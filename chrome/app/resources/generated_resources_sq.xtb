@@ -5043,6 +5043,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4540409690203718935">"Menaxheri i fjalëkalimeve i Google" nuk mund të arrihet. Provo përsëri pas disa minutash</translation>
 <translation id="4540780316273593836">Ndodhi një gabim</translation>
 <translation id="4541123282641193691">Llogaria jote nuk mund të verifikohej. Provo sërish ose rinise pajisjen Chromebook.</translation>
+<translation id="4541396589393395475">Kjo veçori është çaktivizuar nga organizata jote</translation>
 <translation id="4541505619120536051">Hap gjithmonë</translation>
 <translation id="4541662893742891060">Nuk mund të lidhet me këtë profil. Për mbështetje teknike, kontakto me operatorin tënd celular.</translation>
 <translation id="4541706525461326392">Profili po hiqet. Kjo mund të zgjasë disa minuta.</translation>
@@ -5950,6 +5951,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5190926251776387065">Aktivizo portën</translation>
 <translation id="5190959794678983197">Nuk ka mikrofon</translation>
 <translation id="5191094172448199359">Kodet PIN që fute nuk përputhen</translation>
+<translation id="5191251636205085390">Mëso dhe kontrollo teknologjitë e reja që synojnë të zëvendësojnë kukit e palëve të treta</translation>
 <translation id="519185197579575131">Përdor QT</translation>
 <translation id="5192062846343383368">Hap aplikacionin Family Link për të shikuar cilësimet e mbikëqyrjes</translation>
 <translation id="5193485690196207310">{COUNT,plural, =1{1 çelës kalimi}other{{COUNT} çelësa kalimi}}</translation>
@@ -6019,6 +6021,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
     E dukshme si <ph name="DEVICE_TYPE" />...</translation>
 <translation id="523862956770478816">Lejet e sajtit</translation>
 <translation id="5240931875940563122">Identifikohu me telefonin Android</translation>
+<translation id="5241689948221696942">Për disa produkte, tabelat e krahasimit përmbledhin komentet nga i gjithë uebi</translation>
 <translation id="5242724311594467048">Të aktivizohet "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Provo sërish pas pak</translation>
 <translation id="5244234799035360187">OneDrive tani do të shfaqet në aplikacionin Files</translation>

@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Rezimiraj</translation>
 <translation id="123124571410524056">Sumnja se na portal</translation>
 <translation id="1232610416724362657">vodopad</translation>
+<translation id="1238163879850290856">Resetujte da biste sprečili druge da pristupaju podacima. Koristite samo pouzdane metode unosa.</translation>
 <translation id="1238612778414822719">HTTPS kašnjenje</translation>
 <translation id="1252766349417594414">Džojstik</translation>
 <translation id="1270369111467284986">Moguć ulazni portal</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">Desni taster shift</translation>
 <translation id="4654549501020883054">Menjaj svakog dana</translation>
 <translation id="4655868084888499342">Slika je podešena kao pozadina</translation>
+<translation id="4660989616054030633">Generativna veštačka inteligencija može da prikazuje netačne informacije, uključujući i informacije o ljudima, pa proverite odgovore</translation>
 <translation id="4661249927038176904">Nadrealno</translation>
 <translation id="4661392828086261436">Ovo ažuriranje pruža proizvođač uređaja i Google ga nije verifikovao</translation>
 <translation id="4664651912255946953">krzna</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">Sakrij rezime</translation>
 <translation id="6075872808778243331">(Android) HTTP kašnjenje</translation>
 <translation id="6078323886959318429">Dodaj prečicu</translation>
+<translation id="6079693086494835199">Resetujte da biste se uverili da podrazumevana početna stranica nije sajt za „pecanje“. Koristite samo pouzdane veb-sajtove.</translation>
 <translation id="6091080061796993741">žute</translation>
 <translation id="6104112872696127344">Skeniranje je otkazano</translation>
 <translation id="6106186594183574873">Da biste završili, unesite staru lozinku</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">crvenkastobraon i roze</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Resetujte da biste sprečili druge da koriste mikrofon ili kameru. Dozvolite samo pouzdanim sajtovima.</translation>
 <translation id="6188737759358894319">Napravljeno <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Kapacitet baterije se smanjuje tokom korišćenja</translation>
 <translation id="6189987971574353264">Pusti</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">zatamnjivanje tastature</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> je otkazan</translation>
 <translation id="631063167932043783">Istražite aplikaciju</translation>
+<translation id="6314333689576767865">Chromebook je resetovan na bezbedne podrazumevane vrednosti. Možete da unesete promene u bilo kom trenutku u Podešavanjima.</translation>
 <translation id="6318437367327684789">zauvek</translation>
 <translation id="6319207335391420837">Ažurirajte firmver na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Uključite čuvar ekrana</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">Povratne informacije su poslate</translation>
 <translation id="6866732840889595464">bela rada</translation>
 <translation id="6871256179359663621">svetloljubičast(a)</translation>
+<translation id="6887967050249348172">Dodaci su onemogućeni da bi se sprečile promene podešavanja. Uključite samo pouzdane dodatke.</translation>
 <translation id="6889786074662672253">Ne isključujte spoljni uređaj ni računar tokom restartovanja. Možete da umanjite ovaj prozor. Ovo može da potraje nekoliko minuta, a spoljni uređaj možda neće raditi tokom tog perioda.</translation>
 <translation id="6899460405678814458">Prikaži rezime</translation>
 <translation id="6900701049656042631">Ovaj album ne sadrži nijednu sliku. Da biste dodali slike, idite na <ph name="LINK" /></translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">Prečica je vraćena</translation>
 <translation id="725133483556299729">Izaberite imejl</translation>
 <translation id="7255187042098209569">roze i ljubičaste boje</translation>
+<translation id="7267918995585557751">Resetujte da biste se uverili da podrazumevana polazna stranica nije veb-sajt za „pecanje“. Koristite samo pouzdane veb-sajtove.</translation>
 <translation id="7271000785316964275">klasicizam</translation>
 <translation id="7271040990581020067">Skener se trenutno koristi. Probajte ponovo kasnije.</translation>
 <translation id="7271932918253517778">Prečica sa tasterima u gornjem redu treba da sadrži taster <ph name="META_KEY" />.</translation>
@@ -1486,6 +1493,7 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="7903695460270716054">Odaberite neke od pripremljenih ilustracija i slika</translation>
 <translation id="7912005977894000746">Nazad na glavnu stranicu</translation>
 <translation id="7915220255123750251">Upravljajte podešavanjima naziva pristupne tačke mreže. Nazivi pristupnih tačaka uspostavljaju vezu između mobilne mreže i interneta.</translation>
+<translation id="7915759923880480519">Resetujte da biste zaštitili podatke koji se šalju preko mreža. Koristite samo pouzdane mreže.</translation>
 <translation id="7936303884198020182">Nije pronađen nijedan server za imena</translation>
 <translation id="7942349550061667556">Crvena</translation>
 <translation id="7943235353293548836">Trajni interval održavanja linka</translation>
@@ -1711,6 +1719,7 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="89945434909472341">selo</translation>
 <translation id="8997710128084572139">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije.</translation>
 <translation id="8998289560386111590">Nije dostupno na vašem uređaju</translation>
+<translation id="9000871120886759611">Resetujte da biste bili sigurni da možete da pristupate informacijama na željenom jeziku. Proverite da li se koriste samo željeni jezici.</translation>
 <translation id="9003499805101629690">pica</translation>
 <translation id="9003704114456258138">Frekvencija</translation>
 <translation id="901834265349196618">imejl</translation>

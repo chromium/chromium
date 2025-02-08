@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Zhrnúť</translation>
 <translation id="123124571410524056">Podozrenie na portál</translation>
 <translation id="1232610416724362657">vodopádu</translation>
+<translation id="1238163879850290856">Resetovaním zabránite ostatným v prístupe k údajom. Používajte iba metódy vstupu, ktorým dôverujete.</translation>
 <translation id="1238612778414822719">Latencia protokolu HTTPS</translation>
 <translation id="1252766349417594414">Joystick</translation>
 <translation id="1270369111467284986">Predpokladá sa prihlasovací portál</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">Pravý kláves Shift</translation>
 <translation id="4654549501020883054">Meniť denne</translation>
 <translation id="4655868084888499342">Obrázok bol nastavený ako tapeta</translation>
+<translation id="4660989616054030633">Generatívna umelá inteligencia môže robiť chyby, napríklad aj v informáciách o ľuďoch, preto jej odpovede overujte.</translation>
 <translation id="4661249927038176904">Surreálne</translation>
 <translation id="4661392828086261436">Túto aktualizáciu poskytol výrobca zariadenia a Google ju neoveril</translation>
 <translation id="4664651912255946953">kožušina</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">Skryť zhrnutie</translation>
 <translation id="6075872808778243331">(Android) Latencia protokolu HTTP</translation>
 <translation id="6078323886959318429">Pridať odkaz</translation>
+<translation id="6079693086494835199">Resetovaním sa uistite, že predvolená domovská stránka nie je phishingový web. Používajte iba weby, ktorým dôverujete.</translation>
 <translation id="6091080061796993741">žlté</translation>
 <translation id="6104112872696127344">Skenovanie bolo zrušené</translation>
 <translation id="6106186594183574873">Ak chcete zmenu dokončiť, zadajte staré heslo</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">gaštanovohnedá a ružová</translation>
 <translation id="6165508094623778733">Ďalšie informácie</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Resetovaním zabráňte ostatným používať váš mikrofón alebo kameru. Povoľte prístup iba webom, ktorým dôverujete.</translation>
 <translation id="6188737759358894319">Vytvorené: <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Kapacita batérie používaním klesá</translation>
 <translation id="6189987971574353264">Prehrať</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">stmavenie farieb klávesnice</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> bol zrušený</translation>
 <translation id="631063167932043783">Preskúmať aplikáciu</translation>
+<translation id="6314333689576767865">Váš Chromebook bol resetovaný na bezpečné predvolené nastavenie. Môžete to kedykoľvek zmeniť v Nastaveniach.</translation>
 <translation id="6318437367327684789">na neurčito</translation>
 <translation id="6319207335391420837">Aktualizácia firmvéru zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Zapnúť šetrič obrazovky</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">Spätná väzba bola odoslaná</translation>
 <translation id="6866732840889595464">sedmokráska</translation>
 <translation id="6871256179359663621">svetlofialový/-á</translation>
+<translation id="6887967050249348172">Rozšírenia boli vypnuté, aby sa zabránilo zmenám nastavení. Zapnite iba tie, ktorým dôverujete.</translation>
 <translation id="6889786074662672253">Počas reštartu neodpájajte toto externé zariadenie ani nevypínajte počítač. Toto okno môžete minimalizovať. Reštart môže trvať niekoľko minút a vaše externé zariadenie nemusí počas neho fungovať.</translation>
 <translation id="6899460405678814458">Zobraziť zhrnutie</translation>
 <translation id="6900701049656042631">V tomto albume nie sú žiadne fotky. Ak doň chcete nejaké pridať, prejdite na <ph name="LINK" />.</translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">Odkaz bol obnovený</translation>
 <translation id="725133483556299729">Vybrať e‑mail</translation>
 <translation id="7255187042098209569">ružová a purpurová</translation>
+<translation id="7267918995585557751">Resetovaním sa uistite, že predvolená stránka pri spustení nie je phishingový web. Používajte iba weby, ktorým dôverujete.</translation>
 <translation id="7271000785316964275">klasicizmu</translation>
 <translation id="7271040990581020067">Skener sa momentálne používa. Skúste to neskôr.</translation>
 <translation id="7271932918253517778">Skratka s klávesmi horného radu musí zahŕňať kláves <ph name="META_KEY" />.</translation>
@@ -1486,6 +1493,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="7903695460270716054">Zvoliť vybraný plagát a obrázky</translation>
 <translation id="7912005977894000746">Späť na hlavnú stránku</translation>
 <translation id="7915220255123750251">Spravujte nastavenia názvov prístupových bodov (APN) siete. Názvy prístupových bodov umožňujú nadviazať pripojenie medzi mobilnou sieťou a internetom.</translation>
+<translation id="7915759923880480519">Resetovaním ochráňte údaje odosielané prostredníctvom vašich sietí. Používajte iba siete, ktorým dôverujete.</translation>
 <translation id="7936303884198020182">Nenašli sa žiadne servery DNS</translation>
 <translation id="7942349550061667556">Červená</translation>
 <translation id="7943235353293548836">Pretrvávajúci interval keepalive</translation>
@@ -1711,6 +1719,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="89945434909472341">dediny</translation>
 <translation id="8997710128084572139">Úroveň batérie zariadenia je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="8998289560386111590">V zariadení nie je k dispozícii</translation>
+<translation id="9000871120886759611">Resetovaním sa uistite, že máte prístup k informáciám vo svojom preferovanom jazyku. Skontrolujte, či sa používajú iba preferované jazyky.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Frekvencia</translation>
 <translation id="901834265349196618">e-mail</translation>

@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Resumir</translation>
 <translation id="123124571410524056">Portal suspeito</translation>
 <translation id="1232610416724362657">cachoeira</translation>
+<translation id="1238163879850290856">Faça a redefinição para impedir que outras pessoas acessem os dados. Use apenas métodos de entrada confiáveis.</translation>
 <translation id="1238612778414822719">Latência de HTTPS</translation>
 <translation id="1252766349417594414">Joystick</translation>
 <translation id="1270369111467284986">Suspeita de portal cativo</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">Shift da direita</translation>
 <translation id="4654549501020883054">Mudar diariamente</translation>
 <translation id="4655868084888499342">Imagem definida como plano de fundo</translation>
+<translation id="4660989616054030633">A IA generativa pode cometer erros, inclusive sobre pessoas. Por isso, é importante checar as respostas.</translation>
 <translation id="4661249927038176904">Surreal</translation>
 <translation id="4661392828086261436">Essa atualização é fornecida pelo fabricante do dispositivo e não foi verificada pelo Google</translation>
 <translation id="4664651912255946953">pelo</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">Ocultar resumo</translation>
 <translation id="6075872808778243331">(Android) Latência do HTTP</translation>
 <translation id="6078323886959318429">Adicionar atalho</translation>
+<translation id="6079693086494835199">Faça a redefinição para garantir que a página inicial padrão não seja um site de phishing. Use apenas sites em que você confia.</translation>
 <translation id="6091080061796993741">amarela</translation>
 <translation id="6104112872696127344">A digitalização foi cancelada</translation>
 <translation id="6106186594183574873">Para concluir, insira sua senha antiga</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">bordô e rosa</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Redefina para impedir que outras pessoas usem seu microfone ou câmera. Só conceda permissões a sites em que você confia.</translation>
 <translation id="6188737759358894319">Criado em <ph name="DATE" /></translation>
 <translation id="6189418609903030344">A capacidade da bateria diminui com o uso</translation>
 <translation id="6189987971574353264">Reproduzir</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">escurecimento do teclado</translation>
 <translation id="6302401976930124515">O teste de <ph name="TEST_NAME" /> foi cancelado</translation>
 <translation id="631063167932043783">App Explorar</translation>
+<translation id="6314333689576767865">Seu Chromebook foi redefinido para os padrões seguros. Faça mudanças quando quiser nas configurações.</translation>
 <translation id="6318437367327684789">sempre</translation>
 <translation id="6319207335391420837">Atualizar firmware no dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Ativar o protetor de tela</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">Feedback enviado</translation>
 <translation id="6866732840889595464">margarida</translation>
 <translation id="6871256179359663621">roxo-clara</translation>
+<translation id="6887967050249348172">As extensões foram desativadas para evitar mudanças nas configurações. Ative somente extensões confiáveis.</translation>
 <translation id="6889786074662672253">Durante a reinicialização deste dispositivo externo, não o desconecte nem desligue o computador. Você pode minimizar esta janela. Pode levar alguns minutos., e o dispositivo externo pode não funcionar nesse período.</translation>
 <translation id="6899460405678814458">Mostrar resumo</translation>
 <translation id="6900701049656042631">Esse álbum não tem fotos. Para adicionar, acesse <ph name="LINK" /></translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">Atalho restaurado</translation>
 <translation id="725133483556299729">Selecione um e-mail</translation>
 <translation id="7255187042098209569">rosa e roxo</translation>
+<translation id="7267918995585557751">Faça a redefinição para garantir que a página de inicialização padrão não seja um site de phishing. Use apenas sites em que você confia.</translation>
 <translation id="7271000785316964275">classicista</translation>
 <translation id="7271040990581020067">O scanner está em uso. Tente novamente mais tarde.</translation>
 <translation id="7271932918253517778">O atalho com as teclas da primeira fileira precisa incluir a tecla <ph name="META_KEY" />.</translation>
@@ -1486,6 +1493,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="7903695460270716054">Escolher obras de arte e imagens selecionadas</translation>
 <translation id="7912005977894000746">Voltar à página principal</translation>
 <translation id="7915220255123750251">Gerenciar configurações do APN de rede. Os APNs estabelecem uma conexão entre a rede celular e a Internet.</translation>
+<translation id="7915759923880480519">Redefina para proteger os dados enviados pelas suas redes. Use apenas redes confiáveis.</translation>
 <translation id="7936303884198020182">Nenhum servidor de nomes encontrado</translation>
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7943235353293548836">Intervalo de sinal de atividade permanente</translation>
@@ -1711,6 +1719,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="89945434909472341">aldeia</translation>
 <translation id="8997710128084572139">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% bateria.</translation>
 <translation id="8998289560386111590">Indisponível no seu dispositivo</translation>
+<translation id="9000871120886759611">Faça a redefinição para garantir que você possa acessar as informações no seu idioma preferido. Confira se apenas os idiomas preferidos estão sendo usados.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Frequência</translation>
 <translation id="901834265349196618">e-mail</translation>

@@ -2140,6 +2140,10 @@
 <translation id="2462332841984057083">Steam ಅನ್ನು ಈಗಾಗಲೇ ಸೆಟಪ್ ಮಾಡಲಾಗುತ್ತಿದೆ. ಸೆಟಪ್ ಪೂರ್ಣಗೊಳ್ಳಲು ನಿರೀಕ್ಷಿಸಿ.</translation>
 <translation id="2462724976360937186">ಪ್ರಮಾಣದಪತ್ರದ ಪ್ರಾಧಿಕಾರ ಕೀ ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> ಸೇರಿಸಲಾಗಿದೆ</translation>
+<translation id="2464075479326723132">Microsoft SharePoint ಮತ್ತು OneDrive ನಲ್ಲಿನ ನಿಮ್ಮ ತೀರಾ ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆಗೆ ಸುಲಭವಾಗಿ ಹಿಂತಿರುಗಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಲು ಸೂಚಿಸಿದ ಫೈಲ್‌ಗಳನ್ನು ನೀವು ನೋಡುತ್ತಿದ್ದೀರಿ.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        ನೀವು ಕಾರ್ಡ್ ಮೆನುವಿನಿಂದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಬಹುದು ಅಥವಾ Chrome ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ ಎಂಬಲ್ಲಿ ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳನ್ನು ನೋಡಬಹುದು.</translation>
 <translation id="2464079411014186876">ಐಸ್ ಕ್ರೀಂ</translation>
 <translation id="2467755475704469005">ಯಾವುದೇ ಸಾಧನ ಪತ್ತೆಯಾಗಿಲ್ಲ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" /> ಮತ್ತು ಇತರ <ph name="NUM_OTHER_MEMBERS" /> ಸದಸ್ಯರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಸೇರಿಕೊಳ್ಳಿ</translation>
@@ -4001,6 +4005,7 @@
 <translation id="3787434344076711519">ಅನುವಾದಕ್ಕಾಗಿ ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3788301286821743879">ಕಿಯೋಸ್ಕ್ ಆ್ಯಪ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="3788401245189148511">ಇದು ಸಾಧ್ಯವಾಗಬಹುದು:</translation>
+<translation id="3789432704615470433">SharePoint ಮತ್ತು OneDrive ಫೈಲ್‌ಗಳು</translation>
 <translation id="3789841737615482174">ಇನ್‌ಸ್ಟಾಲ್</translation>
 <translation id="3790417903123637354">ಏನೋ ತಪ್ಪಾಗಿದೆ. ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="379082410132524484">ನಿಮ್ಮ ಕಾರ್ಡ್‌ ಅವಧಿ ಮುಗಿದಿದೆ</translation>
@@ -5961,6 +5966,7 @@
 <translation id="5190926251776387065">ಪೋರ್ಟ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="5190959794678983197">ಯಾವುದೇ ಮೈಕ್ರೊಫೋನ್ ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ</translation>
 <translation id="5191094172448199359">ನೀವು ನಮೂದಿಸಿರುವ ಪಿನ್‌ಗಳು ಹೊಂದಾಣಿಕೆಯಾಗುತ್ತಿಲ್ಲ</translation>
+<translation id="5191251636205085390">ಥರ್ಡ್ ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಬದಲಿಸುವ ಉದ್ದೇಶವನ್ನು ಹೊಂದಿರುವ ಹೊಸ ತಂತ್ರಜ್ಞಾನಗಳ ಬಗ್ಗೆ ತಿಳಿದುಕೊಳ್ಳಿ ಮತ್ತು ಅವುಗಳನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
 <translation id="519185197579575131">QT ಬಳಸಿ</translation>
 <translation id="5192062846343383368">ನಿಮ್ಮ ಮೇಲ್ವಿಚಾರಣೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನೋಡಲು Family Link ಆ್ಯಪ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5193485690196207310">{COUNT,plural, =1{1 ಪಾಸ್‌ಕೀ}one{{COUNT} ಪಾಸ್‌ಕೀಗಳು}other{{COUNT} ಪಾಸ್‌ಕೀಗಳು}}</translation>
@@ -6189,6 +6195,7 @@
 <translation id="5360150013186312835">ಪರಿಕರಪಟ್ಟಿಯಲ್ಲಿ ತೋರಿಸು</translation>
 <translation id="5362741141255528695">ಖಾಸಗಿ ಕೀಲಿ ಫೈಲ್ ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="536278396489099088">ChromeOS ಸಿಸ್ಟಂ ಸ್ಥಿತಿ ಮತ್ತು ವರದಿಗಳು</translation>
+<translation id="5362916924854054326">SharePoint ಮತ್ತು OneDrive ಫೈಲ್‌ಗಳನ್ನು ತೋರಿಸಬೇಡಿ</translation>
 <translation id="5363109466694494651">ಪವರ್‌ವಾಶ್ ಮತ್ತು ಹಿಂದಿರುಗಿಸು</translation>
 <translation id="5365881113273618889">ನೀವು ಆಯ್ಕೆ ಮಾಡಿದ ಫೋಲ್ಡ‌ರ್‌ನಲ್ಲಿ ಸೂಕ್ಷ್ಮವಾದ ಫೈಲ್‌ಗಳಿವೆ. ಈ ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ಬರೆಯಲು "<ph name="APP_NAME" />" ಗೆ ಶಾಶ್ವತ ಆ್ಯಕ್ಸೆಸ್ ಒದಗಿಸಲು ನೀವು ಖಂಡಿತವಾಗಿಯೂ ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="536638840841140142">ಯಾವುದೂ ಅಲ್ಲ</translation>
@@ -10772,6 +10779,10 @@
 <translation id="865936634714975126">ಪುಟವು ಲೋಡ್ ಆದ ನಂತರ ಪ್ರಕಾರಗಳನ್ನು ಆಯ್ಕೆಮಾಡುವುದಕ್ಕಾಗಿ URL ನಲ್ಲಿ ಪ್ರಶ್ನೆಯ ಪ್ಯಾರಾಮೀಟರ್‌ಗಳನ್ನು ಸೇರಿಸಿ. ಉದಾಹರಣೆ: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> ಸಂಪರ್ಕಗಳು</translation>
 <translation id="8659609431223166673">ವಿಂಡೋವನ್ನು ಕೆಳಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ</translation>
+<translation id="8660288500924118793">Outlook Calendar ನಲ್ಲಿ ನಿಮ್ಮ ಮುಂದಿನ ಈವೆಂಟ್‌ಗೆ ನೀವು ಸುಲಭವಾಗಿ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ನಿಮ್ಮ ಕ್ಯಾಲೆಂಡರ್ ಅನ್ನು ನೋಡುತ್ತಿದ್ದೀರಿ.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       ನೀವು ಕಾರ್ಡ್ ಮೆನುವಿನಿಂದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಬಹುದು ಅಥವಾ Chrome ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ ಎಂಬಲ್ಲಿ ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳನ್ನು ನೋಡಬಹುದು.</translation>
 <translation id="8661290697478713397">ಅಜ್ಞಾ&amp;ತ ವಿಂಡೋದಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸೇರಿಕೊಳ್ಳಿ</translation>

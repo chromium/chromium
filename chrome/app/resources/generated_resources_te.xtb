@@ -2145,6 +2145,10 @@
 <translation id="2462332841984057083">Steam ఇప్పటికే సెటప్ చేయబడుతోంది. సెటప్ పూర్తయ్యే వరకు వేచి ఉండండి.</translation>
 <translation id="2462724976360937186">సర్టిఫికెట్ అధికార కీ ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> జోడించబడింది</translation>
+<translation id="2464075479326723132">Microsoft SharePoint, OneDriveలో మీ అత్యంత ఇటీవలి యాక్టివిటీని సులభంగా తిరిగి పొందడంలో మీకు సహాయపడటానికి సూచించిన ఫైళ్లు కనిపిస్తున్నాయి.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        మీరు కార్డ్ మెనూ నుండి సెట్టింగ్‌లను మేనేజ్ చేయవచ్చు లేదా, అనుకూలంగా మార్చిన Chromeలో మరిన్ని ఆప్షన్‌లను చూడండి.</translation>
 <translation id="2464079411014186876">ఐస్ క్రీమ్</translation>
 <translation id="2467755475704469005">ఏ పరికరం గుర్తించబడలేదు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" />, ఇంకా మరో <ph name="NUM_OTHER_MEMBERS" /> మంది వ్యక్తులతో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి</translation>
@@ -4007,6 +4011,7 @@
 <translation id="3787434344076711519">అనువాదం కోసం వేచి ఉంది</translation>
 <translation id="3788301286821743879">కియోస్క్ యాప్‌ను ప్రారంభించడం సాధ్యపడలేదు.</translation>
 <translation id="3788401245189148511">ఇది వీటిని చేయాలనుకుంటోంది:</translation>
+<translation id="3789432704615470433">SharePoint, OneDrive ఫైళ్లు</translation>
 <translation id="3789841737615482174">ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="3790417903123637354">ఏదో తప్పు జరిగింది. తర్వాత మళ్లీ ట్రై చేయండి</translation>
 <translation id="379082410132524484">మీ కార్డ్ గడువు ముగిసింది</translation>
@@ -5967,6 +5972,7 @@
 <translation id="5190926251776387065">పోర్ట్‌ను యాక్టివేట్ చేయండి</translation>
 <translation id="5190959794678983197">మైక్రోఫోన్ లేదు</translation>
 <translation id="5191094172448199359">మీరు ఎంటర్ చేసిన పిన్‌లు మ్యాచ్ అవ్వడం లేదు</translation>
+<translation id="5191251636205085390">థర్డ్-పార్టీ కుక్కీలను భర్తీ చేయడానికి, అలాగే వాటిని కంట్రోల్ చేయడానికి ఉద్దేశించిన కొత్త టెక్నాలిజీల గురించి తెలుసుకోండి</translation>
 <translation id="519185197579575131">QTని ఉపయోగించండి</translation>
 <translation id="5192062846343383368">మీ పర్యవేక్షణ సెట్టింగ్‌లను చూడడానికి Family Link యాప్‌ను తెరవండి</translation>
 <translation id="5193485690196207310">{COUNT,plural, =1{1 పాస్-కీ}other{{COUNT} పాస్-కీలు}}</translation>
@@ -6195,6 +6201,7 @@
 <translation id="5360150013186312835">సాధనపట్టీలో చూపండి</translation>
 <translation id="5362741141255528695">వ్యక్తిగత కీ ఫైల్‌ను ఎంచుకోండి.</translation>
 <translation id="536278396489099088">ChromeOS సిస్టమ్ స్టేట్, రిపోర్ట్‌లు</translation>
+<translation id="5362916924854054326">SharePoint, OneDrive ఫైళ్లను చూపవద్దు</translation>
 <translation id="5363109466694494651">పవర్‌వాష్ చేసి, తిరిగి మార్చు</translation>
 <translation id="5365881113273618889">మీరు ఎంచుకున్న ఫోల్డర్ చాలా ఎక్కువ గోప్యమైన ఫైళ్లను కలిగి ఉంది. మీరు ఖచ్చితంగా ఈ ఫోల్డర్ కోసం "<ph name="APP_NAME" />"కి శాశ్వతంగా రాయగల యాక్సెస్‌ను మంజూరు చేయాలనుకుంటున్నారా?</translation>
 <translation id="536638840841140142">ఏదీ లేదు</translation>
@@ -10775,6 +10782,10 @@
 <translation id="865936634714975126">పేజీ లోడ్‌లో రకాలను ఎంచుకోవడానికి URLలో ప్రశ్న పారామీట‌ర్‌ను జోడించండి. Example: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> కాంటాక్ట్‌లు</translation>
 <translation id="8659609431223166673">విండో కిందికి తరలించబడింది</translation>
+<translation id="8660288500924118793">Outlook Calendarలో మీ తర్వాతి ఈవెంట్‌కు సులభంగా నావిగేట్ చేయడంలో మీకు సహాయపడటానికి మీ క్యాలెండర్‌ను చూస్తున్నారు.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       మీరు కార్డ్ మెనూ నుండి సెట్టింగ్‌లను మేనేజ్ చేయవచ్చు లేదా, అనుకూలంగా మార్చిన Chromeలో మరిన్ని ఆప్షన్‌లను చూడండి.</translation>
 <translation id="8661290697478713397">అజ్ఞా&amp;త విండోలో లింక్‌ను తెరువు</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />‌కి సైన్ ఇన్ చేయండి</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> నెట్‌వర్క్‌లో చేరండి</translation>

@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Samenvatten</translation>
 <translation id="123124571410524056">Vermoedelijke portal</translation>
 <translation id="1232610416724362657">waterval</translation>
+<translation id="1238163879850290856">Reset om te voorkomen dat anderen toegang krijgen tot gegevens. Gebruik alleen invoermethoden die je vertrouwt.</translation>
 <translation id="1238612778414822719">HTTPS-latentie</translation>
 <translation id="1252766349417594414">Joystick</translation>
 <translation id="1270369111467284986">Vermoedelijke captive portal</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">Shift rechts</translation>
 <translation id="4654549501020883054">Dagelijks wijzigen</translation>
 <translation id="4655868084888499342">Afbeelding ingesteld als achtergrond</translation>
+<translation id="4660989616054030633">Generatieve AI kan fouten maken, ook in informatie over mensen, dus dubbelcheck de reacties</translation>
 <translation id="4661249927038176904">Surrealistisch</translation>
 <translation id="4661392828086261436">Deze update wordt geleverd door de fabrikant van het apparaat en is niet geverifieerd door Google</translation>
 <translation id="4664651912255946953">bont</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">Samenvatting verbergen</translation>
 <translation id="6075872808778243331">(Android) HTTP-vertraging</translation>
 <translation id="6078323886959318429">Snelkoppeling toevoegen</translation>
+<translation id="6079693086494835199">Reset om te zorgen dat de standaard homepage geen phishingsite is. Gebruik alleen websites die je vertrouwt.</translation>
 <translation id="6091080061796993741">geel</translation>
 <translation id="6104112872696127344">Scannen is geannuleerd</translation>
 <translation id="6106186594183574873">Geef je oude wachtwoord op om te voltooien</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">kastanjebruin en roze</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Reset om te voorkomen dat anderen je microfoon of camera gebruiken. Verleen alleen rechten aan sites die je vertrouwt.</translation>
 <translation id="6188737759358894319">Gemaakt op <ph name="DATE" /></translation>
 <translation id="6189418609903030344">De batterijcapaciteit gaat achteruit naarmate een batterij langer wordt gebruikt</translation>
 <translation id="6189987971574353264">Afspelen</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">toetsenbord dimmen</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> is geannuleerd</translation>
 <translation id="631063167932043783">App verkennen</translation>
+<translation id="6314333689576767865">Je Chromebook is teruggezet naar veilige standaardinstellingen. Je kunt altijd wijzigingen aanbrengen via Instellingen.</translation>
 <translation id="6318437367327684789">oneindig</translation>
 <translation id="6319207335391420837">Firmware updaten op <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Screensaver altijd aanzetten</translation>
@@ -1250,6 +1255,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="6862416241246624313">Feedback ingediend</translation>
 <translation id="6866732840889595464">madeliefje</translation>
 <translation id="6871256179359663621">lichtpaars</translation>
+<translation id="6887967050249348172">Extensies staan uit om te voorkomen dat instellingen worden gewijzigd. Zet alleen extensies aan die je vertrouwt.</translation>
 <translation id="6889786074662672253">Koppel dit externe apparaat niet los en zet je computer niet uit tijdens het opnieuw opstarten. Je kunt dit venster minimaliseren. Dit kan een paar minuten duren en je externe apparaat werkt misschien niet tijdens dit proces.</translation>
 <translation id="6899460405678814458">Samenvatting tonen</translation>
 <translation id="6900701049656042631">Dit album bevat geen foto's. Ga naar <ph name="LINK" /> als je foto's wilt toevoegen.</translation>
@@ -1340,6 +1346,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="7233782086689993269">Sneltoets hersteld</translation>
 <translation id="725133483556299729">E-mailadres selecteren</translation>
 <translation id="7255187042098209569">roze en paars</translation>
+<translation id="7267918995585557751">Reset om te zorgen dat de standaard startpagina geen phishingwebsite is. Gebruik alleen websites die je vertrouwt.</translation>
 <translation id="7271000785316964275">classicistisch</translation>
 <translation id="7271040990581020067">De scanner wordt momenteel gebruikt. Probeer het later opnieuw.</translation>
 <translation id="7271932918253517778">Sneltoets met toetsen op de bovenste rij moet de <ph name="META_KEY" />-toets bevatten.</translation>
@@ -1486,6 +1493,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7903695460270716054">Beheerde kunst en afbeeldingen kiezen</translation>
 <translation id="7912005977894000746">Terug naar hoofdpagina</translation>
 <translation id="7915220255123750251">Beheer de APN-instellingen voor het netwerk. APN's maken verbinding tussen een mobiel netwerk en internet.</translation>
+<translation id="7915759923880480519">Reset om gegevens te beschermen die via je netwerken worden verstuurd. Gebruik alleen netwerken die je vertrouwt.</translation>
 <translation id="7936303884198020182">Geen naamservers gevonden</translation>
 <translation id="7942349550061667556">Rood</translation>
 <translation id="7943235353293548836">Permanent keepalive-interval</translation>
@@ -1711,6 +1719,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="89945434909472341">dorp</translation>
 <translation id="8997710128084572139">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading.</translation>
 <translation id="8998289560386111590">Niet beschikbaar op je apparaat</translation>
+<translation id="9000871120886759611">Reset om te zorgen dat je toegang hebt tot informatie in je voorkeurstaal. Controleer of alleen voorkeurstalen worden gebruikt.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Frequentie</translation>
 <translation id="901834265349196618">e-mail</translation>

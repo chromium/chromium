@@ -2148,6 +2148,10 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2462332841984057083">O Steam já está sendo configurado. Aguarde a conclusão do processo.</translation>
 <translation id="2462724976360937186">ID da chave da autoridade de certificação</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> adicionada</translation>
+<translation id="2464075479326723132">Você está vendo arquivos sugeridos para que possa voltar de forma simples à sua atividade mais recente no Microsoft SharePoint e OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        É possível gerenciar as configurações no menu do card ou ver mais opções em "Personalizar o Chrome".</translation>
 <translation id="2464079411014186876">Sorvete</translation>
 <translation id="2467755475704469005">Nenhum dispositivo detectado. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Participe do grupo de guias com <ph name="OWNER_FIRST_NAME" /> e mais <ph name="NUM_OTHER_MEMBERS" /> pessoas</translation>
@@ -4010,6 +4014,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3787434344076711519">Aguardando tradução</translation>
 <translation id="3788301286821743879">Não foi possível iniciar o aplicativo de quiosque.</translation>
 <translation id="3788401245189148511">Ele poderia:</translation>
+<translation id="3789432704615470433">Arquivos do SharePoint e do OneDrive</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3790417903123637354">Algo deu errado. Tente novamente mais tarde</translation>
 <translation id="379082410132524484">Seu cartão expirou</translation>
@@ -5970,6 +5975,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5190926251776387065">Ativar porta</translation>
 <translation id="5190959794678983197">Nenhum microfone</translation>
 <translation id="5191094172448199359">Os PINs que você digitou não são iguais</translation>
+<translation id="5191251636205085390">Descubra e controle novas tecnologias para substituir cookies de terceiros</translation>
 <translation id="519185197579575131">Usar QT</translation>
 <translation id="5192062846343383368">Abra o app Family Link para ver as configurações de supervisão</translation>
 <translation id="5193485690196207310">{COUNT,plural, =1{1 chave de acesso}one{{COUNT} chave de acesso}other{{COUNT} chaves de acesso}}</translation>
@@ -6199,6 +6205,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5360150013186312835">Mostrar na barra de ferramentas</translation>
 <translation id="5362741141255528695">Selecionar arquivo de chave privada.</translation>
 <translation id="536278396489099088">Estado e relatórios do sistema ChromeOS</translation>
+<translation id="5362916924854054326">Não mostrar arquivos do SharePoint e do OneDrive</translation>
 <translation id="5363109466694494651">Realizar Powerwash e reverter</translation>
 <translation id="5365881113273618889">A pasta selecionada contém arquivos confidenciais. Tem certeza de que quer conceder acesso permanente de gravação nessa pasta ao "<ph name="APP_NAME" />"?</translation>
 <translation id="536638840841140142">Nenhuma</translation>
@@ -10786,6 +10793,10 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="865936634714975126">Adicione um parâmetro de consulta ao URL para selecionar tipos no carregamento da página. Exemplo: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Contatos do <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Janela movida para baixo</translation>
+<translation id="8660288500924118793">Você está vendo sua agenda para navegar com facilidade até o próximo evento no Calendário do Outlook.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       É possível gerenciar as configurações no menu do card ou ver mais opções em "Personalizar o Chrome".</translation>
 <translation id="8661290697478713397">Abrir link na janela &amp;anônima</translation>
 <translation id="8662474268934425487">Fazer login no site <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Entrar na rede <ph name="TYPE" /></translation>

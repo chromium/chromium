@@ -5951,6 +5951,7 @@
 <translation id="5190926251776387065">पोर्ट अन गर्नुहोस्</translation>
 <translation id="5190959794678983197">माइक्रोफोन कनेक्ट गरिएको छैन</translation>
 <translation id="5191094172448199359">तपाईंले हाल्नुभएका PIN हरू मेल खाँदैनन्</translation>
+<translation id="5191251636205085390">तेस्रो पक्षीय कुकीहरूलाई प्रतिस्थापन गर्ने प्रविधिका बारेमा जानकारी प्राप्त गर्नुहोस् र तिनलाई नियन्त्रण गर्ने तरिका सिक्नुहोस्</translation>
 <translation id="519185197579575131">QT प्रयोग गर्नुहोस्</translation>
 <translation id="5192062846343383368">आफ्नो सुपरिवेक्षणका सेटिङहरू हेर्न Family Link एप खोल्नुहोस्</translation>
 <translation id="5193485690196207310">{COUNT,plural, =1{एउटा पासकी}other{{COUNT} वटा पासकी}}</translation>
@@ -6369,7 +6370,7 @@
 <translation id="5490798133083738649">Linux लाई तपाईंको माइक्रोफोन प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="549211519852037402">फुस्रो खैरो र सेतो</translation>
 <translation id="5492637351392383067">डिभाइसमै चल्ने इन्क्रिप्सन</translation>
-<translation id="5493455553805432330">बिर्सनुहोस्</translation>
+<translation id="5493455553805432330">हटाउनुहोस्</translation>
 <translation id="5493792505296048976">स्क्रिन सक्रिय छ</translation>
 <translation id="5494016731375030300">भर्खरै बन्द गरिएका ट्याबहरू</translation>
 <translation id="5494362494988149300">&amp;पूरा भएपछि खोल्नुहोस्</translation>
@@ -11236,7 +11237,7 @@
 <translation id="8985561265504464578">डिटेक्सन थ्रेसहोल्ड</translation>
 <translation id="8985661493893822002">आफ्नो <ph name="DEVICE_TYPE" /> मा साइन इन गर्न कृपया इन्टरनेटमा कनेक्ट गर्नुहोस्।</translation>
 <translation id="8985661571449404298">असुरक्षित फाइल डाउनलोड गरियो</translation>
-<translation id="8986362086234534611">बिर्सनुहोस्</translation>
+<translation id="8986362086234534611">हटाउनुहोस्</translation>
 <translation id="8986494364107987395">Google लाई स्वचालित रूपमा उपयोगको तथ्याङ्कहरू र क्र्यास रिपोर्ट पठाउनुहोस्</translation>
 <translation id="8987305927843254629">हरेक व्यक्ति आफूले प्रयोग गर्ने सुविधा पर्सनलाइज गर्न र जानकारी गोप्य राख्न सक्छन्।</translation>
 <translation id="8987321822984361516">ब्राउजर सङ्गठनले व्यवस्थापन गर्छ भने प्रोफाइल <ph name="PROFILE_DOMAIN" /> ले व्यवस्थापन गर्छ</translation>

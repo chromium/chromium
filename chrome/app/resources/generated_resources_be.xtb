@@ -2135,6 +2135,10 @@
 <translation id="2462332841984057083">Steam ужо наладжваецца. Пачакайце, пакуль наладжванне завершыцца.</translation>
 <translation id="2462724976360937186">Ідэнтыфікатар ключа цэнтра сертыфікацыі</translation>
 <translation id="2462752602710430187">Дададзены прынтар <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Вы бачыце прапанаваныя файлы, з дапамогай якіх можна з лёгкасцю вяртацца да сваіх самых нядаўніх дзеянняў у Microsoft SharePoint і OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        У вас ёсць магчымасць кіраваць наладамі з меню карткі і праглядаць дадатковыя параметры ў раздзеле "Наладзіць Chrome".</translation>
 <translation id="2464079411014186876">Марожанае</translation>
 <translation id="2467755475704469005">Прылады не выяўлены. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /> і яшчэ некалькі (<ph name="NUM_OTHER_MEMBERS" />) карыстальнікаў</translation>
@@ -3995,6 +3999,7 @@
 <translation id="3787434344076711519">Выконваецца пераклад</translation>
 <translation id="3788301286821743879">Не ўдалося запусціць праграму-кіёск.</translation>
 <translation id="3788401245189148511">Гэта пашырэнне або ўбудова можа:</translation>
+<translation id="3789432704615470433">Файлы SharePoint і OneDrive</translation>
 <translation id="3789841737615482174">Усталяваць</translation>
 <translation id="3790417903123637354">Нешта пайшло не так. Паўтарыце спробу пазней</translation>
 <translation id="379082410132524484">Тэрмін дзеяння карткі скончыўся</translation>
@@ -5955,6 +5960,7 @@
 <translation id="5190926251776387065">Уключыць порт</translation>
 <translation id="5190959794678983197">Няма мікрафона</translation>
 <translation id="5191094172448199359">Уведзеныя PIN-коды не супадаюць</translation>
+<translation id="5191251636205085390">Даведайцеся пра новыя тэхналогіі, якія прыходзяць на змену староннім файлам cookie, а таксама пра спосабы кіравання імі</translation>
 <translation id="519185197579575131">Выкарыстоўваць QT</translation>
 <translation id="5192062846343383368">Каб праглядзець налады бацькоўскага кантролю, адкрыйце праграму Family Link</translation>
 <translation id="5193485690196207310">{COUNT,plural, =1{1 ключ доступу}one{{COUNT} ключ доступу}few{{COUNT} ключы доступу}many{{COUNT} ключоў доступу}other{{COUNT} ключа доступу}}</translation>
@@ -6183,6 +6189,7 @@
 <translation id="5360150013186312835">Паказаць на панэлі інструментаў</translation>
 <translation id="5362741141255528695">Выберыце файл закрытага ключа.</translation>
 <translation id="536278396489099088">Справаздачы і стан сістэмы ChromeOS</translation>
+<translation id="5362916924854054326">Не паказваць файлы SharePoint і OneDrive</translation>
 <translation id="5363109466694494651">Скінуць налады функцыяй Powerwash і вярнуцца да старой версіі</translation>
 <translation id="5365881113273618889">Выбраная папка змяшчае канфідэнцыяльныя файлы. Даць праграме "<ph name="APP_NAME" />" пастаянны доступ на запіс у гэту папку?</translation>
 <translation id="536638840841140142">Без палёў</translation>
@@ -10771,6 +10778,10 @@
 <translation id="865936634714975126">Дадайце параметр запыту ў URL-адрас для выбару тыпаў пры загрузцы старонкі Прыклад: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" />: кантакты</translation>
 <translation id="8659609431223166673">Акно перамешчана ўніз</translation>
+<translation id="8660288500924118793">Каляндар паказваецца, каб вам было зручна пераходзіць да наступнай падзеі ў Календары Outlook.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       У вас ёсць магчымасць кіраваць наладамі з меню карткі і праглядаць дадатковыя параметры ў раздзеле "Наладзіць Chrome".</translation>
 <translation id="8661290697478713397">Адкрыць спасылку ў акне інко&amp;гніта</translation>
 <translation id="8662474268934425487">Выберыце ўліковы запіс для ўваходу ў <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Падключэнне да сеткі <ph name="TYPE" /></translation>
