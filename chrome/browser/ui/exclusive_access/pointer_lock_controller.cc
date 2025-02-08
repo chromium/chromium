@@ -192,7 +192,7 @@ void PointerLockController::LockPointer(
   if (!ShouldSuppressBubbleReshowForStateChange()) {
     exclusive_access_manager()->UpdateBubble(
         base::BindOnce(&PointerLockController::OnBubbleHidden,
-                       weak_ptr_factory_.GetWeakPtr(), web_contents.get()));
+                       weak_ptr_factory_.GetWeakPtr(), web_contents));
   }
   if (lock_state_callback_for_test_) {
     std::move(lock_state_callback_for_test_).Run();
@@ -222,7 +222,7 @@ void PointerLockController::RejectRequestToLockPointer(
 }
 
 void PointerLockController::OnBubbleHidden(
-    WebContents* web_contents,
+    base::WeakPtr<content::WebContents> web_contents,
     ExclusiveAccessBubbleHideReason reason) {
   if (bubble_hide_callback_for_test_) {
     bubble_hide_callback_for_test_.Run(reason);
@@ -231,7 +231,7 @@ void PointerLockController::OnBubbleHidden(
   // Allow silent pointer lock if the bubble has been display for a period of
   // time and dismissed due to timeout.
   if (reason == ExclusiveAccessBubbleHideReason::kTimeout) {
-    web_contents_granted_silent_pointer_lock_permission_ = web_contents;
+    web_contents_granted_silent_pointer_lock_permission_ = web_contents.get();
   } else {
     web_contents_granted_silent_pointer_lock_permission_ = nullptr;
   }
