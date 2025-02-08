@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SERIALIZATION_SERIALIZED_COLOR_PARAMS_H_
-#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SERIALIZATION_SERIALIZED_COLOR_PARAMS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SERIALIZATION_SERIALIZED_PARAMS_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SERIALIZATION_SERIALIZED_PARAMS_H_
 
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"
 
 namespace blink {
 
@@ -104,6 +105,12 @@ enum class SerializedImageOrientation : uint32_t {
   kLast = kLeftBottom,
 };
 
+enum class SerializedTextDirection : uint32_t {
+  kLtr = 0,
+  kRtl = 1,
+  kLast = kRtl,
+};
+
 class SerializedImageDataSettings {
  public:
   SerializedImageDataSettings(PredefinedColorSpace, ImageDataStorageFormat);
@@ -128,9 +135,9 @@ class SerializedImageDataSettings {
       SerializedImageDataStorageFormat::kUint8Clamped;
 };
 
-constexpr uint32_t kSerializedParametricColorSpaceLength = 16;
-constexpr float kSerializedPQConstant = -2.f;
-constexpr float kSerializedHLGConstant = -3.f;
+inline constexpr uint32_t kSerializedParametricColorSpaceLength = 16;
+inline constexpr float kSerializedPQConstant = -2.f;
+inline constexpr float kSerializedHLGConstant = -3.f;
 
 class SerializedImageBitmapSettings {
  public:
@@ -169,6 +176,21 @@ class SerializedImageBitmapSettings {
       SerializedImageOrientation::kTopLeft;
 };
 
+class SerializedTextDirectionSettings {
+ public:
+  SerializedTextDirectionSettings(TextDirection);
+  SerializedTextDirectionSettings(SerializedTextDirection);
+
+  TextDirection GetTextDirection() const;
+
+  SerializedTextDirection GetSerializedTextDirection() const {
+    return text_direction_;
+  }
+
+ private:
+  SerializedTextDirection text_direction_ = SerializedTextDirection::kLtr;
+};
+
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SERIALIZATION_SERIALIZED_COLOR_PARAMS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SERIALIZATION_SERIALIZED_PARAMS_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_color_params.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_params.h"
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
@@ -118,10 +118,12 @@ SerializedImageBitmapSettings::SerializedImageBitmapSettings(
   // transfer functions, but `trfn` is still populated appropriately. DCHECK
   // that the constants for HLG and PQ have not changed.
   color_space->isNumericalTransferFn(&trfn);
-  if (skcms_TransferFunction_isPQish(&trfn))
+  if (skcms_TransferFunction_isPQish(&trfn)) {
     DCHECK_EQ(trfn.g, kSerializedPQConstant);
-  if (skcms_TransferFunction_isHLGish(&trfn))
+  }
+  if (skcms_TransferFunction_isHLGish(&trfn)) {
     DCHECK_EQ(trfn.g, kSerializedHLGConstant);
+  }
   bool to_xyzd50_result = color_space->toXYZD50(&to_xyz);
   DCHECK(to_xyzd50_result);
   sk_color_space_.resize(16);
@@ -290,6 +292,35 @@ ImageOrientationEnum SerializedImageBitmapSettings::GetImageOrientation()
       return ImageOrientationEnum::kOriginRightBottom;
     case SerializedImageOrientation::kLeftBottom:
       return ImageOrientationEnum::kOriginLeftBottom;
+  }
+  NOTREACHED();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// SerializedTextDirection
+SerializedTextDirectionSettings::SerializedTextDirectionSettings(
+    TextDirection direction) {
+  switch (direction) {
+    case TextDirection::kLtr:
+      text_direction_ = SerializedTextDirection::kLtr;
+      return;
+    case TextDirection::kRtl:
+      text_direction_ = SerializedTextDirection::kRtl;
+      return;
+  }
+  NOTREACHED();
+}
+
+SerializedTextDirectionSettings::SerializedTextDirectionSettings(
+    SerializedTextDirection direction)
+    : text_direction_(direction) {}
+
+TextDirection SerializedTextDirectionSettings::GetTextDirection() const {
+  switch (text_direction_) {
+    case SerializedTextDirection::kLtr:
+      return TextDirection::kLtr;
+    case SerializedTextDirection::kRtl:
+      return TextDirection::kRtl;
   }
   NOTREACHED();
 }

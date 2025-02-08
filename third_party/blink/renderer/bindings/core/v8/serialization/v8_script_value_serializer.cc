@@ -705,9 +705,12 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
           "because it had a rendering context.");
       return false;
     }
+    SerializedTextDirectionSettings serialized_direction(
+        canvas->GetTextDirection(nullptr));
     WriteAndRequireInterfaceTag(kOffscreenCanvasTransferTag);
     WriteUint32(canvas->width());
     WriteUint32(canvas->height());
+    WriteUint32Enum(serialized_direction.GetSerializedTextDirection());
     WriteUint64(canvas->PlaceholderCanvasId());
     WriteUint32(canvas->ClientId());
     WriteUint32(canvas->SinkId());

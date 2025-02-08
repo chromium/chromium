@@ -598,13 +598,18 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
     }
     case kOffscreenCanvasTransferTag: {
       uint32_t width = 0, height = 0, canvas_id = 0, client_id = 0, sink_id = 0;
+      SerializedTextDirection serialized_direction =
+          SerializedTextDirection::kLtr;
       if (!ReadUint32(&width) || !ReadUint32(&height) ||
+          !ReadUint32Enum<SerializedTextDirection>(&serialized_direction) ||
           !ReadUint32(&canvas_id) || !ReadUint32(&client_id) ||
           !ReadUint32(&sink_id)) {
         return nullptr;
       }
       OffscreenCanvas* canvas =
           OffscreenCanvas::Create(GetScriptState(), width, height);
+      SerializedTextDirectionSettings direction_setting(serialized_direction);
+      canvas->SetTextDirection(direction_setting.GetTextDirection());
       canvas->SetPlaceholderCanvasId(canvas_id);
       canvas->SetFrameSinkId(client_id, sink_id);
       return canvas;
