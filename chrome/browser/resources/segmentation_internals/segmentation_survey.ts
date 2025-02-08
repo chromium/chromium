@@ -59,6 +59,13 @@ function openError() {
 }
 
 function processPredictionResult(segmentInfo: SegmentInfo) {
+  if (!segmentInfo.predictionResult || segmentInfo.predictionResult === '' ||
+      segmentInfo.predictionTimestamp.internalValue === 0n ||
+      segmentInfo.segmentId !== 50 ||
+      !segmentInfo.segmentData.includes('model_version: 2')) {
+    openError();
+    return;
+  }
   const result = String(segmentInfo.predictionResult) +
       ' Timestamp: ' + String(segmentInfo.predictionTimestamp.internalValue);
   const encoded = window.btoa(result);
@@ -76,7 +83,7 @@ function processClientInfo(info: ClientInfo) {
 function initialize() {
   // Timeout to wait for segmentation results.
   const timeoutSec = 3000;
-  setTimeout(() => {
+  const timeoutId = setTimeout(() => {
     openError();
   }, timeoutSec);
 
@@ -84,12 +91,14 @@ function initialize() {
       (clientInfos: ClientInfo[]) => {
         for (let i = 0; i < clientInfos.length; ++i) {
           if (clientInfos[i]!.segmentationKey === 'metrics_clustering') {
+            clearTimeout(timeoutId);
             processClientInfo(clientInfos[i]!);
           }
         }
       });
 
-  getProxy().getServiceStatus();
+  // OPTIMIZATION_TARGET_SEGMENTATION_METRICS_CLUSTERING
+  getProxy().executeModel(50);
 }
 
 document.addEventListener('DOMContentLoaded', initialize);
