@@ -77,6 +77,9 @@ public class DataSharingStringConfig {
             TABS_COUNT_TITLE,
             LEARN_ABOUT_SHARED_TAB_GROUPS,
             LEARN_ABOUT_BLOCKED_ACCOUNTS,
+            JOIN_GROUP_IS_FULL_ERROR_TITLE,
+            JOIN_GROUP_IS_FULL_ERROR_BODY,
+            ACTIVITY_LOGS_TITLE,
         })
         public @interface Key {}
 
@@ -100,5 +103,8 @@ public class DataSharingStringConfig {
         public static final int TABS_COUNT_TITLE = 17;
         public static final int LEARN_ABOUT_SHARED_TAB_GROUPS = 18;
         public static final int LEARN_ABOUT_BLOCKED_ACCOUNTS = 19;
+        public static final int JOIN_GROUP_IS_FULL_ERROR_TITLE = 20;
+        public static final int JOIN_GROUP_IS_FULL_ERROR_BODY = 21;
+        public static final int ACTIVITY_LOGS_TITLE = 22;
     }
 }
