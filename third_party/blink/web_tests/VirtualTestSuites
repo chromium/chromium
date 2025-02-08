@@ -3342,7 +3342,7 @@
       "scrollbars/prefers-default-scrollbar-styles"],
     "args": ["--enable-blink-features=PreferDefaultScrollbarStyles",
              "--blink-settings=prefersDefaultScrollbarStyles=true"],
-    "expires": "Feb 1, 2025",
+    "expires": "Feb 1, 2026",
     "owners": ["evelynn.kaplan@microsoft.com", "almaher@microsoft.com"]
   },
   {
