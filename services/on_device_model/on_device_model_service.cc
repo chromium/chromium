@@ -58,10 +58,6 @@ class SessionWrapper final : public mojom::Session {
 
   mojo::Receiver<mojom::Session>& receiver() { return receiver_; }
 
-  void AddPreviousContext(mojom::InputOptionsPtr input) {
-    previous_contexts_.push_back(std::move(input));
-  }
-
  private:
   void AddContextInternal(mojom::InputOptionsPtr input,
                           mojo::PendingRemote<mojom::ContextClient> client,
@@ -95,7 +91,6 @@ class SessionWrapper final : public mojom::Session {
   base::WeakPtr<ModelWrapper> model_;
   mojo::Receiver<mojom::Session> receiver_;
   std::unique_ptr<ml::SessionImpl> session_;
-  std::vector<mojom::InputOptionsPtr> previous_contexts_;
   base::WeakPtrFactory<SessionWrapper> weak_ptr_factory_{this};
 };
 
@@ -134,7 +129,7 @@ class ModelWrapper final : public mojom::OnDeviceModel {
 
   void StartSession(mojo::PendingReceiver<mojom::Session> session) override {
     AddSession(std::move(session),
-               model_->CreateSession(receivers_.current_context().get()), {});
+               model_->CreateSession(receivers_.current_context().get()));
   }
 
   void ClassifyTextSafety(const std::string& text,
@@ -157,16 +152,11 @@ class ModelWrapper final : public mojom::OnDeviceModel {
         base::IgnoreArgs<base::OnceClosure>(std::move(load_adaptation)));
   }
 
-  void AddSession(
-      mojo::PendingReceiver<mojom::Session> receiver,
-      std::unique_ptr<ml::SessionImpl> session,
-      const std::vector<mojom::InputOptionsPtr>& previous_contexts) {
+  void AddSession(mojo::PendingReceiver<mojom::Session> receiver,
+                  std::unique_ptr<ml::SessionImpl> session) {
     auto current_session = std::make_unique<SessionWrapper>(
         weak_ptr_factory_.GetWeakPtr(), std::move(receiver),
         std::move(session));
-    for (const auto& context : previous_contexts) {
-      current_session->AddPreviousContext(context.Clone());
-    }
     SessionWrapper* current_session_ptr = current_session.get();
     sessions_.insert(std::move(current_session));
     current_session_ptr->receiver().set_disconnect_handler(
@@ -260,23 +250,11 @@ void SessionWrapper::AddContext(
     return;
   }
 
-  base::OnceClosure save_context =
-      base::BindOnce(&SessionWrapper::AddPreviousContext,
-                     weak_ptr_factory_.GetWeakPtr(), input.Clone());
-
   auto add_context_internal = base::BindOnce(
       &SessionWrapper::AddContextInternal, weak_ptr_factory_.GetWeakPtr(),
       std::move(input), std::move(client));
 
-  auto add_context = base::BindOnce(
-      [](decltype(add_context_internal) add_context_internal,
-         base::OnceClosure save_context, base::OnceClosure finish_callback) {
-        std::move(add_context_internal)
-            .Run(std::move(save_context).Then(std::move(finish_callback)));
-      },
-      std::move(add_context_internal), std::move(save_context));
-
-  model_->AddAndRunPendingTask(std::move(add_context),
+  model_->AddAndRunPendingTask(std::move(add_context_internal),
                                weak_ptr_factory_.GetWeakPtr());
 }
 
@@ -338,7 +316,7 @@ void SessionWrapper::CloneInternal(
     return;
   }
 
-  model_->AddSession(std::move(session), session_->Clone(), previous_contexts_);
+  model_->AddSession(std::move(session), session_->Clone());
 }
 
 const ml::ChromeML* DefaultImpl() {
