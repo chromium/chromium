@@ -18,11 +18,12 @@ import "mojo/public/mojom/base/time.mojom";
 // //components/account_manager_core/chromeos/tokens.proto.
 //
 // The enums values should match the aforementioned proto too.
+// Next value: 3
 [Extensible]
 enum AccountType {
   [Default] kUnspecified = 0,
   kGaia = 1,
-  kActiveDirectory = 2,
+  // DEPRECATED kActiveDirectory = 2,
 };
 
 // Uniquely identifies an account in Account Manager.
@@ -30,10 +31,9 @@ enum AccountType {
 // Next id: 2
 struct AccountKey {
   // `id` is obfuscated Gaia id for Gaia accounts.
-  // `id` is the object GUID for Microsoft Active Directory accounts.
   string id@0;
 
-  // Type of the account - such as Gaia, or Microsoft Active Directory.
+  // Type of the account.
   AccountType account_type@1;
 };
 
@@ -154,7 +154,7 @@ union AccessTokenResult {
   GoogleServiceAuthError error;
 };
 
-// Interface for observers of Chrome OS Account Manager.
+// Interface for observers of ChromeOS Account Manager.
 // This interface is implemented by lacros-chrome, and is used by ash-chrome to
 // send account update notifications.
 //
@@ -195,19 +195,19 @@ interface AccountManagerObserver {
   OnSigninDialogClosed@3();
 };
 
-// Interface for Chrome OS Account Manager.
-// Chrome OS Account Manager is the source of truth for accounts on Chrome OS -
-// including ARC, and Chrome content area. It supports Google accounts and
-// Microsoft Active Directory accounts, as of this writing.
+// Interface for ChromeOS Account Manager.
+// ChromeOS Account Manager is the source of truth for accounts on ChromeOS -
+// including ARC, and Chrome content area. It only supports Gaia accounts, as
+// of this writing.
 // This interface is implemented by ash-chrome, and is used by lacros-chrome to
-// query accounts residing in the Chrome OS Account Manager.
-// ARC++ uses components/arc/mojom/auth.mojom to talk to the Chrome OS Account
+// query accounts residing in the ChromeOS Account Manager.
+// ARC++ uses components/arc/mojom/auth.mojom to talk to the ChromeOS Account
 // Manager.
 //
 // Next id: 9
 [Uuid="85b9a674-9d8e-497f-98d5-22c8dca6f2b8"]
 interface AccountManager {
-  // Returns `true` if Chrome OS Account Manager has been fully initialized, and
+  // Returns `true` if ChromeOS Account Manager has been fully initialized, and
   // `false` otherwise.
   IsInitialized@0() => (bool is_initialized);
 
@@ -253,7 +253,7 @@ interface AccountManager {
   // Returns a remote to an interface to fetch an access token for
   // `account_key`, to be used by `oauth_consumer_name` OAuth2 client.
   // `account_key` must be a Gaia account. If `account_key` is invalid or not
-  // known to Chrome OS Account Manager, fetching an access token via
+  // known to ChromeOS Account Manager, fetching an access token via
   // `AccessTokenFetcher` will result in an error (`kUserNotSignedUp`). If the
   // account's refresh token is no longer valid, it will result in
   // `kInvalidGaiaCredentials` error. See `GoogleServiceAuthError` for all error

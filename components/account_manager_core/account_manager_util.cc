@@ -211,11 +211,6 @@ std::optional<account_manager::AccountType> FromMojoAccountType(
                         static_cast<int>(account_manager::AccountType::kGaia),
                     "Underlying enum values must match");
       return account_manager::AccountType::kGaia;
-    case crosapi::mojom::AccountType::kActiveDirectory:
-      // TODO(crbug.com/291783005): This account type is no longer supported on
-      // ChromeOS, and the kActiveDirectory enum value can be removed from
-      // crosapi.
-      NOTREACHED();
     default:
       // Don't consider this as as error to preserve forwards compatibility with
       // lacros.
