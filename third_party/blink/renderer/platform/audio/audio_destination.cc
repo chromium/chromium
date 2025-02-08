@@ -342,6 +342,8 @@ void AudioDestination::SetWorkletTaskRunner(
   // accordingly.
   fifo_->SetEarmarkFrames(callback_buffer_size_);
   worklet_task_runner_ = std::move(worklet_task_runner);
+
+  uma_reporter_.UpdateMetricNameForDualThreadMode();
 }
 
 void AudioDestination::StartWithWorkletTaskRunner(

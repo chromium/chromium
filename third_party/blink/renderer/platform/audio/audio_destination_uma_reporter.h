@@ -27,32 +27,24 @@ class PLATFORM_EXPORT AudioDestinationUmaReporter final {
   void UpdateFifoDelay(base::TimeDelta fifo_delay);
   void UpdateTotalPlayoutDelay(base::TimeDelta total_playout_delay);
   void IncreaseFifoUnderrunCount();
+  void UpdateMetricNameForDualThreadMode();
   void Report();
+
+  static constexpr std::string_view kFifoDelayHistogramNameBase = "FIFODelay";
+  static constexpr std::string_view kFifoUnderrunHistogramNameBase =
+      "FIFOUnderrunCount";
+  static constexpr std::string_view kTotalPlayoutDelayHistogramNameBase =
+      "TotalPlayoutDelay";
 
  private:
   // Indicates what period samples are aggregated over. kShort means entire
   // streams of less than 1000 callbacks, kIntervals means exactly 1000
   // callbacks.
   enum class SamplingPeriod { kShort, kIntervals };
-
-  using RealtimeUmaCallback = base::RepeatingCallback<void(int value)>;
-  using AggregateUmaCallback =
-      base::RepeatingCallback<void(int value, SamplingPeriod sampling_period)>;
-
-  static RealtimeUmaCallback CreateRealtimeUmaCallback(
-      const std::string& stat_name,
-      WebAudioLatencyHint latency_hint,
-      int max_value,
-      size_t bucket_count);
-
-  static AggregateUmaCallback CreateAggregateUmaCallback(
-      const std::string& stat_name,
-      WebAudioLatencyHint latency_hint,
-      int max_value,
-      size_t bucket_count);
-
   int callback_count_ = 0;
   int fifo_underrun_count_ = 0;
+  const WebAudioLatencyHint latency_hint_;
+  bool use_audio_worklet_ = false;
 
   // The audio delay (ms) computed the number of available frames of the
   // PushPUllFIFO in AudioDestination. Measured and reported at every audio
@@ -63,9 +55,12 @@ class PLATFORM_EXPORT AudioDestinationUmaReporter final {
   // the speaker. Measured and reported at every audio callback.
   base::TimeDelta total_playout_delay_;
 
-  const RealtimeUmaCallback fifo_delay_uma_callback_;
-  const RealtimeUmaCallback total_playout_delay_uma_callback_;
-  const AggregateUmaCallback fifo_underrun_count_uma_callback_;
+  std::string fifo_delay_histogram_name_;
+  std::string fifo_delay_histogram_name_with_latency_tag_;
+  std::string fifo_underrun_histogram_name_;
+  std::string fifo_underrun_histogram_name_with_latency_tag_;
+  std::string total_playout_delay_histogram_name_;
+  std::string total_playout_delay_histogram_name_with_latency_tag_;
 
   // Indicates that the current audio stream is less than 1000 callbacks.
   bool is_stream_short_ = true;

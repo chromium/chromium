@@ -249,7 +249,7 @@ class PLATFORM_EXPORT AudioDestination final
   AudioCallbackMetricReporter metric_reporter_;
   AudioDestinationUmaReporter uma_reporter_;
 
-  // Collect the device latency matric only from the initial callback.
+  // Collect the device latency metric only from the initial callback.
   bool is_latency_metric_collected_ = false;
 
   // This WaitableEvent is only for use with the kWebAudioBypassOutputBuffering
