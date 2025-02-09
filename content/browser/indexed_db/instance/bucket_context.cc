@@ -925,9 +925,8 @@ void BucketContext::BindBlobReader(
   if (itr == file_reader_map_.end()) {
     // Unretained is safe because `this` owns the reader.
     auto reader = std::make_unique<BlobReader>(
-        blob_info, *blob_storage_context_,
-        base::BindOnce(&BucketContext::RemoveBoundReaders,
-                       base::Unretained(this), path));
+        blob_info, base::BindOnce(&BucketContext::RemoveBoundReaders,
+                                  base::Unretained(this), path));
     itr =
         file_reader_map_
             .insert({path, std::make_tuple(std::move(reader),
@@ -936,7 +935,8 @@ void BucketContext::BindBlobReader(
             .first;
   }
 
-  std::get<0>(itr->second)->Clone(std::move(blob_receiver));
+  std::get<0>(itr->second)
+      ->AddReceiver(std::move(blob_receiver), *blob_storage_context_);
 }
 
 void BucketContext::RemoveBoundReaders(const base::FilePath& path) {

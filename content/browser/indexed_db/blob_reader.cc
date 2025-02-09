@@ -100,34 +100,43 @@ void BlobReader::ReadSideData(
 }
 
 BlobReader::BlobReader(const IndexedDBExternalObject& blob_info,
-                       storage::mojom::BlobStorageContext& blob_registry,
                        base::OnceClosure on_last_receiver_disconnected)
     : uuid_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       blob_length_(blob_info.size()),
+      content_type_(base::UTF16ToUTF8(blob_info.type())),
       file_path_(blob_info.indexed_db_file_path()),
       on_last_receiver_disconnected_(std::move(on_last_receiver_disconnected)) {
   receivers_.set_disconnect_handler(base::BindRepeating(
       &BlobReader::OnMojoDisconnect, base::Unretained(this)));
   data_pipe_getter_receivers_.set_disconnect_handler(base::BindRepeating(
       &BlobReader::OnMojoDisconnect, base::Unretained(this)));
-
-  auto element = storage::mojom::BlobDataItem::New();
-  element->size = blob_info.size();
-  element->side_data_size = 0;
-  element->content_type = base::UTF16ToUTF8(blob_info.type());
-  element->type = storage::mojom::BlobDataItemType::kIndexedDB;
-  reader_.Bind(element->reader.InitWithNewPipeAndPassReceiver());
-  reader_.set_disconnect_handler(base::BindRepeating(
-      &BlobReader::OnReaderDisconnect, base::Unretained(this)));
-  blob_registry.RegisterFromDataItem(
-      registry_blob_.BindNewPipeAndPassReceiver(), uuid_, std::move(element));
+  readers_.set_disconnect_handler(base::BindRepeating(
+      &BlobReader::OnMojoDisconnect, base::Unretained(this)));
 }
 
 BlobReader::~BlobReader() = default;
 
-void BlobReader::OnReaderDisconnect() {
-  reader_.reset();
-  OnMojoDisconnect();
+void BlobReader::BindRegistryBlob(
+    storage::mojom::BlobStorageContext& blob_registry) {
+  CHECK(!registry_blob_.is_bound());
+  auto element = storage::mojom::BlobDataItem::New();
+  element->size = blob_length_;
+  element->side_data_size = 0;
+  element->content_type = content_type_;
+  element->type = storage::mojom::BlobDataItemType::kIndexedDB;
+  readers_.Add(this, element->reader.InitWithNewPipeAndPassReceiver());
+  blob_registry.RegisterFromDataItem(
+      registry_blob_.BindNewPipeAndPassReceiver(), uuid_, std::move(element));
+}
+
+void BlobReader::AddReceiver(
+    mojo::PendingReceiver<blink::mojom::Blob> receiver,
+    storage::mojom::BlobStorageContext& blob_registry) {
+  if (!registry_blob_.is_bound()) {
+    CHECK(receivers_.empty());
+    BindRegistryBlob(blob_registry);
+  }
+  Clone(std::move(receiver));
 }
 
 void BlobReader::OnMojoDisconnect() {
@@ -135,9 +144,14 @@ void BlobReader::OnMojoDisconnect() {
     return;
   }
 
+  // Unregistering the blob will drop its reference to the `BlobDataItem`
+  // associated with `this` as a `BlobDataItemReader`, which will often lead to
+  // `readers_` receiving a disconnect. But there may still be other references
+  // to the `BlobDataItem`, such as another blob, which means that `this` can go
+  // on living indefinitely. See crbug.com/392376370
   registry_blob_.reset();
 
-  if (!reader_.is_bound()) {
+  if (readers_.empty()) {
     std::move(on_last_receiver_disconnected_).Run();
     // `this` is deleted.
   }
