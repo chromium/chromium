@@ -225,12 +225,7 @@ TEST_F(PerformanceDetectionManagerTest, UpdatedActionableTabsSentToObservers) {
 TEST_F(PerformanceDetectionManagerTest, DiscardMetricsRecorded) {
   CreateManager();
   base::HistogramTester histogram_tester;
-  base::RunLoop run_loop;
-  manager()->DiscardTabs(
-      {}, base::BindOnce([](base::RepeatingClosure quit_closure,
-                            bool did_discard) { quit_closure.Run(); },
-                         run_loop.QuitClosure()));
-  run_loop.Run();
+  manager()->DiscardTabs({});
   const std::string health_status_prefix =
       "PerformanceControls.Intervention.BackgroundTab.Cpu."
       "HealthStatusAfterDiscard.";

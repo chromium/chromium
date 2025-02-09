@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/process/process.h"
+#include "base/scoped_observation.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
@@ -106,6 +107,13 @@ namespace {
 
 class MockObserver : public MockProcessNodeObserver {
  public:
+  explicit MockObserver(Graph* graph = nullptr) {
+    // If a `graph` is passed, automatically start observing it.
+    if (graph) {
+      scoped_observation_.Observe(graph);
+    }
+  }
+
   void SetNotifiedProcessNode(const ProcessNode* process_node) {
     notified_process_node_ = process_node;
   }
@@ -127,6 +135,7 @@ class MockObserver : public MockProcessNodeObserver {
   }
 
  private:
+  base::ScopedObservation<Graph, ProcessNodeObserver> scoped_observation_{this};
   raw_ptr<const ProcessNode, DanglingUntriaged> notified_process_node_ =
       nullptr;
 };

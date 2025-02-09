@@ -7,6 +7,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "components/memory_pressure/fake_memory_pressure_monitor.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -51,6 +52,13 @@ using testing::InvokeWithoutArgs;
 
 class MockObserver : public MockSystemNodeObserver {
  public:
+  explicit MockObserver(Graph* graph = nullptr) {
+    // If a `graph` is passed, automatically start observing it.
+    if (graph) {
+      scoped_observation_.Observe(graph);
+    }
+  }
+
   void SetNotifiedSystemNode(const SystemNode* system_node) {
     notified_system_node_ = system_node;
   }
@@ -62,6 +70,7 @@ class MockObserver : public MockSystemNodeObserver {
   }
 
  private:
+  base::ScopedObservation<Graph, SystemNodeObserver> scoped_observation_{this};
   raw_ptr<const SystemNode> notified_system_node_ = nullptr;
 };
 
@@ -117,8 +126,7 @@ TEST_F(SystemNodeImplTest, ObserverWorks) {
 }
 
 TEST_F(SystemNodeImplTest, MemoryPressureNotification) {
-  MockObserver obs;
-  graph()->AddSystemNodeObserver(&obs);
+  MockObserver obs(graph());
   memory_pressure::test::FakeMemoryPressureMonitor mem_pressure_monitor;
 
   {
@@ -152,8 +160,6 @@ TEST_F(SystemNodeImplTest, MemoryPressureNotification) {
             MEMORY_PRESSURE_LEVEL_MODERATE);
     run_loop.Run();
   }
-
-  graph()->RemoveSystemNodeObserver(&obs);
 }
 
 }  // namespace performance_manager

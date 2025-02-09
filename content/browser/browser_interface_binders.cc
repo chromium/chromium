@@ -238,6 +238,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "content/browser/renderer_host/text_input_host_impl.h"
+#include "services/webnn/public/cpp/coreml_initializer.h"
 #include "third_party/blink/public/mojom/input/text_input_host.mojom.h"
 #endif
 
@@ -304,7 +305,13 @@ void BindWebNNContextProviderForRenderFrame(
     RenderFrameHost* host,
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver) {
   auto* process_host = static_cast<RenderProcessHostImpl*>(host->GetProcess());
+#if BUILDFLAG(IS_MAC)
+  webnn::InitializeCacheDirAndRun(base::BindOnce(
+      &viz::GpuClient::BindWebNNContextProvider,
+      process_host->GetGpuClient()->GetWeakPtr(), std::move(receiver)));
+#else
   process_host->GetGpuClient()->BindWebNNContextProvider(std::move(receiver));
+#endif
 }
 
 void BindWebNNContextProviderForDedicatedWorker(
@@ -312,7 +319,13 @@ void BindWebNNContextProviderForDedicatedWorker(
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver) {
   auto* process_host =
       static_cast<RenderProcessHostImpl*>(host->GetProcessHost());
+#if BUILDFLAG(IS_MAC)
+  webnn::InitializeCacheDirAndRun(base::BindOnce(
+      &viz::GpuClient::BindWebNNContextProvider,
+      process_host->GetGpuClient()->GetWeakPtr(), std::move(receiver)));
+#else
   process_host->GetGpuClient()->BindWebNNContextProvider(std::move(receiver));
+#endif
 }
 
 #if BUILDFLAG(IS_MAC)

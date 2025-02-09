@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Animation.timeline returns a timeline with no source for inactive deferred timeline
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'source')"
+[FAIL] Animation.timeline returns a timeline with no source for inactive (overattached) deferred timeline
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'source')"
+Harness: the test ran to completion.
+

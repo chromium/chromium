@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/performance_manager/policies/freezing_opt_out_checker.h"
 #include "chrome/browser/profiles/profile.h"
@@ -157,26 +156,18 @@ class PageDiscardingHelperBrowserTest
     }
     SCOPED_TRACE(::testing::Message()
                  << discard_string << " discard from " << location.ToString());
-    base::WeakPtr<PageNode> page_node = GetPageNodeAtIndex(index);
-    base::RunLoop run_loop;
-    PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindLambdaForTesting([&](Graph* graph) {
-          SCOPED_TRACE(::testing::Message()
-                       << discard_string << " discard, called on graph from "
-                       << location.ToString());
-          ASSERT_TRUE(page_node);
-          auto* helper = PageDiscardingHelper::GetFromGraph(graph);
-          ASSERT_TRUE(helper);
-          helper->ImmediatelyDiscardMultiplePages(
-              {page_node.get()}, discard_reason,
-              base::BindLambdaForTesting(
-                  [&](std::optional<base::TimeTicks> first_discarded_at) {
-                    EXPECT_EQ(first_discarded_at.has_value(), expected_result);
-                    run_loop.Quit();
-                  }));
-        }));
-    run_loop.Run();
 
+    base::WeakPtr<PageNode> page_node = GetPageNodeAtIndex(index);
+    ASSERT_TRUE(page_node);
+
+    Graph* graph = PerformanceManager::GetGraph();
+    auto* helper = PageDiscardingHelper::GetFromGraph(graph);
+    ASSERT_TRUE(helper);
+
+    std::optional<base::TimeTicks> first_discarded_at =
+        helper->ImmediatelyDiscardMultiplePages({page_node.get()},
+                                                discard_reason);
+    EXPECT_EQ(first_discarded_at.has_value(), expected_result);
     EXPECT_EQ(
         browser()->tab_strip_model()->GetWebContentsAt(index)->WasDiscarded(),
         expected_result);
@@ -397,25 +388,17 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
   // Attempt to discard the background tab.
   const auto attempt_discard = [this]() {
     base::WeakPtr<PageNode> discard_target_page_node = GetPageNodeAtIndex(1);
-    base::RunLoop run_loop;
-    PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindLambdaForTesting([&](Graph* graph) {
-          ASSERT_TRUE(discard_target_page_node);
-          auto* helper = PageDiscardingHelper::GetFromGraph(graph);
-          ASSERT_TRUE(helper);
-          EXPECT_EQ(
-              CanDiscardResult::kEligible,
+    ASSERT_TRUE(discard_target_page_node);
+    Graph* graph = PerformanceManager::GetGraph();
+    auto* helper = PageDiscardingHelper::GetFromGraph(graph);
+    ASSERT_TRUE(helper);
+    EXPECT_EQ(CanDiscardResult::kEligible,
               helper->CanDiscard(discard_target_page_node.get(),
                                  DiscardReason::URGENT, base::TimeDelta()));
-          helper->DiscardAPage(
-              base::BindLambdaForTesting(
-                  [&](std::optional<base::TimeTicks> first_discarded_at) {
-                    EXPECT_TRUE(first_discarded_at.has_value());
-                    run_loop.Quit();
-                  }),
-              DiscardReason::URGENT, base::TimeDelta());
-        }));
-    run_loop.Run();
+    std::optional<base::TimeTicks> first_discarded_at =
+        helper->DiscardAPage(DiscardReason::URGENT, base::TimeDelta());
+
+    EXPECT_TRUE(first_discarded_at.has_value());
   };
   attempt_discard();
 

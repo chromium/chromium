@@ -12,8 +12,6 @@
 #include "base/check_op.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
@@ -67,52 +65,35 @@ void PerformanceDetectionManager::RemoveActionableTabsObserver(
   }
 }
 
-void PerformanceDetectionManager::DiscardTabs(
-    std::vector<resource_attribution::PageContext> tabs,
-    base::OnceCallback<void(bool)> post_discard_cb) {
-  base::OnceCallback<void(bool)> callback =
-      post_discard_cb.is_null()
-          ? base::DoNothing()
-          : base::BindPostTask(content::GetUIThreadTaskRunner({}),
-                               std::move(post_discard_cb));
+bool PerformanceDetectionManager::DiscardTabs(
+    std::vector<resource_attribution::PageContext> tabs) {
+  Graph* graph = PerformanceManager::GetGraph();
 
-  PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](std::vector<resource_attribution::PageContext> tabs,
-             base::OnceCallback<void(bool)> post_discard_cb, Graph* graph) {
-            std::vector<const PageNode*> eligible_nodes;
-            std::vector<resource_attribution::PageContext>
-                eligible_page_contexts;
-            for (resource_attribution::PageContext context : tabs) {
-              const PageNode* page_node = context.GetPageNode();
-              if (page_node) {
-                eligible_nodes.emplace_back(page_node);
-                eligible_page_contexts.emplace_back(context);
-              }
-            }
+  std::vector<const PageNode*> eligible_nodes;
+  std::vector<resource_attribution::PageContext> eligible_page_contexts;
+  for (resource_attribution::PageContext context : tabs) {
+    const PageNode* page_node = context.GetPageNode();
+    if (page_node) {
+      eligible_nodes.emplace_back(page_node);
+      eligible_page_contexts.emplace_back(context);
+    }
+  }
 
-            performance_manager::user_tuning::CpuHealthTracker* const
-                health_tracker = performance_manager::user_tuning::
-                    CpuHealthTracker::GetFromGraph(graph);
+  performance_manager::user_tuning::CpuHealthTracker* const health_tracker =
+      performance_manager::user_tuning::CpuHealthTracker::GetFromGraph(graph);
 
-            RecordCpuUsageBeforeDiscard(health_tracker->GetTotalCpuPercentUsage(
-                eligible_page_contexts));
+  RecordCpuUsageBeforeDiscard(
+      health_tracker->GetTotalCpuPercentUsage(eligible_page_contexts));
 
-            policies::PageDiscardingHelper* const helper =
-                policies::PageDiscardingHelper::GetFromGraph(graph);
-            CHECK(helper);
-            helper->ImmediatelyDiscardMultiplePages(
-                eligible_nodes, ::mojom::LifecycleUnitDiscardReason::SUGGESTED,
-                base::BindOnce([](std::optional<base::TimeTicks>
-                                      first_discarded_at) {
-                  return first_discarded_at.has_value();
-                }).Then(std::move(post_discard_cb)));
-          },
-          std::move(tabs),
-          std::move(callback).Then(
-              base::BindOnce(&PerformanceDetectionManager::OnDiscardComplete,
-                             base::Unretained(this)))));
+  policies::PageDiscardingHelper* const helper =
+      policies::PageDiscardingHelper::GetFromGraph(graph);
+  CHECK(helper);
+  std::optional<base::TimeTicks> first_discarded_at =
+      helper->ImmediatelyDiscardMultiplePages(
+          eligible_nodes, ::mojom::LifecycleUnitDiscardReason::SUGGESTED);
+
+  OnDiscardComplete();
+  return first_discarded_at.has_value();
 }
 
 void PerformanceDetectionManager::ForceTabCpuDataRefresh() {

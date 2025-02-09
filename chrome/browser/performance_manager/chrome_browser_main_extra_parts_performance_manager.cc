@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/battery_state_sampler.h"
 #include "base/power_monitor/power_monitor_buildflags.h"
@@ -112,8 +111,7 @@ class FreezingDiscarder : public performance_manager::freezing::Discarder {
     CHECK(helper);
     helper->ImmediatelyDiscardMultiplePages(
         page_nodes,
-        ::mojom::LifecycleUnitDiscardReason::FROZEN_WITH_GROWING_MEMORY,
-        base::DoNothing());
+        ::mojom::LifecycleUnitDiscardReason::FROZEN_WITH_GROWING_MEMORY);
   }
 };
 

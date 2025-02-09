@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl_operations.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -244,6 +245,13 @@ namespace {
 
 class MockObserver : public MockPageNodeObserver {
  public:
+  explicit MockObserver(Graph* graph = nullptr) {
+    // If a `graph` is passed, automatically start observing it.
+    if (graph) {
+      scoped_observation_.Observe(graph);
+    }
+  }
+
   void SetNotifiedPageNode(const PageNode* page_node) {
     notified_page_node_ = page_node;
   }
@@ -267,6 +275,7 @@ class MockObserver : public MockPageNodeObserver {
   }
 
  private:
+  base::ScopedObservation<Graph, PageNodeObserver> scoped_observation_{this};
   raw_ptr<const PageNode, DanglingUntriaged> notified_page_node_ = nullptr;
 };
 
@@ -415,8 +424,7 @@ TEST_F(PageNodeImplTest, SetMainFrameRestoredState) {
   const PageNode* raw_page_node = page.get();
   EXPECT_EQ(page->GetNotificationPermissionStatus(), std::nullopt);
 
-  MockObserver obs;
-  graph()->AddPageNodeObserver(&obs);
+  MockObserver obs(graph());
 
   EXPECT_CALL(obs, OnMainFrameUrlChanged(_))
       .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
@@ -430,8 +438,6 @@ TEST_F(PageNodeImplTest, SetMainFrameRestoredState) {
   EXPECT_EQ(page->GetMainFrameUrl(), kUrl);
   EXPECT_EQ(page->GetNotificationPermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
-
-  graph()->RemovePageNodeObserver(&obs);
 }
 
 TEST_F(PageNodeImplTest, PublicInterface) {
@@ -481,6 +487,7 @@ TEST_F(PageNodeImplTest, EmbedderFrameNode) {
   EXPECT_EQ(public_embedded_page_node->GetEmbedderFrameNode(),
             embedder_frame_node.get());
 }
+
 TEST_F(PageNodeImplTest, GetMainFrameNodes) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
@@ -498,8 +505,7 @@ TEST_F(PageNodeImplTest, IsHoldingBlockingIndexedDBLock) {
   CreateFrameNodeAutoId(process.get(), page_node.get());
   const PageNode* raw_page_node = page_node.get();
 
-  MockObserver obs;
-  graph()->AddPageNodeObserver(&obs);
+  MockObserver obs(graph());
 
   EXPECT_CALL(obs, OnPageIsHoldingBlockingIndexedDBLockChanged(raw_page_node));
   page_node->SetIsHoldingBlockingIndexedDBLockForTesting(true);
@@ -508,8 +514,6 @@ TEST_F(PageNodeImplTest, IsHoldingBlockingIndexedDBLock) {
   EXPECT_CALL(obs, OnPageIsHoldingBlockingIndexedDBLockChanged(raw_page_node));
   page_node->SetIsHoldingBlockingIndexedDBLockForTesting(false);
   EXPECT_FALSE(page_node->IsHoldingBlockingIndexedDBLock());
-
-  graph()->RemovePageNodeObserver(&obs);
 }
 
 }  // namespace performance_manager

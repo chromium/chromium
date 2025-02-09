@@ -22,6 +22,13 @@ component("cpp") {
     "webnn_trace.h",
   ]
 
+  if (is_mac) {
+    sources += [
+      "coreml_initializer.cc",
+      "coreml_initializer.h",
+    ]
+  }
+
   deps = [
     "//base",
     "//mojo/public/cpp/bindings",

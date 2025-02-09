@@ -280,7 +280,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'a8f4bcc625322a277f7ce4b1dfcf68b68543e18a',
+  'skia_revision': '22f96cc60dec5d3244bd208e5b2eb78a353c9655',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -288,7 +288,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'ffb7575c7d5839841649e017998ced028f18dd09',
+  'angle_revision': 'b5584cfd89d95c6e0efd4cbf76d641c181a46a8e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '684dc51098740f6aab247baf93f6f298b06793a8',
+  'devtools_frontend_revision': '39bf2bd5e08960991982e29d4bef8d8577158263',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': 'c9d57c1f4dd7f156921673fdc03880fb7f1b8992',
+  'dawn_revision': 'acb8a9747ab18ee3f890e58ed5808f5974a7c394',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'afe5b79568b57ce021414da562eb4f84ed021646',
+    'b2267231558d0de66abb4b52c91d9e6296159be2',
     'condition': 'checkout_android and checkout_src_internal',
   },
 

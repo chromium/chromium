@@ -11,9 +11,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
-#include "base/run_loop.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -268,28 +266,17 @@ void UserPerformanceTuningManager::NotifyMemoryThresholdReached() {
 
 void UserPerformanceTuningManager::DiscardPageForTesting(
     content::WebContents* web_contents) {
-  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  // The RunLoop is quit after discarding is executed on the main thread, so the
-  // caller can check if discarding succeeded via WebContents::WasDiscarded().
-  performance_manager::PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::ScopedClosureRunner quit_closure,
-             base::WeakPtr<performance_manager::PageNode> page_node,
-             performance_manager::Graph* graph) {
-            if (page_node) {
-              performance_manager::policies::PageDiscardingHelper::GetFromGraph(
-                  graph)
-                  ->ImmediatelyDiscardMultiplePages(
-                      {page_node.get()},
-                      ::mojom::LifecycleUnitDiscardReason::PROACTIVE,
-                      base::DoNothingWithBoundArgs(std::move(quit_closure)));
-            }
-          },
-          base::ScopedClosureRunner(run_loop.QuitClosure()),
-          performance_manager::PerformanceManager::
-              GetPrimaryPageNodeForWebContents(web_contents)));
-  run_loop.Run();
+  performance_manager::Graph* graph =
+      performance_manager::PerformanceManager::GetGraph();
+
+  base::WeakPtr<performance_manager::PageNode> page_node =
+      performance_manager::PerformanceManager::GetPrimaryPageNodeForWebContents(
+          web_contents);
+  CHECK(page_node);
+
+  performance_manager::policies::PageDiscardingHelper::GetFromGraph(graph)
+      ->ImmediatelyDiscardMultiplePages(
+          {page_node.get()}, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 }
 
 }  // namespace performance_manager::user_tuning
