@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -139,46 +138,42 @@ class PageDiscardingHelper
     return weak_factory_.GetWeakPtr();
   }
 
-  // Selects a tab to discard and posts to the UI thread to discard it. This
-  // will try to discard a tab until there's been a successful discard or until
-  // there's no more discard candidate.
+  // Selects and discards a tab. This will try to discard a tab until there's
+  // been a successful discard or until there's no more discard candidate.
   // `minimum_time_in_background` is passed to `CanDiscard()`, see the comment
   // there about its usage.
-  void DiscardAPage(DiscardCallback post_discard_cb,
-                    DiscardReason discard_reason,
-                    base::TimeDelta minimum_time_in_background =
-                        kNonVisiblePagesUrgentProtectionTime);
+  std::optional<base::TimeTicks> DiscardAPage(
+      DiscardReason discard_reason,
+      base::TimeDelta minimum_time_in_background =
+          kNonVisiblePagesUrgentProtectionTime);
 
-  // Discards multiple tabs to meet the reclaim target based and posts to the UI
-  // thread to discard these tabs. Retries discarding if all discardings in the
-  // UI thread fail. If |reclaim_target_kb| is nullopt, only discard one tab. If
-  // |discard_protected_tabs| is true, protected tabs (CanDiscard() returns
-  // kProtected) can also be discarded.
+  // Selects and discards multiple tabs to meet the reclaim target. This will
+  // keep trying again until there's been at least a single successful discard
+  // or until there's no more discard candidate. If |reclaim_target_kb| is
+  // nullopt, only discard one tab. If |discard_protected_tabs| is true,
+  // protected tabs (CanDiscard() returns kProtected) can also be discarded.
   // `minimum_time_in_background` is passed to `CanDiscard()`, see the comment
   // there about its usage.
-  void DiscardMultiplePages(
+  std::optional<base::TimeTicks> DiscardMultiplePages(
       std::optional<memory_pressure::ReclaimTarget> reclaim_target,
       bool discard_protected_tabs,
-      DiscardCallback post_discard_cb,
       DiscardReason discard_reason,
       base::TimeDelta minimum_time_in_background =
           kNonVisiblePagesUrgentProtectionTime);
 
   // Immediately discards as many pages as possible in `page_nodes`. Does not
   // check for a minimum time in the background.
-  void ImmediatelyDiscardMultiplePages(
+  std::optional<base::TimeTicks> ImmediatelyDiscardMultiplePages(
       const std::vector<const PageNode*>& page_nodes,
-      DiscardReason discard_reason,
-      DiscardCallback post_discard_cb = base::DoNothing());
+      DiscardReason discard_reason);
 
   // Immediately discards as many pages as possible in `page_nodes`.
   // `minimum_time_in_background` is passed to `CanDiscard()`, see the comment
   // there about its usage.
-  void ImmediatelyDiscardMultiplePages(
+  std::optional<base::TimeTicks> ImmediatelyDiscardMultiplePages(
       const std::vector<const PageNode*>& page_nodes,
       DiscardReason discard_reason,
-      base::TimeDelta minimum_time_in_background,
-      DiscardCallback post_discard_cb = base::DoNothing());
+      base::TimeDelta minimum_time_in_background);
 
   void SetNoDiscardPatternsForProfile(const std::string& browser_context_id,
                                       const std::vector<std::string>& patterns);
@@ -225,19 +220,6 @@ class PageDiscardingHelper
  private:
   // NodeDataDescriber implementation:
   base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
-
-  // Called after each discard attempt. |success| will indicate whether or not
-  // the attempt has been successful. |post_discard_cb| will be called once
-  // there's been at least one successful discard or if there's no more discard
-  // candidates.
-  void PostDiscardAttemptCallback(
-      std::optional<memory_pressure::ReclaimTarget> reclaim_target,
-      bool discard_protected_tabs,
-      DiscardCallback post_discard_cb,
-      DiscardReason discard_reason,
-      base::TimeDelta minimum_time_in_background,
-      const std::vector<mechanism::PageDiscarder::DiscardEvent>&
-          discard_events);
 
   // The mechanism used to do the actual discarding.
   std::unique_ptr<mechanism::PageDiscarder> page_discarder_;

@@ -30,7 +30,6 @@
 #include "components/performance_manager/public/user_tuning/tab_revisit_tracker.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/gurl.h"
 
 using performance_manager::mechanism::PageDiscarder;
@@ -134,18 +133,16 @@ PageDiscardingHelper::PageDiscardingHelper()
     : page_discarder_(std::make_unique<PageDiscarder>()) {}
 PageDiscardingHelper::~PageDiscardingHelper() = default;
 
-void PageDiscardingHelper::DiscardAPage(
-    DiscardCallback post_discard_cb,
+std::optional<base::TimeTicks> PageDiscardingHelper::DiscardAPage(
     DiscardReason discard_reason,
     base::TimeDelta minimum_time_in_background) {
-  DiscardMultiplePages(std::nullopt, false, std::move(post_discard_cb),
-                       discard_reason, minimum_time_in_background);
+  return DiscardMultiplePages(std::nullopt, false, discard_reason,
+                              minimum_time_in_background);
 }
 
-void PageDiscardingHelper::DiscardMultiplePages(
+std::optional<base::TimeTicks> PageDiscardingHelper::DiscardMultiplePages(
     std::optional<memory_pressure::ReclaimTarget> reclaim_target,
     bool discard_protected_tabs,
-    DiscardCallback post_discard_cb,
     DiscardReason discard_reason,
     base::TimeDelta minimum_time_in_background) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -162,11 +159,6 @@ void PageDiscardingHelper::DiscardMultiplePages(
   LOG(WARNING) << "Discarding multiple pages with target (kb): "
                << (reclaim_target ? reclaim_target->target_kb : 0)
                << ", discard_protected_tabs: " << discard_protected_tabs;
-
-  // Ensures running post_discard_cb on early return.
-  absl::Cleanup run_post_discard_cb_on_return = [&post_discard_cb] {
-    std::move(post_discard_cb).Run(std::nullopt);
-  };
 
   std::vector<PageNodeSortProxy> candidates;
   for (const PageNode* page_node : GetOwningGraph()->GetAllPageNodes()) {
@@ -191,9 +183,9 @@ void PageDiscardingHelper::DiscardMultiplePages(
                            candidates.size());
 
   // Returns early when candidate is empty to avoid infinite loop in
-  // DiscardMultiplePages and PostDiscardAttemptCallback.
+  // DiscardMultiplePages.
   if (candidates.empty()) {
-    return;
+    return std::nullopt;
   }
   std::vector<const PageNode*> discard_attempts;
 
@@ -236,8 +228,13 @@ void PageDiscardingHelper::DiscardMultiplePages(
     }
   }
 
+  // Clear the candidates vector to avoid holding on to pointers of the pages
+  // that are about to be discarded.
+  candidates.clear();
+
   if (discard_attempts.empty()) {
-    return;
+    // No pages left that are available for discarding.
+    return std::nullopt;
   }
 
   // Adorns the PageNodes with a discard attempt marker to make sure that we
@@ -247,33 +244,40 @@ void PageDiscardingHelper::DiscardMultiplePages(
     DiscardAttemptMarker::GetOrCreate(PageNodeImpl::FromNode(attempt));
   }
 
-  // Got to the end successfully, don't call the early return callback.
-  std::move(run_post_discard_cb_on_return).Cancel();
+  std::vector<PageDiscarder::DiscardEvent> discard_events =
+      page_discarder_->DiscardPageNodes(discard_attempts, discard_reason);
 
-  page_discarder_->DiscardPageNodes(
-      discard_attempts, discard_reason,
-      base::BindOnce(&PageDiscardingHelper::PostDiscardAttemptCallback,
-                     weak_factory_.GetWeakPtr(), reclaim_target,
-                     discard_protected_tabs, std::move(post_discard_cb),
-                     discard_reason, minimum_time_in_background));
+  if (discard_events.empty()) {
+    // DiscardAttemptMarker will force the retry to choose different pages.
+    return DiscardMultiplePages(reclaim_target, discard_protected_tabs,
+                                discard_reason, minimum_time_in_background);
+  }
+
+  for (const auto& discard_event : discard_events) {
+    unnecessary_discard_monitor_.OnDiscard(
+        discard_event.estimated_memory_freed_kb, discard_event.discard_time);
+  }
+
+  unnecessary_discard_monitor_.OnReclaimTargetEnd();
+
+  return discard_events[0].discard_time;
 }
 
-void PageDiscardingHelper::ImmediatelyDiscardMultiplePages(
+std::optional<base::TimeTicks>
+PageDiscardingHelper::ImmediatelyDiscardMultiplePages(
     const std::vector<const PageNode*>& page_nodes,
-    DiscardReason discard_reason,
-    DiscardCallback post_discard_cb) {
+    DiscardReason discard_reason) {
   // Pass 0 TimeDelta to bypass the minimum time in background check.
-  ImmediatelyDiscardMultiplePages(
+  return ImmediatelyDiscardMultiplePages(
       page_nodes, discard_reason,
-      /*minimum_time_in_background=*/base::TimeDelta(),
-      std::move(post_discard_cb));
+      /*minimum_time_in_background=*/base::TimeDelta());
 }
 
-void PageDiscardingHelper::ImmediatelyDiscardMultiplePages(
+std::optional<base::TimeTicks>
+PageDiscardingHelper::ImmediatelyDiscardMultiplePages(
     const std::vector<const PageNode*>& page_nodes,
     DiscardReason discard_reason,
-    base::TimeDelta minimum_time_in_background,
-    DiscardCallback post_discard_cb) {
+    base::TimeDelta minimum_time_in_background) {
   std::vector<const PageNode*> eligible_nodes;
   for (const PageNode* node : page_nodes) {
     if (CanDiscard(node, discard_reason, minimum_time_in_background) ==
@@ -283,20 +287,14 @@ void PageDiscardingHelper::ImmediatelyDiscardMultiplePages(
   }
 
   if (eligible_nodes.empty()) {
-    std::move(post_discard_cb).Run(std::nullopt);
+    return std::nullopt;
   } else {
-    page_discarder_->DiscardPageNodes(
-        std::move(eligible_nodes), discard_reason,
-        base::BindOnce(
-            [](DiscardCallback callback,
-               const std::vector<PageDiscarder::DiscardEvent>& discard_events) {
-              std::optional<base::TimeTicks> first_discarded_at = std::nullopt;
-              if (discard_events.size() > 0) {
-                first_discarded_at = discard_events[0].discard_time;
-              }
-              std::move(callback).Run(first_discarded_at);
-            },
-            std::move(post_discard_cb)));
+    auto discard_events = page_discarder_->DiscardPageNodes(
+        std::move(eligible_nodes), discard_reason);
+    if (discard_events.size() > 0) {
+      return discard_events[0].discard_time;
+    }
+    return std::nullopt;
   }
 }
 
@@ -640,36 +638,6 @@ base::Value::Dict PageDiscardingHelper::DescribePageNodeData(
   }
 
   return ret;
-}
-
-void PageDiscardingHelper::PostDiscardAttemptCallback(
-    std::optional<memory_pressure::ReclaimTarget> reclaim_target,
-    bool discard_protected_tabs,
-    DiscardCallback post_discard_cb,
-    DiscardReason discard_reason,
-    base::TimeDelta minimum_time_in_background,
-    const std::vector<PageDiscarder::DiscardEvent>& discard_events) {
-  // When there is no discard candidate, DiscardMultiplePages returns
-  // early and PostDiscardAttemptCallback is not called.
-  if (discard_events.empty()) {
-    // DiscardAttemptMarker will force the retry to choose different pages.
-    DiscardMultiplePages(reclaim_target, discard_protected_tabs,
-                         std::move(post_discard_cb), discard_reason,
-                         minimum_time_in_background);
-    return;
-  }
-
-  std::optional<base::TimeTicks> first_discarded_at =
-      discard_events[0].discard_time;
-
-  for (const auto& discard_event : discard_events) {
-    unnecessary_discard_monitor_.OnDiscard(
-        discard_event.estimated_memory_freed_kb, discard_event.discard_time);
-  }
-
-  unnecessary_discard_monitor_.OnReclaimTargetEnd();
-
-  std::move(post_discard_cb).Run(first_discarded_at);
 }
 
 }  // namespace policies

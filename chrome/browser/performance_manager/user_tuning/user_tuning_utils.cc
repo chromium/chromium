@@ -8,8 +8,6 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -21,9 +19,6 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/web_contents.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include <algorithm>
@@ -67,28 +62,6 @@ uint64_t GetDiscardedMemoryEstimateForPage(const PageNode* node) {
   return node->EstimatePrivateFootprintSize();
 }
 
-void GetDiscardedMemoryEstimateForWebContents(
-    content::WebContents* web_contents,
-    base::OnceCallback<void(uint64_t)> result_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  base::WeakPtr<PageNode> page_node =
-      PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents);
-  PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::WeakPtr<PageNode> page_node,
-             base::OnceCallback<void(uint64_t)> result_callback) {
-            uint64_t estimate =
-                page_node ? GetDiscardedMemoryEstimateForPage(page_node.get())
-                          : 0;
-            content::GetUIThreadTaskRunner({})->PostTask(
-                FROM_HERE,
-                base::BindOnce(std::move(result_callback), estimate));
-          },
-          page_node, std::move(result_callback)));
-}
-
 std::vector<std::string> GetCannotDiscardReasonsForPageNode(
     const PageNode* page_node) {
 #if BUILDFLAG(IS_ANDROID)
@@ -114,33 +87,23 @@ std::vector<std::string> GetCannotDiscardReasonsForPageNode(
 }
 
 void DiscardPage(const PageNode* page_node,
-                 ::mojom::LifecycleUnitDiscardReason reason,
-                 base::OnceClosure done_closure) {
-#if BUILDFLAG(IS_ANDROID)
-  std::move(done_closure).Run();
-#else
+                 ::mojom::LifecycleUnitDiscardReason reason) {
+#if !BUILDFLAG(IS_ANDROID)
   auto* discarding_helper = policies::PageDiscardingHelper::GetFromGraph(
       PerformanceManager::GetGraph());
   CHECK(discarding_helper);
   CHECK(page_node);
   discarding_helper->ImmediatelyDiscardMultiplePages(
-      {page_node}, reason, policies::kNonVisiblePagesUrgentProtectionTime,
-      base::IgnoreArgs<std::optional<base::TimeTicks>>(
-          std::move(done_closure)));
+      {page_node}, reason, policies::kNonVisiblePagesUrgentProtectionTime);
 #endif
 }
 
-void DiscardAnyPage(::mojom::LifecycleUnitDiscardReason reason,
-                    base::OnceClosure done_closure) {
-#if BUILDFLAG(IS_ANDROID)
-  std::move(done_closure).Run();
-#else
+void DiscardAnyPage(::mojom::LifecycleUnitDiscardReason reason) {
+#if !BUILDFLAG(IS_ANDROID)
   auto* discarding_helper = policies::PageDiscardingHelper::GetFromGraph(
       PerformanceManager::GetGraph());
   CHECK(discarding_helper);
-  discarding_helper->DiscardAPage(
-      base::IgnoreArgs<std::optional<base::TimeTicks>>(std::move(done_closure)),
-      reason);
+  discarding_helper->DiscardAPage(reason);
 #endif
 }
 

@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -44,12 +43,11 @@ enum class DiscardPageOnUIThreadOutcome {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/tab/enums.xml:DiscardPageOnUIThreadOutcome)
 
-// Discards pages on the UI thread. Returns a DiscardEvent for each successful
-// discard.
+// Discards pages. Returns a DiscardEvent for each successful discard.
 // TODO(crbug.com/40194498): Returns the remaining reclaim target so
 // UrgentlyDiscardMultiplePages can keep reclaiming until the reclaim target is
 // met or there is no discardable page.
-std::vector<PageDiscarder::DiscardEvent> DiscardPagesOnUIThread(
+std::vector<PageDiscarder::DiscardEvent> DiscardPagesImpl(
     const std::vector<WebContentsAndPmf>& web_contents_and_pmf,
     resource_coordinator::LifecycleUnitDiscardReason discard_reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -96,11 +94,9 @@ std::vector<PageDiscarder::DiscardEvent> DiscardPagesOnUIThread(
 
 }  // namespace
 
-void PageDiscarder::DiscardPageNodes(
+std::vector<PageDiscarder::DiscardEvent> PageDiscarder::DiscardPageNodes(
     const std::vector<const PageNode*>& page_nodes,
-    resource_coordinator::LifecycleUnitDiscardReason discard_reason,
-    base::OnceCallback<void(const std::vector<DiscardEvent>&)>
-        post_discard_cb) {
+    resource_coordinator::LifecycleUnitDiscardReason discard_reason) {
   std::vector<WebContentsAndPmf> web_contents_and_pmf;
   web_contents_and_pmf.reserve(page_nodes.size());
   for (const auto* page_node : page_nodes) {
@@ -108,11 +104,7 @@ void PageDiscarder::DiscardPageNodes(
         page_node->GetWebContents(),
         user_tuning::GetDiscardedMemoryEstimateForPage(page_node));
   }
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&DiscardPagesOnUIThread, std::move(web_contents_and_pmf),
-                     discard_reason),
-      std::move(post_discard_cb));
+  return DiscardPagesImpl(std::move(web_contents_and_pmf), discard_reason);
 }
 
 }  // namespace mechanism

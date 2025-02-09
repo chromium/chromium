@@ -10,8 +10,6 @@
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
-#include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -71,12 +69,9 @@ class PerformanceDetectionManager {
                                  ActionableTabsObserver* new_observer);
   void RemoveActionableTabsObserver(ActionableTabsObserver* o);
 
-  // Discards all eligible pages in `tabs` and runs `post_discard_cb`
-  // after the discard finishes. `post_discard_cb` must be valid to
-  // run on the UI sequence.
-  void DiscardTabs(ActionableTabsResult tabs,
-                   base::OnceCallback<void(bool)> post_discard_cb =
-                       base::OnceCallback<void(bool)>());
+  // Discards all eligible pages in `tabs`. Returns true if at least 1 tab was
+  // discarded.
+  bool DiscardTabs(ActionableTabsResult tabs);
 
   void ForceTabCpuDataRefresh();
 
