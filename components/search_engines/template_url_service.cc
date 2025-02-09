@@ -889,6 +889,15 @@ TemplateURLService::GetFeaturedEnterpriseSearchEngines() const {
   return result;
 }
 
+TemplateURL* TemplateURLService::GetEnterpriseSearchAggregatorEngine() const {
+  auto it = std::ranges::find_if(
+      enterprise_search_keyword_to_turl_, [](const auto& keyword_and_turl) {
+        return keyword_and_turl.second
+            ->CreatedByEnterpriseSearchAggregatorPolicy();
+      });
+  return it == enterprise_search_keyword_to_turl_.end() ? nullptr : it->second;
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TemplateURLService::OwnedTemplateURLDataVector
 TemplateURLService::GetTemplateURLsForCountry(const std::string& country_code) {

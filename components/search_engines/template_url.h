@@ -965,6 +965,9 @@ class TemplateURL {
   // Returns whether this search engine was created by an Enterprise policy that
   // doesn't define the Default Search Provider.
   bool CreatedByNonDefaultSearchProviderPolicy() const;
+  // Returns whether this search engine was created by the
+  // EnterpriseSearchAggregatorSettings policy.
+  bool CreatedByEnterpriseSearchAggregatorPolicy() const;
 
   void SetURL(const std::string& url);
   void SetPrepopulateId(int id);

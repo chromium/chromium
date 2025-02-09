@@ -280,11 +280,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'a512fc3de3dd517ad8b139e4f5b65a5dd53f7a5a',
+  'skia_revision': 'a8f4bcc625322a277f7ce4b1dfcf68b68543e18a',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'ac44a95cffa27c27fdbc5f84b736d5abeb4bf07b',
+  'v8_revision': '20ffa7cb8162cc75e417c50f24b0451eaaada205',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '19cc3648535f7fcb63f9fd9c7a4db50d77996040',
+  'dawn_revision': 'c9d57c1f4dd7f156921673fdc03880fb7f1b8992',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '91cb5168e2b16986fd57d0d6e9f718068a4be781',
+    'afe5b79568b57ce021414da562eb4f84ed021646',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2951,7 +2951,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'D1ezibleHzIEC5m0HUr8ssqGKjshORzfQllHIwuMpaIC',
+        'version': 'ha9A9Df5Q9gpshs9e6wn715bHb1hcow6WUzJLy9elFEC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4538,7 +4538,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '5e8b945b929f5d9c9cdf6a7b500a086fb67ec6da',
+        '571f31fbc937c65dd54fc1edc00136b116fa1853',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

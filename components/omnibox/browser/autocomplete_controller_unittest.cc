@@ -2132,15 +2132,41 @@ TEST_F(AutocompleteControllerTest,
   auto aggregator_provider = base::MakeRefCounted<FakeAutocompleteProvider>(
       AutocompleteProvider::Type::TYPE_ENTERPRISE_SEARCH_AGGREGATOR);
   controller_.providers_.push_back(aggregator_provider);
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::SearchAggregatorProvider>
+      scoped_config;
 
-  // Aggregator not ran when not in keyword mode.
+  // In unscoped mode (not keyword mode), aggregator is run when
+  // `require_shortcut` policy field is false, and is not run when
+  // `require_shortcut` policy field is true.
   controller_.input_ = AutocompleteInput(
-      u"a", 1u, metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
+      u"query", 1u, metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
+  EXPECT_TRUE(controller_.ShouldRunProvider(aggregator_provider.get()));
+  controller_.input_.UpdateText(u"site_search_not_featured", 0, {});
+  EXPECT_TRUE(controller_.ShouldRunProvider(aggregator_provider.get()));
+  controller_.input_.UpdateText(u"aggregator_not_featured", 0, {});
+  EXPECT_TRUE(controller_.ShouldRunProvider(aggregator_provider.get()));
+
+  scoped_config.Get().require_shortcut = true;
+  controller_.input_.UpdateText(u"query", 0, {});
+  EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
+  controller_.input_.UpdateText(u"site_search_not_featured", 0, {});
+  EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
+  controller_.input_.UpdateText(u"aggregator_not_featured", 0, {});
   EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
 
-  // Aggregator not ran when in site search mode.
+  // Enter keyword mode.
   controller_.input_.set_keyword_mode_entry_method(
       metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+
+  // Aggregator not ran when in site search mode, regardless of
+  // `require_shortcut` value.
+  controller_.input_.UpdateText(u"site_search_not_featured", 0, {});
+  EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
+  controller_.input_.UpdateText(u"site_search_featured", 0, {});
+  EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
+
+  scoped_config.Get().require_shortcut = false;
   controller_.input_.UpdateText(u"site_search_not_featured", 0, {});
   EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
   controller_.input_.UpdateText(u"site_search_featured", 0, {});

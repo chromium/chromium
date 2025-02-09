@@ -26,6 +26,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interactive_test.h"
+#include "ui/base/interaction/interactive_test_definitions.h"
 #include "ui/base/interaction/interactive_test_internal.h"
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -643,7 +644,8 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::IfViewMatches(
                 return std::move(condition).Run(view);
               },
               ui::test::internal::MaybeBind(std::forward<F>(function))),
-          testing::Matcher<R>(std::forward<M>(matcher)),
+          testing::Matcher<ui::test::internal::MatcherTypeFor<R>>(
+              std::forward<M>(matcher)),
           std::forward<T>(then_steps), std::forward<U>(else_steps))
           .SetDescription("IfViewMatches()"));
 }
@@ -737,17 +739,19 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::CheckView(
   StepBuilder builder;
   builder.SetDescription("CheckView()");
   ui::test::internal::SpecifyElement(builder, view);
+  using MatcherType = ui::test::internal::MatcherTypeFor<R>;
   builder.SetStartCallback(base::BindOnce(
-      [](base::OnceCallback<R(V*)> function, testing::Matcher<R> matcher,
+      [](base::OnceCallback<R(V*)> function,
+         testing::Matcher<MatcherType> matcher,
          ui::InteractionSequence* seq, ui::TrackedElement* el) {
         if (!ui::test::internal::MatchAndExplain(
                 "CheckView()", matcher,
-                std::move(function).Run(AsView<V>(el)))) {
+                MatcherType(std::move(function).Run(AsView<V>(el))))) {
           seq->FailForTesting();
         }
       },
       ui::test::internal::MaybeBind(std::forward<F>(function)),
-      testing::Matcher<R>(std::forward<M>(matcher))));
+      testing::Matcher<MatcherType>(std::forward<M>(matcher))));
   return builder;
 }
 
@@ -761,15 +765,17 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::CheckViewProperty(
   StepBuilder builder;
   builder.SetDescription("CheckViewProperty()");
   ui::test::internal::SpecifyElement(builder, view);
+  using MatcherType = ui::test::internal::MatcherTypeFor<R>;
   builder.SetStartCallback(base::BindOnce(
-      [](R (V::*property)() const, testing::Matcher<R> matcher,
+      [](R (V::*property)() const, testing::Matcher<MatcherType> matcher,
          ui::InteractionSequence* seq, ui::TrackedElement* el) {
         if (!ui::test::internal::MatchAndExplain(
-                "CheckViewProperty()", matcher, (AsView<V>(el)->*property)())) {
+                "CheckViewProperty()", matcher,
+                MatcherType((AsView<V>(el)->*property)()))) {
           seq->FailForTesting();
         }
       },
-      property, testing::Matcher<R>(std::forward<M>(matcher))));
+      property, testing::Matcher<MatcherType>(std::forward<M>(matcher))));
   return builder;
 }
 
@@ -794,14 +800,16 @@ InteractiveViewsTestApi::WaitForViewPropertyCallback(
   // The first step will check the property, and either immediately send the
   // event or install the observer that will send the event when the state
   // achieves the correct value.
+  using MatcherType = ui::test::internal::MatcherTypeFor<R>;
   auto observe_property = base::BindOnce(
       [](RefCountedSubscription subscription, R (V::*property)() const,
          base::CallbackListSubscription (V::*add_listener)(
              ui::metadata::PropertyChangedCallback),
-         ui::CustomElementEventType event_type, testing::Matcher<R> matcher,
+         ui::CustomElementEventType event_type,
+         testing::Matcher<MatcherType> matcher,
          ui::TrackedElement* el) {
         auto* const view = AsView<V>(el);
-        if (matcher.Matches((view->*property)())) {
+        if (matcher.Matches(MatcherType((view->*property)()))) {
           // Property is already in the desired state, send event immediately.
           ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
               el, event_type);
@@ -810,8 +818,8 @@ InteractiveViewsTestApi::WaitForViewPropertyCallback(
           subscription->data = (view->*add_listener)(base::BindRepeating(
               [](V* view, R (V::*property)() const,
                  ui::CustomElementEventType event_type,
-                 testing::Matcher<R> matcher) {
-                if (matcher.Matches((view->*property)())) {
+                 testing::Matcher<MatcherType> matcher) {
+                if (matcher.Matches(MatcherType((view->*property)()))) {
                   ElementTrackerViews::GetInstance()->NotifyCustomEvent(
                       event_type, view);
                 }
@@ -820,7 +828,7 @@ InteractiveViewsTestApi::WaitForViewPropertyCallback(
         }
       },
       subscription, property, add_listener, event_type,
-      testing::Matcher<R>(std::forward<M>(matcher)));
+      testing::Matcher<MatcherType>(std::forward<M>(matcher)));
 
   auto steps = Steps(std::move(AfterShow(view, std::move(observe_property))
                                    .SetMustRemainVisible(true)),

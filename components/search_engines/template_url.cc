@@ -2011,6 +2011,10 @@ bool TemplateURL::CreatedByNonDefaultSearchProviderPolicy() const {
   return data().CreatedByNonDefaultSearchProviderPolicy();
 }
 
+bool TemplateURL::CreatedByEnterpriseSearchAggregatorPolicy() const {
+  return data().CreatedByEnterpriseSearchAggregatorPolicy();
+}
+
 RegulatoryExtensionType TemplateURL::GetRegulatoryExtensionType() const {
   if (data().created_from_play_api) {
     return RegulatoryExtensionType::kAndroidEEA;

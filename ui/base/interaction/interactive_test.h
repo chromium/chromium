@@ -860,19 +860,21 @@ InteractionSequence::StepBuilder InteractiveTestApi::IfElementMatches(
     E&& else_steps) {
   InteractionSequence::StepBuilder step;
   internal::SpecifyElement(step, element);
+  step.SetSubsequenceMode(InteractionSequence::SubsequenceMode::kAtMostOne);
   using FunctionType =
       base::OnceCallback<R(const InteractionSequence*, const TrackedElement*)>;
-  step.SetSubsequenceMode(InteractionSequence::SubsequenceMode::kAtMostOne);
+  using MatcherType = internal::MatcherTypeFor<R>;
   step.AddSubsequence(
       internal::BuildSubsequence(Steps(std::forward<T>(then_steps))),
       base::BindOnce(
-          [](FunctionType function, testing::Matcher<R> matcher,
+          [](FunctionType function, testing::Matcher<MatcherType> matcher,
              const InteractionSequence* seq, const TrackedElement* el) -> bool {
-            return matcher.Matches(std::move(function).Run(seq, el));
+            return matcher.Matches(
+                MatcherType(std::move(function).Run(seq, el)));
           },
           base::RectifyCallback<FunctionType>(
               internal::MaybeBind(std::forward<F>(function))),
-          std::forward<M>(matcher)));
+          testing::Matcher<MatcherType>(std::forward<M>(matcher))));
   auto temp = Steps(std::forward<E>(else_steps));
   if (!temp.empty()) {
     step.AddSubsequence(internal::BuildSubsequence(std::move(temp)));
@@ -1170,17 +1172,19 @@ InteractionSequence::StepBuilder InteractiveTestApi::CheckResult(
     C&& function,
     M&& matcher,
     std::string check_description) {
-  return std::move(Check(base::BindOnce(
-                             [](base::OnceCallback<R()> function,
-                                testing::Matcher<R> matcher) {
-                               return internal::MatchAndExplain(
-                                   "CheckResult()", matcher,
-                                   std::move(function).Run());
-                             },
-                             internal::MaybeBind(std::forward<C>(function)),
-                             testing::Matcher<R>(std::forward<M>(matcher))))
-                       .SetDescription(base::StringPrintf(
-                           "CheckResult(\"%s\")", check_description.c_str())));
+  using MatcherType = internal::MatcherTypeFor<R>;
+  return std::move(
+      Check(base::BindOnce(
+                [](base::OnceCallback<R()> function,
+                   testing::Matcher<MatcherType> matcher) {
+                  return internal::MatchAndExplain(
+                      "CheckResult()", matcher,
+                      MatcherType(std::move(function).Run()));
+                },
+                internal::MaybeBind(std::forward<C>(function)),
+                testing::Matcher<MatcherType>(std::forward<M>(matcher))))
+          .SetDescription(base::StringPrintf("CheckResult(\"%s\")",
+                                             check_description.c_str())));
 }
 
 // static
@@ -1220,17 +1224,19 @@ InteractionSequence::StepBuilder InteractiveTestApi::CheckElement(
   StepBuilder builder;
   builder.SetDescription("CheckElement()");
   internal::SpecifyElement(builder, element);
+  using MatcherType = internal::MatcherTypeFor<R>;
   builder.SetStartCallback(base::BindOnce(
       [](base::OnceCallback<R(TrackedElement*)> function,
-         testing::Matcher<R> matcher, InteractionSequence* seq,
+         testing::Matcher<MatcherType> matcher, InteractionSequence* seq,
          TrackedElement* el) {
-        if (!internal::MatchAndExplain("CheckElement()", matcher,
-                                       std::move(function).Run(el))) {
+        if (!internal::MatchAndExplain(
+                "CheckElement()", matcher,
+                MatcherType(std::move(function).Run(el)))) {
           seq->FailForTesting();
         }
       },
       internal::MaybeBind(std::forward<F>(function)),
-      testing::Matcher<R>(std::forward<M>(matcher))));
+      testing::Matcher<MatcherType>(std::forward<M>(matcher))));
   return builder;
 }
 

@@ -1147,7 +1147,13 @@ bool AutocompleteController::ShouldRunProvider(
   // launcher. If we reach here, we're not in starter pack mode.
   switch (provider->type()) {
     case AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR:
-      return false;
+      // TODO(crbug.com/384540016): Check policy field instead of finch param
+      // after policy is handled.
+      return (template_url_service_ &&
+              template_url_service_->GetEnterpriseSearchAggregatorEngine() &&
+              !omnibox_feature_configs::SearchAggregatorProvider::Get()
+                   .require_shortcut);
+
     case AutocompleteProvider::TYPE_OPEN_TAB:
       return is_cros_launcher_;
 #if !BUILDFLAG(IS_IOS)

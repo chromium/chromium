@@ -84,9 +84,11 @@ class PollingViewPropertyObserver : public PollingViewObserver<T, V> {
       : PollingViewObserver<T, V>(
             view_id,
             context,
-            base::BindRepeating([](R (V::*property)() const, const V* view)
-                                    -> T { return (view->*property)(); },
-                                property),
+            base::BindRepeating(
+                [](R (V::*property)() const, const V* view) {
+                  return T((view->*property)());
+                },
+                property),
             polling_interval) {}
 
   ~PollingViewPropertyObserver() override = default;

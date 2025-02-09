@@ -49,6 +49,21 @@ IOBufferWithSize::~IOBufferWithSize() {
   data_ = nullptr;
 }
 
+VectorIOBuffer::VectorIOBuffer(std::vector<uint8_t> vector)
+    : vector_(std::move(vector)) {
+  AssertValidBufferSize(vector_.size());
+  data_ = reinterpret_cast<char*>(vector_.data());
+  size_ = vector_.size();
+}
+
+VectorIOBuffer::VectorIOBuffer(base::span<uint8_t> span)
+    : VectorIOBuffer(std::vector(span.begin(), span.end())) {}
+
+VectorIOBuffer::~VectorIOBuffer() {
+  // Clear pointer before this destructor makes it dangle.
+  data_ = nullptr;
+}
+
 StringIOBuffer::StringIOBuffer(std::string s) : string_data_(std::move(s)) {
   // Can't pass `s.data()` directly to IOBuffer constructor since moving
   // from `s` may invalidate it. This is especially true for libc++ short
@@ -117,6 +132,12 @@ void GrowableIOBuffer::set_offset(int offset) {
   offset_ = offset;
   data_ = UNSAFE_TODO(real_data_.get() + offset);
   size_ = capacity_ - offset;
+}
+
+void GrowableIOBuffer::DidConsume(int bytes) {
+  CHECK_LE(0, bytes);
+  CHECK_LE(bytes, size_);
+  set_offset(offset_ + bytes);
 }
 
 int GrowableIOBuffer::RemainingCapacity() {

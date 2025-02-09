@@ -222,3 +222,7 @@ bool TemplateURLData::CreatedByDefaultSearchProviderPolicy() const {
 bool TemplateURLData::CreatedByNonDefaultSearchProviderPolicy() const {
   return CreatedByPolicy() && !CreatedByDefaultSearchProviderPolicy();
 }
+
+bool TemplateURLData::CreatedByEnterpriseSearchAggregatorPolicy() const {
+  return policy_origin == PolicyOrigin::kSearchAggregator;
+}
