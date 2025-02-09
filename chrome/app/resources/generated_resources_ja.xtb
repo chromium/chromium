@@ -655,7 +655,6 @@
 <translation id="1454223536435069390">スクリーンショットを撮る(&amp;A)</translation>
 <translation id="145432137617179457">スペルチェックの言語</translation>
 <translation id="1455119378540982311">プリセットのウィンドウ サイズ</translation>
-<translation id="1456499573534615137">Chrome のカスタムテーマの作成をサポートします</translation>
 <translation id="1456849775870359518">タブが再度開きます</translation>
 <translation id="1457907785077086338">アプリバッジの色</translation>
 <translation id="146000042969587795">このフレームにはセキュリティで保護されていないコンテンツが含まれているためブロックされました。</translation>
@@ -3011,7 +3010,6 @@
 <translation id="3090871774332213558">「<ph name="DEVICE_NAME" />」がペア設定されました</translation>
 <translation id="3093714882666365141">サイトに支払いハンドラのインストールを許可しない</translation>
 <translation id="3094080575472025333">アプリのブロック</translation>
-<translation id="3094141017404513551">続行すると、<ph name="EXISTING_USER" /> さんとは別のブラウジング環境が使用されるようになります</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{今日で期限切れ}=1{明日で期限切れ}other{あと # 日で期限切れ}}</translation>
 <translation id="3094521107841754472">価格が <ph name="PREVIOUS_PRICE" /> から <ph name="CURRENT_PRICE" /> に変更されました。</translation>
 <translation id="3095871294753148861">ブックマークやパスワードなどの閲覧データはメイン アカウントと同期されます。</translation>
@@ -3114,7 +3112,6 @@
 <translation id="3177909033752230686">ページの言語:</translation>
 <translation id="3177914167275935955">デバイスには Chrome Education Upgrade が含まれていますが、ユーザー名が Google for Education アカウントに関連付けられていません。別のデバイスで g.co/workspace/edusignup にアクセスし、Google for Education アカウントを作成してください。</translation>
 <translation id="3179982752812949580">テキストのフォント</translation>
-<translation id="3180284704187420717">同期することで、ブックマークやパスワード、その他の設定を保存できます</translation>
 <translation id="3180990259147710757">あごを左に動かす</translation>
 <translation id="3181825792072797598">同期を有効にする</translation>
 <translation id="3181954750937456830">セーフ ブラウジング（危険なサイトからユーザーとデバイスを保護します）</translation>
@@ -5062,7 +5059,7 @@
 <translation id="4559617833001311418">このサイトはモーション センサーまたは光センサーにアクセスしています。</translation>
 <translation id="4560728518401799797"><ph name="FOLDER_TITLE" /> ブックマークのその他のオプション</translation>
 <translation id="4561893854334016293">最近変更した権限はありません</translation>
-<translation id="4562091353415772246">アップデートやアプリをインストールします。続行すると、Google、ご利用の携帯通信会社、デバイスの製造元からのアップデートやアプリもデバイスで自動的にダウンロードおよびインストールされる場合があることについて、同意したものと見なされます（ダウンロードの際にはモバイルデータ通信が使用される可能性もあります）。こうしたアプリの一部ではアプリ内購入が提案される場合もあります。<ph name="BEGIN_LINK1" />Play 自動インストールの詳細<ph name="BEGIN_LINK1_END" />詳細<ph name="END_LINK1" /></translation>
+<translation id="4562091353415772246">アップデートやアプリをインストールします。続行すると、Google、ご利用の通信キャリア、デバイスの製造元からのアップデートやアプリをデバイスで自動的にダウンロードおよびインストールされる場合があることに同意したことになります（ダウンロードの際はモバイルデータ通信が使用される可能性もあります）。こうしたアプリの一部ではアプリ内購入が提案される場合もあります。<ph name="BEGIN_LINK1" />Play 自動インストールの詳細<ph name="BEGIN_LINK1_END" />詳細<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">指紋を追加</translation>
 <translation id="4562155266774382038">候補を却下</translation>
 <translation id="4562364000855074606">この <ph name="DEVICE_TYPE" /> でアプリのインストールをブロックします。アプリやコンテンツのダウンロードを制限するには、Google Play の設定にアクセスしてください。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -8783,7 +8780,6 @@
 <translation id="7273894023751806510"><ph name="HOST" /> による MIDI デバイスの操作と再プログラムを常にブロックする</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - あと <ph name="TIME" />で充電完了</translation>
 <translation id="727595954130325265">今すぐ購入</translation>
-<translation id="7278164481614262110">AI でテーマを作成する</translation>
 <translation id="727952162645687754">ダウンロード エラー</translation>
 <translation id="7280649757394340890">テキスト読み上げの音声の設定</translation>
 <translation id="7280877790564589615">許可の要求</translation>

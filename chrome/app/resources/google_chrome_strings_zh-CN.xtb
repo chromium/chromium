@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">自定义您的新 Chrome 个人资料</translation>
 <translation id="1547295885616600893">Chrome 操作系统是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开源软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" />已登录此 Chrome 个人资料。这样做会为 <ph name="USER_EMAIL_ADDRESS" /> 创建一份新的 Chrome 个人资料</translation>
 <translation id="1587223624401073077">Google Chrome 正在使用您的摄像头。</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> 存在危险，因此 Chrome 已将其拦截。</translation>
 <translation id="1597911401261118146">若要检查您的密码是否未曾遭遇数据泄露和其他安全问题，请<ph name="BEGIN_LINK" />登录 Chrome<ph name="END_LINK" />。</translation>
@@ -145,7 +144,6 @@
 <translation id="2846251086934905009">安装时出错：安装程序进程未完成。已中止安装。</translation>
 <translation id="2853415089995957805">Chrome 会预加载您可能访问的网页，以便提高这些网页在您访问时的加载速度</translation>
 <translation id="2857540653560290388">正在启动 Chrome…</translation>
-<translation id="2857972467023607093">已有一份使用此账号创建的 Chrome 个人资料</translation>
 <translation id="286025080868315611">了解 Chrome 为何会拦截部分下载内容</translation>
 <translation id="2861074815332034794">正在更新 Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">您已登录 Chrome！</translation>
@@ -225,7 +223,6 @@
 <translation id="3785324443014631273">登录时发生错误，ChromeOS Flex 无法同步您的数据。</translation>
 <translation id="3795971588916395511">Google Chrome 操作系统</translation>
 <translation id="3809772425479558446">Google Chrome 仅支持 Windows 10 或更高版本的操作系统。</translation>
-<translation id="3835168907083856002">这样做会为 <ph name="USER_EMAIL_ADDRESS" /> 创建一份新的 Chrome 个人资料</translation>
 <translation id="383928141529488001">Google Chrome 需获得蓝牙使用权限，才能浏览蓝牙设备。<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">请关闭所有 Google Chrome 浏览器窗口，然后重试。</translation>
 <translation id="3873044882194371212">在 Chrome 无痕式窗口中打开链接(&amp;G)</translation>
@@ -441,7 +438,6 @@
 <translation id="6712881677154121168">下载时出错：<ph name="DOWNLOAD_ERROR" />。</translation>
 <translation id="6718739135284199302">提高 Chrome 的运行速度</translation>
 <translation id="6735387454586646204">ChromeOS Flex 系统</translation>
-<translation id="6739177684496155661">使用一份新的 Chrome 个人资料继续浏览？</translation>
 <translation id="6750954913813541382">为了修正拼写错误，Chrome 会将您在浏览器中输入的文字发送给 Google</translation>
 <translation id="677276454032249905">仍要退出 Chrome？</translation>
 <translation id="6794858689789885890">始终在关闭 Chrome 时删除设备上的网站数据</translation>
@@ -549,7 +545,6 @@
 <translation id="7947083960301164556">查看新变化</translation>
 <translation id="7951272445806340501">需要重启 ChromeOS Flex 以应用更新。</translation>
 <translation id="7959172989483770734">管理 Chrome 个人资料</translation>
-<translation id="7962368738413920945">网站很可能会按预期运行，但不会在您关闭所有 Chrome 窗口后记住您的偏好设置和相关数据</translation>
 <translation id="7962410387636238736">此计算机将不会再收到 Google Chrome 更新，因为 Windows XP 和 Windows Vista 已不再受支持</translation>
 <translation id="8005666035647241369">保存到此设备上的 Google 密码管理工具中</translation>
 <translation id="8008534537613507642">重新安装Chrome</translation>
@@ -649,7 +644,6 @@
 <translation id="919706545465235479">更新 Chrome 以开始同步</translation>
 <translation id="922152298093051471">自定义 Chrome</translation>
 <translation id="93760716455950538">重启 ChromeOS Flex</translation>
-<translation id="940313311831216333">如需在您的所有设备上访问自己的 Chrome 信息，请登录您的账号，然后开启同步功能。</translation>
 <translation id="943390475793766444">Chrome 建议您扫描此文件，因为它可能包含危险因素。</translation>
 <translation id="945522503751344254">发送反馈</translation>
 <translation id="983803489796659991">更新服务器没有应用的任何哈希数据，因此安装失败。</translation>

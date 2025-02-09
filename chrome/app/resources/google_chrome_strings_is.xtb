@@ -41,7 +41,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1507198376417198979">Sérsníða nýja Chrome prófílinn</translation>
 <translation id="1547295885616600893">ChromeOS á tilvist sína að þakka öðrum <ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Uppfæra Chrome</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> er þegar innskráð(ur) á þennan Chrome prófíl. Þetta býr til nýjan Chrome prófíl fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome er að nota myndavélina þína.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> er skaðleg skrá og Chrome útilokaði hana.</translation>
 <translation id="1597911401261118146"><ph name="BEGIN_LINK" />Skráðu þig inn á Chrome<ph name="END_LINK" /> til að athuga hvort aðgangsorðin þín séu óhult fyrir öryggisbrotum og öðrum öryggisvandamálum.</translation>
@@ -149,7 +148,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2846251086934905009">Uppsetningarvilla: Uppsetningarforrit lauk ekki verki sínu. Hætt var við uppsetningu.</translation>
 <translation id="2853415089995957805">Chrome forhleður síðum sem er líklegt að þú munir skoða svo þær hlaðist fyrr þegar þú opnar þær</translation>
 <translation id="2857540653560290388">Ræsir Chrome...</translation>
-<translation id="2857972467023607093">Chrome prófíll með þessum reikningi er þegar til</translation>
 <translation id="286025080868315611">Kynntu þér hvers vegna Chrome lokar á sumt niðurhal</translation>
 <translation id="2861074815332034794">Uppfærir Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Þú ert skráð(ur) inn á Chrome!</translation>
@@ -229,7 +227,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3785324443014631273">ChromeOS Flex gat ekki samstillt gögnin þín vegna innskráningarvillu.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome krefst Windows 10 eða nýrri útgáfu.</translation>
-<translation id="3835168907083856002">Þetta býr til nýjan Chrome prófíl fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Google Chrome þarf aðgang að Bluetooth til að kanna 
  Bluetooth-tæki. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Lokaðu öllum Google Chrome gluggum og reyndu aftur.</translation>
@@ -450,7 +447,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6712881677154121168">Niðurhalsvilla: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Láttu Chrome vinna hraðar</translation>
 <translation id="6735387454586646204">ChromeOS Flex kerfi</translation>
-<translation id="6739177684496155661">Halda áfram á nýjum Chrome prófíl?</translation>
 <translation id="6750954913813541382">Til að lagfæra stafsetningarvillur sendir Chrome textann sem þú skrifar í vafranum til Google</translation>
 <translation id="677276454032249905">Viltu samt loka Chrome?</translation>
 <translation id="6794858689789885890">Ávallt eyða vefsvæðagögnum úr tækinu þegar þú lokar Chrome</translation>
@@ -558,7 +554,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7947083960301164556">Sjá hvað er nýtt</translation>
 <translation id="7951272445806340501">Endurræsa þarf ChromeOS Flex til að nota uppfærsluna.</translation>
 <translation id="7959172989483770734">Stjórna Chrome-prófílum</translation>
-<translation id="7962368738413920945">Vefsvæði munu líklega virka líkt og búist er við en munu ekki muna eftir þér þegar þú hefur lokað öllum Chrome-gluggum</translation>
 <translation id="7962410387636238736">Þessi tölva tekur ekki lengur við uppfærslum á Google Chrome vegna þess að stýrikerfin Windows XP og Windows Vista eru ekki lengur studd</translation>
 <translation id="8005666035647241369">Í Aðgangsorðastjórnun Google í þessu tæki</translation>
 <translation id="8008534537613507642">Setja Chrome aftur upp</translation>
@@ -658,7 +653,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="919706545465235479">Uppfærðu Chrome til að hefja samstillingu</translation>
 <translation id="922152298093051471">Sérsníða Chrome</translation>
 <translation id="93760716455950538">Endurræsa ChromeOS Flex</translation>
-<translation id="940313311831216333">Til að fá aðgang að Chrome efninu þínu í öllum tækjum skaltu skrá þig inn og kveikja á samstillingu.</translation>
 <translation id="943390475793766444">Chrome mælir með að skanna þessa skrá þar sem hún gæti verið hættuleg.</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>
 <translation id="983803489796659991">Uppsetning mistókst vegna þess að uppfærsluþjónninn er ekki með tætigögn fyrir forritið.</translation>

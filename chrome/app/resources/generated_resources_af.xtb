@@ -656,7 +656,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1454223536435069390">Neem skermkiekie</translation>
 <translation id="145432137617179457">Speltoetstale</translation>
 <translation id="1455119378540982311">Stel vooraf jou venstergroottes</translation>
-<translation id="1456499573534615137">Help jou om gepasmaakte temas vir Chrome te ontwerp</translation>
 <translation id="1456849775870359518">Jou oortjies sal weer oopgemaak word</translation>
 <translation id="1457907785077086338">App-kentekenkleur</translation>
 <translation id="146000042969587795">Hierdie raam is geblokkeer omdat dit onveilige inhoud bevat.</translation>
@@ -3030,7 +3029,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" saamgebind</translation>
 <translation id="3093714882666365141">Moenie werwe toelaat om betalinghanteerders te installeer nie</translation>
 <translation id="3094080575472025333">Blokkeer apps</translation>
-<translation id="3094141017404513551">Dit sal jou blaaidata van <ph name="EXISTING_USER" /> skei</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Verval vandag}=1{Verval môre}other{Verval oor # dae}}</translation>
 <translation id="3094521107841754472">Prys het verander van <ph name="PREVIOUS_PRICE" /> na <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Boekmerke, wagwoorde en ander blaaierdata word met die primêre rekening gesinkroniseer.</translation>
@@ -3133,7 +3131,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3177909033752230686">Bladsytaal:</translation>
 <translation id="3177914167275935955">Jou toestel sluit ’n Chrome Education-opgradering in, maar jou gebruikernaam word nie met ’n Google for Education-rekening geassosieer nie. Skep asseblief ’n Google for Education-rekening deur g.co/workspace/edusignup op ’n sekondêre toestel te besoek.</translation>
 <translation id="3179982752812949580">Tekslettertipe</translation>
-<translation id="3180284704187420717">Stoor jou boekmerke, wagwoorde en meer met sinkronisering</translation>
 <translation id="3180990259147710757">Beweeg kakebeen links</translation>
 <translation id="3181825792072797598">Skakel Sinkronisering aan</translation>
 <translation id="3181954750937456830">Veiligblaai (beskerm jou en jou toestel teen gevaarlike werwe)</translation>
@@ -8814,7 +8811,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7273894023751806510">Keer <ph name="HOST" /> altyd om jou MIDI-toestelle te beheer en te herprogrammeer.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> tot vol</translation>
 <translation id="727595954130325265">Koop nou</translation>
-<translation id="7278164481614262110">Skep temas met AI</translation>
 <translation id="727952162645687754">Aflaaifout</translation>
 <translation id="7280649757394340890">Teks-na-spraak-steminstellings</translation>
 <translation id="7280877790564589615">Toestemming versoek</translation>

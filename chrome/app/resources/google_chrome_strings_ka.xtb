@@ -41,7 +41,6 @@
 <translation id="1507198376417198979">მოირგეთ თქვენი ახალი Chrome პროფილი</translation>
 <translation id="1547295885616600893">ChromeOS მუშაობს <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> დამსახურებით.</translation>
 <translation id="1553358976309200471">Chrome-ის განახლება</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> უკვე შესულია ამ Chrome პროფილში. ეს მოქმედება შექმნის ახალ Chrome პროფილს <ph name="USER_EMAIL_ADDRESS" />-ისთვის</translation>
 <translation id="1587223624401073077">Google Chrome იყენებს თქვენს კამერას.</translation>
 <translation id="1587325591171447154">Chrome-მა დაბლოკა <ph name="FILE_NAME" />, რადგან ის სახიფათოა.</translation>
 <translation id="1597911401261118146"><ph name="BEGIN_LINK" />შედით Chrome-ში<ph name="END_LINK" />, რომ შეამოწმოთ, შეეხო თუ არა პერსონალურ მონაცემთა გაჟონვის შემთხვევები და უსაფრთხოებასთან დაკავშირებული პრობლემები თქვენს პაროლებს.</translation>
@@ -149,7 +148,6 @@
 <translation id="2846251086934905009">შეცდომა ინსტალაციისას: ინსტალატორის მუშაობა ვერ დასრულდა. ინსტალაცია შეწყდა.</translation>
 <translation id="2853415089995957805">Chrome წინასწარ ჩატვირთავს გვერდებს, რომელთა ნახვასაც, სავარაუდოდ, დააპირებთ — ამგვარად, ამ გვერდებზე გადასვლისას, ისინი უფრო სწრაფად ჩაიტვირთება</translation>
 <translation id="2857540653560290388">მიმდინარეობს Chrome-ის გაშვება…</translation>
-<translation id="2857972467023607093">ამ ანგარიშის მქონე Chrome პროფილი უკვე არსებობს</translation>
 <translation id="286025080868315611">შეიტყვეთ, რატომ ბლოკავს Chrome ზოგიერთ ჩამოტვირთვას</translation>
 <translation id="2861074815332034794">მიმდინარეობს Chrome-ის განახლება (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">თქვენ შესული ხართ Chrome-ში!</translation>
@@ -229,7 +227,6 @@
 <translation id="3785324443014631273">ChromeOS Flex-მა ვერ მოახერხა თქვენი მონაცემების სინქრონიზაცია, რადგან შესვლისას მოხდა შეცდომა.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome-ის მუშაობისთვის საჭიროა Windows 10 ან უფრო ახალი ვერსია.</translation>
-<translation id="3835168907083856002">ეს მოქმედება შექმნის ახალ Chrome პროფილს <ph name="USER_EMAIL_ADDRESS" />-ისთვის</translation>
 <translation id="383928141529488001">Bluetooth მოწყობილობების აღმოსაჩენად Google Chrome საჭიროებს 
  Bluetooth-ზე წვდომას. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">დახურეთ Google Chrome-ის ყველა ფანჯარა და ხელახლა სცადეთ.</translation>
@@ -450,7 +447,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6712881677154121168">შეცდომა ჩამოტვირთვისას: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6718739135284199302">ააჩქარეთ Chrome-ის მუშაობა</translation>
 <translation id="6735387454586646204">ChromeOS Flex სისტემა</translation>
-<translation id="6739177684496155661">გსურთ ახალ Chrome პროფილში გაგრძელება?</translation>
 <translation id="6750954913813541382">მართლწერის შეცდომების შესასწორებლად Chrome უგზავნის Google-ს თქვენ მიერ ბრაუზერში აკრეფილ ტექსტს</translation>
 <translation id="677276454032249905">მაინც გსურთ Chrome-იდან გასვლა?</translation>
 <translation id="6794858689789885890">Chrome-ის დახურვისას თქვენი მოწყობილობიდან საიტების მონაცემების ყოველთვის წაიშლება</translation>
@@ -558,7 +554,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="7947083960301164556">იხილეთ სიახლეები</translation>
 <translation id="7951272445806340501">ChromeOS Flex უნდა გადაიტვირთოს განახლების გასააქტიურებლად.</translation>
 <translation id="7959172989483770734">Chrome-ის პროფილების მართვა</translation>
-<translation id="7962368738413920945">საიტები, სავარაუდოდ, მოლოდინისამებრ იმუშავებს, თუმცა ისინი არ დაგიმახსოვრებთ, როცა Chrome-ის ყველა ფანჯარას დახურავთ</translation>
 <translation id="7962410387636238736">ეს კომპიუტერი აღარ მიიღებს Google Chrome-ის განახლებებს, რადგან Windows XP და Windows Vista აღარ არის მხარდაჭერილი</translation>
 <translation id="8005666035647241369">Google პაროლების მმართველში ამ მოწყობილობაზე</translation>
 <translation id="8008534537613507642">ხელახლა დააინსტალირეთ Chrome</translation>
@@ -658,7 +653,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="919706545465235479">სინქრონიზაციის დასაწყებად, განაახლეთ Chrome</translation>
 <translation id="922152298093051471">Chrome-ის მორგება</translation>
 <translation id="93760716455950538">გადატვირთეთ ChromeOS Flex</translation>
-<translation id="940313311831216333">თქვენს Chrome კონტენტზე თქვენი ნებისმიერი მოწყობილობიდან წვდომისთვის შედით სისტემაში, შემდეგ კი ჩართეთ სინქრონიზაცია.</translation>
 <translation id="943390475793766444">Chrome გირჩევთ, დაასკანიროთ ეს ფაილი, რადგან ის შეიძლება სახიფათო იყოს.</translation>
 <translation id="945522503751344254">შეფასების გაგზავნა</translation>
 <translation id="983803489796659991">ინსტალაცია ვერ მოხერხდა, რადგან განახლების სერვერს არ აქვს ამ აპლიკაციის ჰეშ-მონაცემები.</translation>

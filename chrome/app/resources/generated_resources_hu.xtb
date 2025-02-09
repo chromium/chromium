@@ -656,7 +656,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1454223536435069390">&amp;Képernyőkép készítése</translation>
 <translation id="145432137617179457">A helyesírás-ellenőrzés nyelvei</translation>
 <translation id="1455119378540982311">Előre beállított ablakméretek</translation>
-<translation id="1456499573534615137">Segítséget nyújt a Chrome egyéni témáinak megtervezéséhez</translation>
 <translation id="1456849775870359518">A lapok újra meg fognak nyílni</translation>
 <translation id="1457907785077086338">Alkalmazásjelvény színe</translation>
 <translation id="146000042969587795">A keretet blokkoltuk, mert nem biztonságos elemeket is tartalmaz.</translation>
@@ -3029,7 +3028,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3090871774332213558">„<ph name="DEVICE_NAME" />” párosítva</translation>
 <translation id="3093714882666365141">A webhelyek nem telepíthetnek fizetéskezelőket</translation>
 <translation id="3094080575472025333">Alkalmazások letiltása</translation>
-<translation id="3094141017404513551">Ezzel elkülöníti böngészési tevékenységeit ettől a felhasználótól: <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Ma jár le}=1{Holnap jár le}other{# napon belül lejár}}</translation>
 <translation id="3094521107841754472">Az ár megváltozott. Korábbi ár: <ph name="PREVIOUS_PRICE" />, jelenlegi ár: <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">A könyvjelzők, jelszavak és más böngészőadatok szinkronizálva vannak az elsődleges fiókkal.</translation>
@@ -3132,7 +3130,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3177909033752230686">Az oldal nyelve</translation>
 <translation id="3177914167275935955">Eszközéhez Chrome Education Upgrade licenc tartozik, de a felhasználóneve nincs Google for Education-fiókhoz társítva. Hozzon létre új Google for Education-fiókot a g.co/workspace/edusignup címen egy másodlagos eszközön.</translation>
 <translation id="3179982752812949580">Szöveg betűtípusa</translation>
-<translation id="3180284704187420717">Mentheti könyvjelzőit, jelszavait és egyebeket a szinkronizálással.</translation>
 <translation id="3180990259147710757">Állkapocs balra mozgatása</translation>
 <translation id="3181825792072797598">Szinkronizálás bekapcsolása</translation>
 <translation id="3181954750937456830">Biztonságos Böngészés (megvédi Önt és eszközét a veszélyes webhelyekkel szemben)</translation>
@@ -8813,7 +8810,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7273894023751806510">Mindig legyen letiltva a(z) <ph name="HOST" /> számára a MIDI-eszközök vezérlése és átprogramozása</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> a teljes feltöltésig</translation>
 <translation id="727595954130325265">Vásárlás</translation>
-<translation id="7278164481614262110">Témák létrehozása AI segítségével</translation>
 <translation id="727952162645687754">Letöltési hiba</translation>
 <translation id="7280649757394340890">A szövegfelolvasó hangbeállításai</translation>
 <translation id="7280877790564589615">Engedély kérelmezve</translation>

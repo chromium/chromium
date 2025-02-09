@@ -657,7 +657,6 @@
 <translation id="1454223536435069390">С&amp;ними екран</translation>
 <translation id="145432137617179457">Језици за проверу правописа</translation>
 <translation id="1455119378540982311">Унапред одређене величине прозора</translation>
-<translation id="1456499573534615137">Помаже вам да дизајнирате прилагођене теме за Chrome</translation>
 <translation id="1456849775870359518">Картице ће се поново отворити</translation>
 <translation id="1457907785077086338">Боја значке апликације</translation>
 <translation id="146000042969587795">Овај оквир је блокиран јер садржи неки небезбедан садржај.</translation>
@@ -1363,6 +1362,7 @@
 <translation id="1936157145127842922">Прикажи у директоријуму</translation>
 <translation id="1936931585862840749">Наведите број примерака за штампање (1–<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Не можете да увезете тип архитектуре контејнера <ph name="ARCHITECTURE_CONTAINER" /> помоћу овог уређаја, који је <ph name="ARCHITECTURE_DEVICE" />. Можете да пробате да вратите овај контејнер на други уређај или да отворите апликацију Датотеке да бисте приступили датотекама у слици овог контејнера.</translation>
+<translation id="1938116692670653897">Актуелна шема боја</translation>
 <translation id="1938351510777341717">Спољна команда</translation>
 <translation id="1940221956626514677">Прилагоди траку с алаткама</translation>
 <translation id="1940546824932169984">Повезани уређаји</translation>
@@ -2128,6 +2128,10 @@
 <translation id="2462332841984057083">Steam се већ подешава. Сачекајте да се подешавање заврши.</translation>
 <translation id="2462724976360937186">ИД кључа ауторитета за издавање сертификата</translation>
 <translation id="2462752602710430187">Додато је: <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Приказују вам се предложени фајлови да бисте лако могли да се вратите најновијим активностима у Microsoft SharePoint-у и OneDrive-у.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Можете да управљате подешавањима из менија картице или да видите још опција у менију Прилагодите Chrome.</translation>
 <translation id="2464079411014186876">Сладолед</translation>
 <translation id="2467755475704469005">Није откривен ниједан уређај. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Придружите се групи картица са корисником <ph name="OWNER_FIRST_NAME" /> и још особа (<ph name="NUM_OTHER_MEMBERS" />)</translation>
@@ -3015,7 +3019,6 @@
 <translation id="3090871774332213558">Упарили сте „<ph name="DEVICE_NAME" />“</translation>
 <translation id="3093714882666365141">Не дозвољавај сајтовима да инсталирају обрађиваче плаћања</translation>
 <translation id="3094080575472025333">Блокирајте апликације</translation>
-<translation id="3094141017404513551">Овим се ваше прегледање раздваја од прегледања корисника <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Истиче данас}=1{Истиче сутра}one{Истиче за # дан}few{Истиче за # дана}other{Истиче за # дана}}</translation>
 <translation id="3094521107841754472">Цена је промењена из <ph name="PREVIOUS_PRICE" /> у <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Обележивачи, лозинке и други подаци прегледања се синхронизују са примарним налогом.</translation>
@@ -3118,7 +3121,6 @@
 <translation id="3177909033752230686">Језик странице:</translation>
 <translation id="3177914167275935955">Уређај садржи надоградњу за Chrome Education, али ваше корисничко име није повезано са Google for Education налогом. Отворите Google for Education налог тако што ћете посетити g.co/workspace/edusignup на секундарном уређају.</translation>
 <translation id="3179982752812949580">Фонт текста</translation>
-<translation id="3180284704187420717">Сачувајте обележиваче, лозинке и друго уз синхронизацију</translation>
 <translation id="3180990259147710757">Померите вилицу улево</translation>
 <translation id="3181825792072797598">Укључи синхронизацију</translation>
 <translation id="3181954750937456830">Безбедно прегледање (штити вас и уређај од опасних сајтова)</translation>
@@ -3989,6 +3991,7 @@
 <translation id="3787434344076711519">Чека се превод</translation>
 <translation id="3788301286821743879">Покретање киоск апликације није успело.</translation>
 <translation id="3788401245189148511">Могли би да:</translation>
+<translation id="3789432704615470433">SharePoint и OneDrive фајлови</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
 <translation id="3790417903123637354">Дошло је до грешке. Пробајте поново касније</translation>
 <translation id="379082410132524484">Картица је истекла</translation>
@@ -6177,6 +6180,7 @@
 <translation id="5360150013186312835">Прикажи на траци с алаткама</translation>
 <translation id="5362741141255528695">Изаберите датотеку приватног кључа.</translation>
 <translation id="536278396489099088">Статус и извештаји система ChromeOS</translation>
+<translation id="5362916924854054326">Не приказуј SharePoint и OneDrive фајлове</translation>
 <translation id="5363109466694494651">Обави Powerwash и врати</translation>
 <translation id="5365881113273618889">Фолдер који сте изабрали садржи осетљиве датотеке. Желите ли стварно да одобрите апликацији „<ph name="APP_NAME" />“ сталан приступ за уписивање за овај фолдер?</translation>
 <translation id="536638840841140142">Нема</translation>
@@ -8802,7 +8806,6 @@
 <translation id="7273894023751806510">Никад не дозволи да <ph name="HOST" /> контролише и репрограмира MIDI уређаје.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> до краја пуњења</translation>
 <translation id="727595954130325265">Купи</translation>
-<translation id="7278164481614262110">Правите теме помоћу вештачке интелигенције</translation>
 <translation id="727952162645687754">Грешка при преузимању</translation>
 <translation id="7280649757394340890">Подешавања гласа за претварање текста у говор</translation>
 <translation id="7280877790564589615">Тражи се дозвола</translation>
@@ -10763,6 +10766,10 @@
 <translation id="865936634714975126">Додајте параметар упита у URL да бисте изабрали типове при учитавању странице. Пример: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Kонтакти за <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Прозор је померен надоле</translation>
+<translation id="8660288500924118793">Календар вам се приказује да бисте лако прешли на следећи догађај у Outlook календару.
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        Можете да управљате подешавањима из менија картице или да видите још опција у менију Прилагодите Chrome.</translation>
 <translation id="8661290697478713397">Отвори линк у прозору за пре&amp;гледање без архивирања</translation>
 <translation id="8662474268934425487">Пријавите се на <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Придружите се <ph name="TYPE" /> мрежи</translation>

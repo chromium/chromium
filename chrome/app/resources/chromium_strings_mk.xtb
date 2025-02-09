@@ -134,7 +134,6 @@
 <translation id="2799223571221894425">Рестартирај</translation>
 <translation id="2803971713792056305">Вашиот Chromium</translation>
 <translation id="2806241689335397269">Chromium ќе прашува дали сакате да ги зачувате податоците од формуларот како датумот на раѓање, возраста и бројот на пасошот</translation>
-<translation id="2837693172913560447">Ова ќе создаде нов профил на Chromium за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2841525013647267359">Преведи од</translation>
 <translation id="2846251086934905009">Грешка при инсталирање: инсталаторот не заврши. Инсталацијата е прекината.</translation>
 <translation id="2847479871509788944">Отстрани од Chromium</translation>
@@ -177,7 +176,6 @@
 <translation id="3296368748942286671">Продолжи со извршување на заднинските апликации кога Chromium е затворен</translation>
 <translation id="3313189106987092621">Chromium ќе ве предупреди пред вчитувањето сајт преку небезбедна врска</translation>
 <translation id="3316771292331273802">Ќе се одјавите од повеќето сајтови кога ќе ги затворите сите прозорци во Chromium, со исклучок на вашата сметка на Google ако сте најавени на Chromium. За да овозможите да ве помнат сајтовите, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="3350761136195634146">Веќе постои профил на Chromium со оваа сметка</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Сакате да се префрлите на постојниот профил на Chromium?</translation>
 <translation id="3412460710772753638">Во Password Manager на уредов</translation>
@@ -260,7 +258,6 @@
 <translation id="4534145890176164066">Chromium подобро ги разбира формуларите и може да ги пополнува автоматски побрзо за вас</translation>
 <translation id="4536805923587466102">Веќе сте најавени како <ph name="USER_EMAIL_ADDRESS" /> во друг профил на Chromium</translation>
 <translation id="4545268686623374213">Chromium може да ја деактивира картичкава за да го подобри вашето доживување со прелистувањето и да ја забрза изведбата.</translation>
-<translation id="454579500955453258">Сакате да продолжите на нов профил на Chromium?</translation>
 <translation id="4548534452171747496">Chromium ги вчитува страниците однапред, што овозможува побрзо прелистување и пребарување. <ph name="BEGIN_LINK" />Дознајте повеќе за страниците вчитани однапред<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Најавени сте како: <ph name="USER_EMAIL_ADDRESS" />. Сега може да пристапувате кон вашите обележувачи, историја и други поставки на сите најавени уреди.</translation>
 <translation id="4570813286784708942">Chromium го блокираше преземањево затоа што исклучивте „Безбедно прелистување', па датотеката не може да се потврди</translation>
@@ -296,7 +293,6 @@
 <translation id="5224391634244552924">Немате зачувани лозинки. Chromium може да ги проверува вашите лозинки ако ги зачувате.</translation>
 <translation id="5231355151045086930">Одјавете се од Chromium</translation>
 <translation id="5234764350956374838">Отфрли</translation>
-<translation id="5252179775517634216">Корисникот <ph name="EXISTING_USER" /> веќе е најавен на овој профил на Chromium. Ова ќе создаде нов профил на Chromium за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">За да се применат измените, рестартирајте го Chromium</translation>
 <translation id="5286907366254680517">Откриено</translation>
 <translation id="5294316920224716406">При прелистување во режим „Инкогнито“, Chromium ќе ве предупреди пред да вчита сајт преку небезбедна врска</translation>
@@ -412,7 +408,6 @@
 <translation id="6600016381025017075">Пребарајте што било на страницава</translation>
 <translation id="6613594504749178791">Промените ќе стапат на сила следниот пат кога ќе го стартувате Chromium повторно.</translation>
 <translation id="665732753414869868">На Chromium му треба дозвола за камерата за да создаде 3D-карта на опкружувањето</translation>
-<translation id="6663852025006259149">Сајтовите веројатно ќе функционираат според вашите очекувања, но нема да ве паметат по затворање на сите прозорци на Chromium</translation>
 <translation id="6669284030132180248">Ако ги зачувувате и вашите обележувачи во вашата сметка на Google, може да ги следите цените на производите во Chromium и да добивате известувања кога ќе се намали цената</translation>
 <translation id="6676384891291319759">Пристап до интернет</translation>
 <translation id="668175097507315160">Chromium OS не може да ги синхронизира податоците поради грешка при најавување.</translation>
@@ -424,7 +419,6 @@
 Некои функции може да бидат недостапни. Наведете друг директориум на профил или користете понова верзија на Chromium.</translation>
 <translation id="6729124504294600478">За да добиете персонализација и други функции, опфатете го Chromium во „Активноста на интернет и апликации“ и поврзаните услуги на Google</translation>
 <translation id="6734291798041940871">Chromium веќе е инсталиран за сите корисници на вашиот компјутер.</translation>
-<translation id="673636774878526923">За да пристапувате до вашите работи на Chromium на сите уреди, најавете се и вклучете ја синхронизацијата.</translation>
 <translation id="674245979920622322">Не сте отвориле одамна. Chromium ги отстрани следниве дозволи: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="COUNT" /></translation>
 <translation id="67706546131546258">Chromium препорачува скенирање на датотекава бидејќи можеби е опасна.</translation>
 <translation id="6779406956731413166">Chromium OS е овозможен со дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />.</translation>

@@ -656,7 +656,6 @@
 <translation id="1454223536435069390">స్క్రీన్‌షాట్ తీ&amp;యి</translation>
 <translation id="145432137617179457">స్పెల్ చెక్ ఉన్న భాషలు</translation>
 <translation id="1455119378540982311">విండో పరిమాణాలను ప్రీసెట్ చేయండి</translation>
-<translation id="1456499573534615137">Chrome కోసం అనుకూల థీమ్‌లను డిజైన్ చేయడంలో మీకు సహాయపడుతుంది</translation>
 <translation id="1456849775870359518">మీ ట్యాబ్‌లు మళ్లీ తెరుచుకుంటాయి</translation>
 <translation id="1457907785077086338">యాప్ బ్యాడ్జ్ రంగు</translation>
 <translation id="146000042969587795">ఈ ఫ్రేమ్‌లో అసురక్షిత కంటెంట్ ఉండటం వల్ల, అది బ్లాక్ చేయబడింది.</translation>
@@ -1372,6 +1371,7 @@
 <translation id="1936157145127842922">ఫోల్డర్‌లో చూపించు</translation>
 <translation id="1936931585862840749">ఎన్ని కాపీలను ప్రింట్ చేయాలో సూచించడానికి సంఖ్యను (1 నుండి <ph name="MAX_COPIES" />) ఉపయోగించండి.</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> అయిన ఈ పరికరంతో <ph name="ARCHITECTURE_CONTAINER" /> రకమైన కంటెయినర్ ఆర్కిటెక్చర్‌ను దిగుమతి చేయడం సాధ్యపడదు. మీరు ఈ కంటెయినర్‌ను వేరే పరికరంలోకి పునరుద్ధరించడం ప్రయత్నించవచ్చు లేదా ఈ కంటెయినర్ చిత్రంలోని ఫైళ్లను "ఫైల్స్ యాప్"లో తెరవడం ద్వారా యాక్సెస్ చేయవచ్చు.</translation>
+<translation id="1938116692670653897">ప్రస్తుతం ఉన్న కలర్ థీమ్</translation>
 <translation id="1938351510777341717">బాహ్య ఆదేశం</translation>
 <translation id="1940221956626514677">టూల్‌బార్‌ను అనుకూలంగా మార్చండి</translation>
 <translation id="1940546824932169984">కనెక్ట్ చేయబడిన డివైజ్‌లు</translation>
@@ -2141,6 +2141,10 @@
 <translation id="2462332841984057083">Steam ఇప్పటికే సెటప్ చేయబడుతోంది. సెటప్ పూర్తయ్యే వరకు వేచి ఉండండి.</translation>
 <translation id="2462724976360937186">సర్టిఫికెట్ అధికార కీ ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> జోడించబడింది</translation>
+<translation id="2464075479326723132">Microsoft SharePoint, OneDriveలో మీ అత్యంత ఇటీవలి యాక్టివిటీని సులభంగా తిరిగి పొందడంలో మీకు సహాయపడటానికి సూచించిన ఫైళ్లు కనిపిస్తున్నాయి.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        మీరు కార్డ్ మెనూ నుండి సెట్టింగ్‌లను మేనేజ్ చేయవచ్చు లేదా, అనుకూలంగా మార్చిన Chromeలో మరిన్ని ఆప్షన్‌లను చూడండి.</translation>
 <translation id="2464079411014186876">ఐస్ క్రీమ్</translation>
 <translation id="2467755475704469005">ఏ పరికరం గుర్తించబడలేదు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" />, ఇంకా మరో <ph name="NUM_OTHER_MEMBERS" /> మంది వ్యక్తులతో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి</translation>
@@ -3028,7 +3032,6 @@
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" జత చేయబడింది</translation>
 <translation id="3093714882666365141">పేమెంట్ హ్యాండ్లర్‌లను ఇన్‌స్టాల్ చేయడానికి సైట్‌లను అనుమతించకండి</translation>
 <translation id="3094080575472025333">యాప్‌లను బ్లాక్ చేయండి</translation>
-<translation id="3094141017404513551">ఇది మీరు బ్రౌజ్ చేసిన వాటిని <ph name="EXISTING_USER" /> నుండి విడిగా ఉంచుతుంది</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{ఈ రోజు గడువు ముగుస్తుంది}=1{రేపు గడువు ముగుస్తుంది}other{# రోజుల్లో గడువు ముగుస్తుంది}}</translation>
 <translation id="3094521107841754472">ధర <ph name="PREVIOUS_PRICE" /> నుండి <ph name="CURRENT_PRICE" />కు మారింది.</translation>
 <translation id="3095871294753148861">బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లతో పాటు ఇతర బ్రౌజింగ్ డేటా ప్రధాన ఖాతాతో సింక్ చేయబడ్డాయి.</translation>
@@ -3131,7 +3134,6 @@
 <translation id="3177909033752230686">పేజీ భాష:</translation>
 <translation id="3177914167275935955">మీ పరికరం Chrome Education అప్‌గ్రేడ్‌ను కలిగి ఉంది, కానీ మీ యూజర్‌నేమ్ Google for Education ఖాతాతో అనుబంధించబడి లేదు. వేరొక పరికరంలో దయచేసి g.co/workspace/edusignup లింక్‌ను సందర్శించి Google for Education ఖాతాను క్రియేట్ చేయండి.</translation>
 <translation id="3179982752812949580">వచన ఫాంట్</translation>
-<translation id="3180284704187420717">సింక్ చేయడం ద్వారా మీ బుక్‌మార్క్‌లను, పాస్‌వర్డ్‌లను, అలాగే మరిన్నింటిని సేవ్ చేయండి</translation>
 <translation id="3180990259147710757">దవడను ఎడమవైపుకు కదల్చడం</translation>
 <translation id="3181825792072797598">సింక్‌ను ఆన్ చేయి</translation>
 <translation id="3181954750937456830">సురక్షిత బ్రౌజింగ్ (ప్రమాదకరమైన సైట్‌ల నుండి మిమ్మల్ని, మీ పరికరాన్ని రక్షిస్తుంది)</translation>
@@ -4002,6 +4004,7 @@
 <translation id="3787434344076711519">అనువాదం కోసం వేచి ఉంది</translation>
 <translation id="3788301286821743879">కియోస్క్ యాప్‌ను ప్రారంభించడం సాధ్యపడలేదు.</translation>
 <translation id="3788401245189148511">ఇది వీటిని చేయాలనుకుంటోంది:</translation>
+<translation id="3789432704615470433">SharePoint, OneDrive ఫైళ్లు</translation>
 <translation id="3789841737615482174">ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="3790417903123637354">ఏదో తప్పు జరిగింది. తర్వాత మళ్లీ ట్రై చేయండి</translation>
 <translation id="379082410132524484">మీ కార్డ్ గడువు ముగిసింది</translation>
@@ -6190,6 +6193,7 @@
 <translation id="5360150013186312835">సాధనపట్టీలో చూపండి</translation>
 <translation id="5362741141255528695">వ్యక్తిగత కీ ఫైల్‌ను ఎంచుకోండి.</translation>
 <translation id="536278396489099088">ChromeOS సిస్టమ్ స్టేట్, రిపోర్ట్‌లు</translation>
+<translation id="5362916924854054326">SharePoint, OneDrive ఫైళ్లను చూపవద్దు</translation>
 <translation id="5363109466694494651">పవర్‌వాష్ చేసి, తిరిగి మార్చు</translation>
 <translation id="5365881113273618889">మీరు ఎంచుకున్న ఫోల్డర్ చాలా ఎక్కువ గోప్యమైన ఫైళ్లను కలిగి ఉంది. మీరు ఖచ్చితంగా ఈ ఫోల్డర్ కోసం "<ph name="APP_NAME" />"కి శాశ్వతంగా రాయగల యాక్సెస్‌ను మంజూరు చేయాలనుకుంటున్నారా?</translation>
 <translation id="536638840841140142">ఏదీ లేదు</translation>
@@ -8811,7 +8815,6 @@
 <translation id="7273894023751806510">మీ MIDI పరికరాలను కంట్రోల్ చేసి, తిరిగి ప్రోగ్రామ్ చేయకుండా ఎల్లప్పుడూ <ph name="HOST" />‌ను బ్లాక్ చేయండి</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" />లో పూర్తి ఛార్జ్ అవుతుంది</translation>
 <translation id="727595954130325265">ఇప్పుడే షాపింగ్ చేయండి</translation>
-<translation id="7278164481614262110">AIతో రూపాలను క్రియేట్ చేయండి</translation>
 <translation id="727952162645687754">డౌన్‌లోడ్ చేయడంలో ఎర్ర‌ర్‌</translation>
 <translation id="7280649757394340890">వచనం-నుండి-ప్రసంగం వాయిస్ సెట్టింగ్‌లు</translation>
 <translation id="7280877790564589615">అనుమతి రిక్వెస్ట్ చేయబడింది</translation>
@@ -10768,6 +10771,10 @@
 <translation id="865936634714975126">పేజీ లోడ్‌లో రకాలను ఎంచుకోవడానికి URLలో ప్రశ్న పారామీట‌ర్‌ను జోడించండి. Example: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> కాంటాక్ట్‌లు</translation>
 <translation id="8659609431223166673">విండో కిందికి తరలించబడింది</translation>
+<translation id="8660288500924118793">Outlook Calendarలో మీ తర్వాతి ఈవెంట్‌కు సులభంగా నావిగేట్ చేయడంలో మీకు సహాయపడటానికి మీ క్యాలెండర్‌ను చూస్తున్నారు.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       మీరు కార్డ్ మెనూ నుండి సెట్టింగ్‌లను మేనేజ్ చేయవచ్చు లేదా, అనుకూలంగా మార్చిన Chromeలో మరిన్ని ఆప్షన్‌లను చూడండి.</translation>
 <translation id="8661290697478713397">అజ్ఞా&amp;త విండోలో లింక్‌ను తెరువు</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />‌కి సైన్ ఇన్ చేయండి</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> నెట్‌వర్క్‌లో చేరండి</translation>

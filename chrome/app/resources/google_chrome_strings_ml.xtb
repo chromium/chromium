@@ -41,7 +41,6 @@
 <translation id="1507198376417198979">നിങ്ങളുടെ പുതിയ Chrome പ്രൊഫൈൽ ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="1547295885616600893">ChromeOS സാധ്യമാക്കിയത് അധിക <ph name="BEGIN_LINK_CROS_OSS" />ഓപ്പൺ സോഴ്‌സ് സോഫ്റ്റ്‌വെയർ<ph name="END_LINK_CROS_OSS" /> ഉപയോഗിച്ചാണ്.</translation>
 <translation id="1553358976309200471">Chrome അപ്‌ഡേറ്റുചെയ്യുക</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> ഇതിനകം ഈ Chrome പ്രൊഫൈലിൽ സൈൻ ഇൻ ചെയ്തിരിക്കുന്നു. ഇത് <ph name="USER_EMAIL_ADDRESS" /> എന്ന അക്കൗണ്ടിനായി പുതിയൊരു Chrome പ്രൊഫൈൽ സൃഷ്ടിക്കും</translation>
 <translation id="1587223624401073077">Google Chrome നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കുന്നു.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> അപകടകരമായതിനാൽ, Chrome ഇതിനെ ബ്ലോക്കുചെയ്‌തു.</translation>
 <translation id="1597911401261118146">ഡാറ്റാ ലംഘനങ്ങളിൽ നിന്നും മറ്റ് സുരക്ഷാ പ്രശ്‌നങ്ങളിൽ നിന്നും നിങ്ങളുടെ പാസ്‌വേഡുകൾ സുരക്ഷിതമാണോ എന്ന് പരിശോധിക്കാൻ, <ph name="BEGIN_LINK" />Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക<ph name="END_LINK" />.</translation>
@@ -149,7 +148,6 @@
 <translation id="2846251086934905009">ഇൻസ്റ്റാൾ ചെയ്യുന്നതിൽ പിശക്: ഇൻസ്റ്റാളർ പൂർത്തിയായില്ല. ഇൻസ്റ്റാൾ ചെയ്യൽ റദ്ദാക്കി.</translation>
 <translation id="2853415089995957805">നിങ്ങൾ സന്ദർശിക്കാനിടയുള്ള പേജുകൾ Chrome മുൻകൂട്ടി ലോഡ് ചെയ്യുന്നു, അതുവഴി നിങ്ങൾ ആ പേജുകൾ സന്ദർശിക്കുമ്പോൾ അവ അതിവേഗം ലോഡ് ചെയ്യും</translation>
 <translation id="2857540653560290388">Chrome സമാരംഭിക്കുന്നു...</translation>
-<translation id="2857972467023607093">ഈ അക്കൗണ്ടുള്ള ഒരു Chrome പ്രൊഫൈൽ നിലവിലുണ്ട്</translation>
 <translation id="286025080868315611">ചില ഡൗൺലോഡുകൾ Chrome ബ്ലോക്ക് ചെയ്യുന്നത് എന്തുകൊണ്ടാണെന്ന് അറിയുക</translation>
 <translation id="2861074815332034794">Chrome അപ്‌ഡേറ്റ് ചെയ്യുന്നു (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">നിങ്ങൾ Chrome-ൽ സൈൻ ഇൻ ചെയ്‌തു!</translation>
@@ -229,7 +227,6 @@
 <translation id="3785324443014631273">സൈൻ ഇൻ ചെയ്യുന്നതിലെ പിശക് മൂലം ChromeOS Flex-ന് നിങ്ങളുടെ ഡാറ്റ സമന്വയിപ്പിക്കാനായില്ല.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome-ന് Windows 10 അല്ലെങ്കിൽ അതിന് ശേഷമുള്ള പതിപ്പ് ആവശ്യമാണ്.</translation>
-<translation id="3835168907083856002">ഇത് <ph name="USER_EMAIL_ADDRESS" /> എന്ന അക്കൗണ്ടിനായി പുതിയൊരു Chrome പ്രൊഫൈൽ സൃഷ്ടിക്കും</translation>
 <translation id="383928141529488001">Bluetooth ഉപകരണങ്ങൾ 
  അടുത്തറിയാൻ Google Chrome-ന് Bluetooth ആക്‌സസ് ആവശ്യമാണ്. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">ദയവായി എല്ലാ Google Chrome വിന്‍‌ഡോകളും അടച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -450,7 +447,6 @@
 <translation id="6712881677154121168">ഡൗൺലോഡ് ചെയ്യുന്നതിൽ പിശക്: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6718739135284199302">Chrome കൂടുതൽ വേഗതയുള്ളതാക്കുക</translation>
 <translation id="6735387454586646204">ChromeOS Flex സിസ്റ്റം</translation>
-<translation id="6739177684496155661">പുതിയ Chrome പ്രൊഫൈലിൽ തുടരണോ?</translation>
 <translation id="6750954913813541382">അക്ഷരത്തെറ്റുകൾ പരിഹരിക്കാൻ നിങ്ങൾ ബ്രൗസറിൽ ടൈപ്പ് ചെയ്യുന്ന ടെക്‌സ്‌റ്റ് Chrome Google ലേക്ക് അയയ്ക്കുന്നു</translation>
 <translation id="677276454032249905">എന്തായാലും Chrome-ൽ നിന്ന് പുറത്തുകടക്കണോ?</translation>
 <translation id="6794858689789885890">Chrome അടയ്‌ക്കുമ്പോഴെല്ലാം നിങ്ങളുടെ ഉപകരണത്തിൽ നിന്ന് സൈറ്റ് ഡാറ്റ ഇല്ലാതാക്കുക</translation>
@@ -558,7 +554,6 @@
 <translation id="7947083960301164556">പുതുതായി എന്താണുള്ളതെന്ന് കാണുക</translation>
 <translation id="7951272445806340501">അപ്ഡേറ്റ് ബാധകമാക്കാൻ ChromeOS Flex റീസ്റ്റാർട്ട് ചെയ്യേണ്ടതുണ്ട്.</translation>
 <translation id="7959172989483770734">Chrome പ്രൊഫൈലുകൾ മാനേജ് ചെയ്യുക</translation>
-<translation id="7962368738413920945">നിങ്ങൾ പ്രതീക്ഷിക്കുന്നത് പോലെ സൈറ്റുകൾ പ്രവർത്തിക്കാനിടയുണ്ടെങ്കിലും, Chrome വിൻഡോകളെല്ലാം അടച്ചാൽ പിന്നീട് നിങ്ങളെ ഓർക്കുകയില്ല</translation>
 <translation id="7962410387636238736">Windows XP-ക്കും Windows Vista-യ്‌ക്കും ഇനിയങ്ങോട്ട് പിന്തുണ ഇല്ലാത്തതിനാൽ ഈ കമ്പ്യൂട്ടറിന് ഇനി Google Chrome അപ്‌ഡേറ്റുകൾ സ്വീകരിക്കാനാകില്ല</translation>
 <translation id="8005666035647241369">ഈ ഉപകരണത്തിലെ Google പാസ്‌വേഡ് മാനേജരിലേക്ക്</translation>
 <translation id="8008534537613507642">Chrome വീണ്ടും ഇൻസ്റ്റാളുചെയ്യുക</translation>
@@ -658,7 +653,6 @@
 <translation id="919706545465235479">സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന് Chrome അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="922152298093051471">Chrome ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="93760716455950538">ChromeOS Flex റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
-<translation id="940313311831216333">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും Chrome ഫയൽ ആക്സസ് ചെയ്യാൻ, സൈൻ ഇൻ ചെയ്ത ശേഷം സമന്വയിപ്പിക്കൽ ഓണാക്കുക.</translation>
 <translation id="943390475793766444">ഈ ഫയൽ അപകടകരമാകാൻ സാധ്യതയുള്ളതിനാൽ ഇത് സ്‌കാൻ ചെയ്യാൻ Chrome നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
 <translation id="983803489796659991">അപ്‌ഡേറ്റ് സെർവറിൽ ആപ്പിനായി ഹാഷ് ഡാറ്റയൊന്നും ഇല്ലാത്തതിനാൽ ഇൻസ്റ്റാൾ ചെയ്യുന്നത് പരാജയപ്പെട്ടു.</translation>

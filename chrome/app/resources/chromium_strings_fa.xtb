@@ -132,7 +132,6 @@
 <translation id="2799223571221894425">راه‌اندازی مجدد</translation>
 <translation id="2803971713792056305">‏‫Chromium شما</translation>
 <translation id="2806241689335397269">‏‫Chromium از شما می‌پرسد که آیا می‌خواهید اطلاعات فرم مثل تاریخ تولد، سن، و شماره گذرنامه‌تان را ذخیره کنید</translation>
-<translation id="2837693172913560447">‏با این کار، نمایه Chromium جدیدی برای <ph name="USER_EMAIL_ADDRESS" /> ایجاد خواهد شد</translation>
 <translation id="2841525013647267359">ترجمه کردن از</translation>
 <translation id="2846251086934905009">خطای نصب: نصب‌کننده کامل نشد. نصب لغو شد.</translation>
 <translation id="2847479871509788944">‏حذف از Chromium...</translation>
@@ -174,7 +173,6 @@
 <translation id="3296368748942286671">‏ادامه اجرای برنامه‌ها در پس‌زمینه هنگامیکه Chromium بسته می‌شود</translation>
 <translation id="3313189106987092621">‏Chromium قبل‌از اینکه هر سایتی را ازطریق اتصال ناامن بار کند به شما هشدار می‌دهد</translation>
 <translation id="3316771292331273802">‏وقتی همه پنجره‌های Chromium را ببندید از سیستم اکثر سایت‌ها خارج خواهید شد، اما اگر به سیستم Chromium وارد شده باشید از «حساب Google» خارج نخواهید شد. برای اینکه سایت‌ها شما را به‌خاطر بسپارند، <ph name="SETTINGS_LINK" />.</translation>
-<translation id="3350761136195634146">‏درحال‌حاضر یک نمایه Chromium با این حساب وجود دارد</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">‏به نمایه Chromium موجود می‌روید؟</translation>
 <translation id="3412460710772753638">در «مدیر گذرواژه» در این دستگاه</translation>
@@ -257,7 +255,6 @@
 <translation id="4534145890176164066">‏‫Chromium فرم‌ها را بهتر درک می‌کند و می‌تواند با سرعت بیشتری آن‌ها را برایتان پر کند</translation>
 <translation id="4536805923587466102">‏قبلاً با <ph name="USER_EMAIL_ADDRESS" /> در نمایه Chromium دیگری به سیستم وارد شده‌اید</translation>
 <translation id="4545268686623374213">‏‫Chromium می‌تواند این برگه را غیرفعال کند تا تجربه مرور شما را بهبود بخشد و سرعت بالا را حفظ کند.</translation>
-<translation id="454579500955453258">‏در نمایه جدید Chromium ادامه می‌دهید؟</translation>
 <translation id="4548534452171747496">‏‫Chromium صفحه‌ها را پیش‌بارگیری می‌کند تا مرور و جستجو کردن سریع‌تر شود. <ph name="BEGIN_LINK" />درباره پیش‌بارگیری صفحه‌ها بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">با حساب <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم شده‌اید. اکنون در همه دستگاه‌هایی که با آنها به سیستم وارد شده‌اید می‌توانید به نشانک‌ها، سابقه و دیگر تنظیماتتان دسترسی داشته باشید.</translation>
 <translation id="4570813286784708942">‏‫Chromium این بارگیری را مسدود کرد زیرا «مرور ایمن» خاموش است و نمی‌توان فایل را تأیید کرد</translation>
@@ -293,7 +290,6 @@
 <translation id="5224391634244552924">‏گذرواژه ذخیره‌شده‌ای وجود ندارد. Chromium زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که آن‌ها را ذخیره کرده باشید.</translation>
 <translation id="5231355151045086930">‏خروج از سیستم Chromium</translation>
 <translation id="5234764350956374838">رد کردن</translation>
-<translation id="5252179775517634216">‏<ph name="EXISTING_USER" /> قبلاً به سیستم این نمایه Chromium وارد شده است. با این کار، نمایه Chromium جدیدی برای <ph name="USER_EMAIL_ADDRESS" /> ایجاد خواهد شد</translation>
 <translation id="5277894862589591112">‏برای اعمال تغییراتتان، Chromium را راه‌اندازی مجدد کنید</translation>
 <translation id="5286907366254680517">تشخیص داده شد</translation>
 <translation id="5294316920224716406">‏هنگام مرور «درحالت ناشناس»، Chromium قبل‌از اینکه سایت را ازطریق اتصال ناامن بار کند به شما هشدار می‌دهد</translation>
@@ -409,7 +405,6 @@
 <translation id="6600016381025017075">هرچیزی در این صفحه را جستجو کنید</translation>
 <translation id="6613594504749178791">‏دفعه بعدی که Chromium را مجدداً راه‌اندازی می‌کنید، این تغییرات اعمال می‌شوند.</translation>
 <translation id="665732753414869868">‏Chromium برای ایجاد نقشه سه‌بعدی از محیط اطراف شما به اجازه دوربین نیاز دارد</translation>
-<translation id="6663852025006259149">‏سایت‌ها احتمالاً عملکردی مطابق انتظار شما خواهند داشت اما بعداز بسته شدن همه پنجره‌های Chromium، شما را به‌یاد نخواهند داشت</translation>
 <translation id="6669284030132180248">‏اگر نشانک‌ها را در «حساب Google» هم ذخیره کنید، می‌توانید قیمت محصولات را در Chromium پیگیری کنید و از کاهش قیمت‌ها مطلع شوید</translation>
 <translation id="6676384891291319759">دسترسی به اینترنت</translation>
 <translation id="668175097507315160">‏به‌دلیل بروز خطا هنگام ورود به سیستم، ChromiumOS نتوانست داده‌های شما را همگام‌سازی کند.</translation>
@@ -421,7 +416,6 @@
 برخی از ویژگی‌ها ممکن است موجود نباشند. لطفاً یک فهرست راهنمای نمایه دیگری را مشخص کنید یا از نسخه جدیدتری از Chromium استفاده کنید.</translation>
 <translation id="6729124504294600478">‏برای دریافت شخصی‌سازی و ویژگی‌های دیگر، Chromium را به «فعالیت‌ها در وب و برنامه» و سرویس‌های پیوندشده Google اضافه کنید</translation>
 <translation id="6734291798041940871">‏Chromium از قبل برای همه کاربران این رایانه نصب شده است.</translation>
-<translation id="673636774878526923">‏برای دسترسی به چیزهای Chromium در همه دستگاه‌هایتان، به سیستم وارد شوید، سپس همگام‌سازی را روشن کنید.</translation>
 <translation id="674245979920622322">‏اخیراً بازدیدی نداشته‌اید. ‫Chromium ‏<ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />،‏ و <ph name="COUNT" /> مورد دیگر را برداشت</translation>
 <translation id="67706546131546258">‏Chromium توصیه می‌کند این فایل را اسکن کنید زیرا ممکن است خطرناک باشد.</translation>
 <translation id="6779406956731413166">‏ارائه ChromiumOS به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی ممکن شده است.</translation>

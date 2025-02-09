@@ -3018,6 +3018,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="633770708279464947">Hodnota <ph name="SECURE_DNS_SALT" /> je neplatná a nepoužije sa.</translation>
 <translation id="6340739886198108203">Pravidlá správcu neodporúčajú vytváranie snímok obrazovky alebo nahrávok, keď je viditeľný dôverný obsah:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Pravidlá správcu nahratie tohto súboru do úložiska <ph name="DESTINATION_NAME" /> neodporúčajú}few{Pravidlá správcu nahratie týchto súborov do úložiska <ph name="DESTINATION_NAME" /> neodporúčajú}many{Administrator policy doesn’t recommend uploading these files to <ph name="DESTINATION_NAME" />}other{Pravidlá správcu nahratie týchto súborov do úložiska <ph name="DESTINATION_NAME" /> neodporúčajú}}</translation>
+<translation id="6342069812937806050">Práve teraz</translation>
 <translation id="634500758737709758">Trasy</translation>
 <translation id="6348220984832452017">Aktívne variácie</translation>
 <translation id="6349101878882523185">Inštalovať aplikáciu <ph name="APP_NAME" /></translation>

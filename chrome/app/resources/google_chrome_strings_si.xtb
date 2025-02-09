@@ -41,7 +41,6 @@
 <translation id="1507198376417198979">ඔබගේ නව Chrome පැතිකඩ අභිරුචිකරණය කරන්න</translation>
 <translation id="1547295885616600893">අතිරේක <ph name="BEGIN_LINK_CROS_OSS" />විවෘත මූලාශ්‍ර මෘදුකාංග<ph name="END_LINK_CROS_OSS" /> මගින් ChromeOS සඳහා හැකියාව ලබා දී ඇත.</translation>
 <translation id="1553358976309200471">Chrome යාවත් කරන්න</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> දැනටමත් මෙම Chrome පැතිකඩට පුරා ඇත. මෙය <ph name="USER_EMAIL_ADDRESS" /> සඳහා නව Chrome පැතිකඩක් තනනු ඇත</translation>
 <translation id="1587223624401073077">Google Chrome ඔබේ කැමරාව භාවිතා කරයි.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> අනතුරුදායක විය හැකිය, එම නිසා Chrome එය අවහිර කර ඇත.</translation>
 <translation id="1597911401261118146">ඔබගේ මුරපද දත්ත කඩ කිරීම්වලින් සහ අනෙකුත් ආරක්ෂක ගැටලුවලින් සුරක්ෂිතද යන්න පරීක්ෂා කිරීමට, <ph name="BEGIN_LINK" />Chrome වෙත පුරන්න<ph name="END_LINK" />.</translation>
@@ -149,7 +148,6 @@
 <translation id="2846251086934905009">ස්ථාපන දෝෂය: ස්ථාපකය සම්පූර්ණ කර නැත. ස්ථාපනය නතර කර ඇත.</translation>
 <translation id="2853415089995957805">Chrome ඔබ පිවිසීමට ඉඩ ඇති පිටු පූර්ව පූරණය කරන බැවින්, ඔබ ඒවාට පිවිසෙන විට ඒවා වඩාත් ඉක්මනින් පූරණය වේ</translation>
 <translation id="2857540653560290388">Chrome දියත් කරමින්...</translation>
-<translation id="2857972467023607093">මෙම ගිණුම සහිත Chrome පැතිකඩක් දැනටමත් පවතී</translation>
 <translation id="286025080868315611">Chrome සමහර බාගැනීම් අවහිර කරන හේතුව ඉගෙන ගන්න</translation>
 <translation id="2861074815332034794">Chrome යාවත්කාලීන කරමින් (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">ඔබ Chromeට සයින් ඉන් වී ඇත!</translation>
@@ -229,7 +227,6 @@
 <translation id="3785324443014631273">ChromeOS Flex හට පිරීමේ දෝෂයක් හේතුවෙන් ඔබගේ දත්ත සමමුහුර්ත කළ නොහැකි විය.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome හට Windows 10 හෝ ඊට ඉහළ අනුවාදයක් අවශ්‍යයි.</translation>
-<translation id="3835168907083856002">මෙය <ph name="USER_EMAIL_ADDRESS" /> සඳහා නව Chrome පැතිකඩක් තනනු ඇත</translation>
 <translation id="383928141529488001">බ්ලූටූත් උපාංග ගවේෂණය කිරීමට Google Chrome හට බ්ලූටූත් ප්‍රවේශය අවශ්‍ය වේ. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Google Chrome කවුළුව වසා නැවත උත්සාහ කරන්න.</translation>
 <translation id="3873044882194371212">සබැඳිය Chrome අ&amp;ප්‍රසිද්ධ කවුළුව තුළ විවෘත කරන්න</translation>
@@ -449,7 +446,6 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6712881677154121168">බාගැනීමේ දෝෂය: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome වේගවත් කරන්න</translation>
 <translation id="6735387454586646204">ChromeOS Flex පද්ධතිය</translation>
-<translation id="6739177684496155661">නව Chrome පැතිකඩක ඉදිරියට යන්නද?</translation>
 <translation id="6750954913813541382">අක්‍ෂර වින්‍යාස දෝෂ නිවැරදි කිරීමට, නිඔබ බ්‍රවුසරය තුළ ටයිප් කරන පාඨය Chrome විසින් Google වෙත යවනු ලැබේ</translation>
 <translation id="677276454032249905">කෙසේ වුවත් Chrome වෙතින් ඉවත් වන්න ද?</translation>
 <translation id="6794858689789885890">ඔබ Chrome වසා දැමූ විට සැම විටම ඔබේ උපාංගයෙන් අඩවි දත්ත මකන්න</translation>
@@ -557,7 +553,6 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="7947083960301164556">අලුත් කුමක්ද</translation>
 <translation id="7951272445806340501">යාවත්කාලීනය යෙදීමට ChromeOS Flex යළි ඇරඹිය යුතුය.</translation>
 <translation id="7959172989483770734">Chrome පැතිකඩවල් කළමනා කරන්න</translation>
-<translation id="7962368738413920945">ඔබ අපේක්ෂා කළ පරිදි අඩවි ක්‍රියා කරනු ඇති නමුත් ඔබ සියලු Chrome කවුළු වැසූ පසු ඔබව මතක තබා නොගනී</translation>
 <translation id="7962410387636238736">Windows XP සහ Windows Vista සඳහා තවදුරටත් සහය නොදක්වන නිසා, මෙම පරිගණකයට තවදුරටත් Google Chrome යාවත්කාලීන නොලැබෙනු ඇත.</translation>
 <translation id="8005666035647241369">මෙම උපාංගයෙහි Google මුරපද කළමනාකරු වෙත</translation>
 <translation id="8008534537613507642">Chrome යළි ස්ථාපනය කරන්න</translation>
@@ -657,7 +652,6 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="919706545465235479">සමමුහුර්ත කිරීම ආරම්භ කිරීමට Chrome යාවත්කාලීන කරන්න</translation>
 <translation id="922152298093051471">Chrome අභිරුචිකරණය කරන්න</translation>
 <translation id="93760716455950538">ChromeOS Flex යළි අරඹන්න</translation>
-<translation id="940313311831216333">ඔබගේ සියලු උපාංග හරහා ඔබගේ Chrome දේවල්වලට ප්‍රවේශ වීමට, පුරා සමමුහුර්ත කිරීම ක්‍රියාත්මක කරන්න.</translation>
 <translation id="943390475793766444">Chrome මෙම ගොනුව අනතුරුදායක විය හැකි නිසා ස්කෑන් කිරීම නිර්දේශ කරයි.</translation>
 <translation id="945522503751344254">අදහස් හා යෝජනා යවන්න</translation>
 <translation id="983803489796659991">යාවත්කාලීන සේවාදායකයේ යෙදුම සඳහා හෑෂ් දත්ත නොමැති නිසා ස්ථාපනය අසමත් විය.</translation>

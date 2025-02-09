@@ -131,7 +131,6 @@
 <translation id="2799223571221894425">重新启动</translation>
 <translation id="2803971713792056305">您的 Chromium</translation>
 <translation id="2806241689335397269">Chromium 会询问您是否要保存表单信息，例如生日、年龄和护照号码</translation>
-<translation id="2837693172913560447">这样做会为 <ph name="USER_EMAIL_ADDRESS" /> 创建一份新的 Chromium 个人资料</translation>
 <translation id="2841525013647267359">源语言</translation>
 <translation id="2846251086934905009">安装时出错：安装程序进程未完成。已中止安装。</translation>
 <translation id="2847479871509788944">从Chromium中移除…</translation>
@@ -174,7 +173,6 @@
 <translation id="3296368748942286671">关闭 Chromium 后继续运行后台应用</translation>
 <translation id="3313189106987092621">Chromium 会在使用不安全的连接加载网站前向您发出警告</translation>
 <translation id="3316771292331273802">关闭所有 Chromium 窗口后，您将会从大多数网站退出账号；但如果您已登录 Chromium，则您的 Google 账号不会退出。若要让网站记住您，请<ph name="SETTINGS_LINK" />。</translation>
-<translation id="3350761136195634146">已有一份使用此账号创建的 Chromium 个人资料</translation>
 <translation id="3387527074123400161">Chromium 操作系统</translation>
 <translation id="3406848076815591792">切换到现有的 Chromium 个人资料？</translation>
 <translation id="3412460710772753638">在此设备上的密码管理工具中更新</translation>
@@ -257,7 +255,6 @@
 <translation id="4534145890176164066">Chromium 可以更好地理解表单，并更快地为您自动填充表单</translation>
 <translation id="4536805923587466102">您已使用另一份 Chromium 个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录</translation>
 <translation id="4545268686623374213">Chromium 可让此标签页处于非活跃状态，以改善您的浏览体验并保持快速运行。</translation>
-<translation id="454579500955453258">使用一份新的 Chromium 个人资料继续浏览？</translation>
 <translation id="4548534452171747496">Chromium 会预加载网页，以便您更快速地浏览和搜索内容。<ph name="BEGIN_LINK" />详细了解预加载网页<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">您已使用 <ph name="USER_EMAIL_ADDRESS" /> 的身份登录。现在您可在已登录的所有设备上访问您的书签、历史记录和其他设置。</translation>
 <translation id="4570813286784708942">Chromium 阻止了此项下载操作，因为您关闭了安全浏览功能，系统无法验证该文件</translation>
@@ -293,7 +290,6 @@
 <translation id="5224391634244552924">尚未保存任何密码。您需要先保存密码才能使用 Chromium 的密码检查功能。</translation>
 <translation id="5231355151045086930">退出 Chromium</translation>
 <translation id="5234764350956374838">关闭</translation>
-<translation id="5252179775517634216"><ph name="EXISTING_USER" />已登录此 Chromium 个人资料。这样做会为 <ph name="USER_EMAIL_ADDRESS" /> 创建一份新的 Chromium 个人资料</translation>
 <translation id="5277894862589591112">要想应用您的更改，请重新启动 Chromium</translation>
 <translation id="5286907366254680517">检测到</translation>
 <translation id="5294316920224716406">当您在无痕模式下浏览内容时，Chromium 会在使用不安全的连接加载网站前向您发出警告</translation>
@@ -409,7 +405,6 @@
 <translation id="6600016381025017075">搜索此页面上的任何内容</translation>
 <translation id="6613594504749178791">您所做的更改会在下次重新启动 Chromium 时生效。</translation>
 <translation id="665732753414869868">Chromium 需要获得摄像头权限才能为您的周边环境创建 3D 地图</translation>
-<translation id="6663852025006259149">网站很可能会按预期运行，但不会在您关闭所有 Chromium 窗口后记住您的偏好设置和相关数据</translation>
 <translation id="6669284030132180248">如果您还将书签保存在 Google 账号中，则可在 Chromium 中跟踪商品价格，并在降价时收到通知</translation>
 <translation id="6676384891291319759">访问互联网</translation>
 <translation id="668175097507315160">由于登录时发生错误，Chromium 操作系统无法同步您的数据。</translation>
@@ -421,7 +416,6 @@
 某些功能可能会无法使用。请指定其他个人资料目录或使用更高版本的 Chromium。</translation>
 <translation id="6729124504294600478">若要获得个性化体验和其他功能，请在“网络与应用活动记录”和关联的 Google 服务中包含 Chromium</translation>
 <translation id="6734291798041940871">已为您计算机上的所有用户都安装 Chromium。</translation>
-<translation id="673636774878526923">如需在您的所有设备上访问自己的 Chromium 信息，请登录您的账号，然后开启同步功能。</translation>
 <translation id="674245979920622322">您近期未访问过该网站。Chromium 移除了<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和另外 <ph name="COUNT" /> 项权限</translation>
 <translation id="67706546131546258">Chromium 建议您扫描此文件，因为它可能包含危险因素。</translation>
 <translation id="6779406956731413166">Chromium 操作系统是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开源软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>

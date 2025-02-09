@@ -656,7 +656,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1454223536435069390">T&amp;ake screenshot</translation>
 <translation id="145432137617179457">Spell check languages</translation>
 <translation id="1455119378540982311">Preset window sizes</translation>
-<translation id="1456499573534615137">Helps you design custom themes for Chrome</translation>
 <translation id="1456849775870359518">Your tabs will reopen</translation>
 <translation id="1457907785077086338">App badge colour</translation>
 <translation id="146000042969587795">This frame was blocked because it contains some insecure content.</translation>
@@ -3030,7 +3029,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" paired</translation>
 <translation id="3093714882666365141">Don't allow sites to install payment handlers</translation>
 <translation id="3094080575472025333">Block apps</translation>
-<translation id="3094141017404513551">This will separate your browsing from <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Expires today}=1{Expires tomorrow}other{Expires in # days}}</translation>
 <translation id="3094521107841754472">Price has changed from <ph name="PREVIOUS_PRICE" /> to <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Bookmarks, passwords and other browser data are synced with the primary account.</translation>
@@ -3133,7 +3131,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3177909033752230686">Page Language:</translation>
 <translation id="3177914167275935955">Your device includes a Chrome Education upgrade, but your username is not associated with a Google for Education account. Please create a Google for Education account by visiting g.co/workspace/edusignup on a secondary device.</translation>
 <translation id="3179982752812949580">Text font</translation>
-<translation id="3180284704187420717">Save your bookmarks, passwords and more with sync</translation>
 <translation id="3180990259147710757">Shift jaw left</translation>
 <translation id="3181825792072797598">Turn on Sync</translation>
 <translation id="3181954750937456830">Safe Browsing (protects you and your device from dangerous sites)</translation>
@@ -8814,7 +8811,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7273894023751806510">Always block <ph name="HOST" /> from controlling and reprogramming your MIDI devices</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> until full</translation>
 <translation id="727595954130325265">Shop now</translation>
-<translation id="7278164481614262110">Create themes with AI</translation>
 <translation id="727952162645687754">Download error</translation>
 <translation id="7280649757394340890">Text-to-speech voice settings</translation>
 <translation id="7280877790564589615">Permission requested</translation>

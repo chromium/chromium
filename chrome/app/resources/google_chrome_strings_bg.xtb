@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">Персонализирайте новия си потребителски профил в Chrome</translation>
 <translation id="1547295885616600893">Chrome OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Актуализиране на Chrome</translation>
-<translation id="1583073672411044740">Този потребителски профил в Chrome вече се използва от <ph name="EXISTING_USER" />. Това ще създаде нов потребителски профил в браузъра за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome използва камерата ви.</translation>
 <translation id="1587325591171447154">Chrome блокира „<ph name="FILE_NAME" />“, тъй като файлът е опасен.</translation>
 <translation id="1597911401261118146">За да проверите дали паролите ви не са компрометирани при нарушения на сигурността на данните и други проблеми със сигурността, <ph name="BEGIN_LINK" />влезте в Chrome<ph name="END_LINK" />.</translation>
@@ -147,7 +146,6 @@
 <translation id="2846251086934905009">Грешка при инсталирането: Инсталационната програма не завърши. Инсталирането е прекратено.</translation>
 <translation id="2853415089995957805">Chrome зарежда предварително страниците, които е вероятно да посетите, така че да се заредят по-бързо, когато ги отворите.</translation>
 <translation id="2857540653560290388">Chrome се стартира...</translation>
-<translation id="2857972467023607093">Вече съществува потребителски профил в Chrome за този профил</translation>
 <translation id="286025080868315611">Научете защо Chrome блокира някои изтегляния</translation>
 <translation id="2861074815332034794">Chrome се актуализира (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Влязохте в Chrome!</translation>
@@ -227,7 +225,6 @@
 <translation id="3785324443014631273">ChromeOS Flex не успя да синхронизира данните ви поради грешка при влизане в профила.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">За Google Chrome се изисква Windows 10 или по-нова версия.</translation>
-<translation id="3835168907083856002">Това ще създаде нов потребителски профил в Chrome за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Google Chrome се нуждае от достъп до Bluetooth, за да преглежда
 устройствата с Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Моля, затворете всички прозорци на Google Chrome и опитайте отново.</translation>
@@ -444,7 +441,6 @@
 <translation id="6712881677154121168">Грешка при изтеглянето: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Ускорете Chrome</translation>
 <translation id="6735387454586646204">Система ChromeOS Flex</translation>
-<translation id="6739177684496155661">Искате ли да продължите с нов потребителски профил в Chrome?</translation>
 <translation id="6750954913813541382">С цел поправка на правописни грешки Chrome изпраща до Google текста, който въвеждате в браузъра</translation>
 <translation id="677276454032249905">Искате ли да излезете от Chrome въпреки това?</translation>
 <translation id="6794858689789885890">Изтриване на данните за сайтовете от устройството ви при всяко затваряне на Chrome</translation>
@@ -552,7 +548,6 @@
 <translation id="7947083960301164556">Вижте новите неща</translation>
 <translation id="7951272445806340501">ChromeOS Flex трябва да се рестартира, за да бъде приложена актуализацията.</translation>
 <translation id="7959172989483770734">Управление на потребителските профили в Chrome</translation>
-<translation id="7962368738413920945">Сайтовете вероятно ще работят по очаквания начин, но няма да ви помнят, след като затворите всички прозорци на Chrome</translation>
 <translation id="7962410387636238736">От сега нататък този компютър няма да получава актуализации на Google Chrome, тъй като Windows XP и Windows Vista вече не се поддържат</translation>
 <translation id="8005666035647241369">Към мениджъра на паролите в Google на това устройство</translation>
 <translation id="8008534537613507642">Повторно инсталиране на Chrome</translation>
@@ -652,7 +647,6 @@
 <translation id="919706545465235479">Актуализирайте Chrome, за да стартира синхронизирането</translation>
 <translation id="922152298093051471">Персонализиране на Chrome</translation>
 <translation id="93760716455950538">Рестартиране на ChromeOS Flex</translation>
-<translation id="940313311831216333">За да имате достъп до нещата си в Chrome на всичките си устройства, влезте в профила си и включете синхронизирането.</translation>
 <translation id="943390475793766444">Chrome препоръчва този файл да бъде сканиран, защото може да е опасен.</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
 <translation id="983803489796659991">Инсталирането не бе успешно, защото сървърът за актуализиране няма хеш данни за приложението.</translation>

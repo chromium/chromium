@@ -70,6 +70,7 @@
 <translation id="2459183986985456602">Дазваляе адкрыць вашу апошнюю ўкладку ў Chromium.</translation>
 <translation id="2476409803017965813">Вы ў любы час можаце змяніць выбраныя параметры ў наладах Chromium.</translation>
 <translation id="2478931088402984578">Выберыце <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
+<translation id="2485774047568879945">Зрабіце Chromium стандартным браўзерам, і зможаце з лёгкасцю абагульваць і адкрываць спасылкі</translation>
 <translation id="2512597191798760956">Націсніце і ўтрымлівайце значок Chromium, а потым выберыце пункт "Змяніць галоўны экран"</translation>
 <translation id="2517624234762908348">Сінхранізацыя даных Chromium</translation>
 <translation id="2592940277904433508">Працягнуць работу ў Chromium</translation>
@@ -167,6 +168,7 @@
 <translation id="5088872414922783602">Адкрывайце Chromium хутчэй, выкарыстоўваючы панэль Dock галоўнага экрана.</translation>
 <translation id="5124429847818367226">Цяпер вы можаце выкарыстоўваць Chromium, каб праглядаць вэб-старонкі і адкрываць спасылкі ў паведамленнях, дакументах і іншых праграмах.</translation>
 <translation id="5131565040785979529">Ваша арганізацыя, <ph name="DOMAIN" />, кіруе ўліковым запісам, у які вы ўвайшлі, а таксама тым, як выкарыстоўваецца Chromium.</translation>
+<translation id="5134464247000681876">Адкрывайце ў Chromium спасылкі з Gmail, Карт, YouTube і іншых праграм</translation>
 <translation id="5224391634244552924">Няма захаваных пароляў. Chromium можа правяраць толькі захаваныя паролі.</translation>
 <translation id="5259423875997548710">Дазваляе выканаць візуальны пошук у Chromium.</translation>
 <translation id="5308226104666789935">Браўзеру Chromium не ўдаецца праверыць наяўнасць абнаўленняў</translation>
@@ -260,6 +262,7 @@
 <translation id="7674213385180944843">Адкрыйце раздзел "Налады &gt; Прыватнасць &gt; Камера &gt; Chromium" і ўключыце камеру.</translation>
 <translation id="7733418656985455268">Парада ад Chromium: шукайце з дапамогай функцыі "Аб’ектыў"</translation>
 <translation id="7747820849741499258">Пошук у Chromium</translation>
+<translation id="7753923083404296545">Адкрыта ў Chromium інкогніта</translation>
 <translation id="7762622637388462191">Блакіруйце доступ да ўкладак у рэжыме інкогніта, калі вы выходзіце з Chromium або пераходзіце ў іншую праграму.</translation>
 <translation id="7763454117143368771">Зрабіце Chromium стандартным браўзерам, каб засцерагчыся ад небяспечных сайтаў і абараніць свае паролі</translation>
 <translation id="7784950022329154821">Блакіраваць доступ да ўкладак у рэжыме інкогніта пры закрыцці Chromium</translation>

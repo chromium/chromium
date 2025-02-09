@@ -132,7 +132,6 @@
 <translation id="2799223571221894425">পুনঃশুরু</translation>
 <translation id="2803971713792056305">আপনার Chromium</translation>
 <translation id="2806241689335397269">জন্মদিন, বয়স ও যোগাযোগের নম্বরের মতো তথ্য সেভ করে রাখতে চান কিনা তা Chromium জিজ্ঞেস করবে</translation>
-<translation id="2837693172913560447"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য এটি একটি নতুন Chromium প্রোফাইল তৈরি করবে</translation>
 <translation id="2841525013647267359">এই ভাষা থেকে অনুবাদ করুন</translation>
 <translation id="2846251086934905009">ইনস্টল সংক্রান্ত সমস্যা: ইনস্টলার সম্পূর্ণ হয়নি। ইনস্টলেশন বাতিল করা হয়েছে।</translation>
 <translation id="2847479871509788944">Chromium থেকে সরান...</translation>
@@ -175,7 +174,6 @@
 <translation id="3296368748942286671"> Chromium বন্ধ হলে পটভূমির অ্যাপ্লিকেশন চালু রাখুন</translation>
 <translation id="3313189106987092621">Chromium অসুরক্ষিত কানেকশন ব্যবহার করে যেকোনও সাইট লোড করার আগে আপনাকে সতর্ক করবে</translation>
 <translation id="3316771292331273802">আপনি সব Chromium উইন্ডো বন্ধ করে দিলে আপনাকে বেশিরভাগ সাইট থেকে সাইন-আউট করে দেওয়া হবে, তবে আপনি Chromium-এ সাইন-ইন করে থাকলে আপনাকে Google অ্যাকাউন্ট থেকে সাইন-আউট করা হবে না। সাইট যাতে আপনাকে চিনতে পারে তার জন্য <ph name="SETTINGS_LINK" />।</translation>
-<translation id="3350761136195634146">এই অ্যাকাউন্টের সাথে আগে থেকেই একটি Chromium প্রোফাইল রয়েছে</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">বর্তমান Chromium প্রোফাইলে পাল্টাতে চান?</translation>
 <translation id="3412460710772753638">এই ডিভাইসের Password Manager-এ</translation>
@@ -258,7 +256,6 @@
 <translation id="4534145890176164066">Chromium ফর্ম আরও ভালো বুঝতে পারে এবং আপনার জন্য আরও দ্রুত তা অটোফিল করতে পারে</translation>
 <translation id="4536805923587466102">আপনি আগে থেকেই অন্য Chromium প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করেছেন</translation>
 <translation id="4545268686623374213">আপনার ব্রাউজিংয়ের অভিজ্ঞতা উন্নত ও দ্রুত কাজ চালিয়ে যেতে Chromium এই ট্যাব নিষ্ক্রিয় করতে পারে।</translation>
-<translation id="454579500955453258">এক্ষেত্রে নতুন Chromium প্রোফাইল তৈরি করতে চান?</translation>
 <translation id="4548534452171747496">Chromium পৃষ্ঠা প্রিলোড করে যার ফলে আরও ঝটপট ব্রাউজ ও সার্চ করা যায়। <ph name="BEGIN_LINK" />পৃষ্ঠা প্রিলোড করা সম্পর্কে আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">আপনি <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করেছেন৷ এখন আপনি আপনার সমস্ত সাইন-ইন করা ডিভাইসে আপনার বুকমার্ক, ইতিহাস এবং অন্যান্য সেটিংস অ্যাক্সেস করতে পারেন৷</translation>
 <translation id="4570813286784708942">আপনি Safe Browsing ফিচারটি বন্ধ করে দেওয়ার ফলে ফাইলটি যাচাই করা যাচ্ছে না, তাই Chromium এই ডাউনলোডটি ব্লক করে দিয়েছে</translation>
@@ -294,7 +291,6 @@
 <translation id="5224391634244552924">কোনও পাসওয়ার্ড সেভ করা নেই। আপনি পাসওয়ার্ড সেভ করলে Chromium সেটি চেক করতে পারবে।</translation>
 <translation id="5231355151045086930">Chromium থেকে সাইন-আউট করুন</translation>
 <translation id="5234764350956374838">খারিজ</translation>
-<translation id="5252179775517634216"><ph name="EXISTING_USER" /> আগে থেকেই এই Chromium প্রোফাইলে সাইন-ইন করে আছেন। <ph name="USER_EMAIL_ADDRESS" />-এর জন্য এটি একটি নতুন Chromium প্রোফাইল তৈরি করবে</translation>
 <translation id="5277894862589591112">আপনার পরিবর্তনগুলি প্রয়োগ করতে, Chromium রিলঞ্চ করুন</translation>
 <translation id="5286907366254680517">শনাক্ত করা হয়েছে</translation>
 <translation id="5294316920224716406">ছদ্মবেশী মোডে ব্রাউজ করার সময়, Chromium অসুরক্ষিত কানেকশন ব্যবহার করে কোনও সাইট লোড করার আগে আপনাকে সতর্ক করবে</translation>
@@ -410,7 +406,6 @@
 <translation id="6600016381025017075">এই পৃষ্ঠাতে যেকোনও তথ্য খুঁজুন</translation>
 <translation id="6613594504749178791">আপনার পরিবর্তনগুলি পরবর্তী সময় আপনি Chromium আবার চালু হলে ফলপ্রদ হবে৷</translation>
 <translation id="665732753414869868">আপনার আশেপাশের জায়গার একটি 3D ম্যাপ তৈরি করার জন্য Chromium-এর ক্যামেরা অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
-<translation id="6663852025006259149">সাইটগুলি সম্ভবত আপনার প্রত্যাশা অনুযায়ী কাজ করবে কিন্তু আপনি সমস্ত উইন্ডো বন্ধ করার পরে Chromium আপনাকে মনে রাখবে না</translation>
 <translation id="6669284030132180248">এছাড়াও, আপনি বুকমার্ক Google অ্যাকাউন্টে সেভ করলে Chromium-এ প্রোডাক্টের দাম ট্র্যাক করার সুবিধা পাবেন এবং সেই সাথে প্রোডাক্টের দাম কমলে আপনাকে বিজ্ঞপ্তি দিয়ে জানানো হবে</translation>
 <translation id="6676384891291319759">ইন্টারনেটটি অ্যাক্সেস করুন</translation>
 <translation id="668175097507315160">সাইন-ইনে সমস্যা থাকার জন্য ChromiumOS আপনার ডেটা সিঙ্ক করতে পারেনি।</translation>
@@ -420,7 +415,6 @@
 <translation id="6717134281241384636">আপনার প্রোফাইলটি ব্যবহার করা যাবে না কারণ এটি একটি Chromium-এর নতুন ভার্সন৷ কিছু বিষয় অনুপলব্ধ হতে পারে৷ একটি ভিন্ন প্রোফাইল ডিরেক্টরি উল্লেখ করুন অথবা Chromium-এর একটি নতুন ভার্সন ব্যবহার করুন৷</translation>
 <translation id="6729124504294600478">পছন্দমতো সুবিধা ও অন্যান্য ফিচার ব্যবহার করতে ওয়েব ও অ্যাপ অ্যাক্টিভিটি ও লিঙ্ক করা Google পরিষেবায় Chromium যোগ করে নিন</translation>
 <translation id="6734291798041940871">Chromium ইতোমধ্যে আপনার কম্পিউটারের সকল ব্যবহারকারীর জন্য ইনস্টল করা হয়েছে।</translation>
-<translation id="673636774878526923">সব ডিভাইস জুড়ে Chromium-এ থাকা ডেটা অ্যাক্সেস করতে, প্রথমে সাইন-ইন করে সিঙ্ক চালু করুন।</translation>
 <translation id="674245979920622322">আপনি সম্প্রতি ভিজিট করেননি। Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> এবং আরও <ph name="COUNT" />টি অনুমতি সরিয়ে দিয়েছে</translation>
 <translation id="67706546131546258">ফাইলটি বিপজ্জনক হতে পারে বলে Chromium এটি স্ক্যান করার সাজেশন দেয়।</translation>
 <translation id="6779406956731413166">ChromeOS সম্ভবত অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" /> দিয়ে তৈরি।</translation>

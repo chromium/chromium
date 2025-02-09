@@ -655,7 +655,6 @@
 <translation id="1454223536435069390">Скриншотқа т&amp;үсіру</translation>
 <translation id="145432137617179457">Емлесі тексерілетін тілдер</translation>
 <translation id="1455119378540982311">Терезе өлшемдерін алдын ала орнату</translation>
-<translation id="1456499573534615137">Chrome-ға арналған арнаулы тақырыптар дизайнын жасауға көмектеседі.</translation>
 <translation id="1456849775870359518">Қойындыларыңыз қайта ашылады</translation>
 <translation id="1457907785077086338">Қолданба танымбелгісінің түсі</translation>
 <translation id="146000042969587795">Бұл жақтауға тыйым салынды, себебі ол кейбір қауіпті контентті қамтиды.</translation>
@@ -3019,7 +3018,6 @@
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" жұптастырылған</translation>
 <translation id="3093714882666365141">Сайттардың төлем өңдегіштерін орнатуына рұқсат бермеу</translation>
 <translation id="3094080575472025333">Қолданбаларды блоктау</translation>
-<translation id="3094141017404513551">Бұл браузерді пайдалану деректеріңізді <ph name="EXISTING_USER" /> пайдаланушысынан бөледі.</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Мерзімі бүгін бітеді}=1{Мерзімі ертең бітеді}other{# күннен кейін мерзімі бітеді}}</translation>
 <translation id="3094521107841754472">Баға <ph name="PREVIOUS_PRICE" /> сомасынан <ph name="CURRENT_PRICE" /> сомасына өзгерді.</translation>
 <translation id="3095871294753148861">Бетбелгілер, құпия сөздер және басқа браузерді пайдалану деректері негізгі аккаунтпен синхрондалады.</translation>
@@ -3122,7 +3120,6 @@
 <translation id="3177909033752230686">Бет тілі:</translation>
 <translation id="3177914167275935955">Құрылғыда Chrome Education Upgrade қамтылған, бірақ пайдаланушы атыңыз Google for Education аккаунтымен байланыстырылмаған. Қосымша құрылғыда g.co/workspace/edusignup сайтына кіру арқылы Google for Education аккаунтын жасаңыз.</translation>
 <translation id="3179982752812949580">Мәтін қарпі</translation>
-<translation id="3180284704187420717">Бетбелгілерді, құпия сөздерді және т.б. ақпаратты синхрондап сақтаңыз</translation>
 <translation id="3180990259147710757">Иегіңізді солға қисайтыңыз.</translation>
 <translation id="3181825792072797598">"Синхрондау" функциясын қосу</translation>
 <translation id="3181954750937456830">Safe Browsing қызметі (сізді және құрылғыңызды қауіпті сайттардан қорғайды)</translation>
@@ -8797,7 +8794,6 @@
 <translation id="7273894023751806510"><ph name="HOST" /> сайтына MIDI құрылғыларыңызды басқаруға және қайта бағдарламалауға үнемі тыйым салу</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – толуына <ph name="TIME" /> қалды</translation>
 <translation id="727595954130325265">Қазір сатып алу</translation>
-<translation id="7278164481614262110">AI көмегімен тақырыптар жасау</translation>
 <translation id="727952162645687754">Жүктеу қатесі</translation>
 <translation id="7280649757394340890">Мәтінді дыбысқа түрлендіру дауыстық параметрлері</translation>
 <translation id="7280877790564589615">Рұқсат қажет</translation>

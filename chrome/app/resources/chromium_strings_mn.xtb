@@ -134,7 +134,6 @@
 <translation id="2799223571221894425">Дахин эхлүүлэх</translation>
 <translation id="2803971713792056305">Таны Chromium</translation>
 <translation id="2806241689335397269">Chromium танаас өөрийн төрсөн огноо, нас, паспортын дугаар зэрэг маягтын мэдээллийг хадгалахыг хүсэж байгаа эсэхийг асууна</translation>
-<translation id="2837693172913560447">Энэ нь <ph name="USER_EMAIL_ADDRESS" />-д Chromium-н шинэ профайл үүсгэнэ</translation>
 <translation id="2841525013647267359">Дараах хэлээс орчуулах</translation>
 <translation id="2846251086934905009">Суулгах үед алдаа гарлаа: Суулгагч дуусгаагүй. Суулгалтыг тасалсан.</translation>
 <translation id="2847479871509788944">Chromium-аас устгах ...</translation>
@@ -175,7 +174,6 @@
 <translation id="3296368748942286671">Chromium-ийг хаахад ард байгаа програмуудыг ажиллуулсан хэвээр бай.</translation>
 <translation id="3313189106987092621">Chromium аюултай холболт ашиглан аливаа сайтыг ачаалахаас өмнө танд сануулна</translation>
 <translation id="3316771292331273802">Хэрэв та Chromium-д нэвтэрсэн бол таныг Chromium-н бүх цонхыг хаах үед Google Бүртгэлээс тань бусад ихэнх сайтаас гаргана. Сайтад таныг санахыг зөвшөөрөхийн тулд <ph name="SETTINGS_LINK" />.</translation>
-<translation id="3350761136195634146">Энэ бүртгэлтэй Chromium-н профайл аль хэдийн байна</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Chromium-н одоо байгаа профайл руу сэлгэх үү?</translation>
 <translation id="3412460710772753638">Энэ төхөөрөмж дээрх Нууц үгний менежерт</translation>
@@ -258,7 +256,6 @@
 <translation id="4534145890176164066">Chromium маягтыг илүү сайн ойлгодог ба танд илүү хурдан автоматаар бөглөж өгөх боломжтой</translation>
 <translation id="4536805923587466102">Та <ph name="USER_EMAIL_ADDRESS" /> хаягаараа Chromium-н өөр профайлд аль хэдийн нэвтэрсэн байна</translation>
 <translation id="4545268686623374213">Chromium таны үзэх хэрэглээг сайжруулах болон зүйлсийг хурдан байлгахын тулд энэ табыг идэвхгүй болгох боломжтой.</translation>
-<translation id="454579500955453258">Chromium-н шинэ профайлд үргэлжлүүлэх үү?</translation>
 <translation id="4548534452171747496">Chromium хуудаснуудыг урьдчилан ачаалах бөгөөд энэ нь үзэх, хайхыг илүү хурдан болгоно. <ph name="BEGIN_LINK" />Хуудас урьдчилан ачаалах талаар нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Та <ph name="USER_EMAIL_ADDRESS" /> ингэж нэвтэрсэн байна. Одоо та өөрийн нэвтэрсэн бүх төхөөрөмжүүд дээрээ хайлтын жагсаалт, түүх болон бусад тохиргоонууд руугаа нэвтэрч болно.</translation>
 <translation id="4570813286784708942">Та Safe Browsing-г унтраасан бөгөөд файлыг баталгаажуулах боломжгүй тул Chromium энэ таталтыг блоклосон</translation>
@@ -294,7 +291,6 @@
 <translation id="5224391634244552924">Хадгалсан ямар ч нууц үг алга. Таныг нууц үгсээ хадгалах үед Chromium тэднийг шалгах боломжтой.</translation>
 <translation id="5231355151045086930">Chromium-с гарах</translation>
 <translation id="5234764350956374838">Хэрэгсэхгүй болго</translation>
-<translation id="5252179775517634216"><ph name="EXISTING_USER" /> Chromium-н энэ профайлд аль хэдийн нэвтэрсэн байна. Энэ нь <ph name="USER_EMAIL_ADDRESS" />-д Chromium-н шинэ профайл үүсгэнэ</translation>
 <translation id="5277894862589591112">Өөрчлөлтөө хэрэгжүүлэхийн тулд Chromium-г дахин ажиллуулна уу</translation>
 <translation id="5286907366254680517">Илэрсэн</translation>
 <translation id="5294316920224716406">Нууцлалын горимд үзэх үед Chromium аюултай холболт ашиглан сайтыг ачаалахаас өмнө танд сануулна</translation>
@@ -410,7 +406,6 @@
 <translation id="6600016381025017075">Энэ хуудсан дээрх дурын зүйлийг хайх</translation>
 <translation id="6613594504749178791">Таныг Chromium дахин эхлүүлэхэд өөрчлөлт идэвхжинэ.</translation>
 <translation id="665732753414869868">Таны эргэн тойрны 3D газрын зургийг үүсгэхийн тулд Chromium-д камерын зөвшөөрөл шаардлагатай</translation>
-<translation id="6663852025006259149">Сайтууд таны бодож байснаар ажиллаж магадгүй ч таныг Chromium-н бүх цонхыг хаасны дараа санахгүй</translation>
 <translation id="6669284030132180248">Хэрэв та мөн хавчуургаа Google Бүртгэлдээ хадгалдаг бол бүтээгдэхүүний үнийг Chromium-д хянаж, үнэ буурах үед мэдэгдэл авах боломжтой</translation>
 <translation id="6676384891291319759">Интернэтэд нэвтрэх</translation>
 <translation id="668175097507315160">Нэвтрэх алдааны улмаас ChromiumOS таны өгөгдлийг синк хийж чадсангүй.</translation>
@@ -422,7 +417,6 @@
 Зарим функц ажиллахгүй байж болно. профайлын өөр зааварчилгааг тодорхойлж өгөх эсвэл Chromium-ийн шинэ хувилбарыг ашиглана уу.</translation>
 <translation id="6729124504294600478">Хувийн болгох болон бусад онцлогийг авахын тулд Chromium-г Веб, аппын үйл ажиллагаа болон Google-н холбосон үйлчилгээнүүдэд оруулна уу</translation>
 <translation id="6734291798041940871">Chromium-г таны компьютерийн бүх хэрэглэгчид суулгасан байна.</translation>
-<translation id="673636774878526923">Та бүх төхөөрөмж дээрээ Chromium-н зүйлсдээ хандахын тулд нэвтэрч, дараа нь синк хийхийг асаана уу.</translation>
 <translation id="674245979920622322">Та ойрын үед зочлоогүй байна. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон өөр <ph name="COUNT" /> зөвшөөрлийг хассан</translation>
 <translation id="67706546131546258">Энэ файл аюултай байж магадгүй тул Chromium үүнийг скан хийхийг зөвлөж байна.</translation>
 <translation id="6779406956731413166">ChromiumOS-г нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>

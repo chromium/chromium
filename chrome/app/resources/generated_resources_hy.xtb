@@ -657,7 +657,6 @@
 <translation id="1454223536435069390">Ստեղ&amp;ծել սքրինշոթ</translation>
 <translation id="145432137617179457">Լեզուների ուղղագրության ստուգում</translation>
 <translation id="1455119378540982311">Պատուհանների ստանդարտ չափեր</translation>
-<translation id="1456499573534615137">Օգնում է ստեղծել հատուկ թեմաներ Chrome-ի համար</translation>
 <translation id="1456849775870359518">Ձեր ներդիրները նորից կբացվեն</translation>
 <translation id="1457907785077086338">Հավելվածի նշանակի գույն</translation>
 <translation id="146000042969587795">Այս շրջանակն արգելափակված է, քանի որ այն անապահով բովանդակություն է պարունակում:</translation>
@@ -3017,7 +3016,6 @@
 <translation id="3090871774332213558">«<ph name="DEVICE_NAME" />» սարքը զուգակցված է</translation>
 <translation id="3093714882666365141">Թույլ չտալ կայքերին տեղադրել վճարումների մշակիչներ</translation>
 <translation id="3094080575472025333">Հավելվածների արգելափակում</translation>
-<translation id="3094141017404513551">Դիտարկիչում ձեր աշխատանքը կառանձնացվի <ph name="EXISTING_USER" /> հաշվից</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Գործողության ժամկետը սպառվում է այսօր}=1{Գործողության ժամկետը սպառվում է վաղը}one{Գործողության ժամկետը սպառվում է # օրից}other{Գործողության ժամկետը սպառվում է # օրից}}</translation>
 <translation id="3094521107841754472">Գինը <ph name="PREVIOUS_PRICE" />-ից դարձել է <ph name="CURRENT_PRICE" />։</translation>
 <translation id="3095871294753148861">Էջանիշները, գաղտնաբառերն ու դիտարկիչի մյուս տվյալները համաժամացված են հիմնական հաշվի հետ։</translation>
@@ -3120,7 +3118,6 @@
 <translation id="3177909033752230686">Էջի լեզուն՝</translation>
 <translation id="3177914167275935955">Ձեր սարքում առկա է Chrome Education-ի լիցենզիա, բայց ձեր օգտանունը կապված չէ Google for Education հաշվի հետ։ Ստեղծեք Google for Education հաշիվ՝ մեկ այլ սարքում անցնելով g.co/workspace/edusignup էջ։</translation>
 <translation id="3179982752812949580">Տեքստի տառատեսակը</translation>
-<translation id="3180284704187420717">Պահեք ձեր էջանիշները, գաղտնաբառերը և ավելին համաժամացման միջոցով</translation>
 <translation id="3180990259147710757">Ծնոտը ձախ տարեք</translation>
 <translation id="3181825792072797598">Միացնել համաժամացումը</translation>
 <translation id="3181954750937456830">Անվտանգ դիտարկում (պաշտպանում է ձեզ և ձեր սարքը վտանգավոր կայքերից)</translation>
@@ -8796,7 +8793,6 @@
 <translation id="7273894023751806510">Արգելել <ph name="HOST" /> կայքին ձեր MIDI սարքերի կառավարումն ու վերածրագրավորումը</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> մինչև լրիվ լիցքավորվելը</translation>
 <translation id="727595954130325265">Գնել</translation>
-<translation id="7278164481614262110">Ստեղծեք թեմաներ արհեստական բանականության օգնությամբ</translation>
 <translation id="727952162645687754">Ներբեռնման սխալ</translation>
 <translation id="7280649757394340890">Տեքստի հնչեցման կարգա­վորումներ</translation>
 <translation id="7280877790564589615">Թույլտվության հարցումն ուղարկված է</translation>

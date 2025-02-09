@@ -41,7 +41,6 @@
 <translation id="1507198376417198979">Прилагодите нови Chrome профил</translation>
 <translation id="1547295885616600893">Chrome OС je могућ захваљујући додатном <ph name="BEGIN_LINK_CROS_OSS" />софтверу са отвореним кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Ажурирај Chrome</translation>
-<translation id="1583073672411044740">Корисник <ph name="EXISTING_USER" /> је већ пријављен на овај Chrome профил. Овим ће се направити нов Chrome профил за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome користи камеру.</translation>
 <translation id="1587325591171447154">Датотека <ph name="FILE_NAME" /> је опасна, па ју је Chrome блокирао.</translation>
 <translation id="1597911401261118146">Да бисте проверили да ли су лозинке безбедне од упада у податке и других безбедносних проблема, <ph name="BEGIN_LINK" />пријавите се у Chrome<ph name="END_LINK" />.</translation>
@@ -149,7 +148,6 @@
 <translation id="2846251086934905009">Грешка при инсталацији: Програм за инсталацију није завршио инсталацију. Инсталација је отказана.</translation>
 <translation id="2853415089995957805">Chrome предучитава странице које ћете вероватно посетити, како би се брже учитавале када их посетите</translation>
 <translation id="2857540653560290388">Покреће се Chrome...</translation>
-<translation id="2857972467023607093">Chrome профил са овим налогом већ постоји</translation>
 <translation id="286025080868315611">Сазнајте зашто Chrome блокира нека преузимања</translation>
 <translation id="2861074815332034794">Ажурирамо Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Пријављени сте у Chrome!</translation>
@@ -229,7 +227,6 @@
 <translation id="3785324443014631273">Chrome OS Flex није успео да синхронизује податке због грешке при пријављивању.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">За Google Chrome је потребан Windows 10 или новија верзија.</translation>
-<translation id="3835168907083856002">Овим ће се направити нов Chrome профил за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Google Chrome захтева приступ Bluetooth-у да би истраживао 
  Bluetooth уређаје. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Затворите све прозоре Google Chrome прегледача и покушајте поново.</translation>
@@ -450,7 +447,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6712881677154121168">Грешка при преузимању: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Убрзајте Chrome</translation>
 <translation id="6735387454586646204">Chrome OS Flex систем</translation>
-<translation id="6739177684496155661">Желите да наставите на новом Chrome профилу?</translation>
 <translation id="6750954913813541382">Да би исправио правописне грешке, Chrome Google-у шаље текст који уносите у прегледач</translation>
 <translation id="677276454032249905">Желите ли ипак да затворите Chrome?</translation>
 <translation id="6794858689789885890">Увек избришите податке о сајтовима са уређаја када затворите Chrome</translation>
@@ -558,7 +554,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7947083960301164556">Прикажи шта је ново</translation>
 <translation id="7951272445806340501">Треба да рестартујете Chrome OS Flex да бисте применили ажурирање.</translation>
 <translation id="7959172989483770734">Управљај Chrome профилима</translation>
-<translation id="7962368738413920945">Сајтови ће вероватно радити на очекивани начин, али вас неће запамтити када затворите све Chrome прозоре</translation>
 <translation id="7962410387636238736">Овај рачунар више неће добијати ажурирања за Google Chrome јер Windows XP и Windows Vista више нису подржани</translation>
 <translation id="8005666035647241369">У Google менаџеру лозинки на овом уређају</translation>
 <translation id="8008534537613507642">Поново инсталирај Chrome</translation>
@@ -658,7 +653,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="919706545465235479">Ажурирајте Chrome да бисте започели синхронизацију</translation>
 <translation id="922152298093051471">Прилагодите Chrome</translation>
 <translation id="93760716455950538">Рестартујте Chrome OS Flex</translation>
-<translation id="940313311831216333">Да бисте приступали Chrome садржају на свим уређајима, пријавите се, па укључите синхронизацију.</translation>
 <translation id="943390475793766444">Chrome препоручује скенирање овог фајла јер може да буде опасан.</translation>
 <translation id="945522503751344254">Пошаљи повратне информације</translation>
 <translation id="983803489796659991">Инсталација није успела зато што сервер за ажурирање нема никакве хеширане податке за апликацију.</translation>

@@ -654,7 +654,6 @@
 <translation id="1454223536435069390">स्क्रिसट लि&amp;नुहोस्</translation>
 <translation id="145432137617179457">हिज्जे जाँचको सुविधा उपलब्ध भएका भाषाहरू</translation>
 <translation id="1455119378540982311">विन्डोको डिफल्ट आकार</translation>
-<translation id="1456499573534615137">तपाईंलाई Chrome का कस्टम थिमहरू डिजाइज गर्न मद्दत गर्छ</translation>
 <translation id="1456849775870359518">तपाईंका ट्याबहरू फेरि खुल्ने छन्</translation>
 <translation id="1457907785077086338">एपको ब्याजको रङ</translation>
 <translation id="146000042969587795">यो फ्रेम ब्लक भएको थियो किनकी यसले केही असुरक्षित सामग्री समावेश गर्छ।</translation>
@@ -3015,7 +3014,6 @@
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" जोडि मिलाईयो</translation>
 <translation id="3093714882666365141">साइटहरूलाई भुक्तानी ह्यान्ड्लर इन्स्टल गर्ने अनुमति नदिनुहोस्</translation>
 <translation id="3094080575472025333">एपहरू ब्लक गर्नुहोस्</translation>
-<translation id="3094141017404513551">तपाईंले नयाँ Chromium प्रोफाइल प्रयोग गर्नुभयो भने तपाईंको ब्राउजिङ इतिहास र <ph name="EXISTING_USER" /> को ब्राउजिङ इतिहास छुट्टाछुट्टै सेभ गरिने छ</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{आज म्याद सकिन्छ}=1{भोलि म्याद सकिन्छ}other{# दिनमा म्याद सकिन्छ}}</translation>
 <translation id="3094521107841754472">मूल्य <ph name="PREVIOUS_PRICE" /> बाट परिवर्तन भई <ph name="CURRENT_PRICE" /> भएको छ।</translation>
 <translation id="3095871294753148861">बुकमार्क, पासवर्ड र ब्राउजरसम्बन्धी अन्य डेटा प्राथमिक खातामा सिंक गरिन्छन्।</translation>
@@ -3118,7 +3116,6 @@
 <translation id="3177909033752230686">पृष्ठको भाषा:</translation>
 <translation id="3177914167275935955">तपाईंको डिभाइसमा Chrome Education Upgrade समावेश छ तर तपाईंको युजरनेम Google for Education खातासँग सम्बद्ध छैन। कृपया सहायक डिभाइसमार्फत g.co/workspace/edusignup मा गई Google for Education खाता बनाउनुहोस्।</translation>
 <translation id="3179982752812949580">पाठको फन्ट</translation>
-<translation id="3180284704187420717">सिंक गर्ने सुविधाका सहायताले आफ्ना बुकमार्क र पासवर्डलगायतका कुराहरू सेभ गर्नुहोस्</translation>
 <translation id="3180990259147710757">च्यापु बायाँतिर सार्नुहोस्</translation>
 <translation id="3181825792072797598">सिंकलाई अन गर्नुहोस्</translation>
 <translation id="3181954750937456830">सुरक्षित ब्राउजिङ (तपाईं र तपाईंको यन्त्रलाई खतरनाक साइटहरूबाट सुरक्षित राख्छ)</translation>
@@ -6364,7 +6361,7 @@
 <translation id="5490798133083738649">Linux लाई तपाईंको माइक्रोफोन प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="549211519852037402">फुस्रो खैरो र सेतो</translation>
 <translation id="5492637351392383067">डिभाइसमै चल्ने इन्क्रिप्सन</translation>
-<translation id="5493455553805432330">बिर्सनुहोस्</translation>
+<translation id="5493455553805432330">हटाउनुहोस्</translation>
 <translation id="5493792505296048976">स्क्रिन सक्रिय छ</translation>
 <translation id="5494016731375030300">भर्खरै बन्द गरिएका ट्याबहरू</translation>
 <translation id="5494362494988149300">&amp;पूरा भएपछि खोल्नुहोस्</translation>
@@ -8794,7 +8791,6 @@
 <translation id="7273894023751806510"><ph name="HOST" /> लाई तपाईंका MIDI डिभाइसहरू नियन्त्रण तथा रिप्रोग्राम गर्न सधैँ ब्लक गर्नुहोस्</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> % - <ph name="TIME" /> पूर्ण नभएसम्म</translation>
 <translation id="727595954130325265">अहिले नै किन्नुहोस्</translation>
-<translation id="7278164481614262110">AI का सहायताले थिमहरू बनाउनुहोस्</translation>
 <translation id="727952162645687754">डाउनलोड त्रुटि</translation>
 <translation id="7280649757394340890">पाठवाचकका आवाजका सेटिङहरू</translation>
 <translation id="7280877790564589615">अनुमति अनुरोध गरियो</translation>
@@ -11227,7 +11223,7 @@
 <translation id="8985561265504464578">डिटेक्सन थ्रेसहोल्ड</translation>
 <translation id="8985661493893822002">आफ्नो <ph name="DEVICE_TYPE" /> मा साइन इन गर्न कृपया इन्टरनेटमा कनेक्ट गर्नुहोस्।</translation>
 <translation id="8985661571449404298">असुरक्षित फाइल डाउनलोड गरियो</translation>
-<translation id="8986362086234534611">बिर्सनुहोस्</translation>
+<translation id="8986362086234534611">हटाउनुहोस्</translation>
 <translation id="8986494364107987395">Google लाई स्वचालित रूपमा उपयोगको तथ्याङ्कहरू र क्र्यास रिपोर्ट पठाउनुहोस्</translation>
 <translation id="8987305927843254629">हरेक व्यक्ति आफूले प्रयोग गर्ने सुविधा पर्सनलाइज गर्न र जानकारी गोप्य राख्न सक्छन्।</translation>
 <translation id="8987321822984361516">ब्राउजर सङ्गठनले व्यवस्थापन गर्छ भने प्रोफाइल <ph name="PROFILE_DOMAIN" /> ले व्यवस्थापन गर्छ</translation>

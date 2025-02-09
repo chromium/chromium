@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">自訂新的 Chrome 設定檔</translation>
 <translation id="1547295885616600893">Chrome OS 受惠於其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />技術才能成功發布。</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" />已登入這個 Chrome 設定檔。這項操作會為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chrome 設定檔</translation>
 <translation id="1587223624401073077">Google Chrome 正在使用你的攝影機。</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> 並不安全，因此遭到 Chrome 封鎖。</translation>
 <translation id="1597911401261118146">如要檢查你的密碼是否因資料侵害事件而遭到外洩，或是否有其他安全性問題，<ph name="BEGIN_LINK" />請登入 Chrome<ph name="END_LINK" />。</translation>
@@ -145,7 +144,6 @@
 <translation id="2846251086934905009">安裝錯誤：安裝程式未完整執行。安裝作業已取消。</translation>
 <translation id="2853415089995957805">Chrome 會預先載入你可能會造訪的網頁，以便在你造訪時更快載入</translation>
 <translation id="2857540653560290388">正在啟動 Chrome…</translation>
-<translation id="2857972467023607093">該帳戶已有相關聯的 Chrome 設定檔</translation>
 <translation id="286025080868315611">瞭解 Chrome 封鎖某些下載內容的原因</translation>
 <translation id="2861074815332034794">正在更新 Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">你已登入 Chrome！</translation>
@@ -225,7 +223,6 @@
 <translation id="3785324443014631273">登入時發生錯誤，因此 ChromeOS Flex 無法同步處理你的資料。</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Google Chrome 僅支援 Windows 10 以上版本的作業系統。</translation>
-<translation id="3835168907083856002">這項操作會為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chrome 設定檔</translation>
 <translation id="383928141529488001">Google Chrome 需要藍牙存取權才能偵測藍牙裝置。<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">請關閉所有 Google Chrome 視窗，並再試一次</translation>
 <translation id="3873044882194371212">在 Chrome 無痕視窗中開啟連結(&amp;G)</translation>
@@ -443,7 +440,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6712881677154121168">下載錯誤：<ph name="DOWNLOAD_ERROR" />。</translation>
 <translation id="6718739135284199302">加快 Chrome 的運作速度</translation>
 <translation id="6735387454586646204">ChromeOS Flex 系統</translation>
-<translation id="6739177684496155661">要繼續使用新的 Chrome 設定檔嗎？</translation>
 <translation id="6750954913813541382">Chrome 會將你在瀏覽器中輸入的文字傳送至 Google，以修正拼字錯誤</translation>
 <translation id="677276454032249905">確定要結束 Chrome 嗎？</translation>
 <translation id="6794858689789885890">在 Chrome 關閉後一律刪除裝置上的網站資料</translation>
@@ -551,7 +547,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7947083960301164556">查看新功能資訊</translation>
 <translation id="7951272445806340501">ChromeOS Flex 必須重新啟動，才能套用更新。</translation>
 <translation id="7959172989483770734">管理 Chrome 設定檔</translation>
-<translation id="7962368738413920945">網站可能會正常運作，但不會在所有 Chrome 視窗關閉後記住你的偏好設定和與你有關的資訊</translation>
 <translation id="7962410387636238736">Google Chrome 已停止支援 Windows XP 和 Windows Vista，因此這部電腦不會再收到 Google Chrome 更新</translation>
 <translation id="8005666035647241369">儲存至這部裝置的 Google 密碼管理員</translation>
 <translation id="8008534537613507642">重新安裝 Chrome</translation>
@@ -651,7 +646,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="919706545465235479">如要開始同步處理，請更新 Chrome</translation>
 <translation id="922152298093051471">自訂 Chrome</translation>
 <translation id="93760716455950538">重新啟動 ChromeOS Flex</translation>
-<translation id="940313311831216333">如要透過所有裝置存取你的 Chrome 資料，請登入並開啟同步處理功能。</translation>
 <translation id="943390475793766444">這個檔案可能有危險內容，因此 Chrome 建議掃描檔案。</translation>
 <translation id="945522503751344254">提供意見</translation>
 <translation id="983803489796659991">更新伺服器沒有應用程式的任何雜湊資料，因此安裝失敗。</translation>

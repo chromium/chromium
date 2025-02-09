@@ -655,7 +655,6 @@
 <translation id="1454223536435069390">ე&amp;კრანის ანაბეჭდის გადაღება</translation>
 <translation id="145432137617179457">მართლწერის შემოწმების ენები</translation>
 <translation id="1455119378540982311">წინასწარ დაყენებული ფანჯრების ზომებით სარგებლობა</translation>
-<translation id="1456499573534615137">დაგეხმარებათ Chrome-ისთვის თემების პერსონალიზებაში</translation>
 <translation id="1456849775870359518">თქვენი ჩანართები ხელახლა გაიხსნება</translation>
 <translation id="1457907785077086338">აპების ბეჯის ფერი</translation>
 <translation id="146000042969587795">ეს კადრი დაიბლოკა, რადგან იგი შეიცავს არაუსაფრთხო შიგთავსს.</translation>
@@ -3017,7 +3016,6 @@
 <translation id="3090871774332213558">„<ph name="DEVICE_NAME" />“ დაწყვილებულია</translation>
 <translation id="3093714882666365141">საიტებისთვის გადახდის დამმუშავებლების ინსტალაციის აკრძალვა</translation>
 <translation id="3094080575472025333">აპების დაბლოკვა</translation>
-<translation id="3094141017404513551">ეს ქმედება განაცალკევებს თქვენსა და <ph name="EXISTING_USER" />-ის დათვალიერების მონაცემებს</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{მოქმედების ვადა იწურება დღეს}=1{მოქმედების ვადა იწურება ხვალ}other{მოქმედების ვადა იწურება # დღეში}}</translation>
 <translation id="3094521107841754472">ფასი შეიცვალა <ph name="PREVIOUS_PRICE" />-დან <ph name="CURRENT_PRICE" />-ზე.</translation>
 <translation id="3095871294753148861">სანიშნეები, პაროლები და ბრაუზერის სხვა მონაცემები სინქრონიზებულია ძირითად ანგარიშთან.</translation>
@@ -3120,7 +3118,6 @@
 <translation id="3177909033752230686">გვერდის ენა:</translation>
 <translation id="3177914167275935955">თქვენს მოწყობილობას მოჰყვება Chrome Education Upgrade, თუმცა თქვენი მომხმარებლის სახელი არ არის დაკავშირებული Google for Education ანგარიშთან. შექმენით Google for Education ანგარიში — ამისთვის გადადით მისამართზე g.co/workspace/edusignup მეორეული მოწყობილობიდან.</translation>
 <translation id="3179982752812949580">ტექსტის შრიფტი</translation>
-<translation id="3180284704187420717">შეინახეთ თქვენი სანიშნეები, პაროლები და სხვა კონტენტი სინქრონიზაციის მეშვეობით</translation>
 <translation id="3180990259147710757">ყბა მოაქციეთ მარცხნივ</translation>
 <translation id="3181825792072797598">სინქრონიზაციის ჩართვა</translation>
 <translation id="3181954750937456830">Safe Browsing (თქვენ და თქვენს მოწყობილობებს გიცავთ სახიფათო საიტებისგან)</translation>
@@ -8800,7 +8797,6 @@
 <translation id="7273894023751806510">ყოველთვის დაიბლოკოს <ph name="HOST" />-ისთვის თქვენი MIDI-მოწყობილობების მართვისა და ხელახლა დაპროგრამების შესაძლებლობა</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% — სრულ დატენვამდე დარჩენილია <ph name="TIME" /></translation>
 <translation id="727595954130325265">ახლა ყიდვა</translation>
-<translation id="7278164481614262110">შექმენით თემები ხელოვნური ინტელექტით</translation>
 <translation id="727952162645687754">ჩამოტვირთვის შეცდომა</translation>
 <translation id="7280649757394340890">ტექსტის გახმოვანების ხმის პარამეტრები</translation>
 <translation id="7280877790564589615">მოთხოვნილია ნებართვა</translation>

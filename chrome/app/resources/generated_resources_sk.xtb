@@ -657,7 +657,6 @@ Povolenia, ktoré ste už udelili aplikáciám, sa môžu vzťahovať na tento �
 <translation id="1454223536435069390">&amp;Vytvoriť snímku obrazovky</translation>
 <translation id="145432137617179457">Jazyky kontroly pravopisu</translation>
 <translation id="1455119378540982311">Predvolené veľkosti okna</translation>
-<translation id="1456499573534615137">Pomáha navrhovať vlastné motívy pre Chrome</translation>
 <translation id="1456849775870359518">Karty sa znova otvoria</translation>
 <translation id="1457907785077086338">Farba odznaku aplikácie</translation>
 <translation id="146000042969587795">Tento rám je zablokovaný, pretože obsahuje nezabezpečený obsah.</translation>
@@ -1366,6 +1365,7 @@ Povolenia, ktoré ste už udelili aplikáciám, sa môžu vzťahovať na tento �
 <translation id="1936157145127842922">Zobraziť v priečinku</translation>
 <translation id="1936931585862840749">Zadajte číslo označujúce počet kópií, ktoré chcete vytlačiť (od 1 do <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">S týmto zariadením, ktoré je <ph name="ARCHITECTURE_DEVICE" />, sa nedá importovať typ architektúry kontajnera <ph name="ARCHITECTURE_CONTAINER" />. Tento kontajner môžete skúsiť obnoviť do iného zariadenia, prípadne môžete získať prístup k súborom v tomto obraze kontajnera pomocou aplikácie Súbory.</translation>
+<translation id="1938116692670653897">Aktuálny farebný motív</translation>
 <translation id="1938351510777341717">Externý príkaz</translation>
 <translation id="1940221956626514677">Prispôsobiť panel s nástrojmi</translation>
 <translation id="1940546824932169984">Pripojené zariadenia</translation>
@@ -2132,6 +2132,10 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2462332841984057083">Steam sa už nastavuje. Počkajte, kým sa nastavovanie dokončí.</translation>
 <translation id="2462724976360937186">ID kľúča certifikačnej autority</translation>
 <translation id="2462752602710430187">Bolo pridané zariadenie: <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Zobrazujú sa navrhované súbory, ktoré vám pomôžu ľahko sa vrátiť k poslednej nedávnej aktivite v aplikáciách Microsoft SharePoint a OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Môžete spravovať nastavenia v ponuke karty alebo si zobraziť ďalšie možnosti v sekcii Prispôsobenie Chromu.</translation>
 <translation id="2464079411014186876">Zmrzlina</translation>
 <translation id="2467755475704469005">Nebolo rozpoznané žiadne zariadenie. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Pripojte sa ku skupine kariet s používateľom <ph name="OWNER_FIRST_NAME" /> a <ph name="NUM_OTHER_MEMBERS" /> ďalšími</translation>
@@ -3019,7 +3023,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3090871774332213558">Zariadenie „<ph name="DEVICE_NAME" />“ bolo spárované</translation>
 <translation id="3093714882666365141">Nepovoliť webom inštalovať obslužné nástroje platieb</translation>
 <translation id="3094080575472025333">Blokovať aplikácie</translation>
-<translation id="3094141017404513551">Týmto oddelíte svoje prehliadanie od používateľa <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Vyprší dnes}=1{Vyprší zajtra}few{Vyprší o # dni}many{Vyprší o # dňa}other{Vyprší o # dní}}</translation>
 <translation id="3094521107841754472">Cena sa zmenila z <ph name="PREVIOUS_PRICE" /> na <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Záložky, heslá a ďalšie dáta prehliadania sú synchronizované s primárnym účtom.</translation>
@@ -3122,7 +3125,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3177909033752230686">Jazyk stránky:</translation>
 <translation id="3177914167275935955">Vaše zariadenie zahŕňa povýšenie Chrome Education, ale vaše používateľské meno nie je spojené s účtom Google for Education. V druhom zariadení prejdite na g.co/workspace/edusignup a zriaďte si účet Google for Education.</translation>
 <translation id="3179982752812949580">Písmo textu</translation>
-<translation id="3180284704187420717">Ukladajte svoje záložky, heslá a ďalší obsah pomocou synchronizácie</translation>
 <translation id="3180990259147710757">Posuňte čeľusť doľava</translation>
 <translation id="3181825792072797598">Zapnúť synchronizáciu</translation>
 <translation id="3181954750937456830">Bezpečné prehliadanie (chráni vás aj zariadenie pred nebezpečnými webmi)</translation>
@@ -3993,6 +3995,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3787434344076711519">Čaká sa na preklad</translation>
 <translation id="3788301286821743879">Verejnú aplikáciu sa nepodarilo spustiť.</translation>
 <translation id="3788401245189148511">Mohli by:</translation>
+<translation id="3789432704615470433">Súbory SharePoint a OneDrive</translation>
 <translation id="3789841737615482174">Inštalovať</translation>
 <translation id="3790417903123637354">Vyskytol sa problém. Skúste to neskôr.</translation>
 <translation id="379082410132524484">Platnosť vašej karty vypršala</translation>
@@ -6180,6 +6183,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5360150013186312835">Zobraziť na paneli s nástrojmi</translation>
 <translation id="5362741141255528695">Vybrať súbor súkromného kľúča.</translation>
 <translation id="536278396489099088">Stav a reporty systému ChromeOS</translation>
+<translation id="5362916924854054326">Nezobrazovať súbory SharePoint a OneDrive</translation>
 <translation id="5363109466694494651">Úplne obnoviť (Powerwash) a vrátiť späť</translation>
 <translation id="5365881113273618889">Vybraný priečinok obsahuje citlivé súbory. Naozaj chcete aplikácii <ph name="APP_NAME" /> povoliť trvalý prístup na zapisovanie pre tento priečinok?</translation>
 <translation id="536638840841140142">Žiadne</translation>
@@ -8805,7 +8809,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7273894023751806510">Vždy blokovať webu <ph name="HOST" /> prístup k ovládaniu a preprogramovávaniu zariadení MIDI</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> % – <ph name="TIME" /> do úplného nabitia</translation>
 <translation id="727595954130325265">Nakupovať</translation>
-<translation id="7278164481614262110">Vytváranie motívov pomocou umelej inteligencie</translation>
 <translation id="727952162645687754">Chyba sťahovania</translation>
 <translation id="7280649757394340890">Nastavenia hlasu pre prevod textu na reč</translation>
 <translation id="7280877790564589615">Vyžaduje sa povolenie</translation>
@@ -10765,6 +10768,10 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="865936634714975126">Pridajte do webovej adresy parameter dopytu na výber typov pri načítaní stránky. Príklad: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Kontakty vo funkcii <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Okno bolo presunuté nadol</translation>
+<translation id="8660288500924118793">Zobrazuje sa kalendár, ktorý vám pomôže jednoducho prejsť na ďalšiu udalosť v kalendári programu Outlook.
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        Môžete spravovať nastavenia v ponuke karty alebo si zobraziť ďalšie možnosti v sekcii Prispôsobenie Chromu.</translation>
 <translation id="8661290697478713397">Otvoriť odkaz v okne inko&amp;gnito</translation>
 <translation id="8662474268934425487">Prihláste sa do služby poskytovateľa <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Pripojenie k sieti <ph name="TYPE" /></translation>

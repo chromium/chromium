@@ -657,7 +657,6 @@
 <translation id="1454223536435069390">स्क्रीन&amp;शॉट लें</translation>
 <translation id="145432137617179457">स्पेलिंग जांच की सुविधा वाली भाषाएं</translation>
 <translation id="1455119378540982311">विंडो के प्रीसेट साइज़</translation>
-<translation id="1456499573534615137">यह सुविधा Chrome के लिए पसंद के मुताबिक थीम डिज़ाइन करने में मदद करती है</translation>
 <translation id="1456849775870359518">आपके टैब फिर से खुल जाएंगे</translation>
 <translation id="1457907785077086338">ऐप्लिकेशन के बैज का रंग</translation>
 <translation id="146000042969587795">यह फ़्रेम ब्लॉक किया गया था क्योंकि इसमें कुछ असुरक्षित सामग्री मौजूद है.</translation>
@@ -3031,7 +3030,6 @@
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" युग्मित किया गया</translation>
 <translation id="3093714882666365141">साइटों को पेमेंट हैंडलर इंस्टॉल करने की अनुमति न दें</translation>
 <translation id="3094080575472025333">ऐप्लिकेशन ब्लॉक करें</translation>
-<translation id="3094141017404513551">यह आपकी ब्राउज़िंग को <ph name="EXISTING_USER" /> से अलग कर देगा</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{समयसीमा आज खत्म हो जाएगी}=1{समयसीमा कल खत्म हो जाएगी}one{समयसीमा # दिन में खत्म हो जाएगी}other{समयसीमा # दिन में खत्म हो जाएगी}}</translation>
 <translation id="3094521107841754472">कीमत को <ph name="PREVIOUS_PRICE" /> से बदलकर <ph name="CURRENT_PRICE" /> कर दिया गया है.</translation>
 <translation id="3095871294753148861">बुकमार्क, पासवर्ड, और ब्राउज़र का दूसरा डेटा प्राथमिक खाते से जुड़ा होता है.</translation>
@@ -3134,7 +3132,6 @@
 <translation id="3177909033752230686">पेज की भाषा:</translation>
 <translation id="3177914167275935955">आपके डिवाइस में Chrome Education Upgrade शामिल है, लेकिन आपका उपयोगकर्ता नाम किसी Google for Education खाते से जुड़ा हुआ नहीं है. कृपया किसी दूसरे डिवाइस से g.co/workspace/edusignup पर जाकर, Google for Education खाता बनाएं.</translation>
 <translation id="3179982752812949580">टेक्स्ट का फ़ॉन्ट</translation>
-<translation id="3180284704187420717">सिंक करने की सुविधा की मदद से, अपने बुकमार्क, पासवर्ड वगैरह सेव करें</translation>
 <translation id="3180990259147710757">जबड़े को बाईं ओर ले जाएं</translation>
 <translation id="3181825792072797598">सिंक सुविधा चालू करें</translation>
 <translation id="3181954750937456830">सुरक्षित ब्राउज़िंग (आपकी और आपके डिवाइस की खतरनाक साइट से सुरक्षा करती है)</translation>
@@ -8814,7 +8811,6 @@
 <translation id="7273894023751806510"><ph name="HOST" /> को हमेशा अपने एमआईडीआई डिवाइसों को कंट्रोल और फिर से प्रोग्राम करने से रोकें</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - पूरा होने में <ph name="TIME" /> बचा</translation>
 <translation id="727595954130325265">अभी खरीदें</translation>
-<translation id="7278164481614262110">एआई की मदद से थीम बनाएं</translation>
 <translation id="727952162645687754">डाउनलोड गड़बड़ी</translation>
 <translation id="7280649757394340890">लिखाई को बोली में बदलने की आवाज़ की सेटिंग</translation>
 <translation id="7280877790564589615">अनुमति का अनुरोध किया गया</translation>

@@ -656,7 +656,6 @@
 <translation id="1454223536435069390">擷取螢幕擷圖</translation>
 <translation id="145432137617179457">拼字檢查支援以下語言</translation>
 <translation id="1455119378540982311">預設視窗大小</translation>
-<translation id="1456499573534615137">幫你設計 Chrome 自訂主題</translation>
 <translation id="1456849775870359518">你的分頁將重新開啟</translation>
 <translation id="1457907785077086338">應用程式標誌顏色</translation>
 <translation id="146000042969587795">此頁框由於包含不安全的內容，已被封鎖。</translation>
@@ -3034,7 +3033,6 @@
 <translation id="3090871774332213558">已配對「<ph name="DEVICE_NAME" />」</translation>
 <translation id="3093714882666365141">不允許網站安裝付款處理常式</translation>
 <translation id="3094080575472025333">封鎖應用程式</translation>
-<translation id="3094141017404513551">這樣做會將您的瀏覽資料與 <ph name="EXISTING_USER" /> 分隔</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{今天到期}=1{明天到期}other{# 天後到期}}</translation>
 <translation id="3094521107841754472">價格已經由 <ph name="PREVIOUS_PRICE" /> 變成 <ph name="CURRENT_PRICE" />。</translation>
 <translation id="3095871294753148861">書籤、密碼和其他瀏覽器資料已與主要帳戶同步。</translation>
@@ -3137,7 +3135,6 @@
 <translation id="3177909033752230686">網頁語言：</translation>
 <translation id="3177914167275935955">您的裝置包含一項 Chrome Education 升級，但您的使用者名稱尚未連結 Google for Education 帳戶。請在次要裝置上前往 g.co/workspace/edusignup 建立 Google for Education 帳戶。</translation>
 <translation id="3179982752812949580">文字字型</translation>
-<translation id="3180284704187420717">透過同步處理功能儲存書籤、密碼和其他資料</translation>
 <translation id="3180990259147710757">下巴向左郁</translation>
 <translation id="3181825792072797598">開啟同步處理功能</translation>
 <translation id="3181954750937456830">安全瀏覽 (保護您和裝置免受危險網站攻擊)</translation>
@@ -8806,7 +8803,6 @@
 <translation id="7273894023751806510">一律禁止 <ph name="HOST" /> 控制 MIDI 裝置及將其重新編程</translation>
 <translation id="727441411541283857">電池現有 <ph name="PERCENTAGE" />% - 還有 <ph name="TIME" />便完成充電</translation>
 <translation id="727595954130325265">立即選購</translation>
-<translation id="7278164481614262110">以 AI 製作主題</translation>
 <translation id="727952162645687754">下載錯誤</translation>
 <translation id="7280649757394340890">文字轉語音聲音設定</translation>
 <translation id="7280877790564589615">已要求許可</translation>

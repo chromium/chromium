@@ -659,7 +659,6 @@
 <translation id="1454223536435069390">З&amp;робити знімок екрана</translation>
 <translation id="145432137617179457">Мови перевірки орфографії</translation>
 <translation id="1455119378540982311">Стандартні розміри вікон</translation>
-<translation id="1456499573534615137">Створюйте власні теми для Chrome</translation>
 <translation id="1456849775870359518">Вкладки відкриються знову</translation>
 <translation id="1457907785077086338">Колір значка додатка</translation>
 <translation id="146000042969587795">Цей фрейм було заблоковано, тому що він містить незахищений вмест.</translation>
@@ -3033,7 +3032,6 @@
 <translation id="3090871774332213558"><ph name="DEVICE_NAME" />: підключено</translation>
 <translation id="3093714882666365141">Заборонити сайтам встановлювати обробники платежів</translation>
 <translation id="3094080575472025333">Блокування додатків</translation>
-<translation id="3094141017404513551">Ви переглядатимете веб-сторінки окремо від користувача <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Строк дії закінчується сьогодні}=1{Строк дії закінчується завтра}one{Строк дії закінчується через # день}few{Строк дії закінчується через # дні}many{Строк дії закінчується через # днів}other{Строк дії закінчується через # дня}}</translation>
 <translation id="3094521107841754472">Ціна змінилася з <ph name="PREVIOUS_PRICE" /> на <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Закладки, паролі й інші дані веб-перегляду синхронізуються з основним обліковим записом.</translation>
@@ -3136,7 +3134,6 @@
 <translation id="3177909033752230686">Мова сторінки:</translation>
 <translation id="3177914167275935955">На цьому пристрої є ліцензія Chrome Education Upgrade, але ваше ім’я користувача не зв’язано з обліковим записом Google for Education. Створіть обліковий запис Google for Education на сторінці g.co/workspace/edusignup на додатковому пристрої.</translation>
 <translation id="3179982752812949580">Шрифт тексту</translation>
-<translation id="3180284704187420717">Зберігайте закладки, паролі тощо завдяки синхронізації</translation>
 <translation id="3180990259147710757">Посунути щелепу ліворуч</translation>
 <translation id="3181825792072797598">Увімкнути синхронізацію</translation>
 <translation id="3181954750937456830">Безпечний перегляд (захищає вас і ваш пристрій від небезпечних сайтів)</translation>
@@ -8818,7 +8815,6 @@
 <translation id="7273894023751806510">Завжди забороняти сайту <ph name="HOST" /> керувати вашими пристроями MIDI й перепрограмовувати їх</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> до повного зарядження</translation>
 <translation id="727595954130325265">Купити зараз</translation>
-<translation id="7278164481614262110">Створення тем за допомогою ШІ</translation>
 <translation id="727952162645687754">Помилка завантаження</translation>
 <translation id="7280649757394340890">Налаштування голосу для синтезу мовлення</translation>
 <translation id="7280877790564589615">Потрібен дозвіл</translation>

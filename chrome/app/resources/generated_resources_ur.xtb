@@ -655,7 +655,6 @@
 <translation id="1454223536435069390">اسکرین شاٹ &amp;لیں</translation>
 <translation id="145432137617179457">املا کی جانچ کو سپورٹ کرنے والی زبانیں</translation>
 <translation id="1455119378540982311">پہلے سے ترتیب شدہ ونڈو کے سائز</translation>
-<translation id="1456499573534615137">‏‫Chrome کے لیے حسب ضرورت تھیمز ڈیزائن کرنے میں آپ کی مدد کرتا ہے</translation>
 <translation id="1456849775870359518">آپ کے ٹیبز دوبارہ کھل جائیں گے</translation>
 <translation id="1457907785077086338">ایپ بَیج کا رنگ</translation>
 <translation id="146000042969587795">کچھ غیر محفوظ مواد شامل ہونے کی وجہ سے اس فریم کو مسدود کر دیا گیا۔</translation>
@@ -3019,7 +3018,6 @@
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" کا جوڑا بنایا گیا</translation>
 <translation id="3093714882666365141">سائٹس کو ادائیگی کے ہینڈلرز انسٹال کرنے کی اجازت نہ دیں</translation>
 <translation id="3094080575472025333">ایپس مسدود کریں</translation>
-<translation id="3094141017404513551">یہ آپ کی براؤزنگ کو <ph name="EXISTING_USER" /> سے الگ کر دے گا</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{میعاد آج ختم ہوگی}=1{میعاد کل ختم ہوگی}other{# دن میں میعاد ختم ہو جائے گی}}</translation>
 <translation id="3094521107841754472">قیمت <ph name="PREVIOUS_PRICE" /> سے تبدیل ہو کر <ph name="CURRENT_PRICE" /> ہو گئی ہے۔</translation>
 <translation id="3095871294753148861">بُک مارکس، پاس ورڈز اور دیگر براؤزر ڈیٹا ابتدائی اکاؤنٹ کے ساتھ مطابقت پذیر ہیں۔</translation>
@@ -3122,7 +3120,6 @@
 <translation id="3177909033752230686">صفحہ کی زبان:</translation>
 <translation id="3177914167275935955">‏آپ کے آلے میں Chrome Education اپ گریڈ شامل ہے، لیکن آپ کا صارف نام Google for Education اکاؤنٹ سے وابستہ نہیں ہے۔ براہ کرم ثانوی آلہ پر g.co/workspace/edusignup پر جا کر Google for Education اکاؤنٹ تخلیق کریں۔</translation>
 <translation id="3179982752812949580">متن کا فونٹ</translation>
-<translation id="3180284704187420717">مطابقت پذیری کے ساتھ اپنے بُک مارکس پاس ورڈز اور بہت کچھ کو محفوظ کریں</translation>
 <translation id="3180990259147710757">جبڑا بائیں جانب لے جائیں</translation>
 <translation id="3181825792072797598">مطابقت پذیری آن کریں</translation>
 <translation id="3181954750937456830">محفوظ براؤزنگ (آپ اور آپ کے آلہ کی خطرناک سائٹس سے حفاظت کرتی ہے)</translation>
@@ -8797,7 +8794,6 @@
 <translation id="7273894023751806510">‏<ph name="HOST" /> کو اپنے MIDI آلات کو کنٹرول اور دوبارہ پروگرام کرنے سے ہمیشہ مسدود کریں</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> مکمل ہو جانے تک</translation>
 <translation id="727595954130325265">ابھی خریدیں</translation>
-<translation id="7278164481614262110">‏AI کے ذریعے تھیمز تخلیق کریں</translation>
 <translation id="727952162645687754">ڈاؤن لوڈ میں خرابی</translation>
 <translation id="7280649757394340890">ٹیکسٹ ٹو اسپیچ آواز کی ترتیبات</translation>
 <translation id="7280877790564589615">اجازت کی درخواست کی گئی</translation>

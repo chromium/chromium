@@ -41,7 +41,6 @@
 <translation id="1507198376417198979">Chrome-н шинэ профайлаа тохируулна уу</translation>
 <translation id="1547295885616600893">ChromeOS-г нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
 <translation id="1553358976309200471">Chrome-г шинэчлэх</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> Chrome-н энэ профайлд аль хэдийн нэвтэрсэн байна. Энэ нь <ph name="USER_EMAIL_ADDRESS" />-д Chrome-н шинэ профайл үүсгэнэ</translation>
 <translation id="1587223624401073077">Google Chrome нь таны камерыг ашиглаж байна.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> аюултай тул үүнийг Chrome блок хийсэн.</translation>
 <translation id="1597911401261118146">Нууц үгнүүддээ өгөгдлийн зөрчил болон аюулгүй байдлын өөр асуудал байхгүй болохыг шалгахын тулд <ph name="BEGIN_LINK" />Chrome-д нэвтэрнэ үү<ph name="END_LINK" />.</translation>
@@ -149,7 +148,6 @@
 <translation id="2846251086934905009">Суулгах үед алдаа гарлаа: Суулгагч дуусгаагүй. Суулгалтыг тасалсан.</translation>
 <translation id="2853415089995957805">Chrome таны зочлох магадлалтай хуудаснуудыг урьдчилан ачаалах бөгөөд ингэснээр тэдгээр нь таныг зочлох үед илүү хурдан ачаална</translation>
 <translation id="2857540653560290388">Chrome-г эхлүүлж байна...</translation>
-<translation id="2857972467023607093">Энэ бүртгэлтэй Chrome-н профайл аль хэдийн байна</translation>
 <translation id="286025080868315611">Chrome зарим татаж авсан файлыг яагаад блоклодог болохыг мэдэж авах</translation>
 <translation id="2861074815332034794">Chrome-г шинэчилж байна (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Та Chrome-д нэвтэрсэн байна!</translation>
@@ -229,7 +227,6 @@
 <translation id="3785324443014631273">Нэвтрэх алдааны улмаас ChromeOS Flex таны өгөгдлийг синк хийж чадсангүй.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome нь Windows 10 эсвэл түүнээс дээших хувилбарыг шаарддаг.</translation>
-<translation id="3835168907083856002">Энэ нь <ph name="USER_EMAIL_ADDRESS" />-д Chrome-н шинэ профайл үүсгэнэ</translation>
 <translation id="383928141529488001">Google Chrome-д Bluetooth төхөөрөмжүүдийг судлахад 
  Bluetooth-н хандалт шаардлагатай. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Бүх Google Chrome-ын цонхнуудыг хааж дахин оролдоно уу.</translation>
@@ -450,7 +447,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6712881677154121168">Татахад алдаа гарлаа: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome-г илүү хурдан болгоорой</translation>
 <translation id="6735387454586646204">ChromeOS Flex-н систем</translation>
-<translation id="6739177684496155661">Chrome-н шинэ профайлд үргэлжлүүлэх үү?</translation>
 <translation id="6750954913813541382">Зөв бичгийн алдааг засахын тулд Chrome таны хөтөч дээр бичсэн текстийг Google-д илгээдэг</translation>
 <translation id="677276454032249905">Chrome-с ямар ч үед гарах уу?</translation>
 <translation id="6794858689789885890">Таныг Chrome-г хаах үед төхөөрөмжөөс тань сайтын өгөгдлийг үргэлж устгана</translation>
@@ -558,7 +554,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7947083960301164556">Шинэ зүйл юу байгааг үзэх</translation>
 <translation id="7951272445806340501">Шинэчлэлтийг хэрэгжүүлэхийн тулд ChromeOS Flex-г дахин эхлүүлэх шаардлагатай.</translation>
 <translation id="7959172989483770734">Chrome-н профайлуудыг удирдах</translation>
-<translation id="7962368738413920945">Сайтууд таны бодож байснаар ажиллаж магадгүй ч таныг Chrome-н бүх цонхыг хаасны дараа таныг санахгүй</translation>
 <translation id="7962410387636238736">Энэ компьютер Windows XP болон Windows Vista-г дэмжихээ больсон тул цаашид Google Chrome-н шинэчлэлтийг авахгүй.</translation>
 <translation id="8005666035647241369">Энэ төхөөрөмж дээрх Google-н Нууц үгний менежерт</translation>
 <translation id="8008534537613507642">Chrome-ийг дахин суулгах</translation>
@@ -658,7 +653,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="919706545465235479">Синкийг эхлүүлэхийн тулд Chrome-г шинэчлэх</translation>
 <translation id="922152298093051471">Chrome-г өөрчлөх</translation>
 <translation id="93760716455950538">ChromeOS Flex-г дахин эхлүүлэх</translation>
-<translation id="940313311831216333">Та бүх төхөөрөмж дээрээ Chrome-н зүйлсдээ хандахын тулд нэвтэрч, дараа нь синк хийхийг асаана уу.</translation>
 <translation id="943390475793766444">Энэ файл аюултай байж магадгүй тул Chrome үүнийг скан хийхийг зөвлөж байна.</translation>
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>
 <translation id="983803489796659991">Шинэчлэлтийн серверт аппликэйшнд зориулсан ямар нэг хэш өгөгдөл байгаагүй тул суулгалт амжилтгүй болсон.</translation>

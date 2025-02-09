@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">Налаштуйте свій новий профіль Chrome</translation>
 <translation id="1547295885616600893">ОС Chrome працює завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Оновити Chrome</translation>
-<translation id="1583073672411044740">Цей профіль Chrome уже використовує <ph name="EXISTING_USER" />. Буде створено новий профіль Chrome для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">Google Chrome використовує вашу камеру.</translation>
 <translation id="1587325591171447154">Файл <ph name="FILE_NAME" /> небезпечний, тому Chrome заблокував його.</translation>
 <translation id="1597911401261118146">Щоб перевірити, чи відомі порушення безпеки даних або інші проблеми не заторкнули ваші паролі, <ph name="BEGIN_LINK" />увійдіть у Chrome<ph name="END_LINK" />.</translation>
@@ -145,7 +144,6 @@
 <translation id="2846251086934905009">Сталася помилка. Не вдалося завершити встановлення. Процес було скасовано.</translation>
 <translation id="2853415089995957805">Chrome попередньо завантажує сторінки, які ви, імовірно, відвідаєте, щоб вони завантажувалися швидше</translation>
 <translation id="2857540653560290388">Запускається Chrome…</translation>
-<translation id="2857972467023607093">Профіль Chrome із цим обліковим записом уже існує</translation>
 <translation id="286025080868315611">Дізнайтеся, чому Chrome блокує деякі завантаження</translation>
 <translation id="2861074815332034794">Оновлення Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Ви ввійшли в Chrome.</translation>
@@ -225,7 +223,6 @@
 <translation id="3785324443014631273">ОС Chrome Flex не змогла синхронізувати ваші дані через помилку входу в систему.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Для роботи Google Chrome потрібно мати ОС Windows 10 або новішої версії.</translation>
-<translation id="3835168907083856002">Буде створено новий профіль Chrome для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="383928141529488001">Для пошуку пристроїв із Bluetooth вебпереглядачу
 Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Закрийте всі вікна Google Chrome і повторіть спробу.</translation>
@@ -442,7 +439,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6712881677154121168">Помилка завантаження: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Пришвидшіть роботу Chrome</translation>
 <translation id="6735387454586646204">Операційна система Chrome Flex</translation>
-<translation id="6739177684496155661">Продовжити в новому профілі Chrome?</translation>
 <translation id="6750954913813541382">Щоб виправляти орфографічні помилки, Chrome надсилає в Google текст, який ви вводите у веб-переглядачі</translation>
 <translation id="677276454032249905">Усе одно вийти з Chrome?</translation>
 <translation id="6794858689789885890">Завжди видаляти дані сайтів із пристрою, коли ви закриваєте Chrome</translation>
@@ -550,7 +546,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7947083960301164556">Переглянути оновлення</translation>
 <translation id="7951272445806340501">Щоб застосувати це оновлення, потрібно перезапустити ОС Chrome Flex.</translation>
 <translation id="7959172989483770734">Керувати профілями Chrome</translation>
-<translation id="7962368738413920945">Сайти, імовірно, працюватимуть належним чином, але дані про ваші дії на них буде очищено, коли ви закриєте всі вікна в Chrome</translation>
 <translation id="7962410387636238736">На цей комп’ютер не надходитимуть оновлення Google Chrome, оскільки Windows XP та Windows Vista більше не підтримуються</translation>
 <translation id="8005666035647241369">У Менеджері паролів Google на цьому пристрої</translation>
 <translation id="8008534537613507642">Перевстановити Chrome</translation>
@@ -650,7 +645,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="919706545465235479">Щоб почати синхронізацію, оновіть Chrome</translation>
 <translation id="922152298093051471">Налаштувати Chrome</translation>
 <translation id="93760716455950538">Перезапустіть ОС Chrome Flex</translation>
-<translation id="940313311831216333">Щоб мати доступ до своїх даних Chrome на всіх пристроях, увійдіть в обліковий запис і ввімкніть синхронізацію.</translation>
 <translation id="943390475793766444">Chrome радить просканувати цей файл, оскільки він може бути небезпечним.</translation>
 <translation id="945522503751344254">Надіслати відгук</translation>
 <translation id="983803489796659991">Не вдалося встановити, оскільки сервер оновлень не має хешованих даних для додатка.</translation>

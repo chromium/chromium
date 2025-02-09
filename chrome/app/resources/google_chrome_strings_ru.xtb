@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">Настройте новый профиль Chrome</translation>
 <translation id="1547295885616600893">Chrome OS работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Обновить Chrome</translation>
-<translation id="1583073672411044740">Пользователь <ph name="EXISTING_USER" /> уже вошел в профиль Chrome. Вы можете создать новый профиль Chrome для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">Google Chrome использует камеру.</translation>
 <translation id="1587325591171447154">Chrome заблокировал файл <ph name="FILE_NAME" /> как опасный.</translation>
 <translation id="1597911401261118146">Чтобы проверить, защищены ли ваши пароли от утечки данных и прочих проблем с безопасностью, <ph name="BEGIN_LINK" />войдите в Chrome<ph name="END_LINK" />.</translation>
@@ -145,7 +144,6 @@
 <translation id="2846251086934905009">Произошла ошибка. Не удалось завершить установку. Она была прервана.</translation>
 <translation id="2853415089995957805">Chrome предварительно загружает страницы, которые вы с большой вероятностью посетите, для ускорения их загрузки.</translation>
 <translation id="2857540653560290388">Запуск Chrome...</translation>
-<translation id="2857972467023607093">Профиль Chrome для этого аккаунта уже существует.</translation>
 <translation id="286025080868315611">Подробнее о том, почему Chrome блокирует скачивание некоторых файлов…</translation>
 <translation id="2861074815332034794">Обновление Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Добро пожаловать в Chrome!</translation>
@@ -225,7 +223,6 @@
 <translation id="3785324443014631273">Chrome OS Flex не удалось синхронизировать данные, так как при входе в аккаунт произошла ошибка.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Для Google Chrome требуется ОС Windows 10 или более поздней версии.</translation>
-<translation id="3835168907083856002">Будет создан новый профиль Chrome для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="383928141529488001">Чтобы найти устройства, предоставьте браузеру Google Chrome доступ к Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Закройте все окна Chrome и повторите попытку снова.</translation>
 <translation id="3873044882194371212">Открыть ссылку в режиме инкогнито браузера Chrome</translation>
@@ -441,7 +438,6 @@
 <translation id="6712881677154121168">Ошибка при скачивании: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome может работать ещё быстрее</translation>
 <translation id="6735387454586646204">Система Chrome OS Flex</translation>
-<translation id="6739177684496155661">Продолжить работу в новом профиле Chrome?</translation>
 <translation id="6750954913813541382">Для проверки правописания Chrome отправляет в Google текст, который вы вводите в браузере.</translation>
 <translation id="677276454032249905">Закрыть Chrome?</translation>
 <translation id="6794858689789885890">Всегда удалять с устройства данные сайтов при закрытии Chrome</translation>
@@ -549,7 +545,6 @@
 <translation id="7947083960301164556">Новые возможности</translation>
 <translation id="7951272445806340501">Чтобы установить обновление, перезапустите Chrome OS Flex.</translation>
 <translation id="7959172989483770734">Управлять профилями Chrome</translation>
-<translation id="7962368738413920945">Скорее всего, сайты сайты будут работать так, как вы ожидаете, но после закрытия всех окон Chrome данные о ваших действиях будут удаляться</translation>
 <translation id="7962410387636238736">Google Chrome больше не будет обновляться на этом компьютере, так как поддержка Windows XP и Windows Vista прекращена.</translation>
 <translation id="8005666035647241369">В Google Менеджере паролей на этом устройстве</translation>
 <translation id="8008534537613507642">Переустановить Chrome</translation>
@@ -649,7 +644,6 @@
 <translation id="919706545465235479">Чтобы начать синхронизацию, обновите Chrome</translation>
 <translation id="922152298093051471">Настроить Chrome</translation>
 <translation id="93760716455950538">Перезапуск Chrome OS Flex</translation>
-<translation id="940313311831216333">Чтобы получить доступ к данным в Chrome на всех своих устройствах, войдите в аккаунт и включите синхронизацию.</translation>
 <translation id="943390475793766444">Chrome рекомендует просканировать этот потенциально вредоносный файл.</translation>
 <translation id="945522503751344254">Отправить отзыв</translation>
 <translation id="983803489796659991">Выполнить установку не удалось, так как на сервере нет никаких хешированных данных для приложения.</translation>

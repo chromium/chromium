@@ -3022,6 +3022,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> എന്ന മൂല്യം അസാധുവാണ്, അത് ഉപയോഗിക്കില്ല.</translation>
 <translation id="6340739886198108203">രഹസ്യാത്മക ഉള്ളടക്കം ദൃശ്യമായിരിക്കുമ്പോൾ സ്ക്രീൻഷോട്ടുകൾ എടുക്കുന്നതോ റെക്കോർഡ് ചെയ്യുന്നതോ അഡ്‌മിൻ നയം ശുപാർശ ചെയ്യുന്നില്ല:</translation>
 <translation id="6341434961864773665">{0,plural, =1{ഈ ഫയൽ <ph name="DESTINATION_NAME" /> എന്നതിലേക്ക് അപ്‌ലോഡ് ചെയ്യാൻ അഡ്‌മിൻ നയം നിർദ്ദേശിക്കുന്നില്ല}other{ഈ ഫയലുകൾ <ph name="DESTINATION_NAME" /> എന്നതിലേക്ക് അപ്‌ലോഡ് ചെയ്യാൻ അഡ്‌മിൻ നയം നിർദ്ദേശിക്കുന്നില്ല}}</translation>
+<translation id="6342069812937806050">ഇപ്പോള്‍‌</translation>
 <translation id="634500758737709758">വഴികൾ</translation>
 <translation id="6348220984832452017">സജീവമായ വ്യതിയാനങ്ങൾ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>

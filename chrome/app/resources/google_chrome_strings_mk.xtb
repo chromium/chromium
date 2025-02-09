@@ -41,7 +41,6 @@
 <translation id="1507198376417198979">Приспособете го вашиот нов профил на Chrome</translation>
 <translation id="1547295885616600893">Chrome OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Ажурирај го Chrome</translation>
-<translation id="1583073672411044740">Корисникот <ph name="EXISTING_USER" /> веќе е најавен на овој профил на Chrome. Ова ќе создаде нов профил на Chrome за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome ја користи вашата камера.</translation>
 <translation id="1587325591171447154">Датотеката <ph name="FILE_NAME" /> е опасна, па затоа Chrome ја блокираше.</translation>
 <translation id="1597911401261118146">За да проверите дали вашите лозинки се заштитени од упад во податоците и други проблеми со безбедноста, <ph name="BEGIN_LINK" />најавете се на Chrome<ph name="END_LINK" />.</translation>
@@ -149,7 +148,6 @@
 <translation id="2846251086934905009">Грешка при инсталирање: инсталаторот не заврши. Инсталацијата е прекината.</translation>
 <translation id="2853415089995957805">Chrome вчитува страници однапред што е веројатно дека ќе ги отворите за да може да се вчитуваат побрзо кога ги отворате</translation>
 <translation id="2857540653560290388">Се стартува Chrome…</translation>
-<translation id="2857972467023607093">Веќе постои профил на Chrome со оваа сметка</translation>
 <translation id="286025080868315611">Дознајте зошто Chrome блокира некои преземања</translation>
 <translation id="2861074815332034794">Chrome се ажурира (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Најавени сте на Chrome!</translation>
@@ -229,7 +227,6 @@
 <translation id="3785324443014631273">ChromeOS Flex не може да ги синхронизира вашите податоци поради грешка при најавување.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Google Chrome бара Windows 10 или понова верзија.</translation>
-<translation id="3835168907083856002">Ова ќе создаде нов профил на Chrome за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Google Chrome бара пристап до Bluetooth за да открива 
  уреди со Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Затворете ги сите прозорци на Google Chrome и пробајте повторно.</translation>
@@ -450,7 +447,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6712881677154121168">Грешка при преземање: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6718739135284199302">Имајте побрз Chrome</translation>
 <translation id="6735387454586646204">Системот ChromeOS Flex</translation>
-<translation id="6739177684496155661">Сакате да продолжите на нов профил на Chrome?</translation>
 <translation id="6750954913813541382">За исправка на правописни грешки, Chrome го испраќа текстот што го пишувате во прелистувачот до Google</translation>
 <translation id="677276454032249905">Сепак да се излезе од Chrome?</translation>
 <translation id="6794858689789885890">Секогаш бришете ги податоците од сајт од вашиот уред кога го затворате Chrome</translation>
@@ -558,7 +554,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7947083960301164556">Прегледајте што има ново</translation>
 <translation id="7951272445806340501">ChromeOS Flex треба да се рестартира за да се примени ажурирањето.</translation>
 <translation id="7959172989483770734">Управувајте со профилите на Chrome</translation>
-<translation id="7962368738413920945">Сајтовите веројатно ќе функционираат според вашите очекувања, но нема да ве паметат по затворање на сите прозорци на Chrome</translation>
 <translation id="7962410387636238736">Компјутеров веќе нема да добива ажурирања за Google Chrome затоа што Windows XP и Windows Vista веќе не се поддржуваат</translation>
 <translation id="8005666035647241369">До „Управникот со лозинки на Google“ на уредов</translation>
 <translation id="8008534537613507642">Преинсталирај го Chrome</translation>
@@ -658,7 +653,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="919706545465235479">Ажурирајте го Chrome за да започнете со синхронизирање</translation>
 <translation id="922152298093051471">Приспособете го Chrome</translation>
 <translation id="93760716455950538">Рестартирајте ја ChromeOS Flex</translation>
-<translation id="940313311831216333">За да пристапувате до вашите работи на Chrome на сите уреди, најавете се и вклучете ја синхронизацијата.</translation>
 <translation id="943390475793766444">Chrome препорачува скенирање на датотекава бидејќи можеби е опасна.</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>
 <translation id="983803489796659991">Инсталацијата не успеа бидејќи серверот за ажурирање нема хаш-податоци за апликацијата.</translation>

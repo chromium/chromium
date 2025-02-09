@@ -41,7 +41,6 @@
 <translation id="1507198376417198979">သင့် Chrome ပရိုဖိုင်ကို စိတ်ကြိုက်ပြင်ပါ</translation>
 <translation id="1547295885616600893">ChromeOS ကို <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ် ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် ရေးဆွဲထားသည်။</translation>
 <translation id="1553358976309200471">Update Chrome</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> ကို ဤ Chrome ပရိုဖိုင်တွင် လက်မှတ်ထိုးဝင်ထားပြီး ဖြစ်သည်။ ၎င်းသည် <ph name="USER_EMAIL_ADDRESS" /> အတွက် Chrome ပရိုဖိုင်အသစ် ပြုလုပ်ပါမည်</translation>
 <translation id="1587223624401073077">Google Chrome iသည် သင်၏ ကင်မရာကို သုံးနေ</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> သည် အန္တရာယ်ရှိသောကြောင့် Chrome က ၎င်းကို ပိတ်ဆို့ထားပါသည်။</translation>
 <translation id="1597911401261118146">သင်၏စကားဝှက်များတွင် ဒေတာပေါက်ကြားမှုနှင့် အခြားသော လုံခြုံရေးပြဿနာများ ရှိ၊ မရှိ စစ်ဆေးရန် <ph name="BEGIN_LINK" />Chrome သို့ လက်မှတ်ထိုးဝင်ပါ<ph name="END_LINK" />။</translation>
@@ -149,7 +148,6 @@
 <translation id="2846251086934905009">ထည့်သွင်းမှုအမှား- ထည့်သွင်းစနစ် အပြီးသတ်၍မရပါ။ ထည့်သွင်းမှုကို ဖျက်သိမ်းလိုက်သည်။</translation>
 <translation id="2853415089995957805">သင်ဝင်ကြည့်နိုင်ဖွယ်ရှိသည့် စာမျက်နှာများသို့ ဝင်ကြည့်အခါ ပိုမိုလျင်မြန်စွာ ပွင့်စေရန် Chrome သည် ၎င်းတို့ကို ကြိုဖွင့်သည်</translation>
 <translation id="2857540653560290388">Chrome ကို ဖွင့်နေသည်...</translation>
-<translation id="2857972467023607093">ဤအကောင့်သုံးထားသော Chrome ပရိုဖိုင် ရှိနှင့်ပြီးဖြစ်သည်</translation>
 <translation id="286025080868315611">ဒေါင်းလုဒ်အချို့ကို Chrome က ဘာကြောင့်ပိတ်ထားကြောင်း လေ့လာရန်</translation>
 <translation id="2861074815332034794">Chrome ကို အပ်ဒိတ်လုပ်နေသည် (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Chrome သို့သင် ဝင်ရောက်ပြီးဖြစ်သည်။</translation>
@@ -229,7 +227,6 @@
 <translation id="3785324443014631273">လက်မှတ်ထိုးဝင်စဉ် အမှားဖြစ်သွားသောကြောင့် ChromeOS Flex က သင့်ဒေတာကို စင့်ခ်လုပ်၍မရပါ။</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome ထည့်သွင်းရန် Windows 10 နှင့်အထက် လိုအပ်သည်။</translation>
-<translation id="3835168907083856002">၎င်းသည် <ph name="USER_EMAIL_ADDRESS" /> အတွက် Chrome ပရိုဖိုင်အသစ် ပြုလုပ်ပါမည်</translation>
 <translation id="383928141529488001">Google Chrome သည် ဘလူးတုသ်သုံးစက်များကို ရှာဖွေရန်
  ဘလူးတုသ်သုံးခွင့် လိုအပ်သည်။ <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">ကျေးဇူးပြုပြီး Google Chrome ဝင်ဒိုးများကို ပိတ်ပြီ ထပ်စမ်းပါ။</translation>
@@ -450,7 +447,6 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="6712881677154121168">ဒေါင်းလုဒ် အမှား- <ph name="DOWNLOAD_ERROR" />။</translation>
 <translation id="6718739135284199302">Chrome ပိုမြန်အောင်လုပ်ခြင်း</translation>
 <translation id="6735387454586646204">ChromeOS Flex စနစ်</translation>
-<translation id="6739177684496155661">Chrome ပရိုဖိုင်အသစ်တွင် ဆက်လုပ်မလား။</translation>
 <translation id="6750954913813541382">စာလုံးပေါင်း အမှားများ ပြင်ရန် Chrome က ဘရောင်ဇာတွင် သင်ရိုက်သည့် စာသားကို Google သို့ ပို့ပါသည်</translation>
 <translation id="677276454032249905">မည်သို့ပင်ဖြစ်စေ Chrome မှ ထွက်လိုပါသလား။</translation>
 <translation id="6794858689789885890">Chrome ကို ပိတ်သည့်အခါ သင့်စက်မှ ဝဘ်ဆိုက်ဒေတာကို အမြဲဖျက်ရန်</translation>
@@ -558,7 +554,6 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="7947083960301164556">အသစ်ပါဝင်သည်များကို ကြည့်ပါ</translation>
 <translation id="7951272445806340501">အပ်ဒိတ်ထည့်သွင်းရန် ChromeOS Flex ကို ပြန်စရမည်။</translation>
 <translation id="7959172989483770734">Chrome ပရိုဖိုင်များ စီမံရန်</translation>
-<translation id="7962368738413920945">ဝဘ်ဆိုက်များက သင်မျှော်မှန်းထားသည့်အတိုင်း လုပ်ဆောင်နိုင်သော်လည်း Chrome ၏ ဝင်းဒိုးအားလုံးပိတ်လိုက်ပါက သင့်ကို မှတ်မိမည်မဟုတ်ပါ</translation>
 <translation id="7962410387636238736">Windows XP နှင့် Windows Vista ကို ဆက်မပံ့ပိုးတော့သောကြောင့် ဤကွန်ပျူတာသည် Google Chrome အပ်ဒိတ်များကို မရယူတော့ပါ။</translation>
 <translation id="8005666035647241369">ဤစက်ရှိ ‘Google စကားဝှက်မန်နေဂျာ’ သို့</translation>
 <translation id="8008534537613507642">Chrome ကို ပြန်လည်တပ်ဆင်ရန်</translation>
@@ -658,7 +653,6 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="919706545465235479">စင့်ခ်လုပ်ခြင်းစတင်ရန် Chrome ကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="922152298093051471">Chrome ကို စိတ်ကြိုက်ပြင်ရန်</translation>
 <translation id="93760716455950538">ChromeOS Flex ကို ပြန်စပါ</translation>
-<translation id="940313311831216333">သင့်စက်အားလုံးတွင် သင်၏ Chrome နှင့်သက်ဆိုင်သည့်အရာများကို သုံးရန် လက်မှတ်ထိုးဝင်ပြီး စင့်ခ်လုပ်ခြင်းကို ဖွင့်ပါ။</translation>
 <translation id="943390475793766444">ဤဖိုင်သည် အန္တရာယ်ရှိနိုင်သဖြင့် စကင်ဖတ်ရန် Chrome က အကြံပြုသည်။</translation>
 <translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>
 <translation id="983803489796659991">အပ်ဒိတ်ဆာဗာတွင် အပလီကေးရှင်းအတွက် မည်သည့်အသွင်ဝှက်သည့် ဒေတာမျှ မရှိသောကြောင့် ထည့်သွင်းမှုမအောင်မြင်ပါ။</translation>

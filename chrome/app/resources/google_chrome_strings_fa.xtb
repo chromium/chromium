@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">‏سفارشی کردن نمایه جدید Chrome</translation>
 <translation id="1547295885616600893">‏ارائه ChromeOS به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی ممکن شده است.</translation>
 <translation id="1553358976309200471">‏به‌روزرسانی Chrome</translation>
-<translation id="1583073672411044740">‏<ph name="EXISTING_USER" /> قبلاً به سیستم این نمایه Chrome وارد شده است. با این کار، نمایه Chrome جدیدی برای <ph name="USER_EMAIL_ADDRESS" /> ایجاد خواهد شد</translation>
 <translation id="1587223624401073077">‏Google Chrome درحال استفاده از دوربین شما است.</translation>
 <translation id="1587325591171447154">‏<ph name="FILE_NAME" /> خطرناک است، بنابراین Chrome آن را مسدود کرده ست.</translation>
 <translation id="1597911401261118146">‏برای بررسی اینکه از گذرواژه‌هایتان دربرابر نقض داده یا دیگر مشکلات امنیتی محافظت می‌شود، <ph name="BEGIN_LINK" />به سیستم Chrome وارد شوید<ph name="END_LINK" />.</translation>
@@ -145,7 +144,6 @@
 <translation id="2846251086934905009">خطای نصب: نصب‌کننده کامل نشد. نصب لغو شد.</translation>
 <translation id="2853415089995957805">‏‫Chrome صفحه‌هایی را که احتمالاً از آن‌ها بازدید خواهید کرد پیش‌بارگیری می‌کند تا وقتی از آن‌ها بازدید می‌کنید سریع‌تر بارگیری شوند</translation>
 <translation id="2857540653560290388">‏درحال راه‌اندازی Chrome…</translation>
-<translation id="2857972467023607093">‏درحال‌حاضر یک نمایه Chrome با این حساب وجود دارد</translation>
 <translation id="286025080868315611">‏ببینید چرا Chrome برخی‌از بارگیری‌ها را مسدود می‌کند</translation>
 <translation id="2861074815332034794">‏درحال به‌روزرسانی Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">‏شما در حال حاضر وارد سیستم Chrome شده‌اید!</translation>
@@ -225,7 +223,6 @@
 <translation id="3785324443014631273">‏به‌دلیل خطای ورود به سیستم، ChromeOS Flex نتوانست داده‌هایتان را همگام‌سازی کند.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">‏Google Chrome به Windows 10 یا بالاتر نیاز دارد.</translation>
-<translation id="3835168907083856002">‏با این کار، نمایه Chrome جدیدی برای <ph name="USER_EMAIL_ADDRESS" /> ایجاد خواهد شد</translation>
 <translation id="383928141529488001">‏‫Google Chrome برای کاوش دستگاه‌های بلوتوث
 باید به بلوتوث دسترسی داشته باشد. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">‏لطفاً همه پنجره‌های Google Chrome را ببندید و دوباره امتحان کنید.</translation>
@@ -442,7 +439,6 @@
 <translation id="6712881677154121168">خطای بارگیری: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">‏سرعت Chrome را افزایش دهید</translation>
 <translation id="6735387454586646204">‏سیستم ChromeOS Flex</translation>
-<translation id="6739177684496155661">‏در نمایه جدیدی از Chrome ادامه می‌دهید؟</translation>
 <translation id="6750954913813541382">‏Chrome برای رفع غلط‌های املایی، نوشتاری را که در مرورگر تایپ می‌کنید به Google ارسال می‌کند</translation>
 <translation id="677276454032249905">‏درهرصورت از Chrome خارج می‌شوید؟</translation>
 <translation id="6794858689789885890">‏داده‌های سایت همواره بعداز بستن Chrome از دستگاه حذف شود</translation>
@@ -550,7 +546,6 @@
 <translation id="7947083960301164556">مشاهده ویژگی‌های جدید</translation>
 <translation id="7951272445806340501">‏برای اعمال به‌روزرسانی، ChromeOS Flex باید بازراه‌اندازی شود.</translation>
 <translation id="7959172989483770734">‏مدیریت نمایه‌های Chrome</translation>
-<translation id="7962368738413920945">‏سایت‌ها احتمالاً عملکردی مطابق انتظار شما خواهند داشت اما بعداز بسته شدن همه پنجره‌های Chrome، شما را به‌یاد نخواهند داشت</translation>
 <translation id="7962410387636238736">‏این رایانه دیگر به‌روزرسانی‌های Google Chrome را دریافت نمی‌کند زیرا Windows XP و Windows Vista دیگر پشتیبانی نمی‌شوند</translation>
 <translation id="8005666035647241369">‏به «مدیر گذرواژه Google» در این دستگاه</translation>
 <translation id="8008534537613507642">‏نصب مجدد Chrome</translation>
@@ -650,7 +645,6 @@
 <translation id="919706545465235479">‏به‌روزرسانی Chrome برای شروع همگام‌سازی</translation>
 <translation id="922152298093051471">‏سفارشی‌سازی Chrome</translation>
 <translation id="93760716455950538">‏بازراه‌اندازی ChromeOS Flex</translation>
-<translation id="940313311831216333">‏برای دسترسی به چیزهای Chrome در همه دستگاه‌هایتان، به سیستم وارد شوید، سپس همگام‌سازی را روشن کنید.</translation>
 <translation id="943390475793766444">‏Chrome توصیه می‌کند این فایل را اسکن کنید زیرا ممکن است خطرناک باشد.</translation>
 <translation id="945522503751344254">ارسال بازخورد</translation>
 <translation id="983803489796659991">نصب انجام نشد چون سرور به‌روزرسانی هیچ‌گونه داده درهمی برای برنامه ندارد.</translation>
