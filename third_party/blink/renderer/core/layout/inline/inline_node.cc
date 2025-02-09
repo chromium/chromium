@@ -1837,12 +1837,10 @@ static LayoutUnit ComputeContentSize(InlineNode node,
     STACK_ALLOCATED();
 
    public:
-    using ItemIterator = HeapVector<InlineItem>::const_iterator;
-
     LayoutUnit position;
     LayoutUnit max_size;
     const InlineItemsData& items_data;
-    ItemIterator next_item;
+    wtf_size_t next_item_index = 0;
     const LineBreaker::MaxSizeCache& max_size_cache;
     FloatsMaxSize* floats;
     bool is_after_break = true;
@@ -1852,26 +1850,28 @@ static LayoutUnit ComputeContentSize(InlineNode node,
                                 const LineBreaker::MaxSizeCache& max_size_cache,
                                 FloatsMaxSize* floats)
         : items_data(items_data),
-          next_item(items_data.items.begin()),
           max_size_cache(max_size_cache),
           floats(floats) {}
 
     // Add all text items up to |end|. The line break results for min size
     // may break text into multiple lines, and may remove trailing spaces. For
     // max size, use the original text widths from InlineItem instead.
-    void AddTextUntil(ItemIterator end) {
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-      for (; next_item != end; UNSAFE_TODO(++next_item)) {
-        if (next_item->Type() == InlineItem::kOpenTag &&
-            next_item->GetLayoutObject()->IsInlineRubyText()) {
+    void AddTextUntil(wtf_size_t end_item_index) {
+      const base::span<const InlineItem> items = base::span{items_data.items}
+                                                     .first(end_item_index)
+                                                     .subspan(next_item_index);
+      next_item_index = end_item_index;
+      for (const InlineItem& item : items) {
+        if (item.Type() == InlineItem::kOpenTag &&
+            item.GetLayoutObject()->IsInlineRubyText()) {
           ++annotation_nesting_level;
-        } else if (next_item->Type() == InlineItem::kCloseTag &&
-                   next_item->GetLayoutObject()->IsInlineRubyText()) {
+        } else if (item.Type() == InlineItem::kCloseTag &&
+                   item.GetLayoutObject()->IsInlineRubyText()) {
           --annotation_nesting_level;
-        } else if (next_item->Type() == InlineItem::kText &&
-                   next_item->Length() && annotation_nesting_level == 0) {
-          DCHECK(next_item->TextShapeResult());
-          const ShapeResult& shape_result = *next_item->TextShapeResult();
+        } else if (item.Type() == InlineItem::kText && item.Length() &&
+                   annotation_nesting_level == 0) {
+          DCHECK(item.TextShapeResult());
+          const ShapeResult& shape_result = *item.TextShapeResult();
           position += shape_result.SnappedWidth().ClampNegativeToZero();
         }
       }
@@ -1881,9 +1881,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
       // Add all text up to the end of the line. There may be spaces that were
       // removed during the line breaking.
       CHECK_LE(line_info.EndItemIndex(), items_data.items.size());
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-      AddTextUntil(
-          UNSAFE_TODO(items_data.items.begin() + line_info.EndItemIndex()));
+      AddTextUntil(line_info.EndItemIndex());
       max_size = floats->ComputeMaxSizeForLine(position.ClampNegativeToZero(),
                                                max_size);
       position = LayoutUnit();
@@ -1892,7 +1890,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
 
     void AddTabulationCharacters(const InlineItem& item, unsigned length) {
       DCHECK_GE(length, 1u);
-      AddTextUntil(items_data.ToItemIterator(item));
+      AddTextUntil(items_data.ToItemIndex(item));
       DCHECK(item.Style());
       const ComputedStyle& style = *item.Style();
       const Font* font = style.GetFont();
@@ -1911,8 +1909,8 @@ static LayoutUnit ComputeContentSize(InlineNode node,
       position += run_advance.ToCeil<LayoutUnit>().ClampNegativeToZero();
     }
 
-    LayoutUnit Finish(ItemIterator end) {
-      AddTextUntil(end);
+    LayoutUnit Finish() {
+      AddTextUntil(items_data.items.size());
       return floats->ComputeMaxSizeForLine(position.ClampNegativeToZero(),
                                            max_size);
     }
@@ -2066,7 +2064,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
       // it has glyph-split InlineItemResults. The sum of InlineItem
       // widths and the sum of InlineItemResult widths can be different.
     }
-    *max_size_out = max_size_from_min_size.Finish(items_data.items.end());
+    *max_size_out = max_size_from_min_size.Finish();
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
     // Check the max size matches to the value computed from 2 pass.
