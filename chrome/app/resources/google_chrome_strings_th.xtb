@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">ปรับแต่งโปรไฟล์ Chrome ใหม่</translation>
 <translation id="1547295885616600893">Chrome OS เกิดขึ้นได้ด้วยการสนับสนุนจาก<ph name="BEGIN_LINK_CROS_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_CROS_OSS" />อื่นเพิ่มเติม</translation>
 <translation id="1553358976309200471">อัปเดต Chrome</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้โปรไฟล์ Chrome นี้แล้ว การดำเนินการนี้จะสร้างโปรไฟล์ Chrome ใหม่สำหรับ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome ใช้กล้องของคุณอยู่</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> เป็นอันตราย Chromium จึงบล็อกไว้</translation>
 <translation id="1597911401261118146"><ph name="BEGIN_LINK" />ลงชื่อเข้าใช้ Chrome<ph name="END_LINK" /> เพื่อตรวจสอบว่ารหัสผ่านของคุณไม่ได้รับผลกระทบจากการละเมิดข้อมูลและปัญหาด้านความปลอดภัยอื่นๆ</translation>
@@ -145,7 +144,6 @@
 <translation id="2846251086934905009">ข้อผิดพลาดในการติดตั้ง: โปรแกรมติดตั้งทำงานไม่สมบูรณ์ ล้มเลิกการติดตั้งแล้ว</translation>
 <translation id="2853415089995957805">Chrome จะโหลดหน้าเว็บที่คุณอาจเข้าชมไว้ล่วงหน้าเพื่อให้หน้าเหล่านั้นโหลดเร็วขึ้นเมื่อคุณเข้าชม</translation>
 <translation id="2857540653560290388">กำลังเปิด Chrome...</translation>
-<translation id="2857972467023607093">มีโปรไฟล์ Chrome ที่ใช้บัญชีนี้อยู่แล้ว</translation>
 <translation id="286025080868315611">ดูสาเหตุที่ Chrome บล็อกการดาวน์โหลดบางรายการ</translation>
 <translation id="2861074815332034794">กำลังอัปเดต Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">คุณได้ลงชื่อเข้าใช้ Chrome แล้ว!</translation>
@@ -225,7 +223,6 @@
 <translation id="3785324443014631273">Chrome OS Flex ซิงค์ข้อมูลไม่ได้เนื่องจากเกิดข้อผิดพลาดในการลงชื่อเข้าใช้</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Google Chrome ต้องใช้ Windows 10 ขึ้นไป</translation>
-<translation id="3835168907083856002">การดำเนินการนี้จะสร้างโปรไฟล์ Chrome ใหม่สำหรับ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Google Chrome ต้องการสิทธิ์เข้าถึงบลูทูธเพื่อสำรวจอุปกรณ์บลูทูธ <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">โปรดปิดหน้าต่าง Google Chrome ทั้งหมดและลองใหม่อีกครั้ง</translation>
 <translation id="3873044882194371212">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตนของ Chrome</translation>
@@ -441,7 +438,6 @@
 <translation id="6712881677154121168">ข้อผิดพลาดในการดาวน์โหลด: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6718739135284199302">ทำให้ Chrome เร็วขึ้น</translation>
 <translation id="6735387454586646204">ระบบ Chrome OS Flex</translation>
-<translation id="6739177684496155661">ดำเนินการต่อในโปรไฟล์ Chrome ใหม่ไหม</translation>
 <translation id="6750954913813541382">Chrome จะส่งข้อความที่คุณพิมพ์ในเบราว์เซอร์ไปยัง Google เพื่อแก้ไขข้อผิดพลาดของการสะกดคำ</translation>
 <translation id="677276454032249905">ออกจาก Chrome ใช่ไหม</translation>
 <translation id="6794858689789885890">ลบข้อมูลเว็บไซต์จากอุปกรณ์เสมอเมื่อปิด Chrome</translation>
@@ -549,7 +545,6 @@
 <translation id="7947083960301164556">ดูสิ่งใหม่ๆ</translation>
 <translation id="7951272445806340501">Chrome OS Flex ต้องรีสตาร์ทเพื่อใช้การอัปเดต</translation>
 <translation id="7959172989483770734">จัดการโปรไฟล์ Chrome</translation>
-<translation id="7962368738413920945">เว็บไซต์อาจทำงานได้ตามที่ต้องการแต่จะไม่จดจำคุณหลังจากที่ปิดหน้าต่าง Chrome ทั้งหมด</translation>
 <translation id="7962410387636238736">คอมพิวเตอร์เครื่องนี้จะไม่ได้รับการอัปเดต Google Chrome อีกต่อไปเพราะระบบไม่รองรับ Windows XP และ Windows Vista แล้ว</translation>
 <translation id="8005666035647241369">ที่เครื่องมือจัดการรหัสผ่านบน Google ในอุปกรณ์นี้</translation>
 <translation id="8008534537613507642">ติดตั้ง Chrome ใหม่</translation>
@@ -649,7 +644,6 @@
 <translation id="919706545465235479">อัปเดต Chrome เพื่อเริ่มการซิงค์</translation>
 <translation id="922152298093051471">ปรับแต่ง Chrome</translation>
 <translation id="93760716455950538">รีสตาร์ท Chrome OS Flex</translation>
-<translation id="940313311831216333">หากต้องการเข้าถึงข้อมูล Chrome ในอุปกรณ์ทั้งหมด ให้ลงชื่อเข้าใช้แล้วเปิดการซิงค์</translation>
 <translation id="943390475793766444">Chrome แนะนำให้สแกนไฟล์นี้เนื่องจากอาจเป็นอันตราย</translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
 <translation id="983803489796659991">การติดตั้งไม่สำเร็จเนื่องจากเซิร์ฟเวอร์การอัปเดตไม่มีข้อมูลแฮชสำหรับแอปพลิเคชัน</translation>

@@ -133,7 +133,6 @@
 <translation id="2799223571221894425">다시 시작</translation>
 <translation id="2803971713792056305">내 Chromium</translation>
 <translation id="2806241689335397269">Chromium에서 생일, 나이, 여권 번호와 같은 양식 정보를 저장할지 묻는 메시지가 표시됩니다.</translation>
-<translation id="2837693172913560447"><ph name="USER_EMAIL_ADDRESS" />님을 위한 새 Chromium 프로필이 생성됩니다.</translation>
 <translation id="2841525013647267359">출발어</translation>
 <translation id="2846251086934905009">설치 오류: 설치 프로그램이 완료되지 않았습니다. 설치가 중단되었습니다.</translation>
 <translation id="2847479871509788944">Chromium에서 제거...</translation>
@@ -176,7 +175,6 @@
 <translation id="3296368748942286671">Chromium 종료 후에도 백그라운드 앱을 계속 실행</translation>
 <translation id="3313189106987092621">Chromium에서 안전하지 않은 연결을 사용해 사이트를 로드하기 전에 경고를 표시합니다.</translation>
 <translation id="3316771292331273802">Chromium에 로그인한 경우 Google 계정을 제외한 모든 Chromium 창을 닫으면 대부분의 사이트에서 로그아웃됩니다. 사이트에서 나를 기억하도록 하려면 <ph name="SETTINGS_LINK" />하세요.</translation>
-<translation id="3350761136195634146">이 계정을 사용하는 Chromium 프로필이 이미 존재합니다.</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">기존 Chromium 프로필로 전환하시겠습니까?</translation>
 <translation id="3412460710772753638">기기의 비밀번호 관리자에 업데이트합니다.</translation>
@@ -259,7 +257,6 @@
 <translation id="4534145890176164066">Chromium이 양식을 더 잘 이해하고 더 빠르게 자동 완성할 수 있습니다.</translation>
 <translation id="4536805923587466102">이미 다른 Chromium 프로필에 <ph name="USER_EMAIL_ADDRESS" /> 계정으로 로그인되어 있습니다</translation>
 <translation id="4545268686623374213">Chromium은 이 탭을 비활성화하여 탐색 환경을 개선하고 빠른 속도를 유지할 수 있습니다.</translation>
-<translation id="454579500955453258">새 Chromium 프로필로 계속하시겠습니까?</translation>
 <translation id="4548534452171747496">Chromium에서 페이지를 미리 로드하여 더 빠르게 탐색하고 검색할 수 있습니다. <ph name="BEGIN_LINK" />페이지 미리 로드에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" />(으)로 로그인되어 있습니다. 이제 로그인한 모든 기기에서 북마크, 방문 기록 및 기타 설정에 액세스할 수 있습니다.</translation>
 <translation id="4570813286784708942">사용자가 세이프 브라우징을 사용 중지했으며 파일을 확인할 수 없기 때문에 Chromium에서 이 다운로드를 차단했습니다.</translation>
@@ -295,7 +292,6 @@
 <translation id="5224391634244552924">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Chromium에서 확인할 수 있습니다.</translation>
 <translation id="5231355151045086930">Chromium에서 로그아웃</translation>
 <translation id="5234764350956374838">닫기</translation>
-<translation id="5252179775517634216"><ph name="EXISTING_USER" />님이 이미 Chromium 프로필에 로그인되어 있습니다. <ph name="USER_EMAIL_ADDRESS" />님을 위한 새 Chromium 프로필이 생성됩니다.</translation>
 <translation id="5277894862589591112">변경사항을 적용하려면 Chromium을 다시 실행하세요.</translation>
 <translation id="5286907366254680517">감지됨</translation>
 <translation id="5294316920224716406">시크릿 모드로 탐색할 때 Chromium에서 안전하지 않은 연결을 사용해 사이트를 로드하기 전에 경고를 표시합니다.</translation>
@@ -411,7 +407,6 @@
 <translation id="6600016381025017075">이 페이지에 표시된 모든 항목을 검색하세요</translation>
 <translation id="6613594504749178791">변경사항은 다음에 Chromium을 다시 시작할 때 적용됩니다.</translation>
 <translation id="665732753414869868">Chromium에서 주변의 3D 지도를 만들려면 카메라 권한이 필요합니다.</translation>
-<translation id="6663852025006259149">사이트가 제대로 작동하지만 Chromium 창을 모두 닫으면 데이터는 전부 삭제됩니다.</translation>
 <translation id="6669284030132180248">Google 계정에도 북마크를 저장하면 Chromium에서 제품 가격을 추적하고 가격이 인하되면 알림을 받을 수 있습니다.</translation>
 <translation id="6676384891291319759">인터넷 연결</translation>
 <translation id="668175097507315160">로그인 중 오류가 발생하여 ChromiumOS에서 데이터를 동기화할 수 없습니다.</translation>
@@ -423,7 +418,6 @@
 일부 기능을 사용할 수 없습니다. 다른 프로필 디렉터리를 지정하거나 Chromium의 새로운 버전을 사용하시기 바랍니다.</translation>
 <translation id="6729124504294600478">맞춤설정 및 기타 기능을 사용하려면 웹 및 앱 활동 그리고 연결된 Google 서비스에 Chromium을 포함하세요</translation>
 <translation id="6734291798041940871">모든 사용자가 사용할 수 있도록 컴퓨터에 Chromium이 이미 설치되어 있습니다.</translation>
-<translation id="673636774878526923">모든 기기에서 Chromium 계정 정보에 액세스하려면 로그인한 후 동기화를 사용 설정하세요.</translation>
 <translation id="674245979920622322">최근에 사이트를 방문하지 않았습니다. Chromium에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 권한 <ph name="COUNT" />개를 삭제했습니다.</translation>
 <translation id="67706546131546258">위험할 수 있는 파일이므로 검사하는 것이 좋습니다.</translation>
 <translation id="6779406956731413166">ChromiumOS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>

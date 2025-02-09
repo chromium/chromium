@@ -3018,6 +3018,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> విలువ చెల్లదు, ఉపయోగించబడదు.</translation>
 <translation id="6340739886198108203">గోప్యమైన కంటెంట్ కనిపించినప్పుడు, దానిని స్క్రీన్‌షాట్‌లు తీయవద్దని లేదా రికార్డ్ చేయవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది:</translation>
 <translation id="6341434961864773665">{0,plural, =1{ఈ ఫైల్‌ను <ph name="DESTINATION_NAME" />‌కు అప్‌లోడ్ చేయవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది}other{ఈ ఫైల్స్‌ను <ph name="DESTINATION_NAME" />‌కు అప్‌లోడ్ చేయవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది}}</translation>
+<translation id="6342069812937806050">ఇప్పుడే</translation>
 <translation id="634500758737709758">దిశలు</translation>
 <translation id="6348220984832452017">యాక్టివ్‌గా ఉన్న వేరియేషన్‌లు</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" />‌ను ఇన్‌స్టాల్ చేయండి</translation>

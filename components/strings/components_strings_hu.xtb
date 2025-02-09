@@ -3020,6 +3020,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="633770708279464947">A(z) <ph name="SECURE_DNS_SALT" /> érték érvénytelen, és nem fogja használni a rendszer.</translation>
 <translation id="6340739886198108203">A rendszergazda által beállított házirend nem javasolja képernyőképek vagy felvételek készítését, amikor a következő bizalmas tartalmak láthatók:</translation>
 <translation id="6341434961864773665">{0,plural, =1{A rendszergazda által beállított házirend nem javasolja ennek a fájlnak a feltöltését a következő helyre: <ph name="DESTINATION_NAME" />}other{A rendszergazda által beállított házirend nem javasolja ezeknek a fájloknak a feltöltését a következő helyre: <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="6342069812937806050">Éppen most</translation>
 <translation id="634500758737709758">Útvonalterv</translation>
 <translation id="6348220984832452017">Aktív változatok</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> telepítése</translation>

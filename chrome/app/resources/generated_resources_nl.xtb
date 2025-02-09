@@ -655,7 +655,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1454223536435069390">&amp;Screenshot maken</translation>
 <translation id="145432137617179457">Talen voor spellingcontrole</translation>
 <translation id="1455119378540982311">Vensterformaten vooraf instellen</translation>
-<translation id="1456499573534615137">Hiermee kun je aangepaste thema's voor Chrome ontwerpen</translation>
 <translation id="1456849775870359518">Je tabbladen worden opnieuw geopend</translation>
 <translation id="1457907785077086338">Kleur van app-badge</translation>
 <translation id="146000042969587795">Dit frame is geblokkeerd omdat het onbeveiligde content bevat.</translation>
@@ -1364,6 +1363,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1936157145127842922">Weergeven in map</translation>
 <translation id="1936931585862840749">Gebruik een cijfer om aan te geven hoeveel exemplaren er moeten worden afgedrukt (1-<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Kan type containerarchitectuur <ph name="ARCHITECTURE_CONTAINER" /> niet importeren met dit apparaat. Dit apparaat is <ph name="ARCHITECTURE_DEVICE" />. Je kunt proberen deze container te herstellen op een ander apparaat of je kunt toegang krijgen tot bestanden in deze containerimage door ze te openen in de app Bestanden.</translation>
+<translation id="1938116692670653897">Huidig kleurenthema</translation>
 <translation id="1938351510777341717">Externe opdracht</translation>
 <translation id="1940221956626514677">Werkbalk aanpassen</translation>
 <translation id="1940546824932169984">Verbonden apparaten</translation>
@@ -2130,6 +2130,10 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2462332841984057083">Steam wordt al ingesteld. Wacht tot het instellen is afgerond.</translation>
 <translation id="2462724976360937186">Sleutel-ID van certificeringsinstantie</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> toegevoegd</translation>
+<translation id="2464075479326723132">Je ziet voorgestelde bestanden zodat je makkelijk terug kunt gaan naar je meest recente activiteit in Microsoft SharePoint en OneDrive.
+        <ph name="BREAK" />
+<ph name="BREAK" />
+Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het gedeelte Chrome aanpassen.</translation>
 <translation id="2464079411014186876">IJs</translation>
 <translation id="2467755475704469005">Geen apparaat waargenomen. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" /> en <ph name="NUM_OTHER_MEMBERS" /> anderen</translation>
@@ -3017,7 +3021,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3090871774332213558">'<ph name="DEVICE_NAME" />' gekoppeld</translation>
 <translation id="3093714882666365141">Niet toestaan dat sites betalingshandlers installeren</translation>
 <translation id="3094080575472025333">Apps blokkeren</translation>
-<translation id="3094141017404513551">Hierdoor worden je browsegegevens gescheiden van <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Verloopt vandaag}=1{Verloopt morgen}other{Verloopt over # dagen}}</translation>
 <translation id="3094521107841754472">De prijs is gewijzigd van <ph name="PREVIOUS_PRICE" /> naar <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Bookmarks, wachtwoorden en andere browsegegevens worden gesynchroniseerd met het primaire account.</translation>
@@ -3120,7 +3123,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3177909033752230686">Brontaal:</translation>
 <translation id="3177914167275935955">Je apparaat bevat een Chrome Education Upgrade, maar je gebruikersnaam is niet gekoppeld aan een Google for Education-account. Ga op een secundair apparaat naar g.co/workspace/edusignup om een Google for Education-account te maken.</translation>
 <translation id="3179982752812949580">Lettertype</translation>
-<translation id="3180284704187420717">Sla je bookmarks, wachtwoorden en meer op met synchronisatie</translation>
 <translation id="3180990259147710757">Je kaak naar links bewegen</translation>
 <translation id="3181825792072797598">Synchronisatie aanzetten</translation>
 <translation id="3181954750937456830">Safe Browsing (hiermee worden jij en je apparaat beschermd tegen gevaarlijke sites)</translation>
@@ -3989,6 +3991,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3787434344076711519">Wachten op vertaling</translation>
 <translation id="3788301286821743879">De kiosk-app kan niet worden gestart.</translation>
 <translation id="3788401245189148511">De apps/extensies zouden nu het volgende kunnen doen:</translation>
+<translation id="3789432704615470433">SharePoint- en OneDrive-bestanden</translation>
 <translation id="3789841737615482174">Installeren</translation>
 <translation id="3790417903123637354">Er is iets misgegaan. Probeer het later opnieuw</translation>
 <translation id="379082410132524484">Je pas is verlopen</translation>
@@ -6175,6 +6178,7 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5360150013186312835">In werkbalk bekijken</translation>
 <translation id="5362741141255528695">Selecteer een privésleutelbestand.</translation>
 <translation id="536278396489099088">ChromeOS-systeemstatus en -rapporten</translation>
+<translation id="5362916924854054326">SharePoint- en OneDrive-bestanden niet tonen</translation>
 <translation id="5363109466694494651">Powerwash en terugzetten</translation>
 <translation id="5365881113273618889">De map die je hebt geselecteerd, bevat gevoelige bestanden. Weet je zeker dat je '<ph name="APP_NAME" />' permanente schrijftoegang wilt geven tot deze map?</translation>
 <translation id="536638840841140142">Geen</translation>
@@ -8793,7 +8797,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7273894023751806510">Altijd voorkomen dat <ph name="HOST" /> je MIDI-apparaten bedient en herprogrammeert</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> tot volledig opgeladen</translation>
 <translation id="727595954130325265">Nu winkelen</translation>
-<translation id="7278164481614262110">Thema's maken met AI</translation>
 <translation id="727952162645687754">Downloadfout</translation>
 <translation id="7280649757394340890">Spraakinstellingen voor tekst-naar-spraak</translation>
 <translation id="7280877790564589615">Rechten gevraagd</translation>
@@ -10752,6 +10755,10 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="865936634714975126">Voeg een queryparameter toe in de URL om typen te selecteren bij het laden van de pagina. Voorbeeld: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Contacten voor <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Venster omlaag verplaatst</translation>
+<translation id="8660288500924118793">Je ziet je agenda zodat je makkelijk naar je volgende afspraak in Outlook-agenda kunt gaan.
+       <ph name="BREAK" />
+<ph name="BREAK" />
+Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het gedeelte Chrome aanpassen.</translation>
 <translation id="8661290697478713397">Link openen in inco&amp;gnitovenster</translation>
 <translation id="8662474268934425487">Inloggen op <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Deelnemen aan <ph name="TYPE" />-netwerk</translation>

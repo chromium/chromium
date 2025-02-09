@@ -41,7 +41,6 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="1507198376417198979">Yenza ngendlela oyifisayo iphrofayela yakho entsha ye-Chrome</translation>
 <translation id="1547295885616600893">I-ChromeOS Flex yenzeka ngenxa <ph name="BEGIN_LINK_CROS_OSS" />yesofthiwe yomthombo ovulekile eyengeziwe<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Buyekeza i-Chrome</translation>
-<translation id="1583073672411044740">U-<ph name="EXISTING_USER" /> usengenile ngemvume kakade kule phrofayela ye-Chrome. Lokhu kuzodalela u-<ph name="USER_EMAIL_ADDRESS" /> iphrofayela entsha ye-Chrome</translation>
 <translation id="1587223624401073077">I-Google Chrome isebenzisa ikhamela yakho.</translation>
 <translation id="1587325591171447154">I-<ph name="FILE_NAME" /> iyingozi, ngakho-ke i-Chrome iyivimbile.</translation>
 <translation id="1597911401261118146">Ukuze uhlole uma ngabe amaphasiwedi akho aphephile kusukela ekuphulweni kwedatha nakwezinye izinkinga zokuvikela, <ph name="BEGIN_LINK" />ngena ngemvume ku-<ph name="END_LINK" />.</translation>
@@ -149,7 +148,6 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="2846251086934905009">Iphutha lokufaka: Isifaki asiqedanga. Ukufakwa kukhanseliwe.</translation>
 <translation id="2853415089995957805">I-Chrome ilayisha kusengaphambili amakhasi okungenzeka uwavakashele, ukuze alayishe ngokushesha lapho uwavakashela</translation>
 <translation id="2857540653560290388">Iqalisa i-Chrome...</translation>
-<translation id="2857972467023607093">Iphrofayela ye-Chrome enale akhawunti isikhona kakade</translation>
 <translation id="286025080868315611">Funda ukuthi kungani i-Chrome ivimbela ukudawuniloda okuthile</translation>
 <translation id="2861074815332034794">Ibuyekeza i-Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Ungene ngemvume ku-Chrome!</translation>
@@ -229,7 +227,6 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="3785324443014631273">I-ChromeOS Flex ayikwazanga ukuvumelanisa idatha yakho ngenxa yephutha lokungena ngemvume.</translation>
 <translation id="3795971588916395511">I-Google ChromeOS</translation>
 <translation id="3809772425479558446">I-Google Chrome idinga i-Windows 7 noma ngaphezulu.</translation>
-<translation id="3835168907083856002">Lokhu kuzodalela u-<ph name="USER_EMAIL_ADDRESS" /> iphrofayela entsha ye-Chrome</translation>
 <translation id="383928141529488001">I-Google Chrome idinga ukufinyelela kwe-Bluetooth ukuze ihlole amadivayisi we-Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Sicela uvale wonke amawindi we-Google Chrome bese uzama futhi.</translation>
 <translation id="3873044882194371212">Vula isixhumanisi kuwindi le-Chrome inco&amp;gnito</translation>
@@ -449,7 +446,6 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="6712881677154121168">Iphutha lokudawuniloda: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Yenza i-Chrome isheshe</translation>
 <translation id="6735387454586646204">Isistimu ye-ChromeOS Flex</translation>
-<translation id="6739177684496155661">Qhubeka kuphrofayela entsha ye-Chrome?</translation>
 <translation id="6750954913813541382">Ukuze kulungiswe amaphutha okupeletwa, i-Chrome ithumela umbhalo owuthayiphayo kusiphequluli ku-Google</translation>
 <translation id="677276454032249905">Phuma ku-Chrome noma kunjalo?</translation>
 <translation id="6794858689789885890">Yisule njalo idatha yesayithi kudivayisi yakho lapho uvala i-Chrome</translation>
@@ -557,7 +553,6 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="7947083960301164556">Buka Okusha</translation>
 <translation id="7951272445806340501">I-ChromeOS Flex idinga ukuqalwa kabusha ukuze isibuyekezo sisebenze.</translation>
 <translation id="7959172989483770734">Phatha Amaphrofayela e-Chrome</translation>
-<translation id="7962368738413920945">Amasayithi cishe azosebenza njengoba ulindele kodwa ngeke akukhumbule ngemva kokuvala wonke amawindi e-Chrome</translation>
 <translation id="7962410387636238736">Le khompuyutha ngeke isathola izibuyekezo ze-Google Chrome ngoba i-Windows XP ne-Windows Vista azisasekelwa</translation>
 <translation id="8005666035647241369">Ku-Google Password Manager ekule divayisi</translation>
 <translation id="8008534537613507642">Phinda ufake i-Chrome</translation>
@@ -657,7 +652,6 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="919706545465235479">Buyekeza i-Chrome ukuze uqale ukuvumelanisa</translation>
 <translation id="922152298093051471">Yenza i-Chrome ngokwezifiso</translation>
 <translation id="93760716455950538">Qala kabusha i-ChromeOS Flex</translation>
-<translation id="940313311831216333">Ukuze ufinyelele ezintweni zakho ze-Chrome kuwo wonke amadivayisi wakho, ngena ngemvume, bese uvula ukuvumelanisa.</translation>
 <translation id="943390475793766444">I-Chrome incoma ukuskena leli fayela ngenxa yokuthi kungenzeka ukuthi liyingozi.</translation>
 <translation id="945522503751344254">Thumela impendulo</translation>
 <translation id="983803489796659991">Ukufaka kuhlulekile ngoba iseva yokubuyekeza ayinayo idatha ye-hash ye-application.</translation>

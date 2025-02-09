@@ -656,7 +656,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1454223536435069390">T&amp;a en skärmbild</translation>
 <translation id="145432137617179457">Språk för stavningskontroll</translation>
 <translation id="1455119378540982311">Förinställda fönsterstorlekar</translation>
-<translation id="1456499573534615137">Hjälper dig att utforma anpassade teman för Chrome</translation>
 <translation id="1456849775870359518">Flikarna öppnas igen</translation>
 <translation id="1457907785077086338">Färg på appmärke</translation>
 <translation id="146000042969587795">Ramen blockerades eftersom den innehåller icke-säkert innehåll.</translation>
@@ -3030,7 +3029,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3090871774332213558"><ph name="DEVICE_NAME" /> har kopplats</translation>
 <translation id="3093714882666365141">Tillåt inte att webbplatser installerar betalningshanterare</translation>
 <translation id="3094080575472025333">Blockera appar</translation>
-<translation id="3094141017404513551">Om du gör detta hålls webbinformationen isär från <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Löper ut i dag}=1{Löper ut i morgon}other{Löper ut om # dagar}}</translation>
 <translation id="3094521107841754472">Priset har ändrats från <ph name="PREVIOUS_PRICE" /> till <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Bokmärken, lösenord och annan webbinformation synkroniseras med det primära kontot.</translation>
@@ -3133,7 +3131,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3177909033752230686">Sidans språk:</translation>
 <translation id="3177914167275935955">Chrome Education Upgrade ingår med enheten, men ditt användarnamn är inte kopplat till ett Google for Education-konto. Skapa ett Google for Education-konto genom att besöka g.co/workspace/edusignup på en annan enhet.</translation>
 <translation id="3179982752812949580">Textens teckensnitt</translation>
-<translation id="3180284704187420717">Spara bokmärken, lösenord och annat med synkronisering</translation>
 <translation id="3180990259147710757">Flytta käken åt vänster</translation>
 <translation id="3181825792072797598">Aktivera synkronisering</translation>
 <translation id="3181954750937456830">Säker webbsökning (skyddar dig och enheten från skadliga webbplatser)</translation>
@@ -8814,7 +8811,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7273894023751806510">Blockera alltid <ph name="HOST" /> från att styra och omprogrammera dina MIDI-enheter</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> % – <ph name="TIME" /> tills batteriet är fulladdat</translation>
 <translation id="727595954130325265">Köp nu</translation>
-<translation id="7278164481614262110">Skapa teman med AI</translation>
 <translation id="727952162645687754">Nedladdningsfel</translation>
 <translation id="7280649757394340890">Röstinställningar för text till tal</translation>
 <translation id="7280877790564589615">Tillstånd begärt</translation>

@@ -3023,6 +3023,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> की वैल्यू गलत है और इसका इस्तेमाल नहीं किया जाएगा.</translation>
 <translation id="6340739886198108203">जब गोपनीय कॉन्टेंट दिख रहा हो, तो एडमिन नीति स्क्रीनशॉट लेने या रिकॉर्डिंग करने का सुझाव नहीं देती है:</translation>
 <translation id="6341434961864773665">{0,plural, =1{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर अपलोड करने का सुझाव नहीं देती}one{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर अपलोड करने का सुझाव नहीं देती}other{एडमिन नीति, इन फ़ाइलों को <ph name="DESTINATION_NAME" /> पर अपलोड करने का सुझाव नहीं देती}}</translation>
+<translation id="6342069812937806050">अभी</translation>
 <translation id="634500758737709758">निर्देश</translation>
 <translation id="6348220984832452017">इस्तेमाल किए जा सकने वाले वर्शन</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> इंस्टॉल करें</translation>

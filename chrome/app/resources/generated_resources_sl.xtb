@@ -659,7 +659,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1454223536435069390">N&amp;aredi posnetek zaslona</translation>
 <translation id="145432137617179457">Jeziki, ki so na voljo za preverjanje črkovanja</translation>
 <translation id="1455119378540982311">Prednastavljene velikosti okna</translation>
-<translation id="1456499573534615137">Pomaga vam oblikovati teme po meri za Chrome</translation>
 <translation id="1456849775870359518">Zavihki se bodo znova odprli</translation>
 <translation id="1457907785077086338">Barva značke aplikacije</translation>
 <translation id="146000042969587795">Ta okvir je bil blokiran, ker vsebuje vsebino, ki ni varna.</translation>
@@ -3033,7 +3032,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3090871774332213558">Naprava »<ph name="DEVICE_NAME" />« je seznanjena</translation>
 <translation id="3093714882666365141">Spletnim mestom ne dovoli namestitve rutin za obravnavo plačil.</translation>
 <translation id="3094080575472025333">Blokiranje aplikacij</translation>
-<translation id="3094141017404513551">S tem bo vaše brskanje ločeno od brskanja osebe <ph name="EXISTING_USER" />.</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Poteče danes}=1{Poteče jutri}one{Poteče čez # dan}two{Poteče čez # dneva}few{Poteče čez # dni}other{Poteče čez # dni}}</translation>
 <translation id="3094521107841754472">Cena se je spremenila iz <ph name="PREVIOUS_PRICE" /> v <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Zaznamki, gesla in drugi podatki brskalnika so sinhronizirani z glavnim računom.</translation>
@@ -3136,7 +3134,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3177909033752230686">Jezik strani:</translation>
 <translation id="3177914167275935955">Vaša naprava vključuje nadgradnjo za Chrome Education, vendar vaše uporabniško ime ni povezano z računom za Google for Education. Ustvarite račun za Google for Education tako, da v drugi napravi obiščete g.co/workspace/edusignup.</translation>
 <translation id="3179982752812949580">Pisava besedila</translation>
-<translation id="3180284704187420717">Shranite zaznamke, gesla in drugo z uporabo sinhronizacije.</translation>
 <translation id="3180990259147710757">Premik čeljusti levo</translation>
 <translation id="3181825792072797598">Vklopi sinhronizacijo</translation>
 <translation id="3181954750937456830">Varno brskanje (ščiti vas in napravo pred nevarnimi spletnimi mesti)</translation>
@@ -8825,7 +8822,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7273894023751806510">Spletnemu mestu <ph name="HOST" /> vedno prepreči upravljanje in reprogramiranje naprav MIDI</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> % – <ph name="TIME" /> do napolnjenosti</translation>
 <translation id="727595954130325265">Nakup</translation>
-<translation id="7278164481614262110">Ustvarjajte teme z umetno inteligenco</translation>
 <translation id="727952162645687754">Napaka pri prenosu</translation>
 <translation id="7280649757394340890">Glasovne nastavitve pretvorbe besedila v govor</translation>
 <translation id="7280877790564589615">Zahtevano je dovoljenje</translation>

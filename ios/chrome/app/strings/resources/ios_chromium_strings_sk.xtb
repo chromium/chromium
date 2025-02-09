@@ -70,6 +70,7 @@ Pred odhlásením skúste počkať niekoľko minút. Ak sa odhlásite teraz, tie
 <translation id="2459183986985456602">Otvorenie najnovšej karty v prehliadači Chromium</translation>
 <translation id="2476409803017965813">Svoje voľby môžete kedykoľvek aktualizovať v nastaveniach prehliadača Chromium.</translation>
 <translation id="2478931088402984578">Vyberte <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2485774047568879945">Nastavte si Chromium ako predvolený prehliadač, aby ste mohli jednoducho zdieľať a otvárať odkazy</translation>
 <translation id="2512597191798760956">Pridržte ikonu prehliadača Chromium a kliknite na Úprava plochy</translation>
 <translation id="2517624234762908348">Synchronizovať údaje prehliadača Chromium</translation>
 <translation id="2592940277904433508">Pokračovať v používaní prehliadača Chromium</translation>
@@ -167,6 +168,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="5088872414922783602">Získajte prístup k prehliadaču Chromium rýchlejšie z Docku na ploche.</translation>
 <translation id="5124429847818367226">Chromium môžete teraz kedykoľvek použiť pri prehliadaní alebo klepnutí na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
 <translation id="5131565040785979529">Vaša organizácia <ph name="DOMAIN" /> spravuje účet, v ktorom máte aktívne prihlásenie, a spôsob používania prehliadača Chromium.</translation>
+<translation id="5134464247000681876">Otvárajte odkazy z aplikácií Gmail, Mapy, YouTube a ďalších v prehliadači Chromium</translation>
 <translation id="5224391634244552924">Žiadne uložené heslá. Chromium môže skontrolovať heslá, keď ich uložíte.</translation>
 <translation id="5259423875997548710">Vyhľadajte vizuálne prvky v prehliadači Chromium.</translation>
 <translation id="5308226104666789935">Chromium nemôže skontrolovať dostupnosť aktualizácií</translation>
@@ -260,6 +262,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="7674213385180944843">Otvorte Nastavenia &gt; Súkromie &gt; Fotoaparát &gt; Chromium a zapnite fotoaparát.</translation>
 <translation id="7733418656985455268">Tip pre prehliadač Chromium: vyhľadávajte pomocou funkcie Lens</translation>
 <translation id="7747820849741499258">Hľadať v prehliadači Chromium</translation>
+<translation id="7753923083404296545">Otvorené v režime inkognito prehliadača Chromium</translation>
 <translation id="7762622637388462191">Uzamknite karty inkognito, keď opustíte Chromium, alebo prepnite na inú aplikáciu.</translation>
 <translation id="7763454117143368771">Používajte Chromium ako svoj predvolený prehliadač, aby ste sa naďalej chránili pred nebezpečnými webmi a zaistili ochranu svojich hesiel</translation>
 <translation id="7784950022329154821">Uzamknúť karty inkognito pri zavretí prehliadača Chromium</translation>

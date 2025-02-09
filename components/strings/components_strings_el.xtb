@@ -3025,6 +3025,7 @@
 <translation id="633770708279464947">Η τιμή <ph name="SECURE_DNS_SALT" /> δεν είναι έγκυρη και δεν θα χρησιμοποιηθεί.</translation>
 <translation id="6340739886198108203">Η πολιτική διαχειριστή δεν συνιστά τη λήψη στιγμιότυπων οθόνης ή εγγραφών όταν εμπιστευτικό περιεχόμενο είναι ορατό:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Η πολιτική διαχειριστή δεν συνιστά τη μεταφόρτωση αυτού του αρχείου σε <ph name="DESTINATION_NAME" />.}other{Η πολιτική διαχειριστή δεν συνιστά τη μεταφόρτωση αυτών των αρχείων σε <ph name="DESTINATION_NAME" />.}}</translation>
+<translation id="6342069812937806050">Μόλις τώρα</translation>
 <translation id="634500758737709758">Οδηγίες</translation>
 <translation id="6348220984832452017">Ενεργές παραλλαγές</translation>
 <translation id="6349101878882523185">Εγκατάσταση εφαρμογής <ph name="APP_NAME" /></translation>

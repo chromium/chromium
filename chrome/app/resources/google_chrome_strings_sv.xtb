@@ -41,7 +41,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1507198376417198979">Anpassa din nya Chrome-profil</translation>
 <translation id="1547295885616600893">ChromeOS fungerar tack vare <ph name="BEGIN_LINK_CROS_OSS" />ytterligare program med öppen källkod<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Uppdatera Chrome</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> är redan inloggad på den här Chrome-profilen. En ny Chrome-profil skapas för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome använder din kamera.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> är skadlig och har blockerats av Chrome.</translation>
 <translation id="1597911401261118146"><ph name="BEGIN_LINK" />Logga in i Chrome<ph name="END_LINK" /> om du vill kontrollera att dina lösenord skyddas från dataintrång och andra säkerhetsproblem.</translation>
@@ -149,7 +148,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2846251086934905009">Installationsfel: Installationsprogrammet slutfördes inte. Installationen har avbrutits.</translation>
 <translation id="2853415089995957805">Sidor som du troligen kommer att besöka läses in i förväg i Chrome så att de läses in snabbare när du besöker dem</translation>
 <translation id="2857540653560290388">Chrome startas …</translation>
-<translation id="2857972467023607093">Det finns redan en Chrome-profil med detta konto</translation>
 <translation id="286025080868315611">Läs mer om varför vissa nedladdningar blockeras i Chrome</translation>
 <translation id="2861074815332034794">Chrome uppdateras (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Du är inloggad i Chrome.</translation>
@@ -229,7 +227,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3785324443014631273">Det gick inte att synkronisera data med ChromeOS Flex på grund av ett inloggningsfel.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">För Google Chrome krävs Windows 10 eller senare.</translation>
-<translation id="3835168907083856002">En ny Chrome-profil skapas för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Google Chrome behöver åtkomst till Bluetooth för att utforska 
  Bluetooth-enheter. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Stäng alla Google Chrome-fönster och försök igen.</translation>
@@ -450,7 +447,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6712881677154121168">Nedladdningsfel: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6718739135284199302">Gör Chrome snabbare</translation>
 <translation id="6735387454586646204">ChromeOS Flex-system</translation>
-<translation id="6739177684496155661">Vill du fortsätta i en ny Chrome-profil?</translation>
 <translation id="6750954913813541382">Text som du skriver i webbläsaren Chrome skickas till Google för att kontrollera stavningen</translation>
 <translation id="677276454032249905">Vill du avsluta Chrome ändå?</translation>
 <translation id="6794858689789885890">Radera alltid webbplatsdata från enheten när du stänger Chrome</translation>
@@ -558,7 +554,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7947083960301164556">Se vad som är nytt</translation>
 <translation id="7951272445806340501">ChromeOS Flex måste startas om för att uppdateringen ska börja gälla.</translation>
 <translation id="7959172989483770734">Hantera Chrome-profiler</translation>
-<translation id="7962368738413920945">Webbplatser fortsätter förmodligen att fungera som förväntat men de kommer inte ihåg dig efter att du stänger alla Chrome-fönster</translation>
 <translation id="7962410387636238736">Den här datorn får inte längre uppdateringar för Google Chrome eftersom Windows XP och Windows Vista inte längre stöds.</translation>
 <translation id="8005666035647241369">I Google Lösenordshantering på den här enheten</translation>
 <translation id="8008534537613507642">Installera om Chrome</translation>
@@ -658,7 +653,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="919706545465235479">Du måste uppdatera Chrome innan synkroniseringen kan starta</translation>
 <translation id="922152298093051471">Anpassa Chrome</translation>
 <translation id="93760716455950538">Starta om ChromeOS Flex</translation>
-<translation id="940313311831216333">Logga in och aktivera synkronisering om du vill få tillgång till dina saker i Chrome på olika enheter.</translation>
 <translation id="943390475793766444">Den här filen bör genomsökas eftersom den kan vara farlig.</translation>
 <translation id="945522503751344254">Skicka feedback</translation>
 <translation id="983803489796659991">Installationen misslyckades eftersom uppdateringsservern inte har någon hashdata för appen.</translation>

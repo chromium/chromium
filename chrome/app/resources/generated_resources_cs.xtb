@@ -657,7 +657,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1454223536435069390">&amp;Pořídit snímek obrazovky</translation>
 <translation id="145432137617179457">Jazyky kontroly pravopisu</translation>
 <translation id="1455119378540982311">Přednastavené velikosti oken</translation>
-<translation id="1456499573534615137">Pomáhá navrhovat vlastní motivy pro Chrome</translation>
 <translation id="1456849775870359518">Vaše karty se znovu otevřou</translation>
 <translation id="1457907785077086338">Barva odznaku aplikace</translation>
 <translation id="146000042969587795">Tento rámec byl blokován, protože obsahuje určitý nezabezpečený obsah.</translation>
@@ -3019,7 +3018,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3090871774332213558">Zařízení „<ph name="DEVICE_NAME" />“ bylo spárováno</translation>
 <translation id="3093714882666365141">Nepovolovat webům instalovat obslužné nástroje pro platby</translation>
 <translation id="3094080575472025333">Blokování aplikací</translation>
-<translation id="3094141017404513551">Vaše prohlížení bude odděleno od uživatele <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Platnost skončí dnes}=1{Platnost skončí zítra}few{Platnost skončí za # dny}many{Platnost skončí za # dne}other{Platnost skončí za # dní}}</translation>
 <translation id="3094521107841754472">Cena se změnila z <ph name="PREVIOUS_PRICE" /> na <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Záložky, hesla a další data prohlížeče se synchronizují s primárním účtem.</translation>
@@ -3122,7 +3120,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3177909033752230686">Jazyk stránky:</translation>
 <translation id="3177914167275935955">Vaše zařízení obsahuje upgrade Chrome Education, ale vaše uživatelské jméno není přidruženo k účtu Google for Education. Navštivte na sekundárním zařízení stránku g.co/workspace/edusignup a vytvořte si účet Google for Education.</translation>
 <translation id="3179982752812949580">Písmo textu</translation>
-<translation id="3180284704187420717">Ukládejte si záložky, hesla a další obsah pomocí synchronizace</translation>
 <translation id="3180990259147710757">Posuňte čelist doleva</translation>
 <translation id="3181825792072797598">Zapnout synchronizaci</translation>
 <translation id="3181954750937456830">Bezpečné prohlížení (chrání vás a vaše zařízení před nebezpečnými weby)</translation>
@@ -8799,7 +8796,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7273894023751806510">Webu <ph name="HOST" /> vždy blokovat ovládání a přeprogramování vašich zařízení MIDI</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> %, plné nabití za <ph name="TIME" /></translation>
 <translation id="727595954130325265">Koupit</translation>
-<translation id="7278164481614262110">Vytváření motivů pomocí umělé inteligence</translation>
 <translation id="727952162645687754">Chyba při stahování</translation>
 <translation id="7280649757394340890">Nastavení hlasu převodu textu na řeč</translation>
 <translation id="7280877790564589615">Jsou požadována oprávnění</translation>

@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">‏يمكنك الآن تخصيص ملفك الشخصي الجديد على Chrome.</translation>
 <translation id="1547295885616600893">‏أصبح نظام التشغيل Chrome متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">‏تحديث Chrome‏</translation>
-<translation id="1583073672411044740">‏سبَق تسجيل دخول <ph name="EXISTING_USER" /> إلى هذا الملف الشخصي على Chrome. سيؤدي هذا الإجراء إلى إنشاء ملف شخصي جديد على Chrome لحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">‏يستخدم Google Chrome الكاميرا.</translation>
 <translation id="1587325591171447154">‏ملف <ph name="FILE_NAME" /> ضار، لذلك فقد حظره Chrome.</translation>
 <translation id="1597911401261118146">‏للتحقُّق مما إذا كانت كلمات المرور آمنة من عمليات اختراق البيانات ومشاكل الأمان الأخرى، يُرجى <ph name="BEGIN_LINK" />تسجيل الدخول إلى متصفِّح Chrome<ph name="END_LINK" />.</translation>
@@ -147,7 +146,6 @@
 <translation id="2846251086934905009">خطأ في التثبيت: لم تكتمل أداة التثبيت. تم إلغاء عملية التثبيت.</translation>
 <translation id="2853415089995957805">‏يُحمِّل متصفِّح Chrome مسبقًا الصفحات التي من المرجَح أن تنتقل إليها، وذلك لتحميلها بسرعة أكبر عند زيارتك لها.</translation>
 <translation id="2857540653560290388">‏جارٍ إطلاق Chrome...</translation>
-<translation id="2857972467023607093">‏يتوفّر ملف شخصي بهذا الحساب حاليًا على Chrome.</translation>
 <translation id="286025080868315611">‏تعرّف على سبب حظر Chrome لبعض عمليات التنزيل</translation>
 <translation id="2861074815332034794">‏جارٍ تحديث Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">‏تم تسجيل دخولك إلى Chrome!</translation>
@@ -227,7 +225,6 @@
 <translation id="3785324443014631273">‏تعذَّر على ChromeOS Flex مزامنة البيانات بسبب حدوث خطأ أثناء تسجيل الدخول.</translation>
 <translation id="3795971588916395511">‏نظام التشغيل Chrome من Google</translation>
 <translation id="3809772425479558446">‏يتطلّب Google Chrome نظام التشغيل Windows 10 أو إصدارًا أحدث.</translation>
-<translation id="3835168907083856002">‏سيؤدي هذا الإجراء إلى إنشاء ملف شخصي جديد على Chrome لحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="383928141529488001">‏يجب منح Google Chrome الإذن بالوصول إلى البلوتوث لاستكشاف 
 الأجهزة التي تتضمّن بلوتوث. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">‏يُرجى إغلاق كل نوافذ Google Chrome وإعادة المحاولة.</translation>
@@ -446,7 +443,6 @@
 <translation id="6712881677154121168">حدث خطأ في عملية التنزيل: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">‏زيادة سرعة متصفِّح Chrome</translation>
 <translation id="6735387454586646204">‏نظام التشغيل ChromeOS Flex</translation>
-<translation id="6739177684496155661">‏هل تريد المتابعة باستخدام ملف شخصي جديد على Chrome؟</translation>
 <translation id="6750954913813541382">‏لإصلاح الأخطاء الإملائية، يرسِل Chrome النص الذي تكتبه في المتصفّح إلى Google.</translation>
 <translation id="677276454032249905">‏هل تريد الخروج من Chrome على أي حال؟</translation>
 <translation id="6794858689789885890">‏حذف بيانات الموقع الإلكتروني من جهازك دائمًا عند إغلاق Chrome</translation>
@@ -554,7 +550,6 @@
 <translation id="7947083960301164556">عرض أحدث الميزات</translation>
 <translation id="7951272445806340501">‏يجب إعادة تشغيل نظام التشغيل ChromeOS Flex لتثبيت التحديث.</translation>
 <translation id="7959172989483770734">‏إدارة الملفات الشخصية على Chrome</translation>
-<translation id="7962368738413920945">‏على الأرجح ستعمل المواقع الإلكترونية على النحو المتوقَّع، ولكنها لن تحفظ بياناتك بعد إغلاق جميع نوافذ Chrome.</translation>
 <translation id="7962410387636238736">‏لن يستلم جهاز الكمبيوتر هذا تحديثات Google Chrome لأن Windows XP وWindows Vista أصبحا غير مدعومين.</translation>
 <translation id="8005666035647241369">‏في "مدير كلمات المرور في Google" على هذا الجهاز</translation>
 <translation id="8008534537613507642">‏إعادة تثبيت Chrome</translation>
@@ -654,7 +649,6 @@
 <translation id="919706545465235479">‏تحديث Chrome لبدء المزامنة</translation>
 <translation id="922152298093051471">‏تخصيص Chrome</translation>
 <translation id="93760716455950538">‏إعادة تشغيل نظام التشغيل ChromeOS Flex</translation>
-<translation id="940313311831216333">‏للوصول من خلال جميع أجهزتك إلى بياناتك في Chrome، عليك تسجيل الدخول وتفعيل المزامنة.</translation>
 <translation id="943390475793766444">‏ينصح متصفِّح Chrome بفحص هذا الملف لأنّه قد يكون خطيرًا.</translation>
 <translation id="945522503751344254">إرسال ملاحظات</translation>
 <translation id="983803489796659991">تعذَّر تثبيت التطبيق لعدم وجود أي بيانات تجزئة للتطبيق في خادم التحديث.</translation>

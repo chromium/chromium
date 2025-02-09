@@ -656,7 +656,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1454223536435069390">Ambil screenshot</translation>
 <translation id="145432137617179457">Bahasa fitur periksa ejaan</translation>
 <translation id="1455119378540982311">Ukuran jendela preset</translation>
-<translation id="1456499573534615137">Membantu Anda mendesain tema kustom untuk Chrome</translation>
 <translation id="1456849775870359518">Tab Anda akan dibuka kembali</translation>
 <translation id="1457907785077086338">Warna badge aplikasi</translation>
 <translation id="146000042969587795">Bingkai ini diblokir karena berisi sejumlah konten tidak aman.</translation>
@@ -3030,7 +3029,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" disandingkan</translation>
 <translation id="3093714882666365141">Jangan izinkan situs menginstal pengendali pembayaran</translation>
 <translation id="3094080575472025333">Blokir aplikasi</translation>
-<translation id="3094141017404513551">Ini akan memisahkan penjelajahan Anda dari <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Berakhir hari ini}=1{Berakhir besok}other{Berakhir dalam # hari}}</translation>
 <translation id="3094521107841754472">Harga telah berubah dari <ph name="PREVIOUS_PRICE" /> menjadi <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Bookmark, sandi, dan data penjelajahan lainnya disinkronkan dengan akun utama.</translation>
@@ -3133,7 +3131,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3177909033752230686">Bahasa Halaman:</translation>
 <translation id="3177914167275935955">Perangkat Anda menyertakan Chrome Education Upgrade, tetapi nama pengguna Anda tidak dikaitkan dengan akun Google for Education. Buat akun Google for Education dengan membuka g.co/workspace/edusignup di perangkat sekunder.</translation>
 <translation id="3179982752812949580">Font teks</translation>
-<translation id="3180284704187420717">Simpan bookmark, sandi, dan yang lainnya dengan sinkronisasi</translation>
 <translation id="3180990259147710757">Menggerakkan rahang ke kiri</translation>
 <translation id="3181825792072797598">Aktifkan Sinkronisasi</translation>
 <translation id="3181954750937456830">Safe Browsing (melindungi Anda dan perangkat dari situs berbahaya)</translation>
@@ -8814,7 +8811,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7273894023751806510">Selalu blokir <ph name="HOST" /> agar tidak mengontrol dan memprogram ulang perangkat MIDI Anda</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> hingga baterai penuh</translation>
 <translation id="727595954130325265">Beli Sekarang</translation>
-<translation id="7278164481614262110">Membuat tema dengan AI</translation>
 <translation id="727952162645687754">Error download</translation>
 <translation id="7280649757394340890">Setelan suara Text-to-Speech</translation>
 <translation id="7280877790564589615">Izin diminta</translation>

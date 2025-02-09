@@ -41,7 +41,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1507198376417198979">Pertsonalizatu Chrome-ko profil berria</translation>
 <translation id="1547295885616600893"><ph name="BEGIN_LINK_CROS_OSS" />Kode irekiko software<ph name="END_LINK_CROS_OSS" /> gehigarriari esker da posible Chrome OS.</translation>
 <translation id="1553358976309200471">Eguneratu Chrome</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> erabiltzaileak Chrome-ko profil honetan hasi du saioa dagoeneko. Chrome-ko beste profil bat sortuko da <ph name="USER_EMAIL_ADDRESS" /> helbiderako.</translation>
 <translation id="1587223624401073077">Google Chrome kamera erabiltzen ari da.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> arriskutsua da; horregatik, blokeatu egin du Chrome-k.</translation>
 <translation id="1597911401261118146">Pasahitzak datuen isilpekotasunaren urratzeen eta beste segurtasun-arazoen aurka babestuta dauden egiaztatzeko, <ph name="BEGIN_LINK" />hasi saioa Chrome-n<ph name="END_LINK" />.</translation>
@@ -149,7 +148,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2846251086934905009">Instalazio-errorea: instalatzailea ez da osatu. Instalazioa bertan behera utzi da.</translation>
 <translation id="2853415089995957805">Ziurrenik bisitatuko dituzun orriak aurrez kargatzen ditu Chrome-k, bisitatzen dituzunean bizkorrago karga daitezen</translation>
 <translation id="2857540653560290388">Chrome abiarazten…</translation>
-<translation id="2857972467023607093">Badago kontu honen Chrome-ko profil bat</translation>
 <translation id="286025080868315611">Ikusi zergatik blokeatzen dituen Chrome-k deskarga batzuk</translation>
 <translation id="2861074815332034794">Chrome eguneratzen (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Chrome-n saioa hasi duzu.</translation>
@@ -229,7 +227,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3785324443014631273">Saioa hastean gertatu den errore bat dela eta, ChromeOS Flex-ek ezin izan ditu sinkronizatu zure datuak.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Windows 10 edo sistema berriagoa behar da Google Chrome erabiltzeko.</translation>
-<translation id="3835168907083856002">Chrome-ko beste profil bat sortuko da <ph name="USER_EMAIL_ADDRESS" /> helbiderako</translation>
 <translation id="383928141529488001">Bluetooth bidezko gailuak arakatzeko, Bluetootha erabiltzeko baimena behar du Google Chrome-k. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Itxi Google Chrome leiho guztiak eta saiatu berriro.</translation>
 <translation id="3873044882194371212">Ireki esteka Chrome-ko &amp;ezkutuko moduko leiho batean</translation>
@@ -449,7 +446,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6712881677154121168">Deskarga-errorea: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6718739135284199302">Bizkortu Chrome</translation>
 <translation id="6735387454586646204">ChromeOS Flex sistema</translation>
-<translation id="6739177684496155661">Chrome-eko beste profil batean egin nahi duzu aurrera?</translation>
 <translation id="6750954913813541382">Ortografia-akatsak konpontzeko, Chrome-k Google-ri bidaltzen dio arakatzailean idazten duzun testua</translation>
 <translation id="677276454032249905">Chrome-tik irten nahi duzu hala ere?</translation>
 <translation id="6794858689789885890">Chrome ixten duzunean, ezabatu beti webguneetako datuak gailutik</translation>
@@ -557,7 +553,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7947083960301164556">Ikusi berritasunak</translation>
 <translation id="7951272445806340501">Eguneratzea aplikatzeko, berrabiarazi egin behar da ChromeOS Flex.</translation>
 <translation id="7959172989483770734">Kudeatu Chrome-ko profilak</translation>
-<translation id="7962368738413920945">Webguneek espero duzun bezala funtzionatuko dute segur aski, baina ez zaituzte gogoratuko Chrome-ko leiho guztiak itxi ondoren</translation>
 <translation id="7962410387636238736">Ordenagailuak ez du jasoko Google Chrome-ren beste eguneratzerik, jada ez baita bateragarria Windows XP eta Windows Vista-rekin</translation>
 <translation id="8005666035647241369">Google-ren Pasahitz-kudeatzailea zerbitzuan (gailu honetan)</translation>
 <translation id="8008534537613507642">Berrinstalatu Chrome</translation>
@@ -657,7 +652,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="919706545465235479">Eguneratu Chrome sinkronizatzen hasteko</translation>
 <translation id="922152298093051471">Pertsonalizatu Chrome</translation>
 <translation id="93760716455950538">Berrabiarazi ChromeOS Flex</translation>
-<translation id="940313311831216333">Chrome-ko gauzak gailu guztietan atzitze aldera, hasi saioa eta aktibatu sinkronizazioa.</translation>
 <translation id="943390475793766444">Chrome-k fitxategia aztertzea gomendatzen du, agian arriskutsua delako.</translation>
 <translation id="945522503751344254">Bidali oharrak</translation>
 <translation id="983803489796659991">Instalazioak huts egin du, eguneratze-zerbitzariak aplikaziorako hash-daturik ez duelako.</translation>

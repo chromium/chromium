@@ -121,6 +121,7 @@ Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sess�
 <translation id="4064699917955374540">Para usar e guardar dados do Chrome na sua Conta Google, valide a sua identidade.</translation>
 <translation id="417201473131094001">Opção não suportada no Chrome Canary.</translation>
 <translation id="424864128008805179">Quer terminar sessão no Chrome?</translation>
+<translation id="4430797724889237570">Abra links do Gmail, do Maps, do YouTube e de outras apps no Chrome</translation>
 <translation id="447252321002412580">Ajudar a melhorar as funcionalidades e o desempenho do Chrome</translation>
 <translation id="4523886039239821078">Alguns suplementos provocam falhas no sistema do Chrome. Desinstale:</translation>
 <translation id="4633328489441962921">O Chrome não consegue verificar se existem atualizações.</translation>
@@ -206,6 +207,7 @@ Experimente aguardar alguns minutos antes de mudar de conta. Se mudar de conta a
 
 Os seus dados estão encriptados com a sua frase de acesso. Introduza-a para usar e guardar os dados do Chrome na sua Conta Google.</translation>
 <translation id="6533470733797826516">Inicie sessão mais rapidamente com o preenchimento automático do Chrome</translation>
+<translation id="6536544321553662809">Defina o Chrome como o seu navegador predefinido para partilhar e abrir links facilmente</translation>
 <translation id="6545449117344801102">O Chrome deteta moradas e usa o Google Maps para lhe dar direções e informações locais.</translation>
 <translation id="6636941099779251629">A sua organização requer que inicie sessão para usar o Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Envia uma parte oculta do URL para a Google através de um servidor de privacidade que oculta o seu endereço IP. Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chrome também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Google</translation>
@@ -291,6 +293,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="8371138994040262994">Abre as definições no Chrome.</translation>
 <translation id="8387459386171870978">Continuar a usar o Chrome</translation>
+<translation id="8392023217086447677">Aberto na Navegação anónima do Chrome</translation>
 <translation id="840168496893712993">Alguns suplementos provocam falhas no sistema do Chrome. Tente desinstalá-los.</translation>
 <translation id="8413500425974960807">Sugestão do Chrome: mova o Chrome para a dock</translation>
 <translation id="8413795581997394485">Protege contra sites, transferências e extensões identificados como perigosos. Quando visita um site, o Chrome envia uma parte oculta do URL para a Google através de um servidor de privacidade que oculta o seu endereço IP. Se um site fizer algo suspeito, são também enviados URLs completos e fragmentos de conteúdo da página.</translation>

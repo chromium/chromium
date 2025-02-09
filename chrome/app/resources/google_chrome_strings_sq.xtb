@@ -41,7 +41,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1507198376417198979">Personalizo profilin tënd të ri të Chrome</translation>
 <translation id="1547295885616600893">ChromeOS mundësohet nga<ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Përditëso Chrome</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> është i identifikuar tashmë në këtë profil të Chrome. Kjo do të krijojë një profil të ri të Chrome për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome po përdor kamerën tënde.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> është i rrezikshëm, prandaj Chrome e ka bllokuar.</translation>
 <translation id="1597911401261118146">Për të kontrolluar nëse fjalëkalimet e tua janë të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe probleme të tjera të sigurisë, <ph name="BEGIN_LINK" />identifikohu në Chrome<ph name="END_LINK" />.</translation>
@@ -149,7 +148,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2846251086934905009">Gabim gjatë instalimit: Instaluesi nuk përfundoi. Instalimi është ndërprerë.</translation>
 <translation id="2853415089995957805">Chrome ngarkon paraprakisht faqet që mund t'i vizitosh që ato të ngarkohen më shpejt kur t'i vizitosh</translation>
 <translation id="2857540653560290388">Po hapet Chrome...</translation>
-<translation id="2857972467023607093">Ekziston tashmë një profil i Chrome me këtë llogari</translation>
 <translation id="286025080868315611">Mëso se pse Chrome i bllokon disa shkarkime</translation>
 <translation id="2861074815332034794">Po përditëson Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Je i identifikuar në Chrome!</translation>
@@ -229,7 +227,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3785324443014631273">Chrome OS Flex nuk mund t'i sinkronizonte të dhënat e tua për shkak të një gabimi në identifikim.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome kërkon Windows 10 ose një version më të lartë.</translation>
-<translation id="3835168907083856002">Kjo do të krijojë një profil të ri të Chrome për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Google Chrome ka nevojë për qasje te Bluetooth-i për të eksploruar pajisjet me Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Mbyll të gjitha dritaret e Google Chrome dhe provo përsëri.</translation>
 <translation id="3873044882194371212">Hape lidhjen në një dritare të fshehtë të Chrome</translation>
@@ -449,7 +446,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6712881677154121168">Gabim shkarkimi: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Bëje Chrome më të shpejtë</translation>
 <translation id="6735387454586646204">Sistemi Chrome OS Flex</translation>
-<translation id="6739177684496155661">Të vazhdohet te një profil i ri Chrome?</translation>
 <translation id="6750954913813541382">Për të rregulluar gabimet drejtshkrimore, Chrome e dërgon tekstin që shkruan në shfletues te Google</translation>
 <translation id="677276454032249905">Dëshiron të dalësh nga Chrome gjithsesi?</translation>
 <translation id="6794858689789885890">Fshi gjithmonë të dhënat e sajteve nga pajisja jote kur të mbyllësh Chrome</translation>
@@ -557,7 +553,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7947083960301164556">Shiko çfarë ka të re</translation>
 <translation id="7951272445806340501">Chrome OS Flex ka nevojë të riniset për të zbatuar përditësimin.</translation>
 <translation id="7959172989483770734">Menaxho profilet e Chrome</translation>
-<translation id="7962368738413920945">Sajtet ndoshta do të funksionojnë siç pritet, por nuk do të të kujtojnë pasi t'i mbyllësh të gjitha dritaret e Chrome</translation>
 <translation id="7962410387636238736">Ky kompjuter nuk do të marrë më përditësime të Google Chrome sepse Windows XP dhe Windows Vista nuk mbështeten më</translation>
 <translation id="8005666035647241369">Te "Menaxheri i fjalëkalimeve të Google" në këtë pajisje</translation>
 <translation id="8008534537613507642">Instalo përsëri Chrome</translation>
@@ -657,7 +652,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="919706545465235479">Përditëso Chrome për të nisur sinkronizimin</translation>
 <translation id="922152298093051471">Personalizo Chrome</translation>
 <translation id="93760716455950538">Rinis Chrome OS Flex</translation>
-<translation id="940313311831216333">Për t'u qasur te gjërat e Chrome nëpër të gjitha pajisjet, identifikohu dhe më pas aktivizo sinkronizimin.</translation>
 <translation id="943390475793766444">Chrome rekomandon ta skanosh këtë skedar, sepse ai mund të jetë i rrezikshëm.</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
 <translation id="983803489796659991">Instalimi dështoi sepse serveri i përditësimit nuk ka të dhëna të hash-it për aplikacionin.</translation>

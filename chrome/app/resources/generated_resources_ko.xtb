@@ -656,7 +656,6 @@
 <translation id="1454223536435069390">스크린샷 캡쳐하기(&amp;A)</translation>
 <translation id="145432137617179457">맞춤법 검사 언어</translation>
 <translation id="1455119378540982311">미리 설정된 창 크기</translation>
-<translation id="1456499573534615137">Chrome 맞춤 테마를 디자인하는 데 도움이 됩니다.</translation>
 <translation id="1456849775870359518">탭이 다시 열립니다</translation>
 <translation id="1457907785077086338">앱 배지 색상</translation>
 <translation id="146000042969587795">안전하지 않은 콘텐츠가 포함되어 이 프레임을 차단했습니다.</translation>
@@ -3032,7 +3031,6 @@
 <translation id="3090871774332213558">'<ph name="DEVICE_NAME" />' 페어링됨</translation>
 <translation id="3093714882666365141">사이트에서 결제 핸들러를 설치하도록 허용하지 않음</translation>
 <translation id="3094080575472025333">앱 차단</translation>
-<translation id="3094141017404513551">그러면 <ph name="EXISTING_USER" /> 기록과 내 인터넷 사용 기록이 구분됩니다.</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{오늘 만료됨}=1{내일 만료됨}other{#일 후에 만료됨}}</translation>
 <translation id="3094521107841754472">가격이 <ph name="PREVIOUS_PRICE" />에서 <ph name="CURRENT_PRICE" />(으)로 변경되었습니다.</translation>
 <translation id="3095871294753148861">북마크, 비밀번호 등의 브라우저 데이터가 기본 계정과 동기화되어 있습니다.</translation>
@@ -3135,7 +3133,6 @@
 <translation id="3177909033752230686">페이지 언어:</translation>
 <translation id="3177914167275935955">기기에 Chrome Education 업그레이드가 있지만 사용자 이름이 Google for Education 계정과 연결되어 있지 않습니다. 보조 기기에서 g.co/workspace/edusignup을 방문하여 Google for Education 계정을 만드세요.</translation>
 <translation id="3179982752812949580">텍스트 글꼴</translation>
-<translation id="3180284704187420717">동기화를 통해 북마크, 비밀번호 등을 저장하세요</translation>
 <translation id="3180990259147710757">턱을 왼쪽으로 움직이기</translation>
 <translation id="3181825792072797598">동기화 사용 설정</translation>
 <translation id="3181954750937456830">세이프 브라우징(사용자와 사용자의 기기를 위험한 사이트로부터 보호)</translation>
@@ -8815,7 +8812,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7273894023751806510"><ph name="HOST" />에서 MIDI 기기를 제어하고 다시 프로그래밍하지 못하도록 항상 차단</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - 충전 완료까지 <ph name="TIME" /> 남음</translation>
 <translation id="727595954130325265">지금 구매</translation>
-<translation id="7278164481614262110">AI로 테마 만들기</translation>
 <translation id="727952162645687754">다운로드 오류</translation>
 <translation id="7280649757394340890">TTS 음성 설정</translation>
 <translation id="7280877790564589615">권한 요청됨</translation>

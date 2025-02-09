@@ -657,7 +657,6 @@
 <translation id="1454223536435069390">ਸਕ੍ਰੀਨਸ਼ਾਟ ਲ&amp;ਵੋ</translation>
 <translation id="145432137617179457">ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ ਵਾਲੀਆਂ ਭਾਸ਼ਾਵਾਂ</translation>
 <translation id="1455119378540982311">ਵਿੰਡੋ ਦੇ ਪ੍ਰੀਸੈੱਟ ਆਕਾਰ</translation>
-<translation id="1456499573534615137">ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ Chrome ਲਈ ਵਿਉਂਤਿਆ ਥੀਮ ਡਿਜ਼ਾਈਨ ਕਰਨ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰਦੀ ਹੈ</translation>
 <translation id="1456849775870359518">ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ ਮੁੜ-ਖੁੱਲ੍ਹ ਜਾਣਗੀਆਂ</translation>
 <translation id="1457907785077086338">ਐਪ ਦੇ ਬੈਜ ਦਾ ਰੰਗ</translation>
 <translation id="146000042969587795">ਇਹ ਫ੍ਰੇਮ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਕਿਉਂਕਿ ਇਸ ਵਿੱਚ ਕੁਝ ਅਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਹੈ।</translation>
@@ -3037,7 +3036,6 @@
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" ਪੇਅਰ ਕੀਤਾ</translation>
 <translation id="3093714882666365141">ਸਾਈਟਾਂ ਨੂੰ ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਸਥਾਪਤ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
 <translation id="3094080575472025333">ਐਪਾਂ ਬਲਾਕ ਕਰੋ</translation>
-<translation id="3094141017404513551">ਇਹ ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ <ph name="EXISTING_USER" /> ਤੋਂ ਵੱਖ ਕਰ ਦੇਵੇਗਾ</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{ਮਿਆਦ ਅੱਜ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}=1{ਮਿਆਦ ਕੱਲ੍ਹ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}other{ਮਿਆਦ # ਦਿਨਾਂ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}}</translation>
 <translation id="3094521107841754472">ਕੀਮਤ <ph name="PREVIOUS_PRICE" /> ਤੋਂ <ph name="CURRENT_PRICE" /> ਵਿੱਚ ਬਦਲ ਗਈ ਹੈ।</translation>
 <translation id="3095871294753148861">ਬੁੱਕਮਾਰਕ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਬ੍ਰਾਊਜ਼ਰ ਡਾਟੇ ਦਾ ਮੁੱਖ ਖਾਤੇ ਨਾਲ ਸਿੰਕ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
@@ -3140,7 +3138,6 @@
 <translation id="3177909033752230686">ਪੰਨਾ ਭਾਸ਼ਾ:</translation>
 <translation id="3177914167275935955">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਵਿੱਚ ਇੱਕ Chrome Education ਅੱਪਗ੍ਰੇਡ ਸ਼ਾਮਲ ਹੈ, ਪਰ ਤੁਹਾਡਾ ਵਰਤੋਂਕਾਰ ਨਾਮ Google for Education ਖਾਤੇ ਨਾਲ ਸੰਬੰਧਿਤ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਕਿਸੇ ਸੈਕੰਡਰੀ ਡੀਵਾਈਸ ਵਿੱਚ g.co/workspace/edusignup 'ਤੇ ਜਾ ਕੇ Google for Education ਖਾਤਾ ਬਣਾਓ।</translation>
 <translation id="3179982752812949580">ਲਿਖਤ ਦਾ ਫੌਂਟ</translation>
-<translation id="3180284704187420717">ਸਿੰਕ ਨਾਲ ਆਪਣੇ ਬੁੱਕਮਾਰਕਾਂ, ਪਾਸਵਰਡਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="3180990259147710757">ਜਬਾੜੇ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਲਿਜਾਓ</translation>
 <translation id="3181825792072797598">ਸਿੰਕ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="3181954750937456830">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ (ਖਤਰਨਾਕ ਸਾਈਟਾਂ ਤੋਂ ਤੁਹਾਡੀ ਅਤੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਸੁਰੱਖਿਆ ਕਰਦੀ ਹੈ)</translation>
@@ -8824,7 +8821,6 @@
 <translation id="7273894023751806510"><ph name="HOST" /> ਨੂੰ ਹਮੇਸ਼ਾਂ ਆਪਣੇ MIDI ਡੀਵਾਈਸਾਂ ਨੂੰ ਕੰਟਰੋਲ ਕਰਨ ਅਤੇ ਰੀ-ਪ੍ਰੋਗਰਾਮ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> ਪੂਰੀ ਹੋਣ ਤੱਕ</translation>
 <translation id="727595954130325265">ਹੁਣੇ ਖਰੀਦੋ</translation>
-<translation id="7278164481614262110">AI ਦੀ ਮਦਦ ਨਾਲ ਥੀਮ ਬਣਾਉਂਦੀ ਹੈ</translation>
 <translation id="727952162645687754">ਡਾਊਨਲੋਡ ਗੜਬੜ</translation>
 <translation id="7280649757394340890">ਲਿਖਤ ਤੋਂ ਬੋਲੀ ਲਈ ਅਵਾਜ਼ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="7280877790564589615">ਅਨੁਮਤੀ ਦੀ ਬੇਨਤੀ ਕੀਤੀ</translation>

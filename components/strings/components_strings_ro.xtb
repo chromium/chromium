@@ -3023,6 +3023,7 @@
 <translation id="633770708279464947">Valoarea <ph name="SECURE_DNS_SALT" /> este nevalidă și nu va fi folosită.</translation>
 <translation id="6340739886198108203">Politica implementată de administrator nu recomandă să faci capturi de ecran sau înregistrări atunci când este vizibil conținut confidențial:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Politica implementată de administrator nu recomandă să încarci acest fișier în <ph name="DESTINATION_NAME" />}few{Politica implementată de administrator nu recomandă să încarci aceste fișiere în <ph name="DESTINATION_NAME" />}other{Politica implementată de administrator nu recomandă să încarci aceste fișiere în <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="6342069812937806050">Adineauri</translation>
 <translation id="634500758737709758">Indicații de orientare</translation>
 <translation id="6348220984832452017">Variante active</translation>
 <translation id="6349101878882523185">Instalează <ph name="APP_NAME" /></translation>

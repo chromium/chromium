@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">Muokkaa uusi Chrome-profiili näköiseksesi</translation>
 <translation id="1547295885616600893">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee Chrome-käyttöjärjestelmää.</translation>
 <translation id="1553358976309200471">Päivitä Chrome</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> on jo kirjautunut tähän Chrome-profiiliin. Tämä luo uuden Chrome-profiilin: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome käyttää kameraasi.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> on vaarallinen, joten Chrome on estänyt sen.</translation>
 <translation id="1597911401261118146">Jos haluat tarkistaa, ovatko salasanasi turvassa tietosuojaloukkauksilta ja muilta tietoturvaongelmilta, <ph name="BEGIN_LINK" />kirjaudu Chromeen<ph name="END_LINK" />.</translation>
@@ -145,7 +144,6 @@
 <translation id="2846251086934905009">Asennusvirhe: Asennusohjelmaa ei suoritettu loppuun. Asennus on keskeytetty.</translation>
 <translation id="2853415089995957805">Chrome esilataa sivut, joilla todennäköisesti käyt, jotta ne latautuisivat avatessa nopeammin</translation>
 <translation id="2857540653560290388">Käynnistetään Chromea…</translation>
-<translation id="2857972467023607093">Tällä tilillä on jo Chrome-profiili</translation>
 <translation id="286025080868315611">Miksi Chrome estää joitakin latauksia</translation>
 <translation id="2861074815332034794">Päivitetään Chromea (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Olet kirjautunut Chromeen!</translation>
@@ -225,7 +223,6 @@
 <translation id="3785324443014631273">ChromeOS Flex ei voinut synkronoida tietoja kirjautumisvirheen vuoksi.</translation>
 <translation id="3795971588916395511">Google Chrome ‑käyttöjärjestelmä</translation>
 <translation id="3809772425479558446">Google Chrome edellyttää Windows 10:tä tai uudempaa versiota.</translation>
-<translation id="3835168907083856002">Tämä luo uuden Chrome-profiilin: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Google Chrome tarvitsee pääsyn Bluetoothiin etsiäkseen
  Bluetooth-laitteita. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Sulje kaikki Chrome-ikkunat ja yritä uudelleen.</translation>
@@ -442,7 +439,6 @@
 <translation id="6712881677154121168">Latausvirhe: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chromen nopeuttaminen</translation>
 <translation id="6735387454586646204">ChromeOS Flexin järjestelmä</translation>
-<translation id="6739177684496155661">Jatketaanko uudessa Chrome-profiilissa?</translation>
 <translation id="6750954913813541382">Chrome lähettää selaimeen kirjoittamasi tekstin Googlelle kirjoitusvirheiden korjaamiseksi</translation>
 <translation id="677276454032249905">Suljetaanko Chrome silti?</translation>
 <translation id="6794858689789885890">Poista laitteen sivustodata aina, kun suljet Chromen</translation>
@@ -550,7 +546,6 @@
 <translation id="7947083960301164556">Näytä uusi sisältö</translation>
 <translation id="7951272445806340501">ChromeOS Flex täytyy käynnistää uudelleen, jotta päivitys voidaan ottaa käyttöön.</translation>
 <translation id="7959172989483770734">Ylläpidä Chrome-profiileja</translation>
-<translation id="7962368738413920945">Sivustot toimivat todennäköisesti odotetulla tavalla, mutta ne eivät muista sinua suljettuasi kaikki Chrome-ikkunat</translation>
 <translation id="7962410387636238736">Tämän tietokoneen Google Chromea ei enää päivitetä, koska Windows XP:tä ja Windows Vistaa ei enää tueta.</translation>
 <translation id="8005666035647241369">Googlen Salasanojen ylläpitoon tällä laitteella</translation>
 <translation id="8008534537613507642">Asenna Chrome uudelleen</translation>
@@ -650,7 +645,6 @@
 <translation id="919706545465235479">Aloita synkronointi päivittämällä Chrome.</translation>
 <translation id="922152298093051471">Yksilöi Chromea</translation>
 <translation id="93760716455950538">Käynnistä ChromeOS Flex uudelleen</translation>
-<translation id="940313311831216333">Jos haluat pääsyn Chrome-sisältöösi kaikilla laitteilla, kirjaudu sisään ja laita sitten synkronointi päälle.</translation>
 <translation id="943390475793766444">Chrome suosittelee tiedoston skannaamista, koska se voi olla vaarallinen.</translation>
 <translation id="945522503751344254">Lähetä palautetta</translation>
 <translation id="983803489796659991">Asennus epäonnistui, koska päivityspalvelimella ei ole tiivistedataa sovelluksesta.</translation>

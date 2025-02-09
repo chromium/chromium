@@ -121,6 +121,7 @@ Wacht een paar minuten voordat je uitlogt. Als je nu uitlogt, worden deze gegeve
 <translation id="4064699917955374540">Bevestig dat jij het bent als je Chrome-gegevens wilt gebruiken en opslaan in je Google-account.</translation>
 <translation id="417201473131094001">Niet ondersteund in Chrome Canary</translation>
 <translation id="424864128008805179">Uitloggen bij Chrome?</translation>
+<translation id="4430797724889237570">Open links uit Gmail, Maps, YouTube en andere apps in Chrome</translation>
 <translation id="447252321002412580">Help de functies en prestaties van Chrome verbeteren</translation>
 <translation id="4523886039239821078">Sommige add-ons kunnen ervoor zorgen dat Chrome crasht. Verwijder de volgende add-ons:</translation>
 <translation id="4633328489441962921">Chrome kan niet checken op updates</translation>
@@ -206,6 +207,7 @@ Wacht een paar minuten voordat je van account wisselt. Als je nu van account wis
 
 Je gegevens zijn versleuteld met je wachtwoordzin. Geef deze op om Chrome-gegevens te gebruiken en op te slaan in je Google-account.</translation>
 <translation id="6533470733797826516">Log sneller in met automatisch invullen in Chrome</translation>
+<translation id="6536544321553662809">Stel Chrome in als je standaardbrowser om links makkelijk te delen en te openen</translation>
 <translation id="6545449117344801102">Chrome neemt adressen waar en gebruikt Google Maps om je routes en lokale informatie te geven.</translation>
 <translation id="6636941099779251629">Je organisatie vereist dat je inlogt om Chrome te gebruiken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Stuurt een geobfusceerd gedeelte van de URL naar Google via een privacyserver die je IP-adres verbergt. Als een site je wachtwoord probeert te stelen of als je een schadelijk bestand downloadt, kan Chrome ook URL's, inclusief delen van de paginacontent, naar Google sturen.</translation>
@@ -291,6 +293,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rechten voorbehouden.</translation>
 <translation id="8371138994040262994">Opent Instellingen in Chrome.</translation>
 <translation id="8387459386171870978">Chrome blijven gebruiken</translation>
+<translation id="8392023217086447677">Geopend in Chrome-incognitomodus</translation>
 <translation id="840168496893712993">Sommige add-ons kunnen ervoor zorgen dat Chrome crasht. Verwijder deze add-ons.</translation>
 <translation id="8413500425974960807">Chrome-tip: verplaats Chrome naar het dock</translation>
 <translation id="8413795581997394485">Beschermt tegen sites, downloads en extensies die als gevaarlijk zijn bestempeld. Als je een site bezoekt, stuurt Chrome een geobfusceerd gedeelte van de URL naar Google via een privacyserver die je IP-adres verbergt. Doet een site iets verdachts, dan worden ook volledige URL's en delen van de paginacontent verstuurd.</translation>

@@ -658,7 +658,6 @@
 <translation id="1454223536435069390">الت&amp;قاط لقطة شاشة</translation>
 <translation id="145432137617179457">لغات التدقيق الإملائي</translation>
 <translation id="1455119378540982311">أحجام النوافذ المُعَدّة مسبقًا</translation>
-<translation id="1456499573534615137">‏يساعدك هذا الإعداد في تصميم مظاهر مخصّصة لمتصفِّح Chrome</translation>
 <translation id="1456849775870359518">ستتم إعادة فتح علامات التبويب</translation>
 <translation id="1457907785077086338">لون شارة التطبيقات</translation>
 <translation id="146000042969587795">تمّ حجب هذا الإطار لتضمّنه بعض المحتوى غير الآمن.</translation>
@@ -3022,7 +3021,6 @@
 <translation id="3090871774332213558">تم إقران "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3093714882666365141">عدم السماح للمواقع الإلكترونية بتثبيت معالِجات الدفع</translation>
 <translation id="3094080575472025333">حظر التطبيقات</translation>
-<translation id="3094141017404513551">سيؤدي هذا إلى فصل تجربة تصفّحك عن <ph name="EXISTING_USER" />.</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{تنتهي الصلاحية اليوم}=1{تنتهي الصلاحية غدًا}two{تنتهي الصلاحية بعد يومَين}few{تنتهي الصلاحية بعد # أيام}many{تنتهي الصلاحية بعد # يومًا}other{تنتهي الصلاحية بعد # يوم}}</translation>
 <translation id="3094521107841754472">‏تم تغيير السعر من ‎<ph name="PREVIOUS_PRICE" /> إلى ‎<ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">تتم مزامنة الإشارات المرجعية وكلمات المرور وبيانات التصفُّح الأخرى مع الحساب الأساسي.</translation>
@@ -3125,7 +3123,6 @@
 <translation id="3177909033752230686">لغة الصفحة:</translation>
 <translation id="3177914167275935955">‏يتضمّن جهازك "ترقية Chrome Education"، ولكن اسم المستخدم الخاص بك غير مرتبط بحساب على Google for Education. يُرجى إنشاء حساب على Google for Education بالانتقال إلى g.co/workspace/edusignup على جهاز ثانوي.</translation>
 <translation id="3179982752812949580">خط النص</translation>
-<translation id="3180284704187420717">يمكنك حفظ إشاراتك المرجعية وكلمات المرور وغيرها باستخدام ميزة المزامنة.</translation>
 <translation id="3180990259147710757">تحريك الفك إلى اليسار</translation>
 <translation id="3181825792072797598">تفعيل المزامنة</translation>
 <translation id="3181954750937456830">التصفُّح الآمن (يحميك ويحمي جهازك من المواقع الإلكترونية الضارة)</translation>
@@ -8813,7 +8810,6 @@
 <translation id="7273894023751806510">‏حظر <ph name="HOST" /> دائمًا من التحكّم في أجهزة MIDI وإعادة برمجتها</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> حتى الاكتمال</translation>
 <translation id="727595954130325265">التسوّق الآن</translation>
-<translation id="7278164481614262110">‏إنشاء مظاهر باستخدام الذكاء الاصطناعي (AI)</translation>
 <translation id="727952162645687754">خطأ في التنزيل</translation>
 <translation id="7280649757394340890">إعدادات الصوت في ميزة تحويل النص إلى كلام</translation>
 <translation id="7280877790564589615">تمّ طلب إذن</translation>

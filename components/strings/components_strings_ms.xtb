@@ -3024,6 +3024,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="633770708279464947">Nilai <ph name="SECURE_DNS_SALT" /> tidak sah dan tidak akan digunakan.</translation>
 <translation id="6340739886198108203">Dasar pentadbir tidak mengesyorkan mengambil tangkapan skrin atau rakaman apabila kandungan sulit kelihatan:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Dasar pentadbir tidak mengesyorkan anda memuat naik fail ini ke <ph name="DESTINATION_NAME" />}other{Dasar pentadbir tidak mengesyorkan anda memuat naik fail ini ke <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="6342069812937806050">Sebentar tadi</translation>
 <translation id="634500758737709758">Arah</translation>
 <translation id="6348220984832452017">Variasi Aktif</translation>
 <translation id="6349101878882523185">Pasang <ph name="APP_NAME" /></translation>

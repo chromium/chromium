@@ -3023,6 +3023,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="633770708279464947">Værdien af <ph name="SECURE_DNS_SALT" /> er ugyldig og anvendes ikke.</translation>
 <translation id="6340739886198108203">Administratorpolitikken fraråder screenshots og optagelser, når der vises fortroligt indhold på skærmen:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Administratorpolitikken fraråder at uploade denne fil til <ph name="DESTINATION_NAME" />}one{Administratorpolitikken fraråder at uploade denne fil til <ph name="DESTINATION_NAME" />}other{Administratorpolitikken fraråder at uploade disse filer til <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="6342069812937806050">Lige nu</translation>
 <translation id="634500758737709758">Rutevejledning</translation>
 <translation id="6348220984832452017">Aktive variationer</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>

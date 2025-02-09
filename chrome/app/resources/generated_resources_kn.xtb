@@ -657,7 +657,6 @@
 <translation id="1454223536435069390">ಸ್ಕ್ರೀ&amp;ನ್‌ಶಾಟ್‌ ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="145432137617179457">ಕಾಗುಣಿತ ಪರೀಕ್ಷೆಯ ಭಾಷೆಗಳು</translation>
 <translation id="1455119378540982311">ಪೂರ್ವನಿಗದಿ ವಿಂಡೋ ಗಾತ್ರಗಳು</translation>
-<translation id="1456499573534615137">Chrome ಗಾಗಿ ಕಸ್ಟಮ್‌ ಥೀಮ್‌ಗಳನ್ನು ವಿನ್ಯಾಸಗೊಳಿಸಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ</translation>
 <translation id="1456849775870359518">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು ಪುನಃ ತೆರೆಯುತ್ತವೆ</translation>
 <translation id="1457907785077086338">ಆ್ಯಪ್ ಬ್ಯಾಡ್ಜ್ ಬಣ್ಣ</translation>
 <translation id="146000042969587795">ಈ ಫ್ರೇಮ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ ಏಕೆಂದರೆ ಅದು ಕೆಲವು ಅಸುರಕ್ಷಿತ ವಿಷಯವನ್ನು ಒಳಗೊಂಡಿದೆ</translation>
@@ -1367,6 +1366,7 @@
 <translation id="1936157145127842922">ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ತೋರಿಸಿ</translation>
 <translation id="1936931585862840749">ಎಷ್ಟು ಪ್ರತಿಗಳನ್ನು ಪ್ರಿಂಟ್ ಮಾಡಬೇಕೆಂದು (1 ರಿಂದ <ph name="MAX_COPIES" />) ಸೂಚಿಸಲು ಸಂಖ್ಯೆಯನ್ನು ಬಳಸಿ.</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> ಪ್ರಕಾರದ ಈ ಸಾಧನದ ಜೊತೆಗೆ ಕಂಟೇನರ್ ಆರ್ಕಿಟೆಕ್ಚರ್ ಪ್ರಕಾರವನ್ನು <ph name="ARCHITECTURE_CONTAINER" /> ಆಮದು ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ನೀವು ಈ ಕಂಟೇನರ್ ಅನ್ನು ಬೇರೊಂದು ಸಾಧನದಲ್ಲಿ ಮರುಸ್ಥಾಪಿಸಲು ಪ್ರಯತ್ನಿಸಬಹುದು ಅಥವಾ ಫೈಲ್‌ಗಳು ಆ್ಯಪ್ ಅನ್ನು ತೆರೆಯುವುದರ ಮೂಲಕ ಈ ಕಂಟೇನರ್ ಚಿತ್ರದಲ್ಲಿರುವ ಫೈಲ್‌ಗಳನ್ನು ನೀವು ಪ್ರವೇಶಿಸಬಹುದು.</translation>
+<translation id="1938116692670653897">ಪ್ರಸ್ತುತ ಕಲರ್ ಥೀಮ್</translation>
 <translation id="1938351510777341717">ಬಾಹ್ಯ ಕಮಾಂಡ್ ಕೀ</translation>
 <translation id="1940221956626514677">ಟೂಲ್‌ಬಾರ್ ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="1940546824932169984">ಸಂಪರ್ಕಗೊಂಡಿರುವ ಸಾಧನಗಳು</translation>
@@ -2136,6 +2136,10 @@
 <translation id="2462332841984057083">Steam ಅನ್ನು ಈಗಾಗಲೇ ಸೆಟಪ್ ಮಾಡಲಾಗುತ್ತಿದೆ. ಸೆಟಪ್ ಪೂರ್ಣಗೊಳ್ಳಲು ನಿರೀಕ್ಷಿಸಿ.</translation>
 <translation id="2462724976360937186">ಪ್ರಮಾಣದಪತ್ರದ ಪ್ರಾಧಿಕಾರ ಕೀ ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> ಸೇರಿಸಲಾಗಿದೆ</translation>
+<translation id="2464075479326723132">Microsoft SharePoint ಮತ್ತು OneDrive ನಲ್ಲಿನ ನಿಮ್ಮ ತೀರಾ ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆಗೆ ಸುಲಭವಾಗಿ ಹಿಂತಿರುಗಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಲು ಸೂಚಿಸಿದ ಫೈಲ್‌ಗಳನ್ನು ನೀವು ನೋಡುತ್ತಿದ್ದೀರಿ.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        ನೀವು ಕಾರ್ಡ್ ಮೆನುವಿನಿಂದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಬಹುದು ಅಥವಾ Chrome ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ ಎಂಬಲ್ಲಿ ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳನ್ನು ನೋಡಬಹುದು.</translation>
 <translation id="2464079411014186876">ಐಸ್ ಕ್ರೀಂ</translation>
 <translation id="2467755475704469005">ಯಾವುದೇ ಸಾಧನ ಪತ್ತೆಯಾಗಿಲ್ಲ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" /> ಮತ್ತು ಇತರ <ph name="NUM_OTHER_MEMBERS" /> ಸದಸ್ಯರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಸೇರಿಕೊಳ್ಳಿ</translation>
@@ -3023,7 +3027,6 @@
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" ಜೋಡಿಸಲಾಗಿದೆ</translation>
 <translation id="3093714882666365141">ಪಾವತಿ ಹ್ಯಾಂಡ್‌ಲರ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="3094080575472025333">ಆ್ಯಪ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
-<translation id="3094141017404513551">ಇದು ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು <ph name="EXISTING_USER" /> ನಿಂದ ಪ್ರತ್ಯೇಕಿಸುತ್ತದೆ</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{ಇಂದು ಅವಧಿ ಅಂತ್ಯಗೊಳ್ಳುತ್ತದೆ}=1{ನಾಳೆ ಅವಧಿ ಅಂತ್ಯಗೊಳ್ಳುತ್ತದೆ}one{# ದಿನಗಳಲ್ಲಿ ಅವಧಿ ಮುಕ್ತಾಯಗೊಳ್ಳುತ್ತದೆ}other{# ದಿನಗಳಲ್ಲಿ ಅವಧಿ ಮುಕ್ತಾಯಗೊಳ್ಳುತ್ತದೆ}}</translation>
 <translation id="3094521107841754472">ಬೆಲೆಯು <ph name="PREVIOUS_PRICE" /> ನಿಂದ <ph name="CURRENT_PRICE" /> ಗೆ ಬದಲಾಗಿದೆ.</translation>
 <translation id="3095871294753148861">ಪ್ರಾಥಮಿಕ ಖಾತೆಯ ಜೊತೆಗೆ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಬ್ರೌಸಿಂಗ್‌ ಡೇಟಾವನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗಿದೆ.</translation>
@@ -3126,7 +3129,6 @@
 <translation id="3177909033752230686">ಪುಟದ ಭಾಷೆ:</translation>
 <translation id="3177914167275935955">ನಿಮ್ಮ ಸಾಧನವು Chrome Education ಅಪ್‌ಗ್ರೇಡ್ ಅನ್ನು ಹೊಂದಿದೆ, ಆದರೆ ನಿಮ್ಮ ಬಳಕೆದಾರ ಹೆಸರು ಅದಕ್ಕೆ ಸಂಬಂಧಿಸಿದ Google for Education ಖಾತೆಯನ್ನು ಹೊಂದಿಲ್ಲ. ಸೆಕೆಂಡರಿ ಸಾಧನದಲ್ಲಿ g.co/workspace/edusignup ಗೆ ಭೇಟಿ ನೀಡುವ ಮೂಲಕ Google for Education ಖಾತೆಯನ್ನು ರಚಿಸಿ.</translation>
 <translation id="3179982752812949580">ಪಠ್ಯದ ಫಾಂಟ್</translation>
-<translation id="3180284704187420717">ಸಿಂಕ್ ಮಾಡುವ ಮೂಲಕ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹಾಗೂ ಮುಂತಾದವುಗಳನ್ನು ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="3180990259147710757">ದವಡೆಯನ್ನು ಎಡಕ್ಕೆ ಸರಿಸುವುದು</translation>
 <translation id="3181825792072797598">ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ</translation>
 <translation id="3181954750937456830">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ (ಅಪಾಯಕಾರಿ ಸೈಟ್‌ಗಳಿಂದ ನಿಮ್ಮನ್ನು ಮತ್ತು ನಿಮ್ಮ ಸಾಧನವನ್ನು ರಕ್ಷಿಸುತ್ತದೆ)</translation>
@@ -3996,6 +3998,7 @@
 <translation id="3787434344076711519">ಅನುವಾದಕ್ಕಾಗಿ ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3788301286821743879">ಕಿಯೋಸ್ಕ್ ಆ್ಯಪ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="3788401245189148511">ಇದು ಸಾಧ್ಯವಾಗಬಹುದು:</translation>
+<translation id="3789432704615470433">SharePoint ಮತ್ತು OneDrive ಫೈಲ್‌ಗಳು</translation>
 <translation id="3789841737615482174">ಇನ್‌ಸ್ಟಾಲ್</translation>
 <translation id="3790417903123637354">ಏನೋ ತಪ್ಪಾಗಿದೆ. ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="379082410132524484">ನಿಮ್ಮ ಕಾರ್ಡ್‌ ಅವಧಿ ಮುಗಿದಿದೆ</translation>
@@ -6184,6 +6187,7 @@
 <translation id="5360150013186312835">ಪರಿಕರಪಟ್ಟಿಯಲ್ಲಿ ತೋರಿಸು</translation>
 <translation id="5362741141255528695">ಖಾಸಗಿ ಕೀಲಿ ಫೈಲ್ ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="536278396489099088">ChromeOS ಸಿಸ್ಟಂ ಸ್ಥಿತಿ ಮತ್ತು ವರದಿಗಳು</translation>
+<translation id="5362916924854054326">SharePoint ಮತ್ತು OneDrive ಫೈಲ್‌ಗಳನ್ನು ತೋರಿಸಬೇಡಿ</translation>
 <translation id="5363109466694494651">ಪವರ್‌ವಾಶ್ ಮತ್ತು ಹಿಂದಿರುಗಿಸು</translation>
 <translation id="5365881113273618889">ನೀವು ಆಯ್ಕೆ ಮಾಡಿದ ಫೋಲ್ಡ‌ರ್‌ನಲ್ಲಿ ಸೂಕ್ಷ್ಮವಾದ ಫೈಲ್‌ಗಳಿವೆ. ಈ ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ಬರೆಯಲು "<ph name="APP_NAME" />" ಗೆ ಶಾಶ್ವತ ಆ್ಯಕ್ಸೆಸ್ ಒದಗಿಸಲು ನೀವು ಖಂಡಿತವಾಗಿಯೂ ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="536638840841140142">ಯಾವುದೂ ಅಲ್ಲ</translation>
@@ -8809,7 +8813,6 @@
 <translation id="7273894023751806510">ನಿಮ್ಮ MIDI ಸಾಧನಗಳನ್ನು ನಿಯಂತ್ರಿಸದಂತೆ ಮತ್ತು ಮರು ಪ್ರೋಗ್ರಾಂ ಮಾಡದಂತೆ <ph name="HOST" /> ಅನ್ನು ಯಾವಾಗಲೂ ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> ಪೂರ್ಣಗೊಳ್ಳುವವರೆಗೆ</translation>
 <translation id="727595954130325265">ಈಗಲೇ ಶಾಪ್ ಮಾಡಿ</translation>
-<translation id="7278164481614262110">AI ಮೂಲಕ ಥೀಮ್‌ಗಳನ್ನು ರಚಿಸಿ</translation>
 <translation id="727952162645687754">ಡೌನ್‌ಲೋಡ್ ದೋಷ</translation>
 <translation id="7280649757394340890">ಪಠ್ಯದಿಂದ ಧ್ವನಿಯ ಧ್ವನಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="7280877790564589615">ಅನುಮತಿ ವಿನಂತಿಸಲಾಗಿದೆ</translation>
@@ -10765,6 +10768,10 @@
 <translation id="865936634714975126">ಪುಟವು ಲೋಡ್ ಆದ ನಂತರ ಪ್ರಕಾರಗಳನ್ನು ಆಯ್ಕೆಮಾಡುವುದಕ್ಕಾಗಿ URL ನಲ್ಲಿ ಪ್ರಶ್ನೆಯ ಪ್ಯಾರಾಮೀಟರ್‌ಗಳನ್ನು ಸೇರಿಸಿ. ಉದಾಹರಣೆ: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> ಸಂಪರ್ಕಗಳು</translation>
 <translation id="8659609431223166673">ವಿಂಡೋವನ್ನು ಕೆಳಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ</translation>
+<translation id="8660288500924118793">Outlook Calendar ನಲ್ಲಿ ನಿಮ್ಮ ಮುಂದಿನ ಈವೆಂಟ್‌ಗೆ ನೀವು ಸುಲಭವಾಗಿ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ನಿಮ್ಮ ಕ್ಯಾಲೆಂಡರ್ ಅನ್ನು ನೋಡುತ್ತಿದ್ದೀರಿ.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       ನೀವು ಕಾರ್ಡ್ ಮೆನುವಿನಿಂದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಬಹುದು ಅಥವಾ Chrome ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ ಎಂಬಲ್ಲಿ ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳನ್ನು ನೋಡಬಹುದು.</translation>
 <translation id="8661290697478713397">ಅಜ್ಞಾ&amp;ತ ವಿಂಡೋದಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸೇರಿಕೊಳ್ಳಿ</translation>

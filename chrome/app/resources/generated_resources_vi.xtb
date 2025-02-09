@@ -656,7 +656,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1454223536435069390">&amp;Chụp ảnh màn hình</translation>
 <translation id="145432137617179457">Ngôn ngữ kiểm tra lỗi chính tả</translation>
 <translation id="1455119378540982311">Kích thước cửa sổ đặt trước</translation>
-<translation id="1456499573534615137">Giúp bạn thiết kế giao diện tuỳ chỉnh cho Chrome</translation>
 <translation id="1456849775870359518">Các thẻ sẽ mở lại</translation>
 <translation id="1457907785077086338">Màu huy hiệu ứng dụng</translation>
 <translation id="146000042969587795">Khung này đã bị chặn bởi vì có chứa một số nội dung không an toàn.</translation>
@@ -3030,7 +3029,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3090871774332213558">Đã ghép nối "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3093714882666365141">Không cho phép trang web cài đặt trình xử lý thanh toán</translation>
 <translation id="3094080575472025333">Chặn ứng dụng</translation>
-<translation id="3094141017404513551">Thao tác này sẽ tách biệt hoạt động duyệt web của bạn với <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Hết hạn hôm nay}=1{Hết hạn ngày mai}other{Hết hạn sau # ngày nữa}}</translation>
 <translation id="3094521107841754472">Giá đã thay đổi từ <ph name="PREVIOUS_PRICE" /> thành <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Dấu trang, mật khẩu và dữ liệu khác của trình duyệt sẽ được đồng bộ hóa với tài khoản chính.</translation>
@@ -3133,7 +3131,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3177909033752230686">Ngôn ngữ trang:</translation>
 <translation id="3177914167275935955">Thiết bị của bạn có Bản nâng cấp Chrome Education, nhưng tên người dùng của bạn chưa liên kết với một tài khoản Google for Education. Vui lòng truy cập vào g.co/workspace/edusignup trên thiết bị phụ để tạo tài khoản Google for Education.</translation>
 <translation id="3179982752812949580">Phông chữ</translation>
-<translation id="3180284704187420717">Lưu dấu trang, mật khẩu và các nội dung khác bằng tính năng đồng bộ hoá</translation>
 <translation id="3180990259147710757">Di chuyển hàm sang trái</translation>
 <translation id="3181825792072797598">Bật tính năng đồng bộ hóa</translation>
 <translation id="3181954750937456830">Duyệt web an toàn (bảo vệ bạn cũng như thiết bị của bạn khỏi các trang web nguy hiểm)</translation>
@@ -8816,7 +8813,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7273894023751806510">Luôn cấm <ph name="HOST" /> điều khiển và lập trình lại thiết bị MIDI của bạn</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> cho đến khi pin đầy</translation>
 <translation id="727595954130325265">Mua ngay</translation>
-<translation id="7278164481614262110">Tạo giao diện bằng AI</translation>
 <translation id="727952162645687754">Lỗi tải xuống</translation>
 <translation id="7280649757394340890">Cài đặt giọng nói của tính năng chuyển văn bản sang lời nói</translation>
 <translation id="7280877790564589615">Đã yêu cầu quyền</translation>

@@ -40,7 +40,6 @@
 <translation id="1507198376417198979">तुमची नवीन Chrome प्रोफाइल कस्टमाइझ करा</translation>
 <translation id="1547295885616600893">ChromeOS हे अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_CROS_OSS" /> याद्वारे तयार करण्यात आले आहे.</translation>
 <translation id="1553358976309200471">Chrome अपडेट करा</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> यांनी आधीपासून या Chrome प्रोफाइलमध्ये साइन इन केलेले आहे. हे <ph name="USER_EMAIL_ADDRESS" /> साठी नवीन Chrome प्रोफाइल तयार करेल</translation>
 <translation id="1587223624401073077">Google Chrome तुमचा कॅमेरा वापरत आहे.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> धोकादायक आहे, त्यामुळे Chrom ने ती ब्लॉक केली आहे.</translation>
 <translation id="1597911401261118146">तुमचे पासवर्ड डेटा भंग आणि इतर सुरक्षा समस्यांपासून सुरक्षित आहेत हे तपासण्यासाठी, <ph name="BEGIN_LINK" />Chrome मध्ये साइन इन करा<ph name="END_LINK" />.</translation>
@@ -148,7 +147,6 @@
 <translation id="2846251086934905009">इंस्टॉलसंबंधित एरर: इंस्टॉलर पूर्ण झाले नाही. इंस्टॉलेशन रद्द केले गेले आहे.</translation>
 <translation id="2853415089995957805">Chrome तुम्ही भेट देण्याची शक्यता असलेली पेज प्रीलोड करते, जेणेकरून तुम्ही त्यांना भेट देता, तेव्हा ती अधिक जलद लोड होतात</translation>
 <translation id="2857540653560290388">Chrome लाँच करत आहे...</translation>
-<translation id="2857972467023607093">हे खाते वापरून तयार केलेली Chrome प्रोफाइल आधीपासून अस्तित्वात आहे</translation>
 <translation id="286025080868315611">Chrome काही डाउनलोड ब्लॉक का करते हे जाणून घ्या</translation>
 <translation id="2861074815332034794">Chrome अपडेट करत आहे (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">तुम्ही Chrome मध्‍ये साइन इन केले आहे!</translation>
@@ -228,7 +226,6 @@
 <translation id="3785324443014631273">साइन इन करताना एरर आल्यामुळे ChromeOS Flex ला तुमचा डेटा सिंक करता आला नाही.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome साठी Windows 10 किंवा त्यावरील आवृत्ती आवश्यक आहे.</translation>
-<translation id="3835168907083856002">हे <ph name="USER_EMAIL_ADDRESS" /> साठी नवीन Chrome प्रोफाइल तयार करेल</translation>
 <translation id="383928141529488001">ब्लूटूथ डिव्हाइस एक्सप्लोर करण्यासाठी Google Chrome ला 
  ब्लूटूथ चा ॲक्सेस हवा आहे. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">कृपया सर्व Google Chrome विंडो बंद करा आणि पुन्हा प्रयत्न करा.</translation>
@@ -448,7 +445,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6712881677154121168">डाउनलोडशी संबंधित एरर: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome ला आणखी जलद बनवा</translation>
 <translation id="6735387454586646204">ChromeOS Flex सिस्टीम</translation>
-<translation id="6739177684496155661">नवीन Chrome प्रोफाइलमध्ये सुरू ठेवायचे आहे का?</translation>
 <translation id="6750954913813541382">शब्दलेखनाच्या चुकांमध्ये सुधारणा करण्यासाठी, तुम्ही ब्राउझरमध्ये टाइप करता तो मजकूर Chrome Google ला पाठवते</translation>
 <translation id="677276454032249905">तरीही Chrome बंद करायचे?</translation>
 <translation id="6794858689789885890">तुम्ही Chrome बंद करता, तेव्हा नेहमी तुमच्या डिव्हाइसवरून साइट डेटा हटवा</translation>
@@ -556,7 +552,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7947083960301164556">नवीन काय आहे ते पहा</translation>
 <translation id="7951272445806340501">अपडेट लागू करण्यासाठी ChromeOS Flex रीस्टार्ट करणे आवश्यक आहे.</translation>
 <translation id="7959172989483770734">Chrome ची प्रोफाइल व्यवस्थापित करा</translation>
-<translation id="7962368738413920945">साइट या तुमच्या अपेक्षेनुसार काम करतील, पण तुम्ही सर्व Chrome विंडो बंद केल्यावर त्या तुमच्या प्राधान्यांसारखी तुमची माहिती लक्षात ठेवणार नाहीत</translation>
 <translation id="7962410387636238736">Windows XP आणि Windows Vista ला आता सपोर्ट नसल्याने या कॉंप्युटरला यापुढे Google Chrome अपडेट मिळणार नाहीत</translation>
 <translation id="8005666035647241369">या डिव्हाइसवरील Google पासवर्ड व्यवस्थापक मध्ये</translation>
 <translation id="8008534537613507642">Chrome पुनर्स्थापित करा</translation>
@@ -656,7 +651,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="919706545465235479">सिंक सुरू करण्यासाठी अपडेट करा</translation>
 <translation id="922152298093051471">Chrome कस्टमाइझ करा</translation>
 <translation id="93760716455950538">ChromeOS Flex रीस्टार्ट करा</translation>
-<translation id="940313311831216333">तुमचा Chrome आशय तुमच्या सर्व डिव्हाइसवर अ‍ॅक्सेस करण्यासाठी साइन इन करा, त्यानंतर सिंक सुरू करा.</translation>
 <translation id="943390475793766444">Chrome हे ही फाइल स्कॅन करण्याची शिफारस करते, कारण ती धोकादायक असू शकते.</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
 <translation id="983803489796659991">अपडेट सर्व्हरकडे अ‍ॅप्लिकेशनसाठी कोणताही हॅश डेटा नसल्यामुळे, इंस्टॉलेशन यशस्वी झाले नाही.</translation>

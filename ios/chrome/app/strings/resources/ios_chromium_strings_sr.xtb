@@ -70,6 +70,7 @@
 <translation id="2459183986985456602">Отворите своју најновију картицу у Chromium-у.</translation>
 <translation id="2476409803017965813">Увек можете да ажурирате изабране опције у подешавањима Chromium-а.</translation>
 <translation id="2478931088402984578">Изаберите <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
+<translation id="2485774047568879945">Подесите Chromium као подразумевани прегледач да бисте лако делили и отварали линкове</translation>
 <translation id="2512597191798760956">Притисните и задржите икону Chromium-а, па кликните на Измените почетни екран</translation>
 <translation id="2517624234762908348">Синхронизуј Chromium податке</translation>
 <translation id="2592940277904433508">Настави са коришћењем Chromium-а</translation>
@@ -167,6 +168,7 @@
 <translation id="5088872414922783602">Брже приступајте Chromium-у са траке с апликацијама на Почетном екрану.</translation>
 <translation id="5124429847818367226">Сада можете да користите Chromium сваки пут када прегледате или додирнете линкове у порукама, документима и другим апликацијама.</translation>
 <translation id="5131565040785979529">Ваша организација, <ph name="DOMAIN" />, управља налогом на који сте пријављени и начином на који се Chromium користи.</translation>
+<translation id="5134464247000681876">Отвара линкове из Gmail-а, Мапа, YouTube-а и других апликација у Chromium-у</translation>
 <translation id="5224391634244552924">Нема сачуваних лозинки. Chromium може да проверава лозинке када их сачувате.</translation>
 <translation id="5259423875997548710">Претражите визуелни материјал у Chromium-у.</translation>
 <translation id="5308226104666789935">Chromium не може да тражи ажурирања</translation>
@@ -260,6 +262,7 @@
 <translation id="7674213385180944843">Отворите Подешавања &gt; Приватност &gt; Камера &gt; Chromium и укључите камеру.</translation>
 <translation id="7733418656985455268">Савет за Chromium: Претражујте помоћу Објектива</translation>
 <translation id="7747820849741499258">Претражи у Chromium-у</translation>
+<translation id="7753923083404296545">Отворено је у Chromium-у без архивирања</translation>
 <translation id="7762622637388462191">Закључајте картице без архивирања када напустите Chromium или пређете у другу апликацију.</translation>
 <translation id="7763454117143368771">Користите Chromium као подразумевани прегледач да бисте се одбранили од опасних сајтова и заштитили лозинке</translation>
 <translation id="7784950022329154821">Закључајте картице без архивирања после затварања Chromium-а</translation>

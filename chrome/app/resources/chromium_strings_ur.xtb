@@ -133,7 +133,6 @@
 <translation id="2799223571221894425">دوبارہ شروع کریں</translation>
 <translation id="2803971713792056305">‏آپ کا Chromium</translation>
 <translation id="2806241689335397269">‏‫Chromium پوچھے گا کہ اگر آپ فارم کی معلومات کو محفوظ کرنا چاہتے ہیں، جیسا کہ آپ کی یوم پیدائش، عمر اور پاسپورٹ نمبر</translation>
-<translation id="2837693172913560447">‏اس سے <ph name="USER_EMAIL_ADDRESS" /> کیلئے ایک نئی Chromium پروفائل تخلیق ہو جائے گی</translation>
 <translation id="2841525013647267359">اس سے ترجمہ کریں</translation>
 <translation id="2846251086934905009">انسٹالر سے متعلق خرابی: انسٹالر مکممل نہیں ہوا۔ انسٹالر کو منسوخ کر دیا گیا۔</translation>
 <translation id="2847479871509788944">‏Chromium سے ہٹائیں…</translation>
@@ -176,7 +175,6 @@
 <translation id="3296368748942286671">‏Chromium بند ہو جانے پر پس منظر کی ایپس چلانا جاری رکھیں</translation>
 <translation id="3313189106987092621">‏غیر محفوظ کنکشن کا استعمال کر کے کسی بھی سائٹ کو لوڈ کرنے سے پہلے Chromium آپ کو متنبہ کرے گا</translation>
 <translation id="3316771292331273802">‏اگر آپ Chromium میں سائن ان ہیں تو اپنے Google اکاؤنٹ کے علاوہ، سبھی Chromium ونڈوز بند کرنے پر آپ بیشتر سائٹس سے سائن آؤٹ ہو جائیں گے۔ سائٹس کو آپ کی معلومات یاد رکھنے کی اجازت دینے کے لیے، <ph name="SETTINGS_LINK" /> پر جائیں۔</translation>
-<translation id="3350761136195634146">‏اس اکاؤنٹ کے ساتھ ایک Chromium پروفائل پہلے سے موجود ہے</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">‏موجودہ Chromium پروفائل پر سوئچ کریں؟</translation>
 <translation id="3412460710772753638">اس آلہ پر پاس ورڈ مینیجر میں</translation>
@@ -259,7 +257,6 @@
 <translation id="4534145890176164066">‏‫Chromium فارمز کو بہتر طور پر سمجھتا ہے اور آپ کے لیے انہیں تیزی سے آٹو فل کر سکتا ہے</translation>
 <translation id="4536805923587466102">‏آپ دوسری Chromium پروفائل میں پہلے ہی سے بطور <ph name="USER_EMAIL_ADDRESS" /> سائن ان ہیں</translation>
 <translation id="4545268686623374213">‏آپ کے براؤزنگ کے تجربے کو بہتر بنانے اور چیزوں کو تیز بنائے رکھنے کیلئے، Chromium اس ٹیب کو غیر فعال کر سکتا ہے۔</translation>
-<translation id="454579500955453258">‏ایک نئی Chromium پروفائل میں جاری رکھیں؟</translation>
 <translation id="4548534452171747496">‏‫Chromium صفحات کو پہلے سے لوڈ کرتا ہے جس براؤزنگ اور تلاش کا عمل زیادہ تیز ہو جاتا ہے۔ <ph name="BEGIN_LINK" />پیشگی لوڈ کے صفحات کے بارے میں مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">آپ <ph name="USER_EMAIL_ADDRESS" /> کے بطور سائن ان کردہ ہیں۔ اب آپ اپنے سبھی سائن ان کردہ آلات پر اپنے بُک مارکس، سرگزشت اور دیگر ترتیبات تک رسائی حاصل کر سکتے ہیں۔</translation>
 <translation id="4570813286784708942">‏Chromium نے اس ڈاؤن لوڈ کو مسدود کر دیا کیونکہ آپ نے محفوظ براؤزنگ کو آف کر دیا ہے اور فائل کی تصدیق نہیں ہو سکتی</translation>
@@ -295,7 +292,6 @@
 <translation id="5224391634244552924">‏کوئی محفوظ کردہ پاس ورڈ نہیں۔ جب آپ پاس ورڈز کو محفوظ کرتے ہیں تو Chromium انہیں چیک کر سکتا ہے۔</translation>
 <translation id="5231355151045086930">‏Chromium سے سائن آؤٹ کریں</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
-<translation id="5252179775517634216">‏<ph name="EXISTING_USER" /> اس Chromium پروفائل میں پہلے سے سائن ان ہے۔ اس سے <ph name="USER_EMAIL_ADDRESS" /> کیلئے ایک نئی Chromium پروفائل تخلیق ہو جائے گی</translation>
 <translation id="5277894862589591112">‏اپنی تبدیلیوں کو لاگو کرنے کیلئے، Chromium کو دوبارہ شروع کریں</translation>
 <translation id="5286907366254680517">پتا چلا</translation>
 <translation id="5294316920224716406">‏پوشیدگی وضع میں براؤز کرتے وقت، غیر محفوظ کنکشن کا استعمال کرتے ہوئے کسی سائٹ کو لوڈ کرنے سے پہلے Chromium آپ کو متنبہ کرے گا</translation>
@@ -411,7 +407,6 @@
 <translation id="6600016381025017075">اس صفحہ پر کچھ بھی تلاش کریں</translation>
 <translation id="6613594504749178791">‏آپ کی تبدیلیاں Chromium کو اگلی بار آپ کے دوبارہ شروع کرنے کے وقت نافذ ہوں گی۔</translation>
 <translation id="665732753414869868">‏Chromium کو آپ کے اطراف کا 3D نقشہ تخلیق کرنے کے لیے کیمرے کی اجازت درکار ہے</translation>
-<translation id="6663852025006259149">‏سائٹس شاید آپ کی توقع کے مطابق کام کریں گی لیکن آپ کے تمام Chromium ونڈوز کو بند کرنے کے بعد آپ کو یاد نہیں رکھیں گی</translation>
 <translation id="6669284030132180248">‏اگر آپ اپنے بُک مارکس کو اپنے Google اکاؤنٹ میں بھی محفوظ کرتے ہیں تو آپ Chromium میں پروڈکٹ کی قیمتوں کو ٹریک کر سکتے ہیں اور قیمت میں گراوٹ ہونے پر اطلاع حاصل کر سکتے ہیں</translation>
 <translation id="6676384891291319759">انٹرنیٹ تک رسائی حاصل کریں</translation>
 <translation id="668175097507315160">‏ChromiumOS سائن ان میں ایک خرابی کی وجہ سے آپ کے ڈیٹا کی مطابقت پذیری نہیں کر سکا۔</translation>
@@ -423,7 +418,6 @@
 ممکن ہے کچھ خصوصیات غیر دستیاب ہوں۔ براہ کرم ایک مختلف پروفائل ڈائریکٹری متعین کریں یا Chromium کا ایک جدید تر ورژن استعمال کریں۔</translation>
 <translation id="6729124504294600478">‏ذاتی نوعیت سازی اور دیگر خصوصیات حاصل کرنے کے لیے، ویب اور ایپ سرگرمی اور لنک کردہ Google سروسز میں Chromium شامل کریں</translation>
 <translation id="6734291798041940871">‏Chromium پہلے سے آپ کے کمپیوٹر پر سبھی صارفین کیلئے انسٹال ہے۔</translation>
-<translation id="673636774878526923">‏اپنے تمام آلات پر اپنی Chromium کی چیزوں تک رسائی حاصل کرنے کیلئے، سائن ان کریں اور پھر مطابقت پذیری کو آن کریں۔</translation>
 <translation id="674245979920622322">‏آپ نے حال ہی میں ملاحظہ نہیں کیا ہے۔ ‫Chromium نے <ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="COUNT" /> مزید کو ہٹا دیا</translation>
 <translation id="67706546131546258">‏Chromium اس فائل کو اسکین کرنے کی تجویز کرتا ہے کیونکہ یہ خطرناک ہو سکتی ہے۔</translation>
 <translation id="6779406956731413166">‏ChromeOS اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن ہو پایا ہے۔</translation>

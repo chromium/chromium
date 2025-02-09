@@ -3022,6 +3022,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> мааниси жараксыз, андыктан колдонулбайт.</translation>
 <translation id="6340739886198108203">Администратордун саясаты купуя мазмун көрүнүп турганда скриншотторду тартууну же жаздырууну сунуштабайт:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Администратордун саясаты бул файлды төмөнкүгө жүктөп берүүнү сунуштабайт: <ph name="DESTINATION_NAME" />}other{Администратордун саясаты бул файлдарды төмөнкүгө жүктөп берүүнү сунуштабайт: <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="6342069812937806050">Жаңы эле</translation>
 <translation id="634500758737709758">Багыттар</translation>
 <translation id="6348220984832452017">Активдүү варианттар</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> колдонмосун орнотуу</translation>

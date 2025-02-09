@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">‏רוצה להתאים אישית את פרופיל Chrome?</translation>
 <translation id="1547295885616600893">‏<ph name="BEGIN_LINK_CROS_OSS" />תוכנת קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספת מאפשרת את השימוש ב-ChromeOS.</translation>
 <translation id="1553358976309200471">‏כדאי לעדכן את Chrome</translation>
-<translation id="1583073672411044740">‏המשתמש <ph name="EXISTING_USER" /> כבר מחובר לפרופיל Chrome הזה. ייווצר פרופיל Chrome חדש בשביל <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">‏Google Chrome משתמש במצלמה שלך.</translation>
 <translation id="1587325591171447154">‏<ph name="FILE_NAME" /> מסוכן, ולכן Chrome חסם אותו.</translation>
 <translation id="1597911401261118146">‏כדי לבדוק אם שאר הסיסמאות מוגנות מפני פרצות באבטחת מידע ובעיות אבטחה אחרות, <ph name="BEGIN_LINK" />יש להיכנס ל-Chrome<ph name="END_LINK" />.</translation>
@@ -145,7 +144,6 @@
 <translation id="2846251086934905009">שגיאת התקנה: פעולת מנהל ההתקנה לא הושלמה. ההתקנה בוטלה.</translation>
 <translation id="2853415089995957805">‏כדי שהדפים שבהם מבקרים ייטענו מהר יותר, Chrome טוען מראש דפים שיש סיכוי גבוה שייפתחו</translation>
 <translation id="2857540653560290388">‏הפעלת Chrome...</translation>
-<translation id="2857972467023607093">‏כבר קיים פרופיל Chrome עם החשבון הזה</translation>
 <translation id="286025080868315611">‏למה הורדות מסוימות נחסמות ב-Chrome</translation>
 <translation id="2861074815332034794">‏מתבצע עדכון של Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">‏נכנסת ל-Chrome!</translation>
@@ -225,7 +223,6 @@
 <translation id="3785324443014631273">‏לא ניתן היה לסנכרן את הנתונים ב-ChromeOS Flex בגלל שגיאה בכניסה.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">‏כדי להשתמש ב-Google Chrome, נדרש Windows מגרסה 10 ואילך.</translation>
-<translation id="3835168907083856002">‏ייווצר פרופיל Chrome חדש בשביל <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="383928141529488001">‏ל-Google Chrome נדרשת גישה ל-Bluetooth כדי למצוא 
  מכשירי Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">‏יש לסגור את כל החלונות של Google Chrome ולנסות שוב.</translation>
@@ -442,7 +439,6 @@
 <translation id="6712881677154121168">שגיאה בהורדה: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">‏שיפור המהירות ב-Chrome</translation>
 <translation id="6735387454586646204">‏מערכת ChromeOS Flex</translation>
-<translation id="6739177684496155661">‏להמשיך בפרופיל Chrome חדש?</translation>
 <translation id="6750954913813541382">‏כדי לתקן שגיאות כתיב, הטקסט שהוקלד על ידך בדפדפן נשלח אל Google על ידי Chrome</translation>
 <translation id="677276454032249905">‏לסגור את Chrome בכל זאת?</translation>
 <translation id="6794858689789885890">‏מחיקת נתונים מאתרים מהמכשיר בכל פעם שסוגרים את Chrome</translation>
@@ -550,7 +546,6 @@
 <translation id="7947083960301164556">לצפייה בתכונות החדשות</translation>
 <translation id="7951272445806340501">‏צריך להפעיל מחדש את ChromeOS Flex כדי להחיל את העדכון.</translation>
 <translation id="7959172989483770734">‏ניהול הפרופילים ב-Chrome</translation>
-<translation id="7962368738413920945">‏סביר להניח שאתרים יפעלו כצפוי, אבל ההעדפות שלך באתרים האלו יימחקו לאחר סגירת כל החלונות ב-Chrome</translation>
 <translation id="7962410387636238736">‏המחשב הזה כבר לא יקבל עדכונים ל-Google Chrome, מאחר שכבר אין תמיכה במערכות Windows XP ו-Windows Vista</translation>
 <translation id="8005666035647241369">‏נשמרה במנהל הסיסמאות של Google במכשיר הזה</translation>
 <translation id="8008534537613507642">‏התקנת Chrome מחדש</translation>
@@ -650,7 +645,6 @@
 <translation id="919706545465235479">‏יש לעדכן את Chrome כדי להתחיל את הסנכרון</translation>
 <translation id="922152298093051471">‏התאמה אישית של Chrome</translation>
 <translation id="93760716455950538">‏הפעלה מחדש של ChromeOS Flex</translation>
-<translation id="940313311831216333">‏כדי לקבל גישה אל הפריטים שלך ב-Chrome בכל המכשירים, יש להיכנס לחשבון ולהפעיל את הסנכרון.</translation>
 <translation id="943390475793766444">‏ההמלצה של Chrome היא לסרוק את הקובץ הזה כי הוא עלול להיות מסוכן.</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="983803489796659991">‏ההתקנה נכשלה כי שרת העדכון לא מכיל נתוני גיבוב (hash) של האפליקציה.</translation>

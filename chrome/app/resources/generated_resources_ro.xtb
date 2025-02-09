@@ -656,7 +656,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1454223536435069390">F&amp;aceți o captură de ecran</translation>
 <translation id="145432137617179457">Limbi pentru care se verifică ortografia</translation>
 <translation id="1455119378540982311">Dimensiuni de fereastră presetate</translation>
-<translation id="1456499573534615137">Te ajută să creezi teme personalizate pentru Chrome</translation>
 <translation id="1456849775870359518">Filele se vor redeschide</translation>
 <translation id="1457907785077086338">Culoarea insignei aplicației</translation>
 <translation id="146000042969587795">Acest cadru a fost blocat, deoarece are conținut nesigur.</translation>
@@ -3018,7 +3017,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3090871774332213558">„<ph name="DEVICE_NAME" />” conectată</translation>
 <translation id="3093714882666365141">Nu permite site-urilor să instaleze handlere pentru plăți</translation>
 <translation id="3094080575472025333">Blochează aplicațiile</translation>
-<translation id="3094141017404513551">Astfel, vei separa navigarea de cea asociată contului <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Expiră astăzi}=1{Expiră mâine}few{Expiră peste # zile}other{Expiră peste # de zile}}</translation>
 <translation id="3094521107841754472">Prețul s-a modificat de la <ph name="PREVIOUS_PRICE" /> la <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Marcajele, parolele și alte date ale browserului sunt sincronizate cu contul principal.</translation>
@@ -3121,7 +3119,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3177909033752230686">Limba paginii:</translation>
 <translation id="3177914167275935955">Dispozitivul include Upgrade-ul la Chrome pentru educație, dar numele de utilizator nu este asociat unui cont Google for Education. Creează un cont Google for Education accesând g.co/workspace/edusignup pe un dispozitiv secundar.</translation>
 <translation id="3179982752812949580">Fontul textului</translation>
-<translation id="3180284704187420717">Salvează-ți marcajele, parolele și altele cu sincronizarea</translation>
 <translation id="3180990259147710757">Mișcă maxilarul spre stânga</translation>
 <translation id="3181825792072797598">Activează sincronizarea</translation>
 <translation id="3181954750937456830">Navigare sigură (protecție împotriva site-urilor periculoase)</translation>
@@ -8801,7 +8798,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7273894023751806510">Blochează întotdeauna <ph name="HOST" />, astfel încât să nu poată controla și reprograma dispozitivele MIDI</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> până la încărcare completă</translation>
 <translation id="727595954130325265">Cumpără acum</translation>
-<translation id="7278164481614262110">Creează teme cu AI</translation>
 <translation id="727952162645687754">Eroare la descărcare</translation>
 <translation id="7280649757394340890">Setări ale vocii pentru redarea vocală a textului</translation>
 <translation id="7280877790564589615">Permisiune solicitată</translation>

@@ -656,7 +656,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1454223536435069390">E&amp;kranni suratga olish</translation>
 <translation id="145432137617179457">Imlosi tekshiriladigan tillar</translation>
 <translation id="1455119378540982311">Oynaning standart oʻlchamlari</translation>
-<translation id="1456499573534615137">Chrome uchun maxsus mavzularni yaratishda yordam beradi</translation>
 <translation id="1456849775870359518">Varaqlar qayta ochiladi</translation>
 <translation id="1457907785077086338">Ilova belgisi rangi</translation>
 <translation id="146000042969587795">Bu freym unda havfsiz bo‘lmagan elementlar borligi sababli bloklandi.</translation>
@@ -3019,7 +3018,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3090871774332213558">“<ph name="DEVICE_NAME" />” qurilmasi ulandi</translation>
 <translation id="3093714882666365141">Saytlarga toʻlov vositalarini oʻrnatishni taqiqlash</translation>
 <translation id="3094080575472025333">Ilovalarni bloklash</translation>
-<translation id="3094141017404513551">Brauzer axborotlari <ph name="EXISTING_USER" /> hisobidan ajratiladi</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Muddati bugun tugaydi}=1{Muddati ertaga tugaydi}other{# kundan keyin muddati tugaydi}}</translation>
 <translation id="3094521107841754472">Narx oʻzgardi: <ph name="PREVIOUS_PRICE" /> – <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Bukmarklar, parollar va boshqa brauzer maʼlumotlari asosiy hisobga sinxronlanadi.</translation>
@@ -3122,7 +3120,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3177909033752230686">Sahifa tili:</translation>
 <translation id="3177914167275935955">Qurilmangiz uchun Chrome Education yangilanishi mavjud, lekin qurilmadagi foydalanuvchi nomi Google for Education hisobiga tegishli emas. Google for Education hisobini ochish uchun boshqa qurilma orqali g.co/workspace/edusignup sahifasini oching.</translation>
 <translation id="3179982752812949580">Matn shrifti</translation>
-<translation id="3180284704187420717">Sinxronizatsiya orqali bukmark, parollar va boshqa axborotlarni saqlang</translation>
 <translation id="3180990259147710757">Lablarni chapga torting</translation>
 <translation id="3181825792072797598">Sinxronizatsiyani yoqish</translation>
 <translation id="3181954750937456830">Saytlarni xavfsiz kezish (sizni va qurilmangizni xavfli saytlardan himoya qiladi)</translation>
@@ -8799,7 +8796,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7273894023751806510"><ph name="HOST" /> saytiga MIDI qurilmalarini boshqarish va qayta dasturlash taqiqlansin</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – to‘la quvvatlanishi uchun  qolgan vaqt: <ph name="TIME" /></translation>
 <translation id="727595954130325265">Xarid qilish</translation>
-<translation id="7278164481614262110">AI yordamida mavzu yaratish</translation>
 <translation id="727952162645687754">Yuklab olishda xatolik yuz berdi</translation>
 <translation id="7280649757394340890">Nutq sintezatori uchun ovoz sozlamalari</translation>
 <translation id="7280877790564589615">Ruxsat so‘ralmoqda</translation>

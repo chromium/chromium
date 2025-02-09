@@ -3023,6 +3023,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> মানটি সঠিক নয় এবং ব্যবহার করা যাবে না।</translation>
 <translation id="6340739886198108203">গোপনীয় কন্টেন্ট দেখা গেলে অ্যাডমিনিস্ট্রেটরের নীতি স্ক্রিনশট নেওয়া অথবা রেকর্ডিং করার সাজেশন দেয় না:</translation>
 <translation id="6341434961864773665">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল আপলোড করা যাবে না}one{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এইসব ফাইল আপলোড করা যাবে না}other{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এইসব ফাইল আপলোড করা যাবে না}}</translation>
+<translation id="6342069812937806050">এখনই</translation>
 <translation id="634500758737709758">দিকনির্দেশ</translation>
 <translation id="6348220984832452017">অ্যাক্টিভ ভ্যারিয়েশন</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ইনস্টল করুন</translation>

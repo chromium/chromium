@@ -3018,6 +3018,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> மதிப்பு தவறாக உள்ளதால் அது பயன்படுத்தப்படாது.</translation>
 <translation id="6340739886198108203">ரகசிய உள்ளடக்கம் காட்டப்படும்போது ஸ்கிரீன்ஷாட் எடுப்பதையும் ரெக்கார்டு செய்வதையும் நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை:</translation>
 <translation id="6341434961864773665">{0,plural, =1{இந்த ஃபைலை <ph name="DESTINATION_NAME" />க்குப் பதிவேற்றுவதை நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை}other{இந்த ஃபைல்களை <ph name="DESTINATION_NAME" />க்குப் பதிவேற்றுவதை நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை}}</translation>
+<translation id="6342069812937806050">இப்போது</translation>
 <translation id="634500758737709758">வழிகள்</translation>
 <translation id="6348220984832452017">செயலில் உள்ள பதிப்புகள்</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ஆப்ஸை நிறுவுக</translation>

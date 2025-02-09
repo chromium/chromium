@@ -3023,6 +3023,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="633770708279464947">Gildið <ph name="SECURE_DNS_SALT" /> á ekki við og verður ekki notað.</translation>
 <translation id="6340739886198108203">Regla kerfisstjóra ræður gegn því að taka skjámyndir eða taka upp þegar trúnaðarupplýsingar eru sýnilegar:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Regla kerfisstjóra mælir ekki með að hlaða þessari skrá upp á <ph name="DESTINATION_NAME" />}one{Regla kerfisstjóra mælir ekki með að hlaða þessum skrám upp á <ph name="DESTINATION_NAME" />}other{Regla kerfisstjóra mælir ekki með að hlaða þessum skrám upp á <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="6342069812937806050">Rétt í þessu</translation>
 <translation id="634500758737709758">Leiðarlýsing</translation>
 <translation id="6348220984832452017">Virk afbrigði</translation>
 <translation id="6349101878882523185">Setja upp <ph name="APP_NAME" /></translation>

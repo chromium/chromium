@@ -41,7 +41,6 @@
 <translation id="1507198376417198979">ປັບແຕ່ງໂປຣໄຟລ໌ Chrome ໃໝ່ຂອງທ່ານ</translation>
 <translation id="1547295885616600893">ChromeOS ເກີດຂຶ້ນໄດ້ດ້ວຍ <ph name="BEGIN_LINK_CROS_OSS" />ຊອບແວໂອເພນຊອດ<ph name="END_LINK_CROS_OSS" /> ເພີ່ມເຕີມ.</translation>
 <translation id="1553358976309200471">ອັບ​ເດດ Chrome</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> ເຂົ້າສູ່ລະບົບໂປຣໄຟລ໌ Chrome ນີ້ຢູ່ກ່ອນແລ້ວ. ນີ້ຈະເປັນການສ້າງໂປຣໄຟລ໌ Chrome ໃໝ່ສຳລັບ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome ກໍາລັງໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານ.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> ອັນຕະລາຍ, ສະນັ້ນ Chrome ໄດ້ບລັອກມັນໄວ້ແລ້ວ.</translation>
 <translation id="1597911401261118146">ເພື່ອກວດເບິ່ງວ່າລະຫັດຜ່ານຂອງທ່ານປອດໄພຈາກການລະເມີດຂໍ້ມູນ ແລະ ບັນຫາຄວາມປອດໄພອື່ນຫຼືບໍ່, ກະລຸນາ <ph name="BEGIN_LINK" />ເຂົ້າສູ່ລະບົບ Chrome<ph name="END_LINK" />.</translation>
@@ -149,7 +148,6 @@
 <translation id="2846251086934905009">ຂໍ້ຜິດພາດໃນການຕິດຕັ້ງ: ຕົວຕິດຕັ້ງເຮັດວຽກໄດ້ບໍ່ສົມບູນ. ຍົກເລີກການຕິດຕັ້ງແລ້ວ.</translation>
 <translation id="2853415089995957805">Chrome ໂຫຼດໜ້າທີ່ທ່ານອາດຈະເຂົ້າເບິ່ງໄວ້ລ່ວງໜ້າ, ເພື່ອໃຫ້ພວກມັນໂຫຼດໄວຂຶ້ນເມື່ອທ່ານເຂົ້າເບິ່ງ</translation>
 <translation id="2857540653560290388">ກຳລັງເປີດໃຊ້ Chrome...</translation>
-<translation id="2857972467023607093">ມີໂປຣໄຟລ໌ Chrome ກັບບັນຊີນີ້ຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="286025080868315611">ສຶກສາວ່າເປັນຫຍັງ Chrome ຈຶ່ງບລັອກການດາວໂຫຼດບາງລາຍການ</translation>
 <translation id="2861074815332034794">ກຳລັງອັບເດດ Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">ທ່ານລົງຊື່ເຂົ້າໃຊ້ Chrome ແລ້ວ.</translation>
@@ -229,7 +227,6 @@
 <translation id="3785324443014631273">ChromeOS Flex ບໍ່ສາມາດຊິ້ງຂໍ້ມູນຂອງທ່ານໄດ້ເນື່ອງຈາກເກີດຄວາມຜິດພາດໃນການເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome ຕ້ອງການ Windows 10 ຂຶ້ນໄປ.</translation>
-<translation id="3835168907083856002">ນີ້ຈະເປັນການສ້າງໂປຣໄຟລ໌ Chrome ໃໝ່ສຳລັບ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Google Chrome ຕ້ອງການສິດເຂົ້າເຖິງ Bluetooth ເພື່ອສຳຫຼວດ 
  ອຸປະກອນ Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">ກະລຸນາປິດທຸກວິນໂດ Google Chrome ແລະລອງໃໝ່ອີກ.</translation>
@@ -450,7 +447,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6712881677154121168">ດາວໂຫຼດຜິດພາດ: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">ເຮັດໃຫ້ Chrome ໄວຂຶ້ນ</translation>
 <translation id="6735387454586646204">ລະບົບ ChromeOS Flex</translation>
-<translation id="6739177684496155661">ສືບຕໍ່ໃນໂປຣໄຟລ໌ Chrome ໃໝ່ບໍ?</translation>
 <translation id="6750954913813541382">ເພື່ອແກ້ໄຂຂໍ້ຜິດພາດກ່ຽວກັບການສະກົດຄຳ, Chrome ສົ່ງຂໍ້ຄວາມທີ່ທ່ານພິມໃນໂປຣແກຣມທ່ອງເວັບໃຫ້ Google</translation>
 <translation id="677276454032249905">ຢືນຢັນການອອກຈາກ Chrome ບໍ?</translation>
 <translation id="6794858689789885890">ລຶບຂໍ້ມູນເວັບໄຊຈາກອຸປະກອນຂອງທ່ານທຸກເທື່ອທີ່ທ່ານປິດ Chrome</translation>
@@ -558,7 +554,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7947083960301164556">ເບິ່ງສິ່ງທີ່ມາໃໝ່</translation>
 <translation id="7951272445806340501">ຈຳເປັນຕ້ອງຣີສະຕາດ ChromeOS Flex ເພື່ອນຳໃຊ້ອັບເດດ.</translation>
 <translation id="7959172989483770734">ຈັດການໂປຣໄຟລ໌ Chrome</translation>
-<translation id="7962368738413920945">ເວັບໄຊຈະເຮັດວຽກຕາມທີ່ທ່ານຄາດໄວ້ແຕ່ຈະບໍ່ຈື່ທ່ານຫຼັງຈາກທີ່ທ່ານປິດໜ້າຈໍ Chrome ທັງໝົດແລ້ວ</translation>
 <translation id="7962410387636238736">ຄອມພິວເຕີນີ້ຈະບໍ່ໄດ້ຮັບການອັບເດດ Google Chrome ອີກຕໍ່ໄປ ເພາະວ່າບໍ່ຮອງຮັບ Windows XP ແລະ Windows Vista ອີກຕໍ່ໄປ</translation>
 <translation id="8005666035647241369">ຫາຕົວຈັດການລະຫັດຜ່ານ Google ຢູ່ອຸປະກອນນີ້</translation>
 <translation id="8008534537613507642">ຕິດຕັ້ງ Chrome ຄືນໃໝ່</translation>
@@ -658,7 +653,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="919706545465235479">ອັບເດດ Chrome ເພື່ອເລີ່ມຊິ້ງຂໍ້ມູນ</translation>
 <translation id="922152298093051471">ປັບແຕ່ງ Chrome</translation>
 <translation id="93760716455950538">ຣີສະຕາດ ChromeOS Flex</translation>
-<translation id="940313311831216333">ເພື່ອເຂົ້າເຖິງຂໍ້ມູນໃນ Chrome ຂອງທ່ານຢູ່ໃນອຸປະກອນທັງໝົດ, ກະລຸນາເຂົ້າສູ່ລະບົບ ແລ້ວເປີດການຊິ້ງຂໍ້ມູນ.</translation>
 <translation id="943390475793766444">Chrome ແນະນຳໃຫ້ສະແກນໄຟລ໌ນີ້ເນື່ອງຈາກມັນອາດເປັນອັນຕະລາຍໄດ້.</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>
 <translation id="983803489796659991">ການຕິດຕັ້ງບໍ່ສຳເລັດເນື່ອງຈາກເຊີບເວີອັບເດດບໍ່ມີຂໍ້ມູນ hash ໃດໆສຳລັບແອັບພລິເຄຊັນ.</translation>

@@ -656,7 +656,6 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1454223536435069390">Piga picha ya skrini</translation>
 <translation id="145432137617179457">Lugha zinazoweza kutumia kikagua maendelezo</translation>
 <translation id="1455119378540982311">Ukubwa wa madirisha uliowekwa mapema</translation>
-<translation id="1456499573534615137">Hukusaidia kubuni mandhari maalum ya Chrome</translation>
 <translation id="1456849775870359518">Vichupo vyako vitafunguka upya</translation>
 <translation id="1457907785077086338">Rangi ya beji ya programu</translation>
 <translation id="146000042969587795">Fremu hii imezuiwa kwa sababu ina maudhui mengine yasiyo salama.</translation>
@@ -3027,7 +3026,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" imeoanishwa</translation>
 <translation id="3093714882666365141">Usiruhusu tovuti zisakinishe vidhibiti vya malipo</translation>
 <translation id="3094080575472025333">Zuia programu</translation>
-<translation id="3094141017404513551">Hatua hii itatenganisha shughuli zako za kuvinjari na za <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Muda wa matumizi unaisha leo}=1{Muda wa matumizi utaisha kesho}other{Muda wa matumizi utaisha baada ya siku #}}</translation>
 <translation id="3094521107841754472">Bei imebadilika kutoka <ph name="PREVIOUS_PRICE" /> kuwa <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Alamisho, manenosiri na data nyingine ya kuvinjari husawazishwa na akaunti ya msingi.</translation>
@@ -3130,7 +3128,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3177909033752230686">Lugha ya Ukurasa:</translation>
 <translation id="3177914167275935955">Kifaa chako kinajumuisha Toleo jipya la Chrome Education, lakini jina lako la mtumiaji halihusiani na akaunti ya Google for Education. Tafadhali fungua akaunti ya Google for Education kwa kutembelea g.co/workspace/edusignup kwenye kifaa cha pili.</translation>
 <translation id="3179982752812949580">Fonti ya maandishi</translation>
-<translation id="3180284704187420717">Hifadhi alamisho, manenosiri yako na zaidi ukitumia kipengele cha usawazishaji</translation>
 <translation id="3180990259147710757">Elekeza taya kushoto</translation>
 <translation id="3181825792072797598">Washa kipengele cha Kusawazisha</translation>
 <translation id="3181954750937456830">Kuvinjari Salama (hukulinda wewe na kifaa chako dhidi ya tovuti hatari)</translation>
@@ -8809,7 +8806,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7273894023751806510">Zuia <ph name="HOST" /> kila wakati isidhibiti na kusanidi upya vifaa vyako vya MIDI</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> mpaka ijae</translation>
 <translation id="727595954130325265">Nunua Sasa</translation>
-<translation id="7278164481614262110">Tayarisha mandhari ukitumia AI</translation>
 <translation id="727952162645687754">Hitilafu ya upakuaji</translation>
 <translation id="7280649757394340890">Mipangilio ya sauti ya Ubadilishaji wa Maandishi kwenda Usemi</translation>
 <translation id="7280877790564589615">Ruhusa imeombwa</translation>

@@ -131,7 +131,6 @@
 <translation id="2799223571221894425">Riavvia</translation>
 <translation id="2803971713792056305">Il tuo Chromium</translation>
 <translation id="2806241689335397269">Chromium ti chiederà se vuoi salvare le informazioni del modulo, ad esempio la data di nascita, l'età e il numero del passaporto</translation>
-<translation id="2837693172913560447">Questa operazione creerà un nuovo profilo Chromium per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2841525013647267359">Traduci da</translation>
 <translation id="2846251086934905009">Errore di installazione: il programma di installazione non è stato completato. L'installazione è stata interrotta.</translation>
 <translation id="2847479871509788944">Rimuovi da Chromium...</translation>
@@ -174,7 +173,6 @@
 <translation id="3296368748942286671">Continua a eseguire applicazioni in background dopo la chiusura di Chromium</translation>
 <translation id="3313189106987092621">Chromium ti avvisa prima di caricare qualsiasi sito che utilizza una connessione non sicura</translation>
 <translation id="3316771292331273802">Quando chiudi tutte le finestre di Chromium, uscirai dalla maggior parte dei siti, ma se hai eseguito l'accesso a Chromium non uscirai dal tuo Account Google. Per consentire ai siti di memorizzare le tue informazioni, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="3350761136195634146">Esiste già un profilo Chromium con questo account</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Vuoi passare a un profilo Chromium esistente?</translation>
 <translation id="3412460710772753638">In Gestore delle password su questo dispositivo</translation>
@@ -257,7 +255,6 @@
 <translation id="4534145890176164066">Chromium comprende meglio i moduli e può compilarli automaticamente e più velocemente al tuo posto</translation>
 <translation id="4536805923587466102">Hai già eseguito l'accesso come <ph name="USER_EMAIL_ADDRESS" /> in un altro profilo Chromium</translation>
 <translation id="4545268686623374213">Chromium può rendere inattiva questa scheda per migliorare la tua esperienza di navigazione e mantenere la velocità delle prestazioni.</translation>
-<translation id="454579500955453258">Vuoi continuare con un nuovo profilo Chromium?</translation>
 <translation id="4548534452171747496">Chromium precarica le pagine per velocizzare la navigazione e la ricerca. <ph name="BEGIN_LINK" />Scopri di più sul precaricamento delle pagine<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Hai eseguito l'accesso come <ph name="USER_EMAIL_ADDRESS" />. Ora puoi accedere ai tuoi Preferiti, alla tua cronologia e ad altre impostazioni su tutti i tuoi dispositivi su cui esegui l'accesso.</translation>
 <translation id="4570813286784708942">Chromium ha bloccato questo download perché hai disattivato Navigazione sicura e non è possibile verificare il file</translation>
@@ -293,7 +290,6 @@
 <translation id="5224391634244552924">Nessuna password salvata. Chromium può controllare le password quando le salvi.</translation>
 <translation id="5231355151045086930">Uscita da Chromium</translation>
 <translation id="5234764350956374838">Ignora</translation>
-<translation id="5252179775517634216"><ph name="EXISTING_USER" /> ha già eseguito l'accesso a questo profilo Chromium. Questa operazione creerà un nuovo profilo Chromium per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Riavvia Chromium per applicare le modifiche</translation>
 <translation id="5286907366254680517">Rilevata</translation>
 <translation id="5294316920224716406">Quando navighi in modalità di navigazione in incognito, Chromium ti avvisa prima di caricare un sito utilizzando una connessione non sicura</translation>
@@ -409,7 +405,6 @@
 <translation id="6600016381025017075">Cerca qualsiasi cosa in questa pagina</translation>
 <translation id="6613594504749178791">Le modifiche verranno applicate al prossimo riavvio di Chromium.</translation>
 <translation id="665732753414869868">Chromium deve avere l'autorizzazione di accesso alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
-<translation id="6663852025006259149">I siti dovrebbero funzionare come previsto, ma non memorizzeranno le tue informazioni dopo la chiusura di tutte le finestre di Chromium</translation>
 <translation id="6669284030132180248">Se salvi anche i preferiti nel tuo Account Google, puoi monitorare i prezzi dei prodotti in Chromium e ricevere notifiche quando il prezzo scende</translation>
 <translation id="6676384891291319759">Accesso a Internet</translation>
 <translation id="668175097507315160">Impossibile sincronizzare i dati in Chromium OS a causa di un errore durante l'accesso.</translation>
@@ -421,7 +416,6 @@
 Alcune funzioni potrebbero non essere disponibili. Specifica un'altra directory per il profilo o utilizza una versione più recente di Chromium.</translation>
 <translation id="6729124504294600478">Per accedere alla personalizzazione e ad altre funzionalità, includi Chromium in Attività web e app e nei servizi Google collegati</translation>
 <translation id="6734291798041940871">Chromium è già installato per tutti gli utenti sul computer.</translation>
-<translation id="673636774878526923">Per accedere ai tuoi contenuti Chromium su tutti i tuoi dispositivi, accedi e attiva la sincronizzazione.</translation>
 <translation id="674245979920622322">Non hai visitato il sito di recente. Chromium ha rimosso <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="COUNT" /> autorizzazioni</translation>
 <translation id="67706546131546258">Chromium consiglia di analizzare questo file perché potrebbe essere pericoloso.</translation>
 <translation id="6779406956731413166">La realizzazione di Chromium OS è stata possibile grazie a <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivi.</translation>

@@ -657,7 +657,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1454223536435069390">T&amp;aka skjámynd</translation>
 <translation id="145432137617179457">Tungumál villuleitar</translation>
 <translation id="1455119378540982311">Forstilltar gluggastærðir</translation>
-<translation id="1456499573534615137">Hjálpar þér að hanna sérsniðin þemu fyrir Chrome</translation>
 <translation id="1456849775870359518">Fliparnir þínir munu opnast aftur</translation>
 <translation id="1457907785077086338">Litur á merki forrits</translation>
 <translation id="146000042969587795">Þessi rammi var útilokaður vegna þess að hann inniheldur eitthvert óöruggt efni.</translation>
@@ -3036,7 +3035,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3090871774332213558">„<ph name="DEVICE_NAME" />“ parað</translation>
 <translation id="3093714882666365141">Ekki leyfa vefsvæðum að setja upp greiðslumiðlara</translation>
 <translation id="3094080575472025333">Útiloka forrit</translation>
-<translation id="3094141017404513551">Þetta aðskilur vefskoðun þína og <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Rennur út í dag}=1{Rennur út á morgun}one{Rennur út eftir # dag}other{Rennur út eftir # daga}}</translation>
 <translation id="3094521107841754472">Verð breyttist úr <ph name="PREVIOUS_PRICE" /> í <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Bókamerki, aðgangsorð og önnur vefskoðunargögn eru samstillt við aðalreikninginn.</translation>
@@ -3139,7 +3137,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3177909033752230686">Tungumál síðu:</translation>
 <translation id="3177914167275935955">Tækið þitt er með Chrome Education-uppfærslu en notandanafnið þitt er ekki tengt við Google for Education-reikning. Stofnaðu Google for Education-reikning með því að opna g.co/workspace/edusignup í öðru tæki.</translation>
 <translation id="3179982752812949580">Leturgerð texta</translation>
-<translation id="3180284704187420717">Vistaðu bókamerki, aðgangsorð og fleira með samstillingu</translation>
 <translation id="3180990259147710757">Beindu vörunum til vinstri</translation>
 <translation id="3181825792072797598">Kveikja á samstillingu</translation>
 <translation id="3181954750937456830">Örugg vefnotkun (verndar þig og tækið þitt fyrir hættulegum vefsvæðum)</translation>
@@ -8823,7 +8820,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7273894023751806510">Aldrei leyfa <ph name="HOST" /> að stjórna og endurforrita MIDI-tækin þín.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> í fulla hleðslu</translation>
 <translation id="727595954130325265">Versla núna</translation>
-<translation id="7278164481614262110">Búa til þemu með gervigreind</translation>
 <translation id="727952162645687754">Niðurhalsvilla</translation>
 <translation id="7280649757394340890">Raddstillingar talgervils</translation>
 <translation id="7280877790564589615">Heimildar krafist</translation>

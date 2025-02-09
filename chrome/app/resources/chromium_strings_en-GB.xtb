@@ -134,7 +134,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2799223571221894425">Relaunch</translation>
 <translation id="2803971713792056305">Your Chromium</translation>
 <translation id="2806241689335397269">Chromium will ask if you want to save form information, such as your birthday, age and passport number</translation>
-<translation id="2837693172913560447">This will create a new Chromium profile for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2841525013647267359">Translate from</translation>
 <translation id="2846251086934905009">Install error: The installer did not complete. The installation has been aborted.</translation>
 <translation id="2847479871509788944">Remove from Chromium...</translation>
@@ -177,7 +176,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3296368748942286671">Continue running background apps when Chromium is closed</translation>
 <translation id="3313189106987092621">Chromium will warn you before loading any site using an insecure connection</translation>
 <translation id="3316771292331273802">You'll be signed out of most sites when you close all Chromium windows, except your Google Account if you're signed in to Chromium. To let sites remember you, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="3350761136195634146">A Chromium profile with this account already exists</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Switch to existing Chromium profile?</translation>
 <translation id="3412460710772753638">In Password Manager on this device</translation>
@@ -260,7 +258,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4534145890176164066">Chromium understands forms better and can autofill them faster for you</translation>
 <translation id="4536805923587466102">You're already signed in as <ph name="USER_EMAIL_ADDRESS" /> in another Chromium profile</translation>
 <translation id="4545268686623374213">Chromium can make this tab inactive to improve your browsing experience and keep things fast.</translation>
-<translation id="454579500955453258">Continue in a new Chromium profile?</translation>
 <translation id="4548534452171747496">Chromium preloads pages which makes browsing and searching faster. <ph name="BEGIN_LINK" />Learn more about preload pages<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">You're signed in as <ph name="USER_EMAIL_ADDRESS" />. Now you can access your bookmarks, history and other settings on all your signed in devices.</translation>
 <translation id="4570813286784708942">Chromium blocked this download because you turned Safe Browsing off and the file can't be verified</translation>
@@ -296,7 +293,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5224391634244552924">No saved passwords. Chromium can check your passwords when you save them.</translation>
 <translation id="5231355151045086930">Sign out of Chromium</translation>
 <translation id="5234764350956374838">Dismiss</translation>
-<translation id="5252179775517634216"><ph name="EXISTING_USER" /> is already signed in to this Chromium profile. This will create a new Chromium profile for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">To apply your changes, relaunch Chromium</translation>
 <translation id="5286907366254680517">Detected</translation>
 <translation id="5294316920224716406">When browsing in Incognito mode, Chromium will warn you before loading a site using an insecure connection</translation>
@@ -412,7 +408,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="6600016381025017075">Search anything on this page</translation>
 <translation id="6613594504749178791">Your changes will take effect the next time you relaunch Chromium.</translation>
 <translation id="665732753414869868">Chromium needs camera permission to create a 3D map of your surroundings</translation>
-<translation id="6663852025006259149">Sites will probably work as you expect but won't remember you after you close all Chromium windows</translation>
 <translation id="6669284030132180248">If you also save your bookmarks in your Google Account, you can track product prices in Chromium and get notified when the price drops</translation>
 <translation id="6676384891291319759">Access the Internet</translation>
 <translation id="668175097507315160">Chromium OS could not sync your data due to an error signing in.</translation>
@@ -424,7 +419,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 Some features may be unavailable. Please specify a different profile directory or use a newer version of Chromium.</translation>
 <translation id="6729124504294600478">To get personalisation and other features, include Chromium in Web &amp; App Activity and linked Google services</translation>
 <translation id="6734291798041940871">Chromium is already installed for all users on your computer.</translation>
-<translation id="673636774878526923">To access your Chromium stuff across all your devices, sign in, then turn on sync.</translation>
 <translation id="674245979920622322">You haven't visited recently. Chromium removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="COUNT" /> more</translation>
 <translation id="67706546131546258">Chromium recommends scanning this file because it may be dangerous.</translation>
 <translation id="6779406956731413166">Chromium OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />.</translation>

@@ -41,7 +41,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1507198376417198979">Je nieuwe Chrome-profiel aanpassen</translation>
 <translation id="1547295885616600893">Chrome OS wordt mogelijk gemaakt door aanvullende <ph name="BEGIN_LINK_CROS_OSS" />opensource-software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Chrome updaten</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> is al ingelogd bij dit Chrome-profiel. Hiermee maak je een nieuw Chrome-profiel voor <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">Google Chrome gebruikt je camera.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> is gevaarlijk en is daarom door Chrome geblokkeerd.</translation>
 <translation id="1597911401261118146">Als je wilt checken of je wachtwoorden zijn beveiligd tegen gegevenslekken en andere beveiligingsproblemen, <ph name="BEGIN_LINK" />log je in bij Chrome<ph name="END_LINK" />.</translation>
@@ -149,7 +148,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2846251086934905009">Installatiefout: Het installatieprogramma is niet afgerond. De installatie is afgebroken.</translation>
 <translation id="2853415089995957805">Chrome laadt vooraf de pagina's die je waarschijnlijk gaat bezoeken, zodat de pagina's sneller laden als je ze bezoekt</translation>
 <translation id="2857540653560290388">Chrome starten…</translation>
-<translation id="2857972467023607093">Er bestaat al een Chrome-profiel voor dit account</translation>
 <translation id="286025080868315611">Meer informatie over waarom Chrome bepaalde downloads blokkeert</translation>
 <translation id="2861074815332034794">Chrome updaten (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Je bent ingelogd bij Chrome.</translation>
@@ -229,7 +227,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3785324443014631273">Chrome OS Flex kan je gegevens niet synchroniseren door een fout tijdens het inloggen.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Voor Google Chrome is Windows 10 of hoger vereist.</translation>
-<translation id="3835168907083856002">Hiermee maak je een nieuw Chrome-profiel voor <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="383928141529488001">Google Chrome heeft bluetooth-toegang nodig om bluetooth-apparaten te verkennen. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Sluit alle Google Chrome-vensters en probeer het opnieuw.</translation>
 <translation id="3873044882194371212">Link openen in een Chrome-inco&amp;gnitovenster</translation>
@@ -447,7 +444,6 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6712881677154121168">Downloadfout: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Maak Chrome sneller</translation>
 <translation id="6735387454586646204">Chrome OS Flex-systeem</translation>
-<translation id="6739177684496155661">Doorgaan met een nieuw Chrome-profiel?</translation>
 <translation id="6750954913813541382">Voor het verbeteren van spelfouten verzendt Chrome de tekst die je in de browser typt naar Google</translation>
 <translation id="677276454032249905">Chrome toch sluiten?</translation>
 <translation id="6794858689789885890">Sitegegevens altijd verwijderen van je apparaat als je Chrome sluit</translation>
@@ -555,7 +551,6 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="7947083960301164556">Bekijk nieuwe content</translation>
 <translation id="7951272445806340501">Chrome OS Flex moet opnieuw worden opgestart om de update uit te voeren.</translation>
 <translation id="7959172989483770734">Chrome-profielen beheren</translation>
-<translation id="7962368738413920945">Sites werken waarschijnlijk zoals verwacht, maar onthouden je niet nadat je alle Chrome-vensters hebt gesloten</translation>
 <translation id="7962410387636238736">Deze computer ontvangt geen Google Chrome-updates meer, omdat Windows XP en Windows Vista niet meer worden ondersteund</translation>
 <translation id="8005666035647241369">In Google Wachtwoordmanager op dit apparaat</translation>
 <translation id="8008534537613507642">Chrome opnieuw installeren</translation>
@@ -655,7 +650,6 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="919706545465235479">Chrome updaten om de synchronisatie te starten</translation>
 <translation id="922152298093051471">Chrome aanpassen</translation>
 <translation id="93760716455950538">Chrome OS Flex opnieuw opstarten</translation>
-<translation id="940313311831216333">Log in en zet synchronisatie aan voor toegang tot je Chrome-gegevens op al je apparaten.</translation>
 <translation id="943390475793766444">Chrome raadt aan dit bestand te scannen omdat het misschien gevaarlijk is.</translation>
 <translation id="945522503751344254">Feedback sturen</translation>
 <translation id="983803489796659991">De installatie is mislukt omdat de updateserver geen hash-gegevens voor de app heeft.</translation>

@@ -3023,6 +3023,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="633770708279464947">Die <ph name="SECURE_DNS_SALT" />-waarde is ongeldig en sal nie gebruik word nie.</translation>
 <translation id="6340739886198108203">Administrateursbeleid beveel nie aan dat skermskote geneem of opnames gemaak word wanneer vertroulike inhoud sigbaar is nie:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Administrateursbeleid beveel aan dat jy nie hierdie lêer na <ph name="DESTINATION_NAME" /> toe oplaai nie}other{Administrateursbeleid beveel aan dat jy nie hierdie lêers na <ph name="DESTINATION_NAME" /> toe oplaai nie}}</translation>
+<translation id="6342069812937806050">Nou net</translation>
 <translation id="634500758737709758">Aanwysings</translation>
 <translation id="6348220984832452017">Aktiewe variasies</translation>
 <translation id="6349101878882523185">Installeer <ph name="APP_NAME" /></translation>

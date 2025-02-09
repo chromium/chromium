@@ -660,7 +660,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1454223536435069390">T&amp;ynnu sgrinlun</translation>
 <translation id="145432137617179457">Ieithoedd sy'n cefnogi gwirio sillafu</translation>
 <translation id="1455119378540982311">Meintiau ffenestr rhagosodedig</translation>
-<translation id="1456499573534615137">Yn eich helpu i ddylunio themâu personol ar gyfer Chrome</translation>
 <translation id="1456849775870359518">Bydd eich tabiau yn ailagor</translation>
 <translation id="1457907785077086338">Lliw bathodyn ap</translation>
 <translation id="146000042969587795">Cafodd y ffrâm hon ei rhwystro gan ei bod yn cynnwys deunydd anniogel.</translation>
@@ -3033,7 +3032,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" wedi'i baru</translation>
 <translation id="3093714882666365141">Peidio â chaniatáu i wefannau osod trinwyr taliadau</translation>
 <translation id="3094080575472025333">Rhwystro apiau</translation>
-<translation id="3094141017404513551">Bydd hyn yn gwahanu'ch pori oddi wrth <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Yn darfod heddiw}=1{Yn darfod yfory}two{Yn darfod mewn # ddiwrnod}few{Yn darfod mewn # diwrnod}many{Yn darfod mewn # diwrnod}other{Yn darfod mewn # diwrnod}}</translation>
 <translation id="3094521107841754472">Mae'r pris wedi newid o <ph name="PREVIOUS_PRICE" /> i <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Caiff nodau tudalen, cyfrineiriau a data pori eraill eu cysoni â'r prif gyfrif.</translation>
@@ -3136,7 +3134,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3177909033752230686">Iaith y Dudalen:</translation>
 <translation id="3177914167275935955">Mae eich dyfais yn cynnwys Uwchraddiad Chrome Education, ond nid yw eich enw defnyddiwr wedi'i gysylltu â chyfrif Google for Education. Crëwch gyfrif Google for Education trwy fynd i g.co/workspace/edusignup ar ddyfais eilaidd.</translation>
 <translation id="3179982752812949580">Ffont testun</translation>
-<translation id="3180284704187420717">Cadwch eich nodau tudalen, cyfrineiriau a rhagor gyda chysoni</translation>
 <translation id="3180990259147710757">Symudwch eich gên i'r chwith</translation>
 <translation id="3181825792072797598">Troi Cysoni ymlaen</translation>
 <translation id="3181954750937456830">Pori'n Ddiogel (yn eich amddiffyn chi a'ch dyfais rhag gwefannau peryglus)</translation>
@@ -8825,7 +8822,6 @@ es pori a dod o hyd i wefannau y gwnaethoch ymweld â nhw. Gallwch hefyd ofyn cw
 <translation id="7273894023751806510">Rhwystro <ph name="HOST" /> rhag rheoli ac ailraglennu eich dyfeisiau MIDI bob amser</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> nes ei fod yn llawn</translation>
 <translation id="727595954130325265">Siopa Nawr</translation>
-<translation id="7278164481614262110">Creu themâu gydag AI</translation>
 <translation id="727952162645687754">Gwall lawrlwytho</translation>
 <translation id="7280649757394340890">Gosodiadau llais Testun i Leferydd</translation>
 <translation id="7280877790564589615">Gofynnwyd am ganiatâd</translation>

@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">Sesuaikan profil Chrome baru Anda</translation>
 <translation id="1547295885616600893">ChromeOS terwujud karena adanya <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
 <translation id="1553358976309200471">Perbarui browser Chrome</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> telah login ke profil Chrome ini. Ini akan membuat profil Chrome baru untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome menggunakan kamera Anda.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> berbahaya, sehingga Chrome memblokirnya.</translation>
 <translation id="1597911401261118146">Untuk memeriksa apakah sandi Anda aman dari pelanggaran data dan masalah keamanan lainnya, <ph name="BEGIN_LINK" />login ke Chrome<ph name="END_LINK" />.</translation>
@@ -145,7 +144,6 @@
 <translation id="2846251086934905009">Error penginstalan: Penginstal tidak selesai. Penginstalan telah dibatalkan.</translation>
 <translation id="2853415089995957805">Chrome melakukan pramuat halaman yang mungkin akan Anda buka, agar halaman tersebut dimuat lebih cepat saat Anda membukanya</translation>
 <translation id="2857540653560290388">Meluncurkan Chrome...</translation>
-<translation id="2857972467023607093">Profil Chrome dengan akun ini sudah ada</translation>
 <translation id="286025080868315611">Pelajari alasan Chrome memblokir beberapa download</translation>
 <translation id="2861074815332034794">Mengupdate Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Anda sudah masuk ke Chrome!</translation>
@@ -225,7 +223,6 @@
 <translation id="3785324443014631273">ChromeOS Flex tidak dapat menyinkronkan data Anda karena terjadi error saat login.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome memerlukan Windows 10 atau lebih tinggi.</translation>
-<translation id="3835168907083856002">Ini akan membuat profil Chrome baru untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Google Chrome memerlukan akses Bluetooth untuk menjelajah 
  perangkat Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Tutup semua jendela Google Chrome, lalu coba lagi.</translation>
@@ -442,7 +439,6 @@
 <translation id="6712881677154121168">Error download: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Buat Chrome lebih cepat</translation>
 <translation id="6735387454586646204">Sistem ChromeOS Flex</translation>
-<translation id="6739177684496155661">Lanjutkan di profil Chrome baru?</translation>
 <translation id="6750954913813541382">Untuk memperbaiki kesalahan ejaan, Chrome mengirim teks yang Anda ketikkan di browser ke Google</translation>
 <translation id="677276454032249905">Tetap tutup Chrome?</translation>
 <translation id="6794858689789885890">Selalu menghapus data situs dari perangkat saat Anda menutup Chrome</translation>
@@ -550,7 +546,6 @@
 <translation id="7947083960301164556">Lihat Yang Baru</translation>
 <translation id="7951272445806340501">ChromeOS Flex perlu dimulai ulang untuk menerapkan update.</translation>
 <translation id="7959172989483770734">Kelola Profil Chrome</translation>
-<translation id="7962368738413920945">Situs mungkin akan berfungsi seperti yang Anda harapkan, tetapi tidak akan mengingat Anda setelah Anda menutup semua jendela Chrome</translation>
 <translation id="7962410387636238736">Komputer ini tidak akan menerima update Google Chrome lagi karena Windows XP dan Windows Vista sudah tidak didukung</translation>
 <translation id="8005666035647241369">Ke Pengelola Sandi Google di perangkat ini</translation>
 <translation id="8008534537613507642">Instal Ulang Chrome</translation>
@@ -650,7 +645,6 @@
 <translation id="919706545465235479">Perbarui Chrome untuk memulai sinkronisasi</translation>
 <translation id="922152298093051471">Sesuaikan Chrome</translation>
 <translation id="93760716455950538">Mulai ulang ChromeOS Flex</translation>
-<translation id="940313311831216333">Untuk mengakses aktivitas Chrome di semua perangkat, login lalu aktifkan sinkronisasi.</translation>
 <translation id="943390475793766444">Chrome merekomendasikan pemindaian file ini karena file mungkin berbahaya.</translation>
 <translation id="945522503751344254">Kirim masukan</translation>
 <translation id="983803489796659991">Penginstalan gagal karena server update tidak memiliki data hash apa pun untuk aplikasi.</translation>

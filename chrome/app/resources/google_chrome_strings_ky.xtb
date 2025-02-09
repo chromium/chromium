@@ -41,7 +41,6 @@
 <translation id="1507198376417198979">Жаңы Chrome профилиңизди жекелештириңиз</translation>
 <translation id="1547295885616600893">ChromeOS тутуму кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен, иштейт.</translation>
 <translation id="1553358976309200471">Chrome'ду жаңыртуу</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> ушул Chrome профилине мурунтан эле кирип турат. Ушуну менен <ph name="USER_EMAIL_ADDRESS" /> үчүн жаңы Chrome профили түзүлөт</translation>
 <translation id="1587223624401073077">Google Chrome камераңызды колдонуп жатат.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> кооптуу файл болгондуктан, Chrome аны бөгөттөп койду.</translation>
 <translation id="1597911401261118146">Башка сырсөздөрүңүздүн бекем корголгонун, ошондой эле коопсуздукка байланыштуу көйгөйлөрдү текшерүү үчүн <ph name="BEGIN_LINK" />Chrome'го кириңиз<ph name="END_LINK" />.</translation>
@@ -149,7 +148,6 @@
 <translation id="2846251086934905009">Орнотуу катасы: Орнотуу аягына чыккан жок. Орнотуу токтотулду.</translation>
 <translation id="2853415089995957805">Chrome'дун божомолунда сиз кире турган барактар алдын ала жүктөлүп, киргениңизде алар тез ачылат</translation>
 <translation id="2857540653560290388">Chrome иштетилүүдө…</translation>
-<translation id="2857972467023607093">Бул аккаунт менен Chrome профили мурунтан эле түзүлгөн</translation>
 <translation id="286025080868315611">Chrome эмне үчүн айрым жүктөп алууларды бөгөттөп жатканын билип алыңыз</translation>
 <translation id="2861074815332034794">Chrome жаңыртылууда (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Chrome'го кирдиңиз!</translation>
@@ -229,7 +227,6 @@
 <translation id="3785324443014631273">Кирүү катасынан улам, ChromeOS Flex дайын-даректериңизди шайкештештире алган жок.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome'го Windows 10 же жаңыраак версиясы талап кылынат.</translation>
-<translation id="3835168907083856002">Ушуну менен <ph name="USER_EMAIL_ADDRESS" /> үчүн жаңы Chrome профили түзүлөт</translation>
 <translation id="383928141529488001">Google Chrome 
 Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайдаланууга уруксат алышы керек. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Бардык Google Chrome терезелерин жаап, дагы бир жолу аракет кылыңыз.</translation>
@@ -450,7 +447,6 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="6712881677154121168">Жүктөп алуу катасы: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome'ду ылдамдатуу</translation>
 <translation id="6735387454586646204">ChromeOS Flex тутуму</translation>
-<translation id="6739177684496155661">Жаңы Chrome профилинде улантасызбы?</translation>
 <translation id="6750954913813541382">Орфографиялык каталарды оңдоо үчүн Chrome серепчиде терилген текстти Google кызматтарына жөнөтүп турат</translation>
 <translation id="677276454032249905">Баары бир Chrome'дон чыгасызбы?</translation>
 <translation id="6794858689789885890">Chrome'ду жапкан сайын түзмөгүңүздөгү сайттардын маалыматын өчүрүү</translation>
@@ -558,7 +554,6 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="7947083960301164556">Жаңылыктарды көрүү</translation>
 <translation id="7951272445806340501">Жаңыртууну колдонуу үчүн ChromeOS Flex өчүрүлүп күйгүзүлүшү керек.</translation>
 <translation id="7959172989483770734">Chrome профилдерин тескөө</translation>
-<translation id="7962368738413920945">Сайттар ойдогудай иштеши мүмкүн, бирок Chrome'дун бардык терезелерин жапканыңыздан кийин алар сизди эстеп калбайт</translation>
 <translation id="7962410387636238736">Бул компьютер мындан ары Google Chrome жаңыртууларын албайт, себеби Windows XP жана Windows Vista мындан ары колдоого алынбайт</translation>
 <translation id="8005666035647241369">Бул түзмөктөгү Google Сырсөздөрдү башкаргычка</translation>
 <translation id="8008534537613507642">Chrome'ду кайра орнотуу</translation>
@@ -658,7 +653,6 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="919706545465235479">Шайкештирип баштоо үчүн Chrome'ду жаңыртыңыз</translation>
 <translation id="922152298093051471">Chrome'ду ыңгайлаштыруу</translation>
 <translation id="93760716455950538">ChromeOS Flex'ти өчүрүп күйгүзүү</translation>
-<translation id="940313311831216333">Chrome'догу файлдарды бардык түзмөктөрүңүздө колдонуу үчүн аккаунтуңузга кирип, шайкештирүүнү күйгүзүңүз.</translation>
 <translation id="943390475793766444">Chrome бул файлды текшерүүнү сунуштайт. Ал кооптуу болушу мүмкүн.</translation>
 <translation id="945522503751344254">Пикириңизди билдириңиз</translation>
 <translation id="983803489796659991">Орнотулган жок, анткени жаңыртуу серверинде колдонмонун хеш маалыматы жок.</translation>

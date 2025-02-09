@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">Pielāgojiet savu jauno Chrome profilu.</translation>
 <translation id="1547295885616600893">Chrome OS darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Atjaunināt Chrome</translation>
-<translation id="1583073672411044740">Lietotājs <ph name="EXISTING_USER" /> jau ir pierakstījies šajā Chrome profilā. Tādējādi tiks izveidots jauns Chrome profils lietotājam <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">Pārlūkā Google Chrome tiek izmantota kamera.</translation>
 <translation id="1587325591171447154">Fails <ph name="FILE_NAME" /> ir bīstams, tādēļ Chrome to bloķēja.</translation>
 <translation id="1597911401261118146">Lai pārbaudītu, vai jūsu paroles ir aizsargātas pret datu pārkāpumiem un citām drošības problēmām, <ph name="BEGIN_LINK" />pierakstieties pārlūkā Chrome<ph name="END_LINK" />.</translation>
@@ -147,7 +146,6 @@
 <translation id="2846251086934905009">Instalēšanas kļūda: instalēšanas programma nepabeidza darbu. Instalēšana ir priekšlaikus pārtraukta.</translation>
 <translation id="2853415089995957805">Pārlūkā Chrome tiek iepriekš ielādētas lapas, ko jūs, iespējams, apmeklēsiet. Tādējādi var tās ielādēt ātrāk tad, kad tās tiešām apmeklējat.</translation>
 <translation id="2857540653560290388">Notiek Chrome palaišana...</translation>
-<translation id="2857972467023607093">Chrome profils ar šādu kontu jau pastāv</translation>
 <translation id="286025080868315611">Uzziniet, kāpēc Chrome bloķē noteiktas lejupielādes</translation>
 <translation id="2861074815332034794">Notiek Chrome atjaunināšana (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Esat pierakstījies pārlūkā Chrome!</translation>
@@ -227,7 +225,6 @@
 <translation id="3785324443014631273">Chrome OS Flex nevarēja sinhronizēt jūsu datus pierakstīšanās kļūdas dēļ.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Pārlūka Google Chrome izmantošanai nepieciešama operētājsistēma Windows 10 vai jaunāka versija.</translation>
-<translation id="3835168907083856002">Tādējādi tiks izveidots jauns Chrome profils lietotājam <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="383928141529488001">Pārlūkam Google Chrome ir nepieciešama Bluetooth piekļuve, lai atrastu Bluetooth ierīces. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Lūdzu, aizveriet visus Google Chrome logus un mēģiniet vēlreiz.</translation>
 <translation id="3873044882194371212">Atvērt saiti Chrome inko&amp;gnito režīma logā</translation>
@@ -445,7 +442,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6712881677154121168">Lejupielādes kļūda: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Pārlūka Chrome darbības paātrināšana</translation>
 <translation id="6735387454586646204">Chrome OS Flex sistēma</translation>
-<translation id="6739177684496155661">Vai turpināt jaunā Chrome profilā?</translation>
 <translation id="6750954913813541382">Lai labotu pareizrakstības kļūdas, Chrome nosūta jūsu pārlūkprogrammā ievadīto tekstu Google serveriem</translation>
 <translation id="677276454032249905">Vai tik un tā aizvērt pārlūku Chrome?</translation>
 <translation id="6794858689789885890">Vienmēr dzēst vietnes datus no ierīces, kad tiek aizvērts pārlūks Chrome</translation>
@@ -553,7 +549,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="7947083960301164556">Skatīt jaunumus</translation>
 <translation id="7951272445806340501">Chrome OS Flex ir jārestartē, lai lietotu atjauninājumu.</translation>
 <translation id="7959172989483770734">Pārvaldīt Chrome profilus</translation>
-<translation id="7962368738413920945">Vietnes, visticamāk, darbosies pienācīgi, taču nesaglabās jūsu datus, kad aizvērsiet visus Chrome logus.</translation>
 <translation id="7962410387636238736">Šajā datorā vairs netiks saņemti Google Chrome atjauninājumi, jo operētājsistēmas Windows XP un Windows Vista vairs netiek atbalstītas.</translation>
 <translation id="8005666035647241369">Google paroļu pārvaldniekā šajā ierīcē</translation>
 <translation id="8008534537613507642">Pārinstalēt Chrome</translation>
@@ -653,7 +648,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="919706545465235479">Lai sāktu sinhronizāciju, atjauniniet Chrome.</translation>
 <translation id="922152298093051471">Pielāgot pārlūkprogrammu Chrome</translation>
 <translation id="93760716455950538">Chrome OS Flex restartēšana</translation>
-<translation id="940313311831216333">Lai piekļūtu savam Chrome saturam visās jūsu ierīcēs, pierakstieties un pēc tam ieslēdziet sinhronizāciju.</translation>
 <translation id="943390475793766444">Chrome iesaka pārbaudīt šo failu, jo tas var būt bīstams.</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>
 <translation id="983803489796659991">Instalēšana neizdevās, jo atjauninājumu serverim nav nekādu jaukšanas datu lietojumprogrammai.</translation>

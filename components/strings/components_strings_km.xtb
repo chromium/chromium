@@ -3027,6 +3027,7 @@
 <translation id="633770708279464947">តម្លៃ <ph name="SECURE_DNS_SALT" /> មិនត្រឹមត្រូវទេ ហើយនឹង​មិន​ត្រូវបាន​ប្រើប្រាស់​ឡើយ។</translation>
 <translation id="6340739886198108203">គោលការណ៍​អ្នកគ្រប់គ្រង​មិនណែនាំឱ្យ​ថតវីដេអូ ឬថតរូបអេក្រង់ទេ នៅពេលអាច​មើលឃើញខ្លឹមសារ​សម្ងាត់៖</translation>
 <translation id="6341434961864773665">{0,plural, =1{គោលការណ៍អ្នកគ្រប់គ្រង​មិន​ណែនាំ​ឱ្យ​បង្ហោះឯកសារ​នេះ​ទៅ​ក្នុង <ph name="DESTINATION_NAME" /> ទេ}other{គោលការណ៍អ្នកគ្រប់គ្រង​មិន​ណែនាំ​ឱ្យ​​បង្ហោះឯកសារ​ទាំង​នេះ​ទៅក្នុង <ph name="DESTINATION_NAME" /> ទេ}}</translation>
+<translation id="6342069812937806050">អំបាញ់មិញនេះ</translation>
 <translation id="634500758737709758">ទិសដៅ</translation>
 <translation id="6348220984832452017">បម្រែបម្រួលសកម្ម</translation>
 <translation id="6349101878882523185">ដំឡើង <ph name="APP_NAME" /></translation>

@@ -3021,6 +3021,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> 的值無效，系統不會使用這個值。</translation>
 <translation id="6340739886198108203">根據管理員政策，當畫面上有機密內容時，不建議你擷取螢幕截圖或錄影：</translation>
 <translation id="6341434961864773665">{0,plural, =1{根據管理員政策，建議你不要將這個檔案上傳到「<ph name="DESTINATION_NAME" />」}other{根據管理員政策，建議你不要將這些檔案上傳到「<ph name="DESTINATION_NAME" />」}}</translation>
+<translation id="6342069812937806050">剛剛</translation>
 <translation id="634500758737709758">規劃路線</translation>
 <translation id="6348220984832452017">使用中的變化版本</translation>
 <translation id="6349101878882523185">安裝 <ph name="APP_NAME" /></translation>

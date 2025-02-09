@@ -288,7 +288,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'b5584cfd89d95c6e0efd4cbf76d641c181a46a8e',
+  'angle_revision': 'ef2ef107242781000ebe2f4f11839ea233aae01b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': 'acb8a9747ab18ee3f890e58ed5808f5974a7c394',
+  'dawn_revision': '624730684a7fc5aa6c484a63e109cf2f7fac8c8e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'b2267231558d0de66abb4b52c91d9e6296159be2',
+    '4d287945fa74c1693c53e741a8e72fa3327f0eff',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2756,11 +2756,11 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@dbe0a14ab51271d28ac5e315a29b81012e7aef59',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@b4c8dd090b72888dcc64a26a36606073b6fb5838',
   'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@8a6b381c9afbfaf9fff851582539fab15ea480c0',
   'src/third_party/spirv-cross/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Cross@b8fcf307f1f347089e3c46eb4451d27f32ebc8d3',
   'src/third_party/spirv-headers/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Headers@09913f088a1197aba4aefd300a876b2ebbaa3391',
-  'src/third_party/spirv-tools/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Tools@9d7e182da7f06c50e4fa386e5b30304e7554e492',
+  'src/third_party/spirv-tools/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Tools@b3fe11f89bd6673a1a8c55b0ddb9ba42811f0774',
   'src/third_party/vulkan-headers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Headers@234c4b7370a8ea3239a214c9e871e4b17c89f4ab',
   'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@fde0f9718bd60b49cf8efc80d3fb7a093c309ac0',
   'src/third_party/vulkan-tools/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Tools@a9f88a232a4cd6634e47f0f93c8fac5789387a7a',
@@ -2984,7 +2984,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',
-        'version': '2-bXcPbGM8AXMzqHRiBWu4XIH9KKg5hXHvg-5FajpY4C',
+        'version': 'IdemvCOmhjw5xwOu_AthwhVDsT7Kw4Bykxwn2YQJwV0C',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4538,7 +4538,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '571f31fbc937c65dd54fc1edc00136b116fa1853',
+        'a4315a68bf1a854067faae5d21d9f9398bc78e38',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

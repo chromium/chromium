@@ -657,7 +657,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1454223536435069390">I&amp;egūt ekrānuzņēmumu</translation>
 <translation id="145432137617179457">Valodas, kurās var pārbaudīt pareizrakstību</translation>
 <translation id="1455119378540982311">Iepriekš iestatīti logu izmēri</translation>
-<translation id="1456499573534615137">Palīdz veidot pielāgotus Chrome motīvus</translation>
 <translation id="1456849775870359518">Jūsu cilnes tiks atkal atvērtas</translation>
 <translation id="1457907785077086338">Lietotnes emblēmas krāsa</translation>
 <translation id="146000042969587795">Šis rāmis tika bloķēts, jo tas satur dažus nedrošus elementus.</translation>
@@ -3019,7 +3018,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3090871774332213558">Izveidots savienojums pārī ar ierīci “<ph name="DEVICE_NAME" />”.</translation>
 <translation id="3093714882666365141">Neļaut vietnēm instalēt maksājumu apdarinātājus</translation>
 <translation id="3094080575472025333">Bloķēt lietotnes</translation>
-<translation id="3094141017404513551">Tādējādi jūsu pārlūkošanas dati tiks atdalīti no profila <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Derīguma termiņš beidzas šodien}=1{Derīguma termiņš beigsies rīt}zero{Derīguma termiņš beigsies pēc # dienām}one{Derīguma termiņš beigsies pēc # dienas}other{Derīguma termiņš beigsies pēc # dienām}}</translation>
 <translation id="3094521107841754472">Cena ir mainīta — iepriekš tā bija <ph name="PREVIOUS_PRICE" />, bet tagad ir <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Grāmatzīmes, paroles un citi pārlūkošanas dati tiek sinhronizēti ar primāro kontu.</translation>
@@ -3122,7 +3120,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3177909033752230686">Lapas valoda:</translation>
 <translation id="3177914167275935955">Jūsu ierīces komplektācijā ir iekļauts jauninājums Chrome Education Upgrade, taču jūsu lietotājvārds nav saistīts ar Google for Education kontu. Lūdzu, izveidojiet Google for Education kontu, otrā ierīcē apmeklējot vietni g.co/workspace/edusignup.</translation>
 <translation id="3179982752812949580">Teksta fonts</translation>
-<translation id="3180284704187420717">Izmantojot sinhronizāciju, varat saglabāt savas grāmatzīmes, paroles un daudz ko citu</translation>
 <translation id="3180990259147710757">Pārvietojiet apakšžokli pa kreisi</translation>
 <translation id="3181825792072797598">Ieslēgt sinhronizāciju</translation>
 <translation id="3181954750937456830">Droša pārlūkošana (aizsargā jūs un ierīci pret bīstamām vietnēm)</translation>
@@ -8801,7 +8798,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7273894023751806510">Vienmēr liegt vietnei <ph name="HOST" /> kontrolēt un pārprogrammēt jūsu MIDI ierīces</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% — līdz pilnam akumulatoram: <ph name="TIME" /></translation>
 <translation id="727595954130325265">Iepirkties tūlīt</translation>
-<translation id="7278164481614262110">Motīvu izveide, izmantojot MI</translation>
 <translation id="727952162645687754">Lejupielādes kļūda</translation>
 <translation id="7280649757394340890">Balss iestatījumi teksta pārvēršanai runā</translation>
 <translation id="7280877790564589615">Atļaujas pieprasījums</translation>

@@ -656,7 +656,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1454223536435069390">Ot&amp;a kuvakaappaus</translation>
 <translation id="145432137617179457">Oikeinkirjoituksen tarkistuskielet</translation>
 <translation id="1455119378540982311">Ikkunakokojen esiasetukset</translation>
-<translation id="1456499573534615137">Auttaa sinua suunnittelemaan omia Chrome-teemoja</translation>
 <translation id="1456849775870359518">Välilehdet avataan uudelleen</translation>
 <translation id="1457907785077086338">Sovellusmerkin väri</translation>
 <translation id="146000042969587795">Kehys estettiin, koska se sisältää suojaamatonta sisältöä.</translation>
@@ -3029,7 +3028,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3090871774332213558">Laitepari muodostettu laitteen <ph name="DEVICE_NAME" /> kanssa</translation>
 <translation id="3093714882666365141">Älä salli sivustojen asentaa maksujen käsittelijöitä</translation>
 <translation id="3094080575472025333">Sovellusten estäminen</translation>
-<translation id="3094141017404513551">Selaamisesi pidetään erillään tilistä <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Vanhenee tänään}=1{Vanhenee huomenna}other{Vanhenee # päivän kuluttua}}</translation>
 <translation id="3094521107841754472">Hinta on muuttunut. Se on nyt <ph name="CURRENT_PRICE" /> (aiemmin <ph name="PREVIOUS_PRICE" />).</translation>
 <translation id="3095871294753148861">Kirjanmerkit, salasanat ja muu selausdata synkronoidaan päätilin kanssa.</translation>
@@ -3132,7 +3130,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3177909033752230686">Sivun kieli:</translation>
 <translation id="3177914167275935955">Laitteesi sisältää Chrome Education Upgraden, mutta käyttäjänimeäsi ei ole liitetty Google for Education ‐tiliin. Luo Google for Education ‐tili siirtymällä toisella laitteella osoitteeseen g.co/workspace/edusignup.</translation>
 <translation id="3179982752812949580">Tekstin fontti</translation>
-<translation id="3180284704187420717">Tallenna esimerkiksi kirjanmerkit ja salasanat synkronoimalla</translation>
 <translation id="3180990259147710757">Käännä leukaa vasemmalle</translation>
 <translation id="3181825792072797598">Ota synkronointi käyttöön</translation>
 <translation id="3181954750937456830">Selaussuoja (suojaa sinua ja laitettasi vaarallisilta sivustoilta)</translation>
@@ -8810,7 +8807,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7273894023751806510"><ph name="HOST" /> ei saa ohjata eikä uudelleenohjelmoida MIDI-laitteitasi</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> % – täyteen lataukseen <ph name="TIME" /></translation>
 <translation id="727595954130325265">Osta nyt</translation>
-<translation id="7278164481614262110">Luo teemoja tekoälyn avulla</translation>
 <translation id="727952162645687754">Latausvirhe</translation>
 <translation id="7280649757394340890">Tekstistä puheeksi ‑ääniasetukset</translation>
 <translation id="7280877790564589615">Käyttölupapyyntö</translation>

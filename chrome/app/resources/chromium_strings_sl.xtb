@@ -134,7 +134,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2799223571221894425">Vnovičen zagon</translation>
 <translation id="2803971713792056305">Vaš Chromium</translation>
 <translation id="2806241689335397269">Chromium vas bo vprašal, ali želite shraniti podatke iz obrazca, kot so datum rojstva, starost in številka potnega lista</translation>
-<translation id="2837693172913560447">S tem bo ustvarjen novi profil v Chromiumu za uporabnika <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2841525013647267359">Prevedi iz jezika</translation>
 <translation id="2846251086934905009">Napaka pri namestitvi: Namestitveni program se ni dokončal. Namestitev je bila prekinjena.</translation>
 <translation id="2847479871509788944">Odstranitev iz Chromiuma ...</translation>
@@ -177,7 +176,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3296368748942286671">Nadaljuj izvajanje aplikacij v ozadju, ko je Chromium zaprt</translation>
 <translation id="3313189106987092621">Chromium vas bo opozoril pred nalaganjem katerega koli spletnega mesta prek povezave, ki ni varna</translation>
 <translation id="3316771292331273802">Ko zaprete vsa Chromiumova okna, boste odjavljeni z večine spletnih mest z izjemo računa Google, če ste prijavljeni v Chromium. Če želite, da si vas spletna mesta zapomnijo, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="3350761136195634146">Profil v Chromiumu s tem računom že obstaja.</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Želite preklopiti na obstoječi profil v Chromiumu?</translation>
 <translation id="3412460710772753638">V Upravitelju gesel v tej napravi</translation>
@@ -260,7 +258,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4534145890176164066">Chromium bolje razume obrazce in jih lahko hitreje samodejno izpolni</translation>
 <translation id="4536805923587466102">V drugem profilu za Chromium ste že prijavljeni kot <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4545268686623374213">Chromium lahko zaradi izboljšanja izkušnje brskanja in hitrejšega delovanja ta zavihek spremeni v neaktivnega.</translation>
-<translation id="454579500955453258">Ali želite nadaljevati v novem profilu v Chromiumu?</translation>
 <translation id="4548534452171747496">Chromium vnaprej naloži strani, kar omogoča hitrejše brskanje in iskanje. <ph name="BEGIN_LINK" />Preberite več o vnaprejšnjem nalaganju strani<ph name="END_LINK" />.</translation>
 <translation id="4567424176335768812">Prijavljeni ste kot <ph name="USER_EMAIL_ADDRESS" />. Zdaj imate dostop do zaznamkov, zgodovine in drugih nastavitev v vseh napravah, v katerih ste prijavljeni.</translation>
 <translation id="4570813286784708942">Chromium je blokiral ta prenos, ker ste izklopili Varno brskanje in datoteke ni mogoče preveriti</translation>
@@ -296,7 +293,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="5224391634244552924">Ni shranjenih gesel. Chromium lahko preveri gesla, če jih shranite.</translation>
 <translation id="5231355151045086930">Odjava iz Chromiuma</translation>
 <translation id="5234764350956374838">Opusti</translation>
-<translation id="5252179775517634216">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen v ta profil v Chromiumu. S tem bo ustvarjen novi profil v Chromiumu za uporabnika <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="5277894862589591112">Če želite uporabiti spremembe, znova zaženite Chromium</translation>
 <translation id="5286907366254680517">Zaznano</translation>
 <translation id="5294316920224716406">Pri brskanju v anonimnem načinu vas bo Chromium opozoril pred nalaganjem spletnega mesta prek povezave, ki ni varna</translation>
@@ -412,7 +408,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="6600016381025017075">Poiščite kar koli na tej strani</translation>
 <translation id="6613594504749178791">Spremembe bodo začele veljati ob naslednjem zagonu Chromiuma.</translation>
 <translation id="665732753414869868">Chromium potrebuje dovoljenje za dostop do fotoaparata zaradi ustvarjanja tridimenzionalnega zemljevida okolice.</translation>
-<translation id="6663852025006259149">Spletna mesta bodo verjetno delovala po pričakovanjih, vendar si vas ne bodo zapomnila, ko zaprete vsa okna Chromiuma.</translation>
 <translation id="6669284030132180248">Če v računu Google shranite tudi zaznamke, lahko v Chromiumu spremljate cene izdelkov in prejmete obvestilo, ko se cena zniža</translation>
 <translation id="6676384891291319759">Dostop do interneta</translation>
 <translation id="668175097507315160">Chromium OS ni mogel sinhronizirati podatkov zaradi napake pri prijavi.</translation>
@@ -424,7 +419,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 Nekatere funkcije morda ne bodo na voljo. Določite drug imenik profila ali uporabite novejšo različico Chromiuma.</translation>
 <translation id="6729124504294600478">Če želite uporabljati osebno prilagajanje in druge funkcije, vključite Chromium v dejavnost v spletu in aplikacijah ter povezane Googlove storitve</translation>
 <translation id="6734291798041940871">Chromium je že nameščen za vse uporabnike v računalniku.</translation>
-<translation id="673636774878526923">Če želite do stvari v Chromiumu dostopati v vseh svojih napravah, se prijavite in nato vklopite sinhronizacijo.</translation>
 <translation id="674245979920622322">Nedavno niste obiskali tega mesta. Chromium je odstranil ta dovoljenja: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="COUNT" />.</translation>
 <translation id="67706546131546258">Chromium priporoča, da pregledate to datoteko, saj je morda nevarna.</translation>
 <translation id="6779406956731413166">Chromium OS omogoča dodatna <ph name="BEGIN_LINK_CROS_OSS" />odprtokodna programska oprema<ph name="END_LINK_CROS_OSS" />.</translation>

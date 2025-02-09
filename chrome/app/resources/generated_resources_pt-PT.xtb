@@ -655,7 +655,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1454223536435069390">C&amp;riar captura de ecrã</translation>
 <translation id="145432137617179457">Idiomas com verificação ortográfica</translation>
 <translation id="1455119378540982311">Tamanhos de janelas predefinidos</translation>
-<translation id="1456499573534615137">Ajuda a criar temas personalizados para o Chrome</translation>
 <translation id="1456849775870359518">Os separadores vão ser reabertos</translation>
 <translation id="1457907785077086338">Cor do emblema da app</translation>
 <translation id="146000042969587795">Esta moldura foi bloqueada, pois contém alguns conteúdos não seguros.</translation>
@@ -1364,6 +1363,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1936157145127842922">Mostrar na pasta</translation>
 <translation id="1936931585862840749">Utilize um número para indicar as cópias a imprimir (1 a <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Não é possível importar o tipo de arquitetura de contentor <ph name="ARCHITECTURE_CONTAINER" /> com este dispositivo cuja arquitetura é <ph name="ARCHITECTURE_DEVICE" />. Pode tentar restaurar este contentor para um dispositivo diferente ou pode aceder aos ficheiros contidos na imagem deste contentor através da aplicação Ficheiros.</translation>
+<translation id="1938116692670653897">Tema de cores atual</translation>
 <translation id="1938351510777341717">Comando externo</translation>
 <translation id="1940221956626514677">Personalizar barra de ferramentas</translation>
 <translation id="1940546824932169984">Dispositivos ligados</translation>
@@ -2130,6 +2130,10 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2462332841984057083">O Steam já está a ser configurado. Aguarde pela conclusão da configuração.</translation>
 <translation id="2462724976360937186">ID da chave da autoridade de certificação</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> adicionada</translation>
+<translation id="2464075479326723132">Está a ver ficheiros sugeridos para poder voltar facilmente à sua atividade mais recente no Microsoft SharePoint e OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Pode gerir definições no menu do cartão ou ver mais opções em Personalizar o Chrome.</translation>
 <translation id="2464079411014186876">Gelado</translation>
 <translation id="2467755475704469005">Nenhum dispositivo detetado. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Adira ao grupo de separadores com <ph name="OWNER_FIRST_NAME" /> e mais <ph name="NUM_OTHER_MEMBERS" /> pessoas</translation>
@@ -3018,7 +3022,6 @@ Quer pará-lo?</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" sincronizado</translation>
 <translation id="3093714882666365141">Não permitir que os sites instalem controladores de pagamentos</translation>
 <translation id="3094080575472025333">Bloquear apps</translation>
-<translation id="3094141017404513551">Esta ação irá separar a sua navegação de <ph name="EXISTING_USER" />.</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Expira hoje}=1{Expira amanhã}other{Expira dentro de # dias}}</translation>
 <translation id="3094521107841754472">O preço foi alterado de <ph name="PREVIOUS_PRICE" /> para <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Os marcadores, as palavras-passe e outros dados do navegador são sincronizados com a conta principal.</translation>
@@ -3121,7 +3124,6 @@ Quer pará-lo?</translation>
 <translation id="3177909033752230686">Idioma da página:</translation>
 <translation id="3177914167275935955">O seu dispositivo inclui uma Atualização do Chrome Education, mas o seu nome de utilizador não está associado a uma conta do Google for Education. Crie uma conta do Google for Education ao visitar g.co/workspace/edusignup num dispositivo secundário.</translation>
 <translation id="3179982752812949580">Tipo de letra do texto</translation>
-<translation id="3180284704187420717">Guarde os seus marcadores, palavras-passe e muito mais com a sincronização</translation>
 <translation id="3180990259147710757">Mover o maxilar para a esquerda</translation>
 <translation id="3181825792072797598">Ativar Sincronização</translation>
 <translation id="3181954750937456830">Navegação segura (protege o utilizador e o seu dispositivo contra sites perigosos)</translation>
@@ -3992,6 +3994,7 @@ Quer pará-lo?</translation>
 <translation id="3787434344076711519">A aguardar tradução</translation>
 <translation id="3788301286821743879">Não foi possível iniciar a app de quiosque.</translation>
 <translation id="3788401245189148511">Esta poderia:</translation>
+<translation id="3789432704615470433">Ficheiros do SharePoint e OneDrive</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3790417903123637354">Ocorreu um erro. Tente mais tarde.</translation>
 <translation id="379082410132524484">O seu cartão de crédito expirou</translation>
@@ -6181,6 +6184,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5360150013186312835">Mostrar na Barra de ferramentas</translation>
 <translation id="5362741141255528695">Selecionar ficheiro de chave privada.</translation>
 <translation id="536278396489099088">Relatórios e estado do sistema do ChromeOS</translation>
+<translation id="5362916924854054326">Não mostrar ficheiros do SharePoint e OneDrive</translation>
 <translation id="5363109466694494651">Powerwash e reverter</translation>
 <translation id="5365881113273618889">A pasta que selecionou contém ficheiros confidenciais. Tem a certeza de que quer conceder à aplicação "<ph name="APP_NAME" />" acesso de escrita permanente a esta pasta?</translation>
 <translation id="536638840841140142">Nenhumas</translation>
@@ -8803,7 +8807,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7273894023751806510">Impedir sempre que <ph name="HOST" /> controle e reprograme os seus dispositivos MIDI</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> até ficar completa</translation>
 <translation id="727595954130325265">Comprar agora</translation>
-<translation id="7278164481614262110">Criar temas com IA</translation>
 <translation id="727952162645687754">Erro de transferência</translation>
 <translation id="7280649757394340890">Definições de voz para a conversão de texto em voz</translation>
 <translation id="7280877790564589615">Autorização solicitada</translation>
@@ -10764,6 +10767,10 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="865936634714975126">Adicione um parâmetro de consulta ao URL para selecionar tipos no carregamento de página. Exemplo: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Contactos da funcionalidade <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Janela movida para baixo</translation>
+<translation id="8660288500924118793">Está a ver o seu calendário para ajudar a navegar facilmente para o seu próximo evento no Calendário do Outlook.
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        Pode gerir definições no menu do cartão ou ver mais opções em Personalizar o Chrome.</translation>
 <translation id="8661290697478713397">Abrir Link numa Janela de Nave&amp;gação Anónima</translation>
 <translation id="8662474268934425487">Inicie sessão em <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Ligar à rede <ph name="TYPE" /></translation>

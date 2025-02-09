@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">Personalizează noul profil Chrome</translation>
 <translation id="1547295885616600893">ChromeOS este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar.</translation>
 <translation id="1553358976309200471">Actualizează Chrome</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> s-a conectat deja la acest profil Chrome. Astfel, se va crea un nou profil Chrome pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome utilizează camera foto.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> este periculos, așadar Chrome l-a blocat.</translation>
 <translation id="1597911401261118146">Ca să verifici dacă parolele sunt protejate împotriva încălcării securității datelor și a altor probleme de securitate, <ph name="BEGIN_LINK" />conectează-te la Chrome<ph name="END_LINK" />.</translation>
@@ -145,7 +144,6 @@
 <translation id="2846251086934905009">Eroare la instalare: programul de instalare nu a finalizat procesul. Instalarea a fost anulată.</translation>
 <translation id="2853415089995957805">Chrome preîncarcă paginile pe care este posibil să le accesezi, astfel încât să se încarce mai rapid când le accesezi</translation>
 <translation id="2857540653560290388">Se lansează Chrome...</translation>
-<translation id="2857972467023607093">Există deja un profil Chrome asociat acestui cont</translation>
 <translation id="286025080868315611">Află de ce Chrome blochează unele descărcări</translation>
 <translation id="2861074815332034794">Se actualizează Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">V-ați conectat la Chrome!</translation>
@@ -225,7 +223,6 @@
 <translation id="3785324443014631273">ChromeOS Flex nu a putut sincroniza datele din cauza unei erori la conectare.</translation>
 <translation id="3795971588916395511">Sistemul de operare Google Chrome</translation>
 <translation id="3809772425479558446">Google Chrome necesită Windows 10 sau o versiune ulterioară.</translation>
-<translation id="3835168907083856002">Astfel, se va crea un nou profil Chrome pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Google Chrome are nevoie de acces la Bluetooth pentru a explora 
  Dispozitive Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Închide toate ferestrele Google Chrome și încearcă din nou.</translation>
@@ -442,7 +439,6 @@
 <translation id="6712881677154121168">Eroare la descărcare: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Crește eficiența în Chrome</translation>
 <translation id="6735387454586646204">ChromeOS Flex</translation>
-<translation id="6739177684496155661">Continui cu un profil Chrome nou?</translation>
 <translation id="6750954913813541382">Pentru a corecta erorile de scriere, Chrome trimite la Google textul pe care îl introduci în browser</translation>
 <translation id="677276454032249905">Ieși din Chrome oricum?</translation>
 <translation id="6794858689789885890">Șterge întotdeauna datele privind site-urile de pe dispozitiv când închizi Chrome</translation>
@@ -550,7 +546,6 @@
 <translation id="7947083960301164556">Vezi noutățile</translation>
 <translation id="7951272445806340501">Pentru a se aplica actualizarea, sistemul de operare Chrome Flex trebuie să fie repornit.</translation>
 <translation id="7959172989483770734">Gestionează profilurile Chrome</translation>
-<translation id="7962368738413920945">Probabil că site-urile vor funcționa conform așteptărilor, dar nu te vor reține după ce închizi toate ferestrele Chrome</translation>
 <translation id="7962410387636238736">Acest computer nu va mai primi actualizări pentru Google Chrome, deoarece Windows XP și Windows Vista nu mai sunt acceptate</translation>
 <translation id="8005666035647241369">În Manager de parole Google pe acest dispozitiv</translation>
 <translation id="8008534537613507642">Reinstalați Chrome</translation>
@@ -650,7 +645,6 @@
 <translation id="919706545465235479">Actualizează Chrome pentru a începe sincronizarea</translation>
 <translation id="922152298093051471">Personalizează Chrome</translation>
 <translation id="93760716455950538">Repornește sistemul de operare Chrome Flex</translation>
-<translation id="940313311831216333">Pentru a accesa informațiile din Chrome pe toate dispozitivele, conectează-te, apoi activează sincronizarea.</translation>
 <translation id="943390475793766444">Chrome îți recomandă să scanezi acest fișier, deoarece ar putea fi periculos.</translation>
 <translation id="945522503751344254">Trimite feedback</translation>
 <translation id="983803489796659991">Nu s-a instalat deoarece serverul de actualizare nu are date hash pentru aplicație.</translation>

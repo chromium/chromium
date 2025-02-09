@@ -41,7 +41,6 @@
 <translation id="1507198376417198979">તમારી નવી Chrome પ્રોફાઇલ કસ્ટમાઇઝ કરો</translation>
 <translation id="1547295885616600893">ChromeOSને વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા શક્ય બનાવવામાં આવ્યું છે.</translation>
 <translation id="1553358976309200471">Chrome અપડેટ કરો</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> આ Chrome પ્રોફાઇલમાં પહેલેથી સાઇન ઇન છે. આને લીધે <ph name="USER_EMAIL_ADDRESS" /> માટે નવી Chrome પ્રોફાઇલ બનશે</translation>
 <translation id="1587223624401073077">Google Chrome તમારા કૅમેરાનો ઉપયોગ કરી રહ્યું છે.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> જોખમી છે, તેથી Chrome એ તેને અવરોધિત કરેલ છે.</translation>
 <translation id="1597911401261118146">ડેટા ઉલ્લંઘન અને અન્ય સુરક્ષાની સમસ્યાથી તમારા પાસવર્ડ સુરક્ષિત છે કે નહીં તે ચેક કરવા માટે, <ph name="BEGIN_LINK" />Chromeમાં સાઇન ઇન કરો<ph name="END_LINK" />.</translation>
@@ -149,7 +148,6 @@
 <translation id="2846251086934905009">ઇન્સ્ટૉલ કરવામાં ભૂલ: ઇન્સ્ટૉલર પૂર્ણ થયું નહીં. ઇન્સ્ટોલેશન રદ કરવામાં આવ્યું છે.</translation>
 <translation id="2853415089995957805">તમે જે પેજની મુલાકાત લેવાની શક્યતા વધુ હોય, Chrome તેને પહેલેથી લોડ કરે છે, જેથી જ્યારે તમે તેમની મુલાકાત લો, ત્યારે તે વધુ ઝડપથી લોડ થઈ શકે</translation>
 <translation id="2857540653560290388">Chrome લૉન્ચ કરી રહ્યાં છીએ…</translation>
-<translation id="2857972467023607093">આ એકાઉન્ટ સાથેની Chrome પ્રોફાઇલ પહેલેથી અસ્તિત્વમાં છે</translation>
 <translation id="286025080868315611">Chrome શા માટે અમુક ડાઉનલોડ કરેલી ફાઇલને બ્લૉક કરે છે તે જાણો</translation>
 <translation id="2861074815332034794">Chrome અપડેટ કરી રહ્યાં છીએ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">તમે હમણાં Chrome માં સાઇન ઇન છો!</translation>
@@ -229,7 +227,6 @@
 <translation id="3785324443014631273">સાઇન ઇન કરવામાં ભૂલ આવવાને કારણે, ChromeOS Flex તમારા ડેટાને સિંક કરી શક્યું નથી.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome માટે Windows 10 અથવા તે પછીનું વર્ઝન આવશ્યક છે.</translation>
-<translation id="3835168907083856002">આને લીધે <ph name="USER_EMAIL_ADDRESS" /> માટે નવી Chrome પ્રોફાઇલ બનશે</translation>
 <translation id="383928141529488001">બ્લૂટૂથ ડિવાઇસ વિશે શોધખોળ કરવા Google Chromeને બ્લૂટૂથના 
  ઍક્સેસની જરૂર છે. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">કૃપા કરીને બધી Google Chrome વિંડોઝ બંધ કરો અને ફરીથી પ્રયાસ કરો.</translation>
@@ -450,7 +447,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6712881677154121168">ડાઉનલોડ કરવામાં ભૂલ: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chromeને વધુ ઝડપી બનાવો</translation>
 <translation id="6735387454586646204">ChromeOS Flex સિસ્ટમ</translation>
-<translation id="6739177684496155661">નવી Chrome પ્રોફાઇલમાં બ્રાઉઝિંગ ચાલુ રાખીએ?</translation>
 <translation id="6750954913813541382">જોડણીની ભૂલો સુધારવા માટે, તમે બ્રાઉઝરમાં ટાઇપ કરો છો તે ટેક્સ્ટ Chrome દ્વારા Googleને મોકલવામાં આવે છે</translation>
 <translation id="677276454032249905">છતાં પણ Chromeમાંથી બહાર નિકળવું છે?</translation>
 <translation id="6794858689789885890">જ્યારે તમે Chrome બંધ કરો, ત્યારે હંમેશાં તમારા ડિવાઇસમાંથી સાઇટનો ડેટા ડિલીટ કરો</translation>
@@ -558,7 +554,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7947083960301164556">જુઓ નવું શું છે</translation>
 <translation id="7951272445806340501">અપડેટ લાગુ કરવા માટે ChromeOS Flexને ફરી શરૂ કરવાની જરૂર છે.</translation>
 <translation id="7959172989483770734">Chrome પ્રોફાઇલ મેનેજ કરો</translation>
-<translation id="7962368738413920945">સાઇટ કદાચ તમારી અપેક્ષા મુજબ કામ કરશે, પરંતુ તમે Chromeની બધી વિન્ડો બંધ કરી દો તે પછી, તે તમારો ડેટા સાચવશે નહીં</translation>
 <translation id="7962410387636238736">આ કમ્પ્યુટર હવેથી Google Chrome અપડેટ મેળવી શકશે નહીં કારણકે Windows XP અને Windows Vista હવે સમર્થિત રહ્યાં નથી</translation>
 <translation id="8005666035647241369">આ ડિવાઇસ પર Google પાસવર્ડ મેનેજરમાં સાચવો</translation>
 <translation id="8008534537613507642">Chrome ફરીથી ઇન્સ્ટોલ કરો</translation>
@@ -658,7 +653,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="919706545465235479">સમન્વયન પ્રારંભ કરવા માટે Chrome અપડેટ કરો</translation>
 <translation id="922152298093051471">Chrome કસ્ટમાઇઝ કરો</translation>
 <translation id="93760716455950538">ChromeOS Flex ફરી શરૂ કરો</translation>
-<translation id="940313311831216333">Chrome પરની તમારી વસ્તુઓને તમારા બધા ડિવાઇસ પર ઍક્સેસ કરવા માટે, સાઇન ઇન કરો અને પછી સિંક કરવાની સુવિધા ચાલુ કરો.</translation>
 <translation id="943390475793766444">Chrome આ ફાઇલને સ્કૅન કરવાનો સુઝાવ આપે છે, કારણ કે તે જોખમકારક હોઈ શકે છે.</translation>
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
 <translation id="983803489796659991">અપડેટ સર્વર પાસે ઍપ્લિકેશન માટે કોઈ હૅશ સંબંધી ડેટા ન હોવાને કારણે ઇન્સ્ટૉલેશન નિષ્ફળ રહ્યું.</translation>

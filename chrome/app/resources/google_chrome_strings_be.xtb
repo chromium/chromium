@@ -41,7 +41,6 @@
 <translation id="1507198376417198979">Наладзьце новы профіль Chrome</translation>
 <translation id="1547295885616600893">Chrome OS працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Абнавіць Chrome</translation>
-<translation id="1583073672411044740">Уваход у гэты профіль Chrome ужо выкананы карыстальнікам <ph name="EXISTING_USER" />. Будзе створаны новы профіль Chrome для ўліковага запісу <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome выкарыстоўвае камеру.</translation>
 <translation id="1587325591171447154">Файл <ph name="FILE_NAME" /> небяспечны, таму Chrome заблакіраваў яго.</translation>
 <translation id="1597911401261118146">Каб праверыць, ці не пагражае вашым паролям раскрыццё ў выніку ўцечкі даных або іншых праблем з бяспекай, <ph name="BEGIN_LINK" />увайдзіце ў Chrome<ph name="END_LINK" />.</translation>
@@ -149,7 +148,6 @@
 <translation id="2846251086934905009">Адбылася памылка. Усталёўшчык не завяршыў працу. Усталяванне перарвана.</translation>
 <translation id="2853415089995957805">Chrome перадзагружае старонкі, на якія вы з высокай імавернасцю можаце перайсці, каб яны адкрыліся хутчэй, калі вы іх наведаеце</translation>
 <translation id="2857540653560290388">Ідзе запуск Chrome...</translation>
-<translation id="2857972467023607093">Профіль Chrome з гэтым уліковым запісам ужо існуе</translation>
 <translation id="286025080868315611">Даведацца, чаму Chrome блакіруе некаторыя спампоўкі</translation>
 <translation id="2861074815332034794">Ідзе абнаўленне браўзера Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Вы ўвайшлі ў Chrome!</translation>
@@ -229,7 +227,6 @@
 <translation id="3785324443014631273">АС Chrome OS Flex не змагла сінхранізаваць даныя з-за памылкі ўваходу.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Для браўзера Google Chrome патрабуецца Windows 10 або навейшая версія.</translation>
-<translation id="3835168907083856002">Будзе створаны новы профіль Chrome для ўліковага запісу <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Браўзеру Google Chrome неабходны доступ да Bluetooth для пошуку прылад з Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Закрыйце ўсе вокны Google Chrome і паўтарыце спробу.</translation>
 <translation id="3873044882194371212">Адкрыць спасылку ў акне &amp;інкогніта Chrome</translation>
@@ -449,7 +446,6 @@
 <translation id="6712881677154121168">Памылка спампоўкі: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Паскорце працу Chrome</translation>
 <translation id="6735387454586646204">Сістэма Chrome OS Flex</translation>
-<translation id="6739177684496155661">Працягнуць працу ў новым профілі Chrome?</translation>
 <translation id="6750954913813541382">Для выпраўлення арфаграфічных памылак Chrome адпраўляе ў Google тэкст, які вы набіраеце ў браўзеры</translation>
 <translation id="677276454032249905">Усё роўна выйсці з Chrome?</translation>
 <translation id="6794858689789885890">Заўсёды выдаляць даныя сайтаў з прылады пры закрыцці Chrome</translation>
@@ -557,7 +553,6 @@
 <translation id="7947083960301164556">Паглядзець, што новага</translation>
 <translation id="7951272445806340501">Каб прымяніць абнаўленне, трэба перазапусціць Chrome OS Flex.</translation>
 <translation id="7959172989483770734">Кіраваць профілямі Chrome</translation>
-<translation id="7962368738413920945">Сайты, хутчэй за ўсё, будуць працаваць для вас як звычайна, але даныя пра вас будуць выдаляцца пасля закрыцця вамі ўсіх вокнаў браўзера Chrome</translation>
 <translation id="7962410387636238736">Гэты камп’ютар больш не будзе атрымліваць абнаўленні Google Chrome: Windows XP і Windows Vista цяпер не падтрымліваюцца</translation>
 <translation id="8005666035647241369">У Менеджары пароляў Google на гэтай прыладзе</translation>
 <translation id="8008534537613507642">Пераўсталяваць Chrome</translation>
@@ -657,7 +652,6 @@
 <translation id="919706545465235479">Абнавіце Chrome, каб пачаць сінхранізацыю</translation>
 <translation id="922152298093051471">Наладзіць Chrome</translation>
 <translation id="93760716455950538">Перазапуск Chrome OS Flex</translation>
-<translation id="940313311831216333">Каб мець доступ да даных браўзера Chrome на ўсіх вашых прыладах, увайдзіце ва ўліковы запіс, а затым уключыце сінхранізацыю.</translation>
 <translation id="943390475793766444">Chrome рэкамендуе праверыць гэты файл, бо ён можа быць небяспечным.</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
 <translation id="983803489796659991">Выканаць усталяванне не ўдалося, бо на серверы абнаўленняў адсутнічаюць хэш-даныя для праграмы.</translation>

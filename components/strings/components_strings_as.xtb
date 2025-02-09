@@ -3018,6 +3018,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> মানটো অমান্য আৰু সেইটো ব্যৱহাৰ কৰা নহ’ব।</translation>
 <translation id="6340739886198108203">প্ৰশাসকৰ নীতিয়ে গোপনীয় সমল দেখা পোৱা হৈ থকাৰ সময়ত স্ক্ৰীনশ্বট লোৱা অথবা ৰেকৰ্ডিং কৰাটো চুপাৰিছ নকৰে:</translation>
 <translation id="6341434961864773665">{0,plural, =1{প্ৰশাসকৰ নীতিয়ে এই ফাইলটো <ph name="DESTINATION_NAME" />ত আপল’ড কৰাটো চুপাৰিছ নকৰে}one{প্ৰশাসকৰ নীতিয়ে এই ফাইলসমূহ <ph name="DESTINATION_NAME" />ত আপল’ড কৰাটো চুপাৰিছ নকৰে}other{প্ৰশাসকৰ নীতিয়ে এই ফাইলসমূহ <ph name="DESTINATION_NAME" />ত আপল’ড কৰাটো চুপাৰিছ নকৰে}}</translation>
+<translation id="6342069812937806050">খন্তেক পূর্বে</translation>
 <translation id="634500758737709758">দিক্-নিৰ্দেশনা</translation>
 <translation id="6348220984832452017">ভিন্নতা সক্ৰিয় কৰক</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ইনষ্টল কৰক</translation>

@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">Personalizza il tuo nuovo profilo Chrome</translation>
 <translation id="1547295885616600893">La realizzazione di ChromeOS è stata possibile grazie a <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivi.</translation>
 <translation id="1553358976309200471">Aggiorna Chrome</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> ha già eseguito l'accesso a questo profilo Chrome. Questa operazione creerà un nuovo profilo Chrome per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome sta utilizzando la videocamera.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> è pericoloso, pertanto è stato bloccato da Chrome.</translation>
 <translation id="1597911401261118146">Per controllare che le tue password siano protette da violazioni dei dati e altri problemi di sicurezza, <ph name="BEGIN_LINK" />accedi a Chrome<ph name="END_LINK" />.</translation>
@@ -145,7 +144,6 @@
 <translation id="2846251086934905009">Errore di installazione: il programma di installazione non è stato completato. L'installazione è stata interrotta.</translation>
 <translation id="2853415089995957805">Chrome precarica le pagine che è probabile che visiterai, in modo che vengano caricate più rapidamente quando lo farai</translation>
 <translation id="2857540653560290388">Avvio di Chrome...</translation>
-<translation id="2857972467023607093">Esiste già un profilo Chrome con questo account</translation>
 <translation id="286025080868315611">Scopri perché Chrome blocca alcuni download</translation>
 <translation id="2861074815332034794">Aggiornamento di Chrome in corso… (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Hai eseguito l'accesso a Chrome.</translation>
@@ -225,7 +223,6 @@
 <translation id="3785324443014631273">Impossibile sincronizzare i dati in ChromeOS Flex a causa di un errore durante l'accesso.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome richiede Windows 10 o versioni successive.</translation>
-<translation id="3835168907083856002">Questa operazione creerà un nuovo profilo Chrome per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Google Chrome richiede l'accesso al Bluetooth per individuare i dispositivi Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Chiudi tutte le finestre di Google Chrome e riprova.</translation>
 <translation id="3873044882194371212">Apri link in una finestra di navigazione in inco&amp;gnito di Chrome</translation>
@@ -441,7 +438,6 @@
 <translation id="6712881677154121168">Errore di download: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6718739135284199302">Rendi Chrome più veloce</translation>
 <translation id="6735387454586646204">Sistema ChromeOS Flex</translation>
-<translation id="6739177684496155661">Vuoi continuare con un nuovo profilo Chrome?</translation>
 <translation id="6750954913813541382">Per correggere gli errori ortografici, Chrome invia a Google il testo che digiti nel browser</translation>
 <translation id="677276454032249905">Vuoi uscire comunque da Chrome?</translation>
 <translation id="6794858689789885890">Elimina sempre i dati dei siti dal dispositivo alla chiusura di Chrome</translation>
@@ -549,7 +545,6 @@
 <translation id="7947083960301164556">Guarda le novità</translation>
 <translation id="7951272445806340501">Per applicare l'aggiornamento è necessario riavviare ChromeOS Flex.</translation>
 <translation id="7959172989483770734">Gestisci i profili Chrome</translation>
-<translation id="7962368738413920945">I siti dovrebbero funzionare come previsto, ma non memorizzeranno le tue informazioni dopo la chiusura di tutte le finestre di Chrome</translation>
 <translation id="7962410387636238736">Questo computer non riceverà più gli aggiornamenti di Google Chrome perché Windows XP e Windows Vista non sono più supportati.</translation>
 <translation id="8005666035647241369">Su Gestore delle password di Google su questo dispositivo</translation>
 <translation id="8008534537613507642">Reinstalla Chrome</translation>
@@ -649,7 +644,6 @@
 <translation id="919706545465235479">Aggiorna Chrome per avviare la sincronizzazione</translation>
 <translation id="922152298093051471">Personalizza Chrome</translation>
 <translation id="93760716455950538">Riavvia ChromeOS Flex</translation>
-<translation id="940313311831216333">Per accedere ai tuoi contenuti Chrome su tutti i tuoi dispositivi, accedi e attiva la sincronizzazione.</translation>
 <translation id="943390475793766444">Chrome consiglia di analizzare questo file perché potrebbe essere pericoloso.</translation>
 <translation id="945522503751344254">Invia feedback</translation>
 <translation id="983803489796659991">Installazione non riuscita perché il server di aggiornamento non dispone di dati di hashing per l'applicazione.</translation>

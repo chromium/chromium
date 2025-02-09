@@ -3023,6 +3023,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="633770708279464947">Invalid ang value ng <ph name="SECURE_DNS_SALT" /> at hindi ito gagamitin.</translation>
 <translation id="6340739886198108203">Hindi inirerekomenda ng patakaran ng administrator ang pagkuha ng mga screenshot o recording kapag may nakikitang kumpidensyal na content:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Hindi inirerekomenda ng patakaran ng administrator na i-upload ang file na ito sa <ph name="DESTINATION_NAME" />}one{Hindi inirerekomenda ng patakaran ng administrator na i-upload ang mga file na ito sa <ph name="DESTINATION_NAME" />}other{Hindi inirerekomenda ng patakaran ng administrator na i-upload ang mga file na ito sa <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="6342069812937806050">Ngayon lang</translation>
 <translation id="634500758737709758">Mga Direksyon</translation>
 <translation id="6348220984832452017">Mga Aktibong Variation</translation>
 <translation id="6349101878882523185">I-install ang <ph name="APP_NAME" /></translation>

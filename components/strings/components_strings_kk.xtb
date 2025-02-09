@@ -3022,6 +3022,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> мәні жарамсыз және пайдаланылмайды.</translation>
 <translation id="6340739886198108203">Әкімші саясаты құпия контент көрсетілген кезде, скриншот жасауды немесе жазуды ұсынбайды.</translation>
 <translation id="6341434961864773665">{0,plural, =1{Әкімші саясатына сәйкес бұл файлды <ph name="DESTINATION_NAME" /> жадына жүктеп салу ұсынылмайды.}other{Әкімші саясатына сәйкес бұл файлдарды <ph name="DESTINATION_NAME" /> жадына жүктеп салу ұсынылмайды.}}</translation>
+<translation id="6342069812937806050">Қазір ғана</translation>
 <translation id="634500758737709758">Бағыттар</translation>
 <translation id="6348220984832452017">Белсенді нұсқалар</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> қолданбасын орнату</translation>

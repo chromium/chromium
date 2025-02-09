@@ -41,7 +41,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1507198376417198979">Customise your new Chrome profile</translation>
 <translation id="1547295885616600893">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Update Chrome</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> is already signed in to this Chrome profile. This will create a new Chrome profile for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome is using your camera.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> is dangerous, so Chrome has blocked it.</translation>
 <translation id="1597911401261118146">To check if your passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK" />sign in to Chrome<ph name="END_LINK" />.</translation>
@@ -149,7 +148,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2846251086934905009">Install error: The installer did not complete. The installation has been aborted.</translation>
 <translation id="2853415089995957805">Chrome preloads pages you're likely to visit, so that they load more quickly when you visit them</translation>
 <translation id="2857540653560290388">Launching Chrome...</translation>
-<translation id="2857972467023607093">A Chrome profile with this account already exists</translation>
 <translation id="286025080868315611">Learn why Chrome blocks some downloads</translation>
 <translation id="2861074815332034794">Updating Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">You're signed in to Chrome!</translation>
@@ -229,7 +227,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3785324443014631273">Chrome OS Flex could not sync your data due to an error signing in.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome requires Windows 10 or higher.</translation>
-<translation id="3835168907083856002">This will create a new Chrome profile for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Google Chrome needs Bluetooth access to explore 
  Bluetooth devices. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Please close all Google Chrome windows and try again.</translation>
@@ -450,7 +447,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6712881677154121168">Download error: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Make Chrome faster</translation>
 <translation id="6735387454586646204">Chrome OS Flex system</translation>
-<translation id="6739177684496155661">Continue in a new Chrome profile?</translation>
 <translation id="6750954913813541382">To fix spelling errors, Chrome sends the text that you type in the browser to Google</translation>
 <translation id="677276454032249905">Exit Chrome anyway?</translation>
 <translation id="6794858689789885890">Always delete site data from your device when you close Chrome</translation>
@@ -558,7 +554,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7947083960301164556">View what's new</translation>
 <translation id="7951272445806340501">Chrome OS Flex needs to be restarted to apply the update.</translation>
 <translation id="7959172989483770734">Manage Chrome profiles</translation>
-<translation id="7962368738413920945">Sites will probably work as you expect but won't remember you after you close all Chrome windows</translation>
 <translation id="7962410387636238736">This computer will no longer receive Google Chrome updates because Windows XP and Windows Vista are no longer supported</translation>
 <translation id="8005666035647241369">To Google Password Manager on this device</translation>
 <translation id="8008534537613507642">Reinstall Chrome</translation>
@@ -658,7 +653,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="919706545465235479">Update Chrome to start sync</translation>
 <translation id="922152298093051471">Customise Chrome</translation>
 <translation id="93760716455950538">Restart Chrome OS Flex</translation>
-<translation id="940313311831216333">To access your Chrome stuff across all your devices, sign in, then turn on sync.</translation>
 <translation id="943390475793766444">Chrome recommends scanning this file because it may be dangerous.</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="983803489796659991">Installation failed because the update server does not have any hash data for the application.</translation>

@@ -134,7 +134,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2803971713792056305">Tu Chromium</translation>
 <translation id="2806241689335397269">Chromium te preguntará si quieres guardar información de formularios, como tu fecha de nacimiento, edad y número de pasaporte</translation>
-<translation id="2837693172913560447">Se creará un perfil nuevo de Chromium para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2841525013647267359">Traducir del</translation>
 <translation id="2846251086934905009">Error de instalación: no se ha completado el proceso de instalación. Se ha cancelado la instalación.</translation>
 <translation id="2847479871509788944">Desinstalar de Chromium...</translation>
@@ -177,7 +176,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3296368748942286671">Seguir ejecutando aplicaciones en segundo plano al cerrar Chromium</translation>
 <translation id="3313189106987092621">Chromium te avisará antes de cargar un sitio usando una conexión no segura</translation>
 <translation id="3316771292331273802">Cuando cierres todas las ventanas de Chromium, se cerrará tu sesión en la mayoría de los sitios, salvo la de tu cuenta de Google si has iniciado sesión en Chromium. Para permitir que los sitios te recuerden, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="3350761136195634146">Ya existe un perfil de Chromium con esta cuenta</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">¿Cambiar a un perfil de Chromium?</translation>
 <translation id="3412460710772753638">En el gestor de contraseñas de este dispositivo</translation>
@@ -260,7 +258,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4534145890176164066">Chromium entiende mejor los formularios y puede autocompletarlos más rápido</translation>
 <translation id="4536805923587466102">Ya has iniciado sesión como <ph name="USER_EMAIL_ADDRESS" /> en otro perfil de Chromium</translation>
 <translation id="4545268686623374213">Chromium puede inactivar esta pestaña para mejorar y agilizar tu experiencia de navegación.</translation>
-<translation id="454579500955453258">¿Continuar en un nuevo perfil de Chromium?</translation>
 <translation id="4548534452171747496">Chromium precarga las páginas, lo que te permite navegar y hacer búsquedas más rápido. <ph name="BEGIN_LINK" />Más información sobre la precarga de páginas<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Has iniciado sesión como <ph name="USER_EMAIL_ADDRESS" />. Ahora puedes acceder a tus marcadores, a tu historial y a otras opciones en todos los dispositivos en los que hayas iniciado sesión.</translation>
 <translation id="4570813286784708942">Chromium ha bloqueado esta descarga porque has desactivado Navegación segura y el archivo no se puede verificar</translation>
@@ -296,7 +293,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="5224391634244552924">No hay ninguna contraseña guardada. Chromium puede comprobar tus contraseñas si las guardas.</translation>
 <translation id="5231355151045086930">Cerrar sesión en Chromium</translation>
 <translation id="5234764350956374838">Cerrar</translation>
-<translation id="5252179775517634216"><ph name="EXISTING_USER" /> ya ha iniciado sesión en este perfil de Chromium. Se creará un perfil nuevo de Chromium para <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="5277894862589591112">Reinicia Chromium para aplicar los cambios</translation>
 <translation id="5286907366254680517">Detectado</translation>
 <translation id="5294316920224716406">Cuando navegues en modo Incógnito, Chromium te avisará antes de cargar un sitio usando una conexión no segura</translation>
@@ -412,7 +408,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="6600016381025017075">Buscar cualquier cosa en esta página</translation>
 <translation id="6613594504749178791">Los cambios se aplicarán la próxima vez que reinicies Chromium.</translation>
 <translation id="665732753414869868">Chromium necesita el permiso de la cámara para crear un mapa 3D de tu entorno</translation>
-<translation id="6663852025006259149">Es probable que los sitios funcionen como deben, pero no te recordarán tras cerrar todas las ventanas de Chromium</translation>
 <translation id="6669284030132180248">Si también guardas los marcadores en tu cuenta de Google, puedes hacer un seguimiento de los precios de los productos en Chromium y recibir una notificación cuando bajen</translation>
 <translation id="6676384891291319759">Accede a Internet.</translation>
 <translation id="668175097507315160">ChromiumOS no ha podido sincronizar tus datos debido a un error de inicio de sesión.</translation>
@@ -424,7 +419,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 Es posible que algunas funciones no estén disponibles. Especifica un directorio de perfil diferente o utiliza una versión más actualizada de Chromium.</translation>
 <translation id="6729124504294600478">Para disfrutar de personalización y otras funciones, incluye Chromium en Actividad en la Web y en Aplicaciones y en los servicios de Google vinculados</translation>
 <translation id="6734291798041940871">Chromium ya está instalado para todos los usuarios en tu ordenador.</translation>
-<translation id="673636774878526923">Para acceder a tus cosas de Chromium en todos tus dispositivos, inicia sesión y activa la sincronización.</translation>
 <translation id="674245979920622322">No has visitado el sitio recientemente. Chromium ha eliminado <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="COUNT" /> más.</translation>
 <translation id="67706546131546258">Chromium recomienda analizar este archivo porque puede que sea peligroso.</translation>
 <translation id="6779406956731413166">ChromiumOS se ha creado gracias a <ph name="BEGIN_LINK_CROS_OSS" />software libre<ph name="END_LINK_CROS_OSS" /> adicional.</translation>

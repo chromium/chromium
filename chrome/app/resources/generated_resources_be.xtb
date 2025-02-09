@@ -658,7 +658,6 @@
 <translation id="1454223536435069390">З&amp;рабіць здымак экрана</translation>
 <translation id="145432137617179457">Мовы праверкі правапісу</translation>
 <translation id="1455119378540982311">Стандартныя памеры акон</translation>
-<translation id="1456499573534615137">Дапамагае ствараць карыстальніцкія тэмы для Chrome</translation>
 <translation id="1456849775870359518">Вашы ўкладкі зноў адкрыюцца</translation>
 <translation id="1457907785077086338">Колер значкоў праграм</translation>
 <translation id="146000042969587795">Гэты фрэйм заблакіраваны, бо ён утрымлівае небяспечнае змесціва.</translation>
@@ -1367,6 +1366,7 @@
 <translation id="1936157145127842922">Паказаць у папцы</translation>
 <translation id="1936931585862840749">Каб указаць, колькі копій друкаваць, увядзіце лік (ад 1 да <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Не ўдалося імпартаваць кантэйнер з тыпам архітэктуры "<ph name="ARCHITECTURE_CONTAINER" />" на прыладу з тыпам "<ph name="ARCHITECTURE_DEVICE" />". Можна паспрабаваць аднавіць гэты кантэйнер на іншай прыладзе або атрымаць доступ да файлаў у кантэйнеры, адкрыўшы яго вобраз у праграме "Файлы".</translation>
+<translation id="1938116692670653897">Бягучая колеравая тэма</translation>
 <translation id="1938351510777341717">Знешняя клавіша Command</translation>
 <translation id="1940221956626514677">Наладзіць панэль інструментаў</translation>
 <translation id="1940546824932169984">Падключаныя прылады</translation>
@@ -2131,6 +2131,10 @@
 <translation id="2462332841984057083">Steam ужо наладжваецца. Пачакайце, пакуль наладжванне завершыцца.</translation>
 <translation id="2462724976360937186">Ідэнтыфікатар ключа цэнтра сертыфікацыі</translation>
 <translation id="2462752602710430187">Дададзены прынтар <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Вы бачыце прапанаваныя файлы, з дапамогай якіх можна з лёгкасцю вяртацца да сваіх самых нядаўніх дзеянняў у Microsoft SharePoint і OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        У вас ёсць магчымасць кіраваць наладамі з меню карткі і праглядаць дадатковыя параметры ў раздзеле "Наладзіць Chrome".</translation>
 <translation id="2464079411014186876">Марожанае</translation>
 <translation id="2467755475704469005">Прылады не выяўлены. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /> і яшчэ некалькі (<ph name="NUM_OTHER_MEMBERS" />) карыстальнікаў</translation>
@@ -3018,7 +3022,6 @@
 <translation id="3090871774332213558">Клавіятура "<ph name="DEVICE_NAME" />" спалучана</translation>
 <translation id="3093714882666365141">Не дазваляць сайтам усталёўваць апрацоўшчыкі плацяжоў</translation>
 <translation id="3094080575472025333">Заблакіраваць праграмы</translation>
-<translation id="3094141017404513551">Вы будзеце праглядаць старонкі асобна ад карыстальніка <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Тэрмін дзеяння заканчваецца сёння}=1{Тэрмін дзеяння заканчваецца заўтра}one{Тэрмін дзеяння закончыцца праз # дзень}few{Тэрмін дзеяння закончыцца праз # дні}many{Тэрмін дзеяння закончыцца праз # дзён}other{Тэрмін дзеяння закончыцца праз # дня}}</translation>
 <translation id="3094521107841754472">Цана змянілася з <ph name="PREVIOUS_PRICE" /> на <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Закладкі, паролі і іншыя даныя браўзера сінхранізуюцца з асноўным уліковым запісам.</translation>
@@ -3121,7 +3124,6 @@
 <translation id="3177909033752230686">Мова старонкі:</translation>
 <translation id="3177914167275935955">На вашай прыладзе ёсць ліцэнзія Chrome Education Upgrade, але ваша імя карыстальніка не звязана з уліковым запісам Google for Education. Стварыце ўліковы запіс Google for Education, зайшоўшы на старонку g.co/workspace/edusignup на іншай прыладзе.</translation>
 <translation id="3179982752812949580">Шрыфт тэксту</translation>
-<translation id="3180284704187420717">Захоўвайце закладкі, паролі і іншыя даныя з выкарыстаннем сінхранізацыі</translation>
 <translation id="3180990259147710757">Змясціце сківіцу ўлева</translation>
 <translation id="3181825792072797598">Уключыць сінхранізацыю</translation>
 <translation id="3181954750937456830">Бяспечны прагляд (абараняе вас і прыладу ад небяспечных сайтаў)</translation>
@@ -3990,6 +3992,7 @@
 <translation id="3787434344076711519">Выконваецца пераклад</translation>
 <translation id="3788301286821743879">Не ўдалося запусціць праграму-кіёск.</translation>
 <translation id="3788401245189148511">Гэта пашырэнне або ўбудова можа:</translation>
+<translation id="3789432704615470433">Файлы SharePoint і OneDrive</translation>
 <translation id="3789841737615482174">Усталяваць</translation>
 <translation id="3790417903123637354">Нешта пайшло не так. Паўтарыце спробу пазней</translation>
 <translation id="379082410132524484">Тэрмін дзеяння карткі скончыўся</translation>
@@ -6178,6 +6181,7 @@
 <translation id="5360150013186312835">Паказаць на панэлі інструментаў</translation>
 <translation id="5362741141255528695">Выберыце файл закрытага ключа.</translation>
 <translation id="536278396489099088">Справаздачы і стан сістэмы ChromeOS</translation>
+<translation id="5362916924854054326">Не паказваць файлы SharePoint і OneDrive</translation>
 <translation id="5363109466694494651">Скінуць налады функцыяй Powerwash і вярнуцца да старой версіі</translation>
 <translation id="5365881113273618889">Выбраная папка змяшчае канфідэнцыяльныя файлы. Даць праграме "<ph name="APP_NAME" />" пастаянны доступ на запіс у гэту папку?</translation>
 <translation id="536638840841140142">Без палёў</translation>
@@ -8804,7 +8808,6 @@
 <translation id="7273894023751806510">Заўсёды блакіраваць сайту <ph name="HOST" /> доступ да кіравання прыладамі MIDI і іх перапраграмавання</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> да поўнай зарадкі</translation>
 <translation id="727595954130325265">Купіць</translation>
-<translation id="7278164481614262110">Стварэнне тэм з дапамогай AI</translation>
 <translation id="727952162645687754">Памылка спампоўкі</translation>
 <translation id="7280649757394340890">Налады голасу для сінтэзу маўлення</translation>
 <translation id="7280877790564589615">Дазвол запытаны</translation>
@@ -10764,6 +10767,10 @@
 <translation id="865936634714975126">Дадайце параметр запыту ў URL-адрас для выбару тыпаў пры загрузцы старонкі Прыклад: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" />: кантакты</translation>
 <translation id="8659609431223166673">Акно перамешчана ўніз</translation>
+<translation id="8660288500924118793">Каляндар паказваецца, каб вам было зручна пераходзіць да наступнай падзеі ў Календары Outlook.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       У вас ёсць магчымасць кіраваць наладамі з меню карткі і праглядаць дадатковыя параметры ў раздзеле "Наладзіць Chrome".</translation>
 <translation id="8661290697478713397">Адкрыць спасылку ў акне інко&amp;гніта</translation>
 <translation id="8662474268934425487">Выберыце ўліковы запіс для ўваходу ў <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Падключэнне да сеткі <ph name="TYPE" /></translation>

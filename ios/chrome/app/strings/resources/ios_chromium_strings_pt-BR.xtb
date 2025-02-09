@@ -70,6 +70,7 @@ Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão ex
 <translation id="2459183986985456602">Abre minha guia mais recente no Chromium.</translation>
 <translation id="2476409803017965813">Você pode atualizar suas escolhas quando quiser nas configurações do Chromium.</translation>
 <translation id="2478931088402984578">Selecione o <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
+<translation id="2485774047568879945">Defina o Chromium como seu navegador padrão para compartilhar e abrir links com facilidade</translation>
 <translation id="2512597191798760956">Toque no ícone do Chromium, pressione e clique em "Editar tela inicial"</translation>
 <translation id="2517624234762908348">Sincronizar seus dados do Chromium</translation>
 <translation id="2592940277904433508">Continuar usando o Chromium</translation>
@@ -167,6 +168,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="5088872414922783602">Acesse o Chromium com mais rapidez no Dock da tela inicial.</translation>
 <translation id="5124429847818367226">Agora você pode usar o Chromium sempre que navegar ou tocar em links em mensagens, documentos e outros apps.</translation>
 <translation id="5131565040785979529">Sua organização, <ph name="DOMAIN" />, gerencia a conta em que você fez login e como o Chromium é usado.</translation>
+<translation id="5134464247000681876">Abrir links do Gmail, Maps, YouTube e outros apps no Chromium</translation>
 <translation id="5224391634244552924">Nenhuma senha salva. O Chromium poderá verificar suas senhas quando elas forem salvas.</translation>
 <translation id="5259423875997548710">Pesquise recursos visuais no Chromium.</translation>
 <translation id="5308226104666789935">Não é possível verificar se há atualizações</translation>
@@ -260,6 +262,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="7674213385180944843">Abra Ajustes &gt; Privacidade &gt; Câmera &gt; Chromium e ative a câmera.</translation>
 <translation id="7733418656985455268">Dica do Chromium: pesquise com o Lens</translation>
 <translation id="7747820849741499258">Pesquisar no Chromium</translation>
+<translation id="7753923083404296545">Aberto na navegação anônima do Chromium</translation>
 <translation id="7762622637388462191">Bloqueie o modo de navegação anônima ao sair do Chromium ou mudar para outro app.</translation>
 <translation id="7763454117143368771">Use o Chromium como navegador padrão para se proteger contra sites perigosos e garantir a segurança das suas senhas</translation>
 <translation id="7784950022329154821">Bloquear guias anônimas ao fechar o Chromium</translation>

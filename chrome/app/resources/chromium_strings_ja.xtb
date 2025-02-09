@@ -131,7 +131,6 @@
 <translation id="2799223571221894425">再起動</translation>
 <translation id="2803971713792056305">あなたの Chromium</translation>
 <translation id="2806241689335397269">Chromium で誕生日、年齢、パスポート番号などのフォーム情報を保存するかどうかを確認するメッセージが表示されます</translation>
-<translation id="2837693172913560447"><ph name="USER_EMAIL_ADDRESS" /> 用の新しい Chromium プロファイルが作成されます。</translation>
 <translation id="2841525013647267359">原文の言語</translation>
 <translation id="2846251086934905009">インストール エラー: インストーラが完了しませんでした。インストールは中止されました。</translation>
 <translation id="2847479871509788944">Chromium から削除...</translation>
@@ -174,7 +173,6 @@
 <translation id="3296368748942286671">Chromium を閉じた際にバックグラウンド アプリの処理を続行する</translation>
 <translation id="3313189106987092621">Chromium で安全でない接続を使用してサイトを読み込む前に警告を表示します</translation>
 <translation id="3316771292331273802">Chromium のウィンドウをすべて閉じると、ほとんどのサイトからログアウトします。ただし Chromium にログインしている場合、Google アカウントからはログアウトしません。サイトにあなたの情報を記憶させるには、<ph name="SETTINGS_LINK" />します。</translation>
-<translation id="3350761136195634146">このアカウントの Chromium プロフィールはすでに存在します</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">既存の Chromium プロフィールに切り替えますか？</translation>
 <translation id="3412460710772753638">このデバイスのパスワード マネージャーで更新</translation>
@@ -257,7 +255,6 @@
 <translation id="4534145890176164066">Chromium でフォームの内容を正確に把握して、すばやく自動入力できます</translation>
 <translation id="4536805923587466102">別の Chromium プロフィールに <ph name="USER_EMAIL_ADDRESS" /> としてすでにログインしています</translation>
 <translation id="4545268686623374213">このタブを非アクティブにして、ブラウジング環境を改善し、処理を高速に保つことができます。</translation>
-<translation id="454579500955453258">新しい Chromium プロフィールで続行しますか？</translation>
 <translation id="4548534452171747496">ページがプリロードされ、閲覧と検索をすばやく行えるようになります。<ph name="BEGIN_LINK" />ページのプリロードの詳細<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" /> としてログインしています。ログインしているすべてのデバイスで、ブックマーク、履歴、その他の設定にアクセスできます。</translation>
 <translation id="4570813286784708942">このダウンロードは Chromium でブロックされました。セーフ ブラウジングがオフになっており、ファイルを確認できません</translation>
@@ -293,7 +290,6 @@
 <translation id="5224391634244552924">保存されているパスワードがありません。パスワードを保存すると、Chromium で確認できるようになります。</translation>
 <translation id="5231355151045086930">Chromium からのログアウト</translation>
 <translation id="5234764350956374838">閉じる</translation>
-<translation id="5252179775517634216"><ph name="EXISTING_USER" /> さんはこの Chromium プロファイルにすでにログインしています。<ph name="USER_EMAIL_ADDRESS" /> 用の新しい Chromium プロファイルが作成されます。</translation>
 <translation id="5277894862589591112">変更を適用するには Chromium を再起動してください</translation>
 <translation id="5286907366254680517">検出しました</translation>
 <translation id="5294316920224716406">シークレット モードでブラウジングする際、Chromium で安全でない接続を使用してサイトを読み込む前に警告を表示します</translation>
@@ -409,7 +405,6 @@
 <translation id="6600016381025017075">このページの内容を検索</translation>
 <translation id="6613594504749178791">変更内容は次に Chromium を再起動したときに有効になります。</translation>
 <translation id="665732753414869868">周囲の 3D マップを作成するには、Chromium にカメラの使用を許可する必要があります</translation>
-<translation id="6663852025006259149">サイトはおおむね想定どおりに機能しますが、Chromium のウィンドウをすべて閉じるとユーザーに関する情報は失われます</translation>
 <translation id="6669284030132180248">ブックマークを Google アカウントにも保存している場合は、Chromium で商品価格をトラッキングして、値下げがあったときに通知を受け取ることができます</translation>
 <translation id="6676384891291319759">インターネットにアクセス</translation>
 <translation id="668175097507315160">ログイン時にエラーが発生したため、Chromium OS はデータを同期できませんでした。</translation>
@@ -421,7 +416,6 @@
 一部の機能が利用できない可能性があります。別の場所のプロフィールを指定するか、新しいバージョンの Chromium をご使用ください。</translation>
 <translation id="6729124504294600478">パーソナライズなどの機能を利用するには、Chromium をウェブとアプリのアクティビティと、リンクされた Google サービスに追加します</translation>
 <translation id="6734291798041940871">Chromium は既にパソコンのすべてのユーザーに対してインストールされています。</translation>
-<translation id="673636774878526923">お使いのすべてのデバイスで Chromium の設定やデータを使用するには、ログインして同期を有効にしてください。</translation>
 <translation id="674245979920622322">最近アクセスしていないため、Chromium で <ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="COUNT" /> 件の権限を削除しました</translation>
 <translation id="67706546131546258">このファイルは危害を及ぼす可能性があるため、スキャンすることをおすすめします。</translation>
 <translation id="6779406956731413166">Chromium OS は、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>

@@ -41,7 +41,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1507198376417198979">Přizpůsobte si svůj nový profil Chrome</translation>
 <translation id="1547295885616600893">Systém ChromeOS by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />open source softwaru<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Aktualizovat Chrome</translation>
-<translation id="1583073672411044740">Uživatel <ph name="EXISTING_USER" /> už je k tomuto profilu Chrome přihlášen. Tímto vytvoříte nový profil Chrome pro uživatele <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome používá vaši kameru.</translation>
 <translation id="1587325591171447154">Soubor <ph name="FILE_NAME" /> je nebezpečný, proto jej Chrome zablokoval.</translation>
 <translation id="1597911401261118146">Chcete-li zkontrolovat, zda jsou hesla v bezpečí před porušením zabezpečení údajů a ostatními bezpečnostními hrozbami, <ph name="BEGIN_LINK" />přihlaste se do Chromu<ph name="END_LINK" />.</translation>
@@ -149,7 +148,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2846251086934905009">Chyba instalace: Instalační program nebyl dokončen. Instalace byla zrušena.</translation>
 <translation id="2853415089995957805">Chrome předběžně načítá stránky, které byste pravděpodobně mohli navštívit. Když je navštívíte, načtou se tak rychleji.</translation>
 <translation id="2857540653560290388">Spouštění Chromu...</translation>
-<translation id="2857972467023607093">Profil Chrome s tímto účtem už existuje</translation>
 <translation id="286025080868315611">Přečtěte si, proč Chrome blokuje některá stahování</translation>
 <translation id="2861074815332034794">Aktualizace Chromu (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Nyní jste přihlášeni do Chromu.</translation>
@@ -229,7 +227,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3785324443014631273">Systém ChromeOS Flex nemůže synchronizovat data kvůli chybě při přihlašování.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome vyžaduje systém Windows 10 nebo vyšší.</translation>
-<translation id="3835168907083856002">Tímto vytvoříte nový profil Chrome pro uživatele <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">K prozkoumání zařízení Bluetooth potřebuje Google Chrome přístup k rozhraní Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Zavřete prosím všechna okna prohlížeče Google Chrome a zkuste to znovu.</translation>
 <translation id="3873044882194371212">Otevřít odkaz v &amp;anonymním okně Chrome</translation>
@@ -449,7 +446,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6712881677154121168">Chyba stahování: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Zrychlete svůj prohlížeč Chrome</translation>
 <translation id="6735387454586646204">Systém ChromeOS Flex</translation>
-<translation id="6739177684496155661">Pokračovat v novém profilu Chrome?</translation>
 <translation id="6750954913813541382">Text zadaný v prohlížeči odesílá Chrome kvůli opravě pravopisných chyb do Googlu</translation>
 <translation id="677276454032249905">Přesto Chrome ukončit?</translation>
 <translation id="6794858689789885890">Při zavření prohlížeče Chrome ze zařízení vždy vymazat data webů</translation>
@@ -557,7 +553,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7947083960301164556">Zobrazit novinky</translation>
 <translation id="7951272445806340501">Aktualizace se použije po restartování systému ChromeOS Flex.</translation>
 <translation id="7959172989483770734">Spravovat profily Chrome</translation>
-<translation id="7962368738413920945">Weby budou pravděpodobně fungovat podle očekávání, ale po zavření všech oken prohlížeče Chrome si vás nebudou pamatovat</translation>
 <translation id="7962410387636238736">Google Chrome se v tomto počítači již nebude aktualizovat, protože systémy Windows XP a Windows Vista již nejsou podporovány.</translation>
 <translation id="8005666035647241369">Do Správce hesel Google na tomto zařízení</translation>
 <translation id="8008534537613507642">Přeinstalovat Chrome</translation>
@@ -657,7 +652,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="919706545465235479">Chcete-li zahájit synchronizaci, aktualizujte Chrome</translation>
 <translation id="922152298093051471">Přizpůsobit Chrome</translation>
 <translation id="93760716455950538">Restartovat systém ChromeOS Flex</translation>
-<translation id="940313311831216333">Chcete-li mít ve všech zařízeních přístup k údajům z prohlížeče Chrome, přihlaste se a zapněte synchronizaci.</translation>
 <translation id="943390475793766444">Chrome doporučuje zkontrolovat tento soubor, protože může být nebezpečný.</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
 <translation id="983803489796659991">Instalace se nezdařila, protože server s aktualizací nemá hashovací data pro aplikaci.</translation>

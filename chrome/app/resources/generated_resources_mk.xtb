@@ -657,7 +657,6 @@
 <translation id="1454223536435069390">&amp;Сними слика од екранот</translation>
 <translation id="145432137617179457">Јазици со проверка на правописот</translation>
 <translation id="1455119378540982311">Зададени големини на прозорците</translation>
-<translation id="1456499573534615137">Ви помага да дизајнирате приспособени теми за Chrome</translation>
 <translation id="1456849775870359518">Вашите картички ќе се отворат повторно</translation>
 <translation id="1457907785077086338">Боја на значка на апликација</translation>
 <translation id="146000042969587795">Рамката е блокирана затоа што содржи небезбедна содржина.</translation>
@@ -3031,7 +3030,6 @@
 <translation id="3090871774332213558">„<ph name="DEVICE_NAME" />“ се спари</translation>
 <translation id="3093714882666365141">Не им дозволувај на сајтовите да инсталираат ракувачи со плаќања</translation>
 <translation id="3094080575472025333">Блокирајте апликации</translation>
-<translation id="3094141017404513551">Ова ќе го оддели вашето прелистување од <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Истекува денес}=1{Истекува утре}one{Истекува за # ден}other{Истекува за # дена}}</translation>
 <translation id="3094521107841754472">Цената се промени од <ph name="PREVIOUS_PRICE" /> на <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Обележувачите, лозинките и другите податоци од прелистувачот се синхронизираат со примарната сметка.</translation>
@@ -3134,7 +3132,6 @@
 <translation id="3177909033752230686">Јазик на страницата:</translation>
 <translation id="3177914167275935955">Вашиот уред содржи Chrome Education Upgrade, но вашето корисничко име не е поврзано со сметка на Google for Education. Создајте сметка на Google for Education на g.co/workspace/edusignup на секундарен уред.</translation>
 <translation id="3179982752812949580">Фонт на текстот</translation>
-<translation id="3180284704187420717">Зачувувајте ги обележувачите, лозинките и друго со синхронизација</translation>
 <translation id="3180990259147710757">Помрднете ја вилицата налево</translation>
 <translation id="3181825792072797598">Вклучи синхронизација</translation>
 <translation id="3181954750937456830">Безбедно прелистување (ве заштитува вас и вашиот уред од опасни сајтови)</translation>
@@ -8816,7 +8813,6 @@
 <translation id="7273894023751806510">Секогаш блокирај <ph name="HOST" /> да ги контролира и репрограмира MIDI-уредите</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> до полна</translation>
 <translation id="727595954130325265">Купете сега</translation>
-<translation id="7278164481614262110">Создавање теми со AI</translation>
 <translation id="727952162645687754">Грешка при преземање</translation>
 <translation id="7280649757394340890">Гласовни поставки за „Од текст во говор“</translation>
 <translation id="7280877790564589615">Побарана е дозвола</translation>

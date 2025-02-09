@@ -657,7 +657,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1454223536435069390">Wykon&amp;aj zrzut ekranu</translation>
 <translation id="145432137617179457">Języki sprawdzania pisowni</translation>
 <translation id="1455119378540982311">Gotowe rozmiary okien</translation>
-<translation id="1456499573534615137">Pomaga projektować niestandardowe motywy dla Chrome</translation>
 <translation id="1456849775870359518">Karty zostaną ponownie otwarte</translation>
 <translation id="1457907785077086338">Kolor plakietki aplikacji</translation>
 <translation id="146000042969587795">Ramka została zablokowana, ponieważ zawiera kilka niezabezpieczonych elementów.</translation>
@@ -3008,7 +3007,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3090871774332213558">Sparowano „<ph name="DEVICE_NAME" />”</translation>
 <translation id="3093714882666365141">Nie zezwalaj witrynom na instalowanie modułów do obsługi płatności</translation>
 <translation id="3094080575472025333">Blokowanie aplikacji</translation>
-<translation id="3094141017404513551">Spowoduje to oddzielenie Twoich danych przeglądania od danych użytkownika <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Wygasa dzisiaj}=1{Wygasa jutro}few{Wygasa za # dni}many{Wygasa za # dni}other{Wygasa za # dnia}}</translation>
 <translation id="3094521107841754472">Cena zmieniła się z <ph name="PREVIOUS_PRICE" /> na <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Zakładki, hasła i inne dane przeglądarki są zsynchronizowane z kontem głównym.</translation>
@@ -3111,7 +3109,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3177909033752230686">Język strony:</translation>
 <translation id="3177914167275935955">Twoje urządzenie ma licencję na Chrome Education, ale Twoja nazwa użytkownika nie jest powiązana z kontem Google for Education. Utwórz takie konto na stronie g.co/workspace/edusignup, korzystając z dodatkowego urządzenia.</translation>
 <translation id="3179982752812949580">Czcionka tekstu</translation>
-<translation id="3180284704187420717">Korzystaj z synchronizacji, aby zapisywać m.in. swoje zakładki i hasła</translation>
 <translation id="3180990259147710757">Przesunięcie żuchwy w lewo</translation>
 <translation id="3181825792072797598">Włącz synchronizację</translation>
 <translation id="3181954750937456830">Bezpieczne przeglądanie (chroni Ciebie i Twoje urządzenie przed niebezpiecznymi witrynami)</translation>
@@ -8789,7 +8786,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7273894023751806510">Nigdy nie zezwalaj stronie <ph name="HOST" /> na sterowanie urządzeniami MIDI ani na ich przeprogramowywanie</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – pełne naładowanie za <ph name="TIME" /></translation>
 <translation id="727595954130325265">Kup teraz</translation>
-<translation id="7278164481614262110">Tworzenie motywów za pomocą AI</translation>
 <translation id="727952162645687754">Błąd pobierania</translation>
 <translation id="7280649757394340890">Ustawienia głosu przy zamianie tekstu na mowę</translation>
 <translation id="7280877790564589615">Prośba o uprawnienia</translation>

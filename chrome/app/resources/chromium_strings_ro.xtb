@@ -132,7 +132,6 @@
 <translation id="2799223571221894425">Repornește</translation>
 <translation id="2803971713792056305">Chromium</translation>
 <translation id="2806241689335397269">Chromium te va întreba dacă vrei să salvezi informațiile din formular, cum ar fi data nașterii, vârsta și numărul pașaportului</translation>
-<translation id="2837693172913560447">Astfel, se va crea un nou profil Chromium pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2841525013647267359">Tradu din</translation>
 <translation id="2846251086934905009">Eroare la instalare: programul de instalare nu a finalizat procesul. Instalarea a fost anulată.</translation>
 <translation id="2847479871509788944">Elimină din Chromium...</translation>
@@ -175,7 +174,6 @@
 <translation id="3296368748942286671">Rulați în continuare aplicații de fundal când Chromium este închis</translation>
 <translation id="3313189106987092621">Chromium te va avertiza înainte de a încărca un site folosind o conexiune nesecurizată</translation>
 <translation id="3316771292331273802">Dacă te-ai conectat la Chromium, când închizi toate ferestrele Chromium fără să te deconectezi de la Contul Google, te vei deconecta de pe majoritatea site-urilor. Pentru ca site-urile să te rețină, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="3350761136195634146">Există deja un profil Chromium asociat acestui cont</translation>
 <translation id="3387527074123400161">Sistemul de operare Chromium</translation>
 <translation id="3406848076815591792">Schimbi la profilul Chromium existent?</translation>
 <translation id="3412460710772753638">În Managerul de parole, pe acest dispozitiv</translation>
@@ -258,7 +256,6 @@
 <translation id="4534145890176164066">Chromium înțelege mai bine formularele și le poate completa automat mai rapid</translation>
 <translation id="4536805923587466102">Te-ai conectat deja ca <ph name="USER_EMAIL_ADDRESS" /> în alt profil Chromium</translation>
 <translation id="4545268686623374213">Chromium poate dezactiva această filă pentru a-ți îmbunătăți experiența de navigare și a menține viteza ridicată.</translation>
-<translation id="454579500955453258">Continui cu un profil Chromium nou?</translation>
 <translation id="4548534452171747496">Chromium preîncarcă paginile, astfel încât navigarea și căutarea să fie mai rapide. <ph name="BEGIN_LINK" />Află mai multe despre preîncărcarea paginilor<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">V-ați conectat ca <ph name="USER_EMAIL_ADDRESS" />. Acum vă puteți accesa marcajele, istoricul și alte setări de pe toate dispozitivele pe care v-ați conectat.</translation>
 <translation id="4570813286784708942">Chromium a blocat descărcarea, deoarece ai dezactivat Navigarea sigură, iar fișierul nu poate fi confirmat</translation>
@@ -294,7 +291,6 @@
 <translation id="5224391634244552924">Nu există parole salvate. Chromium îți poate verifica parolele dacă le salvezi.</translation>
 <translation id="5231355151045086930">Deconectează-te de la Chromium</translation>
 <translation id="5234764350956374838">Închide</translation>
-<translation id="5252179775517634216"><ph name="EXISTING_USER" /> s-a conectat deja la acest profil Chromium. Astfel, se va crea un nou profil Chromium pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Pentru a aplica modificările, relansează Chromium</translation>
 <translation id="5286907366254680517">Detectat</translation>
 <translation id="5294316920224716406">Atunci când navighezi în modul incognito, Chromium te va avertiza înainte de a încărca un site folosind o conexiune nesecurizată</translation>
@@ -410,7 +406,6 @@
 <translation id="6600016381025017075">Caută orice în această pagină</translation>
 <translation id="6613594504749178791">Modificările dvs. vor intra în vigoare următoarea dată când reporniți Chromium.</translation>
 <translation id="665732753414869868">Chromium are nevoie de acces la cameră pentru a crea o hartă 3D a lucrurilor din jurul tău</translation>
-<translation id="6663852025006259149">Probabil că site-urile vor funcționa conform așteptărilor, dar nu te vor reține după ce închizi toate ferestrele Chromium</translation>
 <translation id="6669284030132180248">Dacă salvezi marcajele și în Contul Google, poți să urmărești prețurile produselor în Chromium și să primești notificări când scad</translation>
 <translation id="6676384891291319759">Accesează internetul</translation>
 <translation id="668175097507315160">Sistemul de operare Chromium nu a putut sincroniza datele din cauza unei erori la conectare.</translation>
@@ -422,7 +417,6 @@
 Este posibil ca unele funcții să nu fie disponibile. Specificați un director de profil diferit sau utilizați o versiune mai nouă de Chromium.</translation>
 <translation id="6729124504294600478">Pentru a beneficia de personalizare și alte funcții, include Chromium în Activitatea de pe web și din aplicații și în serviciile Google conectate</translation>
 <translation id="6734291798041940871">Chromium este instalat deja pentru toți utilizatorii de pe computerul tău.</translation>
-<translation id="673636774878526923">Pentru a accesa informațiile din Chromium pe toate dispozitivele, conectează-te, apoi activează sincronizarea.</translation>
 <translation id="674245979920622322">Nu ai accesat recent site-ul. Chromium a eliminat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="COUNT" />.</translation>
 <translation id="67706546131546258">Chromium îți recomandă să scanezi acest fișier, deoarece ar putea fi periculos.</translation>
 <translation id="6779406956731413166">Sistemul de operare Chromium este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar.</translation>

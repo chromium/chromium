@@ -3023,6 +3023,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> 값이 잘못되었으므로 사용되지 않습니다.</translation>
 <translation id="6340739886198108203">관리자 정책에 따라 기밀 콘텐츠가 화면에 표시되어 있을 때 스크린샷을 찍거나 녹화하지 않는 것이 좋습니다.</translation>
 <translation id="6341434961864773665">{0,plural, =1{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에 업로드하지 않는 것이 좋습니다.}other{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에 업로드하지 않는 것이 좋습니다.}}</translation>
+<translation id="6342069812937806050">방금</translation>
 <translation id="634500758737709758">경로</translation>
 <translation id="6348220984832452017">활성 버전</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> 설치</translation>

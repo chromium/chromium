@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">Tilpass den nye Chrome-profilen din</translation>
 <translation id="1547295885616600893">ChromeOS er basert på <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Oppdater Chrome</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> er allerede logget på denne Chrome-profilen. Dette medfører at det blir opprettet en ny Chrome-profil for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome bruker kameraet ditt.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> er farlig, så Chrome har blokkert den.</translation>
 <translation id="1597911401261118146">For å sjekke om passordene dine er trygge mot databrudd og andre sikkerhetsproblemer, <ph name="BEGIN_LINK" />logg på Chrome<ph name="END_LINK" />.</translation>
@@ -145,7 +144,6 @@
 <translation id="2846251086934905009">Installasjonsfeil: Installasjonsprogrammet ble ikke fullført. Installasjonen er avbrutt.</translation>
 <translation id="2853415089995957805">Chrome forhåndslaster sider du sannsynligvis kommer til å besøke, slik at de lastes inn raskere når du faktisk besøker dem</translation>
 <translation id="2857540653560290388">Starter Chrome ...</translation>
-<translation id="2857972467023607093">Det finnes allerede en Chrome-profil med denne kontoen</translation>
 <translation id="286025080868315611">Finn ut hvorfor Chrome blokkerer enkelte nedlastinger</translation>
 <translation id="2861074815332034794">Oppdaterer Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Du er nå logget på Chrome.</translation>
@@ -225,7 +223,6 @@
 <translation id="3785324443014631273">ChromeOS Flex kunne ikke synkronisere dataene dine på grunn av en påloggingsfeil.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome krever Windows 10 eller nyere.</translation>
-<translation id="3835168907083856002">Dette medfører at det blir opprettet en ny Chrome-profil for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Google Chrome trenger Bluetooth-tilgang for å utforske 
  Bluetooth-enheter. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Lukk alle Google Chrome-vinduer og prøv på nytt.</translation>
@@ -442,7 +439,6 @@
 <translation id="6712881677154121168">Nedlastingsfeil: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Gjør Chrome raskere</translation>
 <translation id="6735387454586646204">ChromeOS Flex-system</translation>
-<translation id="6739177684496155661">Vil du fortsette i en ny Chrome-profil?</translation>
 <translation id="6750954913813541382">For å rette stavefeil sender Chrome teksten du skriver inn i nettleseren, til Google</translation>
 <translation id="677276454032249905">Vil du avslutte Chrome likevel?</translation>
 <translation id="6794858689789885890">Slett alltid nettstedsdata fra enheten når du lukker Chrome</translation>
@@ -550,7 +546,6 @@
 <translation id="7947083960301164556">Se siste nytt</translation>
 <translation id="7951272445806340501">ChromeOS Flex må startes på nytt for at oppdateringen skal tas i bruk.</translation>
 <translation id="7959172989483770734">Administrer Chrome-profiler</translation>
-<translation id="7962368738413920945">Nettsteder fungerer sannsynligvis som forventet, men husker deg ikke etter at du har lukket alle Chrome-vinduer</translation>
 <translation id="7962410387636238736">Denne datamaskinen kommer ikke lenger til å motta oppdateringer av Google Chrome, fordi Windows XP og Windows Vista ikke støttes lenger</translation>
 <translation id="8005666035647241369">I Google Passordlagring på denne enheten</translation>
 <translation id="8008534537613507642">Installer Chrome på nytt</translation>
@@ -650,7 +645,6 @@
 <translation id="919706545465235479">Oppdater Chrome for å starte synkroniseringen</translation>
 <translation id="922152298093051471">Tilpass Chrome</translation>
 <translation id="93760716455950538">Start ChromeOS Flex på nytt</translation>
-<translation id="940313311831216333">For å få tilgang til Chrome-tingene dine på alle enhetene dine, logg på og slå på synkronisering.</translation>
 <translation id="943390475793766444">Chrome anbefaler å skanne denne filen ettersom den kan være farlig.</translation>
 <translation id="945522503751344254">Send tilbakemelding</translation>
 <translation id="983803489796659991">Installasjonen mislyktes fordi oppdateringstjeneren ikke har hash-data for programmet.</translation>

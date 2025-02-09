@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">Tùy chỉnh hồ sơ mới của bạn trên Chrome</translation>
 <translation id="1547295885616600893">ChromeOS có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung.</translation>
 <translation id="1553358976309200471">Cập nhật Chrome</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> đã đăng nhập vào hồ sơ này trên Chrome. Thao tác này sẽ tạo một hồ sơ mới trên Chrome cho <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome đang sử dụng máy ảnh của bạn.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> nguy hiểm, do đó Chrome đã chặn tệp.</translation>
 <translation id="1597911401261118146">Để kiểm tra xem mật khẩu của bạn có bị ảnh hưởng bởi các vụ rò rỉ dữ liệu và sự cố bảo mật khác hay không, hãy <ph name="BEGIN_LINK" />đăng nhập vào Chrome<ph name="END_LINK" />.</translation>
@@ -147,7 +146,6 @@
 <translation id="2846251086934905009">Lỗi cài đặt: Chưa hoàn tất trình cài đặt. Hoạt động cài đặt đã bị huỷ.</translation>
 <translation id="2853415089995957805">Chrome tải trước các trang mà bạn có thể sẽ truy cập để các trang đó tải nhanh hơn khi bạn truy cập</translation>
 <translation id="2857540653560290388">Đang khởi động Chrome...</translation>
-<translation id="2857972467023607093">Đã có một hồ sơ trên Chrome sử dụng tài khoản này</translation>
 <translation id="286025080868315611">Tìm hiểu lý do Chrome chặn một số nội dung tải xuống</translation>
 <translation id="2861074815332034794">Đang cập nhật Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Bạn đã đăng nhập vào Chrome!</translation>
@@ -227,7 +225,6 @@
 <translation id="3785324443014631273">ChromeOS Flex không đồng bộ hoá được dữ liệu của bạn do xảy ra lỗi khi đăng nhập.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Google Chrome yêu cầu Windows 10 trở lên.</translation>
-<translation id="3835168907083856002">Thao tác này sẽ tạo một hồ sơ mới trên Chrome cho <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Google Chrome cần có quyền truy cập Bluetooth để tìm 
  các thiết bị Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Vui lòng đóng tất cả cửa sổ của Google Chrome và thử lại.</translation>
@@ -446,7 +443,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6712881677154121168">Lỗi khi tải xuống: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Giúp Chrome hoạt động nhanh hơn</translation>
 <translation id="6735387454586646204">Hệ thống ChromeOS Flex</translation>
-<translation id="6739177684496155661">Tiếp tục đăng nhập vào hồ sơ mới trên Chrome?</translation>
 <translation id="6750954913813541382">Để sửa lỗi chính tả, Chrome sẽ gửi văn bản mà bạn nhập vào trình duyệt này cho Google</translation>
 <translation id="677276454032249905">Bạn vẫn muốn thoát khỏi Chrome?</translation>
 <translation id="6794858689789885890">Luôn xoá dữ liệu trang web khỏi thiết bị của bạn khi bạn đóng Chrome</translation>
@@ -554,7 +550,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7947083960301164556">Xem nội dung mới</translation>
 <translation id="7951272445806340501">Bạn cần khởi động lại ChromeOS Flex để áp dụng bản cập nhật.</translation>
 <translation id="7959172989483770734">Quản lý hồ sơ trên Chrome</translation>
-<translation id="7962368738413920945">Các trang web có thể sẽ hoạt động như mong đợi nhưng sẽ không ghi nhớ thông tin của bạn sau khi bạn đóng tất cả cửa sổ Chrome</translation>
 <translation id="7962410387636238736">Máy tính này sẽ không còn nhận được bản cập nhật Google Chrome do Windows XP và Windows Vista không còn được hỗ trợ</translation>
 <translation id="8005666035647241369">Lưu mật khẩu vào Trình quản lý mật khẩu của Google trên thiết bị này</translation>
 <translation id="8008534537613507642">Cài đặt lại Chrome</translation>
@@ -654,7 +649,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="919706545465235479">Cập nhật Chrome để bắt đầu đồng bộ hóa</translation>
 <translation id="922152298093051471">Tuỳ chỉnh Chrome</translation>
 <translation id="93760716455950538">Khởi động lại ChromeOS Flex</translation>
-<translation id="940313311831216333">Để truy cập vào nội dung của bạn trên Chrome bằng mọi thiết bị, hãy đăng nhập rồi bật tính năng đồng bộ hóa.</translation>
 <translation id="943390475793766444">Chrome đề xuất quét tệp này vì tệp này có thể nguy hiểm.</translation>
 <translation id="945522503751344254">Gửi phản hồi</translation>
 <translation id="983803489796659991">Không cài đặt được do máy chủ cập nhật không có dữ liệu băm nào cho ứng dụng.</translation>

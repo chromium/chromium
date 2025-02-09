@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">Personalize o seu novo perfil do Chrome</translation>
 <translation id="1547295885616600893">A criação do ChromeOS foi possível devido a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="1553358976309200471">Atualizar o Chrome</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> já tem sessão iniciada neste perfil do Chrome. Esta ação cria um novo perfil do Chrome para <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">O Google Chrome está a utilizar a câmara.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> é perigoso, por isso o Chrome bloqueou-o.</translation>
 <translation id="1597911401261118146">Para verificar se as suas palavras-passe estão protegidas contra violação de dados e outros problemas de segurança, <ph name="BEGIN_LINK" />inicie sessão no Chrome<ph name="END_LINK" />.</translation>
@@ -145,7 +144,6 @@
 <translation id="2846251086934905009">Erro de instalação: o instalador não foi concluído. A instalação foi interrompida.</translation>
 <translation id="2853415089995957805">O Chrome pré-carrega páginas que provavelmente vai visitar para que sejam carregadas mais rapidamente quando as visita</translation>
 <translation id="2857540653560290388">A iniciar o Chrome…</translation>
-<translation id="2857972467023607093">Já existe um perfil do Chrome com esta conta.</translation>
 <translation id="286025080868315611">Saiba por que motivo o Chrome bloqueia algumas transferências</translation>
 <translation id="2861074815332034794">A atualizar o Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Tem sessão iniciada no Chrome!</translation>
@@ -225,7 +223,6 @@
 <translation id="3785324443014631273">O ChromeOS Flex não conseguiu sincronizar os dados devido a um erro de início de sessão.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">O Google Chrome requer o Windows 10 ou superior.</translation>
-<translation id="3835168907083856002">Esta ação cria um novo perfil do Chrome para <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="383928141529488001">O Google Chrome precisa de acesso ao Bluetooth para explorar 
  dispositivos Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Feche todas as janelas do Google Chrome e tente novamente.</translation>
@@ -442,7 +439,6 @@
 <translation id="6712881677154121168">Erro de transferência: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Torne o Chrome mais rápido</translation>
 <translation id="6735387454586646204">Sistema do ChromeOS Flex</translation>
-<translation id="6739177684496155661">Quer continuar num novo perfil do Chrome?</translation>
 <translation id="6750954913813541382">Para corrigir erros ortográficos, o Chrome envia o texto que escrever no navegador para a Google.</translation>
 <translation id="677276454032249905">Quer sair do Chrome mesmo assim?</translation>
 <translation id="6794858689789885890">Eliminar sempre os dados de sites do seu dispositivo ao fechar o Chrome</translation>
@@ -550,7 +546,6 @@
 <translation id="7947083960301164556">Ver novidades</translation>
 <translation id="7951272445806340501">É necessário reiniciar o ChromeOS Flex para aplicar a atualização.</translation>
 <translation id="7959172989483770734">Gerir perfis do Chrome</translation>
-<translation id="7962368738413920945">É provável que os sites funcionem como esperado, mas não se vão lembrar de si depois de fechar todas as janelas do Chrome</translation>
 <translation id="7962410387636238736">Este computador deixará de receber atualizações do Google Chrome, uma vez que o Windows XP e o Windows Vista já não são suportados.</translation>
 <translation id="8005666035647241369">No Gestor de Palavras-passe da Google neste dispositivo</translation>
 <translation id="8008534537613507642">Reinstalar Chrome</translation>
@@ -650,7 +645,6 @@
 <translation id="919706545465235479">Atualize o Chrome para iniciar a sincronização</translation>
 <translation id="922152298093051471">Personalizar o Chrome</translation>
 <translation id="93760716455950538">Reinicie o ChromeOS Flex</translation>
-<translation id="940313311831216333">Para aceder aos seus itens do Chrome em todos os seus dispositivos, inicie sessão e, em seguida, ative a sincronização.</translation>
 <translation id="943390475793766444">O Chrome recomenda que analise este ficheiro porque pode ser perigoso.</translation>
 <translation id="945522503751344254">Enviar feedback</translation>
 <translation id="983803489796659991">A instalação falhou porque o servidor de atualização não tem dados hash para a aplicação.</translation>

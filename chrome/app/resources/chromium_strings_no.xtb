@@ -132,7 +132,6 @@
 <translation id="2799223571221894425">Start på nytt</translation>
 <translation id="2803971713792056305">Din Chromium</translation>
 <translation id="2806241689335397269">Chromium spør om du vil lagre skjemainformasjon, for eksempel fødselsdag, alder og passnummer</translation>
-<translation id="2837693172913560447">Dette medfører at det blir opprettet en ny Chromium-profil for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2841525013647267359">Oversett fra</translation>
 <translation id="2846251086934905009">Installasjonsfeil: Installasjonsprogrammet ble ikke fullført. Installasjonen er avbrutt.</translation>
 <translation id="2847479871509788944">Fjern fra Chromium</translation>
@@ -175,7 +174,6 @@
 <translation id="3296368748942286671">Fortsett å kjøre bakgrunnsprogrammer når Chromium er lukket</translation>
 <translation id="3313189106987092621">Chromium advarer deg før all innlasting av nettsteder via usikre tilkoblinger</translation>
 <translation id="3316771292331273802">Du logges av de fleste nettsteder når du lukker alle Chromium-vinduer, men du blir ikke logget av Google-kontoen din hvis du er logget på Chromium. For å la nettsteder huske deg, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="3350761136195634146">Det finnes allerede en Chromium-profil med denne kontoen</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Vil du bytte til den eksisterende Chromium-profilen?</translation>
 <translation id="3412460710772753638">I Passordlagring på denne enheten</translation>
@@ -258,7 +256,6 @@
 <translation id="4534145890176164066">Chromium forstår skjemaer bedre og kan autofylle dem raskere for deg</translation>
 <translation id="4536805923587466102">Du er allerede logget på som <ph name="USER_EMAIL_ADDRESS" /> i en annen Chromium-profil</translation>
 <translation id="4545268686623374213">Chromium kan gjøre denne fanen inaktiv for å holde seg rask og gi deg en bedre surfeopplevelse.</translation>
-<translation id="454579500955453258">Vil du fortsette i en ny Chromium-profil?</translation>
 <translation id="4548534452171747496">Chromium forhåndslaster sider, slik at det går raskere å surfe og søke. <ph name="BEGIN_LINK" />Finn ut mer om forhåndslasting av sider<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Du er logget på som <ph name="USER_EMAIL_ADDRESS" />. Nå kan du bruke bokmerkene, loggen og andre innstillinger på alle enhetene du er logget på.</translation>
 <translation id="4570813286784708942">Chromium har blokkert denne nedlastingen fordi du har slått av Safe Browsing, så filen kan ikke bekreftes</translation>
@@ -294,7 +291,6 @@
 <translation id="5224391634244552924">Ingen lagrede passord. Chromium kan sjekke passordene dine når du lagrer dem.</translation>
 <translation id="5231355151045086930">Vil du logge av Chromium?</translation>
 <translation id="5234764350956374838">Lukk</translation>
-<translation id="5252179775517634216"><ph name="EXISTING_USER" /> er allerede logget på denne Chromium-profilen. Dette medfører at det blir opprettet en ny Chromium-profil for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">For å bruke endringene dine må du starte Chromium på nytt</translation>
 <translation id="5286907366254680517">Registrert</translation>
 <translation id="5294316920224716406">Når du surfer i inkognitomodus, advarer Chromium deg før nettsteder lastes inn via usikre tilkoblinger</translation>
@@ -410,7 +406,6 @@
 <translation id="6600016381025017075">Søk etter hva som helst på denne siden</translation>
 <translation id="6613594504749178791">Endringene dine trer i kraft neste gang du starter Chromium.</translation>
 <translation id="665732753414869868">Chromium trenger kameratillatelse for å lage et 3D-kart av omgivelsene dine</translation>
-<translation id="6663852025006259149">Nettsteder fungerer sannsynligvis som forventet, men husker deg ikke etter at du har lukket alle Chromium-vinduer</translation>
 <translation id="6669284030132180248">Hvis du også lagrer bokmerkene i Google-kontoen din, kan du spore produktpriser i Chromium og bli varslet om avslag</translation>
 <translation id="6676384891291319759">Gå til Internett</translation>
 <translation id="668175097507315160">ChromiumOS kunne ikke synkronisere dataene dine på grunn av en feil under pålogging.</translation>
@@ -422,7 +417,6 @@
 Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilkatalog eller bruk en nyere versjon av Chromium.</translation>
 <translation id="6729124504294600478">For å få personlig tilpasning og andre funksjoner må du inkludere Chromium i Nett- og appaktivitet og tilknyttede Google-tjenester</translation>
 <translation id="6734291798041940871">Chromium er allerede installert for alle brukerne på datamaskinen din.</translation>
-<translation id="673636774878526923">For å få tilgang til Chromium-tingene dine på alle enhetene dine, logg på og slå på synkronisering.</translation>
 <translation id="674245979920622322">Du har ikke vært her i det siste. Chromium har fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="COUNT" /> til</translation>
 <translation id="67706546131546258">Chromium anbefaler å skanne denne filen ettersom den kan være farlig.</translation>
 <translation id="6779406956731413166">ChromiumOS er basert på <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />.</translation>

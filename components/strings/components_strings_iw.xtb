@@ -3028,6 +3028,7 @@ Del</translation>
 <translation id="633770708279464947">הערך של <ph name="SECURE_DNS_SALT" /> לא חוקי ולא ייעשה בו שימוש.</translation>
 <translation id="6340739886198108203">בהתאם למדיניות של מנהל המערכת, לא מומלץ לצלם צילומי מסך או הקלטות כשתוכן סודי גלוי:</translation>
 <translation id="6341434961864773665">{0,plural, =1{בהתאם למדיניות האדמין, לא מומלץ להעלות את הקובץ הזה אל <ph name="DESTINATION_NAME" />}one{בהתאם למדיניות האדמין, לא מומלץ להעלות את הקבצים האלה אל <ph name="DESTINATION_NAME" />}two{בהתאם למדיניות האדמין, לא מומלץ להעלות את הקבצים האלה אל <ph name="DESTINATION_NAME" />}other{בהתאם למדיניות האדמין, לא מומלץ להעלות את הקבצים האלה אל <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="6342069812937806050">זה עתה</translation>
 <translation id="634500758737709758">מסלול</translation>
 <translation id="6348220984832452017">הגרסאות הפעילות</translation>
 <translation id="6349101878882523185">התקנת <ph name="APP_NAME" /></translation>

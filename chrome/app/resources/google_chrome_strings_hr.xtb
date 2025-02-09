@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">Prilagodite svoj novi profil u Chromeu</translation>
 <translation id="1547295885616600893">Chrome OS omogućen je dodatnim <ph name="BEGIN_LINK_CROS_OSS" />softverom utemeljenim na otvorenom izvornom kodu<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Ažuriraj Chrome</translation>
-<translation id="1583073672411044740">Korisnik <ph name="EXISTING_USER" /> već je prijavljen na taj profil u Chromeu. Izradit će se novi profil u Chromeu za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome upotrebljava vašu kameru.</translation>
 <translation id="1587325591171447154">Datoteka <ph name="FILE_NAME" /> opasna je, pa ju je Chrome blokirao.</translation>
 <translation id="1597911401261118146">Da biste provjerili jesu li vaše zaporke sigurne od povrede podataka i drugih poteškoća sa sigurnošću, <ph name="BEGIN_LINK" />prijavite se na Chrome<ph name="END_LINK" />.</translation>
@@ -145,7 +144,6 @@
 <translation id="2846251086934905009">Pogreška pri instalaciji: program za instalaciju nije dovršio radnju. Instalacija je prekinuta.</translation>
 <translation id="2853415089995957805">Chrome predučitava stranice koje ćete vjerojatno posjetiti kako bi se brže učitale kad ih posjetite</translation>
 <translation id="2857540653560290388">Pokretanje Chromea...</translation>
-<translation id="2857972467023607093">Već postoji profil u Chromeu s tim računom</translation>
 <translation id="286025080868315611">Saznajte zašto Chrome blokira neka preuzimanja</translation>
 <translation id="2861074815332034794">Ažuriranje Chromea (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Prijavljeni ste na Chrome!</translation>
@@ -225,7 +223,6 @@
 <translation id="3785324443014631273">ChromeOS Flex nije mogao sinkronizirati vaše podatke zbog pogreške prilikom prijave.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Google Chrome zahtijeva Windows 10 ili noviju verziju.</translation>
-<translation id="3835168907083856002">Izradit će se novi profil u Chromeu za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Google Chrome treba pristup Bluetoothu kako bi pronašao 
  Bluetooth uređaje. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />.</translation>
 <translation id="386202838227397562">Zatvorite sve Google Chrome prozore i pokušajte ponovo.</translation>
@@ -442,7 +439,6 @@
 <translation id="6712881677154121168">Pogreška pri preuzimanju: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6718739135284199302">Ubrzajte Chrome</translation>
 <translation id="6735387454586646204">Sustav ChromeOS Flex</translation>
-<translation id="6739177684496155661">Želite li nastaviti na novom profilu u Chromeu?</translation>
 <translation id="6750954913813541382">Chrome šalje Googleu tekst koji utipkate u preglednik radi ispravljanja pravopisnih pogrešaka</translation>
 <translation id="677276454032249905">Želite li ipak zatvoriti Chrome?</translation>
 <translation id="6794858689789885890">Podaci web-lokacije uvijek se brišu s uređaja kad zatvorite Chrome</translation>
@@ -550,7 +546,6 @@
 <translation id="7947083960301164556">Pogledajte što je novo</translation>
 <translation id="7951272445806340501">Potrebno je ponovo pokrenuti ChromeOS Flex kako bi se ažuriranje primijenilo.</translation>
 <translation id="7959172989483770734">Upravljajte profilima na Chromeu</translation>
-<translation id="7962368738413920945">Web-lokacije će vjerojatno funkcionirati kao što očekujete, ali vas neće zapamtiti nakon što zatvorite sve prozore Chromea</translation>
 <translation id="7962410387636238736">Ovo računalo više neće primati ažuriranja za Google Chrome jer sustavi Windows XP i Windows Vista više nisu podržani</translation>
 <translation id="8005666035647241369">Na Google upravitelj zaporki na ovom uređaju</translation>
 <translation id="8008534537613507642">Ponovo instaliraj Chrome</translation>
@@ -650,7 +645,6 @@
 <translation id="919706545465235479">Ažurirajte Chrome da bi se pokrenula sinkronizacija</translation>
 <translation id="922152298093051471">Prilagodite Chrome</translation>
 <translation id="93760716455950538">Ponovo pokretanje ChromeOS Flexa</translation>
-<translation id="940313311831216333">Da biste mogli pristupiti svojim sadržajima u Chromeu na svim svojim uređajima, prijavite se i zatim uključite sinkronizaciju.</translation>
 <translation id="943390475793766444">Chrome preporučuje skeniranje datoteke jer je možda opasna.</translation>
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
 <translation id="983803489796659991">Instalacija nije uspjela jer poslužitelj za ažuriranje nema hashiranih podataka za aplikaciju.</translation>

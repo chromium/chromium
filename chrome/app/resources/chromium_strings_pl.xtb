@@ -131,7 +131,6 @@
 <translation id="2799223571221894425">Uruchom ponownie</translation>
 <translation id="2803971713792056305">Twoja przeglądarka Chromium</translation>
 <translation id="2806241689335397269">Chromium zapyta, czy chcesz zapisać informacje z formularza, takie jak data urodzenia, wiek i numer paszportu</translation>
-<translation id="2837693172913560447">Spowoduje to utworzenie nowego profilu Chromium dla użytkownika <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2841525013647267359">Tłumacz z</translation>
 <translation id="2846251086934905009">Błąd instalacji: instalator nie zakończył działania. Instalacja została przerwana.</translation>
 <translation id="2847479871509788944">Usuń z Chromium...</translation>
@@ -172,7 +171,6 @@
 <translation id="3296368748942286671">Kontynuuj działanie aplikacji w tle po zamknięciu Chromium</translation>
 <translation id="3313189106987092621">Chromium będzie Cię ostrzegać przed wczytywaniem stron, które korzystają z niezabezpieczonego połączenia</translation>
 <translation id="3316771292331273802">Gdy zamkniesz wszystkie okna Chromium, wylogujesz się na większości stron, ale nie z konta Google, o ile wcześniej zalogujesz się w Chromium. Aby pozwolić witrynom na zapamiętywanie Twoich danych, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="3350761136195634146">Już istnieje profil Chromium z tym kontem</translation>
 <translation id="3387527074123400161">System operacyjny Chromium</translation>
 <translation id="3406848076815591792">Przełączyć na istniejący profil Chromium?</translation>
 <translation id="3412460710772753638">W Menedżerze haseł na tym urządzeniu</translation>
@@ -255,7 +253,6 @@
 <translation id="4534145890176164066">Chromium lepiej rozumie formularze i szybciej je uzupełnia</translation>
 <translation id="4536805923587466102">Jesteś już zalogowany(-a) jako <ph name="USER_EMAIL_ADDRESS" /> w innym profilu Chromium</translation>
 <translation id="4545268686623374213">Aby ułatwić i przyspieszyć przeglądanie, Chromium może dezaktywować tę kartę.</translation>
-<translation id="454579500955453258">Kontynuować w nowym profilu Chromium?</translation>
 <translation id="4548534452171747496">Chromium wstępnie wczytuje strony, co przyspiesza przeglądanie i wyszukiwanie. <ph name="BEGIN_LINK" />Więcej informacji o wstępnym wczytywaniu stron<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Jesteś zalogowany jako <ph name="USER_EMAIL_ADDRESS" />. Teraz możesz korzystać ze swoich zakładek, historii i innych ustawień na wszystkich zalogowanych urządzeniach.</translation>
 <translation id="4570813286784708942">Pobieranie zostało zablokowane przez Chromium, ponieważ masz wyłączone Bezpieczne przeglądanie i nie można zweryfikować pliku</translation>
@@ -291,7 +288,6 @@
 <translation id="5224391634244552924">Brak zapisanych haseł. Chromium może sprawdzać Twoje hasła, gdy je zapiszesz.</translation>
 <translation id="5231355151045086930">Wylogowanie z Chromium</translation>
 <translation id="5234764350956374838">Zamknij</translation>
-<translation id="5252179775517634216">W tym profilu Chromium jest już zalogowany użytkownik <ph name="EXISTING_USER" />. Spowoduje to utworzenie nowego profilu Chromium dla użytkownika <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="5277894862589591112">Aby zastosować zmiany, uruchom ponownie Chromium</translation>
 <translation id="5286907366254680517">Wykryto</translation>
 <translation id="5294316920224716406">Podczas przeglądania w trybie incognito Chromium będzie Cię ostrzegać przed wczytaniem strony korzystającej z niezabezpieczonego połączenia</translation>
@@ -407,7 +403,6 @@
 <translation id="6600016381025017075">Wyszukaj dowolną rzecz na tej stronie</translation>
 <translation id="6613594504749178791">Zmiany zostaną zastosowane po ponownym uruchomieniu Chromium.</translation>
 <translation id="665732753414869868">Aby utworzyć mapę 3D Twojego otoczenia, Chromium potrzebuje dostępu do aparatu</translation>
-<translation id="6663852025006259149">Strony będą prawdopodobnie działać zgodnie z oczekiwaniami, ale nie będą Cię pamiętać po zamknięciu wszystkich okien Chromium</translation>
 <translation id="6669284030132180248">Jeśli zapisujesz też zakładki na koncie Google, możesz śledzić ceny produktów w Chromium i otrzymywać powiadomienia o obniżkach</translation>
 <translation id="6676384891291319759">Skorzystaj z internetu</translation>
 <translation id="668175097507315160">System operacyjny Chromium nie może zsynchronizować danych z powodu błędu podczas logowania.</translation>
@@ -419,7 +414,6 @@
 Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub użyj nowszej wersji Chromium.</translation>
 <translation id="6729124504294600478">Aby korzystać z personalizacji i innych funkcji, uwzględnij Chromium w Aktywności w internecie i aplikacjach oraz w połączonych usługach Google</translation>
 <translation id="6734291798041940871">Chromium jest już zainstalowany dla wszystkich użytkowników tego komputera.</translation>
-<translation id="673636774878526923">Aby mieć dostęp do danych z Chromium na wszystkich swoich urządzeniach, zaloguj się i włącz synchronizację.</translation>
 <translation id="674245979920622322">Ta witryna nie była przez Ciebie ostatnio odwiedzana. Przeglądarka Chromium usunęła te uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="COUNT" />.</translation>
 <translation id="67706546131546258">Chromium zaleca przeskanowanie tego pliku, bo może on być niebezpieczny.</translation>
 <translation id="6779406956731413166">Opracowanie systemu operacyjnego Chromium było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />.</translation>

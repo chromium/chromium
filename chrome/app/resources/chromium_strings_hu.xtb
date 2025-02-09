@@ -132,7 +132,6 @@
 <translation id="2799223571221894425">Újraindítás</translation>
 <translation id="2803971713792056305">A Chromium</translation>
 <translation id="2806241689335397269">A Chromium rákérdez arra, hogy szeretné-e menteni az űrlapon megadott adatokat (például születési dátumát, életkorát és útlevele számát)</translation>
-<translation id="2837693172913560447">Ezzel új Chromium-profilt hoz létre a(z) <ph name="USER_EMAIL_ADDRESS" /> fiókhoz.</translation>
 <translation id="2841525013647267359">Fordítás a következő nyelvről:</translation>
 <translation id="2846251086934905009">Telepítési hiba: A telepítő nem fejezte be a folyamatot. A telepítés megszakadt.</translation>
 <translation id="2847479871509788944">Eltávolítás a Chromiumból…</translation>
@@ -175,7 +174,6 @@
 <translation id="3296368748942286671">A háttéralkalmazások továbbfuttatása, ha a Chromiumot bezárják</translation>
 <translation id="3313189106987092621">A Chromium figyelmezteti Önt a nem biztonságos kapcsolatot használó webhelyek betöltése előtt</translation>
 <translation id="3316771292331273802">Az összes Chromium-ablak bezárásakor a legtöbb webhelyről kijelentkezteti a rendszer, kivéve a Google-fiókját, ha bejelentkezett a Chromiumba. Ha engedélyezni szeretné, hogy a webhelyek emlékezzenek Önre, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="3350761136195634146">Már létezik Chromium-profil ezzel a fiókkal</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Szeretne a meglévő Chromium-profilra váltani?</translation>
 <translation id="3412460710772753638">Az eszközön található Jelszókezelőben</translation>
@@ -258,7 +256,6 @@
 <translation id="4534145890176164066">A funkció segítségével a Chromium pontosabban megérti az űrlapokat, és gyorsabban tudja kitölteni őket.</translation>
 <translation id="4536805923587466102">Már be van jelentkezve a(z) <ph name="USER_EMAIL_ADDRESS" /> fiókkal egy másik Chromium-profilban.</translation>
 <translation id="4545268686623374213">A Chromium inaktívvá teheti ezt a lapot a böngészési élmény javítása és a gyors működés érdekében.</translation>
-<translation id="454579500955453258">Biztosan új Chromium-profilban folytatja?</translation>
 <translation id="4548534452171747496">A Chromium előre betölti az oldalakat, ami felgyorsítja a böngészést és a keresést. <ph name="BEGIN_LINK" />További információ az oldalak előtöltéséről<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">A(z) <ph name="USER_EMAIL_ADDRESS" /> címmel van bejelentkezve. Elérheti könyvjelzőit, előzményeit és más beállításait minden olyan eszközön, amelyen bejelentkezett.</translation>
 <translation id="4570813286784708942">A Chromium letiltotta ezt a letöltést, mert Ön kikapcsolta a Biztonságos Böngészést, és a fájl nem ellenőrizhető</translation>
@@ -294,7 +291,6 @@
 <translation id="5224391634244552924">Nincsenek mentett jelszavak. A Chromium képes a jelszavak ellenőrzésére, ha Ön elmenti őket.</translation>
 <translation id="5231355151045086930">Kijelentkezés a Chromiumból</translation>
 <translation id="5234764350956374838">Elvetés</translation>
-<translation id="5252179775517634216"><ph name="EXISTING_USER" /> már be van jelentkezve ebbe a Chromium-profilba. Ezzel új Chromium-profilt hoz létre a(z) <ph name="USER_EMAIL_ADDRESS" /> fiókhoz.</translation>
 <translation id="5277894862589591112">A módosítások alkalmazásához indítsa újra a Chromiumot</translation>
 <translation id="5286907366254680517">Észlelve</translation>
 <translation id="5294316920224716406">Inkognitó módban való böngészéskor a Chromium figyelmezteti Önt a nem biztonságos kapcsolatot használó webhelyek betöltése előtt</translation>
@@ -410,7 +406,6 @@
 <translation id="6600016381025017075">Bármire rákereshet ezen az oldalon</translation>
 <translation id="6613594504749178791">Módosításai a Chromium újraindítása után lépnek érvénybe.</translation>
 <translation id="665732753414869868">A Chromiumnak kamerahasználati engedélyre van szüksége, hogy 3D-s térképet készíthessen az Ön környezetéről</translation>
-<translation id="6663852025006259149">A webhelyek valószínűleg a várt módon fognak működni, de nem fognak emlékezni az Ön tevékenységeire, miután bezárta az összes Chromium-ablakot.</translation>
 <translation id="6669284030132180248">Ha Google-fiókjába is menti könyvjelzőit, a Chromiumban nyomon követheti a termékek árait, és értesítést kaphat, amikor az árak csökkennek.</translation>
 <translation id="6676384891291319759">Internetelérés</translation>
 <translation id="668175097507315160">A ChromiumOS egy bejelentkezési hiba miatt nem tudta szinkronizálni az adatokat.</translation>
@@ -420,7 +415,6 @@
 <translation id="6717134281241384636">A profilja nem használható, mert az a Chromium egy újabb verziójából származik. Előfordulhat, hogy egyes funkciók nem érhetők el. Kérjük, adjon meg egy másik profilmappát, vagy használja a Chromium újabb verzióját.</translation>
 <translation id="6729124504294600478">A személyre szabás és az egyéb funkciók használatához vegye fel a Chromiumot az Internetes és alkalmazástevékenységek közé, valamint az összekapcsolt Google-szolgáltatásokba</translation>
 <translation id="6734291798041940871">A Chromium már telepítve van az összes felhasználó számára a számítógépen.</translation>
-<translation id="673636774878526923">Ha szeretne minden eszközén hozzáférni Chromium-anyagaihoz, jelentkezzen be, majd kapcsolja be a szinkronizálást.</translation>
 <translation id="674245979920622322">Nem látogatta meg mostanában. A Chromium eltávolította a következőket: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="COUNT" />.</translation>
 <translation id="67706546131546258">A Chromium a fájl ellenőrzését javasolja, mert veszélyes lehet.</translation>
 <translation id="6779406956731413166">A ChromiumOS létrejöttéhez további <ph name="BEGIN_LINK_CROS_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_CROS_OSS" /> is hozzájárultak.</translation>

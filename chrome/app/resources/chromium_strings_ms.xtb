@@ -132,7 +132,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="2799223571221894425">Lancarkan semula</translation>
 <translation id="2803971713792056305">Chromium anda</translation>
 <translation id="2806241689335397269">Chromium akan bertanya sama ada anda mahu menyimpan maklumat pada borang, seperti hari lahir, umur dan nombor pasport anda atau tidak</translation>
-<translation id="2837693172913560447">Tindakan ini akan membuat profil Chromium baharu untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2841525013647267359">Terjemahkan daripada</translation>
 <translation id="2846251086934905009">Ralat pemasangan: Proses pemasang tidak selesai. Pemasangan telah dihenti paksa.</translation>
 <translation id="2847479871509788944">Alih keluar daripada Chromium...</translation>
@@ -175,7 +174,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="3296368748942286671">Terus menjalankan apl latar belakang apabila Chromium ditutup</translation>
 <translation id="3313189106987092621">Chromium akan memberi anda amaran sebelum memuatkan sebarang laman menggunakan sambungan yang tidak selamat</translation>
 <translation id="3316771292331273802">Anda akan dilog keluar daripada kebanyakan laman apabila anda menutup semua tetingkap Chromium, kecuali Google Account anda jika anda log masuk ke Chromium. Untuk membenarkan laman mengingati anda, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="3350761136195634146">Profil Chromium dengan akaun ini telah pun wujud</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Tukar kepada profil Chromium yang sedia ada?</translation>
 <translation id="3412460710772753638">Dalam Password Manager pada peranti ini</translation>
@@ -258,7 +256,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="4534145890176164066">Chromium memahami borang dengan lebih baik dan dapat membuat autolengkap borang dengan lebih pantas untuk anda</translation>
 <translation id="4536805923587466102">Anda telah log masuk sebagai <ph name="USER_EMAIL_ADDRESS" /> dalam profil Chromium yang lain</translation>
 <translation id="4545268686623374213">Chromium boleh menjadikan tab ini tidak aktif untuk meningkatkan pengalaman penyemakan imbas anda dan melancarkan pengalaman anda.</translation>
-<translation id="454579500955453258">Teruskan dalam profil Chromium baharu?</translation>
 <translation id="4548534452171747496">Chromium mempramuatkan halaman yang menjadikan penyemakan imbas dan carian lebih pantas. <ph name="BEGIN_LINK" />Ketahui halaman pramuat dengan lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Anda telah log masuk sebagai <ph name="USER_EMAIL_ADDRESS" />. Sekarang anda boleh mengakses penanda halaman, sejarah dan tetapan anda yang lain pada semua peranti yang anda gunakan untuk log masuk.</translation>
 <translation id="4570813286784708942">Chromium menyekat muat turun ini kerana anda mematikan Penyemakan Imbas Selamat dan fail tidak dapat disahkan</translation>
@@ -294,7 +291,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="5224391634244552924">Tiada kata laluan yang disimpan. Chromium boleh menyemak kata laluan anda yang disimpan.</translation>
 <translation id="5231355151045086930">Log keluar daripada Chromium</translation>
 <translation id="5234764350956374838">Ketepikan</translation>
-<translation id="5252179775517634216"><ph name="EXISTING_USER" /> telah pun dilog masuk ke profil Chromium ini. Tindakan ini akan membuat profil Chromium baharu untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Untuk menggunakan perubahan anda, mulakan semula Chromium</translation>
 <translation id="5286907366254680517">Dikesan</translation>
 <translation id="5294316920224716406">Apabila menyemak imbas dalam Mod Inkognito, Chromium akan memberi anda amaran sebelum memuatkan laman menggunakan sambungan yang tidak selamat</translation>
@@ -410,7 +406,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="6600016381025017075">Cari apa-apa item pada halaman ini</translation>
 <translation id="6613594504749178791">Perubahan anda akan dilaksanakan apabila anda melancarkan semula Chromium pada masa hadapan.</translation>
 <translation id="665732753414869868">Chromium memerlukan kebenaran kamera untuk membuat peta 3D bagi persekitaran anda</translation>
-<translation id="6663852025006259149">Laman mungkin akan berfungsi seperti yang anda jangkakan tetapi tidak akan mengingati anda selepas anda menutup semua tetingkap Chromium</translation>
 <translation id="6669284030132180248">Jika anda juga menyimpan penanda halaman dalam Google Account anda, anda boleh menjejak harga produk dalam Chromium dan mendapatkan pemberitahuan jika harga produk tersebut turun</translation>
 <translation id="6676384891291319759">Akses Internet</translation>
 <translation id="668175097507315160">Chromium OS tidak dapat menyegerakkan data anda disebabkan oleh ralat melog masuk.</translation>
@@ -422,7 +417,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 Beberapa ciri mungkin tidak tersedia. Sila nyatakan direktori profil yang berbeza atau gunakan versi Chromium yang lebih baharu.</translation>
 <translation id="6729124504294600478">Untuk mendapatkan pemeribadian dan ciri lain, sertakan Chromium dalam Aktiviti Web &amp; Apl dan perkhidmatan Google terpaut</translation>
 <translation id="6734291798041940871">Chromium telah dipasang untuk semua pengguna pada komputer anda.</translation>
-<translation id="673636774878526923">Untuk mengakses bahan Chromium anda pada semua peranti anda, log masuk, kemudian hidupkan penyegerakan.</translation>
 <translation id="674245979920622322">Anda belum melawati laman web ini baru-baru ini. Chromium mengalih keluar <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="COUNT" /> lagi</translation>
 <translation id="67706546131546258">Chromium mengesyorkan pengimbasan fail ini kerana fail ini mungkin berbahaya.</translation>
 <translation id="6779406956731413166">Chromium OS berjaya dilaksanakan dengan adanya <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>

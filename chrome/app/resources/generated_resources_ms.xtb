@@ -656,7 +656,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1454223536435069390">A&amp;mbil tangkapan skrin</translation>
 <translation id="145432137617179457">Bahasa semak ejaan</translation>
 <translation id="1455119378540982311">Saiz tetingkap pratetapan</translation>
-<translation id="1456499573534615137">Membantu anda mereka bentuk tema tersuai untuk Chrome</translation>
 <translation id="1456849775870359518">Tab anda akan dibuka semula</translation>
 <translation id="1457907785077086338">Warna lencana apl</translation>
 <translation id="146000042969587795">Bingkai ini disekat kerana ia mengandungi beberapa kandungan selamat.</translation>
@@ -3035,7 +3034,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" digandingkan</translation>
 <translation id="3093714882666365141">Jangan benarkan laman memasang pengendali pembayaran</translation>
 <translation id="3094080575472025333">Sekat apl</translation>
-<translation id="3094141017404513551">Tindakan ini akan memisahkan penyemakan imbas anda daripada <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Tamat tempoh hari ini}=1{Tamat tempoh esok}other{Tamat tempoh dalam masa # hari}}</translation>
 <translation id="3094521107841754472">Harga telah berubah daripada <ph name="PREVIOUS_PRICE" /> kepada <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Penanda halaman, kata laluan dan data semakan imbas lain disegerakkan dengan akaun utama.</translation>
@@ -3138,7 +3136,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3177909033752230686">Bahasa Halaman:</translation>
 <translation id="3177914167275935955">Peranti anda merangkumi Peningkatan Pendidikan Chrome tetapi nama pengguna anda tidak dikaitkan dengan akaun Google for Education. Sila buat akaun Google for Education dengan melawati g.co/workspace/edusignup pada peranti kedua.</translation>
 <translation id="3179982752812949580">Fon teks</translation>
-<translation id="3180284704187420717">Simpan penanda halaman anda, kata laluan dan pelbagai lagi dengan penyegerakan</translation>
 <translation id="3180990259147710757">Alihkan rahang ke kiri</translation>
 <translation id="3181825792072797598">Hidupkan Penyegerakan</translation>
 <translation id="3181954750937456830">Penyemakan Imbas Selamat (melindungi anda dan peranti anda daripada tapak yang berbahaya)</translation>
@@ -8821,7 +8818,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7273894023751806510">Sentiasa sekat <ph name="HOST" /> daripada mengawal dan mengatur cara semula peranti MIDI anda</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> hingga penuh</translation>
 <translation id="727595954130325265">Beli Sekarang</translation>
-<translation id="7278164481614262110">Buat tema dengan AI</translation>
 <translation id="727952162645687754">Ralat muat turun</translation>
 <translation id="7280649757394340890">Tetapan suara Teks ke Pertuturan</translation>
 <translation id="7280877790564589615">Kebenaran diminta</translation>

@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">Szabja személyre az új Chrome-profilját</translation>
 <translation id="1547295885616600893">A ChromeOS létrejöttéhez egyéb <ph name="BEGIN_LINK_CROS_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_CROS_OSS" /> is hozzájárultak.</translation>
 <translation id="1553358976309200471">A Chrome böngésző frissítése</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> már be van jelentkezve ebbe a Chrome-profilba. Ezzel új Chrome-profilt hoz létre a(z) <ph name="USER_EMAIL_ADDRESS" /> fiókhoz.</translation>
 <translation id="1587223624401073077">A Google Chrome használja a kamerát.</translation>
 <translation id="1587325591171447154">A(z) <ph name="FILE_NAME" /> veszélyes, ezért a Chrome letiltotta.</translation>
 <translation id="1597911401261118146">Ha ellenőrizni szeretné, hogy jelszavai biztonságban vannak-e az adatvédelmi incidensektől és más biztonsági problémáktól, <ph name="BEGIN_LINK" />jelentkezzen be a Chrome-ba<ph name="END_LINK" />.</translation>
@@ -145,7 +144,6 @@
 <translation id="2846251086934905009">Telepítési hiba: A telepítő nem fejezte be a folyamatot. A telepítés megszakadt.</translation>
 <translation id="2853415089995957805">A Chrome előtölt olyan oldalakat, amelyeket Ön valószínűleg felkeres, így ha Ön valóban felkeresi őket, gyorsabban töltődnek be</translation>
 <translation id="2857540653560290388">A Chrome indítása…</translation>
-<translation id="2857972467023607093">Már létezik Chrome-profil ezzel a fiókkal</translation>
 <translation id="286025080868315611">További információ arról, hogy miért tilt le bizonyos letöltéseket a Chrome</translation>
 <translation id="2861074815332034794">A Chrome frissítése… (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Bejelentkezett a Chrome-ba.</translation>
@@ -225,7 +223,6 @@
 <translation id="3785324443014631273">A ChromeOS Flex nem tudta szinkronizálni az adatokat, mert hiba történt a bejelentkezés során.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">A Google Chrome futtatásához Windows 10 vagy újabb verzió szükséges.</translation>
-<translation id="3835168907083856002">Ezzel új Chrome-profilt hoz létre a(z) <ph name="USER_EMAIL_ADDRESS" /> fiókhoz.</translation>
 <translation id="383928141529488001">A Google Chrome-nak Bluetooth-hozzáférésre van szüksége a 
  Bluetooth-eszközök felfedezéséhez. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />.</translation>
 <translation id="386202838227397562">Zárjon be minden Google Chrome-ablakot, és próbálkozzon újra.</translation>
@@ -442,7 +439,6 @@
 <translation id="6712881677154121168">Letöltési hiba: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">A Chrome felgyorsítása</translation>
 <translation id="6735387454586646204">ChromeOS Flex rendszer</translation>
-<translation id="6739177684496155661">Biztosan új Chrome-profilban folytatja?</translation>
 <translation id="6750954913813541382">A nyelvtani hibák javítása érdekében a Chrome elküldi a böngészőben begépelt összes szöveget a Google-nak</translation>
 <translation id="677276454032249905">Biztosan kilép a Chrome-ból?</translation>
 <translation id="6794858689789885890">Mindig törölje a webhelyadatokat az eszközről a Chrome bezárásakor</translation>
@@ -550,7 +546,6 @@
 <translation id="7947083960301164556">Nézze meg az újdonságokat</translation>
 <translation id="7951272445806340501">A frissítés alkalmazásához a ChromeOS Flex újraindítása szükséges.</translation>
 <translation id="7959172989483770734">Chrome-profilok kezelése</translation>
-<translation id="7962368738413920945">A webhelyek valószínűleg a várt módon fognak működni, de nem fognak emlékezni az Ön tevékenységeire, miután bezárta az összes Chrome-ablakot</translation>
 <translation id="7962410387636238736">Ez a számítógép a továbbiakban már nem kapja meg a Google Chrome frissítéseit, mert már nem támogatjuk a Windows XP és Windows Vista rendszereket.</translation>
 <translation id="8005666035647241369">A Google Jelszókezelőbe ezen az eszközön</translation>
 <translation id="8008534537613507642">A Chrome újratelepítése</translation>
@@ -650,7 +645,6 @@
 <translation id="919706545465235479">Frissítse a Chrome-ot a szinkronizálás megkezdéséhez</translation>
 <translation id="922152298093051471">A Chrome személyre szabása</translation>
 <translation id="93760716455950538">A ChromeOS Flex újraindítása</translation>
-<translation id="940313311831216333">Ha szeretne minden eszközén hozzáférni Chrome-anyagához, jelentkezzen be, majd kapcsolja be a szinkronizálást.</translation>
 <translation id="943390475793766444">A Chrome a fájl ellenőrzését javasolja, mert veszélyes lehet.</translation>
 <translation id="945522503751344254">Visszajelzés küldése</translation>
 <translation id="983803489796659991">A telepítés nem sikerült, mert a frissítési szerver nem rendelkezik hash-adatokkal az alkalmazáshoz.</translation>

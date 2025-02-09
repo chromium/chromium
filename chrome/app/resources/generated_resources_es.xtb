@@ -655,7 +655,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1454223536435069390">H&amp;acer captura de pantalla</translation>
 <translation id="145432137617179457">Idiomas de la revisión ortográfica</translation>
 <translation id="1455119378540982311">Tamaños de ventana predefinidos</translation>
-<translation id="1456499573534615137">Te ayuda a diseñar temas personalizados para Chrome</translation>
 <translation id="1456849775870359518">Se reabrirán tus pestañas</translation>
 <translation id="1457907785077086338">Color de la insignia de la aplicación</translation>
 <translation id="146000042969587795">Este marco se ha bloqueado porque incluye contenido no seguro.</translation>
@@ -3018,7 +3017,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3090871774332213558"><ph name="DEVICE_NAME" /> vinculado</translation>
 <translation id="3093714882666365141">No permitir que los sitios instalen controladores de pago</translation>
 <translation id="3094080575472025333">Bloquear aplicaciones</translation>
-<translation id="3094141017404513551">Esto separará tu navegación de la de <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Caduca hoy}=1{Caduca mañana}other{Caduca dentro de # días}}</translation>
 <translation id="3094521107841754472">El precio ha cambiado de <ph name="PREVIOUS_PRICE" /> a <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Los marcadores, las contraseñas y otros datos del navegador están sincronizados con la cuenta principal.</translation>
@@ -3121,7 +3119,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3177909033752230686">Idioma de la página:</translation>
 <translation id="3177914167275935955">Tu dispositivo incluye una Licencia de Chrome Education, pero tu nombre de usuario no está asociado a una cuenta de Google for Education. Crea una cuenta de Google for Education en g.co/workspace/edusignup con un dispositivo secundario.</translation>
 <translation id="3179982752812949580">Fuente del texto</translation>
-<translation id="3180284704187420717">Guarda tus marcadores, contraseñas y más con la sincronización</translation>
 <translation id="3180990259147710757">Mover la mandíbula hacia la izquierda</translation>
 <translation id="3181825792072797598">Activar sincronización</translation>
 <translation id="3181954750937456830">Navegación segura (te protege a ti y a tu dispositivo frente a sitios peligrosos)</translation>
@@ -8799,7 +8796,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7273894023751806510">Impedir siempre que <ph name="HOST" /> controle y reprograme tus dispositivos MIDI</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> hasta completar la carga</translation>
 <translation id="727595954130325265">Ver ahora</translation>
-<translation id="7278164481614262110">Crear temas con IA</translation>
 <translation id="727952162645687754">Error de descarga</translation>
 <translation id="7280649757394340890">Ajustes de voz de conversión de texto a voz</translation>
 <translation id="7280877790564589615">Permiso solicitado</translation>

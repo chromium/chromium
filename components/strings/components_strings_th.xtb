@@ -3022,6 +3022,7 @@
 <translation id="633770708279464947">ค่า <ph name="SECURE_DNS_SALT" /> ไม่ถูกต้องและจะไม่มีการนำไปใช้</translation>
 <translation id="6340739886198108203">นโยบายของผู้ดูแลระบบไม่แนะนำให้ถ่ายภาพหน้าจอหรือบันทึกวิดีโอเมื่อมีการแสดงเนื้อหาที่เป็นความลับ</translation>
 <translation id="6341434961864773665">{0,plural, =1{นโยบายของผู้ดูแลระบบไม่แนะนำให้อัปโหลดไฟล์นี้ไปยัง <ph name="DESTINATION_NAME" />}other{นโยบายของผู้ดูแลระบบไม่แนะนำให้อัปโหลดไฟล์เหล่านี้ไปยัง <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="6342069812937806050">เมื่อสักครู่</translation>
 <translation id="634500758737709758">เส้นทาง</translation>
 <translation id="6348220984832452017">รูปแบบที่ใช้งานอยู่</translation>
 <translation id="6349101878882523185">ติดตั้ง <ph name="APP_NAME" /></translation>

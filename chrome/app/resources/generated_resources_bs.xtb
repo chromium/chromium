@@ -658,7 +658,6 @@ Odobrenja koja ste već dali aplikacijama se mogu primjenjivati na ovaj račun. 
 <translation id="1454223536435069390">Nap&amp;ravi snimak ekrana</translation>
 <translation id="145432137617179457">Jezici za provjeru pravopisa</translation>
 <translation id="1455119378540982311">Zadane postavke veličina prozora</translation>
-<translation id="1456499573534615137">Pomaže vam da dizajnirate prilagođene teme za Chrome</translation>
 <translation id="1456849775870359518">Kartice će se ponovo otvoriti</translation>
 <translation id="1457907785077086338">Boja značke aplikacije</translation>
 <translation id="146000042969587795">Okvir je blokiran jer ima nesiguran sadržaj.</translation>
@@ -3034,7 +3033,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3090871774332213558">Uparen je uređaj "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3093714882666365141">Nemoj dozvoliti web lokacijama instaliranje obrađivača plaćanja</translation>
 <translation id="3094080575472025333">Blokirajte aplikacije</translation>
-<translation id="3094141017404513551">Ovo će odvojiti vaše pregledanje od korisnika <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Ističe danas}=1{Ističe sutra}one{Ističe za # dan}few{Ističe za # dana}other{Ističe za # dana}}</translation>
 <translation id="3094521107841754472">Cijena je promijenjena iz <ph name="PREVIOUS_PRICE" /> u <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Oznake, lozinke i drugi podaci iz preglednika se sinhroniziraju s primarnim računom.</translation>
@@ -3137,7 +3135,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3177909033752230686">Jezik stranice:</translation>
 <translation id="3177914167275935955">Uređaj uključuje nadogradnju na obrazovnu verziju Chromea, ali vaše korisničko ime nije povezano s Google for Education računom. Kreirajte Google for Education račun odlaskom na g.co/workspace/edusignup na drugom uređaju.</translation>
 <translation id="3179982752812949580">Font teksta</translation>
-<translation id="3180284704187420717">Sačuvajte oznake, lozinke i još mnogo toga uz sinhronizaciju</translation>
 <translation id="3180990259147710757">Pomicanje čeljusti ulijevo</translation>
 <translation id="3181825792072797598">Uključi sinhronizaciju</translation>
 <translation id="3181954750937456830">Sigurno pregledanje (štiti vas i vaš uređaj od opasnih web lokacija)</translation>
@@ -8824,7 +8821,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7273894023751806510">Uvijek blokiraj da web lokacija <ph name="HOST" /> kontrolira i reprogramira MIDI uređaje</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> do potpune napunjenosti</translation>
 <translation id="727595954130325265">Kupite odmah</translation>
-<translation id="7278164481614262110">Kreiranje tema s AI-jem</translation>
 <translation id="727952162645687754">Greška prilikom preuzimanja</translation>
 <translation id="7280649757394340890">Postavke glasa za pretvaranje teksta u govor</translation>
 <translation id="7280877790564589615">Upućen je zahtjev za odobrenje</translation>

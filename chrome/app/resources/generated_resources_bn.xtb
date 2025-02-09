@@ -657,7 +657,6 @@
 <translation id="1454223536435069390">স্ক্রিনশট নিন</translation>
 <translation id="145432137617179457">যেসব ভাষায় বানান পরীক্ষার সুবিধা আছে</translation>
 <translation id="1455119378540982311">প্রিসেট উইন্ডোর মাপ</translation>
-<translation id="1456499573534615137">আপনাকে Chrome-এর জন্য কাস্টম থিম ডিজাইন করতে সাহায্য করে</translation>
 <translation id="1456849775870359518">আপনার ট্যাব আবার খুলে যাবে</translation>
 <translation id="1457907785077086338">অ্যাপ ব্যাজের রঙ</translation>
 <translation id="146000042969587795">নিরাপদ নয় এমন কন্টেন্ট থাকার কারণে এই ফ্রেমটি আটকানো হয়্ছে৷</translation>
@@ -3031,7 +3030,6 @@
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" যুক্ত করা হয়েছে</translation>
 <translation id="3093714882666365141">পেমেন্ট হ্যান্ডলার ইনস্টল করার অনুমতি দেয় না</translation>
 <translation id="3094080575472025333">ব্লক করা অ্যাপ</translation>
-<translation id="3094141017404513551">এটি আপনার ব্রাউজিং <ph name="EXISTING_USER" /> থেকে আলাদা করে দেবে</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{আজ মেয়াদ শেষ}=1{আগামীকাল মেয়াদ শেষ}one{# দিনে মেয়াদ শেষ হবে}other{# দিনে মেয়াদ শেষ হবে}}</translation>
 <translation id="3094521107841754472">দাম <ph name="PREVIOUS_PRICE" /> থেকে <ph name="CURRENT_PRICE" />-এ পরিবর্তন করা হয়েছে।</translation>
 <translation id="3095871294753148861">বুকমার্ক, পাসওয়ার্ড, এবং ব্রাউজারের অন্যান্য ডেটা প্রাথমিক অ্যাকাউন্টের সাথে সিঙ্ক করা আছে।</translation>
@@ -3134,7 +3132,6 @@
 <translation id="3177909033752230686">পৃষ্ঠার ভাষা:</translation>
 <translation id="3177914167275935955">আপনার ডিভাইসে Chrome Education আপগ্রেড অন্তর্ভুক্ত রয়েছে, কিন্তু আপনার ইউজারনেমটি কোনও Google for Education অ্যাকাউন্টের সাথে যুক্ত নয়। একটি সেকেন্ডারি ডিভাইসে g.co/workspace/edusignup-এ গিয়ে একটি Google for Education অ্যাকাউন্ট তৈরি করুন।</translation>
 <translation id="3179982752812949580">টেক্সটের ফন্ট</translation>
-<translation id="3180284704187420717">সিঙ্ক করার সুবিধা ব্যবহার করে নিজের বুকমার্ক, পাসওয়ার্ড ও আরও অনেক কিছু সেভ করুন</translation>
 <translation id="3180990259147710757">চোয়াল বাঁদিকে নিয়ে যান</translation>
 <translation id="3181825792072797598">সিঙ্ক চালু করুন</translation>
 <translation id="3181954750937456830">নিরাপদ ব্রাউজিং (বিপজ্জনক সাইট থেকে আপনাকে এবং আপনার ডিভাইসকে রক্ষা করে)</translation>
@@ -8818,7 +8815,6 @@
 <translation id="7273894023751806510"><ph name="HOST" />-এর জন্য সবসময়ই কন্ট্রোল ও রিপ্রোগ্রাম করার অনুমতি ব্লক করুন</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - পূর্ণ হতে <ph name="TIME" /> বাকি আছে</translation>
 <translation id="727595954130325265">এখনই কিনুন</translation>
-<translation id="7278164481614262110">AI-এর মাধ্যমে থিম তৈরি করুন</translation>
 <translation id="727952162645687754">ডাউনলোড ক্রটি</translation>
 <translation id="7280649757394340890">পাঠ্য থেকে ভাষ্যের ভয়েস সেটিংস</translation>
 <translation id="7280877790564589615">অনুমতির জন্য অনুরোধ করা হয়েছে</translation>

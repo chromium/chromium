@@ -41,7 +41,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1507198376417198979">Personoleiddio eich proffil Chrome newydd</translation>
 <translation id="1547295885616600893">Mae ChromeOS yn bosib oherwydd <ph name="BEGIN_LINK_CROS_OSS" />meddalwedd ffynhonnell agored<ph name="END_LINK_CROS_OSS" /> ychwanegol.</translation>
 <translation id="1553358976309200471">Diweddarwch Chrome</translation>
-<translation id="1583073672411044740">Mae <ph name="EXISTING_USER" /> eisoes wedi mewngofnodi i'r proffil Chrome hwn. Bydd hyn yn creu proffil Chrome newydd ar gyfer <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Mae Google Chrome yn defnyddio'ch camera.</translation>
 <translation id="1587325591171447154">Mae <ph name="FILE_NAME" /> yn beryglus, felly mae Chrome wedi ei rhwystro.</translation>
 <translation id="1597911401261118146">I wirio a yw'ch cyfrineiriau'n ddiogel rhag toriadau data a phroblemau diogelwch eraill, <ph name="BEGIN_LINK" />mewngofnodwch i Chrome<ph name="END_LINK" />.</translation>
@@ -149,7 +148,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2846251086934905009">Gwall gosod: Ni wnaeth y gosodwr orffen. Mae'r gosodiad wedi'i derfynu.</translation>
 <translation id="2853415089995957805">Mae Chrome yn rhaglwytho tudalennau rydych yn debygol o ymweld â nhw, fel eu bod yn llwytho yn gyflymach pan rydych yn ymweld â nhw</translation>
 <translation id="2857540653560290388">Wrthi'n lansio Chrome...</translation>
-<translation id="2857972467023607093">Mae proffil Chrome â'r cyfrif hwn eisoes yn bodoli</translation>
 <translation id="286025080868315611">Dysgu pam fod Chrome yn rhwystro rhai lawrlwythiadau</translation>
 <translation id="2861074815332034794">Wrthi'n diweddaru Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Rydych wedi mewngofnodi i Chrome!</translation>
@@ -229,7 +227,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="3785324443014631273">Ni allai ChromeOS Flex gysoni'ch data oherwydd gwall wrth fewngofnodi.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Mae Chrome yn gofyn am Windows 10 neu uwch.</translation>
-<translation id="3835168907083856002">Bydd hyn yn creu proffil Chrome newydd ar gyfer <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Mae angen mynediad Bluetooth ar Google Chrome i archwilio 
  dyfeisiau Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Caewch holl ffenestri Google Chrome a rhowch gynnig arall arni.</translation>
@@ -450,7 +447,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6712881677154121168">Gwall lawrlwytho: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Gwneud Chrome yn gyflymach</translation>
 <translation id="6735387454586646204">System ChromeOS Flex</translation>
-<translation id="6739177684496155661">Parhau mewn proffil Chrome newydd?</translation>
 <translation id="6750954913813541382">I drwsio gwallau sillafu, mae Chrome yn anfon y testun rydych yn ei deipio yn y porwr at Google</translation>
 <translation id="677276454032249905">Gadael Chrome beth bynnag?</translation>
 <translation id="6794858689789885890">Dileu data gwefan o'ch dyfais bob amser pan fyddwch yn cau Chrome</translation>
@@ -558,7 +554,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="7947083960301164556">Gweld Beth Sy'n Newydd</translation>
 <translation id="7951272445806340501">Mae angen ailgychwyn ChromeOS Flex i gymhwyso'r diweddariad.</translation>
 <translation id="7959172989483770734">Rheoli Proffiliau Chrome</translation>
-<translation id="7962368738413920945">Mae'n debyg y bydd gwefannau'n gweithio fel y disgwyliwch ond ni fyddant yn eich cofio ar ôl i chi gau pob ffenestr Chrome</translation>
 <translation id="7962410387636238736">Ni fydd y cyfrifiadur hwn yn cael diweddariadau Google Chrome mwyach oherwydd ni chefnogir Windows XP na Windows Vista mwyach</translation>
 <translation id="8005666035647241369">I Reolwr Cyfrineiriau Google ar y ddyfais hon</translation>
 <translation id="8008534537613507642">Ailosod Chrome</translation>
@@ -658,7 +653,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="919706545465235479">Diweddarwch Chrome i ddechrau cysoni</translation>
 <translation id="922152298093051471">Personoleiddio Chrome</translation>
 <translation id="93760716455950538">Ailddechrau ChromeOS Flex</translation>
-<translation id="940313311831216333">I gael mynediad at eich holl bethau Chrome ar draws eich holl ddyfeisiau, mewngofnodwch, yna trowch gysoni ymlaen.</translation>
 <translation id="943390475793766444">Mae Chrome yn argymell sganio'r ffeil hon oherwydd y gallai fod yn beryglus.</translation>
 <translation id="945522503751344254">Danfon adborth</translation>
 <translation id="983803489796659991">Methodd y gosodiad oherwydd nad oes gan y gweinydd diweddaru unrhyw ddata hash ar gyfer yr ap.</translation>

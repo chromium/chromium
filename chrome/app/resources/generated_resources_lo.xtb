@@ -656,7 +656,6 @@
 <translation id="1454223536435069390">ຖ່າຍຮູບໜ້າຈໍ</translation>
 <translation id="145432137617179457">ພາສາທີ່ໃຊ້ໃນການກວດຄຳຜິດ</translation>
 <translation id="1455119378540982311">ພຣີເຊັດຂະໜາດໜ້າຈໍ</translation>
-<translation id="1456499573534615137">ຊ່ວຍທ່ານອອກແບບຮູບແບບສີສັນທີ່ກຳນົດເອງສຳລັບ Chrome</translation>
 <translation id="1456849775870359518">ແຖບຂອງທ່ານຈະເປີດຂຶ້ນອີກຄັ້ງ</translation>
 <translation id="1457907785077086338">ສີຂອງປ້າຍແອັບ</translation>
 <translation id="146000042969587795">ຂອບນີ້ຖືກບລັອກ ເພາະວ່າມັນມີບາງເນື້ອໃນທີ່ບໍ່ປອດໄພ.</translation>
@@ -3029,7 +3028,6 @@
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" ຈັບຄູ່ແລ້ວ</translation>
 <translation id="3093714882666365141">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊຕິດຕັ້ງຕົວຈັດການການຈ່າຍເງິນ</translation>
 <translation id="3094080575472025333">ບລັອກແອັບ</translation>
-<translation id="3094141017404513551">ນີ້ຈະແຍກການທ່ອງເວັບຂອງທ່ານອອກຈາກ <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{ໝົດອາຍຸມື້ນີ້}=1{ໝົດອາຍຸມື້ອື່ນ}other{ໝົດອາຍຸໃນ # ມື້}}</translation>
 <translation id="3094521107841754472">ລາຄາໄດ້ປ່ຽນຈາກ <ph name="PREVIOUS_PRICE" /> ເປັນ <ph name="CURRENT_PRICE" /> ແລ້ວ.</translation>
 <translation id="3095871294753148861">ບຸກມາກ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນໂປຣແກຣມທ່ອງເວັບອື່ນຖືກຊິ້ງຂໍ້ມູນກັບບັນຊີຫຼັກຂອງທ່ານ.</translation>
@@ -3132,7 +3130,6 @@
 <translation id="3177909033752230686">ພາ​ສາຂອງໜ້າເວັບ:</translation>
 <translation id="3177914167275935955">ອຸປະກອນຂອງທ່ານຮວມເອົາການອັບເກຣດ Chrome Education ແຕ່ຊື່ຜູ້ໃຊ້ຂອງທ່ານບໍ່ໄດ້ເຊື່ອມໂຍງກັບບັນຊີ Google ສຳລັບການສຶກສາ. ກະລຸນາສ້າງບັນຊີ Google ສຳລັບການສຶກສາໂດຍເຂົ້າໄປທີ່: g.co/workspace/edusignup ໃນອຸປະກອນສຳຮອງ.</translation>
 <translation id="3179982752812949580">ຟອນຂໍ້ຄວາມ</translation>
-<translation id="3180284704187420717">ບັນທຶກບຸກມາກ, ລະຫັດຜ່ານ ແລະ ອື່ນໆຂອງທ່ານດ້ວຍການຊິ້ງ</translation>
 <translation id="3180990259147710757">ເລື່ອນກາມໄປທາງຊ້າຍ</translation>
 <translation id="3181825792072797598">ເປີດ Sync</translation>
 <translation id="3181954750937456830">Safe Browsing (ປົກປ້ອງທ່ານ ແລະ ອຸປະກອນຂອງທ່ານຈາກເວັບໄຊອັນຕະລາຍ)</translation>
@@ -8811,7 +8808,6 @@
 <translation id="7273894023751806510">ບລັອກ <ph name="HOST" /> ບໍ່ໃຫ້ຄວບຄຸມ ແລະ ຕັ້ງໂປຣແກຣມໃໝ່ໃນອຸປະກອນ MIDI ຂອງທ່ານທຸກເທື່ອ</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> ຈົນ​ກ່​ວາ​ຈະ​ເຕັມ</translation>
 <translation id="727595954130325265">ຊື້ດຽວນີ້</translation>
-<translation id="7278164481614262110">ສ້າງຮູບແບບສີສັນດ້ວຍ AI</translation>
 <translation id="727952162645687754">ດາວ​ໂຫລດ​ຜິດພາດ</translation>
 <translation id="7280649757394340890">ການຕັ້ງຄ່າສຽງສຳລັບການປ່ຽນຂໍ້ຄວາມເປັນສຽງເວົ້າ</translation>
 <translation id="7280877790564589615">ຂໍ​ເອົາການອະ​ນຸ​ຍາດ​ແລ້ວ</translation>

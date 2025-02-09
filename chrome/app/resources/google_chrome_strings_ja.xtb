@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">新しい Chrome プロフィールをカスタマイズ</translation>
 <translation id="1547295885616600893">ChromeOS は、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="1553358976309200471">Chrome を更新</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> さんはこの Chrome プロファイルにすでにログインしています。<ph name="USER_EMAIL_ADDRESS" /> 用の新しい Chrome プロファイルが作成されます。</translation>
 <translation id="1587223624401073077">Google Chrome がカメラを使用しています。</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> は危険なファイルであるため、Chrome でブロックしました。</translation>
 <translation id="1597911401261118146">パスワードにデータ侵害などセキュリティに関する問題がないかどうかを確認するには、<ph name="BEGIN_LINK" />Chrome にログイン<ph name="END_LINK" />してください。</translation>
@@ -145,7 +144,6 @@
 <translation id="2846251086934905009">インストール エラー: インストーラが完了しませんでした。インストールは中止されました。</translation>
 <translation id="2853415089995957805">アクセスする可能性の高いページはプリロードされるので、実際にアクセスしたときの読み込み時間が短縮されます</translation>
 <translation id="2857540653560290388">Chrome を起動しています...</translation>
-<translation id="2857972467023607093">このアカウントの Chrome プロファイルはすでに存在します</translation>
 <translation id="286025080868315611">Chrome で一部のダウンロードがブロックされる理由</translation>
 <translation id="2861074815332034794">Chrome を更新しています（<ph name="PROGRESS_PERCENT" />）</translation>
 <translation id="2871893339301912279">Chrome にログインしました</translation>
@@ -225,7 +223,6 @@
 <translation id="3785324443014631273">ログイン時にエラーが発生したため、ChromeOS Flex はデータを同期できませんでした。</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome のご利用には Windows 10 以上が必要です。</translation>
-<translation id="3835168907083856002"><ph name="USER_EMAIL_ADDRESS" /> 用の新しい Chrome プロファイルが作成されます。</translation>
 <translation id="383928141529488001">Bluetooth デバイスを検出するには、Google Chrome に Bluetooth へのアクセスを許可する必要があります。<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">すべての Google Chrome ウィンドウを閉じてからもう一度お試しください。</translation>
 <translation id="3873044882194371212">Chrome のシークレット ウインドウでリンクを開く(&amp;G)</translation>
@@ -441,7 +438,6 @@
 <translation id="6712881677154121168">ダウンロード エラー: <ph name="DOWNLOAD_ERROR" />。</translation>
 <translation id="6718739135284199302">Chrome を高速化する</translation>
 <translation id="6735387454586646204">ChromeOS Flex システム</translation>
-<translation id="6739177684496155661">新しい Chrome プロファイルで続行しますか？</translation>
 <translation id="6750954913813541382">スペルミスを修正するために、ブラウザに入力したテキストが Chrome から Google に送信されます</translation>
 <translation id="677276454032249905">今すぐ Chrome を終了しますか？</translation>
 <translation id="6794858689789885890">Chrome を閉じるとき、常にデバイスからサイトデータを削除する</translation>
@@ -549,7 +545,6 @@
 <translation id="7947083960301164556">新機能を表示</translation>
 <translation id="7951272445806340501">アップデートを適用するには ChromeOS Flex を再起動する必要があります。</translation>
 <translation id="7959172989483770734">Chrome プロファイルを管理</translation>
-<translation id="7962368738413920945">サイトはおおむね想定どおりに機能しますが、Chrome のウィンドウをすべて閉じるとユーザーに関する情報は失われます</translation>
 <translation id="7962410387636238736">Windows XP と Windows Vista はサポートされなくなったため、このパソコンでは今後 Google Chrome のアップデートは受信されません</translation>
 <translation id="8005666035647241369">保存先: このデバイスの Google パスワード マネージャー</translation>
 <translation id="8008534537613507642">Chrome を再インストール</translation>
@@ -649,7 +644,6 @@
 <translation id="919706545465235479">同期を開始するには、Chrome を更新します</translation>
 <translation id="922152298093051471">Chrome をカスタマイズ</translation>
 <translation id="93760716455950538">ChromeOS Flex を再起動</translation>
-<translation id="940313311831216333">お使いのすべてのデバイスで Chrome の設定やデータを使用するには、ログインして同期を有効にしてください。</translation>
 <translation id="943390475793766444">このファイルは危害を及ぼす可能性があるため、スキャンすることをおすすめします。</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="983803489796659991">更新サーバーにアプリケーションのハッシュデータがないため、インストールできませんでした。</translation>

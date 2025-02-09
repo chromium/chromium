@@ -3019,6 +3019,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> ਮੁੱਲ ਅਵੈਧ ਹੈ ਅਤੇ ਇਸਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾਵੇਗੀ।</translation>
 <translation id="6340739886198108203">ਗੁਪਤ ਸਮੱਗਰੀ ਦੇ ਦਿਸਣਯੋਗ ਹੋਣ 'ਤੇ ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲੈਣ ਜਾਂ ਰਿਕਾਰਡਿੰਗਾਂ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ:</translation>
 <translation id="6341434961864773665">{0,plural, =1{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਸ ਫ਼ਾਈਲ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਅੱਪਲੋਡ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}one{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਸ ਫ਼ਾਈਲ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਅੱਪਲੋਡ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}other{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਨ੍ਹਾਂ ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਅੱਪਲੋਡ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}}</translation>
+<translation id="6342069812937806050">ਬਿਲਕੁਲ ਹੁਣੇ</translation>
 <translation id="634500758737709758">ਦਿਸ਼ਾਵਾਂ</translation>
 <translation id="6348220984832452017">ਕਿਰਿਆਸ਼ੀਲ ਭਿੰਨਤਾਵਾਂ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ਸਥਾਪਤ ਕਰੋ</translation>

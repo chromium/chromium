@@ -41,7 +41,6 @@
 <translation id="1507198376417198979">ଆପଣଙ୍କ ନୂଆ Chrome ପ୍ରୋଫାଇଲକୁ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="1547295885616600893">ChromeOS ଅତିରିକ୍ତ <ph name="BEGIN_LINK_CROS_OSS" />ଓପନ ସୋର୍ସ ସଫ୍ଟୱେର<ph name="END_LINK_CROS_OSS" /> ଦ୍ୱାରା ସମ୍ଭବପର ହୋଇଛି।</translation>
 <translation id="1553358976309200471">Chrome ଅପ୍‍‍‍‍‍ଡେଟ୍‌</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> ଏହି Chrome ପ୍ରୋଫାଇଲରେ ପୂର୍ବରୁ ସାଇନ୍ ଇନ୍ କରିସାରିଛନ୍ତି। ଏହା <ph name="USER_EMAIL_ADDRESS" /> ପାଇଁ ଏକ ନୂଆ Chrome ପ୍ରୋଫାଇଲ୍ ତିଆରି କରିବ</translation>
 <translation id="1587223624401073077">Google Chrome ଆପଣଙ୍କର କ୍ୟାମେରା ବ୍ୟବହାର କରୁଛି।</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> ବିପଜ୍ଜନକ ଅଟେ, ତେଣୁ Chrome ଏହାକୁ ଅବରୋଧ କରିଛି।</translation>
 <translation id="1597911401261118146">ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକ ଡାଟା ଚୋରି ଏବଂ ଅନ୍ୟ ସୁରକ୍ଷା ସମସ୍ୟାଗୁଡ଼ିକରୁ ସୁରକ୍ଷିତ ଅଛି ନା ନାହିଁ ତାହା ଯାଞ୍ଚ କରିବାକୁ, <ph name="BEGIN_LINK" />Chromeରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
@@ -149,7 +148,6 @@
 <translation id="2846251086934905009">ଇନଷ୍ଟଲ କରିବାରେ ତ୍ରୁଟି: ଇନଷ୍ଟଲର ସମ୍ପୂର୍ଣ୍ଣ ହୋଇନାହିଁ। ଇନଷ୍ଟଲେସନକୁ ରଦ୍ଦ କରାଯାଇଛି।</translation>
 <translation id="2853415089995957805">ଆପଣ ଭିଜିଟ କରିବାର ସମ୍ଭାବନା ଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକୁ Chrome ପ୍ରିଲୋଡ କରେ, ଯାହା ଫଳରେ ଆପଣ ସେହି ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଭିଜିଟ କରିବା ବେଳେ ସେଗୁଡ଼ିକ ଖୁବ ଶୀଘ୍ର ଲୋଡ ହୁଏ</translation>
 <translation id="2857540653560290388">Chrome ଲଞ୍ଚ ହେଉଛି...</translation>
-<translation id="2857972467023607093">ଏହି ଆକାଉଣ୍ଟ ସହ ଏକ Chrome ପ୍ରୋଫାଇଲ୍ ପୂର୍ବରୁ ଅଛି</translation>
 <translation id="286025080868315611">Chrome କାହିଁକି କିଛି ଡାଉନଲୋଡକୁ ବ୍ଲକ କରେ ତାହା ଜାଣନ୍ତୁ</translation>
 <translation id="2861074815332034794">Chrome ଅପଡେଟ୍ କରାଯାଉଛି (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">ଆପଣ Chromeରେ ସାଇନ୍ ଇନ୍ କରିଛନ୍ତି!</translation>
@@ -229,7 +227,6 @@
 <translation id="3785324443014631273">ସାଇନ ଇନ କରିବାରେ ଏକ ତ୍ରୁଟି ଯୋଗୁଁ ChromeOS Flex ଆପଣଙ୍କ ଡାଟାକୁ ସିଙ୍କ କରିପାରିଲା ନାହିଁ।</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome ପାଇଁ Windows 10 କିମ୍ୱା ତା'ପରର ସଂସ୍କରଣ ଆବଶ୍ୟକ।</translation>
-<translation id="3835168907083856002">ଏହା <ph name="USER_EMAIL_ADDRESS" /> ପାଇଁ ଏକ ନୂଆ Chrome ପ୍ରୋଫାଇଲ୍ ତିଆରି କରିବ</translation>
 <translation id="383928141529488001">ବ୍ଲୁଟୁଥ ଡିଭାଇସଗୁଡ଼ିକୁ ଏକ୍ସପ୍ଲୋର କରିବା ପାଇଁ Chrome ବ୍ଲୁଟୁଥ ଆକ୍ସେସ ଆବଶ୍ୟକ କରେ। <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">ଦୟାକରି ସମସ୍ତ Google Chrome ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3873044882194371212">Chromeର ଇନ୍‍କ&amp;ଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଲିଙ୍କ୍‍ ଖୋଲନ୍ତୁ</translation>
@@ -449,7 +446,6 @@
 <translation id="6712881677154121168">ଡାଉନଲୋଡ ତ୍ରୁଟି: <ph name="DOWNLOAD_ERROR" />।</translation>
 <translation id="6718739135284199302">Chromeକୁ ଅଧିକ ଦ୍ରୁତ କରନ୍ତୁ</translation>
 <translation id="6735387454586646204">ChromeOS Flex ସିଷ୍ଟମ</translation>
-<translation id="6739177684496155661">ଏକ ନୂଆ Chrome ପ୍ରୋଫାଇଲରେ ଜାରି ରଖିବେ?</translation>
 <translation id="6750954913813541382">ବନାନ ଗତ ତ୍ରୁଟିଗୁଡ଼ିକର ସମାଧାନ ପାଇଁ, Chrome ବ୍ରାଉଜର୍‌ରେ ଆପଣ ଟାଇପ୍ କରିଥିବା ଟେକ୍ସଟ୍ Googleକୁ ପଠାଇଥାଏ</translation>
 <translation id="677276454032249905">ଯେକୌଣସିମତେ Chromeରୁ ବାହାରିବେ?</translation>
 <translation id="6794858689789885890">ଆପଣ Chromeକୁ ବନ୍ଦ କରିବା ସମୟରେ ସର୍ବଦା ଆପଣଙ୍କ ଡିଭାଇସରୁ ସାଇଟ ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
@@ -557,7 +553,6 @@
 <translation id="7947083960301164556">ନୂଆ କ'ଣ ଅଛି ତାହା ଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="7951272445806340501">ଅପଡେଟ ଲାଗୁ କରିବା ପାଇଁ ChromeOS Flexକୁ ରିଷ୍ଟାର୍ଟ କରାଯିବା ଆବଶ୍ୟକ।</translation>
 <translation id="7959172989483770734">Chrome ପ୍ରୋଫାଇଲଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
-<translation id="7962368738413920945">ଆପଣ ଆଶା କରୁଥିବା ପରି ସାଇଟଗୁଡ଼ିକ ସମ୍ଭବତଃ କାମ କରିବ କିନ୍ତୁ ଆପଣ ସମସ୍ତ Chrome ୱିଣ୍ଡୋକୁ ବନ୍ଦ କରିବା ପରେ ସେଗୁଡ଼ିକ ଆପଣଙ୍କୁ ମନେ ରଖିବେ ନାହିଁ</translation>
 <translation id="7962410387636238736">ଏହି କମ୍ପ୍ୟୁଟର୍‌ ଆଉ Google Chrome ଅପ‌ଡେଟ୍‍ ପ୍ରାପ୍ତ କରିବ ନାହିଁ କାରଣ ଏହା ଆଉ Windows XP ଏବଂ Windows Vista ଦ୍ୱାରା ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="8005666035647241369">ଏହି ଡିଭାଇସରେ ଥିବା Google ପାସୱାର୍ଡ ମ୍ୟାନେଜରରେ</translation>
 <translation id="8008534537613507642">Chrome ପୁଣି ଇନ୍‍ଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
@@ -657,7 +652,6 @@
 <translation id="919706545465235479">ସିଙ୍କ ଆରମ୍ଭ କରିବାକୁ Chrome ଅପ୍‌ଡେଟ୍ କରନ୍ତୁ</translation>
 <translation id="922152298093051471">Chromeକୁ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="93760716455950538">ChromeOS Flexକୁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
-<translation id="940313311831216333">ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କର Chrome ଷ୍ଟଫଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ସାଇନ୍ ଇନ୍ କରି ତାପରେ ସିଙ୍କ୍ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="943390475793766444">ଏହି ଫାଇଲଟି ବିପଦଜନକ ହୋଇପାରେ ବୋଲି Chrome ଏହାକୁ ସ୍କାନ କରିବା ପାଇଁ ସୁପାରିଶ କରୁଛି।</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="983803489796659991">ଅପଡେଟ ସର୍ଭରରେ ଆପ୍ଲିକେସନ ପାଇଁ କୌଣସି ହାସ ଡାଟା ନଥିବା ଯୋଗୁଁ ଇନଷ୍ଟଲେସନ ବିଫଳ ହୋଇଛି।</translation>

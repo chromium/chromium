@@ -3025,6 +3025,7 @@
 <translation id="633770708279464947">قيمة <ph name="SECURE_DNS_SALT" /> غير صالحة ولن يتم استخدامها.</translation>
 <translation id="6340739886198108203">حسب سياسة المشرف، لا يُنصح بأخذ لقطات شاشة أو تسجيل فيديوهات لمحتوى سرّي معروض على الشاشة:</translation>
 <translation id="6341434961864773665">{0,plural, =1{لا تنصح سياسة المشرف بتحميل هذا الملف إلى <ph name="DESTINATION_NAME" />.}zero{لا تنصح سياسة المشرف بتحميل هذه الملفات إلى <ph name="DESTINATION_NAME" />.}two{لا تنصح سياسة المشرف بتحميل هذين الملفَين إلى <ph name="DESTINATION_NAME" />.}few{لا تنصح سياسة المشرف بتحميل هذه الملفات إلى <ph name="DESTINATION_NAME" />.}many{لا تنصح سياسة المشرف بتحميل هذه الملفات إلى <ph name="DESTINATION_NAME" />.}other{لا تنصح سياسة المشرف بتحميل هذه الملفات إلى <ph name="DESTINATION_NAME" />.}}</translation>
+<translation id="6342069812937806050">الآن</translation>
 <translation id="634500758737709758">بدء الاتجاهات</translation>
 <translation id="6348220984832452017">الأنماط المتنوّعة المفعَّلة</translation>
 <translation id="6349101878882523185">تثبيت "<ph name="APP_NAME" />"</translation>

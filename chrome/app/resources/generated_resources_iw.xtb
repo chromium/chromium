@@ -658,7 +658,6 @@
 <translation id="1454223536435069390">צילום של המסך</translation>
 <translation id="145432137617179457">שפות שבהן בדיקת האיות זמינה</translation>
 <translation id="1455119378540982311">גדלים של חלונות בהגדרה קבועה מראש</translation>
-<translation id="1456499573534615137">‏התכונה הזו עוזרת ליצור עיצובים בהתאמה אישית ל-Chrome</translation>
 <translation id="1456849775870359518">הכרטיסיות ייפתחו מחדש</translation>
 <translation id="1457907785077086338">הצבע של תג האפליקציה</translation>
 <translation id="146000042969587795">מסגרת זו נחסמה משום שהיא מכילה תוכן לא בטוח.</translation>
@@ -3029,7 +3028,6 @@
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" מותאם</translation>
 <translation id="3093714882666365141">‏לא לאפשר לאתרים להתקין מעבדי handler לתשלומים</translation>
 <translation id="3094080575472025333">חסימת אפליקציות</translation>
-<translation id="3094141017404513551">כך תופרד פעילות הגלישה שלך מהפעילות של <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{התוקף יפוג היום}=1{התוקף יפוג מחר}one{התוקף יפוג בעוד # ימים}two{התוקף יפוג בעוד יומיים}other{התוקף יפוג בעוד # ימים}}</translation>
 <translation id="3094521107841754472">המחיר השתנה מ-<ph name="PREVIOUS_PRICE" /> ל-<ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">סימניות, סיסמאות ונתוני דפדפן אחרים מסונכרנים עם החשבון הראשי.</translation>
@@ -3132,7 +3130,6 @@
 <translation id="3177909033752230686">שפת הדף:</translation>
 <translation id="3177914167275935955">‏המכשיר כולל אפשרות שדרוג ל-Chrome Education, אבל שם המשתמש שלך לא משויך לחשבון Google for Education. יש ליצור חשבון Google for Education בכתובת g.co/workspace/edusignup במכשיר אחר.</translation>
 <translation id="3179982752812949580">גופן הטקסט</translation>
-<translation id="3180284704187420717">בעזרת הסנכרון אפשר לשמור את הסימניות, הסיסמאות ועוד</translation>
 <translation id="3180990259147710757">מזיזים את הלסת שמאלה</translation>
 <translation id="3181825792072797598">הפעלת סנכרון</translation>
 <translation id="3181954750937456830">גלישה בטוחה (מגנה עליך ועל המכשיר מפני אתרים מסוכנים)</translation>
@@ -8818,7 +8815,6 @@
 <translation id="7273894023751806510">‏יש לחסום תמיד את האפשרות של <ph name="HOST" /> לשלוט במכשירי ה-MIDI ולתכנת אותם מחדש.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - ‏<ph name="TIME" /> עד טעינה מלאה</translation>
 <translation id="727595954130325265">לקנייה</translation>
-<translation id="7278164481614262110">‏יצירת עיצובים באמצעות AI</translation>
 <translation id="727952162645687754">שגיאה בהורדה</translation>
 <translation id="7280649757394340890">הגדרות קול של המרת טקסט לדיבור</translation>
 <translation id="7280877790564589615">התבקשה הרשאה</translation>

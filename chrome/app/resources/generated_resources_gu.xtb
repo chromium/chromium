@@ -656,7 +656,6 @@
 <translation id="1454223536435069390">સ્ક્રીનશોટ &amp;લો</translation>
 <translation id="145432137617179457">જોડણીની તપાસ ધરાવતી ભાષાઓ</translation>
 <translation id="1455119378540982311">વિન્ડોના પ્રીસેટ કરેલા કદ</translation>
-<translation id="1456499573534615137">Chrome માટે કસ્ટમ થીમ ડિઝાઇન કરવામાં તમારી સહાય કરે છે</translation>
 <translation id="1456849775870359518">તમારા ટૅબ ફરી ખૂલશે</translation>
 <translation id="1457907785077086338">ઍપના બૅજનો રંગ</translation>
 <translation id="146000042969587795">આ ફ્રેમ બ્લૉક કરવામાં આવી હતી કારણ કે તેમાં અમુક અસુરક્ષિત કન્ટેન્ટ છે.</translation>
@@ -1361,6 +1360,7 @@
 <translation id="1936157145127842922">ફોલ્ડરમાં બતાવો</translation>
 <translation id="1936931585862840749">કેટલી કૉપિ પ્રિન્ટ કરવાની છે એ દર્શાવવા માટે સંખ્યાનો ઉપયોગ કરો (1 થી <ph name="MAX_COPIES" /> સુધીની).</translation>
 <translation id="1937774647013465102">આ ડિવાઇસ કે જે <ph name="ARCHITECTURE_DEVICE" /> છે તેના વડે <ph name="ARCHITECTURE_CONTAINER" /> પ્રકારના કન્ટેનર આર્કિટેક્ચરની આયાત કરી શકાતી નથી. તમે આ કન્ટેનરને જુદા ડિવાઇસમાં રિસ્ટોર કરવાનો પ્રયાસ કરી શકો છો અથવા તમે આ કન્ટેનર છબીમાંની ફાઇલોને Files ઍપમાં ખોલીને તેમને ઍક્સેસ કરી શકો છો.</translation>
+<translation id="1938116692670653897">રંગની વર્તમાન થીમ</translation>
 <translation id="1938351510777341717">બાહ્ય આદેશ</translation>
 <translation id="1940221956626514677">ટૂલબાર કસ્ટમાઇઝ કરો</translation>
 <translation id="1940546824932169984">કનેક્ટ થયેલ ઉપકરણો</translation>
@@ -2128,6 +2128,10 @@
 <translation id="2462332841984057083">Steamનું પહેલેથી સેટઅપ કરવામાં આવી રહ્યું છે. સેટઅપ પૂર્ણ થવાની રાહ જુઓ.</translation>
 <translation id="2462724976360937186">પ્રમાણન અધિકારી કી ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> ઉમેર્યું</translation>
+<translation id="2464075479326723132">Microsoft SharePoint અને OneDriveમાં તમારી સૌથી તાજેતરની ઍક્ટિવિટી પર સરળતાથી પરત ફરવામાં તમને સહાય મળી રહે તે માટે તમને સૂચવેલી ફાઇલો જોવા મળી રહી છે.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        તમે કાર્ડ મેનૂમાં જઈને સેટિંગ મેનેજ કરી શકો છો અથવા 'Chromeને કસ્ટમાઇઝ કરો'માં વધુ વિકલ્પો જોઈ શકો છો.</translation>
 <translation id="2464079411014186876">આઈસ્ક્રીમ</translation>
 <translation id="2467755475704469005">કોઈ ડિવાઇસ મળ્યું નથી. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" /> અને અન્ય <ph name="NUM_OTHER_MEMBERS" /> વ્યક્તિ સાથે ટૅબના ગ્રૂપમાં જોડાઓ</translation>
@@ -3015,7 +3019,6 @@
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />"થી જોડી બનાવી</translation>
 <translation id="3093714882666365141">સાઇટને ચુકવણી હૅન્ડલર ઇન્સ્ટૉલ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="3094080575472025333">ઍપ બ્લૉક કરો</translation>
-<translation id="3094141017404513551">આને કારણે તમારું બ્રાઉઝિંગ <ph name="EXISTING_USER" />થી અલગ થઈ જશે</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{આજે સમાપ્ત થાય છે}=1{આવતીકાલે સમાપ્ત થાય છે}one{# દિવસમાં સમાપ્ત થાય છે}other{# દિવસમાં સમાપ્ત થાય છે}}</translation>
 <translation id="3094521107841754472">કિંમત બદલીને <ph name="PREVIOUS_PRICE" />થી <ph name="CURRENT_PRICE" /> કરવામાં આવી છે.</translation>
 <translation id="3095871294753148861">બુકમાર્ક, પાસવર્ડ અને અન્ય બ્રાઉઝર ડેટાને પ્રાથમિક એકાઉન્ટ સાથે સિંક કરવામાં આવે છે.</translation>
@@ -3118,7 +3121,6 @@
 <translation id="3177909033752230686">પેજની ભાષા:</translation>
 <translation id="3177914167275935955">તમારા ડિવાઇસ માટે Chrome Education Upgrade શામેલ છે, પરંતુ તમારું વપરાશકર્તાનું નામ કોઈ Google for Education એકાઉન્ટ સાથે સંકળાયેલું નથી. કૃપા કરીને કોઈ ગૌણ ડિવાઇસ પર g.co/workspace/edusignupની મુલાકાત લઈને એક Google for Education એકાઉન્ટ બનાવો.</translation>
 <translation id="3179982752812949580">ટેક્સ્ટ ફોન્ટ</translation>
-<translation id="3180284704187420717">સિંક સુવિધા વડે તમારા બુકમાર્ક, પાસવર્ડ અને અન્ય બાબતો સાચવો</translation>
 <translation id="3180990259147710757">જડબું ડાબે ખસેડો</translation>
 <translation id="3181825792072797598">સિંક ચાલુ કરો</translation>
 <translation id="3181954750937456830">Safe Browsing (તમારું અને તમારા ડિવાઇસનું જોખમી સાઇટથી રક્ષણ કરે છે)</translation>
@@ -3989,6 +3991,7 @@
 <translation id="3787434344076711519">અનુવાદની રાહ જોઈ રહ્યાં છીએ</translation>
 <translation id="3788301286821743879">કિઓસ્ક ઍપ્લિકેશન લોંચ કરી શકાઈ નથી.</translation>
 <translation id="3788401245189148511">તે આ કરી શકે છે:</translation>
+<translation id="3789432704615470433">SharePoint અને OneDriveની ફાઇલો</translation>
 <translation id="3789841737615482174">ઇન્સ્ટોલ કરો</translation>
 <translation id="3790417903123637354">કંઈક ખોટું થયું હતું. થોડા સમય પછી ફરી પ્રયાસ કરો</translation>
 <translation id="379082410132524484">તમારા કાર્ડની સમયસીમા સમાપ્ત થઈ ગઈ છે</translation>
@@ -6178,6 +6181,7 @@
 <translation id="5360150013186312835">ટુલબારમાં દર્શાવો</translation>
 <translation id="5362741141255528695">ખાનગી કી ફાઇલ પસંદ કરો.</translation>
 <translation id="536278396489099088">ChromeOS સિસ્ટમની સ્થિતિ અને રિપોર્ટ</translation>
+<translation id="5362916924854054326">SharePoint અને OneDrive ફાઇલો બતાવશો નહીં</translation>
 <translation id="5363109466694494651">Powerwash કરો અને ઉલટાવો</translation>
 <translation id="5365881113273618889">તમે પસંદ કરેલું ફોલ્ડર સંવેદનશીલ ફાઇલો ધરાવે છે. શું તમે ખરેખર "<ph name="APP_NAME" />"ને આ ફોલ્ડરની કાયમી લખવાનો ઍક્સેસ આપવા માંગો છો?</translation>
 <translation id="536638840841140142">એકપણ નહીં</translation>
@@ -8803,7 +8807,6 @@ USB ડિવાઇસ</translation>
 <translation id="7273894023751806510"><ph name="HOST" />ને હંમેશાં તમારા MIDI ડિવાઇસને નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરવાથી બ્લૉક કરો</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> પૂર્ણ ન થાય ત્યાં સુધી</translation>
 <translation id="727595954130325265">હમણાં ખરીદો</translation>
-<translation id="7278164481614262110">AI વડે થીમ બનાવો</translation>
 <translation id="727952162645687754">ડાઉનલોડ ભૂલ</translation>
 <translation id="7280649757394340890">ટેક્સ્ટ-ટૂ-સ્પીચ વૉઇસ સેટિંગ</translation>
 <translation id="7280877790564589615">પરવાનગીની વિનંતી કરી</translation>
@@ -10758,6 +10761,10 @@ USB ડિવાઇસ</translation>
 <translation id="865936634714975126">પેજ લોડ પર પ્રકારો પસંદ કરવા માટે, URLમાં કોઈ ક્વેરી પેરામીટર ઉમેરો. ઉદાહરણ: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> Contacts</translation>
 <translation id="8659609431223166673">વિન્ડોને નીચેની તરફ ખસેડવામાં આવી</translation>
+<translation id="8660288500924118793">Outlook Calendarમાં તમારી આગલી ઇવેન્ટ પર સરળતાથી નૅવિગેટ કરવામાં તમને સહાય મળી રહે તે માટે તમને તમારું કૅલેન્ડર જોવા મળી રહ્યું છે.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       તમે કાર્ડ મેનૂમાં જઈને સેટિંગ મેનેજ કરી શકો છો અથવા 'Chromeને કસ્ટમાઇઝ કરો'માં વધુ વિકલ્પો જોઈ શકો છો.</translation>
 <translation id="8661290697478713397">છુ&amp;પી વિંડોમાં લિંક ખોલો</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />માં સાઇન ઇન કરો</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> નેટવર્કમાં જોડાઓ</translation>

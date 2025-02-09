@@ -3019,6 +3019,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> dəyəri yanlışdır və istifadə edilməyəcək.</translation>
 <translation id="6340739886198108203">Administrator siyasəti məxfi kontent göründükdə skrinşot çəkməyi və ya nəsə qeydə almağı tövsiyə etmir:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Administrator siyasəti bu faylı <ph name="DESTINATION_NAME" /> bölməsinə yükləməyi tövsiyə etmir}other{Administrator siyasəti bu faylları <ph name="DESTINATION_NAME" /> bölməsinə yükləməyi tövsiyə etmir}}</translation>
+<translation id="6342069812937806050">İndicə</translation>
 <translation id="634500758737709758">İstiqamətlər</translation>
 <translation id="6348220984832452017">Aktiv Variasiyalar</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> tətbiqini quraşdırın</translation>

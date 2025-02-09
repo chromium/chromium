@@ -656,7 +656,6 @@
 <translation id="1454223536435069390">Създаване на &amp;екранна снимка</translation>
 <translation id="145432137617179457">Езици за проверка на правописа</translation>
 <translation id="1455119378540982311">Предварително зададени размери на прозорците</translation>
-<translation id="1456499573534615137">Помага ви да създавате персонализирани теми за Chrome</translation>
 <translation id="1456849775870359518">Разделите ви ще се отворят отново</translation>
 <translation id="1457907785077086338">Цвят на балончето за приложенията</translation>
 <translation id="146000042969587795">Тази рамка бе блокирана, защото съдържанието й е несигурно.</translation>
@@ -3026,7 +3025,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3090871774332213558">Успешно сдвояване на <ph name="DEVICE_NAME" /></translation>
 <translation id="3093714882666365141">Да не се разрешава на сайтовете да инсталират приложения за обработване на плащания</translation>
 <translation id="3094080575472025333">Блокиране на приложения</translation>
-<translation id="3094141017404513551">По този начин ще отделите данните за сърфирането си от тези на <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Изтича днес}=1{Изтича утре}other{Изтича след # дни}}</translation>
 <translation id="3094521107841754472">Цената бе променена от <ph name="PREVIOUS_PRICE" /> на <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Отметките, паролите и другите данни в браузъра се синхронизират с основния профил.</translation>
@@ -3129,7 +3127,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3177909033752230686">Език на страницата:</translation>
 <translation id="3177914167275935955">Устройството ви включва Chrome Education Upgrade, но потребителското ви име не е свързано с профил в Google for Education. Създайте такъв, като посетите g.co/workspace/edusignup от алтернативно устройство.</translation>
 <translation id="3179982752812949580">Шрифт на текста</translation>
-<translation id="3180284704187420717">Запазвайте своите отметки, пароли и др. с функцията за синхронизиране</translation>
 <translation id="3180990259147710757">Преместване на челюстта наляво</translation>
 <translation id="3181825792072797598">Включване на синхронизирането</translation>
 <translation id="3181954750937456830">„Безопасно сърфиране“ (защитава вас и устройството ви от опасни сайтове)</translation>
@@ -8812,7 +8809,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7273894023751806510">Контролирането и препрограмирането на MIDI устройствата ви да са забранени винаги за <ph name="HOST" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> до зареждането</translation>
 <translation id="727595954130325265">Купете сега</translation>
-<translation id="7278164481614262110">Създаване на теми с AI</translation>
 <translation id="727952162645687754">Грешка при изтеглянето</translation>
 <translation id="7280649757394340890">Настройки за гласовете за синтезиран говор</translation>
 <translation id="7280877790564589615">Изисква се разрешение</translation>

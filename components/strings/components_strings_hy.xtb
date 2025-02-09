@@ -3032,6 +3032,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> կանոնի արժեքը անվավեր է և չի կարող օգտագործվել։</translation>
 <translation id="6340739886198108203">Ադմինիստրատորը խորհուրդ չի տալիս սքրինշոթներ կամ տեսագրություններ անել, երբ էկրանին կոնֆիդենցիալ բովանդակություն է երևում։</translation>
 <translation id="6341434961864773665">{0,plural, =1{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը վերբեռնել <ph name="DESTINATION_NAME" />}one{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը վերբեռնել <ph name="DESTINATION_NAME" />}other{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլերը վերբեռնել <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="6342069812937806050">Հենց նոր</translation>
 <translation id="634500758737709758">Երթուղիներ</translation>
 <translation id="6348220984832452017">Ընթացիկ տարբերակներ</translation>
 <translation id="6349101878882523185">Տեղադրել <ph name="APP_NAME" /> հավելվածը</translation>

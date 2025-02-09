@@ -39,7 +39,6 @@
 <translation id="1507198376417198979">Kohandage oma uut Chrome'i profiili</translation>
 <translation id="1547295885616600893">Chrome OS on võimalik tänu <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvarale<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Värskenda Chrome'i</translation>
-<translation id="1583073672411044740"><ph name="EXISTING_USER" /> on juba sellele Chrome'i profiilile sisse logitud. See loob konto <ph name="USER_EMAIL_ADDRESS" /> jaoks uue Chrome'i profiili.</translation>
 <translation id="1587223624401073077">Google Chrome kasutab teie kaamerat.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> on ohtlik, mistõttu Chrome blokeeris selle.</translation>
 <translation id="1597911401261118146">Kui soovite kontrollida, kas teie paroolid on andmetega seotud rikkumiste ja muude turvaprobleemide eest kaitstud, <ph name="BEGIN_LINK" />logige Chrome'i sisse<ph name="END_LINK" />.</translation>
@@ -147,7 +146,6 @@
 <translation id="2846251086934905009">Installimisviga: installiprogrammi ei viidud lõpule. Installimine katkestati.</translation>
 <translation id="2853415089995957805">Chrome eellaadib lehed, mida tõenäoliselt külastada soovite, et need laaditaks avamisel kiiremini</translation>
 <translation id="2857540653560290388">Chrome'i käivitamine …</translation>
-<translation id="2857972467023607093">Selle kontoga Chrome'i profiil on juba olemas</translation>
 <translation id="286025080868315611">Vaadake, miks Chrome mõned allalaadimised blokeerib</translation>
 <translation id="2861074815332034794">Chrome’i värskendamine (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Olete Chrome'i sisse logitud.</translation>
@@ -227,7 +225,6 @@
 <translation id="3785324443014631273">Chrome OS Flex ei saanud sisselogimisvea tõttu teie andmeid sünkroonida.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Google Chrome vajab operatsioonisüsteemi Windows 10 või uuemat versiooni.</translation>
-<translation id="3835168907083856002">See loob konto <ph name="USER_EMAIL_ADDRESS" /> jaoks uue Chrome'i profiili.</translation>
 <translation id="383928141529488001">Google Chrome vajab Bluetooth-seadmete avastamiseks 
  juurdepääsu Bluetoothile. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Sulgege kõik Google Chrome'i aknad ja proovige uuesti.</translation>
@@ -446,7 +443,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6712881677154121168">Allalaadimisviga: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Muutke Chrome kiiremaks</translation>
 <translation id="6735387454586646204">Chrome OS Flexi süsteem</translation>
-<translation id="6739177684496155661">Kas jätkata uuel Chrome'i profiilil?</translation>
 <translation id="6750954913813541382">Õigekirjavigade parandamiseks saadab Chrome brauseris sisestatava teksti Google'ile</translation>
 <translation id="677276454032249905">Kas väljuda Chrome'ist ikkagi?</translation>
 <translation id="6794858689789885890">Saidiandmed kustutatakse alati seadmest, kui Chrome’i sulgete</translation>
@@ -554,7 +550,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7947083960301164556">Vaadake, mis on uut</translation>
 <translation id="7951272445806340501">Chrome OS Flex tuleb värskenduse rakendamiseks taaskäivitada.</translation>
 <translation id="7959172989483770734">Halda Chrome’i profiile</translation>
-<translation id="7962368738413920945">Saidid toimivad tõenäoliselt ootuspäraselt, kuid teid ei mäletata pärast kõigi Chrome'i akende sulgemist</translation>
 <translation id="7962410387636238736">See arvuti ei saa enam Google Chrome'i värskendusi, kuna Windows XP-d ja Windows Vistat enam ei toetata</translation>
 <translation id="8005666035647241369">Selle seadme Google'i paroolihaldurile</translation>
 <translation id="8008534537613507642">Installi Chrome uuesti</translation>
@@ -654,7 +649,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="919706545465235479">Sünkroonimise alustamiseks värskendage Chrome'i</translation>
 <translation id="922152298093051471">Chrome'i kohandamine</translation>
 <translation id="93760716455950538">Taaskäivitage Chrome OS Flex</translation>
-<translation id="940313311831216333">Selleks et oma Chrome'i sisule kõigis oma seadmetes juurde pääseda, logige sisse ja lülitage siis sisse sünkroonimine.</translation>
 <translation id="943390475793766444">Chrome soovitab seda faili skannida, kuna see võib olla ohtlik.</translation>
 <translation id="945522503751344254">Tagasiside saatmine</translation>
 <translation id="983803489796659991">Installimine ebaõnnestus, kuna värskendusserveril pole rakenduse kohta räsiandmeid.</translation>
