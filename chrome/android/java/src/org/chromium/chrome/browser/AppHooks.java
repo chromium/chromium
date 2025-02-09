@@ -7,8 +7,6 @@ package org.chromium.chrome.browser;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ServiceLoaderUtil;
@@ -44,15 +42,6 @@ public class AppHooks {
     public void registerPolicyProviders(CombinedPolicyProvider combinedProvider) {
         combinedProvider.registerProvider(
                 new AppRestrictionsProvider(ContextUtils.getApplicationContext()));
-    }
-
-    /**
-     * @return An iterator of partner bookmarks.
-     */
-    @Nullable
-    @Deprecated
-    public PartnerBookmark.BookmarkIterator getPartnerBookmarkIterator() {
-        return PartnerBookmarksProviderIterator.createIfAvailable();
     }
 
     /** Async fetch the iterator of partner bookmarks (or null if not available). */
