@@ -70,7 +70,6 @@ public class SafetyHubAccountPasswordsModuleMediatorTest {
     }
 
     public void mockSignedInState(boolean isSignedIn) {
-        doReturn(isSignedIn).when(mDataSource).isSignedIn();
         doReturn(isSignedIn ? TEST_EMAIL_ADDRESS : null).when(mDataSource).getAccountEmail();
     }
 

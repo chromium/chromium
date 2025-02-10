@@ -36,7 +36,7 @@ public class SafetyHubBrowserStateModuleMediator {
                         mPreference.getContext(), R.drawable.ic_check_circle_filled_green_24dp));
         mPreference.setShouldCenterIcon(true);
         mPreference.setCloseIconVisibility(View.GONE);
-        mPreference.setVisible(isBrowserStateSafe());
+        mPreference.setVisible(false);
     }
 
     public void destroy() {
