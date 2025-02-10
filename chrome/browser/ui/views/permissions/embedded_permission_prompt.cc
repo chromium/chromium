@@ -169,7 +169,8 @@ void EmbeddedPermissionPrompt::Allow() {
   prompt_model_->PrecalculateVariantsForMetrics();
   prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kGranted);
-  SendDelegateAction(Action::kAllow);
+  prompt_model_->SetDelegateAction(
+      permissions::EmbeddedPermissionPromptFlowModel::DelegateAction::kAllow);
   CloseCurrentViewAndMaybeShowNext(/*first_prompt=*/false);
 }
 
@@ -177,7 +178,9 @@ void EmbeddedPermissionPrompt::AllowThisTime() {
   prompt_model_->PrecalculateVariantsForMetrics();
   prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kGrantedOnce);
-  SendDelegateAction(Action::kAllowThisTime);
+  prompt_model_->SetDelegateAction(
+      permissions::EmbeddedPermissionPromptFlowModel::DelegateAction::
+          kAllowThisTime);
   CloseCurrentViewAndMaybeShowNext(/*first_prompt=*/false);
 }
 
@@ -190,7 +193,8 @@ void EmbeddedPermissionPrompt::Dismiss() {
   prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kDismissedXButton);
 
-  SendDelegateAction(Action::kDismiss);
+  prompt_model_->SetDelegateAction(
+      permissions::EmbeddedPermissionPromptFlowModel::DelegateAction::kDismiss);
   FinalizePrompt();
 }
 
@@ -198,7 +202,8 @@ void EmbeddedPermissionPrompt::Acknowledge() {
   prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kOk);
 
-  SendDelegateAction(Action::kDismiss);
+  prompt_model_->SetDelegateAction(
+      permissions::EmbeddedPermissionPromptFlowModel::DelegateAction::kDismiss);
   FinalizePrompt();
 }
 
@@ -207,7 +212,8 @@ void EmbeddedPermissionPrompt::StopAllowing() {
   prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kDenied);
 
-  SendDelegateAction(Action::kDeny);
+  prompt_model_->SetDelegateAction(
+      permissions::EmbeddedPermissionPromptFlowModel::DelegateAction::kDeny);
   FinalizePrompt();
 }
 
@@ -251,7 +257,8 @@ void EmbeddedPermissionPrompt::DismissScrim() {
       permissions::ElementAnchoredBubbleAction::kDismissedScrim);
 
   prompt_model_->PrecalculateVariantsForMetrics();
-  SendDelegateAction(Action::kDismiss);
+  prompt_model_->SetDelegateAction(
+      permissions::EmbeddedPermissionPromptFlowModel::DelegateAction::kDismiss);
   FinalizePrompt();
 }
 
@@ -352,30 +359,10 @@ void EmbeddedPermissionPrompt::FinalizePrompt() {
 
   // If by this point we've not sent an action to the delegate, send a dismiss
   // action.
-  if (!sent_action_.has_value()) {
-    SendDelegateAction(Action::kDismiss);
+  if (!prompt_model_->HasDelegateActionSet()) {
+    prompt_model_->SetDelegateAction(
+        permissions::EmbeddedPermissionPromptFlowModel::DelegateAction::
+            kDismiss);
   }
   delegate_->FinalizeCurrentRequests();
-}
-
-void EmbeddedPermissionPrompt::SendDelegateAction(Action action) {
-  if (sent_action_.has_value()) {
-    return;
-  }
-
-  sent_action_ = action;
-  switch (action) {
-    case Action::kAllow:
-      delegate_->Accept();
-      break;
-    case Action::kAllowThisTime:
-      delegate_->AcceptThisTime();
-      break;
-    case Action::kDeny:
-      delegate_->Deny();
-      break;
-    case Action::kDismiss:
-      delegate_->Dismiss();
-      break;
-  }
 }

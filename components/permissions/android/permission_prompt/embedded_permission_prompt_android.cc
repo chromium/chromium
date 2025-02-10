@@ -18,6 +18,7 @@
 namespace permissions {
 
 using Variant = EmbeddedPermissionPromptFlowModel::Variant;
+using Action = permissions::EmbeddedPermissionPromptFlowModel::DelegateAction;
 using base::android::ConvertUTF16ToJavaString;
 
 EmbeddedPermissionPromptAndroid::EmbeddedPermissionPromptAndroid(
@@ -37,7 +38,11 @@ EmbeddedPermissionPromptAndroid::EmbeddedPermissionPromptAndroid(
   }
 }
 
-EmbeddedPermissionPromptAndroid::~EmbeddedPermissionPromptAndroid() = default;
+EmbeddedPermissionPromptAndroid::~EmbeddedPermissionPromptAndroid() {
+  if (!prompt_model_->HasDelegateActionSet()) {
+    prompt_model_->SetDelegateAction(Action::kDismiss);
+  }
+}
 
 PermissionPromptDisposition
 EmbeddedPermissionPromptAndroid::GetPromptDisposition() const {
@@ -68,7 +73,7 @@ void EmbeddedPermissionPromptAndroid::Closing() {
   prompt_model_->RecordOsMetrics(permissions::OsScreenAction::DISMISSED_SCRIM);
   prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kDismissedScrim);
-  delegate()->Dismiss();
+  prompt_model_->SetDelegateAction(Action::kDismiss);
   delegate()->FinalizeCurrentRequests();
 }
 
@@ -76,14 +81,14 @@ void EmbeddedPermissionPromptAndroid::Accept() {
   prompt_model_->PrecalculateVariantsForMetrics();
   prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kGranted);
-  delegate()->Accept();
+  prompt_model_->SetDelegateAction(Action::kAllow);
   MaybeUpdateDialogWithNewScreenVariant();
 }
 
 void EmbeddedPermissionPromptAndroid::Acknowledge() {
   prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kOk);
-  delegate()->Dismiss();
+  prompt_model_->SetDelegateAction(Action::kDismiss);
   delegate()->FinalizeCurrentRequests();
 }
 
@@ -91,7 +96,7 @@ void EmbeddedPermissionPromptAndroid::AcceptThisTime() {
   prompt_model_->PrecalculateVariantsForMetrics();
   prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kGrantedOnce);
-  delegate()->AcceptThisTime();
+  prompt_model_->SetDelegateAction(Action::kAllowThisTime);
   MaybeUpdateDialogWithNewScreenVariant();
 }
 
@@ -99,7 +104,7 @@ void EmbeddedPermissionPromptAndroid::Deny() {
   prompt_model_->PrecalculateVariantsForMetrics();
   prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kDenied);
-  delegate()->Deny();
+  prompt_model_->SetDelegateAction(Action::kDeny);
   delegate()->FinalizeCurrentRequests();
 }
 
@@ -122,7 +127,7 @@ void EmbeddedPermissionPromptAndroid::SystemPermissionResolved(bool accepted) {
     prompt_model_->PrecalculateVariantsForMetrics();
     prompt_model_->RecordOsMetrics(
         permissions::OsScreenAction::OS_PROMPT_DENIED);
-    delegate()->Dismiss();
+    prompt_model_->SetDelegateAction(Action::kDismiss);
     delegate()->FinalizeCurrentRequests();
   }
 }
@@ -284,6 +289,11 @@ void EmbeddedPermissionPromptAndroid::MaybeUpdateDialogWithNewScreenVariant() {
     // It's necessary to notify to Java side, for example to update omnibox
     // icon.
     permission_dialog_delegate()->NotifyPermissionAllowed();
+    // TODO(crbug.com/374282626): change on renderer side, dispatching event not
+    // simply following the action on the dialog but respecting how the
+    // permission status change. Then we should translate the dismiss here to
+    // "resolve" event if needed.
+    prompt_model_->SetDelegateAction(Action::kDismiss);
     delegate()->FinalizeCurrentRequests();
     return;
   }

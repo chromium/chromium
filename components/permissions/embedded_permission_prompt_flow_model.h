@@ -64,6 +64,14 @@ class EmbeddedPermissionPromptFlowModel {
     kAdministratorDenied = 7,
   };
 
+  // Define the unique delegate action owned by this model.
+  enum class DelegateAction {
+    kAllow,
+    kAllowThisTime,
+    kDeny,
+    kDismiss,
+  };
+
   // Calculate the variant of given type based on the current state of browser
   // (content settings) and device (settings and policies).
   Variant DeterminePromptVariant(ContentSetting setting,
@@ -113,6 +121,10 @@ class EmbeddedPermissionPromptFlowModel {
 
   void RecordElementAnchoredBubbleVariantUMA(Variant variant);
 
+  void SetDelegateAction(DelegateAction action);
+
+  bool HasDelegateActionSet() const { return action_.has_value(); }
+
  private:
   Variant prompt_variant_ = Variant::kUninitialized;
   raw_ptr<PermissionPrompt::Delegate> delegate_;
@@ -129,6 +141,8 @@ class EmbeddedPermissionPromptFlowModel {
   Variant os_system_settings_variant_ = Variant::kUninitialized;
 
   base::Time current_variant_first_display_time_;
+
+  std::optional<DelegateAction> action_ = std::nullopt;
 
   base::WeakPtrFactory<EmbeddedPermissionPromptFlowModel> weak_factory_{this};
 };
