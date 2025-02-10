@@ -24,9 +24,7 @@ FindResults::FindResults(const FindBuffer* find_buffer,
   text_searcher_->SetPattern(search_text_, options);
   text_searcher_->SetText(base::span(buffer));
   text_searcher_->SetOffset(0);
-  if (!RuntimeEnabledFeatures::FindRubyInPageEnabled()) {
-    DCHECK(!extra_buffers || extra_buffers->empty());
-  } else if (extra_buffers) {
+  if (extra_buffers) {
     extra_searchers_.reserve(extra_buffers->size());
     for (const auto& text : *extra_buffers) {
       extra_searchers_.push_back(

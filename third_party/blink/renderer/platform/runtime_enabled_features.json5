@@ -2078,11 +2078,6 @@
       status: "experimental",
     },
     {
-      // crbug.com/40755728
-      name: "FindRubyInPage",
-      status: "stable",
-    },
-    {
       name: "FindTextInReadonlyTextInput",
       status: "experimental",
     },
