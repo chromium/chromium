@@ -32,6 +32,7 @@ public final class DeviceInfo {
     private static final String TAG = "DeviceInfo";
 
     private @Nullable String mGmsVersionCodeForTesting;
+    private static boolean sInitialized;
 
     /** The versionCode of Play Services. Can be overridden in tests. */
     private String mGmsVersionCode;
@@ -114,6 +115,10 @@ public final class DeviceInfo {
         return getInstance().mVulkanDeqpLevel;
     }
 
+    public static boolean isInitializedForTesting() {
+        return sInitialized;
+    }
+
     private static DeviceInfo getInstance() {
         // Some tests mock out things BuildInfo is based on, so disable caching in tests to ensure
         // such mocking is not defeated by caching.
@@ -142,6 +147,7 @@ public final class DeviceInfo {
     }
 
     private DeviceInfo() {
+        sInitialized = true;
         PackageInfo gmsPackageInfo = PackageUtils.getPackageInfo("com.google.android.gms", 0);
         mGmsVersionCode =
                 gmsPackageInfo != null

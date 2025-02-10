@@ -157,6 +157,10 @@ public final class ApkInfo {
         return target >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
     }
 
+    public static boolean isInitializedForTesting() {
+        return sInitialized;
+    }
+
     public static ApkInfo getInstance() {
         // Some tests mock out things BuildInfo is based on, so disable caching in tests to ensure
         // such mocking is not defeated by caching.

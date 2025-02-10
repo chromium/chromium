@@ -44,7 +44,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include <string_view>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "net/android/network_library.h"
 #include "net/base/network_interfaces_getifaddrs.h"
 #endif
@@ -231,16 +231,16 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
   // On Android 11 RTM_GETLINK (used by AddressTrackerLinux) no longer works as
   // per https://developer.android.com/preview/privacy/mac-address so instead
   // use getifaddrs() which is supported since Android N.
-  base::android::BuildInfo* build_info =
-      base::android::BuildInfo::GetInstance();
-  if (build_info->sdk_int() >= base::android::SDK_VERSION_NOUGAT) {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_NOUGAT) {
     // Some Samsung devices with MediaTek processors are with
     // a buggy getifaddrs() implementation,
     // so use a Chromium's own implementation to workaround.
     // See https://crbug.com/1240237 for more context.
     bool use_alternative_getifaddrs =
-        std::string_view(build_info->brand()) == "samsung" &&
-        std::string_view(build_info->hardware()).starts_with("mt");
+        std::string_view(base::android::android_info::brand()) == "samsung" &&
+        std::string_view(base::android::android_info::hardware())
+            .starts_with("mt");
     bool ret = internal::GetNetworkListUsingGetifaddrs(
         networks, policy, use_alternative_getifaddrs);
     // Use GetInterfaceConnectionType() to sharpen up interface types.

@@ -61,7 +61,7 @@
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
@@ -267,13 +267,6 @@ void URLRequestContextBuilder::BindToNetwork(
     std::optional<HostResolver::ManagerOptions> options) {
 #if BUILDFLAG(IS_ANDROID)
   DCHECK(NetworkChangeNotifier::AreNetworkHandlesSupported());
-  // DNS lookups for this context will need to target `network`. NDK to do that
-  // has been introduced in Android Marshmallow
-  // (https://developer.android.com/ndk/reference/group/networking#android_getaddrinfofornetwork)
-  // This is also checked later on in the codepath (at lookup time), but
-  // failing here should be preferred to return a more intuitive crash path.
-  CHECK(base::android::BuildInfo::GetInstance()->sdk_int() >=
-        base::android::SDK_VERSION_MARSHMALLOW);
   bound_network_ = network;
   manager_options_ = options.value_or(manager_options_);
 #else
