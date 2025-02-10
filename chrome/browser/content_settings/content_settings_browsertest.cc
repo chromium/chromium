@@ -196,10 +196,6 @@ class CookieSettingsTest
       set_secure_scheme();
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentSettingsTest::SetUpCommandLine(command_line);
-  }
-
   void set_secure_scheme() { secure_scheme_ = true; }
 
   std::string ReadCookie(Browser* browser) {

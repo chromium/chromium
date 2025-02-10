@@ -275,9 +275,6 @@ class PrivateNetworkAccessWithFeatureEnabledBrowserTest
                 : std::vector<base::test::FeatureRef>({
                       features::kPrivateNetworkAccessForWorkersWarningOnly,
                   })) {}
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PrivateNetworkAccessBrowserTestBase::SetUpCommandLine(command_line);
-  }
 };
 
 class PrivateNetworkAccessWithFeatureEnabledWorkerBrowserTest

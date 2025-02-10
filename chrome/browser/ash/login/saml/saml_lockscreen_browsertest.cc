@@ -567,10 +567,6 @@ class ProxyAuthLockscreenWebUiTest : public LockscreenWebUiTest {
 
   ~ProxyAuthLockscreenWebUiTest() override = default;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    LockscreenWebUiTest::SetUpCommandLine(command_line);
-  }
-
   void SetUpOnMainThread() override {
     LockscreenWebUiTest::SetUpOnMainThread();
 

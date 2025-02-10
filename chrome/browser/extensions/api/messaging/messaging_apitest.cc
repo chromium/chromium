@@ -1188,25 +1188,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, FromPopup) {
   EXPECT_FALSE(AreAnyNonWebApisDefinedForFrame(popup_frame));
 }
 
-// TODO(devlin): Remove this subclass - it doesn't seem to do anything.
-class ExternallyConnectableMessagingTestNoChannelID
-    : public ExternallyConnectableMessagingTest {
- public:
-  ExternallyConnectableMessagingTestNoChannelID() = default;
-
-  ExternallyConnectableMessagingTestNoChannelID(
-      const ExternallyConnectableMessagingTestNoChannelID&) = delete;
-  ExternallyConnectableMessagingTestNoChannelID& operator=(
-      const ExternallyConnectableMessagingTestNoChannelID&) = delete;
-
-  ~ExternallyConnectableMessagingTestNoChannelID() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExternallyConnectableMessagingTest::SetUpCommandLine(command_line);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTestNoChannelID,
+IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                        TlsChannelIdEmptyWhenDisabled) {
   std::string expected_tls_channel_id_value;
 

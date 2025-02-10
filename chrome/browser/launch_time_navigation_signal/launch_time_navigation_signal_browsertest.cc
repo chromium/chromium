@@ -256,10 +256,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 class LaunchNavigationBrowserRestartTest : public LaunchNavigationBrowserTest {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    LaunchNavigationBrowserTest::SetUpCommandLine(command_line);
-  }
-
   // This function returns the expected number of tabs in various restore
   // scenarios.
   size_t GetExpectedTabCountFromRestore() {
