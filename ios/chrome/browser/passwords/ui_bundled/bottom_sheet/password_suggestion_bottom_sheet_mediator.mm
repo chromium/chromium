@@ -6,6 +6,7 @@
 
 #import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
@@ -117,7 +118,7 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
 @end
 
 @implementation BottomSheetFormSuggestionProviderWrapperV1 {
-  id<FormInputSuggestionsProvider> _providerWrapper;
+  __weak id<FormInputSuggestionsProvider> _providerWrapper;
 }
 
 - (instancetype)initWithFormInputSuggestionProvider:
@@ -177,7 +178,7 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
 
 @implementation BottomSheetFormSuggestionProviderWrapperV2 {
   // Suggestions provider for the bottom sheet.
-  id<FormSuggestionProvider> _providerWrapper;
+  __weak id<FormSuggestionProvider> _providerWrapper;
 
   // Form activity parameters giving the context around the sheet trigger.
   autofill::FormActivityParams _params;
@@ -211,6 +212,7 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
                     atIndex:(NSInteger)index
                    webState:(web::WebState*)webState {
+  __weak UIView* weakView = webState->GetView();
   [_providerWrapper
       didSelectSuggestion:suggestion
                   atIndex:index
@@ -224,7 +226,7 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
           // approach as used when filling with the FormInputSuggestionProvider
           // in V1. Not doing this will result he re-popping the keyboard after
           // filling is done which is a bad UX.
-          [webState->GetView() endEditing:YES];
+          [weakView endEditing:YES];
         }];
 }
 
@@ -416,6 +418,8 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
   _forwarder.reset();
   _webStateObserver.reset();
   _webStateList = nullptr;
+
+  _suggestionsProviderWrapper = nil;
 }
 
 - (BOOL)hasSuggestions {
@@ -585,9 +589,6 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
 
 - (void)webStateListDestroyed:(WebStateList*)webStateList {
   DCHECK_EQ(webStateList, _webStateList);
-  // `disconnect` cleans up all references to `_webStateList` and objects that
-  // depend on it.
-  [self disconnect];
   [self onWebStateChange];
 }
 
@@ -604,6 +605,10 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
 #pragma mark - Private
 
 - (void)onWebStateChange {
+  // Disconnect so anything that relies on the webstate behind the mediator can
+  // avoid using the mediator's objects once the webstate is destroyed.
+  [self disconnect];
+
   // As there is no more context for showing the bottom sheet, end the
   // presentation.
   [self.presenter endPresentation];
