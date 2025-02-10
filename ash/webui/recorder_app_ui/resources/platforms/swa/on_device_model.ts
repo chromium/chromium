@@ -56,7 +56,7 @@ abstract class OnDeviceModel<T> implements Model<T> {
   constructor(
     private readonly remote: OnDeviceModelRemote,
     private readonly pageRemote: PageHandlerRemote,
-    private readonly modelInfo: ModelInfo,
+    protected readonly modelInfo: ModelInfo,
   ) {
     // TODO(pihsun): Handle disconnection error
   }
@@ -255,10 +255,15 @@ export class SummaryModel extends OnDeviceModel<string> {
   ): Promise<ModelResponse<string>> {
     const inputTokenSize = await this.getInputTokenSize(content, session);
     const bulletPointsRequest = this.getBulletPointsRequest(inputTokenSize);
+    // For large model, we use v2 safety feature. It only affects on response.
+    const safetyFeatureOnResponse = this.modelInfo.isLargeModel ?
+      SafetyFeature.kAudioSummaryResponseV2 :
+      SafetyFeature.kAudioSummaryResponse;
+
     const resp = await this.formatAndExecute(
       FormatFeature.kAudioSummary,
       SafetyFeature.kAudioSummaryRequest,
-      SafetyFeature.kAudioSummaryResponse,
+      safetyFeatureOnResponse,
       {
         transcription: content,
         language,
@@ -308,10 +313,15 @@ export class TitleSuggestionModel extends OnDeviceModel<string[]> {
     language: LanguageCode,
     session: SessionRemote,
   ): Promise<ModelResponse<string[]>> {
+    // For large model, we use v2 safety feature. It only affects on response.
+    const safetyFeatureOnResponse = this.modelInfo.isLargeModel ?
+      SafetyFeature.kAudioTitleResponseV2 :
+      SafetyFeature.kAudioTitleResponse;
+
     const resp = await this.formatAndExecute(
       FormatFeature.kAudioTitle,
       SafetyFeature.kAudioTitleRequest,
-      SafetyFeature.kAudioTitleResponse,
+      safetyFeatureOnResponse,
       {
         transcription: content,
         language,

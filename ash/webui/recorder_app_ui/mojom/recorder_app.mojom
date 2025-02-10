@@ -57,6 +57,8 @@ struct ModelInfo {
   mojo_base.mojom.Uuid model_id;
   // The maximum input token size.
   uint32 input_token_limit;
+  // Whether the model is a large model.
+  bool is_large_model;
 };
 
 // Retrieved information for a microphone.
