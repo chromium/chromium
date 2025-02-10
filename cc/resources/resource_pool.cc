@@ -349,11 +349,13 @@ bool ResourcePool::PrepareForExport(
       resource->mark_avoid_reuse();
       return false;
     }
-    uint32_t texture_target = gpu_backing->shared_image->GetTextureTarget();
-    transferable = viz::TransferableResource::MakeGpu(
-        gpu_backing->shared_image->mailbox(), texture_target,
-        gpu_backing->mailbox_sync_token, resource->size(), resource->format(),
-        gpu_backing->overlay_candidate, resource_source);
+    viz::TransferableResource::MetadataOverride overrides;
+    overrides.size = resource->size();
+    overrides.format = resource->format();
+    overrides.is_overlay_candidate = gpu_backing->overlay_candidate;
+    transferable = viz::TransferableResource::Make(
+        gpu_backing->shared_image, resource_source,
+        gpu_backing->mailbox_sync_token, overrides);
     if (gpu_backing->wait_on_fence_required)
       transferable.synchronization_type =
           viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
