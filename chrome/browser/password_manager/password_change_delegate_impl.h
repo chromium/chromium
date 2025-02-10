@@ -18,6 +18,7 @@
 
 namespace content {
 class WebContents;
+enum class Visibility;
 }
 
 namespace password_manager {
@@ -44,6 +45,8 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
       base::Seconds(10);
   static constexpr char kFinalPasswordChangeStatusHistogram[] =
       "PasswordManager.FinalPasswordChangeStatus";
+  static constexpr char kWasPasswordChangeNewTabFocused[] =
+      "PasswordManager.WasPasswordChangeNewTabFocused";
 
   PasswordChangeDelegateImpl(GURL change_password_url,
                              std::u16string username,
@@ -81,6 +84,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
 
   // content::WebContentsObserver Impl
   void WebContentsDestroyed() override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
 
   // Opens the tab for password change and start looking for change password
   // form.
@@ -117,6 +121,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
 
   base::Time flow_start_time_;
+  bool was_password_change_tab_focused_ = false;
 
   base::WeakPtrFactory<PasswordChangeDelegateImpl> weak_ptr_factory_{this};
 };
