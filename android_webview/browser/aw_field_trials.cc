@@ -31,6 +31,12 @@
 
 namespace internal {
 
+// Duplicated from content/browser/file_system_access/features.cc to allow
+// WebView-only override.
+BASE_FEATURE(kFileSystemAccessDirectoryIterationBlocklistCheck,
+             "FileSystemAccessDirectoryIterationBlocklistCheck",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 AwFeatureOverrides::AwFeatureOverrides(base::FeatureList& feature_list)
     : feature_list_(feature_list) {}
 
@@ -292,4 +298,9 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
 
   // Disable Topics on WebView.
   aw_feature_overrides.DisableFeature(blink::features::kBrowsingTopics);
+
+  // Temporarily turn off kFileSystemAccessDirectoryIterationBlocklistCheck for
+  // a kill switch. https://crbug.com/393606977
+  aw_feature_overrides.DisableFeature(
+      internal::kFileSystemAccessDirectoryIterationBlocklistCheck);
 }
