@@ -92,12 +92,21 @@ public class MessageUtils {
 
     /** Returns a GroupMember associated with the message, prioritizing affected over triggering. */
     public static GroupMember extractMember(@Nullable InstantMessage message) {
-        if (message == null || message.attribution == null) {
+        return message == null ? null : extractMember(message.attribution);
+    }
+
+    /** Returns a GroupMember associated with the message, prioritizing affected over triggering. */
+    public static GroupMember extractMember(@Nullable PersistentMessage message) {
+        return message == null ? null : extractMember(message.attribution);
+    }
+
+    private static GroupMember extractMember(@Nullable MessageAttribution attribution) {
+        if (attribution == null) {
             return null;
-        } else if (message.attribution.affectedUser != null) {
-            return message.attribution.affectedUser;
+        } else if (attribution.affectedUser != null) {
+            return attribution.affectedUser;
         } else {
-            return message.attribution.triggeringUser;
+            return attribution.triggeringUser;
         }
     }
 

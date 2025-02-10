@@ -277,9 +277,13 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mTabListCoordinator.initWithNative(originalProfile);
 
             if (isDataSharingAndroidEnabled) {
+                DataSharingService dataSharingService =
+                        DataSharingServiceFactory.getForProfile(originalProfile);
                 mTabLabeller =
                         new TabLabeller(
                                 originalProfile,
+                                activity,
+                                dataSharingService.getUiDelegate(),
                                 mTabListCoordinator.getTabListNotificationHandler(),
                                 mCurrentTabGroupId);
             } else {
