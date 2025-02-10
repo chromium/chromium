@@ -6,6 +6,9 @@
 
 #include <string>
 
+#include "base/android/android_info.h"
+#include "base/android/apk_info.h"
+#include "base/android/device_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -16,35 +19,13 @@
 #include "base/strings/string_number_conversions.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/base_jni/BuildInfo_jni.h"
+#include "base/build_info_jni/BuildInfo_jni.h"
 
 namespace base {
 namespace android {
 
-namespace {
-
-// We are leaking these strings.
-const char* StrDupParam(const std::vector<std::string>& params, size_t index) {
-  return strdup(params[index].c_str());
-}
-
-int GetIntParam(const std::vector<std::string>& params, size_t index) {
-  int ret = 0;
-  bool success = StringToInt(params[index], &ret);
-  DCHECK(success);
-  return ret;
-}
-
-}  // namespace
-
 struct BuildInfoSingletonTraits {
-  static BuildInfo* New() {
-    JNIEnv* env = AttachCurrentThread();
-    ScopedJavaLocalRef<jobjectArray> params_objs = Java_BuildInfo_getAll(env);
-    std::vector<std::string> params;
-    AppendJavaStringArrayToStringVector(env, params_objs, &params);
-    return new BuildInfo(params);
-  }
+  static BuildInfo* New() { return new BuildInfo(); }
 
   static void Delete(BuildInfo* x) {
     // We're leaking this type, see kRegisterAtExit.
@@ -57,51 +38,51 @@ struct BuildInfoSingletonTraits {
 #endif
 };
 
-BuildInfo::BuildInfo(const std::vector<std::string>& params)
-    : brand_(StrDupParam(params, 0)),
-      device_(StrDupParam(params, 1)),
-      android_build_id_(StrDupParam(params, 2)),
-      manufacturer_(StrDupParam(params, 3)),
-      model_(StrDupParam(params, 4)),
-      sdk_int_(GetIntParam(params, 5)),
-      build_type_(StrDupParam(params, 6)),
-      board_(StrDupParam(params, 7)),
-      host_package_name_(StrDupParam(params, 8)),
-      host_version_code_(StrDupParam(params, 9)),
-      host_package_label_(StrDupParam(params, 10)),
-      package_name_(StrDupParam(params, 11)),
-      package_version_code_(StrDupParam(params, 12)),
-      package_version_name_(StrDupParam(params, 13)),
-      android_build_fp_(StrDupParam(params, 14)),
-      gms_version_code_(StrDupParam(params, 15)),
-      installer_package_name_(StrDupParam(params, 16)),
-      abi_name_(StrDupParam(params, 17)),
-      custom_themes_(StrDupParam(params, 18)),
-      resources_version_(StrDupParam(params, 19)),
-      target_sdk_version_(GetIntParam(params, 20)),
-      is_debug_android_(GetIntParam(params, 21)),
-      is_tv_(GetIntParam(params, 22)),
-      version_incremental_(StrDupParam(params, 23)),
-      hardware_(StrDupParam(params, 24)),
-      is_at_least_t_(GetIntParam(params, 25)),
-      is_automotive_(GetIntParam(params, 26)),
-      is_at_least_u_(GetIntParam(params, 27)),
-      targets_at_least_u_(GetIntParam(params, 28)),
-      codename_(StrDupParam(params, 29)),
-      vulkan_deqp_level_(GetIntParam(params, 30)),
-      is_foldable_(GetIntParam(params, 31)),
-      soc_manufacturer_(StrDupParam(params, 32)),
-      is_debug_app_(GetIntParam(params, 33)),
-      is_desktop_(GetIntParam(params, 34)) {}
+BuildInfo::BuildInfo()
+    : brand_(android_info::brand()),
+      device_(android_info::device()),
+      android_build_id_(android_info::android_build_id()),
+      manufacturer_(android_info::manufacturer()),
+      model_(android_info::model()),
+      sdk_int_(android_info::sdk_int()),
+      build_type_(android_info::build_type()),
+      board_(android_info::board()),
+      host_package_name_(apk_info::host_package_name()),
+      host_version_code_(apk_info::host_version_code()),
+      host_package_label_(apk_info::host_package_label()),
+      package_name_(apk_info::package_name()),
+      package_version_code_(apk_info::package_version_code()),
+      package_version_name_(apk_info::package_version_name()),
+      android_build_fp_(android_info::android_build_fp()),
+      installer_package_name_(apk_info::installer_package_name()),
+      abi_name_(android_info::abi_name()),
+      custom_themes_(device_info::custom_themes()),
+      resources_version_(apk_info::resources_version()),
+      target_sdk_version_(apk_info::target_sdk_version()),
+      is_debug_android_(android_info::is_debug_android()),
+      is_tv_(device_info::is_tv()),
+      version_incremental_(android_info::version_incremental()),
+      hardware_(android_info::hardware()),
+      is_at_least_t_(android_info::is_at_least_t()),
+      is_automotive_(device_info::is_automotive()),
+      is_at_least_u_(android_info::is_at_least_u()),
+      targets_at_least_u_(apk_info::targets_at_least_u()),
+      codename_(android_info::codename()),
+      vulkan_deqp_level_(device_info::vulkan_deqp_level()),
+      is_foldable_(device_info::is_foldable()),
+      soc_manufacturer_(android_info::soc_manufacturer()),
+      is_debug_app_(apk_info::is_debug_app()),
+      is_desktop_(device_info::is_desktop()) {}
 
 BuildInfo::~BuildInfo() = default;
 
+const char* BuildInfo::gms_version_code() const {
+  return device_info::gms_version_code();
+}
+
 void BuildInfo::set_gms_version_code_for_test(
     const std::string& gms_version_code) {
-  // This leaks the string, just like production code.
-  gms_version_code_ = strdup(gms_version_code.c_str());
-  Java_BuildInfo_setGmsVersionCodeForTest(AttachCurrentThread(),
-                                          gms_version_code);
+  device_info::set_gms_version_code_for_test(gms_version_code);
 }
 
 std::string BuildInfo::host_signing_cert_sha256() {

@@ -1125,10 +1125,14 @@ component("base") {
       "android/android_hardware_buffer_compat.h",
       "android/android_image_reader_compat.cc",
       "android/android_image_reader_compat.h",
+      "android/android_info.cc",
+      "android/android_info.h",
       "android/android_input_receiver_compat.cc",
       "android/android_input_receiver_compat.h",
       "android/apk_assets.cc",
       "android/apk_assets.h",
+      "android/apk_info.cc",
+      "android/apk_info.h",
       "android/application_status_listener.cc",
       "android/application_status_listener.h",
       "android/base_feature_map.cc",
@@ -1141,6 +1145,8 @@ component("base") {
       "android/content_uri_utils.cc",
       "android/content_uri_utils.h",
       "android/cpu_features.cc",
+      "android/device_info.cc",
+      "android/device_info.h",
       "android/early_trace_event_binding.cc",
       "android/early_trace_event_binding.h",
       "android/event_log.cc",
@@ -1233,8 +1239,10 @@ component("base") {
     ]
 
     deps += [
+      ":android_info_jni",
       ":base_jni",
       ":base_shared_preferences_jni",
+      ":build_info_jni",
       ":callback_jni",
       ":content_uri_utils_jni",
       ":jank_tracker_jni",
@@ -4298,7 +4306,6 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/base/ApkAssets.java",
       "android/java/src/org/chromium/base/BaseFeatureMap.java",
-      "android/java/src/org/chromium/base/BuildInfo.java",
       "android/java/src/org/chromium/base/BundleUtils.java",
       "android/java/src/org/chromium/base/CpuFeatures.java",
       "android/java/src/org/chromium/base/EventLog.java",
@@ -4417,7 +4424,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/ApkAssets.java",
       "android/java/src/org/chromium/base/BaseFeatureMap.java",
       "android/java/src/org/chromium/base/BinderCallsListener.java",
-      "android/java/src/org/chromium/base/BuildInfo.java",
       "android/java/src/org/chromium/base/BundleUtils.java",
       "android/java/src/org/chromium/base/CallbackController.java",
       "android/java/src/org/chromium/base/CancelableRunnable.java",
@@ -4453,7 +4459,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/MutableIntParamWithSafeDefault.java",
       "android/java/src/org/chromium/base/MutableParamWithSafeDefault.java",
       "android/java/src/org/chromium/base/PackageManagerUtils.java",
-      "android/java/src/org/chromium/base/PackageUtils.java",
       "android/java/src/org/chromium/base/PathService.java",
       "android/java/src/org/chromium/base/PathUtils.java",
       "android/java/src/org/chromium/base/PiiElider.java",
@@ -4493,9 +4498,11 @@ if (is_android) {
     # The current list were grandfathered during the refactoring of base_java.
     public_deps = [
       ":activity_state_java",
+      ":android_info_java",
       ":base_jni_java",
       ":base_minimal_jni_java",
       ":base_switches_java",
+      ":build_info_java",
       ":callback_java",
       ":command_line_java",
       ":jank_tracker_java",
@@ -4871,6 +4878,54 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     sources = [ "android/java/src/org/chromium/base/ResettersForTesting.java" ]
+  }
+
+  generate_jni("build_info_jni") {
+    sources = [
+      "android/java/src/org/chromium/base/ApkInfo.java",
+      "android/java/src/org/chromium/base/BuildInfo.java",
+      "android/java/src/org/chromium/base/DeviceInfo.java",
+    ]
+  }
+
+  android_library("build_info_java") {
+    srcjar_deps = [ ":build_info_jni" ]
+    deps = [
+      ":android_info_java",
+      ":log_java",
+      ":tasks_java",
+      "//base/version_info/android:version_constants_java",
+      "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+      "//third_party/androidx:androidx_annotation_annotation_experimental_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+    sources = [
+      # BuildInfo depend on both ApkInfo and DeviceInfo, those two classes
+      # also depend on PackageUtils which depends on BuildInfo. This result
+      # in a cyclic dependency of four element.
+      # There is a cyclic dependency between BuildInfo and PackageUtils.
+      "android/java/src/org/chromium/base/ApkInfo.java",
+      "android/java/src/org/chromium/base/BuildInfo.java",
+      "android/java/src/org/chromium/base/DeviceInfo.java",
+      "android/java/src/org/chromium/base/PackageUtils.java",
+    ]
+  }
+
+  generate_jni("android_info_jni") {
+    sources = [ "android/java/src/org/chromium/base/AndroidInfo.java" ]
+  }
+
+  android_library("android_info_java") {
+    srcjar_deps = [ ":android_info_jni" ]
+    deps = [
+      ":tasks_java",
+      "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+      "//third_party/androidx:androidx_annotation_annotation_experimental_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+    sources = [ "android/java/src/org/chromium/base/AndroidInfo.java" ]
   }
 
   generate_jni("sys_utils_jni") {
