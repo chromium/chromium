@@ -459,35 +459,6 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyDisabledTest, WebUiDisabledAtLoad) {
   }
 }
 
-// Ensure that if the policy changes to disabled at runtime, and the user has an
-// an open Glic window, that window is closed.
-IN_PROC_BROWSER_TEST_F(GlicPolicyTest, CloseOpenGlicWindowWhenDisabled) {
-  // The pref defaults to enabled.
-  ASSERT_EQ(kEnabledValue,
-            profile_1_->GetPrefs()->GetInteger(kGlicSettingsPolicy));
-
-  GlicKeyedService* service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(profile_1_);
-  ASSERT_FALSE(service->window_controller().IsShowing());
-
-  BrowserWindowInterface* bwi = browser()
-                                    ->window()
-                                    ->AsBrowserView()
-                                    ->tabstrip()
-                                    ->controller()
-                                    ->GetBrowserWindowInterface();
-  GlicKeyedServiceFactory::GetGlicKeyedService(profile_1_)
-      ->ToggleUI(bwi, /*prevent_close=*/false, InvocationSource::kOsButton);
-
-  ASSERT_TRUE(service->window_controller().IsShowing());
-
-  // Disable the policy.
-  SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kDisabled);
-  ASSERT_EQ(kDisabledValue,
-            profile_1_->GetPrefs()->GetInteger(kGlicSettingsPolicy));
-
-  EXPECT_FALSE(service->window_controller().IsShowing());
-}
 }  // namespace
 
 }  // namespace glic

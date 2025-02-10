@@ -6,7 +6,6 @@
 
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/launcher/glic_background_mode_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -55,17 +54,6 @@ void GlicProfileConfiguration::OnEnabledByPolicyChanged() {
   // Note: the pref listener can sometimes fire even if the value from
   // GetInteger doesn't change (e.g. value was set from multiple sources). See
   // GlicPolicyTest.PrefDisabledByPolicy for an example.
-
-  if (!IsEnabledByPolicy()) {
-    // If the policy becomes disabled, ensure an open Glic window is closed.  Do
-    // this before updating the Glic button since closing the panel starts an
-    // animation that relies on the button geometry for the animation.
-    // TODO(https://crbug.com/391337606): Longer term, we may want to handle
-    // this more gracefully but that'd require the client being aware that it's
-    // been disabled while it's active.
-    GlicKeyedServiceFactory::GetGlicKeyedService(&profile_.get())->ClosePanel();
-  }
-
   for (Browser* const browser : *BrowserList::GetInstance()) {
     if (browser->profile() == &profile_.get()) {
       TabStripRegionView* tab_strip_region_view =
