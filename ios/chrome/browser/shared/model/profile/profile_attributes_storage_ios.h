@@ -42,14 +42,6 @@ class ProfileAttributesStorageIOS {
   void AddObserver(ProfileAttributesStorageObserverIOS* observer);
   void RemoveObserver(ProfileAttributesStorageObserverIOS* observer);
 
-  // Register profile with `name`. No profile with that name must be registered
-  // yet.
-  void AddProfile(std::string_view name);
-
-  // Remove information about profile with `name`. A profile with that name
-  // must be registered (and won't be anymore once this method returns).
-  void RemoveProfile(std::string_view name);
-
   // Returns the count of known profiles.
   size_t GetNumberOfProfiles() const;
 
@@ -100,12 +92,13 @@ class ProfileAttributesStorageIOS {
   // Register cache related preferences in Local State.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
- private:
+ protected:
   // Returns the index of the profile with `name` or std::string::npos if
   // not found.
   size_t GetIndexOfProfileWithName(std::string_view name) const;
 
   raw_ptr<PrefService> prefs_;
+
   // All known profile names, sorted alphabetically.
   std::vector<std::string> sorted_keys_;
 

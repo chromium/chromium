@@ -16,8 +16,8 @@
 #import "base/uuid.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/mutable_profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
-#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -261,7 +261,7 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
   }
 
  private:
-  ProfileAttributesStorageIOS profile_attributes_storage_;
+  MutableProfileAttributesStorageIOS profile_attributes_storage_;
 
   std::map<std::string, std::unique_ptr<FakeProfileIOS>, std::less<>>
       profiles_map_;

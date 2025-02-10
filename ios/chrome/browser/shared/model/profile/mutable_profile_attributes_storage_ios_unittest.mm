@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/mutable_profile_attributes_storage_ios.h"
 
-#include "base/time/time.h"
-#include "components/prefs/testing_pref_service.h"
-#include "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#include "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
-#include "testing/platform_test.h"
+#import "base/time/time.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "testing/platform_test.h"
 
 namespace {
 
@@ -59,22 +60,21 @@ constexpr char kTestSceneId2[] = "scene-id2";
 
 }  // namespace
 
-class ProfileAttributesStorageIOSTest : public PlatformTest {
+class MutableProfileAttributesStorageIOSTest : public PlatformTest {
  public:
-  ProfileAttributesStorageIOSTest() {
-    ProfileAttributesStorageIOS::RegisterPrefs(
-        testing_pref_service_.registry());
+  MutableProfileAttributesStorageIOSTest() {}
+
+  PrefService* pref_service() {
+    return GetApplicationContext()->GetLocalState();
   }
 
-  PrefService* pref_service() { return &testing_pref_service_; }
-
  private:
-  TestingPrefServiceSimple testing_pref_service_;
+  IOSChromeScopedTestingLocalState scoped_local_state_;
 };
 
 // Tests that AddProfile(...) inserts data for a Profile.
-TEST_F(ProfileAttributesStorageIOSTest, AddProfile) {
-  ProfileAttributesStorageIOS storage(pref_service());
+TEST_F(MutableProfileAttributesStorageIOSTest, AddProfile) {
+  MutableProfileAttributesStorageIOS storage(pref_service());
 
   for (const TestAccount& account : kTestAccounts) {
     EXPECT_FALSE(storage.HasProfileWithName(account.name));
@@ -97,8 +97,8 @@ TEST_F(ProfileAttributesStorageIOSTest, AddProfile) {
 }
 
 // Tests that RemoveProfile(...) removes data for a Profile.
-TEST_F(ProfileAttributesStorageIOSTest, RemoveProfile) {
-  ProfileAttributesStorageIOS storage(pref_service());
+TEST_F(MutableProfileAttributesStorageIOSTest, RemoveProfile) {
+  MutableProfileAttributesStorageIOS storage(pref_service());
 
   for (const TestAccount& account : kTestAccounts) {
     storage.AddProfile(account.name);
@@ -118,8 +118,8 @@ TEST_F(ProfileAttributesStorageIOSTest, RemoveProfile) {
 }
 
 // Tests that the saved profile name can be retrieved with the scene ID.
-TEST_F(ProfileAttributesStorageIOSTest, MapProfileAndSceneID) {
-  ProfileAttributesStorageIOS storage(pref_service());
+TEST_F(MutableProfileAttributesStorageIOSTest, MapProfileAndSceneID) {
+  MutableProfileAttributesStorageIOS storage(pref_service());
 
   storage.AddProfile(kTestProfile1);
   ASSERT_EQ(storage.GetProfileNameForSceneID(kTestSceneId1), std::string());
@@ -139,8 +139,8 @@ TEST_F(ProfileAttributesStorageIOSTest, MapProfileAndSceneID) {
 }
 
 // Tests that removing a profile orphans all attached scenes.
-TEST_F(ProfileAttributesStorageIOSTest, RemoveProfileDisconnectScenes) {
-  ProfileAttributesStorageIOS storage(pref_service());
+TEST_F(MutableProfileAttributesStorageIOSTest, RemoveProfileDisconnectScenes) {
+  MutableProfileAttributesStorageIOS storage(pref_service());
 
   storage.AddProfile(kTestProfile1);
   storage.AddProfile(kTestProfile2);
@@ -158,9 +158,10 @@ TEST_F(ProfileAttributesStorageIOSTest, RemoveProfileDisconnectScenes) {
 // Tests that settings and getting the attributes using ProfileAttributesIOS
 // works as expected, and they are correctly stored in the local preferences
 // when committed.
-TEST_F(ProfileAttributesStorageIOSTest, UpdateAttributesForProfileWithName) {
+TEST_F(MutableProfileAttributesStorageIOSTest,
+       UpdateAttributesForProfileWithName) {
   {
-    ProfileAttributesStorageIOS storage(pref_service());
+    MutableProfileAttributesStorageIOS storage(pref_service());
 
     for (const TestAccount& account : kTestAccounts) {
       storage.AddProfile(account.name);
@@ -181,7 +182,7 @@ TEST_F(ProfileAttributesStorageIOSTest, UpdateAttributesForProfileWithName) {
     }
   }
 
-  ProfileAttributesStorageIOS storage(pref_service());
+  MutableProfileAttributesStorageIOS storage(pref_service());
   for (const TestAccount& account : kTestAccounts) {
     ASSERT_TRUE(storage.HasProfileWithName(account.name));
 
@@ -201,8 +202,9 @@ TEST_F(ProfileAttributesStorageIOSTest, UpdateAttributesForProfileWithName) {
 
 // Tests that GetAttributesForProfileWithName(...) works as expected.
 // Note that this implicitly tests GetAttributesForProfileAtIndex(...).
-TEST_F(ProfileAttributesStorageIOSTest, GetAttributesForProfileWithName) {
-  ProfileAttributesStorageIOS storage(pref_service());
+TEST_F(MutableProfileAttributesStorageIOSTest,
+       GetAttributesForProfileWithName) {
+  MutableProfileAttributesStorageIOS storage(pref_service());
 
   for (const TestAccount& account : kTestAccounts) {
     storage.AddProfile(account.name);
@@ -217,10 +219,10 @@ TEST_F(ProfileAttributesStorageIOSTest, GetAttributesForProfileWithName) {
   }
 }
 
-TEST_F(ProfileAttributesStorageIOSTest, FixInvalidPersonalProfileName) {
+TEST_F(MutableProfileAttributesStorageIOSTest, FixInvalidPersonalProfileName) {
   {
     // Setup: Register some profiles.
-    ProfileAttributesStorageIOS storage(pref_service());
+    MutableProfileAttributesStorageIOS storage(pref_service());
     for (const TestAccount& account : kTestAccounts) {
       storage.AddProfile(account.name);
     }
@@ -237,7 +239,7 @@ TEST_F(ProfileAttributesStorageIOSTest, FixInvalidPersonalProfileName) {
   pref_service()->SetString(prefs::kPersonalProfileName, kOtherProfileName);
 
   {
-    ProfileAttributesStorageIOS storage(pref_service());
+    MutableProfileAttributesStorageIOS storage(pref_service());
 
     EXPECT_EQ(storage.GetPersonalProfileName(), kOtherProfileName);
     EXPECT_TRUE(storage.HasProfileWithName(kOtherProfileName));
@@ -245,10 +247,11 @@ TEST_F(ProfileAttributesStorageIOSTest, FixInvalidPersonalProfileName) {
   }
 }
 
-TEST_F(ProfileAttributesStorageIOSTest, AllowEmptyInvalidPersonalProfileName) {
+TEST_F(MutableProfileAttributesStorageIOSTest,
+       AllowEmptyInvalidPersonalProfileName) {
   {
     // Setup: Register some profiles.
-    ProfileAttributesStorageIOS storage(pref_service());
+    MutableProfileAttributesStorageIOS storage(pref_service());
     for (const TestAccount& account : kTestAccounts) {
       storage.AddProfile(account.name);
     }
@@ -258,7 +261,7 @@ TEST_F(ProfileAttributesStorageIOSTest, AllowEmptyInvalidPersonalProfileName) {
   }
 
   {
-    ProfileAttributesStorageIOS storage(pref_service());
+    MutableProfileAttributesStorageIOS storage(pref_service());
     ASSERT_EQ(storage.GetNumberOfProfiles(), std::size(kTestAccounts));
 
     // The personal profile name should still be empty.
