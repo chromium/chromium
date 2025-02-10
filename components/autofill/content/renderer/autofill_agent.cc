@@ -1062,12 +1062,11 @@ void AutofillAgent::ApplyFieldsAction(
                                          action_persistence,
                                          field_data_manager()),
             {},
-            [](const std::pair<FieldRef, WebAutofillState>& filled_field)
+            [](const std::pair<FieldRendererId, WebAutofillState>& filled_field)
                 -> std::pair<FieldRendererId, FormRendererId> {
               WebFormControlElement element =
-                  form_util::GetFormControlByRendererId(
-                      filled_field.first.GetId());
-              return {filled_field.first.GetId(),
+                  form_util::GetFormControlByRendererId(filled_field.first);
+              return {filled_field.first,
                       element ? form_util::GetFormRendererId(
                                     element.GetOwningFormForAutofill())
                               : FormRendererId()};
@@ -1154,9 +1153,10 @@ void AutofillAgent::ClearPreviewedForm() {
 
   std::vector<std::pair<WebFormControlElement, WebAutofillState>>
       previewed_elements;
-  for (const auto& [previewed_element, prior_autofill_state] :
+  for (const auto& [previewed_element_id, prior_autofill_state] :
        previewed_elements_) {
-    if (WebFormControlElement field = previewed_element.GetField()) {
+    if (WebFormControlElement field =
+            form_util::GetFormControlByRendererId(previewed_element_id)) {
       previewed_elements.emplace_back(field, prior_autofill_state);
     }
   }
@@ -1206,7 +1206,7 @@ void AutofillAgent::ApplyFieldAction(
                 << "Previewing replacement of selection is not implemented";
             break;
           case mojom::FieldActionType::kReplaceAll:
-            previewed_elements_.emplace_back(form_control,
+            previewed_elements_.emplace_back(field_id,
                                              form_control.GetAutofillState());
             form_control.SetSuggestedValue(WebString::FromUTF16(value));
             break;

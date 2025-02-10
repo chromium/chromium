@@ -475,7 +475,8 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // List of elements that are currently being previewed, along with their
   // autofill state before the preview.
-  std::vector<std::pair<FieldRef, blink::WebAutofillState>> previewed_elements_;
+  std::vector<std::pair<FieldRendererId, blink::WebAutofillState>>
+      previewed_elements_;
 
   // When dealing with an unowned form, we keep track of the unowned fields
   // the user has modified so we can determine when submission occurs.
