@@ -685,6 +685,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.CertificateManager.PageVisits"
+    enum="CertificateManagerPage" expires_after="M145">
+  <owner>dadrian@chromium.org</owner>
+  <owner>hchao@chromium.org</owner>
+  <owner>chrome-secure-web-and-net@chromium.org</owner>
+  <summary>
+    This histogram is recorded every time a user visits the Chrome Certificate
+    Manager. The value recorded represents the page visited in the Chrome
+    Certificate Manager.
+  </summary>
+</histogram>
+
 <histogram name="Net.CertificateTransparency.SCTOrigin" enum="SCTOrigin"
     expires_after="2025-07-21">
   <owner>estark@chromium.org</owner>
