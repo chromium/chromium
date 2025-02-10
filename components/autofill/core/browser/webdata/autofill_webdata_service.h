@@ -72,14 +72,20 @@ class AutofillWebDataService : public WebDataServiceBase {
                                      const std::u16string& value);
 
   // Schedules a task to add an Autofill profile to the web database.
-  void AddAutofillProfile(const AutofillProfile& profile);
+  void AddAutofillProfile(
+      const AutofillProfile& profile,
+      base::OnceCallback<void(const AutofillProfileChange&)> on_success);
 
   // Schedules a task to update an Autofill profile in the web database.
-  void UpdateAutofillProfile(const AutofillProfile& profile);
+  void UpdateAutofillProfile(
+      const AutofillProfile& profile,
+      base::OnceCallback<void(const AutofillProfileChange&)> on_success);
 
   // Schedules a task to remove an Autofill profile from the web database.
   // |guid| is the identifier of the profile to remove.
-  void RemoveAutofillProfile(const std::string& guid);
+  void RemoveAutofillProfile(
+      const std::string& guid,
+      base::OnceCallback<void(const AutofillProfileChange&)> on_success);
 
   // Initiates the request for Autofill profiles. The method
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
@@ -109,9 +115,6 @@ class AutofillWebDataService : public WebDataServiceBase {
   // Schedules a task to update autocomplete entries in the web database.
   void UpdateAutocompleteEntries(
       const std::vector<AutocompleteEntry>& autocomplete_entries);
-
-  void SetAutofillProfileChangedCallback(
-      base::RepeatingCallback<void(const AutofillProfileChange&)> change_cb);
 
   // Schedules a task to add a local IBAN to the web database.
   void AddLocalIban(const Iban& iban);

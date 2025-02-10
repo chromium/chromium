@@ -262,7 +262,7 @@ TEST_F(WebDataServiceAutofillTest, ProfileAdd) {
                   AutofillProfileChange::ADD, profile.guid(), profile)))
       .WillOnce(SignalEvent(&done_event_));
 
-  wds_->AddAutofillProfile(profile);
+  wds_->AddAutofillProfile(profile, base::DoNothing());
   done_event_.TimedWait(kWebDataServiceTimeout);
 
   // Check that it was added.
@@ -277,7 +277,7 @@ TEST_F(WebDataServiceAutofillTest, ProfileRemove) {
   // Add a profile.
   EXPECT_CALL(observer_, AutofillProfileChanged)
       .WillOnce(SignalEvent(&done_event_));
-  wds_->AddAutofillProfile(profile);
+  wds_->AddAutofillProfile(profile, base::DoNothing());
   done_event_.TimedWait(kWebDataServiceTimeout);
 
   // Check that it was added.
@@ -292,7 +292,7 @@ TEST_F(WebDataServiceAutofillTest, ProfileRemove) {
       .WillOnce(SignalEvent(&done_event_));
 
   // Remove the profile.
-  wds_->RemoveAutofillProfile(profile.guid());
+  wds_->RemoveAutofillProfile(profile.guid(), base::DoNothing());
   done_event_.TimedWait(kWebDataServiceTimeout);
 
   // Check that it was removed.
@@ -314,8 +314,8 @@ TEST_F(WebDataServiceAutofillTest, ProfileUpdate) {
       .WillOnce(DoDefault())
       .WillOnce(SignalEvent(&done_event_));
 
-  wds_->AddAutofillProfile(profile1);
-  wds_->AddAutofillProfile(profile2);
+  wds_->AddAutofillProfile(profile1, base::DoNothing());
+  wds_->AddAutofillProfile(profile2, base::DoNothing());
   done_event_.TimedWait(kWebDataServiceTimeout);
 
   // Check that they were added.
@@ -331,7 +331,7 @@ TEST_F(WebDataServiceAutofillTest, ProfileUpdate) {
       .WillOnce(SignalEvent(&done_event_));
 
   // Update the profile.
-  wds_->UpdateAutofillProfile(profile2_changed);
+  wds_->UpdateAutofillProfile(profile2_changed, base::DoNothing());
   done_event_.TimedWait(kWebDataServiceTimeout);
 
   // Check that the updates were made.

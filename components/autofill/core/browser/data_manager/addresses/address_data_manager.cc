@@ -93,9 +93,6 @@ AddressDataManager::AddressDataManager(
       std::make_unique<AlternativeStateNameMapUpdater>(local_state, this);
   if (webdata_service_) {
     // The `webdata_service_` is null when the TestPDM is used.
-    webdata_service_->SetAutofillProfileChangedCallback(
-        base::BindRepeating(&AddressDataManager::OnAutofillProfileChanged,
-                            weak_factory_.GetWeakPtr()));
     webdata_service_observer_.Observe(webdata_service_.get());
   }
 
@@ -734,7 +731,9 @@ void AddressDataManager::HandleNextProfileChange(const std::string& guid) {
         OnProfileChangeDone(guid);
         return;
       }
-      webdata_service_->RemoveAutofillProfile(guid);
+      webdata_service_->RemoveAutofillProfile(
+          guid, base::BindOnce(&AddressDataManager::OnAutofillProfileChanged,
+                               weak_factory_.GetWeakPtr()));
       break;
     }
     case AutofillProfileChange::ADD: {
@@ -746,7 +745,9 @@ void AddressDataManager::HandleNextProfileChange(const std::string& guid) {
         OnProfileChangeDone(guid);
         return;
       }
-      webdata_service_->AddAutofillProfile(profile);
+      webdata_service_->AddAutofillProfile(
+          profile, base::BindOnce(&AddressDataManager::OnAutofillProfileChanged,
+                                  weak_factory_.GetWeakPtr()));
       break;
     }
     case AutofillProfileChange::UPDATE: {
@@ -767,7 +768,10 @@ void AddressDataManager::HandleNextProfileChange(const std::string& guid) {
         updated_profile.usage_history().set_modification_date(
             AutofillClock::Now());
       }
-      webdata_service_->UpdateAutofillProfile(updated_profile);
+      webdata_service_->UpdateAutofillProfile(
+          updated_profile,
+          base::BindOnce(&AddressDataManager::OnAutofillProfileChanged,
+                         weak_factory_.GetWeakPtr()));
       break;
     }
   }

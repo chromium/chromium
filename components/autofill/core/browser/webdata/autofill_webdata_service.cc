@@ -90,30 +90,30 @@ void AutofillWebDataService::RemoveFormValueForElementName(
 }
 
 void AutofillWebDataService::AddAutofillProfile(
-    const AutofillProfile& profile) {
+    const AutofillProfile& profile,
+    base::OnceCallback<void(const AutofillProfileChange&)> on_success) {
   wdbs_->ScheduleDBTask(
-      FROM_HERE, base::BindOnce(&AutofillWebDataBackendImpl::AddAutofillProfile,
-                                autofill_backend_, profile));
-}
-
-void AutofillWebDataService::SetAutofillProfileChangedCallback(
-    base::RepeatingCallback<void(const AutofillProfileChange&)> change_cb) {
-  autofill_backend_->SetAutofillProfileChangedCallback(std::move(change_cb));
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::AddAutofillProfile,
+                     autofill_backend_, profile, std::move(on_success)));
 }
 
 void AutofillWebDataService::UpdateAutofillProfile(
-    const AutofillProfile& profile) {
+    const AutofillProfile& profile,
+    base::OnceCallback<void(const AutofillProfileChange&)> on_success) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::UpdateAutofillProfile,
-                     autofill_backend_, profile));
+                     autofill_backend_, profile, std::move(on_success)));
 }
 
-void AutofillWebDataService::RemoveAutofillProfile(const std::string& guid) {
+void AutofillWebDataService::RemoveAutofillProfile(
+    const std::string& guid,
+    base::OnceCallback<void(const AutofillProfileChange&)> on_success) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::RemoveAutofillProfile,
-                     autofill_backend_, guid));
+                     autofill_backend_, guid, std::move(on_success)));
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetAutofillProfiles(

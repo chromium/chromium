@@ -167,15 +167,6 @@ AutofillWebDataBackendImpl::~AutofillWebDataBackendImpl() {
   DCHECK(!user_data_);  // Forgot to call ResetUserData?
 }
 
-void AutofillWebDataBackendImpl::SetAutofillProfileChangedCallback(
-    base::RepeatingCallback<void(const AutofillProfileChange&)> change_cb) {
-  // The callback must be set only once, but it can be reset in tests.
-  if (!on_autofill_profile_changed_cb_.is_null()) {
-    CHECK_IS_TEST();
-  }
-  on_autofill_profile_changed_cb_ = std::move(change_cb);
-}
-
 WebDatabase* AutofillWebDataBackendImpl::GetDatabase() {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   return web_database_backend_->database();
@@ -345,6 +336,7 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveFormValueForElementName(
 
 WebDatabase::State AutofillWebDataBackendImpl::AddAutofillProfile(
     const AutofillProfile& profile,
+    base::OnceCallback<void(const AutofillProfileChange&)> on_success,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   AddressAutofillTable* table = AddressAutofillTable::FromWebDatabase(db);
@@ -363,11 +355,8 @@ WebDatabase::State AutofillWebDataBackendImpl::AddAutofillProfile(
   for (auto& db_observer : db_observer_list_)
     db_observer.AutofillProfileChanged(change);
 
-  if (!on_autofill_profile_changed_cb_.is_null()) {
-    ui_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(on_autofill_profile_changed_cb_, std::move(change)));
-  }
+  ui_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(on_success), std::move(change)));
 
   ReportResult(Result::kAddAutofillProfile_Success);
   return WebDatabase::COMMIT_NEEDED;
@@ -375,6 +364,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddAutofillProfile(
 
 WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillProfile(
     const AutofillProfile& profile,
+    base::OnceCallback<void(const AutofillProfileChange&)> on_success,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   AddressAutofillTable* table = AddressAutofillTable::FromWebDatabase(db);
@@ -402,11 +392,8 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillProfile(
   for (auto& db_observer : db_observer_list_)
     db_observer.AutofillProfileChanged(change);
 
-  if (!on_autofill_profile_changed_cb_.is_null()) {
-    ui_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(on_autofill_profile_changed_cb_, std::move(change)));
-  }
+  ui_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(on_success), std::move(change)));
 
   ReportResult(Result::kUpdateAutofillProfile_Success);
   return WebDatabase::COMMIT_NEEDED;
@@ -414,6 +401,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillProfile(
 
 WebDatabase::State AutofillWebDataBackendImpl::RemoveAutofillProfile(
     const std::string& guid,
+    base::OnceCallback<void(const AutofillProfileChange&)> on_success,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::optional<AutofillProfile> profile =
@@ -435,11 +423,8 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveAutofillProfile(
   for (auto& db_observer : db_observer_list_)
     db_observer.AutofillProfileChanged(change);
 
-  if (!on_autofill_profile_changed_cb_.is_null()) {
-    ui_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(on_autofill_profile_changed_cb_, std::move(change)));
-  }
+  ui_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(on_success), std::move(change)));
 
   ReportResult(Result::kRemoveAutofillProfile_Success);
   return WebDatabase::COMMIT_NEEDED;

@@ -829,7 +829,7 @@ TEST_F(AddressDataManagerTest, Refresh) {
                        "joewayne@me.xyz", "Fox", "1212 Center.", "Bld. 5",
                        "Orlando", "FL", "32801", "US", "19482937549");
 
-  profile_database_service_->AddAutofillProfile(profile2);
+  profile_database_service_->AddAutofillProfile(profile2, base::DoNothing());
 
   address_data_manager().LoadProfiles();
   WaitForOnAddressDataChanged();
@@ -838,8 +838,10 @@ TEST_F(AddressDataManagerTest, Refresh) {
               UnorderedElementsAre(Pointee(profile0), Pointee(profile1),
                                    Pointee(profile2)));
 
-  profile_database_service_->RemoveAutofillProfile(profile1.guid());
-  profile_database_service_->RemoveAutofillProfile(profile2.guid());
+  profile_database_service_->RemoveAutofillProfile(profile1.guid(),
+                                                   base::DoNothing());
+  profile_database_service_->RemoveAutofillProfile(profile2.guid(),
+                                                   base::DoNothing());
 
   address_data_manager().LoadProfiles();
   WaitForOnAddressDataChanged();
@@ -849,7 +851,7 @@ TEST_F(AddressDataManagerTest, Refresh) {
   EXPECT_EQ(profile0, *results[0]);
 
   profile0.SetRawInfo(NAME_FIRST, u"Mar");
-  profile_database_service_->UpdateAutofillProfile(profile0);
+  profile_database_service_->UpdateAutofillProfile(profile0, base::DoNothing());
 
   address_data_manager().LoadProfiles();
   WaitForOnAddressDataChanged();

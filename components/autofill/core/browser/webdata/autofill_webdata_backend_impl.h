@@ -118,16 +118,22 @@ class AutofillWebDataBackendImpl
                                                    WebDatabase* db);
 
   // Adds an Autofill profile to the web database.
-  WebDatabase::State AddAutofillProfile(const AutofillProfile& profile,
-                                        WebDatabase* db);
+  WebDatabase::State AddAutofillProfile(
+      const AutofillProfile& profile,
+      base::OnceCallback<void(const AutofillProfileChange&)> on_success,
+      WebDatabase* db);
 
   // Updates an Autofill profile in the web database.
-  WebDatabase::State UpdateAutofillProfile(const AutofillProfile& profile,
-                                           WebDatabase* db);
+  WebDatabase::State UpdateAutofillProfile(
+      const AutofillProfile& profile,
+      base::OnceCallback<void(const AutofillProfileChange&)> on_success,
+      WebDatabase* db);
 
   // Removes an Autofill profile from the web database.
-  WebDatabase::State RemoveAutofillProfile(const std::string& guid,
-                                           WebDatabase* db);
+  WebDatabase::State RemoveAutofillProfile(
+      const std::string& guid,
+      base::OnceCallback<void(const AutofillProfileChange&)> on_success,
+      WebDatabase* db);
 
   // Returns the Autofill profiles from the web database.
   std::unique_ptr<WDTypedResult> GetAutofillProfiles(
@@ -291,8 +297,6 @@ class AutofillWebDataBackendImpl
 
   base::RepeatingCallback<void(syncer::DataType)>
       on_autofill_changed_by_sync_callback_;
-  base::RepeatingCallback<void(const AutofillProfileChange&)>
-      on_autofill_profile_changed_cb_;
 };
 
 }  // namespace autofill
