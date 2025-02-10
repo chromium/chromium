@@ -16,12 +16,6 @@
 #include "components/autofill_ai/core/browser/autofill_ai_annotation_prompt_strike_database.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "components/autofill_ai/core/browser/autofill_ai_logger.h"
-#include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
-#include "url/gurl.h"
-
-namespace optimization_guide {
-class OptimizationGuideDecider;
-}  // namespace optimization_guide
 
 namespace autofill {
 class FormStructure;
@@ -35,7 +29,6 @@ namespace autofill_ai {
 class AutofillAiManager : public autofill::AutofillAiDelegate {
  public:
   AutofillAiManager(AutofillAiClient* client,
-                    optimization_guide::OptimizationGuideDecider* decider,
                     autofill::StrikeDatabase* strike_database);
   AutofillAiManager(const AutofillAiManager&) = delete;
   AutofillAiManager& operator=(const AutofillAiManager&) = delete;
@@ -103,12 +96,6 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   // A raw reference to the client, which owns `this` and therefore outlives
   // it.
   const raw_ref<AutofillAiClient> client_;
-
-  // The `decider_` is used to check if the
-  // `AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST` optimization guide can be
-  // applied to the main frame's last committed URL. `decider_` is null if the
-  // corresponding feature is not enabled.
-  const raw_ptr<optimization_guide::OptimizationGuideDecider> decider_;
 
   // A strike data base used blocking save prompt for specific form signatures
   // to prevent over prompting.

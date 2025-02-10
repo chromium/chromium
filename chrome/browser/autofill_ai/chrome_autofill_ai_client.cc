@@ -62,7 +62,6 @@ ChromeAutofillAiClient::ChromeAutofillAiClient(
       prefs_(CHECK_DEREF(profile->GetPrefs())),
       prediction_improvements_manager_{
           this,
-          OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
           autofill::StrikeDatabaseFactory::GetForProfile(profile),
       } {
   DCHECK(autofill_ai::IsAutofillAiSupported(&*prefs_));

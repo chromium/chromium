@@ -36,7 +36,6 @@
 #include "components/autofill_ai/core/browser/mock_autofill_ai_client.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_suggestions.h"
-#include "components/optimization_guide/core/mock_optimization_guide_decider.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/user_annotations/test_user_annotations_service.h"
@@ -125,9 +124,6 @@ class BaseAutofillAiManagerTest : public testing::Test {
     ON_CALL(client(), IsUserEligible).WillByDefault(Return(true));
   }
 
-  optimization_guide::MockOptimizationGuideDecider& decider() {
-    return decider_;
-  }
   MockAutofillAiModelExecutor& model_executor() { return model_executor_; }
   MockAutofillAiClient& client() { return client_; }
   AutofillAiManager& manager() { return manager_; }
@@ -137,11 +133,10 @@ class BaseAutofillAiManagerTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
   autofill::TestAutofillClient autofill_client_;
-  NiceMock<optimization_guide::MockOptimizationGuideDecider> decider_;
   NiceMock<MockAutofillAiModelExecutor> model_executor_;
   NiceMock<MockAutofillAiClient> client_;
   autofill::TestStrikeDatabase strike_database_;
-  AutofillAiManager manager_{&client(), &decider(), &strike_database_};
+  AutofillAiManager manager_{&client(), &strike_database_};
 };
 
 class AutofillAiManagerTest : public BaseAutofillAiManagerTest {
@@ -756,25 +751,6 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleIfPrefIsDisabled) {
 
   EXPECT_CALL(client(), IsAutofillAiEnabledPref).WillOnce(Return(false));
   EXPECT_FALSE(
-      manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
-}
-
-TEST_F(IsFormAndFieldEligibleAutofillAiTest,
-       IsEligibleIfOptimizationGuideCanBeApplied) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      autofill::features::kAutofillAiWithDataSchema);
-
-  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
-  autofill::AutofillField* prediction_improvement_field = form->field(0);
-  SetPredictionTypesForField(
-      *prediction_improvement_field,
-      {autofill::NAME_FIRST, autofill::PASSPORT_NAME_TAG});
-
-  ON_CALL(decider(), CanApplyOptimization(_, _, nullptr))
-      .WillByDefault(
-          Return(optimization_guide::OptimizationGuideDecision::kTrue));
-  EXPECT_TRUE(
       manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
 }
 

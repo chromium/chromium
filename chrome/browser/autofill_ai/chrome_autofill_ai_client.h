@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/data_manager/entities/entity_data_manager.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
+#include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 #include "components/prefs/pref_service.h"
 
 class Profile;

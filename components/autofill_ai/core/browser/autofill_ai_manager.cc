@@ -52,7 +52,6 @@
 #include "components/autofill_ai/core/browser/autofill_ai_value_filter.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_suggestions.h"
-#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/strings/grit/components_strings.h"
@@ -183,17 +182,9 @@ std::optional<autofill::EntityInstance> MaybeUpdateEntity(
 
 }  // namespace
 
-AutofillAiManager::AutofillAiManager(
-    AutofillAiClient* client,
-    optimization_guide::OptimizationGuideDecider* decider,
-    autofill::StrikeDatabase* strike_database)
-    : client_(CHECK_DEREF(client)), decider_(decider) {
-  if (decider_) {
-    decider_->RegisterOptimizationTypes(
-        {optimization_guide::proto::
-             AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST});
-  }
-
+AutofillAiManager::AutofillAiManager(AutofillAiClient* client,
+                                     autofill::StrikeDatabase* strike_database)
+    : client_(CHECK_DEREF(client)) {
   user_annotation_prompt_strike_database_ =
       strike_database
           ? std::make_unique<
