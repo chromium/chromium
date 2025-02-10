@@ -57,6 +57,8 @@ class DevToolsProtocolTestBindings : public WebContentsObserver,
   // If true, the binding is using the log instead of sending real messages.
   // The log is enabled if a non-empty log is provided via the constructor.
   bool log_enabled_ = false;
+  // Whether CDP has access to unsafe operations.
+  bool allow_unsafe_operations_ = true;
 };
 
 }  // namespace content
