@@ -42,6 +42,12 @@ VideoCaptureDevice::Client::ReserveResult AllocateNV12GpuMemoryBuffer(
     std::unique_ptr<gfx::GpuMemoryBuffer>* out_gpu_memory_buffer,
     VideoCaptureDevice::Client::Buffer* out_capture_buffer);
 
+VideoCaptureDevice::Client::ReserveResult AllocateNV12SharedImage(
+    VideoCaptureDevice::Client* capture_client,
+    const gfx::Size& buffer_size,
+    scoped_refptr<gpu::ClientSharedImage>* out_shared_image,
+    VideoCaptureDevice::Client::Buffer* out_capture_buffer);
+
 }  // namespace media
 
 #endif  // MEDIA_CAPTURE_VIDEO_GPU_MEMORY_BUFFER_UTILS_H_
