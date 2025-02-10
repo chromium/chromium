@@ -5035,6 +5035,14 @@ Called by update_autofill_enums.py.-->
   <int value="275" label="UpdateServerIbanMetadata: Failure"/>
   <int value="276" label="ClearAllCreditCardBenefits: Success"/>
   <int value="277" label="ClearAllCreditCardBenefits: Failure"/>
+  <int value="280" label="AddEntityInstance: Success"/>
+  <int value="281" label="AddEntityInstance: Failure"/>
+  <int value="290" label="UpdateEntityInstance: Success"/>
+  <int value="291" label="UpdateEntityInstance: Failure"/>
+  <int value="300" label="RemoveEntityInstance: Success"/>
+  <int value="301" label="RemoveEntityInstance: Failure"/>
+  <int value="310" label="RemoveEntityInstancesModifiedBetween: Success"/>
+  <int value="311" label="RemoveEntityInstancesModifiedBetween: Failure"/>
 </enum>
 
 <enum name="BooleanAutofillAddressSuggestionOnTypingAcceptance">
