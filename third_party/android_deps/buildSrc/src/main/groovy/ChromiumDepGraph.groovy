@@ -248,27 +248,6 @@ class ChromiumDepGraph {
             resolveVersion: '1.7.2'),
         org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm: new PropertyOverride(
             resolveVersion: '1.7.3'),
-        io_grpc_grpc_binder: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        io_grpc_grpc_core: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        io_grpc_grpc_api: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        io_grpc_grpc_context: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        io_grpc_grpc_protobuf_lite: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        io_grpc_grpc_stub: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        io_perfmark_perfmark_api: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
     ]
 
     // Bill of materials (BOM) deps are used to specify versions for other dependencies and don't have children or
