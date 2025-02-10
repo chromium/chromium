@@ -1050,34 +1050,54 @@ void AutofillAgent::ApplyFieldsAction(
   } else {
     was_last_action_fill_ = true;
 
-    base::flat_set<FieldRendererId> filled_field_ids =
-        base::MakeFlatSet<FieldRendererId>(
+    // This map contains for each filled field (returned by
+    // `form_util::ApplyFieldsAction()`) the corresponding current owning form.
+    // This information cannot be inferred from
+    // `FormFieldData::FillData::host_form_id` because after calling the filling
+    // function dynamic changes can occur to the DOM.
+    // TODO(crbug.com/40943206): Remove IDs that correspond to null elements.
+    auto filled_fields_and_forms =
+        base::MakeFlatMap<FieldRendererId, FormRendererId>(
             form_util::ApplyFieldsAction(document, fields, action_type,
                                          action_persistence,
                                          field_data_manager()),
-            {}, [](const std::pair<FieldRef, WebAutofillState>& filled_field) {
-              return filled_field.first.GetId();
+            {},
+            [](const std::pair<FieldRef, WebAutofillState>& filled_field)
+                -> std::pair<FieldRendererId, FormRendererId> {
+              WebFormControlElement element =
+                  form_util::GetFormControlByRendererId(
+                      filled_field.first.GetId());
+              return {filled_field.first.GetId(),
+                      element ? form_util::GetFormRendererId(
+                                    element.GetOwningFormForAutofill())
+                              : FormRendererId()};
             });
 
-    auto host_form_is_connected = [](const FormFieldData::FillData& fill_data) {
-      return !form_util::GetFormByRendererId(fill_data.host_form_id).IsNull();
-    };
-    if (auto it = std::ranges::find_if(fields, host_form_is_connected);
-        it != fields.end()) {
+    auto host_form_is_connected =
+        [](const std::pair<FieldRendererId, FormRendererId>&
+               filled_field_and_form) {
+          return !form_util::GetFormByRendererId(filled_field_and_form.second)
+                      .IsNull();
+        };
+    if (auto it = std::ranges::find_if(filled_fields_and_forms,
+                                       host_form_is_connected);
+        it != filled_fields_and_forms.end()) {
+      const auto& [filled_field_id, filled_form_id] = *it;
       base::FeatureList::IsEnabled(
           features::kAutofillAcceptDomMutationAfterAutofillSubmission)
           ? TrackAutofilledElement(
-                form_util::GetFormControlByRendererId(it->renderer_id))
-          : UpdateLastInteractedElement(it->host_form_id);
+                form_util::GetFormControlByRendererId(filled_field_id))
+          : UpdateLastInteractedElement(filled_form_id);
     } else {
-      for (FieldRendererId filled_field_id : filled_field_ids) {
+      for (const auto& [filled_field_id, filled_form_id] :
+           filled_fields_and_forms) {
         if (WebFormControlElement control_element =
                 form_util::GetFormControlByRendererId(filled_field_id)) {
-          // `filled_fields` was populated at the same time where multiple focus
-          // and blur events were dispatched. This means that many fields in the
-          // list could have been removed from the DOM. Updating inside this
-          // conditional ensures submission is always tracked with an element
-          // currently connected to the DOM.
+          // `filled_fields_and_forms` contains information from before multiple
+          // focus and blur events were dispatched. This means that some fields
+          // in the map could have been removed from the DOM. Updating inside
+          // this conditional ensures submission is always tracked with an
+          // element currently connected to the DOM.
           base::FeatureList::IsEnabled(
               features::kAutofillAcceptDomMutationAfterAutofillSubmission)
               ? TrackAutofilledElement(control_element)
@@ -1087,20 +1107,22 @@ void AutofillAgent::ApplyFieldsAction(
       }
     }
 
-    formless_elements_were_autofilled_ |=
-        std::ranges::any_of(filled_field_ids, [](FieldRendererId field_id) {
-          WebFormControlElement element =
-              form_util::GetFormControlByRendererId(field_id);
-          return element && !element.GetOwningFormForAutofill();
+    formless_elements_were_autofilled_ |= std::ranges::any_of(
+        filled_fields_and_forms,
+        [](std::pair<FieldRendererId, FormRendererId>& filled_field_and_form) {
+          const auto& [filled_field_id, filled_form_id] = filled_field_and_form;
+          return !filled_form_id &&
+                 form_util::GetFormControlByRendererId(filled_field_id);
         });
 
     base::flat_set<FormRendererId> extracted_form_ids;
     std::vector<FormData> filled_forms;
-    for (const FormFieldData::FillData& field : fields) {
+    for (const auto& [filled_field_id, filled_form_id] :
+         filled_fields_and_forms) {
       // Inform the browser about all forms that were autofilled.
-      if (extracted_form_ids.insert(field.host_form_id).second) {
+      if (extracted_form_ids.insert(filled_form_id).second) {
         std::optional<FormData> form = form_util::ExtractFormData(
-            document, form_util::GetFormByRendererId(field.host_form_id),
+            document, form_util::GetFormByRendererId(filled_form_id),
             field_data_manager(), GetCallTimerState(kApplyFieldsAction));
         if (!form) {
           continue;
@@ -1115,12 +1137,12 @@ void AutofillAgent::ApplyFieldsAction(
     }
 
     // Notify Password Manager of filled fields.
-    for (const FormFieldData::FillData& field : fields) {
+    for (const auto& [filled_field_id, filled_form_id] :
+         filled_fields_and_forms) {
       if (WebInputElement input_element =
-              form_util::GetFormControlByRendererId(field.renderer_id)
-                  .DynamicTo<WebInputElement>();
-          input_element && filled_field_ids.contains(field.renderer_id)) {
-        if (auto form_it = std::ranges::find(filled_forms, field.host_form_id,
+              form_util::GetFormControlByRendererId(filled_field_id)
+                  .DynamicTo<WebInputElement>()) {
+        if (auto form_it = std::ranges::find(filled_forms, filled_form_id,
                                              &FormData::renderer_id);
             form_it != filled_forms.end()) {
           password_autofill_agent_->UpdatePasswordStateForTextChange(
