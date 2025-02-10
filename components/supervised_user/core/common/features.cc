@@ -17,13 +17,21 @@ namespace supervised_user {
 
 // Enables local parent approvals for the blocked website on the Family Link
 // user's device.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kLocalWebApprovals,
              "LocalWebApprovals",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
-BASE_FEATURE(kLocalWebApprovals,
-             "LocalWebApprovals",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+// TODO(crbug.com/391799078): Support local web approval for subframes on
+// Desktop.
+BASE_FEATURE(kAllowSubframeLocalWebApprovals,
+             "AllowSubframeLocalWebApprovals",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
@@ -60,6 +68,10 @@ bool IsLocalWebApprovalsEnabled() {
 #else
   return base::FeatureList::IsEnabled(kLocalWebApprovals);
 #endif
+}
+
+bool IsLocalWebApprovalsEnabledForSubframes() {
+  return base::FeatureList::IsEnabled(kAllowSubframeLocalWebApprovals);
 }
 
 BASE_FEATURE(kEnableSupervisedUserSkipParentApprovalToInstallExtensions,
