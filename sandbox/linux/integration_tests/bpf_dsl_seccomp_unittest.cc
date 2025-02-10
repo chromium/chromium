@@ -43,7 +43,6 @@
 #include "base/system/sys_info.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/errorcode.h"
 #include "sandbox/linux/bpf_dsl/linux_syscall_ranges.h"
@@ -2164,7 +2163,7 @@ SANDBOX_TEST(SandboxBPF, Tsync) {
   const bool supports_multi_threaded = SandboxBPF::SupportsSeccompSandbox(
       SandboxBPF::SeccompLevel::MULTI_THREADED);
 // On Chrome OS tsync is mandatory.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (base::SysInfo::IsRunningOnChromeOS()) {
     BPF_ASSERT_EQ(true, supports_multi_threaded);
   }
