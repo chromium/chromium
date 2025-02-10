@@ -1576,6 +1576,16 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
             base::Unretained(host)));
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  map->Add<blink::mojom::DirectSocketsService>(base::BindRepeating(
+      [](SharedWorkerHost* host,
+         mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver) {
+        DirectSocketsServiceImpl::CreateForSharedWorker(*host,
+                                                        std::move(receiver));
+      },
+      base::Unretained(host)));
+#endif
+
   // RenderProcessHost binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindWorkerReceiver(
       &RenderProcessHostImpl::BindVideoDecodePerfHistory, host));

@@ -55,7 +55,7 @@ constexpr char kHostname[] = "direct-sockets.com";
 constexpr char kPrivateAddress[] = "10.8.0.1";
 
 constexpr std::string_view kTcpReadWriteScript = R"(
-  (async () => {
+  new Promise(async (resolve, reject) => {
     try {
       const socket = new TCPSocket($1, $2);
 
@@ -80,36 +80,33 @@ constexpr std::string_view kTcpReadWriteScript = R"(
       const readUntil = async () => {
         const { value, done } = await reader.read();
         if (done) {
-          console.log("ReadableStream must not be exhausted at this point.");
-          return false;
+          reject("ReadableStream must not be exhausted at this point.");
         }
 
         const message = (new TextDecoder()).decode(value);
         tcpResponse += message;
         if (tcpResponse.length >= kTcpMinExpectedResponseLength) {
           if (!tcpResponse.match(kTcpResponsePattern)) {
-            console.log("The data returned must match the data sent.");
-            return false;
+            reject("The data returned must match the data sent.");
           }
 
-          return true;
+          resolve();
         } else {
-          return await readUntil();
+          readUntil();
         }
       };
 
       writer.write((new TextEncoder()).encode(kTcpPacket));
 
-      return await readUntil();
+      readUntil();
     } catch (err) {
-      console.log(err);
-      return false;
+      reject(err);
     }
-  })();
+  });
 )";
 
 constexpr std::string_view kUdpConnectedReadWriteScript = R"(
-  (async () => {
+  new Promise(async (resolve, reject) => {
     try {
       const socket = new UDPSocket({ remoteAddress: $1, remotePort: $2 });
       const { readable, writable } = await socket.opened;
@@ -121,23 +118,22 @@ constexpr std::string_view kUdpConnectedReadWriteScript = R"(
       return await readable.getReader().read().then(packet => {
         const { value, done } = packet;
         if (done) {
-          return false;
+          reject("ReadableStream must not be exhausted at this point.");
         }
         const { data } = value;
         if ((new TextDecoder()).decode(data) !== kUdpMessage) {
-          return false;
+          reject("The data returned must match the data sent.");
         }
-        return true;
+        resolve();
       });
     } catch (err) {
-      console.log(err);
-      return false;
+      reject(err);
     }
-  })();
+  });
 )";
 
 constexpr std::string_view kUdpBoundReadWriteScript = R"(
-  (async () => {
+  new Promise(async (resolve, reject) => {
     try {
       const socket = new UDPSocket({ localAddress: "127.0.0.1" });
       const { readable, writable } = await socket.opened;
@@ -151,33 +147,32 @@ constexpr std::string_view kUdpBoundReadWriteScript = R"(
       return await readable.getReader().read().then(packet => {
         const { value, done } = packet;
         if (done) {
-          return false;
+          reject("ReadableStream must not be exhausted at this point.");
         }
         const { data, remoteAddress, remotePort } = value;
         if ((new TextDecoder()).decode(data) !== kUdpMessage) {
-          return false;
+          reject("The data returned must match the data sent.");
         }
         if (remoteAddress !== "127.0.0.1") {
-          return false;
+          reject(`Expected remoteAddress = 127.0.0.1, got ${remoteAddress}`);
         }
         if (remotePort !== $2) {
-          return false;
+          reject(`Expected remotePort = $2, got ${remotePort}`);
         }
-        return true;
+        resolve();
       });
     } catch (err) {
-      console.log(err);
-      return false;
+      reject(err);
     }
-  })();
+  });
 )";
 
 static constexpr std::string_view kTcpServerExchangePacketWithTcpScript = R"(
-  (async () => {
+  new Promise(async (resolve, reject) => {
     const assertEq = (actual, expected) => {
       const jf = e => JSON.stringify(e);
       if (actual !== expected) {
-        throw `Expected ${jf(expected)}, got ${jf(actual)}`;
+        reject(`Expected ${jf(expected)}, got ${jf(actual)}`);
       }
     };
 
@@ -234,7 +229,9 @@ static constexpr std::string_view kTcpServerExchangePacketWithTcpScript = R"(
     await clientSocket.close();
     await acceptedSocket.close();
     await serverSocket.close();
-  })();
+
+    resolve();
+  });
 )";
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -269,6 +266,10 @@ auto PrivateNetworkAccessBlocked() {
 
 auto ErrorIs(const auto& matcher) {
   return testing::Field(&content::EvalJsResult::error, matcher);
+}
+
+auto IsOk() {
+  return content::EvalJsResult::IsOk();
 }
 
 #endif
@@ -404,10 +405,10 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest, TcpReadWrite) {
                        base::Value::Dict().Set(
                            "tcp", base::Value::Dict().Set("connect", "*"))));
 
-  ASSERT_TRUE(
+  ASSERT_THAT(
       EvalJs(app_frame, content::JsReplace(kTcpReadWriteScript, kHostname,
-                                           test_server()->port()))
-          .ExtractBool());
+                                           test_server()->port())),
+      IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest,
@@ -453,10 +454,10 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpReadWrite) {
       GenerateManifest(/*socket_permissions=*/base::Value::Dict().Set(
           "udp", base::Value::Dict().Set("send", "*"))));
 
-  ASSERT_TRUE(
+  ASSERT_THAT(
       EvalJs(app_frame, content::JsReplace(kUdpConnectedReadWriteScript,
-                                           kHostname, test_server()->port()))
-          .ExtractBool());
+                                           kHostname, test_server()->port())),
+      IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
@@ -517,10 +518,10 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpServerReadWrite) {
       GenerateManifest(/*socket_permissions=*/base::Value::Dict().Set(
           "udp", base::Value::Dict().Set("bind", "*").Set("send", "*"))));
 
-  ASSERT_TRUE(
+  ASSERT_THAT(
       EvalJs(app_frame, content::JsReplace(kUdpBoundReadWriteScript, kHostname,
-                                           test_server()->port()))
-          .ExtractBool());
+                                           test_server()->port())),
+      IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
@@ -541,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
     })();
   )";
 
-  ASSERT_THAT(EvalJs(app_frame, kUdpBoundPna), content::EvalJsResult::IsOk());
+  ASSERT_THAT(EvalJs(app_frame, kUdpBoundPna), IsOk());
 }
 
 using ChromeDirectSocketsTcpServerApiTest = ChromeAppApiTest;
@@ -587,8 +588,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,
               .Set("tcpServer", base::Value::Dict().Set("listen", "*"))
               .Set("tcp", base::Value::Dict().Set("connect", "*"))));
 
-  EXPECT_THAT(EvalJs(app_frame, kTcpServerExchangePacketWithTcpScript),
-              content::EvalJsResult::IsOk());
+  EXPECT_THAT(EvalJs(app_frame, kTcpServerExchangePacketWithTcpScript), IsOk());
 }
 
 #endif
@@ -608,25 +608,95 @@ class IsolatedWebAppApiTest : public web_app::IsolatedWebAppBrowserTestHarness {
     }
     auto app = web_app::IsolatedWebAppBuilder(std::move(manifest_builder))
                    .BuildBundle();
-    app->TrustSigningKey();
+    web_app::IsolatedWebAppUrlInfo url_info = app->Install(profile()).value();
+    return OpenApp(url_info.app_id());
+  }
+};
+
+class IsolatedWebAppSharedWorkerApiTest
+    : public web_app::IsolatedWebAppBrowserTestHarness {
+ public:
+  static constexpr std::string_view kSharedWorkerScriptTemplate = R"(
+    onconnect = async e => {
+      const port = e.ports[0];
+      port.start();
+      try {
+        await %s;
+        port.postMessage(null);
+      } catch (err) {
+        port.postMessage({ 'error': err });
+      }
+    };
+  )";
+
+  static constexpr std::string_view kSharedWorkerConnect = R"(
+    new Promise((resolve, reject) => {
+      const policy = trustedTypes.createPolicy("default", {
+        createScriptURL: (url) => url,
+      });
+      const worker = new SharedWorker(
+        policy.createScriptURL('/shared_worker.js')
+      );
+      worker.port.onmessage = e => {
+        if (e.data) {
+          reject(e.data.error);
+        } else {
+          resolve();
+        }
+      };
+    });
+  )";
+
+  content::RenderFrameHost* InstallAndOpenIsolatedWebAppWithSharedWorkerScript(
+      std::string_view shared_worker_script,
+      bool with_pna = false) {
+    using PermissionsPolicyFeature = network::mojom::PermissionsPolicyFeature;
+
+    auto manifest_builder =
+        web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+            PermissionsPolicyFeature::kDirectSockets);
+    if (with_pna) {
+      manifest_builder.AddPermissionsPolicyWildcard(
+          PermissionsPolicyFeature::kDirectSocketsPrivate);
+    }
+    auto app = web_app::IsolatedWebAppBuilder(std::move(manifest_builder))
+                   .AddJs("/shared_worker.js", shared_worker_script)
+                   .BuildBundle();
     web_app::IsolatedWebAppUrlInfo url_info = app->Install(profile()).value();
     return OpenApp(url_info.app_id());
   }
 
  private:
-  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app_;
+  base::test::ScopedFeatureList features_{
+      blink::features::kDirectSocketsInSharedWorkers};
 };
 
 using ChromeDirectSocketsTcpIsolatedWebAppTest =
     ChromeDirectSocketsTcpTest<IsolatedWebAppApiTest>;
 
+using ChromeDirectSocketsTcpIsolatedWebAppSharedWorkerTest =
+    ChromeDirectSocketsTcpTest<IsolatedWebAppSharedWorkerApiTest>;
+
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest, TcpReadWrite) {
   content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
 
-  ASSERT_TRUE(
+  ASSERT_THAT(
       EvalJs(app_frame, content::JsReplace(kTcpReadWriteScript, kHostname,
-                                           test_server()->port()))
-          .ExtractBool());
+                                           test_server()->port())),
+      IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppSharedWorkerTest,
+                       TcpReadWrite) {
+  const std::string shared_worker_script =
+      base::StringPrintf(kSharedWorkerScriptTemplate,
+                         content::JsReplace(kTcpReadWriteScript, kHostname,
+                                            test_server()->port()));
+
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebAppWithSharedWorkerScript(shared_worker_script);
+
+  ASSERT_THAT(EvalJs(app_frame, kSharedWorkerConnect), IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest,
@@ -669,13 +739,29 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest,
 using ChromeDirectSocketsUdpIsolatedWebAppTest =
     ChromeDirectSocketsUdpTest<IsolatedWebAppApiTest>;
 
+using ChromeDirectSocketsUdpIsolatedWebAppSharedWorkerTest =
+    ChromeDirectSocketsUdpTest<IsolatedWebAppSharedWorkerApiTest>;
+
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest, UdpReadWrite) {
   content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
 
-  ASSERT_TRUE(
+  ASSERT_THAT(
       EvalJs(app_frame, content::JsReplace(kUdpConnectedReadWriteScript,
-                                           kHostname, test_server()->port()))
-          .ExtractBool());
+                                           kHostname, test_server()->port())),
+      IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppSharedWorkerTest,
+                       UdpReadWrite) {
+  const std::string shared_worker_script =
+      base::StringPrintf(kSharedWorkerScriptTemplate,
+                         content::JsReplace(kUdpConnectedReadWriteScript,
+                                            kHostname, test_server()->port()));
+
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebAppWithSharedWorkerScript(shared_worker_script);
+
+  ASSERT_THAT(EvalJs(app_frame, kSharedWorkerConnect), IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
@@ -721,10 +807,23 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
 
-  ASSERT_TRUE(
+  ASSERT_THAT(
       EvalJs(app_frame, content::JsReplace(kUdpBoundReadWriteScript, kHostname,
-                                           test_server()->port()))
-          .ExtractBool());
+                                           test_server()->port())),
+      IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppSharedWorkerTest,
+                       UdpServerReadWrite) {
+  const std::string shared_worker_script =
+      base::StringPrintf(kSharedWorkerScriptTemplate,
+                         content::JsReplace(kUdpBoundReadWriteScript, kHostname,
+                                            test_server()->port()));
+
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebAppWithSharedWorkerScript(shared_worker_script);
+
+  ASSERT_THAT(EvalJs(app_frame, kSharedWorkerConnect), IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
@@ -786,18 +885,30 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
     })();
   )";
 
-  ASSERT_THAT(EvalJs(app_frame, kUdpBoundPortNumberHighEnough),
-              content::EvalJsResult::IsOk());
+  ASSERT_THAT(EvalJs(app_frame, kUdpBoundPortNumberHighEnough), IsOk());
 }
 
 using ChromeDirectSocketsTcpServerIsolatedWebAppTest = IsolatedWebAppApiTest;
+using ChromeDirectSocketsTcpServerIsolatedWebAppSharedWorkerTest =
+    IsolatedWebAppSharedWorkerApiTest;
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerIsolatedWebAppTest,
                        TcpServerExchangePacketWithTcpSocket) {
   content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
 
-  EXPECT_THAT(EvalJs(app_frame, kTcpServerExchangePacketWithTcpScript),
-              content::EvalJsResult::IsOk());
+  EXPECT_THAT(EvalJs(app_frame, kTcpServerExchangePacketWithTcpScript), IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeDirectSocketsTcpServerIsolatedWebAppSharedWorkerTest,
+    TcpServerExchangePacketWithTcpSocket) {
+  const std::string shared_worker_script = base::StringPrintf(
+      kSharedWorkerScriptTemplate, kTcpServerExchangePacketWithTcpScript);
+
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebAppWithSharedWorkerScript(shared_worker_script);
+
+  ASSERT_THAT(EvalJs(app_frame, kSharedWorkerConnect), IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerIsolatedWebAppTest,
@@ -822,8 +933,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerIsolatedWebAppTest,
     })();
   )";
 
-  ASSERT_THAT(EvalJs(app_frame, kTcpServerPortNumberHighEnough),
-              content::EvalJsResult::IsOk());
+  ASSERT_THAT(EvalJs(app_frame, kTcpServerPortNumberHighEnough), IsOk());
 }
 
 }  // namespace
