@@ -2753,20 +2753,22 @@ void CreateOperatorNodeForScatterElements(
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, scatter_elements->input_operand_id);
   TensorDesc input_tensor_desc = input->GetTensorDesc();
-  CHECK(context_properties.data_type_limits.scatter_elements_input.Has(
-      DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
+  CHECK(
+      context_properties.data_type_limits.scatter_elements_input.data_types.Has(
+          DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
   const NodeOutput* indices = GetNodeOutputForOperand(
       id_to_node_output_map, scatter_elements->indices_operand_id);
   TensorDesc indices_tensor_desc = indices->GetTensorDesc();
-  CHECK(context_properties.data_type_limits.scatter_elements_indices.Has(
-      DmlDataTypeToOperand(indices_tensor_desc.GetDataType())));
+  CHECK(context_properties.data_type_limits.scatter_elements_indices.data_types
+            .Has(DmlDataTypeToOperand(indices_tensor_desc.GetDataType())));
 
   const NodeOutput* updates = GetNodeOutputForOperand(
       id_to_node_output_map, scatter_elements->updates_operand_id);
   TensorDesc updates_tensor_desc = updates->GetTensorDesc();
-  CHECK(context_properties.data_type_limits.scatter_elements_input.Has(
-      DmlDataTypeToOperand(updates_tensor_desc.GetDataType())));
+  CHECK(
+      context_properties.data_type_limits.scatter_elements_input.data_types.Has(
+          DmlDataTypeToOperand(updates_tensor_desc.GetDataType())));
 
   uint64_t output_id = scatter_elements->output_operand_id;
   const TensorDesc output_tensor_desc =
@@ -2798,19 +2800,19 @@ void CreateOperatorNodeForScatterND(const ContextProperties& context_properties,
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, scatter_nd->input_operand_id);
   TensorDesc input_tensor_desc = input->GetTensorDesc();
-  CHECK(context_properties.data_type_limits.scatter_nd_input.Has(
+  CHECK(context_properties.data_type_limits.scatter_nd_input.data_types.Has(
       DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
   const NodeOutput* indices = GetNodeOutputForOperand(
       id_to_node_output_map, scatter_nd->indices_operand_id);
   TensorDesc indices_tensor_desc = indices->GetTensorDesc();
-  CHECK(context_properties.data_type_limits.scatter_nd_indices.Has(
+  CHECK(context_properties.data_type_limits.scatter_nd_indices.data_types.Has(
       DmlDataTypeToOperand(indices_tensor_desc.GetDataType())));
 
   const NodeOutput* updates = GetNodeOutputForOperand(
       id_to_node_output_map, scatter_nd->updates_operand_id);
   TensorDesc updates_tensor_desc = updates->GetTensorDesc();
-  CHECK(context_properties.data_type_limits.scatter_nd_input.Has(
+  CHECK(context_properties.data_type_limits.scatter_nd_updates.data_types.Has(
       DmlDataTypeToOperand(updates_tensor_desc.GetDataType())));
 
   uint64_t output_id = scatter_nd->output_operand_id;

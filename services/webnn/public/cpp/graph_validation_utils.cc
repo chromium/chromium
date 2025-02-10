@@ -2508,22 +2508,22 @@ ValidateScatterElementsAndInferOutput(
     const OperandDescriptor& updates,
     const uint32_t axis,
     std::string_view label) {
-  if (!context_properties.data_type_limits.scatter_elements_input.Has(
-          input.data_type())) {
+  if (!context_properties.data_type_limits.scatter_elements_input.Supports(
+          input)) {
     return base::unexpected(ErrorWithLabel(
         label,
-        NotSupportedInputArgumentTypeError(
-            input.data_type(),
+        NotSupportedInputArgumentError(
+            input,
             context_properties.data_type_limits.scatter_elements_input)));
   }
 
   static constexpr char kIndicesParam[] = "indices";
-  if (!context_properties.data_type_limits.scatter_elements_indices.Has(
-          indices.data_type())) {
+  if (!context_properties.data_type_limits.scatter_elements_indices.Supports(
+          indices)) {
     return base::unexpected(ErrorWithLabel(
         label,
-        NotSupportedArgumentTypeError(
-            kIndicesParam, indices.data_type(),
+        NotSupportedArgumentError(
+            kIndicesParam, indices,
             context_properties.data_type_limits.scatter_elements_indices)));
   }
 
@@ -2532,11 +2532,6 @@ ValidateScatterElementsAndInferOutput(
         ErrorWithLabel(label,
                        "The updates tensor data type should be the same as "
                        "input data type."));
-  }
-
-  if (input.Rank() == 0) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The input should not be a scalar."));
   }
 
   if (input.Rank() <= axis) {
@@ -2578,21 +2573,29 @@ base::expected<OperandDescriptor, std::string> ValidateScatterNDAndInferOutput(
     const OperandDescriptor& indices,
     const OperandDescriptor& updates,
     std::string_view label) {
-  if (!context_properties.data_type_limits.scatter_nd_input.Has(
-          input.data_type())) {
+  if (!context_properties.data_type_limits.scatter_nd_input.Supports(input)) {
     return base::unexpected(ErrorWithLabel(
-        label, NotSupportedInputArgumentTypeError(
-                   input.data_type(),
-                   context_properties.data_type_limits.scatter_nd_input)));
+        label,
+        NotSupportedInputArgumentError(
+            input, context_properties.data_type_limits.scatter_nd_input)));
   }
 
   static constexpr char kIndicesParam[] = "indices";
-  if (!context_properties.data_type_limits.scatter_nd_indices.Has(
-          indices.data_type())) {
+  if (!context_properties.data_type_limits.scatter_nd_indices.Supports(
+          indices)) {
     return base::unexpected(ErrorWithLabel(
-        label, NotSupportedArgumentTypeError(
-                   kIndicesParam, indices.data_type(),
+        label, NotSupportedArgumentError(
+                   kIndicesParam, indices,
                    context_properties.data_type_limits.scatter_nd_indices)));
+  }
+
+  static constexpr char kUpdatesParam[] = "updates";
+  if (!context_properties.data_type_limits.scatter_nd_updates.Supports(
+          updates)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentError(
+                   kUpdatesParam, updates,
+                   context_properties.data_type_limits.scatter_nd_updates)));
   }
 
   // Updates tensor's data type should be the same as input's.
@@ -2601,16 +2604,6 @@ base::expected<OperandDescriptor, std::string> ValidateScatterNDAndInferOutput(
         ErrorWithLabel(label,
                        "The updates tensor data type should be the same as "
                        "input data type."));
-  }
-
-  if (input.Rank() == 0) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The input should not be a scalar."));
-  }
-
-  if (indices.Rank() == 0) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The indices should not be a scalar."));
   }
 
   const uint32_t indices_last_dim_size = indices.shape()[indices.Rank() - 1];

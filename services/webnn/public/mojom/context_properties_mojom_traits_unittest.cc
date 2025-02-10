@@ -188,13 +188,20 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        /*reverse_input=*/
        {webnn::SupportedDataTypes::All(), kMaxRank},
        /*scatter_elements_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
        /*scatter_elements_indices=*/
-       {webnn::OperandDataType::kInt32, webnn::OperandDataType::kUint32},
+       {{webnn::OperandDataType::kInt32, webnn::OperandDataType::kUint32},
+        kMaxRank},
        /*scatter_nd_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
        /*scatter_nd_indices=*/
-       {webnn::OperandDataType::kInt32, webnn::OperandDataType::kUint32},
+       {{webnn::OperandDataType::kInt32, webnn::OperandDataType::kUint32},
+        kMaxRank},
+       /*scatter_nd_updates=*/
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
        /*sigmoid_input=*/
        {webnn::SupportedDataTypes::All(), kMaxRank},
        /*slice_input=*/
@@ -229,7 +236,7 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
 
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<webnn::mojom::ContextProperties>(

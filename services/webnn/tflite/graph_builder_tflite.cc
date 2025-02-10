@@ -599,13 +599,23 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*reshape_input=*/{kAllDataTypesExceptUint4, SupportedRanks::UpTo(8)},
        /*reverse_input=*/
        {kFloat16To32AndInt8To32AndUint8, SupportedRanks::UpTo(8)},
-       /*scatter_elements_input=*/kFloat16To32AndInt8To64AndUint32,
+       // scatter_elements is emulated by scatter_nd, so keep their data types
+       // and rank ranges aligned.
+       /*scatter_elements_input=*/
+       {kFloat16To32AndInt8To64AndUint32, SupportedRanks::NonScalarUpTo(8)},
        // The indices data type is the same as scatter_nd.
-       /*scatter_elements_indices=*/{OperandDataType::kInt32},
-       /*scatter_nd_input=*/kFloat16To32AndInt8To64AndUint32,
+       /*scatter_elements_indices=*/
+       {{OperandDataType::kInt32}, SupportedRanks::NonScalarUpTo(8)},
+       // Scalar is not supported:
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/scatter_nd.cc
+       /*scatter_nd_input=*/
+       {kFloat16To32AndInt8To64AndUint32, SupportedRanks::NonScalarUpTo(8)},
        // The indices of tfl.scatter_nd only support int32.
        // https://www.tensorflow.org/mlir/tfl_ops#operands_117
-       /*scatter_nd_indices=*/{OperandDataType::kInt32},
+       /*scatter_nd_indices=*/
+       {{OperandDataType::kInt32}, SupportedRanks::NonScalarUpTo(8)},
+       /*scatter_nd_updates=*/
+       {kFloat16To32AndInt8To64AndUint32, SupportedRanks::NonScalarUpTo(8)},
        // Polyfilled with linear.
        /*sigmoid_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(6)},
@@ -5067,12 +5077,12 @@ auto GraphBuilderTflite::SerializeWebNNScatterND(
 auto GraphBuilderTflite::SerializeScatterElements(
     const mojom::ScatterElements& scatter_elements)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.scatter_elements_input.Has(
-      GetOperand(scatter_elements.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.scatter_elements_input.Supports(
+      GetOperand(scatter_elements.input_operand_id).descriptor));
   const mojom::Operand& indices_operand =
       GetOperand(scatter_elements.indices_operand_id);
-  CHECK(context_properties_.data_type_limits.scatter_elements_indices.Has(
-      indices_operand.descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.scatter_elements_indices.Supports(
+      indices_operand.descriptor));
   if (indices_operand.kind != mojom::Operand::Kind::kConstant) {
     // TODO(crbug.com/377615324): Support user input indices.
     return base::unexpected("scatterElements only supports constant indices.");
@@ -5117,10 +5127,10 @@ auto GraphBuilderTflite::SerializeScatterElements(
 
 auto GraphBuilderTflite::SerializeScatterND(const mojom::ScatterND& scatter_nd)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.scatter_nd_input.Has(
-      GetOperand(scatter_nd.input_operand_id).descriptor.data_type()));
-  CHECK(context_properties_.data_type_limits.scatter_nd_indices.Has(
-      GetOperand(scatter_nd.indices_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.scatter_nd_input.Supports(
+      GetOperand(scatter_nd.input_operand_id).descriptor));
+  CHECK(context_properties_.data_type_limits.scatter_nd_indices.Supports(
+      GetOperand(scatter_nd.indices_operand_id).descriptor));
 
   ASSIGN_OR_RETURN(const TensorInfo& updates_tensor_info,
                    SerializeInputTensorInfo(scatter_nd.updates_operand_id));
