@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -1406,7 +1407,7 @@ ActionButtonView* CaptureModeSession::AddActionButton(
   // Another process may try to add an action button before the container is
   // created, or while it is invalid. In these cases, we don't want to do
   // anything.
-  if (!action_container_widget_ || !action_container_widget_->IsVisible()) {
+  if (!action_container_widget_) {
     return nullptr;
   }
 
@@ -2693,13 +2694,13 @@ void CaptureModeSession::UpdateCaptureRegion(
   layer()->SchedulePaint(damage_region);
 
   controller_->SetUserCaptureRegion(new_capture_region, by_user);
+  InvalidateImageSearch();
+  ClearActionContainer();
   UpdateDimensionsLabelWidget(is_resizing);
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
-  UpdateActionContainerWidget();
-  if (ShowDefaultActionButtonsOrPerformSearch()) {
-    return;
-  }
-  InvalidateImageSearch();
+  // The following may end the session and delete `this`, but we can ignore the
+  // result since it's the last line of this method.
+  std::ignore = ShowDefaultActionButtonsOrPerformSearch();
 }
 
 void CaptureModeSession::UpdateDimensionsLabelWidget(bool is_resizing) {
@@ -3264,7 +3265,7 @@ void CaptureModeSession::UpdateActionContainerWidget() {
     if (action_container_widget_ && action_container_widget_->IsVisible()) {
       // It is inefficient to destroy and recreate the widget if a drag is in
       // progress.
-      ClearActionContainer();
+      action_container_view_->ClearContainer();
       action_container_widget_->Hide();
     }
     return;
@@ -3278,6 +3279,11 @@ void CaptureModeSession::UpdateActionContainerWidget() {
 
     action_container_view_ = action_container_widget_->SetContentsView(
         std::make_unique<ActionButtonContainerView>());
+  }
+
+  if (action_container_view_->GetPreferredSize().IsEmpty()) {
+    action_container_widget_->Hide();
+    return;
   }
 
   action_container_widget_->Show();
@@ -3308,6 +3314,7 @@ void CaptureModeSession::ClearActionContainer() {
   if (action_container_widget_) {
     CHECK(action_container_view_);
     action_container_view_->ClearContainer();
+    UpdateActionContainerWidget();
   }
 }
 

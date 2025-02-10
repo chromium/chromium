@@ -3522,6 +3522,51 @@ TEST_F(
       1);
 }
 
+// Tests that the copy text and smart actions buttons are correctly shown and
+// hidden when the user selects or adjusts a capture region with their keyboard.
+TEST_F(ScannerTest, ActionButtonsUpdatedWhenRegionAdjustedWithKeyboard) {
+  // Start default capture mode.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillRepeatedly(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  // Hit space to select a default region.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_SPACE, event_generator);
+  detect_text_future.Take().Run("detected text");
+
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  // Action buttons should be shown since there was detected text.
+  EXPECT_THAT(
+      session_test_api.GetActionButtons(),
+      ElementsAre(ActionButtonIdIs(ActionButtonViewID::kSmartActionsButton),
+                  ActionButtonIdIs(ActionButtonViewID::kCopyTextButton)));
+
+  // Hit tab until the whole region is focused, then shift the region using an
+  // arrow key.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/6);
+  SendKey(ui::VKEY_RIGHT, event_generator);
+  detect_text_future.Take().Run("");
+
+  // No action buttons should be shown since there was no detected text.
+  EXPECT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+
+  // Shift the region again.
+  SendKey(ui::VKEY_RIGHT, event_generator);
+  detect_text_future.Take().Run("detected text again");
+
+  // Action buttons should be shown again since there was detected text.
+  EXPECT_THAT(
+      session_test_api.GetActionButtons(),
+      ElementsAre(ActionButtonIdIs(ActionButtonViewID::kSmartActionsButton),
+                  ActionButtonIdIs(ActionButtonViewID::kCopyTextButton)));
+}
+
 // Tests that the capture label is hidden while capturing an image to send to
 // the Scanner backend.
 TEST_F(ScannerTest, CaptureLabelHiddenWhilePerformingCaptureForScanner) {
