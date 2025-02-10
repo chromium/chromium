@@ -130714,6 +130714,19 @@
        {}
       ]
      ],
+     "italic-oblique-fallback.html": [
+      "48187ea0f7e2556d563ee2d5c817818a8769bf11",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/italic-oblique-fallback-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "lang-attribute-affects-rendering.html": [
       "041fd8f5abdc1524b585673e919de83126efe49a",
       [
@@ -336242,6 +336255,10 @@
       "f524a983cd93c33c00fa115e40827cb275b8acc2",
       []
      ],
+     "italic-oblique-fallback-ref.html": [
+      "6dd1a7bac2210e6c4ebe5ff89ec6bfb02344cd45",
+      []
+     ],
      "lang-attribute-affects-rendering-ref.html": [
       "f832a1ef61fe39141c9566f1d76d52161607d83d",
       []
@@ -374365,7 +374382,7 @@
       []
      ],
      "indent.js": [
-      "0265552f0939e3c803b452f965c2a2ce85000dc5",
+      "100da577458de26ee57e4dbb704e0f08bbe23bc7",
       []
      ],
      "insert-list-items-in-table-cells.js": [
@@ -375195,7 +375212,7 @@
       []
      ],
      "indent-expected.txt": [
-      "871e76d72f02cca8e35461295a1e963f700f7182",
+      "ac6a7276eb90764b591d597a03c46e7c4a60a3e5",
       []
      ],
      "insert-list-items-in-table-cell-expected.txt": [
@@ -441310,7 +441327,7 @@
      ]
     ],
     "idbtransaction_abort.any.js": [
-     "7bc27dc3d6941e0aeb0b4f37ac76a2f2c3c4b712",
+     "1f14bbe4d5dd7c82a9fea8dc96cc6e63362d2104",
      [
       "IndexedDB/idbtransaction_abort.any.html",
       {
@@ -492348,7 +492365,7 @@
        ]
       ],
       "at-font-face-font-matching.html": [
-       "ba18f9d5ab2e1ea7982b4a9fff468421f8c344e4",
+       "7511a83c4251729ea69788d810e8ba8f125e86d1",
        [
         null,
         {
