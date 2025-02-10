@@ -653,7 +653,7 @@ void SetSurfaceDrawTransform(const PropertyTrees* property_trees,
       transform_tree.Node(render_surface->TransformTreeIndex());
   const EffectNode* effect_node =
       effect_tree.Node(render_surface->EffectTreeIndex());
-  // The draw transform of root render surface is identity tranform.
+  // The draw transform of root render surface is identity transform.
   if (render_surface->EffectTreeIndex() == kContentsRootPropertyNodeId) {
     render_surface->SetDrawTransform(gfx::Transform());
     return;
@@ -1027,6 +1027,57 @@ bool SkipForInvertibility(const LayerImpl* layer,
              : !transform_node->ancestors_are_invertible;
 }
 
+void ComputeLayerDrawTransforms(LayerImpl* layer,
+                                const PropertyTrees* property_trees) {
+  const TransformNode* transform_node =
+      property_trees->transform_tree().Node(layer->transform_tree_index());
+  layer->draw_properties().screen_space_transform =
+      ScreenSpaceTransformInternal(layer, property_trees->transform_tree());
+  layer->draw_properties().target_space_transform = DrawTransform(
+      layer, property_trees->transform_tree(), property_trees->effect_tree());
+  layer->draw_properties().screen_space_transform_is_animating =
+      transform_node->to_screen_is_potentially_animated;
+  auto mask_filter_info_pair =
+      GetMaskFilterInfoPair(property_trees, layer->effect_tree_index(),
+                            /*for_render_surface=*/false);
+  layer->draw_properties().mask_filter_info = mask_filter_info_pair.first;
+  layer->draw_properties().is_fast_rounded_corner =
+      mask_filter_info_pair.second;
+}
+
+void ComputeLayerDrawOpacity(LayerImpl* layer,
+                             const PropertyTrees* property_trees) {
+  layer->draw_properties().opacity =
+      LayerDrawOpacity(layer, property_trees->effect_tree());
+}
+
+void ComputeLayerClipAndVisibleRect(LayerImpl* layer,
+                                    PropertyTrees* property_trees) {
+  ConditionalClip clip = LayerClipRect(property_trees, layer);
+  // is_clipped should be set before visible rect computation as it is used
+  // there.
+  layer->draw_properties().is_clipped = clip.is_clipped;
+  layer->draw_properties().clip_rect = ToEnclosingClipRect(clip.clip_rect);
+  layer->draw_properties().visible_layer_rect =
+      LayerVisibleRect(property_trees, layer);
+}
+
+void ComputeLayerDrawableContentRect(LayerImpl* layer,
+                                     const PropertyTrees* property_trees) {
+  bool only_draws_visible_content = property_trees->effect_tree()
+                                        .Node(layer->effect_tree_index())
+                                        ->only_draws_visible_content;
+  gfx::Rect drawable_bounds = gfx::Rect(layer->visible_layer_rect());
+  if (!only_draws_visible_content) {
+    drawable_bounds = gfx::Rect(layer->bounds());
+  }
+  gfx::Rect visible_bounds_in_target_space = MathUtil::MapEnclosingClippedRect(
+      layer->draw_properties().target_space_transform, drawable_bounds);
+  layer->draw_properties().visible_drawable_content_rect =
+      LayerDrawableContentRect(layer, visible_bounds_in_target_space,
+                               layer->draw_properties().clip_rect);
+}
+
 void ComputeInitialRenderSurfaceList(
     LayerTreeImpl* layer_tree_impl,
     PropertyTrees* property_trees,
@@ -1354,59 +1405,19 @@ void UpdateElasticOverscroll(
 
 void ComputeDrawPropertiesOfVisibleLayers(const LayerImplList* layer_list,
                                           PropertyTrees* property_trees) {
-  // Compute transforms and clear common ancestor clips of render surfaces.
   for (LayerImpl* layer : *layer_list) {
-    const TransformNode* transform_node =
-        property_trees->transform_tree().Node(layer->transform_tree_index());
-    layer->draw_properties().screen_space_transform =
-        ScreenSpaceTransformInternal(layer, property_trees->transform_tree());
-    layer->draw_properties().target_space_transform = DrawTransform(
-        layer, property_trees->transform_tree(), property_trees->effect_tree());
-    layer->draw_properties().screen_space_transform_is_animating =
-        transform_node->to_screen_is_potentially_animated;
-    auto mask_filter_info_pair =
-        GetMaskFilterInfoPair(property_trees, layer->effect_tree_index(),
-                              /*from_render_surface=*/false);
-    layer->draw_properties().mask_filter_info = mask_filter_info_pair.first;
-    layer->draw_properties().is_fast_rounded_corner =
-        mask_filter_info_pair.second;
-
+    ComputeLayerDrawTransforms(layer, property_trees);
     ClearRenderSurfaceCommonAncestorClip(layer);
   }
-
-  // Compute effects and common ancestor clips of render surfaces.
   for (LayerImpl* layer : *layer_list) {
-    layer->draw_properties().opacity =
-        LayerDrawOpacity(layer, property_trees->effect_tree());
+    ComputeLayerDrawOpacity(layer, property_trees);
     UpdateRenderSurfaceCommonAncestorClip(layer, property_trees->clip_tree());
   }
-
-  // Compute clips and visible rects
   for (LayerImpl* layer : *layer_list) {
-    ConditionalClip clip = LayerClipRect(property_trees, layer);
-    // is_clipped should be set before visible rect computation as it is used
-    // there.
-    layer->draw_properties().is_clipped = clip.is_clipped;
-    layer->draw_properties().clip_rect = ToEnclosingClipRect(clip.clip_rect);
-    layer->draw_properties().visible_layer_rect =
-        LayerVisibleRect(property_trees, layer);
+    ComputeLayerClipAndVisibleRect(layer, property_trees);
   }
-
-  // Compute drawable content rects
   for (LayerImpl* layer : *layer_list) {
-    bool only_draws_visible_content = property_trees->effect_tree()
-                                          .Node(layer->effect_tree_index())
-                                          ->only_draws_visible_content;
-    gfx::Rect drawable_bounds = gfx::Rect(layer->visible_layer_rect());
-    if (!only_draws_visible_content) {
-      drawable_bounds = gfx::Rect(layer->bounds());
-    }
-    gfx::Rect visible_bounds_in_target_space =
-        MathUtil::MapEnclosingClippedRect(
-            layer->draw_properties().target_space_transform, drawable_bounds);
-    layer->draw_properties().visible_drawable_content_rect =
-        LayerDrawableContentRect(layer, visible_bounds_in_target_space,
-                                 layer->draw_properties().clip_rect);
+    ComputeLayerDrawableContentRect(layer, property_trees);
   }
 }
 
