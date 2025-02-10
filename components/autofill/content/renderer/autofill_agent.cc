@@ -14,11 +14,13 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
@@ -1050,26 +1052,30 @@ void AutofillAgent::ApplyFieldsAction(
   } else {
     was_last_action_fill_ = true;
 
+    std::vector<FieldRendererId> filled_element_ids = base::ToVector(
+        form_util::ApplyFieldsAction(document, fields, action_type,
+                                     action_persistence, field_data_manager()),
+        &std::pair<FieldRendererId, WebAutofillState>::first);
+    std::erase_if(filled_element_ids, [](FieldRendererId filled_element_id) {
+      return !form_util::GetFormControlByRendererId(filled_element_id);
+    });
+
     // This map contains for each filled field (returned by
     // `form_util::ApplyFieldsAction()`) the corresponding current owning form.
     // This information cannot be inferred from
     // `FormFieldData::FillData::host_form_id` because after calling the filling
     // function dynamic changes can occur to the DOM.
-    // TODO(crbug.com/40943206): Remove IDs that correspond to null elements.
     auto filled_fields_and_forms =
         base::MakeFlatMap<FieldRendererId, FormRendererId>(
-            form_util::ApplyFieldsAction(document, fields, action_type,
-                                         action_persistence,
-                                         field_data_manager()),
-            {},
-            [](const std::pair<FieldRendererId, WebAutofillState>& filled_field)
+            filled_element_ids, {},
+            [](FieldRendererId filled_element_id)
                 -> std::pair<FieldRendererId, FormRendererId> {
               WebFormControlElement element =
-                  form_util::GetFormControlByRendererId(filled_field.first);
-              return {filled_field.first,
-                      element ? form_util::GetFormRendererId(
-                                    element.GetOwningFormForAutofill())
-                              : FormRendererId()};
+                  form_util::GetFormControlByRendererId(filled_element_id);
+              CHECK(element);
+              return {filled_element_id,
+                      form_util::GetFormRendererId(
+                          element.GetOwningFormForAutofill())};
             });
 
     form_tracker_->TrackAutofilledElement(filled_fields_and_forms);
@@ -1077,9 +1083,7 @@ void AutofillAgent::ApplyFieldsAction(
     formless_elements_were_autofilled_ |= std::ranges::any_of(
         filled_fields_and_forms,
         [](std::pair<FieldRendererId, FormRendererId>& filled_field_and_form) {
-          const auto& [filled_field_id, filled_form_id] = filled_field_and_form;
-          return !filled_form_id &&
-                 form_util::GetFormControlByRendererId(filled_field_id);
+          return !filled_field_and_form.second;
         });
 
     base::flat_set<FormRendererId> extracted_form_ids;
