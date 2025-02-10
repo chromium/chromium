@@ -62,7 +62,6 @@ public class SplitChromeApplication extends SplitCompatApplication {
 
     @Override
     protected void attachBaseContext(Context context) {
-        super.attachBaseContext(context);
         if (isBrowserProcess()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 DexFixer.setHasIsolatedSplits(true);
@@ -76,6 +75,9 @@ public class SplitChromeApplication extends SplitCompatApplication {
         } else {
             setImplSupplier(() -> createNonBrowserApplication());
         }
+        // We need to call setImplSupplier before continuing attachBaseContext. See
+        // crbug.com/395261363 for details.
+        super.attachBaseContext(context);
     }
 
     private static String getPreloadClassName(String split) {
