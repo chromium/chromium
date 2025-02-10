@@ -2220,7 +2220,7 @@ void RenderFrameImpl::Unload(
   SendUpdateState();
 
   // Before `this` is destroyed, save any fields needed to schedule a call to
-  // `AgentSchedulingGroupHost::DidUnloadRenderFrame()`. The acknowlegement
+  // `AgentSchedulingGroupHost::DidUnloadRenderFrame()`. The acknowledgement
   // itself is asynchronous to ensure that any postMessage calls (which schedule
   // IPCs as well) made from unload handlers are routed to the browser process
   // before the corresponding `RenderFrameHostImpl` is torn down.
@@ -3369,7 +3369,7 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
     }
 
     // The load of the URL can result in this frame being removed. Use a
-    // WeakPtr as an easy way to detect whether this has occured. If so, this
+    // WeakPtr as an easy way to detect whether this has occurred. If so, this
     // method should return immediately and not touch any part of the object,
     // otherwise it will result in a use-after-free bug.
     // Similarly, check whether `navigation_state` is still the state associated
@@ -3728,8 +3728,9 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
   // The unique name generation logic was moved out of Blink, so for historical
   // reasons, unique name generation needs to take something called the
   // |fallback_name| into account. Normally, unique names are generated based on
-  // the browing context name. For new frames, the initial browsing context name
-  // comes from the name attribute of the browsing context container element.
+  // the browsing context name. For new frames, the initial browsing context
+  // name comes from the name attribute of the browsing context container
+  // element.
   //
   // However, when the browsing context name is null, Blink instead uses the
   // "fallback name" to derive the unique name. The exact contents of the
@@ -6196,7 +6197,7 @@ void RenderFrameImpl::BeginNavigationInternal(
   bool for_outermost_main_frame = frame_->IsOutermostMainFrame();
   {
     // upstream_url can be empty here because ForRedirect(false) implies that
-    // this isn't a browser intiated navigation.
+    // this isn't a browser initiated navigation.
     std::optional<blink::WebURL> adjusted_request_url = WillSendRequestInternal(
         info->url_request.Url(), info->url_request.RequestorOrigin(),
         info->url_request.SiteForCookies(), ForRedirect(false),

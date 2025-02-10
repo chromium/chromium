@@ -143,6 +143,8 @@ enum class BackForwardCacheType {
   kEnabled,
 };
 
+constexpr char kPagehideEventPath[] = "/pagehideFired";
+
 std::string ToString(const testing::TestParamInfo<BackForwardCacheType>& info) {
   switch (info.param) {
     case BackForwardCacheType::kDisabled:
@@ -342,7 +344,8 @@ class PrerenderBrowserTest : public ContentBrowserTest,
             &PrerenderBrowserTest::web_contents, base::Unretained(this)));
     feature_list_.InitWithFeatures(
         {blink::features::kPrerender2MainFrameNavigation,
-         ::features::kSuppressesPrerenderingOnSlowNetwork},
+         ::features::kSuppressesPrerenderingOnSlowNetwork,
+         blink::features::kFetchLaterAPI},
         {});
   }
   ~PrerenderBrowserTest() override = default;
@@ -374,6 +377,9 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     ssl_server_.AddDefaultHandlers(GetTestDataFilePath());
     ssl_server_.SetSSLConfig(
         net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
+    pagehide_event_receiver_ =
+        std::make_unique<net::test_server::ControllableHttpResponse>(
+            &ssl_server_, kPagehideEventPath);
     ASSERT_TRUE(ssl_server_.Start());
     WebContentsObserver::Observe(shell()->web_contents());
 
@@ -820,6 +826,8 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     return result.GetString();
   }
 
+  void WaitForPageHide() { pagehide_event_receiver_->WaitForRequest(); }
+
   // Stores all the navigation_ids for all navigations. This is used to check
   // that we record UKMs for correct SourceIds.
   std::vector<int64_t> navigation_ids_;
@@ -863,6 +871,8 @@ class PrerenderBrowserTest : public ContentBrowserTest,
       prediction_ukm_entry_builder_;
   std::unique_ptr<PreloadingPredictionPreviousPrimaryPageUkmEntryBuilder>
       prediction_previous_ukm_entry_builder_;
+  std::unique_ptr<net::test_server::ControllableHttpResponse>
+      pagehide_event_receiver_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -3629,17 +3639,27 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnAuthRequestedSubResource) {
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        CancelOnSpeculationCandidateRemoved) {
+  GURL url_ping(GetUrl(kPagehideEventPath));
+
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/title1.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Start prerendering.
-  const GURL kPrerenderingUrl = GetUrl("/title2.html");
+  const GURL kPrerenderingUrl = GetUrl("/title1.html?prerender");
   test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
   AddPrerenderAsync(kPrerenderingUrl);
   registry_observer.WaitForTrigger(kPrerenderingUrl);
   FrameTreeNodeId host_id = GetHostForUrl(kPrerenderingUrl);
   ASSERT_TRUE(host_id);
+  WaitForPrerenderLoadCompletion(kPrerenderingUrl);
+
+  RenderFrameHost* prerender_host = GetPrerenderedMainFrameHost(host_id);
+  std::string js = R"(
+        addEventListener('pagehide', () => {
+          fetchLater($1);
+        });)";
+  EXPECT_TRUE(ExecJs(prerender_host, JsReplace(js, url_ping)));
 
   // Remove the rules and check that the prerender is cancelled with an
   // appropriate final status.
@@ -3651,6 +3671,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EXPECT_TRUE(GetHostForUrl(kPrerenderingUrl).is_null());
   ExpectFinalStatusForSpeculationRule(
       PrerenderFinalStatus::kSpeculationRuleRemoved);
+
+  // Intended prerender cancellation such as speculation rules removal is
+  // expected to dispatch the pagehide event unlike other unexpected prerender
+  // failures.
+  WaitForPageHide();
 }
 
 // Tests removing speculation rules whose target_hint is "_blank" (i.e.,
