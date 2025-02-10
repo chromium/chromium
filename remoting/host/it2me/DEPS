@@ -6,6 +6,7 @@ specific_include_rules = {
     "+ui/message_center/public/cpp",
   ],
   "it2me_confirmation_dialog_chromeos_unittest.cc": [
+    "+components/user_manager/user_type.h",
     "+ui/message_center/lock_screen/fake_lock_screen_controller.h",
     "+ui/message_center/message_center.h",
     "+ui/message_center/public/cpp/notification.h",
