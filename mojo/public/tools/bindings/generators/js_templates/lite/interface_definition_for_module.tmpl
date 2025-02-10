@@ -78,7 +78,7 @@ export class {{interface.name}}Remote {
   {{generateMethodAnnotation(method)}}
   {{method.name}}(
 {%- for param in method.parameters %}
-      {{param.name}}{%- if not loop.last %},{% endif %}
+      {{param.name|sanitize_identifier}}{%- if not loop.last %},{% endif %}
 {%- endfor -%}) {
 {%- if method.response_parameters != None %}
     return this.proxy.sendMessage(
@@ -94,7 +94,7 @@ export class {{interface.name}}Remote {
 {%-   endif %}
         [
 {%- for param in method.parameters %}
-          {{param.name}}{%- if not loop.last %},{% endif %}
+          {{param.name|sanitize_identifier}}{%- if not loop.last %},{% endif %}
 {%- endfor %}
         ]);
   }
