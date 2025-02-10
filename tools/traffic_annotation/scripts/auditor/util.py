@@ -57,15 +57,17 @@ def get_current_platform(build_path: Optional[Path] = None) -> str:
   current_platform: str = platform.system().lower()
 
   if current_platform == "linux" and build_path is not None:
-    # It could be an Android build directory, being compiled from a Linux host.
-    # Look for a target_os="android" line in args.gn.
+    # Other OS builds can be cross-compiled from Linux. Look for a
+    # target_os="foo" line in args.gn.
     try:
       gn_args = (build_path / "args.gn").read_text(encoding="utf-8")
-      pattern = re.compile(r"^\s*target_os\s*=\s*\"(android|chromeos)\"\s*$",
-                           re.MULTILINE)
+      pattern = re.compile(
+          r"^\s*target_os\s*=\s*\"(android|chromeos|win)\"\s*$", re.MULTILINE)
       match = pattern.search(gn_args)
       if match:
         current_platform = match.group(1)
+        if current_platform == "win":
+          current_platform = "windows"
 
     except (ValueError, OSError) as e:
       logger.info(e)
