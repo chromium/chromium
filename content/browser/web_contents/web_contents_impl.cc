@@ -11846,6 +11846,9 @@ void WebContentsImpl::GetMediaCaptureRawDeviceIdsOpened(
 }
 
 void WebContentsImpl::WarmUpAndroidSpareRenderer() {
+  if (GetBrowserContext()->ShutdownStarted()) {
+    return;
+  }
   int renderer_timeout_seconds =
       features::kAndroidSpareRendererTimeoutSeconds.Get();
   if (renderer_timeout_seconds < 0) {
