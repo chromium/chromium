@@ -479,10 +479,31 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         return mTabGridDialogVisibilitySupplier;
     }
 
+    /** Provides information on whether the tab grid dialog is showing or animating. */
+    public @Nullable ObservableSupplier<Boolean> getTabGridDialogShowingOrAnimationSupplier() {
+        return mTabGridDialogCoordinator != null
+                ? mTabGridDialogCoordinator.getShowingOrAnimationSupplier()
+                : null;
+    }
+
+    /** Provides the tab ID for the most recently swiped tab. */
+    public @NonNull ObservableSupplier<Integer> getRecentlySwipedTabIdSupplier() {
+        return mTabListCoordinator.getRecentlySwipedTabSupplier();
+    }
+
     /** Returns a {@link TabSwitcherCustomViewManager.Delegate} for supplying custom views. */
     public @Nullable TabSwitcherCustomViewManager.Delegate
             getTabSwitcherCustomViewManagerDelegate() {
         return mMediator;
+    }
+
+    /** Indicates whether any animator for the {@link TabListRecyclerView} is running. */
+    public @Nullable ObservableSupplier<Boolean> getIsRecyclerViewAnimatorRunning() {
+        TabListRecyclerView containerView = mTabListCoordinator.getContainerView();
+        if (containerView == null) {
+            return null;
+        }
+        return containerView.getIsAnimatorRunningSupplier();
     }
 
     /** Returns the number of elements in the tab switcher's tab list model. */

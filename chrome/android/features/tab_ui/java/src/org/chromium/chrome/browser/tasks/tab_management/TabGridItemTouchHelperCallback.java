@@ -22,6 +22,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -57,6 +59,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
 
     private final TabListModel mModel;
     private final Supplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
+    private final ObservableSupplierImpl<Integer> mRecentlySwipedTabIdSupplier =
+            new ObservableSupplierImpl<>(Tab.INVALID_TAB_ID);
     private final TabListMediator.TabActionListener mTabClosedListener;
     private final String mComponentName;
     private final TabListMediator.TabGridDialogHandler mTabGridDialogHandler;
@@ -249,6 +253,9 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
 
         SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder =
                 (SimpleRecyclerViewAdapter.ViewHolder) viewHolder;
+
+        int tabId = simpleViewHolder.model.get(TabProperties.TAB_ID);
+        mRecentlySwipedTabIdSupplier.set(tabId);
 
         if (simpleViewHolder.model.get(CARD_TYPE) == TAB) {
             mTabClosedListener.run(
@@ -579,6 +586,11 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     boolean hasDragFlagForTesting(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         int flags = getMovementFlags(recyclerView, viewHolder);
         return (flags >> 16) != 0;
+    }
+
+    /** Provides the tab ID for the most recently swiped tab. */
+    ObservableSupplier<Integer> getRecentlySwipedTabIdSupplier() {
+        return mRecentlySwipedTabIdSupplier;
     }
 
     @VisibleForTesting
