@@ -299,6 +299,66 @@ TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
   ASSERT_TRUE(DialogVisibleInParentContainer(kUserSessionScreen));
 }
 
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       DialogShouldMoveToUserSessionScreenOnUserLogin) {
+  SimulateDeviceOnLoginScreen();
+
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
+
+  ASSERT_TRUE(DialogVisibleInParentContainer(kLoginScreen));
+  ASSERT_FALSE(DialogVisibleInParentContainer(kUserSessionScreen));
+
+  SimulateUserLogin(kTestUserEmail, user_manager::UserType::kRegular);
+
+  ASSERT_FALSE(DialogVisibleInParentContainer(kLoginScreen));
+  ASSERT_TRUE(DialogVisibleInParentContainer(kUserSessionScreen));
+}
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       DialogShouldMoveToLoginScreenOnUserLogout) {
+  SimulateUserLogin(kTestUserEmail, user_manager::UserType::kRegular);
+
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
+
+  ASSERT_TRUE(DialogVisibleInParentContainer(kUserSessionScreen));
+  ASSERT_FALSE(DialogVisibleInParentContainer(kLoginScreen));
+
+  ClearLogin();
+
+  ASSERT_FALSE(DialogVisibleInParentContainer(kUserSessionScreen));
+  ASSERT_TRUE(DialogVisibleInParentContainer(kLoginScreen));
+}
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       DialogShouldMoveToUserSessionScreenOnSessionUnlock) {
+  SimulateDeviceOnLockScreen();
+
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
+
+  ASSERT_TRUE(DialogVisibleInParentContainer(kLockScreen));
+  ASSERT_FALSE(DialogVisibleInParentContainer(kUserSessionScreen));
+
+  SimulateUserLogin(kTestUserEmail, user_manager::UserType::kRegular);
+
+  ASSERT_FALSE(DialogVisibleInParentContainer(kLockScreen));
+  ASSERT_TRUE(DialogVisibleInParentContainer(kUserSessionScreen));
+}
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       DialogShouldMoveToLockSessionScreenWhenSessionIsLocked) {
+  SimulateUserLogin(kTestUserEmail, user_manager::UserType::kRegular);
+
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
+
+  ASSERT_TRUE(DialogVisibleInParentContainer(kUserSessionScreen));
+  ASSERT_FALSE(DialogVisibleInParentContainer(kLockScreen));
+
+  SimulateDeviceOnLockScreen();
+
+  ASSERT_FALSE(DialogVisibleInParentContainer(kUserSessionScreen));
+  ASSERT_TRUE(DialogVisibleInParentContainer(kLockScreen));
+}
+
 INSTANTIATE_TEST_SUITE_P(EnterpriseDialog,
                          It2MeConfirmationDialogChromeOSTest,
                          testing::Values(DialogStyle::kEnterprise));
