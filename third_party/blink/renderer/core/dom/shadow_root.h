@@ -220,6 +220,30 @@ inline ShadowRoot* Node::GetShadowRoot() const {
   return this_element->GetShadowRoot();
 }
 
+inline bool IsShadowHost(const Node* node) {
+  return node && node->GetShadowRoot();
+}
+
+inline bool IsShadowHost(const Node& node) {
+  return node.GetShadowRoot();
+}
+
+inline bool IsShadowHost(const Element* element) {
+  return element && element->GetShadowRoot();
+}
+
+inline bool IsShadowHost(const Element& element) {
+  return element.GetShadowRoot();
+}
+
+inline bool IsAtShadowBoundary(const Element* element) {
+  if (!element) {
+    return false;
+  }
+  ContainerNode* parent_node = element->parentNode();
+  return parent_node && parent_node->IsShadowRoot();
+}
+
 template <>
 struct DowncastTraits<ShadowRoot> {
   static bool AllowFrom(const Node& node) { return node.IsShadowRoot(); }
