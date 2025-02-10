@@ -53,6 +53,7 @@ enum class RenderSurfaceReason : uint8_t {
   kSubtreeIsBeingCaptured,
   kViewTransitionParticipant,
   kGradientMask,
+  k2DTransformWithCompositedDescendants,
   // This must be the last value because it's used in tracing code to know the
   // number of reasons.
   kTest,

@@ -107,7 +107,13 @@ CompositingReasons CompositingReasonsFor3DTransform(
   const ComputedStyle& style = layout_object.StyleRef();
   CompositingReasons reasons =
       CompositingReasonFinder::PotentialCompositingReasonsFor3DTransform(style);
-  if (reasons != CompositingReason::kNone && layout_object.IsBox()) {
+
+  bool has_scale =
+      RuntimeEnabledFeatures::RenderSurfaceForScaleTransformEnabled() &&
+      style.Scale();
+
+  if ((reasons != CompositingReason::kNone || has_scale) &&
+      layout_object.IsBox()) {
     // In theory this should operate on fragment sizes, but using the box size
     // is probably good enough for a use counter.
     auto& box = To<LayoutBox>(layout_object);
@@ -128,6 +134,13 @@ CompositingReasons CompositingReasonsFor3DTransform(
         UseCounter::Count(layout_object.GetDocument(),
                           WebFeature::kTransform3dScene);
       }
+    }
+
+    if (RuntimeEnabledFeatures::RenderSurfaceForScaleTransformEnabled() &&
+        matrix.IsScale2d()) {
+      // TODO(chrishtr): make this "2d scale with composited descendants"
+      // somehow.
+      reasons |= CompositingReason::k2DScaleTransformWithCompositedDescendants;
     }
   }
   return reasons;

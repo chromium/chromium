@@ -323,16 +323,18 @@ class CORE_EXPORT ObjectPaintProperties
   //   |   Provides the root stacking context for a local subframe with an
   //   |   active ViewTransition. This is used to implement the view transition
   //  /    layer stacking context:
-  // |     https://drafts.csswg.org/css-view-transitions-1/#view-transition-layer
+  // | https://drafts.csswg.org/css-view-transitions-1/#view-transition-layer
   // +-[ ViewTransitionEffect ]
   //   |   Provides the stacking context to paint all content for a Document,
   //   |   including top layer elements, into an image used for ViewTransition.
   //  /    This implements the capturing the image for the document element at:
-  // |     https://drafts.csswg.org/css-view-transitions-1/#capture-the-image-algorithm
+  // |
+  // https://drafts.csswg.org/css-view-transitions-1/#capture-the-image-algorithm
   // +-[ Effect ]
   //   |   Isolated group to apply various CSS effects, including opacity,
-  //  /    mix-blend-mode, backdrop-filter, and for isolation if a mask needs
-  // |     to be applied or backdrop-dependent children are present.
+  //   |   mix-blend-mode, backdrop-filter, and for isolation if a mask needs
+  //  /    to be applied or backdrop-dependent children are present, or to
+  // |     induce a render surface for cc 2D transform quality optimizations.
   // +-[ Mask ]
   //   |   Isolated group for painting the CSS mask or the mask-based CSS
   //  /    clip-path. This node will have SkBlendMode::kDstIn and shall paint

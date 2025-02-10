@@ -243,6 +243,10 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
   bool HasDirectCompositingReasons() const {
     return state_.direct_compositing_reasons != CompositingReason::kNone;
   }
+  bool RequiresCompositingFor2DScaleTransformWithCompositedDescendants() const {
+    return state_.direct_compositing_reasons &
+           CompositingReason::k2DScaleTransformWithCompositedDescendants;
+  }
   bool RequiresCompositingForBackdropFilterMask() const {
     return state_.direct_compositing_reasons &
            CompositingReason::kBackdropFilterMask;
