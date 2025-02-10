@@ -727,6 +727,12 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
                                     groupOfActiveWebState, newVisualData));
     }
   }
+
+  if (_localDragInProgress) {
+    _visibleItemsDuringDrag =
+        CreateItemIdentifiers(_webStateList,
+                              /*including_hidden_tab_items=*/false);
+  }
 }
 
 - (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
@@ -740,6 +746,12 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 
   [self addWebStateObservations];
   [self populateConsumerItems];
+
+  if (_localDragInProgress) {
+    _visibleItemsDuringDrag =
+        CreateItemIdentifiers(_webStateList,
+                              /*including_hidden_tab_items=*/false);
+  }
 }
 
 #pragma mark - TabStripMutator
@@ -1026,6 +1038,11 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
     if (tabInfo.profile != self.profile) {
       // Tabs from different profiles cannot be dropped.
+      return UIDropOperationForbidden;
+    }
+
+    if (_localDragInProgress &&
+        _visibleItemsDuringDrag.count < destinationItemIndex) {
       return UIDropOperationForbidden;
     }
 
