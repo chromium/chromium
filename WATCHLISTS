@@ -1742,6 +1742,13 @@
                   '^components/omnibox/|'\
                   '^components/search_engines/'
     },
+    'omnibox_ios': {
+      'filepath': '^components/omnibox/|'\
+                  '^components/search_engines/|'\
+                  '^ios/chrome/browser/autocomplete/|'\
+                  '^ios/chrome/browser/location_bar/|'\
+                  '^ios/chrome/browser/omnibox/'
+    },
     'origin_trials': {
       'filepath': 'origin_trial'\
                   '|OriginTrial'\
@@ -3107,6 +3114,7 @@
                       'fgorski+watch@chromium.org'],
     'omnibox_desktop': ['jdonnelly+watch@chromium.org',
                         'mahmadi+watch@chromium.org'],
+    'omnibox_ios': ['christianxu+watch@chromium.org'],
     'origin_trials': ['chasej+watch@chromium.org',
                       'iclelland+watch@chromium.org'],
     'os_crypt': ['wfh+watch@chromium.org'],
