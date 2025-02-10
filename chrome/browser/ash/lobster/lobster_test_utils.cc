@@ -72,15 +72,16 @@ manta::proto::Request CreateTestMantaRequest(std::string_view query,
 }
 
 std::unique_ptr<manta::proto::Response> CreateFakeMantaResponse(
-    size_t num_candidates,
+    const std::vector<std::string>& queries_returned_from_server,
     const gfx::Size& image_dimensions) {
   auto response = std::make_unique<manta::proto::Response>();
-  for (size_t i = 0; i < num_candidates; ++i) {
+  for (size_t i = 0; i < queries_returned_from_server.size(); ++i) {
     auto* output_data = response->add_output_data();
     output_data->mutable_image()->set_serialized_bytes(
         std::string(GetTestJpgBytes(CreateTestBitmap(
             image_dimensions.width(), image_dimensions.height()))));
     output_data->set_generation_seed(kFakeBaseGenerationSeed + i);
+    output_data->set_generative_prompt(queries_returned_from_server[i]);
   }
   return response;
 }
