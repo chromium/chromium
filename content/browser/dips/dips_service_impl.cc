@@ -7,10 +7,12 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -124,11 +126,14 @@ inline void UmaHistogramDeletion(BtmCookieMode mode, BtmDeletionAction action) {
 
 inline void UmaHistogramSiteToClearDomainLength(
     std::string const& site_to_clear,
-    bool is_partition_key_serializable) {
+    bool is_partition_key_serializable,
+    bool is_canonical_host) {
   base::UmaHistogramSparse(
-      is_partition_key_serializable
-          ? "Privacy.DIPS.DeletionDomainLength.Serializable"
-          : "Privacy.DIPS.DeletionDomainLength.NonSerializable",
+      is_canonical_host
+          ? is_partition_key_serializable
+                ? "Privacy.DIPS.DeletionDomainLength.Serializable"
+                : "Privacy.DIPS.DeletionDomainLength.NonSerializable"
+          : "Privacy.DIPS.DeletionDomainLength.NonCanonical",
       site_to_clear.length());
 }
 
@@ -147,6 +152,10 @@ net::CookiePartitionKeyCollection CookiePartitionKeyCollectionForSites(
       for (auto ancestorChainBit :
            {net::CookiePartitionKey::AncestorChainBit::kSameSite,
             net::CookiePartitionKey::AncestorChainBit::kCrossSite}) {
+        bool is_canonical_host =
+            url::Origin::UnsafelyCreateTupleOriginWithoutNormalization(
+                scheme, site, port)
+                .has_value();
         auto key = net::CookiePartitionKey::FromStorageKeyComponents(
             net::SchemefulSite(
                 url::Origin::CreateFromNormalizedTuple(scheme, site, port)),
@@ -156,12 +165,27 @@ net::CookiePartitionKeyCollection CookiePartitionKeyCollectionForSites(
           // Track metrics around the length of cleared domains and whether they
           // form valid cookie partition keys.
           //
-          // TODO(crbug.com/393088777): Remove this histogram once crashes have
-          // resolved.
-          UmaHistogramSiteToClearDomainLength(site, key->IsSerializeable());
-          // Only collect serializeable cookie partition keys. BTM does not
-          // support wiping opaque sites.
-          if (key->IsSerializeable()) {
+          // TODO(crbug.com/393088777): Remove this histogram and the crash
+          // dumps once crashes have resolved.
+          UmaHistogramSiteToClearDomainLength(site, key->IsSerializeable(),
+                                              is_canonical_host);
+          // Collect crash dumps if the cookie partition key is not
+          // serializeable or the host is not canonical. This should not happen
+          // in practice, and in the case it does, it'll cause deserialization
+          // problems down the line.
+          std::string crash_value =
+              "len=" + base::NumberToString(site.length()) + " " + site;
+          if (!key->IsSerializeable()) {
+            SCOPED_CRASH_KEY_STRING1024("BtmCookiePartitionKey",
+                                        "nonserializeable", crash_value);
+            base::debug::DumpWithoutCrashing();
+          }
+          if (!is_canonical_host) {
+            SCOPED_CRASH_KEY_STRING1024("BtmCookiePartitionKey", "noncanonical",
+                                        crash_value);
+            base::debug::DumpWithoutCrashing();
+          }
+          if (key->IsSerializeable() && is_canonical_host) {
             keys.push_back(*key);
           }
         }
