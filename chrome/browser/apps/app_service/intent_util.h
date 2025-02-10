@@ -16,7 +16,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom-forward.h"
-#include "chromeos/crosapi/mojom/app_service_types.mojom-forward.h"
 
 namespace arc {
 class ArcIntentHelperBridge;
@@ -116,37 +115,8 @@ arc::IntentFilter ConvertAppServiceToArcIntentFilter(
 // nullptr if the intent filter from ARC is not valid.
 apps::IntentFilterPtr CreateIntentFilterForArc(
     const arc::IntentFilter& arc_intent_filter);
-
-// Convert App Service Intent to Crosapi Intent.
-// |profile| is only needed when the intent contains files, can be filled with
-// null otherwise.
-// If |profile| is null when converting intent contains files, the files
-// fields will not be converted.
-// TODO(crbug.com/40199088): Needs manual conversion rather than mojom traits
-// because Lacros does not support FileSystemURL as Ash, this method can be
-// replaced with mojom traits after migrating the App Service Intent to use the
-// file path.
-crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
-    const apps::IntentPtr& app_service_intent,
-    Profile* profile);
-
-// Convert Crosapi Intent to App Service Intent. Note that the converted App
-// Service Intent will not contain the files field in lacros-chrome.
-// |profile| is only needed when the intent contains files, can be filled with
-// null otherwise.
-// If |profile| is null when converting intent contains files, the files
-// fields will not be converted.
-// TODO(crbug.com/40199088): Needs manual conversion rather than mojom traits
-// because Lacros does not support FileSystemURL as Ash, this method can be
-// replaced with mojom traits after migrating the App Service Intent to use the
-// file path.
-apps::IntentPtr CreateAppServiceIntentFromCrosapi(
-    const crosapi::mojom::IntentPtr& crosapi_intent,
-    Profile* profile);
-
-crosapi::mojom::IntentPtr CreateCrosapiIntentForViewFiles(
-    std::vector<base::FilePath> file_paths);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace apps_util
 
 #endif  // CHROME_BROWSER_APPS_APP_SERVICE_INTENT_UTIL_H_

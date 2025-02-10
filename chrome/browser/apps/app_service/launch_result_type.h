@@ -9,11 +9,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/unguessable_token.h"
-#include "build/build_config.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/crosapi/mojom/app_service_types.mojom-forward.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
 // LaunchResult and LaunchCallback can be used in ChromeOS and other
@@ -39,20 +34,6 @@ struct LaunchResult {
 
 using LaunchCallback = base::OnceCallback<void(LaunchResult&&)>;
 using State = LaunchResult::State;
-
-#if BUILDFLAG(IS_CHROMEOS)
-LaunchResult ConvertMojomLaunchResultToLaunchResult(
-    crosapi::mojom::LaunchResultPtr mojom_launch_result);
-
-base::OnceCallback<void(crosapi::mojom::LaunchResultPtr)>
-LaunchResultToMojomLaunchResultCallback(LaunchCallback callback);
-
-crosapi::mojom::LaunchResultPtr ConvertLaunchResultToMojomLaunchResult(
-    LaunchResult&&);
-
-LaunchCallback MojomLaunchResultToLaunchResultCallback(
-    base::OnceCallback<void(crosapi::mojom::LaunchResultPtr)> callback);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 LaunchResult ConvertBoolToLaunchResult(bool success);
 

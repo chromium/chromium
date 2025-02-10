@@ -52,14 +52,6 @@ class PreferredAppsList : public PreferredAppsListHandle {
   // Returns the deleted filters, if any.
   IntentFilters DeleteSupportedLinks(const std::string& app_id);
 
-  // Applies all of the |changes| in a single bulk update. This method is
-  // intended to only be called from |OnPreferredAppsChanged| App Service
-  // subscriber overrides.
-  // Note that removed filters are processed before new filters are added. If
-  // the same filter appears in both |changes->added_filters| and
-  // |changes->removed_filters|, it be removed and then immediately added back.
-  void ApplyBulkUpdate(apps::PreferredAppChangesPtr changes);
-
   // PreferredAppsListHandler overrides:
   bool IsInitialized() const override;
   size_t GetEntrySize() const override;

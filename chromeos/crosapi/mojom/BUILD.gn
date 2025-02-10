@@ -8,8 +8,6 @@ import("//printing/buildflags/buildflags.gni")
 mojom("mojom") {
   sources = [
     "account_manager.mojom",
-    "app_service.mojom",
-    "app_service_types.mojom",
     "arc.mojom",
     "audio_service.mojom",
     "authentication.mojom",
@@ -165,10 +163,6 @@ mojom("mojom") {
           nullable_is_same_type = true
         },
         {
-          mojom = "crosapi.mojom.UninstallSource"
-          cpp = "::apps::UninstallSource"
-        },
-        {
           mojom = "crosapi.mojom.CapabilityAccess"
           cpp = "::apps::CapabilityAccessPtr"
           move_only = true
@@ -227,16 +221,6 @@ mojom("mojom") {
           move_only = true
         },
         {
-          mojom = "crosapi.mojom.PreferredApp"
-          cpp = "::apps::PreferredAppPtr"
-          move_only = true
-        },
-        {
-          mojom = "crosapi.mojom.PreferredAppChanges"
-          cpp = "::apps::PreferredAppChangesPtr"
-          move_only = true
-        },
-        {
           mojom = "crosapi.mojom.WebAppInstallResultCode"
           cpp = "::webapps::InstallResultCode"
         },
@@ -272,7 +256,6 @@ mojom("mojom") {
         },
       ]
       traits_headers = [
-        "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",
         "//chromeos/crosapi/mojom/cert_database_mojom_traits.h",
         "//chromeos/crosapi/mojom/desk_mojom_traits.h",
         "//chromeos/crosapi/mojom/desk_template_mojom_traits.h",
@@ -290,7 +273,6 @@ mojom("mojom") {
         "//components/services/app_service/public/cpp/preferred_app.h",
       ]
       traits_sources = [
-        "//chromeos/crosapi/mojom/app_service_types_mojom_traits.cc",
         "//chromeos/crosapi/mojom/cert_database_mojom_traits.cc",
         "//chromeos/crosapi/mojom/desk_mojom_traits.cc",
         "//chromeos/crosapi/mojom/desk_template_mojom_traits.cc",
@@ -338,18 +320,4 @@ mojom("structured_metrics_service") {
     "//mojo/public/mojom/base",
   ]
   webui_module_path = "/"
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "app_service_types_mojom_traits_unittest.cc" ]
-
-  deps = [
-    ":mojom",
-    "//base/test:test_support",
-    "//components/services/app_service",
-    "//mojo/public/cpp/test_support:test_utils",
-    "//testing/gtest",
-    "//ui/gfx:test_support",
-  ]
 }
