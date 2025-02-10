@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/i18n/file_util_icu.h"
-#include "build/chromeos_buildflags.h"
 #include "net/base/filename_util_internal.h"
 
 class GURL;
@@ -80,7 +79,7 @@ base::FilePath GenerateFileName(const GURL& url,
       default_file_name, should_replace_extension,
       &base::i18n::ReplaceIllegalCharactersInPath));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // When doing file manager operations on ChromeOS, the file paths get
   // normalized in WebKit layer, so let's ensure downloaded files have
   // normalized names. Otherwise, we won't be able to handle files with NFD
