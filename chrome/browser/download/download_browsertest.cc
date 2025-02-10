@@ -3881,7 +3881,8 @@ IN_PROC_BROWSER_TEST_P(DownloadReferrerPolicyTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(DownloadTest, TestMultipleDownloadsRequests) {
+// TODO(crbug.com/395491549): The test is flaky.
+IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_TestMultipleDownloadsRequests) {
   // Create a downloads observer.
   std::unique_ptr<content::DownloadTestObserver> downloads_observer(
       CreateWaiter(browser(), 2));
