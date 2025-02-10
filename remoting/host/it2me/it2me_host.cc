@@ -382,6 +382,7 @@ void It2MeHost::ConnectOnNetworkThread(
   if (use_corp_session_authz_) {
     corp_host_status_logger_ = CorpHostStatusLogger::CreateForRemoteSupport(
         host_context_->url_loader_factory(),
+        host_context_->CreateClientCertStore(),
         local_session_policies_provider_.get(),
         api_token_getter_->GetWeakPtr());
     corp_host_status_logger_->StartObserving(*session_manager);
@@ -758,6 +759,7 @@ void It2MeHost::OnReceivedSupportID(const std::string& support_id,
     factory->AddSessionAuthzAuth(
         base::MakeRefCounted<CorpSessionAuthzServiceClientFactory>(
             host_context_->url_loader_factory(),
+            host_context_->create_client_cert_store_callback(),
             api_token_getter_->GetWeakPtr(), support_id_));
   } else {
     CHECK(!host_secret_.empty());

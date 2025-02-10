@@ -146,7 +146,7 @@ class ProtobufHttpClientTest : public testing::Test {
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_);
   ProtobufHttpClient client_{kTestServerEndpoint, &mock_token_getter_,
-                             test_shared_loader_factory_};
+                             test_shared_loader_factory_, nullptr};
 };
 
 void ProtobufHttpClientTest::ExpectCallWithTokenSuccess() {

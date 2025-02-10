@@ -51,6 +51,11 @@ source_set("chromeos") {
   ]
 }
 
+# browser_interop can't explicitly depend on //chrome/browser since they form
+# a dependency circle
+# (chrome/browser->remote_command->browser_interop->chrome/browser).
+# Targets depending on browser_interop must have //chrome/browser in their
+# dependency tree.
 source_set("browser_interop") {
   sources = [
     "browser_interop.cc",
@@ -58,8 +63,11 @@ source_set("browser_interop") {
   ]
 
   deps = [
+    "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
     "//content/public/browser:browser",
+    "//net",
     "//remoting/base:base",
     "//remoting/host",
   ]
@@ -147,8 +155,10 @@ source_set("unit_tests") {
     ":features",
     ":remoting_service",
     "//base/test:test_support",
+    "//chrome/browser",  # Required for browser_interop
     "//components/policy/core/common:test_support",
     "//components/viz/service",
+    "//content/public/browser",
     "//remoting/host:common",
     "//remoting/host:test_support",
     "//remoting/host/it2me:common",

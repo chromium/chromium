@@ -46,13 +46,15 @@ class CorpServiceClient {
       std::unique_ptr<internal::RemoteAccessHostV1Proto>)>;
 
   // C'tor to use for unauthenticated service requests.
-  explicit CorpServiceClient(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  CorpServiceClient(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<net::ClientCertStore> client_cert_store);
   // C'tor to use for authenticated requests using the device robot account.
   CorpServiceClient(
       const std::string& refresh_token,
       const std::string& service_account_email,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<net::ClientCertStore> client_cert_store);
   ~CorpServiceClient();
 
   CorpServiceClient(const CorpServiceClient&) = delete;

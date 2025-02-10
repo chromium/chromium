@@ -15,10 +15,12 @@ namespace remoting::protocol {
 IceConfigFetcherCorp::IceConfigFetcherCorp(
     const std::string& refresh_token,
     const std::string& service_account_email,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<net::ClientCertStore> client_cert_store)
     : service_client_(refresh_token,
                       service_account_email,
-                      url_loader_factory) {}
+                      url_loader_factory,
+                      std::move(client_cert_store)) {}
 
 IceConfigFetcherCorp::~IceConfigFetcherCorp() = default;
 

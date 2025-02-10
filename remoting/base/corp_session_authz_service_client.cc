@@ -50,12 +50,14 @@ ResponseCallback<ProtoType> ConvertCallback(
 
 CorpSessionAuthzServiceClient::CorpSessionAuthzServiceClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<net::ClientCertStore> client_cert_store,
     std::unique_ptr<OAuthTokenGetter> oauth_token_getter,
     std::string_view support_id)
     : oauth_token_getter_(std::move(oauth_token_getter)),
       http_client_(ServiceUrls::GetInstance()->remoting_corp_endpoint(),
                    oauth_token_getter_.get(),
-                   url_loader_factory),
+                   url_loader_factory,
+                   std::move(client_cert_store)),
       support_id_(support_id) {
   session_authz_path_ = support_id.empty()
                             ? internal::GetRemoteAccessSessionAuthzPath()

@@ -34,6 +34,7 @@ class CorpSessionAuthzServiceClient : public SessionAuthzServiceClient {
   //   mode is remote access.
   CorpSessionAuthzServiceClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<net::ClientCertStore> client_cert_store,
       std::unique_ptr<OAuthTokenGetter> oauth_token_getter,
       std::string_view support_id);
   ~CorpSessionAuthzServiceClient() override;

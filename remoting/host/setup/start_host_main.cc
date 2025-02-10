@@ -26,7 +26,9 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
+#include "net/ssl/client_cert_store.h"
 #include "net/url_request/url_request_context_getter.h"
+#include "remoting/base/certificate_helpers.h"
 #include "remoting/base/crash/crash_reporting.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/url_request_context_getter.h"
@@ -470,7 +472,8 @@ int StartHostMain(int argc, char** argv) {
   std::unique_ptr<HostStarter> host_starter;
   if (use_corp_machine_flow) {
     host_starter =
-        ProvisionCorpMachine(url_loader_factory_owner.GetURLLoaderFactory());
+        ProvisionCorpMachine(url_loader_factory_owner.GetURLLoaderFactory(),
+                             CreateClientCertStoreInstance());
   } else if (use_cloud_machine_flow) {
     fprintf(stdout,
             "*** Warning: This workflow is experimental and not fully "

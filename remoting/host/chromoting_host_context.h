@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/management/platform_management_service.h"
@@ -16,6 +17,7 @@ class SingleThreadTaskRunner;
 }  // namespace base
 
 namespace net {
+class ClientCertStore;
 class URLRequestContextGetter;
 }  // namespace net
 
@@ -32,6 +34,9 @@ class AutoThreadTaskRunner;
 // testing purposes.
 class ChromotingHostContext {
  public:
+  using CreateClientCertStoreCallback =
+      base::RepeatingCallback<std::unique_ptr<net::ClientCertStore>()>;
+
 #if BUILDFLAG(IS_CHROMEOS)
   // Attaches task runners to the relevant browser threads for the chromoting
   // host. Must be called on the UI thread of the browser process.
@@ -39,7 +44,8 @@ class ChromotingHostContext {
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
-      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      CreateClientCertStoreCallback create_client_cert_store);
 #else
   // Create threads and URLRequestContextGetter for use by a host.
   // During shutdown the caller should tear-down the ChromotingHostContext and
@@ -59,10 +65,15 @@ class ChromotingHostContext {
 
   // Per-platform classes must implement these methods.
   virtual std::unique_ptr<ChromotingHostContext> Copy() = 0;
+  virtual std::unique_ptr<net::ClientCertStore> CreateClientCertStore()
+      const = 0;
   virtual scoped_refptr<net::URLRequestContextGetter>
   url_request_context_getter() const = 0;
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   url_loader_factory() = 0;
+  // Returns a callback that can be called to create a ClientCertStore.
+  virtual CreateClientCertStoreCallback create_client_cert_store_callback()
+      const = 0;
 
   // Task runner for the thread that is used for the UI.
   scoped_refptr<AutoThreadTaskRunner> ui_task_runner() const;

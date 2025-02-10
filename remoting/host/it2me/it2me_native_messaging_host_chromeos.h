@@ -8,12 +8,17 @@
 
 #include "extensions/browser/api/messaging/native_message_host.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace remoting {
 
 // Creates a native messaging host on ChromeOS. Must be called on the UI thread
 // of the browser process.
 std::unique_ptr<extensions::NativeMessageHost>
-CreateIt2MeNativeMessagingHostForChromeOS();
+CreateIt2MeNativeMessagingHostForChromeOS(
+    content::BrowserContext* browser_context);
 
 }  // namespace remoting
 

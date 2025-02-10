@@ -278,7 +278,8 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
       ChromotingHostContext::Create(new remoting::AutoThreadTaskRunner(
           main_task_executor.task_runner(), run_loop.QuitClosure()));
 #else   // !BUILDFLAG(IS_CHROMEOS)
-      base::MakeRefCounted<BrowserInterop>()->CreateChromotingHostContext();
+      base::MakeRefCounted<BrowserInterop>()->CreateChromotingHostContext(
+          nullptr);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Create the native messaging host.

@@ -19,12 +19,14 @@ namespace remoting {
 
 CorpLoggingServiceClient::CorpLoggingServiceClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<net::ClientCertStore> client_cert_store,
     std::unique_ptr<OAuthTokenGetter> oauth_token_getter,
     std::string_view logging_path)
     : oauth_token_getter_(std::move(oauth_token_getter)),
       http_client_(ServiceUrls::GetInstance()->remoting_corp_endpoint(),
                    oauth_token_getter_.get(),
-                   url_loader_factory),
+                   url_loader_factory,
+                   std::move(client_cert_store)),
       logging_path_(logging_path) {}
 
 CorpLoggingServiceClient::~CorpLoggingServiceClient() = default;

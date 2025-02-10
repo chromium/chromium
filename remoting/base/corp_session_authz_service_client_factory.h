@@ -8,12 +8,18 @@
 #include <memory>
 #include <string_view>
 
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "remoting/base/authentication_method.h"
 #include "remoting/base/corp_session_authz_service_client.h"
 #include "remoting/base/session_authz_service_client_factory.h"
+
+namespace net {
+class ClientCertStore;
+}  // namespace net
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -30,14 +36,19 @@ class SessionAuthzServiceClient;
 class CorpSessionAuthzServiceClientFactory
     : public SessionAuthzServiceClientFactory {
  public:
+  using CreateClientCertStoreCallback =
+      base::RepeatingCallback<std::unique_ptr<net::ClientCertStore>()>;
+
   CorpSessionAuthzServiceClientFactory(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      CreateClientCertStoreCallback create_client_cert_store,
       const std::string& service_account_email,
       const std::string& refresh_token);
 
   // |support_id|: The 7-digit support ID.
   CorpSessionAuthzServiceClientFactory(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      CreateClientCertStoreCallback create_client_cert_store,
       base::WeakPtr<OAuthTokenGetter> oauth_token_getter,
       std::string_view support_id);
 
@@ -54,9 +65,11 @@ class CorpSessionAuthzServiceClientFactory
 
   void InitializeFactory(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      CreateClientCertStoreCallback create_client_cert_store,
       base::WeakPtr<OAuthTokenGetter> oauth_token_getter);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  CreateClientCertStoreCallback create_client_cert_store_;
 
   // This is nullptr if the factory is not constructed with a service account.
   std::unique_ptr<OAuthTokenGetterImpl> oauth_token_getter_for_service_account_;

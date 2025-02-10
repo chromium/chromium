@@ -5552,6 +5552,11 @@ static_library("browser") {
       "//components/webauthn/core/browser:passkey_model",
       "//device/fido",
       "//device/vr/public/mojom:isolated_xr_service",
+
+      # Required for adding browser_interop to allow_circular_includes_from.
+      # TODO: crbug.com/395179599 - Remove once //chrome/browser/net has its own
+      # build target.
+      "//remoting/host/chromeos:browser_interop",
       "//remoting/host/chromeos:features",
       "//services/device/public/cpp/geolocation",
       "//services/screen_ai/public/cpp:metrics",
@@ -5877,6 +5882,16 @@ static_library("browser") {
 
       # TODO(b/215757706): Find a way to avoid the circular include.
       "//chrome/browser/ui/ash/quick_answers",
+
+      # browser_interop's use of ProfileNetworkContextService causes a circular
+      # dependency:
+      # c/b -> ... ->
+      # c/b/ash/policy/remote_commands -> ... ->
+      # remoting/host/chromeos:browser_interop ->
+      # c/b
+      # TODO: crbug.com/395179599 - Remove once //chrome/browser/net has its own
+      # build target.
+      "//remoting/host/chromeos:browser_interop",
     ]
 
     if (is_chrome_branded) {

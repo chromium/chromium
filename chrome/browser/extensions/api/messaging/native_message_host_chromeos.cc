@@ -21,16 +21,11 @@ namespace extensions {
 
 namespace {
 
-std::unique_ptr<NativeMessageHost> CreateIt2MeHost(
-    content::BrowserContext* browser_context) {
-  return remoting::CreateIt2MeNativeMessagingHostForChromeOS();
-}
-
 const NativeMessageBuiltInHost kBuiltInHostsArray[] = {
     {NativeMessageEchoHost::kHostName, NativeMessageEchoHost::kOrigins,
      &NativeMessageEchoHost::Create},
     {remoting::kIt2MeNativeMessageHostName, remoting::kIt2MeOrigins,
-     &CreateIt2MeHost},
+     &remoting::CreateIt2MeNativeMessagingHostForChromeOS},
     {arc::ArcSupportMessageHost::kHostName,
      arc::ArcSupportMessageHost::kHostOrigin,
      &arc::ArcSupportMessageHost::Create},
