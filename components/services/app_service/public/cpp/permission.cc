@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "base/containers/to_value_list.h"
+#include "base/strings/to_string.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace apps {
@@ -79,7 +80,7 @@ std::string Permission::ToString() const {
   if (details.has_value()) {
     out << " details: " << details.value() << std::endl;
   }
-  out << " is_managed: " << (is_managed ? "true" : "false") << std::endl;
+  out << " is_managed: " << base::ToString(is_managed) << std::endl;
   return out.str();
 }
 

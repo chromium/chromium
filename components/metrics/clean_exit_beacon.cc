@@ -21,6 +21,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -399,7 +400,7 @@ void CleanExitBeacon::SetStabilityExitedCleanlyForTesting(
 std::string CleanExitBeacon::CreateBeaconFileContentsForTesting(
     bool exited_cleanly,
     int crash_streak) {
-  const std::string exited_cleanly_str = exited_cleanly ? "true" : "false";
+  const std::string exited_cleanly_str = base::ToString(exited_cleanly);
   return base::StringPrintf(
       "{\n"
       "  \"user_experience_metrics.stability.exited_cleanly\":%s,\n"

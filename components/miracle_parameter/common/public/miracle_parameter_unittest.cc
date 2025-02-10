@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
+#include "base/strings/to_string.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "base/test/scoped_feature_list.h"
@@ -28,9 +29,6 @@ scoped_refptr<base::FieldTrial> CreateFieldTrial(
       trial_name, total_probability, default_group_name, entropy_provider);
 }
 
-const std::string BoolToString(bool value) {
-  return value ? "true" : "false";
-}
 
 class ScopedNullCommandLineOverride {
  public:
@@ -509,15 +507,15 @@ TEST_F(MiracleParameterTest, MiracleParameterForBool) {
   // Set up the field trial params.
   const std::string kTrialName = "TrialName";
   std::map<std::string, std::string> params;
-  params["aForLessThan512MB"] = BoolToString(kAForLessThan512MB);
-  params["aFor512MBTo1GB"] = BoolToString(kAFor512MBTo1GB);
-  params["aFor1GBTo2GB"] = BoolToString(kAFor1GBTo2GB);
-  params["aFor2GBTo4GB"] = BoolToString(kAFor2GBTo4GB);
-  params["aFor4GBTo8GB"] = BoolToString(kAFor4GBTo8GB);
-  params["aFor8GBTo16GB"] = BoolToString(kAFor8GBTo16GB);
-  params["aFor16GBAndAbove"] = BoolToString(kAFor16GBAndAbove);
-  params["a"] = BoolToString(kAParamValue);
-  params["c"] = BoolToString(kCParamValue);
+  params["aForLessThan512MB"] = base::ToString(kAForLessThan512MB);
+  params["aFor512MBTo1GB"] = base::ToString(kAFor512MBTo1GB);
+  params["aFor1GBTo2GB"] = base::ToString(kAFor1GBTo2GB);
+  params["aFor2GBTo4GB"] = base::ToString(kAFor2GBTo4GB);
+  params["aFor4GBTo8GB"] = base::ToString(kAFor4GBTo8GB);
+  params["aFor8GBTo16GB"] = base::ToString(kAFor8GBTo16GB);
+  params["aFor16GBAndAbove"] = base::ToString(kAFor16GBAndAbove);
+  params["a"] = base::ToString(kAParamValue);
+  params["c"] = base::ToString(kCParamValue);
   base::AssociateFieldTrialParams(kTrialName, "A", params);
   scoped_refptr<base::FieldTrial> trial(CreateFieldTrial(
       kTrialName, /*total_probability=*/100, /*default_group_name=*/"A"));

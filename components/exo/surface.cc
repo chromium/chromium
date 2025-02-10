@@ -20,6 +20,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -911,7 +912,7 @@ std::string Surface::GetClientSurfaceId() const {
 
 void Surface::SetContainsVideo(bool contains_video) {
   TRACE_EVENT1("exo", "Surface::SetContainsVideo", "contains_video",
-               contains_video ? "true" : "false");
+               base::ToString(contains_video));
   pending_state_.basic_state.contains_video = contains_video;
 }
 

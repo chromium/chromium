@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -189,7 +190,7 @@ class IpProtectionCoreImplTest : public testing::Test {
     scoped_feature_list_.Reset();
     std::map<std::string, std::string> parameters;
     parameters[net::features::kIpPrivacyCacheTokensByGeo.name] =
-        should_enable_feature ? "true" : "false";
+        base::ToString(should_enable_feature);
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         net::features::kEnableIpProtectionProxy, std::move(parameters));
   }

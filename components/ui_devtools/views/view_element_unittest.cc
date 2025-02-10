@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/ui_devtools/protocol.h"
 #include "components/ui_devtools/ui_devtools_unittest_utils.h"
@@ -37,7 +38,7 @@ void TestBooleanCustomPropertySetting(ui_devtools::ViewElement* element,
                                       bool init_value) {
   std::pair<size_t, size_t> indices =
       GetPropertyIndices(element, property_name);
-  std::string old_value(init_value ? "true" : "false");
+  std::string old_value = base::ToString(init_value);
   std::vector<UIElement::ClassProperties> props =
       element->GetCustomPropertiesForMatchedStyle();
   std::vector<UIElement::UIProperty> ui_props =

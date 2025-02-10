@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -772,7 +773,7 @@ class FPFPageActivationThrottleTestGetActivationTest
       scoped_feature_list_.InitWithFeaturesAndParameters(
           {{features::kEnableFingerprintingProtectionFilter,
             {{"enable_only_if_3pc_blocked",
-              test_case.only_if_3pc_blocked_param ? "true" : "false"},
+              base::ToString(test_case.only_if_3pc_blocked_param)},
              {"activation_level", activation_level_param},
              {features::kRefreshHeuristicExceptionThresholdParam,
               test_case.is_refresh_heuristic_breakage_exception_enabled

@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/heuristic_source.h"
 
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -35,7 +36,7 @@ class HeuristicSourceTest
     std::vector<base::test::FeatureRef> disabled_features;
     if (test_case.model_predictions_feature) {
       std::string model_prediction_active =
-          *test_case.model_predictions_feature ? "true" : "false";
+          base::ToString(test_case.model_predictions_feature.value());
       enabled_features.push_back(
           {features::kAutofillModelPredictions,
            {{features::kAutofillModelPredictionsAreActive.name,

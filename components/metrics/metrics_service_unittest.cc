@@ -23,6 +23,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -1080,8 +1081,7 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
   // InitializeMetricsRecordingState() depends on the type of Android Chrome
   // session. See the comments in MetricsService::InitializeMetricsState() for
   // more details.
-  const std::string beacon_value =
-      params.expected_beacon_value ? "true" : "false";
+  const std::string beacon_value = base::ToString(params.expected_beacon_value);
   partial_expected_contents = "exited_cleanly\":" + beacon_value;
 #else
   partial_expected_contents = "exited_cleanly\":false";

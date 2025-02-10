@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
+#include "base/strings/to_string.h"
 #include "base/task/common/task_annotator.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
@@ -2575,7 +2576,7 @@ void SurfaceAggregator::DebugLogSurface(const Surface* surface,
           static_cast<int>(referenced_surfaces_.size()),
           surface->surface_id().ToString().c_str(),
           surface->size_in_pixels().ToString().c_str(),
-          will_draw ? "true" : "false");
+          base::ToString(will_draw).c_str());
 }
 
 }  // namespace viz

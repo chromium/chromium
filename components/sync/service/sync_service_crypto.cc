@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/sync/base/passphrase_enums.h"
@@ -533,7 +534,7 @@ void SyncServiceCrypto::OnEncryptedTypesChanged(DataTypeSet encrypted_types,
   DVLOG(1) << "Encrypted types changed to "
            << DataTypeSetToDebugString(state_.encrypted_types)
            << " (encrypt everything is set to "
-           << (state_.encrypt_everything ? "true" : "false") << ")";
+           << base::ToString(state_.encrypt_everything) << ")";
   DCHECK(state_.encrypted_types.HasAll(AlwaysEncryptedUserTypes()));
 
   delegate_->CryptoStateChanged();
