@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
@@ -65,12 +66,14 @@ class VerifyTrustAPI::IOPart {
     RequestState& operator=(const RequestState&) = delete;
 
     std::unique_ptr<net::CertVerifier::Request> request;
+    net::NetLogWithSource net_log;
   };
 
-  // Calls back |callback| with the result and no error.
+  // Keeps |request_state| alive until the |verify_result| is received, then
+  // calls back the |callback| with the result and no error.
   void CallBackWithResult(VerifyCallback callback,
                           std::unique_ptr<net::CertVerifyResult> verify_result,
-                          RequestState* request_state,
+                          std::unique_ptr<RequestState> request_state,
                           int return_value);
 
   // One CertVerifier per extension to verify trust. Each verifier is created on
@@ -175,8 +178,7 @@ void VerifyTrustAPI::IOPart::Verify(std::optional<Params> params,
       std::move(callback).Run(platform_keys::kErrorInvalidX509Cert, 0, 0);
       return;
     }
-    der_cert_chain.push_back(std::string_view(
-        reinterpret_cast<const char*>(cert_der.data()), cert_der.size()));
+    der_cert_chain.push_back(base::as_string_view(cert_der));
   }
   scoped_refptr<net::X509Certificate> cert_chain(
       net::X509Certificate::CreateFromDERCertChain(der_cert_chain));
@@ -191,31 +193,27 @@ void VerifyTrustAPI::IOPart::Verify(std::optional<Params> params,
   }
   net::CertVerifier* verifier = extension_to_verifier_[extension_id].get();
 
-  std::unique_ptr<net::CertVerifyResult> verify_result(
-      new net::CertVerifyResult);
-  std::unique_ptr<net::NetLogWithSource> net_log(new net::NetLogWithSource);
-  const int flags = 0;
+  auto verify_result = std::make_unique<net::CertVerifyResult>();
+  auto request_state = std::make_unique<RequestState>();
 
-  std::string ocsp_response;
-  std::string sct_list;
   net::CertVerifyResult* const verify_result_ptr = verify_result.get();
+  RequestState* const request_state_ptr = request_state.get();
 
-  RequestState* request_state = new RequestState();
-  using VerificationCallback = base::OnceCallback<void(int)>;
-  VerificationCallback bound_callback = base::BindOnce(
+  base::OnceCallback<void(int)> bound_callback = base::BindOnce(
       &IOPart::CallBackWithResult, base::Unretained(this), std::move(callback),
-      std::move(verify_result), base::Owned(request_state));
-  std::pair<VerificationCallback, VerificationCallback> split_callback =
+      std::move(verify_result), std::move(request_state));
+  auto [first_callback, second_callback] =
       base::SplitOnceCallback(std::move(bound_callback));
 
-  const int return_value = verifier->Verify(
-      net::CertVerifier::RequestParams(std::move(cert_chain), details.hostname,
-                                       flags, ocsp_response, sct_list),
-      verify_result_ptr, std::move(split_callback.first),
-      &request_state->request, *net_log);
+  const int return_value =
+      verifier->Verify(net::CertVerifier::RequestParams(
+                           std::move(cert_chain), details.hostname,
+                           /*flags=*/0, /*ocsp_response=*/{}, /*sct_list=*/{}),
+                       verify_result_ptr, std::move(first_callback),
+                       &request_state_ptr->request, request_state_ptr->net_log);
 
   if (return_value != net::ERR_IO_PENDING) {
-    std::move(split_callback.second).Run(return_value);
+    std::move(second_callback).Run(return_value);
     return;
   }
 }
@@ -228,7 +226,7 @@ void VerifyTrustAPI::IOPart::OnExtensionUnloaded(
 void VerifyTrustAPI::IOPart::CallBackWithResult(
     VerifyCallback callback,
     std::unique_ptr<net::CertVerifyResult> verify_result,
-    RequestState* request_state,
+    std::unique_ptr<RequestState> request_state,
     int return_value) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
