@@ -881,7 +881,6 @@ public class StripLayoutHelperManager
         if (applyScrimOverlay) {
             mIsHeightTransitioning = true;
             boolean hideStrip = newHeightPx == 0;
-            setStripVisibilityState(StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION, !hideStrip);
             mStripTransitionScrimOpacity = hideStrip ? 0f : 1f;
             // Update the strip visibility state in StatusBarController just after the margins are
             // updated during a hide->show transition so that the status bar assumes the base tab
@@ -892,6 +891,10 @@ public class StripLayoutHelperManager
             // Set the status bar color and scrim overlay at the start of the transition.
             mStatusBarColorController.setTabStripColorOverlay(
                     getStripTransitionScrimColor(), mStripTransitionScrimOpacity);
+            // The height transition is running to update strip visibility. Ensure that any stale
+            // state set by a previous fade transition is cleared at this time.
+            setStripVisibilityState(StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION, !hideStrip);
+            setStripVisibilityState(StripVisibilityState.HIDDEN_BY_FADE, /* clear= */ true);
         }
 
         if (mIsLayoutOptimizationsEnabled) {
@@ -947,7 +950,11 @@ public class StripLayoutHelperManager
                 : "Height transition to update the scrim should not be running when a fade"
                         + " transition is finishing.";
         mFadeTransitionAnimator = null;
+        // The fade transition is running to update strip visibility. Ensure that any stale
+        // state set by a previous height transition is cleared at this time.
         setStripVisibilityState(StripVisibilityState.HIDDEN_BY_FADE, showStrip);
+        setStripVisibilityState(
+                StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION, /* clear= */ true);
     }
 
     @Override
