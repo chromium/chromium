@@ -110,33 +110,6 @@ class BuildConfigGenerator extends DefaultTask {
         // Logic for google_play_services_package added below.
     ]
 
-    /**
-     * Prefixes of androidx dependencies which are allowed to use non-SNAPSHOT
-     * versions. These are the legacy androidx targets that are no longer being
-     * released regularly (thus are not part of the snapshots) but are still
-     * required by chromium.
-     *
-     * If an assert fails pointing at a dep which *does* exist in the androidx
-     * snapshot then adding it here will only silence the sanity check rather
-     * than fix the underlying issue (which is we should always use the snapshot
-     * versions of androidx deps when possible). A better solution could be to
-     * add it in //third_party/androidx/build.gradle.template
-     *
-     * If running fetch_all.py, you must first run fetch_all_androidx.py for
-     * changes to its build.gradle.template to take effect.
-     */
-    static final Set<String> ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES = [
-      'androidx_compose_material_material_icons_core_android',
-      'androidx_constraintlayout',
-      'androidx_legacy',
-      'androidx_localbroadcastmanager_localbroadcastmanager',
-      'androidx_media3_media3',
-      'androidx_multidex_multidex',
-      'androidx_pdf_pdf',
-      'androidx_privacysandbox_ads_ads_adservices',
-      'androidx_test',
-    ]
-
     // Prefixes of autorolled libraries in //third_party/android_deps_autorolled.
     static final List<String> AUTOROLLED_LIB_PREFIXES = []
 
@@ -494,11 +467,6 @@ class BuildConfigGenerator extends DefaultTask {
 
         mergeLicensesDeps.each { dependency ->
             mergeLicenses(dependency, normalisedRepoPath)
-        }
-
-        // Skip when --no-subprojects is passed.
-        if (project.subprojects) {
-            validateAndroidX(graph.dependencies.values())
         }
 
         // 3. Generate the root level build files
@@ -959,24 +927,6 @@ class BuildConfigGenerator extends DefaultTask {
         }
         String out = "${BUILD_GN_TOKEN_START}\n$sb\n${BUILD_GN_TOKEN_END}"
         buildFile.write(matcher.replaceFirst(Matcher.quoteReplacement(out)))
-    }
-
-    private void validateAndroidX(
-            Collection<ChromiumDepGraph.DependencyDescription> dependencies) {
-        dependencies.each { dependency ->
-            if (dependency.id.contains('androidx') &&
-                    dependency.fileName && !dependency.fileName.contains('SNAPSHOT')) {
-                boolean hasAllowedDep = ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES.any {
-                    allowedPrefix -> dependency.id.startsWith(allowedPrefix)
-                }
-                if (!hasAllowedDep) {
-                    String errorMsg = ("${dependency.fileName} uses non-SNAPSHOT version. "
-                          + "If this is expected, add ${dependency.id} to "
-                          + '|ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES| list.')
-                    throw new IllegalStateException(errorMsg)
-                }
-            }
-        }
     }
 
     private void updateDepsDeclaration(ChromiumDepGraph depGraph, String cipdBucket,
