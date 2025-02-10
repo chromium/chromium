@@ -203,8 +203,8 @@ class WebWidget {
   virtual void SetScreenRects(const gfx::Rect& widget_screen_rect,
                               const gfx::Rect& window_screen_rect) = 0;
 
-  // Returns the visible viewport size (in screen coorindates).
-  virtual gfx::Size VisibleViewportSizeInDIPs() = 0;
+  // Returns the visible viewport size (in device pixel screen coordinates).
+  virtual gfx::Size VisibleViewportSize() = 0;
 
   // Returns the emulator scale.
   virtual float GetEmulatorScale() { return 1.0f; }

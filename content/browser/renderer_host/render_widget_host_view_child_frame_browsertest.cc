@@ -192,16 +192,17 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
       nested_root->child_at(1)->current_frame_host()->GetRenderWidgetHost();
   ASSERT_NE(nested_root_rwh->GetProcess(), nested_child_rwh->GetProcess());
 
-  const gfx::Size initial_size = root_view->GetVisibleViewportSize();
+  const gfx::Size initial_size = root_view->GetVisibleViewportSizeDevicePx();
   ASSERT_FALSE(initial_size.IsEmpty());
 
-  gfx::Size nested_initial_size = nested_root_view->GetVisibleViewportSize();
+  gfx::Size nested_initial_size =
+      nested_root_view->GetVisibleViewportSizeDevicePx();
   while (nested_initial_size.IsEmpty()) {
     // CrossProcessFrameConnector for `nested_child_rwh` must receive a
     // SetRectInParentView() IPC before it has a viewport size. Run tasks until
     // that IPC arrives.
     base::RunLoop().RunUntilIdle();
-    nested_initial_size = nested_root_view->GetVisibleViewportSize();
+    nested_initial_size = nested_root_view->GetVisibleViewportSizeDevicePx();
   }
   ASSERT_NE(initial_size, nested_initial_size);
 
@@ -255,12 +256,15 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 // CrossProcessFrameConnector, and this isn't Android-specific code.
 // For iOS, RenderWidgetHostViewIOS can't be resized, either.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  float scale_factor = root_rwh->GetDeviceScaleFactor();
 
   // Resize the top level widget to cause its |visible_viewport_size| to be
   // changed. The change should propagate down to the child RenderWidget.
   {
-    const gfx::Size resize_to(initial_size.width() - 10,
-                              initial_size.height() - 10);
+    gfx::Size resize_to(gfx::ScaleToCeiledSize(initial_size, 1 / scale_factor));
+    resize_to.SetSize(resize_to.width() - 10, resize_to.height() - 10);
+    const gfx::Size resize_to_device_px(
+        gfx::ScaleToCeiledSize(resize_to, scale_factor));
 
     root_view->SetSize(resize_to);
 
@@ -268,15 +272,19 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     while (true) {
       std::optional<blink::VisualProperties> properties =
           root_rwh->LastComputedVisualProperties();
-      if (properties && properties->visible_viewport_size == resize_to)
+      if (properties &&
+          properties->visible_viewport_size == resize_to_device_px) {
         break;
+      }
       base::RunLoop().RunUntilIdle();
     }
     while (true) {
       std::optional<blink::VisualProperties> properties =
           child_rwh->LastComputedVisualProperties();
-      if (properties && properties->visible_viewport_size == resize_to)
+      if (properties &&
+          properties->visible_viewport_size == resize_to_device_px) {
         break;
+      }
       base::RunLoop().RunUntilIdle();
     }
   }
@@ -286,8 +294,11 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   // Resize the top level widget to cause its |visible_viewport_size| to be
   // changed. The change should propagate down to the child RenderWidget.
   {
-    const gfx::Size resize_to(nested_initial_size.width() - 10,
-                              nested_initial_size.height() - 10);
+    gfx::Size resize_to(
+        gfx::ScaleToCeiledSize(nested_initial_size, 1 / scale_factor));
+    resize_to.SetSize(resize_to.width() - 10, resize_to.height() - 10);
+    const gfx::Size resize_to_device_px(
+        gfx::ScaleToCeiledSize(resize_to, scale_factor));
 
     EXPECT_TRUE(
         ExecJs(root->current_frame_host(),
@@ -299,15 +310,19 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     while (true) {
       std::optional<blink::VisualProperties> properties =
           nested_root_rwh->LastComputedVisualProperties();
-      if (properties && properties->visible_viewport_size == resize_to)
+      if (properties &&
+          properties->visible_viewport_size == resize_to_device_px) {
         break;
+      }
       base::RunLoop().RunUntilIdle();
     }
     while (true) {
       std::optional<blink::VisualProperties> properties =
           nested_child_rwh->LastComputedVisualProperties();
-      if (properties && properties->visible_viewport_size == resize_to)
+      if (properties &&
+          properties->visible_viewport_size == resize_to_device_px) {
         break;
+      }
       base::RunLoop().RunUntilIdle();
     }
   }
@@ -325,6 +340,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   // check that the value is sent to both RenderWidgets.
   {
     const gfx::Size auto_resize_to(105, 100);
+    const gfx::Size auto_resize_to_device_px(
+        gfx::ScaleToCeiledSize(auto_resize_to, scale_factor));
 
     // Replace the WebContentsDelegate so that we can use the auto-resize
     // changes to adjust the size of the top widget.
@@ -339,15 +356,19 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     while (true) {
       std::optional<blink::VisualProperties> properties =
           root_rwh->LastComputedVisualProperties();
-      if (properties && properties->visible_viewport_size == auto_resize_to)
+      if (properties &&
+          properties->visible_viewport_size == auto_resize_to_device_px) {
         break;
+      }
       base::RunLoop().RunUntilIdle();
     }
     while (true) {
       std::optional<blink::VisualProperties> properties =
           child_rwh->LastComputedVisualProperties();
-      if (properties && properties->visible_viewport_size == auto_resize_to)
+      if (properties &&
+          properties->visible_viewport_size == auto_resize_to_device_px) {
         break;
+      }
       base::RunLoop().RunUntilIdle();
     }
 
