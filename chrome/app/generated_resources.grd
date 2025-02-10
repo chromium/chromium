@@ -18728,6 +18728,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_MERCHANT_TRUST_IPH_BODY_SCREEN_READER" desc="Announcement to screen reader users when the merchant trust IPH is shown." is_accessibility_with_no_ui="true">
       You can get a summary of what people are saying in their reviews
     </message>
+
+    <!-- Chrome Apps Deprecation -->
+    <if expr="is_chromeos">
+      <message name="IDS_USER_INSTALLED_CHROME_APP_DEPRECATION_NOTIFICATION_MESSAGE" desc="Message of the notification displayed while launching a user-installed app.">
+        Chrome Apps will soon be deprecated. For alternatives contact the developer or your IT service contact.
+      </message>
+    </if>
+
   </messages>
 </release>
 </grit>
