@@ -8120,7 +8120,6 @@ crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/protocol/rtp-demuxing.html [ S
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/protocol/split.https.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/RTCDataChannel-bufferedAmount.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/RTCDataChannel-close.html [ Skip Timeout ]
-crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/RTCDataChannel-GC.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/RTCDataChannel-iceRestart.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac14 ] external/wpt/webrtc/RTCDataChannel-send-blob-order.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/RTCDataChannel-send-blob-order.html [ Timeout ]
@@ -8184,7 +8183,6 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/protocol/rtp-demuxing.ht
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/protocol/split.https.html [ Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/RTCDataChannel-bufferedAmount.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/RTCDataChannel-close.html [ Skip Timeout ]
-crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/RTCDataChannel-GC.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/RTCDataChannel-iceRestart.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/RTCDataChannel-send-blob-order.html [ Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/RTCDataChannel-send-close.html [ Skip Timeout ]
@@ -9138,3 +9136,6 @@ crbug.com/394287937 http/tests/devtools/storage-panel-dom-storage-update.js [ Fa
 # Gardener 2025-02-06
 crbug.com/385054996 external/wpt/css/css-pseudo/input-element-pseudo-open.optional.html [ Crash Pass Timeout ]
 crbug.com/394638725 [ Mac ] external/wpt/css/cssom/getComputedStyle-width-scroll.tentative.html [ Failure Pass ]
+
+# Gardener 2025-02-10
+crbug.com/356930166 [ Mac ] external/wpt/webrtc/RTCDataChannel-GC.html [ Failure Pass Skip Timeout ]
