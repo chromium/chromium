@@ -195,6 +195,9 @@ TEST_F(ChangeFormSubmissionVerifierTest, Succeeded) {
   verifier->OnPasswordFormSubmission(web_contents());
 
   EXPECT_TRUE(completion_future.Get());
+  histogram_tester.ExpectTotalCount(
+      ChangeFormSubmissionVerifier::kPasswordChangeVerificationTimeHistogram,
+      1);
   histogram_tester.ExpectUniqueSample(
       ChangeFormSubmissionVerifier::kPasswordChangeSubmittedHistogram, true, 1);
 }
