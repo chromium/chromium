@@ -711,7 +711,7 @@ template("proto_library") {
 #     args = [
 #       "--encode=foo.FooMessage",
 #       "-I",
-#       rebase_path("//"),
+#       rebase_path("//", root_build_dir),
 #       "component/core/foo.proto",
 #     ]
 #   }

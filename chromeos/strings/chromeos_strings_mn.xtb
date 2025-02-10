@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Хураангуйлах</translation>
 <translation id="123124571410524056">Портал байж магадгүй</translation>
 <translation id="1232610416724362657">хүрхрээ</translation>
+<translation id="1238163879850290856">Бусад хүнийг өгөгдөлд хандахаас сэргийлэхийн тулд шинэчилнэ үү. Зөвхөн итгэдэг оруулах аргаа ашиглана уу.</translation>
 <translation id="1238612778414822719">HTTPS хоцролт</translation>
 <translation id="1252766349417594414">Залуур</translation>
 <translation id="1270369111467284986">Дамжих портал гэж таамагласан</translation>
@@ -449,6 +450,7 @@
 <translation id="3122883569442693641">Дэлгэрэнгүй мэдээлэл</translation>
 <translation id="3124039320086536031">Төхөөрөмж холбогдсон байна.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Хуудсыг хасах уу?}=1{{PAGE_NUMBER}-р хуудсыг хасах уу?}other{{PAGE_NUMBER}-р хуудсыг хасах уу?}}</translation>
+<translation id="3134486240968249588">Анхаарвал зохих цөөн хэдэн зүйл</translation>
 <translation id="3140130301071865159">цас</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" />-д онцгой</translation>
 <translation id="315116470104423982">Гар утасны дата</translation>
@@ -766,6 +768,7 @@
 <translation id="4650608062294027130">Баруун талын shift</translation>
 <translation id="4654549501020883054">Өдөр бүр өөрчлөх</translation>
 <translation id="4655868084888499342">Зургийг дэлгэцийн зургаар тохируулсан</translation>
+<translation id="4660989616054030633">Үүсгэгч ХОУ хүмүүсийн талаар буруу мэдээлэл үүсгэх зэрэг алдаа гаргаж болох тул хариултыг дахин шалгана уу</translation>
 <translation id="4661249927038176904">Сюрреал</translation>
 <translation id="4661392828086261436">Энэ шинэчлэлтийг төхөөрөмж үйлдвэрлэгчээс олгосон бөгөөд Google-с баталгаажуулаагүй</translation>
 <translation id="4664651912255946953">үс</translation>
@@ -1065,6 +1068,7 @@
 <translation id="6074752328838739425">Хураангуйг нуух</translation>
 <translation id="6075872808778243331">(Android) HTTP хоцролт</translation>
 <translation id="6078323886959318429">Товчлол нэмэх</translation>
+<translation id="6079693086494835199">Өгөгдмөл нүүр хуудас нь фишинг сайт биш эсэхийг нягтлахын тулд шинэчилнэ үү. Зөвхөн итгэдэг вебсайтаа ашиглана уу.</translation>
 <translation id="6091080061796993741">шар</translation>
 <translation id="6104112872696127344">Скан хийхийг цуцалсан</translation>
 <translation id="6106186594183574873">Дуусгахын тулд хуучин нууц үгээ оруулна уу</translation>
@@ -1088,6 +1092,7 @@
 <translation id="6156030503438652198">элгэн хүрэн болон ягаан</translation>
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Бусад хүнийг таны микрофон, камерыг ашиглахыг зогсоохын тулд шинэчилнэ үү. Зөвхөн итгэдэг сайтдаа зөвшөөрөл олгоно уу.</translation>
 <translation id="6188737759358894319"><ph name="DATE" />-нд үүсгэсэн</translation>
 <translation id="6189418609903030344">Батарейн хүчин чадлыг ашиглалт бууруулдаг</translation>
 <translation id="6189987971574353264">Тоглуулах</translation>
@@ -1114,6 +1119,7 @@
 <translation id="629550705077076970">гарыг бүдгэрүүлэх</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> тестийг цуцалсан байна</translation>
 <translation id="631063167932043783">Аппыг судлах</translation>
+<translation id="6314333689576767865">Таны Chromebook-г аюулгүй өгөгдмөл рүү шинэчилсэн. Та хүссэн үедээ Тохиргоонд өөрчлөлт хийх боломжтой.</translation>
 <translation id="6318437367327684789">үүрд</translation>
 <translation id="6319207335391420837">Жижиг программыг <ph name="DEVICE_NAME" /> дээр шинэчлэх</translation>
 <translation id="6321407676395378991">Дэлгэц амраагчийг асаах</translation>
@@ -1250,6 +1256,7 @@
 <translation id="6862416241246624313">Санал хүсэлт илгээсэн</translation>
 <translation id="6866732840889595464">хонин нүдэн цэцэг</translation>
 <translation id="6871256179359663621">цайвар нил ягаан</translation>
+<translation id="6887967050249348172">Тохиргоонд өөрчлөлт хийгдэхээс сэргийлэхийн тулд өргөтгөлийг идэвхгүй болгосон. Зөвхөн итгэдэг өргөтгөлүүдээ асаана уу.</translation>
 <translation id="6889786074662672253">Дахин эхлүүлэх үед энэ гадаад төхөөрөмжийг бүү салгаарай. Мөн компьютероо бүү унтраагаарай. Та энэ цонхыг багасгах боломжтой. Үүнд хэдэн минут зарцуулж магадгүй бөгөөд энэ хугацаанд таны гадаад төхөөрөмж ажиллахгүй байж магадгүй.</translation>
 <translation id="6899460405678814458">Хураангуйг харуулах</translation>
 <translation id="6900701049656042631">Энэ цомогт ямар ч зураг байхгүй байна. Зураг нэмэхийн тулд <ph name="LINK" /> руу очно уу</translation>
@@ -1340,6 +1347,7 @@
 <translation id="7233782086689993269">Товчлолыг сэргээсэн</translation>
 <translation id="725133483556299729">Имэйл сонгох</translation>
 <translation id="7255187042098209569">ягаан, нил ягаан</translation>
+<translation id="7267918995585557751">Өгөгдмөл эхлүүлэх хуудас нь фишинг вебсайт биш эсэхийг нягтлахын тулд шинэчилнэ үү. Зөвхөн итгэдэг вебсайтаа ашиглана уу.</translation>
 <translation id="7271000785316964275">классикист</translation>
 <translation id="7271040990581020067">Сканнерыг одоогоор ашиглаж байна. Дараа дахин оролдоно уу.</translation>
 <translation id="7271932918253517778">Дээд талын мөрийн товчнуудтай товчлол нь <ph name="META_KEY" /> товчийг оруулах шаардлагатай.</translation>
@@ -1485,6 +1493,7 @@
 <translation id="7903695460270716054">Шилэгдсэн постер болон зургууд сонгоно уу</translation>
 <translation id="7912005977894000746">Үндсэн хуудас руу буцах</translation>
 <translation id="7915220255123750251">Сүлжээний APN-н тохиргоог удирдана уу. APN үүрэн холбооны сүлжээ болон интернэтийн хооронд холболт тогтоодог.</translation>
+<translation id="7915759923880480519">Сүлжээгээрээ дамжуулан илгээдэг өгөгдлийг хамгаалахын тулд шинэчилнэ үү. Зөвхөн итгэдэг сүлжээгээ ашиглана уу.</translation>
 <translation id="7936303884198020182">DNS олдсонгүй</translation>
 <translation id="7942349550061667556">Улаан</translation>
 <translation id="7943235353293548836">Тогтмол keepalive интервал</translation>
@@ -1648,7 +1657,6 @@
 <translation id="8747900814994928677">Өөрчлөлтийг баталгаажуулах</translation>
 <translation id="8749478549112817787">Камерын дэвсгэр</translation>
 <translation id="8755946156089753497">цамхаг</translation>
-<translation id="8756235582947991808">ХОУ-аар хэрхэн үүсгэх болон анхаарвал зохих цөөн хэдэн зүйл</translation>
 <translation id="8760616037557661287">Өмнөх заавар</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Зургийн цомог</translation>
@@ -1710,6 +1718,7 @@
 <translation id="89945434909472341">тосгон</translation>
 <translation id="8997710128084572139">Төхөөрөмжийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
 <translation id="8998289560386111590">Таны төхөөрөмжид боломжгүй</translation>
+<translation id="9000871120886759611">Сонгосон хэлээрээ мэдээлэлд хандах боломжтой эсэхийг нягтлахын тулд шинэчилнэ үү. Зөвхөн сонгосон хэлийг ашигладаг эсэхийг шалгана уу.</translation>
 <translation id="9003499805101629690">пицца</translation>
 <translation id="9003704114456258138">Давтамж</translation>
 <translation id="901834265349196618">и-мэйл</translation>

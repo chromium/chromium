@@ -16,10 +16,6 @@
 - (void)manageSyncSettingsCoordinatorWasRemoved:
     (ManageSyncSettingsCoordinator*)coordinator;
 
-// Title for the Sync Settings coordinator.
-// TODO(crbug.com/40774188): Remove property following the MICE Settings launch.
-@property(nonatomic, readonly) NSString* manageSyncSettingsCoordinatorTitle;
-
 @optional
 // Called when the view controller is about to open the Chrome Sync web page
 // URL.

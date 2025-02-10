@@ -26,6 +26,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/share_kit/model",
+    "//ios/chrome/browser/share_kit/model:constants",
     "//ios/chrome/browser/share_kit/model:factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",

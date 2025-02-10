@@ -198,8 +198,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       assertWithMatcher:grey_notVisible()];
 }
 
-// Tests that unified account settings row is showing, and the Sync row is not
-// showing.
+// Tests that unified account settings row is showing.
 - (void)testShowingUnifiedAccountSettings {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -209,9 +208,6 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   // Sign in with fake identity using the settings sign-in promo.
   SignInWithPromoFromAccountSettings(fakeIdentity,
                                      /*expect_history_sync_ui=*/YES);
-
-  // Verify the Sync settings row is not showing.
-  [SigninEarlGrey verifySyncUIIsHidden];
 
   // Verify the account settings row is showing.
   [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]

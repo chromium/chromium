@@ -33,7 +33,7 @@ enum class IncognitoLockSettingInteraction {
   kDoNotHideSelected = 0,
   // User selected hide with reauth method option in settings.
   kHideWithReauthSelected,
-  // User selected wide with soft lock option in settings
+  // User selected hide with soft lock option in settings.
   kHideWithSoftLockSelected,
   kMaxValue = kHideWithSoftLockSelected,
 };

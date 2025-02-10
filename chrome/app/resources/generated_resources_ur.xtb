@@ -220,6 +220,7 @@
 <translation id="114721135501989771">‏Chrome میں Google کی اسمارٹ سروسز حاصل کریں</translation>
 <translation id="1147322039136785890">اب <ph name="SUPERVISED_USER_NAME" /> کی باری ہے</translation>
 <translation id="1147991416141538220">رسائی طلب کرنے کے لیے، اس آلہ کے منتظم سے رابطہ کریں۔</translation>
+<translation id="1148464196693569530">صارف اسکرپٹس کی اجازت دیں</translation>
 <translation id="1148624853678088576">آپ پوری طرح سے تیار ہیں!</translation>
 <translation id="1148669835763563782">‏آپ کو بہتر سیکیورٹی اور Chromebook کی جدید ترین خصوصیات کے لیے تازہ ترین سافٹ ویئر اپ ڈیٹ مل رہا ہے۔ اس اپ ڈیٹ میں سیٹ اپ کا ایک بہتر تجربہ شامل ہے تاکہ آپ کو اپنے Chromebook پر ایک ہموار آغاز کرنے میں مدد ملے۔</translation>
 <translation id="1149401351239820326">میعاد کے اختتام کا مہینہ</translation>
@@ -2295,6 +2296,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{یہ آلہ 1 سال کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}other{یہ آلہ {YEARS} سال کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}}</translation>
 <translation id="2577127557293415225">کچھ دیر کیلئے دونوں آنکھیں بند کریں</translation>
 <translation id="257779572837908839">‏Chromebox برائے میٹنگز کے طور پر سیٹ کریں</translation>
+<translation id="2577981599306533385">‏<ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) فوری طور پر "<ph name="GROUP_NAME" />" ٹیب گروپ تک رسائی سے محروم ہو جائے گا اور Google سروسز پر مزید آپ کے ساتھ تعامل نہیں کر سکے گا۔</translation>
 <translation id="2580889980133367162"><ph name="HOST" /> کو ہمیشہ متعدد فائلیں ڈاؤن لوڈ کرنے کی اجازت دیں</translation>
 <translation id="258095186877893873">طویل</translation>
 <translation id="2581455244799175627">فریق ثالث کوکیز کی اجازت دینے کے بارے میں مزید</translation>
@@ -6758,6 +6760,7 @@
 <translation id="5794414402486823030">ہمیشہ سسٹم ویور کے ساتھ کھولیں</translation>
 <translation id="5794700615121138172">‏Linux کے اشتراک کردہ فولڈرز</translation>
 <translation id="5794786537412027208">‏سبھی Chrome ایپس چھوڑ دیں</translation>
+<translation id="5795422263272161110">ایک ساتھ دکھائیں</translation>
 <translation id="5796485699458186843">نیا پوشیدگی ٹیب</translation>
 <translation id="5796956053441619942">‏ریموٹ آلہ کا URL تعاون یافتہ نہیں ہے</translation>
 <translation id="5797934230382081317">‏&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; اور &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; پر شروع کرنے کا طریقہ سیکھیں</translation>
@@ -7286,6 +7289,7 @@
 <translation id="6170498031581934115">‏ADB ڈیبگنگ کو فعال نہیں کیا جا سکا۔ ترتیبات میں جائیں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6170675927290506430">اطلاع کی ترتیبات پر جائیں</translation>
 <translation id="6171779718418683144">ہر دورے پر پوچھیں</translation>
+<translation id="6172020488605056255">پڑھنے میں میری مدد کریں استعمال کرنے کے لیے دایاں کلک کریں</translation>
 <translation id="617213288191670920">کوئی زبان شامل نہیں کی گئی</translation>
 <translation id="6173623053897475761">‏اپنا PIN دوبارہ ٹائپ کریں</translation>
 <translation id="6174909075810107548">ماؤس کے بٹن کو دبانے کیلئے "5" کا استعمال کریں</translation>
@@ -8312,6 +8316,7 @@
 <translation id="6910190732484284349">صارف نام کی پاس کی حذف کریں: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">حذف کردہ</translation>
 <translation id="6910274140210351823">گہری</translation>
+<translation id="691102290537033604">‏یہ ایکسٹینشن ایسا کوڈ چلانے کے قابل ہو گی جسے Google نے جائزہ نہیں لیا ہے۔ یہ غیر محفوظ ہو سکتا ہے اور آپ کو اسے صرف اس صورت میں فعال کرنا چاہیے جب آپ کو معلوم ہو کہ آپ کیا کر رہے ہیں۔</translation>
 <translation id="6911734910326569517">میموری فوٹ پرنٹ</translation>
 <translation id="6912007319859991306">‏سیلولر SIM کا PIN</translation>
 <translation id="6912380255120084882">کوئی مختلف آلہ آزمائیں</translation>
@@ -9823,6 +9828,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> آواز <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">‏اپنے Android فون سے WiFi کو خودکار طور پر منتقل کریں</translation>
 <translation id="7991296728590311172">سوئچ رسائی کی ترتیبات</translation>
+<translation id="7992080146463834191">مواد کا خلاصہ کریں، پیچیدہ زبان کو سادہ بنائیں، یا سوالات پوچھیں۔</translation>
 <translation id="7992203134935383159">اسپیچ سنتھیسس</translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">کارروائی کی ترجیح</translation>
@@ -11075,6 +11081,7 @@
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" کو آف کر دیا گیا</translation>
 <translation id="8874647982044395866">نامیاتی</translation>
 <translation id="8874790741333031443">فریق ثالث کوکیز کو عارضی طور پر اجازت دے کر آزمائیں، جس کا مطلب براؤزنگ کا کم تحفظ ہے لیکن سائٹ کی خصوصیات کے توقع کے مطابق کام کرنے کا زیادہ امکان ہے۔</translation>
+<translation id="8875221558267407626">مواد کا خلاصہ کریں، پیچیدہ زبان کو سادہ بنائیں، یا سوالات پوچھیں</translation>
 <translation id="8875520811099717934">‏Linux اپ گریڈ</translation>
 <translation id="8875736897340638404">اپنے نظر آنے کو منتخب کریں</translation>
 <translation id="8876307312329369159">ڈیمو سیشن میں اس ترتیب کو تبدیل نہیں کیا جا سکتا ہے۔</translation>
@@ -11128,6 +11135,7 @@
 <translation id="8915916167043355778">تمام بند کریں</translation>
 <translation id="8916476537757519021">پوشیدگی کا ذیلی فریم: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">ہاں میں متفق ہوں</translation>
+<translation id="8917980324687233736">ایک ساتھ دکھائیں</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> کا <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">ایپ انسٹال کی جا رہی ہے...</translation>
 <translation id="891931289445130855">ڈیٹا اور اجازتیں حذف کریں</translation>

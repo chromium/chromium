@@ -156,8 +156,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 new SafetyHubBrowserStateModuleMediator(
                         findPreference(PREF_BROWSER_STATE_INDICATOR), mModuleMediators);
 
-        // `mBrowserStateModuleMediator` needs to be set up after all the other modules, as it
-        // depends on them.
         mBrowserStateModuleMediator.setUpModule();
     }
 
@@ -279,16 +277,15 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
             moduleMediator.updateModule();
         }
 
-        // `mBrowserStateModuleMediator` needs to be updated after all the other modules, as it
-        // depends on them.
-        mBrowserStateModuleMediator.updateModule();
-
         onUpdateNeeded();
     }
 
     @Override
     public void onUpdateNeeded() {
+        // `mBrowserStateModuleMediator` needs to be updated after all the other modules change, as
+        // it depends on them.
         mBrowserStateModuleMediator.updateModule();
+
         updateAllModulesExpandState();
     }
 

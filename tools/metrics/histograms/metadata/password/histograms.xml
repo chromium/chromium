@@ -2662,6 +2662,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordChangeVerificationTime" units="ms"
+    expires_after="2025-11-30">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    The time in milliseconds it takes to get a response from the server whether
+    the change password form submission was successful. The metric is reported
+    immediately after receiving the server response.
+  </summary>
+</histogram>
+
 <histogram
     name="PasswordManager.PasswordChangeVerificationTriggeredAutomatically"
     enum="Boolean" expires_after="2025-11-30">

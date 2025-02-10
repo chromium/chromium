@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/base64.h"
@@ -154,13 +155,25 @@ static std::string TerminationStatusToString(base::TerminationStatus status) {
 
 class BrowserToPageConnector;
 
+// Contains permissions for the instances of BrowserConnectorHostClient.
+// Currently, only permissions for
+// DevToolsAgentHostClient::AllowUnsafeOperations are implemented.
+struct BrowserConnectorHostClientPermissions {
+  // Defines what DevToolsAgentHostClient::AllowUnsafeOperations
+  // returns for BrowserConnectorHostClient instances. See
+  // DevToolsAgentHostClient::AllowUnsafeOperations for more details.
+  bool allow_unsafe_operations = false;
+};
+
 class BrowserToPageConnector {
  public:
   class BrowserConnectorHostClient : public DevToolsAgentHostClient {
    public:
-    BrowserConnectorHostClient(BrowserToPageConnector* connector,
-                               DevToolsAgentHost* host)
-        : connector_(connector) {
+    BrowserConnectorHostClient(
+        BrowserToPageConnector* connector,
+        DevToolsAgentHost* host,
+        const BrowserConnectorHostClientPermissions& permissions)
+        : connector_(connector), permissions_(permissions) {
       // TODO(dgozman): handle return value of AttachClient.
       host->AttachClient(this);
     }
@@ -177,18 +190,24 @@ class BrowserToPageConnector {
       connector_->AgentHostClosed(agent_host);
     }
 
+    bool AllowUnsafeOperations() override {
+      return permissions_.allow_unsafe_operations;
+    }
+
    private:
     raw_ptr<BrowserToPageConnector> connector_;
+    BrowserConnectorHostClientPermissions permissions_;
   };
 
   BrowserToPageConnector(const std::string& binding_name,
-                         DevToolsAgentHost* page_host)
+                         DevToolsAgentHost* page_host,
+                         BrowserConnectorHostClientPermissions permissions)
       : binding_name_(binding_name), page_host_(page_host) {
     browser_host_ = BrowserDevToolsAgentHost::CreateForDiscovery();
-    browser_host_client_ =
-        std::make_unique<BrowserConnectorHostClient>(this, browser_host_.get());
-    page_host_client_ =
-        std::make_unique<BrowserConnectorHostClient>(this, page_host_.get());
+    browser_host_client_ = std::make_unique<BrowserConnectorHostClient>(
+        this, browser_host_.get(), permissions);
+    page_host_client_ = std::make_unique<BrowserConnectorHostClient>(
+        this, page_host_.get(), BrowserConnectorHostClientPermissions());
 
     SendProtocolMessageToPage("Page.enable", base::Value());
     SendProtocolMessageToPage("Runtime.enable", base::Value());
@@ -1162,7 +1181,8 @@ Response TargetHandler::CloseTarget(const std::string& target_id,
 
 Response TargetHandler::ExposeDevToolsProtocol(
     const std::string& target_id,
-    std::optional<std::string> binding_name) {
+    std::optional<std::string> binding_name,
+    std::optional<bool> inherit_permissions) {
   if (access_mode_ != AccessMode::kBrowser)
     return Response::InvalidParams(kNotAllowedError);
   scoped_refptr<DevToolsAgentHost> agent_host =
@@ -1180,7 +1200,14 @@ Response TargetHandler::ExposeDevToolsProtocol(
         "RemoteDebuggingBinding can be granted only to page targets");
   }
 
-  new BrowserToPageConnector(binding_name.value_or("cdp"), agent_host.get());
+  BrowserConnectorHostClientPermissions permissions;
+  if (inherit_permissions.value_or(false)) {
+    permissions.allow_unsafe_operations =
+        root_session_->GetClient()->AllowUnsafeOperations();
+  }
+
+  new BrowserToPageConnector(binding_name.value_or("cdp"), agent_host.get(),
+                             permissions);
   return Response::Success();
 }
 

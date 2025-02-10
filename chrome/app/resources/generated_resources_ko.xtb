@@ -1373,6 +1373,7 @@
 <translation id="1936157145127842922">폴더에서 열기</translation>
 <translation id="1936931585862840749">숫자로 인쇄 부수를 표시하세요(1부터 <ph name="MAX_COPIES" />까지).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> 기기에서는 <ph name="ARCHITECTURE_CONTAINER" /> 컨테이너 아키텍처 유형을 가져올 수 없습니다. 이 컨테이너를 다른 기기에서 복원할 수 있으며, 컨테이너 이미지를 Files 앱에서 열면 컨테이너 이미지에 포함된 파일에 액세스할 수 있습니다.</translation>
+<translation id="1938116692670653897">현재 색상 테마</translation>
 <translation id="1938351510777341717">외부 명령어</translation>
 <translation id="1940221956626514677">툴바 맞춤설정</translation>
 <translation id="1940546824932169984">연결된 기기</translation>
@@ -2144,6 +2145,10 @@
 <translation id="2462332841984057083">이미 Steam을 설정하는 중입니다. 설정이 완료될 때까지 기다려 주세요.</translation>
 <translation id="2462724976360937186">인증 기관 키 ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> 추가됨</translation>
+<translation id="2464075479326723132">Microsoft SharePoint 및 OneDrive에서 최근 활동을 쉽게 확인할 수 있도록 추천 파일이 표시됩니다.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        카드 메뉴에서 설정을 관리하거나 Chrome 맞춤설정에서 추가 옵션을 확인할 수 있습니다.</translation>
 <translation id="2464079411014186876">아이스크림</translation>
 <translation id="2467755475704469005">감지된 기기가 없습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" />님 외 <ph name="NUM_OTHER_MEMBERS" />명이 있는 탭 그룹에 참여</translation>
@@ -2308,6 +2313,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{기기는 1년 동안 저장되며 다음번 연결 시 코드가 필요하지 않습니다. 이는 관리자가 설정한 규칙입니다.}other{기기는 {YEARS}년 동안 저장되며 다음번 연결 시 코드가 필요하지 않습니다. 이는 관리자가 설정한 규칙입니다.}}</translation>
 <translation id="2577127557293415225">잠깐 양쪽 눈 감기</translation>
 <translation id="257779572837908839">Chromebox 화상회의 시스템으로 설정</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" />(<ph name="EMAIL" />)님이 “<ph name="GROUP_NAME" />” 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며, Google 서비스 전반에서 나와 더 이상 소통할 수 없게 됩니다.</translation>
 <translation id="2580889980133367162"><ph name="HOST" />에서 여러 파일을 다운로드할 수 있도록 항상 허용</translation>
 <translation id="258095186877893873">길게</translation>
 <translation id="2581455244799175627">서드 파티 쿠키 허용 자세히 알아보기</translation>
@@ -4003,6 +4009,7 @@
 <translation id="3787434344076711519">번역 대기 중</translation>
 <translation id="3788301286821743879">키오스크 애플리케이션을 시작할 수 없습니다.</translation>
 <translation id="3788401245189148511">이전에 가능했던 대상:</translation>
+<translation id="3789432704615470433">SharePoint 및 OneDrive 파일</translation>
 <translation id="3789841737615482174">설치</translation>
 <translation id="3790417903123637354">문제가 발생했습니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="379082410132524484">카드가 만료됨</translation>
@@ -6191,6 +6198,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5360150013186312835">툴바에서 보기</translation>
 <translation id="5362741141255528695">비공개 키 파일을 선택합니다.</translation>
 <translation id="536278396489099088">ChromeOS 시스템 상태 및 보고서</translation>
+<translation id="5362916924854054326">SharePoint 및 OneDrive 파일 표시 안함</translation>
 <translation id="5363109466694494651">Powerwash 및 되돌리기</translation>
 <translation id="5365881113273618889">선택한 폴더에 민감한 파일이 포함되어 있습니다. 이 폴더에 '<ph name="APP_NAME" />' 영구 쓰기 액세스 권한을 부여하시겠습니까?</translation>
 <translation id="536638840841140142">없음</translation>
@@ -10772,6 +10780,10 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="865936634714975126">URL에 쿼리 매개변수를 추가하여 페이지 로드 시 유형을 선택합니다. 예: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">연락처 <ph name="FEATURE_NAME" />개</translation>
 <translation id="8659609431223166673">창이 아래로 이동함</translation>
+<translation id="8660288500924118793">Outlook Calendar에서 다음 일정으로 쉽게 이동할 수 있도록 캘린더가 표시됩니다.
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        카드 메뉴에서 설정을 관리하거나 Chrome 맞춤설정에서 추가 옵션을 확인할 수 있습니다.</translation>
 <translation id="8661290697478713397">시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />에 로그인</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> 네트워크에 연결</translation>

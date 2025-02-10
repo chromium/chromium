@@ -121,6 +121,7 @@ Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum
 <translation id="4064699917955374540">Pentru a folosi și a salva datele Chrome în Contul Google, confirmă-ți identitatea.</translation>
 <translation id="417201473131094001">Nu se acceptă pe Chrome Canary</translation>
 <translation id="424864128008805179">Te deconectezi de la Chrome?</translation>
+<translation id="4430797724889237570">Deschide linkuri din Gmail, Maps, YouTube și alte aplicații în Chrome</translation>
 <translation id="447252321002412580">Contribuie la îmbunătățirea funcțiilor și performanței Chrome</translation>
 <translation id="4523886039239821078">Unele suplimente determină blocarea browserului Chrome. Dezinstalează:</translation>
 <translation id="4633328489441962921">Chrome nu poate căuta actualizări</translation>
@@ -206,6 +207,7 @@ Așteaptă câteva minute înainte să schimbi contul. Dacă schimbi conturile a
 
 Datele tale sunt criptate cu expresia de acces. Introdu-o pentru a folosi și a salva datele Chrome în Contul Google.</translation>
 <translation id="6533470733797826516">Conectează-te mai rapid cu ajutorul completării automate din Chrome</translation>
+<translation id="6536544321553662809">Setează Chrome ca browser prestabilit pentru a trimite și a deschide ușor linkuri</translation>
 <translation id="6545449117344801102">Chrome detectează adresele și folosește Google Maps pentru a-ți oferi indicații de orientare și informații locale.</translation>
 <translation id="6636941099779251629">Organizația îți solicită să te conectezi pentru a folosi Chrome. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Trimite la Google o parte obscurizată a adresei URL printr-un server pentru confidențialitate care îți ascunde adresa IP. Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită la Google și adresele URL, inclusiv fragmente din conținutul paginilor.</translation>
@@ -291,6 +293,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="8370517070665726704">Drept de autor <ph name="YEAR" /> Google LLC. Toate drepturile rezervate.</translation>
 <translation id="8371138994040262994">Deschide Setările în Chrome.</translation>
 <translation id="8387459386171870978">Continuă să folosești Chrome</translation>
+<translation id="8392023217086447677">Deschis în modul incognito din Chrome</translation>
 <translation id="840168496893712993">Unele suplimente determină blocarea browserului Chrome. Încearcă să le dezinstalezi.</translation>
 <translation id="8413500425974960807">Sfat pentru Chrome: mută Chrome în bara de andocare</translation>
 <translation id="8413795581997394485">Protejează împotriva site-urilor, descărcărilor și extensiilor despre care se știe că sunt periculoase. Când accesezi un site, Chrome trimite la Google o parte obscurizată a adresei URL printr-un server pentru confidențialitate care îți ascunde adresa IP. Dacă un site are un comportament suspect, sunt trimise și adresele URL complete și fragmente din conținutul paginilor.</translation>

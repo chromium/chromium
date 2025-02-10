@@ -12,7 +12,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
-#include "chrome/browser/password_manager/android/password_manager_settings_service_android_impl.h"
+#include "chrome/browser/password_manager/android/password_manager_settings_service_android_migration_impl.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #endif
@@ -66,7 +66,7 @@ PasswordManagerSettingsServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
 #if BUILDFLAG(IS_ANDROID)
   if (password_manager_android_util::AreMinUpmRequirementsMet()) {
-    return std::make_unique<PasswordManagerSettingsServiceAndroidImpl>(
+    return std::make_unique<PasswordManagerSettingsServiceAndroidMigrationImpl>(
         profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile));
   }
 #endif

@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// The number of milliseconds between 1 January 1900 and 1 January 1970.
+const kNtpToUnixTimeOffsetMs = -2208988800000;
+
 const CalculatorModifier = Object.freeze({
   kNone: Object.freeze({postfix: '', multiplier: 1}),
   kMillisecondsFromSeconds:
@@ -207,18 +210,19 @@ export class StatsReport {
 }
 
 // Shows a `DOMHighResTimeStamp` as a human readable date time.
-// The metric must be a time value in milliseconds with Unix epoch as time
-// origin.
+// The "metric + timestampOffsetMs" must be a time value in milliseconds with
+// Unix epoch as time origin.
 class DateCalculator {
-  constructor(metric) {
+  constructor(metric, timestampOffsetMs = 0) {
     this.metric = metric;
+    this.timestampOffsetMs = timestampOffsetMs;
   }
   getCalculatedMetricName() {
     return '[' + this.metric + ']';
   }
   calculate(id, previousReport, currentReport) {
     const timestamp = currentReport.get(id)[this.metric];
-    const date = new Date(timestamp);
+    const date = new Date(timestamp + this.timestampOffsetMs);
     return date.toLocaleString();
   }
 }
@@ -528,7 +532,7 @@ export class StatsRatesCalculator {
           lastPacketReceivedTimestamp: new DateCalculator(
               'lastPacketReceivedTimestamp'),
           estimatedPlayoutTimestamp: new DateCalculator(
-              'estimatedPlayoutTimestamp'),
+              'estimatedPlayoutTimestamp', kNtpToUnixTimeOffsetMs),
           totalProcessingDelay: new RateCalculator(
               'totalProcessingDelay', 'jitterBufferEmittedCount',
               CalculatorModifier.kMillisecondsFromSeconds),

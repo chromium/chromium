@@ -960,7 +960,6 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5444999712122199445">Vratite se na web lokaciju</translation>
 <translation id="544776284582297024">Da otvorite kartice i posjećujete različite stranice u isto vrijeme, dodirnite dugme Otvori kartice</translation>
 <translation id="5454166040603940656">s pružaocem usluge <ph name="PROVIDER" /></translation>
-<translation id="5454215368971121976">Kada je uređaj sklopljen, možete odabrati opciju ili dodirnuti i zadržati traku za adresu da promijenite položaj.</translation>
 <translation id="5456381639095306749">Preuzmi stranicu</translation>
 <translation id="5458366071038729214">Ovdje ćete pronaći lokacije koje pratite</translation>
 <translation id="5468068603361015296">Želite li ipak preuzeti fajl <ph name="FILE_NAME" />?</translation>
@@ -1284,6 +1283,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6850830437481525139">Broj zatvorenih kartica: <ph name="TAB_COUNT" /></translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Audio fajlovi, 1 audio fajl na listi}one{Audio fajlovi, # audio fajl na listi}few{Audio fajlovi, # audio fajla na listi}other{Audio fajlovi, # audio fajlova na listi}}</translation>
 <translation id="685850645784703949">Googleov Discover - isključeno</translation>
+<translation id="6861722405755529743">Gumb dodatnog izbornika na traci oznaka</translation>
 <translation id="686366188661646310">Izbrisati lozinku?</translation>
 <translation id="6864459304226931083">Preuzmi sliku</translation>
 <translation id="686490460830618322">Tabela filtera aplikacija</translation>

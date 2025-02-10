@@ -21,8 +21,8 @@
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -39,8 +39,6 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/prefs/pref_service.h"
-#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
-#include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -67,12 +65,8 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
   BookmarkBarViewBaseTest() {
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
-        search_engines::SearchEngineChoiceServiceFactory::GetInstance(),
-        search_engines::SearchEngineChoiceServiceFactory::GetDefaultFactory());
-    profile_builder.AddTestingFactory(
         TemplateURLServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &BookmarkBarViewBaseTest::CreateTemplateURLService));
+        TemplateURLServiceTestUtil::GetTemplateURLServiceTestingFactory());
     profile_builder.AddTestingFactory(
         BookmarkModelFactory::GetInstance(),
         BookmarkModelFactory::GetDefaultFactory());
@@ -178,20 +172,6 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
   TestBrowserWindow browser_window_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<BookmarkBarViewTestHelper> test_helper_;
-
- private:
-  static std::unique_ptr<KeyedService> CreateTemplateURLService(
-      content::BrowserContext* context) {
-    Profile* profile = Profile::FromBrowserContext(context);
-    search_engines::SearchEngineChoiceService* search_engine_choice_service =
-        search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
-            profile);
-    return std::make_unique<TemplateURLService>(
-        *profile->GetPrefs(), *search_engine_choice_service,
-        std::make_unique<SearchTermsData>(),
-        nullptr /* KeywordWebDataService */,
-        nullptr /* TemplateURLServiceClient */, base::RepeatingClosure());
-  }
 };
 
 class BookmarkBarViewTest : public BookmarkBarViewBaseTest {

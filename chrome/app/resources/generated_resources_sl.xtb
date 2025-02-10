@@ -1376,6 +1376,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1936157145127842922">Pokaži v mapi</translation>
 <translation id="1936931585862840749">Vnesite število izvodov, ki jih želite natisniti (od 1 do <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Vsebnika z arhitekturo tipa <ph name="ARCHITECTURE_CONTAINER" /> ni mogoče uvoziti v to napravo z arhitekturo <ph name="ARCHITECTURE_DEVICE" />. Poskusite lahko obnoviti ta vsebnik v drugi napravi ali dostopate do datotek v sliki vsebnika tako, da jo odprete v aplikaciji Datoteke.</translation>
+<translation id="1938116692670653897">Trenutna barvna tema</translation>
 <translation id="1938351510777341717">Zunanji ukaz</translation>
 <translation id="1940221956626514677">Prilagodi orodno vrstico</translation>
 <translation id="1940546824932169984">Povezane naprave</translation>
@@ -2145,6 +2146,10 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2462332841984057083">Steam se že nastavlja. Počakajte, da se nastavitev konča.</translation>
 <translation id="2462724976360937186">ID ključa overitelja potrdil</translation>
 <translation id="2462752602710430187">Dodano: <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Prikazane so predlagane datoteke, s katerimi se boste lažje vrnili k nedavni dejavnosti v storitvah Microsoft SharePoint in OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Upravljate lahko nastavitve v meniju kartice ali si ogledate več možnosti v razdelku za prilagajanje Chroma.</translation>
 <translation id="2464079411014186876">Sladoled</translation>
 <translation id="2467755475704469005">Ni zaznanih naprav. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Pridružite se skupini zavihkov z osebo <ph name="OWNER_FIRST_NAME" /> in še <ph name="NUM_OTHER_MEMBERS" /></translation>
@@ -2309,6 +2314,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2575713839157415345">{YEARS,plural, =1{Ta naprava bo shranjena za 1 leto in naslednjič se lahko z njo povežete brez kode. To nastavi vaš skrbnik.}one{Ta naprava bo shranjena za {YEARS} leto in naslednjič se lahko z njo povežete brez kode. To nastavi vaš skrbnik.}two{Ta naprava bo shranjena za {YEARS} leti in naslednjič se lahko z njo povežete brez kode. To nastavi vaš skrbnik.}few{Ta naprava bo shranjena za {YEARS} leta in naslednjič se lahko z njo povežete brez kode. To nastavi vaš skrbnik.}other{Ta naprava bo shranjena za {YEARS} let in naslednjič se lahko z njo povežete brez kode. To nastavi vaš skrbnik.}}</translation>
 <translation id="2577127557293415225">Na kratko zaprite obe očesi</translation>
 <translation id="257779572837908839">Nastavitev kot Chromebox za videokonference</translation>
+<translation id="2577981599306533385">Uporabnik <ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) bo takoj izgubil dostop do skupine zavihkov »<ph name="GROUP_NAME" />« in ne bo več mogel komunicirati z vami v Googlovih storitvah.</translation>
 <translation id="2580889980133367162">Gostitelju <ph name="HOST" /> vedno dovoli prenos več datotek</translation>
 <translation id="258095186877893873">Dolga</translation>
 <translation id="2581455244799175627">Več o omogočanju piškotkov tretjih oseb</translation>
@@ -4004,6 +4010,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3787434344076711519">Čakanje na prevod</translation>
 <translation id="3788301286821743879">Aplikacije za kiosk ni bilo mogoče zagnati.</translation>
 <translation id="3788401245189148511">Lahko bi:</translation>
+<translation id="3789432704615470433">Datoteke v storitvah SharePoint in OneDrive</translation>
 <translation id="3789841737615482174">Namesti</translation>
 <translation id="3790417903123637354">Prišlo je do napake. Poskusite znova pozneje.</translation>
 <translation id="379082410132524484">Kartica je potekla</translation>
@@ -6193,6 +6200,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5360150013186312835">Pokaži v orodni vrstici</translation>
 <translation id="5362741141255528695">Izberite datoteko z zasebnim ključem.</translation>
 <translation id="536278396489099088">Stanje sistema ChromeOS in poročila</translation>
+<translation id="5362916924854054326">Ne prikaži datotek iz storitev SharePoint in OneDrive</translation>
 <translation id="5363109466694494651">Izvedi Powerwash in povrni</translation>
 <translation id="5365881113273618889">Izbrana mapa vsebuje občutljive datoteke. Ali ste prepričani, da želite aplikaciji »<ph name="APP_NAME" />« odobriti trajni dostop za pisanje v tej mapi?</translation>
 <translation id="536638840841140142">Brez</translation>
@@ -10782,6 +10790,10 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="865936634714975126">V URL dodajte parameter poizvedbe, da izberete vrste ob nalaganju strani. Primer: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Stiki funkcije <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Okno je premaknjeno navzdol</translation>
+<translation id="8660288500924118793">Koledar je prikazan, da se lahko laže pomaknete na naslednji dogodek v koledarju storitve Outlook.
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        Upravljate lahko nastavitve v meniju kartice ali si ogledate več možnosti v razdelku za prilagajanje Chroma.</translation>
 <translation id="8661290697478713397">Odpri povezavo v oknu brez bele&amp;ženja zgodovine</translation>
 <translation id="8662474268934425487">Prijava na <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Pridružitev omrežju <ph name="TYPE" /></translation>

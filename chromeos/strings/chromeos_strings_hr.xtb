@@ -450,6 +450,7 @@
 <translation id="3122883569442693641">Više pojedinosti</translation>
 <translation id="3124039320086536031">Uređaj je povezan.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Želite li ukloniti stranicu?}=1{Želite li ukloniti stranicu {PAGE_NUMBER}?}one{Želite li ukloniti stranicu {PAGE_NUMBER}?}few{Želite li ukloniti stranicu {PAGE_NUMBER}?}other{Želite li ukloniti stranicu {PAGE_NUMBER}?}}</translation>
+<translation id="3134486240968249588">Nekoliko stvari koje morate imati u vidu</translation>
 <translation id="3140130301071865159">snijeg</translation>
 <translation id="3146655726035122603">Ekskluzivno za <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobilni podaci</translation>
@@ -553,6 +554,7 @@
 <translation id="3628462041319107639">Preuzimanje modela prijepisa…</translation>
 <translation id="3632040286124154621">Dobar prijedlog</translation>
 <translation id="3632579075709132555">Prekidač zaslona privatnosti</translation>
+<translation id="3634941468757842845">Odaberite temu</translation>
 <translation id="3639873154908477486">Naziv (od A do Ž)</translation>
 <translation id="3644695927181369554">Loš prijedlog</translation>
 <translation id="3651050199673793219">Odaberite temperaturnu jedinicu</translation>
@@ -1539,6 +1541,7 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="8132480444149501833">Zatraži brojače prometa</translation>
 <translation id="8135609423982943441">Chromebook je vraćen na sigurne zadane postavke. Te promjene uvijek možete prilagoditi u postavkama.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8140591278915222789">Izradite vlastitu</translation>
 <translation id="8143951647992294073">Odaberite <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Alati za razvojne programere</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
@@ -1656,7 +1659,6 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="8747900814994928677">Potvrda promjena</translation>
 <translation id="8749478549112817787">Pozadina kamere</translation>
 <translation id="8755946156089753497">Toranj</translation>
-<translation id="8756235582947991808">Kako stvarati uz pomoć umjetne inteligencije i nekoliko napomena</translation>
 <translation id="8760616037557661287">Prethodni upiti</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google fotografija</translation>

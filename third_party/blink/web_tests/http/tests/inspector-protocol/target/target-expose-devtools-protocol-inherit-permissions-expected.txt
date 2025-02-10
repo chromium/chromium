@@ -1,0 +1,6 @@
+Verify that exposing devtools protocol can inherit permissions.
+Inherit permissions: true, command available: true
+Inherit permissions: true, command available: false
+Inherit permissions: false, command available: false
+Inherit permissions: false, command available: false
+

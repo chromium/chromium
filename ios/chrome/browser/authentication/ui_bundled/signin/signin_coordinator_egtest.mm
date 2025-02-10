@@ -52,7 +52,6 @@
 using chrome_test_util::BookmarksNavigationBarDoneButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::GoogleServicesSettingsButton;
-using chrome_test_util::GoogleSyncSettingsButton;
 using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SecondarySignInButton;

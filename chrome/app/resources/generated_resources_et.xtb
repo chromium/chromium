@@ -2297,6 +2297,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2575713839157415345">{YEARS,plural, =1{See seade salvestatakse üheks aastaks ja saate järgmine kord ilma koodita ühendada. Selle seadistab teie administraator.}other{See seade salvestatakse {YEARS} aastaks ja saate järgmine kord ilma koodita ühendada. Selle seadistab teie administraator.}}</translation>
 <translation id="2577127557293415225">Mõlema silma sulgemine hetkeks</translation>
 <translation id="257779572837908839">Seadista seadmena Chromebox koosolekutele</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) kaotab kohe juurdepääsu vahelehegrupile „<ph name="GROUP_NAME" />“ ega saa enam teiega Google’i teenustes suhelda.</translation>
 <translation id="2580889980133367162">Luba alati hostil <ph name="HOST" /> laadida alla mitu faili</translation>
 <translation id="258095186877893873">Pikk</translation>
 <translation id="2581455244799175627">Lisateave kolmandate osapoolte küpsisefailide lubamise kohta</translation>

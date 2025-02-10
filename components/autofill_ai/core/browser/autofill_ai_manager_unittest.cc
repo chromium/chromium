@@ -626,38 +626,6 @@ TEST_F(AutofillAiManagerTest,
                             autofill_callback.Get());
 }
 
-// TODO(crbug.com/376016081): Refactor test to expect if suggestions are
-// included so that `ShouldSkipAutofillSuggestion()` can be move to the
-// anonymous namespace.
-TEST_F(AutofillAiManagerTest, ShouldSkipAutofillSuggestion) {
-  Suggestion autofill_suggestion = Suggestion(kAddressEntry);
-  autofill_suggestion.payload =
-      Suggestion::AutofillProfilePayload(Suggestion::Guid("guid"));
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::FieldType::NAME_FIRST},
-                 {.role = autofill::FieldType::NAME_LAST}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
-  autofill::FormStructure form_structure{form};
-  test_api(form_structure)
-      .SetFieldTypes(
-          {autofill::FieldType::NAME_FIRST, autofill::FieldType::NAME_LAST});
-  ON_CALL(client(), GetCachedFormStructure)
-      .WillByDefault(Return(&form_structure));
-  EXPECT_CALL(client(), GetAutofillNameFillingValue(
-                            _, autofill::FieldType::NAME_FIRST, _))
-      .WillOnce(Return(u"j ǎ Ņ ë"));
-  EXPECT_CALL(client(),
-              GetAutofillNameFillingValue(_, autofill::FieldType::NAME_LAST, _))
-      .WillOnce(Return(u"  d o Ê"));
-  const PredictionsByGlobalId cache = PredictionsByGlobalId{
-      {form.fields()[0].global_id(),
-       {u"Jane", u"First Name", form.fields()[0].IsFocusable()}},
-      {form.fields()[1].global_id(),
-       {u"Doe", u"Last Name", form.fields()[1].IsFocusable()}}};
-  EXPECT_TRUE(
-      ShouldSkipAutofillSuggestion(client(), cache, form, autofill_suggestion));
-}
-
 class IsFormAndFieldEligibleAutofillAiTest : public BaseAutofillAiManagerTest {
  public:
   IsFormAndFieldEligibleAutofillAiTest() {

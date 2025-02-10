@@ -321,8 +321,7 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
   }
 
   // FIXME: We should assert that the sheet only styles MathML elements.
-  if (element.namespaceURI() == mathml_names::kNamespaceURI &&
-      !mathml_style_sheet_) {
+  if (element.IsMathMLElement() && !mathml_style_sheet_) {
     mathml_style_sheet_ =
         ParseUASheet(UncompressResourceAsASCIIString(IDR_UASTYLE_MATHML_CSS));
     AddRulesToDefaultStyleSheets(mathml_style_sheet_, NamespaceType::kMathML);

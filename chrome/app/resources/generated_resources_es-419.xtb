@@ -2290,6 +2290,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2575713839157415345">{YEARS,plural, =1{Este dispositivo se guardará por 1 año y no necesitarás un código la próxima vez que te conectes. Esto lo estableció el administrador.}other{Este dispositivo se guardará por {YEARS} años y no necesitarás un código la próxima vez que te conectes. Esto lo estableció el administrador.}}</translation>
 <translation id="2577127557293415225">Cierra brevemente ambos ojos</translation>
 <translation id="257779572837908839">Configurar como Chromebox para reuniones</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perderá de inmediato el acceso al grupo de pestañas "<ph name="GROUP_NAME" />" y ya no podrá interactuar contigo en los servicios de Google.</translation>
 <translation id="2580889980133367162">Siempre permitir que <ph name="HOST" /> descargue varios archivos</translation>
 <translation id="258095186877893873">Largo</translation>
 <translation id="2581455244799175627">Más información para permitir cookies de terceros</translation>

@@ -905,7 +905,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     LRUCanvasResourceProviderCache(wtf_size_t capacity, CacheType type);
     // The pointer returned is owned by the image buffer map.
     CanvasResourceProvider* GetCanvasResourceProvider(
-        SkISize size,
+        gfx::Size size,
         SkColorType sk_color_type,
         SkAlphaType alpha_type,
         sk_sp<SkColorSpace> sk_color_space);

@@ -82,6 +82,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2094648590148273905">Uslovi za ChromeOS Flex</translation>
 <translation id="2094919256425865063">Ipak želite napustiti Chrome?</translation>
 <translation id="2106831557840787829">ChromeOS Flex je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />, kao što je <ph name="BEGIN_LINK_LINUX_OSS" />Linuxovo okruženje za razvoj<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2108778574543343055">Onemogući rad Chromea u pozadini za aplikacije</translation>
 <translation id="2120620239521071941">Ovim će se s ovog uređaja izbrisati sljedeći broj stavki: <ph name="ITEMS_COUNT" />. Da preuzmete svoje podatke kasnije, prijavite se u Chrome kao <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Ponovo pokrenite da ažurirate &amp;Chrome</translation>
 <translation id="2123055963409958220">Pomozite nam da poboljšamo Chrome izvještavanjem o <ph name="BEGIN_LINK" />trenutnim postavkama<ph name="END_LINK" /></translation>
@@ -143,6 +144,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2797864378188255696">Prilikom prijavljivanja na Googleove usluge kao što su Gmail ili YouTube koristeći <ph name="USER_EMAIL" /> možete se automatski prijaviti u Chrome putem istog računa</translation>
 <translation id="2799162042226656283">Vaš Chrome</translation>
 <translation id="2799223571221894425">Ponovo pokreni</translation>
+<translation id="2818684386420968393">Onemogući rad Chromea u pozadini za aplikacije</translation>
 <translation id="2825024317344269723">Opasna web lokacija. Chrome je uklonio obavještenja.</translation>
 <translation id="2841525013647267359">Prevod s jezika</translation>
 <translation id="2846251086934905009">Greška prilikom instaliranja: program za instaliranje nije završio. Instalacija je prekinuta.</translation>
@@ -435,7 +437,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6497147134301593682">Chrome se automatski zatvorio</translation>
 <translation id="6506909944137591434">Chromeu je potrebno odobrenje za kameru radi kreiranja 3D mape vašeg okruženja</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
-<translation id="6515549163407364048">Da dobijete ekstenzije na svim svojim računarima, prijavite se u Chrome</translation>
 <translation id="6520670145826811516">Da koristite lokaciju, odobrite Chromeu pristup u <ph name="BEGIN_LINK" />postavkama sistema<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">U Googleovom Upravitelju lozinki na ovom uređaju</translation>
 <translation id="6632473616050862500">ChromeOS Flex je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />.</translation>

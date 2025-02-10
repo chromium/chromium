@@ -55,7 +55,6 @@ extern NSString* const kChromiumSigninPromoLogoImage;
 
 // Custom symbol names.
 extern NSString* const kPrivacySymbol;
-extern NSString* const kSyncDisabledSymbol;
 extern NSString* const kSafetyCheckSymbol;
 extern NSString* const kArrowClockWiseSymbol;
 extern NSString* const kIncognitoSymbol;

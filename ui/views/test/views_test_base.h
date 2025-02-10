@@ -48,6 +48,7 @@ class ViewsTestBase : public PlatformTest {
   struct WidgetCloser {
     void operator()(Widget* widget) const;
   };
+  // DEPRECATED. Use std::unique_ptr<Widget> with CLIENT_OWNS_WIDGET instead.
   using WidgetAutoclosePtr = std::unique_ptr<Widget, WidgetCloser>;
 
   // Constructs a ViewsTestBase with |traits| being forwarded to its

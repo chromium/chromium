@@ -70,6 +70,7 @@
 <translation id="2459183986985456602">ເປີດແຖບຫຼ້າສຸດຂອງຂ້ອຍໃນ Chromium.</translation>
 <translation id="2476409803017965813">ທ່ານສາມາດອັບເດດສິ່ງທີ່ທ່ານເລືອກໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າ Chromium.</translation>
 <translation id="2478931088402984578">ເລືອກ <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2485774047568879945">ຕັ້ງຄ່າ Chromium ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານເພື່ອແບ່ງປັນ ແລະ ເປີດລິ້ງໄດ້ຢ່າງງ່າຍດາຍ</translation>
 <translation id="2512597191798760956">ກົດໄອຄອນ Chromium ຄ້າງໄວ້ ແລ້ວຄລິກ "ແກ້ໄຂໂຮມສະກຣີນ"</translation>
 <translation id="2517624234762908348">ຊິ້ງຂໍ້ມູນ Chromium ຂອງທ່ານ</translation>
 <translation id="2592940277904433508">ສືບຕໍ່ນຳໃຊ້ Chromium</translation>
@@ -167,6 +168,7 @@
 <translation id="5088872414922783602">ເຂົ້າເຖິງ Chromium ໄດ້ໄວຂຶ້ນຈາກດັອກໂຮມສະກຣີນຂອງທ່ານ.</translation>
 <translation id="5124429847818367226">ຕອນນີ້ທ່ານສາມາດໃຊ້ Chromium ຕອນໃດກໍໄດ້ທີ່ທ່ານເລືອກເບິ່ງ ຫຼື ແຕະລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ.</translation>
 <translation id="5131565040785979529">ອົງກອນ <ph name="DOMAIN" /> ຂອງທ່ານຈະເປັນຜູ້ຈັດການບັນຊີທີ່ທ່ານເຂົ້າສູ່ລະບົບ ແລະ ວິທີໃຊ້ Chromium.</translation>
+<translation id="5134464247000681876">ເປີດລິ້ງຈາກ Gmail, ແຜນທີ່, YouTube ແລະ ແອັບອື່ນໆໃນ Chromium</translation>
 <translation id="5224391634244552924">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້. Chromium ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານເມື່ອທ່ານບັນທຶກພວກມັນໄວ້.</translation>
 <translation id="5259423875997548710">ຊອກຫາພາບໃນ Chromium.</translation>
 <translation id="5308226104666789935">Chromium ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້</translation>
@@ -260,6 +262,7 @@
 <translation id="7674213385180944843">ເປີດການຕັ້ງຄ່າ &gt; ຄວາມເປັນສ່ວນຕົວ &gt; ກ້ອງຖ່າຍຮູບ &gt; Chromium ແລະ ເປີດກ້ອງຖ່າຍຮູບ.</translation>
 <translation id="7733418656985455268">ເຄັດລັບສຳລັບ Chromium: ຊອກຫາດ້ວຍ Lens</translation>
 <translation id="7747820849741499258">ຊອກຫາໃນ Chromium</translation>
+<translation id="7753923083404296545">ເປີດໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນຂອງ Chromium</translation>
 <translation id="7762622637388462191">ລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານເມື່ອທ່ານອອກຈາກ Chromium ຫຼື ປ່ຽນໄປໃຊ້ແອັບອື່ນ.</translation>
 <translation id="7763454117143368771">ໃຊ້ Chromium ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານເພື່ອປ້ອງກັນເວັບໄຊທີ່ເປັນອັນຕະລາຍ ແລະ ຮັກສາລະຫັດຜ່ານຂອງທ່ານໃຫ້ປອດໄພ</translation>
 <translation id="7784950022329154821">ລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນເມື່ອທ່ານປິດ Chromium</translation>

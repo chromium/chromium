@@ -70,6 +70,7 @@
 <translation id="2459183986985456602">‏يؤدي هذا الاختصار إلى فتح آخر علامة تبويب في Chromium.</translation>
 <translation id="2476409803017965813">‏يمكنك تعديل اختياراتك متى شئت من خلال إعدادات Chromium.</translation>
 <translation id="2478931088402984578">‏اختيار <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2485774047568879945">‏ننصحك بضبط Chromium كمتصفّح تلقائي لمشاركة الروابط وفتحها بسهولة</translation>
 <translation id="2512597191798760956">‏اضغط مع الاستمرار على رمز Chromium وانقر على "تعديل الشاشة الرئيسية" (Edit home screen)</translation>
 <translation id="2517624234762908348">‏مزامنة بيانات Chromium</translation>
 <translation id="2592940277904433508">‏مواصلة استخدام Chromium</translation>
@@ -167,6 +168,7 @@
 <translation id="5088872414922783602">‏يمكنك الوصول إلى Chromium بشكل أسرع من خلال شريط التطبيقات في الشاشة الرئيسية.</translation>
 <translation id="5124429847818367226">‏يمكنك الآن استخدام Chromium في أي وقت تتصفَّح فيه أو تنقر على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
 <translation id="5131565040785979529">‏يدير نطاق مؤسستك <ph name="DOMAIN" /> الحساب الذي سجَّلت الدخول إليه وطريقة استخدامك لمتصفِّح Chromium.</translation>
+<translation id="5134464247000681876">‏يمكنك فتح الروابط من Gmail و"خرائط Google" وYouTube وتطبيقات أخرى في Chromium</translation>
 <translation id="5224391634244552924">‏ما مِن كلمات مرور محفوظة. لا يستطيع Chromium التحقُّق من كلمات المرور إلا عند حفظها.</translation>
 <translation id="5259423875997548710">‏يؤدي هذا الاختصار إلى البحث عن العناصر المرئية في Chromium.</translation>
 <translation id="5308226104666789935">‏يتعذّر على Chromium البحث عن تحديثات.</translation>
@@ -260,6 +262,7 @@
 <translation id="7674213385180944843">‏افتح الإعدادات &gt; الخصوصية &gt; الكاميرا &gt; Chromium وشغِّل الكاميرا.</translation>
 <translation id="7733418656985455268">‏نصيحة من Chromium: البحث باستخدام "عدسة Google"</translation>
 <translation id="7747820849741499258">‏البحث في Chromium</translation>
+<translation id="7753923083404296545">‏تم فتح الرابط في "وضع التصفّح المتخفي" في Chromium</translation>
 <translation id="7762622637388462191">‏يمكنك قفل علامات التبويب في وضع التصفُّح المتخفي عند مغادرة Chromium أو التبديل إلى تطبيق مختلف.</translation>
 <translation id="7763454117143368771">‏يمكنك استخدام Chromium كمتصفّح تلقائي لحماية نفسك من المواقع الإلكترونية الضارة وحماية كلمات المرور الخاصة بك.</translation>
 <translation id="7784950022329154821">‏قفل علامات التبويب في وضع التصفّح المتخفي عند إغلاق Chromium</translation>

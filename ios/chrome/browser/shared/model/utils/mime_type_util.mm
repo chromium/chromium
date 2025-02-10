@@ -16,6 +16,7 @@ char kMobileConfigurationType[] = "application/x-apple-aspen-config";
 char kPkPassMimeType[] = "application/vnd.apple.pkpass";
 char kPkBundledPassMimeType[] = "application/vnd.apple.pkpasses";
 char kVcardMimeType[] = "text/vcard";
+char kXVcardMimeType[] = "text/x-vcard";
 char kUsdzMimeType[] = "model/vnd.usdz+zip";
 char kLegacyUsdzMimeType[] = "model/usd";
 char kLegacyPixarUsdzMimeType[] = "model/vnd.pixar.usd";

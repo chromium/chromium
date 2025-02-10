@@ -2284,6 +2284,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2575713839157415345">{YEARS,plural, =1{To urządzenie będzie zapisane przez rok. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}few{To urządzenie będzie zapisane przez {YEARS} lata. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}many{To urządzenie będzie zapisane przez {YEARS} lat. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}other{To urządzenie będzie zapisane przez {YEARS} roku. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}}</translation>
 <translation id="2577127557293415225">Zamknij na chwilę oboje oczu</translation>
 <translation id="257779572837908839">Skonfiguruj jako Chromeboxa wideokonferencje</translation>
+<translation id="2577981599306533385">Użytkownik <ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) natychmiast utraci dostęp do grupy kart <ph name="GROUP_NAME" /> i nie będzie mógł kontaktować się z Tobą w usługach Google.</translation>
 <translation id="2580889980133367162">Zawsze zezwalaj <ph name="HOST" /> na pobieranie wielu plików</translation>
 <translation id="258095186877893873">Długie</translation>
 <translation id="2581455244799175627">Więcej informacji o zezwalaniu na pliki cookie innych firm</translation>

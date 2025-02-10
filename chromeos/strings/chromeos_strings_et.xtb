@@ -449,6 +449,7 @@
 <translation id="3122883569442693641">Rohkem üksikasju</translation>
 <translation id="3124039320086536031">Seade on ühendatud.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Kas eemaldada leht?}=1{Kas eemaldada {PAGE_NUMBER}. leht?}other{Kas eemaldada {PAGE_NUMBER}. leht?}}</translation>
+<translation id="3134486240968249588">Pidage meeles järgmist</translation>
 <translation id="3140130301071865159">lumi</translation>
 <translation id="3146655726035122603">Ainult teenuses <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobiilne andmeside</translation>
@@ -1648,7 +1649,6 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8747900814994928677">Kinnita muudatus</translation>
 <translation id="8749478549112817787">Kaamera taust</translation>
 <translation id="8755946156089753497">torn</translation>
-<translation id="8756235582947991808">AI abil loomine ja mõningad meelespead</translation>
 <translation id="8760616037557661287">Eelmised päringud</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Teenuse Google Photos album</translation>

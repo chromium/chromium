@@ -49,6 +49,10 @@ class TestShareKitService : public ShareKitService {
   id<ShareKitAvatarPrimitive> AvatarImage(
       ShareKitAvatarConfiguration* config) override;
 
+  // Creates the shared tab group with the given `collab_id` and saves it to the
+  // fake server.
+  void CreateSharedTabGroupInFakeServer(NSString* collab_id);
+
   // KeyedService.
   void Shutdown() override;
 
@@ -61,12 +65,8 @@ class TestShareKitService : public ShareKitService {
   void SetTabGroupCollabIdFromGroupGuid(base::Uuid group_guid,
                                         NSString* collab_id);
 
-  // Called when the user joined a group with the given `collab_id` from the
-  // join flow.
-  void OnTabGroupJoined(NSString* collab_id);
-
-  // Whether the user is the owner of the group. This is a workaround to update
-  // the user's role based on the specific tested flow.
+  // Whether the user is the owner of the most-recently-updated group. This is
+  // a workaround to update the user's role based on the specific tested flow.
   bool is_owner_ = false;
 
   raw_ptr<data_sharing::DataSharingService> data_sharing_service_;

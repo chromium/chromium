@@ -450,6 +450,7 @@
 <translation id="3122883569442693641">Higit pang detalye</translation>
 <translation id="3124039320086536031">Nakakonekta ang device.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Alisin ang page?}=1{Alisin ang page {PAGE_NUMBER}?}one{Alisin ang page {PAGE_NUMBER}?}other{Alisin ang page {PAGE_NUMBER}?}}</translation>
+<translation id="3134486240968249588">Ilang bagay na dapat tandaan</translation>
 <translation id="3140130301071865159">niyebe</translation>
 <translation id="3146655726035122603">Eksklusibo sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Data sa mobile</translation>
@@ -1656,7 +1657,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8747900814994928677">Kumpirmahin ang pagbabago</translation>
 <translation id="8749478549112817787">Background ng Camera</translation>
 <translation id="8755946156089753497">tore</translation>
-<translation id="8756235582947991808">Paano gumawa gamit ang AI at ilang bagay na dapat tandaan</translation>
 <translation id="8760616037557661287">Mga nakaraang prompt</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album sa Google Photos</translation>

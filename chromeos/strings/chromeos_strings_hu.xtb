@@ -449,6 +449,7 @@
 <translation id="3122883569442693641">További részletek</translation>
 <translation id="3124039320086536031">Az eszköz csatlakoztatva van.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Eltávolítja az oldalt?}=1{Eltávolítja a(z) {PAGE_NUMBER}. oldalt?}other{Eltávolítja a(z) {PAGE_NUMBER}. oldalt?}}</translation>
+<translation id="3134486240968249588">Néhány fontos tudnivaló</translation>
 <translation id="3140130301071865159">hó</translation>
 <translation id="3146655726035122603">Kizárólag a következőnél: <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobiladatok</translation>
@@ -1648,7 +1649,6 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8747900814994928677">Módosítás megerősítése</translation>
 <translation id="8749478549112817787">Kamera háttere</translation>
 <translation id="8755946156089753497">torony</translation>
-<translation id="8756235582947991808">Alkotás AI segítségével és még néhány dolog, amelyet érdemes szem előtt tartani</translation>
 <translation id="8760616037557661287">Előző utasítások</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Fotók-album</translation>

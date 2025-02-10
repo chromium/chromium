@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">ສະຫຼຸບ</translation>
 <translation id="123124571410524056">ສົງໄສວ່າເປັນໜ້າເວັບ</translation>
 <translation id="1232610416724362657">ນໍ້າຕົກຕາດ</translation>
+<translation id="1238163879850290856">ຣີເຊັດເພື່ອປ້ອງກັນບໍ່ໃຫ້ຜູ້ອື່ນເຂົ້າເຖິງຂໍ້ມູນ. ກະລຸນາໃຊ້ສະເພາະວິທີການປ້ອນຂໍ້ມູນທີ່ທ່ານເຊື່ອຖືໄດ້ເທົ່ານັ້ນ.</translation>
 <translation id="1238612778414822719">ເວລາແຝງ HTTPS</translation>
 <translation id="1252766349417594414">ຈອຍສະຕິກ</translation>
 <translation id="1270369111467284986">ສົງໄສວ່າເປັນຊ່ອງທາງເຂົ້າຮັກສາໄວ້</translation>
@@ -449,6 +450,7 @@
 <translation id="3122883569442693641">ລາຍລະອຽດເພີ່ມເຕີມ</translation>
 <translation id="3124039320086536031">ເຊື່ອມຕໍ່ອຸປະກອນແລ້ວ.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ລຶບໜ້າອອກບໍ?}=1{ລຶບໜ້າ {PAGE_NUMBER} ອອກບໍ?}other{ລຶບໜ້າ {PAGE_NUMBER} ອອກບໍ?}}</translation>
+<translation id="3134486240968249588">ສອງສາມສິ່ງທີ່ຕ້ອງຄຳນຶງ</translation>
 <translation id="3140130301071865159">ຫິມະ</translation>
 <translation id="3146655726035122603">ພິເສດສຳລັບ <ph name="PRODUCT_NAME" /> ໂດຍສະເພາະ</translation>
 <translation id="315116470104423982">ຂໍ້​ມູນ​ມື​ຖື</translation>
@@ -766,6 +768,7 @@
 <translation id="4650608062294027130">Shift ຂວາ</translation>
 <translation id="4654549501020883054">ປ່ຽນທຸກມື້</translation>
 <translation id="4655868084888499342">ຮູບທີ່ຕັ້ງເປັນພາບພື້ນຫຼັງ</translation>
+<translation id="4660989616054030633">AI ສ້າງເນື້ອຫາອາດເຮັດຜິດພາດໄດ້, ເຊິ່ງຮວມທັງການໃຫ້ຂໍ້ມູນກ່ຽວກັບບຸກຄົນ, ດັ່ງນັ້ນກະລຸນາກວດສອບຄຳຕອບຊ້ຳ</translation>
 <translation id="4661249927038176904">ເໜືອຄວາມຈິງ</translation>
 <translation id="4661392828086261436">ການອັບເດດນີ້ສະໜອງໂດຍຜູ້ຜະລິດອຸປະກອນ ແລະ ຍັງບໍ່ໄດ້ຮັບການຢັ້ງຢືນຈາກ Google</translation>
 <translation id="4664651912255946953">ຂົນ</translation>
@@ -1065,6 +1068,7 @@
 <translation id="6074752328838739425">ເຊື່ອງຂໍ້ມູນສະຫຼຸບ</translation>
 <translation id="6075872808778243331">(Android) ການຕອບສະໜອງ HTTP</translation>
 <translation id="6078323886959318429">ເພີ່ມທາງລັດ</translation>
+<translation id="6079693086494835199">ຣີເຊັດເພື່ອໃຫ້ໝັ້ນໃຈວ່າໜ້າຫຼັກເລີ່ມຕົ້ນບໍ່ແມ່ນເວັບໄຊການຫຼອກເອົາຂໍ້ມູນ. ກະລຸນາໃຊ້ສະເພາະເວັບໄຊທີ່ທ່ານເຊື່ອຖືໄດ້ເທົ່ານັ້ນ.</translation>
 <translation id="6091080061796993741">ເຫຼືອງ</translation>
 <translation id="6104112872696127344">ຍົກເລີກການສະແກນແລ້ວ</translation>
 <translation id="6106186594183574873">ເພື່ອສຳເລັດ, ກະລຸນາປ້ອນລະຫັດຜ່ານເກົ່າຂອງທ່ານ</translation>
@@ -1088,6 +1092,7 @@
 <translation id="6156030503438652198">ນ້ຳຕານ ແລະ ບົວ</translation>
 <translation id="6165508094623778733">ສຶກສາ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">ຣີເຊັດເພື່ອບໍ່ໃຫ້ຜູ້ອື່ນໃຊ້ໄມໂຄຣໂຟນ ຫຼື ກ້ອງຂອງທ່ານ. ກະລຸນາໃຫ້ການອະນຸຍາດສະເພາະເວັບໄຊທີ່ທ່ານເຊື່ອຖືໄດ້ເທົ່ານັ້ນ.</translation>
 <translation id="6188737759358894319">ສ້າງເມື່ອ <ph name="DATE" /></translation>
 <translation id="6189418609903030344">ຄວາມຈຸຂອງແບັດເຕີຣີຫຼຸດລົງເມື່ອໃຊ້ໄປເລື້ອຍໆ</translation>
 <translation id="6189987971574353264">ຫຼິ້ນ</translation>
@@ -1114,6 +1119,7 @@
 <translation id="629550705077076970">ການຫຼຸດແສງແປ້ນພິມ</translation>
 <translation id="6302401976930124515">ຍົກເລີກການທົດສອບ <ph name="TEST_NAME" /> ແລ້ວ</translation>
 <translation id="631063167932043783">ແອັບ Explore</translation>
+<translation id="6314333689576767865">Chromebook ຂອງທ່ານຣີເຊັດເປັນຄ່າເລີ່ມຕົ້ນທີ່ປອດໄພແລ້ວ. ໂດຍທ່ານສາມາດປ່ຽນແປງໄດ້ຕະຫຼອດເວລາໃນການຕັ້ງຄ່າ.</translation>
 <translation id="6318437367327684789">ຕະຫຼອດໄປ</translation>
 <translation id="6319207335391420837">ອັບເດດເຟີມແວຢູ່ <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">ເປີດສະກຣີນເຊັບເວີ</translation>
@@ -1250,6 +1256,7 @@
 <translation id="6862416241246624313">ສົ່ງຄຳຕິຊົມແລ້ວ</translation>
 <translation id="6866732840889595464">ເດຊີ</translation>
 <translation id="6871256179359663621">ມ່ວງອ່ອນ</translation>
+<translation id="6887967050249348172">ປິດການນຳໃຊ້ສ່ວນຂະຫຍາຍຢູ່ເພື່ອປ້ອງກັນການປ່ຽນແປງການຕັ້ງຄ່າ. ກະລຸນາເປີດສະເພາະສ່ວນຂະຫຍາຍທີ່ທ່ານເຊື່ອຖືໄດ້ເທົ່ານັ້ນ.</translation>
 <translation id="6889786074662672253">ໃນລະຫວ່າງທີ່ກຳລັງຣີສະຕາດ, ກະລຸນາຢ່າຖອດປລັກອຸປະກອນພາຍນອກນີ້ ຫຼື ປິດເຄື່ອງຄອມພິວເຕີຂອງທ່ານ. ທ່ານສາມາດຫຍໍ້ໜ້າຈໍນີ້ລົງໄດ້. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ ແລະ ອຸປະກອນພາຍນອກຂອງທ່ານອາດບໍ່ເຮັດວຽກໃນລະຫວ່າງນີ້.</translation>
 <translation id="6899460405678814458">ສະແດງຂໍ້ມູນສະຫຼຸບ</translation>
 <translation id="6900701049656042631">ອະລະບ້ຳນີ້ຍັງບໍ່ມີຮູບພາບ. ກະລຸນາເຂົ້າໄປ <ph name="LINK" /> ເພື່ອເພີ່ມຮູບພາບ</translation>
@@ -1341,6 +1348,7 @@
 <translation id="7233782086689993269">ກູ້ຄືນທາງລັດແລ້ວ</translation>
 <translation id="725133483556299729">ເລືອກອີເມວ</translation>
 <translation id="7255187042098209569">ສີບົວ ແລະ ສີມ່ວງ</translation>
+<translation id="7267918995585557751">ຣີເຊັດເພື່ອໃຫ້ໝັ້ນໃຈວ່າໜ້າເລີ່ມຕົ້ນນຳໃຊ້ເລີ່ມຕົ້ນບໍ່ແມ່ນເວັບໄຊການຫຼອກເອົາຂໍ້ມູນ. ກະລຸນາໃຊ້ສະເພາະເວັບໄຊທີ່ທ່ານເຊື່ອຖືໄດ້ເທົ່ານັ້ນ.</translation>
 <translation id="7271000785316964275">ຄລາດສິກ</translation>
 <translation id="7271040990581020067">ຕອນນີ້ມີຄົນໃຊ້ເຄື່ອງສະແກນຢູ່. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="7271932918253517778">ຄີລັດທີ່ມີປຸ່ມແຖວເທິງສຸດຕ້ອງມີປຸ່ມ <ph name="META_KEY" /> ນຳ.</translation>
@@ -1486,6 +1494,7 @@
 <translation id="7903695460270716054">ເລືອກໜ້າປົກ ແລະ ຮູບທີ່ຄັດສັນມາ</translation>
 <translation id="7912005977894000746">ກັບຄືນໄປຫາໜ້າຫຼັກ</translation>
 <translation id="7915220255123750251">ຈັດການການຕັ້ງຄ່າ APN ຂອງເຄືອຂ່າຍ. APN ສ້າງການເຊື່ອມຕໍ່ລະຫວ່າງເຄືອຂ່າຍມືຖື ແລະ ອິນເຕີເນັດ.</translation>
+<translation id="7915759923880480519">ຣີເຊັດເພື່ອປົກປ້ອງຂໍ້ມູນທີ່ສົ່ງຜ່ານເຄືອຂ່າຍຂອງທ່ານ. ກະລຸນາໃຊ້ສະເພາະເຄືອຂ່າຍທີ່ທ່ານເຊື່ອຖືໄດ້ເທົ່ານັ້ນ.</translation>
 <translation id="7936303884198020182">ບໍ່ພົບເຊີບເວີຊື່</translation>
 <translation id="7942349550061667556">ສີ​ແດງ</translation>
 <translation id="7943235353293548836">ໄລຍະເວລາຂອງ keepalive ຕໍ່ເນື່ອງ</translation>
@@ -1649,7 +1658,6 @@
 <translation id="8747900814994928677">ຢືນຢັນການປ່ຽນແປງ</translation>
 <translation id="8749478549112817787">ພາບພື້ນຫຼັງກ້ອງຖ່າຍຮູບ</translation>
 <translation id="8755946156089753497">ຫໍຄອຍ</translation>
-<translation id="8756235582947991808">ວິທີສ້າງດ້ວຍ AI ແລະ ບາງສິ່ງທີ່ຕ້ອງຄຳນຶງເຖິງ</translation>
 <translation id="8760616037557661287">prompt ກ່ອນໜ້າ</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">ອະລະບໍ້າ Google ຮູບພາບ</translation>
@@ -1711,6 +1719,7 @@
 <translation id="89945434909472341">ໝູ່ບ້ານ</translation>
 <translation id="8997710128084572139">ອຸປະກອນມີແບັດເຕີຣີ <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="8998289560386111590">ບໍ່ມີໃຫ້ໃນອຸປະກອນຂອງທ່ານ</translation>
+<translation id="9000871120886759611">ຣີເຊັດເພື່ອໃຫ້ໝັ້ນໃຈວ່າທ່ານສາມາດເຂົ້າເຖິງຂໍ້ມູນໄດ້ໃນພາສາທີ່ທ່ານຕ້ອງການ. ກວດສອບວ່າໃຊ້ສະເພາະພາສາທີ່ຕ້ອງການເທົ່ານັ້ນ.</translation>
 <translation id="9003499805101629690">ພິດຊ່າ</translation>
 <translation id="9003704114456258138">ຄວາມຖີ່</translation>
 <translation id="901834265349196618">ອີເມວ</translation>

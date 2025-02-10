@@ -619,10 +619,6 @@ gfx::Size RenderWidgetHostViewBase::GetVisibleViewportSize() {
   return GetViewBounds().size();
 }
 
-gfx::Size RenderWidgetHostViewBase::GetVisibleViewportSizeDevicePx() {
-  return gfx::ScaleToCeiledSize(GetViewBounds().size(), GetDeviceScaleFactor());
-}
-
 void RenderWidgetHostViewBase::SetInsets(const gfx::Insets& insets) {
   NOTIMPLEMENTED_LOG_ONCE();
 }

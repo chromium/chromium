@@ -449,6 +449,7 @@
 <translation id="3122883569442693641">ज़्यादा जानकारी</translation>
 <translation id="3124039320086536031">डिवाइस कनेक्ट है.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{पेज को हटाना चाहते हैं?}=1{पेज {PAGE_NUMBER} को हटाना चाहते हैं?}one{पेज {PAGE_NUMBER} को हटाना चाहते हैं?}other{पेज {PAGE_NUMBER} को हटाना चाहते हैं?}}</translation>
+<translation id="3134486240968249588">इन बातों का ध्यान रखें</translation>
 <translation id="3140130301071865159">स्नो</translation>
 <translation id="3146655726035122603">सिर्फ़ <ph name="PRODUCT_NAME" /> पर उपलब्ध</translation>
 <translation id="315116470104423982">मोबाइल डेटा</translation>
@@ -1648,7 +1649,6 @@
 <translation id="8747900814994928677">बदलाव की पुष्टि करें</translation>
 <translation id="8749478549112817787">कैमरे का बैकग्राउंड</translation>
 <translation id="8755946156089753497">टावर</translation>
-<translation id="8756235582947991808">एआई की मदद से इमेज बनाने का तरीका और ध्यान में रखने वाली कुछ बातें</translation>
 <translation id="8760616037557661287">पिछले प्रॉम्प्ट</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos की एल्बम</translation>

@@ -5431,8 +5431,8 @@ if (is_mac) {
     args = [
       "--encode=mach_fuzzer.MachMessage",
       "-I",
-      rebase_path("//"),
-      rebase_path(inputs[0]),
+      rebase_path("//", root_build_dir),
+      rebase_path(inputs[0], root_build_dir),
     ]
   }
   fuzzer_test("base_mach_port_rendezvous_fuzzer") {

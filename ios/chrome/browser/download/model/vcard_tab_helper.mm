@@ -22,7 +22,8 @@ VcardTabHelper::~VcardTabHelper() {
 }
 
 void VcardTabHelper::Download(std::unique_ptr<web::DownloadTask> task) {
-  DCHECK_EQ(task->GetMimeType(), kVcardMimeType);
+  DCHECK(task->GetMimeType() == kVcardMimeType ||
+         task->GetMimeType() == kXVcardMimeType);
   web::DownloadTask* task_ptr = task.get();
 
   // Add the task to the set of unfinished tasks before calling

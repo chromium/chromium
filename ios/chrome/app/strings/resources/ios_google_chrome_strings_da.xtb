@@ -121,6 +121,7 @@ Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes
 <translation id="4064699917955374540">Verificer din identitet for at bruge og gemme Chrome-data på din Google-konto.</translation>
 <translation id="417201473131094001">Understøttes ikke i Chrome Canary</translation>
 <translation id="424864128008805179">Vil du logge ud af Chrome?</translation>
+<translation id="4430797724889237570">Åbn links fra Gmail, Maps, YouTube og andre apps i Chrome</translation>
 <translation id="447252321002412580">Vær med til at forbedre Chromes funktioner og ydeevne</translation>
 <translation id="4523886039239821078">Nogle tilføjelser får Chrome til at gå ned. Prøv at afinstallere:</translation>
 <translation id="4633328489441962921">Chrome kan ikke søge efter opdateringer</translation>
@@ -206,6 +207,7 @@ Prøv at vente et par minutter, før du skifter konto. Hvis du skifter konto nu,
 
 Dine data krypteres med din adgangssætning. Angiv adgangssætningen for at bruge og gemme Chrome-data på din Google-konto.</translation>
 <translation id="6533470733797826516">Log hurtigere ind med autofyld i Chrome</translation>
+<translation id="6536544321553662809">Angiv Chrome som din standardbrowser, så du nemt kan dele og åbne links</translation>
 <translation id="6545449117344801102">Chrome registrerer adresser og bruger Google Maps til at give dig rutevejledninger og lokale oplysninger.</translation>
 <translation id="6636941099779251629">Din organisation kræver, at du logger ind for at bruge Chrome. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Sender en sløret del af webadressen til Google via en privatlivsbeskyttende server, som skjuler din IP-adresse. Hvis et website forsøger at stjæle din adgangskode, eller når du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Google.</translation>
@@ -291,6 +293,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="8371138994040262994">Åbner indstillingerne i Chrome.</translation>
 <translation id="8387459386171870978">Fortsæt med at bruge Chrome</translation>
+<translation id="8392023217086447677">Åbnet i inkognitotilstand i Chrome</translation>
 <translation id="840168496893712993">Nogle tilføjelser får Chrome til at gå ned. Prøv at afinstallere dem.</translation>
 <translation id="8413500425974960807">Tip til Chromium: Flyt Chrome til docken</translation>
 <translation id="8413795581997394485">Beskytter mod websites, downloads og udvidelser, der er registreret som skadelige. Når du besøger et website, sender Chrome en sløret del af webadressen til Google via en privatlivsbeskyttende server, der skjuler din IP-adresse. Hvis et website foretager sig noget mistænkeligt, sendes hele webadresser og uddrag af sideindhold også.</translation>

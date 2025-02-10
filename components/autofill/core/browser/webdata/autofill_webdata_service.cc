@@ -41,6 +41,8 @@ AutofillWebDataService::AutofillWebDataService(
       on_autofill_changed_by_sync_callback);
 }
 
+AutofillWebDataService::~AutofillWebDataService() = default;
+
 void AutofillWebDataService::ShutdownOnUISequence() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   wdbs_->GetDbSequence()->PostTask(
@@ -457,8 +459,6 @@ void AutofillWebDataService::AddServerCreditCardForTesting(
       base::BindOnce(&AutofillWebDataBackendImpl::AddServerCreditCardForTesting,
                      autofill_backend_, credit_card));
 }
-
-AutofillWebDataService::~AutofillWebDataService() = default;
 
 void AutofillWebDataService::NotifyOnAutofillChangedBySyncOnUISequence(
     syncer::DataType data_type) {

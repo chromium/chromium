@@ -450,6 +450,7 @@
 <translation id="3122883569442693641">Ďalšie podrobnosti</translation>
 <translation id="3124039320086536031">Zariadenie je pripojené.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Chcete stranu odstrániť?}=1{Chcete odstrániť {PAGE_NUMBER} stranu?}few{Chcete odstrániť {PAGE_NUMBER} strany?}many{Chcete odstrániť {PAGE_NUMBER} strany?}other{Chcete odstrániť {PAGE_NUMBER} strán?}}</translation>
+<translation id="3134486240968249588">Niekoľko vecí, na ktoré treba pamätať</translation>
 <translation id="3140130301071865159">sneh</translation>
 <translation id="3146655726035122603">Exkluzívne pre <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobilné dátové prenosy</translation>
@@ -1656,7 +1657,6 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8747900814994928677">Potvrdenie zmeny</translation>
 <translation id="8749478549112817787">Pozadie kamery</translation>
 <translation id="8755946156089753497">veža</translation>
-<translation id="8756235582947991808">Ako vytvárať obsah pomocou umelej inteligencie a na čo treba pamätať</translation>
 <translation id="8760616037557661287">Predchádzajúce pokyny</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Fotiek Google</translation>

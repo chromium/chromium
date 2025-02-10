@@ -4,13 +4,10 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
-import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordDashboardInteractions;
-
 import android.content.Context;
 import android.view.View;
 
 import org.chromium.chrome.browser.safety_hub.SafetyHubAccountPasswordsDataSource.ModuleType;
-import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardInteractions;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -25,12 +22,12 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class SafetyHubAccountPasswordsModuleMediator
         implements SafetyHubModuleMediator, SafetyHubAccountPasswordsDataSource.Observer {
     private final SafetyHubExpandablePreference mPreference;
-    private final SafetyHubModuleDelegate mModuleDelegate;
     private final SafetyHubModuleMediatorDelegate mMediatorDelegate;
+    private final SafetyHubModuleDelegate mModuleDelegate;
 
     private SafetyHubAccountPasswordsDataSource mAccountPasswordsDataSource;
+    private SafetyHubModuleHelper mModuleHelper;
     private PropertyModel mModel;
-    private @ModuleType int mModuleType;
 
     SafetyHubAccountPasswordsModuleMediator(
             SafetyHubExpandablePreference preference,
@@ -63,6 +60,7 @@ public class SafetyHubAccountPasswordsModuleMediator
             mAccountPasswordsDataSource.destroy();
             mAccountPasswordsDataSource = null;
         }
+        mModuleHelper = null;
     }
 
     @Override
@@ -70,36 +68,60 @@ public class SafetyHubAccountPasswordsModuleMediator
         mAccountPasswordsDataSource.updateState();
     }
 
-    private void updateModule(@ModuleType int moduleType) {
-        mModuleType = moduleType;
-        switch (mModuleType) {
+    private SafetyHubModuleHelper getModuleHelper(@ModuleType int moduleType) {
+        Context context = mPreference.getContext();
+        switch (moduleType) {
             case ModuleType.SIGNED_OUT:
-                updatePreferenceForSignedOut();
-                break;
+                return new SafetyHubAccountPasswordsSignedOutModuleHelper(context, mModuleDelegate);
             case ModuleType.UNAVAILABLE_PASSWORDS:
-                updatePreferenceForUnavailablePasswords();
-                break;
+                return new SafetyHubAccountPasswordsUnavailableAllPasswordsModuleHelper(
+                        context, mModuleDelegate);
             case ModuleType.NO_SAVED_PASSWORDS:
-                updatePreferenceForNoSavedPasswords();
-                break;
+                return new SafetyHubAccountPasswordsNoPasswordsModuleHelper(
+                        context, mModuleDelegate);
             case ModuleType.HAS_COMPROMISED_PASSWORDS:
-                updatePreferenceForHasCompromisedPasswords();
-                break;
+                return new SafetyHubAccountPasswordsHasCompromisedPasswordsModuleHelper(
+                        context,
+                        mModuleDelegate,
+                        mAccountPasswordsDataSource.getCompromisedPasswordCount());
             case ModuleType.NO_COMPROMISED_PASSWORDS:
-                updatePreferenceForNoCompromisedPasswords();
-                break;
+                return new SafetyHubAccountPasswordsNoCompromisedPasswordsModuleHelper(
+                        context, mModuleDelegate, mAccountPasswordsDataSource.getAccountEmail());
             case ModuleType.HAS_WEAK_PASSWORDS:
-                updatePreferenceForHasWeakPasswords();
-                break;
+                return new SafetyHubAccountPasswordsHasWeakPasswordsModuleHelper(
+                        context,
+                        mModuleDelegate,
+                        mAccountPasswordsDataSource.getWeakPasswordCount());
             case ModuleType.HAS_REUSED_PASSWORDS:
-                updatePreferenceForHasReusedPasswords();
-                break;
+                return new SafetyHubAccountPasswordsHasReusedPasswordsModuleHelper(
+                        context,
+                        mModuleDelegate,
+                        mAccountPasswordsDataSource.getReusedPasswordCount());
             case ModuleType.UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS:
-                updatePreferenceForUnavailableCompromisedNoWeakReusePasswords();
-                break;
+                return new SafetyHubAccountPasswordsUnavailableCompromisedPasswordsModuleHelper(
+                        context, mModuleDelegate);
             default:
                 throw new IllegalArgumentException();
         }
+    }
+
+    private void updateModule(@ModuleType int moduleType) {
+        mModuleHelper = getModuleHelper(moduleType);
+
+        mModel.set(SafetyHubModuleProperties.TITLE, mModuleHelper.getTitle());
+        mModel.set(SafetyHubModuleProperties.SUMMARY, mModuleHelper.getSummary());
+        mModel.set(
+                SafetyHubModuleProperties.PRIMARY_BUTTON_TEXT,
+                mModuleHelper.getPrimaryButtonText());
+        mModel.set(
+                SafetyHubModuleProperties.SECONDARY_BUTTON_TEXT,
+                mModuleHelper.getSecondaryButtonText());
+        mModel.set(
+                SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
+                mModuleHelper.getPrimaryButtonListener());
+        mModel.set(
+                SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
+                mModuleHelper.getSecondaryButtonListener());
 
         if (isManaged()) {
             overridePreferenceForManaged();
@@ -116,22 +138,7 @@ public class SafetyHubAccountPasswordsModuleMediator
 
     @Override
     public @ModuleState int getModuleState() {
-        switch (mModuleType) {
-            case ModuleType.NO_SAVED_PASSWORDS:
-            case ModuleType.HAS_WEAK_PASSWORDS:
-            case ModuleType.HAS_REUSED_PASSWORDS:
-                return ModuleState.INFO;
-            case ModuleType.SIGNED_OUT:
-            case ModuleType.UNAVAILABLE_PASSWORDS:
-            case ModuleType.UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS:
-                return ModuleState.UNAVAILABLE;
-            case ModuleType.HAS_COMPROMISED_PASSWORDS:
-                return ModuleState.WARNING;
-            case ModuleType.NO_COMPROMISED_PASSWORDS:
-                return ModuleState.SAFE;
-            default:
-                throw new IllegalArgumentException();
-        }
+        return mModuleHelper.getModuleState();
     }
 
     @Override
@@ -154,141 +161,8 @@ public class SafetyHubAccountPasswordsModuleMediator
         mMediatorDelegate.onUpdateNeeded();
     }
 
-    // Updates `preference` for the password module of type {@link ModuleType.SIGNED_OUT}.
-    private void updatePreferenceForSignedOut() {
-        Context context = mPreference.getContext();
-        mPreference.setTitle(
-                context.getString(R.string.safety_hub_password_check_unavailable_title));
-        mPreference.setSummary(
-                context.getString(R.string.safety_hub_password_check_signed_out_summary));
-        mPreference.setPrimaryButtonText(null);
-        mPreference.setPrimaryButtonClickListener(null);
-        mPreference.setSecondaryButtonText(context.getString(R.string.sign_in_to_chrome));
-        mPreference.setSecondaryButtonClickListener(getButtonListener());
-    }
-
-    // Updates `preference` for the password module of type {@link
-    // ModuleType.UNAVAILABLE_PASSWORDS}.
-    private void updatePreferenceForUnavailablePasswords() {
-        Context context = mPreference.getContext();
-        mPreference.setTitle(
-                context.getString(R.string.safety_hub_password_check_unavailable_title));
-        mPreference.setSummary(context.getString(R.string.safety_hub_unavailable_summary));
-        mPreference.setPrimaryButtonText(null);
-        mPreference.setPrimaryButtonClickListener(null);
-        mPreference.setSecondaryButtonText(
-                context.getString(R.string.safety_hub_passwords_navigation_button));
-        mPreference.setSecondaryButtonClickListener(getButtonListener());
-    }
-
-    // Updates `preference` for the password module of type {@link ModuleType.NO_SAVED_PASSWORDS}.
-    private void updatePreferenceForNoSavedPasswords() {
-        Context context = mPreference.getContext();
-        mPreference.setTitle(context.getString(R.string.safety_hub_no_passwords_title));
-        mPreference.setSummary(context.getString(R.string.safety_hub_no_passwords_summary));
-        mPreference.setPrimaryButtonText(null);
-        mPreference.setPrimaryButtonClickListener(null);
-        mPreference.setSecondaryButtonText(
-                context.getString(R.string.safety_hub_passwords_navigation_button));
-        mPreference.setSecondaryButtonClickListener(getButtonListener());
-    }
-
-    // Updates `preference` for the password module of type {@link
-    // ModuleType.HAS_COMPROMISED_PASSWORDS}.
-    private void updatePreferenceForHasCompromisedPasswords() {
-        Context context = mPreference.getContext();
-        mPreference.setTitle(
-                context.getResources()
-                        .getQuantityString(
-                                R.plurals.safety_check_passwords_compromised_exist,
-                                mAccountPasswordsDataSource.getCompromisedPasswordCount(),
-                                mAccountPasswordsDataSource.getCompromisedPasswordCount()));
-        mPreference.setSummary(
-                context.getResources()
-                        .getQuantityString(
-                                R.plurals.safety_hub_compromised_passwords_summary,
-                                mAccountPasswordsDataSource.getCompromisedPasswordCount(),
-                                mAccountPasswordsDataSource.getCompromisedPasswordCount()));
-        mPreference.setPrimaryButtonText(
-                context.getString(R.string.safety_hub_passwords_navigation_button));
-        mPreference.setPrimaryButtonClickListener(getButtonListener());
-        mPreference.setSecondaryButtonText(null);
-        mPreference.setSecondaryButtonClickListener(null);
-    }
-
-    // Updates `preference` for the password module of type {@link
-    // ModuleType.NO_COMPROMISED_PASSWORDS}.
-    private void updatePreferenceForNoCompromisedPasswords() {
-        Context context = mPreference.getContext();
-        String account = mAccountPasswordsDataSource.getAccountEmail();
-
-        mPreference.setTitle(context.getString(R.string.safety_hub_no_compromised_passwords_title));
-
-        if (account != null) {
-            mPreference.setSummary(
-                    context.getString(R.string.safety_hub_password_check_time_recently, account));
-        } else {
-            mPreference.setSummary(context.getString(R.string.safety_hub_checked_recently));
-        }
-        mPreference.setPrimaryButtonText(null);
-        mPreference.setPrimaryButtonClickListener(null);
-        mPreference.setSecondaryButtonText(
-                context.getString(R.string.safety_hub_passwords_navigation_button));
-        mPreference.setSecondaryButtonClickListener(getButtonListener());
-    }
-
-    // Updates `preference` for the password module of type {@link ModuleType.HAS_WEAK_PASSWORDS}.
-    private void updatePreferenceForHasWeakPasswords() {
-        Context context = mPreference.getContext();
-        mPreference.setTitle(context.getString(R.string.safety_hub_reused_weak_passwords_title));
-        mPreference.setSummary(
-                context.getResources()
-                        .getQuantityString(
-                                R.plurals.safety_hub_weak_passwords_summary,
-                                mAccountPasswordsDataSource.getWeakPasswordCount(),
-                                mAccountPasswordsDataSource.getWeakPasswordCount()));
-        mPreference.setPrimaryButtonText(
-                context.getString(R.string.safety_hub_passwords_navigation_button));
-        mPreference.setPrimaryButtonClickListener(getButtonListener());
-        mPreference.setSecondaryButtonText(null);
-        mPreference.setSecondaryButtonClickListener(null);
-    }
-
-    // Updates `preference` for the password module of type {@link ModuleType.HAS_REUSED_PASSWORDS}.
-    private void updatePreferenceForHasReusedPasswords() {
-        Context context = mPreference.getContext();
-        mPreference.setTitle(context.getString(R.string.safety_hub_reused_weak_passwords_title));
-        mPreference.setSummary(
-                context.getResources()
-                        .getQuantityString(
-                                R.plurals.safety_hub_reused_passwords_summary,
-                                mAccountPasswordsDataSource.getReusedPasswordCount(),
-                                mAccountPasswordsDataSource.getReusedPasswordCount()));
-        mPreference.setPrimaryButtonText(
-                context.getString(R.string.safety_hub_passwords_navigation_button));
-        mPreference.setPrimaryButtonClickListener(getButtonListener());
-        mPreference.setSecondaryButtonText(null);
-        mPreference.setSecondaryButtonClickListener(null);
-    }
-
-    // Updates `preference` for the password module of type {@link
-    // ModuleType.UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS}.
-    private void updatePreferenceForUnavailableCompromisedNoWeakReusePasswords() {
-        Context context = mPreference.getContext();
-        mPreference.setTitle(context.getString(R.string.safety_hub_no_reused_weak_passwords_title));
-        mPreference.setSummary(
-                context.getString(
-                        R.string
-                                .safety_hub_unavailable_compromised_no_reused_weak_passwords_summary));
-        mPreference.setPrimaryButtonText(null);
-        mPreference.setPrimaryButtonClickListener(null);
-        mPreference.setSecondaryButtonText(
-                context.getString(R.string.safety_hub_passwords_navigation_button));
-        mPreference.setSecondaryButtonClickListener(getButtonListener());
-    }
-
-    // Overrides summary and primary button fields of `preference` if passwords are controlled by a
-    // policy.
+    // Overrides the summary and primary button fields of `preference` if passwords are controlled
+    // by a policy.
     private void overridePreferenceForManaged() {
         assert isManaged();
         mPreference.setSummary(
@@ -303,20 +177,6 @@ public class SafetyHubAccountPasswordsModuleMediator
             mPreference.setSecondaryButtonClickListener(primaryButtonListener);
             mPreference.setPrimaryButtonText(null);
             mPreference.setPrimaryButtonClickListener(null);
-        }
-    }
-
-    private View.OnClickListener getButtonListener() {
-        if (mAccountPasswordsDataSource.isSignedIn()) {
-            return v -> {
-                mModuleDelegate.showPasswordCheckUi(mPreference.getContext());
-                recordDashboardInteractions(DashboardInteractions.OPEN_PASSWORD_MANAGER);
-            };
-        } else {
-            return v -> {
-                mModuleDelegate.launchSigninPromo(mPreference.getContext());
-                recordDashboardInteractions(DashboardInteractions.SHOW_SIGN_IN_PROMO);
-            };
         }
     }
 }

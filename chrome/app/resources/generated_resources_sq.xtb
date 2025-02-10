@@ -2291,6 +2291,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2575713839157415345">{YEARS,plural, =1{Kjo pajisje do të ruhet për 1 vit dhe mund të lidhesh pa kod herën tjetër. Kjo është caktuar nga administratori yt.}other{Kjo pajisje do të ruhet për {YEARS} vite dhe mund të lidhesh pa kod herën tjetër. Kjo është caktuar nga administratori yt.}}</translation>
 <translation id="2577127557293415225">Mbyll shkurtimisht të dy sytë</translation>
 <translation id="257779572837908839">Konfiguroje si "Chromebox për takime"</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) do të humbasë menjëherë qasjen në grupin e skedave "<ph name="GROUP_NAME" />" dhe nuk do të mund të ndërveprojë më me ty në shërbimet e Google.</translation>
 <translation id="2580889980133367162">Lejo gjithmonë që <ph name="HOST" /> të shkarkojë shumë skedarë</translation>
 <translation id="258095186877893873">E gjatë</translation>
 <translation id="2581455244799175627">Më shumë rreth lejimit të kukive të palëve të treta</translation>

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill_ai/core/browser/autofill_ai_features.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -103,7 +104,8 @@ class AutofillAiPolicyTest
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_{autofill_ai::kAutofillAi};
+  base::test::ScopedFeatureList scoped_feature_list_{
+      autofill::features::kAutofillAiWithDataSchema};
 
   // Identity test support.
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>

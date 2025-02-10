@@ -960,7 +960,6 @@
 <translation id="5444999712122199445">საიტზე დაბრუნება</translation>
 <translation id="544776284582297024">ჩანართების გასახსნელად და ერთდროულად სხვადასხვა გვერდის მოსანახულებლად შეეხეთ ჩანართების გახსნის ღილაკს</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" />-ით</translation>
-<translation id="5454215368971121976">როცა თქვენი მოწყობილობა დაკეცილია, პოზიციის შესაცვლელად აირჩიეთ რომელიმე ვარიანტი ან ხანგრძლივად შეეხეთ მისამართთა ზოლს.</translation>
 <translation id="5456381639095306749">გვერდის ჩამოტვირთვა</translation>
 <translation id="5458366071038729214">აქ იპოვით საიტებს, რომლებსაც თვალს ადევნებთ</translation>
 <translation id="5468068603361015296">მაინც გსურთ, ჩამოტვირთოთ <ph name="FILE_NAME" />?</translation>
@@ -1284,6 +1283,7 @@
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ჩანართი დაიხურა</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{აუდიოფაილები, სიაშია 1 აუდიოფაილი}other{აუდიოფაილები, სიაშია # აუდიოფაილი}}</translation>
 <translation id="685850645784703949">Discover by Google — გამორთული</translation>
+<translation id="6861722405755529743">სანიშნეების ზოლის გადავსების ღილაკი</translation>
 <translation id="686366188661646310">გსურთ პაროლის წაშლა?</translation>
 <translation id="6864459304226931083">სურათის ჩამოტვირთვა</translation>
 <translation id="686490460830618322">აპების ფილტრის ფურცელი</translation>

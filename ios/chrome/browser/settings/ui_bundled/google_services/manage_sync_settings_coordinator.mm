@@ -166,11 +166,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
           initWithStyle:ChromeTableViewStyle()];
   self.viewController = viewController;
 
-  NSString* title = self.mediator.overrideViewControllerTitle;
-  if (!title) {
-    title = self.delegate.manageSyncSettingsCoordinatorTitle;
-  }
-  viewController.title = title;
+  viewController.title = self.mediator.overrideViewControllerTitle;
   viewController.serviceDelegate = self.mediator;
   viewController.presentationDelegate = self;
   viewController.modelDelegate = self.mediator;

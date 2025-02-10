@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
@@ -347,13 +348,12 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SpecifierOff) {
 class AiDataKeyedServiceBrowserTestWithFormsPredictions
     : public AiDataKeyedServiceBrowserTest {
  public:
+  AiDataKeyedServiceBrowserTestWithFormsPredictions() = default;
   ~AiDataKeyedServiceBrowserTestWithFormsPredictions() override = default;
-  AiDataKeyedServiceBrowserTestWithFormsPredictions() {
-    scoped_feature_list_.InitAndEnableFeature(autofill_ai::kAutofillAi);
-  }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      autofill::features::kAutofillAiWithDataSchema};
 };
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTestWithFormsPredictions,

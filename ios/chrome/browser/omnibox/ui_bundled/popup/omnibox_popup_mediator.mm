@@ -210,7 +210,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 - (void)popupControllerDidUpdateSuggestions:
             (OmniboxPopupController*)popupController
                              hasSuggestions:(BOOL)hasSuggestions
-                                  isOnFocus:(BOOL)isOnFocus {
+                                 isFocusing:(BOOL)isFocusing {
   self.nonPedalSuggestions = nil;
   self.currentPedals = nil;
 
@@ -227,7 +227,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
                     ->GetTriggerVariationsString())];
   }
   self.open = hasSuggestions;
-  [self.presenter updatePopupOnFocus:isOnFocus];
+  [self.presenter updatePopupOnFocus:isFocusing];
 }
 
 - (void)popupController:(OmniboxPopupController*)popupController

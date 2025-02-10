@@ -449,6 +449,7 @@
 <translation id="3122883569442693641">Weitere Details</translation>
 <translation id="3124039320086536031">Das Gerät ist verbunden.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Seite entfernen?}=1{Seite {PAGE_NUMBER} entfernen?}other{Seite {PAGE_NUMBER} entfernen?}}</translation>
+<translation id="3134486240968249588">Wichtige Hinweise</translation>
 <translation id="3140130301071865159">Schnee</translation>
 <translation id="3146655726035122603">Exklusiv für <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobile Daten</translation>
@@ -1648,7 +1649,6 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8747900814994928677">Änderung bestätigen</translation>
 <translation id="8749478549112817787">Kamerahintergrund</translation>
 <translation id="8755946156089753497">Turm</translation>
-<translation id="8756235582947991808">Wie du Inhalte mithilfe von KI erstellst und was du beachten solltest</translation>
 <translation id="8760616037557661287">Vorherige Prompts</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Fotos-Album</translation>

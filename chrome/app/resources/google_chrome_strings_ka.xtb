@@ -82,6 +82,7 @@
 <translation id="2094648590148273905">ChromeOS Flex-ის პირობები</translation>
 <translation id="2094919256425865063">მაინც გსურთ Chrome-იდან გასვლა?</translation>
 <translation id="2106831557840787829">ChromeOS Flex და <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ის შემუშავების გარემო<ph name="END_LINK_LINUX_OSS" /> მუშაობს <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის დამატებითი პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> დამსახურებით.</translation>
+<translation id="2108778574543343055">Chrome-ის აპების ფონურ რეჟიმში მუშაობის გათიშვა</translation>
 <translation id="2120620239521071941">ეს მოქმედება წაშლის <ph name="ITEMS_COUNT" /> ერთეულს ამ მოწყობილობიდან. თქვენი მონაცემების მოგვიანებით მისაღებად, შედით Chrome-ში, როგორც <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">ხელახლა გაშვება &amp;Chrome-ის გასაახლებლად</translation>
 <translation id="2123055963409958220">ხელი შეუწყვეთ Chrome-ის გაუმჯობესებას <ph name="BEGIN_LINK" />მიმდინარე პარამეტრების<ph name="END_LINK" /> გამოგზავნის მეშვეობით</translation>
@@ -143,6 +144,7 @@
 <translation id="2797864378188255696">Google სერვისებში, მაგალითად, Gmail-სა თუ YouTube-ში <ph name="USER_EMAIL" />-ით შესვლისას შეგიძლიათ ავტომატურად შეხვიდეთ Chrome-შიც იმავე ანგარიშით</translation>
 <translation id="2799162042226656283">თქვენი Chrome</translation>
 <translation id="2799223571221894425">ხელახლა გაშვება</translation>
+<translation id="2818684386420968393">Chrome-ის აპების ფონურ რეჟიმში მუშაობის გათიშვა</translation>
 <translation id="2825024317344269723">სახიფათო საიტი Chrome-მა ამოშალა შეტყობინებები.</translation>
 <translation id="2841525013647267359">თარგმნა ენიდან:</translation>
 <translation id="2846251086934905009">შეცდომა ინსტალაციისას: ინსტალატორის მუშაობა ვერ დასრულდა. ინსტალაცია შეწყდა.</translation>
@@ -435,7 +437,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6497147134301593682">Chrome ავტომატურად დაიხურა</translation>
 <translation id="6506909944137591434">თქვენი შემოგარენის 3-განზომილებიანი რუკის შესაქმნელად Chrome საჭიროებს მეხსიერებაზე წვდომის ნებართვას</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> — Google Chrome Dev</translation>
-<translation id="6515549163407364048">თქვენს ყველა კომპიუტერში გაფართოებებზე წვდომის მისაღებად შედით Chrome-ში</translation>
 <translation id="6520670145826811516">თქვენი მდებარეობა რომ გამოიყენოთ, გახსენით <ph name="BEGIN_LINK" />სისტემის პარამეტრები<ph name="END_LINK" /> და მიანიჭეთ Chrome-ს წვდომა</translation>
 <translation id="659498884637196217">Google პაროლების მმართველში ამ მოწყობილობაზე</translation>
 <translation id="6632473616050862500">ChromeOS Flex მუშაობს <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> დამსახურებით.</translation>

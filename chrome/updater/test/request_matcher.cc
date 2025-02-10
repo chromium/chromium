@@ -123,13 +123,12 @@ Matcher GetContentMatcher(
 Matcher GetScopeMatcher(UpdaterScope scope) {
   return base::BindLambdaForTesting([scope](const HttpRequest& request) {
     const bool is_match = [&scope, &request] {
-      const std::optional<base::Value> doc =
-          base::JSONReader::Read(request.decoded_content);
-      if (!doc || !doc->is_dict()) {
+      const std::optional<base::Value::Dict> doc =
+          base::JSONReader::ReadDict(request.decoded_content);
+      if (!doc) {
         return false;
       }
-      const base::Value::Dict* object_request =
-          doc->GetDict().FindDict("request");
+      const base::Value::Dict* object_request = doc->FindDict("request");
       if (!object_request) {
         return false;
       }
@@ -157,13 +156,13 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
   return base::BindLambdaForTesting([app_id,
                                      priority](const HttpRequest& request) {
     const bool is_match = [&app_id, priority, &request] {
-      const std::optional<base::Value> doc =
-          base::JSONReader::Read(request.decoded_content);
-      if (!doc || !doc->is_dict()) {
+      const std::optional<base::Value::Dict> doc =
+          base::JSONReader::ReadDict(request.decoded_content);
+      if (!doc) {
         return false;
       }
       const base::Value::List* app_list =
-          doc->GetDict().FindListByDottedPath("request.app");
+          doc->FindListByDottedPath("request.app");
       if (!app_list) {
         return false;
       }
@@ -193,13 +192,13 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
 Matcher GetUpdaterEnableUpdatesMatcher() {
   return base::BindLambdaForTesting([](const HttpRequest& request) {
     const bool update_disabled = [&request] {
-      const std::optional<base::Value> doc =
-          base::JSONReader::Read(request.decoded_content);
-      if (!doc || !doc->is_dict()) {
+      const std::optional<base::Value::Dict> doc =
+          base::JSONReader::ReadDict(request.decoded_content);
+      if (!doc) {
         return false;
       }
       const base::Value::List* app_list =
-          doc->GetDict().FindListByDottedPath("request.app");
+          doc->FindListByDottedPath("request.app");
       if (!app_list) {
         return false;
       }

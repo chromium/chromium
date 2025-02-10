@@ -1376,6 +1376,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1936157145127842922">Dangos mewn Ffolder</translation>
 <translation id="1936931585862840749">Defnyddiwch rif i nodi faint o gopïau i'w hargraffu (1 i <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Methu â mewnforio math pensaernïaeth y cynhwysydd <ph name="ARCHITECTURE_CONTAINER" /> gyda'r ddyfais hon sy'n <ph name="ARCHITECTURE_DEVICE" />. Gallwch roi cynnig ar adfer y cynhwysydd hwn i ddyfais wahanol, neu gallwch gael mynediad at y ffeiliau y tu mewn i'r llun cynhwysydd hwn drwy ei agor yn ap Files.</translation>
+<translation id="1938116692670653897">Thema lliw presennol</translation>
 <translation id="1938351510777341717">Gorchymyn Allanol</translation>
 <translation id="1940221956626514677">Addasu bar offer</translation>
 <translation id="1940546824932169984">Dyfeisiau sydd wedi'u cysylltu</translation>
@@ -2145,6 +2146,10 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2462332841984057083">Mae Steam eisoes yn cael ei osod. Arhoswch i'r gosodiad gael ei gwblhau.</translation>
 <translation id="2462724976360937186">Rhif Adnabod Allwedd yr Awdurdod Ardystio</translation>
 <translation id="2462752602710430187">Ychwanegwyd <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Rydych yn gweld ffeiliau a awgrymir i'ch helpu chi i ddychwelyd yn hawdd i'ch gweithgaredd diweddaraf yn Microsoft SharePoint ac OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Gallwch reoli gosodiadau o'r ddewislen cardiau neu weld rhagor o ddewisiadau yn Customize Chrome.</translation>
 <translation id="2464079411014186876">Hufen iâ</translation>
 <translation id="2467755475704469005">Ni chanfuwyd dyfais. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Ymuno â Grŵp tabiau gyda <ph name="OWNER_FIRST_NAME" /> a <ph name="NUM_OTHER_MEMBERS" /> Arall</translation>
@@ -2309,6 +2314,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2575713839157415345">{YEARS,plural, =1{Bydd y ddyfais hon yn cael ei chadw am 1 flwyddyn a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}zero{Bydd y ddyfais hon yn cael ei chadw am {YEARS} blynedd a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}two{Bydd y ddyfais hon yn cael ei chadw am {YEARS} flynedd a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}few{Bydd y ddyfais hon yn cael ei chadw am {YEARS} o flynyddoedd a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}many{Bydd y ddyfais hon yn cael ei chadw am {YEARS} o flynyddoedd a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}other{Bydd y ddyfais hon yn cael ei chadw am {YEARS} o flynyddoedd a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}}</translation>
 <translation id="2577127557293415225">Caewch eich dau lygad am eiliad</translation>
 <translation id="257779572837908839">Gosod fel Chromebox ar gyfer cyfarfodydd</translation>
+<translation id="2577981599306533385">Bydd <ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) yn colli mynediad at y grŵp tabiau '<ph name="GROUP_NAME" />' ar unwaith, ac ni fydd yn gallu rhyngweithio â chi ar draws gwasanaethau Google mwyach.</translation>
 <translation id="2580889980133367162">Caniatáu i <ph name="HOST" /> lawrlwytho mwy nag un ffeil bob amser</translation>
 <translation id="258095186877893873">Hir</translation>
 <translation id="2581455244799175627">Rhagor am ganiatáu cwcis trydydd parti</translation>
@@ -4004,6 +4010,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3787434344076711519">Wrthi'n aros am gyfieithiad</translation>
 <translation id="3788301286821743879">Ni ellid lansio'r ap Kiosk.</translation>
 <translation id="3788401245189148511">Gallai:</translation>
+<translation id="3789432704615470433">Ffeiliau SharePoint ac OneDrive</translation>
 <translation id="3789841737615482174">Gosod</translation>
 <translation id="3790417903123637354">Aeth rhywbeth o'i le. Rhowch gynnig arall arni'n nes ymlaen</translation>
 <translation id="379082410132524484">Mae'ch cerdyn wedi darfod</translation>
@@ -6193,6 +6200,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5360150013186312835">Dangos yn y Bar Offer</translation>
 <translation id="5362741141255528695">Dewiswch ffeil allwedd breifat.</translation>
 <translation id="536278396489099088">Cyflwr ac Adroddiadau System ChromeOS</translation>
+<translation id="5362916924854054326">Peidiwch â dangos ffeiliau SharePoint ac OneDrive</translation>
 <translation id="5363109466694494651">Powerwash a Dychwelyd</translation>
 <translation id="5365881113273618889">Mae'r ffolder y gwnaethoch ei dewis yn cynnwys ffeiliau sensitif. Ydych chi'n siŵr eich bod am ganiatáu mynediad ysgrifennu parhaol i "<ph name="APP_NAME" />" at y ffolder hon?</translation>
 <translation id="536638840841140142">Dim</translation>
@@ -10781,6 +10789,10 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="865936634714975126">Ychwanegu paramedr ymholiad yn yr URL i ddewis mathau ar lwyth tudalen. Enghraifft: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Cysylltiadau <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Symudodd y ffenestr i lawr</translation>
+<translation id="8660288500924118793">Rydych yn gweld eich calendr i'ch helpu chi i lywio'n hawdd i'ch digwyddiad nesaf yn y Calendr Outlook.
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        Gallwch reoli gosodiadau o'r ddewislen cardiau neu weld rhagor o ddewisiadau yn Customize Chrome.</translation>
 <translation id="8661290697478713397">Agor y Ddolen mewn Ffenestr Anh&amp;ysbys</translation>
 <translation id="8662474268934425487">Mewngofnodi i <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Ymuno â rhwydwaith <ph name="TYPE" /></translation>

@@ -2306,6 +2306,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2575713839157415345">{YEARS,plural, =1{This device will be saved for one year and you can connect without a code next time. This is set by your administrator.}other{This device will be saved for {YEARS} years and you can connect without a code next time. This is set by your administrator.}}</translation>
 <translation id="2577127557293415225">Briefly close both eyes</translation>
 <translation id="257779572837908839">Set up as Chromebox for meetings</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and will no longer be able to interact with you across Google services.</translation>
 <translation id="2580889980133367162">Always allow <ph name="HOST" /> to download multiple files</translation>
 <translation id="258095186877893873">Long</translation>
 <translation id="2581455244799175627">More about allowing third-party cookies</translation>

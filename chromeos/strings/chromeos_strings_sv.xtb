@@ -449,6 +449,7 @@
 <translation id="3122883569442693641">Mer information</translation>
 <translation id="3124039320086536031">Enheten är ansluten.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Vill du ta bort sidan?}=1{Vill du ta bort sidan {PAGE_NUMBER}?}other{Vill du ta bort sidan {PAGE_NUMBER}?}}</translation>
+<translation id="3134486240968249588">Några saker att tänka på</translation>
 <translation id="3140130301071865159">snö</translation>
 <translation id="3146655726035122603">Exklusivt för <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobildata</translation>
@@ -1648,7 +1649,6 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8747900814994928677">Bekräfta ändring</translation>
 <translation id="8749478549112817787">Kamerabakgrund</translation>
 <translation id="8755946156089753497">torn</translation>
-<translation id="8756235582947991808">Hur du skapar med AI och några saker att tänka på</translation>
 <translation id="8760616037557661287">Föregående promptar</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album i Google Foto</translation>

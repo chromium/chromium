@@ -294,14 +294,7 @@ using ResponseType = OptimizationGuideTestServer::ResponseType;
 // Base class for setting up the browser test.
 class AutofillAiBrowserBaseTest : public InteractiveBrowserTest {
  public:
-  AutofillAiBrowserBaseTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{kAutofillAi,
-                               {{"skip_allowlist", "true"},
-                                {"allowed_hosts_for_form_submissions",
-                                 "a.com"}}}},
-        /*disabled_features=*/{});
-  }
+  AutofillAiBrowserBaseTest() = default;
 
   void SetUp() override {
     embedded_test_server()->ServeFilesFromSourceDirectory(
@@ -399,7 +392,8 @@ class AutofillAiBrowserBaseTest : public InteractiveBrowserTest {
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
 
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      autofill::features::kAutofillAiWithDataSchema};
   GURL form_page_url_;
   OptimizationGuideTestServer optimization_guide_test_server_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>

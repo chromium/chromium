@@ -2296,6 +2296,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2575713839157415345">{YEARS,plural, =1{Ovaj uređaj će biti sačuvan godinu dana i možete da se povežete bez koda sledeći put. To je podesio administrator.}one{Ovaj uređaj će biti sačuvan {YEARS} godinu i možete da se povežete bez koda sledeći put. To je podesio administrator.}few{Ovaj uređaj će biti sačuvan {YEARS} godine i možete da se povežete bez koda sledeći put. To je podesio administrator.}other{Ovaj uređaj će biti sačuvan {YEARS} godina i možete da se povežete bez koda sledeći put. To je podesio administrator.}}</translation>
 <translation id="2577127557293415225">Zatvorite oba oka nakratko</translation>
 <translation id="257779572837908839">Podesi kao Chromebox za sastanke</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) će odmah izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i više neće moći da komunicira sa vama u Google uslugama.</translation>
 <translation id="2580889980133367162">Uvek dozvoli hostu <ph name="HOST" /> da preuzima više datoteka</translation>
 <translation id="258095186877893873">Dugo</translation>
 <translation id="2581455244799175627">Više o dozvoljavanju kolačića trećih strana</translation>

@@ -106,8 +106,15 @@ void DriveSkyvaultUploader::Run() {
   // Observe Drive updates.
   drive::DriveIntegrationService::Observer::Observe(drive_integration_service_);
 
-  if (drive::util::GetDriveConnectionStatus(profile_) !=
-      drive::util::ConnectionStatus::kConnected) {
+  auto drive_status = drive::util::GetDriveConnectionStatus(profile_);
+  if (drive_status == drive::util::ConnectionStatus::kNoService) {
+    // Drive is completely disabled for this profile.
+    LOG(ERROR) << "Drive integration service isn't available";
+    OnEndCopy(MigrationUploadError::kServiceUnavailable);
+    return;
+  }
+
+  if (drive_status != drive::util::ConnectionStatus::kConnected) {
     LOG(ERROR) << "Waiting for connection to Drive";
     waiting_for_connection_ = true;
     return;
@@ -425,9 +432,15 @@ void DriveSkyvaultUploader::OnDriveConnectionStatusChanged(
     }
     return;
   }
+  if (status == drive::util::ConnectionStatus::kNoService) {
+    LOG(ERROR) << "Drive service became unavailable during upload";
+    OnEndCopy(MigrationUploadError::kServiceUnavailable);
+    return;
+  }
   if (status != drive::util::ConnectionStatus::kConnected) {
     LOG(ERROR) << "Lost connection to Drive during upload";
-    OnEndCopy(MigrationUploadError::kServiceUnavailable);
+    // TODO: wait for reconnection, but not indefinitely?
+    OnEndCopy(MigrationUploadError::kNetworkError);
   }
 }
 

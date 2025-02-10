@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sharing_message/model/ios_sharing_message_bridge_factory.h"
 #import "ios/chrome/browser/signin/model/about_signin_internals_factory.h"
@@ -286,6 +287,20 @@ SyncServiceFactory::GetForProfileAsSyncServiceImplForTesting(
 
   return GetInstance()->GetServiceForProfileAs<syncer::SyncServiceImpl>(
       profile, /*create*/ true);
+}
+
+// static
+std::vector<const syncer::SyncService*>
+SyncServiceFactory::GetAllSyncServices() {
+  std::vector<const syncer::SyncService*> sync_services;
+  for (ProfileIOS* profile :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
+    syncer::SyncService* sync_service = GetForProfileIfExists(profile);
+    if (sync_service != nullptr) {
+      sync_services.push_back(sync_service);
+    }
+  }
+  return sync_services;
 }
 
 SyncServiceFactory::SyncServiceFactory()

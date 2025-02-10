@@ -449,6 +449,7 @@
 <translation id="3122883569442693641">Plus de détails</translation>
 <translation id="3124039320086536031">L'appareil est connecté.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Retirer la page?}=1{Retirer la page {PAGE_NUMBER}?}one{Retirer la page {PAGE_NUMBER}?}other{Retirer la page {PAGE_NUMBER}?}}</translation>
+<translation id="3134486240968249588">Voici quelques éléments à garder à l'esprit</translation>
 <translation id="3140130301071865159">neige</translation>
 <translation id="3146655726035122603">Exclusif à <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Données mobiles</translation>
@@ -1648,7 +1649,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8747900814994928677">Confirmer la modification</translation>
 <translation id="8749478549112817787">Arrière-plan de caméra</translation>
 <translation id="8755946156089753497">tour</translation>
-<translation id="8756235582947991808">Comment créer avec l'IA et quelques points à garder à l'esprit</translation>
 <translation id="8760616037557661287">Requêtes précédentes</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Photos</translation>

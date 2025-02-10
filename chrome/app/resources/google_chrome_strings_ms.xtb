@@ -78,6 +78,7 @@
 <translation id="2094648590148273905">Syarat Chrome OS Flex</translation>
 <translation id="2094919256425865063">Keluar daripada Chrome juga?</translation>
 <translation id="2106831557840787829">ChromeOS Flex menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" />tambahan, sebagaimana <ph name="BEGIN_LINK_LINUX_OSS" />persekitaran pembangunan Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2108778574543343055">Lumpuhkan Chrome yang Berjalan pada Latar untuk Apl</translation>
 <translation id="2120620239521071941">Tindakan ini akan memadamkan <ph name="ITEMS_COUNT" /> item daripada peranti ini. Untuk mendapatkan kembali data anda kemudian, log masuk ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Lancarkan Semula untuk Mengemas Kini &amp;Chrome</translation>
 <translation id="2123055963409958220">Bantu jadikan Chrome lebih baik dengan melaporkan <ph name="BEGIN_LINK" />tetapan semasa<ph name="END_LINK" /></translation>
@@ -139,6 +140,7 @@
 <translation id="2797864378188255696">Apabila anda log masuk ke perkhidmatan Google seperti Gmail atau YouTube dengan <ph name="USER_EMAIL" />, anda boleh log masuk ke Chrome secara automatik dengan akaun yang sama</translation>
 <translation id="2799162042226656283">Chrome Anda</translation>
 <translation id="2799223571221894425">Lancarkan semula</translation>
+<translation id="2818684386420968393">Lumpuhkan Chrome yang berjalan pada latar untuk apl</translation>
 <translation id="2825024317344269723">Laman berbahaya. Chrome mengalih keluar pemberitahuan.</translation>
 <translation id="2841525013647267359">Terjemahkan daripada</translation>
 <translation id="2846251086934905009">Ralat pemasangan: Proses pemasang tidak selesai. Pemasangan telah dihenti paksa.</translation>
@@ -427,7 +429,6 @@
 <translation id="6497147134301593682">Chrome ditutup secara automatik</translation>
 <translation id="6506909944137591434">Chrome memerlukan kebenaran kamera untuk membuat peta 3D bagi persekitaran anda</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
-<translation id="6515549163407364048">Untuk mendapatkan sambungan anda pada semua komputer anda, log masuk ke Chrome</translation>
 <translation id="6520670145826811516">Untuk menggunakan lokasi anda, berikan akses kepada Chrome dalam <ph name="BEGIN_LINK" />tetapan sistem<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">Dalam Pengurus Kata Laluan Google pada peranti ini</translation>
 <translation id="6632473616050862500">Chrome OS Flex menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>

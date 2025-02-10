@@ -2293,6 +2293,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2575713839157415345">{YEARS,plural, =1{Aquest dispositiu es desarà durant 1 any i et podràs connectar sense un codi la propera vegada. Això ho ha establert el teu administrador.}other{Aquest dispositiu es desarà durant {YEARS} anys i et podràs connectar sense un codi la propera vegada. Això ho ha establert el teu administrador.}}</translation>
 <translation id="2577127557293415225">Tanca breument els ulls</translation>
 <translation id="257779572837908839">Estableix com a Chromebox per a reunions</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perdrà immediatament l'accés al grup de pestanyes "<ph name="GROUP_NAME" />" i ja no podrà interaccionar amb tu als serveis de Google.</translation>
 <translation id="2580889980133367162">Permet sempre que <ph name="HOST" /> baixi diversos fitxers</translation>
 <translation id="258095186877893873">Llarg</translation>
 <translation id="2581455244799175627">Més informació sobre com pots permetre les galetes de tercers</translation>

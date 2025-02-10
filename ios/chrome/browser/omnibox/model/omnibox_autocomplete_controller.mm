@@ -55,7 +55,7 @@ using base::UserMetricsAction;
                       metrics::OmniboxFocusType::INTERACTION_FOCUS;
     [self.omniboxPopupController
         newResultsAvailable:_autocompleteController->result()
-                  isOnFocus:isFocusing];
+                 isFocusing:isFocusing];
   }
 }
 

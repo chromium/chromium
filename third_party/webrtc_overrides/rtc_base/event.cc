@@ -6,7 +6,7 @@
 
 #include "base/time/time.h"
 
-namespace rtc {
+namespace webrtc {
 
 using base::WaitableEvent;
 
@@ -36,4 +36,4 @@ bool Event::Wait(webrtc::TimeDelta give_up_after) {
   return event_.TimedWait(base::Microseconds(give_up_after.us()));
 }
 
-}  // namespace rtc
+}  // namespace webrtc

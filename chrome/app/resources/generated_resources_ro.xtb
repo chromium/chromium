@@ -1364,6 +1364,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1936157145127842922">Afișați în dosar</translation>
 <translation id="1936931585862840749">Precizează un număr de exemplare pentru printare (de la 1 la <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Nu se poate importa tipul de arhitectură de container <ph name="ARCHITECTURE_CONTAINER" /> cu acest dispozitiv <ph name="ARCHITECTURE_DEVICE" />. Poți încerca să restabilești acest container într-un dispozitiv diferit sau poți accesa fișierele din această imagine de container deschizându-le în aplicația Files.</translation>
+<translation id="1938116692670653897">Tema de culoare actuală</translation>
 <translation id="1938351510777341717">Comandă externă</translation>
 <translation id="1940221956626514677">Personalizează bara de instrumente</translation>
 <translation id="1940546824932169984">Dispozitive conectate</translation>
@@ -2130,6 +2131,10 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2462332841984057083">Steam se configurează deja. Așteaptă să se finalizeze configurarea.</translation>
 <translation id="2462724976360937186">ID-ul cheii autorității de certificare</translation>
 <translation id="2462752602710430187">S-a adăugat <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Vezi fișierele sugerate pentru a reveni ușor la cea mai recentă activitate din Microsoft SharePoint și OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Poți să gestionezi setările din meniul cardului sau să afișezi mai multe opțiuni în Personalizează Chrome.</translation>
 <translation id="2464079411014186876">Înghețată</translation>
 <translation id="2467755475704469005">Nu s-a detectat niciun dispozitiv. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Alătură-te grupului de file cu <ph name="OWNER_FIRST_NAME" /> și încă <ph name="NUM_OTHER_MEMBERS" /> persoane</translation>
@@ -2294,6 +2299,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2575713839157415345">{YEARS,plural, =1{Dispozitivul va fi salvat timp de un an și te poți conecta fără cod data viitoare. Setarea este configurată de administrator.}few{Dispozitivul va fi salvat timp de {YEARS} ani și te poți conecta fără cod data viitoare. Setarea este configurată de administrator.}other{Dispozitivul va fi salvat timp de {YEARS} de ani și te poți conecta fără cod data viitoare. Setarea este configurată de administrator.}}</translation>
 <translation id="2577127557293415225">Închide ambii ochi pentru scurt timp</translation>
 <translation id="257779572837908839">Configurează ca Chromebox pentru videoconferințe</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) va pierde imediat accesul la grupul de file <ph name="GROUP_NAME" /> și nu va mai putea să interacționeze cu tine în serviciile Google.</translation>
 <translation id="2580889980133367162">Permiteți întotdeauna <ph name="HOST" /> să descarce mai multe fișiere</translation>
 <translation id="258095186877893873">Lungă</translation>
 <translation id="2581455244799175627">Mai multe despre permiterea cookie-urilor terță parte</translation>
@@ -3988,6 +3994,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3787434344076711519">Se așteaptă traducerea</translation>
 <translation id="3788301286821743879">Aplicația chioșc nu a putut fi lansată.</translation>
 <translation id="3788401245189148511">Aceasta ar putea să:</translation>
+<translation id="3789432704615470433">Fișiere SharePoint și OneDrive</translation>
 <translation id="3789841737615482174">Instalează</translation>
 <translation id="3790417903123637354">A apărut o eroare. Încearcă din nou mai târziu.</translation>
 <translation id="379082410132524484">Cardul a expirat</translation>
@@ -6175,6 +6182,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5360150013186312835">Afișează în bara de instrumente</translation>
 <translation id="5362741141255528695">Selectează fișierul cu cheia privată.</translation>
 <translation id="536278396489099088">Starea sistemului și rapoartele ChromeOS</translation>
+<translation id="5362916924854054326">Nu afișa fișierele SharePoint și OneDrive</translation>
 <translation id="5363109466694494651">Folosește Powerwash și revino la o versiune anterioară</translation>
 <translation id="5365881113273618889">Dosarul pe care l-ai selectat conține fișiere cu informații sensibile. Sigur dorești să permiți accesul de scriere permanent pentru „<ph name="APP_NAME" />” la acest dosar?</translation>
 <translation id="536638840841140142">Fără</translation>
@@ -10758,6 +10766,10 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="865936634714975126">Adaugă un parametru de interogare în adresa URL pentru a selecta tipurile la încărcarea paginii. Exemplu: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Persoane de contact pentru <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Fereastra a fost mutată în jos</translation>
+<translation id="8660288500924118793">Calendarul tău este afișat pentru a te ajuta să navighezi cu ușurință la următorul eveniment din Outlook Calendar.
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        Poți să gestionezi setările din meniul cardului sau să afișezi mai multe opțiuni în Personalizează Chrome.</translation>
 <translation id="8661290697478713397">Deschide linkul într-o fereastră inco&amp;gnito</translation>
 <translation id="8662474268934425487">Conectează-te la <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Conectează-te la rețeaua <ph name="TYPE" /></translation>

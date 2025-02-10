@@ -115,10 +115,6 @@ void InternalsUIHandler::RegisterMessages() {
       "resetUpmEviction",
       base::BindRepeating(&InternalsUIHandler::OnResetUpmEviction,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "resetAccountStorageNotice",
-      base::BindRepeating(&InternalsUIHandler::OnResetAccountStorageNotice,
-                          base::Unretained(this)));
 #endif
 }
 
@@ -182,12 +178,6 @@ void InternalsUIHandler::OnResetUpmEviction(const base::Value::List& args) {
   }
   FireWebUIListener("enable-reset-upm-eviction-button",
                     base::Value(!is_user_unenrolled));
-}
-
-void InternalsUIHandler::OnResetAccountStorageNotice(
-    const base::Value::List& args) {
-  Profile::FromWebUI(web_ui())->GetPrefs()->ClearPref(
-      password_manager::prefs::kAccountStorageNoticeShown);
 }
 #endif
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/android/password_manager_settings_service_android_impl.h"
+#include "chrome/browser/password_manager/android/password_manager_settings_service_android_migration_impl.h"
 
 #include <memory>
 #include <optional>
@@ -55,15 +55,17 @@ class MockPasswordSettingsUpdaterBridgeHelper
 
 }  // namespace
 
-class PasswordManagerSettingsServiceAndroidImplBaseTest : public testing::Test {
+class PasswordManagerSettingsServiceAndroidMigrationImplBaseTest
+    : public testing::Test {
  protected:
-  PasswordManagerSettingsServiceAndroidImplBaseTest();
-  ~PasswordManagerSettingsServiceAndroidImplBaseTest() override;
+  PasswordManagerSettingsServiceAndroidMigrationImplBaseTest();
+  ~PasswordManagerSettingsServiceAndroidMigrationImplBaseTest() override;
 
   void InitializeSettingsService(bool password_sync_enabled,
                                  bool setting_sync_enabled);
 
-  std::unique_ptr<PasswordManagerSettingsServiceAndroidImpl> CreateNewService(
+  std::unique_ptr<PasswordManagerSettingsServiceAndroidMigrationImpl>
+  CreateNewService(
       std::unique_ptr<MockPasswordSettingsUpdaterBridgeHelper> bridge_helper);
 
   void SetPasswordsSync(bool enabled);
@@ -92,7 +94,8 @@ class PasswordManagerSettingsServiceAndroidImplBaseTest : public testing::Test {
   void RegisterPrefs();
 
   TestingPrefServiceSimple test_pref_service_;
-  std::unique_ptr<PasswordManagerSettingsServiceAndroidImpl> settings_service_;
+  std::unique_ptr<PasswordManagerSettingsServiceAndroidMigrationImpl>
+      settings_service_;
   syncer::TestSyncService test_sync_service_;
   raw_ptr<MockPasswordSettingsUpdaterBridgeHelper> mock_bridge_helper_ =
       nullptr;
@@ -100,8 +103,8 @@ class PasswordManagerSettingsServiceAndroidImplBaseTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 };
 
-PasswordManagerSettingsServiceAndroidImplBaseTest::
-    PasswordManagerSettingsServiceAndroidImplBaseTest() {
+PasswordManagerSettingsServiceAndroidMigrationImplBaseTest::
+    PasswordManagerSettingsServiceAndroidMigrationImplBaseTest() {
   RegisterPrefs();
   CoreAccountInfo sync_account_info;
   sync_account_info.email = kTestAccount;
@@ -109,12 +112,12 @@ PasswordManagerSettingsServiceAndroidImplBaseTest::
                                  sync_account_info);
 }
 
-PasswordManagerSettingsServiceAndroidImplBaseTest::
-    ~PasswordManagerSettingsServiceAndroidImplBaseTest() {
+PasswordManagerSettingsServiceAndroidMigrationImplBaseTest::
+    ~PasswordManagerSettingsServiceAndroidMigrationImplBaseTest() {
   testing::Mock::VerifyAndClearExpectations(mock_bridge_helper_);
 }
 
-void PasswordManagerSettingsServiceAndroidImplBaseTest::
+void PasswordManagerSettingsServiceAndroidMigrationImplBaseTest::
     InitializeSettingsService(bool password_sync_enabled,
                               bool setting_sync_enabled) {
   std::unique_ptr<MockPasswordSettingsUpdaterBridgeHelper> bridge_helper =
@@ -130,14 +133,15 @@ void PasswordManagerSettingsServiceAndroidImplBaseTest::
   SetPasswordsSync(password_sync_enabled);
   SetSettingsSync(setting_sync_enabled);
   settings_service_ = std::make_unique<
-      PasswordManagerSettingsServiceAndroidImpl>(
-      base::PassKey<class PasswordManagerSettingsServiceAndroidImplBaseTest>(),
+      PasswordManagerSettingsServiceAndroidMigrationImpl>(
+      base::PassKey<
+          class PasswordManagerSettingsServiceAndroidMigrationImplBaseTest>(),
       &test_pref_service_, &test_sync_service_, std::move(bridge_helper),
       std::move(lifecycle_helper));
 }
 
-std::unique_ptr<PasswordManagerSettingsServiceAndroidImpl>
-PasswordManagerSettingsServiceAndroidImplBaseTest::CreateNewService(
+std::unique_ptr<PasswordManagerSettingsServiceAndroidMigrationImpl>
+PasswordManagerSettingsServiceAndroidMigrationImplBaseTest::CreateNewService(
     std::unique_ptr<MockPasswordSettingsUpdaterBridgeHelper> bridge_helper =
         nullptr) {
   if (!bridge_helper) {
@@ -145,14 +149,15 @@ PasswordManagerSettingsServiceAndroidImplBaseTest::CreateNewService(
   }
   std::unique_ptr<FakePasswordManagerLifecycleHelper> lifecycle_helper =
       std::make_unique<FakePasswordManagerLifecycleHelper>();
-  return std::make_unique<PasswordManagerSettingsServiceAndroidImpl>(
-      base::PassKey<class PasswordManagerSettingsServiceAndroidImplBaseTest>(),
+  return std::make_unique<PasswordManagerSettingsServiceAndroidMigrationImpl>(
+      base::PassKey<
+          class PasswordManagerSettingsServiceAndroidMigrationImplBaseTest>(),
       pref_service(), sync_service(), std::move(bridge_helper),
       std::move(lifecycle_helper));
 }
 
-void PasswordManagerSettingsServiceAndroidImplBaseTest::SetPasswordsSync(
-    bool enabled) {
+void PasswordManagerSettingsServiceAndroidMigrationImplBaseTest::
+    SetPasswordsSync(bool enabled) {
   syncer::UserSelectableTypeSet selected_sync_types =
       test_sync_service_.GetUserSettings()->GetSelectedTypes();
   if (enabled) {
@@ -164,8 +169,8 @@ void PasswordManagerSettingsServiceAndroidImplBaseTest::SetPasswordsSync(
                                                          selected_sync_types);
 }
 
-void PasswordManagerSettingsServiceAndroidImplBaseTest::SetSettingsSync(
-    bool enabled) {
+void PasswordManagerSettingsServiceAndroidMigrationImplBaseTest::
+    SetSettingsSync(bool enabled) {
   syncer::UserSelectableTypeSet selected_sync_types =
       test_sync_service_.GetUserSettings()->GetSelectedTypes();
   if (enabled) {
@@ -177,7 +182,7 @@ void PasswordManagerSettingsServiceAndroidImplBaseTest::SetSettingsSync(
                                                          selected_sync_types);
 }
 
-void PasswordManagerSettingsServiceAndroidImplBaseTest::
+void PasswordManagerSettingsServiceAndroidMigrationImplBaseTest::
     ExpectSettingsRetrievalFromBackend(std::optional<SyncingAccount> account,
                                        size_t times) {
   EXPECT_CALL(
@@ -200,7 +205,8 @@ void PasswordManagerSettingsServiceAndroidImplBaseTest::
   }
 }
 
-void PasswordManagerSettingsServiceAndroidImplBaseTest::RegisterPrefs() {
+void PasswordManagerSettingsServiceAndroidMigrationImplBaseTest::
+    RegisterPrefs() {
   test_pref_service_.registry()->RegisterBooleanPref(
       password_manager::prefs::kCredentialsEnableService, true);
   test_pref_service_.registry()->RegisterBooleanPref(
@@ -232,10 +238,10 @@ void PasswordManagerSettingsServiceAndroidImplBaseTest::RegisterPrefs() {
 }
 
 // This suite starts with the pref `kPasswordsUseUPMLocalAndSeparateStores` off.
-class PasswordManagerSettingsServiceAndroidImplTest
-    : public PasswordManagerSettingsServiceAndroidImplBaseTest {};
+class PasswordManagerSettingsServiceAndroidMigrationImplTest
+    : public PasswordManagerSettingsServiceAndroidMigrationImplBaseTest {};
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        DoesntRequestSettingsOnServiceCreation) {
   std::unique_ptr<MockPasswordSettingsUpdaterBridgeHelper> bridge_helper =
       std::make_unique<MockPasswordSettingsUpdaterBridgeHelper>();
@@ -259,7 +265,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
   CreateNewService(std::move(bridge_helper));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        OnSaveSettingFetchSyncingBoth) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -277,7 +283,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kCredentialsEnableService));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        OnSaveSettingFetchNotSyncingSettings) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/false);
@@ -295,7 +301,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kCredentialsEnableService));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        OnSaveSettingFetchNotSyncingPasswords) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/true);
@@ -313,7 +319,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kCredentialsEnableService));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        OnAutoSignInSettingFetchSyncingBoth) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -331,7 +337,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kCredentialsEnableAutosignin));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        OnAutoSignInFetchNotSyncingSettings) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/false);
@@ -349,7 +355,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kCredentialsEnableAutosignin));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        OnAutoSignInFetchNotSyncingPasswords) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/true);
@@ -367,7 +373,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kCredentialsEnableAutosignin));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        OnSaveSettingAbsentDefaultSyncing) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -376,7 +382,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       PasswordManagerSetting::kOfferToSavePasswords);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        OnSaveSettingAbsentDoesntSetValueSyncing) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -393,7 +399,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       PasswordManagerSetting::kOfferToSavePasswords);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        OnSaveSettingAbsentSetValueNotSyncing) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/true);
@@ -405,7 +411,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       PasswordManagerSetting::kOfferToSavePasswords);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        OnSaveSettingAbsentUserUnenrolledFromUPM) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -420,7 +426,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       PasswordManagerSetting::kOfferToSavePasswords);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        OnAutoSignInAbsentDefaultSyncing) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -429,7 +435,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       PasswordManagerSetting::kAutoSignIn);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        OnAutoSignInAbsentDontSetValueSyncing) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -446,7 +452,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       PasswordManagerSetting::kAutoSignIn);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        OnAutoSignInAbsentSetValueNotSyncing) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/true);
@@ -457,7 +463,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       PasswordManagerSetting::kAutoSignIn);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        OnAutoSignInAbsentSetValueUserUnenrolledFromUPM) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -473,7 +479,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 
 // Checks that general syncable prefs are dumped into the android-only GMS
 // prefs before settings are requested when sync is enabled.
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        PasswordSyncEnablingDoesntMovePrefs) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
@@ -498,7 +504,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 
 // Checks that general syncable prefs are dumped into the android-only GMS
 // prefs before settings are requested when sync is enabled.
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        PasswordSyncEnablingPrefsUserUnenrolledFromUPM) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
@@ -524,7 +530,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kAutoSignInEnabledGMS));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        PasswordSyncEnablingGMSSettingAbsentChromeHasUserSetting) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
@@ -556,7 +562,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
             nullptr);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        PasswordSyncEnablingGMSHasSetting) {
   // TODO(crbug.com/40286015): Split this test.
   InitializeSettingsService(/*password_sync_enabled=*/false,
@@ -591,7 +597,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kOfferToSavePasswordsEnabledGMS));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        PasswordSyncDisablingGMSSettingAbsent) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/false);
@@ -620,7 +626,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kAutoSignInEnabledGMS));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        PasswordSyncDisablingGMSHasSetting) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/false);
@@ -652,7 +658,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kOfferToSavePasswordsEnabledGMS));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        SavePasswordsSettingNotSyncing) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/true);
@@ -665,7 +671,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       PasswordManagerSetting::kOfferToSavePasswords));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        SavePasswordsSettingSyncingManaged) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -678,7 +684,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       PasswordManagerSetting::kOfferToSavePasswords));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        SavePasswordsSettingSyncingNotManaged) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -691,7 +697,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       PasswordManagerSetting::kOfferToSavePasswords));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        SavePasswordsSettingUserUnenrolledFromUPM) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -708,7 +714,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       PasswordManagerSetting::kOfferToSavePasswords));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        AutoSignInSettingNotSyncing) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/true);
@@ -720,7 +726,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       PasswordManagerSetting::kAutoSignIn));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        AutoSignInSettingSyncingManaged) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -733,7 +739,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       PasswordManagerSetting::kAutoSignIn));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        AutoSignInSettingSyncingNotManaged) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -745,7 +751,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       PasswordManagerSetting::kAutoSignIn));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        AutoSignInSettingUserUnenrolledFromUPM) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -761,7 +767,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       PasswordManagerSetting::kAutoSignIn));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        SettingsAreRequestedFromBackendWhenPasswordSyncEnabled) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -770,7 +776,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
   settings_service()->RequestSettingsFromBackend();
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        SettingsAreNotRequestedFromBackendWhenPasswordSyncDisabled) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/true);
@@ -779,7 +785,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
   settings_service()->RequestSettingsFromBackend();
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        SettingsAreNotRequestedFromBackendWhenUserUnenrolledFromUPM) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -791,7 +797,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
   settings_service()->RequestSettingsFromBackend();
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        TurnOffAutoSignInNotSyncingPasswords) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/true);
@@ -811,7 +817,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kAutoSignInEnabledGMS));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        TurnOffAutoSignInSyncingPasswordsNotPrefs) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/false);
@@ -832,7 +838,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kAutoSignInEnabledGMS));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        TurnOffAutoSignInSyncingPasswordsAndPrefs) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -853,7 +859,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kAutoSignInEnabledGMS));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        TurnOffAutoSignInSyncingUserUnenrolledFromUPM) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -876,7 +882,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kAutoSignInEnabledGMS));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        TestDontMigrateSettingsOnReenrollingIntoUPM) {
   SetPasswordsSync(true);
 
@@ -905,7 +911,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
             nullptr);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTest,
        UnenrollmentPreventsRequestsOnSyncTurningOff) {
   pref_service()->SetBoolean(
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
@@ -923,10 +929,10 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 }
 
 // This suite starts with the pref `kPasswordsUseUPMLocalAndSeparateStores` on.
-class PasswordManagerSettingsServiceAndroidImplTestLocalUsers
-    : public PasswordManagerSettingsServiceAndroidImplBaseTest {
+class PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers
+    : public PasswordManagerSettingsServiceAndroidMigrationImplBaseTest {
  protected:
-  PasswordManagerSettingsServiceAndroidImplTestLocalUsers() {
+  PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers() {
     pref_service()->SetInteger(
         password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
         static_cast<int>(
@@ -934,7 +940,7 @@ class PasswordManagerSettingsServiceAndroidImplTestLocalUsers
   }
 };
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        RespectsPolicyDespiteErrorOverrideForLocalBackend) {
   // This test checks that the managed pref has a priority over the manually set
   // values and that the password saving isn't suspended for users who are not
@@ -953,7 +959,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       PasswordManagerSetting::kOfferToSavePasswords));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        UnenrollmentDoesntPreventUPMLocalRequests) {
   pref_service()->SetBoolean(
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
@@ -966,7 +972,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
   lifecycle_helper()->OnForegroundSessionStart();
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        UnenrollmentDoesntPreventUPMLocalOnSettingValueAbsent) {
   pref_service()->SetBoolean(
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
@@ -993,7 +999,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
             nullptr);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        UnenrollmentDoesntPreventUPMLocalOnSettingValueFetched) {
   pref_service()->SetBoolean(
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
@@ -1018,7 +1024,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       password_manager::prefs::kAutoSignInEnabledGMS));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        OnSaveSettingFetchUpdatesTheCacheAndRegularPref) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
@@ -1040,7 +1046,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       password_manager::prefs::kOfferToSavePasswordsEnabledGMS));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        OnSaveSettingFetchUpdatesOnlyTheCache) {
   // This test is similar to OnSaveSettingFetchUpdatesTheCacheAndRegularPref,
   // but it shows that the regular pref is not updated if settings sync is on,
@@ -1061,7 +1067,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       password_manager::prefs::kOfferToSavePasswordsEnabledGMS));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        OnSettingsAbsentUpdatesTheGMSAndRegularPref) {
   // This test covers the case when the cache has a non-default value and GMS
   // has a default value. The user can have non-default values in the cache
@@ -1092,7 +1098,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
             nullptr);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        OnSettingsAbsentUpdatesOnlyTheGMSPref) {
   // This test is similar to OnSettingsAbsentUpdatesTheGMSAndRegularPref, but
   // it shows that the regular pref is not updated if settings sync is on, in
@@ -1117,7 +1123,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       password_manager::prefs::kCredentialsEnableService));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        IsSettingEnabledChecksGMSPrefWhenSettingsMigratedToUPMLocal) {
   pref_service()->SetBoolean(
       password_manager::prefs::kSettingsMigratedToUPMLocal, true);
@@ -1133,7 +1139,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       PasswordManagerSetting::kOfferToSavePasswords));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        RequestSettingsFromBackendFetchesSettings) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
@@ -1143,7 +1149,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
   settings_service()->RequestSettingsFromBackend();
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        TurnOffAutoSignInWhenNotSyncingSettingsChangesTheGMSPrefAndRegularPref) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
@@ -1168,7 +1174,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       password_manager::prefs::kAutoSignInEnabledGMS));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        TurnOffAutoSignInWhenSyncingSettingsChangesOnlyTheGMSPref) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/true);
@@ -1187,7 +1193,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       password_manager::prefs::kAutoSignInEnabledGMS));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        PasswordSyncDisablingGMSSettingAbsent) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/false);
@@ -1219,7 +1225,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
             nullptr);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        PasswordSyncDisablingGMSHasSetting) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/false);
@@ -1250,7 +1256,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       password_manager::prefs::kOfferToSavePasswordsEnabledGMS));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        PasswordSyncEnablingGMSSettingAbsent) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
@@ -1283,7 +1289,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
             nullptr);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        PasswordSyncEnablingGMSHasSetting) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
@@ -1316,7 +1322,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       password_manager::prefs::kAutoSignInEnabledGMS));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        DoesntRequestSettingsOnServiceCreation) {
   std::unique_ptr<MockPasswordSettingsUpdaterBridgeHelper> bridge_helper =
       std::make_unique<MockPasswordSettingsUpdaterBridgeHelper>();
@@ -1340,7 +1346,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
   CreateNewService(std::move(bridge_helper));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        SavePasswordsSettingManagedByCustodian) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
@@ -1353,7 +1359,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       PasswordManagerSetting::kOfferToSavePasswords));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        MigrateSettingsChromeHadNonDefaultValueGmsHadDefaultValue) {
   pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
                              false);
@@ -1401,7 +1407,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       "PasswordManager.PasswordSettingsMigrationSucceeded2", true, 1);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        MigrateSettingsChromeAndGmsHadNonDefaultValue) {
   pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
                              false);
@@ -1448,7 +1454,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       "PasswordManager.PasswordSettingsMigrationSucceeded2", true, 1);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        SettingsMigrationNotStartedIfCompletedBefore) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
@@ -1473,7 +1479,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       PasswordManagerSetting::kOfferToSavePasswords, /*value=*/false);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        MigrateSettingsChromeAndGMSHadDefaultValue) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
@@ -1516,7 +1522,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       "PasswordManager.PasswordSettingsMigrationSucceeded2", true, 1);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        MigrationCallbackNotCreatedWhenChromeAndGMSHadDefaultValue) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
@@ -1569,7 +1575,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       AndroidBackendAPIErrorCode::kUnexpectedError, 0);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        SettingsMigrationNotPerformedWhenInterruptedByTurningOnSync) {
   pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
                              false);
@@ -1613,7 +1619,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 }
 
 // Checks if settings migration happens only once per browser lifetime.
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        MigrateSettingsChromePutToForegroundTwice) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
@@ -1666,7 +1672,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 
 // Checks that the migration algorithm determines what to do for each setting
 // independently from the other.
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        MigrateSettingsEachPrefHadDifferentValue) {
   // User has changed one setting.
   pref_service()->ClearPref(password_manager::prefs::kCredentialsEnableService);
@@ -1718,7 +1724,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       "PasswordManager.PasswordSettingsMigrationSucceeded2", true, 1);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        MigrateSettingsGettingValueFailed) {
   pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
                              false);
@@ -1785,7 +1791,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       "PasswordManager.PasswordSettingsMigrationSucceeded2", false, 1);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        MigrateSettingsMarkedAsDoneIfChromeHadDefaultPrefs) {
   pref_service()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
@@ -1805,7 +1811,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       "PasswordManager.PasswordSettingsMigrationSucceeded2", true, 1);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        MigrationNotDoneIfDefaultSettingsButNoStoreSplit) {
   pref_service()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
@@ -1825,7 +1831,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       "PasswordManager.PasswordSettingsMigrationSucceeded2", 0);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        MigrateSettingsGotValueForTheSamePrefTwice) {
   // Set prefs to user selected value so that the migration is triggered
   pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
@@ -1864,7 +1870,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       "PasswordManager.PasswordSettingsMigrationSucceeded2", false, 1);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        DefaultSettingsMigrationResetsIfLocalPwdMigrationOff) {
   pref_service()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
@@ -1886,7 +1892,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       password_manager::prefs::kSettingsMigratedToUPMLocal));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        DefaultSettingsMigrationDoesntResetIfLocalPwdMigrationPending) {
   pref_service()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
@@ -1909,7 +1915,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       password_manager::prefs::kSettingsMigratedToUPMLocal));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        DefaultSettingsMigrationDoesntResetIfLocalPwdMigrationOn) {
   pref_service()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
@@ -1931,7 +1937,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       password_manager::prefs::kSettingsMigratedToUPMLocal));
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        MigrateSettingsSettingGmsPrefFailed) {
   pref_service()->SetBoolean(
       password_manager::prefs::kSettingsMigratedToUPMLocal, false);
@@ -1983,7 +1989,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       "PasswordManager.PasswordSettingsMigrationSucceeded2", false, 1);
 }
 
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+TEST_F(PasswordManagerSettingsServiceAndroidMigrationImplTestLocalUsers,
        FetchesBiometricAuthenticationBeforeFillingSetting) {
   base::test::ScopedFeatureList scoped_feature_list{
       password_manager::features::kBiometricTouchToFill};

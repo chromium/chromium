@@ -2043,11 +2043,10 @@ KleeneValue StyleCascade::EvalIfStyleFeature(
     const CSSValue& computed_query_value =
         StyleBuilderConverter::ConvertRegisteredPropertyValue(
             state_, *parsed_value, decl_value.ParserContext());
-    // TODO(crbug.com/393698480): Ensure that attr-taint carries through
     computed_query_data =
         StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
             computed_query_value, /* is_animation_tainted */ false,
-            /* is_attr_tainted */ false);
+            computed_query_data->IsAttrTainted());
   }
 
   if (computed->EqualsIgnoringAttrTainting(*computed_query_data)) {

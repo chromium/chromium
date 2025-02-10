@@ -2295,6 +2295,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2575713839157415345">{YEARS,plural, =1{Cet appareil sera mémorisé pendant 1 an, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}one{Cet appareil sera mémorisé pendant {YEARS} an, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}other{Cet appareil sera mémorisé pendant {YEARS} ans, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}}</translation>
 <translation id="2577127557293415225">Fermez brièvement les deux yeux</translation>
 <translation id="257779572837908839">Configurer en tant que Chromebox pour les réunions</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perdra immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> » et ne pourra plus interagir avec vous dans les services Google.</translation>
 <translation id="2580889980133367162">Toujours autoriser <ph name="HOST" /> à télécharger plusieurs fichiers</translation>
 <translation id="258095186877893873">Long</translation>
 <translation id="2581455244799175627">En savoir plus sur l'autorisation des témoins tiers</translation>

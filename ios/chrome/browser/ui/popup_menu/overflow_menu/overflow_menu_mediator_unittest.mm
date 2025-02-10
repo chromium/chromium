@@ -114,6 +114,8 @@ namespace {
 const int kNumberOfWebStates = 3;
 
 // Turns on Sync.
+// TODO(crbug.com/40066949): Remove Sync-the-feature related helper, and update
+// or remove related tests.
 void SetupSyncServiceEnabledExpectations(
     syncer::MockSyncService* sync_service) {
   ON_CALL(*sync_service, GetTransportState())
@@ -937,16 +939,16 @@ TEST_F(OverflowMenuMediatorTest, TestNoEligibleIdentityErrorWhenSyncOff) {
 }
 
 // Tests that there is an error badge on the Settings destination when there is
-// a Sync error that will be indicated in the Settings menu. The account is
-// signed in and has Sync turned ON.
+// an account error that will be indicated in the Settings menu. The account is
+// signed.
 TEST_F(OverflowMenuMediatorTest, TestSyncError) {
   CreateMediator(/*is_incognito=*/NO);
 
   syncer::MockSyncService syncService;
   // Inject Sync error in Sync Service.
   ON_CALL(syncService, GetUserActionableError())
-      .WillByDefault(Return(kIneligibleIdentityErrorWhenSyncOff));
-  SetupSyncServiceEnabledExpectations(&syncService);
+      .WillByDefault(
+          Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
   mediator_.syncService = &syncService;
   CreateLocalStatePrefs();
   mediator_.localStatePrefs = localStatePrefs_.get();

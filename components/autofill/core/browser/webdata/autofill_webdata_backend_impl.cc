@@ -365,7 +365,8 @@ WebDatabase::State AutofillWebDataBackendImpl::AddAutofillProfile(
 
   if (!on_autofill_profile_changed_cb_.is_null()) {
     ui_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(on_autofill_profile_changed_cb_, change));
+        FROM_HERE,
+        base::BindOnce(on_autofill_profile_changed_cb_, std::move(change)));
   }
 
   ReportResult(Result::kAddAutofillProfile_Success);
@@ -403,7 +404,8 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillProfile(
 
   if (!on_autofill_profile_changed_cb_.is_null()) {
     ui_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(on_autofill_profile_changed_cb_, change));
+        FROM_HERE,
+        base::BindOnce(on_autofill_profile_changed_cb_, std::move(change)));
   }
 
   ReportResult(Result::kUpdateAutofillProfile_Success);
@@ -435,7 +437,8 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveAutofillProfile(
 
   if (!on_autofill_profile_changed_cb_.is_null()) {
     ui_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(on_autofill_profile_changed_cb_, change));
+        FROM_HERE,
+        base::BindOnce(on_autofill_profile_changed_cb_, std::move(change)));
   }
 
   ReportResult(Result::kRemoveAutofillProfile_Success);

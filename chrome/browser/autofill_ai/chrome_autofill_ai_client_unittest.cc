@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill_ai/core/browser/autofill_ai_features.h"
@@ -88,7 +89,8 @@ class ChromeAutofillAiClientTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{autofill_ai::kAutofillAi};
+  base::test::ScopedFeatureList scoped_feature_list_{
+      autofill::features::kAutofillAiWithDataSchema};
   std::unique_ptr<ChromeAutofillAiClient> client_;
 };
 

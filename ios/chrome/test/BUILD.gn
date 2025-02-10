@@ -216,6 +216,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/authentication/ui_bundled/signin/trusted_vault_reauthentication:unit_tests",
     "//ios/chrome/browser/authentication/ui_bundled/signin/two_screens_signin:unit_tests",
     "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet:unit_tests",
+    "//ios/chrome/browser/autocomplete/model:unit_tests",
     "//ios/chrome/browser/autofill/model:unit_tests",
     "//ios/chrome/browser/autofill/model/authentication:unit_tests",
     "//ios/chrome/browser/autofill/model/bottom_sheet:unit_tests",

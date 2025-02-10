@@ -70,7 +70,6 @@ public class SafetyHubAccountPasswordsDataSource
     private int mCompromisedPasswordCount;
     private int mWeakPasswordCount;
     private int mReusedPasswordCount;
-    private boolean mIsSignedIn;
 
     SafetyHubAccountPasswordsDataSource(
             SafetyHubModuleMediatorDelegate mediatorDelegate,
@@ -102,7 +101,6 @@ public class SafetyHubAccountPasswordsDataSource
         updateCompromisedPasswordCount();
         updateReusedPasswordCount();
         updateWeakPasswordCount();
-        updateIsSignedIn();
         if (mObserver != null) {
             mObserver.stateChanged(getModuleType());
         }
@@ -187,14 +185,10 @@ public class SafetyHubAccountPasswordsDataSource
         return mModuleDelegate.getAccountPasswordsCount(mPasswordStoreBridge);
     }
 
-    private void updateIsSignedIn() {
+    private boolean isSignedIn() {
         assert mProfile != null
                 : "A null Profile was detected in" + " SafetyHubAccountPasswordsDataSource";
-        mIsSignedIn = SafetyHubUtils.isSignedIn(mProfile);
-    }
-
-    public boolean isSignedIn() {
-        return mIsSignedIn;
+        return SafetyHubUtils.isSignedIn(mProfile);
     }
 
     public String getAccountEmail() {

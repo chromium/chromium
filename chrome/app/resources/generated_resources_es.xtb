@@ -2294,6 +2294,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2575713839157415345">{YEARS,plural, =1{Este dispositivo se guardará durante 1 año y podrás conectarte sin un código la próxima vez. Este ajuste lo establece tu administrador.}other{Este dispositivo se guardará durante {YEARS} años y podrás conectarte sin un código la próxima vez. Este ajuste lo establece tu administrador.}}</translation>
 <translation id="2577127557293415225">Cierra brevemente los dos ojos</translation>
 <translation id="257779572837908839">Configurar como Chromebox para reuniones</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perderá inmediatamente el acceso al grupo de pestañas "<ph name="GROUP_NAME" />" y ya no podrá interactuar contigo en los servicios de Google.</translation>
 <translation id="2580889980133367162">Permitir siempre a <ph name="HOST" /> descargar varios archivos</translation>
 <translation id="258095186877893873">Largo</translation>
 <translation id="2581455244799175627">Más información sobre permitir las cookies de terceros</translation>

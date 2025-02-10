@@ -1374,6 +1374,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1936157145127842922">Vis i mappe</translation>
 <translation id="1936931585862840749">Brug et tal til at angive, hvor mange kopier der skal udskrives (1 til <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Containerarkitekturen <ph name="ARCHITECTURE_CONTAINER" /> kan ikke importeres med denne enhed, som kører med <ph name="ARCHITECTURE_DEVICE" />. Du kan prøve at gendanne denne container i en anden enhed, eller også kan du åbne filerne i containerbilledet i appen Filer.</translation>
+<translation id="1938116692670653897">Aktuelt farvetema</translation>
 <translation id="1938351510777341717">Ekstern kommando</translation>
 <translation id="1940221956626514677">Tilpas værktøjslinjen</translation>
 <translation id="1940546824932169984">Forbundne enheder</translation>
@@ -2143,6 +2144,10 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2462332841984057083">Steam er allerede ved at blive konfigureret. Vent, indtil konfigurationen er afsluttet.</translation>
 <translation id="2462724976360937186">Nøgle-id for certifikatautoritet</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> blev tilføjet</translation>
+<translation id="2464075479326723132">Du får vist foreslåede filer, som hjælper dig med nemt at vende tilbage til din seneste aktivitet i Microsoft SharePoint og OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Du kan administrere indstillingerne i kortmenuen eller se flere valgmuligheder under Tilpas Chrome.</translation>
 <translation id="2464079411014186876">Is</translation>
 <translation id="2467755475704469005">Der blev ikke registreret nogen enheder. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Deltag i fangegruppen med <ph name="OWNER_FIRST_NAME" /> og <ph name="NUM_OTHER_MEMBERS" /> andre</translation>
@@ -2307,6 +2312,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2575713839157415345">{YEARS,plural, =1{Denne enhed gemmes i 1 år, og du kan oprette forbindelse uden en kode næste gang. Koden indstilles af din administrator.}one{Denne enhed gemmes i {YEARS} år, og du kan oprette forbindelse uden en kode næste gang. Koden indstilles af din administrator.}other{Denne enhed gemmes i {YEARS} år, og du kan oprette forbindelse uden en kode næste gang. Koden indstilles af din administrator.}}</translation>
 <translation id="2577127557293415225">Luk kortvarigt begge øjne</translation>
 <translation id="257779572837908839">Konfigurer til Chromebox til møder</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) mister øjeblikkeligt adgang til fanegruppen "<ph name="GROUP_NAME" />" og kan ikke længere interagere med dig i Google-tjenester.</translation>
 <translation id="2580889980133367162">Tillad altid, at <ph name="HOST" /> downloader flere forskellige filer</translation>
 <translation id="258095186877893873">Lang</translation>
 <translation id="2581455244799175627">Mere om at give tilladelse til tredjepartscookies</translation>
@@ -4002,6 +4008,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3787434344076711519">Venter på oversættelse</translation>
 <translation id="3788301286821743879">Terminalappen kunne ikke startes.</translation>
 <translation id="3788401245189148511">Den vil kunne:</translation>
+<translation id="3789432704615470433">SharePoint- og OneDrive-filer</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3790417903123637354">Noget gik galt. Prøv igen</translation>
 <translation id="379082410132524484">Dit kort er udløbet</translation>
@@ -6191,6 +6198,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5360150013186312835">Vis på værktøjslinjen</translation>
 <translation id="5362741141255528695">Vælg privat nøglefil.</translation>
 <translation id="536278396489099088">Systemtilstand og rapporter for ChromeOS</translation>
+<translation id="5362916924854054326">Vis ikke SharePoint- og OneDrive-filer</translation>
 <translation id="5363109466694494651">Powerwash, og vend tilbage</translation>
 <translation id="5365881113273618889">Den valgte mappe indeholder følsomme filer. Er du sikker på, at du vil give "<ph name="APP_NAME" />" permanent skriveadgang til denne mappe?</translation>
 <translation id="536638840841140142">Ingen</translation>
@@ -10773,6 +10781,10 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="865936634714975126">Tilføj en forespørgselsparameter i webadressen for at vælge typer ved sideindlæsning. Eksempel: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Kontakter for <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Vinduet blev flyttet nedad</translation>
+<translation id="8660288500924118793">Du får vist din kalender for at hjælpe dig med nemt at navigere til din næste begivenhed i Outlook-kalenderen.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Du kan administrere indstillingerne i kortmenuen eller se flere valgmuligheder under Tilpas Chrome.</translation>
 <translation id="8661290697478713397">Åbn link i inko&amp;gnitovindue</translation>
 <translation id="8662474268934425487">Log ind på <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Opret forbindelse til <ph name="TYPE" />-netværk</translation>

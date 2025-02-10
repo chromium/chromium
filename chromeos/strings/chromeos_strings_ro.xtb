@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Rezumă</translation>
 <translation id="123124571410524056">Posibil portal</translation>
 <translation id="1232610416724362657">cascadă</translation>
+<translation id="1238163879850290856">Resetează pentru a împiedica alte persoane să acceseze datele. Folosește doar metode de introducere text în care ai încredere.</translation>
 <translation id="1238612778414822719">Latență a solicitărilor HTTPS</translation>
 <translation id="1252766349417594414">Joystick</translation>
 <translation id="1270369111467284986">Posibil portal captiv</translation>
@@ -449,6 +450,7 @@
 <translation id="3122883569442693641">Mai multe detalii</translation>
 <translation id="3124039320086536031">Dispozitivul este conectat.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Elimini pagina?}=1{Elimini pagina {PAGE_NUMBER}?}few{Elimini pagina {PAGE_NUMBER}?}other{Elimini pagina {PAGE_NUMBER}?}}</translation>
+<translation id="3134486240968249588">Câteva lucruri de reținut</translation>
 <translation id="3140130301071865159">zăpadă</translation>
 <translation id="3146655726035122603">Exclusiv pentru <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Date mobile</translation>
@@ -766,6 +768,7 @@
 <translation id="4650608062294027130">Shift din dreapta</translation>
 <translation id="4654549501020883054">Schimbă zilnic</translation>
 <translation id="4655868084888499342">Imaginea s-a setat ca imagine de fundal</translation>
+<translation id="4660989616054030633">AI-ul generativ poate să facă greșeli, inclusiv în legătură cu persoane, așadar verifică încă o dată răspunsurile</translation>
 <translation id="4661249927038176904">suprarealist</translation>
 <translation id="4661392828086261436">Actualizarea este oferită de producătorul dispozitivului și nu a fost verificată de Google</translation>
 <translation id="4664651912255946953">blană</translation>
@@ -1065,6 +1068,7 @@
 <translation id="6074752328838739425">Ascunde rezumatul</translation>
 <translation id="6075872808778243331">(Android) Latența solicitărilor HTTP</translation>
 <translation id="6078323886959318429">Adaugă o comandă rapidă</translation>
+<translation id="6079693086494835199">Resetează pentru a te asigura că pagina de pornire prestabilită nu este un site de phishing. Folosește numai site-uri în care ai încredere.</translation>
 <translation id="6091080061796993741">galben</translation>
 <translation id="6104112872696127344">Scanarea a fost anulată</translation>
 <translation id="6106186594183574873">Pentru a finaliza, introdu vechea parolă</translation>
@@ -1088,6 +1092,7 @@
 <translation id="6156030503438652198">castaniu și roz</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Resetează pentru a împiedica alte persoane să-ți folosească microfonul sau camera. Acordă permisiuni numai site-urilor în care ai încredere.</translation>
 <translation id="6188737759358894319">Data creării: <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Capacitatea bateriei scade pe măsura utilizării</translation>
 <translation id="6189987971574353264">Redă</translation>
@@ -1114,6 +1119,7 @@
 <translation id="629550705077076970">reducerea luminozității tastaturii</translation>
 <translation id="6302401976930124515">Testul <ph name="TEST_NAME" /> a fost anulat</translation>
 <translation id="631063167932043783">Explorează aplicația</translation>
+<translation id="6314333689576767865">Chromebookul a fost resetat la valorile prestabilite sigure. Poți face oricând modificări în Setări.</translation>
 <translation id="6318437367327684789">întotdeauna</translation>
 <translation id="6319207335391420837">Actualizează firmware-ul pentru <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Activează screensaverul</translation>
@@ -1250,6 +1256,7 @@
 <translation id="6862416241246624313">Feedbackul a fost trimis</translation>
 <translation id="6866732840889595464">margaretă</translation>
 <translation id="6871256179359663621">mov deschis</translation>
+<translation id="6887967050249348172">Extensiile au fost dezactivate pentru a împiedica modificarea setărilor. Activează doar extensiile în care ai încredere.</translation>
 <translation id="6889786074662672253">Nu deconecta dispozitivul extern și nu închide computerul în timpul repornirii. Poți să minimizezi fereastra. Actualizarea poate să dureze câteva minute și este posibil ca dispozitivul extern să nu funcționeze în această perioadă.</translation>
 <translation id="6899460405678814458">Afișează rezumatul</translation>
 <translation id="6900701049656042631">Acest album nu conține nicio fotografie. Pentru a adăuga fotografii, accesează <ph name="LINK" /></translation>
@@ -1340,6 +1347,7 @@
 <translation id="7233782086689993269">Comanda rapidă a fost restabilită</translation>
 <translation id="725133483556299729">Selectează adresa de e-mail</translation>
 <translation id="7255187042098209569">roz și mov</translation>
+<translation id="7267918995585557751">Resetează pentru a te asigura că pagina de pornire prestabilită nu este un site de phishing. Folosește numai site-uri în care ai încredere.</translation>
 <translation id="7271000785316964275">clasic</translation>
 <translation id="7271040990581020067">Scanerul este în uz. Încearcă din nou mai târziu.</translation>
 <translation id="7271932918253517778">Comenzile rapide cu taste de pe rândul de sus trebuie să includă tasta <ph name="META_KEY" />.</translation>
@@ -1485,6 +1493,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="7903695460270716054">Alege imagini recomandate</translation>
 <translation id="7912005977894000746">Înapoi la pagina principală</translation>
 <translation id="7915220255123750251">Gestionează setările APN ale rețelei. APN-urile stabilesc o conexiune între o rețea de date mobile și internet.</translation>
+<translation id="7915759923880480519">Resetează pentru a proteja datele trimise prin rețelele tale. Folosește numai rețele în care ai încredere.</translation>
 <translation id="7936303884198020182">Nu s-au găsit servere de nume</translation>
 <translation id="7942349550061667556">Roșu</translation>
 <translation id="7943235353293548836">Interval keep-alive persistent</translation>
@@ -1648,7 +1657,6 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8747900814994928677">Confirmă schimbarea</translation>
 <translation id="8749478549112817787">Imaginea de fundal a camerei foto</translation>
 <translation id="8755946156089753497">turn</translation>
-<translation id="8756235582947991808">Cum să creezi cu AI și câteva lucruri de reținut</translation>
 <translation id="8760616037557661287">Solicitări anterioare</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Foto</translation>
@@ -1710,6 +1718,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="89945434909472341">sat</translation>
 <translation id="8997710128084572139">Nivelul bateriei dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="8998289560386111590">Nu este disponibil pe dispozitivul tău</translation>
+<translation id="9000871120886759611">Resetează pentru a te asigura că poți accesa informații în limba dorită. Asigură-te că sunt folosite numai limbile dorite.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Frecvență</translation>
 <translation id="901834265349196618">e-mail</translation>

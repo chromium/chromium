@@ -449,6 +449,7 @@
 <translation id="3122883569442693641">More details</translation>
 <translation id="3124039320086536031">Device is connected.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Remove page?}=1{Remove page {PAGE_NUMBER}?}other{Remove page {PAGE_NUMBER}?}}</translation>
+<translation id="3134486240968249588">A few things to bear in mind</translation>
 <translation id="3140130301071865159">snow</translation>
 <translation id="3146655726035122603">Exclusive to <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobile data</translation>
@@ -1648,7 +1649,6 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8747900814994928677">Confirm change</translation>
 <translation id="8749478549112817787">Camera background</translation>
 <translation id="8755946156089753497">tower</translation>
-<translation id="8756235582947991808">How to create with AI and a few things to bear in mind</translation>
 <translation id="8760616037557661287">Previous prompts</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos album</translation>

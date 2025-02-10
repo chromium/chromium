@@ -13,10 +13,10 @@
 #pragma mark - OmniboxAutocomplete event
 
 - (void)newResultsAvailable:(const AutocompleteResult&)results
-                  isOnFocus:(BOOL)isOnFocus {
+                 isFocusing:(BOOL)isFocusing {
   [self.delegate popupControllerDidUpdateSuggestions:self
                                       hasSuggestions:!results.empty()
-                                           isOnFocus:isOnFocus];
+                                          isFocusing:isFocusing];
 }
 
 - (void)updateWithSortedResults:(const AutocompleteResult&)results {

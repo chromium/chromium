@@ -2298,6 +2298,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{系統會記住這部裝置，在 1 年內無需輸入驗證碼即可再次連接。這項設定是由你系統管理員指定。}other{系統會記住這部裝置，在 {YEARS} 年內無需輸入驗證碼即可再次連接。這項設定是由你系統管理員指定。}}</translation>
 <translation id="2577127557293415225">暫時閉上雙眼</translation>
 <translation id="257779572837908839">設為 Chromebox 視訊會議解決方案</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) 會立即失去「<ph name="GROUP_NAME" />」分頁群組的存取權，也無法再透過各項 Google 服務與你互動。</translation>
 <translation id="2580889980133367162">永遠允許 <ph name="HOST" /> 下載多個檔案</translation>
 <translation id="258095186877893873">長</translation>
 <translation id="2581455244799175627">進一步瞭解允許第三方 Cookie</translation>

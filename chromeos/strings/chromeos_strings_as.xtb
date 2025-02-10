@@ -450,6 +450,7 @@
 <translation id="3122883569442693641">অধিক সবিশেষ</translation>
 <translation id="3124039320086536031">ডিভাইচটো সংযোগ কৰা হৈছে।</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{পৃষ্ঠাখন আঁতৰাবনে?}=1{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন আঁতৰাবনে?}one{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন আঁতৰাবনে?}other{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন আঁতৰাবনে?}}</translation>
+<translation id="3134486240968249588">মনত ৰাখিবলগীয়া কেইটামান কথা</translation>
 <translation id="3140130301071865159">বৰফ</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" />ত বিশেষভাৱে উপলব্ধ</translation>
 <translation id="315116470104423982">ম’বাইল ডেটা</translation>
@@ -1656,7 +1657,6 @@
 <translation id="8747900814994928677">সলনি কৰাটো নিশ্চিত কৰক</translation>
 <translation id="8749478549112817787">কেমেৰাৰ পটভূমি</translation>
 <translation id="8755946156089753497">টাৱাৰ</translation>
-<translation id="8756235582947991808">AIৰ জৰিয়তে কেনেকৈ সৃষ্টি কৰিব লাগে আৰু মনত ৰাখিবলগীয়া কেইটামান কথা</translation>
 <translation id="8760616037557661287">পূৰ্বৱৰ্তী প্ৰম্প্‌ট</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photosৰ এলবাম</translation>

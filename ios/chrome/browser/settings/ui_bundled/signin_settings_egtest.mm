@@ -32,7 +32,6 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using chrome_test_util::GoogleSyncSettingsButton;
 using chrome_test_util::SettingsSignInRowMatcher;
 
 @interface SigninSettingsTestCase : ChromeTestCase

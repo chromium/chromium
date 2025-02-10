@@ -2307,6 +2307,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2575713839157415345">{YEARS,plural, =1{Le divayisi izolondolozwa unyaka o-1 futhi ungakwazi ukuxhuma ngaphandle kwekhodi esikhathini esizayo. Lokhu kusetshwa ngumlawuli wakho.}one{Le divayisi izolondolozwa iminyaka engu-{YEARS} futhi ungakwazi ukuxhuma ngaphandle kwekhodi esikhathini esizayo. Lokhu kusetshwa ngumlawuli wakho.}other{Le divayisi izolondolozwa iminyaka engu-{YEARS} futhi ungakwazi ukuxhuma ngaphandle kwekhodi esikhathini esizayo. Lokhu kusetshwa ngumlawuli wakho.}}</translation>
 <translation id="2577127557293415225">Vala amehlo womabili kafushane</translation>
 <translation id="257779572837908839">Setha njenge-Chromebox yemihlangano</translation>
+<translation id="2577981599306533385">U-<ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) uzolahlekelwa ukufinyelela eqenjini lethebhu ethi <ph name="GROUP_NAME" /> ngokushesha, futhi ngeke esakwazi ukuxhumana nawe kuwo wonke amasevisi eGoogle.</translation>
 <translation id="2580889980133367162">Vumela njalo i-<ph name="HOST" /> ukuthi ilande amafayela amaningi</translation>
 <translation id="258095186877893873">Yide</translation>
 <translation id="2581455244799175627">Okuningi mayelana nokuvumela amakhukhi ezinkampani zangaphandle</translation>

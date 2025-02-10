@@ -264,13 +264,9 @@ class AutofillWebDataService : public WebDataServiceBase {
  protected:
   ~AutofillWebDataService() override;
 
+ private:
   void NotifyOnAutofillChangedBySyncOnUISequence(syncer::DataType data_type);
 
-  base::WeakPtr<AutofillWebDataService> AsWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
- private:
   base::ObserverList<AutofillWebDataServiceObserverOnUISequence>::Unchecked
       ui_observer_list_;
 

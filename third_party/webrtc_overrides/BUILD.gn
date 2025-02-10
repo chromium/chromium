@@ -325,7 +325,10 @@ source_set("system_time") {
   # TODO(mbonadei): Migrate WebRTC deps to webrtc_component and uncomment.
   # visibility = [ ":*" ]
   sources = [ "rtc_base/system_time.cc" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//third_party/webrtc/rtc_base:timeutils",
+  ]
 }
 
 source_set("bridge_ice_controller") {

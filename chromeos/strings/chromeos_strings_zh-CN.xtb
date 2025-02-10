@@ -449,6 +449,7 @@
 <translation id="3122883569442693641">更多详情</translation>
 <translation id="3124039320086536031">设备已连接。</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{移除页面？}=1{移除第 {PAGE_NUMBER} 页？}other{移除第 {PAGE_NUMBER} 页？}}</translation>
+<translation id="3134486240968249588">需要注意的事项</translation>
 <translation id="3140130301071865159">雪</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> 专有</translation>
 <translation id="315116470104423982">移动数据</translation>
@@ -1648,7 +1649,6 @@
 <translation id="8747900814994928677">确认更改</translation>
 <translation id="8749478549112817787">相机背景</translation>
 <translation id="8755946156089753497">塔</translation>
-<translation id="8756235582947991808">如何利用 AI 创作内容以及一些注意事项</translation>
 <translation id="8760616037557661287">先前的提示</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google 相册中的相册</translation>

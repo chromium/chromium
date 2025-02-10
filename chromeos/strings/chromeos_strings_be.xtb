@@ -450,6 +450,7 @@
 <translation id="3122883569442693641">Дадатковая інфармацыя</translation>
 <translation id="3124039320086536031">Прылада падключана.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Выдаліць старонку?}=1{Выдаліць старонку {PAGE_NUMBER}?}one{Выдаліць старонку {PAGE_NUMBER}?}few{Выдаліць старонку {PAGE_NUMBER}?}many{Выдаліць старонку {PAGE_NUMBER}?}other{Выдаліць старонку {PAGE_NUMBER}?}}</translation>
+<translation id="3134486240968249588">Што трэба помніць</translation>
 <translation id="3140130301071865159">снег</translation>
 <translation id="3146655726035122603">Эксклюзіўна для <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Мабільная перадача даных</translation>
@@ -1654,7 +1655,6 @@
 <translation id="8747900814994928677">Пацвярджэнне змен</translation>
 <translation id="8749478549112817787">Фон для камеры</translation>
 <translation id="8755946156089753497">вежа</translation>
-<translation id="8756235582947991808">Як ствараць змесціва з дапамогай AI і пра што трэба памятаць</translation>
 <translation id="8760616037557661287">Папярэднія запыты</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Альбом Google Фота</translation>

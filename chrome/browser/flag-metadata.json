@@ -800,7 +800,7 @@
       "izuzic@google.com",
       "friedrichh@chromium.org",
       "//components/autofill/android/OWNERS" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 138
   },
   {
     "name": "autofill-throttle-doc-form-scans",
@@ -2447,7 +2447,7 @@
       "friedrichh@chromium.org",
       "//components/autofill/android/OWNERS"
     ],
-    "expiry_milestone": 135
+    "expiry_milestone": 138
   },
   {
     "name": "enable-automotive-fullscreen-toolbar-improvements",
@@ -4073,7 +4073,7 @@
   {
     "name": "enable-web-printing-api",
     "owners": [ "//chrome/browser/printing/web_api/OWNERS" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 150
   },
   {
     "name": "enable-webassembly-baseline",
@@ -7503,8 +7503,8 @@
   },
   {
       "name": "replace-sync-promos-with-sign-in-promos",
-      "owners": [ "mastiz@chromium.org", "bsazonov@chromium.org", "chrome-sync-dev@google.com", "chrome-signin-team@google.com" ],
-      "expiry_milestone": 135
+      "owners": [ "myuu@google.com", "bsazonov@chromium.org", "chrome-signin-team@google.com" ],
+      "expiry_milestone": 136
   },
   {
     "name": "reset-audio-selection-improvement-pref",
@@ -8245,7 +8245,7 @@
       "friedrichh@chromium.org",
       "//components/autofill/android/OWNERS"
     ],
-    "expiry_milestone": 135
+    "expiry_milestone": 138
   },
   {
     "name": "suppress-toolbar-captures",

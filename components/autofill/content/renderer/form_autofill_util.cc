@@ -2540,7 +2540,7 @@ std::optional<FormData> FindFormForContentEditable(
   return form;
 }
 
-std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFieldsAction(
+std::vector<std::pair<FieldRendererId, WebAutofillState>> ApplyFieldsAction(
     const WebDocument& document,
     base::span<const FormFieldData::FillData> fields,
     mojom::FormActionType action_type,
@@ -2548,7 +2548,7 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFieldsAction(
     FieldDataManager& field_data_manager) {
   // This container stores the FormFieldData::FillData* of `form.fields` that
   // will be filled into their corresponding blink elements.
-  std::vector<std::pair<FieldRef, WebAutofillState>> filled_fields;
+  std::vector<std::pair<FieldRendererId, WebAutofillState>> filled_fields;
   filled_fields.reserve(fields.size());
 
   struct Field {
@@ -2600,7 +2600,7 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFieldsAction(
     // In preview mode, only fill the field if it changes the fields value.
     // With this, the WebAutofillState is not changed from kAutofilled to
     // kPreviewed. This prevents the highlighting to change.
-    filled_fields.emplace_back(focused_field.element,
+    filled_fields.emplace_back(GetFieldRendererId(focused_field.element),
                                focused_field.element.GetAutofillState());
     if (action_persistence == mojom::ActionPersistence::kFill) {
       FillFormField(*focused_field.data, /*is_initiating_node=*/true,
@@ -2627,7 +2627,8 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFieldsAction(
   // WebFormControlElement::SetAutofillValue fires the focus and blur
   // events.
   for (Field& field : unfocused_fields) {
-    filled_fields.emplace_back(field.element, field.element.GetAutofillState());
+    filled_fields.emplace_back(GetFieldRendererId(field.element),
+                               field.element.GetAutofillState());
     if (action_persistence == mojom::ActionPersistence::kFill) {
       FillFormField(*field.data, /*is_initiating_node=*/false, field.element,
                     field_data_manager);

@@ -94,6 +94,8 @@ std::string FormatErrorMessage(CloudProvider provider,
     case MigrationUploadError::kCancelled:  // should not be logged
     case MigrationUploadError::kUnexpectedError:
     case MigrationUploadError::kServiceUnavailable:
+    // TODO: use a dedicated network error string, not generic
+    case MigrationUploadError::kNetworkError:
       return l10n_util::GetStringUTF8(IDS_OFFICE_UPLOAD_ERROR_GENERIC);
   }
 }

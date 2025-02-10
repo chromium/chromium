@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/share_kit/model/sharing_state.h"
+
 // TabGroupIndicator Consumer interface.
 @protocol TabGroupIndicatorConsumer <NSObject>
 
@@ -16,10 +18,8 @@
 // Sets whether the group can be shared or not.
 - (void)setShareAvailable:(BOOL)shareAvailable;
 
-// Sets the group shared state.
-// - `shared` is true when this group is shared with other users.
-// - `owner` is true when the user owns the shared group.
-- (void)setShared:(BOOL)shared owner:(BOOL)owner;
+// Sets the sharing state of a group.
+- (void)setSharingState:(tab_groups::SharingState)state;
 
 // Sets the face pile view controller to display the share button or the face
 // pile.

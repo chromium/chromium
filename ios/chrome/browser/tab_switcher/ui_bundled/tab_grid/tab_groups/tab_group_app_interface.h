@@ -15,6 +15,11 @@
 // Creates and saves `numberOfGroups` synced tab groups.
 + (void)prepareFakeSyncedTabGroups:(NSInteger)numberOfGroups;
 
+// Creates and saves `numberOfGroups` shared tab groups. A user with
+// `fakeIdentity1` joins the group as a member and a user with `fakeIdentity2`
+// joins the group as an owner.
++ (void)prepareFakeSharedTabGroups:(NSInteger)numberOfGroups;
+
 // Removes a group at `index`.
 + (void)removeAtIndex:(unsigned int)index;
 

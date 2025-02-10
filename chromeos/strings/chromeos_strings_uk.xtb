@@ -449,6 +449,7 @@
 <translation id="3122883569442693641">Докладніше</translation>
 <translation id="3124039320086536031">Пристрій підключено.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Видалити сторінку?}=1{Видалити сторінку {PAGE_NUMBER}?}one{Видалити сторінку {PAGE_NUMBER}?}few{Видалити сторінку {PAGE_NUMBER}?}many{Видалити сторінку {PAGE_NUMBER}?}other{Видалити сторінку {PAGE_NUMBER}?}}</translation>
+<translation id="3134486240968249588">Важлива інформація</translation>
 <translation id="3140130301071865159">сніг</translation>
 <translation id="3146655726035122603">Ексклюзивно для <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Мобільне передавання даних</translation>
@@ -1648,7 +1649,6 @@
 <translation id="8747900814994928677">Підтвердити зміни</translation>
 <translation id="8749478549112817787">Фонове зображення для камери</translation>
 <translation id="8755946156089753497">Вежа</translation>
-<translation id="8756235582947991808">Вказівки зі створення контенту за допомогою ШІ й важлива інформація</translation>
 <translation id="8760616037557661287">Попередні запити</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Альбом Google Фото</translation>

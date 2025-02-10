@@ -450,6 +450,7 @@
 <translation id="3122883569442693641">Περισσότερες λεπτομέρειες</translation>
 <translation id="3124039320086536031">Η συσκευή είναι συνδεδεμένη.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Κατάργηση σελίδας;}=1{Κατάργηση σελίδας {PAGE_NUMBER};}other{Κατάργηση σελίδας {PAGE_NUMBER};}}</translation>
+<translation id="3134486240968249588">Ορισμένα πράγματα που πρέπει να έχετε υπόψη</translation>
 <translation id="3140130301071865159">χιόνι</translation>
 <translation id="3146655726035122603">Αποκλειστικά στο <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Δεδομένα κινητής τηλεφωνίας</translation>
@@ -1656,7 +1657,6 @@
 <translation id="8747900814994928677">Επιβεβαίωση αλλαγής</translation>
 <translation id="8749478549112817787">Φόντο κάμερας</translation>
 <translation id="8755946156089753497">πύργος</translation>
-<translation id="8756235582947991808">Πώς να δημιουργήσετε περιεχόμενο με τεχνολογία AI και ορισμένα πράγματα που πρέπει να έχετε υπόψη</translation>
 <translation id="8760616037557661287">Προηγούμενες οδηγίες</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Λεύκωμα Φωτογραφιών Google</translation>

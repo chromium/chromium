@@ -96,6 +96,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="2343156876103232566">Untuk menghantar nombor dari sini ke telefon Android anda, log masuk ke Chromium pada kedua-dua peranti.</translation>
 <translation id="2359808026110333948">Teruskan</translation>
 <translation id="2361918034042471035">Sambungan "<ph name="EXTENSION_NAME" />" mahu anda log masuk ke Chromium</translation>
+<translation id="236943522426971115">Lumpuhkan Chromium yang Berjalan pada Latar untuk Apl</translation>
 <translation id="2374216753258219393">Untuk menggunakan sambungan ini sebagai <ph name="USER_EMAIL_ADDRESS" />, log masuk ke Chromium.</translation>
 <translation id="2384373936468275798">Chromium OS tidak dapat menyegerakkan data anda kerana butiran log masuk akaun anda sudah lapuk.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 peranti HID telah diakses oleh satu atau beberapa sambungan Chromium}=1{1 peranti HID sedang diakses oleh satu atau beberapa sambungan Chromium}other{# peranti HID sedang diakses oleh satu atau beberapa sambungan Chromium}}</translation>
@@ -314,7 +315,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="549669000822060376">Sila tunggu sementara Chromium memasang kemas kini sistem terkini.</translation>
 <translation id="5496810170689441661">Chromium cuba mengedit kata laluan. Taip kata laluan Windows anda untuk membenarkan tindakan ini.</translation>
 <translation id="5527463683072221100">Buka PDF dalam Chromium</translation>
-<translation id="5568136785038042132">Untuk mendapatkan sambungan anda pada semua komputer anda, log masuk ke Chromium</translation>
 <translation id="5579324208890605088">Ralat permulaan: sila jalankan pemasang sebagai pengguna biasa, bukan sebagai pentadbir.</translation>
 <translation id="5596627076506792578">Lagi pilihan</translation>
 <translation id="5605834417512968703">Pilih apa-apa sahaja untuk dicari dengan Carian Imej atau tekan kekunci escape untuk keluar daripada Carian Imej</translation>
@@ -504,6 +504,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8013436988911883588">Sebaik sahaja Chromium mendapat akses, laman web akan dapat meminta akses daripada anda.</translation>
 <translation id="80471789339884597">Terima kasih kerana memasang. Anda perlu memulakan semula semua penyemak imbas anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Pintasan Sentiasa paparkan Carian Imej</translation>
+<translation id="8077498902115777962">Lumpuhkan Chromium yang berjalan pada latar untuk apl</translation>
 <translation id="80790299200510644">Carian Imej</translation>
 <translation id="8086881907087796310">Pemasangan gagal kerana komputer anda tidak menepati keperluan perkakasan minimum.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>

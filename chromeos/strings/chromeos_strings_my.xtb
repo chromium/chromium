@@ -449,6 +449,7 @@
 <translation id="3122883569442693641">နောက်ထပ်အသေးစိတ်</translation>
 <translation id="3124039320086536031">ကိရိယာနှင့် ချိတ်ဆက်ထားသည်။</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{စာမျက်နှာ ဖယ်ရှားမလား။}=1{စာမျက်နှာ {PAGE_NUMBER} ဖယ်ရှားမလား။}other{စာမျက်နှာ {PAGE_NUMBER} ဖယ်ရှားမလား။}}</translation>
+<translation id="3134486240968249588">သိထားရမည့် အရာအချို့</translation>
 <translation id="3140130301071865159">နှင်း</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> အတွက် အထူးသီးသန့်</translation>
 <translation id="315116470104423982">မိုဘိုင်း ဒေတာ</translation>
@@ -1648,7 +1649,6 @@
 <translation id="8747900814994928677">ပြောင်းလဲမှုကို အတည်ပြုခြင်း</translation>
 <translation id="8749478549112817787">ကင်မရာ နောက်ခံ</translation>
 <translation id="8755946156089753497">မျှော်စင်</translation>
-<translation id="8756235582947991808">AI ဖြင့် ပြုလုပ်နည်းနှင့် သိထားရမည့် အကြောင်းအရာအချို့</translation>
 <translation id="8760616037557661287">ယခင်ညွှန်ကြားချက်များ</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos အယ်လ်ဘမ်</translation>

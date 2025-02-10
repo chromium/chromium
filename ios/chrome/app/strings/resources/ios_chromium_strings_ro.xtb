@@ -70,6 +70,7 @@ Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum
 <translation id="2459183986985456602">Deschide cea mai recentă filă în Chromium</translation>
 <translation id="2476409803017965813">Poți actualiza oricând opțiunile din Setările Chromium.</translation>
 <translation id="2478931088402984578">Selectează <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2485774047568879945">Setează Chromium ca browser prestabilit pentru a trimite și a deschide ușor linkuri</translation>
 <translation id="2512597191798760956">Apasă lung pictograma Chromium și dă clic pe Editează ecranul de pornire</translation>
 <translation id="2517624234762908348">Sincronizează-ți datele din Chromium</translation>
 <translation id="2592940277904433508">Continuă să folosești Chromium</translation>
@@ -167,6 +168,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chromi
 <translation id="5088872414922783602">Accesează Chromium mai rapid din bara de andocare de pe ecranul de pornire.</translation>
 <translation id="5124429847818367226">Acum poți folosi Chromium oricând navighezi sau atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="5131565040785979529">Organizația ta, <ph name="DOMAIN" />, gestionează contul la care te-ai conectat și modul în care folosești Chromium.</translation>
+<translation id="5134464247000681876">Deschide linkuri din Gmail, Maps, YouTube și alte aplicații în Chromium</translation>
 <translation id="5224391634244552924">Nu există parole salvate. Chromium îți poate verifica parolele dacă le salvezi.</translation>
 <translation id="5259423875997548710">Caută imagini în Chromium.</translation>
 <translation id="5308226104666789935">Chromium nu poate căuta actualizări.</translation>
@@ -260,6 +262,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="7674213385180944843">Deschide Setări &gt; Confidențialitate &gt; Cameră foto &gt; Chromium și activează camera foto.</translation>
 <translation id="7733418656985455268">Sfat pentru Chromium: caută cu Lens</translation>
 <translation id="7747820849741499258">Caută în Chromium</translation>
+<translation id="7753923083404296545">Deschis în modul incognito din Chromium</translation>
 <translation id="7762622637388462191">Blochează filele incognito când ieși din Chromium sau treci la altă aplicație.</translation>
 <translation id="7763454117143368771">Folosește Chromium ca browser prestabilit ca să te protejezi de site-uri periculoase și să păstrezi parolele în siguranță</translation>
 <translation id="7784950022329154821">Blochează filele incognito când închizi Chromium</translation>

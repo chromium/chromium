@@ -276,8 +276,6 @@ function setUpPasswordManagerInternals() {
       'inline';
   addWebUiListener(
       'enable-reset-upm-eviction-button', enableResetUpmEvictionButton);
-  document.getElementById('reset-account-storage-notice-fake-button')
-      .style.display = 'inline';
   // </if>
 }
 
@@ -620,11 +618,5 @@ document.addEventListener('DOMContentLoaded', function(event) {
       document.getElementById('reset-upm-eviction-fake-button');
   resetUpmEvictionButton.addEventListener('click', () => {
     chrome.send('resetUpmEviction');
-  });
-
-  const resetAccountStorageNoticeButton =
-      document.getElementById('reset-account-storage-notice-fake-button');
-  resetAccountStorageNoticeButton.addEventListener('click', () => {
-    chrome.send('resetAccountStorageNotice');
   });
 });

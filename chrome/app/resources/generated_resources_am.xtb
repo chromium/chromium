@@ -1371,6 +1371,7 @@
 <translation id="1936157145127842922">በአቃፊ አሳይ</translation>
 <translation id="1936931585862840749">ስንት ቅጂዎች መታተም እንዳለባቸው ለማመላከት ቁጥር ይጠቀሙ (ከ1 እስከ <ph name="MAX_COPIES" />)።</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> በሆነው በዚህ መሣሪያ የመያዣ ኪነ ህንፃ ዓይነት <ph name="ARCHITECTURE_CONTAINER" />ን ማስመጣት አይቻልም። ይህን መያዣ በተለየ መሣሪያ ወደነበረበት ለመመለስ መሞከር፣ ወይም ደግሞ በፋይሎች መተግበሪያ ውስጥ በመክፈት በዚህ መያዣ ውስጥ ይያሉ ፋይሎችን መድረስ ይችላሉ።</translation>
+<translation id="1938116692670653897">የአሁን የቀለም ገጽታ</translation>
 <translation id="1938351510777341717">ውጫዊ ትዕዛዝ</translation>
 <translation id="1940221956626514677">የመሣሪያ አሞሌን ያብጁ</translation>
 <translation id="1940546824932169984">የተገናኙ መሣሪያዎች</translation>
@@ -2138,6 +2139,10 @@
 <translation id="2462332841984057083">Steam አስቀድሞ ተዋቅሯል። ማዋቀር እስከሚጠናቀቅ ድረስ ይጠብቁ።</translation>
 <translation id="2462724976360937186">የእውቅና ማረጋገጫ ባለስልጣን ቁልፍ መታወቂያ</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> ታክሏል</translation>
+<translation id="2464075479326723132">Microsoft SharePoint እና OneDrive ውስጥ ወዳለዎት በጣም የቅርብ ጊዜ እንቅስቃሴ በቀላሉ መመለስ እንዲችሉ ለማገዝ የተጠቆሙ ፋይሎችን እያዩ ነው።
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        ቅንብሮችን ከካርድ ምናሌው ማስተዳደር ወይም Chromeን አብጅ በሚለው ውስጥ ተጨማሪ አማራጮችን ማየት ይችላሉ።</translation>
 <translation id="2464079411014186876">አይስክሬም</translation>
 <translation id="2467755475704469005">ምንም መሣሪያ አልተገኘም <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">ከ<ph name="OWNER_FIRST_NAME" /> እና <ph name="NUM_OTHER_MEMBERS" /> ሌሎች ጋር የትር ቡድን ይቀላቀላሉ</translation>
@@ -2302,6 +2307,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{ይህ መሣሪያ ለ1 ዓመት የሚቀመጥ ሲሆን በቀጣዩ ጊዜ ላይ ያለ ኮድ ማገናኘት ይችላሉ። ይህ በአስተዳዳሪዎ የሚቀናበር ነው።}one{ይህ መሣሪያ ለ{YEARS} ዓመታት የሚቀመጥ ሲሆን በቀጣዩ ጊዜ ላይ ያለ ኮድ ማገናኘት ይችላሉ። ይህ በአስተዳዳሪዎ የሚቀናበር ነው።}other{ይህ መሣሪያ ለ{YEARS} ዓመታት የሚቀመጥ ሲሆን በቀጣዩ ጊዜ ላይ ያለ ኮድ ማገናኘት ይችላሉ። ይህ በአስተዳዳሪዎ የሚቀናበር ነው።}}</translation>
 <translation id="2577127557293415225">ለአጭር ጊዜ ሁለቱንም ዓይኖች ይጨፍኑ</translation>
 <translation id="257779572837908839">እንደ Chromebox ለስብሰባዎች ያዋቅሩ</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) ወዲያውኑ የ«<ph name="GROUP_NAME" />» የትር ቡድን መዳረሻ ያጣሉ፣ እና ከእንግዲህ በመላው የGoogle አገልግሎቶች ላይ ከእርስዎ ጋር መስተጋብር መፍጠር አይችሉም።</translation>
 <translation id="2580889980133367162">ሁልጊዜም <ph name="HOST" /> ከአንድ በላይ ፋይሎችን እንዲያወርድ ይፍቀዱ</translation>
 <translation id="258095186877893873">ረጅም</translation>
 <translation id="2581455244799175627">የሦስተኛ ወገን ኩኪዎችን ስለመፍቀድ ተጨማሪ</translation>
@@ -3997,6 +4003,7 @@
 <translation id="3787434344076711519">ትርጉምን በመጠበቅ ላይ</translation>
 <translation id="3788301286821743879">የኪዮስክ መተግበሪያውን ማስጀመር አልተቻለም።</translation>
 <translation id="3788401245189148511">ይህንን ሊያደርግ ይችላል፦</translation>
+<translation id="3789432704615470433">የSharePoint እና OneDrive ፋይሎች</translation>
 <translation id="3789841737615482174">ጫን  </translation>
 <translation id="3790417903123637354">የሆነ ችግር ተፈጥሯል። ቆይተው እንደገና ይሞክሩ</translation>
 <translation id="379082410132524484">የእርስዎ ካርድ የአገልግሎት ጊዜው አብቅቷል</translation>
@@ -6184,6 +6191,7 @@
 <translation id="5360150013186312835">በመሣሪያ አሞሌ ላይ አሳይ</translation>
 <translation id="5362741141255528695">የግል ቁልፍ ፋይል ይምረጡ።</translation>
 <translation id="536278396489099088">የChromeOS ሥርዓት ሁኔታ እና ሪፖርቶች</translation>
+<translation id="5362916924854054326">የSharePoint እና OneDrive ፋይሎችን አታሳይ</translation>
 <translation id="5363109466694494651">Powerwash አድርግ እና አድህር</translation>
 <translation id="5365881113273618889">የመረጡት አቃፊ ሊጎዱ የሚችሉ ፋይሎች አሉት። እርግጠኛ ነዎት ዘላቂ የዚህ አቃፊ የመጻፍ መዳረሻ ለ«<ph name="APP_NAME" />» መስጠት ይፈልጋሉ?</translation>
 <translation id="536638840841140142">ምንም</translation>
@@ -10772,6 +10780,10 @@ nil</translation>
 <translation id="865936634714975126">የገፅ ጭነት ላይ ዓይነቶችን ለመምረጥ ዩአርኤል ውስጥ የመጠይቅ ልኬት ያክሉ። ለምሳሌ፦ chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> ዕውቂያዎች</translation>
 <translation id="8659609431223166673">መስኮት ወደታች ተንቀሳቅሷል</translation>
+<translation id="8660288500924118793">በቀላሉ Outlook ቀን መቁጠሪያ ውስጥ ወዳለው ቀጣዩ ክስተትዎ ለማሰስ እንዲያግዝዎ ቀን መቁጠሪያዎን እያዩ ነው።
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       ቅንብሮችን ከካርድ ምናሌው ማስተዳደር ወይም Chromeን አብጅ በሚለው ውስጥ ተጨማሪ አማራጮችን ማየት ይችላሉ።</translation>
 <translation id="8661290697478713397">አገናኙን ማን&amp;ነትን በማያሳውቅ መስኮት ክፈት</translation>
 <translation id="8662474268934425487">ወደ <ph name="SITE_ETLD_PLUS_ONE" /> ይግቡ</translation>
 <translation id="8662671328352114214">የ<ph name="TYPE" /> አውታረ መረብን ይቀላቀሉ</translation>

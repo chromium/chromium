@@ -36,6 +36,10 @@ DownloadMimeTypeResult GetDownloadMimeTypeResultFromMimeType(
     return DownloadMimeTypeResult::VirtualContactFile;
   }
 
+  if (mime_type == kXVcardMimeType) {
+    return DownloadMimeTypeResult::VirtualContactFile;
+  }
+
   if (mime_type == kCalendarMimeType) {
     return DownloadMimeTypeResult::Calendar;
   }
@@ -82,10 +86,6 @@ DownloadMimeTypeResult GetDownloadMimeTypeResultFromMimeType(
 
   if (mime_type == kJavaArchiveMimeType) {
     return DownloadMimeTypeResult::JavaArchive;
-  }
-
-  if (mime_type == kVcardMimeType) {
-    return DownloadMimeTypeResult::Vcard;
   }
 
   if (mime_type == kLegacyPixarUsdzMimeType) {

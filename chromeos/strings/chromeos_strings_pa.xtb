@@ -450,6 +450,7 @@
 <translation id="3122883569442693641">ਹੋਰ ਵੇਰਵੇ</translation>
 <translation id="3124039320086536031">ਡੀਵਾਈਸ ਕਨੈਕਟ ਹੈ।</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ਕੀ ਪੰਨਾ ਹਟਾਉਣਾ ਹੈ?}=1{ਕੀ ਪੰਨਾ {PAGE_NUMBER} ਹਟਾਉਣਾ ਹੈ?}other{ਕੀ ਪੰਨਾ {PAGE_NUMBER} ਹਟਾਉਣਾ ਹੈ?}}</translation>
+<translation id="3134486240968249588">ਧਿਆਨ ਵਿੱਚ ਰੱਖਣ ਵਾਲੀਆਂ ਕੁਝ ਗੱਲਾਂ</translation>
 <translation id="3140130301071865159">ਬਰਫ਼</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> ਲਈ ਵਿਸ਼ੇਸ਼</translation>
 <translation id="315116470104423982">ਮੋਬਾਈਲ ਡਾਟਾ</translation>
@@ -1656,7 +1657,6 @@
 <translation id="8747900814994928677">ਤਬਦੀਲੀ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="8749478549112817787">ਕੈਮਰਾ ਬੈਕਗ੍ਰਾਊਂਡ</translation>
 <translation id="8755946156089753497">ਬੁਰਜ</translation>
-<translation id="8756235582947991808">AI ਨਾਲ ਚਿੱਤਰ ਬਣਾਉਣ ਦਾ ਤਰੀਕਾ ਅਤੇ ਧਿਆਨ ਵਿੱਚ ਰੱਖਣ ਵਾਲੀਆਂ ਕੁਝ ਗੱਲਾਂ</translation>
 <translation id="8760616037557661287">ਪਿਛਲੇ ਉਤਪ੍ਰੇਰਕ</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ਐਲਬਮ</translation>

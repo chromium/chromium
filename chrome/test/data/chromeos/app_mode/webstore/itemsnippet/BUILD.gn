@@ -26,7 +26,7 @@ protoc_convert("itemsnippet") {
   args = [
     "--encode=extensions.FetchItemSnippetResponse",
     "-I",
-    rebase_path("//"),
+    rebase_path("//", root_build_dir),
     "chrome/browser/extensions/cws_item_service.proto",
   ]
 }

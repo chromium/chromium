@@ -450,6 +450,7 @@
 <translation id="3122883569442693641">รายละเอียดเพิ่มเติม</translation>
 <translation id="3124039320086536031">อุปกรณ์เชื่อมต่ออยู่</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{นำหน้าออกไหม}=1{นำหน้าที่ {PAGE_NUMBER} ออกไหม}other{นำหน้าที่ {PAGE_NUMBER} ออกไหม}}</translation>
+<translation id="3134486240968249588">โปรดคำนึงถึงสิ่งต่อไปนี้</translation>
 <translation id="3140130301071865159">หิมะ</translation>
 <translation id="3146655726035122603">พิเศษสำหรับ <ph name="PRODUCT_NAME" /> โดยเฉพาะ</translation>
 <translation id="315116470104423982">เน็ตมือถือ</translation>
@@ -1656,7 +1657,6 @@
 <translation id="8747900814994928677">ยืนยันการเปลี่ยนแปลง</translation>
 <translation id="8749478549112817787">พื้นหลังกล้อง</translation>
 <translation id="8755946156089753497">หอคอย</translation>
-<translation id="8756235582947991808">วิธีสร้างด้วย AI และสิ่งที่ควรคำนึงถึง</translation>
 <translation id="8760616037557661287">พรอมต์ก่อนหน้า</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">อัลบั้มใน Google Photos</translation>

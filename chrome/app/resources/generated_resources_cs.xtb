@@ -2295,6 +2295,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2575713839157415345">{YEARS,plural, =1{Toto zařízení bude 1 rok uloženo a příště se budete moci připojit bez kódu. Toto nastavuje váš administrátor.}few{Toto zařízení bude {YEARS} roky uloženo a příště se budete moci připojit bez kódu. Toto nastavuje váš administrátor.}many{Toto zařízení bude {YEARS} roku uloženo a příště se budete moci připojit bez kódu. Toto nastavuje váš administrátor.}other{Toto zařízení bude {YEARS} let uloženo a příště se budete moci připojit bez kódu. Toto nastavuje váš administrátor.}}</translation>
 <translation id="2577127557293415225">Krátce zavřete obě oči</translation>
 <translation id="257779572837908839">Nastavit jako Chromebox pro videokonference</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) hned přijde o přístup ke skupině karet „<ph name="GROUP_NAME" />“ a už s vámi nebude moct komunikovat ve službách Google.</translation>
 <translation id="2580889980133367162">Vždy povolit hostiteli <ph name="HOST" /> stahování několika souborů</translation>
 <translation id="258095186877893873">Dlouhé</translation>
 <translation id="2581455244799175627">Další informace o povolení souborů cookie třetích stran</translation>

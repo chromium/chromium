@@ -16,19 +16,15 @@
 #include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
-
-namespace regional_capabilities {
-class RegionalCapabilitiesService;
-}
 
 namespace search_engines {
 class SearchEngineChoiceService;
 }
 
 class KeywordWebDataService;
-class TemplateURLService;
 
 // Sets the managed preferences for the default search provider. `enabled`
 // enables/disables use of the managed engine by `DefaultSearchManager`.
@@ -79,6 +75,24 @@ class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {
 
   ~TemplateURLServiceTestUtil() override;
 
+  static BrowserContextKeyedServiceFactory::TestingFactory
+  GetTemplateURLServiceTestingFactory();
+
+  // Forwards to the equivalent `TemplateURLService` constructor, pulling
+  // services it depends on from `profile`.
+  static std::unique_ptr<TemplateURLService> CreateTemplateURLServiceForTesting(
+      Profile* profile,
+      std::unique_ptr<SearchTermsData> search_terms_data,
+      scoped_refptr<KeywordWebDataService> web_data_service,
+      std::unique_ptr<TemplateURLServiceClient> client,
+      base::RepeatingClosure dsp_change_callback);
+
+  // Forwards to the equivalent `TemplateURLService` constructor, pulling
+  // services it depends on from `profile`.
+  static std::unique_ptr<TemplateURLService> CreateTemplateURLServiceForTesting(
+      Profile* profile,
+      base::span<const TemplateURLService::Initializer> initializers = {});
+
   // TemplateURLServiceObserver implemementation.
   void OnTemplateURLServiceChanged() override;
 
@@ -125,11 +139,12 @@ class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {
   KeywordWebDataService* web_data_service() { return web_data_service_.get(); }
   TemplateURLService* model() { return model_.get(); }
   TestingProfile* profile() { return profile_.get(); }
-  search_engines::SearchEngineChoiceService* search_engine_choice_service() {
-    return search_engine_choice_service_.get();
-  }
+  search_engines::SearchEngineChoiceService* search_engine_choice_service();
 
  private:
+  static TestingProfile::TestingFactories
+  SetUpRequiredServicesWithCustomLocalState(PrefService* local_state_override);
+
   // Populated only if the calling test did not previously set up a
   // local state. This object would then own the process-global local
   // state.
@@ -144,10 +159,6 @@ class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {
   std::u16string search_term_;
   int dsp_set_to_google_callback_count_ = 0;
   scoped_refptr<KeywordWebDataService> web_data_service_;
-  std::unique_ptr<regional_capabilities::RegionalCapabilitiesService>
-      regional_capabilities_service_;
-  std::unique_ptr<search_engines::SearchEngineChoiceService>
-      search_engine_choice_service_;
   std::unique_ptr<TemplateURLService> model_;
   data_decoder::test::InProcessDataDecoder data_decoder_;
 };

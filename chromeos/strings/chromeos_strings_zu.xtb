@@ -449,6 +449,7 @@
 <translation id="3122883569442693641">Imininingwane eyengeziwe</translation>
 <translation id="3124039320086536031">Idivayisi ixhunyiwe.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Susa ikhasi?}=1{Susa ikhasi {PAGE_NUMBER}?}one{Susa ikhasi {PAGE_NUMBER}?}other{Susa ikhasi {PAGE_NUMBER}?}}</translation>
+<translation id="3134486240968249588">Izinto ezimbalwa okufanele uzikhumbule</translation>
 <translation id="3140130301071865159">iqhwa</translation>
 <translation id="3146655726035122603">Okukhethekile ku-<ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Idatha yeselula</translation>
@@ -1648,7 +1649,6 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8747900814994928677">Qinisekisa ushintsho</translation>
 <translation id="8749478549112817787">Ingemuva Lekhamera</translation>
 <translation id="8755946156089753497">isilindo</translation>
-<translation id="8756235582947991808">Indlela yokusungula nge-AI kanye nezinto ezimbalwa okufanele uzikhumbule</translation>
 <translation id="8760616037557661287">Imiyalelo yangaphambilini</translation>
 <translation id="8764414543112028321">I-WireGuard</translation>
 <translation id="87646919272181953">I-albhamu Yezithombe ze-Google</translation>

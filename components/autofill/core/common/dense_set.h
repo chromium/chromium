@@ -296,40 +296,40 @@ class DenseSet {
 
     constexpr Iterator() = default;
 
-    friend bool operator==(const Iterator& a, const Iterator& b) {
+    friend constexpr bool operator==(const Iterator& a, const Iterator& b) {
       DCHECK(a.owner_);
       DCHECK_EQ(a.owner_, b.owner_);
       return a.index_ == b.index_;
     }
 
-    friend bool operator!=(const Iterator& a, const Iterator& b) {
+    friend constexpr bool operator!=(const Iterator& a, const Iterator& b) {
       return !(a == b);
     }
 
-    T operator*() const {
+    constexpr T operator*() const {
       DCHECK(dereferenceable());
       return index_to_value(index_);
     }
 
-    Iterator& operator++() {
+    constexpr Iterator& operator++() {
       ++index_;
       Skip(kForward);
       return *this;
     }
 
-    Iterator operator++(int) {
+    constexpr Iterator operator++(int) {
       auto that = *this;
       operator++();
       return that;
     }
 
-    Iterator& operator--() {
+    constexpr Iterator& operator--() {
       --index_;
       Skip(kBackward);
       return *this;
     }
 
-    Iterator operator--(int) {
+    constexpr Iterator operator--(int) {
       auto that = *this;
       operator--();
       return that;
@@ -345,14 +345,14 @@ class DenseSet {
 
     // Advances the index, starting from the current position, to the next
     // non-empty one.
-    void Skip(Direction direction) {
+    constexpr void Skip(Direction direction) {
       DCHECK_LE(index_, owner_->max_size());
       while (index_ < owner_->max_size() && !dereferenceable()) {
         index_ += direction;
       }
     }
 
-    bool dereferenceable() const {
+    constexpr bool dereferenceable() const {
       DCHECK_LT(index_, owner_->max_size());
       return owner_->bitset_.get_bit(index_);
     }
@@ -412,24 +412,24 @@ class DenseSet {
   // Iterators.
 
   // Returns an iterator to the beginning.
-  iterator begin() const {
+  constexpr iterator begin() const {
     const_iterator it(this, 0);
     it.Skip(Iterator::kForward);
     return it;
   }
-  const_iterator cbegin() const { return begin(); }
+  constexpr const_iterator cbegin() const { return begin(); }
 
   // Returns an iterator to the end.
-  iterator end() const { return iterator(this, max_size()); }
-  const_iterator cend() const { return end(); }
+  constexpr iterator end() const { return iterator(this, max_size()); }
+  constexpr const_iterator cend() const { return end(); }
 
   // Returns a reverse iterator to the beginning.
-  reverse_iterator rbegin() const { return reverse_iterator(end()); }
-  const_reverse_iterator crbegin() const { return rbegin(); }
+  constexpr reverse_iterator rbegin() const { return reverse_iterator(end()); }
+  constexpr const_reverse_iterator crbegin() const { return rbegin(); }
 
   // Returns a reverse iterator to the end.
-  reverse_iterator rend() const { return reverse_iterator(begin()); }
-  const_reverse_iterator crend() const { return rend(); }
+  constexpr reverse_iterator rend() const { return reverse_iterator(begin()); }
+  constexpr const_reverse_iterator crend() const { return rend(); }
 
   // Capacity.
 

@@ -169,19 +169,6 @@ void ClearRelevantData() {
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 }
 
-- (void)enableTypeForSyncTheFeature:(NSString*)typeIdentifier {
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI
-      tapSettingsMenuButton:chrome_test_util::ManageSyncSettingsButton()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                          typeIdentifier,
-                                          /*is_toggled_on=*/NO,
-                                          /*is_enabled=*/YES)]
-      performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/YES)];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
-      performAction:grey_tap()];
-}
-
 // Tests that a bookmark added on the client is uploaded to the Sync server.
 - (void)testSyncUploadBookmark {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];

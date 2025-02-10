@@ -450,6 +450,7 @@
 <translation id="3122883569442693641">Daugiau išsamios informacijos</translation>
 <translation id="3124039320086536031">Įrenginys prijungtas.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Pašalinti puslapį?}=1{Pašalinti {PAGE_NUMBER} puslapį?}one{Pašalinti {PAGE_NUMBER} puslapį?}few{Pašalinti {PAGE_NUMBER} puslapį?}many{Pašalinti {PAGE_NUMBER} puslapį?}other{Pašalinti {PAGE_NUMBER} puslapį?}}</translation>
+<translation id="3134486240968249588">Atminkite keletą dalykų</translation>
 <translation id="3140130301071865159">sniegas</translation>
 <translation id="3146655726035122603">Taikoma tik „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="315116470104423982">Duomenys mobiliesiems</translation>
@@ -1658,7 +1659,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8747900814994928677">Patvirtinti pakeitimą</translation>
 <translation id="8749478549112817787">Fotoaparato fonas</translation>
 <translation id="8755946156089753497">bokštas</translation>
-<translation id="8756235582947991808">Kaip kurti naudojant DI ir keli dalykai, kuriuos reikia atminti</translation>
 <translation id="8760616037557661287">Ankstesnės užklausos</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">„Google“ nuotraukų albumas</translation>

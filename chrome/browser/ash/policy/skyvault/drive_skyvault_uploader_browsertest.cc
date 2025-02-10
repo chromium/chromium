@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, ConnectionLostDuringUpload) {
   drive_upload_handler->Run();
 
   auto [error, upload_root_path] = future.Get();
-  ASSERT_EQ(MigrationUploadError::kServiceUnavailable, error);
+  ASSERT_EQ(MigrationUploadError::kNetworkError, error);
   EXPECT_EQ(drive_root_dir().Append(kUploadRootPrefix), upload_root_path);
 
   // Check that the source file has not been moved to Drive.

@@ -59,7 +59,7 @@ bool ShouldShowPostMigrationSheet(Profile* profile) {
 
   // The post password migration sheet should be shown for an active UPM user
   // that uses split stores only once, so
-  // `kLocalPasswordMigrationWarningShownAtStartup` will be true only when the
+  // `kShouldShowPostPasswordMigrationSheetAtStartup` will be true only when the
   // migration algorithm sets it to true and it will be flipped to false when
   // the sheet is shown.
   return profile->GetPrefs()->GetBoolean(
