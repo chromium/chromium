@@ -5175,6 +5175,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-isolated-web-apps", flag_descriptions::kEnableIsolatedWebAppsName,
      flag_descriptions::kEnableIsolatedWebAppsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kIsolatedWebApps)},
+    {"direct-sockets-in-shared-workers",
+     flag_descriptions::kDirectSocketsInSharedWorkersName,
+     flag_descriptions::kDirectSocketsInSharedWorkersDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(blink::features::kDirectSocketsInSharedWorkers)},
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-isolated-web-app-managed-guest-session-install",
      flag_descriptions::kEnableIsolatedWebAppManagedGuestSessionInstallName,

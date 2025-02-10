@@ -1961,6 +1961,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "direct-sockets-in-shared-workers",
+    "owners": [ "//content/browser/direct_sockets/OWNERS" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "disable-accelerated-2d-canvas",
     "owners": [ "fserb@chromium.org" ],
     "expiry_milestone": -1

@@ -1412,6 +1412,12 @@ const char kEnableIsolatedWebAppsDescription[] =
     "Enables experimental support for Isolated Web Apps. "
     "See https://github.com/reillyeon/isolated-web-apps for more information.";
 
+const char kDirectSocketsInSharedWorkersName[] =
+    "Direct Sockets API in Shared Workers";
+const char kDirectSocketsInSharedWorkersDescription[] =
+    "Enable access to the Direct Sockets API in shared workers. See "
+    "https://github.com/WICG/direct-sockets for details.";
+
 #if BUILDFLAG(IS_CHROMEOS)
 const char kEnableIsolatedWebAppUnmanagedInstallName[] =
     "Enable Isolated Web App unmanaged installation";

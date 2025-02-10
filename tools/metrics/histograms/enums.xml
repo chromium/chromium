@@ -13163,6 +13163,7 @@ from previous Chrome versions.
       label="AndroidNoSurfaceSyncForBrowserControls:enabled"/>
   <int value="-376322609" label="BluetoothWifiQSPodRefresh:disabled"/>
   <int value="-375342164" label="SafeBrowsingAsyncRealTimeCheck:disabled"/>
+  <int value="-375341515" label="DirectSocketsInSharedWorkers:disabled"/>
   <int value="-374657496" label="OmniboxEnableClipboardProvider:enabled"/>
   <int value="-374423260" label="OmniboxTabSwitchSuggestions:disabled"/>
   <int value="-373365335" label="JourneysOmniboxAction:disabled"/>
@@ -17350,6 +17351,7 @@ from previous Chrome versions.
   <int value="1281399380" label="NetworkServiceSandbox:disabled"/>
   <int value="1281471853" label="UseButtonTranslateBubbleUI:disabled"/>
   <int value="1282551250" label="IgnoreHoverEventAnr:enabled"/>
+  <int value="1282810683" label="DirectSocketsInSharedWorkers:enabled"/>
   <int value="1283205498" label="FasterSplitScreenSetup:disabled"/>
   <int value="1283455082" label="DeskProfiles:disabled"/>
   <int value="1283642596" label="ExtensionDisableUnsupportedDeveloper:enabled"/>
