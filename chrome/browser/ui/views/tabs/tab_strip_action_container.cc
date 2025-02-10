@@ -355,8 +355,7 @@ void TabStripActionContainer::UpdateGlicButton() {
 
     glic_button_ = AddChildView(std::move(glic_button));
   } else if (glic_button_ && !need_button) {
-    RemoveChildView(glic_button_);
-    glic_button_ = nullptr;
+    RemoveChildViewT(std::exchange(glic_button_, nullptr));
   }
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)

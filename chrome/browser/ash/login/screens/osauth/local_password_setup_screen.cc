@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -26,7 +27,6 @@
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-forward.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-shared.h"
-#include "components/crash/core/app/crashpad.h"
 
 namespace ash {
 namespace {
@@ -124,7 +124,7 @@ void LocalPasswordSetupScreen::OnUpdateLocalPassword(
     LOG(ERROR) << "Failed to update local password, error id= "
                << static_cast<int>(result);
     exit_callback_.Run(Result::kDone);
-    crash_reporter::DumpWithoutCrashing();
+    base::debug::DumpWithoutCrashing();
     return;
   }
   context()->knowledge_factor_setup.modified_factors.Put(
@@ -139,7 +139,7 @@ void LocalPasswordSetupScreen::OnSetLocalPassword(
     LOG(ERROR) << "Failed to set local password, error id= "
                << static_cast<int>(result);
     exit_callback_.Run(Result::kDone);
-    crash_reporter::DumpWithoutCrashing();
+    base::debug::DumpWithoutCrashing();
     return;
   }
   context()->knowledge_factor_setup.modified_factors.Put(

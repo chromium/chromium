@@ -367,12 +367,15 @@ ContextProperties ContextImplDml::GetProperties(
        /*reverse_input=*/{kFloat16To32Ints8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_scatter_operator_desc#tensor-support
-       /*scatter_elements_input=*/kFloat16To32Ints8To32,
-       /*scatter_elements_indices=*/kGatherScatterIndicesSupportedDataTypes,
+       /*scatter_elements_input=*/{kFloat16To32Ints8To32, kMaxRank},
+       /*scatter_elements_indices=*/
+       {kGatherScatterIndicesSupportedDataTypes, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_scatter_nd_operator_desc#tensor-support
-       /*scatter_nd_input=*/kFloat16To32Ints8To32,
-       /*scatter_nd_indices=*/kGatherScatterIndicesSupportedDataTypes,
+       /*scatter_nd_input=*/{kFloat16To32Ints8To32, kMaxRank},
+       /*scatter_nd_indices=*/
+       {kGatherScatterIndicesSupportedDataTypes, kMaxRank},
+       /*scatter_nd_updates=*/{kFloat16To32Ints8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_sigmoid_operator_desc#tensor-support
        /*sigmoid_input=*/
@@ -457,9 +460,11 @@ ContextProperties ContextImplDml::GetProperties(
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.reverse_input.data_types =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
-    properties.data_type_limits.scatter_elements_input =
+    properties.data_type_limits.scatter_elements_input.data_types =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
-    properties.data_type_limits.scatter_nd_input =
+    properties.data_type_limits.scatter_nd_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.scatter_nd_updates.data_types =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.sign_input.data_types =
         DataTypeConstraint::kFloat16To32Int8To64;

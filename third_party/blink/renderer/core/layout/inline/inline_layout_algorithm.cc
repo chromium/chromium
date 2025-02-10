@@ -276,7 +276,7 @@ void InlineLayoutAlgorithm::PrepareBoxStates(
   // Check if the box states in InlineChildLayoutContext is valid for this line.
   // If the previous line was ::first-line, always rebuild because box states
   // have ::first-line styles.
-  const HeapVector<InlineItem>& items = line_info.ItemsData().items;
+  const InlineItems& items = line_info.ItemsData().items;
   if (!break_token->UseFirstLineStyle()) {
     box_states_ = context_->BoxStatesIfValidForItemIndex(
         items, break_token->StartItemIndex());
@@ -1431,8 +1431,7 @@ void InlineLayoutAlgorithm::PositionLeadingFloats(
     return;
   }
 
-  const HeapVector<InlineItem>& items =
-      Node().ItemsData(/* is_first_line */ false).items;
+  const InlineItems& items = Node().ItemsData(/* is_first_line */ false).items;
 
   unsigned index = GetBreakToken() ? GetBreakToken()->StartItemIndex() : 0;
   HeapVector<PositionedFloat>& positioned_floats = leading_floats.floats;

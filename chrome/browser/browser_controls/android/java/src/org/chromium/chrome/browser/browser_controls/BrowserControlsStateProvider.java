@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.browser_controls;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 
-import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.cc.input.BrowserControlsState;
 
 import java.lang.annotation.Retention;

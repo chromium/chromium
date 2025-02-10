@@ -17,6 +17,7 @@
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -1112,7 +1113,7 @@ TEST_F(HQPDomainSuggestionsTest, DomainSuggestions) {
                         std::vector<std::u16string> expected_matches,
                         bool expected_triggered) {
     SCOPED_TRACE("input_text: " + base::UTF16ToUTF8(input_text) +
-                 ", input_keyword: " + (input_keyword ? "true" : "false"));
+                 ", input_keyword: " + base::ToString(input_keyword));
 
     AutocompleteInput input(input_text, metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());

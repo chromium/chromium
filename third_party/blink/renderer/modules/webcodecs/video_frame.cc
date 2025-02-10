@@ -367,7 +367,13 @@ class CanvasResourceProviderCache
       delete;
   CanvasResourceProviderCache(const CanvasResourceProviderCache&) = delete;
 
-  CanvasResourceProvider* CreateProvider(const SkImageInfo& info) {
+  CanvasResourceProvider* CreateProvider(gfx::Size size) {
+    // TODO(https://crbug.com/1341235): The choice of color type, alpha type,
+    // and color space is inappropriate in many circumstances.
+    const auto info =
+        SkImageInfo::Make(gfx::SizeToSkISize(size), kN32_SkColorType,
+                          kPremul_SkAlphaType, nullptr);
+
     if (info_to_provider_.empty())
       PostMonitoringTask();
 
@@ -1455,14 +1461,9 @@ scoped_refptr<Image> VideoFrame::GetSourceImageForCanvas(
       ExecutionContext::From(v8::Isolate::GetCurrent()->GetCurrentContext());
   auto& provider_cache = CanvasResourceProviderCache::From(*execution_context);
 
-  // TODO(https://crbug.com/1341235): The choice of color type, alpha type, and
-  // color space is inappropriate in many circumstances.
   const auto& resource_provider_size = local_handle->frame()->natural_size();
-  const auto resource_provider_info =
-      SkImageInfo::Make(gfx::SizeToSkISize(resource_provider_size),
-                        kN32_SkColorType, kPremul_SkAlphaType, nullptr);
   auto* resource_provider =
-      provider_cache.CreateProvider(resource_provider_info);
+      provider_cache.CreateProvider(resource_provider_size);
 
   const auto dest_rect = gfx::Rect(resource_provider_size);
   auto image = CreateImageFromVideoFrame(local_handle->frame(),
@@ -1566,14 +1567,9 @@ ScriptPromise<ImageBitmap> VideoFrame::CreateImageBitmap(
       ExecutionContext::From(v8::Isolate::GetCurrent()->GetCurrentContext());
   auto& provider_cache = CanvasResourceProviderCache::From(*execution_context);
 
-  // TODO(https://crbug.com/1341235): The choice of color type, alpha type, and
-  // color space is inappropriate in many circumstances.
   const auto& resource_provider_size = local_handle->frame()->natural_size();
-  const auto resource_provider_info =
-      SkImageInfo::Make(gfx::SizeToSkISize(resource_provider_size),
-                        kN32_SkColorType, kPremul_SkAlphaType, nullptr);
   auto* resource_provider =
-      provider_cache.CreateProvider(resource_provider_info);
+      provider_cache.CreateProvider(resource_provider_size);
 
   // We disable zero copy images since the ImageBitmap spec says created bitmaps
   // are copies. Many other paths can avoid doing this w/o issue, but hardware

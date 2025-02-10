@@ -112,6 +112,8 @@ enum SafetyFeature {
   kAudioTitleRequest = 2,
   kAudioSummaryResponse = 3,
   kAudioTitleResponse = 4,
+  [MinVersion=1] kAudioSummaryResponseV2 = 5,
+  [MinVersion=1] kAudioTitleResponseV2 = 6,
 };
 
 // A service which allows loading trusted models which are stored on-device and

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -122,7 +123,7 @@ class IpProtectionProxyConfigManagerImplTest : public testing::Test {
     // Set token caching by geo param value.
     std::map<std::string, std::string> parameters;
     parameters[net::features::kIpPrivacyCacheTokensByGeo.name] =
-        enable_cache_by_geo ? "true" : "false";
+        base::ToString(enable_cache_by_geo);
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         net::features::kEnableIpProtectionProxy, std::move(parameters));
 

@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"

@@ -216,7 +216,6 @@ void AutocompleteActionPredictor::StartPrerendering(
       preloading_data->AddPreloadingAttempt(
           chrome_preloading_predictor::kOmniboxDirectURLInput,
           content::PreloadingType::kPrerender, std::move(same_url_matcher),
-          /*planned_max_preloading_type=*/std::nullopt,
           web_contents.GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   PrerenderManager::CreateForWebContents(&web_contents);

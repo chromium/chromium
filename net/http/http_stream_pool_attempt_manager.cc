@@ -393,19 +393,7 @@ void HttpStreamPool::AttemptManager::StartJob(
   // HttpStreamPool should check the existing QUIC/SPDY sessions before calling
   // this method.
   DCHECK(!CanUseExistingQuicSession());
-  // TODO(crbug.com/385563837): Change to use CHECK(!spdy_session_) once we
-  // identified the cause of the issue.
-  if (spdy_session_) {
-    std::string stream_key_string = stream_key().ToString();
-    std::string spdy_session_string =
-        spdy_session_->GetInfoAsValue().DebugString();
-    DEBUG_ALIAS_FOR_CSTR(stream_key_cstr, stream_key_string.c_str(), 128);
-    DEBUG_ALIAS_FOR_CSTR(spdy_session_cstr, spdy_session_string.c_str(), 512);
-    CHECK(false);
-  }
-  DCHECK(!spdy_session_pool()->FindAvailableSession(
-      spdy_session_key(), IsIpBasedPoolingEnabled(),
-      /*is_websocket=*/false, request_net_log));
+  DCHECK(!HasAvailableSpdySession());
 
   jobs_.Insert(job, priority);
 
@@ -458,10 +446,8 @@ int HttpStreamPool::AttemptManager::Preconnect(
 
   // HttpStreamPool should check the existing QUIC/SPDY sessions before calling
   // this method.
-  CHECK(!CanUseExistingQuicSession());
-  CHECK(!spdy_session_);
-  CHECK(!spdy_session_pool()->HasAvailableSession(spdy_session_key(),
-                                                  /*is_websocket=*/false));
+  DCHECK(!CanUseExistingQuicSession());
+  DCHECK(!HasAvailableSpdySession());
   CHECK(group_->ActiveStreamSocketCount() < num_streams);
 
   auto entry =
@@ -589,7 +575,7 @@ void HttpStreamPool::AttemptManager::ProcessPendingJob() {
   }
 
   CHECK(!CanUseExistingQuicSession());
-  CHECK(!spdy_session_);
+  DCHECK(!HasAvailableSpdySession());
 
   MaybeAttemptConnection(/*exclude_ip_endpoint=*/std::nullopt,
                          /*max_attempts=*/1);
@@ -686,15 +672,16 @@ HttpStreamPool::AttemptManager::quic_session_alias_key() const {
   return group_->quic_session_alias_key();
 }
 
-HttpNetworkSession* HttpStreamPool::AttemptManager::http_network_session() {
+HttpNetworkSession* HttpStreamPool::AttemptManager::http_network_session()
+    const {
   return group_->http_network_session();
 }
 
-SpdySessionPool* HttpStreamPool::AttemptManager::spdy_session_pool() {
+SpdySessionPool* HttpStreamPool::AttemptManager::spdy_session_pool() const {
   return http_network_session()->spdy_session_pool();
 }
 
-QuicSessionPool* HttpStreamPool::AttemptManager::quic_session_pool() {
+QuicSessionPool* HttpStreamPool::AttemptManager::quic_session_pool() const {
   return http_network_session()->quic_session_pool();
 }
 
@@ -774,7 +761,7 @@ bool HttpStreamPool::AttemptManager::IsStalledByPoolLimit() {
     return false;
   }
 
-  if (CanUseExistingQuicSession() || spdy_session_) {
+  if (CanUseExistingQuicSession() || HasAvailableSpdySession()) {
     CHECK_EQ(PendingPreconnectCount(), 0u);
     return false;
   }
@@ -792,10 +779,7 @@ bool HttpStreamPool::AttemptManager::IsStalledByPoolLimit() {
 }
 
 void HttpStreamPool::AttemptManager::OnRequiredHttp11() {
-  if (spdy_session_) {
-    spdy_session_.reset();
-    HandleFinalError(ERR_HTTP_1_1_REQUIRED);
-  }
+  HandleFinalError(ERR_HTTP_1_1_REQUIRED);
 }
 
 void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
@@ -1093,38 +1077,38 @@ bool HttpStreamPool::AttemptManager::
 
 bool HttpStreamPool::AttemptManager::
     CanUseExistingSpdySessionAfterEndpointChanges() {
-  if (spdy_session_) {
-    return true;
-  }
-
   if (!IsIpBasedPoolingEnabled() || !UsingTls()) {
     return false;
   }
 
+  if (HasAvailableSpdySession()) {
+    return true;
+  }
+
   for (const auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
-    spdy_session_ =
+    base::WeakPtr<SpdySession> spdy_session =
         spdy_session_pool()->FindMatchingIpSessionForServiceEndpoint(
             spdy_session_key(), endpoint,
             service_endpoint_request_->GetDnsAliasResults());
-    if (!spdy_session_) {
+    if (!spdy_session) {
       continue;
     }
-    CHECK(spdy_session_->IsAvailable());
+    CHECK(spdy_session->IsAvailable());
 
     net_log_.AddEvent(
         NetLogEventType::
             HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_SPDY_SESSION_MATCHED,
         [&] {
           base::Value::Dict dict;
-          spdy_session_->net_log().source().AddToEventParameters(dict);
+          spdy_session->net_log().source().AddToEventParameters(dict);
           return dict;
         });
     base::UmaHistogramTimes(
         "Net.HttpStreamPool.ExistingSpdySessionFoundTime",
         base::TimeTicks::Now() - dns_resolution_start_time_);
 
-    HandleSpdySessionReady(StreamSocketCloseReason::kUsingExistingSpdySession);
-    CreateSpdyStreamAndNotify();
+    HandleSpdySessionReady(spdy_session,
+                           StreamSocketCloseReason::kUsingExistingSpdySession);
     return true;
   }
 
@@ -1241,15 +1225,14 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
     return;
   }
 
-  if (spdy_session_) {
-    return;
-  }
-
   // There might be multiple pending jobs. Make attempts as much as needed
   // and allowed.
   size_t num_attempts = 0;
   const bool using_tls = UsingTls();
   while (IsConnectionAttemptReady()) {
+    // TODO(crbug.com/346835898): Change to DCHECK once we stabilize the
+    // implementation.
+    CHECK(!HasAvailableSpdySession());
     std::optional<IPEndPoint> ip_endpoint =
         GetIPEndPointToAttempt(exclude_ip_endpoint);
     if (!ip_endpoint.has_value()) {
@@ -1424,7 +1407,7 @@ bool HttpStreamPool::AttemptManager::ShouldThrottleAttemptForSpdy() const {
     return false;
   }
 
-  CHECK(!spdy_session_);
+  DCHECK(!HasAvailableSpdySession());
   return true;
 }
 
@@ -1701,14 +1684,17 @@ void HttpStreamPool::AttemptManager::CreateTextBasedStreamAndNotify(
   // `this` may be deleted.
 }
 
-void HttpStreamPool::AttemptManager::CreateSpdyStreamAndNotify() {
+bool HttpStreamPool::AttemptManager::HasAvailableSpdySession() const {
+  return spdy_session_pool()->HasAvailableSession(spdy_session_key(),
+                                                  /*is_websocket=*/false);
+}
+
+void HttpStreamPool::AttemptManager::CreateSpdyStreamAndNotify(
+    base::WeakPtr<SpdySession> spdy_session) {
   CHECK(!is_canceling_jobs_);
   CHECK(!is_failing_);
-  CHECK(spdy_session_);
-
-  // Note that spdy_session_->IsAvailable() may not be true. Just create
-  // HttpStreams even the session is not available to delegate retry to the
-  // upper layer.
+  CHECK(spdy_session);
+  CHECK(spdy_session->IsAvailable());
 
   std::set<std::string> dns_aliases =
       http_network_session()->spdy_session_pool()->GetDnsAliasesForSessionKey(
@@ -1716,7 +1702,7 @@ void HttpStreamPool::AttemptManager::CreateSpdyStreamAndNotify() {
 
   std::vector<std::unique_ptr<SpdyHttpStream>> streams(jobs_.size());
   std::ranges::generate(streams, [&] {
-    return std::make_unique<SpdyHttpStream>(spdy_session_, net_log().source(),
+    return std::make_unique<SpdyHttpStream>(spdy_session, net_log().source(),
                                             dns_aliases);
   });
 
@@ -1772,14 +1758,16 @@ void HttpStreamPool::AttemptManager::NotifyStreamReady(
 }
 
 void HttpStreamPool::AttemptManager::HandleSpdySessionReady(
+    base::WeakPtr<SpdySession> spdy_session,
     StreamSocketCloseReason refresh_group_reason) {
   CHECK(!group_->force_quic());
   CHECK(!is_failing_);
-  CHECK(spdy_session_);
-  CHECK(spdy_session_->IsAvailable());
+  CHECK(spdy_session);
+  CHECK(spdy_session->IsAvailable());
 
   group_->Refresh(kSwitchingToHttp2, refresh_group_reason);
   NotifyPreconnectsComplete(OK);
+  CreateSpdyStreamAndNotify(spdy_session);
 }
 
 void HttpStreamPool::AttemptManager::HandleQuicSessionReady(
@@ -1901,15 +1889,14 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
 
   const auto reuse_type = StreamSocketHandle::SocketReuseType::kUnused;
   if (stream_socket->GetNegotiatedProtocol() == NextProto::kProtoHTTP2) {
-    CHECK(!spdy_session_pool()->FindAvailableSession(
-        group_->spdy_session_key(), IsIpBasedPoolingEnabled(),
-        /*is_websocket=*/false, net_log()));
+    CHECK(!HasAvailableSpdySession());
     std::unique_ptr<HttpStreamPoolHandle> handle = group_->CreateHandle(
         std::move(stream_socket), reuse_type, std::move(connect_timing));
+    base::WeakPtr<SpdySession> spdy_session;
     int create_result =
         spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
             spdy_session_key(), std::move(handle), net_log(),
-            MultiplexedSessionCreationInitiator::kUnknown, &spdy_session_);
+            MultiplexedSessionCreationInitiator::kUnknown, &spdy_session);
     if (create_result != OK) {
       HandleAttemptFailure(std::move(in_flight_attempt), create_result);
       return;
@@ -1928,8 +1915,8 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
         "Net.HttpStreamPool.NewSpdySessionEstablishTime",
         base::TimeTicks::Now() - in_flight_attempt->start_time());
 
-    HandleSpdySessionReady(StreamSocketCloseReason::kSpdySessionCreated);
-    CreateSpdyStreamAndNotify();
+    HandleSpdySessionReady(spdy_session,
+                           StreamSocketCloseReason::kSpdySessionCreated);
     return;
   }
 

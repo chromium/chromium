@@ -27,6 +27,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -1134,7 +1135,7 @@ void FlagsState::SetFlags(FlagsStorage* flags_storage,
           entry->StateForOption(feature_option);
       bool feature_value =
           (feature_state == FeatureEntry::FeatureState::ENABLED);
-      std::string feature_value_string = (feature_value ? "true" : "false");
+      std::string feature_value_string = base::ToString(feature_value);
       features[feature_name] = feature_value_string;
 
       if (entry->type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE) {

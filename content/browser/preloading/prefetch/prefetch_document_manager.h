@@ -69,7 +69,6 @@ class CONTENT_EXPORT PrefetchDocumentManager
   void PrefetchUrl(const GURL& url,
                    const PrefetchType& prefetch_type,
                    const PreloadingPredictor& enacting_predictor,
-                   PreloadingType planned_max_preloading_type,
                    const blink::mojom::Referrer& referrer,
                    const network::mojom::NoVarySearchPtr& no_vary_search_hint,
                    scoped_refptr<PreloadPipelineInfo> preload_pipeline_info);

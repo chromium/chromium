@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "build/build_config.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/core/browser/cookie_settings_util.h"
@@ -238,8 +239,9 @@ std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
                          base::NumberToString(profile_mode_mask).c_str()));
   bool is_mirror_enabled =
       account_consistency_ == AccountConsistencyMethod::kMirror;
-  parts.push_back(base::StringPrintf("%s=%s", kEnableAccountConsistencyAttrName,
-                                     is_mirror_enabled ? "true" : "false"));
+  parts.push_back(
+      base::StringPrintf("%s=%s", kEnableAccountConsistencyAttrName,
+                         base::ToString(is_mirror_enabled).c_str()));
   switch (is_child_account) {
     case Tribool::kTrue:
       parts.push_back(base::StringPrintf("%s=%s", kSupervisedAttrName, "true"));

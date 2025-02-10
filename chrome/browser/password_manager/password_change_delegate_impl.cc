@@ -24,6 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "ui/base/window_open_disposition.h"
@@ -208,6 +209,8 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
 PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
   base::UmaHistogramEnumeration(kFinalPasswordChangeStatusHistogram,
                                 current_state_);
+  base::UmaHistogramBoolean(kWasPasswordChangeNewTabFocused,
+                            was_password_change_tab_focused_);
   if (auto logger = GetLoggerIfAvailable(originator_)) {
     logger->LogBoolean(
         BrowserSavePasswordProgressLogger::STRING_PASSWORD_CHANGE_FINISHED,
@@ -286,6 +289,14 @@ void PasswordChangeDelegateImpl::WebContentsDestroyed() {
   // PasswordFormManager keeps raw pointers to PasswordManagerClient reset it
   // immediately to avoid keeping dangling pointer.
   submission_verifier_.reset();
+}
+
+void PasswordChangeDelegateImpl::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (!was_password_change_tab_focused_ &&
+      visibility == content::Visibility::VISIBLE) {
+    was_password_change_tab_focused_ = true;
+  }
 }
 
 bool PasswordChangeDelegateImpl::IsPasswordChangeOngoing(

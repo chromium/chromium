@@ -126,7 +126,7 @@ FontHeight ComputeEmHeight(const LogicalLineItem& line_item) {
 
 }  // anonymous namespace
 
-RubyItemIndexes ParseRubyInInlineItems(const HeapVector<InlineItem>& items,
+RubyItemIndexes ParseRubyInInlineItems(const InlineItems& items,
                                        wtf_size_t start_item_index) {
   CHECK_LT(start_item_index, items.size());
   CHECK_EQ(items[start_item_index].Type(), InlineItem::kOpenRubyColumn);

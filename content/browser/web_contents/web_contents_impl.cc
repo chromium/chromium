@@ -50,7 +50,7 @@
 #include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "components/attribution_reporting/features.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/input/cursor_manager.h"
@@ -11513,11 +11513,12 @@ void WebContentsImpl::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
     bool animate,
-    const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info) {
+    const std::optional<cc::BrowserControlsOffsetTagModifications>&
+        offset_tag_modifications) {
   // Browser controls should be synchronised with the scroll state. Therefore,
   // they are controlled from the renderer by the main RenderFrame(Host).
   GetPrimaryPage().UpdateBrowserControlsState(constraints, current, animate,
-                                              offset_tags_info);
+                                              offset_tag_modifications);
 }
 
 void WebContentsImpl::SetV8CompileHints(base::ReadOnlySharedMemoryRegion data) {
@@ -11655,7 +11656,8 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
       should_warm_up_compositor, should_prepare_paint_tree,
       std::move(url_match_predicate),
       std::move(prerender_navigation_handle_callback),
-      base::MakeRefCounted<PreloadPipelineInfo>());
+      base::MakeRefCounted<PreloadPipelineInfo>(
+          /*planned_max_preloading_type=*/PreloadingType::kPrerender));
 #if BUILDFLAG(IS_ANDROID)
   attributes.additional_headers = std::move(additional_headers);
 #else
@@ -11844,6 +11846,9 @@ void WebContentsImpl::GetMediaCaptureRawDeviceIdsOpened(
 }
 
 void WebContentsImpl::WarmUpAndroidSpareRenderer() {
+  if (GetBrowserContext()->ShutdownStarted()) {
+    return;
+  }
   int renderer_timeout_seconds =
       features::kAndroidSpareRendererTimeoutSeconds.Get();
   if (renderer_timeout_seconds < 0) {

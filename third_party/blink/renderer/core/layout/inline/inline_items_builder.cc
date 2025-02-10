@@ -27,7 +27,7 @@ class HTMLAreaElement;
 template <typename MappingBuilder>
 InlineItemsBuilderTemplate<MappingBuilder>::InlineItemsBuilderTemplate(
     LayoutBlockFlow* block_flow,
-    HeapVector<InlineItem>* items,
+    InlineItems* items,
     const String& previous_text_content,
     const SvgTextChunkOffsets* chunk_offsets)
     : block_flow_(block_flow),
@@ -159,7 +159,7 @@ bool ShouldRemoveNewline(const StringBuilder& before,
                                  after_style);
 }
 
-inline InlineItem& AppendItem(HeapVector<InlineItem>* items,
+inline InlineItem& AppendItem(InlineItems* items,
                               InlineItem::InlineItemType type,
                               unsigned start,
                               unsigned end,
@@ -210,7 +210,7 @@ inline bool MoveToEndOfCollapsibleSpaces(const StringView& string,
 // Find the last item to compute collapsing with. Opaque items such as
 // open/close or bidi controls are ignored.
 // Returns nullptr if there were no previous items.
-InlineItem* LastItemToCollapseWith(HeapVector<InlineItem>* items) {
+InlineItem* LastItemToCollapseWith(InlineItems* items) {
   for (auto& item : base::Reversed(*items)) {
     if (item.EndCollapseType() != InlineItem::kOpaqueToCollapsing) {
       return &item;
@@ -263,8 +263,8 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::BoxInfo::
 }
 
 template <typename MappingBuilder>
-void InlineItemsBuilderTemplate<MappingBuilder>::BoxInfo::
-    SetShouldCreateBoxFragment(HeapVector<InlineItem>* items) {
+void InlineItemsBuilderTemplate<
+    MappingBuilder>::BoxInfo::SetShouldCreateBoxFragment(InlineItems* items) {
   DCHECK(!should_create_box_fragment);
   should_create_box_fragment = true;
   (*items)[item_index].SetShouldCreateBoxFragment();

@@ -2234,29 +2234,6 @@ inline void Element::SetTagNameForCreateElementNS(
   tag_name_ = tag_name;
 }
 
-inline bool IsShadowHost(const Node* node) {
-  return node && node->GetShadowRoot();
-}
-
-inline bool IsShadowHost(const Node& node) {
-  return node.GetShadowRoot();
-}
-
-inline bool IsShadowHost(const Element* element) {
-  return element && element->GetShadowRoot();
-}
-
-inline bool IsShadowHost(const Element& element) {
-  return element.GetShadowRoot();
-}
-
-inline bool IsAtShadowBoundary(const Element* element) {
-  if (!element)
-    return false;
-  ContainerNode* parent_node = element->parentNode();
-  return parent_node && parent_node->IsShadowRoot();
-}
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_H_

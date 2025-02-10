@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "base/version_info/channel.h"
@@ -358,7 +359,7 @@ bool FamilyLinkSettingsState::ResetIntent::Check(
     const FamilyLinkSettingsState::Services& services) const {
   bool result = UrlFiltersAreEmpty(services);
   LOG(WARNING) << "FamilyLinkSettingsState::ResetIntent = "
-               << (result ? "true" : "false");
+               << base::ToString(result);
   return result;
 }
 
@@ -410,7 +411,7 @@ bool FamilyLinkSettingsState::DefineManualSiteListIntent::Check(
     const FamilyLinkSettingsState::Services& services) const {
   bool result = UrlFiltersAreConfigured(services, allowed_url_, blocked_url_);
   LOG(WARNING) << "FamilyLinkSettingsState::DefineManualSiteListIntent = "
-               << (result ? "true" : "false");
+               << base::ToString(result);
   return result;
 }
 
@@ -463,7 +464,7 @@ bool FamilyLinkSettingsState::ToggleIntent::Check(
     if (!toggle_has_expected_value) {
       LOG(WARNING) << "FamilyLinkSettingsState::ToggleIntent[" +
                           GetToggleAbbrev(toggle.type) + "] = "
-                   << (toggle_has_expected_value ? "true" : "false");
+                   << base::ToString(toggle_has_expected_value);
     }
     result = result && toggle_has_expected_value;
   }

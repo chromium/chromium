@@ -313,6 +313,7 @@ void RecorderAppUI::GetModelInfo(on_device_model::mojom::FormatFeature feature,
 
   if (base::FeatureList::IsEnabled(ash::features::kConchLargeModel)) {
     model_info->input_token_limit = kInputTokenXsModelLimit;
+    model_info->is_large_model = true;
 
     if (feature == on_device_model::mojom::FormatFeature::kAudioSummary) {
       model_info->model_id =
@@ -323,6 +324,7 @@ void RecorderAppUI::GetModelInfo(on_device_model::mojom::FormatFeature feature,
     }
   } else {
     model_info->input_token_limit = kInputTokenXxsModelLimit;
+    model_info->is_large_model = false;
 
     if (feature == on_device_model::mojom::FormatFeature::kAudioSummary) {
       model_info->model_id =

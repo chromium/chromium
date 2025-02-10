@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "components/payments/core/error_strings.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/payment_address.h"
@@ -148,7 +149,7 @@ void PaymentHandlerHost::UpdateWith(
         data.emplace(prefix + " Label", option->label);
         data.emplace(prefix + " Amount Currency", option->amount->currency);
         data.emplace(prefix + " Amount Value", option->amount->value);
-        data.emplace(prefix + " Selected", option->selected ? "true" : "false");
+        data.emplace(prefix + " Selected", base::ToString(option->selected));
       }
     }
 

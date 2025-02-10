@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1698,7 +1699,7 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
       {features::kAutofillAblationStudyAblationWeightPerMilleParam.name,
        "1000"},
       {features::kAutofillAblationStudyIsDryRun.name,
-       GetParam().ablation_study_is_dry_run ? "true" : "false"}};
+       base::ToString(GetParam().ablation_study_is_dry_run)}};
   base::test::ScopedFeatureList scoped_feature_list;
   if (GetParam().enable_ablation_study_for_addresses) {
     scoped_feature_list.InitAndEnableFeatureWithParameters(

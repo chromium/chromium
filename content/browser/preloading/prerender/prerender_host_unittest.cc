@@ -291,7 +291,8 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
         /*should_warm_up_compositor=*/false,
         /*should_prepare_paint_tree=*/false, std::move(url_match_predicate),
         /*prerender_navigation_handle_callback=*/{},
-        base::MakeRefCounted<PreloadPipelineInfo>());
+        base::MakeRefCounted<PreloadPipelineInfo>(
+            /*planned_max_preloading_type=*/PreloadingType::kPrerender));
   }
 
   void ExpectFinalStatus(PrerenderFinalStatus status) {
@@ -685,7 +686,6 @@ TEST_F(PrerenderHostTest, CanceledPrerenderCannotBeReadyForActivation) {
   PreloadingAttempt* preloading_attempt = preloading_data->AddPreloadingAttempt(
       content_preloading_predictor::kSpeculationRules,
       PreloadingType::kPrerender, std::move(same_url_matcher),
-      /*planned_max_preloading_type=*/std::nullopt,
       contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   const FrameTreeNodeId prerender_frame_tree_node_id =

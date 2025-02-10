@@ -78,7 +78,8 @@ class PrefetchContainerTestBase : public RenderViewHostTestHarness {
                      blink::mojom::SpeculationEagerness::kEager),
         blink::mojom::Referrer(),
         /*no_vary_search_hint=*/std::nullopt, prefetch_document_manager,
-        base::MakeRefCounted<PreloadPipelineInfo>());
+        base::MakeRefCounted<PreloadPipelineInfo>(
+            /*planned_max_preloading_type=*/PreloadingType::kPrefetch));
   }
 
   std::unique_ptr<PrefetchContainer> CreateEmbedderPrefetchContainer(
@@ -283,7 +284,8 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer) {
       blink::mojom::Referrer(),
       /*no_vary_search_hint=*/std::nullopt,
       /*prefetch_document_manager=*/nullptr,
-      base::MakeRefCounted<PreloadPipelineInfo>());
+      base::MakeRefCounted<PreloadPipelineInfo>(
+          /*planned_max_preloading_type=*/PreloadingType::kPrefetch));
 
   EXPECT_EQ(prefetch_container.GetReferringRenderFrameHostId(),
             main_rfh()->GetGlobalId());
@@ -891,7 +893,8 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms) {
         blink::mojom::Referrer(),
         /*no_vary_search_hint=*/std::nullopt,
         /*prefetch_document_manager=*/nullptr,
-        base::MakeRefCounted<PreloadPipelineInfo>());
+        base::MakeRefCounted<PreloadPipelineInfo>(
+            /*planned_max_preloading_type=*/PreloadingType::kPrefetch));
 
     prefetch_container.OnGetPrefetchToServe(test_case.block_until_head);
     if (test_case.block_until_head) {
@@ -966,7 +969,8 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms2) {
         blink::mojom::Referrer(),
         /*no_vary_search_hint=*/std::nullopt,
         /*prefetch_document_manager=*/nullptr,
-        base::MakeRefCounted<PreloadPipelineInfo>());
+        base::MakeRefCounted<PreloadPipelineInfo>(
+            /*planned_max_preloading_type=*/PreloadingType::kPrefetch));
 
     prefetch_container.OnUnregisterCandidate(
         GURL("https://test.com/"), test_case.is_served,

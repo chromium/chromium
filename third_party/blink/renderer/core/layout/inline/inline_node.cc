@@ -154,7 +154,7 @@ class ReusingTextShaper final {
 
  public:
   ReusingTextShaper(InlineItemsData* data,
-                    const HeapVector<InlineItem>* reusable_items,
+                    const InlineItems* reusable_items,
                     const bool allow_shape_cache)
       : data_(*data),
         reusable_items_(reusable_items),
@@ -291,7 +291,7 @@ class ReusingTextShaper final {
   }
 
   InlineItemsData& data_;
-  const HeapVector<InlineItem>* const reusable_items_;
+  const InlineItems* const reusable_items_;
   HarfBuzzShaper shaper_;
   ShapeOptions options_;
   const bool allow_shape_cache_;
@@ -703,7 +703,7 @@ class InlineNodeDataEditor final {
     DCHECK_LE(start_offset, new_length - end_match_length);
     const unsigned end_offset = old_length - end_match_length;
     DCHECK_LE(start_offset, end_offset);
-    HeapVector<InlineItem> items;
+    InlineItems items;
     ClearCollectionScope clear_scope(&items);
 
     // +3 for before and after replaced text.
@@ -898,7 +898,7 @@ class InlineNodeDataEditor final {
         item->shape_result_->CopyAdjustedOffset(item->start_offset_);
   }
 
-  void VerifyItems(const HeapVector<InlineItem>& items) const {
+  void VerifyItems(const InlineItems& items) const {
 #if DCHECK_IS_ON()
     if (items.empty())
       return;
@@ -1011,8 +1011,8 @@ void InlineNode::ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
   // InlineItems and text content built by |builder|, because they are
   // already there in InlineNodeData. For efficiency, we should make
   // |builder| not construct items and text content.
-  HeapVector<InlineItem> items;
-  ClearCollectionScope<HeapVector<InlineItem>> clear_scope(&items);
+  InlineItems items;
+  ClearCollectionScope<InlineItems> clear_scope(&items);
   items.reserve(EstimateInlineItemsCount(*layout_block_flow));
   InlineItemsBuilderForOffsetMapping builder(layout_block_flow, &items,
                                              data->text_content, chunk_offsets);
@@ -1107,8 +1107,8 @@ const SvgTextChunkOffsets* InlineNode::FindSvgTextChunks(
   // Build InlineItems and OffsetMapping first.  They are used only by
   // SVGTextLayoutAttributesBuilder, and are discarded because they might
   // be different from final ones.
-  HeapVector<InlineItem> items;
-  ClearCollectionScope<HeapVector<InlineItem>> clear_scope(&items);
+  InlineItems items;
+  ClearCollectionScope<InlineItems> clear_scope(&items);
   items.reserve(EstimateInlineItemsCount(block));
   InlineItemsBuilderForOffsetMapping items_builder(&block, &items);
   OffsetMappingBuilder& mapping_builder =
@@ -1229,7 +1229,7 @@ void InlineNode::SegmentFontOrientation(InlineNodeData* data) const {
     return;
   }
 
-  HeapVector<InlineItem>& items = data->items;
+  InlineItems& items = data->items;
   if (items.empty())
     return;
   String& text_content = data->text_content;
@@ -1288,7 +1288,7 @@ void InlineNode::SegmentBidiRuns(InlineNodeData* data) const {
     return;
   }
 
-  HeapVector<InlineItem>& items = data->items;
+  InlineItems& items = data->items;
   unsigned item_index = 0;
   for (unsigned start = 0; start < data->text_content.length();) {
     UBiDiLevel level;
@@ -1311,7 +1311,7 @@ void InlineNode::SegmentBidiRuns(InlineNodeData* data) const {
 bool InlineNode::IsNGShapeCacheAllowed(
     const String& text_content,
     const Font* override_font,
-    const HeapVector<InlineItem>& items,
+    const InlineItems& items,
     ShapeResultSpacing<String>& spacing) const {
   if (!RuntimeEnabledFeatures::LayoutNGShapeCacheEnabled()) {
     return false;
@@ -1353,7 +1353,7 @@ bool InlineNode::IsNGShapeCacheAllowed(
 
 void InlineNode::ShapeText(InlineItemsData* data,
                            const String* previous_text,
-                           const HeapVector<InlineItem>* previous_items,
+                           const InlineItems* previous_items,
                            const Font* override_font) const {
   TRACE_EVENT0("fonts", "InlineNode::ShapeText");
   base::ScopedClosureRunner scoped_closure_runner(WTF::BindOnce(
@@ -1367,7 +1367,7 @@ void InlineNode::ShapeText(InlineItemsData* data,
                                         : nullptr)));
 
   const String& text_content = data->text_content;
-  HeapVector<InlineItem>* items = &data->items;
+  InlineItems* items = &data->items;
 
   ShapeResultSpacing<String> spacing(text_content, IsSvgText());
   InlineTextAutoSpace auto_space(*data);
@@ -1594,7 +1594,7 @@ void InlineNode::ShapeText(InlineItemsData* data,
 #endif
 }
 
-// Create HeapVector<InlineItem> with :first-line rules applied if needed.
+// Create InlineItems with :first-line rules applied if needed.
 void InlineNode::ShapeTextForFirstLineIfNeeded(InlineNodeData* data) const {
   // First check if the document has any :first-line rules.
   DCHECK(!data->first_line_items_);
@@ -1649,7 +1649,7 @@ void InlineNode::ShapeTextForFirstLineIfNeeded(InlineNodeData* data) const {
 void InlineNode::ShapeTextIncludingFirstLine(
     InlineNodeData* data,
     const String* previous_text,
-    const HeapVector<InlineItem>* previous_items) const {
+    const InlineItems* previous_items) const {
   ShapeText(data, previous_text, previous_items);
   ShapeTextForFirstLineIfNeeded(data);
 }
@@ -1658,7 +1658,7 @@ void InlineNode::AssociateItemsWithInlines(InlineNodeData* data) const {
 #if DCHECK_IS_ON()
   HeapHashSet<Member<LayoutObject>> associated_objects;
 #endif
-  HeapVector<InlineItem>& items = data->items;
+  InlineItems& items = data->items;
   WTF::wtf_size_t size = items.size();
   for (WTF::wtf_size_t i = 0; i != size;) {
     LayoutObject* object = items[i].GetLayoutObject();
@@ -2121,7 +2121,7 @@ bool InlineNode::UseFirstLineStyle() const {
 
 void InlineNode::CheckConsistency() const {
 #if DCHECK_IS_ON()
-  const HeapVector<InlineItem>& items = Data().items;
+  const InlineItems& items = Data().items;
   for (const InlineItem& item : items) {
     DCHECK(!item.GetLayoutObject() || !item.Style() ||
            item.Style() == item.GetLayoutObject()->Style());

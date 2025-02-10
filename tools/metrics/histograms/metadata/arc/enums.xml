@@ -592,6 +592,25 @@ chromium-metrics-reviews@google.com.
   <int value="24" label="App started from installer"/>
 </enum>
 
+<enum name="ArcVerifiedBootHashResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid verified boot hash"/>
+  <int value="2" label="Error while reading hash file"/>
+</enum>
+
+<enum name="ArcVerifiedBootKeyResult">
+  <int value="0" label="Success dev key"/>
+  <int value="1" label="Success prod key"/>
+  <int value="2" label="Debugd error"/>
+  <int value="3" label="Verified boot log error"/>
+</enum>
+
+<enum name="ArcVerifiedBootStateResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Null cros system"/>
+  <int value="2" label="Invalid cros debug value"/>
+</enum>
+
 <enum name="ArcVmDataMigrationAccessDeniedAtOpenFileFailureType">
   <int value="0" label="Other"/>
   <int value="1" label="References parent"/>

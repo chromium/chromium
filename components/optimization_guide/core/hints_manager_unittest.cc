@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -138,8 +139,7 @@ SetUpDeferStartupActiveTabsHintsFetch(bool is_enabled) {
       std::make_unique<base::test::ScopedFeatureList>();
   auto params = GetOptimizationHintsDefaultFeatureParams();
 
-  params["defer_startup_active_tabs_hints_fetch"] =
-      is_enabled ? "true" : "false";
+  params["defer_startup_active_tabs_hints_fetch"] = base::ToString(is_enabled);
   scoped_feature_list->InitAndEnableFeatureWithParameters(
       features::kOptimizationHints, params);
   return scoped_feature_list;

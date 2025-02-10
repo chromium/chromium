@@ -56,9 +56,7 @@
 #include "chromeos/ash/experiences/arc/intent_helper/intent_filter.h"
 #include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom-shared.h"
 #include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
-#include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #include "extensions/common/manifest_handlers/action_handlers_handler.h"
-#include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -848,129 +846,6 @@ apps::IntentFilterPtr CreateIntentFilterForArc(
 
   return intent_filter;
 }
-
-crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
-    const apps::IntentPtr& app_service_intent,
-    Profile* profile) {
-  auto crosapi_intent = crosapi::mojom::Intent::New();
-  crosapi_intent->action = app_service_intent->action;
-  if (app_service_intent->url.has_value()) {
-    crosapi_intent->url = app_service_intent->url.value();
-  }
-  if (app_service_intent->mime_type.has_value()) {
-    crosapi_intent->mime_type = app_service_intent->mime_type.value();
-  }
-  if (app_service_intent->share_text.has_value()) {
-    crosapi_intent->share_text = app_service_intent->share_text.value();
-  }
-  if (app_service_intent->share_title.has_value()) {
-    crosapi_intent->share_title = app_service_intent->share_title.value();
-  }
-  if (!app_service_intent->files.empty() && profile) {
-    std::vector<crosapi::mojom::IntentFilePtr> crosapi_files;
-    for (const auto& file : app_service_intent->files) {
-      if (file->url.SchemeIsFile()) {
-        auto crosapi_file = crosapi::mojom::IntentFile::New();
-        net::FileURLToFilePath(file->url, &crosapi_file->file_path);
-        crosapi_file->mime_type = file->mime_type;
-        crosapi_files.push_back(std::move(crosapi_file));
-      } else if (file->url.SchemeIsFileSystem()) {
-        auto file_system_url = apps::GetFileSystemURL(profile, file->url);
-        if (file_system_url.is_valid()) {
-          base::FilePath path =
-              file_system_url.TypeImpliesPathIsReal()
-                  ? file_system_url.path()
-                  : fusebox::Server::SubstituteFuseboxFilePath(file_system_url);
-          if (!path.empty()) {
-            auto crosapi_file = crosapi::mojom::IntentFile::New();
-            crosapi_file->file_path = std::move(path);
-            crosapi_file->mime_type = file->mime_type;
-            crosapi_files.push_back(std::move(crosapi_file));
-          }
-        }
-      }
-    }
-    crosapi_intent->files = std::move(crosapi_files);
-  }
-  if (app_service_intent->activity_name.has_value()) {
-    crosapi_intent->activity_name = app_service_intent->activity_name.value();
-  }
-  if (app_service_intent->data.has_value()) {
-    crosapi_intent->data = app_service_intent->data.value();
-  }
-  if (app_service_intent->ui_bypassed.has_value()) {
-    crosapi_intent->ui_bypassed = app_service_intent->ui_bypassed.value();
-  }
-  if (!app_service_intent->extras.empty()) {
-    crosapi_intent->extras = app_service_intent->extras;
-  }
-
-  return crosapi_intent;
-}
-
-apps::IntentPtr CreateAppServiceIntentFromCrosapi(
-    const crosapi::mojom::IntentPtr& crosapi_intent,
-    Profile* profile) {
-  auto app_service_intent =
-      std::make_unique<apps::Intent>(crosapi_intent->action);
-  if (crosapi_intent->url.has_value()) {
-    app_service_intent->url = crosapi_intent->url.value();
-  }
-  if (crosapi_intent->mime_type.has_value()) {
-    app_service_intent->mime_type = crosapi_intent->mime_type.value();
-  }
-  if (crosapi_intent->share_text.has_value()) {
-    app_service_intent->share_text = crosapi_intent->share_text.value();
-  }
-  if (crosapi_intent->share_title.has_value()) {
-    app_service_intent->share_title = crosapi_intent->share_title.value();
-  }
-  if (crosapi_intent->files.has_value() && profile) {
-    std::vector<apps::IntentFilePtr> intent_files;
-    for (const auto& file : crosapi_intent->files.value()) {
-      auto file_url = apps::GetFileSystemUrl(profile, file->file_path);
-      if (file_url.is_empty()) {
-        continue;
-      }
-      auto intent_file = std::make_unique<apps::IntentFile>(file_url);
-      intent_file->mime_type = file->mime_type;
-
-      intent_files.push_back(std::move(intent_file));
-    }
-    if (intent_files.size() > 0) {
-      app_service_intent->files = std::move(intent_files);
-    }
-  }
-  if (crosapi_intent->activity_name.has_value()) {
-    app_service_intent->activity_name = crosapi_intent->activity_name.value();
-  }
-  if (crosapi_intent->data.has_value()) {
-    app_service_intent->data = crosapi_intent->data.value();
-  }
-  if (crosapi_intent->ui_bypassed.has_value()) {
-    app_service_intent->ui_bypassed = crosapi_intent->ui_bypassed.value();
-  }
-  if (crosapi_intent->extras.has_value()) {
-    app_service_intent->extras = crosapi_intent->extras.value();
-  }
-
-  return app_service_intent;
-}
-
-crosapi::mojom::IntentPtr CreateCrosapiIntentForViewFiles(
-    std::vector<base::FilePath> file_paths) {
-  auto intent = crosapi::mojom::Intent::New();
-  intent->action = kIntentActionView;
-  std::vector<crosapi::mojom::IntentFilePtr> crosapi_files;
-  for (const auto& file_path : file_paths) {
-    auto crosapi_file = crosapi::mojom::IntentFile::New();
-    crosapi_file->file_path = file_path;
-    crosapi_files.push_back(std::move(crosapi_file));
-  }
-  intent->files = std::move(crosapi_files);
-  return intent;
-}
-
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps_util

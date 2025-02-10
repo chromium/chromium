@@ -18,7 +18,6 @@
 #include "ui/display/types/display_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
@@ -210,97 +209,6 @@ TEST_F(LaunchUtilsTest, GetLaunchFilesFromCommandLine_CustomProtocol) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Verifies that convert params (with no override url, intent, files) to crosapi
-// and back works.
-TEST_F(LaunchUtilsTest, ConvertToCrosapi) {
-  auto container = apps::LaunchContainer::kLaunchContainerWindow;
-  auto disposition = WindowOpenDisposition::NEW_WINDOW;
-  const int64_t kDisplayId = 1;
-  auto params = CreateLaunchParams(container, disposition, false, kDisplayId);
-
-  auto crosapi_params = apps::ConvertLaunchParamsToCrosapi(params, &profile_);
-  auto converted_params =
-      apps::ConvertCrosapiToLaunchParams(crosapi_params, &profile_);
-  EXPECT_EQ(params.app_id, converted_params.app_id);
-  EXPECT_EQ(params.container, converted_params.container);
-  EXPECT_EQ(params.disposition, converted_params.disposition);
-  EXPECT_EQ(params.launch_source, converted_params.launch_source);
-  EXPECT_EQ(params.display_id, converted_params.display_id);
-}
-
-// Verifies that convert params with override url to crosapi and back works.
-TEST_F(LaunchUtilsTest, ConvertToCrosapiUrl) {
-  auto container = apps::LaunchContainer::kLaunchContainerWindow;
-  auto disposition = WindowOpenDisposition::NEW_WINDOW;
-  const int64_t kDisplayId = 2;
-  auto params = CreateLaunchParams(container, disposition, false, kDisplayId);
-  params.override_url = GURL("abc.example.com");
-
-  auto crosapi_params = apps::ConvertLaunchParamsToCrosapi(params, &profile_);
-  auto converted_params =
-      apps::ConvertCrosapiToLaunchParams(crosapi_params, &profile_);
-  EXPECT_EQ(params.app_id, converted_params.app_id);
-  EXPECT_EQ(params.container, converted_params.container);
-  EXPECT_EQ(params.disposition, converted_params.disposition);
-  EXPECT_EQ(params.launch_source, converted_params.launch_source);
-  EXPECT_EQ(params.override_url, converted_params.override_url);
-  EXPECT_EQ(params.display_id, converted_params.display_id);
-}
-
-// Verifies that convert params with files to crosapi and back works.
-TEST_F(LaunchUtilsTest, ConvertToCrosapiFiles) {
-  auto container = apps::LaunchContainer::kLaunchContainerWindow;
-  auto disposition = WindowOpenDisposition::NEW_WINDOW;
-  const int64_t kDisplayId = 3;
-  auto params = CreateLaunchParams(container, disposition, false, kDisplayId);
-  params.launch_files.emplace_back("root");
-
-  auto crosapi_params = apps::ConvertLaunchParamsToCrosapi(params, &profile_);
-  auto converted_params =
-      apps::ConvertCrosapiToLaunchParams(crosapi_params, &profile_);
-  EXPECT_EQ(params.app_id, converted_params.app_id);
-  EXPECT_EQ(params.container, converted_params.container);
-  EXPECT_EQ(params.disposition, converted_params.disposition);
-  EXPECT_EQ(params.launch_source, converted_params.launch_source);
-  EXPECT_EQ(params.display_id, converted_params.display_id);
-  EXPECT_EQ(params.launch_files, converted_params.launch_files);
-}
-
-// Verifies that convert params with intent to crosapi and back works.
-TEST_F(LaunchUtilsTest, ConvertToCrosapiIntent) {
-  auto container = apps::LaunchContainer::kLaunchContainerWindow;
-  auto disposition = WindowOpenDisposition::NEW_WINDOW;
-  const int64_t kDisplayId = 4;
-  auto params = CreateLaunchParams(container, disposition, false, kDisplayId);
-  params.intent = std::make_unique<apps::Intent>(apps_util::kIntentActionView,
-                                                 GURL("abc.example.com"));
-
-  auto crosapi_params = apps::ConvertLaunchParamsToCrosapi(params, &profile_);
-  auto converted_params =
-      apps::ConvertCrosapiToLaunchParams(crosapi_params, &profile_);
-  EXPECT_EQ(params.app_id, converted_params.app_id);
-  EXPECT_EQ(params.container, converted_params.container);
-  EXPECT_EQ(params.disposition, converted_params.disposition);
-  EXPECT_EQ(params.launch_source, converted_params.launch_source);
-  EXPECT_EQ(params.display_id, converted_params.display_id);
-  EXPECT_EQ(*params.intent, *converted_params.intent);
-}
-
-// Verifies that convert params from crosapi with incomplete params works.
-TEST_F(LaunchUtilsTest, FromCrosapiIncomplete) {
-  auto params = crosapi::mojom::LaunchParams::New();
-  params->app_id = "aaaa";
-  params->launch_source = apps::LaunchSource::kFromIntentUrl;
-
-  auto converted_params = apps::ConvertCrosapiToLaunchParams(params, &profile_);
-
-  EXPECT_EQ(params->app_id, converted_params.app_id);
-  EXPECT_EQ(apps::LaunchContainer::kLaunchContainerNone,
-            converted_params.container);
-  EXPECT_EQ(WindowOpenDisposition::UNKNOWN, converted_params.disposition);
-  EXPECT_EQ(apps::LaunchSource::kFromIntentUrl, converted_params.launch_source);
-}
-
 // Fake AppPublisher for tracking app launches.
 class FakePublisher : public AppPublisher {
  public:

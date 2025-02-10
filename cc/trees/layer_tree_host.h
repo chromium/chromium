@@ -33,7 +33,7 @@
 #include "cc/benchmarks/micro_benchmark.h"
 #include "cc/benchmarks/micro_benchmark_controller.h"
 #include "cc/cc_export.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/input/compositor_input_interfaces.h"
 #include "cc/input/event_listener_properties.h"
@@ -406,7 +406,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
       BrowserControlsState constraints,
       BrowserControlsState current,
       bool animate,
-      base::optional_ref<const BrowserControlsOffsetTagsInfo> offset_tags_info);
+      base::optional_ref<const BrowserControlsOffsetTagModifications>
+          offset_tag_modifications);
 
   // Returns the delegate that the input handler uses to communicate with the
   // LayerTreeHostImpl on the compositor thread. Must be dereferenced only on

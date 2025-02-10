@@ -873,25 +873,25 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   op_support_limits->setReverse(reverse);
 
   MLScatterSupportLimits* scatter_elements = MLScatterSupportLimits::Create();
-  scatter_elements->setInput(SupportedDataTypesToDataTypeLimits(
+  scatter_elements->setInput(SupportedTensorLimitsToTensorLimits(
       data_type_limits.scatter_elements_input));
-  scatter_elements->setIndices(SupportedDataTypesToDataTypeLimits(
+  scatter_elements->setIndices(SupportedTensorLimitsToTensorLimits(
       data_type_limits.scatter_elements_indices));
-  scatter_elements->setUpdates(SupportedDataTypesToDataTypeLimits(
+  scatter_elements->setUpdates(SupportedTensorLimitsToTensorLimits(
       data_type_limits.scatter_elements_input));
   scatter_elements->setOutput(SupportedDataTypesToDataTypeLimits(
-      data_type_limits.scatter_elements_input));
+      data_type_limits.scatter_elements_input.data_types));
   op_support_limits->setScatterElements(scatter_elements);
 
   MLScatterSupportLimits* scatter_nd = MLScatterSupportLimits::Create();
   scatter_nd->setInput(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.scatter_nd_input));
+      SupportedTensorLimitsToTensorLimits(data_type_limits.scatter_nd_input));
   scatter_nd->setIndices(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.scatter_nd_indices));
+      SupportedTensorLimitsToTensorLimits(data_type_limits.scatter_nd_indices));
   scatter_nd->setUpdates(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.scatter_nd_input));
-  scatter_nd->setOutput(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.scatter_nd_input));
+      SupportedTensorLimitsToTensorLimits(data_type_limits.scatter_nd_updates));
+  scatter_nd->setOutput(SupportedDataTypesToDataTypeLimits(
+      data_type_limits.scatter_nd_input.data_types));
   op_support_limits->setScatterND(scatter_nd);
 
   MLSingleInputSupportLimits* sigmoid = MLSingleInputSupportLimits::Create();

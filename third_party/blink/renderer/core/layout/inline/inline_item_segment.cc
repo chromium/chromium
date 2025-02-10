@@ -231,7 +231,7 @@ void InlineItemSegments::Split(unsigned index, unsigned offset) {
                    InlineItemSegment(end_offset, segment.segment_data_));
 }
 
-void InlineItemSegments::ComputeItemIndex(const HeapVector<InlineItem>& items) {
+void InlineItemSegments::ComputeItemIndex(const InlineItems& items) {
   DCHECK_EQ(items.back().EndOffset(), EndOffset());
   unsigned segment_index = 0;
   const InlineItemSegment* segment = segments_.data();

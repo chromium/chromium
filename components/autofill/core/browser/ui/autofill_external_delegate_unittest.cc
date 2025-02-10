@@ -1945,19 +1945,6 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
 }
 
 TEST_F(AutofillExternalDelegateTest,
-       AutofillAi_DidPerformButtonAction_LearnMoreIsForwardedToDelegate) {
-  IssueOnQuery();
-
-  // TODO(crbug.com/362468426): Update comment in case it is decided that
-  // feedback will be its own suggestion.
-  EXPECT_CALL(*client().GetAutofillAiDelegate(), UserClickedLearnMore());
-
-  external_delegate().DidPerformButtonActionForSuggestion(
-      Suggestion(SuggestionType::kAutofillAiFeedback),
-      AutofillAiSuggestionButtonAction::kLearnMoreClicked);
-}
-
-TEST_F(AutofillExternalDelegateTest,
        ComposeSuggestion_ComposeProactiveNudge_ForwardsCaretBoundsToClient) {
   const gfx::Rect caret_bounds = gfx::Rect(/*width=*/1, /*height=*/3);
   FormGlobalId form_id = test::MakeFormGlobalId();

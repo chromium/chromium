@@ -197,8 +197,8 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       cc::BrowserControlsState constraints,
       cc::BrowserControlsState current,
       bool animate,
-      base::optional_ref<const cc::BrowserControlsOffsetTagsInfo>
-          offset_tags_info);
+      base::optional_ref<const cc::BrowserControlsOffsetTagModifications>
+          offset_tag_modifications);
 
   MainThreadEventQueue* input_event_queue() { return input_event_queue_.get(); }
 

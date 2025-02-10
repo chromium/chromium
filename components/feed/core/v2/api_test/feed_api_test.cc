@@ -17,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -506,7 +507,7 @@ void TestReliabilityLoggingBridge::LogLoadMoreRequestFinished(
 
 void TestReliabilityLoggingBridge::LogLoadMoreEnded(bool success) {
   events_.push_back(
-      base::StrCat({"LogLoadMoreEnded success=", success ? "true" : "false"}));
+      base::StrCat({"LogLoadMoreEnded success=", base::ToString(success)}));
 }
 
 void TestReliabilityLoggingBridge::ReportExperiments(

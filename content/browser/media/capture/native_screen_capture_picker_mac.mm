@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/features.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/timer/timer.h"
 #include "content/browser/media/capture/native_screen_capture_picker.h"
 #include "content/browser/media/capture/screen_capture_kit_device_mac.h"
@@ -21,12 +22,54 @@ using PickerCallback = base::OnceCallback<void(Source)>;
 using PickerCancelCallback = base::OnceClosure;
 using PickerErrorCallback = base::OnceClosure;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SCContentSharingPickerOperation {
+  kPresentScreen_Start = 0,
+  kPresentScreen_Update = 1,
+  kPresentScreen_Cancel = 2,
+  kPresentScreen_Error = 3,
+  kPresentWindow_Start = 4,
+  kPresentWindow_Update = 5,
+  kPresentWindow_Cancel = 6,
+  kPresentWindow_Error = 7,
+  kMaxValue = kPresentWindow_Error
+};
+
+void API_AVAILABLE(macos(14.0))
+    LogToUma(SCContentSharingPickerOperation operation) {
+  base::UmaHistogramEnumeration("Media.ScreenCaptureKit.SCContentSharingPicker",
+                                operation);
+}
+
+void API_AVAILABLE(macos(14.0))
+    LogUpdateToUma(content::DesktopMediaID::Type type) {
+  LogToUma(type == content::DesktopMediaID::Type::TYPE_SCREEN
+               ? SCContentSharingPickerOperation::kPresentScreen_Update
+               : SCContentSharingPickerOperation::kPresentWindow_Update);
+}
+
+void API_AVAILABLE(macos(14.0))
+    LogCancelToUma(content::DesktopMediaID::Type type) {
+  LogToUma(type == content::DesktopMediaID::Type::TYPE_SCREEN
+               ? SCContentSharingPickerOperation::kPresentScreen_Cancel
+               : SCContentSharingPickerOperation::kPresentWindow_Cancel);
+}
+
+void API_AVAILABLE(macos(14.0))
+    LogErrorToUma(content::DesktopMediaID::Type type) {
+  LogToUma(type == content::DesktopMediaID::Type::TYPE_SCREEN
+               ? SCContentSharingPickerOperation::kPresentScreen_Error
+               : SCContentSharingPickerOperation::kPresentWindow_Error);
+}
+
 API_AVAILABLE(macos(14.0))
 @interface PickerObserver : NSObject <SCContentSharingPickerObserver>
 - (instancetype)initWithPickerCallback:(PickerCallback)pickerCallback
                         cancelCallback:(PickerCancelCallback)cancelCallback
                          errorCallback:(PickerErrorCallback)errorCallback
-                        assignSourceId:(int)assignedSourceId;
+                        assignSourceId:(int)assignedSourceId
+                                  type:(content::DesktopMediaID::Type)type;
 @property(strong, readonly) SCContentFilter* contentFilter;
 @end
 
@@ -35,6 +78,7 @@ API_AVAILABLE(macos(14.0))
   PickerCancelCallback _cancelCallback;
   PickerErrorCallback _errorCallback;
   int _assignedSourceId;
+  content::DesktopMediaID::Type _type;
 }
 
 @synthesize contentFilter;
@@ -42,12 +86,14 @@ API_AVAILABLE(macos(14.0))
 - (instancetype)initWithPickerCallback:(PickerCallback)pickerCallback
                         cancelCallback:(PickerCancelCallback)cancelCallback
                          errorCallback:(PickerErrorCallback)errorCallback
-                        assignSourceId:(int)assignedSourceId {
+                        assignSourceId:(int)assignedSourceId
+                                  type:(content::DesktopMediaID::Type)type {
   if (self = [super init]) {
     _pickerCallback = std::move(pickerCallback);
     _cancelCallback = std::move(cancelCallback);
     _errorCallback = std::move(errorCallback);
     _assignedSourceId = assignedSourceId;
+    _type = type;
   }
   return self;
 }
@@ -57,6 +103,7 @@ API_AVAILABLE(macos(14.0))
                    forStream:(SCStream*)stream {
   VLOG(1) << "NSCPM::contentSharingPicker:didUpdateWithFilter: source_id = "
           << _assignedSourceId;
+  LogUpdateToUma(_type);
   contentFilter = filter;
 
   Source source;
@@ -70,6 +117,7 @@ API_AVAILABLE(macos(14.0))
           didCancelForStream:(SCStream*)stream {
   VLOG(1) << "NSCPM:contentSharingPicker:didCancelForStream: source_id = "
           << _assignedSourceId;
+  LogCancelToUma(_type);
   if (_cancelCallback) {
     std::move(_cancelCallback).Run();
   }
@@ -80,6 +128,7 @@ API_AVAILABLE(macos(14.0))
           << _assignedSourceId << ", code = " << [error code]
           << ", domain = " << [error domain]
           << ", description = " << [error localizedDescription];
+  LogErrorToUma(_type);
   if (_errorCallback) {
     std::move(_errorCallback).Run();
   }
@@ -154,7 +203,8 @@ void NativeScreenCapturePickerMac::Open(
         initWithPickerCallback:std::move(picker_callback)
                 cancelCallback:std::move(cancel_callback)
                  errorCallback:std::move(error_callback)
-                assignSourceId:next_id_];
+                assignSourceId:next_id_
+                          type:type];
     picker_observers_[source_id] = picker_observer;
     std::move(created_callback).Run(next_id_);
     ++next_id_;
@@ -171,16 +221,18 @@ void NativeScreenCapturePickerMac::Open(
       config.allowedPickerModes = SCContentSharingPickerModeSingleDisplay;
       picker.defaultConfiguration = config;
       picker.maximumStreamCount = max_stream_count;
+      [picker presentPickerUsingContentStyle:SCShareableContentStyleDisplay];
       VLOG(1) << "NSCPM: Show screen-sharing picker for source_id = "
               << source_id.longValue;
-      [picker presentPickerUsingContentStyle:SCShareableContentStyleDisplay];
+      LogToUma(SCContentSharingPickerOperation::kPresentScreen_Start);
     } else {
       config.allowedPickerModes = SCContentSharingPickerModeSingleWindow;
       picker.defaultConfiguration = config;
       picker.maximumStreamCount = max_stream_count;
+      [picker presentPickerUsingContentStyle:SCShareableContentStyleWindow];
       VLOG(1) << "NSCPM: Show window-sharing picker for source_id = "
               << source_id.longValue;
-      [picker presentPickerUsingContentStyle:SCShareableContentStyleWindow];
+      LogToUma(SCContentSharingPickerOperation::kPresentWindow_Start);
     }
   } else {
     NOTREACHED();

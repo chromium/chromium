@@ -7,6 +7,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
@@ -164,7 +165,7 @@ std::string AutocompleteParsingResult::ToString() const {
   return base::StrCat({"section='", section, "' ", "mode='",
                        HtmlFieldModeToStringView(mode), "' ", "field_type='",
                        FieldTypeToStringView(field_type), "' ", "webauthn='",
-                       webauthn ? "true" : "false", "'"});
+                       base::ToString(webauthn), "'"});
 }
 
 bool AutocompleteParsingResult::operator==(

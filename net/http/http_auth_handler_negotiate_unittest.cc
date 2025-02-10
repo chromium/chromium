@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"

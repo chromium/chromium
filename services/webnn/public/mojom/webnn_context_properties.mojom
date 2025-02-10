@@ -167,12 +167,13 @@ struct DataTypeLimits {
   SupportedTensors reverse_input;
 
   // ScatterElements.
-  SupportedDataTypes scatter_elements_input;
-  SupportedDataTypes scatter_elements_indices;
+  SupportedTensors scatter_elements_input;
+  SupportedTensors scatter_elements_indices;
 
   // ScatterND.
-  SupportedDataTypes scatter_nd_input;
-  SupportedDataTypes scatter_nd_indices;
+  SupportedTensors scatter_nd_input;
+  SupportedTensors scatter_nd_indices;
+  SupportedTensors scatter_nd_updates;
 
   SupportedTensors sigmoid_input;
   SupportedTensors slice_input;

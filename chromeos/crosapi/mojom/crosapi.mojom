@@ -9,7 +9,6 @@ import "chromeos/components/payments/mojom/payment_app.mojom";
 import "chromeos/components/remote_apps/mojom/remote_apps.mojom";
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
-import "chromeos/crosapi/mojom/app_service.mojom";
 import "chromeos/crosapi/mojom/arc.mojom";
 import "chromeos/crosapi/mojom/audio_service.mojom";
 import "chromeos/crosapi/mojom/authentication.mojom";

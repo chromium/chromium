@@ -168,17 +168,16 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
   void SegmentBidiRuns(InlineNodeData*) const;
   void ShapeText(InlineItemsData*,
                  const String* previous_text = nullptr,
-                 const HeapVector<InlineItem>* previous_items = nullptr,
+                 const InlineItems* previous_items = nullptr,
                  const Font* override_font = nullptr) const;
   void ShapeTextForFirstLineIfNeeded(InlineNodeData*) const;
-  void ShapeTextIncludingFirstLine(
-      InlineNodeData* data,
-      const String* previous_text,
-      const HeapVector<InlineItem>* previous_items) const;
+  void ShapeTextIncludingFirstLine(InlineNodeData* data,
+                                   const String* previous_text,
+                                   const InlineItems* previous_items) const;
   void AssociateItemsWithInlines(InlineNodeData*) const;
   bool IsNGShapeCacheAllowed(const String&,
                              const Font*,
-                             const HeapVector<InlineItem>&,
+                             const InlineItems&,
                              ShapeResultSpacing<String>&) const;
 
   InlineNodeData* MutableData() const {

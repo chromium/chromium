@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "sandbox/features.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -126,14 +125,14 @@ BASE_FEATURE(kWinSboxFilterServiceEnvironment,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Controls whether the Spectre variant 2 mitigation is enabled. We use a USE
 // flag on some Chrome OS boards to disable the mitigation by disabling this
 // feature in exchange for system performance.
 BASE_FEATURE(kSpectreVariant2Mitigation,
              "SpectreVariant2Mitigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Increase the renderer sandbox memory limit. As of 2023, there are no limits

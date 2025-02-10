@@ -928,22 +928,7 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
       }
       return;
     case SuggestionType::kAutofillAiFeedback: {
-      AutofillAiDelegate* delegate = manager_->client().GetAutofillAiDelegate();
-      if (!delegate) {
-        break;
-      }
-      CHECK(absl::holds_alternative<AutofillAiSuggestionButtonAction>(
-          button_action));
-      AutofillAiSuggestionButtonAction action =
-          absl::get<AutofillAiSuggestionButtonAction>(button_action);
-      switch (action) {
-        case AutofillAiSuggestionButtonAction::kThumbsUpClicked:
-        case AutofillAiSuggestionButtonAction::kThumbsDownClicked:
-          break;
-        case AutofillAiSuggestionButtonAction::kLearnMoreClicked:
-          delegate->UserClickedLearnMore();
-          break;
-      }
+      NOTIMPLEMENTED();
       break;
     }
     default:

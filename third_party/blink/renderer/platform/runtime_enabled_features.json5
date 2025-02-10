@@ -299,6 +299,11 @@
       name: "AdjustEndOfNextParagraphIfMovedParagraphIsUpdated",
       status: "stable",
     },
+    // See crbug.com/41115285
+    {
+      name: "AdjustStartOfParagraphToMoveDuringIndent",
+      status: "stable",
+    },
     {
       name: "AdTagging",
       public: true,
@@ -2071,11 +2076,6 @@
       // See https://crbug.com/321980469.
       name: "FileSystemObserverUnobserve",
       status: "experimental",
-    },
-    {
-      // crbug.com/40755728
-      name: "FindRubyInPage",
-      status: "stable",
     },
     {
       name: "FindTextInReadonlyTextInput",

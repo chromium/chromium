@@ -215,25 +215,11 @@ bool CanvasResource::PrepareTransferableResource(
     return false;
   }
 
-  if (!CreatesAcceleratedTransferableResources()) {
-    // Create a TransferableResource to be used with the software compositor.
-    TRACE_EVENT0("blink",
-                 "CanvasResource::PrepareUnacceleratedTransferableResource");
+  TRACE_EVENT0("blink", "CanvasResource::PrepareTransferableResource");
 
-    *out_resource = viz::TransferableResource::Make(
-        client_shared_image, viz::TransferableResource::ResourceSource::kCanvas,
-        GetSyncToken());
-
-    return true;
-  }
-
-  TRACE_EVENT0("blink",
-               "CanvasResource::PrepareAcceleratedTransferableResource");
-
-  // Gpu compositing is a prerequisite for compositing an accelerated resource
-  DCHECK(SharedGpuContext::IsGpuCompositingEnabled());
-  if (!ContextProviderWrapper())
+  if (CreatesAcceleratedTransferableResources() && !ContextProviderWrapper()) {
     return false;
+  }
 
   *out_resource = viz::TransferableResource::Make(
       client_shared_image, GetTransferableResourceSource(),
@@ -241,14 +227,17 @@ bool CanvasResource::PrepareTransferableResource(
 
   out_resource->hdr_metadata = GetHDRMetadata();
 
-  // When a resource is returned by the display compositor, a sync token is
-  // provided to indicate when the compositor's commands using the resource are
-  // executed on the GPU thread. However, if the *CPU* is used for raster we
-  // need to ensure that the display compositor's GPU-side reads have actually
-  // completed before the compositor returns the resource for reuse, as after
-  // that point the resource will be written via the CPU without any further
-  // synchronization with those GPU-side reads.
-  if (!UsesAcceleratedRaster()) {
+  // When the compositor returns an accelerated resource, it provides a sync
+  // token to allow subsequent accelerated raster operations to properly
+  // sequence their usage of the resource within the GPU service. However, if
+  // the compositor is accelerated but raster is *not*, sync tokens are not
+  // sufficient for ordering: We must instead ensure that the compositor's
+  // GPU-side reads have actually *completed* before the compositor returns the
+  // resource for reuse, as after that point subsequent raster operations will
+  // start writing to the resource via the CPU without any subsequent
+  // synchronization with the GPU service.
+  if (!UsesAcceleratedRaster() && CreatesAcceleratedTransferableResources()) {
+    DCHECK(SharedGpuContext::IsGpuCompositingEnabled());
     out_resource->synchronization_type =
         viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   }

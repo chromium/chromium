@@ -85,7 +85,6 @@ FrameTreeNodeId PrerenderNewTabHandle::StartPrerendering(
       static_cast<PreloadingAttemptImpl*>(preloading_data->AddPreloadingAttempt(
           creating_predictor, enacting_predictor, PreloadingType::kPrerender,
           std::move(same_url_matcher),
-          /*planned_max_preloading_type=*/std::nullopt,
           triggered_primary_page_source_id));
   preloading_data->AddPreloadingPrediction(
       enacting_predictor, confidence,

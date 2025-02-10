@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
@@ -203,8 +204,6 @@ void PreferredAppsImpl::ReadCompleted(std::string preferred_apps_string) {
     WriteToJSON(profile_dir_, preferred_apps_list_);
   }
 
-  host_->InitializePreferredAppsForAllSubscribers();
-
   LogPreferredAppEntryCount(preferred_apps_list_.GetEntrySize());
 
   while (!pending_preferred_apps_tasks_.empty()) {
@@ -229,23 +228,16 @@ void PreferredAppsImpl::RemovePreferredAppImpl(const std::string& app_id) {
   IntentFilters removed_filters = preferred_apps_list_.DeleteAppId(app_id);
   if (!removed_filters.empty()) {
     WriteToJSON(profile_dir_, preferred_apps_list_);
-
-    auto changes = std::make_unique<PreferredAppChanges>();
-    changes->removed_filters[app_id] = std::move(removed_filters);
-    host_->OnPreferredAppsChanged(std::move(changes));
   }
 }
 
 void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
     const std::string& app_id,
     IntentFilters all_link_filters) {
-  auto changes = std::make_unique<PreferredAppChanges>();
-  auto& added = changes->added_filters;
-  auto& removed = changes->removed_filters;
+  base::flat_map<std::string, IntentFilters> removed;
 
   for (auto& filter : all_link_filters) {
     auto replaced_apps = preferred_apps_list_.AddPreferredApp(app_id, filter);
-    added[app_id].push_back(std::move(filter));
 
     // If we removed overlapping supported links when adding the new app, those
     // affected apps no longer handle all their Supported Links filters and so
@@ -281,8 +273,6 @@ void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
 
   WriteToJSON(profile_dir_, preferred_apps_list_);
 
-  host_->OnPreferredAppsChanged(changes->Clone());
-
   // Notify publishers: The new app has been set to open links, and all removed
   // apps no longer handle links.
   host_->OnSupportedLinksPreferenceChanged(app_id,
@@ -300,10 +290,6 @@ void PreferredAppsImpl::RemoveSupportedLinksPreferenceImpl(
 
   if (!removed_filters.empty()) {
     WriteToJSON(profile_dir_, preferred_apps_list_);
-
-    auto changes = std::make_unique<PreferredAppChanges>();
-    changes->removed_filters[app_id] = std::move(removed_filters);
-    host_->OnPreferredAppsChanged(std::move(changes));
   }
 
   host_->OnSupportedLinksPreferenceChanged(app_id,

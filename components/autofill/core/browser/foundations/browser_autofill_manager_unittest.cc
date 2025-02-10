@@ -29,6 +29,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
@@ -1299,9 +1300,9 @@ class BrowserAutofillManagerTest : public testing::Test {
       bool for_credit_cards) {
     base::FieldTrialParams feature_parameters{
         {features::kAutofillAblationStudyEnabledForAddressesParam.name,
-         for_addresses ? "true" : "false"},
+         base::ToString(for_addresses)},
         {features::kAutofillAblationStudyEnabledForPaymentsParam.name,
-         for_credit_cards ? "true" : "false"},
+         base::ToString(for_credit_cards)},
         {features::kAutofillAblationStudyAblationWeightPerMilleParam.name,
          "1000"},
     };
@@ -6741,7 +6742,7 @@ TEST_F(BrowserAutofillManagerTest, ShowAutofillAiSuggestions) {
   ON_CALL(delegate, IsEligibleForAutofillAi).WillByDefault(Return(true));
   std::vector<Suggestion> suggestions = {
       Suggestion(SuggestionType::kFillAutofillAi)};
-  EXPECT_CALL(delegate, GetSuggestionsV2)
+  EXPECT_CALL(delegate, GetSuggestions)
       .WillOnce(RunOnceCallback<3>(suggestions));
 
   OnAskForValuesToFill(form, form.fields().front(),

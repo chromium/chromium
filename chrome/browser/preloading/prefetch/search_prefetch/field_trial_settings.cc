@@ -105,6 +105,13 @@ bool OnlyAllowDefaultMatchPreloading() {
       kSearchPrefetchOnlyAllowDefaultMatchPreloading);
 }
 
+bool IsPrefetchIncognitoEnabled() {
+  return SearchPrefetchServicePrefetchingIsEnabled() &&
+         IsSearchNavigationPrefetchEnabled() &&
+         base::GetFieldTrialParamByFeatureAsBool(kSearchNavigationPrefetch,
+                                                 "allow_incognito", false);
+}
+
 BASE_FEATURE(kAutocompleteDictionaryPreload,
              "AutocompleteDictionaryPreload",
              base::FEATURE_ENABLED_BY_DEFAULT);

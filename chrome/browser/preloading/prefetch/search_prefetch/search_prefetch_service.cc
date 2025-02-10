@@ -238,7 +238,7 @@ void SearchPrefetchService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 SearchPrefetchService::SearchPrefetchService(Profile* profile)
     : profile_(profile) {
-  DCHECK(!profile_->IsOffTheRecord());
+  CHECK(!profile_->IsOffTheRecord() || IsPrefetchIncognitoEnabled());
 
   if (LoadFromPrefs())
     SaveToPrefs();
@@ -300,18 +300,6 @@ bool SearchPrefetchService::MaybePrefetchURL(
   // |navigation_prefetch| is true.
   attempt = preloading_data->AddPreloadingAttempt(
       predictor, content::PreloadingType::kPrefetch, same_url_matcher,
-      // Note that it'd be nice to use kPrerender if
-      // `(!navigation_prefetch &&
-      // prerender_utils::IsSearchSuggestionPrerenderEnabled())`. But currently
-      // this attribute is not used for search preloads as expected behavior
-      // varies depending on how this is triggered as follows:
-      //
-      // - If `navigation_prefetch` is true, we will not upgrade the attempt.
-      // - If the default search engine prerender is not enabled, we will not
-      // upgrade this attempt.
-      // - If the server side does not ask to upgrade the request, we will not
-      // upgrade it.
-      /*planned_max_preloading_type=*/std::nullopt,
       web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   if (!search_with_terms) {
@@ -1034,7 +1022,6 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
       preloading_data->AddPreloadingAttempt(
           chrome_preloading_predictor::kDefaultSearchEngine,
           content::PreloadingType::kPrerender, same_url_matcher,
-          /*planned_max_preloading_type=*/std::nullopt,
           web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   auto prefetch_request_iter = prefetches_.find(canonical_search_url);

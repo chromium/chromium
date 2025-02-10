@@ -52,7 +52,6 @@
 #include "components/autofill_ai/core/browser/autofill_ai_value_filter.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_suggestions.h"
-#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/strings/grit/components_strings.h"
@@ -183,17 +182,9 @@ std::optional<autofill::EntityInstance> MaybeUpdateEntity(
 
 }  // namespace
 
-AutofillAiManager::AutofillAiManager(
-    AutofillAiClient* client,
-    optimization_guide::OptimizationGuideDecider* decider,
-    autofill::StrikeDatabase* strike_database)
-    : client_(CHECK_DEREF(client)), decider_(decider) {
-  if (decider_) {
-    decider_->RegisterOptimizationTypes(
-        {optimization_guide::proto::
-             AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST});
-  }
-
+AutofillAiManager::AutofillAiManager(AutofillAiClient* client,
+                                     autofill::StrikeDatabase* strike_database)
+    : client_(CHECK_DEREF(client)) {
   user_annotation_prompt_strike_database_ =
       strike_database
           ? std::make_unique<
@@ -280,12 +271,6 @@ void AutofillAiManager::OnReceivedAXTree(
   client_->GetModelExecutor()->GetPredictions(
       form, /*field_eligibility_map*/ {}, GetFieldValueSensitivityMap(form),
       std::move(ax_tree_update), base::DoNothing());
-}
-
-// TODO(crbug.com/362468426): Rename this method to
-// `UserClickedManagePredictionsImprovements()`.
-void AutofillAiManager::UserClickedLearnMore() {
-  client_->OpenAutofillAiSettings();
 }
 
 void AutofillAiManager::OnSuggestionsShown(
@@ -415,11 +400,10 @@ void AutofillAiManager::OnSavePromptAcceptance(
   }
 }
 
-void AutofillAiManager::GetSuggestionsV2(
-    autofill::FormGlobalId form_global_id,
-    autofill::FieldGlobalId field_global_id,
-    bool is_manual_fallback,
-    GetSuggestionsCallback callback) {
+void AutofillAiManager::GetSuggestions(autofill::FormGlobalId form_global_id,
+                                       autofill::FieldGlobalId field_global_id,
+                                       bool is_manual_fallback,
+                                       GetSuggestionsCallback callback) {
   autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
   if (!entity_manager) {
     return std::move(callback).Run({});

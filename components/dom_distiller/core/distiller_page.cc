@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/grit/components_resources.h"
@@ -58,7 +59,7 @@ std::string GetDistillerScriptWithOptions(
   script =
       script.replace(options_offset, strlen(kOptionsPlaceholder), options_json);
 
-  std::string stringify = stringify_output ? "true" : "false";
+  std::string stringify = base::ToString(stringify_output);
   size_t stringify_offset = script.find(kStringifyPlaceholder);
   DCHECK_NE(std::string::npos, stringify_offset);
   DCHECK_EQ(std::string::npos,

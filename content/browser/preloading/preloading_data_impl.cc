@@ -170,13 +170,11 @@ PreloadingAttempt* PreloadingDataImpl::AddPreloadingAttempt(
     PreloadingPredictor predictor,
     PreloadingType preloading_type,
     PreloadingURLMatchCallback url_match_predicate,
-    std::optional<PreloadingType> planned_max_preloading_type,
     ukm::SourceId triggering_primary_page_source_id) {
   // The same `predictor` created and enacted the candidate associated with this
   // attempt.
   return AddPreloadingAttempt(predictor, predictor, preloading_type,
                               std::move(url_match_predicate),
-                              std::move(planned_max_preloading_type),
                               triggering_primary_page_source_id);
 }
 
@@ -185,12 +183,11 @@ PreloadingAttemptImpl* PreloadingDataImpl::AddPreloadingAttempt(
     const PreloadingPredictor& enacting_predictor,
     PreloadingType preloading_type,
     PreloadingURLMatchCallback url_match_predicate,
-    std::optional<PreloadingType> planned_max_preloading_type,
     ukm::SourceId triggering_primary_page_source_id) {
   auto attempt = std::make_unique<PreloadingAttemptImpl>(
       creating_predictor, enacting_predictor, preloading_type,
       triggering_primary_page_source_id, std::move(url_match_predicate),
-      std::move(planned_max_preloading_type), sampling_seed_);
+      sampling_seed_);
   preloading_attempts_.push_back(std::move(attempt));
 
   return preloading_attempts_.back().get();

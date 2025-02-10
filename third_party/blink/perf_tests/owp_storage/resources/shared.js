@@ -48,6 +48,93 @@ function createIncrementalBarrier(callback) {
   }
 }
 
+/**
+ * Retrieves a value from an IndexedDB object store.
+ *
+ * This function queries the object store for a given key and returns a promise
+ * that resolves with the result of the get operation or rejects with an error
+ * message.
+ *
+ * @param {IDBTransaction} transaction The IndexedDB transaction to perform the
+ *     operation within.
+ * @param {string} storeName The name of the object store to query.
+ * @param {string|number} key The key used to retrieve the value from the store.
+ * @return {Promise} A promise that resolves with the value from the store, or
+ *     rejects with an error message.
+ */
+function getIDBValue(transaction, storeName, key) {
+  return new Promise((resolve, reject) => {
+    // Access the object store specified by storeName
+    const objectStore = transaction.objectStore(storeName);
+    const request = objectStore.get(key);
+
+    // Resolve the promise with the result on successful retrieval
+    request.onsuccess = () => resolve(request.result);
+
+    // Reject the promise with an error message if the retrieval fails
+    request.onerror = () => reject(`Failed to get '${key}' from '${
+        storeName}' with error '${request.error}'`);
+  });
+}
+
+/**
+ * Retrieves multiple values from an IndexedDB object store.
+ *
+ * This function fetches data using an optional key range and batch size. If
+ * both `range` and `batchSize` are omitted or null, it retrieves all records
+ * from the store.
+ *
+ * @param {IDBTransaction} transaction The active IndexedDB transaction.
+ * @param {string} storeName The name of the object store to query.
+ * @param {IDBKeyRange|null} range Optional key range for filtering records.
+ *     Defaults to null.
+ * @param {number} batchSize Optional maximum number of records to retrieve. If
+ *     omitted or 0, fetches all records.
+ * @return {Promise<Array>} A promise that resolves with the retrieved records,
+ *     or rejects on error.
+ */
+function getAllIDBValues(transaction, storeName, range = null, batchSize) {
+  return new Promise((resolve, reject) => {
+    const store = transaction.objectStore(storeName);
+    const request = store.getAll(range, batchSize);
+
+    // Triggered when the request completes successfully.
+    request.onsuccess = () => resolve(request.result);
+
+    // Triggered when an error occurs during the request.
+    request.onerror = () => reject(`Failed to retrieve data from '${
+        storeName}' with error '${request.error}'`);
+  });
+}
+
+/**
+ * Puts (inserts or updates) a value into an IndexedDB object store.
+ *
+ * This function inserts or updates the given value into the specified object
+ * store. It returns a promise that resolves with the result of the put
+ * operation or rejects with an error message if the operation fails.
+ *
+ * @param {IDBTransaction} transaction The IndexedDB transaction to perform the
+ *     operation within.
+ * @param {string} storeName The name of the object store to update.
+ * @param {Object} value The value to insert or update in the store.
+ * @return {Promise} A promise that resolves with the result of the put
+ *     operation, or rejects with an error message
+ */
+function putIDBValue(transaction, storeName, value) {
+  return new Promise((resolve, reject) => {
+    // Access the object store specified by storeName
+    const objectStore = transaction.objectStore(storeName);
+    const request = objectStore.put(value);
+
+    // Resolve the promise with the result on successful insertion or update
+    request.onsuccess = () => resolve(request.result);
+
+    // Reject the promise with an error message if the operation fails
+    request.onerror = () => reject(
+        `Failed to put value in '${storeName}' with error '${request.error}'`);
+  });
+}
 function transactionCompletePromise(txn) {
   return new Promise((resolve, reject) => {
     txn.oncomplete = resolve;

@@ -276,15 +276,15 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': '8061ec452e812c4ce7039c2a955b710919bfbfce',
+  'src_internal_revision': 'd9c011bdfb9f8d8c89274e5ebaf7ae587188d7d3',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '22f96cc60dec5d3244bd208e5b2eb78a353c9655',
+  'skia_revision': '180ed4fc263d05d9231c8b430693df0e5fd9fbfb',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'b622ba85020065571cccac2f90912f44c4a43dec',
+  'v8_revision': '8292756c1f1d749865d7b4c11762643492a20906',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -348,7 +348,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling catapult
   # and whatever else without interference from each other.
-  'catapult_revision': '521490bbb879d3255314fddecb3956bf9d617efc',
+  'catapult_revision': '5f094dfc3ee5cdc537403f24101e9c6408d9784e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling chromium_variations
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '39bf2bd5e08960991982e29d4bef8d8577158263',
+  'devtools_frontend_revision': 'b192a9b52a5442654b460ea28d79f23042bf5c72',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '90cd425b86ef2a0ef0e2afcae76904f6421cea0f',
+    'aeba9b3c390ad658ea0112ce1f3e54a626e80732',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1943,7 +1943,7 @@ deps = {
 
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '14051a83465d5d983bc1ad5f05b651eb118b10f9',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + 'a5519ca8728983c295ec8fbeca8d4da72e530c3c',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
@@ -2929,7 +2929,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/boca_app/app',
-        'version': 'zDrl7eetx-H03AU1APcHEdz30D8wVK8BwsfiC1Ho7BAC',
+        'version': 'OnRRJ8_hD09Vu6ojNhXie64p3Lu4H2AjVtfs_6DaxfoC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4538,7 +4538,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '96749c54bf0b035351eab088e169d4fdad568331',
+        'bdf687ea7c7b19cb1a3378de68765473b5c37002',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

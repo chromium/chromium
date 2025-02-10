@@ -38,7 +38,6 @@ import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.content.browser.AppWebMessagePort;
 import org.chromium.content.browser.GestureListenerManagerImpl;
 import org.chromium.content.browser.RenderCoordinatesImpl;
@@ -67,6 +66,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsInternals;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
+import org.chromium.ui.BrowserControlsOffsetTagDefinitions;
 import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -1240,12 +1240,10 @@ public class WebContentsImpl
 
     @Override
     public void notifyControlsConstraintsChanged(
-            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
-            BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+            BrowserControlsOffsetTagDefinitions offsetTagDefinitions) {
         if (mNativeWebContentsAndroid == 0) return;
         WebContentsImplJni.get()
-                .notifyControlsConstraintsChanged(
-                        mNativeWebContentsAndroid, oldOffsetTagsInfo, offsetTagsInfo);
+                .notifyControlsConstraintsChanged(mNativeWebContentsAndroid, offsetTagDefinitions);
     }
 
     @Override
@@ -1481,8 +1479,7 @@ public class WebContentsImpl
 
         void notifyControlsConstraintsChanged(
                 long nativeWebContentsAndroid,
-                BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
-                BrowserControlsOffsetTagsInfo offsetTagsInfo);
+                BrowserControlsOffsetTagDefinitions offsetTagDefinitions);
 
         void disconnectFileSelectListenerIfAny(long nativeWebContentsAndroid);
 

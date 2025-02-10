@@ -20,6 +20,8 @@ namespace blink {
 
 class LayoutObject;
 
+using InlineItems = HeapVector<InlineItem>;
+
 // Class representing a single text node or styled inline element with text
 // content segmented by style, text direction, sideways rotation, font fallback
 // priority (text, symbol, emoji, etc), and script (but not by font).
@@ -235,12 +237,12 @@ class CORE_EXPORT InlineItem {
     is_end_collapsible_newline_ = is_newline;
   }
 
-  static void Split(HeapVector<InlineItem>&, unsigned index, unsigned offset);
+  static void Split(InlineItems&, unsigned index, unsigned offset);
 
   // RunSegmenter properties.
   unsigned SegmentData() const { return segment_data_; }
   static void SetSegmentData(const RunSegmenter::RunSegmenterRange& range,
-                             HeapVector<InlineItem>* items);
+                             InlineItems* items);
 
   RunSegmenter::RunSegmenterRange CreateRunSegmenterRange() const {
     // Only `kText` has the `segment_data_`, see `InlineItem::SetSegmentData`.
@@ -260,7 +262,7 @@ class CORE_EXPORT InlineItem {
       shape_result_ = nullptr;
     bidi_level_ = level;
   }
-  static unsigned SetBidiLevel(HeapVector<InlineItem>&,
+  static unsigned SetBidiLevel(InlineItems&,
                                unsigned index,
                                unsigned end_offset,
                                UBiDiLevel);

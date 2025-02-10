@@ -24,7 +24,6 @@
 #
 #             (*) only used on platforms where epoll tests are built
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//net/third_party/quiche/src/build/source_list.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")

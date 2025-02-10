@@ -223,9 +223,10 @@ void WidgetInputHandlerImpl::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
     bool animate,
-    const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info) {
-  input_handler_manager_->UpdateBrowserControlsState(constraints, current,
-                                                     animate, offset_tags_info);
+    const std::optional<cc::BrowserControlsOffsetTagModifications>&
+        offset_tag_modifications) {
+  input_handler_manager_->UpdateBrowserControlsState(
+      constraints, current, animate, offset_tag_modifications);
 }
 
 void WidgetInputHandlerImpl::RunOnMainThread(base::OnceClosure closure) {

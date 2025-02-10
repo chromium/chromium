@@ -10,6 +10,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/bookmarks/browser/titled_url_match.h"
@@ -335,9 +336,8 @@ TEST_F(TitledUrlMatchUtilsTest, PathsInContentsAndDescription) {
                   bool has_ancestor_match, std::string expected_contents,
                   std::string expected_description) {
     SCOPED_TRACE("title [" + title + "], url [" + url + "], has_url_match [" +
-                 std::string(has_url_match ? "true" : "false") +
-                 "], has_ancestor_match [" +
-                 std::string(has_ancestor_match ? "true" : "false") + "].");
+                 base::ToString(has_url_match) + "], has_ancestor_match [" +
+                 base::ToString(has_ancestor_match) + "].");
     MockTitledUrlNode node(base::UTF8ToUTF16(title), GURL(url), ancestors);
     bookmarks::TitledUrlMatch titled_url_match;
     titled_url_match.node = &node;

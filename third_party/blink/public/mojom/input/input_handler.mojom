@@ -4,7 +4,7 @@
 
 module blink.mojom;
 
-import "cc/mojom/browser_controls_offset_tags_info.mojom";
+import "cc/mojom/browser_controls_offset_tag_modifications.mojom";
 import "cc/mojom/browser_controls_state.mojom";
 import "cc/mojom/overscroll_behavior.mojom";
 import "cc/mojom/touch_action.mojom";
@@ -522,5 +522,5 @@ interface WidgetInputHandler {
   UpdateBrowserControlsState(cc.mojom.BrowserControlsState constraints,
                              cc.mojom.BrowserControlsState current,
                              bool animate,
-                             cc.mojom.BrowserControlsOffsetTagsInfo? offset_tags_info);
+                             cc.mojom.BrowserControlsOffsetTagModifications? offset_tag_modifications);
 };

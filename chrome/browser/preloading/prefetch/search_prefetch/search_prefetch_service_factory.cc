@@ -5,9 +5,31 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "content/public/browser/browser_context.h"
+
+namespace {
+ProfileSelections GetProfileSelections() {
+  // Note SearchPrefetchService partially supports Incognito profile. For now,
+  // it supports the on-press triggered search prefetch only. Other prefetches
+  // must not be triggered in Incognito. crbug.com/394716358 for more details.
+  ProfileSelection profile_selection = IsPrefetchIncognitoEnabled()
+                                           ? ProfileSelection::kOwnInstance
+                                           : ProfileSelection::kOriginalOnly;
+  return ProfileSelections::Builder()
+      .WithRegular(profile_selection)
+      // TODO(crbug.com/40257657): Check if this
+      // service is needed in Guest mode.
+      .WithGuest(profile_selection)
+      // TODO(crbug.com/41488885): Check if this
+      // service is needed for Ash Internals.
+      .WithAshInternals(profile_selection)
+      .Build();
+}
+}  // namespace
 
 // static
 SearchPrefetchService* SearchPrefetchServiceFactory::GetForProfile(
@@ -23,17 +45,8 @@ SearchPrefetchServiceFactory* SearchPrefetchServiceFactory::GetInstance() {
 }
 
 SearchPrefetchServiceFactory::SearchPrefetchServiceFactory()
-    : ProfileKeyedServiceFactory(
-          "SearchPrefetchService",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/41488885): Check if this service is needed for
-              // Ash Internals.
-              .WithAshInternals(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+    : ProfileKeyedServiceFactory("SearchPrefetchService",
+                                 GetProfileSelections()) {}
 
 SearchPrefetchServiceFactory::~SearchPrefetchServiceFactory() = default;
 

@@ -202,7 +202,9 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
             /*should_prepare_paint_tree=*/false,
             /*url_match_predicate=*/{},
             /*prerender_navigation_handle_callback=*/{},
-            base::MakeRefCounted<PreloadPipelineInfo>());
+            base::MakeRefCounted<
+                PreloadPipelineInfo>(/*planned_max_preloading_type=*/
+                                     PreloadingType::kPrerender));
       case PreloadingTriggerType::kEmbedder:
         return PrerenderAttributes(
             url, trigger_type, embedder_histogram_suffix,
@@ -216,7 +218,9 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
             /*should_prepare_paint_tree=*/false,
             /*url_match_predicate=*/{},
             /*prerender_navigation_handle_callback=*/{},
-            base::MakeRefCounted<PreloadPipelineInfo>());
+            base::MakeRefCounted<
+                PreloadPipelineInfo>(/*planned_max_preloading_type=*/
+                                     PreloadingType::kPrerender));
     }
   }
 
@@ -338,7 +342,6 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_PreloadingConfigHoldback) {
   PreloadingAttempt* preloading_attempt = preloading_data->AddPreloadingAttempt(
       content_preloading_predictor::kSpeculationRules,
       PreloadingType::kPrerender, std::move(same_url_matcher),
-      /*planned_max_preloading_type=*/std::nullopt,
       contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
   const FrameTreeNodeId prerender_frame_tree_node_id =
       registry().CreateAndStartHost(
@@ -359,7 +362,6 @@ TEST_F(PrerenderHostRegistryTest,
   PreloadingAttempt* preloading_attempt = preloading_data->AddPreloadingAttempt(
       content_preloading_predictor::kSpeculationRules,
       PreloadingType::kPrerender, std::move(same_url_matcher),
-      /*planned_max_preloading_type=*/std::nullopt,
       contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   auto attributes = GeneratePrerenderAttributes(
@@ -386,7 +388,6 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_HoldbackOverride_Allowed) {
   PreloadingAttempt* preloading_attempt = preloading_data->AddPreloadingAttempt(
       content_preloading_predictor::kSpeculationRules,
       PreloadingType::kPrerender, std::move(same_url_matcher),
-      /*planned_max_preloading_type=*/std::nullopt,
       contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   auto attributes = GeneratePrerenderAttributes(

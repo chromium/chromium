@@ -35,6 +35,7 @@
 #include "base/logging.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/services/on_device_translation/proto/translate_kit_api.pb.h"
@@ -303,9 +304,9 @@ DISABLE_CFI_DLSYM TRANSLATE_KIT_EXPORT bool TranslatorTranslate(
         "Result of Open(): ",
         data ? "OK" : "Failed",
         ", result of FileExists(): ",
-        file_exists ? "true" : "false",
+        base::ToString(file_exists),
         ", is_directory: ",
-        is_directory ? "true" : "false",
+        base::ToString(is_directory),
     });
     callback(TranslateKitOutputText(result.data(), result.size()), user_data);
     return true;

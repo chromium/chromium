@@ -11,9 +11,6 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "app_service_types_mojom_traits_unittest\.cc": [
-    "+ui/gfx/image/image_unittest_util.h"
-  ],
   "desk_template_mojom_traits\.cc" : [
     "+ui/gfx/range/range.h"
   ],

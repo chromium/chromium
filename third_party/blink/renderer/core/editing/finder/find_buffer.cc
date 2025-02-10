@@ -416,13 +416,9 @@ void FindBuffer::CollectTextUntilBlockBoundary(
   // We will also stop if we encountered/passed |end_node|.
   Node* end_node = range.EndPosition().NodeAsRangeLastNode();
 
-  bool use_chunk_graph = false;
-  if (RuntimeEnabledFeatures::FindRubyInPageEnabled()) {
-    use_chunk_graph = ruby_support == RubySupport::kEnabledForcefully ||
-                      (ruby_support == RubySupport::kEnabledIfNecessary &&
-                       IsIfcWithRuby(block_ancestor));
-  }
-  if (use_chunk_graph) {
+  if (ruby_support == RubySupport::kEnabledForcefully ||
+      (ruby_support == RubySupport::kEnabledIfNecessary &&
+       IsIfcWithRuby(block_ancestor))) {
     auto [corpus_chunk_list, level_list, next_node] =
         BuildChunkGraph(*node, end_node, block_ancestor, just_after_block);
     node_after_block_ = next_node;

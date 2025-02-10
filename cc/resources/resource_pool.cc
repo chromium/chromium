@@ -197,7 +197,7 @@ ResourcePool::InUsePoolResource ResourcePool::AcquireResource(
   if (!resource)
     resource = CreateResource(size, format, color_space);
   resource->set_debug_name(debug_name);
-  return InUsePoolResource(resource, !!context_provider_);
+  return InUsePoolResource(resource);
 }
 
 // Iterate over all three resource lists (unused, in-use, and busy), updating
@@ -286,7 +286,7 @@ ResourcePool::TryAcquireResourceForPartialRaster(
     resource->set_invalidated_rect(gfx::Rect());
     resource->set_content_id(0);
     resource->set_debug_name(debug_name);
-    return InUsePoolResource(resource, !!context_provider_);
+    return InUsePoolResource(resource);
   }
 
   return InUsePoolResource();

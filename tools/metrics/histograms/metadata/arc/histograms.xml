@@ -1386,6 +1386,37 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Arc.KeyMint.VerifiedBootHash.Result"
+    enum="ArcVerifiedBootHashResult" expires_after="2026-02-01">
+  <owner>batoon@google.com</owner>
+  <owner>arc-commercial@google.com</owner>
+  <summary>
+    Records the success or error reason when getting the value for the verified
+    boot hash. It is emitted when ARC KeyMint starts.
+  </summary>
+</histogram>
+
+<histogram name="Arc.KeyMint.VerifiedBootKey.Result"
+    enum="ArcVerifiedBootKeyResult" expires_after="2026-02-01">
+  <owner>batoon@google.com</owner>
+  <owner>arc-commercial@google.com</owner>
+  <summary>
+    Records the success or error reason when getting the value for the verified
+    boot key. It is emitted when ARC KeyMint starts.
+  </summary>
+</histogram>
+
+<histogram name="Arc.KeyMint.VerifiedBootState.Result"
+    enum="ArcVerifiedBootStateResult" expires_after="2026-02-01">
+  <owner>batoon@google.com</owner>
+  <owner>arc-commercial@google.com</owner>
+  <summary>
+    Records the success or error reason when getting the value for the verified
+    boot state and device locked state. It is dependent on the CrOS debug value.
+    It is emitted when ARC KeyMint starts.
+  </summary>
+</histogram>
+
 <histogram name="Arc.LaunchedWithGhostWindow" units="apps"
     expires_after="2025-02-10">
   <owner>sstan@chromium.org</owner>

@@ -96,12 +96,10 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     }
 
     InUsePoolResource(InUsePoolResource&& other) {
-      is_gpu_ = other.is_gpu_;
       resource_ = other.resource_;
       other.resource_ = nullptr;
     }
     InUsePoolResource& operator=(InUsePoolResource&& other) {
-      is_gpu_ = other.is_gpu_;
       resource_ = other.resource_;
       other.resource_ = nullptr;
       return *this;
@@ -127,21 +125,17 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
 
     // Only valid when the ResourcePool is vending texture-backed resources.
     Backing* gpu_backing() const {
-      DCHECK(is_gpu_);
       return resource_->gpu_backing();
     }
     void set_gpu_backing(std::unique_ptr<Backing> gpu) const {
-      DCHECK(is_gpu_);
       return resource_->set_gpu_backing(std::move(gpu));
     }
 
     // Only valid when the ResourcePool is vending software-backed resources.
     Backing* software_backing() const {
-      DCHECK(!is_gpu_);
       return resource_->software_backing();
     }
     void set_software_backing(std::unique_ptr<Backing> software) const {
-      DCHECK(!is_gpu_);
       resource_->set_software_backing(std::move(software));
     }
 
@@ -156,13 +150,10 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
 
    private:
     friend ResourcePool;
-    explicit InUsePoolResource(PoolResource* resource, bool is_gpu)
-        : is_gpu_(is_gpu), resource_(resource) {
+    explicit InUsePoolResource(PoolResource* resource) : resource_(resource) {
       DCHECK_EQ(resource->state(), PoolResource::kInUse);
     }
     void SetWasFreedByResourcePool() { resource_ = nullptr; }
-
-    bool is_gpu_ = false;
 
     // `resource_` is not a raw_ptr<...> for performance reasons (based on
     // analysis of sampling profiler data and tab_search:top100:2020).

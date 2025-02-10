@@ -9,11 +9,10 @@
 
 namespace blink {
 // |InlineItemSpan| performs like base::span<InlineItem> but stores a
-// pointer to |InlineItemsData|, not |HeapVector<InlineItem>| in
-// |InlineItemsData|, to keep it alive. |HeapVector<InlineItem>| allocated
-// in |InlineItemsData| is deleted in |InlineItemsData|'s destructor even
-// if there is any pointer to the vector, and storing a pointer to it can
-// cause use-after-free bugs.
+// pointer to |InlineItemsData|, not |InlineItems| in |InlineItemsData|, to keep
+// it alive. |InlineItems| allocated in |InlineItemsData| is deleted in
+// |InlineItemsData|'s destructor even if there is any pointer to the vector,
+// and storing a pointer to it can cause use-after-free bugs.
 struct InlineItemSpan final {
   DISALLOW_NEW();
 

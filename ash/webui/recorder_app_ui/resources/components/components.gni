@@ -52,4 +52,5 @@ component_files = [
   "time-duration.ts",
   "transcription-consent-dialog.ts",
   "transcription-view.ts",
+  "unescapable-dialog.ts",
 ]

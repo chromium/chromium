@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/cast.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
 import("//testing/test.gni")
@@ -26,7 +25,6 @@ component("policy") {
   defines = [ "SANDBOX_POLICY_IMPL" ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//ppapi/buildflags",
     "//sandbox/policy/mojom",
   ]
@@ -94,7 +92,7 @@ component("policy") {
       "linux/sandbox_seccomp_bpf_linux.cc",
       "linux/sandbox_seccomp_bpf_linux.h",
     ]
-    if (is_linux || is_chromeos_ash) {
+    if (is_linux || is_chromeos) {
       sources += [
         "linux/bpf_hardware_video_decoding_policy_linux.cc",
         "linux/bpf_hardware_video_decoding_policy_linux.h",
@@ -116,7 +114,7 @@ component("policy") {
       "//sandbox/linux:suid_sandbox_client",
     ]
   }
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "linux/bpf_ime_policy_linux.cc",
       "linux/bpf_ime_policy_linux.h",

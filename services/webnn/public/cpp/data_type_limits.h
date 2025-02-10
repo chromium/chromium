@@ -101,10 +101,11 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedTensors resample2d_input,
                  SupportedTensors reshape_input,
                  SupportedTensors reverse_input,
-                 SupportedDataTypes scatter_elements_input,
-                 SupportedDataTypes scatter_elements_indices,
-                 SupportedDataTypes scatter_nd_input,
-                 SupportedDataTypes scatter_nd_indices,
+                 SupportedTensors scatter_elements_input,
+                 SupportedTensors scatter_elements_indices,
+                 SupportedTensors scatter_nd_input,
+                 SupportedTensors scatter_nd_indices,
+                 SupportedTensors scatter_nd_updates,
                  SupportedTensors sigmoid_input,
                  SupportedTensors slice_input,
                  SupportedTensors softmax_input,
@@ -215,10 +216,11 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedTensors resample2d_input;
   SupportedTensors reshape_input;
   SupportedTensors reverse_input;
-  SupportedDataTypes scatter_elements_input;
-  SupportedDataTypes scatter_elements_indices;
-  SupportedDataTypes scatter_nd_input;
-  SupportedDataTypes scatter_nd_indices;
+  SupportedTensors scatter_elements_input;
+  SupportedTensors scatter_elements_indices;
+  SupportedTensors scatter_nd_input;
+  SupportedTensors scatter_nd_indices;
+  SupportedTensors scatter_nd_updates;
   SupportedTensors sigmoid_input;
   SupportedTensors slice_input;
   SupportedTensors softmax_input;
@@ -326,6 +328,7 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.scatter_elements_indices == rhs.scatter_elements_indices &&
          lhs.scatter_nd_input == rhs.scatter_nd_input &&
          lhs.scatter_nd_indices == rhs.scatter_nd_indices &&
+         lhs.scatter_nd_updates == rhs.scatter_nd_updates &&
          lhs.sigmoid_input == rhs.sigmoid_input &&
          lhs.slice_input == rhs.slice_input &&
          lhs.softmax_input == rhs.softmax_input &&

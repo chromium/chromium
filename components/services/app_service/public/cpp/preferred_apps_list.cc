@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
@@ -148,65 +147,6 @@ IntentFilters PreferredAppsList::DeleteSupportedLinks(
   }
 
   return out;
-}
-
-void PreferredAppsList::ApplyBulkUpdate(apps::PreferredAppChangesPtr changes) {
-  // Process removed filters first. There's no difference in behavior whether we
-  // handle removals or additions first, but doing removals first means there
-  // are fewer items in the list to search through when finding matches.
-  for (const auto& removed_filters : changes->removed_filters) {
-    const std::string& app_id = removed_filters.first;
-    const auto& filters = removed_filters.second;
-
-    // To process removals for an app, go through the current list and remove
-    // any filters which match the bulk update. Any items which exist in the
-    // bulk update but not in the current list will be silently ignored.
-    auto iter = preferred_apps_.begin();
-    while (iter != preferred_apps_.end()) {
-      if ((*iter)->app_id == app_id &&
-          Contains(filters, (*iter)->intent_filter)) {
-        iter = preferred_apps_.erase(iter);
-      } else {
-        iter++;
-      }
-    }
-
-    bool has_supported_link =
-        std::ranges::any_of(filters, [&app_id](const auto& filter) {
-          return apps_util::IsSupportedLinkForApp(app_id, filter);
-        });
-
-    // Notify observers if any of the removed filters were supported links.
-    // TODO(crbug.com/40791690): Notify observers about all changes, not just
-    // changes to supported links status.
-    if (has_supported_link) {
-      for (auto& obs : observers_) {
-        obs.OnPreferredAppChanged(app_id, false);
-      }
-    }
-  }
-
-  // Added filters are appended to the preferred app list with no changes.
-  for (auto& added_filters : changes->added_filters) {
-    const std::string& app_id = added_filters.first;
-    bool has_supported_link = false;
-    for (auto& filter : added_filters.second) {
-      if (EntryExists(app_id, filter)) {
-        continue;
-      }
-      has_supported_link = has_supported_link ||
-                           apps_util::IsSupportedLinkForApp(app_id, filter);
-      preferred_apps_.push_back(
-          std::make_unique<PreferredApp>(std::move(filter), app_id));
-    }
-
-    // Notify observers if any of the added filters added were supported links.
-    if (has_supported_link) {
-      for (auto& obs : observers_) {
-        obs.OnPreferredAppChanged(app_id, true);
-      }
-    }
-  }
 }
 
 bool PreferredAppsList::IsInitialized() const {

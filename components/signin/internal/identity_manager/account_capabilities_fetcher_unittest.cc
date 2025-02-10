@@ -15,6 +15,7 @@
 #include "account_capabilities_fetcher.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -141,9 +142,9 @@ std::string GenerateValidAccountCapabilitiesResponse(bool capability_value) {
   std::vector<std::string> dict_array;
   for (std::string_view name :
        AccountCapabilitiesTestMutator::GetSupportedAccountCapabilityNames()) {
-    dict_array.push_back(
-        base::StringPrintf(kSingleCapabilitiyResponseFormat, name.size(),
-                           name.data(), capability_value ? "true" : "false"));
+    dict_array.push_back(base::StringPrintf(kSingleCapabilitiyResponseFormat,
+                                            name.size(), name.data(),
+                                            base::ToString(capability_value)));
   }
   return base::StringPrintf(kAccountCapabilitiesResponseFormat,
                             base::JoinString(dict_array, ",").c_str());

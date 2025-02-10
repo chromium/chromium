@@ -21,7 +21,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom-forward.h"
-#include "chromeos/crosapi/mojom/app_service_types.mojom-forward.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 class Browser;
@@ -83,27 +82,6 @@ int GetSessionIdForRestoreFromWebContents(
 #if BUILDFLAG(IS_CHROMEOS)
 // Helper to convert apps::mojom::WindowInfoPtr to arc::mojom::WindowInfoPtr.
 arc::mojom::WindowInfoPtr MakeArcWindowInfo(WindowInfoPtr window_info);
-
-// Helper to convert apps::AppLaunchParams to crosapi::mojom::LaunchParams.
-// This is needed because we cannot use traits to convert Intent at the moment,
-// After that is done, this can be moved to the mojom type traits.
-crosapi::mojom::LaunchParamsPtr ConvertLaunchParamsToCrosapi(
-    const AppLaunchParams& params,
-    Profile* profile);
-
-// Helper to convert crosapi::mojom::LaunchParams to apps::AppLaunchParams.
-// This is needed because we cannot use traits to convert Intent at the moment,
-// After that is done, this can be moved to the mojom type traits.
-AppLaunchParams ConvertCrosapiToLaunchParams(
-    const crosapi::mojom::LaunchParamsPtr& crosapi_params,
-    Profile* profile);
-
-crosapi::mojom::LaunchParamsPtr CreateCrosapiLaunchParamsWithEventFlags(
-    AppServiceProxy* proxy,
-    const std::string& app_id,
-    int event_flags,
-    LaunchSource launch_source,
-    int64_t display_id);
 
 // Container for holding possible app IDs that can launch a PWA for a given URL.
 struct AppIdsToLaunchForUrl {

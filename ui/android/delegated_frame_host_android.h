@@ -11,7 +11,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/layers/deadline_policy.h"
 #include "components/viz/client/frame_evictor.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -23,6 +22,7 @@
 #include "components/viz/host/host_frame_sink_client.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
+#include "ui/android/browser_controls_offset_tag_definitions.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/android/window_android_compositor.h"
 
@@ -180,8 +180,9 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
 
   void SetIsFrameSinkIdOwner(bool is_owner);
 
-  void RegisterOffsetTags(const cc::BrowserControlsOffsetTagsInfo& tags_info);
-  void UnregisterOffsetTags(const cc::BrowserControlsOffsetTagsInfo& tags_info);
+  void RegisterOffsetTags(
+      const BrowserControlsOffsetTagDefinitions& tag_definitions);
+  void UnregisterOffsetTags(const cc::BrowserControlsOffsetTags& tags);
 
  private:
   // FrameEvictorClient implementation.

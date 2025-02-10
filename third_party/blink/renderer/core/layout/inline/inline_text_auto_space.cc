@@ -118,7 +118,7 @@ class SpacingApplier {
 }  // namespace
 
 void InlineTextAutoSpace::Initialize(const InlineItemsData& data) {
-  const HeapVector<InlineItem>& items = data.items;
+  const InlineItems& items = data.items;
   if (items.empty()) [[unlikely]] {
     return;
   }

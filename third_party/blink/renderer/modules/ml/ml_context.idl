@@ -149,9 +149,9 @@ dictionary MLSingleInputSupportLimits {
 };
 
 dictionary MLScatterSupportLimits {
-  MLDataTypeLimits input;
-  MLDataTypeLimits indices;
-  MLDataTypeLimits updates;
+  MLTensorLimits input;
+  MLTensorLimits indices;
+  MLTensorLimits updates;
   MLDataTypeLimits output;
 };
 

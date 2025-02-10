@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/cast.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/features.gni")
@@ -1115,7 +1114,6 @@ component("net") {
   deps = [
     ":cronet_buildflags",
     ":net_deps",
-    "//build:chromeos_buildflags",
     "//components/miracle_parameter/common",
     "//components/network_time/time_tracker",
     "//net/http:transport_security_state_generated_files",
@@ -1528,6 +1526,7 @@ component("net") {
       "third_party/nss/ssl/cmpcert.cc",
       "third_party/nss/ssl/cmpcert.h",
     ]
+    deps += [ "//build:chromeos_buildflags" ]
     if (!is_castos) {
       sources += [
         "ssl/client_cert_store_nss.cc",
@@ -2344,7 +2343,6 @@ if (!is_ios && !is_android) {
     deps = [
       ":net",
       "//base",
-      "//build:chromeos_buildflags",
       "//build/win:default_exe_manifest",
     ]
   }
@@ -2975,7 +2973,7 @@ target(_test_target_type, "net_unittests") {
     ]
   }
 
-  if (is_chromeos_ash && use_nss_certs) {
+  if (is_chromeos && use_nss_certs) {
     sources += [
       "cert/nss_cert_database_chromeos_unittest.cc",
       "cert/nss_profile_filter_chromeos_unittest.cc",
@@ -3044,7 +3042,6 @@ target(_test_target_type, "net_unittests") {
     ":test_support",
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//components/network_time/time_tracker",
     "//crypto",
     "//crypto:test_support",
@@ -3096,7 +3093,7 @@ target(_test_target_type, "net_unittests") {
     sources += [ "base/sockaddr_util_posix_unittest.cc" ]
   }
 
-  if (is_android || is_chromeos_ash) {
+  if (is_android || is_chromeos) {
     sources += [ "base/network_change_notifier_passive_unittest.cc" ]
   }
 

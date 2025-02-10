@@ -57,7 +57,18 @@ AccountWidgetUpdater::StoreIdentityDataInDict(NSMutableDictionary* dictionary,
   // Add the account to the dictionary of accounts.
   [dictionary setObject:account forKey:identity.gaiaID];
 
-  // TODO(crbug.com/380847504): Save avatar info to disk.
+  // Save avatar info to disk.
+  NSString* file_name = [NSString stringWithFormat:@"%@.png", identity.gaiaID];
+  NSURL* identity_file =
+      [app_group::WidgetsAvatarFolder() URLByAppendingPathComponent:file_name];
+
+  if (UIImage* image =
+          system_identity_manager_->GetCachedAvatarForIdentity(identity)) {
+    NSData* png_data = UIImagePNGRepresentation(image);
+    [png_data writeToURL:identity_file atomically:YES];
+  } else {
+    [[NSFileManager defaultManager] removeItemAtURL:identity_file error:nil];
+  }
 
   return SystemIdentityManager::IteratorResult::kContinueIteration;
 }

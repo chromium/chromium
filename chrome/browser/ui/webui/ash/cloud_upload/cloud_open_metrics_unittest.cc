@@ -118,7 +118,7 @@ class CloudOpenMetricsTest : public testing::Test {
 
   void TearDown() override {
     base::debug::SetDumpWithoutCrashingFunction(nullptr);
-    base::debug::ClearMapsForTesting();
+    base::debug::ResetDumpWithoutCrashingThrottlingForTesting();
   }
 
   static int number_of_dump_calls_;

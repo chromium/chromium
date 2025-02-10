@@ -23,7 +23,6 @@
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager_test_api.h"
 #include "components/autofill_ai/core/browser/mock_autofill_ai_client.h"
-#include "components/optimization_guide/core/mock_optimization_guide_decider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
@@ -87,8 +86,7 @@ std::string GetCorrectionAfterFillHistogram(bool submitted) {
 class BaseAutofillAiTest : public testing::Test {
  public:
   BaseAutofillAiTest() {
-    manager_ = std::make_unique<AutofillAiManager>(&client_, &decider_,
-                                                   &strike_database_);
+    manager_ = std::make_unique<AutofillAiManager>(&client_, &strike_database_);
     ON_CALL(client_, GetAutofillClient)
         .WillByDefault(testing::ReturnRef(autofill_client_));
     ON_CALL(client_, GetEntityDataManager)
@@ -103,7 +101,6 @@ class BaseAutofillAiTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   autofill::TestAutofillClient autofill_client_;
-  testing::NiceMock<optimization_guide::MockOptimizationGuideDecider> decider_;
   testing::NiceMock<MockAutofillAiClient> client_;
   std::unique_ptr<AutofillAiManager> manager_;
   autofill::TestStrikeDatabase strike_database_;

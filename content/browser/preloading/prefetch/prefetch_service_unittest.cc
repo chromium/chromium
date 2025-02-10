@@ -436,8 +436,8 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     prefetch_document_manager->PrefetchUrl(
         prefetch_url, prefetch_type,
         GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type()),
-        planned_max_preloading_type, referrer, no_vary_search_hint,
-        base::MakeRefCounted<PreloadPipelineInfo>());
+        referrer, no_vary_search_hint,
+        base::MakeRefCounted<PreloadPipelineInfo>(planned_max_preloading_type));
   }
 
   void MakePrefetchFromEmbedder(
@@ -6787,7 +6787,6 @@ class PrefetchServiceAddPrefetchContainerTest : public PrefetchServiceTestBase {
         preloading_data->AddPreloadingAttempt(
             GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type()),
             PreloadingType::kPrefetch, std::move(matcher),
-            planned_max_preloading_type,
             web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId()));
 
     attempt->SetSpeculationEagerness(prefetch_type.GetEagerness());
@@ -6797,7 +6796,8 @@ class PrefetchServiceAddPrefetchContainerTest : public PrefetchServiceTestBase {
         prefetch_url, std::move(prefetch_type), blink::mojom::Referrer(),
         /*no_vary_search_hint=*/std::nullopt,
         /*prefetch_document_manager=*/nullptr,
-        base::MakeRefCounted<PreloadPipelineInfo>(), attempt->GetWeakPtr());
+        base::MakeRefCounted<PreloadPipelineInfo>(planned_max_preloading_type),
+        attempt->GetWeakPtr());
   }
 
   void AddPrefetchContainerWithoutStartingPrefetchForTesting(
