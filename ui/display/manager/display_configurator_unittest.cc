@@ -1582,6 +1582,10 @@ TEST_F(DisplayConfiguratorTest, DontRestoreStalePowerStateAfterResume) {
 }
 
 TEST_F(DisplayConfiguratorTest, ExternalControl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(display::features::kFastDrmMasterDrop);
+  ASSERT_FALSE(display::features::IsFastDrmMasterDropEnabled());
+
   InitWithOutputs(&small_mode_);
   state_controller_.set_state(MULTIPLE_DISPLAY_STATE_SINGLE);
 
@@ -1611,6 +1615,31 @@ TEST_F(DisplayConfiguratorTest, ExternalControl) {
                   kCommitModesetStr, GetCrtcActions(&small_mode_).c_str(),
                   kModesetOutcomeSuccess, nullptr),
       log_->GetActionsAndClear());
+}
+
+TEST_F(DisplayConfiguratorTest, ExternalControlFastDrmDrop) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(display::features::kFastDrmMasterDrop);
+  ASSERT_TRUE(display::features::IsFastDrmMasterDropEnabled());
+
+  InitWithOutputs(&small_mode_);
+  state_controller_.set_state(MULTIPLE_DISPLAY_STATE_SINGLE);
+
+  // Set the initial power state and verify that it is restored when control is
+  // taken.
+  config_waiter_.Reset();
+  configurator_.SetDisplayPower(chromeos::DISPLAY_POWER_ALL_ON,
+                                DisplayConfigurator::kSetDisplayPowerNoFlags,
+                                config_waiter_.on_configuration_callback());
+
+  configurator_.RelinquishControl(
+      base::BindOnce(&DisplayConfiguratorTest::OnDisplayControlUpdated,
+                     base::Unretained(this)));
+  EXPECT_EQ(kNoDelay, config_waiter_.Wait());
+  EXPECT_EQ(CALLBACK_SUCCESS, PopDisplayControlResult());
+  // FastDrmMasterDrop forgoes the modeset in favor of detaching planes from drm
+  // pipes when relinquish is called.
+  EXPECT_EQ(kRelinquishDisplayControl, log_->GetActionsAndClear());
 }
 
 TEST_F(DisplayConfiguratorTest,
