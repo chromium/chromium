@@ -78,6 +78,8 @@ void MoveGroupBeforeTabStripItem(const TabGroup* group,
   // directly. Otherwise, use `MoveTabGroupToBrowser` to first move the group to
   // `destination_browser`.
   if (web_state_list->ContainsGroup(group)) {
+    const WebStateList::ScopedBatchOperation batch =
+        web_state_list->StartBatchOperation();
     web_state_list->MoveGroup(group, web_state_list_index_after_update);
   } else {
     tab_groups::utils::MoveTabGroupToBrowser(group, destination_browser,
