@@ -224,6 +224,10 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     /**
      * Returns whether the given {context, device, cct-ness} combo is eligible for toolbar position
      * customization.
+     *
+     * <p>NOTE: this method controls whether feature can take effect, and is separate from code
+     * controlling whether feature can be configured - {@see
+     * org.chromium.chrome.browser.settings.MainSettings#updateAddressBarPreference()}.
      */
     public static boolean isToolbarPositionCustomizationEnabled(
             Context context, boolean isCustomTab) {
