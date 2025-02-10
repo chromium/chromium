@@ -4,8 +4,21 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.content.Context;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.DESCRIPTION_TEXT;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_IDENTIFIER;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageService.DEFAULT_MESSAGE_IDENTIFIER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupMessageCardViewProperties.ALL_KEYS;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupMessageCardViewProperties.MESSAGING_BACKEND_SERVICE_ID;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DESTROYABLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
 
+import android.content.Context;
+import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.CallbackController;
@@ -17,8 +30,17 @@ import org.chromium.chrome.browser.bookmarks.PendingRunnable;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListCoordinator.RowType;
+import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.collaboration.messaging.CollaborationEvent;
+import org.chromium.components.collaboration.messaging.MessageUtils;
+import org.chromium.components.collaboration.messaging.MessagingBackendService;
+import org.chromium.components.collaboration.messaging.MessagingBackendService.PersistentMessageObserver;
+import org.chromium.components.collaboration.messaging.PersistentMessage;
+import org.chromium.components.collaboration.messaging.PersistentNotificationType;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -39,6 +61,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /** Populates a {@link ModelList} with an item for each tab group. */
 public class TabGroupListMediator {
@@ -56,6 +80,7 @@ public class TabGroupListMediator {
     private final SyncService mSyncService;
     private final ModalDialogManager mModalDialogManager;
     private final CallbackController mCallbackController = new CallbackController();
+    private final @NonNull MessagingBackendService mMessagingBackendService;
     private final PendingRunnable mPendingRefresh =
             new PendingRunnable(
                     TaskTraits.UI_DEFAULT,
@@ -75,7 +100,7 @@ public class TabGroupListMediator {
                 }
             };
 
-    private final TabGroupSyncService.Observer mTabGroupSyncObserver =
+    private final Observer mTabGroupSyncObserver =
             new Observer() {
                 @Override
                 public void onInitialized() {
@@ -137,6 +162,28 @@ public class TabGroupListMediator {
                 }
             };
 
+    private final PersistentMessageObserver mPersistentMessageObserver =
+            new PersistentMessageObserver() {
+                @Override
+                public void onMessagingBackendServiceInitialized() {
+                    mPendingRefresh.post();
+                }
+
+                @Override
+                public void displayPersistentMessage(PersistentMessage message) {
+                    if (message.collaborationEvent == CollaborationEvent.TAB_GROUP_REMOVED) {
+                        mPendingRefresh.post();
+                    }
+                }
+
+                @Override
+                public void hidePersistentMessage(PersistentMessage message) {
+                    if (message.collaborationEvent == CollaborationEvent.TAB_GROUP_REMOVED) {
+                        mPendingRefresh.post();
+                    }
+                }
+            };
+
     /**
      * @param context Used to load resources and create views.
      * @param modelList Side effect is adding items to this list.
@@ -145,6 +192,7 @@ public class TabGroupListMediator {
      * @param faviconResolver Used to fetch favicon images for some tabs.
      * @param tabGroupSyncService Used to fetch synced copy of tab groups.
      * @param dataSharingService Used to fetch shared group data.
+     * @param messagingBackendService Used to fetch tab group related messages.
      * @param identityManager Used to fetch current account information.
      * @param paneManager Used switch panes to show details of a group.
      * @param tabGroupUiActionHandler Used to open hidden tab groups.
@@ -160,6 +208,7 @@ public class TabGroupListMediator {
             FaviconResolver faviconResolver,
             @Nullable TabGroupSyncService tabGroupSyncService,
             @Nullable DataSharingService dataSharingService,
+            @NonNull MessagingBackendService messagingBackendService,
             IdentityManager identityManager,
             PaneManager paneManager,
             TabGroupUiActionHandler tabGroupUiActionHandler,
@@ -173,6 +222,7 @@ public class TabGroupListMediator {
         mFaviconResolver = faviconResolver;
         mTabGroupSyncService = tabGroupSyncService;
         mDataSharingService = dataSharingService;
+        mMessagingBackendService = messagingBackendService;
         mIdentityManager = identityManager;
         mPaneManager = paneManager;
         mTabGroupUiActionHandler = tabGroupUiActionHandler;
@@ -188,6 +238,7 @@ public class TabGroupListMediator {
             mDataSharingService.addObserver(mDataSharingObserver);
         }
         mSyncService.addSyncStateChangedListener(mSyncStateChangeListener);
+        mMessagingBackendService.addPersistentMessageObserver(mPersistentMessageObserver);
 
         repopulateModelList();
         mSyncStateChangeListener.syncStateChanged();
@@ -205,6 +256,7 @@ public class TabGroupListMediator {
         }
         mSyncService.removeSyncStateChangedListener(mSyncStateChangeListener);
         mCallbackController.destroy();
+        mMessagingBackendService.removePersistentMessageObserver(mPersistentMessageObserver);
     }
 
     private @GroupWindowState int getState(SavedTabGroup savedTabGroup) {
@@ -246,10 +298,56 @@ public class TabGroupListMediator {
         return groupList;
     }
 
+    private List<PropertyModel> getTabGroupRemovedMessageModelList() {
+        List<PersistentMessage> messages =
+                mMessagingBackendService.getMessages(
+                        Optional.of(PersistentNotificationType.DIRTY_TAB_GROUP_REMOVED));
+
+        List<PropertyModel> tabGroupRemovedMessages = new ArrayList<>();
+        for (PersistentMessage message : messages) {
+            if (message.collaborationEvent != CollaborationEvent.TAB_GROUP_REMOVED) {
+                continue;
+            }
+
+            if (message.attribution.id == null || TextUtils.isEmpty(message.attribution.id)) {
+                continue;
+            }
+
+            String descriptionText =
+                    mContext.getString(
+                            R.string.tab_group_removed_message_card_description,
+                            getTabGroupTitle(message));
+            String dismissButtonContextDescription =
+                    mContext.getString(R.string.accessibility_tab_group_removed_dismiss_button);
+
+            String messageId = message.attribution.id;
+            PropertyModel propertyModel =
+                    new PropertyModel.Builder(ALL_KEYS)
+                            .with(MESSAGE_IDENTIFIER, DEFAULT_MESSAGE_IDENTIFIER)
+                            .with(
+                                    UI_DISMISS_ACTION_PROVIDER,
+                                    (unused) -> dismissActionProvider(messageId))
+                            .with(DESCRIPTION_TEXT, descriptionText)
+                            .with(
+                                    DISMISS_BUTTON_CONTENT_DESCRIPTION,
+                                    dismissButtonContextDescription)
+                            .with(CARD_TYPE, MESSAGE)
+                            .with(MESSAGING_BACKEND_SERVICE_ID, messageId)
+                            .build();
+
+            tabGroupRemovedMessages.add(propertyModel);
+        }
+        return tabGroupRemovedMessages;
+    }
+
     private void repopulateModelList() {
         destroyAndClearAllRows();
         LazyOneshotSupplier<CoreAccountInfo> accountInfoSupplier =
                 LazyOneshotSupplier.fromSupplier(this::getAccountInfo);
+
+        for (PropertyModel propertyModel : getTabGroupRemovedMessageModelList()) {
+            mModelList.add(new ListItem(RowType.TAB_GROUP_REMOVED_CARD, propertyModel));
+        }
 
         for (SavedTabGroup savedTabGroup : getSortedGroupList()) {
             TabGroupRowMediator rowMediator =
@@ -266,16 +364,56 @@ public class TabGroupListMediator {
                             mFaviconResolver,
                             accountInfoSupplier,
                             () -> getState(savedTabGroup));
-            ListItem listItem = new ListItem(0, rowMediator.getModel());
+            ListItem listItem = new ListItem(RowType.TAB_GROUP, rowMediator.getModel());
             mModelList.add(listItem);
         }
         boolean empty = mModelList.isEmpty();
         mPropertyModel.set(TabGroupListProperties.EMPTY_STATE_VISIBLE, empty);
     }
 
+    // TODO(crbug.com/394310573): Extract common code to separate util to unify.
+    private String getTabGroupTitle(PersistentMessage message) {
+        String messageTitle = MessageUtils.extractTabGroupTitle(message);
+        if (TextUtils.isEmpty(messageTitle)) {
+            @Nullable String syncId = MessageUtils.extractSyncTabGroupId(message);
+            @Nullable SavedTabGroup syncGroup = mTabGroupSyncService.getGroup(syncId);
+            @Nullable Token token = extractLocalId(syncGroup);
+            int rootId = mFilter.getRootIdFromStableId(token);
+            int tabCount = mFilter.getRelatedTabCountForRootId(rootId);
+            return TabGroupTitleUtils.getDisplayableTitle(mContext, mFilter, tabCount);
+        } else {
+            return messageTitle;
+        }
+    }
+
+    // TODO(crbug.com/394310573): Extract common code to separate util to unify.
+    private @Nullable Token extractLocalId(@Nullable SavedTabGroup syncGroup) {
+        return syncGroup == null || syncGroup.localId == null ? null : syncGroup.localId.tabGroupId;
+    }
+
+    private void dismissActionProvider(String messageId) {
+        removeMessageCardItemFromModelList(messageId);
+    }
+
+    // TODO(crbug.com/394312504): Make the method general and move to ModelList Util.
+    private void removeMessageCardItemFromModelList(String messageId) {
+        for (int i = mModelList.size() - 1; i >= 0; i--) {
+            ListItem listItem = mModelList.get(i);
+            if (listItem.type == RowType.TAB_GROUP_REMOVED_CARD
+                    && Objects.equals(
+                            listItem.model.get(MESSAGING_BACKEND_SERVICE_ID), messageId)) {
+                mModelList.removeAt(i);
+                break;
+            }
+        }
+    }
+
     private void destroyAndClearAllRows() {
         for (ListItem listItem : mModelList) {
-            Destroyable destroyable = listItem.model.get(TabGroupRowProperties.DESTROYABLE);
+            Destroyable destroyable =
+                    listItem.model.containsKey(DESTROYABLE)
+                            ? listItem.model.get(DESTROYABLE)
+                            : null;
             if (destroyable != null) {
                 destroyable.destroy();
             }
