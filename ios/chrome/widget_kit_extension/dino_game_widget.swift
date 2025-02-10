@@ -73,6 +73,9 @@ struct DinoGameWidgetEntryView: View {
               .font(.subheadline)
               .lineLimit(1)
             Spacer()
+            #if IOS_ENABLE_WIDGETS_FOR_MIM
+              AvatarForDinoGame(entry: entry)
+            #endif
           }
           .padding([.leading, .bottom], 16)
         }
@@ -86,3 +89,26 @@ struct DinoGameWidgetEntryView: View {
     .crContainerBackground(Color("widget_background_color").unredacted())
   }
 }
+
+#if IOS_ENABLE_WIDGETS_FOR_MIM
+  struct AvatarForDinoGame: View {
+    var entry: ConfigureWidgetEntry
+    var body: some View {
+      if entry.isPreview {
+        Circle()
+          .foregroundColor(Color("widget_text_color"))
+          .opacity(0.2)
+          .frame(width: 25, height: 25)
+          .padding(.trailing, 16)
+      } else if let avatar = entry.avatar {
+        avatar
+          .resizable()
+          .clipShape(Circle())
+          .unredacted()
+          .scaledToFill()
+          .frame(width: 25, height: 25)
+          .padding(.trailing, 16)
+      }
+    }
+  }
+#endif
