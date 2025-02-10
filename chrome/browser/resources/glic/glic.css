@@ -23,13 +23,14 @@ webview:not([hidden]) {
   font-family: Roboto, sans-serif;
   font-size: 13px;
   font-weight: 300;
+  line-height: 20px;
   color: #C4C7C5;
 }
 
 .dialog .container {
   background: #1b1c1d;
   border-radius: 12px;
-  color: #e3e3e3;
+  color: white;
   padding-bottom: 24px;
 }
 
@@ -55,12 +56,20 @@ webview:not([hidden]) {
 }
 
 .dialog .notice {
-  text-align: center;
+  background-color: #282a2c;
+  border-radius: 10px;
+  padding: 12px;
+  margin: 0 14px;
+}
+
+.dialog p {
+  margin: 0 0 8px;
 }
 
 .dialog .headline {
   font-size: 14px;
   font-weight: 400;
+  margin: 8px 0 4px;
 }
 
 /* Guest panel contains glic webview. If in the show-header state, a header
@@ -104,8 +113,9 @@ webview:not([hidden]) {
   bottom: 0;
 }
 .tonal-button {
-  background-color: #A8C7FA;
-  color: #062E6F;
+  width: 100%;
+  background-color: #004a77;
+  color: #c2e7ff;
 }
 
 #debug {

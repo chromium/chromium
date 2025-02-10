@@ -86,16 +86,13 @@ found in the LICENSE file.
         Customize the keyboard shortcut here
       </message>
       <message name="IDS_GLIC_OFFLINE_NOTICE_HEADER" translateable="false" desc="This is the headline on the glic offline notice informing the user that there is no network connection.">
-        Your connection is interrupted
-      </message>
-      <message name="IDS_GLIC_OFFLINE_NOTICE" translateable="false" desc="This is the description of the issue on the glic offline notice.">
-        Glic isn't available right now.
+        You're offline
       </message>
       <message name="IDS_GLIC_OFFLINE_NOTICE_ACTION" translateable="false" desc="This is the suggested user action for the glic offline notice.">
-        Check your internet connection and try again.
+        Check your internet connection and try to use glic again
       </message>
       <message name="IDS_GLIC_OFFLINE_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for the glic offline notice.">
-        Retry connection
+        Try again
       </message>
       <message name="IDS_GLIC_ERROR_NOTICE_HEADER" translateable="false" desc="This is the headline on the glic error notice.">
         Something went wrong
