@@ -89,7 +89,8 @@ void BrowserDownloadService::OnDownloadCreated(
     if (tab_helper) {
       tab_helper->DownloadCalendar(std::move(task));
     }
-  } else if (task->GetMimeType() == kVcardMimeType &&
+  } else if ((task->GetMimeType() == kVcardMimeType ||
+              task->GetMimeType() == kXVcardMimeType) &&
              !base::FeatureList::IsEnabled(kVCardKillSwitch)) {
     VcardTabHelper* tab_helper = VcardTabHelper::FromWebState(web_state);
     if (tab_helper) {
