@@ -35,6 +35,14 @@ class MockAutofillWebDataBackend : public AutofillWebDataBackend {
               RemoveObserver,
               (AutofillWebDataServiceObserverOnDBSequence * observer),
               (override));
+  MOCK_METHOD(void,
+              AddObserver,
+              (AutofillWebDataServiceObserverOnUISequence * observer),
+              (override));
+  MOCK_METHOD(void,
+              RemoveObserver,
+              (AutofillWebDataServiceObserverOnUISequence * observer),
+              (override));
   MOCK_METHOD(void, CommitChanges, (), (override));
   MOCK_METHOD(void,
               NotifyOfAutofillProfileChanged,

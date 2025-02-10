@@ -32,22 +32,14 @@ AutofillWebDataService::AutofillWebDataService(
     : WebDataServiceBase(std::move(wdbs), ui_task_runner),
       ui_task_runner_(std::move(ui_task_runner)),
       autofill_backend_(nullptr) {
-  base::RepeatingCallback<void(syncer::DataType)>
-      on_autofill_changed_by_sync_callback = base::BindRepeating(
-          &AutofillWebDataService::NotifyOnAutofillChangedBySyncOnUISequence,
-          weak_ptr_factory_.GetWeakPtr());
   autofill_backend_ = new AutofillWebDataBackendImpl(
-      wdbs_->GetBackend(), ui_task_runner_, wdbs_->GetDbSequence(),
-      on_autofill_changed_by_sync_callback);
+      wdbs_->GetBackend(), ui_task_runner_, wdbs_->GetDbSequence());
 }
 
 AutofillWebDataService::~AutofillWebDataService() = default;
 
 void AutofillWebDataService::ShutdownOnUISequence() {
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  wdbs_->GetDbSequence()->PostTask(
-      FROM_HERE,
-      BindOnce(&AutofillWebDataBackendImpl::ResetUserData, autofill_backend_));
+  autofill_backend_->ShutdownOnUISequence();
   WebDataServiceBase::ShutdownOnUISequence();
 }
 
@@ -415,14 +407,16 @@ void AutofillWebDataService::RemoveObserver(
 
 void AutofillWebDataService::AddObserver(
     AutofillWebDataServiceObserverOnUISequence* observer) {
-  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-  ui_observer_list_.AddObserver(observer);
+  if (autofill_backend_) {
+    autofill_backend_->AddObserver(observer);
+  }
 }
 
 void AutofillWebDataService::RemoveObserver(
     AutofillWebDataServiceObserverOnUISequence* observer) {
-  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-  ui_observer_list_.RemoveObserver(observer);
+  if (autofill_backend_) {
+    autofill_backend_->RemoveObserver(observer);
+  }
 }
 
 base::SupportsUserData* AutofillWebDataService::GetDBUserData() {
@@ -458,13 +452,6 @@ void AutofillWebDataService::AddServerCreditCardForTesting(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::AddServerCreditCardForTesting,
                      autofill_backend_, credit_card));
-}
-
-void AutofillWebDataService::NotifyOnAutofillChangedBySyncOnUISequence(
-    syncer::DataType data_type) {
-  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-  for (auto& ui_observer : ui_observer_list_)
-    ui_observer.OnAutofillChangedBySync(data_type);
 }
 
 }  // namespace autofill

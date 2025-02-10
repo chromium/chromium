@@ -13,6 +13,7 @@ class WebDatabase;
 namespace autofill {
 
 class AutofillWebDataServiceObserverOnDBSequence;
+class AutofillWebDataServiceObserverOnUISequence;
 
 // Interface for doing Autofill work directly on the DB sequence (used by
 // Sync, mostly), without fully exposing the AutofillWebDataBackend to clients.
@@ -30,6 +31,14 @@ class AutofillWebDataBackend {
   // Remove an observer.
   virtual void RemoveObserver(
       AutofillWebDataServiceObserverOnDBSequence* observer) = 0;
+
+  // Add an observer to be notified of changes on the UI sequence.
+  virtual void AddObserver(
+      AutofillWebDataServiceObserverOnUISequence* observer) = 0;
+
+  // Remove an observer.
+  virtual void RemoveObserver(
+      AutofillWebDataServiceObserverOnUISequence* observer) = 0;
 
   // Commits the currently open transaction in the database. Should be only used
   // by parties that talk directly to the database and not through the

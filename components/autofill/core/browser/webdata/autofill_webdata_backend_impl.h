@@ -33,6 +33,7 @@ class WebDatabaseBackend;
 namespace autofill {
 
 class AutofillWebDataServiceObserverOnDBSequence;
+class AutofillWebDataServiceObserverOnUISequence;
 class CreditCard;
 class Iban;
 
@@ -49,19 +50,16 @@ class AutofillWebDataBackendImpl
   // `web_database_backend` is used to access the WebDatabase directly for
   // Sync-related operations. `ui_task_runner` and `db_task_runner` are the task
   // runners that this class uses for UI and DB tasks respectively.
-  // `on_autofill_changed_by_sync_callback_` is a closure which can be used to
-  // notify the UI sequence of changes initiated by Sync (this callback may be
-  // called multiple times).
   AutofillWebDataBackendImpl(
       scoped_refptr<WebDatabaseBackend> web_database_backend,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> db_task_runner,
-      const base::RepeatingCallback<void(syncer::DataType)>&
-          on_autofill_changed_by_sync_callback);
+      scoped_refptr<base::SequencedTaskRunner> db_task_runner);
 
   AutofillWebDataBackendImpl(const AutofillWebDataBackendImpl&) = delete;
   AutofillWebDataBackendImpl& operator=(const AutofillWebDataBackendImpl&) =
       delete;
+
+  void ShutdownOnUISequence();
 
   void SetAutofillProfileChangedCallback(
       base::RepeatingCallback<void(const AutofillProfileChange&)> change_cb);
@@ -71,6 +69,10 @@ class AutofillWebDataBackendImpl
       AutofillWebDataServiceObserverOnDBSequence* observer) override;
   void RemoveObserver(
       AutofillWebDataServiceObserverOnDBSequence* observer) override;
+  void AddObserver(
+      AutofillWebDataServiceObserverOnUISequence* observer) override;
+  void RemoveObserver(
+      AutofillWebDataServiceObserverOnUISequence* observer) override;
   WebDatabase* GetDatabase() override;
   void NotifyOfAutofillProfileChanged(
       const AutofillProfileChange& change) override;
@@ -291,12 +293,16 @@ class AutofillWebDataBackendImpl
   base::ObserverList<AutofillWebDataServiceObserverOnDBSequence>::Unchecked
       db_observer_list_;
 
+  base::ObserverList<AutofillWebDataServiceObserverOnUISequence>::Unchecked
+      ui_observer_list_;
+
   // WebDatabaseBackend allows direct access to DB.
   // TODO(caitkp): Make it so nobody but us needs direct DB access anymore.
   scoped_refptr<WebDatabaseBackend> web_database_backend_;
 
-  base::RepeatingCallback<void(syncer::DataType)>
-      on_autofill_changed_by_sync_callback_;
+  // This factory is used on the UI sequence. All vended weak pointers are
+  // invalidated in ShutdownOnUISequence().
+  base::WeakPtrFactory<AutofillWebDataBackendImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

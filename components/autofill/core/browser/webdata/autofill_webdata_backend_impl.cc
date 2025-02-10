@@ -141,15 +141,19 @@ void ReportResult(Result result) {
 AutofillWebDataBackendImpl::AutofillWebDataBackendImpl(
     scoped_refptr<WebDatabaseBackend> web_database_backend,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> db_task_runner,
-    const base::RepeatingCallback<void(syncer::DataType)>&
-        on_autofill_changed_by_sync_callback)
+    scoped_refptr<base::SequencedTaskRunner> db_task_runner)
     : base::RefCountedDeleteOnSequence<AutofillWebDataBackendImpl>(
           std::move(db_task_runner)),
       ui_task_runner_(ui_task_runner),
-      web_database_backend_(web_database_backend),
-      on_autofill_changed_by_sync_callback_(
-          on_autofill_changed_by_sync_callback) {}
+      web_database_backend_(web_database_backend) {}
+
+void AutofillWebDataBackendImpl::ShutdownOnUISequence() {
+  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  owning_task_runner()->PostTask(
+      FROM_HERE, BindOnce(&AutofillWebDataBackendImpl::ResetUserData,
+                          scoped_refptr(this)));
+}
 
 void AutofillWebDataBackendImpl::AddObserver(
     AutofillWebDataServiceObserverOnDBSequence* observer) {
@@ -161,6 +165,18 @@ void AutofillWebDataBackendImpl::RemoveObserver(
     AutofillWebDataServiceObserverOnDBSequence* observer) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   db_observer_list_.RemoveObserver(observer);
+}
+
+void AutofillWebDataBackendImpl::AddObserver(
+    AutofillWebDataServiceObserverOnUISequence* observer) {
+  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
+  ui_observer_list_.AddObserver(observer);
+}
+
+void AutofillWebDataBackendImpl::RemoveObserver(
+    AutofillWebDataServiceObserverOnUISequence* observer) {
+  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
+  ui_observer_list_.RemoveObserver(observer);
 }
 
 AutofillWebDataBackendImpl::~AutofillWebDataBackendImpl() {
@@ -226,11 +242,18 @@ void AutofillWebDataBackendImpl::NotifyOfIbanChanged(const IbanChange& change) {
 void AutofillWebDataBackendImpl::NotifyOnAutofillChangedBySync(
     syncer::DataType data_type) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-
-  // UI sequence notification.
   ui_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(on_autofill_changed_by_sync_callback_, data_type));
+      FROM_HERE, base::BindOnce(
+                     [](base::WeakPtr<AutofillWebDataBackendImpl> self,
+                        syncer::DataType data_type) {
+                       if (!self) {
+                         return;
+                       }
+                       for (auto& ui_observer : self->ui_observer_list_) {
+                         ui_observer.OnAutofillChangedBySync(data_type);
+                       }
+                     },
+                     weak_ptr_factory_.GetWeakPtr(), data_type));
 }
 
 void AutofillWebDataBackendImpl::NotifyOnServerCvcChanged(

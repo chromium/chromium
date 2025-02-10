@@ -268,19 +268,10 @@ class AutofillWebDataService : public WebDataServiceBase {
   ~AutofillWebDataService() override;
 
  private:
-  void NotifyOnAutofillChangedBySyncOnUISequence(syncer::DataType data_type);
-
-  base::ObserverList<AutofillWebDataServiceObserverOnUISequence>::Unchecked
-      ui_observer_list_;
-
   // The task runner that this class uses for UI tasks.
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
   scoped_refptr<AutofillWebDataBackendImpl> autofill_backend_;
-
-  // This factory is used on the UI sequence. All vended weak pointers are
-  // invalidated in ShutdownOnUISequence().
-  base::WeakPtrFactory<AutofillWebDataService> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
