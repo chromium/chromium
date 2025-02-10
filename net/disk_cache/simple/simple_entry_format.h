@@ -77,6 +77,10 @@ struct NET_EXPORT_PRIVATE SimpleFileEOF {
   uint32_t data_crc32;
   // |stream_size| is only used in the EOF record for stream 0.
   uint32_t stream_size;
+
+  // Avoid implicit padding so `std::has_unique_object_representations_v<>` will
+  // hold.
+  uint32_t unused_padding = 0;
 };
 
 struct SimpleFileSparseRangeHeader {
@@ -86,6 +90,10 @@ struct SimpleFileSparseRangeHeader {
   int64_t offset;
   int64_t length;
   uint32_t data_crc32;
+
+  // Avoid implicit padding so `std::has_unique_object_representations_v<>` will
+  // hold.
+  uint32_t unused_padding = 0;
 };
 
 }  // namespace disk_cache
