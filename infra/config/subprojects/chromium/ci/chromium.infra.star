@@ -185,15 +185,15 @@ packager_builder(
                 "tools/android/avd/proto_creation/android_34_google_apis_x64.textpb",
                 "tools/android/avd/proto_creation/android_35_google_apis_x64.textpb",
 
+                # google_apis_tablet system images
+                "tools/android/avd/proto_creation/android_35_google_apis_tablet_x64.textpb",
+
                 # google_atd system images
                 "tools/android/avd/proto_creation/android_30_google_atd_x86.textpb",
                 "tools/android/avd/proto_creation/android_30_google_atd_x64.textpb",
                 "tools/android/avd/proto_creation/android_31_google_atd_x64.textpb",
                 "tools/android/avd/proto_creation/android_32_google_atd_x64_foldable.textpb",
                 "tools/android/avd/proto_creation/android_33_google_atd_x64.textpb",
-
-                # Desktop system images
-                "tools/android/avd/proto_creation/android_34_desktop_x64.textpb",
 
                 # TODO(hypan): Using more specific names for the configs below.
                 "tools/android/avd/proto_creation/generic_android19.textpb",
@@ -335,10 +335,6 @@ packager_builder(
             {
                 "sdk_package_name": "system-images;android-33;google_atd;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-33/google_atd/x86_64.yaml",
-            },
-            {
-                "sdk_package_name": "system-images;android-34;android-desktop;x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-34/android-desktop/x86_64.yaml",
             },
             {
                 "sdk_package_name": "system-images;android-34;google_apis;x86_64",
