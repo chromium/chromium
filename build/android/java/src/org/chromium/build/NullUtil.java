@@ -14,12 +14,32 @@ public class NullUtil {
     private NullUtil() {}
 
     /**
-     * Tell NullAway that the given parameter is non-null. Using the return value is optional.
+     * Tell NullAway that the given parameter is non-null, and asserting to raise a runtime error if
+     * the parameter is actually null. Using the return value is optional.
      *
-     * <p>Prefer "assumeNotNull(foo);" over "assert foo != null;" when "foo" will be immenently
+     * <p>Prefer "assumeNotNull(foo);" over "assert foo != null;" when "foo" will be immediately
      * dereferenced (since dereferencing checks for nullness anyways).
      *
-     * <p>For when a runtime check is meritted, use Objects.requireNonNull().
+     * <p>For when a runtime check is preferred on all channels (since asserts only fire on canary),
+     * use Objects.requireNonNull().
+     *
+     * <p>Expressions are supported. E.g.: assertNonNull(foo.getBar());
+     */
+    @SuppressWarnings("NullAway") // Since it does not actually check.
+    @Contract("null -> fail") // Means you do not need to use the return value.
+    public static <T> T assertNonNull(@Nullable T object) {
+        assert object != null;
+        return object;
+    }
+
+    /**
+     * Tell NullAway that the given parameter is non-null. Using the return value is optional.
+     *
+     * <p>Prefer "assumeNotNull(foo);" over "assertNotNull(foo);" when "foo" will be immediately
+     * dereferenced (since dereferencing checks for nullness anyways).
+     *
+     * <p>When foo is not immediately dereferenced, prefer assertNonNull(). When a runtime check is
+     * preferred on all channels (since asserts only fire on canary), use Objects.requireNonNull().
      *
      * <p>Expressions are supported. E.g.: assumeNonNull(foo.getBar());
      */
