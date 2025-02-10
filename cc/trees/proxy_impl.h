@@ -16,7 +16,6 @@
 #include "base/types/optional_ref.h"
 #include "cc/base/completion_event.h"
 #include "cc/base/delayed_unique_notifier.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/paint/draw_image.h"
 #include "cc/scheduler/scheduler.h"
@@ -27,12 +26,14 @@ class GURL;
 
 namespace viz {
 struct FrameTimingDetails;
+class LocalSurfaceId;
 }
 
 namespace cc {
 
 struct CommitState;
 struct CommitTimestamps;
+struct BrowserControlsOffsetTagModifications;
 class LayerTreeFrameSink;
 class LayerTreeHost;
 class LayerTreeHostImpl;
@@ -68,7 +69,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
       BrowserControlsState constraints,
       BrowserControlsState current,
       bool animate,
-      base::optional_ref<const BrowserControlsOffsetTagsInfo> offset_tags_info);
+      base::optional_ref<const BrowserControlsOffsetTagModifications>
+          offset_tag_modifications);
   void InitializeLayerTreeFrameSinkOnImpl(
       LayerTreeFrameSink* layer_tree_frame_sink,
       base::WeakPtr<ProxyMain> proxy_main_frame_sink_bound_weak_ptr);

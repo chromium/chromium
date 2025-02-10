@@ -54,8 +54,8 @@
 #include "ui/touch_selection/touch_selection_controller.h"
 
 namespace cc {
-struct BrowserControlsOffsetTagsInfo;
-}  // namespace cc
+struct BrowserControlsOffsetTags;
+}
 
 namespace cc::slim {
 class SurfaceLayer;
@@ -66,6 +66,7 @@ struct NativeWebKeyboardEvent;
 }  // namespace input
 
 namespace ui {
+struct BrowserControlsOffsetTagDefinitions;
 class MotionEventAndroid;
 class OverscrollRefreshHandler;
 struct DidOverscrollParams;
@@ -448,8 +449,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   const cc::slim::SurfaceLayer* GetSurfaceLayer() const;
 
-  void RegisterOffsetTags(const cc::BrowserControlsOffsetTagsInfo& tags_info);
-  void UnregisterOffsetTags(const cc::BrowserControlsOffsetTagsInfo& tags_info);
+  void RegisterOffsetTags(
+      const ui::BrowserControlsOffsetTagDefinitions& tag_definitions);
+  void UnregisterOffsetTags(const cc::BrowserControlsOffsetTags& tags);
 
   void PassImeRenderWidgetHost(
       mojo::PendingRemote<blink::mojom::ImeRenderWidgetHost> pending_remote);

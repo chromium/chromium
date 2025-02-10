@@ -12,7 +12,6 @@
 #include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
 #include "content/browser/android/render_widget_host_connector.h"
 #include "content/browser/navigation_transitions/back_forward_transition_animator.h"
 #include "content/browser/renderer_host/navigation_controller_android.h"
@@ -20,6 +19,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
+#include "ui/android/browser_controls_offset_tag_definitions.h"
 
 class GURL;
 
@@ -216,8 +216,7 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   void NotifyControlsConstraintsChanged(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jold_offset_tag_bundle,
-      const base::android::JavaParamRef<jobject>& joffset_tag_bundle);
+      const base::android::JavaParamRef<jobject>& joffset_tag_definitions);
 
   void DisconnectFileSelectListenerIfAny(JNIEnv* env);
 
@@ -284,8 +283,8 @@ class CONTENT_EXPORT WebContentsAndroid {
     explicit BrowserControlsOffsetTagMediator(WebContents* web_contents);
     ~BrowserControlsOffsetTagMediator() override;
 
-    void SetOffsetTagsInfo(
-        const cc::BrowserControlsOffsetTagsInfo& new_offset_tags_info);
+    void SetOffsetTagDefinitions(const ui::BrowserControlsOffsetTagDefinitions&
+                                     new_offset_tag_definitions);
 
     void UpdateRenderProcessConnection(
         RenderWidgetHostViewAndroid* old_rwhva,
@@ -293,7 +292,7 @@ class CONTENT_EXPORT WebContentsAndroid {
 
    private:
     raw_ptr<RenderWidgetHostViewAndroid> rwhva_ = nullptr;
-    cc::BrowserControlsOffsetTagsInfo offset_tags_info_;
+    ui::BrowserControlsOffsetTagDefinitions offset_tag_definitions_;
   };
 
   raw_ptr<BrowserControlsOffsetTagMediator> offset_tag_mediator_ = nullptr;

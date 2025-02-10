@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/layer_tree.h"
 #include "cc/slim/surface_layer.h"
@@ -24,6 +23,8 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/viz_utils.h"
 #include "components/viz/host/host_frame_sink_manager.h"
+#include "ui/android/browser_controls_offset_tag_constraints.h"
+#include "ui/android/browser_controls_offset_tag_definitions.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/android/window_android_compositor.h"
@@ -126,59 +127,47 @@ void DelegatedFrameHostAndroid::SetIsFrameSinkIdOwner(bool is_owner) {
 }
 
 void DelegatedFrameHostAndroid::RegisterOffsetTags(
-    const cc::BrowserControlsOffsetTagsInfo& tags_info) {
-  const viz::OffsetTag& bottom_controls_offset_tag =
-      tags_info.bottom_controls_offset_tag;
-  const viz::OffsetTag& top_controls_offset_tag =
-      tags_info.top_controls_offset_tag;
-  const viz::OffsetTag& content_offset_tag = tags_info.content_offset_tag;
+    const BrowserControlsOffsetTagDefinitions& tag_definitions) {
+  const cc::BrowserControlsOffsetTags& tags = tag_definitions.tags;
+  const BrowserControlsOffsetTagConstraints& constraints =
+      tag_definitions.constraints;
 
+  const viz::OffsetTag& bottom_controls_offset_tag =
+      tags.bottom_controls_offset_tag;
   if (!bottom_controls_offset_tag.IsEmpty()) {
-    int bottom_controls_height = tags_info.bottom_controls_height;
-    int bottom_controls_additional_height =
-        tags_info.bottom_controls_additional_height;
-    viz::OffsetTagConstraints bottom_controls_constraints(
-        0, 0, 0, bottom_controls_height + bottom_controls_additional_height);
     content_layer_->RegisterOffsetTag(bottom_controls_offset_tag,
-                                      bottom_controls_constraints);
+                                      constraints.bottom_controls_constraints);
   }
 
   // TOOD(peilinwang) Enforce that either both tags exist or are both empty
   // after the NoBrowserFramesWithAdditionalCaptures BCIV experiment ramps up.
+  const viz::OffsetTag& top_controls_offset_tag = tags.top_controls_offset_tag;
+  const viz::OffsetTag& content_offset_tag = tags.content_offset_tag;
   if (!top_controls_offset_tag.IsEmpty()) {
     CHECK(!content_offset_tag.IsEmpty());
-
-    int top_controls_height = tags_info.top_controls_height;
-    int top_controls_hairline_height = tags_info.top_controls_hairline_height;
-    viz::OffsetTagConstraints top_controls_constraints(
-        0, 0, -(top_controls_height + top_controls_hairline_height), 0);
     content_layer_->RegisterOffsetTag(top_controls_offset_tag,
-                                      top_controls_constraints);
+                                      constraints.top_controls_constraints);
   }
-
   if (!content_offset_tag.IsEmpty()) {
-    int top_controls_height = tags_info.top_controls_height;
-    viz::OffsetTagConstraints content_constraints(0, 0, -top_controls_height,
-                                                  0);
-    content_layer_->RegisterOffsetTag(content_offset_tag, content_constraints);
+    content_layer_->RegisterOffsetTag(content_offset_tag,
+                                      constraints.content_constraints);
   }
 }
 
 void DelegatedFrameHostAndroid::UnregisterOffsetTags(
-    const cc::BrowserControlsOffsetTagsInfo& tags_info) {
-  const viz::OffsetTag& top_controls_offset_tag =
-      tags_info.top_controls_offset_tag;
+    const cc::BrowserControlsOffsetTags& tags) {
+  const viz::OffsetTag& top_controls_offset_tag = tags.top_controls_offset_tag;
   if (!top_controls_offset_tag.IsEmpty()) {
     content_layer_->UnregisterOffsetTag(top_controls_offset_tag);
   }
 
-  const viz::OffsetTag& content_offset_tag = tags_info.content_offset_tag;
+  const viz::OffsetTag& content_offset_tag = tags.content_offset_tag;
   if (!content_offset_tag.IsEmpty()) {
     content_layer_->UnregisterOffsetTag(content_offset_tag);
   }
 
   const viz::OffsetTag& bottom_controls_offset_tag =
-      tags_info.bottom_controls_offset_tag;
+      tags.bottom_controls_offset_tag;
   if (!bottom_controls_offset_tag.IsEmpty()) {
     content_layer_->UnregisterOffsetTag(bottom_controls_offset_tag);
   }

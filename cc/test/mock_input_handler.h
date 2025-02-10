@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/input/event_listener_properties.h"
 #include "cc/input/input_handler.h"
@@ -127,12 +127,13 @@ class MockInputHandler : public InputHandler {
 
   void SetDeferBeginMainFrame(bool defer_begin_main_frame) const override {}
 
-  MOCK_METHOD4(UpdateBrowserControlsState,
-               void(BrowserControlsState constraints,
-                    BrowserControlsState current,
-                    bool animate,
-                    base::optional_ref<const BrowserControlsOffsetTagsInfo>
-                        offset_tags_info));
+  MOCK_METHOD4(
+      UpdateBrowserControlsState,
+      void(BrowserControlsState constraints,
+           BrowserControlsState current,
+           bool animate,
+           base::optional_ref<const BrowserControlsOffsetTagModifications>
+               offset_tag_modifications));
 
  private:
   bool is_scrolling_root_ = true;

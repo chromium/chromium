@@ -39,7 +39,8 @@ cc_component("cc") {
     "input/browser_controls_offset_manager.cc",
     "input/browser_controls_offset_manager.h",
     "input/browser_controls_offset_manager_client.h",
-    "input/browser_controls_offset_tags_info.h",
+    "input/browser_controls_offset_tag_modifications.h",
+    "input/browser_controls_offset_tags.h",
     "input/browser_controls_state.h",
     "input/compositor_input_interfaces.h",
     "input/hit_test_opaqueness.cc",
@@ -1083,7 +1084,8 @@ if (is_android) {
 
   generate_jni("cc_jni_headers") {
     sources = [
-      "input/android/java/src/org/chromium/cc/input/BrowserControlsOffsetTagsInfo.java",
+      "input/android/java/src/org/chromium/cc/input/BrowserControlsOffsetTagModifications.java",
+      "input/android/java/src/org/chromium/cc/input/BrowserControlsOffsetTags.java",
       "input/android/java/src/org/chromium/cc/input/OffsetTag.java",
     ]
   }
@@ -1097,7 +1099,8 @@ if (is_android) {
     ]
 
     sources = [
-      "input/android/java/src/org/chromium/cc/input/BrowserControlsOffsetTagsInfo.java",
+      "input/android/java/src/org/chromium/cc/input/BrowserControlsOffsetTagModifications.java",
+      "input/android/java/src/org/chromium/cc/input/BrowserControlsOffsetTags.java",
       "input/android/java/src/org/chromium/cc/input/OffsetTag.java",
     ]
 

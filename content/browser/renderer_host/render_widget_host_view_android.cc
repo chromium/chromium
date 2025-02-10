@@ -27,7 +27,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "cc/base/math_util.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/slim/layer.h"
 #include "components/input/events_helper.h"
 #include "components/input/input_router.h"
@@ -79,6 +78,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "ui/android/browser_controls_offset_tag_definitions.h"
 #include "ui/android/view_android_observer.h"
 #include "ui/android/window_android.h"
 #include "ui/android/window_android_compositor.h"
@@ -3278,16 +3278,16 @@ const cc::slim::SurfaceLayer* RenderWidgetHostViewAndroid::GetSurfaceLayer()
 }
 
 void RenderWidgetHostViewAndroid::RegisterOffsetTags(
-    const cc::BrowserControlsOffsetTagsInfo& tags_info) {
+    const ui::BrowserControlsOffsetTagDefinitions& tag_definitions) {
   if (delegated_frame_host_) {
-    delegated_frame_host_->RegisterOffsetTags(tags_info);
+    delegated_frame_host_->RegisterOffsetTags(tag_definitions);
   }
 }
 
 void RenderWidgetHostViewAndroid::UnregisterOffsetTags(
-    const cc::BrowserControlsOffsetTagsInfo& tags_info) {
+    const cc::BrowserControlsOffsetTags& tags) {
   if (delegated_frame_host_) {
-    delegated_frame_host_->UnregisterOffsetTags(tags_info);
+    delegated_frame_host_->UnregisterOffsetTags(tags);
   }
 }
 

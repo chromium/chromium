@@ -33,7 +33,7 @@
 #include "url/gurl.h"
 
 namespace cc {
-struct BrowserControlsOffsetTagsInfo;
+struct BrowserControlsOffsetTagModifications;
 }  // namespace cc
 
 namespace viz {
@@ -191,7 +191,8 @@ class CONTENT_EXPORT PageImpl : public Page {
       cc::BrowserControlsState constraints,
       cc::BrowserControlsState current,
       bool animate,
-      const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info);
+      const std::optional<cc::BrowserControlsOffsetTagModifications>&
+          offset_tag_modifications);
 
   float GetPageScaleFactor() const;
 

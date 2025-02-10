@@ -76,6 +76,7 @@ include_rules = [
   "+media/base/android/java",
   "+services/device/public",
   "+services/media_session/public",
+  "+ui/android",
 ]
 
 specific_include_rules = {

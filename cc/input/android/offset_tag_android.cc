@@ -8,9 +8,10 @@
 #include "base/android/token_android.h"
 #include "base/logging.h"
 #include "base/token.h"
-#include "cc/cc_jni_headers/BrowserControlsOffsetTagsInfo_jni.h"
+#include "cc/cc_jni_headers/BrowserControlsOffsetTagModifications_jni.h"
+#include "cc/cc_jni_headers/BrowserControlsOffsetTags_jni.h"
 #include "cc/cc_jni_headers/OffsetTag_jni.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "components/viz/common/quads/offset_tag.h"
 
 namespace cc::android {
@@ -27,52 +28,64 @@ viz::OffsetTag FromJavaOffsetTag(
   return viz::OffsetTag(token);
 }
 
-cc::BrowserControlsOffsetTagsInfo FromJavaBrowserControlsOffsetTagsInfo(
+BrowserControlsOffsetTags FromJavaBrowserControlsOffsetTags(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& jbrowser_controls_offset_tags_info) {
-  cc::BrowserControlsOffsetTagsInfo tags_info;
-  if (!jbrowser_controls_offset_tags_info) {
-    return tags_info;
+    const base::android::JavaRef<jobject>& jbrowser_controls_offset_tags) {
+  BrowserControlsOffsetTags offset_tags;
+  if (!jbrowser_controls_offset_tags) {
+    return offset_tags;
   }
 
-  const base::android::JavaRef<jobject>& jbottom_controls_offset_tag =
-      Java_BrowserControlsOffsetTagsInfo_getBottomControlsOffsetTag(
-          env, jbrowser_controls_offset_tags_info);
-  viz::OffsetTag bottom_controls_offset_tag =
-      FromJavaOffsetTag(env, jbottom_controls_offset_tag);
-  tags_info.bottom_controls_offset_tag = bottom_controls_offset_tag;
+  const base::android::JavaRef<jobject>& jtop_controls_offset_tag =
+      Java_BrowserControlsOffsetTags_getTopControlsOffsetTag(
+          env, jbrowser_controls_offset_tags);
+  viz::OffsetTag top_controls_offset_tag =
+      android::FromJavaOffsetTag(env, jtop_controls_offset_tag);
+  offset_tags.top_controls_offset_tag = top_controls_offset_tag;
 
   const base::android::JavaRef<jobject>& jcontent_offset_tag =
-      Java_BrowserControlsOffsetTagsInfo_getContentOffsetTag(
-          env, jbrowser_controls_offset_tags_info);
+      Java_BrowserControlsOffsetTags_getContentOffsetTag(
+          env, jbrowser_controls_offset_tags);
   viz::OffsetTag content_offset_tag =
-      FromJavaOffsetTag(env, jcontent_offset_tag);
-  tags_info.content_offset_tag = content_offset_tag;
+      android::FromJavaOffsetTag(env, jcontent_offset_tag);
+  offset_tags.content_offset_tag = content_offset_tag;
 
-  const base::android::JavaRef<jobject>& jtop_controls_offset_tag =
-      Java_BrowserControlsOffsetTagsInfo_getTopControlsOffsetTag(
-          env, jbrowser_controls_offset_tags_info);
-  viz::OffsetTag top_controls_offset_tag =
-      FromJavaOffsetTag(env, jtop_controls_offset_tag);
-  tags_info.top_controls_offset_tag = top_controls_offset_tag;
+  const base::android::JavaRef<jobject>& jbottom_controls_offset_tag =
+      Java_BrowserControlsOffsetTags_getBottomControlsOffsetTag(
+          env, jbrowser_controls_offset_tags);
+  viz::OffsetTag bottom_controls_offset_tag =
+      android::FromJavaOffsetTag(env, jbottom_controls_offset_tag);
+  offset_tags.bottom_controls_offset_tag = bottom_controls_offset_tag;
 
-  tags_info.bottom_controls_height =
-      Java_BrowserControlsOffsetTagsInfo_getBottomControlsHeight(
-          env, jbrowser_controls_offset_tags_info);
+  return offset_tags;
+}
 
-  tags_info.bottom_controls_additional_height =
-      Java_BrowserControlsOffsetTagsInfo_getBottomControlsAdditionalHeight(
-          env, jbrowser_controls_offset_tags_info);
+BrowserControlsOffsetTagModifications
+FromJavaBrowserControlsOffsetTagModifications(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>&
+        jbrowser_controls_offset_tag_modifications) {
+  BrowserControlsOffsetTagModifications offset_tag_modifications;
+  if (!jbrowser_controls_offset_tag_modifications) {
+    return offset_tag_modifications;
+  }
 
-  tags_info.top_controls_height =
-      Java_BrowserControlsOffsetTagsInfo_getTopControlsHeight(
-          env, jbrowser_controls_offset_tags_info);
+  const base::android::JavaRef<jobject>& jtags =
+      Java_BrowserControlsOffsetTagModifications_getTags(
+          env, jbrowser_controls_offset_tag_modifications);
+  BrowserControlsOffsetTags tags =
+      FromJavaBrowserControlsOffsetTags(env, jtags);
+  offset_tag_modifications.tags = tags;
 
-  tags_info.top_controls_hairline_height =
-      Java_BrowserControlsOffsetTagsInfo_getTopControlsHairlineHeight(
-          env, jbrowser_controls_offset_tags_info);
+  offset_tag_modifications.top_controls_additional_height =
+      Java_BrowserControlsOffsetTagModifications_getTopControlsAdditionalHeight(
+          env, jbrowser_controls_offset_tag_modifications);
 
-  return tags_info;
+  offset_tag_modifications.bottom_controls_additional_height =
+      Java_BrowserControlsOffsetTagModifications_getBottomControlsAdditionalHeight(
+          env, jbrowser_controls_offset_tag_modifications);
+
+  return offset_tag_modifications;
 }
 
 }  // namespace cc::android
