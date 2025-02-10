@@ -276,8 +276,7 @@ bool ExtractKeyIdsFromKeyIdsInitData(const std::string& input,
     }
 
     // Add the decoded key ID to the list.
-    local_key_ids.push_back(
-        std::vector<uint8_t>(raw_key_id.begin(), raw_key_id.end()));
+    local_key_ids.emplace_back(raw_key_id.begin(), raw_key_id.end());
   }
 
   // All done.
