@@ -35,8 +35,6 @@ class PageActionContainerView : public views::View {
 
  private:
   std::map<actions::ActionId, raw_ptr<PageActionView>> page_action_views_;
-
-  const int between_icon_spacing_;
 };
 
 }  // namespace page_actions
