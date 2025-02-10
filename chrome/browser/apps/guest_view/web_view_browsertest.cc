@@ -790,6 +790,12 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
                         base::StrCat({"onAppCommand('", message, "');"})));
   }
 
+  void SendMessageToEmbedderAsync(const std::string& message) {
+    content::ExecuteScriptAsync(
+        GetEmbedderWebContents(),
+        base::StrCat({"onAppCommand('", message, "');"}));
+  }
+
   void SendMessageToGuestAndWait(const std::string& message,
                                  const std::string& wait_message) {
     std::unique_ptr<ExtensionTestMessageListener> listener;
@@ -901,10 +907,9 @@ class WebViewTest : public WebViewTestBase,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Disabled MPArch tests due to failures; see https://crbug.com/394461920.
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          WebViewTest,
-                         testing::Values(false),
+                         testing::Bool(),
                          WebViewTest::DescribeParams);
 
 // The following test suites are created to group tests based on specific
@@ -1119,6 +1124,16 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, WebViewRespectsInsets) {
 
   gfx::Size size_after = guest_host_view->GetVisibleViewportSize();
   EXPECT_EQ(expected.size(), size_after);
+}
+
+IN_PROC_BROWSER_TEST_P(WebViewTest, ShutdownBeforeAttach) {
+  LoadAndLaunchPlatformApp("web_view/app_creates_webview",
+                           "WebViewTest.LAUNCHED");
+  SendMessageToEmbedderAsync("create-guest-and-stall-attachment");
+  GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  // After guest creation, but before attachment, shutdown the embedder to
+  // verify that we can shutdown safely in this state.
+  CloseAppWindow(GetFirstAppWindow());
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, AudioMutesWhileAttached) {

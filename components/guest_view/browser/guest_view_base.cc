@@ -802,6 +802,17 @@ void GuestViewBase::DocumentOnLoadCompletedInPrimaryMainFrame() {
 void GuestViewBase::GuestOverrideRendererPreferences(
     blink::RendererPreferences& preferences) {}
 
+void GuestViewBase::FrameDeleted(content::FrameTreeNodeId frame_tree_node_id) {
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch) &&
+      web_contents()->IsBeingDestroyed()) {
+    // If the primary frame tree is shutting down, we need to destroy any
+    // unattached guest frame trees now. We can't wait until
+    // WebContentsDestroyed to do this, otherwise other WebContentsObservers
+    // will see a confusing sequence of events.
+    ClearOwnedGuestPage();
+  }
+}
+
 void GuestViewBase::WebContentsDestroyed() {
   if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
     // Once attached, the guest can't outlive its owner WebContents.
@@ -1315,6 +1326,9 @@ GuestViewBase::OverridePermissionResult(ContentSettingsType type) const {
 
 content::RenderFrameHost* GuestViewBase::GetGuestMainFrame() const {
   if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    if (!guest_page_) {
+      return nullptr;
+    }
     CHECK_EQ(guest_page_->GetGuestMainFrame(),
              owner_web_contents()->UnsafeFindFrameByFrameTreeNodeId(
                  guest_main_frame_tree_node_id()));
