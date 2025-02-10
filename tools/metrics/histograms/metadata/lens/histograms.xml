@@ -221,6 +221,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Lens.Overlay.ContextualSearchBox.ByDocumentType.{DocumentType}.ShownInSession"
+    enum="BooleanShown" expires_after="2025-07-27">
+  <owner>stanfield@google.com</owner>
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed, sliced by the
+    document content type, as specified by the WebContents. This is different
+    from the page content type defined below, which logs based on the content
+    type of the bytes extracted from the page. Records whether the contextual
+    searchbox was shown in the session.
+  </summary>
+  <token key="DocumentType" variants="MimeTypes"/>
+</histogram>
+
+<histogram
     name="Lens.Overlay.ContextualSearchBox.ByPageContentType.{PageContentType}.FocusedInSession"
     enum="Boolean" expires_after="2025-08-03">
   <owner>niharm@google.com</owner>

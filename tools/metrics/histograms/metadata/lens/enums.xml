@@ -191,6 +191,10 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Pdf"/>
   <int value="2" label="Html"/>
   <int value="3" label="PlainText"/>
+  <int value="4" label="Image"/>
+  <int value="5" label="Video"/>
+  <int value="6" label="Audio"/>
+  <int value="7" label="Json"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_mime_type.h:LensOverlayMimeType) -->

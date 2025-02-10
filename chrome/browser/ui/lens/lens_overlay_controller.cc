@@ -251,6 +251,14 @@ lens::MimeType StringMimeTypeToDocumentType(const std::string& mime_type) {
     return lens::MimeType::kHtml;
   } else if (mime_type == "text/plain") {
     return lens::MimeType::kPlainText;
+  } else if (mime_type.starts_with("image/")) {
+    return lens::MimeType::kImage;
+  } else if (mime_type.starts_with("video/")) {
+    return lens::MimeType::kVideo;
+  } else if (mime_type.starts_with("audio/")) {
+    return lens::MimeType::kAudio;
+  } else if (mime_type == "application/json") {
+    return lens::MimeType::kJson;
   }
   return lens::MimeType::kUnknown;
 }
@@ -3094,7 +3102,8 @@ void LensOverlayController::RecordEndOfSessionMetrics(
       source_id, contextual_searchbox_shown_in_session_,
       contextual_searchbox_focused_in_session_,
       contextual_zps_shown_in_session_, contextual_zps_used_in_session_,
-      contextual_query_issued_in_session_, initial_page_content_type_);
+      contextual_query_issued_in_session_, initial_page_content_type_,
+      initial_document_type_);
 }
 
 void LensOverlayController::RecordDocumentMetrics(
