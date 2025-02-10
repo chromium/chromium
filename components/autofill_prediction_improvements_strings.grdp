@@ -1,25 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
-  <!-- Trigger suggestion -->
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_TRIGGER_SUGGESTION_MAIN_TEXT" desc="Suggestion shown when the user focuses a Autofill with AI field.">
-    Autofill with AI
-  </message>
-
   <!-- Fill suggestion -->
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_ALL_MAIN_TEXT" desc="Suggestion shown on the second level menu of Autofill with AI, used to fill all fields.">
     Fill fields with AI
-  </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_LABEL_TEXT" desc="Text shown as a label when the user sees a prediction improvements suggestion.">
-    Fill
-  </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_LABEL_SEPARATOR" desc="The separator character used in the prediction improvements label.">
-    , '''
-  </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_SUGGESTION_AND_ONE_MORE_FIELD" desc="Text displayed as label to indicate more fields will be filled.">
-    &amp; 1 more field
-  </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_SUGGESTION_AND_N_MORE_FIELDS" desc="Text displayed as label to indicate more fields will be filled.">
-    &amp; <ph name="N_FIELDS">$1<ex>4</ex></ph> more fields
   </message>
 
   <!-- Save prompt -->
@@ -36,24 +19,9 @@
     Saved info and the page from <ph name="WEBSITE">$1<ex>airline.com</ex></ph> are sent to Google and may be seen by human reviewers to improve this feature.
   </message>
 
-  <!-- Error state-->
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_ERROR_POPUP_MAIN_TEXT" desc="Text displayed on the Autofill with AI error suggestions">
-    Chrome had trouble getting your information
-  </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_NO_INFO_POPUP_MAIN_TEXT"
-    desc="Text displayed when there are no suggestions from prediction improvements, Autofill or Autocomplete to show."
-    translateable="false">
-    Chrome didn't find info to fill this field.
-  </message>
-
   <!-- General -->
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" desc="Text displayed on different surfaces that is a link which will redirect the user to the settings page.">
     Manage autofill with AI
-  </message>
-
-  <!-- Edit information suggestion -->
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_EDIT_INFORMATION_SUGGESTION_MAIN_TEXT" desc="Text displayed on the suggestion that opens the prediction improvements settings page.">
-    Manage your info
   </message>
 
   <!-- Loading suggestions -->
@@ -73,12 +41,6 @@
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_TEXT" desc="Text displayed on prediction improvements feedback suggestion.">
     Autofill with AI is an experimental feature and won’t always get it right. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS">$1<ex>Manage autofill with AI</ex></ph>.
   </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_SUGGESTION_MANAGE_LINK_A11Y_HINT" desc="Accessibility text that replaces the 'Manage prediction improvements' link on a prediction improvements feedback view.">
-    Press enter to manage prediction improvements
-  </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_SUGGESTION_FEEDBACK_BUTTONS_A11Y_HINT" desc="Accessibility text that is added to a prediction improvements feedback view announcement to help the user find the feedback buttons.">
-    Use left and right keys to navigate to feedback buttons.
-   </message>
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_THUMBS_UP_BUTTON_TOOLTIP" desc="Tooltip displayed on the thumbs up button tooltip.">
     Thumbs up submits feedback that you like autofill with AI
   </message>

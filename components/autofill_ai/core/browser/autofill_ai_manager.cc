@@ -445,7 +445,7 @@ void AutofillAiManager::GetSuggestions(autofill::FormGlobalId form_global_id,
         }
 
         CHECK(autofill_field->GetAutofillAiServerTypePredictions());
-        std::move(callback).Run(CreateFillingSuggestionsV2(
+        std::move(callback).Run(CreateFillingSuggestions(
             *form_structure, field_global_id, entities));
       },
       GetWeakPtr(), form_global_id, field_global_id, is_manual_fallback,
