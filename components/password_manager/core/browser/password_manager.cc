@@ -424,10 +424,6 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterStringPref(prefs::kUPMErrorUIShownTimestamp, "0");
   registry->RegisterBooleanPref(
       prefs::kUserAcknowledgedLocalPasswordsMigrationWarning, false);
-  registry->RegisterTimePref(
-      prefs::kLocalPasswordsMigrationWarningShownTimestamp, base::Time());
-  registry->RegisterBooleanPref(
-      prefs::kLocalPasswordMigrationWarningShownAtStartup, false);
   registry->RegisterIntegerPref(
       prefs::kLocalPasswordMigrationWarningPrefsVersion, 0);
   registry->RegisterIntegerPref(
