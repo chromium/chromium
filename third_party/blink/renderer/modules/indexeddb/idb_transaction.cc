@@ -328,6 +328,7 @@ void IDBTransaction::SetActive(bool new_is_active) {
   state_ = new_is_active ? kActive : kInactive;
 
   if (!new_is_active && request_list_.empty()) {
+    state_ = kCommitting;
     remote_->Commit(num_errors_handled_);
   }
 }
@@ -458,8 +459,7 @@ void IDBTransaction::OnComplete() {
     return;
   }
 
-  DCHECK_NE(state_, kFinished);
-  state_ = kCommitting;
+  DCHECK_EQ(state_, kCommitting);
 
   // See comments in `OnAbort()` on importance of ordering.
   database_->TransactionWillFinish(this);
