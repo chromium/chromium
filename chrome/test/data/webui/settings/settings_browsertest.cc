@@ -1200,6 +1200,26 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
           "runMochaSuite('ManageTopicsAndAdTopicsPageState')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
+                       TopicsSubpageAdTopicsContentParity) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('TopicsSubpageAdTopicsContentParity')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
+                       TopicsSubpageAdTopicsContentParityDisabled) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('TopicsSubpageAdTopicsContentParityDisabled')");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SettingsPrivacySandboxPageTest,
+    TopicsSubpageAdTopicsContentParityAdsApiUxEnhancementDisabled) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('"
+          "TopicsSubpageAdTopicsContentParityAdsApiUxEnhancementDisabled')");
+}
+
 using SettingsRouteTest = SettingsBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(SettingsRouteTest, Basic) {

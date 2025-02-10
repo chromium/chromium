@@ -8,7 +8,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {CrExpandButtonElement, SettingsPrivacySandboxAdMeasurementSubpageElement, SettingsPrivacySandboxManageTopicsSubpageElement, SettingsPrivacySandboxPageElement, SettingsPrivacySandboxTopicsSubpageElement, SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
 import {SettingsPrivacySandboxFledgeSubpageElement} from 'chrome://settings/lazy_load.js';
-import type {CrButtonElement, CrLinkRowElement, FirstLevelTopicsState, SettingsPrefsElement, TopicsState} from 'chrome://settings/settings.js';
+import type {CrButtonElement, CrLinkRowElement, FirstLevelTopicsState, SettingsPrefsElement, SettingsToggleButtonElement, TopicsState} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacySandboxBrowserProxyImpl, Router, routes} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -2129,3 +2129,205 @@ suite('AdMeasurementSubpageAdsApiUxEnhancements', function() {
         await metricsBrowserProxy.whenCalled('recordAction'));
   });
 });
+
+// PrivacySandboxAdsTopicsContentParity and PrivacySandboxAdsApiUxEnhancements
+// are enabled.
+suite('TopicsSubpageAdTopicsContentParity', function() {
+  let page: SettingsPrivacySandboxTopicsSubpageElement;
+  let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
+  let settingsPrefs: SettingsPrefsElement;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+      isPrivacySandboxAdsApiUxEnhancementsEnabled: true,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(async function() {
+    testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
+    testPrivacySandboxBrowserProxy
+        .setShouldShowPrivacySandboxAdTopicsContentParity(true);
+    PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(settingsPrefs);
+    page = document.createElement('settings-privacy-sandbox-topics-subpage');
+    page.prefs = settingsPrefs.prefs!;
+    page.set('prefs.privacy_sandbox.m1.topics_enabled', {value: true});
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_TOPICS);
+    document.body.appendChild(page);
+    await testPrivacySandboxBrowserProxy.whenCalled('getTopicsState');
+    return flushTasks();
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('AdTopicsContentParity', async function() {
+    const topicsToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#topicsToggle');
+    assert(topicsToggle);
+    assertTrue(isVisible(topicsToggle));
+    assertEquals(
+        loadTimeData.getString('adTopicsPageToggleSubLabel'),
+        topicsToggle.subLabel);
+    assertTrue(
+        isVisible(page.shadowRoot!.querySelector('#footerDisclaimerV2')));
+    assertTrue(isVisible(
+        page.shadowRoot!.querySelector('#currentTopicsDescriptionV2')));
+    assertFalse(isVisible(page.shadowRoot!.querySelector('#footerDisclaimer')));
+    assertFalse(
+        isVisible(page.shadowRoot!.querySelector('#currentTopicsDescription')));
+  });
+
+  test('privacyPolicyLink', async function() {
+    const privacyPolicyLink =
+        page.shadowRoot!.querySelector<HTMLElement>('#privacyPolicyLinkV2');
+    assertTrue(!!privacyPolicyLink);
+    privacyPolicyLink!.click();
+    assertEquals(
+        'Settings.PrivacySandbox.AdTopics.PrivacyPolicyLinkClicked',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+  });
+});
+
+// PrivacySandboxAdsTopicsContentParity is disabled and
+// PrivacySandboxAdsApiUxEnhancements is enabled.
+suite('TopicsSubpageAdTopicsContentParityDisabled', function() {
+  let page: SettingsPrivacySandboxTopicsSubpageElement;
+  let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
+  let settingsPrefs: SettingsPrefsElement;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+      isPrivacySandboxAdsApiUxEnhancementsEnabled: true,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(async function() {
+    testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
+    testPrivacySandboxBrowserProxy
+        .setShouldShowPrivacySandboxAdTopicsContentParity(false);
+    PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(settingsPrefs);
+    page = document.createElement('settings-privacy-sandbox-topics-subpage');
+    page.prefs = settingsPrefs.prefs!;
+    page.set('prefs.privacy_sandbox.m1.topics_enabled', {value: true});
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_TOPICS);
+    document.body.appendChild(page);
+    await testPrivacySandboxBrowserProxy.whenCalled('getTopicsState');
+    return flushTasks();
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('privacyPolicyLink', async function() {
+    const privacyPolicyLink =
+        page.shadowRoot!.querySelector<HTMLElement>('#privacyPolicyLink');
+    assertTrue(!!privacyPolicyLink);
+    privacyPolicyLink!.click();
+    assertEquals(
+        'Settings.PrivacySandbox.AdTopics.PrivacyPolicyLinkClicked',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+  });
+
+  test('AdTopicsContentParityNotShown', async function() {
+    const topicsToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#topicsToggle');
+    assert(topicsToggle);
+    assertTrue(isVisible(topicsToggle));
+    assertEquals(
+        loadTimeData.getString('topicsPageToggleSubLabel'),
+        topicsToggle.subLabel);
+    assertFalse(
+        isVisible(page.shadowRoot!.querySelector('#footerDisclaimerV2')));
+    assertFalse(isVisible(
+        page.shadowRoot!.querySelector('#currentTopicsDescriptionV2')));
+    assertTrue(isVisible(page.shadowRoot!.querySelector('#footerDisclaimer')));
+    assertTrue(
+        isVisible(page.shadowRoot!.querySelector('#currentTopicsDescription')));
+  });
+});
+
+// PrivacySandboxAdsTopicsContentParity is enabled and
+// PrivacySandboxAdsApiUxEnhancements is disabled.
+suite(
+    'TopicsSubpageAdTopicsContentParityAdsApiUxEnhancementDisabled',
+    function() {
+      let page: SettingsPrivacySandboxTopicsSubpageElement;
+      let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
+      let settingsPrefs: SettingsPrefsElement;
+      let metricsBrowserProxy: TestMetricsBrowserProxy;
+
+      suiteSetup(function() {
+        loadTimeData.overrideValues({
+          isPrivacySandboxRestricted: false,
+          isPrivacySandboxAdsApiUxEnhancementsEnabled: false,
+        });
+        settingsPrefs = document.createElement('settings-prefs');
+        return CrSettingsPrefs.initialized;
+      });
+
+      setup(async function() {
+        testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
+        testPrivacySandboxBrowserProxy
+            .setShouldShowPrivacySandboxAdTopicsContentParity(true);
+        PrivacySandboxBrowserProxyImpl.setInstance(
+            testPrivacySandboxBrowserProxy);
+        metricsBrowserProxy = new TestMetricsBrowserProxy();
+        MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
+
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        document.body.appendChild(settingsPrefs);
+        page =
+            document.createElement('settings-privacy-sandbox-topics-subpage');
+        page.prefs = settingsPrefs.prefs!;
+        page.set('prefs.privacy_sandbox.m1.topics_enabled', {value: true});
+        Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_TOPICS);
+        document.body.appendChild(page);
+        await testPrivacySandboxBrowserProxy.whenCalled('getTopicsState');
+        return flushTasks();
+      });
+
+      teardown(function() {
+        Router.getInstance().resetRouteForTesting();
+      });
+
+      test('AdsApiUxEnhancementsDisabled', async function() {
+        const topicsToggle =
+            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#topicsToggle');
+        assert(topicsToggle);
+        assertTrue(isVisible(topicsToggle));
+        assertEquals(
+            loadTimeData.getString('adTopicsPageToggleSubLabel'),
+            topicsToggle.subLabel);
+        assertTrue(isVisible(
+            page.shadowRoot!.querySelector('#currentTopicsDescriptionV2')));
+        assertFalse(isVisible(
+            page.shadowRoot!.querySelector('#currentTopicsDescription')));
+        assertFalse(
+            isVisible(page.shadowRoot!.querySelector('#footerDisclaimerV2')));
+        assertFalse(
+            isVisible(page.shadowRoot!.querySelector('#footerDisclaimer')));
+      });
+    });

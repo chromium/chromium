@@ -40,6 +40,9 @@ constexpr char16_t kPrivacyPolicyFunc[] = u"onPrivacyPolicyLinkClicked_";
 // The id of the html element that opens the privacy policy link.
 inline constexpr char16_t kPrivacyPolicyId[] = u"privacyPolicyLink";
 
+// The V2 id of the html element that opens the privacy policy link.
+inline constexpr char16_t kPrivacyPolicyIdV2[] = u"privacyPolicyLinkV2";
+
 void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
                               Profile* profile) {
   // Strings used outside the privacy sandbox page. The i18n preprocessor might
@@ -266,6 +269,11 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_BLOCK_SUBHEADER},
       {"privacyGuideCookiesCardBlockTpcAllowExpandA11yLabel",
        IDS_SETTINGS_PRIVACY_GUIDE_BLOCK_TPC_ALLOW_EXPAND_A11Y_LABEL},
+      // Ad Topics Content Parity - Ad Topics Settings
+      {"adTopicsPageToggleSubLabel",
+       IDS_SETTINGS_AD_TOPICS_PAGE_TOGGLE_SUB_LABEL},
+      {"adTopicsPageActiveTopicsDescription",
+       IDS_SETTINGS_AD_TOPICS_PAGE_ACTIVE_TOPICS_DESCRIPTION},
 
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
@@ -391,6 +399,15 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
           l10n_util::GetStringUTF16(
               IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_LINK_ARIA_DESCRIPTION),
           kPrivacyPolicyFunc, kPrivacyPolicyId));
+  // Ad Topics Content Parity - Ad Topics Settings
+  html_source->AddString(
+      "adTopicsPageDisclaimerV2Desktop",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_AD_TOPICS_PAGE_DISCLAIMER_V2_DESKTOP,
+          base::ASCIIToUTF16(privacy_policy_url),
+          l10n_util::GetStringUTF16(
+              IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_LINK_ARIA_DESCRIPTION),
+          kPrivacyPolicyFunc, kPrivacyPolicyIdV2));
 }
 
 }  // namespace settings
