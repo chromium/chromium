@@ -1153,6 +1153,11 @@
 #pragma mark - FeedSignInPromoDelegate
 
 - (void)showSignInPromoUI {
+  // If the user is already signed in, do nothing.
+  if (self.authService &&
+      self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    return;
+  }
   if (![self isSignInAllowed]) {
     [self showSignInDisableMessage];
     [self.feedMetricsRecorder recordShowSignInRelatedUIWithType:
@@ -1187,6 +1192,11 @@
 }
 
 - (void)showSignInUI {
+  // If the user is already signed in, do nothing.
+  if (self.authService &&
+      self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    return;
+  }
   // Both possible flows (sign-in only and sign-in + sync) involve sign-in. So
   // they shouldn't be offered if sign-in is disallowed.
   if (![self isSignInAllowed]) {
