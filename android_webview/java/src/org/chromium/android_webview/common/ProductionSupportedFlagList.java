@@ -1045,6 +1045,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 MediaFeatures.MEDIA_CODEC_BLOCK_MODEL,
                 "Controls use of MediaCodec's LinearBlock mode."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_PARTITIONED_COOKIES_EXCLUDED,
+                "When enabled, WebView records if a site with partitioned cookies has any cookies"
+                    + " excluded due to a different cookie partition key than the current site's."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

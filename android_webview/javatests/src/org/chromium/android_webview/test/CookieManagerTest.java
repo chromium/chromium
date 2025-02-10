@@ -94,6 +94,8 @@ public class CookieManagerTest extends AwParameterizedTest {
     private AwContents mAwContents;
 
     private static final String SECURE_COOKIE_HISTOGRAM_NAME = "Android.WebView.SecureCookieAction";
+    private static final String PARTITIONED_COOKIES_EXCLUDED_HISTOGRAM_NAME =
+            "Android.WebView.PartitionedCookiesExcluded";
 
     public CookieManagerTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
@@ -1265,6 +1267,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView", "Privacy"})
     @CommandLineFlags.Add("enable-features=WebViewInterceptedCookieHeader")
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_PARTITIONED_COOKIES_EXCLUDED})
     public void testPartitionedNetCookies() throws Throwable {
         TestAwContentsClient.ShouldInterceptRequestHelper shouldInterceptRequestHelper =
                 mContentsClient.getShouldInterceptRequestHelper();
@@ -1313,6 +1316,16 @@ public class CookieManagerTest extends AwParameterizedTest {
                     failureMessage,
                     expectedCookies,
                     webServer.getLastRequest("/path_to_intercept").headerValue("Cookie"));
+
+            // The cookie manager will only return top level partitioned cookies.
+            // We want to measure that the app will not get all cookies back.
+            try (var histogramWatcher =
+                    HistogramWatcher.newBuilder()
+                            .expectBooleanRecord(PARTITIONED_COOKIES_EXCLUDED_HISTOGRAM_NAME, true)
+                            .build()) {
+                mCookieManager.getCookieInfo(iframeUrl);
+                histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+            }
 
             // TODO(crbug.com/384986095): Re-add the real expected cookie behavior
             // post-experimentation
@@ -1369,6 +1382,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView", "Privacy"})
     @CommandLineFlags.Add("disable-partitioned-cookies")
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_PARTITIONED_COOKIES_EXCLUDED})
     public void testDisabledPartitionedNetCookies() throws Throwable {
         TestWebServer webServer = TestWebServer.startSsl();
 
@@ -1411,6 +1425,16 @@ public class CookieManagerTest extends AwParameterizedTest {
                     "All cookies should be returned when 3PCs are enabled",
                     "partitioned_cookie=foo; unpartitioned_cookie=bar",
                     webServer.getLastRequest("/path_to_intercept").headerValue("Cookie"));
+
+            // The cookie manager will only return top level partitioned cookies.
+            // We want to measure that if CHIPS isn't enabled, all cookies should be returned.
+            try (var histogramWatcher =
+                    HistogramWatcher.newBuilder()
+                            .expectBooleanRecord(PARTITIONED_COOKIES_EXCLUDED_HISTOGRAM_NAME, false)
+                            .build()) {
+                mCookieManager.getCookieInfo(iframeUrl);
+                histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+            }
 
             blockThirdPartyCookies(mAwContents);
             mActivityTestRule.loadUrlSync(
