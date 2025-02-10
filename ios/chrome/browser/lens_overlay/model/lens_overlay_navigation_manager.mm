@@ -205,8 +205,8 @@ void LensOverlayNavigationManager::GoToPreviousLensNavigation() {
   // Clear previous sub navigations as they become invalid after reload.
   std::vector<LensSubNavigationItem>& previous_sub_navigation =
       previous_item.sub_navigations();
-  previous_sub_navigation.erase(previous_sub_navigation.begin() + 1,
-                                previous_sub_navigation.end());
+  previous_sub_navigation.resize(
+      std::min<size_t>(previous_sub_navigation.size(), 1u));
   // Load the previous lens navigation.
   lens_reloaded_items_[previous_item.comparison_key()] =
       lens_navigation_items_.size() - 1;
