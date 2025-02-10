@@ -1,1 +1,2 @@
+per-file autofill_ai_policy_browsertest.cc=file://components/autofill_ai/OWNERS
 per-file autofill_policy_browsertest.cc=file://components/autofill/OWNERS
