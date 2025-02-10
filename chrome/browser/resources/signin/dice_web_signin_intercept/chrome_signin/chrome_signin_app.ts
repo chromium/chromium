@@ -95,8 +95,10 @@ export class ChromeSigninAppElement extends ChromeSigninAppElementBase {
     if (this.interceptionParameters_.email.length === 0) {
       return nothing;
     }
-    return this.i18n(
-        'acceptButtonAriaLabel', this.interceptionParameters_.email);
+
+    return this
+        .i18n('acceptButtonAriaLabel', this.interceptionParameters_.givenName)
+        .concat(' ', this.interceptionParameters_.email);
   }
 }
 
