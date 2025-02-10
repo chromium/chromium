@@ -10,13 +10,24 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
 
 namespace {
 
-void LogNudgeInteraction(contextual_cueing::NudgeInteraction interaction) {
+void LogNudgeInteractionHistogram(
+    contextual_cueing::NudgeInteraction interaction) {
   base::UmaHistogramEnumeration("ContextualCueing.NudgeInteraction",
                                 interaction);
+}
+
+void LogNudgeInteractionUKM(ukm::SourceId source_id,
+                            contextual_cueing::NudgeInteraction interaction) {
+  auto* ukm_recorder = ukm::UkmRecorder::Get();
+  ukm::builders::ContextualCueing_NudgeInteraction(source_id)
+      .SetNudgeInteraction(static_cast<int64_t>(interaction))
+      .Record(ukm_recorder->Get());
 }
 
 }  // namespace
@@ -37,7 +48,7 @@ void ContextualCueingService::ReportPageLoad() {
 
 void ContextualCueingService::CueingNudgeShown(const GURL& url) {
   recent_nudge_tracker_.CueingNudgeShown();
-  LogNudgeInteraction(NudgeInteraction::kShown);
+  LogNudgeInteractionHistogram(NudgeInteraction::kShown);
 
   if (kMinPageCountBetweenNudges.Get()) {
     // Let the cue logic be performed the next page after quiet count pages.
@@ -55,7 +66,7 @@ void ContextualCueingService::CueingNudgeShown(const GURL& url) {
 }
 
 void ContextualCueingService::CueingNudgeDismissed() {
-  LogNudgeInteraction(NudgeInteraction::kDismissed);
+  LogNudgeInteractionHistogram(NudgeInteraction::kDismissed);
 
   base::TimeDelta backoff_duration =
       kBackoffTime.Get() * pow(kBackoffMultiplierBase.Get(), dismiss_count_);
@@ -65,7 +76,7 @@ void ContextualCueingService::CueingNudgeDismissed() {
 }
 
 void ContextualCueingService::CueingNudgeClicked() {
-  LogNudgeInteraction(NudgeInteraction::kClicked);
+  LogNudgeInteractionHistogram(NudgeInteraction::kClicked);
 
   dismiss_count_ = 0;
 }
@@ -101,13 +112,21 @@ void ContextualCueingService::OnNudgeActivity(
       break;
     case tabs::GlicNudgeActivity::kNudgeClicked:
       CueingNudgeClicked();
+      LogNudgeInteractionUKM(source_id, NudgeInteraction::kClicked);
       break;
     case tabs::GlicNudgeActivity::kNudgeDismissed:
       CueingNudgeDismissed();
+      LogNudgeInteractionUKM(source_id, NudgeInteraction::kDismissed);
       break;
     case tabs::GlicNudgeActivity::kNudgeNotShownWebContents:
-      LogNudgeInteraction(NudgeInteraction::kNudgeNotShownWebContents);
+      LogNudgeInteractionHistogram(NudgeInteraction::kNudgeNotShownWebContents);
       break;
+    case tabs::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged:
+      LogNudgeInteractionHistogram(NudgeInteraction::kIgnoredTabChange);
+      LogNudgeInteractionUKM(source_id, NudgeInteraction::kIgnoredTabChange);
+      break;
+      // TODO: b/395169951 - Make sure UKM called for ignored nudges due to
+      // navigation changes.
   }
 }
 }  // namespace contextual_cueing

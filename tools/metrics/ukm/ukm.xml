@@ -7120,6 +7120,19 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="ContextualCueing.NudgeInteraction">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>rajendrant@chromium.org</owner>
+  <summary>
+    Recorded only if a contextual cueing nudge was shown to the user.
+  </summary>
+  <metric name="NudgeInteraction" enum="ContextualCueingNudgeInteraction">
+    <summary>
+      The interaction the user had with the contextual cueing nudge.
+    </summary>
+  </metric>
+</event>
+
 <event name="Conversions.ClientBounce">
   <owner>linnan@google.com</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
