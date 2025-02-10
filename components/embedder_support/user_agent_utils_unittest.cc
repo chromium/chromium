@@ -18,6 +18,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
+#include "base/version_info/version_info.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/embedder_support/pref_names.h"
@@ -58,31 +59,6 @@ namespace {
 // second capture is the {minor_version}.
 static constexpr char kChromeProductVersionRegex[] =
     "Chrome/([0-9]+).([0-9]+).([0-9]+).([0-9]+)";
-
-#if BUILDFLAG(IS_ANDROID)
-const char kAndroid[] =
-    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/%s.0.0.0 "
-    "%sSafari/537.36";
-#else
-const char kDesktop[] =
-    "Mozilla/5.0 ("
-#if BUILDFLAG(IS_CHROMEOS)
-    "X11; CrOS x86_64 14541.0.0"
-#elif BUILDFLAG(IS_FUCHSIA)
-    "Fuchsia"
-#elif BUILDFLAG(IS_LINUX)
-    "X11; Linux x86_64"
-#elif BUILDFLAG(IS_MAC)
-    "Macintosh; Intel Mac OS X 10_15_7"
-#elif BUILDFLAG(IS_WIN)
-    "Windows NT 10.0; Win64; x64"
-#else
-#error Unsupported platform
-#endif
-    ") AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s.0.0.0 "
-    "Safari/537.36";
-#endif  // BUILDFLAG(IS_ANDROID)
 
 void CheckUserAgentStringOrdering(bool mobile_device) {
   std::vector<std::string> pieces;
@@ -323,6 +299,37 @@ class UserAgentUtilsTest : public testing::Test,
       "0." +
       std::string(blink::features::kUserAgentFrozenBuildVersion.Get().data()) +
       ".0";
+  // The suffix added after "Chrome/<major_version>.0.0.0" and before
+  // "Safari/537.36" in the user agent string when the kUseMobileUserAgent
+  // switch is enabled.
+  static constexpr char kMobileProductSuffix[] = "Mobile ";
+
+  std::string GenerateExpectedUserAgent(
+      const std::string& product_suffix = std::string()) {
+    static constexpr char kUserAgentTemplate[] =
+        "Mozilla/5.0 ("
+#if BUILDFLAG(IS_CHROMEOS)
+        "X11; CrOS x86_64 14541.0.0"
+#elif BUILDFLAG(IS_FUCHSIA)
+        "Fuchsia"
+#elif BUILDFLAG(IS_LINUX)
+        "X11; Linux x86_64"
+#elif BUILDFLAG(IS_MAC)
+        "Macintosh; Intel Mac OS X 10_15_7"
+#elif BUILDFLAG(IS_WIN)
+        "Windows NT 10.0; Win64; x64"
+#elif BUILDFLAG(IS_ANDROID)
+        "Linux; Android 10; K"
+#else
+#error Unsupported platform
+#endif
+        ") AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%d.0.0.0 "
+        "%sSafari/537.36";
+
+    return base::StringPrintf(kUserAgentTemplate,
+                              version_info::GetMajorVersionNumberAsInt(),
+                              product_suffix.c_str());
+  }
 
   std::string GetUserAgentMinorVersion(const std::string& user_agent_value) {
     // A regular expression that matches Chrome/{major_version}.{minor_version}
@@ -421,21 +428,11 @@ TEST_F(UserAgentUtilsTest, InvalidCustomUserAgent) {
   command_line->AppendSwitchASCII(kUserAgent, custom_user_agent);
   ASSERT_TRUE(command_line->HasSwitch(kUserAgent));
 
-  // Make sure all APIs have the correct behavior once user provide invalid
-  // custom user agent.
-  const std::string major_version = version_info::GetMajorVersionNumber();
-
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       blink::features::kReduceUserAgentMinorVersion);
-#if BUILDFLAG(IS_ANDROID)
-  std::string device_compat = "";
-  EXPECT_EQ(GetUserAgent(), base::StringPrintf(kAndroid, major_version.c_str(),
-                                               device_compat.c_str()));
-#else
-  EXPECT_EQ(GetUserAgent(),
-            base::StringPrintf(kDesktop, major_version.c_str()));
-#endif
+
+  EXPECT_EQ(GetUserAgent(), GenerateExpectedUserAgent());
 }
 
 TEST_F(UserAgentUtilsTest, UserAgentStringReduced) {
@@ -447,38 +444,19 @@ TEST_F(UserAgentUtilsTest, UserAgentStringReduced) {
   // command line flag is present.
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
-  const std::string major_version_number =
-      version_info::GetMajorVersionNumber();
-  const char* const major_version = major_version_number.c_str();
 
   // Verify the mobile user agent string is not returned when not using a mobile
   // user agent.
   ASSERT_FALSE(command_line->HasSwitch(switches::kUseMobileUserAgent));
-  {
-    std::string buffer = GetUserAgent();
-    std::string device_compat = "";
-    EXPECT_EQ(buffer, base::StringPrintf(kAndroid, major_version,
-                                         device_compat.c_str()));
-  }
+  EXPECT_EQ(GetUserAgent(), GenerateExpectedUserAgent());
 
   // Verify the mobile user agent string is returned when using a mobile user
   // agent.
   command_line->AppendSwitch(switches::kUseMobileUserAgent);
   ASSERT_TRUE(command_line->HasSwitch(switches::kUseMobileUserAgent));
-  {
-    std::string buffer = GetUserAgent();
-    std::string device_compat = "Mobile ";
-    EXPECT_EQ(buffer, base::StringPrintf(kAndroid, major_version,
-                                         device_compat.c_str()));
-  }
-
+  EXPECT_EQ(GetUserAgent(), GenerateExpectedUserAgent(kMobileProductSuffix));
 #else
-  {
-    std::string buffer = GetUserAgent();
-    EXPECT_EQ(buffer,
-              base::StringPrintf(
-                  kDesktop, version_info::GetMajorVersionNumber().c_str()));
-  }
+  EXPECT_EQ(GetUserAgent(), GenerateExpectedUserAgent());
 #endif
 }
 
@@ -541,9 +519,7 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
   // not using a mobile user agent.
   ASSERT_FALSE(command_line->HasSwitch(switches::kUseMobileUserAgent));
   {
-    EXPECT_NE(base::StringPrintf(
-                  kAndroid, version_info::GetMajorVersionNumber().c_str(), ""),
-              GetUserAgent());
+    EXPECT_NE(GetUserAgent(), GenerateExpectedUserAgent());
     EXPECT_NE(content::GetUnifiedPlatformForTesting().c_str(),
               GetUserAgentPlatformOsCpu(GetUserAgent()));
   }
@@ -553,10 +529,7 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
   command_line->AppendSwitch(switches::kUseMobileUserAgent);
   ASSERT_TRUE(command_line->HasSwitch(switches::kUseMobileUserAgent));
   {
-    EXPECT_NE(
-        base::StringPrintf(
-            kAndroid, version_info::GetMajorVersionNumber().c_str(), "Mobile "),
-        GetUserAgent());
+    EXPECT_NE(GetUserAgent(), GenerateExpectedUserAgent(kMobileProductSuffix));
   }
 
 #else
@@ -567,9 +540,7 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
       {});
   {
     // Verify desktop unified platform user agent is returned.
-    EXPECT_EQ(base::StringPrintf(kDesktop,
-                                 version_info::GetMajorVersionNumber().c_str()),
-              GetUserAgent());
+    EXPECT_EQ(GetUserAgent(), GenerateExpectedUserAgent());
   }
 #endif
 
@@ -612,11 +583,7 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentAndroidVersionDeviceModel) {
   {
     std::string buffer = GetUserAgent();
     EXPECT_EQ("Linux; Android 10; K", GetUserAgentPlatformOsCpu(buffer));
-    std::string device_compat = "";
-    EXPECT_EQ(buffer,
-              base::StringPrintf(kAndroid,
-                                 version_info::GetMajorVersionNumber().c_str(),
-                                 device_compat.c_str()));
+    EXPECT_EQ(GetUserAgent(), GenerateExpectedUserAgent());
   }
 
   // Verify the mobile deviceModel and androidVersion in the user agent string
@@ -626,11 +593,7 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentAndroidVersionDeviceModel) {
   {
     std::string buffer = GetUserAgent();
     EXPECT_EQ("Linux; Android 10; K", GetUserAgentPlatformOsCpu(buffer));
-    std::string device_compat = "Mobile ";
-    EXPECT_EQ(buffer,
-              base::StringPrintf(kAndroid,
-                                 version_info::GetMajorVersionNumber().c_str(),
-                                 device_compat.c_str()));
+    EXPECT_EQ(GetUserAgent(), GenerateExpectedUserAgent(kMobileProductSuffix));
   }
 }
 #endif
