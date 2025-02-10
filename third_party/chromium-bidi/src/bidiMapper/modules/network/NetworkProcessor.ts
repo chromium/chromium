@@ -459,8 +459,11 @@ export class NetworkProcessor {
 
   static wrapInterceptionError(error: any) {
     // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/fetch_handler.cc;l=169
-    if (error?.message.includes('Invalid header')) {
-      return new InvalidArgumentException('Invalid header');
+    if (
+      error?.message.includes('Invalid header') ||
+      error?.message.includes('Unsafe header')
+    ) {
+      return new InvalidArgumentException(error.message);
     }
     return error;
   }

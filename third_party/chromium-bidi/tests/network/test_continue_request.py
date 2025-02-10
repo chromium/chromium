@@ -414,3 +414,63 @@ async def test_continue_request_remove_intercept_inflight_request(
         },
         "type": "event",
     }
+
+
+@pytest.mark.asyncio
+async def test_continue_request_invalid_header(websocket, context_id,
+                                               url_example):
+
+    network_id = await create_blocked_request(websocket,
+                                              context_id,
+                                              url=url_example,
+                                              phase="beforeRequestSent")
+
+    with pytest.raises(Exception,
+                       match=str({
+                           "error": "invalid argument",
+                           "message": "Invalid header",
+                       })):
+        await execute_command(
+            websocket, {
+                "method": "network.continueRequest",
+                "params": {
+                    "request": network_id,
+                    "headers": [{
+                        "name": "Chromium-BiDi: ",
+                        "value": {
+                            "type": "string",
+                            "value": "value1",
+                        },
+                    }, ],
+                },
+            })
+
+
+@pytest.mark.asyncio
+async def test_continue_request_unsafe_header(websocket, context_id,
+                                              url_example):
+
+    network_id = await create_blocked_request(websocket,
+                                              context_id,
+                                              url=url_example,
+                                              phase="beforeRequestSent")
+
+    with pytest.raises(Exception,
+                       match=str({
+                           "error": "invalid argument",
+                           "message": "Unsafe header",
+                       })):
+        await execute_command(
+            websocket, {
+                "method": "network.continueRequest",
+                "params": {
+                    "request": network_id,
+                    "headers": [{
+                        "name": "Cookie2",
+                        "value": {
+                            "type": "string",
+                            "value": "value1",
+                        },
+                    }, ],
+                },
+            })
