@@ -210,7 +210,7 @@ BASE_FEATURE(kWebViewEnableADPFGpuMain,
 // Enable WebView providing frame rate hints to View system.
 BASE_FEATURE(kWebViewFrameRateHints,
              "WebViewFrameRateHints",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kDrawPredictedInkPoint,
