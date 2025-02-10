@@ -570,6 +570,9 @@ public final class ProductionSupportedFlagList {
                         + " change."),
         Flag.baseFeature(NetFeatures.HAPPY_EYEBALLS_V3, "Enables Happy Eyeballs V3"),
         Flag.baseFeature(NetFeatures.ENABLE_TLS13_EARLY_DATA, "Enables TLS 1.3 Early Data"),
+        Flag.baseFeature(
+                NetFeatures.HTTP_CACHE_NO_VARY_SEARCH,
+                "Enables support for the No-Vary-Search response header in the HTTP disk cache"),
         Flag.baseFeature("MojoIpcz"),
         Flag.baseFeature(
                 "FixDataPipeTrapBug",
