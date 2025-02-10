@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 71 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 69 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["indent",""]] "<div><p>Foo[barbaz<p dir=rtl>פובר]בז</div><p>Extra" compare innerHTML
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\"><div><p>Foobarbaz</p></div><div><p dir=\\"rtl\\">פוברבז</p></div></blockquote><p>Extra</p>" not in array ["<blockquote><div><p>Foobarbaz</p><p dir=\\"rtl\\">פוברבז</p></div></blockquote><p>Extra</p>", "<blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\"><div><p>Foobarbaz</p><p dir=\\"rtl\\">פוברבז</p></div></blockquote><p>Extra</p>"]
 [FAIL] [["indent",""]] "{<p><p> <p>foo</p>}<p>extra" compare innerHTML
@@ -68,8 +68,6 @@ Found 71 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\"><blockquote>foo</blockquote><blockquote><blockquote>bar</blockquote></blockquote></blockquote><p>extra</p>" not in array ["<blockquote><blockquote>foo<blockquote>bar</blockquote></blockquote></blockquote><p>extra</p>", "<blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\"><blockquote>foo<blockquote>bar</blockquote></blockquote></blockquote><p>extra</p>"]
 [FAIL] [["indent",""]] "<ol><li>foo</ol>[bar]" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><blockquote>bar</blockquote>" but got "<ol><li>foo</li></ol><blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\">bar</blockquote>"
-[FAIL] [["indent",""]] "<ol><li>foo<br>[bar]<li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><ol><li>foo<br>bar</li></ol><li>baz</li></ol>" but got "<ol><ol><li>bar</li></ol><li>baz</li></ol>"
 [FAIL] [["indent",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><ol><li><div>foo</div>bar</li></ol><li>baz</li></ol>" but got "<ol><li><div><blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\">foo</blockquote></div>bar</li><li>baz</li></ol>"
 [FAIL] [["indent",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" compare innerHTML
@@ -106,8 +104,6 @@ Found 71 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><ol><li>foo</li><li>bar</li></ol><li>baz</li></ol>" but got "<ol><ol><li>foo<ol><li>bar</li></ol>baz</li></ol></ol>"
 [FAIL] [["indent",""]] "<ol><li>foo<ol><li>[bar]</ol>baz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><ol><li>bar</li></ol></ol><li>baz</li></ol>" but got "<ol><li>foo<ol><ol><li>bar</li></ol></ol>baz</li></ol>"
-[FAIL] [["indent",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol></ol>" but got "<ol><ol><li>baz</li></ol></ol>"
 [FAIL] [["indent",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><ol><li>foo</li><ol><li>bar</li></ol></ol><li>baz</li></ol>" but got "<ol><ol><li>foo<ol><li>bar</li></ol>baz</li></ol></ol>"
 [FAIL] [["indent",""]] "<p>foo<!--bar-->{}<p>extra" compare innerHTML
@@ -141,6 +137,6 @@ Found 71 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["indent",""]] "<ol><li>foo<li>[bar] <ol> <li>baz</ol></ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar </li> <li>baz</li></ol></ol>" but got "<ol><li>foo</li><ol><li>bar <ol> <li>baz</li></ol></li></ol></ol>"
 [FAIL] [["indent",""]] "<ul><li>a<br>{<br>}</li><li>b</li></ul>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><ul><li>a<br><br></li></ul><li>b</li></ul>" but got "<ul><ul><li><br></li></ul><li>b</li></ul>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><ul><li>a<br><br></li></ul><li>b</li></ul>" but got "<ul><ul><li>a<br></li></ul><li>b</li></ul>"
 Harness: the test ran to completion.
 
