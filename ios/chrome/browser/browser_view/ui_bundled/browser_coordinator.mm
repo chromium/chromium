@@ -2348,16 +2348,13 @@ enum class ToolbarKind {
                                                    IPHDismissalReasonType];
   };
 
-  UIImage* image =
-      [UIImage imageNamed:base::SysUTF8ToNSString(config_ref.iph_image_name)];
-
   _contextualPanelEntrypointHelpPresenter =
       [[BubbleViewControllerPresenter alloc]
                initWithText:ShouldShowRichContextualPanelEntrypointIPH()
                                 ? base::SysUTF8ToNSString(config_ref.iph_text)
                                 : base::SysUTF8ToNSString(config_ref.iph_title)
                       title:base::SysUTF8ToNSString(config_ref.iph_title)
-                      image:image
+                      image:nil
              arrowDirection:isBottomOmnibox ? BubbleArrowDirectionDown
                                             : BubbleArrowDirectionUp
                   alignment:BubbleAlignmentTopOrLeading

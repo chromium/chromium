@@ -19,7 +19,6 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/url",
-    "//ios/chrome/browser/shared/ui/symbols:buildflags",
     "//ios/web/public",
     "//ui/base",
   ]
@@ -35,7 +34,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/feature_engagement/public",
     "//ios/chrome/browser/contextual_panel/model:public",
-    "//ios/chrome/browser/shared/ui/symbols:buildflags",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//url",
