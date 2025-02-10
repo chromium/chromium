@@ -1421,7 +1421,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "autofillCardBenefitsAvailable",
       base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCardBenefitsForAmericanExpress));
+          autofill::features::kAutofillEnableCardBenefitsForAmericanExpress) ||
+          base::FeatureList::IsEnabled(
+              autofill::features::kAutofillEnableCardBenefitsForBmo));
 
   html_source->AddString(
       "cardBenefitsToggleSublabel",

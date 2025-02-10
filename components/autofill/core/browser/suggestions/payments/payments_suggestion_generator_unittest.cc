@@ -342,6 +342,7 @@ class AutofillCreditCardBenefitsLabelTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {features::kAutofillEnableCardBenefitsForAmericanExpress,
+         features::kAutofillEnableCardBenefitsForBmo,
          features::kAutofillEnableCardProductName,
          features::kAutofillEnableCardBenefitsIph},
         /*disabled_features=*/{});
@@ -434,7 +435,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Values(&test::GetActiveCreditCardFlatRateBenefit,
                                      &test::GetActiveCreditCardCategoryBenefit,
                                      &test::GetActiveCreditCardMerchantBenefit),
-                     ::testing::Values("amex")));
+                     ::testing::Values("amex", "bmo")));
 
 #if !BUILDFLAG(IS_ANDROID)
 // Checks that for FPAN suggestions that the benefit description is displayed.
@@ -535,13 +536,14 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
 
 // Checks that for credit card suggestions with eligible benefits, the
 // instrument id of the credit card is marked in the MetadataLoggingContext. The
-// instrument ids should also be available when the benefits flag is disabled.
+// instrument ids should also be available when the benefit flags are disabled.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionLabel_MetadataLoggingContext_FlagsDisabled) {
   base::test::ScopedFeatureList disable_benefits;
   disable_benefits.InitWithFeatures(
       /*enabled_features=*/{}, /*disabled_features=*/{
-          features::kAutofillEnableCardBenefitsForAmericanExpress});
+          features::kAutofillEnableCardBenefitsForAmericanExpress,
+          features::kAutofillEnableCardBenefitsForBmo});
   DoBenefitSuggestionLabel_MetadataLoggingContextTest();
 }
 
