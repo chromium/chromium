@@ -82,7 +82,7 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
     OCMStub([consistency_default_account_coordinator_mock_ viewController])
         .andReturn(default_account_view_controller);
     // Setup the mediator.
-    OCMStub([(id)mediator_mock_ alloc]).andReturn(mediator_mock_);
+    OCMExpect([(id)mediator_mock_ alloc]).andReturn(mediator_mock_);
     OCMExpect(
         [mediator_mock_
             initWithAccountManagerService:reinterpret_cast<
