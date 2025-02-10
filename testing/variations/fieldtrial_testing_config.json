@@ -26236,6 +26236,21 @@
             ]
         }
     ],
+    "WebViewPartitionedCookiesExcluded": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewPartitionedCookiesExcluded"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewPrefetchNativeLibrary": [
         {
             "platforms": [
