@@ -14,7 +14,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "ui/gl/gl_display.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -105,13 +104,6 @@ class WaylandConnection {
   // Sets a callback that that shutdowns the browser in case of unrecoverable
   // error. Called by WaylandEventWatcher.
   void SetShutdownCb(base::OnceCallback<void()> shutdown_cb);
-
-  void SetUserInputTaskRunner(
-      scoped_refptr<base::SingleThreadTaskRunner> user_input_task_runner);
-
-  scoped_refptr<base::SingleThreadTaskRunner> user_input_task_runner() const {
-    return user_input_task_runner_;
-  }
 
   wl_compositor* compositor() const { return compositor_.get(); }
   // The server version of the compositor interface (might be higher than the
@@ -505,8 +497,6 @@ class WaylandConnection {
   // This is set if wp_viewporter may be used to instruct the compositor to
   // properly scale fractional scaled surfaces.
   bool supports_viewporter_surface_scaling_ = false;
-
-  scoped_refptr<base::SingleThreadTaskRunner> user_input_task_runner_;
 
   wl::SerialTracker serial_tracker_;
 

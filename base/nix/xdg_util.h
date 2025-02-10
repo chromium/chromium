@@ -148,11 +148,13 @@ BASE_EXPORT void SetXdgActivationTokenCreator(
 
 // Tries to create an xdg-activation token and invokes the `callback` with
 // `LaunchOptions` containing the token if available, or empty `LaunchOptions`.
+// This must be called on UI thread.
 BASE_EXPORT void CreateLaunchOptionsWithXdgActivation(
     XdgActivationLaunchOptionsCallback callback);
 
 // Tries to create an xdg-activation token and invokes the `callback` with the
 // token if available, or an empty string.
+// This must be called on UI thread.
 BASE_EXPORT void CreateXdgActivationToken(XdgActivationTokenCallback callback);
 
 // Returns a request path as specified in v0.9 of xdg-desktop-portal:
