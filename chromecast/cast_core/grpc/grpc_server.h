@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,11 @@
 
 #include <grpcpp/grpcpp.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include "base/functional/callback.h"
@@ -49,6 +54,7 @@ namespace utils {
 //       GrpcUnaryHandler<Bar, AnotherThingRequest,
 //                        AnotherThingResponse, DoAnotherThingMethod>;
 //
+//   GrpcServer server("[::]:12345");
 //   server.SetHandler<DoOneThingHandler>(
 //       base::BindOnce([](OneThingRequest request,
 //                             DoOneThing::Reactor* reactor) {
@@ -61,14 +67,23 @@ namespace utils {
 //       }));
 //
 //   // Start the server.
-//   server.Start("[::]:12345");
+//   server.Start();
 //
 //   // Stop the server.
 //   server.Stop();
 //
 class GrpcServer : public grpc::CallbackGenericService {
  public:
+  // Constructor.
   GrpcServer();
+  // Constructor with an endpoint.
+  // `endpoint` must be in the format of [unix|unix-abstract:]<address>[:<port>]
+  // where `address` is the unix domain socket name or a TCP/IP address. `port`
+  // is used with TCP/IP addresses only and must always be specified. A value of
+  // 0 is used to let gRPC framework pick an available port.
+  explicit GrpcServer(std::string_view endpoint);
+  GrpcServer(GrpcServer&& server);
+  GrpcServer& operator=(GrpcServer&& server);
   ~GrpcServer() override;
 
   // Sets the request callback for an RPC defined by |Handler| type.
@@ -89,7 +104,8 @@ class GrpcServer : public grpc::CallbackGenericService {
   }
 
   // Starts the gRPC server.
-  [[nodiscard]] grpc::Status Start(const std::string& endpoint);
+  [[nodiscard]] grpc::Status Start();
+  [[nodiscard]] grpc::Status Start(std::string_view endpoint);
 
   // Stops the gRPC server synchronously. May block indefinitely if there's a
   // non-finished pending reactor created by the gRPC framework.
@@ -108,6 +124,10 @@ class GrpcServer : public grpc::CallbackGenericService {
     return server_reactor_tracker_->active_reactor_count();
   }
 
+  const std::string& endpoint() const { return endpoint_; }
+
+  bool is_running() const { return server_ != nullptr; }
+
  private:
   // Implements grpc::CallbackGenericService APIs.
   // Creates a reactor for a given rpc method from the |ctx|. If a handler is
@@ -116,10 +136,12 @@ class GrpcServer : public grpc::CallbackGenericService {
   grpc::ServerGenericBidiReactor* CreateReactor(
       grpc::GenericCallbackServerContext* ctx) override;
 
+  std::string endpoint_;
+  std::unique_ptr<ServerReactorTracker> server_reactor_tracker_;
+
   std::unordered_map<std::string, std::unique_ptr<utils::GrpcHandler>>
       registered_handlers_;
   std::unique_ptr<grpc::Server> server_;
-  std::unique_ptr<ServerReactorTracker> server_reactor_tracker_;
 };
 
 }  // namespace utils
