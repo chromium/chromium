@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
@@ -69,7 +70,7 @@ class CustomManagePasswordsUIController : public ManagePasswordsUIController {
 
   void WaitForState(password_manager::ui::State target_state);
 
-  bool WaitForFallbackForSaving(const base::TimeDelta timeout);
+  bool WaitForFallbackForSaving();
 
   bool was_prompt_automatically_shown() {
     return was_prompt_automatically_shown_;
@@ -83,10 +84,6 @@ class CustomManagePasswordsUIController : public ManagePasswordsUIController {
   void OnUpdatePasswordSubmitted(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager)
       override;
-  void OnShowManualFallbackForSaving(
-      std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager,
-      bool has_generated_password,
-      bool is_update) override;
   void OnHideManualFallbackForSaving() override;
   bool OnChooseCredentials(
       std::vector<std::unique_ptr<password_manager::PasswordForm>>
@@ -124,9 +121,6 @@ class CustomManagePasswordsUIController : public ManagePasswordsUIController {
   // The state CustomManagePasswordsUIController is currently waiting for.
   std::optional<password_manager::ui::State> target_state_;
 
-  // True iff showing fallback is waited.
-  bool wait_for_fallback_;
-
   // True iff a prompt was automatically shown.
   bool was_prompt_automatically_shown_;
 };
@@ -135,7 +129,6 @@ CustomManagePasswordsUIController::CustomManagePasswordsUIController(
     content::WebContents* web_contents)
     : ManagePasswordsUIController(web_contents),
       run_loop_(nullptr),
-      wait_for_fallback_(false),
       was_prompt_automatically_shown_(false) {
   // Attach CustomManagePasswordsUIController to |web_contents| so the default
   // ManagePasswordsUIController isn't created.
@@ -157,24 +150,18 @@ void CustomManagePasswordsUIController::WaitForState(
   run_loop_->Run();
 }
 
-bool CustomManagePasswordsUIController::WaitForFallbackForSaving(
-    const base::TimeDelta timeout = base::TimeDelta::Max()) {
-  // If the browser is currently showing the save fallback, return true
-  // without waiting.
-  if (BubbleIsManualFallbackForSaving()) {
-    return true;
+bool CustomManagePasswordsUIController::WaitForFallbackForSaving() {
+  if (GetState() == password_manager::ui::PENDING_PASSWORD_STATE) {
+    return !IsShowingBubble();
   }
 
-  base::RunLoop run_loop;
-  wait_for_fallback_ = true;
-  run_loop_ = &run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, run_loop_->QuitClosure(), timeout);
-  run_loop_->Run();
-  bool shownFallbackForSaving = !wait_for_fallback_;
-  run_loop_ = nullptr;
-  wait_for_fallback_ = false;
-  return shownFallbackForSaving;
+  if (base::test::RunUntil([this]() {
+        return GetState() == password_manager::ui::PENDING_PASSWORD_STATE;
+      })) {
+    EXPECT_FALSE(IsShowingBubble());
+    return true;
+  }
+  return false;
 }
 
 void CustomManagePasswordsUIController::OnPasswordSubmitted(
@@ -190,18 +177,6 @@ void CustomManagePasswordsUIController::OnUpdatePasswordSubmitted(
   ProcessStateExpectations(password_manager::ui::PENDING_PASSWORD_UPDATE_STATE);
   return ManagePasswordsUIController::OnUpdatePasswordSubmitted(
       std::move(form_manager));
-}
-
-void CustomManagePasswordsUIController::OnShowManualFallbackForSaving(
-    std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager,
-    bool has_generated_password,
-    bool is_update) {
-  if (wait_for_fallback_) {
-    QuitRunLoop();
-  }
-
-  ManagePasswordsUIController::OnShowManualFallbackForSaving(
-      std::move(form_manager), has_generated_password, is_update);
 }
 
 void CustomManagePasswordsUIController::OnHideManualFallbackForSaving() {
@@ -256,9 +231,6 @@ void CustomManagePasswordsUIController::ShowChangePasswordBubble() {
 bool CustomManagePasswordsUIController::IsTargetStateObserved(
     const password_manager::ui::State target_state,
     const password_manager::ui::State current_state) const {
-  // This function should not be used for manual fallback expectations.
-  DCHECK(!wait_for_fallback_);
-
   bool should_wait_for_automatic_prompt =
       target_state == password_manager::ui::PENDING_PASSWORD_STATE ||
       target_state == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE;
@@ -280,7 +252,6 @@ void CustomManagePasswordsUIController::ProcessStateExpectations(
 void CustomManagePasswordsUIController::QuitRunLoop() {
   run_loop_->Quit();
   run_loop_ = nullptr;
-  wait_for_fallback_ = false;
   target_state_.reset();
 }
 
@@ -381,11 +352,10 @@ void BubbleObserver::WaitForAutomaticUpdatePrompt() const {
   controller->WaitForState(password_manager::ui::PENDING_PASSWORD_UPDATE_STATE);
 }
 
-bool BubbleObserver::WaitForFallbackForSaving(
-    const base::TimeDelta timeout) const {
+bool BubbleObserver::WaitForFallbackForSaving() const {
   CustomManagePasswordsUIController* controller =
       static_cast<CustomManagePasswordsUIController*>(passwords_ui_controller_);
-  return controller->WaitForFallbackForSaving(timeout);
+  return controller->WaitForFallbackForSaving();
 }
 
 void BubbleObserver::WaitForSaveUnsyncedCredentialsPrompt() const {

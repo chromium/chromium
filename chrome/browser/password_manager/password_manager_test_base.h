@@ -93,8 +93,7 @@ class BubbleObserver {
   // the allotted timeout.
   // |web_contents| must be the custom one returned by
   // PasswordManagerBrowserTestBase.
-  bool WaitForFallbackForSaving(
-      const base::TimeDelta timeout = base::TimeDelta::Max()) const;
+  bool WaitForFallbackForSaving() const;
 
   // Returns once the prompt for saving unsynced credentials pops up.
   void WaitForSaveUnsyncedCredentialsPrompt() const;
