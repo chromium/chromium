@@ -1468,6 +1468,7 @@ CanvasResourceProvider::CanvasResourceProvider(
                               viz::ToClosestSkColorType(format),
                               alpha_type,
                               color_space.ToSkColorSpace())),
+      format_(format),
       color_space_(color_space),
       resource_host_(resource_host),
       recorder_(std::make_unique<MemoryManagedPaintRecorder>(Size(), this)),

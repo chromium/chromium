@@ -184,6 +184,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason);
   const SkImageInfo& GetSkImageInfo() const { return info_; }
   SkSurfaceProps GetSkSurfaceProps() const;
+  viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
   gfx::ColorSpace GetColorSpace() const { return color_space_; }
   SkAlphaType GetAlphaType() const;
   gfx::Size Size() const;
@@ -443,6 +444,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // Note that `info_` should be const, but the relevant SkImageInfo
   // constructors do not exist.
   SkImageInfo info_;
+  viz::SharedImageFormat format_;
   gfx::ColorSpace color_space_;
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
