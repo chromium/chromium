@@ -72,7 +72,7 @@ class TestSharedImageInterface : public SharedImageInterface {
                          const Mailbox& mailbox) override;
 
   scoped_refptr<ClientSharedImage> ImportSharedImage(
-      const ExportedSharedImage& exported_shared_image) override;
+      ExportedSharedImage exported_shared_image) override;
 
   void DestroySharedImage(const SyncToken& sync_token,
                           const Mailbox& mailbox) override;

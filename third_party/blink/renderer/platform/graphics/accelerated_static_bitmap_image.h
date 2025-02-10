@@ -70,7 +70,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   // This takes ownership of the shared image.
   static scoped_refptr<AcceleratedStaticBitmapImage>
   CreateFromExternalSharedImage(
-      const gpu::ExportedSharedImage& exported_shared_image,
+      gpu::ExportedSharedImage exported_shared_image,
       const gpu::SyncToken& sync_token,
       const SkImageInfo& sk_image_info,
       base::OnceCallback<void(const gpu::SyncToken&)> release_callback);

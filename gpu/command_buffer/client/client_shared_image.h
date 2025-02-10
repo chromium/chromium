@@ -177,12 +177,14 @@ class GPU_EXPORT ClientSharedImage
 
   ExportedSharedImage Export();
 
-  // Returns an unowned reference. The caller should ensure that the original
-  // shared image outlives this reference. Note that it is preferable to use
+  // Returns an unowned reference for the underlying shared image backing. The
+  // caller should ensure that the original shared image backing created in
+  // client process outlives this reference. Note that it is preferable to use
   // SharedImageInterface::ImportSharedImage() instead, which returns an owning
-  // reference.
+  // reference, where the underlying shared image backing stays alive in gpu
+  // process even if original ClientSharedImage goes away.
   static scoped_refptr<ClientSharedImage> ImportUnowned(
-      const ExportedSharedImage& exported_shared_image);
+      ExportedSharedImage exported_shared_image);
 
   void UpdateDestructionSyncToken(const gpu::SyncToken& sync_token) {
     destruction_sync_token_ = sync_token;

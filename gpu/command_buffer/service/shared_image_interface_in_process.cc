@@ -671,7 +671,7 @@ void SharedImageInterfaceInProcess::ScheduleGpuTask(
 
 scoped_refptr<ClientSharedImage>
 SharedImageInterfaceInProcess::ImportSharedImage(
-    const ExportedSharedImage& exported_shared_image) {
+    ExportedSharedImage exported_shared_image) {
   // Secondary references are required only by client processes, so it shouldn't
   // be reachable here.
   NOTREACHED();

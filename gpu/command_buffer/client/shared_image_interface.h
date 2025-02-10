@@ -275,7 +275,7 @@ class GPU_EXPORT SharedImageInterface
   // must be released via DestroySharedImage in the same way as for SharedImages
   // created via CreateSharedImage().
   virtual scoped_refptr<ClientSharedImage> ImportSharedImage(
-      const ExportedSharedImage& exported_shared_image) = 0;
+      ExportedSharedImage exported_shared_image) = 0;
 
   struct GPU_EXPORT SwapChainSharedImages {
     SwapChainSharedImages(scoped_refptr<gpu::ClientSharedImage> front_buffer,

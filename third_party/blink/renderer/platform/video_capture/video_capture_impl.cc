@@ -228,7 +228,7 @@ struct VideoCaptureImpl::BufferContext
   void InitializeFromSharedImage(
       media::mojom::blink::SharedImageBufferHandleSetPtr shared_image_handle) {
     shared_image_ = gpu::ClientSharedImage::ImportUnowned(
-        shared_image_handle->shared_image);
+        std::move(shared_image_handle->shared_image));
     shared_image_sync_token_ = shared_image_handle->sync_token;
   }
 

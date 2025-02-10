@@ -107,7 +107,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
       const SyncToken& sync_token,
       scoped_refptr<ClientSharedImage> client_shared_image) override;
   scoped_refptr<ClientSharedImage> ImportSharedImage(
-      const ExportedSharedImage& exported_shared_image) override;
+      ExportedSharedImage exported_shared_image) override;
   SwapChainSharedImages CreateSwapChain(viz::SharedImageFormat format,
                                         const gfx::Size& size,
                                         const gfx::ColorSpace& color_space,

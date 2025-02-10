@@ -339,13 +339,13 @@ void XRFrameProvider::OnImmersiveFrameData(
   frame_id_ = data->render_info->frame_id;
   if (data->buffer_shared_image.has_value()) {
     buffer_shared_image_ = gpu::ClientSharedImage::ImportUnowned(
-        data->buffer_shared_image.value());
+        std::move(data->buffer_shared_image.value()));
     buffer_sync_token_ = data->buffer_sync_token.value();
   }
 
   if (data->camera_image_buffer_shared_image.has_value()) {
     camera_image_shared_image_ = gpu::ClientSharedImage::ImportUnowned(
-        data->camera_image_buffer_shared_image.value());
+        std::move(data->camera_image_buffer_shared_image.value()));
     camera_image_sync_token_ = data->camera_image_buffer_sync_token.value();
   }
 

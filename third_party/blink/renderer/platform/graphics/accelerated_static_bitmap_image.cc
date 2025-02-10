@@ -79,7 +79,7 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
 // static
 scoped_refptr<AcceleratedStaticBitmapImage>
 AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
-    const gpu::ExportedSharedImage& exported_shared_image,
+    gpu::ExportedSharedImage exported_shared_image,
     const gpu::SyncToken& sync_token,
     const SkImageInfo& sk_image_info,
     base::OnceCallback<void(const gpu::SyncToken&)> external_callback) {
@@ -93,7 +93,7 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
   }
 
   scoped_refptr<gpu::ClientSharedImage> shared_image =
-      sii->ImportSharedImage(exported_shared_image);
+      sii->ImportSharedImage(std::move(exported_shared_image));
   auto release_token = sii->GenVerifiedSyncToken();
   // No need to keep the original image after the new reference has been added.
   // Need to update the sync token, however.
