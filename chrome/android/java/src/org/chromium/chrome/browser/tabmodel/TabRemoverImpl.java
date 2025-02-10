@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.chrome.browser.tabmodel.TabModelRemover.TabModelRemoverFlowHandler;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
+import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.MaybeBlockingResult;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -135,7 +136,7 @@ public class TabRemoverImpl implements TabRemover {
                                 : mActionConfirmationManager.willSkipCloseTabAttempt();
                 listener.willPerformActionOrShowDialog(DialogType.SYNC, willSkipDialog);
             }
-            var adaptedCallback = adaptOnResultCallback(onResult, DialogType.SYNC, listener);
+            var adaptedCallback = adaptSyncOnResultCallback(onResult, listener);
             if (isTabGroup) {
                 mActionConfirmationManager.processDeleteGroupAttempt(adaptedCallback);
             } else {
@@ -145,14 +146,15 @@ public class TabRemoverImpl implements TabRemover {
 
         @Override
         public void showCollaborationKeepDialog(
-                @MemberRole int memberRole, @NonNull String title, Callback<Integer> onResult) {
+                @MemberRole int memberRole,
+                @NonNull String title,
+                Callback<MaybeBlockingResult> onResult) {
             @Nullable TabModelActionListener listener = takeListener();
             if (listener != null) {
                 listener.willPerformActionOrShowDialog(
                         DialogType.COLLABORATION, /* willSkipDialog= */ false);
             }
-            var adaptedCallback =
-                    adaptOnResultCallback(onResult, DialogType.COLLABORATION, listener);
+            var adaptedCallback = adaptCollaborationOnResultCallback(onResult, listener);
             if (memberRole == MemberRole.OWNER) {
                 mActionConfirmationManager.processCollaborationOwnerRemoveLastTab(
                         title, adaptedCallback);
@@ -192,21 +194,29 @@ public class TabRemoverImpl implements TabRemover {
             return listener;
         }
 
-        private @NonNull Callback<Integer> adaptOnResultCallback(
-                @NonNull Callback<Integer> callback,
-                @DialogType int plannedDialogType,
+        private @NonNull Callback<MaybeBlockingResult> adaptCollaborationOnResultCallback(
+                @NonNull Callback<MaybeBlockingResult> callback,
                 @Nullable TabModelActionListener listener) {
+            return (MaybeBlockingResult maybeBlockingResult) -> {
+                callback.onResult(maybeBlockingResult);
+                if (listener != null) {
+                    listener.onConfirmationDialogResult(
+                            DialogType.COLLABORATION, maybeBlockingResult.result);
+                }
+            };
+        }
+
+        private @NonNull Callback<Integer> adaptSyncOnResultCallback(
+                @NonNull Callback<Integer> callback, @Nullable TabModelActionListener listener) {
             return (result) -> {
                 boolean isImmediateContinue = result == ActionConfirmationResult.IMMEDIATE_CONTINUE;
                 // Sync dialogs interrupt the flow and as such undo operations after the dialog is
                 // shown should be suppressed as the user already had an opportunity to abort.
-                if (plannedDialogType == DialogType.SYNC) {
-                    mPreventUndo = !isImmediateContinue;
-                }
+                mPreventUndo = !isImmediateContinue;
                 callback.onResult(result);
                 if (listener != null) {
                     @DialogType
-                    int dialogType = isImmediateContinue ? DialogType.NONE : plannedDialogType;
+                    int dialogType = isImmediateContinue ? DialogType.NONE : DialogType.SYNC;
                     listener.onConfirmationDialogResult(dialogType, result);
                 }
             };
@@ -249,11 +259,14 @@ public class TabRemoverImpl implements TabRemover {
 
         @Override
         public void showCollaborationKeepDialog(
-                @MemberRole int memberRole, @NonNull String title, Callback<Integer> onResult) {
+                @MemberRole int memberRole,
+                @NonNull String title,
+                Callback<MaybeBlockingResult> onResult) {
             assert false : "removeTab does not support collaboration keep dialogs.";
 
             // This behavior is a safe default even if the assert trips.
-            onResult.onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
+            onResult.onResult(
+                    new MaybeBlockingResult(ActionConfirmationResult.CONFIRMATION_POSITIVE, null));
         }
 
         @Override

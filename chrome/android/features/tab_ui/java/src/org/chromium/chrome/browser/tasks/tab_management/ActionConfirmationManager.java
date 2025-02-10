@@ -22,6 +22,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogHandler;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogDismissType;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DismissHandler;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.components.prefs.PrefService;
@@ -58,6 +59,29 @@ public class ActionConfirmationManager {
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
 
+    /** Holder for the return result from operations that show a blocking modal dialog. */
+    public static class MaybeBlockingResult {
+        /** The result of the modal dialog. */
+        public final @ActionConfirmationResult int result;
+
+        /**
+         * A runnable that must be invoked if provided to stop showing the blocking UI when the
+         * requisite operation is finished.
+         */
+        public final @Nullable Runnable finishBlocking;
+
+        /**
+         * Constructor is public in the event another API is expecting this type when the action
+         * confirmation dialog is not shown. It should not be used widely.
+         */
+        public MaybeBlockingResult(
+                @ActionConfirmationResult int result, @Nullable Runnable finishBlocking) {
+            this.result = result;
+            this.finishBlocking = finishBlocking;
+        }
+    }
+    ;
+
     /**
      * @param profile The profile to access shared services with.
      * @param context Used to load android resources.
@@ -87,8 +111,9 @@ public class ActionConfirmationManager {
     }
 
     /** Processes deleting a shared group, the user should be the owner. */
-    public void processDeleteSharedGroupAttempt(String groupTitle, Callback<Integer> onResult) {
-        processGroupNameAction(
+    public void processDeleteSharedGroupAttempt(
+            String groupTitle, Callback<MaybeBlockingResult> onResult) {
+        processExitSharedGroupAction(
                 DELETE_SHARED_GROUP_USER_ACTION,
                 R.string.delete_shared_tab_group_dialog_title,
                 R.string.delete_shared_tab_group_description,
@@ -98,8 +123,9 @@ public class ActionConfirmationManager {
     }
 
     /** Processing leaving a shared group. */
-    public void processLeaveGroupAttempt(String groupTitle, Callback<Integer> onResult) {
-        processGroupNameAction(
+    public void processLeaveGroupAttempt(
+            String groupTitle, Callback<MaybeBlockingResult> onResult) {
+        processExitSharedGroupAction(
                 LEAVE_GROUP_USER_ACTION,
                 R.string.leave_tab_group_dialog_title,
                 R.string.leave_tab_group_description,
@@ -156,7 +182,7 @@ public class ActionConfirmationManager {
      * is responsible for deciding this.
      */
     public void processCollaborationOwnerRemoveLastTab(
-            String groupTitle, Callback<Integer> onResult) {
+            String groupTitle, Callback<MaybeBlockingResult> onResult) {
         processCollaborationTabRemoval(
                 COLLABORATION_OWNER_REMOVE_LAST_TAB,
                 R.string.keep_tab_group_dialog_title,
@@ -172,7 +198,7 @@ public class ActionConfirmationManager {
      * is responsible for deciding this.
      */
     public void processCollaborationMemberRemoveLastTab(
-            String groupTitle, Callback<Integer> onResult) {
+            String groupTitle, Callback<MaybeBlockingResult> onResult) {
         processCollaborationTabRemoval(
                 COLLABORATION_MEMBER_REMOVE_LAST_TAB,
                 R.string.keep_tab_group_dialog_title,
@@ -246,20 +272,26 @@ public class ActionConfirmationManager {
         }
     }
 
-    private void processGroupNameAction(
+    private void processExitSharedGroupAction(
             String userActionBaseString,
             @StringRes int titleRes,
             @StringRes int descriptionRes,
             String formatArg,
             @StringRes int actionRes,
-            Callback<Integer> onResult) {
+            Callback<MaybeBlockingResult> onResult) {
         final Function<Resources, String> titleResolver = (res) -> res.getString(titleRes);
         final Function<Resources, String> descriptionResolver =
                 resources -> resources.getString(descriptionRes, formatArg);
         ConfirmationDialogHandler onDialogInteracted =
                 (dismissHandler, buttonClickResult, resultStopShowing) -> {
-                    handleDialogResult(buttonClickResult, userActionBaseString, onResult);
-                    return DialogDismissType.DISMISS_IMMEDIATELY;
+                    boolean takePositiveAction = buttonClickResult == ButtonClickResult.POSITIVE;
+                    recordProceedOrAbort(userActionBaseString, takePositiveAction);
+                    return handleExitCollaborationResult(
+                            getActionConfirmationResult(takePositiveAction),
+                            takePositiveAction,
+                            dismissHandler,
+                            buttonClickResult,
+                            onResult);
                 };
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
@@ -272,16 +304,44 @@ public class ActionConfirmationManager {
                 onDialogInteracted);
     }
 
-    private void handleDialogResult(
+    private static void handleDialogResult(
             @ButtonClickResult int buttonClickResult,
             String userActionBaseString,
             Callback<Integer> onResult) {
         boolean takePositiveAction = buttonClickResult == ButtonClickResult.POSITIVE;
-        RecordUserAction.record(userActionBaseString + (takePositiveAction ? "Proceed" : "Abort"));
+        recordProceedOrAbort(userActionBaseString, takePositiveAction);
         onResult.onResult(
                 takePositiveAction
                         ? ActionConfirmationResult.CONFIRMATION_POSITIVE
                         : ActionConfirmationResult.CONFIRMATION_NEGATIVE);
+    }
+
+    private static @DialogDismissType int handleExitCollaborationResult(
+            @ActionConfirmationResult int result,
+            boolean blocking,
+            DismissHandler dismissHandler,
+            @ButtonClickResult int buttonClickResult,
+            Callback<MaybeBlockingResult> onResult) {
+        if (!blocking) {
+            onResult.onResult(new MaybeBlockingResult(result, /* finishBlocking= */ null));
+            return DialogDismissType.DISMISS_IMMEDIATELY;
+        }
+
+        Runnable finishBlocking = dismissHandler.dismissBlocking(buttonClickResult);
+        onResult.onResult(new MaybeBlockingResult(result, finishBlocking));
+        return DialogDismissType.DISMISS_LATER;
+    }
+
+    private static void recordProceedOrAbort(
+            String userActionBaseString, boolean takePositiveAction) {
+        RecordUserAction.record(userActionBaseString + (takePositiveAction ? "Proceed" : "Abort"));
+    }
+
+    private static @ActionConfirmationResult int getActionConfirmationResult(
+            boolean takePositiveAction) {
+        return takePositiveAction
+                ? ActionConfirmationResult.CONFIRMATION_POSITIVE
+                : ActionConfirmationResult.CONFIRMATION_NEGATIVE;
     }
 
     private void processCollaborationTabRemoval(
@@ -291,15 +351,24 @@ public class ActionConfirmationManager {
             String formatArg,
             @StringRes int positiveButtonRes,
             @StringRes int negativeButtonRes,
-            Callback<Integer> onResult) {
+            Callback<MaybeBlockingResult> onResult) {
         final Function<Resources, String> titleResolver = (res) -> res.getString(titleRes);
         final Function<Resources, String> descriptionResolver =
                 resources -> resources.getString(descriptionRes, formatArg);
         ConfirmationDialogHandler onDialogInteracted =
                 (dismissHandler, buttonClickResult, resultStopShowing) -> {
-                    handleCollaborationDialogResult(
-                            buttonClickResult, userActionBaseString, onResult);
-                    return DialogDismissType.DISMISS_IMMEDIATELY;
+                    boolean takePositiveAction =
+                            shouldTakePositiveActionForKeepOrRemoveGroupButtonClick(
+                                    buttonClickResult, userActionBaseString);
+
+                    // Invert take positive action for blocking as we want to block on the negative
+                    // action (leave/delete). Rather than the positive action (keep).
+                    return handleExitCollaborationResult(
+                            getActionConfirmationResult(takePositiveAction),
+                            !takePositiveAction,
+                            dismissHandler,
+                            buttonClickResult,
+                            onResult);
                 };
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
@@ -312,24 +381,11 @@ public class ActionConfirmationManager {
                 onDialogInteracted);
     }
 
-    private void handleCollaborationDialogResult(
-            @ButtonClickResult int buttonClickResult,
-            String userActionBaseString,
-            Callback<Integer> onResult) {
-        boolean takePositiveAction =
-                shouldTakePositiveActionForCollaborationButtonClick(
-                        buttonClickResult, userActionBaseString);
-        onResult.onResult(
-                takePositiveAction
-                        ? ActionConfirmationResult.CONFIRMATION_POSITIVE
-                        : ActionConfirmationResult.CONFIRMATION_NEGATIVE);
-    }
-
     /**
      * Returns whether to take the positive action for the button click result. Also emits a user
      * action.
      */
-    private boolean shouldTakePositiveActionForCollaborationButtonClick(
+    private boolean shouldTakePositiveActionForKeepOrRemoveGroupButtonClick(
             @ButtonClickResult int buttonClickResult, String userActionBaseString) {
         switch (buttonClickResult) {
             case ButtonClickResult.POSITIVE:

@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
+import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.MaybeBlockingResult;
 import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
@@ -71,13 +72,13 @@ class TabModelRemover {
          *
          * @param memberRole The role of the member.
          * @param title The title of the tab group.
-         * @param onResult A callback invoked with the {@link ActionConfirmationResult} of showing
-         *     the dialog.
+         * @param onResult A callback invoked with the {@link MaybeBlockingResult} of showing the
+         *     dialog.
          */
         void showCollaborationKeepDialog(
                 @MemberRole int memberRole,
                 @NonNull String title,
-                @NonNull Callback<Integer> onResult);
+                @NonNull Callback<MaybeBlockingResult> onResult);
 
         /** Perform the action. */
         void performAction();
@@ -177,16 +178,23 @@ class TabModelRemover {
         return newTabs;
     }
 
-    private @NonNull Callback<Integer> createCollaborationKeepCallback(
+    private @NonNull Callback<MaybeBlockingResult> createCollaborationKeepCallback(
             @NonNull CollaborationInfo collaborationInfo) {
         assert collaborationInfo.isValid();
-        return (confirmationResult) -> {
-            switch (confirmationResult) {
+        return (MaybeBlockingResult maybeBlockingResult) -> {
+            switch (maybeBlockingResult.result) {
                 case CONFIRMATION_POSITIVE:
+                    if (maybeBlockingResult.finishBlocking != null) {
+                        assert false : "Should not be reachable.";
+                        // Do the safe thing and run the runnable anyway.
+                        maybeBlockingResult.finishBlocking.run();
+                    }
                     return;
                 case CONFIRMATION_NEGATIVE:
+                    assert maybeBlockingResult.finishBlocking != null;
                     getTabGroupModelFilter().getTabModel().commitAllTabClosures();
-                    leaveOrDeleteCollaboration(collaborationInfo);
+                    leaveOrDeleteCollaboration(
+                            collaborationInfo, maybeBlockingResult.finishBlocking);
                     return;
                 case IMMEDIATE_CONTINUE: // fallthrough
                 default:
@@ -212,7 +220,8 @@ class TabModelRemover {
         };
     }
 
-    private void leaveOrDeleteCollaboration(@NonNull CollaborationInfo collaborationInfo) {
+    private void leaveOrDeleteCollaboration(
+            @NonNull CollaborationInfo collaborationInfo, @NonNull Runnable finishBlocking) {
         assert collaborationInfo.isValid();
 
         // TODO(crbug.com/376907248): Remove DataSharingService from here once these operations
@@ -222,10 +231,16 @@ class TabModelRemover {
         @MemberRole int memberRole = collaborationInfo.memberRole;
         @Nullable DataSharingService dataSharingService = getDataSharingService();
         if (dataSharingService == null) {
+            finishBlocking.run();
             TabUiUtils.showGenericErrorDialog(mContext, mModalDialogManager);
         } else {
             TabUiUtils.exitCollaborationWithoutWarning(
-                    mContext, mModalDialogManager, dataSharingService, collaborationId, memberRole);
+                    mContext,
+                    mModalDialogManager,
+                    dataSharingService,
+                    collaborationId,
+                    memberRole,
+                    finishBlocking);
         }
     }
 

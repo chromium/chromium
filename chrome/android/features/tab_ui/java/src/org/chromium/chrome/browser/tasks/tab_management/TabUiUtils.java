@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
+import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.MaybeBlockingResult;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.CollaborationService;
@@ -213,15 +214,22 @@ public class TabUiUtils {
 
         @MemberRole
         int memberRole = TabShareUtils.getSelfMemberRole(shareGroup, account.getGaiaId());
-        Callback<Integer> onActionConfirmation =
-                (@ActionConfirmationResult Integer result) -> {
-                    if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
+        Callback<MaybeBlockingResult> onActionConfirmation =
+                (MaybeBlockingResult maybeBlockingResult) -> {
+                    if (maybeBlockingResult.result
+                            != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
+                        assert maybeBlockingResult.finishBlocking != null;
                         exitCollaborationWithoutWarning(
                                 context,
                                 modalDialogManager,
                                 dataSharingService,
                                 collaborationId,
-                                memberRole);
+                                memberRole,
+                                maybeBlockingResult.finishBlocking);
+                    } else if (maybeBlockingResult.finishBlocking != null) {
+                        assert false : "Should not be reachable.";
+                        // Do the safe thing and run the runnable anyway.
+                        maybeBlockingResult.finishBlocking.run();
                     }
                 };
 
@@ -275,14 +283,17 @@ public class TabUiUtils {
      * @param dataSharingService Called to do the actual leave or delete action.
      * @param collaborationId Used to identify the collaboration.
      * @param memberRole Used to decide which way to exit the group.
+     * @param finishedRunnable Invoked when the server RPC is complete.
      */
     public static void exitCollaborationWithoutWarning(
             Context context,
             ModalDialogManager modalDialogManager,
             DataSharingService dataSharingService,
             String collaborationId,
-            @MemberRole int memberRole) {
-        Callback<Integer> callback = bindOnLeaveOrDeleteGroup(context, modalDialogManager);
+            @MemberRole int memberRole,
+            @Nullable Runnable finishedRunnable) {
+        Callback<Integer> callback =
+                bindOnLeaveOrDeleteGroup(context, modalDialogManager, finishedRunnable);
         if (memberRole == MemberRole.OWNER) {
             dataSharingService.deleteGroup(collaborationId, callback);
         } else if (memberRole == MemberRole.MEMBER) {
@@ -341,8 +352,14 @@ public class TabUiUtils {
     }
 
     private static Callback<Integer> bindOnLeaveOrDeleteGroup(
-            Context context, ModalDialogManager modalDialogManager) {
+            Context context,
+            ModalDialogManager modalDialogManager,
+            @Nullable Runnable finishedRunnable) {
         return (@PeopleGroupActionOutcome Integer outcome) -> {
+            // Invoke the runnable first since it may be necessary to hide the prior dialog before
+            // showing the error.
+            if (finishedRunnable != null) finishedRunnable.run();
+
             if (outcome != PeopleGroupActionOutcome.SUCCESS) {
                 showGenericErrorDialog(context, modalDialogManager);
             }

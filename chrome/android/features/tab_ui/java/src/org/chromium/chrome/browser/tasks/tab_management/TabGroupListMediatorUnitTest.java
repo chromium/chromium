@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
+import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.MaybeBlockingResult;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.MessageAttribution;
@@ -141,10 +142,14 @@ public class TabGroupListMediatorUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Profile mProfile;
     @Mock private MessagingBackendService mMessagingBackendService;
+    @Mock private Runnable mFinishBlocking;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserver;
     @Captor private ArgumentCaptor<TabGroupSyncService.Observer> mTabGroupSyncObserverCaptor;
     @Captor private ArgumentCaptor<Callback<Integer>> mActionConfirmationResultCallbackCaptor;
+
+    @Captor
+    private ArgumentCaptor<Callback<MaybeBlockingResult>> mMaybeBlockingResultCallbackCaptor;
 
     @Captor
     private ArgumentCaptor<SyncService.SyncStateChangedListener> mSyncStateChangedListenerCaptor;
@@ -631,14 +636,17 @@ public class TabGroupListMediatorUnitTest {
 
         verify(mActionConfirmationManager)
                 .processDeleteSharedGroupAttempt(
-                        any(), mActionConfirmationResultCallbackCaptor.capture());
-        mActionConfirmationResultCallbackCaptor
+                        any(), mMaybeBlockingResultCallbackCaptor.capture());
+        mMaybeBlockingResultCallbackCaptor
                 .getValue()
-                .onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
+                .onResult(
+                        new MaybeBlockingResult(
+                                ActionConfirmationResult.CONFIRMATION_POSITIVE, mFinishBlocking));
 
         verify(mDataSharingService)
                 .deleteGroup(eq(COLLABORATION_ID1), mActionOutcomeCallbackCaptor.capture());
         mActionOutcomeCallbackCaptor.getValue().onResult(PeopleGroupActionOutcome.SUCCESS);
+        verify(mFinishBlocking).run();
         verify(mModalDialogManager, never())
                 .showDialog(mModalPropertyModelCaptor.capture(), anyInt());
     }
@@ -675,16 +683,19 @@ public class TabGroupListMediatorUnitTest {
         model.get(LEAVE_RUNNABLE).run();
 
         verify(mActionConfirmationManager)
-                .processLeaveGroupAttempt(any(), mActionConfirmationResultCallbackCaptor.capture());
-        mActionConfirmationResultCallbackCaptor
+                .processLeaveGroupAttempt(any(), mMaybeBlockingResultCallbackCaptor.capture());
+        mMaybeBlockingResultCallbackCaptor
                 .getValue()
-                .onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
+                .onResult(
+                        new MaybeBlockingResult(
+                                ActionConfirmationResult.CONFIRMATION_POSITIVE, mFinishBlocking));
 
         verify(mDataSharingService)
                 .leaveGroup(eq(COLLABORATION_ID1), mActionOutcomeCallbackCaptor.capture());
         mActionOutcomeCallbackCaptor
                 .getValue()
                 .onResult(PeopleGroupActionOutcome.TRANSIENT_FAILURE);
+        verify(mFinishBlocking).run();
 
         verify(mModalDialogManager).showDialog(mModalPropertyModelCaptor.capture(), anyInt());
 
