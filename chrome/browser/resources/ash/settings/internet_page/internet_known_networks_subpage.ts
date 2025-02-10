@@ -430,8 +430,8 @@ export class SettingsInternetKnownNetworksPageElement extends
     this.selectedSubscriptionId_ = '';
   }
 
-  override async onPasspointSubscriptionAdded(
-      subscription: PasspointSubscription): Promise<void> {
+  override onPasspointSubscriptionAdded(subscription: PasspointSubscription):
+      void {
     this.push('passpointSubscriptionsList_', subscription);
   }
 

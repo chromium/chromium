@@ -289,8 +289,9 @@ class SodaSessionDev implements SodaSession {
     }
   }
 
-  async start(): Promise<void> {
+  start(): Promise<void> {
     console.info('Soda session started');
+    return Promise.resolve();
   }
 
   addAudio(samples: Float32Array): void {
@@ -304,9 +305,10 @@ class SodaSessionDev implements SodaSession {
     }
   }
 
-  async stop(): Promise<void> {
+  stop(): Promise<void> {
     console.info('Soda session stopped');
     this.emitSodaNextWord(true);
+    return Promise.resolve();
   }
 
   subscribeEvent(observer: Observer<SodaEvent>): Unsubscribe {
@@ -375,7 +377,7 @@ export class PlatformHandler extends PlatformHandlerBase {
     () => devSettings.value.forceLanguageSelection,
   );
 
-  override async init(): Promise<void> {
+  override init(): Promise<void> {
     document.body.appendChild(this.errorView);
     settingsInit();
     const sodaState = signal<ModelState>({kind: 'notInstalled'});
@@ -392,6 +394,7 @@ export class PlatformHandler extends PlatformHandlerBase {
     });
 
     this.initPerfEventWatchers();
+    return Promise.resolve();
   }
 
   override getLangPackList(): readonly LangPackInfo[] {
@@ -427,7 +430,7 @@ export class PlatformHandler extends PlatformHandlerBase {
 
   override perfLogger = new PerfLogger(this.eventsSender);
 
-  override async installSoda(language: LanguageCode): Promise<void> {
+  override installSoda(language: LanguageCode): Promise<void> {
     console.log(`SODA lang pack ${language} installation requested`);
     const sodaState = this.getSodaState(language);
     if (sodaState.value.kind === 'notInstalled') {
@@ -452,6 +455,7 @@ export class PlatformHandler extends PlatformHandlerBase {
         }
       })();
     }
+    return Promise.resolve();
   }
 
   override isSodaAvailable(): boolean {
@@ -462,14 +466,14 @@ export class PlatformHandler extends PlatformHandlerBase {
     return assertExists(this.sodaStates.get(language));
   }
 
-  override async newSodaSession(_language: LanguageCode): Promise<SodaSession> {
-    return new SodaSessionDev();
+  override newSodaSession(_language: LanguageCode): Promise<SodaSession> {
+    return Promise.resolve(new SodaSessionDev());
   }
 
-  override async getMicrophoneInfo(
+  override getMicrophoneInfo(
     _deviceId: string,
   ): Promise<InternalMicInfo> {
-    return {isDefault: false, isInternal: false};
+    return Promise.resolve({isDefault: false, isInternal: false});
   }
 
   override renderDevUi(): RenderResult {

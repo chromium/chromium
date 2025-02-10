@@ -86,7 +86,7 @@ class LocalFilesMigrationDialogElement extends HTMLElement {
     this.dialog.showModal();
   }
 
-  private async onUploadNowButtonClicked_() {
+  private onUploadNowButtonClicked_() {
     this.proxy.handler.uploadNow();
   }
 

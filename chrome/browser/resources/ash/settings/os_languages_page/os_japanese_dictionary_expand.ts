@@ -90,7 +90,7 @@ class OsJapaneseDictionaryExpandElement extends PolymerElement {
   }
 
   // Export dictionary.
-  private async exportDictionary_(): Promise<void> {
+  private exportDictionary_(): void {
     const a = document.createElement('a');
     a.href = `jp-export-dictionary/${this.dict.id}`;
     // In case there is no name, use a placeholder name.

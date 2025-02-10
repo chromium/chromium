@@ -21,7 +21,7 @@ function getApp(): ClientApi {
 /**
  * Runs any initialization code on the boca app once it is in the dom.
  */
-async function initializeApp(app: ClientApi) {
+function initializeApp(app: ClientApi) {
   app.setDelegate(new ClientDelegateFactory(pageHandler).getInstance());
   callbackRouter.onStudentActivityUpdated.addListener(
       (activities: IdentifiedActivity[]) => {

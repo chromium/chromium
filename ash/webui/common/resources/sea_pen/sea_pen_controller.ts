@@ -136,11 +136,11 @@ export async function selectSeaPenThumbnail(
   }
 }
 
-export async function clearSeaPenThumbnails(store: SeaPenStoreInterface) {
+export function clearSeaPenThumbnails(store: SeaPenStoreInterface) {
   store.dispatch(seaPenAction.clearSeaPenThumbnailsAction());
 }
 
-export async function cleanUpSeaPenQueryStates(store: SeaPenStoreInterface) {
+export function cleanUpSeaPenQueryStates(store: SeaPenStoreInterface) {
   store.beginBatchUpdate();
   store.dispatch(seaPenAction.setThumbnailResponseStatusCodeAction(null));
   store.dispatch(seaPenAction.clearCurrentSeaPenQueryAction());

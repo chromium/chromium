@@ -527,15 +527,15 @@ export async function updateDailyRefreshWallpaper(
 }
 
 /** Confirm and set preview wallpaper as actual wallpaper. */
-export async function confirmPreviewWallpaper(
-    provider: WallpaperProviderInterface): Promise<void> {
+export function confirmPreviewWallpaper(provider: WallpaperProviderInterface):
+    void {
   provider.makeOpaque();
   provider.confirmPreviewWallpaper();
 }
 
 /** Cancel preview wallpaper and show the previous wallpaper. */
-export async function cancelPreviewWallpaper(
-    provider: WallpaperProviderInterface): Promise<void> {
+export function cancelPreviewWallpaper(provider: WallpaperProviderInterface):
+    void {
   provider.makeOpaque();
   provider.cancelPreviewWallpaper();
 }
