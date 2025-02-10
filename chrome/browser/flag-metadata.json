@@ -800,7 +800,7 @@
       "izuzic@google.com",
       "friedrichh@chromium.org",
       "//components/autofill/android/OWNERS" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 138
   },
   {
     "name": "autofill-throttle-doc-form-scans",
@@ -2447,7 +2447,7 @@
       "friedrichh@chromium.org",
       "//components/autofill/android/OWNERS"
     ],
-    "expiry_milestone": 135
+    "expiry_milestone": 138
   },
   {
     "name": "enable-automotive-fullscreen-toolbar-improvements",
@@ -8245,7 +8245,7 @@
       "friedrichh@chromium.org",
       "//components/autofill/android/OWNERS"
     ],
-    "expiry_milestone": 135
+    "expiry_milestone": 138
   },
   {
     "name": "suppress-toolbar-captures",
