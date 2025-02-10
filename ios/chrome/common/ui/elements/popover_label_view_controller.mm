@@ -280,10 +280,15 @@ constexpr CGFloat kIconSize = 16;
   }
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
   [self updateUIOnTraitChange:previousTraitCollection];
 }
+#endif
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
