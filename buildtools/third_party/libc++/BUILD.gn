@@ -50,7 +50,7 @@ template("builtin_modules") {
   source_set(target_name) {
     no_default_deps = true
     if (use_explicit_libcxx_modules) {
-      sources = [ "//third_party/llvm-build/Release+Asserts/lib/clang/20/include/module.modulemap" ]
+      sources = [ "//third_party/llvm-build/Release+Asserts/lib/clang/21/include/module.modulemap" ]
     }
 
     deps = []
