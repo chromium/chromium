@@ -29,7 +29,7 @@ import {log} from './mapperTabPage.js';
 export class WindowBidiTransport implements BidiTransport {
   static readonly LOGGER_PREFIX_RECV = `${LogType.bidi}:RECV ◂` as const;
   static readonly LOGGER_PREFIX_SEND = `${LogType.bidi}:SEND ▸` as const;
-  static readonly LOGGER_PREFIX_WARN = LogType.debugWarn as const;
+  static readonly LOGGER_PREFIX_WARN = LogType.debugWarn;
 
   #onMessage: ((message: ChromiumBidi.Command) => void) | null = null;
 
