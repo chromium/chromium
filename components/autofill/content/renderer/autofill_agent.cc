@@ -1073,39 +1073,7 @@ void AutofillAgent::ApplyFieldsAction(
                               : FormRendererId()};
             });
 
-    auto host_form_is_connected =
-        [](const std::pair<FieldRendererId, FormRendererId>&
-               filled_field_and_form) {
-          return !form_util::GetFormByRendererId(filled_field_and_form.second)
-                      .IsNull();
-        };
-    if (auto it = std::ranges::find_if(filled_fields_and_forms,
-                                       host_form_is_connected);
-        it != filled_fields_and_forms.end()) {
-      const auto& [filled_field_id, filled_form_id] = *it;
-      base::FeatureList::IsEnabled(
-          features::kAutofillAcceptDomMutationAfterAutofillSubmission)
-          ? TrackAutofilledElement(
-                form_util::GetFormControlByRendererId(filled_field_id))
-          : UpdateLastInteractedElement(filled_form_id);
-    } else {
-      for (const auto& [filled_field_id, filled_form_id] :
-           filled_fields_and_forms) {
-        if (WebFormControlElement control_element =
-                form_util::GetFormControlByRendererId(filled_field_id)) {
-          // `filled_fields_and_forms` contains information from before multiple
-          // focus and blur events were dispatched. This means that some fields
-          // in the map could have been removed from the DOM. Updating inside
-          // this conditional ensures submission is always tracked with an
-          // element currently connected to the DOM.
-          base::FeatureList::IsEnabled(
-              features::kAutofillAcceptDomMutationAfterAutofillSubmission)
-              ? TrackAutofilledElement(control_element)
-              : UpdateLastInteractedElement(
-                    form_util::GetFieldRendererId(control_element));
-        }
-      }
-    }
+    form_tracker_->TrackAutofilledElement(filled_fields_and_forms);
 
     formless_elements_were_autofilled_ |= std::ranges::any_of(
         filled_fields_and_forms,

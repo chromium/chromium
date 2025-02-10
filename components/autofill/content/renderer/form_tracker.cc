@@ -241,6 +241,48 @@ void FormTracker::TrackAutofilledElement(const WebFormControlElement& element) {
   TrackElement(mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
 }
 
+void FormTracker::TrackAutofilledElement(
+    const base::flat_map<FieldRendererId, FormRendererId>&
+        filled_fields_and_forms) {
+  auto host_form_is_connected =
+      [](const std::pair<FieldRendererId, FormRendererId>&
+             filled_field_and_form) {
+        return !form_util::GetFormByRendererId(filled_field_and_form.second)
+                    .IsNull();
+      };
+  if (auto it =
+          std::ranges::find_if(filled_fields_and_forms, host_form_is_connected);
+      it != filled_fields_and_forms.end()) {
+    const auto& [filled_field_id, filled_form_id] = *it;
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
+      TrackAutofilledElement(
+          form_util::GetFormControlByRendererId(filled_field_id));
+    } else {
+      UpdateLastInteractedElement(filled_form_id);
+    }
+  } else {
+    for (const auto& [filled_field_id, filled_form_id] :
+         filled_fields_and_forms) {
+      // `filled_fields_and_forms` contains information from before multiple
+      // focus and blur events were dispatched. This means that some fields in
+      // the map could have been removed from the DOM. Updating inside this
+      // conditional ensures submission is always tracked with an element
+      // currently connected to the DOM.
+      if (WebFormControlElement control_element =
+              form_util::GetFormControlByRendererId(filled_field_id)) {
+        if (base::FeatureList::IsEnabled(
+                features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
+          TrackAutofilledElement(control_element);
+        } else {
+          UpdateLastInteractedElement(
+              form_util::GetFieldRendererId(control_element));
+        }
+      }
+    }
+  }
+}
+
 void FormTracker::FormControlDidChangeImpl(FieldRendererId element_id,
                                            SaveFormReason change_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
