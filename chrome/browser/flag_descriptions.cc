@@ -4889,6 +4889,12 @@ const char kAllowAllSitesToInitiateMirroringDescription[] =
     "via Presentation API. Requires #cast-media-route-provider to also be "
     "enabled";
 
+const char kAXTreeFixingName[] = "AXTree Fixing";
+const char kAXTreeFixingDescription[] =
+    "When enabled, allows Chrome to dynamically fix the AXTree of sites. This "
+    "is experimental and may cause breaking changes to users of assistive "
+    "technology.";
+
 const char kDialMediaRouteProviderName[] =
     "Allow cast device discovery with DIAL protocol";
 const char kDialMediaRouteProviderDescription[] =

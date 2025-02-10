@@ -11752,6 +11752,7 @@ from previous Chrome versions.
   <int value="-948930847" label="EnableOopPrintDrivers:enabled"/>
   <int value="-948684341" label="OmniboxBlurWithEscape:enabled"/>
   <int value="-948256052" label="EnableInputInDiagnosticsApp:enabled"/>
+  <int value="-948067160" label="AXTreeFixing:disabled"/>
   <int value="-947643308" label="EnableTouchscreensInDiagnosticsApp:disabled"/>
   <int value="-946366838" label="MetricsSettingsAndroid:enabled"/>
   <int value="-945806012" label="DownloadsUi:enabled"/>
@@ -15120,6 +15121,7 @@ from previous Chrome versions.
   <int value="388786873" label="EnableUnifiedMultiDeviceSettings:enabled"/>
   <int value="388996324" label="CustomContextMenu:disabled"/>
   <int value="390360656" label="TrustSafetySentimentSurvey:enabled"/>
+  <int value="390675143" label="AXTreeFixing:enabled"/>
   <int value="391632490" label="NtpDriveModule:enabled"/>
   <int value="392107748" label="PwaUpdateDialogForIcon:disabled"/>
   <int value="392154827" label="BaselineGM3SurfaceColors:enabled"/>

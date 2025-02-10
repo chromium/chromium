@@ -202,6 +202,11 @@ AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForEnhancedNetworkTts();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
+// Use the AXTree fixing code, which may be an assortment of different
+// tools/methods to fix the AXTree. This is not available on Android.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAXTreeFixing);
+AX_BASE_EXPORT bool IsAXTreeFixingEnabled();
+
 // Use the experimental Accessibility Service.
 // TODO(katydek): Provide a more descriptive name here.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityService);

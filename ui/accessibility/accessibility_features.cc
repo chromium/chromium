@@ -276,6 +276,11 @@ bool IsAccessibilityManifestV3EnabledForEnhancedNetworkTts() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kAXTreeFixing, "AXTreeFixing", base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAXTreeFixingEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAXTreeFixing);
+}
+
 bool IsScreenAIMainContentExtractionEnabled() {
   return base::FeatureList::IsEnabled(
       ax::mojom::features::kScreenAIMainContentExtractionEnabled);

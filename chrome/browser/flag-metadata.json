@@ -2460,6 +2460,11 @@
     "expiry_milestone": 136
   },
   {
+    "name": "enable-ax-tree-fixing",
+    "owners": [ "mschillaci@chromium.org", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-background-blur",
     "owners": [ "newcomer@chromium.org" ],
     "expiry_milestone": 86
