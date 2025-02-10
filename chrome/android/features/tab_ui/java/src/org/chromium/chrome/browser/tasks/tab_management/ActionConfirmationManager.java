@@ -20,7 +20,8 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
-import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogResult;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogHandler;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogDismissType;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.components.prefs.PrefService;
@@ -213,14 +214,15 @@ public class ActionConfirmationManager {
             return;
         }
 
-        ConfirmationDialogResult onDialogResult =
-                (buttonClickResult, resultStopShowing) -> {
+        ConfirmationDialogHandler onDialogInteracted =
+                (dismissHandler, buttonClickResult, resultStopShowing) -> {
                     if (resultStopShowing) {
                         RecordUserAction.record(userActionBaseString + "StopShowing");
                         PrefService prefService = UserPrefs.get(mProfile);
                         prefService.setBoolean(stopShowingPref, true);
                     }
                     handleDialogResult(buttonClickResult, userActionBaseString, onResult);
+                    return DialogDismissType.DISMISS_IMMEDIATELY;
                 };
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
@@ -230,7 +232,7 @@ public class ActionConfirmationManager {
                 actionRes,
                 R.string.cancel,
                 /* supportStopShowing= */ true,
-                onDialogResult);
+                onDialogInteracted);
     }
 
     private @Nullable CoreAccountInfo getCoreAccountInfo() {
@@ -254,9 +256,11 @@ public class ActionConfirmationManager {
         final Function<Resources, String> titleResolver = (res) -> res.getString(titleRes);
         final Function<Resources, String> descriptionResolver =
                 resources -> resources.getString(descriptionRes, formatArg);
-        ConfirmationDialogResult onDialogResult =
-                (buttonClickResult, resultStopShowing) ->
-                        handleDialogResult(buttonClickResult, userActionBaseString, onResult);
+        ConfirmationDialogHandler onDialogInteracted =
+                (dismissHandler, buttonClickResult, resultStopShowing) -> {
+                    handleDialogResult(buttonClickResult, userActionBaseString, onResult);
+                    return DialogDismissType.DISMISS_IMMEDIATELY;
+                };
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
@@ -265,7 +269,7 @@ public class ActionConfirmationManager {
                 actionRes,
                 R.string.cancel,
                 /* supportStopShowing= */ false,
-                onDialogResult);
+                onDialogInteracted);
     }
 
     private void handleDialogResult(
@@ -291,10 +295,12 @@ public class ActionConfirmationManager {
         final Function<Resources, String> titleResolver = (res) -> res.getString(titleRes);
         final Function<Resources, String> descriptionResolver =
                 resources -> resources.getString(descriptionRes, formatArg);
-        ConfirmationDialogResult onDialogResult =
-                (buttonClickResult, resultStopShowing) ->
-                        handleCollaborationDialogResult(
-                                buttonClickResult, userActionBaseString, onResult);
+        ConfirmationDialogHandler onDialogInteracted =
+                (dismissHandler, buttonClickResult, resultStopShowing) -> {
+                    handleCollaborationDialogResult(
+                            buttonClickResult, userActionBaseString, onResult);
+                    return DialogDismissType.DISMISS_IMMEDIATELY;
+                };
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
@@ -303,7 +309,7 @@ public class ActionConfirmationManager {
                 positiveButtonRes,
                 negativeButtonRes,
                 /* supportStopShowing= */ false,
-                onDialogResult);
+                onDialogInteracted);
     }
 
     private void handleCollaborationDialogResult(

@@ -53,6 +53,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -120,9 +121,7 @@ public class ActionConfirmationManagerUnitTest {
         verify(mModalDialogManager).showDialog(mPropertyModelArgumentCaptor.capture(), anyInt());
         Controller controller =
                 mPropertyModelArgumentCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
-        controller.onDismiss(
-                mPropertyModelArgumentCaptor.getValue(),
-                DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        controller.onClick(mPropertyModelArgumentCaptor.getValue(), ButtonType.POSITIVE);
         verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
     }
 
@@ -134,9 +133,7 @@ public class ActionConfirmationManagerUnitTest {
         verify(mModalDialogManager).showDialog(mPropertyModelArgumentCaptor.capture(), anyInt());
         Controller controller =
                 mPropertyModelArgumentCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
-        controller.onDismiss(
-                mPropertyModelArgumentCaptor.getValue(),
-                DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        controller.onClick(mPropertyModelArgumentCaptor.getValue(), ButtonType.POSITIVE);
         verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
     }
 
@@ -148,9 +145,7 @@ public class ActionConfirmationManagerUnitTest {
         verify(mModalDialogManager).showDialog(mPropertyModelArgumentCaptor.capture(), anyInt());
         Controller controller =
                 mPropertyModelArgumentCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
-        controller.onDismiss(
-                mPropertyModelArgumentCaptor.getValue(),
-                DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        controller.onClick(mPropertyModelArgumentCaptor.getValue(), ButtonType.POSITIVE);
         verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
     }
 
@@ -162,9 +157,7 @@ public class ActionConfirmationManagerUnitTest {
         verify(mModalDialogManager).showDialog(mPropertyModelArgumentCaptor.capture(), anyInt());
         Controller controller =
                 mPropertyModelArgumentCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
-        controller.onDismiss(
-                mPropertyModelArgumentCaptor.getValue(),
-                DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        controller.onClick(mPropertyModelArgumentCaptor.getValue(), ButtonType.NEGATIVE);
         verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
     }
 
@@ -190,9 +183,7 @@ public class ActionConfirmationManagerUnitTest {
         stopShowingCheckBox.setChecked(true);
         Controller controller =
                 mPropertyModelArgumentCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
-        controller.onDismiss(
-                mPropertyModelArgumentCaptor.getValue(),
-                DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        controller.onClick(mPropertyModelArgumentCaptor.getValue(), ButtonType.POSITIVE);
 
         verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
         verify(mPrefService).setBoolean(any(), eq(true));
@@ -210,9 +201,7 @@ public class ActionConfirmationManagerUnitTest {
         stopShowingCheckBox.setChecked(true);
         Controller controller =
                 mPropertyModelArgumentCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
-        controller.onDismiss(
-                mPropertyModelArgumentCaptor.getValue(),
-                DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        controller.onClick(mPropertyModelArgumentCaptor.getValue(), ButtonType.NEGATIVE);
 
         verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
         verify(mPrefService).setBoolean(any(), eq(true));
@@ -297,9 +286,7 @@ public class ActionConfirmationManagerUnitTest {
         verify(mModalDialogManager).showDialog(mPropertyModelArgumentCaptor.capture(), anyInt());
         Controller controller =
                 mPropertyModelArgumentCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
-        controller.onDismiss(
-                mPropertyModelArgumentCaptor.getValue(),
-                DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        controller.onClick(mPropertyModelArgumentCaptor.getValue(), ButtonType.POSITIVE);
         verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
     }
 
@@ -311,9 +298,7 @@ public class ActionConfirmationManagerUnitTest {
         verify(mModalDialogManager).showDialog(mPropertyModelArgumentCaptor.capture(), anyInt());
         Controller controller =
                 mPropertyModelArgumentCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
-        controller.onDismiss(
-                mPropertyModelArgumentCaptor.getValue(),
-                DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        controller.onClick(mPropertyModelArgumentCaptor.getValue(), ButtonType.POSITIVE);
         verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
     }
 
@@ -325,9 +310,7 @@ public class ActionConfirmationManagerUnitTest {
         verify(mModalDialogManager).showDialog(mPropertyModelArgumentCaptor.capture(), anyInt());
         Controller controller =
                 mPropertyModelArgumentCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
-        controller.onDismiss(
-                mPropertyModelArgumentCaptor.getValue(),
-                DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        controller.onClick(mPropertyModelArgumentCaptor.getValue(), ButtonType.NEGATIVE);
         verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
     }
 
@@ -339,9 +322,7 @@ public class ActionConfirmationManagerUnitTest {
         verify(mModalDialogManager).showDialog(mPropertyModelArgumentCaptor.capture(), anyInt());
         Controller controller =
                 mPropertyModelArgumentCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
-        controller.onDismiss(
-                mPropertyModelArgumentCaptor.getValue(),
-                DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        controller.onClick(mPropertyModelArgumentCaptor.getValue(), ButtonType.POSITIVE);
         verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
     }
 
@@ -353,9 +334,7 @@ public class ActionConfirmationManagerUnitTest {
         verify(mModalDialogManager).showDialog(mPropertyModelArgumentCaptor.capture(), anyInt());
         Controller controller =
                 mPropertyModelArgumentCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
-        controller.onDismiss(
-                mPropertyModelArgumentCaptor.getValue(),
-                DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        controller.onClick(mPropertyModelArgumentCaptor.getValue(), ButtonType.POSITIVE);
         verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
         String action = "TabGroupConfirmation.CollaborationOwnerRemoveLastTab.KeepGroupButton";
         assertTrue(mActionTester.getActions().contains(action));
@@ -369,9 +348,7 @@ public class ActionConfirmationManagerUnitTest {
         verify(mModalDialogManager).showDialog(mPropertyModelArgumentCaptor.capture(), anyInt());
         Controller controller =
                 mPropertyModelArgumentCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
-        controller.onDismiss(
-                mPropertyModelArgumentCaptor.getValue(),
-                DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        controller.onClick(mPropertyModelArgumentCaptor.getValue(), ButtonType.NEGATIVE);
         verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
         String action = "TabGroupConfirmation.CollaborationOwnerRemoveLastTab.RemoveGroup";
         assertTrue(mActionTester.getActions().contains(action));

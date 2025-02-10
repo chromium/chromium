@@ -65,6 +65,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogDismissType;
 import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
@@ -661,7 +662,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 R.string.archive_dialog_close_all_inactive_tabs_confirmation,
                 R.string.cancel,
                 /* supportStopShowing= */ false,
-                (buttonClickResult, stopShowing) -> {
+                (dismissHandler, buttonClickResult, stopShowing) -> {
                     if (buttonClickResult == ButtonClickResult.POSITIVE) {
                         mArchivedTabModel
                                 .getTabRemover()
@@ -674,6 +675,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                                         /* allowDialog= */ false);
                         onConfirmRunnable.run();
                     }
+                    return DialogDismissType.DISMISS_IMMEDIATELY;
                 });
     }
 
