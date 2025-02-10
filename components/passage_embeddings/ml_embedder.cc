@@ -13,7 +13,7 @@ namespace passage_embeddings {
 
 MlEmbedder::MlEmbedder(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
-    passage_embeddings::PassageEmbeddingsServiceController* service_controller)
+    PassageEmbeddingsServiceController* service_controller)
     : model_provider_(model_provider), service_controller_(service_controller) {
   if (model_provider_) {
     model_provider_->AddObserverForOptimizationTargetModel(
@@ -30,18 +30,17 @@ MlEmbedder::~MlEmbedder() {
 }
 
 Embedder::TaskId MlEmbedder::ComputePassagesEmbeddings(
-    passage_embeddings::PassagePriority priority,
+    PassagePriority priority,
     std::vector<std::string> passages,
     ComputePassagesEmbeddingsCallback callback) {
   service_controller_->GetEmbeddings(
       std::move(passages), priority,
       base::BindOnce(
           [](ComputePassagesEmbeddingsCallback callback,
-             std::vector<passage_embeddings::mojom::PassageEmbeddingsResultPtr>
-                 results,
-             passage_embeddings::ComputeEmbeddingsStatus status) {
+             std::vector<mojom::PassageEmbeddingsResultPtr> results,
+             ComputeEmbeddingsStatus status) {
             std::vector<std::string> result_passages;
-            std::vector<passage_embeddings::Embedding> result_embeddings;
+            std::vector<Embedding> result_embeddings;
             for (auto& result : results) {
               result_passages.push_back(result->passage);
               result_embeddings.emplace_back(result->embeddings);

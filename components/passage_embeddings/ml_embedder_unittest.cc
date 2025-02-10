@@ -23,12 +23,6 @@
 
 namespace passage_embeddings {
 
-using passage_embeddings::ComputeEmbeddingsStatus;
-using passage_embeddings::EmbedderMetadata;
-using passage_embeddings::EmbeddingsModelInfoStatus;
-using passage_embeddings::kModelInfoMetricName;
-using passage_embeddings::PassagePriority;
-
 namespace {
 
 constexpr int64_t kEmbeddingsModelVersion = 1l;
@@ -37,7 +31,7 @@ constexpr size_t kEmbeddingsModelOutputSize = 768ul;
 
 using ComputePassagesEmbeddingsFuture =
     base::test::TestFuture<std::vector<std::string>,
-                           std::vector<passage_embeddings::Embedding>,
+                           std::vector<Embedding>,
                            Embedder::TaskId,
                            ComputeEmbeddingsStatus>;
 
@@ -71,21 +65,20 @@ optimization_guide::TestModelInfoBuilder GetBuilderWithValidModelInfo() {
   return builder;
 }
 
-class FakePassageEmbedder : public passage_embeddings::mojom::PassageEmbedder {
+class FakePassageEmbedder : public mojom::PassageEmbedder {
  public:
   explicit FakePassageEmbedder(
-      mojo::PendingReceiver<passage_embeddings::mojom::PassageEmbedder>
-          receiver)
+      mojo::PendingReceiver<mojom::PassageEmbedder> receiver)
       : receiver_(this, std::move(receiver)) {}
 
  private:
   // mojom::PassageEmbedder:
   void GenerateEmbeddings(const std::vector<std::string>& inputs,
-                          passage_embeddings::mojom::PassagePriority priority,
+                          mojom::PassagePriority priority,
                           GenerateEmbeddingsCallback callback) override {
     std::vector<std::string> passages = inputs;
-    std::vector<passage_embeddings::Embedding> embeddings;
-    std::vector<passage_embeddings::mojom::PassageEmbeddingsResultPtr> results;
+    std::vector<Embedding> embeddings;
+    std::vector<mojom::PassageEmbeddingsResultPtr> results;
     for (const std::string& input : inputs) {
       // Fails the generation on an "error" string to simulate failed model
       // execution.
@@ -94,8 +87,7 @@ class FakePassageEmbedder : public passage_embeddings::mojom::PassageEmbedder {
         break;
       }
 
-      results.push_back(
-          passage_embeddings::mojom::PassageEmbeddingsResult::New());
+      results.push_back(mojom::PassageEmbeddingsResult::New());
       results.back()->embeddings =
           std::vector<float>(kEmbeddingsModelOutputSize, 1.0);
       results.back()->passage = input;
@@ -104,26 +96,21 @@ class FakePassageEmbedder : public passage_embeddings::mojom::PassageEmbedder {
     std::move(callback).Run(std::move(results));
   }
 
-  mojo::Receiver<passage_embeddings::mojom::PassageEmbedder> receiver_;
+  mojo::Receiver<mojom::PassageEmbedder> receiver_;
 };
 
-class FakePassageEmbeddingsService
-    : public passage_embeddings::mojom::PassageEmbeddingsService {
+class FakePassageEmbeddingsService : public mojom::PassageEmbeddingsService {
  public:
   explicit FakePassageEmbeddingsService(
-      mojo::PendingReceiver<passage_embeddings::mojom::PassageEmbeddingsService>
-          receiver)
+      mojo::PendingReceiver<mojom::PassageEmbeddingsService> receiver)
       : receiver_(this, std::move(receiver)) {}
 
  private:
   // mojom::PassageEmbeddingsService:
-  void LoadModels(
-      passage_embeddings::mojom::PassageEmbeddingsLoadModelsParamsPtr
-          model_params,
-      passage_embeddings::mojom::PassageEmbedderParamsPtr embedder_params,
-      mojo::PendingReceiver<passage_embeddings::mojom::PassageEmbedder>
-          receiver,
-      LoadModelsCallback callback) override {
+  void LoadModels(mojom::PassageEmbeddingsLoadModelsParamsPtr model_params,
+                  mojom::PassageEmbedderParamsPtr embedder_params,
+                  mojo::PendingReceiver<mojom::PassageEmbedder> receiver,
+                  LoadModelsCallback callback) override {
     bool valid = model_params->input_window_size != 0;
     if (valid) {
       embedder_ = std::make_unique<FakePassageEmbedder>(std::move(receiver));
@@ -132,12 +119,12 @@ class FakePassageEmbeddingsService
     std::move(callback).Run(valid);
   }
 
-  mojo::Receiver<passage_embeddings::mojom::PassageEmbeddingsService> receiver_;
+  mojo::Receiver<mojom::PassageEmbeddingsService> receiver_;
   std::unique_ptr<FakePassageEmbedder> embedder_;
 };
 
 class FakePassageEmbeddingsServiceController
-    : public passage_embeddings::PassageEmbeddingsServiceController {
+    : public PassageEmbeddingsServiceController {
  public:
   FakePassageEmbeddingsServiceController() = default;
   ~FakePassageEmbeddingsServiceController() override = default;
@@ -148,8 +135,7 @@ class FakePassageEmbeddingsServiceController
         service_remote_.BindNewPipeAndPassReceiver());
   }
 
-  using passage_embeddings::PassageEmbeddingsServiceController::
-      ResetEmbedderRemote;
+  using PassageEmbeddingsServiceController::ResetEmbedderRemote;
 
   void ResetServiceRemote() override {
     ResetEmbedderRemote();

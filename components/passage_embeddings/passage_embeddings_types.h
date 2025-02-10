@@ -73,6 +73,10 @@ enum class ComputeEmbeddingsStatus {
 
   // The generation request was explicitly canceled.
   kCanceled = 3,
+
+  // This must be kept in sync with ComputeEmbeddingsStatus in
+  // history/enums.xml.
+  kMaxValue = kCanceled,
 };
 
 }  // namespace passage_embeddings

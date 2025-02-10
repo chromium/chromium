@@ -41,6 +41,13 @@ chromium-metrics-reviews@google.com.
                and on scroll"/>
 </variants>
 
+<variants name="PassagePriority">
+  <variant name="" summary="aggregated across all priorities"/>
+  <variant name=".Latent" summary="Latent priority"/>
+  <variant name=".Passive" summary="Passive priority"/>
+  <variant name=".UserInitiated" summary="User initiated priority"/>
+</variants>
+
 <histogram name="History.AttemptedToFixProfileError" units="units"
     expires_after="2024-02-11">
   <owner>sky@chromium.org</owner>
@@ -2329,16 +2336,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.Embeddings.ScheduledJobDuration" units="ms"
-    expires_after="2025-07-31">
+<histogram name="History.Embeddings.ScheduledJobDuration{PassagePriority}"
+    units="ms" expires_after="2025-07-31">
   <owner>orinj@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
     The number of milliseconds that a job existed in the SchedulingEmbedder job
-    queue. Logged when a job is completed by having all its passages embedded.
-    Canceled jobs do not log this histogram, as queries are normally and
-    frequently canceled.
+    queue. Logged when a job is successfully completed by having all its
+    passages embedded. Failed or canceled jobs do not log this histogram.
   </summary>
+  <token key="PassagePriority" variants="PassagePriority"/>
+</histogram>
+
+<histogram name="History.Embeddings.ScheduledJobStatus{PassagePriority}"
+    enum="ComputeEmbeddingsStatus" expires_after="2025-07-31">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    The status of a job when leaving the SchedulingEmbedder job queue. Logged
+    when a job is successfully completed by having all its passages embedded, or
+    when a job fails or is canceled.
+  </summary>
+  <token key="PassagePriority" variants="PassagePriority"/>
 </histogram>
 
 <histogram name="History.Embeddings.ScheduledPassageCount" units="passages"
