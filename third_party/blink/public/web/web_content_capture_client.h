@@ -22,6 +22,9 @@ class WebContentCaptureClient {
   // tasks.
   virtual base::TimeDelta GetTaskInitialDelay() const = 0;
 
+  // Invoked to notify that a batch of Content Capture has completed.
+  virtual void DidCompleteBatchCaptureContent() = 0;
+
   // Invoked when a list of |content| is captured, |first_content| indicates if
   // this is first captured content in the current document.
   virtual void DidCaptureContent(const std::vector<WebContentHolder>& content,

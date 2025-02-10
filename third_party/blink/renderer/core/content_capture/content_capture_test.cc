@@ -89,6 +89,8 @@ class WebContentCaptureClientTestHelper : public WebContentCaptureClient {
     return base::Milliseconds(500);
   }
 
+  void DidCompleteBatchCaptureContent() override {}
+
   void DidCaptureContent(const std::vector<WebContentHolder>& data,
                          bool first_data) override {
     data_ = data;

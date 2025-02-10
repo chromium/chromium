@@ -14,6 +14,9 @@ import android.view.contentcapture.ContentCaptureSession;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
+import org.chromium.base.ServiceLoaderUtil;
+
 /** The implementation of PlatformAPIWrapper. */
 @RequiresApi(Build.VERSION_CODES.Q)
 public class PlatformAPIWrapperImpl extends PlatformAPIWrapper {
@@ -73,5 +76,16 @@ public class PlatformAPIWrapperImpl extends PlatformAPIWrapper {
                 new ContentCaptureContext.Builder(session.getContentCaptureContext().getLocusId())
                         .setExtras(bundle)
                         .build());
+    }
+
+    @Override
+    public void flush(ContentCaptureSession session) {
+        // TODO(crbug.com/391665549): call session.flush() after the API is released in public
+        // Android SDK
+        AconfigFlaggedApiDelegate delegate =
+                ServiceLoaderUtil.maybeCreate(AconfigFlaggedApiDelegate.class);
+        if (delegate != null) {
+            delegate.flushContentCaptureSession(session);
+        }
     }
 }

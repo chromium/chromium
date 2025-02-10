@@ -85,6 +85,16 @@ void ContentCaptureReceiver::BindPendingReceiver(
   receiver_.Bind(std::move(pending_receiver));
 }
 
+void ContentCaptureReceiver::DidCompleteBatchCaptureContent() {
+  auto* provider = GetOnscreenContentProvider(rfh_);
+  if (!provider) {
+    return;
+  }
+
+  ContentCaptureFrame frame(frame_content_capture_data_);
+  provider->FlushCaptureContent(this, frame);
+}
+
 void ContentCaptureReceiver::DidCaptureContent(const ContentCaptureData& data,
                                                bool first_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
