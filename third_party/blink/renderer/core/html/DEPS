@@ -7,6 +7,7 @@ specific_include_rules = {
     ],
     "client_hints_util.cc": [
         "+services/network/public/cpp/client_hints.h",
+        "+services/network/public/cpp/permissions_policy",
         "+url/gurl.h",
         "+url/origin.h",
     ],

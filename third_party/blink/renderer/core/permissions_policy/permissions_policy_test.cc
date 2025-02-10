@@ -8,9 +8,9 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -1324,14 +1324,14 @@ class FeaturePolicyMutationTest : public testing::Test {
   ParsedPermissionsPolicy test_policy = {
       {network::mojom::PermissionsPolicyFeature::kFullscreen,
        /*allowed_origins=*/
-       {*blink::OriginWithPossibleWildcards::FromOrigin(url_origin_a_),
-        *blink::OriginWithPossibleWildcards::FromOrigin(url_origin_b_)},
+       {*network::OriginWithPossibleWildcards::FromOrigin(url_origin_a_),
+        *network::OriginWithPossibleWildcards::FromOrigin(url_origin_b_)},
        /*self_if_matches=*/std::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/false},
       {network::mojom::PermissionsPolicyFeature::kGeolocation,
        /*=allowed_origins*/
-       {*blink::OriginWithPossibleWildcards::FromOrigin(url_origin_a_)},
+       {*network::OriginWithPossibleWildcards::FromOrigin(url_origin_a_)},
        /*self_if_matches=*/std::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/false}};

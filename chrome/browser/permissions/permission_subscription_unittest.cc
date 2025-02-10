@@ -18,6 +18,7 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/permissions_test_utils.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "url/origin.h"
@@ -117,7 +118,7 @@ class PermissionSubscriptionTest : public ChromeRenderViewHostTestHarness {
     if (feature != PermissionsPolicyFeature::kNotFound) {
       frame_policy.emplace_back(
           feature,
-          std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(
+          std::vector{*network::OriginWithPossibleWildcards::FromOrigin(
               url::Origin::Create(origin))},
           /*self_if_matches=*/std::nullopt,
           /*matches_all_origins=*/false,

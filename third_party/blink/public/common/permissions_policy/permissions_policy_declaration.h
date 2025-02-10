@@ -7,9 +7,9 @@
 
 #include <vector>
 
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -24,7 +24,7 @@ struct BLINK_COMMON_EXPORT ParsedPermissionsPolicyDeclaration {
       network::mojom::PermissionsPolicyFeature feature);
   ParsedPermissionsPolicyDeclaration(
       network::mojom::PermissionsPolicyFeature feature,
-      const std::vector<OriginWithPossibleWildcards>& allowed_origins,
+      const std::vector<network::OriginWithPossibleWildcards>& allowed_origins,
       const std::optional<url::Origin>& self_if_matches,
       bool matches_all_origins,
       bool matches_opaque_src);
@@ -44,7 +44,7 @@ struct BLINK_COMMON_EXPORT ParsedPermissionsPolicyDeclaration {
   network::mojom::PermissionsPolicyFeature feature;
 
   // An list of all the origins/wildcards allowed (none can be opaque).
-  std::vector<OriginWithPossibleWildcards> allowed_origins;
+  std::vector<network::OriginWithPossibleWildcards> allowed_origins;
   // An origin that matches self if 'self' is in the allowlist.
   std::optional<url::Origin> self_if_matches;
   // Fallback value is used when feature is enabled for all or disabled for all.
