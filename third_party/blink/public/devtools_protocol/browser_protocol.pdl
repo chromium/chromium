@@ -8362,6 +8362,14 @@ domain Page
       OriginTrialStatus status
       array of OriginTrialTokenWithStatus tokensWithStatus
 
+  # Additional information about the frame document's security origin.
+  experimental type SecurityOriginDetails extends object
+    properties
+      # Indicates whether the frame document's security origin is one
+      # of the local hostnames (e.g. "localhost") or IP addresses (IPv4
+      # 127.0.0.0/8 or IPv6 ::1).
+      boolean isLocalhost
+
   # Information about the Frame on the page.
   type Frame extends object
     properties
@@ -8384,6 +8392,8 @@ domain Page
       experimental string domainAndRegistry
       # Frame document's security origin.
       string securityOrigin
+      # Additional details about the frame document's security origin.
+      experimental optional SecurityOriginDetails securityOriginDetails
       # Frame document's mimeType as determined by the browser.
       string mimeType
       # If the frame failed to load, this contains the URL that could not be loaded. Note that unlike url above, this URL may contain a fragment.
