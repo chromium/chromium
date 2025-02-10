@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Opsummer</translation>
 <translation id="123124571410524056">Der er muligvis en portal</translation>
 <translation id="1232610416724362657">et vandfald</translation>
+<translation id="1238163879850290856">Nulstil for at forhindre andre i at få adgang til data. Brug kun indtastningsmetoder, du har tillid til.</translation>
 <translation id="1238612778414822719">HTTPS-forsinkelse</translation>
 <translation id="1252766349417594414">Joystick</translation>
 <translation id="1270369111467284986">Der blev muligvis registreret en loginportal</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">Shift i højre side</translation>
 <translation id="4654549501020883054">Skift på daglig basis</translation>
 <translation id="4655868084888499342">Billedet er angivet som baggrund</translation>
+<translation id="4660989616054030633">Generativ AI kan begå fejl, herunder om personer, så sørg for at dobbelttjekke dens svar</translation>
 <translation id="4661249927038176904">Surrealistisk</translation>
 <translation id="4661392828086261436">Denne opdatering er leveret af enhedsproducenten og er ikke verificeret af Google</translation>
 <translation id="4664651912255946953">pels</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">Skjul oversigt</translation>
 <translation id="6075872808778243331">(Android) HTTP-forsinkelse</translation>
 <translation id="6078323886959318429">Tilføj genvej</translation>
+<translation id="6079693086494835199">Nulstil for at sikre, at standardstartsiden ikke er et phishingwebsite. Brug kun websites, du har tillid til.</translation>
 <translation id="6091080061796993741">gul</translation>
 <translation id="6104112872696127344">Scanningen blev annulleret</translation>
 <translation id="6106186594183574873">Angiv din gamle adgangskode for at afslutte</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">rødbrun og lyserød</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Nulstil for at forhindre andre i at bruge din mikrofon eller dit kamera. Giv kun tilladelser til websites, du har tillid til.</translation>
 <translation id="6188737759358894319">Oprettet <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Batterikapaciteten falder løbende, når enheden er i brug</translation>
 <translation id="6189987971574353264">Afspil</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">dæmp tastaturlys</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />-testen er annulleret</translation>
 <translation id="631063167932043783">Appen Udforsk</translation>
+<translation id="6314333689576767865">Din Chromebook er nulstillet til de sikre standardindstillinger. Du kan altid ændre dette i Indstillinger.</translation>
 <translation id="6318437367327684789">hele tiden</translation>
 <translation id="6319207335391420837">Opdater firmware på <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Aktivér Pauseskærm</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">Din feedback blev sendt</translation>
 <translation id="6866732840889595464">marguerit</translation>
 <translation id="6871256179359663621">lyselilla</translation>
+<translation id="6887967050249348172">Udvidelser er deaktiveret for at forhindre ændringer af indstillinger. Aktivér kun de udvidelser, du har tillid til.</translation>
 <translation id="6889786074662672253">Når du genstarter, må du ikke frakoble denne eksterne enhed eller slukke din computer. Du kan minimere dette vindue. Genstarten kan tage et par minutter, og din eksterne enhed fungerer muligvis ikke under opdateringen.</translation>
 <translation id="6899460405678814458">Vis oversigt</translation>
 <translation id="6900701049656042631">Dette album indeholder ingen billeder. Du kan tilføje billeder ved at gå til <ph name="LINK" /></translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">Genvejen er gendannet</translation>
 <translation id="725133483556299729">Vælg mailadresse</translation>
 <translation id="7255187042098209569">pink og lilla</translation>
+<translation id="7267918995585557751">Nulstil for at sikre, at standardopstartssiden ikke er et phishingwebsite. Brug kun websites, du har tillid til.</translation>
 <translation id="7271000785316964275">klassicisme</translation>
 <translation id="7271040990581020067">Scanneren bruges i øjeblikket. Prøv igen senere.</translation>
 <translation id="7271932918253517778">Genvejen med taster i øverste række skal indeholde <ph name="META_KEY" />-tasten.</translation>
@@ -1486,6 +1493,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="7903695460270716054">Vælg udvalgte illustrationer og billeder</translation>
 <translation id="7912005977894000746">Tilbage til hovedsiden</translation>
 <translation id="7915220255123750251">Administrer netværksindstillinger for APN. APN opretter forbindelse mellem et mobilnetværk og internettet.</translation>
+<translation id="7915759923880480519">Nulstil for at beskytte data, der sendes via dine netværk. Brug kun netværk, du har tillid til.</translation>
 <translation id="7936303884198020182">Der blev ikke fundet nogen navneservere</translation>
 <translation id="7942349550061667556">Rød</translation>
 <translation id="7943235353293548836">Fast keepalive-interval</translation>
@@ -1711,6 +1719,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="89945434909472341">en landsby</translation>
 <translation id="8997710128084572139">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri.</translation>
 <translation id="8998289560386111590">Ikke tilgængelig på din enhed</translation>
+<translation id="9000871120886759611">Nulstil for at sikre, at du kan få adgang til oplysninger på dit foretrukne sprog. Tjek, at der kun bruges foretrukne sprog.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Frekvens</translation>
 <translation id="901834265349196618">mail</translation>

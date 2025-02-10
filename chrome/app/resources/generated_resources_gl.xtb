@@ -2133,6 +2133,10 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2462332841984057083">Xa se está configurando Steam. Agarda a que remate o proceso.</translation>
 <translation id="2462724976360937186">ID de clave de autoridade de certificación</translation>
 <translation id="2462752602710430187">Engadiuse <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Estánseche mostrando ficheiros suxeridos para que poidas retomar rapidamente á túa actividade máis recente en Microsoft Sharepoint e OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións en Personalizar Chrome.</translation>
 <translation id="2464079411014186876">Xeado</translation>
 <translation id="2467755475704469005">Non se detectou ningún dispositivo. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Unirte ao grupo de pestanas con <ph name="OWNER_FIRST_NAME" /> e <ph name="NUM_OTHER_MEMBERS" /> persoas máis</translation>
@@ -3998,6 +4002,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3787434344076711519">Esperando pola tradución</translation>
 <translation id="3788301286821743879">Non se puido iniciar a aplicación de quiosco.</translation>
 <translation id="3788401245189148511">Podería:</translation>
+<translation id="3789432704615470433">Ficheiros de SharePoint e OneDrive</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3790417903123637354">Produciuse un erro. Téntao de novo máis tarde</translation>
 <translation id="379082410132524484">A tarxeta caducou</translation>
@@ -6188,6 +6193,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5360150013186312835">Mostrar na barra de ferramentas</translation>
 <translation id="5362741141255528695">Seleccionar ficheiro de clave privada.</translation>
 <translation id="536278396489099088">Estado do sistema e informes de ChromeOS</translation>
+<translation id="5362916924854054326">Non mostrar ficheiros de SharePoint e OneDrive</translation>
 <translation id="5363109466694494651">Levar a cabo un Powerwash e reverter</translation>
 <translation id="5365881113273618889">O cartafol que seleccionaches contén ficheiros confidenciais. Seguro que queres conceder a <ph name="APP_NAME" /> acceso de lectura permanente a este cartafol?</translation>
 <translation id="536638840841140142">Ningunha</translation>
@@ -10767,6 +10773,10 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="865936634714975126">Engade un parámetro de consulta ao URL para seleccionar tipos na carga da páxina. Exemplo: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Contactos de <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">A ventá moveuse cara abaixo</translation>
+<translation id="8660288500924118793">Estáseche mostrando o teu calendario para que poidas navegar facilmente ao seguinte evento en Outlook Calendar.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións en Personalizar Chrome.</translation>
 <translation id="8661290697478713397">Abrir ligazón na ventá de incó&amp;gnito</translation>
 <translation id="8662474268934425487">Inicia sesión en <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Unirse á rede <ph name="TYPE" /></translation>

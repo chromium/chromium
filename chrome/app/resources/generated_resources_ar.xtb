@@ -2139,6 +2139,10 @@
 <translation id="2462332841984057083">‏تجري الآن عملية إعداد تطبيق Steam. يُرجى الانتظار إلى أن تكتمل العملية.</translation>
 <translation id="2462724976360937186">معرّف مفتاح المرجع المصدق</translation>
 <translation id="2462752602710430187">تمت إضافة <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">‏يتم عرض ملفات مُقترَحة لمساعدتك في الرجوع بسهولة إلى آخر أنشطتك في Microsoft SharePoint وOneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        يمكنك إدارة الإعدادات من قائمة البطاقة أو الاطّلاع على المزيد من الخيارات عند النقر على الزر "تخصيص Chrome".</translation>
 <translation id="2464079411014186876">آيس كريم</translation>
 <translation id="2467755475704469005">لم يتم العثور على أي جهاز. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />" و<ph name="NUM_OTHER_MEMBERS" /> من المستخدمِين الآخريِن</translation>
@@ -4002,6 +4006,7 @@
 <translation id="3787434344076711519">في انتظار الترجمة</translation>
 <translation id="3788301286821743879">‏تعذّر إطلاق تطبيق Kiosk.</translation>
 <translation id="3788401245189148511">يمكنه:</translation>
+<translation id="3789432704615470433">‏ملفات SharePoint وOneDrive</translation>
 <translation id="3789841737615482174">تثبيت</translation>
 <translation id="3790417903123637354">حدث خطأ. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="379082410132524484">انتهت صلاحية بطاقتك</translation>
@@ -6189,6 +6194,7 @@
 <translation id="5360150013186312835">العرض في شريط الأدوات</translation>
 <translation id="5362741141255528695">حدد ملف المفتاح الخاص.</translation>
 <translation id="536278396489099088">‏حالة نظام ChromeOS وتقاريره</translation>
+<translation id="5362916924854054326">‏عدم عرض ملفات SharePoint وOneDrive</translation>
 <translation id="5363109466694494651">إجراء المحو الكامل والعودة</translation>
 <translation id="5365881113273618889">يتضمَّن المجلَّد الذي اخترته ملفات حساسة. هل تريد بالتأكيد منح "<ph name="APP_NAME" />" إمكانية الوصول الدائم للكتابة في هذا المجلَّد؟</translation>
 <translation id="536638840841140142">بدون هوامش</translation>
@@ -10782,6 +10788,10 @@
 <translation id="865936634714975126">‏أضِف مَعلمة لطلب البحث في عنوان URL لاختيار الأنواع المطلوب عرضها عند تحميل الصفحة. مثال: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">جهات الاتصال التي تستخدم ميزة "<ph name="FEATURE_NAME" />"</translation>
 <translation id="8659609431223166673">تم نقل النافذة إلى الأسفل</translation>
+<translation id="8660288500924118793">‏يتم عرض التقويم لمساعدتك في الانتقال بسهولة إلى الحدث التالي في "تقويم Outlook"‏ (Outlook Calendar).
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       يمكنك إدارة الإعدادات من قائمة البطاقات أو الاطّلاع على المزيد من الخيارات عند النقر على الزر "تخصيص Chrome".</translation>
 <translation id="8661290697478713397">ف&amp;تح رابط في نافذة التصفح المتخفي</translation>
 <translation id="8662474268934425487">تسجيل الدخول إلى <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">الانضمام إلى شبكة <ph name="TYPE" /></translation>

@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">要約</translation>
 <translation id="123124571410524056">ポータルの可能性があります</translation>
 <translation id="1232610416724362657">滝</translation>
+<translation id="1238163879850290856">他人がデータにアクセスするのを防ぐため、リセットしました。信頼できる入力方法のみを使用してください。</translation>
 <translation id="1238612778414822719">HTTPS レイテンシ</translation>
 <translation id="1252766349417594414">ジョイスティック</translation>
 <translation id="1270369111467284986">キャプティブ ポータルの可能性があります</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">右シフト</translation>
 <translation id="4654549501020883054">毎日変更</translation>
 <translation id="4655868084888499342">壁紙に設定した画像</translation>
+<translation id="4660989616054030633">生成 AI は間違った情報（人物に関する情報など）を表示することがあるため、生成された回答は再確認するようにしてください</translation>
 <translation id="4661249927038176904">シュール</translation>
 <translation id="4661392828086261436">このアップデートはデバイス メーカーから提供されたもので、Google で確認は行っていません</translation>
 <translation id="4664651912255946953">毛皮</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">概要を非表示</translation>
 <translation id="6075872808778243331">（Android）HTTP レイテンシ</translation>
 <translation id="6078323886959318429">ショートカットを追加</translation>
+<translation id="6079693086494835199">デフォルトのホームページがフィッシング サイトに設定されるのを防ぐため、リセットしました。信頼できるウェブサイトのみを使用してください。</translation>
 <translation id="6091080061796993741">黄色</translation>
 <translation id="6104112872696127344">スキャンをキャンセルしました</translation>
 <translation id="6106186594183574873">終了するには、古いパスワードを入力してください</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">マルーンとピンク</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">他人がマイクやカメラを使用するのを防ぐため、リセットしました。信頼できるサイトにのみ権限を付与してください。</translation>
 <translation id="6188737759358894319">作成: <ph name="DATE" /></translation>
 <translation id="6189418609903030344">バッテリー容量は使用に伴って減少します</translation>
 <translation id="6189987971574353264">再生</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">キーボードを薄暗くする</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> テストがキャンセルされました</translation>
 <translation id="631063167932043783">アプリについてもっと知る</translation>
+<translation id="6314333689576767865">Chromebook を安全なデフォルトにリセットしました。この設定は [設定] でいつでも変更できます。</translation>
 <translation id="6318437367327684789">ずっと</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> のファームウェアをアップデート</translation>
 <translation id="6321407676395378991">スクリーン セーバーをオンにする</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">フィードバックを送信しました</translation>
 <translation id="6866732840889595464">デイジー</translation>
 <translation id="6871256179359663621">ライトパープル</translation>
+<translation id="6887967050249348172">設定が変更されるのを防ぐため、拡張機能を無効にしました。信頼できる拡張機能のみ有効にしてください。</translation>
 <translation id="6889786074662672253">再起動中、この外部デバイスを電源から外したり、パソコンをシャットダウンしたりしないでください。このウィンドウは最小化できます。この処理には数分かかることがあります。その間、外部デバイスは動作しない可能性があります。</translation>
 <translation id="6899460405678814458">概要を表示</translation>
 <translation id="6900701049656042631">このアルバムには写真がありません。写真を追加するには、<ph name="LINK" /> にアクセスしてください</translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">ショートカットを復元しました</translation>
 <translation id="725133483556299729">メールアドレスを選択</translation>
 <translation id="7255187042098209569">ピンクと紫色</translation>
+<translation id="7267918995585557751">デフォルトの起動ページがフィッシング サイトに設定されるのを防ぐため、リセットしました。信頼できるウェブサイトのみを使用してください。</translation>
 <translation id="7271000785316964275">古典主義</translation>
 <translation id="7271040990581020067">スキャナは現在使用中です。しばらくしてからもう一度お試しください。</translation>
 <translation id="7271932918253517778">最上段のキーを使用するショートカットには、<ph name="META_KEY" /> キーを含める必要があります。</translation>
@@ -1486,6 +1493,7 @@
 <translation id="7903695460270716054">厳選されたアートワークや画像を選択できます</translation>
 <translation id="7912005977894000746">メインページに戻る</translation>
 <translation id="7915220255123750251">ネットワークの APN 設定を管理します。APN は、モバイル ネットワークとインターネットの間の接続を確立します。</translation>
+<translation id="7915759923880480519">ネットワーク経由で送信されるデータを保護するため、リセットしました。信頼できるネットワークのみを使用してください。</translation>
 <translation id="7936303884198020182">ネームサーバーが見つかりませんでした</translation>
 <translation id="7942349550061667556">赤</translation>
 <translation id="7943235353293548836">PersistentKeepAlive 送信間隔</translation>
@@ -1711,6 +1719,7 @@
 <translation id="89945434909472341">村</translation>
 <translation id="8997710128084572139">デバイスのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
 <translation id="8998289560386111590">お使いのデバイスではご利用いただけません</translation>
+<translation id="9000871120886759611">指定した言語で情報にアクセスできるようにするため、リセットしました。指定した言語のみが使用されていることを確認してください。</translation>
 <translation id="9003499805101629690">ピザ</translation>
 <translation id="9003704114456258138">周波数</translation>
 <translation id="901834265349196618">メール</translation>

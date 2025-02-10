@@ -2149,6 +2149,10 @@
 <translation id="2462332841984057083">이미 Steam을 설정하는 중입니다. 설정이 완료될 때까지 기다려 주세요.</translation>
 <translation id="2462724976360937186">인증 기관 키 ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> 추가됨</translation>
+<translation id="2464075479326723132">Microsoft SharePoint 및 OneDrive에서 최근 활동을 쉽게 확인할 수 있도록 추천 파일이 표시됩니다.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        카드 메뉴에서 설정을 관리하거나 Chrome 맞춤설정에서 추가 옵션을 확인할 수 있습니다.</translation>
 <translation id="2464079411014186876">아이스크림</translation>
 <translation id="2467755475704469005">감지된 기기가 없습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" />님 외 <ph name="NUM_OTHER_MEMBERS" />명이 있는 탭 그룹에 참여</translation>
@@ -4011,6 +4015,7 @@
 <translation id="3787434344076711519">번역 대기 중</translation>
 <translation id="3788301286821743879">키오스크 애플리케이션을 시작할 수 없습니다.</translation>
 <translation id="3788401245189148511">이전에 가능했던 대상:</translation>
+<translation id="3789432704615470433">SharePoint 및 OneDrive 파일</translation>
 <translation id="3789841737615482174">설치</translation>
 <translation id="3790417903123637354">문제가 발생했습니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="379082410132524484">카드가 만료됨</translation>
@@ -6200,6 +6205,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5360150013186312835">툴바에서 보기</translation>
 <translation id="5362741141255528695">비공개 키 파일을 선택합니다.</translation>
 <translation id="536278396489099088">ChromeOS 시스템 상태 및 보고서</translation>
+<translation id="5362916924854054326">SharePoint 및 OneDrive 파일 표시 안함</translation>
 <translation id="5363109466694494651">Powerwash 및 되돌리기</translation>
 <translation id="5365881113273618889">선택한 폴더에 민감한 파일이 포함되어 있습니다. 이 폴더에 '<ph name="APP_NAME" />' 영구 쓰기 액세스 권한을 부여하시겠습니까?</translation>
 <translation id="536638840841140142">없음</translation>
@@ -10784,6 +10790,10 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="865936634714975126">URL에 쿼리 매개변수를 추가하여 페이지 로드 시 유형을 선택합니다. 예: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">연락처 <ph name="FEATURE_NAME" />개</translation>
 <translation id="8659609431223166673">창이 아래로 이동함</translation>
+<translation id="8660288500924118793">Outlook Calendar에서 다음 일정으로 쉽게 이동할 수 있도록 캘린더가 표시됩니다.
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        카드 메뉴에서 설정을 관리하거나 Chrome 맞춤설정에서 추가 옵션을 확인할 수 있습니다.</translation>
 <translation id="8661290697478713397">시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />에 로그인</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> 네트워크에 연결</translation>

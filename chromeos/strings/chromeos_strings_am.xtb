@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">አጠቃልል</translation>
 <translation id="123124571410524056">መግቢያ ተጠርጥሯል</translation>
 <translation id="1232610416724362657">ፏፏቴ</translation>
+<translation id="1238163879850290856">ሌሎች ውሂብን እንዳይደርሱ ለመከላከል ዳግም ያስጀምሩ። እርስዎ የሚያምኗቸውን የግቤት ስልቶች ብቻ ይጠቀሙ።</translation>
 <translation id="1238612778414822719">የHTTPS የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="1252766349417594414">ጆይስቲክ</translation>
 <translation id="1270369111467284986">ተያዥ መግቢያ ተጠርጥሯል</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">የቀኝ ቀያይር</translation>
 <translation id="4654549501020883054">በየቀኑ ይለውጡ</translation>
 <translation id="4655868084888499342">ምስል እንደ ልጣፍ ተቀናብሯል</translation>
+<translation id="4660989616054030633">ስለ ሰዎች ጨምሮ ሰው ሠራሽ አስተውሎት አመንጪ ስሕተቶችን ሊሠራ ይችላል፣ ስለዚህ በድጋሚ ያረጋግጡት</translation>
 <translation id="4661249927038176904">ሕልም አስተኔ</translation>
 <translation id="4661392828086261436">ይህ ዝማኔ የቀረበው በመሣሪያ አምራች ነው እና በGoogle አልተረጋገጠም</translation>
 <translation id="4664651912255946953">የእንስሳ ፀጉር</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">ማጠቃለያን ደብቅ</translation>
 <translation id="6075872808778243331">(Android) የኤችቲቲፒኤስ የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="6078323886959318429">አቋራጭ አክል</translation>
+<translation id="6079693086494835199">ነባሪው መነሻ ገፅ የማስገር ጣቢያ አለመሆኑን ለማረጋገጥ ዳግም ያስጀምሩ። የሚያምኗቸውን ድር ጣቢያዎች ብቻ ይጠቀሙ።</translation>
 <translation id="6091080061796993741">ቢጫ</translation>
 <translation id="6104112872696127344">መቃኘት ተሰርዟል</translation>
 <translation id="6106186594183574873">ለማጠናቀቅ፣ የእርስዎን ይለፍ ቃል ያስገቡ</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">ማሩን እና ሮዝ</translation>
 <translation id="6165508094623778733">የበለጠ ለመረዳት</translation>
 <translation id="6184793017104303157">ቢ4</translation>
+<translation id="6185263894115593524">ሌሎች ሰዎች የእርስዎን ማይክሮፎን ወይም ካሜራ እንዳይጠቀሙ ለመከልከል ዳግም ያስጀምሩ። ፈቃዶችን ለሚያምኗቸው ጣቢያዎች ብቻ ይስጡ።</translation>
 <translation id="6188737759358894319"><ph name="DATE" /> ላይ የተፈጠረ</translation>
 <translation id="6189418609903030344">የባትሪ አቅም ከአጠቃቀም ጋር እየቀነሰ ይሄዳል</translation>
 <translation id="6189987971574353264">አጫውት</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">የቁልፍ ሰሌዛ መፍዘዝ</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ሙከራ ተሰርዟል</translation>
 <translation id="631063167932043783">መተግበሪያን አስስ</translation>
+<translation id="6314333689576767865">የእርስዎ Chromebook ወደ ደህንነታቸው የተጠበቁ ነባሪዎች ዳግም ተጀምሯል። በማንኛውም ጊዜ በቅንብሮች ውስጥ ለውጦችን ማድረግ ይችላሉ።</translation>
 <translation id="6318437367327684789">ለዘለዓለም</translation>
 <translation id="6319207335391420837">ፊርምዌር በ<ph name="DEVICE_NAME" /> ላይ ያዘምኑ</translation>
 <translation id="6321407676395378991">የማያ ገፅ ማቆያን አብራ</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">ግብረመልስ ገብቷል</translation>
 <translation id="6866732840889595464">ዴይዚ</translation>
 <translation id="6871256179359663621">ፈካ ያለ ሐምራዊ</translation>
+<translation id="6887967050249348172">ቅንብሮች ላይ የሚደረጉ ለውጦችን ለመከላከል ቅጥያዎች ተሰናክለዋል። የሚያምኗቸውን ቅጥያዎች ብቻ ያብሩ።</translation>
 <translation id="6889786074662672253">ዳግም በሚነሳበት ጊዜ ይህን ውጫዊ መሣሪያ ይንቀሉ ወይም ኮምፒውተርዎን አይዝጉት። ይህን መስኮት መቀነስ ይችላሉ። ይህ ጥቂት ደቂቃዎች ሊወስድ ይችላል እና በዚህ ጊዜ የእርስዎ ውጫዊ መሣሪያ ላይሰራ ይችላል።</translation>
 <translation id="6899460405678814458">ማጠቃለያን አሳይ</translation>
 <translation id="6900701049656042631">ይህ አልበም ምንም ፎቶዎች የሉትም። ፎቶዎችን ለማከል ወደ <ph name="LINK" /> ይሂዱ</translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">አቋራጭ ወደነበረበት ተመልሷል</translation>
 <translation id="725133483556299729">ኢሜይል ይምረጡ</translation>
 <translation id="7255187042098209569">ሮዝ እና ሐምራዊ</translation>
+<translation id="7267918995585557751">ነባሪው የመነሻ ገፅ የማስገር ጣቢያ አለመሆኑን ለማረጋገጥ ዳግም ያስጀምሩ። የሚያምኗቸውን ድር ጣቢያዎች ብቻ ይጠቀሙ።</translation>
 <translation id="7271000785316964275">ክላሲስት</translation>
 <translation id="7271040990581020067">ቃኚ በአሁኑ ጊዜ ጥቅም ላይ እየዋለ ነው። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="7271932918253517778">ከላይ ረድፍ ቁልፎች ያለው አቋራጭ የ<ph name="META_KEY" /> ቁልፍን ማካተት ያስፈልገዋል።</translation>
@@ -1486,6 +1493,7 @@
 <translation id="7903695460270716054">ተመርጠው የተሰበሰቡ ሥነ ጥበብ እና ምስሎችን ይምረጡ</translation>
 <translation id="7912005977894000746">ወደ ዋና ገፅ ተመለስ</translation>
 <translation id="7915220255123750251">የአውታረ መረብ ኤፒኤን ቅንብሮችን ያስተዳድሩ። ኤፒኤኖች በተንቀሳቃሽ ስልክ አውታረ መረብ እና በይነመረብ መካከል ግንኙነት ይመሰርታሉ።</translation>
+<translation id="7915759923880480519">በእርስዎ አውታረ መረቦች በኩል የተላከ ውሂብን ለመጠበቅ ዳግም ያስጀምሩ። የሚያምኗቸውን አውታረ መረቦች ብቻ ይጠቀሙ።</translation>
 <translation id="7936303884198020182">ምንም የስም አገልጋዮች አልተገኙም</translation>
 <translation id="7942349550061667556">ቀይ</translation>
 <translation id="7943235353293548836">የማያቋርጥ እንደነቃ አቆይ ክፍተት</translation>
@@ -1711,6 +1719,7 @@
 <translation id="89945434909472341">መንደር</translation>
 <translation id="8997710128084572139">መሣሪያ <ph name="BATTERY_PERCENTAGE" />% ባትሪ አለው።</translation>
 <translation id="8998289560386111590">መሣሪያዎ ላይ አይገኝም</translation>
+<translation id="9000871120886759611">መረጃን በእርስዎ የተመረጠ ቋንቋ መድረስ እንደሚችሉ ለማረጋገጥ ዳግም ያስጅምሩ። የተመረጡ ቋንቋዎች ብቻ ጥቅም ላይ መዋላቸውን ይፈትሹ።</translation>
 <translation id="9003499805101629690">ፒዛ</translation>
 <translation id="9003704114456258138">ተደጋጋሚነት</translation>
 <translation id="901834265349196618">ኢሜይል</translation>

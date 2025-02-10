@@ -2143,6 +2143,10 @@
 <translation id="2462332841984057083">Steam-г аль хэдийн тохируулж байна. Тохируулгыг дуусахыг хүлээнэ үү.</translation>
 <translation id="2462724976360937186">Certification Authority Key ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" />-г нэмсэн</translation>
+<translation id="2464075479326723132">Та Microsoft SharePoint, OneDrive дахь хамгийн сүүлийн үйл ажиллагаа руу тань хялбархан буцаж очиход туслах санал болгосон файлуудыг харж байна.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Та картын цэсээс тохиргоог удирдах эсвэл Chrome-г өөрчлөх хэсгээс бусад сонголтыг харах боломжтой.</translation>
 <translation id="2464079411014186876">Зайрмаг</translation>
 <translation id="2467755475704469005">Ямар ч төхөөрөмж илэрсэнгүй. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" /> болон өөр <ph name="NUM_OTHER_MEMBERS" /> хүний байгаа табын бүлэгт нэгдэх</translation>
@@ -4005,6 +4009,7 @@
 <translation id="3787434344076711519">Орчуулгыг хүлээж байна</translation>
 <translation id="3788301286821743879">Киоск аппликэйшнийг эхлүүлж чадсангүй.</translation>
 <translation id="3788401245189148511">Энэ нь:</translation>
+<translation id="3789432704615470433">SharePoint, OneDrive-н файлууд</translation>
 <translation id="3789841737615482174">Суулгах</translation>
 <translation id="3790417903123637354">Алдаа гарлаа. Дараа дахин оролдоно уу</translation>
 <translation id="379082410132524484">Таны карт хүчингүй байна</translation>
@@ -6194,6 +6199,7 @@
 <translation id="5360150013186312835">Хэрэгслийн мөрд харуулах</translation>
 <translation id="5362741141255528695">Хувийн түлхүүр файлыг сонго</translation>
 <translation id="536278396489099088">ChromeOS системийн төлөв болон тайлангууд</translation>
+<translation id="5362916924854054326">SharePoint, OneDrive-н файлуудыг бүү харуул</translation>
 <translation id="5363109466694494651">Powerwash болон Revert</translation>
 <translation id="5365881113273618889">Таны сонгосон фолдерт эмзэг файл агуулсан байна. Та "<ph name="APP_NAME" />"-д энэ фолдерыг бичих хандалтыг бүрмөсөн өгөхдөө итгэлтэй байна уу?</translation>
 <translation id="536638840841140142">Байхгүй</translation>
@@ -10774,6 +10780,10 @@
 <translation id="865936634714975126">Хуудасны ачаалал дээр төрөл сонгохын тулд URL-д асуулгын параметр нэмнэ үү. Жишээ нь: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" />-н харилцагчид</translation>
 <translation id="8659609431223166673">Цонхыг доош зөөсөн</translation>
+<translation id="8660288500924118793">Та Outlook Calendar дахь дараагийн арга хэмжээ рүүгээ хялбархан шилжихэд тань туслах календариа харж байна.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Та картын цэсээс тохиргоог удирдах эсвэл Chrome-г өөрчлөх хэсгээс бусад сонголтыг харах боломжтой.</translation>
 <translation id="8661290697478713397">Холбоосыг нууцлалтай цонхонд нээх</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />-д нэвтрэх</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> сүлжээнд нэгдэх</translation>

@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Ringkasan</translation>
 <translation id="123124571410524056">Portal dicurigai</translation>
 <translation id="1232610416724362657">air terjun</translation>
+<translation id="1238163879850290856">Reset untuk mencegah orang lain mengakses data. Hanya gunakan metode input yang Anda percayai.</translation>
 <translation id="1238612778414822719">Latensi HTTPS</translation>
 <translation id="1252766349417594414">Joystick</translation>
 <translation id="1270369111467284986">Captive portal dicurigai</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">Shift kanan</translation>
 <translation id="4654549501020883054">Ubah Tiap Hari</translation>
 <translation id="4655868084888499342">Gambar disetel sebagai wallpaper</translation>
+<translation id="4660989616054030633">AI generatif dapat membuat kesalahan, termasuk tentang orang. Jadi, harap periksa kembali responsnya</translation>
 <translation id="4661249927038176904">Surealis</translation>
 <translation id="4661392828086261436">Update ini disediakan oleh produsen perangkat dan belum diverifikasi oleh Google</translation>
 <translation id="4664651912255946953">bulu</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">Sembunyikan ringkasan</translation>
 <translation id="6075872808778243331">(Android) Latensi HTTP</translation>
 <translation id="6078323886959318429">Tambahkan pintasan</translation>
+<translation id="6079693086494835199">Reset untuk memastikan halaman beranda default bukan situs phishing. Hanya gunakan situs yang Anda percayai.</translation>
 <translation id="6091080061796993741">kuning</translation>
 <translation id="6104112872696127344">Pemindaian telah dibatalkan</translation>
 <translation id="6106186594183574873">Untuk menyelesaikan, masukkan sandi yang lama</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">merah marun dan merah muda</translation>
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Reset untuk mencegah orang lain menggunakan mikrofon atau kamera Anda. Hanya berikan izin ke situs yang Anda percayai.</translation>
 <translation id="6188737759358894319">Dibuat pada <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Kapasitas baterai menurun seiring penggunaan</translation>
 <translation id="6189987971574353264">Putar</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">peredupan keyboard</translation>
 <translation id="6302401976930124515">Pengujian <ph name="TEST_NAME" /> telah dibatalkan</translation>
 <translation id="631063167932043783">Aplikasi Jelajahi</translation>
+<translation id="6314333689576767865">Chromebook Anda direset ke setelan default yang aman. Anda dapat membuat perubahan kapan saja di Setelan.</translation>
 <translation id="6318437367327684789">selamanya</translation>
 <translation id="6319207335391420837">Update firmware di <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Nyalakan screen saver</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">Masukan dikirim</translation>
 <translation id="6866732840889595464">bunga aster</translation>
 <translation id="6871256179359663621">ungu muda</translation>
+<translation id="6887967050249348172">Ekstensi dinonaktifkan untuk mencegah perubahan pada setelan. Hanya aktifkan ekstensi yang Anda percayai.</translation>
 <translation id="6889786074662672253">Saat memulai ulang, jangan mencabut perangkat eksternal ini atau mematikan komputer. Anda dapat meminimalkan jendela ini. Proses ini mungkin perlu waktu beberapa menit dan perangkat eksternal mungkin tidak berfungsi selama proses berlangsung.</translation>
 <translation id="6899460405678814458">Tampilkan ringkasan</translation>
 <translation id="6900701049656042631">Album ini tidak memiliki foto. Untuk menambahkan foto, buka <ph name="LINK" /></translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">Pintasan dipulihkan</translation>
 <translation id="725133483556299729">Pilih email</translation>
 <translation id="7255187042098209569">merah muda dan ungu</translation>
+<translation id="7267918995585557751">Reset untuk memastikan halaman awal default bukan situs phishing. Hanya gunakan situs yang Anda percayai.</translation>
 <translation id="7271000785316964275">klasisisme</translation>
 <translation id="7271040990581020067">Pemindai sedang digunakan. Coba lagi nanti.</translation>
 <translation id="7271932918253517778">Pintasan dengan tombol baris atas harus menyertakan tombol <ph name="META_KEY" />.</translation>
@@ -1486,6 +1493,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="7903695460270716054">Memilih ilustrasi dan gambar pilihan</translation>
 <translation id="7912005977894000746">Kembali ke halaman utama</translation>
 <translation id="7915220255123750251">Kelola setelan APN jaringan. APN membuat koneksi antara jaringan seluler dan internet.</translation>
+<translation id="7915759923880480519">Reset untuk melindungi data yang dikirim melalui jaringan Anda. Hanya gunakan jaringan yang Anda percayai.</translation>
 <translation id="7936303884198020182">Tidak ada server nama yang ditemukan</translation>
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7943235353293548836">Interval keepalive persisten</translation>
@@ -1711,6 +1719,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="89945434909472341">desa</translation>
 <translation id="8997710128084572139">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai.</translation>
 <translation id="8998289560386111590">Tidak tersedia di perangkat Anda</translation>
+<translation id="9000871120886759611">Reset untuk memastikan Anda dapat mengakses informasi dalam bahasa pilihan Anda. Pastikan hanya bahasa pilihan yang digunakan.</translation>
 <translation id="9003499805101629690">piza</translation>
 <translation id="9003704114456258138">Frekuensi</translation>
 <translation id="901834265349196618">email</translation>
