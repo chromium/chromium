@@ -1203,7 +1203,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
 
   if (delegate && form_structure && autofill_field &&
       delegate->IsEligibleForAutofillAi(*form_structure, *autofill_field)) {
-    delegate->GetSuggestionsV2(
+    delegate->GetSuggestions(
         form.global_id(), field.global_id(),
         /*is_manual_fallback=*/trigger_source ==
             AutofillSuggestionTriggerSource::kAutofillAi,

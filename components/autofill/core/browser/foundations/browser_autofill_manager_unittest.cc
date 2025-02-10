@@ -6742,7 +6742,7 @@ TEST_F(BrowserAutofillManagerTest, ShowAutofillAiSuggestions) {
   ON_CALL(delegate, IsEligibleForAutofillAi).WillByDefault(Return(true));
   std::vector<Suggestion> suggestions = {
       Suggestion(SuggestionType::kFillAutofillAi)};
-  EXPECT_CALL(delegate, GetSuggestionsV2)
+  EXPECT_CALL(delegate, GetSuggestions)
       .WillOnce(RunOnceCallback<3>(suggestions));
 
   OnAskForValuesToFill(form, form.fields().front(),

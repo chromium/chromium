@@ -245,9 +245,9 @@ TEST_F(AutofillAiManagerTest,
       autofill::test::GetPassportEntityInstance());
 
   base::test::TestFuture<std::vector<autofill::Suggestion>> suggestions;
-  manager().GetSuggestionsV2(
-      form.global_id(), form.fields().front().global_id(),
-      /*is_manual_fallback=*/false, suggestions.GetCallback());
+  manager().GetSuggestions(form.global_id(), form.fields().front().global_id(),
+                           /*is_manual_fallback=*/false,
+                           suggestions.GetCallback());
   EXPECT_THAT(suggestions.Take(), ElementsAre(HasType(kFillAutofillAi)));
 }
 
@@ -271,9 +271,9 @@ TEST_F(
       get_suggestions_callback;
 
   base::test::TestFuture<std::vector<autofill::Suggestion>> suggestions;
-  manager().GetSuggestionsV2(
-      form.global_id(), form.fields().front().global_id(),
-      /*is_manual_fallback=*/true, suggestions.GetCallback());
+  manager().GetSuggestions(form.global_id(), form.fields().front().global_id(),
+                           /*is_manual_fallback=*/true,
+                           suggestions.GetCallback());
   EXPECT_THAT(suggestions.Take(),
               ElementsAre(HasType(kAutofillAiLoadingState)));
 }
@@ -300,9 +300,9 @@ TEST_F(
       get_suggestions_callback;
 
   base::test::TestFuture<std::vector<autofill::Suggestion>> suggestions;
-  manager().GetSuggestionsV2(
-      form.global_id(), form.fields().front().global_id(),
-      /*is_manual_fallback=*/true, suggestions.GetCallback());
+  manager().GetSuggestions(form.global_id(), form.fields().front().global_id(),
+                           /*is_manual_fallback=*/true,
+                           suggestions.GetCallback());
   EXPECT_THAT(suggestions.Take(), ElementsAre(HasType(kFillAutofillAi)));
 }
 

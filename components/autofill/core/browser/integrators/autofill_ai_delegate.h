@@ -34,10 +34,10 @@ class AutofillAiDelegate {
   // Returns AutofillAi suggestions. These suggestions can be filling
   // suggestions when triggered via left click, or loading suggestions when
   // using manual fallbacks.
-  virtual void GetSuggestionsV2(autofill::FormGlobalId form_global_id,
-                                autofill::FieldGlobalId field_global_id,
-                                bool is_manual_fallback,
-                                GetSuggestionsCallback callback) = 0;
+  virtual void GetSuggestions(autofill::FormGlobalId form_global_id,
+                              autofill::FieldGlobalId field_global_id,
+                              bool is_manual_fallback,
+                              GetSuggestionsCallback callback) = 0;
 
   // Returns whether `form` and `field` are eligible for the Autofill AI
   // experience.

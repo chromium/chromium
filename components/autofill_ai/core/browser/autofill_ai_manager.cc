@@ -400,11 +400,10 @@ void AutofillAiManager::OnSavePromptAcceptance(
   }
 }
 
-void AutofillAiManager::GetSuggestionsV2(
-    autofill::FormGlobalId form_global_id,
-    autofill::FieldGlobalId field_global_id,
-    bool is_manual_fallback,
-    GetSuggestionsCallback callback) {
+void AutofillAiManager::GetSuggestions(autofill::FormGlobalId form_global_id,
+                                       autofill::FieldGlobalId field_global_id,
+                                       bool is_manual_fallback,
+                                       GetSuggestionsCallback callback) {
   autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
   if (!entity_manager) {
     return std::move(callback).Run({});
