@@ -11,7 +11,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {assertNotStyle, assertStyle, createElement, initNullModule, installMock} from '../../test_support.js';
@@ -869,9 +869,9 @@ suite('NewTabPageModulesModulesV2Test', () => {
         // Arrange - Prepare to load bar module.
         const barModulePromise = getModulePromise(barDescriptor);
         moduleRegistry.setResultFor('initializeModuleById', barModulePromise);
-        // Set the module order, to be verified later.
+        // Set the modules order, without the foo module, to be verified later.
         handler.setResultFor('getModulesOrder', Promise.resolve({
-          moduleIds: [barDescriptor.id, bazDescriptor.id, fooDescriptor.id],
+          moduleIds: [barDescriptor.id, bazDescriptor.id],
         }));
 
         // Act - Enable the bar module by removing it from the disabled modules
@@ -884,7 +884,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
         moduleWrappers =
             modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
         assertEquals(2, moduleWrappers.length);
-        //  Ensure bar and foo modules are loaded in the correct order.
+        // Ensure the 'foo' module loads last, as it was not included in the
+        // module order returned by |getModulesOrder()|.
         assertEquals(
             barDescriptor.id,
             (moduleWrappers[0] as ModuleWrapperElement).module.descriptor.id);
@@ -939,6 +940,46 @@ suite('NewTabPageModulesModulesV2Test', () => {
             assertEquals(fooDescriptor.id, fooModule.module.descriptor.id);
             assertNotStyle(fooModule, 'display', 'none');
           });
+
+      test('load occurs only once despite repeated requests', async () => {
+        // Arrange.
+        const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+        const barDescriptor = new ModuleDescriptor('bar', initNullModule);
+        // Initial state: foo enabled, bar and baz disabled.
+        const modulesElement = await createModulesElementFromDescriptors(
+            [fooDescriptor], /*instanceCount=*/ 1, [barDescriptor]);
+        // Ensure only foo module loaded.
+        let moduleWrappers =
+            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+        assertEquals(1, moduleWrappers.length);
+        assertEquals(
+            fooDescriptor.id,
+            (moduleWrappers[0] as ModuleWrapperElement).module.descriptor.id);
+        // Prepare to load bar module.
+        const barModulePromise = getModulePromise(barDescriptor);
+        moduleRegistry.setResultFor('initializeModuleById', barModulePromise);
+        // Set the module order, to be verified later.
+        handler.setResultFor(
+            'getModulesOrder', Promise.resolve({moduleIds: []}));
+
+        // Act - Clear the disabled modules list multiple times.
+        callbackRouterRemote.setDisabledModules(false, []);
+        callbackRouterRemote.setDisabledModules(false, []);
+        callbackRouterRemote.setDisabledModules(false, []);
+        await barModulePromise;
+        await flushTasks();
+
+        // Assert - Ensure only one instance of the bar module populated.
+        moduleWrappers =
+            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+        assertEquals(2, moduleWrappers.length);
+        assertEquals(
+            fooDescriptor.id,
+            (moduleWrappers[0] as ModuleWrapperElement).module.descriptor.id);
+        assertEquals(
+            barDescriptor.id,
+            (moduleWrappers[1] as ModuleWrapperElement).module.descriptor.id);
+      });
     });
 
     suite('Deferrable', () => {
