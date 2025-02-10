@@ -137,7 +137,7 @@ ScannerFeedbackUntrustedUIConfig::~ScannerFeedbackUntrustedUIConfig() = default;
 
 bool ScannerFeedbackUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return features::IsScannerEnabled();
+  return features::IsScannerEnabled() || features::IsCoralFeatureEnabled();
 }
 
 ScannerFeedbackUntrustedUI::ScannerFeedbackUntrustedUI(content::WebUI* web_ui)
