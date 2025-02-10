@@ -1693,16 +1693,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         ),
     ),
     BanRule(
-        r'/\bbase::debug::DumpWithoutCrashingUnthrottled[(][)]',
-        (
-            'base::debug::DumpWithoutCrashingUnthrottled() does not throttle',
-            'dumps and may spam crash reports. Consider if the throttled',
-            'variants suffice instead.',
-        ),
-        False,
-        (),
-    ),
-    BanRule(
         'RoInitialize',
         ('Improper use of [base::win]::RoInitialize() has been implicated in a ',
          'few COM initialization leaks. Use base::win::ScopedWinrtInitializer ',
