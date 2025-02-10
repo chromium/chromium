@@ -716,8 +716,8 @@ SQLitePersistentReportingAndNelStore::Backend::DoMigrateDatabaseSchema() {
       return std::nullopt;
 
     // Migrate NEL policies table.
-    if (!db()->Execute("DROP TABLE IF EXISTS nel_policies_old; "
-                       "ALTER TABLE nel_policies RENAME TO nel_policies_old")) {
+    if (!db()->Execute("DROP TABLE IF EXISTS nel_policies_old") ||
+        !db()->Execute("ALTER TABLE nel_policies RENAME TO nel_policies_old")) {
       return std::nullopt;
     }
     if (!CreateV2NelPoliciesSchema(db()))
@@ -743,8 +743,8 @@ SQLitePersistentReportingAndNelStore::Backend::DoMigrateDatabaseSchema() {
       return std::nullopt;
 
     // Migrate Reporting endpoints table.
-    if (!db()->Execute("DROP TABLE IF EXISTS reporting_endpoints_old; "
-                       "ALTER TABLE reporting_endpoints RENAME TO "
+    if (!db()->Execute("DROP TABLE IF EXISTS reporting_endpoints_old") ||
+        !db()->Execute("ALTER TABLE reporting_endpoints RENAME TO "
                        "reporting_endpoints_old")) {
       return std::nullopt;
     }
@@ -765,8 +765,8 @@ SQLitePersistentReportingAndNelStore::Backend::DoMigrateDatabaseSchema() {
       return std::nullopt;
 
     // Migrate Reporting endpoint groups table.
-    if (!db()->Execute("DROP TABLE IF EXISTS reporting_endpoint_groups_old; "
-                       "ALTER TABLE reporting_endpoint_groups RENAME TO "
+    if (!db()->Execute("DROP TABLE IF EXISTS reporting_endpoint_groups_old") ||
+        !db()->Execute("ALTER TABLE reporting_endpoint_groups RENAME TO "
                        "reporting_endpoint_groups_old")) {
       return std::nullopt;
     }
