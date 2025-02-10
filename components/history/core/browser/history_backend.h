@@ -401,12 +401,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                                               base::Time begin_time,
                                               base::Time end_time);
 
-  // Gets the last time `url` was visited before `end_time`. If the given URL
-  // has not been visited in the past, the result will have a null base::Time,
-  // but still report success.
-  HistoryLastVisitResult GetLastVisitToURL(const GURL& url,
-                                           base::Time end_time);
-
   // Gets counts for total visits and days visited for pages matching `host`'s
   // scheme, port, and host. Counts only user-visible visits.
   DailyVisitsResult GetDailyVisitsToHost(const GURL& host,
