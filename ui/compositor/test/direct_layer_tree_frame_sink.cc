@@ -37,12 +37,10 @@ DirectLayerTreeFrameSink::DirectLayerTreeFrameSink(
     scoped_refptr<cc::RasterContextProviderWrapper>
         worker_context_provider_wrapper,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gfx::AcceleratedWidget widget)
     : LayerTreeFrameSink(std::move(context_provider),
                          std::move(worker_context_provider_wrapper),
                          std::move(compositor_task_runner),
-                         gpu_memory_buffer_manager,
                          /*shared_image_interface=*/nullptr),
       frame_sink_id_(frame_sink_id),
       frame_sink_manager_(frame_sink_manager),

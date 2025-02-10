@@ -25,7 +25,6 @@
 #include "ui/gfx/color_space.h"
 
 namespace gpu {
-class GpuMemoryBufferManager;
 class ClientSharedImageInterface;
 }
 
@@ -68,7 +67,6 @@ class CC_EXPORT LayerTreeFrameSink : public viz::ContextLostObserver,
       scoped_refptr<RasterContextProviderWrapper>
           worker_context_provider_wrapper,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface);
   LayerTreeFrameSink(const LayerTreeFrameSink&) = delete;
 
@@ -112,9 +110,7 @@ class CC_EXPORT LayerTreeFrameSink : public viz::ContextLostObserver,
                ? worker_context_provider_wrapper_->GetContext().get()
                : nullptr;
   }
-  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager() const {
-    return gpu_memory_buffer_manager_;
-  }
+
   scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface() const;
 
   // If supported, this sets the viz::LocalSurfaceId the LayerTreeFrameSink will
@@ -166,7 +162,6 @@ class CC_EXPORT LayerTreeFrameSink : public viz::ContextLostObserver,
   scoped_refptr<viz::RasterContextProvider> context_provider_;
   scoped_refptr<RasterContextProviderWrapper> worker_context_provider_wrapper_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
-  raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
   scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
 
   std::unique_ptr<ContextLostForwarder> worker_context_lost_forwarder_;

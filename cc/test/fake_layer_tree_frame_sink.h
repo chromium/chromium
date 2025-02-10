@@ -24,7 +24,6 @@
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "components/viz/test/test_raster_interface.h"
-#include "gpu/command_buffer/client/test_gpu_memory_buffer_manager.h"
 
 namespace viz {
 class BeginFrameSource;
@@ -126,8 +125,6 @@ class FakeLayerTreeFrameSink : public LayerTreeFrameSink {
   FakeLayerTreeFrameSink(
       scoped_refptr<viz::RasterContextProvider> context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider);
-
-  gpu::TestGpuMemoryBufferManager test_gpu_memory_buffer_manager_;
 
   std::unique_ptr<viz::CompositorFrame> last_sent_frame_;
   size_t num_sent_frames_ = 0;

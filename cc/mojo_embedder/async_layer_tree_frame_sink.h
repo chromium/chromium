@@ -71,7 +71,6 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
     ~InitParams();
 
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner;
-    raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager = nullptr;
     std::unique_ptr<viz::SyntheticBeginFrameSource>
         synthetic_begin_frame_source;
     UnboundMessagePipes pipes;

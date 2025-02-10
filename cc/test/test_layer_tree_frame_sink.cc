@@ -81,7 +81,6 @@ TestLayerTreeFrameSink::TestLayerTreeFrameSink(
     scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
     scoped_refptr<viz::RasterContextProvider> worker_context_provider,
     scoped_refptr<gpu::SharedImageInterface> shared_image_interface,
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     const viz::RendererSettings& renderer_settings,
     const viz::DebugRendererSettings* const debug_settings,
     TaskRunnerProvider* task_runner_provider,
@@ -101,7 +100,6 @@ TestLayerTreeFrameSink::TestLayerTreeFrameSink(
           task_runner_provider->HasImplThread()
               ? task_runner_provider->ImplThreadTaskRunner()
               : task_runner_provider->MainThreadTaskRunner(),
-          gpu_memory_buffer_manager,
           shared_image_interface
               ? base::MakeRefCounted<TestClientSharedImageInterface>(
                     shared_image_interface)

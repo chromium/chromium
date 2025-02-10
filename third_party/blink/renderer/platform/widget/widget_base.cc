@@ -874,8 +874,6 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
 
   constexpr bool automatic_flushes = false;
   constexpr bool support_locking = false;
-  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager =
-      Platform::Current()->GetGpuMemoryBufferManager();
 
   auto context_provider =
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
@@ -900,7 +898,7 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
             std::move(context_provider),
             std::move(worker_context_provider_wrapper),
             Platform::Current()->CompositorThreadTaskRunner(),
-            gpu_memory_buffer_manager, g_next_layer_tree_frame_sink_id++,
+            g_next_layer_tree_frame_sink_id++,
             std::move(params->synthetic_begin_frame_source),
             widget_input_handler_manager_->GetSynchronousCompositorRegistry(),
             CrossVariantMojoRemote<
@@ -918,7 +916,6 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
   widget_host_->RegisterRenderFrameMetadataObserver(
       std::move(render_frame_metadata_observer_client_receiver),
       std::move(render_frame_metadata_observer_remote));
-  params->gpu_memory_buffer_manager = gpu_memory_buffer_manager;
   std::move(callback).Run(
       std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
           std::move(context_provider),

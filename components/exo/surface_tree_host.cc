@@ -552,8 +552,6 @@ SurfaceTreeHost::CreateLayerTreeFrameSink() {
       frame_sink_id_, std::move(sink_receiver), std::move(client_remote));
 
   cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams params;
-  params.gpu_memory_buffer_manager =
-      aura::Env::GetInstance()->context_factory()->GetGpuMemoryBufferManager();
   params.pipes.compositor_frame_sink_remote = std::move(sink_remote);
   params.pipes.client_receiver = std::move(client_receiver);
 

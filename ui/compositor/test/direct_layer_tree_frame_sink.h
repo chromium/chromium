@@ -39,7 +39,6 @@ class DirectLayerTreeFrameSink : public cc::LayerTreeFrameSink,
       scoped_refptr<cc::RasterContextProviderWrapper>
           worker_context_provider_wrapper,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       gfx::AcceleratedWidget widget = gfx::kNullAcceleratedWidget);
 
   DirectLayerTreeFrameSink(const DirectLayerTreeFrameSink& other) = delete;

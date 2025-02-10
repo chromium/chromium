@@ -68,7 +68,6 @@ AsyncLayerTreeFrameSink::AsyncLayerTreeFrameSink(
     : LayerTreeFrameSink(std::move(context_provider),
                          std::move(worker_context_provider_wrapper),
                          std::move(params->compositor_task_runner),
-                         params->gpu_memory_buffer_manager,
                          std::move(shared_image_interface)),
       use_direct_client_receiver_(params->use_direct_client_receiver),
       synthetic_begin_frame_source_(

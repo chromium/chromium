@@ -21,7 +21,6 @@
 #include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/test_context_provider.h"
-#include "gpu/command_buffer/client/test_gpu_memory_buffer_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
@@ -67,7 +66,6 @@ TEST(AsyncLayerTreeFrameSinkTest,
 
   scoped_refptr<viz::TestContextProvider> provider =
       viz::TestContextProvider::CreateRaster();
-  gpu::TestGpuMemoryBufferManager test_gpu_memory_buffer_manager;
 
   mojo::PendingRemote<viz::mojom::CompositorFrameSink> sink_remote;
   mojo::PendingReceiver<viz::mojom::CompositorFrameSink> sink_receiver =
@@ -76,7 +74,6 @@ TEST(AsyncLayerTreeFrameSinkTest,
 
   AsyncLayerTreeFrameSink::InitParams init_params;
   init_params.compositor_task_runner = bg_thread.task_runner();
-  init_params.gpu_memory_buffer_manager = &test_gpu_memory_buffer_manager;
   init_params.pipes.compositor_frame_sink_remote = std::move(sink_remote);
   init_params.pipes.client_receiver = client.InitWithNewPipeAndPassReceiver();
   auto layer_tree_frame_sink = std::make_unique<AsyncLayerTreeFrameSink>(
@@ -139,7 +136,6 @@ class AsyncLayerTreeFrameSinkSimpleTest : public testing::Test {
     mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client;
 
     init_params_.compositor_task_runner = task_runner_;
-    init_params_.gpu_memory_buffer_manager = &test_gpu_memory_buffer_manager_;
     init_params_.pipes.compositor_frame_sink_remote = std::move(sink_remote);
     init_params_.pipes.client_receiver =
         client.InitWithNewPipeAndPassReceiver();
@@ -170,7 +166,6 @@ class AsyncLayerTreeFrameSinkSimpleTest : public testing::Test {
   AsyncLayerTreeFrameSink::InitParams init_params_;
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  gpu::TestGpuMemoryBufferManager test_gpu_memory_buffer_manager_;
   gfx::Rect display_rect_;
   std::unique_ptr<AsyncLayerTreeFrameSink> layer_tree_frame_sink_;
   FakeLayerTreeFrameSinkClient layer_tree_frame_sink_client_;
