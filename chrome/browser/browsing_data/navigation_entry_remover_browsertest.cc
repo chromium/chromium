@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/browsing_data/navigation_entry_remover.h"
+
 #include "base/files/file_path.h"
 #include "build/build_config.h"
-#include "chrome/browser/browsing_data/navigation_entry_remover.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -17,6 +18,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "url/gurl.h"
 
@@ -67,6 +69,9 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
         browser, urls[0], WindowOpenDisposition::NEW_WINDOW,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
     Browser* new_browser = new_browser_observer.Wait();
+#if BUILDFLAG(IS_MAC)
+    content::HandleMissingKeyWindow();
+#endif
     ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
     AddNavigations(new_browser, {urls.begin() + 1, urls.end()});
     return new_browser;
