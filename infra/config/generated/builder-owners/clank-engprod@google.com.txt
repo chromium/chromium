@@ -37,7 +37,6 @@ ci/android-desktop-arm64-compile-rel
 ci/android-desktop-x64-archive-rel
 ci/android-desktop-x64-compile-dbg
 ci/android-desktop-x64-compile-rel
-ci/android-desktop-x64-rel-14-tests
 ci/android-desktop-x64-rel-15-tests
 ci/android-official
 ci/android-oreo-x86-rel
@@ -63,7 +62,6 @@ try/android-15-x64-fyi-rel
 try/android-15-x64-rel
 try/android-16-x64-fyi-rel
 try/android-clobber-rel
-try/android-desktop-14-x64-rel
 try/android-desktop-15-x64-fyi-rel
 try/android-desktop-15-x64-rel
 try/android-desktop-arm64-clobber-rel
