@@ -38,6 +38,16 @@ public class ManagedBrowserUtils {
         return ManagedBrowserUtilsJni.get().isProfileReportingEnabled(profile);
     }
 
+    /** Wrapper around native call to check if "OnSecurityEventEnterpriseConnector" is enabled. */
+    public static boolean isOnSecurityEventEnterpriseConnectorEnabled(Profile profile) {
+        return ManagedBrowserUtilsJni.get().isOnSecurityEventEnterpriseConnectorEnabled(profile);
+    }
+
+    /** Wrapper around native call to check if "EnterpriseRealTimeUrlCheckMode" is enabled. */
+    public static boolean isEnterpriseRealTimeUrlCheckModeEnabled(Profile profile) {
+        return ManagedBrowserUtilsJni.get().isEnterpriseRealTimeUrlCheckModeEnabled(profile);
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isBrowserManaged(@JniType("Profile*") Profile profile);
@@ -50,5 +60,9 @@ public class ManagedBrowserUtils {
         boolean isBrowserReportingEnabled();
 
         boolean isProfileReportingEnabled(@JniType("Profile*") Profile profile);
+
+        boolean isOnSecurityEventEnterpriseConnectorEnabled(@JniType("Profile*") Profile profile);
+
+        boolean isEnterpriseRealTimeUrlCheckModeEnabled(@JniType("Profile*") Profile profile);
     }
 }
