@@ -199,7 +199,12 @@ const int kExpectedExitAnimationCount = 2;
                          profile:self.browser->GetProfile()];
 
   LensOverlayOverflowMenuFactory* overflowMenuFactory =
-      [[LensOverlayOverflowMenuFactory alloc] initWithBrowser:self.browser];
+      [[LensOverlayOverflowMenuFactory alloc]
+                            initWithBrowser:self.browser
+          browserCoordinatorCommandsHandler:HandlerForProtocol(
+                                                self.browser
+                                                    ->GetCommandDispatcher(),
+                                                BrowserCoordinatorCommands)];
 
   NSArray<UIAction*>* additionalMenuItems = @[
     [overflowMenuFactory openUserActivityAction],
@@ -393,11 +398,11 @@ const int kExpectedExitAnimationCount = 2;
   }
 
   if (self.shouldShowConsentFlow) {
-    if (self.isResultsBottomSheetOpen) {
+    if (self.isResultsBottomSheetCreated) {
       [self stopResultPage];
     }
     [self presentConsentFlow];
-  } else if (self.isResultsBottomSheetOpen) {
+  } else if (self.isResultsBottomSheetCreated) {
     // Only show the bottom sheet when in selection. For translate, build the
     // necessary infrastructure but don't show it, effectively starting it
     // hidden.
@@ -411,6 +416,13 @@ const int kExpectedExitAnimationCount = 2;
   // presented to avoid visual flickering when swapping back the main window.
   if (_associatedTabHelper) {
     _associatedTabHelper->ReleaseSnapshotAuxiliaryWindows();
+  }
+
+  // If the results bottom sheet hasn't been created yet, dismiss the
+  // restoration window. Otherwise, keep the restoration window until the
+  // results bottom sheet is presented.
+  if (!self.isResultsBottomSheetCreated) {
+    [self dismissRestorationWindow];
   }
 }
 
@@ -652,6 +664,12 @@ const int kExpectedExitAnimationCount = 2;
 #pragma mark - LensOverlayMediatorDelegate
 
 - (void)lensOverlayMediatorDidOpenOverlayMenu:(LensOverlayMediator*)mediator {
+  // Capture the viewport snapshot before potential
+  // navigation (e.g., user taps the "Learn More" button) to preserve the
+  // current state.
+  if (_associatedTabHelper) {
+    _associatedTabHelper->RecordViewportSnaphot();
+  }
   [_metricsRecorder recordOverflowMenuOpened];
 }
 
@@ -918,7 +936,7 @@ const int kExpectedExitAnimationCount = 2;
   return _containerViewController != nil;
 }
 
-- (BOOL)isResultsBottomSheetOpen {
+- (BOOL)isResultsBottomSheetCreated {
   return _resultViewController != nil;
 }
 
