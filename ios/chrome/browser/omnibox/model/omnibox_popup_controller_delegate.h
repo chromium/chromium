@@ -17,7 +17,7 @@ class AutocompleteResult;
 - (void)popupControllerDidUpdateSuggestions:
             (OmniboxPopupController*)popupController
                              hasSuggestions:(BOOL)hasSuggestions
-                                  isOnFocus:(BOOL)isOnFocus;
+                                 isFocusing:(BOOL)isFocusing;
 
 /// Notifies the delegate of the new sorted suggestions.
 /// TODO(crbug.com/390410111): Change to AutocompleteSuggestion after moving the
