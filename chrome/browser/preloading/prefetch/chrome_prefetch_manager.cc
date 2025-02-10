@@ -56,7 +56,6 @@ void ChromePrefetchManager::StartPrefetchFromCCT(
       preloading_data->AddPreloadingAttempt(
           chrome_preloading_predictor::kChromeCustomTabs,
           content::PreloadingType::kPrefetch, std::move(matcher),
-          /*planned_max_preloading_type=*/std::nullopt,
           /*triggering_primary_page_source_id=*/ukm::kInvalidSourceId);
 
   std::optional<content::PreloadingHoldbackStatus> holdback_status_override;

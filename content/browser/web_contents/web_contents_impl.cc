@@ -11655,7 +11655,8 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
       should_warm_up_compositor, should_prepare_paint_tree,
       std::move(url_match_predicate),
       std::move(prerender_navigation_handle_callback),
-      base::MakeRefCounted<PreloadPipelineInfo>());
+      base::MakeRefCounted<PreloadPipelineInfo>(
+          /*planned_max_preloading_type=*/PreloadingType::kPrerender));
 #if BUILDFLAG(IS_ANDROID)
   attributes.additional_headers = std::move(additional_headers);
 #else

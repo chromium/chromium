@@ -108,7 +108,9 @@ class NoVarySearchHelperTester final {
             blink::mojom::Referrer(),
             /*no_vary_search_hint=*/std::nullopt,
             /*prefetch_document_manager=*/nullptr,
-            base::MakeRefCounted<PreloadPipelineInfo>());
+            base::MakeRefCounted<
+                PreloadPipelineInfo>(/*planned_max_preloading_type=*/
+                                     PreloadingType::kPrefetch));
 
     prefetch_container->SimulatePrefetchEligibleForTest();
     MakeServableStreamingURLLoaderForTest(prefetch_container.get(),

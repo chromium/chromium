@@ -305,28 +305,24 @@ void RecordAfterClickRedirectChainSize(size_t redirect_chain_size) {
                            redirect_chain_size);
 }
 
-bool CalculateIsLikelyAheadOfPrerender(PreloadingAttempt* attempt) {
+bool CalculateIsLikelyAheadOfPrerender(
+    const PreloadPipelineInfo& preload_pipeline_info) {
   if (!base::FeatureList::IsEnabled(
           features::kPrerender2FallbackPrefetchSpecRules)) {
     return false;
   }
 
-  auto* attempt_impl = static_cast<PreloadingAttemptImpl*>(attempt);
-  if (attempt_impl) {
-    switch (attempt_impl->planned_max_preloading_type()) {
-      case PreloadingType::kPrefetch:
-        return false;
-      case PreloadingType::kPrerender:
-        return true;
-      case PreloadingType::kUnspecified:
-      case PreloadingType::kPreconnect:
-      case PreloadingType::kNoStatePrefetch:
-      case PreloadingType::kLinkPreview:
-        NOTREACHED();
-    }
+  switch (preload_pipeline_info.planned_max_preloading_type()) {
+    case PreloadingType::kPrefetch:
+      return false;
+    case PreloadingType::kPrerender:
+      return true;
+    case PreloadingType::kUnspecified:
+    case PreloadingType::kPreconnect:
+    case PreloadingType::kNoStatePrefetch:
+    case PreloadingType::kLinkPreview:
+      NOTREACHED();
   }
-
-  return false;
 }
 
 }  // namespace
@@ -446,7 +442,8 @@ PrefetchContainer::PrefetchContainer(
           /*prefetch_document_manager=*/nullptr,
           referring_web_contents.GetBrowserContext()->GetWeakPtr(),
           ukm::kInvalidSourceId,
-          base::MakeRefCounted<PreloadPipelineInfo>(),
+          base::MakeRefCounted<PreloadPipelineInfo>(
+              /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
           std::move(attempt),
           holdback_status_override,
           /*initiator_devtools_navigation_token=*/std::nullopt,
@@ -470,26 +467,28 @@ PrefetchContainer::PrefetchContainer(
     const net::HttpRequestHeaders& additional_headers,
     std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
     base::TimeDelta ttl_in_sec)
-    : PrefetchContainer(GlobalRenderFrameHostId(),
-                        referring_origin,
-                        /*referring_url_hash=*/std::nullopt,
-                        PrefetchContainer::Key(
-                            std::optional<blink::DocumentToken>(std::nullopt),
-                            url),
-                        prefetch_type,
-                        referrer,
-                        std::move(no_vary_search_hint),
-                        /*prefetch_document_manager=*/nullptr,
-                        browser_context->GetWeakPtr(),
-                        ukm::kInvalidSourceId,
-                        base::MakeRefCounted<PreloadPipelineInfo>(),
-                        std::move(attempt),
-                        /*holdback_status_override=*/std::nullopt,
-                        /*initiator_devtools_navigation_token=*/std::nullopt,
-                        additional_headers,
-                        std::move(request_status_listener),
-                        javascript_enabled,
-                        ttl_in_sec) {
+    : PrefetchContainer(
+          GlobalRenderFrameHostId(),
+          referring_origin,
+          /*referring_url_hash=*/std::nullopt,
+          PrefetchContainer::Key(
+              std::optional<blink::DocumentToken>(std::nullopt),
+              url),
+          prefetch_type,
+          referrer,
+          std::move(no_vary_search_hint),
+          /*prefetch_document_manager=*/nullptr,
+          browser_context->GetWeakPtr(),
+          ukm::kInvalidSourceId,
+          base::MakeRefCounted<PreloadPipelineInfo>(
+              /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
+          std::move(attempt),
+          /*holdback_status_override=*/std::nullopt,
+          /*initiator_devtools_navigation_token=*/std::nullopt,
+          additional_headers,
+          std::move(request_status_listener),
+          javascript_enabled,
+          ttl_in_sec) {
   CHECK(!prefetch_type_.IsRendererInitiated());
   CHECK(PrefetchBrowserInitiatedTriggersEnabled());
 }
@@ -534,7 +533,7 @@ PrefetchContainer::PrefetchContainer(
       is_javascript_enabled_(is_javascript_enabled),
       ttl_in_sec_(ttl_in_sec) {
   is_likely_ahead_of_prerender_ =
-      CalculateIsLikelyAheadOfPrerender(attempt_.get());
+      CalculateIsLikelyAheadOfPrerender(*preload_pipeline_info_);
 
   const bool is_reusable = [&]() -> bool {
     if (base::FeatureList::IsEnabled(features::kPrefetchReusable)) {
@@ -2003,44 +2002,31 @@ PrefetchContainer::SinglePrefetch::~SinglePrefetch() {
 
 const char* PrefetchContainer::GetSecPurposeHeaderValue(
     const GURL& request_url) const {
-  auto* attempt = static_cast<PreloadingAttemptImpl*>(attempt_.get());
-  if (attempt) {
-    switch (attempt->planned_max_preloading_type()) {
-      case PreloadingType::kPrefetch:
-        if (IsProxyRequiredForURL(request_url)) {
-          return "prefetch;anonymous-client-ip";
-        } else {
-          return "prefetch";
-        }
-      case PreloadingType::kPrerender:
-        if (IsProxyRequiredForURL(request_url)) {
-          // Note that this path would be reachable if a prefetch ahead of
-          // prerender were triggered with a speculation candidate with
-          // `requires_anonymous_client_ip_when_cross_origin`. But such
-          // Speculation Rules are discarded in blink.
-          //
-          // See
-          // https://github.com/WICG/nav-speculation/blob/main/triggers.md#requirements
-          NOTREACHED();
-        } else {
-          return "prefetch;prerender";
-        }
-      case PreloadingType::kUnspecified:
-      case PreloadingType::kPreconnect:
-      case PreloadingType::kNoStatePrefetch:
-      case PreloadingType::kLinkPreview:
+  switch (preload_pipeline_info_->planned_max_preloading_type()) {
+    case PreloadingType::kPrefetch:
+      if (IsProxyRequiredForURL(request_url)) {
+        return "prefetch;anonymous-client-ip";
+      } else {
+        return "prefetch";
+      }
+    case PreloadingType::kPrerender:
+      if (IsProxyRequiredForURL(request_url)) {
+        // Note that this path would be reachable if a prefetch ahead of
+        // prerender were triggered with a speculation candidate with
+        // `requires_anonymous_client_ip_when_cross_origin`. But such
+        // Speculation Rules are discarded in blink.
+        //
+        // See
+        // https://github.com/WICG/nav-speculation/blob/main/triggers.md#requirements
         NOTREACHED();
-    }
-  } else {
-    // Note that the `PreloadingAttempt` is null means that the initiating
-    // document has gone, which also implies there is no prerender that can use
-    // the result of this prefetch.
-
-    if (IsProxyRequiredForURL(request_url)) {
-      return "prefetch;anonymous-client-ip";
-    } else {
-      return "prefetch";
-    }
+      } else {
+        return "prefetch;prerender";
+      }
+    case PreloadingType::kUnspecified:
+    case PreloadingType::kPreconnect:
+    case PreloadingType::kNoStatePrefetch:
+    case PreloadingType::kLinkPreview:
+      NOTREACHED();
   }
 }
 

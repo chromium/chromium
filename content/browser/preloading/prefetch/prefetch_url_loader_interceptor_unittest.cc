@@ -378,7 +378,6 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
         preloading_data->AddPreloadingAttempt(
             GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type()),
             PreloadingType::kPrefetch, std::move(matcher),
-            /*planned_max_preloading_type=*/std::nullopt,
             web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId()));
 
     attempt->SetSpeculationEagerness(prefetch_type.GetEagerness());
@@ -388,7 +387,9 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
         std::move(prefetch_type), blink::mojom::Referrer(),
         /*no_vary_search_hint=*/std::nullopt,
         /*prefetch_document_manager=*/nullptr,
-        base::MakeRefCounted<PreloadPipelineInfo>(), attempt->GetWeakPtr());
+        base::MakeRefCounted<PreloadPipelineInfo>(
+            /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
+        attempt->GetWeakPtr());
   }
 
   std::unique_ptr<PrefetchContainer> CreateSpeculationRulesPrefetchContainer(

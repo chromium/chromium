@@ -71,7 +71,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageInitiatedPageLoadMetricsBrowserTest,
       preloading_data->AddPreloadingAttempt(
           chrome_preloading_predictor::kOmniboxDirectURLInput,
           content::PreloadingType::kPrerender, same_url_matcher,
-          /*planned_max_preloading_type=*/std::nullopt,
           GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
   PrerenderManager::CreateForWebContents(GetActiveWebContents());
   base::WeakPtr<content::PrerenderHandle> prerender_handle =

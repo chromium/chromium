@@ -258,7 +258,6 @@ NoStatePrefetchManager::StartPrefetchingFromLinkRelPrerender(
     attempt = preloading_data->AddPreloadingAttempt(
         content::preloading_predictor::kLinkRel,
         content::PreloadingType::kNoStatePrefetch, same_url_matcher,
-        /*planned_max_preloading_type=*/std::nullopt,
         triggered_primary_page_source_id);
   }
   return StartPrefetchingWithPreconnectFallback(

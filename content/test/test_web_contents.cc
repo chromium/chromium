@@ -496,7 +496,8 @@ FrameTreeNodeId TestWebContents::AddPrerender(const GURL& url) {
       /*should_prepare_paint_tree=*/false,
       /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/{},
-      base::MakeRefCounted<PreloadPipelineInfo>()));
+      base::MakeRefCounted<PreloadPipelineInfo>(
+          /*planned_max_preloading_type=*/PreloadingType::kPrerender)));
 }
 
 TestRenderFrameHost* TestWebContents::AddPrerenderAndCommitNavigation(

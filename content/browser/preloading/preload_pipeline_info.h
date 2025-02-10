@@ -27,7 +27,17 @@ namespace content {
 class CONTENT_EXPORT PreloadPipelineInfo final
     : public base::RefCounted<PreloadPipelineInfo> {
  public:
-  PreloadPipelineInfo();
+  // `planned_max_preloading_type` is used to determine appropriate HTTP header
+  // value `Sec-Purpose`. A caller must designate max preloading type that it
+  // can trigger with this pipeline. That said, it is possible that other
+  // triggers can use already triggered preloads.
+  //
+  // For example, if a pipeline is triggering prerender, it must create
+  // `PreloadingPipelineInfo` with `kPrerender`, and then trigger prefetch and
+  // prerender with this.
+  //
+  // Currently, only this type of pipeline is allowed: kPrefetch -> kPrerender.
+  explicit PreloadPipelineInfo(PreloadingType planned_max_preloading_type);
 
   // Not movable nor copyable.
   PreloadPipelineInfo(PreloadPipelineInfo&& other) = delete;
@@ -37,6 +47,10 @@ class CONTENT_EXPORT PreloadPipelineInfo final
 
   // TODO(crbug.com/342089492): Add `const base::UnguessableToken& id() const {
   // return id_; }`
+
+  PreloadingType planned_max_preloading_type() const {
+    return planned_max_preloading_type_;
+  }
 
   PreloadingEligibility prefetch_eligibility() const {
     return prefetch_eligibility_;
@@ -55,6 +69,8 @@ class CONTENT_EXPORT PreloadPipelineInfo final
   ~PreloadPipelineInfo();
 
   const base::UnguessableToken id_;
+
+  const PreloadingType planned_max_preloading_type_;
 
   PreloadingEligibility prefetch_eligibility_ =
       PreloadingEligibility::kUnspecified;
