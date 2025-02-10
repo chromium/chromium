@@ -108,6 +108,10 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
 
   web::WebState* GetWebState() const { return web_state_; }
 
+  base::WeakPtr<LensOverlayTabHelper> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   // web::WebStateObserver:
   void WebStateDestroyed(web::WebState* web_state) override;
   void WasShown(web::WebState* web_state) override;
