@@ -258,9 +258,9 @@ class HttpStreamPool::AttemptManager
 
   const QuicSessionAliasKey& quic_session_alias_key() const;
 
-  HttpNetworkSession* http_network_session();
-  SpdySessionPool* spdy_session_pool();
-  QuicSessionPool* quic_session_pool();
+  HttpNetworkSession* http_network_session() const;
+  SpdySessionPool* spdy_session_pool() const;
+  QuicSessionPool* quic_session_pool() const;
 
   HttpStreamPool* pool();
   const HttpStreamPool* pool() const;
@@ -400,7 +400,9 @@ class HttpStreamPool::AttemptManager
       StreamSocketHandle::SocketReuseType reuse_type,
       LoadTimingInfo::ConnectTiming connect_timing);
 
-  void CreateSpdyStreamAndNotify();
+  bool HasAvailableSpdySession() const;
+
+  void CreateSpdyStreamAndNotify(base::WeakPtr<SpdySession> spdy_session);
 
   void CreateQuicStreamAndNotify();
 
@@ -408,8 +410,9 @@ class HttpStreamPool::AttemptManager
                          NextProto negotiated_protocol);
 
   // Called when a SPDY session is ready to use. Cancels in-flight attempts.
-  // Closes idle streams. Completes preconnects.
-  void HandleSpdySessionReady(StreamSocketCloseReason refresh_group_reason);
+  // Closes idle streams. Completes preconnects and jobs.
+  void HandleSpdySessionReady(base::WeakPtr<SpdySession> spdy_session,
+                              StreamSocketCloseReason refresh_group_reason);
 
   // Called when a QUIC session is ready to use. Cancels in-flight attempts.
   // Closes idle streams. Completes preconnects.
@@ -569,9 +572,6 @@ class HttpStreamPool::AttemptManager
   // The current state of TCP/TLS connection attempts.
   TcpBasedAttemptState tcp_based_attempt_state_ =
       TcpBasedAttemptState::kNotStarted;
-
-  // Initialized when one of an attempt is negotiated to use HTTP/2.
-  base::WeakPtr<SpdySession> spdy_session_;
 
   // QUIC version that is known to be used for the destination, usually coming
   // from Alt-Svc.

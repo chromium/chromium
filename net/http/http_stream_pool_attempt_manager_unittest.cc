@@ -2953,6 +2953,104 @@ TEST_F(HttpStreamPoolAttemptManagerTest, CloseIdleSpdySessionWhenPoolStalled) {
       stream_key_a.CalculateSpdySessionKey(), /*is_websocket=*/false));
 }
 
+TEST_F(HttpStreamPoolAttemptManagerTest, SpdySessionBecomeUnavailable) {
+  const HttpStreamKey stream_key =
+      StreamKeyBuilder(kDefaultDestination).Build();
+  http_server_properties()->SetSupportsSpdy(
+      stream_key.destination(), stream_key.network_anonymization_key(),
+      /*supports_spdy=*/true);
+
+  const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  SequencedSocketData data1(reads, writes);
+  socket_factory()->AddSocketDataProvider(&data1);
+  SSLSocketDataProvider ssl1(ASYNC, OK);
+  ssl1.next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(&ssl1);
+
+  // The first request creates an SPDY session.
+  StreamRequester requester1(stream_key);
+  requester1.RequestStream(pool());
+  requester1.WaitForResult();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+  EXPECT_EQ(requester1.negotiated_protocol(), NextProto::kProtoHTTP2);
+
+  // Close the SPDY session.
+  spdy_session_pool()->CloseAllSessions();
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  SequencedSocketData data2(reads, writes);
+  socket_factory()->AddSocketDataProvider(&data2);
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  ssl2.next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(&ssl2);
+
+  // The second request creates another SPDY session.
+  StreamRequester requester2(stream_key);
+  requester2.RequestStream(pool());
+  EXPECT_FALSE(requester2.result().has_value());
+  requester2.WaitForResult();
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
+  EXPECT_EQ(requester2.negotiated_protocol(), NextProto::kProtoHTTP2);
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       SpdySessionBecomeUnavailablePreconnect) {
+  const HttpStreamKey stream_key =
+      StreamKeyBuilder(kDefaultDestination).Build();
+
+  const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  SequencedSocketData data1(reads, writes);
+  socket_factory()->AddSocketDataProvider(&data1);
+  SSLSocketDataProvider ssl1(ASYNC, OK);
+  ssl1.next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(&ssl1);
+
+  // The first preconnect creates an SPDY session.
+  Preconnector preconnector1(kDefaultDestination);
+  preconnector1.Preconnect(pool());
+  preconnector1.WaitForResult();
+  EXPECT_THAT(preconnector1.result(), Optional(IsOk()));
+
+  // Close the SPDY session.
+  spdy_session_pool()->CloseAllSessions();
+  FastForwardUntilNoTasksRemain();
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  SequencedSocketData data2(reads, writes);
+  socket_factory()->AddSocketDataProvider(&data2);
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  ssl2.next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(&ssl2);
+
+  // The second preconnect creates another SPDY session.
+  Preconnector preconnector2(kDefaultDestination);
+  preconnector2.Preconnect(pool());
+  preconnector2.WaitForResult();
+  EXPECT_THAT(preconnector2.result(), Optional(IsOk()));
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest,
        PreconnectRequireHttp11AfterSpdySessionCreated) {
   const MockWrite writes[] = {MockWrite(ASYNC, OK, 1)};
