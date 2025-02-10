@@ -16,6 +16,7 @@
     initial-value: "empty";
   }
   div {
+    --true: true;
     --some-string: attr(data-foo);
     --some-string-list: "https://does-not-exist2.test/404.png" attr(data-foo);
     --some-other-url: attr(data-foo);
@@ -196,4 +197,19 @@
               'image-set(var(--image-set-invalid))',
               'https://does-not-exist.test/404.png',
               'none');
+
+    // Test attr-tainting carries through if() function.
+    test_attr('--x',
+              'image-set(if(style(--true): attr(data-foo);))',
+              'https://does-not-exist.test/404.png',
+              'image-set("https://does-not-exist.test/404.png")');
+    test_attr('background-image',
+              'image-set(if(style(--true): attr(data-foo);))',
+              'https://does-not-exist.test/404.png',
+              'none');
+    test_attr('background-image',
+              'image-set(if(style(--some-string): url(https://does-not-exist.test/404.png);))',
+              'https://does-not-exist.test/404.png',
+              'image-set(url("https://does-not-exist.test/404.png") 1dppx)');
+
 </script>
