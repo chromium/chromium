@@ -885,11 +885,12 @@ export class BrowsingContextImpl {
     cdpCommandPromise: Promise<void>,
     navigationState: NavigationState,
   ) {
+    await Promise.all([navigationState.committed, cdpCommandPromise]);
+
     if (wait === BrowsingContext.ReadinessState.None) {
       return;
     }
 
-    await cdpCommandPromise;
     if (navigationState.isFragmentNavigation === true) {
       // After the cdp command is finished, the `fragmentNavigation` should be already
       // settled. If it's the fragment navigation, wait for the `navigationStatus` to be

@@ -610,17 +610,6 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
             }
         })
 
-    # Assert that the navigation command was finished.
-    response = await read_JSON_message(websocket)
-    assert response == AnyExtending({
-        'id': command_id,
-        'result': {
-            'navigation': ANY_UUID,
-            'url': url_base
-        }
-    })
-    navigation_id = response["result"]["navigation"]
-
     # Assert that the navigation started event was received with the correct
     # navigation id.
     response = await read_JSON_message(websocket)
@@ -629,11 +618,22 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
         "method": "browsingContext.navigationStarted",
         "params": {
             "context": context_id,
-            "navigation": navigation_id,
+            "navigation": ANY_UUID,
             "timestamp": ANY_TIMESTAMP,
             "url": url_base,
         }
     }
+    navigation_id = response["params"]["navigation"]
+
+    # Assert that the navigation command was finished.
+    response = await read_JSON_message(websocket)
+    assert response == AnyExtending({
+        'id': command_id,
+        'result': {
+            'navigation': navigation_id,
+            'url': url_base
+        }
+    })
 
     # Assert that the page is loaded.
     response = await read_JSON_message(websocket)

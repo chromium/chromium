@@ -56,7 +56,7 @@ export class NavigationState {
   loaderId?: string;
   #isInitial: boolean;
   #eventManager: EventManager;
-  #navigated = false;
+  committed = new Deferred<void>();
   isFragmentNavigation?: boolean;
 
   get finished(): Promise<NavigationResult> {
@@ -120,7 +120,7 @@ export class NavigationState {
   }
 
   frameNavigated() {
-    this.#navigated = true;
+    this.committed.resolve();
     if (!this.#isInitial) {
       this.#eventManager.registerEvent(
         {
@@ -134,7 +134,7 @@ export class NavigationState {
   }
 
   fragmentNavigated() {
-    this.#navigated = true;
+    this.committed.resolve();
     this.#finish(new NavigationResult(NavigationEventName.FragmentNavigated));
   }
 
@@ -145,7 +145,7 @@ export class NavigationState {
   fail(message: string) {
     this.#finish(
       new NavigationResult(
-        this.#navigated
+        this.committed.isFinished
           ? NavigationEventName.NavigationAborted
           : NavigationEventName.NavigationFailed,
         message,
