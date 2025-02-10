@@ -115,9 +115,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   NSCache<NSString*, UIImage*>* _cachedImages;
 }
 @synthesize consumer = _consumer;
-@synthesize hasResults = _hasResults;
 @synthesize incognito = _incognito;
-@synthesize open = _open;
 @synthesize presenter = _presenter;
 
 - (instancetype)
@@ -214,7 +212,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   self.nonPedalSuggestions = nil;
   self.currentPedals = nil;
 
-  self.hasResults = hasSuggestions;
   [self.consumer newResultsAvailable];
 
   if (self.debugInfoConsumer) {

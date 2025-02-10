@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_util.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mediator.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -51,7 +52,7 @@ void OmniboxPopupViewIOS::UpdatePopupAppearance() {
 }
 
 bool OmniboxPopupViewIOS::IsOpen() const {
-  return [mediator_ hasResults];
+  return omnibox_autocomplete_controller_.omniboxPopupController.hasSuggestions;
 }
 
 std::u16string OmniboxPopupViewIOS::GetAccessibleButtonTextForResult(
@@ -62,7 +63,7 @@ std::u16string OmniboxPopupViewIOS::GetAccessibleButtonTextForResult(
 #pragma mark - OmniboxPopupProvider
 
 bool OmniboxPopupViewIOS::IsPopupOpen() {
-  return [mediator_ isOpen];
+  return omnibox_autocomplete_controller_.omniboxPopupController.hasSuggestions;
 }
 
 void OmniboxPopupViewIOS::SetTextAlignment(NSTextAlignment alignment) {

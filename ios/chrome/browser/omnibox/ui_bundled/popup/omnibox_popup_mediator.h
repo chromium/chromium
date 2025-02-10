@@ -77,9 +77,6 @@ class Tracker;
 
 @property(nonatomic, readonly, assign) FaviconLoader* faviconLoader;
 
-/// Whether the mediator has results to show.
-@property(nonatomic, assign) BOOL hasResults;
-
 /// Sets the semantic content attribute of the popup content.
 - (void)setSemanticContentAttribute:
     (UISemanticContentAttribute)semanticContentAttribute;
