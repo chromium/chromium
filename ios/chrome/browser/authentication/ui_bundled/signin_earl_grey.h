@@ -129,12 +129,6 @@ class GURL;
 // Induces a GREYAssert if an identity is signed in.
 - (void)verifySignedOut;
 
-// Induces a GREYAssert if the Sync state does not match `enabled`.
-- (void)verifySyncUIEnabled:(BOOL)enabled;
-
-// Induces a GREYAssert if the Sync cell is not hidden.
-- (void)verifySyncUIIsHidden;
-
 - (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled;
 
 // Returns if the data type is enabled for the sync service.

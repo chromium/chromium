@@ -43,7 +43,6 @@ using chrome_test_util::BookmarksNavigationBarBackButton;
 using chrome_test_util::FakeAddAccountScreenCancelButton;
 using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::IdentityChooserScrim;
-using chrome_test_util::ManageSyncSettingsButton;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SecondarySignInButton;
 using chrome_test_util::SettingsDoneButton;

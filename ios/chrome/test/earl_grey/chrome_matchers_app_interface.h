@@ -350,10 +350,6 @@
 // Returns matcher for the Tabs Settings button on the main Settings screen.
 + (id<GREYMatcher>)tabsSettingsButton;
 
-// Returns matcher for the Manage Sync Settings button on the main Settings
-// screen.
-+ (id<GREYMatcher>)manageSyncSettingsButton;
-
 // Returns matcher for the Google Services Settings view.
 + (id<GREYMatcher>)googleServicesSettingsView;
 

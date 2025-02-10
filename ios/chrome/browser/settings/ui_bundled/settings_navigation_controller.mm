@@ -941,10 +941,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self stopSyncSettingsCoordinator];
 }
 
-- (NSString*)manageSyncSettingsCoordinatorTitle {
-  return l10n_util::GetNSString(IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE);
-}
-
 #pragma mark - PasswordsCoordinatorDelegate
 
 - (void)passwordsCoordinatorDidRemove:(PasswordsCoordinator*)coordinator {
