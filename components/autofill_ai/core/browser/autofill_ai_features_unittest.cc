@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -35,7 +36,8 @@ class AutofillPredictionSettingsPolicyTest
   TestingPrefServiceSimple& prefs() { return prefs_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{kAutofillAi};
+  base::test::ScopedFeatureList scoped_feature_list_{
+      autofill::features::kAutofillAiWithDataSchema};
   TestingPrefServiceSimple prefs_;
 };
 
