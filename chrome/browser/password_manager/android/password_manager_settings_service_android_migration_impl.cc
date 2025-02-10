@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/android/password_manager_settings_service_android_impl.h"
+#include "chrome/browser/password_manager/android/password_manager_settings_service_android_migration_impl.h"
 
 #include <optional>
 #include <vector>
@@ -80,6 +80,7 @@ const PrefService::Preference* GetGMSPrefFromSetting(
 // Returns the cross-platform preferences in which password manager settings
 // are stored. These are not directly used on Android when the unified password
 // manager is enabled.
+// TODO(crbug.com/394299374): Remove this after login DB deprecation.
 const PrefService::Preference* GetRegularPrefFromSetting(
     PrefService* pref_service,
     PasswordManagerSetting setting) {
@@ -188,9 +189,10 @@ void MarkSettingsMigrationAsSuccessfulIfNothingToMigrate(PrefService* prefs) {
 
 }  // namespace
 
-PasswordManagerSettingsServiceAndroidImpl::
-    PasswordManagerSettingsServiceAndroidImpl(PrefService* pref_service,
-                                              syncer::SyncService* sync_service)
+PasswordManagerSettingsServiceAndroidMigrationImpl::
+    PasswordManagerSettingsServiceAndroidMigrationImpl(
+        PrefService* pref_service,
+        syncer::SyncService* sync_service)
     : pref_service_(pref_service), sync_service_(sync_service) {
   CHECK(pref_service_);
   bridge_helper_ = PasswordSettingsUpdaterAndroidBridgeHelper::Create();
@@ -199,9 +201,10 @@ PasswordManagerSettingsServiceAndroidImpl::
 }
 
 // Constructor for tests
-PasswordManagerSettingsServiceAndroidImpl::
-    PasswordManagerSettingsServiceAndroidImpl(
-        base::PassKey<class PasswordManagerSettingsServiceAndroidImplBaseTest>,
+PasswordManagerSettingsServiceAndroidMigrationImpl::
+    PasswordManagerSettingsServiceAndroidMigrationImpl(
+        base::PassKey<
+            class PasswordManagerSettingsServiceAndroidMigrationImplBaseTest>,
         PrefService* pref_service,
         syncer::SyncService* sync_service,
         std::unique_ptr<PasswordSettingsUpdaterAndroidBridgeHelper>
@@ -216,14 +219,14 @@ PasswordManagerSettingsServiceAndroidImpl::
   Init();
 }
 
-PasswordManagerSettingsServiceAndroidImpl::
-    ~PasswordManagerSettingsServiceAndroidImpl() {
+PasswordManagerSettingsServiceAndroidMigrationImpl::
+    ~PasswordManagerSettingsServiceAndroidMigrationImpl() {
   if (lifecycle_helper_) {
     lifecycle_helper_->UnregisterObserver();
   }
 }
 
-bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
+bool PasswordManagerSettingsServiceAndroidMigrationImpl::IsSettingEnabled(
     PasswordManagerSetting setting) const {
   const PrefService::Preference* regular_pref =
       GetRegularPrefFromSetting(pref_service_, setting);
@@ -251,14 +254,15 @@ bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
   return android_pref->GetValue()->GetBool();
 }
 
-void PasswordManagerSettingsServiceAndroidImpl::RequestSettingsFromBackend() {
+void PasswordManagerSettingsServiceAndroidMigrationImpl::
+    RequestSettingsFromBackend() {
   if (!UsesUPMBackend()) {
     return;
   }
   FetchSettings();
 }
 
-void PasswordManagerSettingsServiceAndroidImpl::TurnOffAutoSignIn() {
+void PasswordManagerSettingsServiceAndroidMigrationImpl::TurnOffAutoSignIn() {
   if (!UsesUPMBackend()) {
     pref_service_->SetBoolean(
         password_manager::prefs::kCredentialsEnableAutosignin, false);
@@ -280,13 +284,13 @@ void PasswordManagerSettingsServiceAndroidImpl::TurnOffAutoSignIn() {
       account, PasswordManagerSetting::kAutoSignIn, false);
 }
 
-void PasswordManagerSettingsServiceAndroidImpl::Init() {
+void PasswordManagerSettingsServiceAndroidMigrationImpl::Init() {
   CHECK(bridge_helper_);
   // TODO(crbug.com/40282601): Copy the pref values to GMSCore for local users.
   bridge_helper_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
 
   lifecycle_helper_->RegisterObserver(base::BindRepeating(
-      &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
+      &PasswordManagerSettingsServiceAndroidMigrationImpl::OnChromeForegrounded,
       weak_ptr_factory_.GetWeakPtr()));
   is_password_sync_enabled_ = false;
   if (sync_service_) {
@@ -300,7 +304,7 @@ void PasswordManagerSettingsServiceAndroidImpl::Init() {
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
-      base::BindRepeating(&PasswordManagerSettingsServiceAndroidImpl::
+      base::BindRepeating(&PasswordManagerSettingsServiceAndroidMigrationImpl::
                               OnUnenrollmentPreferenceChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 
@@ -310,12 +314,12 @@ void PasswordManagerSettingsServiceAndroidImpl::Init() {
     // there is no reason to create the migration callback.
     if (!pref_service_->GetBoolean(
             password_manager::prefs::kSettingsMigratedToUPMLocal)) {
-      start_migration_callback_ = base::BarrierCallback<
-          PasswordManagerSettingGmsAccessResult>(
-          2,
-          base::BindOnce(
-              &PasswordManagerSettingsServiceAndroidImpl::MigratePrefsIfNeeded,
-              weak_ptr_factory_.GetWeakPtr()));
+      start_migration_callback_ =
+          base::BarrierCallback<PasswordManagerSettingGmsAccessResult>(
+              2, base::BindOnce(
+                     &PasswordManagerSettingsServiceAndroidMigrationImpl::
+                         MigratePrefsIfNeeded,
+                     weak_ptr_factory_.GetWeakPtr()));
     }
   }
 
@@ -330,11 +334,12 @@ void PasswordManagerSettingsServiceAndroidImpl::Init() {
   }
 }
 
-void PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded() {
+void PasswordManagerSettingsServiceAndroidMigrationImpl::
+    OnChromeForegrounded() {
   RequestSettingsFromBackend();
 }
 
-void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueFetched(
+void PasswordManagerSettingsServiceAndroidMigrationImpl::OnSettingValueFetched(
     PasswordManagerSetting setting,
     bool value) {
   UpdateSettingFetchState(setting);
@@ -353,7 +358,7 @@ void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueFetched(
   }
 }
 
-void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueAbsent(
+void PasswordManagerSettingsServiceAndroidMigrationImpl::OnSettingValueAbsent(
     password_manager::PasswordManagerSetting setting) {
   CHECK(bridge_helper_);
   UpdateSettingFetchState(setting);
@@ -373,7 +378,7 @@ void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueAbsent(
   }
 }
 
-void PasswordManagerSettingsServiceAndroidImpl::OnSettingFetchingError(
+void PasswordManagerSettingsServiceAndroidMigrationImpl::OnSettingFetchingError(
     password_manager::PasswordManagerSetting setting,
     AndroidBackendAPIErrorCode api_error_code) {
   CHECK(bridge_helper_);
@@ -388,8 +393,9 @@ void PasswordManagerSettingsServiceAndroidImpl::OnSettingFetchingError(
   }
 }
 
-void PasswordManagerSettingsServiceAndroidImpl::OnSuccessfulSettingChange(
-    password_manager::PasswordManagerSetting setting) {
+void PasswordManagerSettingsServiceAndroidMigrationImpl::
+    OnSuccessfulSettingChange(
+        password_manager::PasswordManagerSetting setting) {
   CHECK(bridge_helper_);
   if (!UsesUPMBackend()) {
     return;
@@ -399,7 +405,7 @@ void PasswordManagerSettingsServiceAndroidImpl::OnSuccessfulSettingChange(
         setting, /*was_successful=*/true));
   }
 }
-void PasswordManagerSettingsServiceAndroidImpl::OnFailedSettingChange(
+void PasswordManagerSettingsServiceAndroidMigrationImpl::OnFailedSettingChange(
     password_manager::PasswordManagerSetting setting,
     AndroidBackendAPIErrorCode api_error_code) {
   CHECK(bridge_helper_);
@@ -414,9 +420,9 @@ void PasswordManagerSettingsServiceAndroidImpl::OnFailedSettingChange(
   }
 }
 
-void PasswordManagerSettingsServiceAndroidImpl::WriteToTheCacheAndRegularPref(
-    PasswordManagerSetting setting,
-    std::optional<bool> value) {
+void PasswordManagerSettingsServiceAndroidMigrationImpl::
+    WriteToTheCacheAndRegularPref(PasswordManagerSetting setting,
+                                  std::optional<bool> value) {
   const PrefService::Preference* android_pref =
       GetGMSPrefFromSetting(pref_service_, setting);
   if (value.has_value()) {
@@ -441,7 +447,7 @@ void PasswordManagerSettingsServiceAndroidImpl::WriteToTheCacheAndRegularPref(
   }
 }
 
-void PasswordManagerSettingsServiceAndroidImpl::OnStateChanged(
+void PasswordManagerSettingsServiceAndroidMigrationImpl::OnStateChanged(
     syncer::SyncService* sync) {
   CHECK(sync);
   // Return early if the setting didn't change and no sync errors were resolved.
@@ -478,8 +484,8 @@ void PasswordManagerSettingsServiceAndroidImpl::OnStateChanged(
   FetchSettings();
 }
 
-void PasswordManagerSettingsServiceAndroidImpl::UpdateSettingFetchState(
-    PasswordManagerSetting received_setting) {
+void PasswordManagerSettingsServiceAndroidMigrationImpl::
+    UpdateSettingFetchState(PasswordManagerSetting received_setting) {
   if (!fetch_after_sync_status_change_in_progress_) {
     return;
   }
@@ -490,7 +496,7 @@ void PasswordManagerSettingsServiceAndroidImpl::UpdateSettingFetchState(
   }
 }
 
-void PasswordManagerSettingsServiceAndroidImpl::FetchSettings() {
+void PasswordManagerSettingsServiceAndroidMigrationImpl::FetchSettings() {
   CHECK(bridge_helper_);
   // This code would not be executed for syncing users who are unenrolled.
   CHECK(!is_password_sync_enabled_ || !IsCurrentUserEvicted(pref_service_));
@@ -513,7 +519,7 @@ void PasswordManagerSettingsServiceAndroidImpl::FetchSettings() {
   }
 }
 
-void PasswordManagerSettingsServiceAndroidImpl::
+void PasswordManagerSettingsServiceAndroidMigrationImpl::
     OnUnenrollmentPreferenceChanged() {
   if (!IsCurrentUserEvicted(pref_service_)) {
     // Perform actions that are usually done on startup, but were skipped
@@ -522,12 +528,13 @@ void PasswordManagerSettingsServiceAndroidImpl::
   }
 }
 
-bool PasswordManagerSettingsServiceAndroidImpl::UsesUPMBackend() const {
+bool PasswordManagerSettingsServiceAndroidMigrationImpl::UsesUPMBackend()
+    const {
   return password_manager_android_util::ShouldUseUpmWiring(sync_service_,
                                                            pref_service_);
 }
 
-void PasswordManagerSettingsServiceAndroidImpl::MigratePrefsIfNeeded(
+void PasswordManagerSettingsServiceAndroidMigrationImpl::MigratePrefsIfNeeded(
     const std::vector<PasswordManagerSettingGmsAccessResult>& results) {
   start_migration_callback_.Reset();
   // Check if migration should happen.
@@ -545,12 +552,12 @@ void PasswordManagerSettingsServiceAndroidImpl::MigratePrefsIfNeeded(
     return;
   }
 
-  migration_finished_callback_ = base::BarrierCallback<
-      PasswordManagerSettingGmsAccessResult>(
-      2,
-      base::BindOnce(
-          &PasswordManagerSettingsServiceAndroidImpl::FinishSettingsMigration,
-          weak_ptr_factory_.GetWeakPtr()));
+  migration_finished_callback_ =
+      base::BarrierCallback<PasswordManagerSettingGmsAccessResult>(
+          2,
+          base::BindOnce(&PasswordManagerSettingsServiceAndroidMigrationImpl::
+                             FinishSettingsMigration,
+                         weak_ptr_factory_.GetWeakPtr()));
 
   for (auto setting : kMigratablePasswordSettings) {
     const PrefService::Preference* regular_pref =
@@ -594,8 +601,9 @@ void PasswordManagerSettingsServiceAndroidImpl::MigratePrefsIfNeeded(
   }
 }
 
-void PasswordManagerSettingsServiceAndroidImpl::FinishSettingsMigration(
-    const std::vector<PasswordManagerSettingGmsAccessResult>& results) {
+void PasswordManagerSettingsServiceAndroidMigrationImpl::
+    FinishSettingsMigration(
+        const std::vector<PasswordManagerSettingGmsAccessResult>& results) {
   migration_finished_callback_.Reset();
   // Check if setting settings prefs failed.
   if (DidAccessingGMSPrefsFailed(results)) {

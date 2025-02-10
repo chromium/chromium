@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_SETTINGS_SERVICE_ANDROID_IMPL_H_
-#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_SETTINGS_SERVICE_ANDROID_IMPL_H_
+#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_SETTINGS_SERVICE_ANDROID_MIGRATION_IMPL_H_
+#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_SETTINGS_SERVICE_ANDROID_MIGRATION_IMPL_H_
 
 #include <memory>
 
@@ -28,16 +28,22 @@ struct PasswordManagerSettingGmsAccessResult {
 // prefs based on settings changes in Google Mobile Services. It also answers
 // password manager prefs queries, taking into account managed prefs and
 // the possibility of communicating with GMS.
-class PasswordManagerSettingsServiceAndroidImpl
+// This service performs migrations and fallbacks to prior versions of
+// the password manager. It should only be used during the mgiration phase.
+// TODO(crbug.com/394547508): Remove this once the login DB and the old
+// password manager are deprecated.
+class PasswordManagerSettingsServiceAndroidMigrationImpl
     : public password_manager::PasswordManagerSettingsService,
       public password_manager::PasswordSettingsUpdaterAndroidReceiverBridge::
           Consumer,
       public syncer::SyncServiceObserver {
  public:
-  PasswordManagerSettingsServiceAndroidImpl(PrefService* pref_service,
-                                            syncer::SyncService* sync_service);
-  PasswordManagerSettingsServiceAndroidImpl(
-      base::PassKey<class PasswordManagerSettingsServiceAndroidImplBaseTest>,
+  PasswordManagerSettingsServiceAndroidMigrationImpl(
+      PrefService* pref_service,
+      syncer::SyncService* sync_service);
+  PasswordManagerSettingsServiceAndroidMigrationImpl(
+      base::PassKey<
+          class PasswordManagerSettingsServiceAndroidMigrationImplBaseTest>,
       PrefService* pref_service,
       syncer::SyncService* sync_service,
       std::unique_ptr<
@@ -45,16 +51,16 @@ class PasswordManagerSettingsServiceAndroidImpl
           bridge_helper,
       std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper);
 
-  PasswordManagerSettingsServiceAndroidImpl(
-      const PasswordManagerSettingsServiceAndroidImpl&) = delete;
-  PasswordManagerSettingsServiceAndroidImpl(
-      PasswordManagerSettingsServiceAndroidImpl&&) = delete;
-  PasswordManagerSettingsServiceAndroidImpl& operator=(
-      const PasswordManagerSettingsServiceAndroidImpl&) = delete;
-  PasswordManagerSettingsServiceAndroidImpl& operator=(
-      const PasswordManagerSettingsServiceAndroidImpl&&) = delete;
+  PasswordManagerSettingsServiceAndroidMigrationImpl(
+      const PasswordManagerSettingsServiceAndroidMigrationImpl&) = delete;
+  PasswordManagerSettingsServiceAndroidMigrationImpl(
+      PasswordManagerSettingsServiceAndroidMigrationImpl&&) = delete;
+  PasswordManagerSettingsServiceAndroidMigrationImpl& operator=(
+      const PasswordManagerSettingsServiceAndroidMigrationImpl&) = delete;
+  PasswordManagerSettingsServiceAndroidMigrationImpl& operator=(
+      const PasswordManagerSettingsServiceAndroidMigrationImpl&&) = delete;
 
-  ~PasswordManagerSettingsServiceAndroidImpl() override;
+  ~PasswordManagerSettingsServiceAndroidMigrationImpl() override;
 
   // PasswordManagerSettingsService implementation
   bool IsSettingEnabled(
@@ -168,8 +174,8 @@ class PasswordManagerSettingsServiceAndroidImpl
   // fetched yet.
   base::flat_set<password_manager::PasswordManagerSetting> awaited_settings_;
 
-  base::WeakPtrFactory<PasswordManagerSettingsServiceAndroidImpl>
+  base::WeakPtrFactory<PasswordManagerSettingsServiceAndroidMigrationImpl>
       weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_SETTINGS_SERVICE_ANDROID_IMPL_H_
+#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_SETTINGS_SERVICE_ANDROID_MIGRATION_IMPL_H_
