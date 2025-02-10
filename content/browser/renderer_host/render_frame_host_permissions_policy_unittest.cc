@@ -10,8 +10,8 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_render_frame_host.h"
-#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/frame/deferred_fetch_policy.mojom-shared.h"
 #include "url/gurl.h"
@@ -109,7 +109,7 @@ class RenderFrameHostPermissionsPolicyTest
     result[0].feature = feature;
     for (auto const& origin : origins) {
       result[0].allowed_origins.emplace_back(
-          *network::OriginWithPossibleWildcards::FromOrigin(
+          *blink::OriginWithPossibleWildcards::FromOrigin(
               url::Origin::Create(GURL(origin))));
     }
     return result;

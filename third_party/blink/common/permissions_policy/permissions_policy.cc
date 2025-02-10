@@ -8,7 +8,6 @@
 #include "base/containers/map_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
@@ -43,7 +42,7 @@ PermissionsPolicy::Allowlist PermissionsPolicy::Allowlist::FromDeclaration(
 }
 
 void PermissionsPolicy::Allowlist::Add(
-    const network::OriginWithPossibleWildcards& origin) {
+    const blink::OriginWithPossibleWildcards& origin) {
   allowed_origins_.push_back(origin);
 }
 
@@ -302,9 +301,9 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForFeature(
       default_allowlist.AddAll();
       break;
     case PermissionsPolicyFeatureDefault::EnableForSelf: {
-      std::optional<network::OriginWithPossibleWildcards>
+      std::optional<blink::OriginWithPossibleWildcards>
           origin_with_possible_wildcards =
-              network::OriginWithPossibleWildcards::FromOrigin(origin_);
+              blink::OriginWithPossibleWildcards::FromOrigin(origin_);
       if (origin_with_possible_wildcards.has_value()) {
         default_allowlist.Add(*origin_with_possible_wildcards);
       }
@@ -404,7 +403,7 @@ PermissionsPolicy::CombinePolicies(
     // Otherwise, we use the intersection of origins in the manifest and the
     // header.
     auto manifest_allowed_origins = base_allowlist->AllowedOrigins();
-    std::vector<network::OriginWithPossibleWildcards> final_allowed_origins;
+    std::vector<blink::OriginWithPossibleWildcards> final_allowed_origins;
     // TODO(https://crbug.com/339404063): consider rewriting this to not be
     // O(N^2).
     for (const auto& origin : manifest_allowed_origins) {

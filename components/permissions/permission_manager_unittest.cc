@@ -28,9 +28,9 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
-#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "url/origin.h"
 
@@ -241,10 +241,10 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     content::RenderFrameHost* current = *rfh;
     auto navigation = content::NavigationSimulator::CreateRendererInitiated(
         current->GetLastCommittedURL(), current);
-    std::vector<network::OriginWithPossibleWildcards> parsed_origins;
+    std::vector<blink::OriginWithPossibleWildcards> parsed_origins;
     for (const std::string& origin : origins)
       parsed_origins.emplace_back(
-          *network::OriginWithPossibleWildcards::FromOrigin(
+          *blink::OriginWithPossibleWildcards::FromOrigin(
               url::Origin::Create(GURL(origin))));
     navigation->SetPermissionsPolicyHeader(
         {{feature, parsed_origins, /*self_if_matches=*/std::nullopt,
@@ -262,7 +262,7 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     if (feature != PermissionsPolicyFeature::kNotFound) {
       frame_policy.emplace_back(
           feature,
-          std::vector{*network::OriginWithPossibleWildcards::FromOrigin(
+          std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(
               url::Origin::Create(origin))},
           /*self_if_matches=*/std::nullopt,
           /*matches_all_origins=*/false,

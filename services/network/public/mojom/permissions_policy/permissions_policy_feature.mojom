@@ -12,7 +12,7 @@ module network.mojom;
 // flags. See renderer/core/permissions_policy/permissions_policy_features.json5 for the
 // feature names which will be recognized in policy declarations.
 // For more details on adding a new permissions policy, see:
-// https://chromium.googlesource.com/chromium/src/+/main/services/network/public/cpp/permissions_policy/README.md
+// https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/common/permissions_policy/README.md
 enum PermissionsPolicyFeature {
   kNotFound = 0,
   // Controls access to media autoplay.

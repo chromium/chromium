@@ -60,11 +60,11 @@
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/ed25519_signature.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
-#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -1274,10 +1274,10 @@ TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyRoundTrip) {
        /*matches_all_origins=*/true,
        /*matches_opaque_src=*/false},
       {network::mojom::PermissionsPolicyFeature::kGamepad,
-       {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+       {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             url::Origin::Create(GURL("https://example.com")),
             /*has_subdomain_wildcard=*/false),
-        *network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        *blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             url::Origin::Create(GURL("https://example.net")),
             /*has_subdomain_wildcard=*/true)},
        /*self_if_matches=*/std::nullopt,
@@ -1304,10 +1304,10 @@ TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyProto) {
        /*matches_all_origins=*/true,
        /*matches_opaque_src=*/false},
       {network::mojom::PermissionsPolicyFeature::kGamepad,
-       {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+       {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             url::Origin::Create(GURL("https://example.com")),
             /*has_subdomain_wildcard=*/false),
-        *network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        *blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             url::Origin::Create(GURL("https://example.net")),
             /*has_subdomain_wildcard=*/true)},
        /*self_if_matches=*/std::nullopt,
