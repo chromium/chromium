@@ -63,8 +63,8 @@ TEST(AutofillEntityTypeTest, NameAsString) {
 TEST(AutofillEntityTypeTest, DisambiguationOrder) {
   using enum AttributeTypeName;
   auto lt = [](AttributeTypeName lhs, AttributeTypeName rhs) {
-    AttributeType::DisambiguationComparator lt;
-    return lt(AttributeType(lhs), AttributeType(rhs));
+    return AttributeType::DisambiguationOrder(AttributeType(lhs),
+                                              AttributeType(rhs));
   };
   EXPECT_TRUE(lt(kPassportName, kPassportCountry));
   EXPECT_TRUE(lt(kPassportCountry, kPassportExpiryDate));

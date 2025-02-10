@@ -61,6 +61,12 @@ class AttributeInstance final {
   // Less-than relation based on the AttributeType.
   struct CompareByType;
 
+  // Comparator that ranks types by their priority for disambiguating different
+  // instances of the same entity type, as specified in the schema.
+  // `DisambiguationOrder(x, y) == true` means `x` has higher priority than `y`.
+  static bool DisambiguationOrder(const AttributeInstance& lhs,
+                                  const AttributeInstance& rhs);
+
   AttributeInstance(AttributeType type, std::string value, Context context);
 
   AttributeInstance(const AttributeInstance&);
