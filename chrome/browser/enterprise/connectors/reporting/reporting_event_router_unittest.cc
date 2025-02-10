@@ -4,10 +4,8 @@
 
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router.h"
 
-#include <cassert>
-
-#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
+#include "chrome/browser/enterprise/connectors/test/mock_realtime_reporting_client.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -16,27 +14,13 @@
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "content/public/test/browser_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_connectors {
 
 namespace {
+
 constexpr char kFakeProfileUsername[] = "Fakeuser";
-
-class MockRealtimeReportingClient : public RealtimeReportingClient {
- public:
-  explicit MockRealtimeReportingClient(content::BrowserContext* context)
-      : RealtimeReportingClient(context) {}
-  MockRealtimeReportingClient(const MockRealtimeReportingClient&) = delete;
-  MockRealtimeReportingClient& operator=(const MockRealtimeReportingClient&) =
-      delete;
-};
-
-std::unique_ptr<KeyedService> GetMockRealtimeReportingClient(
-    content::BrowserContext* profile_) {
-  return std::make_unique<MockRealtimeReportingClient>(profile_);
-}
 
 }  // namespace
 
@@ -52,11 +36,13 @@ class ReportingEventRouterTest : public testing::Test {
         policy::DMToken::CreateValidToken("fake-token"));
 
     RealtimeReportingClientFactory::GetInstance()->SetTestingFactory(
-        profile_, base::BindRepeating(&GetMockRealtimeReportingClient));
+        profile_, base::BindRepeating(&test::MockRealtimeReportingClient::
+                                          CreateMockRealtimeReportingClient));
     reportingEventRouter_ = std::make_unique<ReportingEventRouter>(profile_);
 
-    mockRealtimeReportingClient_ = static_cast<MockRealtimeReportingClient*>(
-        RealtimeReportingClientFactory::GetForProfile(profile_));
+    mockRealtimeReportingClient_ =
+        static_cast<test::MockRealtimeReportingClient*>(
+            RealtimeReportingClientFactory::GetForProfile(profile_));
     mockRealtimeReportingClient_->SetProfileUserNameForTesting(
         kFakeProfileUsername);
   }
@@ -71,7 +57,7 @@ class ReportingEventRouterTest : public testing::Test {
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
-  raw_ptr<MockRealtimeReportingClient> mockRealtimeReportingClient_;
+  raw_ptr<test::MockRealtimeReportingClient> mockRealtimeReportingClient_;
   std::unique_ptr<ReportingEventRouter> reportingEventRouter_;
 };
 

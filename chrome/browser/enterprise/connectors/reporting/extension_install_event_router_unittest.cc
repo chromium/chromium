@@ -10,9 +10,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/enterprise/connectors/test/mock_realtime_reporting_client.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -24,7 +24,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
@@ -47,27 +46,6 @@ constexpr char kFakeExtensionSource[] = "EXTERNAL";
 
 }  // namespace
 
-// A SafeBrowsingDatabaseManager implementation that returns a fixed result for
-// a given URL.
-class MockRealtimeReportingClient : public RealtimeReportingClient {
- public:
-  explicit MockRealtimeReportingClient(content::BrowserContext* context)
-      : RealtimeReportingClient(context) {}
-  MockRealtimeReportingClient(const MockRealtimeReportingClient&) = delete;
-  MockRealtimeReportingClient& operator=(const MockRealtimeReportingClient&) =
-      delete;
-
-  MOCK_METHOD3(ReportRealtimeEvent,
-               void(const std::string&,
-                    const ReportingSettings& settings,
-                    base::Value::Dict event));
-};
-
-std::unique_ptr<KeyedService> CreateMockRealtimeReportingClient(
-    content::BrowserContext* profile_) {
-  return std::make_unique<MockRealtimeReportingClient>(profile_);
-}
-
 class ExtensionInstallEventRouterTest : public testing::Test {
  public:
   ExtensionInstallEventRouterTest()
@@ -80,12 +58,14 @@ class ExtensionInstallEventRouterTest : public testing::Test {
         policy::DMToken::CreateValidToken("fake-token"));
 
     RealtimeReportingClientFactory::GetInstance()->SetTestingFactory(
-        profile_, base::BindRepeating(&CreateMockRealtimeReportingClient));
+        profile_, base::BindRepeating(&test::MockRealtimeReportingClient::
+                                          CreateMockRealtimeReportingClient));
     extensionInstallEventRouter_ =
         std::make_unique<ExtensionInstallEventRouter>(profile_);
 
-    mockRealtimeReportingClient_ = static_cast<MockRealtimeReportingClient*>(
-        RealtimeReportingClientFactory::GetForProfile(profile_));
+    mockRealtimeReportingClient_ =
+        static_cast<test::MockRealtimeReportingClient*>(
+            RealtimeReportingClientFactory::GetForProfile(profile_));
     mockRealtimeReportingClient_->SetProfileUserNameForTesting(
         kFakeProfileUsername);
 
@@ -129,7 +109,7 @@ class ExtensionInstallEventRouterTest : public testing::Test {
 
   scoped_refptr<extensions::Extension> extension_chrome_;
   ReportingSettings settings;
-  raw_ptr<MockRealtimeReportingClient> mockRealtimeReportingClient_;
+  raw_ptr<test::MockRealtimeReportingClient> mockRealtimeReportingClient_;
   std::unique_ptr<ExtensionInstallEventRouter> extensionInstallEventRouter_;
 };
 
