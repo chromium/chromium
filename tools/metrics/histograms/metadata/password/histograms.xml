@@ -1661,6 +1661,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.FinalPasswordChangeStatus"
+    enum="PasswordChangeFlowState" expires_after="2025-11-30">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    Records the state at which the password change flow was interrupted (success
+    or failed state if the flow completed fully). The metric is logged when
+    password change delegate is being destroyed.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.FirstRendererFillingResult"
     enum="PasswordManagerFirstRendererFillingResult" expires_after="2025-06-22">
   <owner>kazinova@google.com</owner>

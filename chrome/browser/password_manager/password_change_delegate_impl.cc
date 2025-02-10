@@ -194,6 +194,8 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
 }
 
 PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
+  base::UmaHistogramEnumeration(kFinalPasswordChangeStatusHistogram,
+                                current_state_);
   if (auto logger = GetLoggerIfAvailable(originator_)) {
     logger->LogBoolean(
         BrowserSavePasswordProgressLogger::STRING_PASSWORD_CHANGE_FINISHED,
