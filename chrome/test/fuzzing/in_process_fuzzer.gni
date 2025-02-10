@@ -195,10 +195,10 @@ template("in_process_proto_fuzzer") {
         args = [
           "--encode=${invoker.testcase_proto_kind}",
           "-I",
-          rebase_path(root_gen_dir),
+          rebase_path(root_gen_dir, root_build_dir),
           "-I",
-          rebase_path("//"),
-          rebase_path(inputs[0]),
+          rebase_path("//", root_build_dir),
+          rebase_path(inputs[0], root_build_dir),
         ]
 
         deps = []
