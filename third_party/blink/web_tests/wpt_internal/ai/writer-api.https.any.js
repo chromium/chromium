@@ -92,6 +92,20 @@ promise_test(async () => {
 
 promise_test(async (t) => {
   const writer = await ai.writer.create();
+  let result = await writer.write('');
+  assert_equals(result, '');
+  result = await writer.write(' ');
+  assert_equals(result, '');
+}, 'AIWriter.write() with an empty input or whitespace returns an empty text');
+
+promise_test(async (t) => {
+  const writer = await ai.writer.create();
+  const result = await writer.write('hello', {context: ' '});
+  assert_not_equals(result, '');
+}, 'AIWriter.write() with a whitespace context returns a non-empty result');
+
+promise_test(async (t) => {
+  const writer = await ai.writer.create();
   writer.destroy();
   await promise_rejects_dom(t, 'InvalidStateError', writer.write('hello'));
 }, 'AIWriter.write() fails after destroyed');

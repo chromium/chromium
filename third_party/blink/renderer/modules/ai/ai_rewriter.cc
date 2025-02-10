@@ -70,19 +70,28 @@ ScriptPromise<IDLString> AIRewriter::rewrite(
     resolver->Reject(signal->reason(script_state));
     return promise;
   }
-  const String context_string = options->getContextOr(g_empty_string);
 
   if (!remote_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kExceptionMessageRewriterDestroyed);
     return promise;
   }
+
+  String trimmed_input = input.StripWhiteSpace();
+  if (trimmed_input.empty()) {
+    // Echo input consisting of only whitespace, unlike Writer or Summarizer.
+    resolver->Resolve(input);
+    return promise;
+  }
+
+  const String trimmed_context =
+      options->getContextOr(g_empty_string).StripWhiteSpace();
   auto pending_remote = CreateModelExecutionResponder(
       script_state, signal, resolver, task_runner_,
       AIMetrics::AISessionType::kRewriter,
       /*complete_callback=*/base::DoNothing(),
       /*overflow_callback=*/base::DoNothing());
-  remote_->Rewrite(input, context_string, std::move(pending_remote));
+  remote_->Rewrite(trimmed_input, trimmed_context, std::move(pending_remote));
   return promise;
 }
 
@@ -107,20 +116,27 @@ ReadableStream* AIRewriter::rewriteStreaming(
     return nullptr;
   }
 
-  const String context_string = options->getContextOr(g_empty_string);
-
   if (!remote_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kExceptionMessageRewriterDestroyed);
     return nullptr;
   }
+
+  String trimmed_input = input.StripWhiteSpace();
+  if (trimmed_input.empty()) {
+    return CreateEmptyReadableStream(script_state,
+                                     AIMetrics::AISessionType::kRewriter);
+  }
+
+  const String trimmed_context =
+      options->getContextOr(g_empty_string).StripWhiteSpace();
   auto [readable_stream, pending_remote] =
       CreateModelExecutionStreamingResponder(
           script_state, signal, task_runner_,
           AIMetrics::AISessionType::kRewriter,
           /*complete_callback=*/base::DoNothing(),
           /*overflow_callback=*/base::DoNothing());
-  remote_->Rewrite(input, context_string, std::move(pending_remote));
+  remote_->Rewrite(trimmed_input, trimmed_context, std::move(pending_remote));
   return readable_stream;
 }
 

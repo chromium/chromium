@@ -36,11 +36,11 @@ class AIWriter final : public ScriptWrappable, public ExecutionContextClient {
 
   // ai_writer.idl implementation.
   ScriptPromise<IDLString> write(ScriptState* script_state,
-                                 const String& input,
+                                 const String& writing_task,
                                  const AIWriterWriteOptions* options,
                                  ExceptionState& exception_state);
   ReadableStream* writeStreaming(ScriptState* script_state,
-                                 const String& input,
+                                 const String& writing_task,
                                  const AIWriterWriteOptions* options,
                                  ExceptionState& exception_state);
   void destroy(ScriptState* script_state, ExceptionState& exception_state);
