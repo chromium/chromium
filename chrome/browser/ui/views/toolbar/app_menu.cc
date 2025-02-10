@@ -1358,6 +1358,7 @@ void AppMenu::OnMenuClosed(views::MenuItemView* menu) {
     if (service) {
       service->RemoveObserver(this);
     }
+    bookmark_menu_delegate_.reset();
   }
 
   if (selected_menu_model_) {
