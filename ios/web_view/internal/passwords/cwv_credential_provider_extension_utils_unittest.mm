@@ -13,6 +13,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
@@ -118,7 +119,7 @@ TEST_F(CWVCredentialProviderExtensionUtilsTest, GenerateRandomPassword) {
     base::RunLoop().RunUntilIdle();
     return completion_handler_called;
   }));
-  [mock verify];
+  EXPECT_OCMOCK_VERIFY(mock);
 }
 
 }  // namespace ios_web_view
