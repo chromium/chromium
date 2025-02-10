@@ -518,6 +518,15 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   if (self.hideHeaderOnTallContent) {
     [self updateActionButtonsAndPushUpScrollViewIfMandatory];
   }
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = @[
+      UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class,
+      UITraitPreferredContentSizeCategory.class
+    ];
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateUIOnTraitChange)];
+  }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -694,22 +703,16 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
 #pragma mark - UITraitEnvironment
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
 
-  // Reset the title font and the learn more text to make sure that they are
-  // properly scaled. Nothing will be done for the Read More text if the
-  // bottom is reached.
-  self.titleLabel.font = GetFRETitleFont(self.titleLabelFontTextStyle);
-  [self setReadMoreText];
-
-  // Update the primary button once the layout changes take effect to have the
-  // right measurements to evaluate the scroll position.
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self updateViewsOnScrollViewUpdate];
-    [self hideHeaderOnTallContentIfNeeded];
-  });
+  [self updateUIOnTraitChange];
 }
+#endif
 
 #pragma mark - Accessors
 
@@ -1534,6 +1537,23 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   if (_actionButtonsStackView) {
     _actionButtonsStackView.alpha = alpha;
   }
+}
+
+// Updates certain UI elements when changes in the device's UI traits have been
+// observed.
+- (void)updateUIOnTraitChange {
+  // Reset the title font and the learn more text to make sure that they are
+  // properly scaled. Nothing will be done for the Read More text if the
+  // bottom is reached.
+  self.titleLabel.font = GetFRETitleFont(self.titleLabelFontTextStyle);
+  [self setReadMoreText];
+
+  // Update the primary button once the layout changes take effect to have the
+  // right measurements to evaluate the scroll position.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self updateViewsOnScrollViewUpdate];
+    [self hideHeaderOnTallContentIfNeeded];
+  });
 }
 
 #pragma mark - UIScrollViewDelegate
