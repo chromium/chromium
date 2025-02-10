@@ -8,6 +8,8 @@
 
 #import <optional>
 
+#import "base/debug/crash_logging.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/logging.h"
@@ -87,12 +89,19 @@ web::WebFrame* GetFrameInContentWorld(std::string frame_id,
 // `remote_frame_token` in autofill::ChildFrameRegistrar.
 std::optional<LocalFrameToken> LookupLocalFrame(std::string remote_frame_token,
                                                 web::WebState* web_state) {
-  std::optional<base::UnguessableToken> remote =
-      autofill::DeserializeJavaScriptFrameId(remote_frame_token);
+  if (std::optional<base::UnguessableToken> remote =
+          autofill::DeserializeJavaScriptFrameId(remote_frame_token)) {
+    auto* registrar =
+        autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state);
+    return registrar->LookupChildFrame(autofill::RemoteFrameToken(*remote));
+  }
 
-  auto* registrar =
-      autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state);
-  return registrar->LookupChildFrame(autofill::RemoteFrameToken(*remote));
+  SCOPED_CRASH_KEY_STRING32(/*category=*/"FormSubmission",
+                            /*name=*/"remote_frame_token",
+                            /*value=*/remote_frame_token);
+  base::debug::DumpWithoutCrashing();
+
+  return std::nullopt;
 }
 
 // Finds the WebFrame in the isolated content world corresponding to a page
