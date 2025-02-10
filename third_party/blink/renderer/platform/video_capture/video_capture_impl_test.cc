@@ -811,37 +811,6 @@ TEST_F(VideoCaptureImplTest, StartTimeout) {
       media::VideoCaptureError::kVideoCaptureImplTimedOutOnStart, 1);
 }
 
-TEST_F(VideoCaptureImplTest, StartTimeout_FeatureDisabled) {
-  base::HistogramTester histogram_tester;
-  feature_list_.InitAndDisableFeature(kTimeoutHangingVideoCaptureStarts);
-
-  EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
-  ON_CALL(mock_video_capture_host_, DoStart(_, _, _))
-      .WillByDefault(InvokeWithoutArgs([]() {
-        // Do nothing.
-      }));
-
-  StartCapture(0, params_small_);
-  // Wait past the deadline, nothing should happen.
-  task_environment_.FastForwardBy(2 * VideoCaptureImpl::kCaptureStartTimeout);
-
-  // Finally callback that the capture has started, should respond.
-  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STARTED));
-  video_capture_impl_->OnStateChanged(
-      media::mojom::blink::VideoCaptureResult::NewState(
-          media::mojom::VideoCaptureState::STARTED));
-
-  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED));
-  EXPECT_CALL(mock_video_capture_host_, Stop(_));
-  StopCapture(0);
-
-  histogram_tester.ExpectTotalCount("Media.VideoCapture.Start", 1);
-  histogram_tester.ExpectUniqueSample("Media.VideoCapture.StartOutcome",
-                                      VideoCaptureStartOutcome::kStarted, 1);
-  histogram_tester.ExpectUniqueSample("Media.VideoCapture.StartErrorCode",
-                                      media::VideoCaptureError::kNone, 1);
-}
-
 TEST_F(VideoCaptureImplTest, ErrorBeforeStart) {
   base::HistogramTester histogram_tester;
 
