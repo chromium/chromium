@@ -8,6 +8,9 @@
 // Returns whether the lens overlay is enabled.
 bool IsLensOverlayAvailable();
 
+// Whether the landscape orientation is allowed for Lens Overlay.
+bool IsLensOverlayLandscapeOrientationEnabled();
+
 // Returns whether the lens overlay should open navigation in the same tab
 // instead of new tab.
 bool IsLensOverlaySameTabNavigationEnabled();

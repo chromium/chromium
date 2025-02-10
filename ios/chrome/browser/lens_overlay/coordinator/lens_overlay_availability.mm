@@ -41,6 +41,11 @@ bool IsLVFUnifiedExperienceEnabled() {
          base::FeatureList::IsEnabled(kEnableLensViewFinderUnifiedExperience);
 }
 
+bool IsLensOverlayLandscapeOrientationEnabled() {
+  return IsLensOverlayAvailable() &&
+         base::FeatureList::IsEnabled(kLensOverlayEnableLandscapeCompatibility);
+}
+
 LensOverlayOnboardingTreatment GetLensOverlayOnboardingTreatment() {
   std::string featureParam = base::GetFieldTrialParamValueByFeature(
       kLensOverlayAlternativeOnboarding, kLensOverlayOnboardingParam);

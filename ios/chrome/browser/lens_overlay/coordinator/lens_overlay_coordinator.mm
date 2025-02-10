@@ -1082,9 +1082,9 @@ const int kExpectedExitAnimationCount = 2;
     return;
   }
 
-  // The Lens overlay is locked to portrait.  Skip displaying the restoration
+  // The Lens overlay is locked to portrait. Skip displaying the restoration
   // window on landscape to avoid stretching the snapshot.
-  if (IsLandscape(sceneWindow)) {
+  if (IsLandscape(sceneWindow) && !IsLensOverlayLandscapeOrientationEnabled()) {
     return;
   }
 
