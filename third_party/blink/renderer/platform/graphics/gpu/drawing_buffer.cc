@@ -1279,10 +1279,7 @@ bool DrawingBuffer::ReallocateDefaultFramebuffer(const gfx::Size& size,
     // TexStorage is not core in GLES2 (webgl1) and enabling (or emulating) it
     // universally can cause issues with BGRA formats.
     // See: crbug.com/1443160#c38
-    bool use_tex_image =
-        !texture_storage_enabled_ &&
-        base::FeatureList::IsEnabled(
-            features::kUseImageInsteadOfStorageForStagingBuffer);
+    bool use_tex_image = !texture_storage_enabled_;
     if (webgl_version_ == kWebGL1 && requested_format_ == GL_SRGB8_ALPHA8) {
       // On GLES2:
       //   * SRGB_ALPHA_EXT is not a valid internal format for TexStorage2DEXT.
