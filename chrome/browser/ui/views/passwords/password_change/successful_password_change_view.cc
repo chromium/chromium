@@ -201,7 +201,6 @@ SuccessfulPasswordChangeView::SuccessfulPasswordChangeView(
   box_layout->set_cross_axis_alignment(views::LayoutAlignment::kStretch);
   box_layout->SetCollapseMarginsSpacing(true);
   box_layout->set_between_child_spacing(spacing);
-  box_layout->set_inside_border_insets(gfx::Insets::VH(spacing, 0));
   // Set the margins to 0 such that the `root_view` fills the whole page bubble
   // width.
   set_margins(gfx::Insets());

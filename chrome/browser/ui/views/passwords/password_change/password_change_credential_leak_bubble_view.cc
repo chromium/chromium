@@ -32,6 +32,16 @@
 
 using ClosedReason = views::Widget::ClosedReason;
 
+namespace {
+// Returns margins for a dialog.
+gfx::Insets GetDialogInsets() {
+  const auto* const layout_provider = ChromeLayoutProvider::Get();
+  gfx::Insets margins = layout_provider->GetInsetsMetric(views::INSETS_DIALOG);
+  margins.set_top(0);
+  return margins;
+}
+}  // namespace
+
 PasswordChangeCredentialLeakBubbleView::PasswordChangeCredentialLeakBubbleView(
     content::WebContents* web_contents,
     views::View* anchor_view)
@@ -48,7 +58,10 @@ PasswordChangeCredentialLeakBubbleView::PasswordChangeCredentialLeakBubbleView(
   box_layout->set_cross_axis_alignment(views::LayoutAlignment::kStretch);
   box_layout->SetCollapseMarginsSpacing(true);
   box_layout->set_between_child_spacing(spacing);
-  box_layout->set_inside_border_insets(gfx::Insets::VH(spacing, 0));
+  box_layout->set_inside_border_insets(GetDialogInsets());
+  // Set the margins to 0 such that the `root_view` fills the whole page bubble
+  // width.
+  set_margins(gfx::Insets());
 
   AddChildView(views::Builder<views::StyledLabel>()
                    .SetText(controller_.GetDisplayOrigin())
@@ -94,7 +107,7 @@ PasswordChangeCredentialLeakBubbleView::CreateBodyText() {
       /*link_message_id=*/
       IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_SETTINGS_LINK,
       controller_.GetPrimaryAccountEmail(), navigate_to_settings,
-      CONTEXT_DIALOG_BODY_TEXT_SMALL, views::style::STYLE_PRIMARY);
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY);
 }
 
 PasswordBubbleControllerBase*
