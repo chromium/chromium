@@ -315,7 +315,7 @@ WebSocketChannel::ChannelState WebSocketChannel::SendFrame(
       (op_code == WebSocketFrameHeader::kOpCodeContinuation &&
        sending_text_message_)) {
     StreamingUtf8Validator::State state =
-        outgoing_utf8_validator_.AddBytes(buffer->span());
+        outgoing_utf8_validator_.AddBytes(buffer->span().first(buffer_size));
     if (state == StreamingUtf8Validator::INVALID ||
         (state == StreamingUtf8Validator::VALID_MIDPOINT && fin)) {
       // TODO(ricea): Kill renderer.

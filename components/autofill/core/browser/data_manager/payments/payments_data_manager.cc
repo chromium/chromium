@@ -975,14 +975,19 @@ void PaymentsDataManager::NotifyObservers() {
 
 bool PaymentsDataManager::IsCardEligibleForBenefits(
     const CreditCard& card) const {
-  return card.issuer_id() == kAmexCardIssuerId &&
+  return (card.issuer_id() == kAmexCardIssuerId &&
           base::FeatureList::IsEnabled(
-              features::kAutofillEnableCardBenefitsForAmericanExpress);
+              features::kAutofillEnableCardBenefitsForAmericanExpress)) ||
+         (card.issuer_id() == kBmoCardIssuerId &&
+          base::FeatureList::IsEnabled(
+              features::kAutofillEnableCardBenefitsForBmo));
 }
 
 bool PaymentsDataManager::IsCardBenefitsFeatureEnabled() {
   return base::FeatureList::IsEnabled(
-             features::kAutofillEnableCardBenefitsForAmericanExpress);
+             features::kAutofillEnableCardBenefitsForAmericanExpress) ||
+         base::FeatureList::IsEnabled(
+             features::kAutofillEnableCardBenefitsForBmo);
 }
 
 bool PaymentsDataManager::IsCardBenefitsPrefEnabled() const {

@@ -2227,15 +2227,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                     {kBlockingReasonEnum}, {}, {}, {}, FROM_HERE);
 }
 
-// Test for sending JavaScript details where blocking features are used.
-class BackForwardCacheBrowserTestWithJavaScriptDetails
-    : public BackForwardCacheBrowserTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-  }
-};
-
 // Use a blocklisted feature in multiple locations from an external JavaScript
 // file and make sure all the JavaScript location details are captured.
 // TODO(crbug.com/40241677): WebSocket server is flaky Android.
@@ -2245,7 +2236,7 @@ class BackForwardCacheBrowserTestWithJavaScriptDetails
 #else
 #define MAYBE_MultipleBlocksFromJavaScriptFile MultipleBlocksFromJavaScriptFile
 #endif
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        MAYBE_MultipleBlocksFromJavaScriptFile) {
   net::SpawnedTestServer ws_server(net::SpawnedTestServer::TYPE_WS,
                                    net::GetWebSocketTestDataDirectory());
@@ -2314,7 +2305,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
 #define MAYBE_BlockAndUnblockFromJavaScriptFile \
   BlockAndUnblockFromJavaScriptFile
 #endif
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        MAYBE_BlockAndUnblockFromJavaScriptFile) {
   net::SpawnedTestServer ws_server(net::SpawnedTestServer::TYPE_WS,
                                    net::GetWebSocketTestDataDirectory());
@@ -2380,7 +2371,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
 #else
 #define MAYBE_MultipleBlocksFromHTMLFile MultipleBlocksFromHTMLFile
 #endif
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        MAYBE_MultipleBlocksFromHTMLFile) {
   net::SpawnedTestServer ws_server(net::SpawnedTestServer::TYPE_WS,
                                    net::GetWebSocketTestDataDirectory());
@@ -2443,7 +2434,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
 #else
 #define MAYBE_BlockAndUnblockFromHTMLFile BlockAndUnblockFromHTMLFile
 #endif
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        MAYBE_BlockAndUnblockFromHTMLFile) {
   net::SpawnedTestServer ws_server(net::SpawnedTestServer::TYPE_WS,
                                    net::GetWebSocketTestDataDirectory());
@@ -2506,7 +2497,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
 #else
 #define MAYBE_StickyFeaturesWithDetails StickyFeaturesWithDetails
 #endif
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        MAYBE_StickyFeaturesWithDetails) {
   net::SpawnedTestServer ws_server(net::SpawnedTestServer::TYPE_WS,
                                    net::GetWebSocketTestDataDirectory());

@@ -416,8 +416,11 @@ bool ImmersiveModeControllerMac::ShouldMoveChild(views::Widget* child) {
       child->GetNativeWindowProperty(views::kWidgetIdentifierKey);
   if (widget_identifier ==
           constrained_window::kConstrainedWindowWidgetIdentifier ||
-      widget_identifier == kLensOverlayPreselectionWidgetIdentifier ||
-      widget_identifier == glic::kGlicWidgetIdentifier) {
+      widget_identifier == kLensOverlayPreselectionWidgetIdentifier
+#if BUILDFLAG(ENABLE_GLIC)
+      || widget_identifier == glic::kGlicWidgetIdentifier
+#endif
+  ) {
     return true;
   }
 

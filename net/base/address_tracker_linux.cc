@@ -36,7 +36,7 @@
 #include "net/base/network_interfaces_linux.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 namespace net::internal {
@@ -209,8 +209,8 @@ void AddressTrackerLinux::Init() {
   // https://developer.android.com/preview/privacy/mac-address),
   // so AddressTrackerLinux should not be used in later versions
   // of Android.  Chromium code doesn't need it past Android P.
-  DCHECK_LT(base::android::BuildInfo::GetInstance()->sdk_int(),
-            base::android::SDK_VERSION_P);
+  DCHECK_LT(base::android::android_info::sdk_int(),
+            base::android::android_info::SDK_VERSION_P);
 #endif
   netlink_fd_.reset(socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE));
   if (!netlink_fd_.is_valid()) {

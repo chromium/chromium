@@ -7,12 +7,19 @@
 #include <optional>
 #include <utility>
 
+#include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "components/enterprise/common/strings.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
+#include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace policy {
+
+BASE_FEATURE(kUploadRealtimeReportingEventsUsingProto,
+             "UploadRealtimeReportingEventsUsingProto",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char RealtimeReportingJobConfiguration::kContextKey[] = "context";
 const char RealtimeReportingJobConfiguration::kEventListKey[] = "events";
@@ -44,13 +51,35 @@ RealtimeReportingJobConfiguration::RealtimeReportingJobConfiguration(
                                     DMAuth::FromDMToken(client->dm_token()),
                                     server_url,
                                     std::move(callback)) {
-  InitializePayloadInternal(client, include_device_info);
+  if (base::FeatureList::IsEnabled(kUploadRealtimeReportingEventsUsingProto)) {
+    InitializeUploadRequest(client, include_device_info);
+  } else {
+    InitializePayloadInternal(client, include_device_info);
+  }
 }
 
 RealtimeReportingJobConfiguration::~RealtimeReportingJobConfiguration() =
     default;
 
-bool RealtimeReportingJobConfiguration::AddReport(base::Value::Dict report) {
+std::string RealtimeReportingJobConfiguration::GetPayload() {
+  if (base::FeatureList::IsEnabled(kUploadRealtimeReportingEventsUsingProto)) {
+    return upload_request_.SerializeAsString();
+  }
+  return ReportingJobConfigurationBase::GetPayload();
+}
+
+bool RealtimeReportingJobConfiguration::AddRequest(
+    ::chrome::cros::reporting::proto::UploadEventsRequest request) {
+  DCHECK(
+      base::FeatureList::IsEnabled(kUploadRealtimeReportingEventsUsingProto));
+  upload_request_.MergeFrom(request);
+  return true;
+}
+
+bool RealtimeReportingJobConfiguration::AddReportDeprecated(
+    base::Value::Dict report) {
+  DCHECK(
+      !base::FeatureList::IsEnabled(kUploadRealtimeReportingEventsUsingProto));
   base::Value::Dict* context = report.FindDict(kContextKey);
   base::Value::List* events = report.FindList(kEventListKey);
   if (!context || !events) {
@@ -71,6 +100,19 @@ bool RealtimeReportingJobConfiguration::AddReport(base::Value::Dict report) {
     to->Append(std::move(event));
   }
   return true;
+}
+
+void RealtimeReportingJobConfiguration::InitializeUploadRequest(
+    CloudPolicyClient* client,
+    bool include_device_info) {
+  AddParameter("key", google_apis::GetAPIKey());
+  if (include_device_info) {
+    upload_request_.mutable_device()->MergeFrom(
+        DeviceDictionaryBuilder::BuildDeviceProto(client->dm_token(),
+                                                  client->client_id()));
+  }
+  upload_request_.mutable_browser()->MergeFrom(
+      BrowserDictionaryBuilder::BuildBrowserProto(include_device_info));
 }
 
 void RealtimeReportingJobConfiguration::InitializePayloadInternal(
@@ -103,12 +145,25 @@ void RealtimeReportingJobConfiguration::OnBeforeRetryInternal(
     const std::string& response_body) {
   const auto& failedIds = GetFailedUploadIds(response_body);
   if (!failedIds.empty()) {
-    auto* events = payload_.FindList(kEventListKey);
-    // Only keep the elements that temporarily failed their uploads.
-    events->EraseIf([&failedIds](const base::Value& entry) {
-      auto* id = entry.GetDict().FindString(kEventIdKey);
-      return id && failedIds.find(*id) == failedIds.end();
-    });
+    if (base::FeatureList::IsEnabled(
+            kUploadRealtimeReportingEventsUsingProto)) {
+      auto* events = upload_request_.mutable_events();
+      // Events that did not temporarily fail.
+      auto events_to_remove = std::remove_if(
+          events->begin(), events->end(), [&failedIds](const auto& event) {
+            return failedIds.find(event.event_id()) == failedIds.end();
+          });
+      if (events_to_remove != events->end()) {
+        events->erase(events_to_remove, events->end());
+      }
+    } else {
+      auto* events = payload_.FindList(kEventListKey);
+      // Only keep the elements that temporarily failed their uploads.
+      events->EraseIf([&failedIds](const base::Value& entry) {
+        auto* id = entry.GetDict().FindString(kEventIdKey);
+        return id && failedIds.find(*id) == failedIds.end();
+      });
+    }
   }
 }
 

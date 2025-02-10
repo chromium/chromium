@@ -60,10 +60,12 @@ reviewer.
 </variants>
 
 <variants name="DIPSCookiePartitionKeyState">
+  <variant name="NonCanonical"
+      summary="The cookie partition key does not have a canonical host."/>
   <variant name="NonSerializable"
-      summary="The cookie parition key cannot be serialized."/>
+      summary="The cookie partition key cannot be serialized."/>
   <variant name="Serializable"
-      summary="The cookie parition key can be serialized."/>
+      summary="The cookie partition key can be serialized."/>
 </variants>
 
 <variants name="DIPSDatabaseOperation">

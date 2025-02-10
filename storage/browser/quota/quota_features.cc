@@ -38,11 +38,11 @@ constexpr base::FeatureParam<double> kShouldRemainAvailableRatio{
 
 BASE_FEATURE(kEvictOrphanQuotaStorage,
              "EvictOrphanQuotaStorage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEvictStaleQuotaStorage,
              "EvictStaleQuotaStorage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A kill switch for the new reported quota being a static value.
 BASE_FEATURE(kStaticStorageQuota,

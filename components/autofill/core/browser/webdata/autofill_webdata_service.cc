@@ -32,22 +32,14 @@ AutofillWebDataService::AutofillWebDataService(
     : WebDataServiceBase(std::move(wdbs), ui_task_runner),
       ui_task_runner_(std::move(ui_task_runner)),
       autofill_backend_(nullptr) {
-  base::RepeatingCallback<void(syncer::DataType)>
-      on_autofill_changed_by_sync_callback = base::BindRepeating(
-          &AutofillWebDataService::NotifyOnAutofillChangedBySyncOnUISequence,
-          weak_ptr_factory_.GetWeakPtr());
   autofill_backend_ = new AutofillWebDataBackendImpl(
-      wdbs_->GetBackend(), ui_task_runner_, wdbs_->GetDbSequence(),
-      on_autofill_changed_by_sync_callback);
+      wdbs_->GetBackend(), ui_task_runner_, wdbs_->GetDbSequence());
 }
 
 AutofillWebDataService::~AutofillWebDataService() = default;
 
 void AutofillWebDataService::ShutdownOnUISequence() {
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  wdbs_->GetDbSequence()->PostTask(
-      FROM_HERE,
-      BindOnce(&AutofillWebDataBackendImpl::ResetUserData, autofill_backend_));
+  autofill_backend_->ShutdownOnUISequence();
   WebDataServiceBase::ShutdownOnUISequence();
 }
 
@@ -90,30 +82,30 @@ void AutofillWebDataService::RemoveFormValueForElementName(
 }
 
 void AutofillWebDataService::AddAutofillProfile(
-    const AutofillProfile& profile) {
+    const AutofillProfile& profile,
+    base::OnceCallback<void(const AutofillProfileChange&)> on_success) {
   wdbs_->ScheduleDBTask(
-      FROM_HERE, base::BindOnce(&AutofillWebDataBackendImpl::AddAutofillProfile,
-                                autofill_backend_, profile));
-}
-
-void AutofillWebDataService::SetAutofillProfileChangedCallback(
-    base::RepeatingCallback<void(const AutofillProfileChange&)> change_cb) {
-  autofill_backend_->SetAutofillProfileChangedCallback(std::move(change_cb));
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::AddAutofillProfile,
+                     autofill_backend_, profile, std::move(on_success)));
 }
 
 void AutofillWebDataService::UpdateAutofillProfile(
-    const AutofillProfile& profile) {
+    const AutofillProfile& profile,
+    base::OnceCallback<void(const AutofillProfileChange&)> on_success) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::UpdateAutofillProfile,
-                     autofill_backend_, profile));
+                     autofill_backend_, profile, std::move(on_success)));
 }
 
-void AutofillWebDataService::RemoveAutofillProfile(const std::string& guid) {
+void AutofillWebDataService::RemoveAutofillProfile(
+    const std::string& guid,
+    base::OnceCallback<void(const AutofillProfileChange&)> on_success) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::RemoveAutofillProfile,
-                     autofill_backend_, guid));
+                     autofill_backend_, guid, std::move(on_success)));
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetAutofillProfiles(
@@ -415,14 +407,16 @@ void AutofillWebDataService::RemoveObserver(
 
 void AutofillWebDataService::AddObserver(
     AutofillWebDataServiceObserverOnUISequence* observer) {
-  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-  ui_observer_list_.AddObserver(observer);
+  if (autofill_backend_) {
+    autofill_backend_->AddObserver(observer);
+  }
 }
 
 void AutofillWebDataService::RemoveObserver(
     AutofillWebDataServiceObserverOnUISequence* observer) {
-  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-  ui_observer_list_.RemoveObserver(observer);
+  if (autofill_backend_) {
+    autofill_backend_->RemoveObserver(observer);
+  }
 }
 
 base::SupportsUserData* AutofillWebDataService::GetDBUserData() {
@@ -458,13 +452,6 @@ void AutofillWebDataService::AddServerCreditCardForTesting(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::AddServerCreditCardForTesting,
                      autofill_backend_, credit_card));
-}
-
-void AutofillWebDataService::NotifyOnAutofillChangedBySyncOnUISequence(
-    syncer::DataType data_type) {
-  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-  for (auto& ui_observer : ui_observer_list_)
-    ui_observer.OnAutofillChangedBySync(data_type);
 }
 
 }  // namespace autofill

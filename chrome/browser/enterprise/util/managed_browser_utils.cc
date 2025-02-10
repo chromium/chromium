@@ -53,9 +53,11 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/safe_browsing/core/common/features.h"
 
 // Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/enterprise/util/jni_headers/ManagedBrowserUtils_jni.h"
@@ -345,6 +347,44 @@ jboolean JNI_ManagedBrowserUtils_IsProfileReportingEnabled(JNIEnv* env,
                                                            Profile* profile) {
   return profile->GetPrefs()->GetBoolean(
       enterprise_reporting::kCloudProfileReportingEnabled);
+}
+
+// static
+jboolean JNI_ManagedBrowserUtils_IsOnSecurityEventEnterpriseConnectorEnabled(
+    JNIEnv* env,
+    Profile* profile) {
+  DCHECK(profile);
+
+  auto* service =
+      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+          profile);
+  if (!service) {
+    return false;
+  }
+
+  return !service->GetReportingServiceProviderNames().empty();
+}
+
+// static
+jboolean JNI_ManagedBrowserUtils_IsEnterpriseRealTimeUrlCheckModeEnabled(
+    JNIEnv* env,
+    Profile* profile) {
+  DCHECK(profile);
+
+  if (!base::FeatureList::IsEnabled(
+           safe_browsing::kEnterpriseRealTimeUrlCheckOnAndroid)) {
+    return false;
+  }
+
+  auto* service =
+      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+          profile);
+  if (!service) {
+    return false;
+  }
+
+  return service->GetAppliedRealTimeUrlCheck() !=
+         enterprise_connectors::REAL_TIME_CHECK_DISABLED;
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

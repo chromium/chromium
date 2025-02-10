@@ -10,12 +10,18 @@
 #include <optional>
 #include <string>
 
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/i18n/message_formatter.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chromeos/ash/components/test/ash_test_suite.h"
+#include "components/user_manager/user_type.h"
 #include "remoting/base/string_resources.h"
+#include "remoting/host/chromeos/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -33,6 +39,15 @@ namespace {
 using base::test::TestFuture;
 using DialogStyle = It2MeConfirmationDialog::DialogStyle;
 constexpr char kTestingRemoteEmail[] = "remote@gmail.com";
+constexpr char kModalDialogClassName[] = "MessageBoxView";
+constexpr char kTestUserEmail[] = "user@test.com";
+
+// The lock and login screen use the same container for showing the modal
+// dialog.
+ash::ShellWindowId kLockScreen = ash::kShellWindowId_LockSystemModalContainer;
+ash::ShellWindowId kLoginScreen = ash::kShellWindowId_LockSystemModalContainer;
+ash::ShellWindowId kUserSessionScreen =
+    ash::kShellWindowId_SystemModalContainer;
 
 void LoadUiTestResources() {
   base::FilePath ui_test_pak_path;
@@ -40,6 +55,32 @@ void LoadUiTestResources() {
   ui::ResourceBundle::CleanupSharedInstance();
   ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
   ui::ResourceBundle::GetSharedInstance().ReloadLocaleResources("en-US");
+}
+
+gfx::NativeView GetParentContainer(ash::ShellWindowId container) {
+  return ash::Shell::GetContainer(ash::Shell::GetPrimaryRootWindow(),
+                                  container);
+}
+
+gfx::NativeView GetNativeViewByClassName(gfx::NativeView container,
+                                         const std::string& name) {
+  for (auto& child : container->children()) {
+    if (child->GetName() == name) {
+      return child;
+    }
+  }
+
+  return nullptr;
+}
+
+gfx::NativeView GetModalDialogInsideParent(ash::ShellWindowId parent) {
+  return GetNativeViewByClassName(GetParentContainer(parent),
+                                  kModalDialogClassName);
+}
+
+bool DialogVisibleInParentContainer(ash::ShellWindowId parent) {
+  auto dialog = GetModalDialogInsideParent(parent);
+  return dialog != nullptr && dialog->IsVisible();
 }
 
 }  // namespace
@@ -53,12 +94,10 @@ class It2MeConfirmationDialogChromeOSTest
 
     // It2MeConfirmationDialogChromeOS requires the UI resource bundle.
     LoadUiTestResources();
-
-    dialog = CreateDialog(GetParam());
   }
 
   void TearDown() override {
-    dialog.reset();
+    dialog_.reset();
     ash::AshTestBase::TearDown();
   }
 
@@ -124,8 +163,11 @@ class It2MeConfirmationDialogChromeOSTest
     return It2MeConfirmationDialog::ResultCallback();
   }
 
- protected:
-  std::unique_ptr<It2MeConfirmationDialog> dialog;
+  void CreateAndShowDialog(const std::string& remote_user_email,
+                           It2MeConfirmationDialog::ResultCallback callback) {
+    dialog_ = CreateDialog(GetParam());
+    dialog_->Show(remote_user_email, std::move(callback));
+  }
 
  private:
   std::unique_ptr<It2MeConfirmationDialog> CreateDialog(
@@ -133,10 +175,12 @@ class It2MeConfirmationDialogChromeOSTest
     It2MeConfirmationDialogFactory dialog_factory{dialog_style};
     return dialog_factory.Create();
   }
+
+  std::unique_ptr<It2MeConfirmationDialog> dialog_;
 };
 
 TEST_P(It2MeConfirmationDialogChromeOSTest, NotificationShouldHaveDesiredText) {
-  dialog->Show(kTestingRemoteEmail, DoNothingCallback());
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
 
   const message_center::Notification* notification = GetFirstNotification();
   ASSERT_NE(notification, nullptr);
@@ -147,7 +191,7 @@ TEST_P(It2MeConfirmationDialogChromeOSTest, NotificationShouldHaveDesiredText) {
 }
 
 TEST_P(It2MeConfirmationDialogChromeOSTest, NotificationShouldBePersistent) {
-  dialog->Show(kTestingRemoteEmail, DoNothingCallback());
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
 
   const message_center::Notification* notification = GetFirstNotification();
   ASSERT_NE(notification, nullptr);
@@ -157,7 +201,7 @@ TEST_P(It2MeConfirmationDialogChromeOSTest, NotificationShouldBePersistent) {
 
 TEST_P(It2MeConfirmationDialogChromeOSTest,
        NotificationShouldBeShownInDoNotDisturbMode) {
-  dialog->Show(kTestingRemoteEmail, DoNothingCallback());
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
 
   const message_center::Notification* notification = GetFirstNotification();
   ASSERT_NE(notification, nullptr);
@@ -170,7 +214,7 @@ TEST_P(It2MeConfirmationDialogChromeOSTest,
 
 TEST_P(It2MeConfirmationDialogChromeOSTest,
        NotificationShouldHaveConfirmAndCancelButton) {
-  dialog->Show(kTestingRemoteEmail, DoNothingCallback());
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
 
   const message_center::Notification* notification = GetFirstNotification();
   ASSERT_NE(notification, nullptr);
@@ -187,7 +231,7 @@ TEST_P(It2MeConfirmationDialogChromeOSTest,
 TEST_P(It2MeConfirmationDialogChromeOSTest,
        NotificationShouldBeRemovedAndReturnCancelAfterUserCancels) {
   TestFuture<It2MeConfirmationDialog::Result> result_future;
-  dialog->Show(kTestingRemoteEmail, result_future.GetCallback());
+  CreateAndShowDialog(kTestingRemoteEmail, result_future.GetCallback());
   ClickOnFirstNotification(
       l10n_util::GetStringUTF16(IDS_SHARE_CONFIRM_DIALOG_DECLINE));
 
@@ -198,12 +242,121 @@ TEST_P(It2MeConfirmationDialogChromeOSTest,
 TEST_P(It2MeConfirmationDialogChromeOSTest,
        NotificationShouldBeRemovedAndReturnOkAfterUserConfirms) {
   TestFuture<It2MeConfirmationDialog::Result> result_future;
-  dialog->Show(kTestingRemoteEmail, result_future.GetCallback());
+  CreateAndShowDialog(kTestingRemoteEmail, result_future.GetCallback());
   ClickOnFirstNotification(
       l10n_util::GetStringUTF16(IDS_SHARE_CONFIRM_DIALOG_CONFIRM));
 
   EXPECT_EQ(GetVisibleNotificationsCount(), 0);
   EXPECT_EQ(result_future.Get(), It2MeConfirmationDialog::Result::OK);
+}
+
+// TODO(b:390164552) Add test for correct text in message box view.
+class It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled
+    : public It2MeConfirmationDialogChromeOSTest {
+ public:
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        remoting::features::kEnableCrdSharedSessionToUnattendedDevice);
+    It2MeConfirmationDialogChromeOSTest::SetUp();
+  }
+
+  void SimulateDeviceOnLockScreen() {
+    BlockUserSession(UserSessionBlockReason::BLOCKED_BY_LOCK_SCREEN);
+  }
+
+  void SimulateDeviceOnLoginScreen() {
+    BlockUserSession(UserSessionBlockReason::BLOCKED_BY_LOGIN_SCREEN);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       ShowDialogOnLoginScreenIfNoUserIsSignedIn) {
+  SimulateDeviceOnLoginScreen();
+
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
+
+  ASSERT_TRUE(DialogVisibleInParentContainer(kLoginScreen));
+}
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       ShowDialogOnLockScreenIfTheDeviceIsLocked) {
+  SimulateDeviceOnLockScreen();
+
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
+
+  ASSERT_TRUE(DialogVisibleInParentContainer(kLockScreen));
+}
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       ShowDialogOnUserSessionScreenDuringActiveUserSession) {
+  SimulateUserLogin(kTestUserEmail, user_manager::UserType::kRegular);
+
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
+
+  ASSERT_TRUE(DialogVisibleInParentContainer(kUserSessionScreen));
+}
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       DialogShouldMoveToUserSessionScreenOnUserLogin) {
+  SimulateDeviceOnLoginScreen();
+
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
+
+  ASSERT_TRUE(DialogVisibleInParentContainer(kLoginScreen));
+  ASSERT_FALSE(DialogVisibleInParentContainer(kUserSessionScreen));
+
+  SimulateUserLogin(kTestUserEmail, user_manager::UserType::kRegular);
+
+  ASSERT_FALSE(DialogVisibleInParentContainer(kLoginScreen));
+  ASSERT_TRUE(DialogVisibleInParentContainer(kUserSessionScreen));
+}
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       DialogShouldMoveToLoginScreenOnUserLogout) {
+  SimulateUserLogin(kTestUserEmail, user_manager::UserType::kRegular);
+
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
+
+  ASSERT_TRUE(DialogVisibleInParentContainer(kUserSessionScreen));
+  ASSERT_FALSE(DialogVisibleInParentContainer(kLoginScreen));
+
+  ClearLogin();
+
+  ASSERT_FALSE(DialogVisibleInParentContainer(kUserSessionScreen));
+  ASSERT_TRUE(DialogVisibleInParentContainer(kLoginScreen));
+}
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       DialogShouldMoveToUserSessionScreenOnSessionUnlock) {
+  SimulateDeviceOnLockScreen();
+
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
+
+  ASSERT_TRUE(DialogVisibleInParentContainer(kLockScreen));
+  ASSERT_FALSE(DialogVisibleInParentContainer(kUserSessionScreen));
+
+  SimulateUserLogin(kTestUserEmail, user_manager::UserType::kRegular);
+
+  ASSERT_FALSE(DialogVisibleInParentContainer(kLockScreen));
+  ASSERT_TRUE(DialogVisibleInParentContainer(kUserSessionScreen));
+}
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       DialogShouldMoveToLockSessionScreenWhenSessionIsLocked) {
+  SimulateUserLogin(kTestUserEmail, user_manager::UserType::kRegular);
+
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
+
+  ASSERT_TRUE(DialogVisibleInParentContainer(kUserSessionScreen));
+  ASSERT_FALSE(DialogVisibleInParentContainer(kLockScreen));
+
+  SimulateDeviceOnLockScreen();
+
+  ASSERT_FALSE(DialogVisibleInParentContainer(kUserSessionScreen));
+  ASSERT_TRUE(DialogVisibleInParentContainer(kLockScreen));
 }
 
 INSTANTIATE_TEST_SUITE_P(EnterpriseDialog,
@@ -213,5 +366,15 @@ INSTANTIATE_TEST_SUITE_P(EnterpriseDialog,
 INSTANTIATE_TEST_SUITE_P(ConsumerDialog,
                          It2MeConfirmationDialogChromeOSTest,
                          testing::Values(DialogStyle::kConsumer));
+
+INSTANTIATE_TEST_SUITE_P(
+    EnterpriseDialog,
+    It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+    testing::Values(DialogStyle::kEnterprise));
+
+INSTANTIATE_TEST_SUITE_P(
+    ConsumerDialog,
+    It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+    testing::Values(DialogStyle::kConsumer));
 
 }  // namespace remoting

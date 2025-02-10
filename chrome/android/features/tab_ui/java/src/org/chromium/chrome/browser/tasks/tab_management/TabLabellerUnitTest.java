@@ -8,11 +8,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -26,12 +29,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.MessageAttribution;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
@@ -40,6 +45,8 @@ import org.chromium.components.collaboration.messaging.PersistentMessage;
 import org.chromium.components.collaboration.messaging.PersistentNotificationType;
 import org.chromium.components.collaboration.messaging.TabGroupMessageMetadata;
 import org.chromium.components.collaboration.messaging.TabMessageMetadata;
+import org.chromium.components.data_sharing.DataSharingUIDelegate;
+import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 
 import java.util.List;
@@ -56,11 +63,15 @@ public class TabLabellerUnitTest {
     private static final int TAB_ID2 = 2;
 
     @Mock private Profile mProfile;
+    @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
     @Mock private TabListNotificationHandler mTabListNotificationHandler;
     @Mock private MessagingBackendService mMessagingBackendService;
+    @Mock private Callback<Drawable> mAvatarCallback;
+    @Mock private Bitmap mBitmap;
 
     @Captor private ArgumentCaptor<PersistentMessageObserver> mPersistentMessageObserverCaptor;
     @Captor private ArgumentCaptor<Map<Integer, TabCardLabelData>> mLabelDataCaptor;
+    @Captor private ArgumentCaptor<DataSharingAvatarBitmapConfig> mAvatarConfigCaptor;
 
     private final ObservableSupplierImpl<Token> mTabGroupIdSupplier =
             new ObservableSupplierImpl<>();
@@ -73,7 +84,13 @@ public class TabLabellerUnitTest {
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
         mContext = ApplicationProvider.getApplicationContext();
         mTabGroupIdSupplier.set(GROUP_ID1);
-        mTabLabeller = new TabLabeller(mProfile, mTabListNotificationHandler, mTabGroupIdSupplier);
+        mTabLabeller =
+                new TabLabeller(
+                        mProfile,
+                        mContext,
+                        mDataSharingUiDelegate,
+                        mTabListNotificationHandler,
+                        mTabGroupIdSupplier);
     }
 
     private PersistentMessage makeStandardMessage() {
@@ -247,5 +264,30 @@ public class TabLabellerUnitTest {
 
         verify(mTabListNotificationHandler).updateTabCardLabels(mLabelDataCaptor.capture());
         assertContainsLabel(mLabelDataCaptor.getValue(), TAB_ID1, "Added");
+    }
+
+    @Test
+    public void getAsyncImageFactory() {
+        PersistentMessage message = makeStandardMessage();
+        int size = 1;
+        AsyncImageView.Factory factory = mTabLabeller.getAsyncImageFactory(message);
+        factory.get(mAvatarCallback, size, size);
+
+        verify(mDataSharingUiDelegate).getAvatarBitmap(mAvatarConfigCaptor.capture());
+        mAvatarConfigCaptor.getValue().getDataSharingAvatarCallback().onAvatarLoaded(mBitmap);
+        verify(mAvatarCallback).onResult(notNull());
+    }
+
+    @Test
+    public void getAsyncImageFactoryCanceled() {
+        PersistentMessage message = makeStandardMessage();
+        int size = 1;
+        AsyncImageView.Factory factory = mTabLabeller.getAsyncImageFactory(message);
+        Runnable cancelable = factory.get(mAvatarCallback, size, size);
+
+        verify(mDataSharingUiDelegate).getAvatarBitmap(mAvatarConfigCaptor.capture());
+        cancelable.run();
+        mAvatarConfigCaptor.getValue().getDataSharingAvatarCallback().onAvatarLoaded(mBitmap);
+        verify(mAvatarCallback, never()).onResult(any());
     }
 }

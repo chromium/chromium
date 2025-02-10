@@ -1412,6 +1412,12 @@ const char kEnableIsolatedWebAppsDescription[] =
     "Enables experimental support for Isolated Web Apps. "
     "See https://github.com/reillyeon/isolated-web-apps for more information.";
 
+const char kDirectSocketsInSharedWorkersName[] =
+    "Direct Sockets API in Shared Workers";
+const char kDirectSocketsInSharedWorkersDescription[] =
+    "Enable access to the Direct Sockets API in shared workers. See "
+    "https://github.com/WICG/direct-sockets for details.";
+
 #if BUILDFLAG(IS_CHROMEOS)
 const char kEnableIsolatedWebAppUnmanagedInstallName[] =
     "Enable Isolated Web App unmanaged installation";
@@ -4882,6 +4888,12 @@ const char kAllowAllSitesToInitiateMirroringDescription[] =
     "When enabled, allows all websites to request to initiate tab mirroring "
     "via Presentation API. Requires #cast-media-route-provider to also be "
     "enabled";
+
+const char kAXTreeFixingName[] = "AXTree Fixing";
+const char kAXTreeFixingDescription[] =
+    "When enabled, allows Chrome to dynamically fix the AXTree of sites. This "
+    "is experimental and may cause breaking changes to users of assistive "
+    "technology.";
 
 const char kDialMediaRouteProviderName[] =
     "Allow cast device discovery with DIAL protocol";

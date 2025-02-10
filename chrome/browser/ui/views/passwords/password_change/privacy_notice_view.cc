@@ -73,7 +73,6 @@ std::unique_ptr<views::View> CreateThingsToConsiderList() {
       .AddPaddingRow(TableLayout::kFixedSize, related_control_padding)
       .AddRows(1, TableLayout::kFixedSize);
 
-  // TODO (crbug.com/381053884): Add correct icons here.
   CreateRow(
       *table_root_view, views::kPsychiatryIcon,
       IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_PRIVACY_NOTICE_ITEM_EXPERIMENTAL);
@@ -104,6 +103,9 @@ PrivacyNoticeView::PrivacyNoticeView(content::WebContents* web_contents,
                       ChromeLayoutProvider::Get()->GetDistanceMetric(
                           DISTANCE_CONTROL_LIST_VERTICAL)));
   root_view->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  const int spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
+  root_view->SetBetweenChildSpacing(spacing);
 
   root_view->SetBackground(views::CreateThemedRoundedRectBackground(
       ui::kColorSysSurface4,
@@ -112,7 +114,7 @@ PrivacyNoticeView::PrivacyNoticeView(content::WebContents* web_contents,
   root_view->AddChildView(CreateLabel(
       l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_PRIVACY_NOTICE_SUBTITLE),
-      views::style::STYLE_EMPHASIZED));
+      views::style::STYLE_BODY_4_MEDIUM));
   root_view->AddChildView(CreateThingsToConsiderList());
 
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |

@@ -345,6 +345,7 @@
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/border_view.h"
 #include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "ui/views/layout/box_layout_view.h"
 #endif
 
@@ -3963,9 +3964,13 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
             l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_VR_PRESENTING, title);
         break;
       case TabAlertState::GLIC_ACCESSING:
+#if BUILDFLAG(ENABLE_GLIC)
         title =
             l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_GLIC_ACCESSING, title);
         break;
+#else
+        NOTREACHED();
+#endif
     }
   }
 

@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <bitset>
+#include <utility>
 
 #include "base/check.h"
 #include "base/containers/span.h"
@@ -105,7 +106,7 @@ BlockZeroSerialNumberType GetSerialNumberType(
 }
 }  // namespace
 
-EdidParser::EdidParser(std::vector<uint8_t>&& edid_blob, bool is_external)
+EdidParser::EdidParser(std::vector<uint8_t> edid_blob, bool is_external)
     : edid_blob_(std::move(edid_blob)),
       is_external_display_(is_external),
       manufacturer_id_(0),

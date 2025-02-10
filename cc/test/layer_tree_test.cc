@@ -74,7 +74,6 @@ class SynchronousLayerTreeFrameSink : public TestLayerTreeFrameSink {
   SynchronousLayerTreeFrameSink(
       scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider,
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       const viz::RendererSettings& renderer_settings,
       const viz::DebugRendererSettings* const debug_settings,
       TaskRunnerProvider* task_runner_provider,
@@ -84,7 +83,6 @@ class SynchronousLayerTreeFrameSink : public TestLayerTreeFrameSink {
       : TestLayerTreeFrameSink(std::move(compositor_context_provider),
                                std::move(worker_context_provider),
                                /*shared_image_interface=*/nullptr,
-                               gpu_memory_buffer_manager,
                                renderer_settings,
                                debug_settings,
                                task_runner_provider,
@@ -1178,8 +1176,6 @@ void LayerTreeTest::RunTest(CompositorMode mode) {
   image_worker_ = std::make_unique<base::Thread>("ImageWorker");
   ASSERT_TRUE(image_worker_->Start());
 
-  gpu_memory_buffer_manager_ =
-      std::make_unique<gpu::TestGpuMemoryBufferManager>();
   task_graph_runner_ = std::make_unique<TestTaskGraphRunner>();
 
   if (mode == CompositorMode::THREADED) {
@@ -1257,9 +1253,8 @@ std::unique_ptr<TestLayerTreeFrameSink> LayerTreeTest::CreateLayerTreeFrameSink(
   if (layer_tree_host()->GetSettings().using_synchronous_renderer_compositor) {
     return std::make_unique<SynchronousLayerTreeFrameSink>(
         compositor_context_provider, std::move(worker_context_provider),
-        gpu_memory_buffer_manager(), renderer_settings, &debug_settings_,
-        task_runner_provider(), refresh_rate, begin_frame_source_,
-        use_software_renderer());
+        renderer_settings, &debug_settings_, task_runner_provider(),
+        refresh_rate, begin_frame_source_, use_software_renderer());
   }
 
   gpu::SharedImageInterface* shared_image_interface = nullptr;
@@ -1270,9 +1265,9 @@ std::unique_ptr<TestLayerTreeFrameSink> LayerTreeTest::CreateLayerTreeFrameSink(
 
   return std::make_unique<TestLayerTreeFrameSink>(
       compositor_context_provider, std::move(worker_context_provider),
-      shared_image_interface, gpu_memory_buffer_manager(), renderer_settings,
-      &debug_settings_, task_runner_provider(), synchronous_composite,
-      disable_display_vsync, refresh_rate, begin_frame_source_);
+      shared_image_interface, renderer_settings, &debug_settings_,
+      task_runner_provider(), synchronous_composite, disable_display_vsync,
+      refresh_rate, begin_frame_source_);
 }
 
 std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>

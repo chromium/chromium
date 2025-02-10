@@ -2642,13 +2642,6 @@ BASE_FEATURE(kUnloadBlocklisted,
              "UnloadBlocklisted",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Whether to use 'TexImage2D' instead of 'TexStorage2DEXT' when creating a
-// staging texture for |DrawingBuffer|. This is a killswitch; remove when
-// launched.
-BASE_FEATURE(kUseImageInsteadOfStorageForStagingBuffer,
-             "UseImageInsteadOfStorageForStagingBuffer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Uses page viewport instead of frame viewport in the Largest Contentful Paint
 // heuristic where images occupying the full viewport are ignored.
 BASE_FEATURE(kUsePageViewportInLCP,

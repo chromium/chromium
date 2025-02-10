@@ -1312,21 +1312,6 @@ base::CancelableTaskTracker::TaskId HistoryService::GetLastVisitToOrigin(
       std::move(callback));
 }
 
-base::CancelableTaskTracker::TaskId HistoryService::GetLastVisitToURL(
-    const GURL& url,
-    base::Time end_time,
-    GetLastVisitCallback callback,
-    base::CancelableTaskTracker* tracker) {
-  DCHECK(backend_task_runner_) << "History service being called after cleanup";
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return tracker->PostTaskAndReplyWithResult(
-      backend_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&HistoryBackend::GetLastVisitToURL, history_backend_, url,
-                     end_time),
-      std::move(callback));
-}
-
 base::CancelableTaskTracker::TaskId HistoryService::GetDailyVisitsToOrigin(
     const url::Origin& origin,
     base::Time begin_time,

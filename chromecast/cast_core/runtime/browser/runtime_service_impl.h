@@ -20,6 +20,7 @@
 #include "chromecast/cast_core/runtime/browser/runtime_application_service_impl.h"
 #include "components/cast_receiver/browser/public/runtime_application_dispatcher.h"
 #include "components/cast_receiver/common/public/status.h"
+#include "third_party/cast_core/public/src/proto/core/cast_core_service.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/metrics/metrics_recorder.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/runtime/runtime_service.castcore.pb.h"
 
@@ -101,6 +102,13 @@ class RuntimeServiceImpl final
   void OnMetricsRecorderServiceStopped(
       cast::runtime::RuntimeServiceHandler::StopMetricsRecorder::Reactor*
           reactor);
+  void MaybeAuthenticateRuntime(bool enable_grpc_over_tcpip,
+                                const std::string& runtime_id,
+                                const std::string& cast_core_service_endpoint,
+                                const std::string& runtime_auth_token);
+  void OnRuntimeAuthenticated(
+      cast::utils::GrpcStatusOr<cast::core::AuthenticateRuntimeResponse>
+          response_or);
 
   void ResetGrpcServices();
 
@@ -120,6 +128,7 @@ class RuntimeServiceImpl final
   CastRuntimeMetricsRecorder metrics_recorder_;
 
   std::optional<cast::utils::GrpcServer> grpc_server_;
+  std::optional<cast::core::CastCoreServiceStub> cast_core_service_stub_;
   std::optional<cast::metrics::MetricsRecorderServiceStub>
       metrics_recorder_stub_;
   std::optional<CastRuntimeMetricsRecorderService> metrics_recorder_service_;

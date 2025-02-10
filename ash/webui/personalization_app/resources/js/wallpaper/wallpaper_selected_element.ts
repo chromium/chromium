@@ -502,7 +502,7 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
    * Cache the attribution in local storage when attribution is updated
    * Populate the attribution map in local storage when attribution is updated
    */
-  private async onAttributionChanged_(
+  private onAttributionChanged_(
       newAttribution: CurrentAttribution|null,
       oldAttribution: CurrentAttribution|null) {
     const attributionMap =

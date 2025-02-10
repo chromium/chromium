@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/memory/scoped_refptr.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 #include "media/base/decoder_buffer.h"
@@ -55,8 +56,7 @@ scoped_refptr<DecoderBufferBase> FrameGeneratorForTest::Generate() {
         new DecoderBufferAdapter(::media::DecoderBuffer::CreateEOSBuffer()));
   }
 
-  scoped_refptr< ::media::DecoderBuffer> buffer(
-      new ::media::DecoderBuffer(frame_spec.size));
+  auto buffer = base::MakeRefCounted<::media::DecoderBuffer>(frame_spec.size);
 
   // Timestamp.
   buffer->set_timestamp(frame_spec.timestamp);

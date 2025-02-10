@@ -102,7 +102,7 @@ class AudioDeviceFactoryTestingPlatformSupport : public blink::Platform {
       const media::AudioSinkParameters& params) override {
     MockNewAudioRendererSink(source_type, web_frame, params);
 
-    mock_sink_ = new media::MockAudioRendererSink(
+    mock_sink_ = base::MakeRefCounted<media::MockAudioRendererSink>(
         params.device_id,
         params.device_id == kInvalidOutputDeviceId
             ? media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL

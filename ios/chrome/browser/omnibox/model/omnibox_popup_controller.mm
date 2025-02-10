@@ -8,14 +8,21 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller_delegate.h"
 
+@interface OmniboxPopupController ()
+// Redefine as readwrite.
+@property(nonatomic, assign, readwrite) BOOL hasSuggestions;
+@end
+
 @implementation OmniboxPopupController
 
 #pragma mark - OmniboxAutocomplete event
 
 - (void)newResultsAvailable:(const AutocompleteResult&)results
                  isFocusing:(BOOL)isFocusing {
+  BOOL hasSuggestions = !results.empty();
+  self.hasSuggestions = hasSuggestions;
   [self.delegate popupControllerDidUpdateSuggestions:self
-                                      hasSuggestions:!results.empty()
+                                      hasSuggestions:hasSuggestions
                                           isFocusing:isFocusing];
 }
 

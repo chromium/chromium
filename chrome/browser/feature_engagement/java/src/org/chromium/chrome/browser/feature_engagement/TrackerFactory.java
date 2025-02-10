@@ -4,18 +4,19 @@
 
 package org.chromium.chrome.browser.feature_engagement;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feature_engagement.Tracker;
 
 /** This factory creates Tracker for the given {@link Profile}. */
+@NullMarked
 public final class TrackerFactory {
-    private static Tracker sTrackerForTesting;
+    private static @Nullable Tracker sTrackerForTesting;
 
     // Don't instantiate me.
     private TrackerFactory() {}
@@ -27,7 +28,7 @@ public final class TrackerFactory {
      * the already created instance.
      * @return The {@link Tracker} for the given profile object.
      */
-    public static Tracker getTrackerForProfile(Profile profile) {
+    public static Tracker getTrackerForProfile(@Nullable Profile profile) {
         if (sTrackerForTesting != null) return sTrackerForTesting;
         if (profile == null) {
             throw new IllegalArgumentException("Profile is required for retrieving tracker.");

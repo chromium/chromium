@@ -64,10 +64,6 @@ namespace blink {
 
 constexpr int kMaxFirstFrameLogs = 5;
 
-BASE_FEATURE(kTimeoutHangingVideoCaptureStarts,
-             "TimeoutHangingVideoCaptureStarts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 using VideoFrameBufferHandleType = media::mojom::blink::VideoBufferHandle::Tag;
 
 // A collection of all types of handles that we use to reference a camera buffer
@@ -228,7 +224,7 @@ struct VideoCaptureImpl::BufferContext
   void InitializeFromSharedImage(
       media::mojom::blink::SharedImageBufferHandleSetPtr shared_image_handle) {
     shared_image_ = gpu::ClientSharedImage::ImportUnowned(
-        shared_image_handle->shared_image);
+        std::move(shared_image_handle->shared_image));
     shared_image_sync_token_ = shared_image_handle->sync_token;
   }
 
@@ -1125,11 +1121,9 @@ void VideoCaptureImpl::StartCaptureInternal() {
   state_ = VIDEO_CAPTURE_STATE_STARTING;
   OnLog("VideoCaptureImpl changing state to VIDEO_CAPTURE_STATE_STARTING");
 
-  if (base::FeatureList::IsEnabled(kTimeoutHangingVideoCaptureStarts)) {
-    startup_timeout_.Start(FROM_HERE, kCaptureStartTimeout,
-                           base::BindOnce(&VideoCaptureImpl::OnStartTimedout,
-                                          base::Unretained(this)));
-  }
+  startup_timeout_.Start(FROM_HERE, kCaptureStartTimeout,
+                         base::BindOnce(&VideoCaptureImpl::OnStartTimedout,
+                                        base::Unretained(this)));
   start_outcome_reported_ = false;
   base::UmaHistogramBoolean("Media.VideoCapture.Start", true);
 

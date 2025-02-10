@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -49,26 +50,39 @@ void IncognitoMenuView::BuildMenu() {
   int incognito_window_count =
       BrowserList::GetOffTheRecordBrowsersActiveForProfile(
           browser()->profile());
+  std::u16string close_button_title;
+  if (base::FeatureList::IsEnabled(switches::kEnableImprovedGuestProfileMenu)) {
+    close_button_title = l10n_util::GetPluralStringFUTF16(
+        IDS_INCOGNITO_PROFILE_MENU_CLOSE_X_WINDOWS_BUTTON,
+        incognito_window_count);
+    IdentitySectionParams params;
+    params.title = l10n_util::GetStringUTF16(IDS_INCOGNITO_PROFILE_MENU_TITLE);
+    params.profile_image = ui::ImageModel::FromVectorIcon(
+        kIncognitoProfileIcon, ui::kColorAvatarIconIncognito);
+    SetProfileIdentityWithCallToAction(std::move(params));
+    AddBottomMargin();
+  } else {
+    close_button_title =
+        l10n_util::GetStringUTF16(IDS_INCOGNITO_PROFILE_MENU_CLOSE_BUTTON_NEW);
+    SetProfileIdentityInfo(
+        /*profile_name=*/std::u16string(),
+        /*profile_background_color=*/SK_ColorTRANSPARENT,
+        /*edit_button_params=*/std::nullopt,
+        ui::ImageModel::FromVectorIcon(kIncognitoProfileIcon,
+                                       ui::kColorAvatarIconIncognito),
+        ui::ImageModel(),
+        l10n_util::GetStringUTF16(IDS_INCOGNITO_PROFILE_MENU_TITLE),
+        incognito_window_count > 1
+            ? l10n_util::GetPluralStringFUTF16(
+                  IDS_INCOGNITO_WINDOW_COUNT_MESSAGE, incognito_window_count)
+            : std::u16string(),
+        std::u16string(), &kIncognitoMenuArtIcon);
+  }
 
-  SetProfileIdentityInfo(
-      /*profile_name=*/std::u16string(),
-      /*profile_background_color=*/SK_ColorTRANSPARENT,
-      /*edit_button_params=*/std::nullopt,
-      ui::ImageModel::FromVectorIcon(kIncognitoProfileIcon,
-                                     ui::kColorAvatarIconIncognito),
-      ui::ImageModel(),
-      l10n_util::GetStringUTF16(IDS_INCOGNITO_PROFILE_MENU_TITLE),
-      incognito_window_count > 1
-          ? l10n_util::GetPluralStringFUTF16(IDS_INCOGNITO_WINDOW_COUNT_MESSAGE,
-                                             incognito_window_count)
-          : std::u16string(),
-      std::u16string(), &kIncognitoMenuArtIcon);
-
-  AddFeatureButton(
-      l10n_util::GetStringUTF16(IDS_INCOGNITO_PROFILE_MENU_CLOSE_BUTTON_NEW),
-      base::BindRepeating(&IncognitoMenuView::OnExitButtonClicked,
-                          base::Unretained(this)),
-      vector_icons::kCloseIcon);
+  AddFeatureButton(close_button_title,
+                   base::BindRepeating(&IncognitoMenuView::OnExitButtonClicked,
+                                       base::Unretained(this)),
+                   vector_icons::kCloseIcon);
 }
 
 std::u16string IncognitoMenuView::GetAccessibleWindowTitle() const {

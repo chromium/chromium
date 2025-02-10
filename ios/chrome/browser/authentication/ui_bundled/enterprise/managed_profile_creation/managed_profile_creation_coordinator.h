@@ -34,7 +34,8 @@
                                    browser:(Browser*)browser
                  skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration
                 mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault
-    NS_DESIGNATED_INITIALIZER;
+     browsingDataMigrationDisabledByPolicy:
+         (BOOL)browsingDataMigrationDisabledByPolicy NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;

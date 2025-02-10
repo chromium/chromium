@@ -217,7 +217,7 @@ class MediaClientImpl implements MediaClientInterface {
   }
 }
 
-globalThis.addEventListener('load', async () => {
+globalThis.addEventListener('load', () => {
   MediaClientImpl.init();
 });
 

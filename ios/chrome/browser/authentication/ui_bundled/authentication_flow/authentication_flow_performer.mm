@@ -238,8 +238,9 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
                                 viewController:(UIViewController*)viewController
                                        browser:(Browser*)browser
                      skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration
-                    mergeBrowsingDataByDefault:
-                        (BOOL)mergeBrowsingDataByDefault {
+                    mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault
+         browsingDataMigrationDisabledByPolicy:
+             (BOOL)browsingDataMigrationDisabledByPolicy {
   DCHECK(!_managedConfirmationScreenCoordinator);
   DCHECK(!_managedConfirmationAlertCoordinator);
   DCHECK(!_errorAlertCoordinator);
@@ -251,12 +252,14 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
   if (AreSeparateProfilesForManagedAccountsEnabled()) {
     _managedConfirmationScreenCoordinator =
         [[ManagedProfileCreationCoordinator alloc]
-            initWithBaseViewController:viewController
-                             userEmail:userEmail
-                          hostedDomain:hostedDomain
-                               browser:browser
-             skipBrowsingDataMigration:skipBrowsingDataMigration
-            mergeBrowsingDataByDefault:mergeBrowsingDataByDefault];
+                       initWithBaseViewController:viewController
+                                        userEmail:userEmail
+                                     hostedDomain:hostedDomain
+                                          browser:browser
+                        skipBrowsingDataMigration:skipBrowsingDataMigration
+                       mergeBrowsingDataByDefault:mergeBrowsingDataByDefault
+            browsingDataMigrationDisabledByPolicy:
+                browsingDataMigrationDisabledByPolicy];
     _managedConfirmationScreenCoordinator.delegate = self;
     [_managedConfirmationScreenCoordinator start];
     return;
@@ -462,7 +465,7 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
 // Called when separation policies have been fetched, and calls the delegate.
 - (void)didFetchProfileSeparationPolicies:
     (const policy::ProfileSeparationPolicies&)policies {
-  CHECK(_accountLevelSigninRestrictionPolicyFetcher, );
+  CHECK(_accountLevelSigninRestrictionPolicyFetcher);
   _accountLevelSigninRestrictionPolicyFetcher.reset();
   auto profile_separation_data_migration_settings =
       policy::ProfileSeparationDataMigrationSettings::USER_OPT_IN;

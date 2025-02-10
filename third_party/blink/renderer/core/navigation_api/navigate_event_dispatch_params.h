@@ -38,7 +38,7 @@ struct CORE_EXPORT NavigateEventDispatchParams
   NavigateEventDispatchParams(const KURL&, NavigateEventType, WebFrameLoadType);
   ~NavigateEventDispatchParams();
 
-  const KURL url;
+  KURL url;
   const NavigateEventType event_type;
   const WebFrameLoadType frame_load_type;
   UserNavigationInvolvement involvement = UserNavigationInvolvement::kNone;

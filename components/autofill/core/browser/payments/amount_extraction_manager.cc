@@ -11,9 +11,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.h"
+#include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestions_context.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "url/gurl.h"
 
 namespace autofill::payments {
 
@@ -49,6 +52,11 @@ bool AmountExtractionManager::ShouldTriggerAmountExtraction(
   if (context.filling_product != FillingProduct::kCreditCard) {
     return false;
   }
+  // If the webpage is not in the amount extraction allowlist, do not trigger
+  // the search.
+  if (!IsUrlEligibleForAmountExtraction()) {
+    return false;
+  }
 
   // TODO(crbug.com/378531706) check that there is at least one BNPL issuer
   // present.
@@ -75,6 +83,21 @@ void AmountExtractionManager::TriggerCheckoutAmountExtraction() {
           .number_of_ancestor_levels_to_search(),
       base::BindOnce(&AmountExtractionManager::OnCheckoutAmountReceived,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+bool AmountExtractionManager::IsUrlEligibleForAmountExtraction() const {
+  if (AutofillOptimizationGuide* autofill_optimization_guide =
+          autofill_manager_->client().GetAutofillOptimizationGuide()) {
+    const GURL& url =
+        autofill_manager_->client().GetLastCommittedPrimaryMainFrameURL();
+    for (std::string_view issuer : BnplManager::GetSupportedBnplIssuerIds()) {
+      if (autofill_optimization_guide->IsEligibleForBuyNowPayLater(issuer,
+                                                                   url)) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 void AmountExtractionManager::SetSearchRequestPendingForTesting(

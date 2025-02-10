@@ -63,6 +63,14 @@ BnplManager::BnplManager(PaymentsAutofillClient* payments_autofill_client)
 
 BnplManager::~BnplManager() = default;
 
+// static
+const std::array<std::string_view, 2>&
+BnplManager::GetSupportedBnplIssuerIds() {
+  static const std::array<std::string_view, 2> kBnplIssuers = {
+      kBnplAffirmIssuerId, kBnplZipIssuerId};
+  return kBnplIssuers;
+}
+
 void BnplManager::InitBnplFlow(
     uint64_t final_checkout_amount,
     OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback) {

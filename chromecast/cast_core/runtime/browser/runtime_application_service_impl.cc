@@ -214,8 +214,12 @@ void RuntimeApplicationServiceImpl::Load(
     return;
   }
 
-  LOG(INFO) << "Runtime application server started: endpoint="
-            << request.runtime_application_service_info().grpc_endpoint();
+  LOG(INFO) << "Runtime application service started: app_id="
+            << request.application_config().app_id()
+#if DCHECK_IS_ON()
+            << ", endpoint=" << grpc_server_->endpoint()
+#endif  // DCHECK_IS_ON()
+      ;
 
   // TODO(vigeni): Consider extacting this into RuntimeApplicationBase as a
   // mojo.

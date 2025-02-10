@@ -982,11 +982,10 @@ class StateManager : public StateObserver,
                 avatar_toolbar_button_.get());
       }
 
-      if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-        states_[ButtonState::kSigninPending] =
-            std::make_unique<SigninPendingStateProvider>(
-                /*state_observer=*/*this, *profile, *avatar_toolbar_button_);
-      }
+      states_[ButtonState::kSigninPending] =
+          std::make_unique<SigninPendingStateProvider>(
+              /*state_observer=*/*this, *profile, *avatar_toolbar_button_);
+
 #endif
 
       signin::IdentityManager* identity_manager =
@@ -1299,10 +1298,8 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
       break;
     }
     case ButtonState::kShowIdentityName:
-      text = switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-                 ? l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
-                                              GetShortProfileName())
-                 : GetShortProfileName();
+      text = l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                        GetShortProfileName());
       break;
     case ButtonState::kExplicitTextShowing: {
       const internal::ExplicitStateProvider* explicit_state =

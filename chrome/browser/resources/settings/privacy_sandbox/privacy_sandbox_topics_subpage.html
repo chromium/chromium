@@ -89,7 +89,7 @@
     id="topicsToggle"
     pref="{{prefs.privacy_sandbox.m1.topics_enabled}}"
     label="$i18n{topicsPageToggleLabel}"
-    sub-label="$i18n{topicsPageToggleSubLabel}"
+    sub-label="[[adTopicsToggleSubLabel_]]"
     on-settings-boolean-control-change="onToggleChange_">
 </settings-toggle-button>
 <div id="disclaimer">
@@ -101,9 +101,16 @@
     <div id="currentTopicsSection">
       <div id="currentTopicsSectionWrapper" class="hr">
         <h2 id="currentTopicsHeading">$i18n{topicsPageActiveTopicsHeading}</h2>
-        <div id="currentTopicsDescription" class="cr-secondary-text">
-          $i18n{topicsPageActiveTopicsDescription}
-        </div>
+        <template is="dom-if" if="[[shouldShowAdTopicsContentParity_]]">
+          <div id="currentTopicsDescriptionV2" class="cr-secondary-text">
+            $i18n{adTopicsPageActiveTopicsDescription}
+          </div>
+        </template>
+        <template is="dom-if" if="[[!shouldShowAdTopicsContentParity_]]">
+          <div id="currentTopicsDescription" class="cr-secondary-text">
+            $i18n{topicsPageActiveTopicsDescription}
+          </div>
+        </template>
         <template is="dom-if" if="[[isTopicsEnabledAndLoaded_(
             prefs.privacy_sandbox.m1.topics_enabled.value,
             isTopicsListLoaded_)]]" restamp>
@@ -180,9 +187,16 @@
   <div id="footerV2" class="cr-secondary-text hr footer">
     $i18nRaw{adTopicsPageFooterV2Desktop}
   </div>
-  <div id="footerDisclaimer" class="cr-secondary-text footer">
-    $i18nRaw{adTopicsPageDisclaimer}
-  </div>
+  <template is="dom-if" if="[[shouldShowAdTopicsContentParity_]]">
+    <div id="footerDisclaimerV2" class="cr-secondary-text footer">
+      $i18nRaw{adTopicsPageDisclaimerV2Desktop}
+    </div>
+  </template>
+  <template is="dom-if" if="[[!shouldShowAdTopicsContentParity_]]">
+    <div id="footerDisclaimer" class="cr-secondary-text footer">
+      $i18nRaw{adTopicsPageDisclaimer}
+    </div>
+  </template>
 </template>
 <cr-toast id="unblockTopicToast" duration="10000">
   <div id="unblockTopicToastBody">$i18n{unblockTopicToastBody}</div>

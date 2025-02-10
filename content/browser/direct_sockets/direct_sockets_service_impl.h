@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -23,20 +24,23 @@ class NetworkContext;
 
 namespace content {
 
-class DirectSocketsDelegate;
+class SharedWorkerHost;
 
 // Implementation of the DirectSocketsService Mojo service.
 class CONTENT_EXPORT DirectSocketsServiceImpl
     : public blink::mojom::DirectSocketsService {
  public:
-  // TODO(crbug.com/393539884): Support context for shared workers
-  // (RenderProcessHost ID).
-  using Context = std::variant<const raw_ptr<RenderFrameHost>>;
+  using Context = std::variant<const raw_ptr<RenderFrameHost>,
+                               base::WeakPtr<SharedWorkerHost>>;
 
   ~DirectSocketsServiceImpl() override;
 
   static void CreateForFrame(
       RenderFrameHost*,
+      mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver);
+
+  static void CreateForSharedWorker(
+      SharedWorkerHost&,
       mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver);
 
   // blink::mojom::DirectSocketsService:
@@ -68,8 +72,9 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
-  explicit DirectSocketsServiceImpl(RenderFrameHost*);
+  explicit DirectSocketsServiceImpl(Context context);
 
+  // Might return nullptr.
   network::mojom::NetworkContext* GetNetworkContext() const;
 
   void OnResolveCompleteForTCPSocket(

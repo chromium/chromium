@@ -8,9 +8,11 @@ import android.app.Activity;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.modules.test_dummy.TestDummyModuleProvider;
 
 /** Helper activity to launch test dummy module. */
+@NullMarked
 public class TestDummyActivity extends Activity {
     private static final String ENABLE_TEST_DUMMY_MODULE = "enable-test-dummy-module";
 

@@ -413,7 +413,7 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
    * detected, activationCode is set to the QR code's value and the detection
    * stops.
    */
-  private async detectQrCode_(): Promise<void> {
+  private detectQrCode_(): void {
     try {
       this.qrCodeDetectorTimer_ = this.setIntervalFunction_(
           (async () => {

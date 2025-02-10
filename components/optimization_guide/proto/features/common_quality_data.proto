@@ -232,7 +232,7 @@ message ContentNode {
   ContentAttributes content_attributes = 2;
 }
 
-// Next ID: 21
+// Next ID: 22
 message ContentAttributes {
   oneof content_data {
     // Only set if attribute_type is CONTENT_ATTRIBUTE_TEXT.
@@ -274,6 +274,9 @@ message ContentAttributes {
   // This is the geometry of the common_ancestor_dom_node_id.
   Geometry geometry = 4;
 
+  // The interaction information for the content node.
+  InteractionInfo interaction_info = 21;
+
   // These can come from the aria role, the html tag, or are assumed from some
   // properties of the page.
   repeated AnnotatedRole annotated_roles = 15;
@@ -307,10 +310,10 @@ message Geometry {
   // that the node is a header, footer, or sidebar.
   bool is_fixed_or_sticky_position = 3;
 
-  // Whether the content node can scroll in the x direction.
+  // [DEPRECATED] Whether the content node can scroll in the x direction.
   bool scrolls_overflow_x = 4;
 
-  // Whether the content node can scroll in the y direction.
+  // [DEPRECATED] Whether the content node can scroll in the y direction.
   bool scrolls_overflow_y = 5;
 }
 
@@ -322,6 +325,45 @@ message BoundingRect {
   int32 width = 3;
 
   int32 height = 4;
+}
+
+// The interaction information for the content node. This indicates whether the
+// node is interactive and what type of interaction it supports.
+// Next ID: 11
+message InteractionInfo {
+  // Whether the content node can scroll in the x direction.
+  bool scrolls_overflow_x = 1;
+
+  // Whether the content node can scroll in the y direction.
+  bool scrolls_overflow_y = 2;
+
+  // Whether the content node is selectable.
+  bool is_selectable = 3;
+
+  // Whether the content node is editable; i.e. whether the user can type into
+  // it. This refers to the text actually being editable, not whether the
+  // content node is a text field.
+  bool is_editable = 4;
+
+  // Whether the content node can be resized. This is relevant for scroll
+  // containers and iframes which have the CSS resize behavior.
+  bool can_resize_horizontal = 5;
+
+  bool can_resize_vertical = 6;
+
+  // Whether the content node is focusable.
+  bool is_focusable = 7;
+
+  // Whether the content node is focused.
+  bool is_focused = 8;
+
+  // Whether the content node is draggable.
+  bool is_draggable = 9;
+
+  // Whether the content node is clickable. This checks for whether the node is
+  // a clickable control (e.g. form control elements) or has activation
+  // behavior. It also checks for whether the node has a click handler.
+  bool is_clickable = 10;
 }
 
 // Next ID: 5

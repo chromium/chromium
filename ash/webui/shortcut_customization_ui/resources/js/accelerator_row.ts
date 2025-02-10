@@ -107,7 +107,7 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
       getShortcutProvider();
   private isEllipsisActive_: boolean;
 
-  override async connectedCallback(): Promise<void> {
+  override connectedCallback(): void {
     super.connectedCallback();
     this.subcategoryIsLocked = this.lookupManager.isSubcategoryLocked(
         this.lookupManager.getAcceleratorSubcategory(this.source, this.action));

@@ -1961,6 +1961,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "direct-sockets-in-shared-workers",
+    "owners": [ "//content/browser/direct_sockets/OWNERS" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "disable-accelerated-2d-canvas",
     "owners": [ "fserb@chromium.org" ],
     "expiry_milestone": -1
@@ -2453,6 +2458,11 @@
     "name": "enable-automotive-fullscreen-toolbar-improvements",
     "owners": [ "jtanaristy@google.com", "wenyufu@google.com" ],
     "expiry_milestone": 136
+  },
+  {
+    "name": "enable-ax-tree-fixing",
+    "owners": [ "mschillaci@chromium.org", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 150
   },
   {
     "name": "enable-background-blur",
@@ -8584,7 +8594,7 @@
   {
     "name": "tiled-display-support",
     "owners": [ "sukoo@chromium.org", "//ui/display/OWNERS", "chromeos-gfx-compositor@chromium.org" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 145
   },
   {
     "name": "tint-composited-content",

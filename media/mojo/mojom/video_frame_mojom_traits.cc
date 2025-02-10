@@ -281,6 +281,11 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       DLOG(ERROR) << "Failed to get shared image";
       return false;
     }
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
+    if (exported_shared_image) {
+      shared_image = gpu::ClientSharedImage::ImportUnowned(
+          std::move(*exported_shared_image));
+    }
 
     gpu::SyncToken sync_token;
     if (!gpu_memory_buffer_data.ReadSyncToken(&sync_token)) {
@@ -313,12 +318,6 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       return false;
     }
 
-    scoped_refptr<gpu::ClientSharedImage> shared_image;
-    if (exported_shared_image) {
-      shared_image =
-          gpu::ClientSharedImage::ImportUnowned(*exported_shared_image);
-    }
-
     frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
         visible_rect, natural_size, std::move(gpu_memory_buffer), shared_image,
         sync_token, base::NullCallback(), timestamp);
@@ -331,7 +330,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       return false;
     }
     scoped_refptr<gpu::ClientSharedImage> shared_image =
-        gpu::ClientSharedImage::ImportUnowned(exported_shared_image);
+        gpu::ClientSharedImage::ImportUnowned(std::move(exported_shared_image));
 
     gpu::SyncToken sync_token;
     if (!shared_image_data.ReadSyncToken(&sync_token)) {

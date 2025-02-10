@@ -173,6 +173,10 @@
 #include "device/vr/public/cpp/features.h"
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#endif
+
 namespace settings {
 namespace {
 
@@ -720,6 +724,7 @@ void AddDownloadsStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
+#if BUILDFLAG(ENABLE_GLIC)
 void AddGlicStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"glicPageTitle", IDS_SETTINGS_GLIC_PAGE_TITLE},
@@ -749,6 +754,7 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void AddIncompatibleApplicationsStrings(content::WebUIDataSource* html_source) {
@@ -1415,7 +1421,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "autofillCardBenefitsAvailable",
       base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCardBenefitsForAmericanExpress));
+          autofill::features::kAutofillEnableCardBenefitsForAmericanExpress) ||
+          base::FeatureList::IsEnabled(
+              autofill::features::kAutofillEnableCardBenefitsForBmo));
 
   html_source->AddString(
       "cardBenefitsToggleSublabel",
@@ -3739,7 +3747,9 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddCommonStrings(html_source, profile);
   AddDownloadsStrings(html_source);
   AddExtensionsStrings(html_source);
+#if BUILDFLAG(ENABLE_GLIC)
   AddGlicStrings(html_source);
+#endif
   AddPerformanceStrings(html_source);
   AddLanguagesStrings(html_source, profile);
   AddOnStartupStrings(html_source);

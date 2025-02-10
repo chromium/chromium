@@ -29,7 +29,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/scoped_blocking_call.h"
 #include "base/types/expected.h"
 #include "chrome/browser/platform_util_internal.h"
 #include "components/dbus/properties/types.h"
@@ -328,6 +327,7 @@ void OnLaunchOptionsCreated(const std::string& command,
 void RunCommand(const std::string& command,
                 const base::FilePath& working_directory,
                 const std::string& arg) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::nix::CreateLaunchOptionsWithXdgActivation(
       base::BindOnce(&OnLaunchOptionsCreated, command, working_directory, arg));
 }
@@ -345,12 +345,12 @@ void XDGEmail(const std::string& email) {
 namespace internal {
 
 void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
-  // May result in an interactive dialog.
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
   switch (type) {
     case OPEN_FILE:
-      XDGOpen(path.DirName(), path.value());
+      // Launch options with xdg activation token can only be obtained on the UI
+      // thread.
+      content::GetUIThreadTaskRunner()->PostTask(
+          FROM_HERE, base::BindOnce(&XDGOpen, path.DirName(), path.value()));
       break;
     case OPEN_FOLDER:
       // The utility process checks the working directory prior to the
@@ -360,7 +360,10 @@ void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
       // that there remains a TOCTOU race where the directory could be unlinked
       // between the time the utility process changes into the directory and the
       // time the application invoked by xdg-open inspects the path by name.
-      XDGOpen(path, ".");
+      // Launch options with xdg activation token can only be obtained on the UI
+      // thread.
+      content::GetUIThreadTaskRunner()->PostTask(
+          FROM_HERE, base::BindOnce(&XDGOpen, path, "."));
       break;
   }
 }

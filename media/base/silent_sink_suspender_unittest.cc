@@ -9,6 +9,7 @@
 
 #include "media/base/silent_sink_suspender.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_message_loop.h"
@@ -28,7 +29,8 @@ class SilentSinkSuspenderTest : public testing::Test {
                 ChannelLayoutConfig::Mono(),
                 44100,
                 128),
-        mock_sink_(new testing::StrictMock<MockAudioRendererSink>()),
+        mock_sink_(
+            base::MakeRefCounted<testing::StrictMock<MockAudioRendererSink>>()),
         fake_callback_(0.1, params_.sample_rate()),
         temp_bus_(AudioBus::Create(params_)),
         // Set a negative timeout so any silence will suspend immediately.

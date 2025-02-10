@@ -133,7 +133,6 @@ SynchronousLayerTreeFrameSink::SynchronousLayerTreeFrameSink(
     scoped_refptr<cc::RasterContextProviderWrapper>
         worker_context_provider_wrapper,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     uint32_t layer_tree_frame_sink_id,
     std::unique_ptr<viz::BeginFrameSource> synthetic_begin_frame_source,
     SynchronousCompositorRegistry* registry,
@@ -144,7 +143,6 @@ SynchronousLayerTreeFrameSink::SynchronousLayerTreeFrameSink(
     : cc::LayerTreeFrameSink(std::move(context_provider),
                              std::move(worker_context_provider_wrapper),
                              std::move(compositor_task_runner),
-                             gpu_memory_buffer_manager,
                              /*shared_image_interface=*/nullptr),
       layer_tree_frame_sink_id_(layer_tree_frame_sink_id),
       registry_(registry),

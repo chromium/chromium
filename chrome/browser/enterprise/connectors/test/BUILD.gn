@@ -13,6 +13,7 @@ source_set("test_support") {
     "fake_content_analysis_delegate.h",
     "fake_files_request_handler.h",
     "management_context_mixin.h",
+    "mock_realtime_reporting_client.h",
     "test_constants.h",
     "uploader_test_utils.h",
   ]
@@ -23,6 +24,7 @@ source_set("test_support") {
     "fake_content_analysis_delegate.cc",
     "fake_files_request_handler.cc",
     "management_context_mixin.cc",
+    "mock_realtime_reporting_client.cc",
     "test_constants.cc",
     "uploader_test_utils.cc",
   ]

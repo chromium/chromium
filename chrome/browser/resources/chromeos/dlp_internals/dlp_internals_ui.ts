@@ -109,7 +109,7 @@ class DlpInternalsUi extends PolymerElement {
         this.reportingObserver_.$.bindNewPipeAndPassRemote());
   }
 
-  private async fetchClipboardSourceInfo(): Promise<void> {
+  private fetchClipboardSourceInfo(): void {
     this.pageHandler_.getClipboardDataSource()
         .then((value: {source: DataTransferEndpoint|null}) => {
           this.setClipboardInfo(value.source);
@@ -138,7 +138,7 @@ class DlpInternalsUi extends PolymerElement {
     return EndpointTypeMap[type] || 'invalid';
   }
 
-  private async fetchContentRestrictionsInfo(): Promise<void> {
+  private fetchContentRestrictionsInfo(): void {
     this.pageHandler_.getContentRestrictionsInfo()
         .then((value: {webContentsInfo: WebContentsInfo[]}) => {
           this.setWebContentsInfo(value.webContentsInfo);
@@ -165,7 +165,7 @@ class DlpInternalsUi extends PolymerElement {
     }
   }
 
-  private async fetchFilesDatabaseEntries(): Promise<void> {
+  private fetchFilesDatabaseEntries(): void {
     this.pageHandler_.getFilesDatabaseEntries()
         .then((value: {dbEntries: FileDatabaseEntry[]}) => {
           this.setFilesDatabaseEntries(value.dbEntries);

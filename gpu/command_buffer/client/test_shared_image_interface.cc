@@ -325,9 +325,8 @@ void TestSharedImageInterface::UpdateSharedImage(
   DCHECK(shared_images_.find(mailbox) != shared_images_.end());
 }
 
-scoped_refptr<ClientSharedImage>
-TestSharedImageInterface::ImportSharedImage(
-    const ExportedSharedImage& exported_shared_image) {
+scoped_refptr<ClientSharedImage> TestSharedImageInterface::ImportSharedImage(
+    ExportedSharedImage exported_shared_image) {
   shared_images_.insert(exported_shared_image.mailbox_);
 
   return base::WrapRefCounted<ClientSharedImage>(

@@ -1530,6 +1530,12 @@ static bool NeedsEffectIgnoringClipPath(
     return true;
   }
 
+  if (RuntimeEnabledFeatures::RenderSurfaceForScaleTransformEnabled() &&
+      (direct_compositing_reasons &
+       CompositingReason::k2DScaleTransformWithCompositedDescendants)) {
+    return true;
+  }
+
   return false;
 }
 
@@ -1650,6 +1656,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       state.direct_compositing_reasons |=
           (full_context_.direct_compositing_reasons &
            CompositingReason::kAdditionalEffectCompositingTrigger);
+
+      state.direct_compositing_reasons |=
+          (full_context_.direct_compositing_reasons &
+           CompositingReason::k2DScaleTransformWithCompositedDescendants);
 
       // We may begin to composite our subtree prior to an animation starts, but
       // a compositor element ID is only needed when an animation is current.

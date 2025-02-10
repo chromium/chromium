@@ -128,6 +128,7 @@ source_set("entry_point") {
   ]
   deps = [
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",

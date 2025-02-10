@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread.h"
 #include "media/audio/audio_device_description.h"
@@ -61,7 +62,8 @@ class AudioRendererSinkCacheTest : public testing::Test {
   scoped_refptr<media::AudioRendererSink> CreateSink(
       const LocalFrameToken& frame_token,
       const std::string& device_id) {
-    return new testing::NiceMock<media::MockAudioRendererSink>(
+    return base::MakeRefCounted<
+        testing::NiceMock<media::MockAudioRendererSink>>(
         device_id, (device_id == kUnhealthyDeviceId)
                        ? media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL
                        : media::OUTPUT_DEVICE_STATUS_OK);
@@ -149,7 +151,7 @@ TEST_F(AudioRendererSinkCacheTest, UnhealthySinkIsNotCached) {
 // unhealthy.
 TEST_F(AudioRendererSinkCacheTest, UnhealthySinkIsStopped) {
   scoped_refptr<media::MockAudioRendererSink> sink =
-      new media::MockAudioRendererSink(
+      base::MakeRefCounted<media::MockAudioRendererSink>(
           kUnhealthyDeviceId, media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
 
   cache_.reset();  // Destruct first so there's only one cache at a time.

@@ -35,9 +35,9 @@ export async function initializeData(
 }
 
 // Enable or disable ambient mode.
-export async function setAmbientModeEnabled(
+export function setAmbientModeEnabled(
     ambientModeEnabled: boolean, provider: AmbientProviderInterface,
-    store: PersonalizationStore): Promise<void> {
+    store: PersonalizationStore): void {
   provider.setAmbientModeEnabled(ambientModeEnabled);
 
   // Dispatch action to toggle the button to indicate if the ambient mode is

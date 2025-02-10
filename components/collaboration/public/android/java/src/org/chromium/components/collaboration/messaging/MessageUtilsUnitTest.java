@@ -152,7 +152,8 @@ public class MessageUtilsUnitTest {
 
     @Test
     public void testExtractMember() {
-        assertEquals(null, MessageUtils.extractMember(null));
+        assertEquals(null, MessageUtils.extractMember((InstantMessage) null));
+        assertEquals(null, MessageUtils.extractMember((PersistentMessage) null));
 
         InstantMessage message = new InstantMessage();
         assertEquals(null, MessageUtils.extractMember(message));

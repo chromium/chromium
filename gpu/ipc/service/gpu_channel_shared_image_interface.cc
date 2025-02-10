@@ -556,7 +556,7 @@ void GpuChannelSharedImageInterface::ScheduleGpuTask(
 
 scoped_refptr<ClientSharedImage>
 GpuChannelSharedImageInterface::ImportSharedImage(
-    const ExportedSharedImage& exported_shared_image) {
+    ExportedSharedImage exported_shared_image) {
   NOTREACHED();
 }
 

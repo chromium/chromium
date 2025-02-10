@@ -2201,15 +2201,6 @@ HistoryLastVisitResult HistoryBackend::GetLastVisitToOrigin(
           last_visit};
 }
 
-HistoryLastVisitResult HistoryBackend::GetLastVisitToURL(const GURL& url,
-                                                         base::Time end_time) {
-  base::Time last_visit;
-  return {
-      db_ && db_->GetLastVisitToURL(url, end_time, &last_visit),
-      last_visit,
-  };
-}
-
 DailyVisitsResult HistoryBackend::GetDailyVisitsToHost(const GURL& host,
                                                        base::Time begin_time,
                                                        base::Time end_time) {

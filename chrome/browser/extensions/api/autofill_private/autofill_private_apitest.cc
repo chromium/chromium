@@ -48,10 +48,6 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
   AutofillPrivateApiTest& operator=(const AutofillPrivateApiTest&) = delete;
   ~AutofillPrivateApiTest() override = default;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionApiTest::SetUpCommandLine(command_line);
-  }
-
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     content::RunAllPendingInMessageLoop();

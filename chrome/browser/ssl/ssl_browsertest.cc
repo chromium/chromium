@@ -4720,10 +4720,6 @@ class CommonNameMismatchBrowserTest : public CertVerifierBrowserTest {
                                            "Enabled");
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    CertVerifierBrowserTest::SetUpCommandLine(command_line);
-  }
-
   void SetUpOnMainThread() override {
     CertVerifierBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");

@@ -58,6 +58,20 @@ ReportingJobConfigurationBase::DeviceDictionaryBuilder::BuildDeviceDictionary(
 }
 
 // static
+::chrome::cros::reporting::proto::Device
+ReportingJobConfigurationBase::DeviceDictionaryBuilder::BuildDeviceProto(
+    const std::string& dm_token,
+    const std::string& client_id) {
+  ::chrome::cros::reporting::proto::Device device;
+  device.set_dm_token(dm_token);
+  device.set_client_id(client_id);
+  device.set_os_version(GetOSVersion());
+  device.set_os_platform(GetOSPlatform());
+  device.set_name(GetDeviceName());
+  return device;
+}
+
+// static
 std::string
 ReportingJobConfigurationBase::DeviceDictionaryBuilder::GetDMTokenPath() {
   return GetStringPath(kDMToken);
@@ -128,6 +142,24 @@ ReportingJobConfigurationBase::BrowserDictionaryBuilder::BuildBrowserDictionary(
 
   browser_dictionary.Set(kChromeVersion, version_info::GetVersionNumber());
   return browser_dictionary;
+}
+
+// static
+::chrome::cros::reporting::proto::Browser
+ReportingJobConfigurationBase::BrowserDictionaryBuilder::BuildBrowserProto(
+    bool include_device_info) {
+  ::chrome::cros::reporting::proto::Browser browser;
+  base::FilePath browser_id;
+  if (base::PathService::Get(base::DIR_EXE, &browser_id)) {
+    browser.set_browser_id(browser_id.AsUTF8Unsafe());
+  }
+
+  if (include_device_info) {
+    browser.set_machine_user(GetOSUsername());
+  }
+
+  browser.set_chrome_version(std::string(version_info::GetVersionNumber()));
+  return browser;
 }
 
 // static

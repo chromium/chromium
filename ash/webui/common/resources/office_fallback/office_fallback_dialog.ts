@@ -46,7 +46,7 @@ export class OfficeFallbackElement extends HTMLElement {
     return OfficeFallbackBrowserProxy.getInstance();
   }
 
-  async connectedCallback() {
+  connectedCallback() {
     const tryAgainButton = this.$('#try-again-button')!;
     const cancelButton = this.$('#cancel-button')!;
     const okButton = this.$('#ok-button')!;

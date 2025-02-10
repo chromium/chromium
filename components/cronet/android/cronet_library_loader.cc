@@ -10,8 +10,8 @@
 #include <string>
 #include <utility>
 
+#include "base/android/android_info.h"
 #include "base/android/base_jni_onload.h"
-#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_registrar.h"
@@ -170,8 +170,8 @@ ScopedJavaLocalRef<jstring> JNI_CronetLibraryLoader_GetCronetVersion(
 #if defined(ARCH_CPU_ARM64)
   // Attempt to avoid crashes on some ARM64 Marshmallow devices by
   // prompting zlib ARM feature detection early on. https://crbug.com/853725
-  if (base::android::BuildInfo::GetInstance()->sdk_int() ==
-      base::android::SDK_VERSION_MARSHMALLOW) {
+  if (base::android::android_info::sdk_int() ==
+      base::android::android_info::SDK_VERSION_MARSHMALLOW) {
     crc32(0, Z_NULL, 0);
   }
 #endif

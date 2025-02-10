@@ -24,6 +24,9 @@ class AutocompleteResult;
 @property(nonatomic, weak)
     OmniboxAutocompleteController* omniboxAutocompleteController;
 
+/// Whether the popup currently has suggestions.
+@property(nonatomic, assign, readonly) BOOL hasSuggestions;
+
 #pragma mark - OmniboxAutocomplete event
 
 /// Notifies the popup that new results are available.

@@ -16,6 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
@@ -1116,7 +1117,7 @@ void OpenscreenSessionHost::StartCapturingAudio() {
           SessionError::AUDIO_CAPTURE_ERROR)),
       observer_);
 
-  audio_input_device_ = new media::AudioInputDevice(
+  audio_input_device_ = base::MakeRefCounted<media::AudioInputDevice>(
       std::make_unique<CapturedAudioInput>(
           base::BindRepeating(&OpenscreenSessionHost::CreateAudioStream,
                               base::Unretained(this)),

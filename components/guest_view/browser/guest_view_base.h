@@ -339,6 +339,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // WebContentsObserver implementation.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void FrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override;
   void WebContentsDestroyed() override;
 
   // Given a set of initialization parameters, a concrete subclass of

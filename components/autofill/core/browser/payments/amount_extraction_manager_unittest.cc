@@ -8,6 +8,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,6 +40,10 @@ class AmountExtractionManagerTest : public testing::Test {
         mock_autofill_driver_.get());
     amount_extraction_manager_ =
         std::make_unique<AmountExtractionManager>(autofill_manager_.get());
+    ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+                autofill_manager_->client().GetAutofillOptimizationGuide()),
+            IsEligibleForBuyNowPayLater)
+        .WillByDefault(testing::Return(true));
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -135,6 +140,24 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenNoSuggestion) {
   EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
       context, /*should_suppress_suggestions=*/false,
       /*has_suggestions=*/false));
+}
+
+TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfUrlNotEligible) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAmountExtractionDesktop};
+
+  SuggestionsContext context;
+  context.is_autofill_available = true;
+  context.filling_product = FillingProduct::kCreditCard;
+
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_manager_->client().GetAutofillOptimizationGuide()),
+          IsEligibleForBuyNowPayLater)
+      .WillByDefault(testing::Return(false));
+
+  EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
+      context, /*should_suppress_suggestions=*/false,
+      /*has_suggestions=*/true));
 }
 
 // This test checks when the search is triggered,

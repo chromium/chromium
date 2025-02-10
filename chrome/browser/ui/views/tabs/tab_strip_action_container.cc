@@ -42,6 +42,7 @@
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_vector_icon_manager.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 namespace {
@@ -221,12 +222,16 @@ TabStripActionContainer::TabStripActionContainer(
 
   // `glic_nudge_controller_` will be null if feature is not enabled.
   if (glic_nudge_controller_) {
+#if BUILDFLAG(ENABLE_GLIC)
     glic_nudge_button_ =
         AddChildView(CreateGlicNudgeButton(tab_strip_controller));
 
     SetupButtonProperties(glic_nudge_button_);
 
     tab_glic_nudge_observation_.Observe(glic_nudge_controller_);
+#else
+    NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_GLIC)
   }
   auto_tab_group_button_ =
       AddChildView(CreateAutoTabGroupButton(tab_strip_controller));
@@ -264,6 +269,7 @@ TabStripActionContainer::~TabStripActionContainer() {
   }
 }
 
+#if BUILDFLAG(ENABLE_GLIC)
 std::unique_ptr<TabStripNudgeButton>
 TabStripActionContainer::CreateGlicNudgeButton(
     TabStripController* tab_strip_controller) {
@@ -275,11 +281,7 @@ TabStripActionContainer::CreateGlicNudgeButton(
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_GLIC_PROMO_TITLE),
       kGlicNudgeButtonElementId, Edge::kNone,
-#if BUILDFLAG(ENABLE_GLIC)
       glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON)
-#else
-      gfx::VectorIcon::EmptyIcon()
-#endif
   );
 
   button->SetTooltipText(l10n_util::GetStringUTF16(IDS_GLIC_PROMO_TITLE));
@@ -290,6 +292,7 @@ TabStripActionContainer::CreateGlicNudgeButton(
                       views::LayoutAlignment::kCenter);
   return button;
 }
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 std::unique_ptr<TabStripNudgeButton>
 TabStripActionContainer::CreateTabDeclutterButton(

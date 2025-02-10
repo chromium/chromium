@@ -233,6 +233,8 @@ source_set("internal") {
     "//base:i18n",
     "//components/account_id",
     "//components/enterprise/common:strings",
+    "//components/enterprise/common/proto:chrome_reporting_entity",
+    "//components/enterprise/common/proto:upload_request_response",
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/strings",
@@ -450,6 +452,7 @@ static_library("test_support") {
     # so it will be linked to dependent targets. Otherwise in component
     # build, it will be hidden inside the policy component.
     "//components/account_id",
+    "//components/enterprise/common/proto:upload_request_response",
     "//components/policy:generated",
     "//components/policy/proto",
     "//components/reporting/proto:record_constants",
@@ -629,6 +632,9 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/account_id",
+    "//components/enterprise/common/proto:browser_events_proto",
+    "//components/enterprise/common/proto:chrome_reporting_entity",
+    "//components/enterprise/common/proto:upload_request_response",
     "//components/invalidation:test_support",
     "//components/invalidation/impl:test_support",
     "//components/policy:generated",

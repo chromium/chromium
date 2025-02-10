@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -1046,9 +1047,13 @@ void CloudPolicyClient::UploadChromeProfileReport(
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }
 
-void CloudPolicyClient::UploadSecurityEventReport(bool include_device_info,
-                                                  base::Value::Dict report,
-                                                  ResultCallback callback) {
+void CloudPolicyClient::UploadSecurityEvent(
+    bool include_device_info,
+    ::chrome::cros::reporting::proto::UploadEventsRequest request,
+    ResultCallback callback) {
+  DCHECK(base::FeatureList::IsEnabled(
+      policy::kUploadRealtimeReportingEventsUsingProto));
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!is_registered()) {
@@ -1057,6 +1062,25 @@ void CloudPolicyClient::UploadSecurityEventReport(bool include_device_info,
   }
 
   CreateNewRealtimeReportingJob(
+      std::move(request),
+      service()->configuration()->GetRealtimeReportingServerUrl(),
+      include_device_info, std::move(callback));
+}
+
+void CloudPolicyClient::UploadSecurityEventReport(bool include_device_info,
+                                                  base::Value::Dict report,
+                                                  ResultCallback callback) {
+  DCHECK(!base::FeatureList::IsEnabled(
+      policy::kUploadRealtimeReportingEventsUsingProto));
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!is_registered()) {
+    std::move(callback).Run(CloudPolicyClient::Result(NotRegistered()));
+    return;
+  }
+
+  CreateNewRealtimeReportingJobDeprecated(
       std::move(report),
       service()->configuration()->GetRealtimeReportingServerUrl(),
       include_device_info, std::move(callback));
@@ -1072,7 +1096,7 @@ void CloudPolicyClient::UploadAppInstallReport(base::Value::Dict report,
   }
 
   CancelAppInstallReportUpload();
-  app_install_report_request_job_ = CreateNewRealtimeReportingJob(
+  app_install_report_request_job_ = CreateNewRealtimeReportingJobDeprecated(
       std::move(report),
       service()->configuration()->GetRealtimeReportingServerUrl(),
       /* include_device_info */ true, std::move(callback));
@@ -1135,6 +1159,23 @@ void CloudPolicyClient::FetchRemoteCommands(
 }
 
 DeviceManagementService::Job* CloudPolicyClient::CreateNewRealtimeReportingJob(
+    ::chrome::cros::reporting::proto::UploadEventsRequest request,
+    const std::string& server_url,
+    bool include_device_info,
+    ResultCallback callback) {
+  std::unique_ptr<RealtimeReportingJobConfiguration> config =
+      std::make_unique<RealtimeReportingJobConfiguration>(
+          this, server_url, include_device_info,
+          base::BindOnce(&CloudPolicyClient::OnRealtimeReportUploadCompleted,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  config->AddRequest(std::move(request));
+  request_jobs_.push_back(service_->CreateJob(std::move(config)));
+  return request_jobs_.back().get();
+}
+
+DeviceManagementService::Job*
+CloudPolicyClient::CreateNewRealtimeReportingJobDeprecated(
     base::Value::Dict report,
     const std::string& server_url,
     bool include_device_info,
@@ -1145,7 +1186,7 @@ DeviceManagementService::Job* CloudPolicyClient::CreateNewRealtimeReportingJob(
           base::BindOnce(&CloudPolicyClient::OnRealtimeReportUploadCompleted,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
-  config->AddReport(std::move(report));
+  config->AddReportDeprecated(std::move(report));
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
   return request_jobs_.back().get();
 }

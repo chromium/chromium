@@ -167,50 +167,13 @@ class SigninViewControllerBrowserTestBase : public SigninBrowserTestBase {
   }
 };
 
-class SigninViewControllerBrowserImplicitSigninTest
-    : public SigninViewControllerBrowserTestBase {
- public:
-  SigninViewControllerBrowserImplicitSigninTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserImplicitSigninTest,
-                       NoPrompt) {
-  // Setup a primary account.
-  AccountInfo primary_account_info = SetPrimaryAccount();
-
-  // Add pending sync data.
-  AddUnsyncedData();
-
-  // Trigger the Chrome signout action.
-  browser()->signin_view_controller()->SignoutOrReauthWithPrompt(
-      kTestAccessPoint,
-      signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
-      signin_metrics::SourceForRefreshTokenOperation::
-          kUserMenu_SignOutAllAccounts);
-
-  // Sign out tab opens immediately. The user may not be signed out yet, as the
-  // sign out happens through the web.
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(tab);
-  EXPECT_TRUE(IsSignoutTab(tab));
-}
-
 class SigninViewControllerBrowserTest
     : public SigninViewControllerBrowserTestBase {
  public:
   SigninViewControllerBrowserTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {switches::kExplicitBrowserSigninUIOnDesktop,
-         switches::kImprovedSigninUIOnDesktop,
+        {switches::kImprovedSigninUIOnDesktop,
          features::kManagedProfileRequiredInterstitial},
         /*disabled_features=*/{});
   }

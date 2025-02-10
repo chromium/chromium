@@ -36,6 +36,10 @@ class ContentCaptureConsumer {
  public:
   virtual ~ContentCaptureConsumer() = default;
 
+  // Invoked to notify that a batch of Content Capture has ended.
+  virtual void FlushCaptureContent(const ContentCaptureSession& session,
+                                   const ContentCaptureFrame& data) = 0;
+
   // Invoked when the captured content |data| from the |parent_session| was
   // received.
   virtual void DidCaptureContent(const ContentCaptureSession& parent_session,

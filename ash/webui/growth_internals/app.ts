@@ -48,7 +48,7 @@ export class GrowthInternalsAppElement extends PolymerElement {
     return await this.browserProxy_!.handler!.getCampaignsLogs();
   }
 
-  private async onClickClearAllEventsButton_(event: Event) {
+  private onClickClearAllEventsButton_(event: Event) {
     event.stopPropagation();
     this.browserProxy_!.handler!.clearAllEvents();
   }

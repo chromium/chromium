@@ -12,6 +12,8 @@
 
 @property(nonatomic, assign) BOOL canShowBrowsingDataMigration;
 
+@property(nonatomic, assign) BOOL browsingDataMigrationDisabledByPolicy;
+
 - (void)setKeepBrowsingDataSeparate:(BOOL)keepSeparate;
 
 @end

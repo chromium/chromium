@@ -107,6 +107,24 @@ bool ShouldSkipBrowsingDataMigration(signin_metrics::AccessPoint access_point,
              ->IsProfileForGaiaIDFullyInitialized(GaiaId(gaia_id));
 }
 
+// Returns `true` if the browsing data migration is not available because it is
+// disabled by policy and not because of another reason.
+bool IsBrowsingDataMigrationDisabledByPolicy(
+    signin_metrics::AccessPoint access_point,
+    NSString* gaia_id,
+    PrefService* pref_service,
+    policy::ProfileSeparationDataMigrationSettings
+        profileSeparationDataMigrationSettings) {
+  return access_point != signin_metrics::AccessPoint::kStartPage &&
+         !GetApplicationContext()
+              ->GetAccountProfileMapper()
+              ->IsProfileForGaiaIDFullyInitialized(GaiaId(gaia_id)) &&
+         (profileSeparationDataMigrationSettings == policy::ALWAYS_SEPARATE ||
+          pref_service->GetInteger(
+              prefs::kProfileSeparationDataMigrationSettings) ==
+              policy::ALWAYS_SEPARATE);
+}
+
 }  // namespace
 
 @interface AuthenticationFlow ()
@@ -446,6 +464,7 @@ bool ShouldSkipBrowsingDataMigration(signin_metrics::AccessPoint access_point,
   // `AreSeparateProfilesForManagedAccountsEnabled()` is false.
   BOOL skipBrowsingDataMigration = NO;
   BOOL mergeBrowsingDataByDefault = NO;
+  BOOL browsingDataMigrationDisabledByPolicy = NO;
   if (AreSeparateProfilesForManagedAccountsEnabled()) {
     // Skip browsing data migration if we are at the first run screen or if
     // there is already a profile that exists with the account we are trying
@@ -455,6 +474,10 @@ bool ShouldSkipBrowsingDataMigration(signin_metrics::AccessPoint access_point,
         _profileSeparationDataMigrationSettings == policy::ALWAYS_SEPARATE ||
         ShouldSkipBrowsingDataMigration(_accessPoint, _identityToSignIn.gaiaID,
                                         prefService);
+    browsingDataMigrationDisabledByPolicy =
+        IsBrowsingDataMigrationDisabledByPolicy(
+            _accessPoint, _identityToSignIn.gaiaID, prefService,
+            _profileSeparationDataMigrationSettings);
 
     // Merge browsing data by default if the data migration screen is shown to
     // the user and if a policy was set by the admin to merge the browsing data
@@ -471,7 +494,9 @@ bool ShouldSkipBrowsingDataMigration(signin_metrics::AccessPoint access_point,
                               viewController:_presentingViewController
                                      browser:_browser
                    skipBrowsingDataMigration:skipBrowsingDataMigration
-                  mergeBrowsingDataByDefault:mergeBrowsingDataByDefault];
+                  mergeBrowsingDataByDefault:mergeBrowsingDataByDefault
+       browsingDataMigrationDisabledByPolicy:
+           browsingDataMigrationDisabledByPolicy];
 }
 
 // Converts the personal profile to a managed profile, if needed.

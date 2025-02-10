@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/nix/xdg_util.h"
-#include "base/task/sequenced_task_runner.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 namespace ui {
@@ -46,6 +45,7 @@ class XdgActivation : public wl::GlobalObjectRegistrar<XdgActivation> {
   // If there is an unfinished request, the method chains the new request in the
   // `token_request_queue_` and initiates the next token request to the server
   // after the server responds to the current request or timeout occurs.
+  // This should always be called from the UI thread.
   void RequestNewToken(base::nix::XdgActivationTokenCallback callback) const;
 
  private:
@@ -60,8 +60,6 @@ class XdgActivation : public wl::GlobalObjectRegistrar<XdgActivation> {
   mutable base::queue<std::unique_ptr<TokenRequest>> token_request_queue_;
 
   const raw_ptr<WaylandConnection> connection_;
-
-  base::WeakPtrFactory<XdgActivation> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

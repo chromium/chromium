@@ -62,7 +62,7 @@ class AttributeType final {
   EntityType entity_type() const;
 
   // Maps this AttributeType to the corresponding Autofill AI `FieldType`.
-  FieldType field_type() const;
+  constexpr FieldType field_type() const;
 
   // The string representation of the name. This is unique among all attribute
   // types of the associated entity type. (It is not globally unique!)
@@ -79,6 +79,40 @@ class AttributeType final {
  private:
   AttributeTypeName name_{};
 };
+
+constexpr FieldType AttributeType::field_type() const {
+  switch (name_) {
+    case AttributeTypeName::kPassportName:
+      return PASSPORT_NAME_TAG;
+    case AttributeTypeName::kPassportNumber:
+      return PASSPORT_NUMBER;
+    case AttributeTypeName::kPassportCountry:
+      return PASSPORT_ISSUING_COUNTRY_TAG;
+    case AttributeTypeName::kPassportExpiryDate:
+      return PASSPORT_EXPIRATION_DATE_TAG;
+    case AttributeTypeName::kPassportIssueDate:
+      return PASSPORT_ISSUE_DATE_TAG;
+    case AttributeTypeName::kLoyaltyCardProgram:
+      return LOYALTY_MEMBERSHIP_PROGRAM;
+    case AttributeTypeName::kLoyaltyCardProvider:
+      return LOYALTY_MEMBERSHIP_PROVIDER;
+    case AttributeTypeName::kLoyaltyCardMemberId:
+      return LOYALTY_MEMBERSHIP_ID;
+    case AttributeTypeName::kCarOwner:
+    case AttributeTypeName::kCarLicensePlate:
+    case AttributeTypeName::kCarRegistration:
+    case AttributeTypeName::kCarMake:
+    case AttributeTypeName::kCarModel:
+      return UNKNOWN_TYPE;
+    case AttributeTypeName::kDriversLicenseName:
+    case AttributeTypeName::kDriversLicenseRegion:
+    case AttributeTypeName::kDriversLicenseNumber:
+    case AttributeTypeName::kDriversLicenseExpirationDate:
+    case AttributeTypeName::kDriversLicenseIssueDate:
+      return UNKNOWN_TYPE;
+  }
+  NOTREACHED();
+}
 
 template <>
 struct DenseSetTraits<AttributeType> {
@@ -178,6 +212,24 @@ class EntityType final {
 
  private:
   EntityTypeName name_{};
+};
+
+template <>
+struct DenseSetTraits<EntityType> {
+  using T = EntityType;
+  using N = EntityTypeName;
+  using UnderlyingType = std::underlying_type_t<N>;
+
+  static constexpr T from_underlying(UnderlyingType x) {
+    return T(static_cast<N>(x));
+  }
+  static constexpr UnderlyingType to_underlying(T x) {
+    return base::to_underlying(x.name());
+  }
+
+  static constexpr auto kMinValue = T(static_cast<N>(0));
+  static constexpr auto kMaxValue = T(N::kMaxValue);
+  static constexpr bool kPacked = false;
 };
 
 class EntityTable;

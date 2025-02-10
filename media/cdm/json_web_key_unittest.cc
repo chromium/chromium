@@ -49,7 +49,7 @@ class JSONWebKeyTest : public testing::Test {
                               const std::string& expected_result) {
     std::vector<uint8_t> result;
     KeyIdList key_ids;
-    key_ids.push_back(std::vector<uint8_t>(key_id.begin(), key_id.end()));
+    key_ids.emplace_back(key_id.begin(), key_id.end());
     CreateLicenseRequest(key_ids, session_type, &result);
     std::string s(result.begin(), result.end());
     EXPECT_EQ(expected_result, s);

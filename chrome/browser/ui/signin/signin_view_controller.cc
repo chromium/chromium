@@ -187,14 +187,14 @@ void HandleSignoutConfirmationChoice(
         browser->signin_view_controller()->ShowGaiaLogoutTab(
             token_signout_source);
       }
-      if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-        // In Uno, Gaia logout tab invalidating the account will lead to a sign
-        // in paused state. Unset the primary account to ensure it is removed
-        // from chrome. The `AccountReconcilor` will revoke refresh tokens for
-        // accounts not in the Gaia cookie on next reconciliation.
-        identity_manager->GetPrimaryAccountMutator()
-            ->RemovePrimaryAccountButKeepTokens(profile_signout_source);
-      }
+
+      // In Uno, Gaia logout tab invalidating the account will lead to a sign
+      // in paused state. Unset the primary account to ensure it is removed
+      // from chrome. The `AccountReconcilor` will revoke refresh tokens for
+      // accounts not in the Gaia cookie on next reconciliation.
+      identity_manager->GetPrimaryAccountMutator()
+          ->RemovePrimaryAccountButKeepTokens(profile_signout_source);
+
       return;
     }
   }
@@ -216,8 +216,7 @@ GURL GetSigninUrlForDiceSigninTab(
   // that there is no primary account. Maybe move to a `CHECK` later.
   if (signin_reason == signin_metrics::Reason::kAddSecondaryAccount &&
       access_point == signin_metrics::AccessPoint::kExtensions &&
-      !identity_manager.HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-      switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+      !identity_manager.HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     // Extensions wants the user to sign in to Chrome.
     // Ensure the Gaia page informs the user that they will also be signed in to
     // Chrome.
@@ -607,10 +606,8 @@ void SigninViewController::ShowGaiaLogoutTab(
   // Pass a continue URL when the Web Signin Intercept bubble is shown, so that
   // the bubble and the app picker do not overlap. If the bubble is not shown,
   // open the app picker in case the user is lost.
-  GURL logout_url =
-      switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-          ? GaiaUrls::GetInstance()->LogOutURLWithContinueURL(GURL())
-          : GaiaUrls::GetInstance()->service_logout_url();
+  GURL logout_url = GaiaUrls::GetInstance()->LogOutURLWithContinueURL(GURL());
+
   // Do not use a singleton tab. A new tab should be opened even if there is
   // already a logout tab.
   ShowTabOverwritingNTP(browser_, logout_url);

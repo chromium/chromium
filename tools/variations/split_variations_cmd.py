@@ -30,10 +30,10 @@ Run Chrome through "Windows PowerShell" instead.
 """
 
 try:
-  from urllib.parse import unquote
+  from urllib.parse import unquote, unquote_plus
 except ImportError:
   # ToDo(crbug/1287214): Remove Exception case upon full migration to Python 3
-  from urllib import unquote
+  from urllib import unquote, unquote_plus
 
 import collections
 import os
@@ -150,10 +150,13 @@ def _ValidateForceFieldTrialsAndParams(trials, params):
   if len(params) > len(trials):
     raise ValueError("params size (%d) larger than trials size (%d)" %
                      (len(params), len(trials)))
+  # Params are URL encoded, so we need to decode spaces as well. Unquote_plus
+  # acts like unquote but also decodes + into spaces.
+  # See https://docs.python.org/3/library/urllib.parse.html#urllib.parse.unquote_plus
   trial_groups = {trial.trial_name: trial.group_name for trial in trials}
   for param in params:
-    trial_name = unquote(param.trial_name)
-    group_name = unquote(param.group_name)
+    trial_name = unquote_plus(param.trial_name)
+    group_name = unquote_plus(param.group_name)
     if trial_name not in trial_groups:
       raise ValueError("Fail to find trial_name %s in trials" % trial_name)
     if group_name != trial_groups[trial_name]:
@@ -168,7 +171,7 @@ def _SplitFieldTrials(trials, trial_params):
   number of elements in the input lists.
   """
   middle = (len(trials) + 1) // 2
-  params = {unquote(trial.trial_name): trial for trial in trial_params}
+  params ={unquote_plus(trial.trial_name): trial for trial in trial_params}
 
   trials_first = trials[:middle]
   params_first = []

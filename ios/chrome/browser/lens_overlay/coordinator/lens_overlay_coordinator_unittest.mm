@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
@@ -119,6 +120,13 @@ class LensOverlayCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:load_query_handler_
                      forProtocol:@protocol(LoadQueryCommands)];
 
+    browser_coordinator_commands_handler_ =
+        OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:browser_coordinator_commands_handler_
+                     forProtocol:@protocol(BrowserCoordinatorCommands)];
+
     // Tab helper
     web_state_ = std::make_unique<web::FakeWebState>();
     LensOverlayTabHelper::CreateForWebState(web_state_.get());
@@ -203,6 +211,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   id<ApplicationCommands> application_handler_;
   id<LoadQueryCommands> load_query_handler_;
   id<LensCommands> lens_commands_handler_;
+  id<BrowserCoordinatorCommands> browser_coordinator_commands_handler_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 

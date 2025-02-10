@@ -73,7 +73,10 @@ void RecordSessionDuration(LensOverlayInvocationSource invocation_source,
                            base::TimeDelta duration);
 
 // Records the end of sessions metrics for the contextual searchbox in sessions
-// in which it was shown.
+// in which it was shown. `page_content_type` is the mime type of the content
+// that was extracted from the page when the contextual searchbox was shown.
+// `document_content_type` is the type of the document that the user invoked
+// Lens on, as determined by the WebContents.
 void RecordContextualSearchboxSessionEndMetrics(
     ukm::SourceId source_id,
     bool contextual_searchbox_shown_in_session,
@@ -81,7 +84,8 @@ void RecordContextualSearchboxSessionEndMetrics(
     bool contextual_zps_shown_in_session,
     bool contextual_zps_used_in_session,
     bool contextual_query_issued_in_session,
-    lens::MimeType page_content_type);
+    lens::MimeType page_content_type,
+    lens::MimeType document_content_type);
 
 // Records the time in foreground of a lens overlay. Both sliced and unsliced.
 void RecordSessionForegroundDuration(

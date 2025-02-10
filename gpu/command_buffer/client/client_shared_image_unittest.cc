@@ -145,7 +145,8 @@ TEST(ClientSharedImageTest, ExportAndImport) {
 
   auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
   auto exported_si = client_si->Export();
-  auto imported_client_si = ClientSharedImage::ImportUnowned(exported_si);
+  auto imported_client_si =
+      ClientSharedImage::ImportUnowned(std::move(exported_si));
 
   EXPECT_EQ(imported_client_si->mailbox(), client_si->mailbox());
   EXPECT_EQ(imported_client_si->format(), kFormat);

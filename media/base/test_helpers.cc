@@ -16,6 +16,8 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
@@ -246,8 +248,9 @@ void FillFourColorsFrameARGB(VideoFrame& dest_frame,
 // Utility mock for testing methods expecting Closures and PipelineStatusCBs.
 class MockCallback : public base::RefCountedThreadSafe<MockCallback> {
  public:
-  MockCallback();
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
+  MockCallback() = default;
   MockCallback(const MockCallback&) = delete;
   MockCallback& operator=(const MockCallback&) = delete;
 
@@ -257,28 +260,25 @@ class MockCallback : public base::RefCountedThreadSafe<MockCallback> {
 
  protected:
   friend class base::RefCountedThreadSafe<MockCallback>;
-  virtual ~MockCallback();
+  virtual ~MockCallback() = default;
 };
 
-MockCallback::MockCallback() = default;
-MockCallback::~MockCallback() = default;
-
 base::OnceClosure NewExpectedClosure() {
-  StrictMock<MockCallback>* callback = new StrictMock<MockCallback>();
+  auto callback = base::MakeRefCounted<StrictMock<MockCallback>>();
   EXPECT_CALL(*callback, Run());
-  return base::BindOnce(&MockCallback::Run, WrapRefCounted(callback));
+  return base::BindOnce(&MockCallback::Run, std::move(callback));
 }
 
 base::OnceCallback<void(bool)> NewExpectedBoolCB(bool success) {
-  StrictMock<MockCallback>* callback = new StrictMock<MockCallback>();
+  auto callback = base::MakeRefCounted<StrictMock<MockCallback>>();
   EXPECT_CALL(*callback, RunWithBool(success));
-  return base::BindOnce(&MockCallback::RunWithBool, WrapRefCounted(callback));
+  return base::BindOnce(&MockCallback::RunWithBool, std::move(callback));
 }
 
 PipelineStatusCallback NewExpectedStatusCB(PipelineStatus status) {
-  StrictMock<MockCallback>* callback = new StrictMock<MockCallback>();
+  auto callback = base::MakeRefCounted<StrictMock<MockCallback>>();
   EXPECT_CALL(*callback, RunWithStatus(status));
-  return base::BindOnce(&MockCallback::RunWithStatus, WrapRefCounted(callback));
+  return base::BindOnce(&MockCallback::RunWithStatus, std::move(callback));
 }
 
 WaitableMessageLoopEvent::WaitableMessageLoopEvent()

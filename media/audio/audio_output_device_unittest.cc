@@ -150,7 +150,7 @@ void AudioOutputDeviceTest::CreateDevice(const std::string& device_id,
   if (audio_device_)
     StopAudioDevice();
 
-  audio_device_ = new AudioOutputDevice(
+  audio_device_ = base::MakeRefCounted<AudioOutputDevice>(
       std::make_unique<NiceMock<MockAudioOutputIPC>>(),
       task_env_.GetMainThreadTaskRunner(),
       AudioSinkParameters(base::UnguessableToken(), device_id), timeout);
@@ -362,7 +362,7 @@ TEST_F(AudioOutputDeviceTest,
 TEST_F(AudioOutputDeviceTest, AuthorizationFailsBeforeInitialize_NoError) {
   // Clear audio device set by fixture.
   StopAudioDevice();
-  audio_device_ = new AudioOutputDevice(
+  audio_device_ = base::MakeRefCounted<AudioOutputDevice>(
       std::make_unique<NiceMock<MockAudioOutputIPC>>(),
       task_env_.GetMainThreadTaskRunner(),
       AudioSinkParameters(base::UnguessableToken(), kDefaultDeviceId),

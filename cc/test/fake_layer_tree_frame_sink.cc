@@ -55,12 +55,8 @@ FakeLayerTreeFrameSink::FakeLayerTreeFrameSink(
                         /*for_renderer=*/false))
               : nullptr,
           base::SingleThreadTaskRunner::GetCurrentDefault(),
-          nullptr,
           base::MakeRefCounted<TestClientSharedImageInterface>(
-              base::MakeRefCounted<gpu::TestSharedImageInterface>())) {
-  gpu_memory_buffer_manager_ =
-      context_provider_ ? &test_gpu_memory_buffer_manager_ : nullptr;
-}
+              base::MakeRefCounted<gpu::TestSharedImageInterface>())) {}
 
 FakeLayerTreeFrameSink::~FakeLayerTreeFrameSink() = default;
 

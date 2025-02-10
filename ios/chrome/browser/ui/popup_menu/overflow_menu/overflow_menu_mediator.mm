@@ -1388,9 +1388,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       IsIncognitoModeDisabled(self.profilePrefs);
 
   if (IsLensOverlayAvailable()) {
+    BOOL isPortrait = !IsCompactHeight(self.baseViewController.traitCollection);
+    BOOL isSupported =
+        search_engines::SupportsSearchImageWithLens(self.templateURLService);
+    BOOL portraitOverride = IsLensOverlayLandscapeOrientationEnabled();
     self.lensOverlayAction.enabled =
-        search_engines::SupportsSearchImageWithLens(self.templateURLService) &&
-        !IsCompactHeight(self.baseViewController.traitCollection);
+        isSupported && (isPortrait || portraitOverride);
   }
 }
 

@@ -1068,9 +1068,17 @@ IN_PROC_BROWSER_TEST_F(
 
 // Test that the timer is enabled and cleared appropriately when navigating to
 // a No-Vary-Search hint matched prerender with timeout waiting for headers.
+// Flaky on android: crbug.com/395337644
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_EagerTimerWorksCorrectlyForHeadersThatArriveAfterTimeout \
+  DISABLED_EagerTimerWorksCorrectlyForHeadersThatArriveAfterTimeout
+#else
+#define MAYBE_EagerTimerWorksCorrectlyForHeadersThatArriveAfterTimeout \
+  EagerTimerWorksCorrectlyForHeadersThatArriveAfterTimeout
+#endif
 IN_PROC_BROWSER_TEST_F(
     NoVarySearchPrerenderBrowserTest,
-    EagerTimerWorksCorrectlyForHeadersThatArriveAfterTimeout) {
+    MAYBE_EagerTimerWorksCorrectlyForHeadersThatArriveAfterTimeout) {
   const std::string kTestingRelativeUrl =
       "/delayed_with_no_vary_search?prerender";
   const std::string kPrerenderingRelativeUrl = kTestingRelativeUrl + "&a=5";
@@ -6764,7 +6772,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 #else
 #define MAYBE_DeferPrivateOriginFileSystem DeferPrivateOriginFileSystem
 #endif
-
 // Tests that access to the origin private file system via the File System
 // Access API is deferred until activating the prerendered page.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,

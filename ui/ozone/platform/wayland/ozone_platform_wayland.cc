@@ -456,12 +456,11 @@ class OzonePlatformWayland : public OzonePlatform,
     buffer_manager_->AddBindingWaylandBufferManagerGpu(std::move(receiver));
   }
 
-  void PostCreateMainMessageLoop(base::OnceCallback<void()> shutdown_cb,
-                                 scoped_refptr<base::SingleThreadTaskRunner>
-                                     user_input_task_runner) override {
+  void PostCreateMainMessageLoop(
+      base::OnceCallback<void()> shutdown_cb,
+      scoped_refptr<base::SingleThreadTaskRunner>) override {
     DCHECK(connection_);
     connection_->SetShutdownCb(std::move(shutdown_cb));
-    connection_->SetUserInputTaskRunner(std::move(user_input_task_runner));
   }
 
   void PostMainMessageLoopRun() override {

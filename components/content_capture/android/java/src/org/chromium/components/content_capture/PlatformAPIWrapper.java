@@ -54,6 +54,8 @@ public abstract class PlatformAPIWrapper {
 
     public abstract void notifyFaviconUpdated(ContentCaptureSession session, String favicon);
 
+    public abstract void flush(ContentCaptureSession session);
+
     public static void setPlatformAPIWrapperImplForTesting(PlatformAPIWrapper impl) {
         var oldValue = sImpl;
         sImpl = impl;

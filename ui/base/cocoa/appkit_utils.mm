@@ -11,13 +11,6 @@
 
 namespace {
 
-// Double-click in window title bar actions.
-enum class DoubleClickAction {
-  NONE,
-  MINIMIZE,
-  MAXIMIZE,
-};
-
 // Values of com.apple.trackpad.forceClick corresponding to "Look up & data
 // detectors" in System Preferences -> Trackpad -> Point & Click.
 enum class ForceTouchAction {

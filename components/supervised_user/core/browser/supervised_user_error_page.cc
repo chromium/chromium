@@ -83,7 +83,9 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
   strings.Set("alreadySentRemoteRequest", already_sent_remote_request);
   strings.Set("isMainFrame", is_main_frame);
   bool local_web_approvals_enabled =
-      supervised_user::IsLocalWebApprovalsEnabled();
+      (is_main_frame && supervised_user::IsLocalWebApprovalsEnabled()) ||
+      (!is_main_frame &&
+       supervised_user::IsLocalWebApprovalsEnabledForSubframes());
   strings.Set("isLocalWebApprovalsEnabled", local_web_approvals_enabled);
 
   std::string block_header;

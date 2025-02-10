@@ -411,3 +411,9 @@
 -LocalStorageImplTest.StorageKeysAreIndependent
 -LocalStorageImplTest.WrapperOutlivesMojoConnection
 -LocalStorageImplTest.MetaDataClearedOnDeleteAll
+
+# TODO(crbug.com/395384787): This test has been failing since
+# https://crrev.com/c/6185554.
+-MlEmbedderTest.EmbedderRunningStatus
+-MlEmbedderTest.ReturnsEmbeddings
+-MlEmbedderTest.ReturnsExecutionFailure

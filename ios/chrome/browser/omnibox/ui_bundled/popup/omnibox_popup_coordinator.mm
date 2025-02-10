@@ -188,7 +188,7 @@
 }
 
 - (BOOL)isOpen {
-  return self.mediator.isOpen;
+  return _omniboxPopupController.hasSuggestions;
 }
 
 - (id<ToolbarOmniboxConsumer>)toolbarOmniboxConsumer {
@@ -203,7 +203,7 @@
 #pragma mark - Property accessor
 
 - (BOOL)hasResults {
-  return self.mediator.hasResults;
+  return _omniboxPopupController.hasSuggestions;
 }
 
 #pragma mark - OmniboxPopupMediatorProtocolProvider

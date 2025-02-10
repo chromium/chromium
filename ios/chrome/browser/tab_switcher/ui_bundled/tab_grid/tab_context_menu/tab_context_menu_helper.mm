@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/sharing_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -39,6 +40,7 @@
 #import "ios/web/public/web_state.h"
 
 using PinnedState = WebStateSearchCriteria::PinnedState;
+using tab_groups::SharingState;
 
 @interface TabContextMenuHelper ()
 
@@ -325,26 +327,33 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   CHECK(group);
   base::WeakPtr<const TabGroup> weakGroup = group->GetWeakPtr();
   BOOL incognito = self.incognito;
+
   ShareKitService* shareKitService =
       ShareKitServiceFactory::GetForProfile(_profile);
   tab_groups::TabGroupSyncService* tabGroupSyncService =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(_profile);
-  collaboration::CollaborationService* collaborationService =
-      collaboration::CollaborationServiceFactory::GetForProfile(_profile);
+
+  SharingState sharingState = SharingState::kNotShared;
   BOOL isSharedTabGroupSupported =
       shareKitService && shareKitService->IsSupported();
-  BOOL isTabGroupShared =
-      isSharedTabGroupSupported &&
-      tab_groups::utils::IsTabGroupShared(group, tabGroupSyncService);
-  data_sharing::MemberRole userRole = tab_groups::utils::GetUserRoleForGroup(
-      group, tabGroupSyncService, collaborationService);
+
+  if (tab_groups::utils::IsTabGroupShared(group, tabGroupSyncService)) {
+    collaboration::CollaborationService* collaborationService =
+        collaboration::CollaborationServiceFactory::GetForProfile(_profile);
+    data_sharing::MemberRole userRole = tab_groups::utils::GetUserRoleForGroup(
+        group, tabGroupSyncService, collaborationService);
+    sharingState = userRole == data_sharing::MemberRole::kOwner
+                       ? SharingState::kSharedAndOwned
+                       : SharingState::kShared;
+  }
+
   __weak __typeof(self) weakSelf = self;
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
   // Shared actions.
   NSMutableArray<UIAction*>* sharedActions = [[NSMutableArray alloc] init];
-  if (isTabGroupShared) {
+  if (sharingState != SharingState::kNotShared) {
     [sharedActions addObject:[actionFactory actionToManageTabGroupWithBlock:^{
                      [weakSelf.contextMenuDelegate manageTabGroup:weakGroup];
                    }]];
@@ -373,7 +382,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
                                                   incognito:incognito];
                }]];
 
-  if (!isTabGroupShared) {
+  if (sharingState == SharingState::kNotShared) {
     [editActions addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
                    [weakSelf.contextMenuDelegate ungroupTabGroup:weakGroup
                                                        incognito:incognito
@@ -395,46 +404,34 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
                                             incognito:incognito];
         }]];
     if (!incognito) {
-      if (isTabGroupShared) {
-        switch (userRole) {
-          case data_sharing::MemberRole::kMember: {
-            [destructiveActions
-                addObject:[actionFactory actionToLeaveSharedTabGroupWithBlock:^{
-                  [weakSelf.contextMenuDelegate leaveSharedTabGroup:weakGroup
-                                                         sourceView:cell];
-                }]];
-            break;
-          }
-          case data_sharing::MemberRole::kOwner: {
-            [destructiveActions
-                addObject:[actionFactory
-                              actionToDeleteSharedTabGroupWithBlock:^{
-                                [weakSelf.contextMenuDelegate
-                                    deleteSharedTabGroup:weakGroup
-                                              sourceView:cell];
-                              }]];
-            break;
-          }
-          case data_sharing::MemberRole::kUnknown:
-          case data_sharing::MemberRole::kInvitee:
-            NOTREACHED(base::NotFatalUntil::M137);
+      switch (sharingState) {
+        case SharingState::kNotShared: {
+          [destructiveActions
+              addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+                [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
+                                                   incognito:incognito
+                                                  sourceView:cell];
+              }]];
+          break;
         }
-      } else {
-        [destructiveActions
-            addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-              [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
-                                                 incognito:incognito
-                                                sourceView:cell];
-            }]];
+        case SharingState::kShared: {
+          [destructiveActions
+              addObject:[actionFactory actionToLeaveSharedTabGroupWithBlock:^{
+                [weakSelf.contextMenuDelegate leaveSharedTabGroup:weakGroup
+                                                       sourceView:cell];
+              }]];
+          break;
+        }
+        case SharingState::kSharedAndOwned: {
+          [destructiveActions
+              addObject:[actionFactory actionToDeleteSharedTabGroupWithBlock:^{
+                [weakSelf.contextMenuDelegate deleteSharedTabGroup:weakGroup
+                                                        sourceView:cell];
+              }]];
+          break;
+        }
       }
     }
-  } else {
-    [destructiveActions
-        addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-          [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
-                                             incognito:incognito
-                                            sourceView:cell];
-        }]];
   }
   [menuElements addObject:[UIMenu menuWithTitle:@""
                                           image:nil

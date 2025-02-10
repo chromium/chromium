@@ -1258,6 +1258,10 @@ static cc::RenderSurfaceReason ConditionalRenderSurfaceReasonForEffect(
 
 static cc::RenderSurfaceReason RenderSurfaceReasonForEffect(
     const EffectPaintPropertyNode& effect) {
+  if (effect
+          .RequiresCompositingFor2DScaleTransformWithCompositedDescendants()) {
+    return cc::RenderSurfaceReason::k2DTransformWithCompositedDescendants;
+  }
   if (!effect.Filter().IsEmpty() ||
       effect.RequiresCompositingForWillChangeFilter()) {
     return cc::RenderSurfaceReason::kFilter;

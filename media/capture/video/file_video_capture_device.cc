@@ -39,11 +39,6 @@ namespace media {
 
 namespace {
 
-// Allow MappableSI to be used for FileVideoCaptureDevice.
-BASE_FEATURE(kUseMappableSIForFileVideoCaptureDevice,
-             "UseMappableSIForFileVideoCaptureDevice",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 int gcd(int a, int b) {
   int c;
 
@@ -680,20 +675,10 @@ void FileVideoCaptureDevice::OnCaptureTask() {
 
   if (video_capture_use_mappable_buffer_) {
     const gfx::Size& buffer_size = capture_format_.frame_size;
-    std::unique_ptr<gfx::GpuMemoryBuffer> gmb;
     scoped_refptr<gpu::ClientSharedImage> shared_image;
     VideoCaptureDevice::Client::Buffer capture_buffer;
-    VideoCaptureDevice::Client::ReserveResult reserve_result;
-    const bool is_mappable_si_enabled =
-        base::FeatureList::IsEnabled(kUseMappableSIForFileVideoCaptureDevice);
-    if (is_mappable_si_enabled) {
-      reserve_result = AllocateNV12SharedImage(client_.get(), buffer_size,
-                                               &shared_image, &capture_buffer);
-    } else {
-      reserve_result = AllocateNV12GpuMemoryBuffer(client_.get(), buffer_size,
-                                                   gmb_support_.get(), &gmb,
-                                                   &capture_buffer);
-    }
+    auto reserve_result = AllocateNV12SharedImage(
+        client_.get(), buffer_size, &shared_image, &capture_buffer);
     if (reserve_result !=
         VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
       client_->OnFrameDropped(
@@ -710,7 +695,6 @@ void FileVideoCaptureDevice::OnCaptureTask() {
         ptz_frame.data() +
         VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 0, buffer_size).GetArea() +
         VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 1, buffer_size).GetArea();
-    if (is_mappable_si_enabled) {
       auto scoped_mapping = shared_image->Map();
       libyuv::I420ToNV12(
           src_y_plane, buffer_size.width(), src_u_plane,
@@ -719,25 +703,17 @@ void FileVideoCaptureDevice::OnCaptureTask() {
           scoped_mapping->Stride(0),
           scoped_mapping->GetMemoryForPlane(1).data(),
           scoped_mapping->Stride(1), buffer_size.width(), buffer_size.height());
-    } else {
-      ScopedNV12GpuMemoryBufferMapping scoped_mapping(std::move(gmb));
-      libyuv::I420ToNV12(src_y_plane, buffer_size.width(), src_u_plane,
-                         buffer_size.width() / 2, src_v_plane,
-                         buffer_size.width() / 2, scoped_mapping.y_plane(),
-                         scoped_mapping.y_stride(), scoped_mapping.uv_plane(),
-                         scoped_mapping.uv_stride(), buffer_size.width(),
-                         buffer_size.height());
-    }
-    // When GpuMemoryBuffer is used, the frame data is opaque to the CPU for
-    // most of the time.  Currently the only supported underlying format is
-    // NV12.
-    VideoCaptureFormat gmb_format = ptz_format;
-    gmb_format.pixel_format = PIXEL_FORMAT_NV12;
-    client_->OnIncomingCapturedBuffer(std::move(capture_buffer), gmb_format,
-                                      current_time,
-                                      current_time - first_ref_time_,
-                                      /*capture_begin_timestamp=*/std::nullopt,
-                                      /*metadata=*/std::nullopt);
+
+      // When mappable buffer is used, the frame data is opaque to the CPU for
+      // most of the time.  Currently the only supported underlying format is
+      // NV12.
+      VideoCaptureFormat buffer_format = ptz_format;
+      buffer_format.pixel_format = PIXEL_FORMAT_NV12;
+      client_->OnIncomingCapturedBuffer(
+          std::move(capture_buffer), buffer_format, current_time,
+          current_time - first_ref_time_,
+          /*capture_begin_timestamp=*/std::nullopt,
+          /*metadata=*/std::nullopt);
   } else {
     // Leave the color space unset for compatibility purposes but this
     // information should be retrieved from the container when possible.

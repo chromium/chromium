@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 
@@ -21,17 +22,45 @@ namespace passage_embeddings {
 
 namespace {
 
-using passage_embeddings::PassagePriority;
-
 #if BUILDFLAG(USE_BLINK)
 using ScenarioScope = blink::performance_scenarios::ScenarioScope;
 using LoadingScenario = blink::performance_scenarios::LoadingScenario;
 using InputScenario = blink::performance_scenarios::InputScenario;
 #endif
 
+std::string PassagePriorityToString(PassagePriority priority) {
+  switch (priority) {
+    case PassagePriority::kUserInitiated:
+      return "UserInitiated";
+    case PassagePriority::kPassive:
+      return "Passive";
+    case PassagePriority::kLatent:
+      return "Latent";
+  }
+}
+
+void RecordDurationHistograms(PassagePriority priority,
+                              base::TimeDelta duration) {
+  base::UmaHistogramTimes("History.Embeddings.ScheduledJobDuration", duration);
+  base::UmaHistogramTimes(
+      base::StringPrintf("History.Embeddings.ScheduledJobDuration.%s",
+                         PassagePriorityToString(priority)),
+      duration);
+}
+
+void RecordStatusHistograms(PassagePriority priority,
+                            ComputeEmbeddingsStatus status) {
+  base::UmaHistogramEnumeration("History.Embeddings.ScheduledJobStatus",
+                                status);
+  base::UmaHistogramEnumeration(
+      base::StringPrintf("History.Embeddings.ScheduledJobStatus.%s",
+                         PassagePriorityToString(priority)),
+      status);
+}
+
 }  // namespace
 
-SchedulingEmbedder::Job::Job(passage_embeddings::PassagePriority priority,
+SchedulingEmbedder::Job::Job(PassagePriority priority,
                              TaskId task_id,
                              std::vector<std::string> passages,
                              ComputePassagesEmbeddingsCallback callback)
@@ -70,7 +99,7 @@ SchedulingEmbedder::SchedulingEmbedder(std::unique_ptr<Embedder> embedder,
 SchedulingEmbedder::~SchedulingEmbedder() = default;
 
 SchedulingEmbedder::TaskId SchedulingEmbedder::ComputePassagesEmbeddings(
-    passage_embeddings::PassagePriority priority,
+    PassagePriority priority,
     std::vector<std::string> passages,
     ComputePassagesEmbeddingsCallback callback) {
   base::UmaHistogramCounts1000("History.Embeddings.ScheduledJobCount",
@@ -90,7 +119,7 @@ SchedulingEmbedder::TaskId SchedulingEmbedder::ComputePassagesEmbeddings(
   if (passages.empty()) {
     std::move(callback).Run(
         /*passages=*/{}, /*embeddings=*/{}, task_id,
-        passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
+        ComputeEmbeddingsStatus::kSuccess);
     return task_id;
   }
 
@@ -164,8 +193,7 @@ void SchedulingEmbedder::SubmitWorkToEmbedder() {
 bool SchedulingEmbedder::IsPerformanceScenarioReady() {
 #if BUILDFLAG(USE_BLINK)
   if (!jobs_.empty() &&
-      jobs_.front().priority ==
-          passage_embeddings::PassagePriority::kUserInitiated) {
+      jobs_.front().priority == PassagePriority::kUserInitiated) {
     // Do not block on performance scenario if user initiated a query.
     return true;
   }
@@ -202,7 +230,8 @@ bool SchedulingEmbedder::TryCancel(TaskId task_id) {
               << (job.passages.empty() ? "" : job.passages[0]) << "`";
       std::move(job.callback)
           .Run(std::move(job.passages), {}, job.task_id,
-               passage_embeddings::ComputeEmbeddingsStatus::kCanceled);
+               ComputeEmbeddingsStatus::kCanceled);
+      RecordStatusHistograms(job.priority, ComputeEmbeddingsStatus::kCanceled);
       jobs_.erase(itr);
       return true;
     }
@@ -229,19 +258,17 @@ void SchedulingEmbedder::OnInputScenarioChanged(ScenarioScope scope,
 }
 #endif
 
-void SchedulingEmbedder::OnEmbedderReady(
-    OnEmbedderReadyCallback callback,
-    passage_embeddings::EmbedderMetadata metadata) {
+void SchedulingEmbedder::OnEmbedderReady(OnEmbedderReadyCallback callback,
+                                         EmbedderMetadata metadata) {
   embedder_ready_ = metadata.model_version != 0;
   std::move(callback).Run(metadata);
   SubmitWorkToEmbedder();
 }
 
-void SchedulingEmbedder::OnEmbeddingsComputed(
-    std::vector<std::string> passages,
-    std::vector<Embedding> embeddings,
-    TaskId task_id,
-    passage_embeddings::ComputeEmbeddingsStatus status) {
+void SchedulingEmbedder::OnEmbeddingsComputed(std::vector<std::string> passages,
+                                              std::vector<Embedding> embeddings,
+                                              TaskId task_id,
+                                              ComputeEmbeddingsStatus status) {
   VLOG(3) << embeddings.size() << " embeddings computed for " << passages.size()
           << " passages with status " << static_cast<int>(status);
   CHECK_EQ(passages.size(), embeddings.size());
@@ -253,6 +280,7 @@ void SchedulingEmbedder::OnEmbeddingsComputed(
             << (job.passages.empty() ? "" : job.passages[0]) << "`";
     std::move(job.callback)
         .Run(std::move(job.passages), {}, job.task_id, status);
+    RecordStatusHistograms(job.priority, status);
     jobs_.pop_front();
     // Continue on to allow possibility of resuming any remaining jobs.
     // This upholds the 1:1 callback requirement and gives jobs another
@@ -277,13 +305,13 @@ void SchedulingEmbedder::OnEmbeddingsComputed(
       read_index++;
     }
     if (job.embeddings.size() == job.passages.size()) {
-      base::UmaHistogramTimes("History.Embeddings.ScheduledJobDuration",
-                              job.timer.Elapsed());
       VLOG(2) << "Finished embedding work for " << job.passages.size()
               << " passages starting with `" << job.passages[0] << "`";
       std::move(job.callback)
           .Run(std::move(job.passages), std::move(job.embeddings), job.task_id,
                status);
+      RecordDurationHistograms(job.priority, job.timer.Elapsed());
+      RecordStatusHistograms(job.priority, status);
       jobs_.pop_front();
     }
   }

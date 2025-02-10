@@ -428,7 +428,7 @@ ExportedSharedImage ClientSharedImage::Export() {
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImage::ImportUnowned(
-    const ExportedSharedImage& exported_shared_image) {
+    ExportedSharedImage exported_shared_image) {
   return base::WrapRefCounted<ClientSharedImage>(new ClientSharedImage(
       exported_shared_image.mailbox_, exported_shared_image.metadata_,
       exported_shared_image.creation_sync_token_,

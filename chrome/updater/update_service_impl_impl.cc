@@ -45,7 +45,7 @@
 #include "chrome/updater/cleanup_task.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/find_unregistered_apps_task.h"
+#include "chrome/updater/handle_inconsistent_apps_task.h"
 #include "chrome/updater/installer.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/service.h"
@@ -745,7 +745,7 @@ void UpdateServiceImplImpl::GetAppStates(
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::MakeRefCounted<FindUnregisteredAppsTask>(config_, GetUpdaterScope())
+  base::MakeRefCounted<HandleInconsistentAppsTask>(config_, GetUpdaterScope())
       ->Run(base::BindOnce(&UpdateServiceImplImpl::GetAppStatesImpl, this,
                            std::move(callback)));
 }
@@ -800,8 +800,8 @@ void UpdateServiceImplImpl::RunPeriodicTasks(base::OnceClosure callback) {
 
   std::vector<base::OnceCallback<void(base::OnceClosure)>> new_tasks;
   new_tasks.push_back(
-      base::BindOnce(&FindUnregisteredAppsTask::Run,
-                     base::MakeRefCounted<FindUnregisteredAppsTask>(
+      base::BindOnce(&HandleInconsistentAppsTask::Run,
+                     base::MakeRefCounted<HandleInconsistentAppsTask>(
                          config_, GetUpdaterScope())));
   new_tasks.push_back(
       base::BindOnce(&RemoveUninstalledAppsTask::Run,
@@ -941,7 +941,7 @@ void UpdateServiceImplImpl::CheckForUpdate(
   VLOG(1) << __func__ << ": " << app_id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::MakeRefCounted<FindUnregisteredAppsTask>(config_, GetUpdaterScope())
+  base::MakeRefCounted<HandleInconsistentAppsTask>(config_, GetUpdaterScope())
       ->Run(base::BindOnce(
           &UpdateServiceImplImpl::FetchPolicies, this,
           base::BindOnce(
@@ -1000,7 +1000,7 @@ void UpdateServiceImplImpl::Update(
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::MakeRefCounted<FindUnregisteredAppsTask>(config_, GetUpdaterScope())
+  base::MakeRefCounted<HandleInconsistentAppsTask>(config_, GetUpdaterScope())
       ->Run(base::BindOnce(
           &UpdateServiceImplImpl::FetchPolicies, this,
           base::BindOnce(&FetchPoliciesDone,
@@ -1099,7 +1099,7 @@ void UpdateServiceImplImpl::Install(
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::MakeRefCounted<FindUnregisteredAppsTask>(config_, GetUpdaterScope())
+  base::MakeRefCounted<HandleInconsistentAppsTask>(config_, GetUpdaterScope())
       ->Run(base::BindOnce(
           &UpdateServiceImplImpl::FetchPolicies, this,
           base::BindOnce(&FetchPoliciesDone,
@@ -1198,7 +1198,7 @@ void UpdateServiceImplImpl::RunInstaller(
           << install_args << ": " << install_data << ": " << install_settings;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::MakeRefCounted<FindUnregisteredAppsTask>(config_, GetUpdaterScope())
+  base::MakeRefCounted<HandleInconsistentAppsTask>(config_, GetUpdaterScope())
       ->Run(base::BindOnce(
           &UpdateServiceImplImpl::FetchPolicies, this,
           base::BindOnce(

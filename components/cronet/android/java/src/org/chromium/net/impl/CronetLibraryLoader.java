@@ -19,6 +19,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
@@ -47,6 +48,8 @@ public class CronetLibraryLoader {
     private static boolean sInitialized;
 
     private static final String LIBRARY_NAME = "cronet." + ImplVersion.getCronetVersion();
+    private static final String TESTING_LIBRARY_NAME = LIBRARY_NAME + "_for_testing";
+    private static boolean sSwitchToTestLibrary;
     @VisibleForTesting public static final String TAG = CronetLibraryLoader.class.getSimpleName();
     // Thread used for initialization work and processing callbacks for
     // long-lived global singletons. This thread lives forever as things like
@@ -61,6 +64,10 @@ public class CronetLibraryLoader {
     @VisibleForTesting
     public static final String UPDATE_NETWORK_STATE_ONCE_ON_STARTUP_FLAG_NAME =
             "Cronet_UpdateNetworkStateOnlyOnceOnStartup";
+
+    @VisibleForTesting
+    public static final String INITIALIZE_BUILD_INFO_ON_STARTUP =
+            "Cronet_InitializeBuildInfoOnStartup";
 
     private static ResolvedFlags sHttpFlags;
 
@@ -99,8 +106,18 @@ public class CronetLibraryLoader {
         loadLibrary();
     }
 
-    private static void loadLibrary() {
-        System.loadLibrary(LIBRARY_NAME);
+    @VisibleForTesting
+    public static void loadLibrary() {
+        if (sSwitchToTestLibrary) {
+            System.loadLibrary(TESTING_LIBRARY_NAME);
+        } else {
+            System.loadLibrary(LIBRARY_NAME);
+        }
+    }
+
+    @VisibleForTesting
+    public static void switchToTestLibrary() {
+        sSwitchToTestLibrary = true;
     }
 
     public static boolean ensureInitialized(
@@ -144,6 +161,19 @@ public class CronetLibraryLoader {
                         ScopedSysTraceEvent.scoped(
                                 "CronetLibraryLoader#ensureInitialized calling nativeInit")) {
                     CronetLibraryLoaderJni.get().nativeInit();
+                }
+                var initializeBuildInfoOnStartup =
+                        getHttpFlags().flags().get(INITIALIZE_BUILD_INFO_ON_STARTUP);
+
+                // The flag is considered active if it is absent unlike the usual case
+                // where the flag is considered active only if it's "true". This is needed
+                // to ensure we don't change the behaviour.
+                if (initializeBuildInfoOnStartup == null
+                        || initializeBuildInfoOnStartup.getBoolValue()) {
+                    // This is added here to maintain the previous behaviour of Cronet where
+                    // it would initialize BuildInfo when it calls `getCronetVersion` in the
+                    // proceeding line. We want to A/B on the impact of removing this.
+                    BuildInfo.getInstance();
                 }
                 String implVersion = ImplVersion.getCronetVersion();
                 if (!implVersion.equals(CronetLibraryLoaderJni.get().getCronetVersion())) {

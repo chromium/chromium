@@ -86,7 +86,6 @@ ci/GPU FYI Win x64 Builder (dbg)
 ci/GPU FYI Win x64 DX12 Vulkan Builder
 ci/GPU FYI Win x64 DX12 Vulkan Builder (dbg)
 ci/GPU FYI XR Win x64 Builder
-ci/GPU Flake Finder
 ci/GPU Linux Builder
 ci/GPU Linux Builder (dbg)
 ci/GPU Mac Builder
@@ -154,6 +153,7 @@ try/android-dawn-arm-rel
 try/android-dawn-arm64-exp-rel
 try/android-dawn-arm64-rel
 try/android-dawn-arm64-s24-rel
+try/android_optional_gpu_tests_rel
 try/dawn-android-arm-deps-rel
 try/dawn-android-arm64-deps-rel
 try/dawn-chromium-presubmit
@@ -179,6 +179,7 @@ try/dawn-try-win10-x86-rel
 try/dawn-win10-x64-deps-rel
 try/dawn-win10-x86-deps-rel
 try/dawn-win11-arm64-deps-rel
+try/gpu-fyi-cq-android-arm64
 try/gpu-fyi-try-android-a13-32
 try/gpu-fyi-try-android-a23-32
 try/gpu-fyi-try-android-m-nexus-5x-64
@@ -237,7 +238,10 @@ try/gpu-try-win-nvidia-dbg
 try/linux-dawn-intel-exp-rel
 try/linux-dawn-nvidia-1660-exp-rel
 try/linux-dawn-rel
+try/linux_optional_gpu_tests_rel
 try/mac-arm64-dawn-rel
 try/mac-dawn-rel
+try/mac_optional_gpu_tests_rel
 try/win-dawn-rel
 try/win11-arm64-dawn-rel
+try/win_optional_gpu_tests_rel

@@ -248,7 +248,7 @@ CdmAdapter::CdmAdapter(
       scoped_crash_key_(&g_origin_crash_key,
                         helper_->GetCdmOrigin().Serialize()),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-      pool_(new AudioBufferMemoryPool()) {
+      pool_(base::MakeRefCounted<AudioBufferMemoryPool>()) {
   DVLOG(1) << __func__;
 
   DCHECK(!cdm_config.key_system.empty());

@@ -22,7 +22,7 @@ interface AIWriter {
     RaisesException
   ]
   Promise<DOMString> write(
-    DOMString input,
+    DOMString writingTask,
     optional AIWriterWriteOptions options = {});
 
   [
@@ -31,7 +31,7 @@ interface AIWriter {
     RaisesException
   ]
   ReadableStream writeStreaming(
-    DOMString input,
+    DOMString writingTask,
     optional AIWriterWriteOptions options = {});
 
   [

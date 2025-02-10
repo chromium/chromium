@@ -10,7 +10,7 @@
 #include <string_view>
 #include <vector>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -210,9 +210,6 @@ bool GetCurrentDnsServers(std::vector<IPEndPoint>* dns_servers,
                           bool* dns_over_tls_active,
                           std::string* dns_over_tls_hostname,
                           std::vector<std::string>* search_suffixes) {
-  DCHECK_GE(base::android::BuildInfo::GetInstance()->sdk_int(),
-            base::android::SDK_VERSION_MARSHMALLOW);
-
   JNIEnv* env = AttachCurrentThread();
   // Get the DNS status for the current default network.
   ScopedJavaLocalRef<jobject> result =
@@ -228,8 +225,8 @@ bool GetDnsServersForNetwork(std::vector<IPEndPoint>* dns_servers,
                              std::string* dns_over_tls_hostname,
                              std::vector<std::string>* search_suffixes,
                              handles::NetworkHandle network) {
-  DCHECK_GE(base::android::BuildInfo::GetInstance()->sdk_int(),
-            base::android::SDK_VERSION_P);
+  DCHECK_GE(base::android::android_info::sdk_int(),
+            base::android::android_info::SDK_VERSION_P);
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> result =
@@ -251,7 +248,6 @@ void TagSocket(SocketDescriptor socket, uid_t uid, int32_t tag) {
 
 namespace {
 
-using LollipopSetNetworkForSocket = int (*)(unsigned net_id, int socket_fd);
 using MarshmallowSetNetworkForSocket = int (*)(int64_t net_id, int socket_fd);
 
 MarshmallowSetNetworkForSocket GetMarshmallowSetNetworkForSocket() {
@@ -266,20 +262,6 @@ MarshmallowSetNetworkForSocket GetMarshmallowSetNetworkForSocket() {
       dlsym(dl, "android_setsocknetwork"));
 }
 
-LollipopSetNetworkForSocket GetLollipopSetNetworkForSocket() {
-  // On Android L use setNetworkForSocket from libnetd_client.so. Android's netd
-  // client library should always be loaded in our address space as it shims
-  // socket().
-  base::FilePath file(base::GetNativeLibraryName("netd_client"));
-  // Use RTLD_NOW to match Android's prior loading of the library:
-  // http://androidxref.com/6.0.0_r5/xref/bionic/libc/bionic/NetdClient.cpp#37
-  // Use RTLD_NOLOAD to assert that the library is already loaded and avoid
-  // doing any disk IO.
-  void* dl = dlopen(file.value().c_str(), RTLD_NOW | RTLD_NOLOAD);
-  return reinterpret_cast<LollipopSetNetworkForSocket>(
-      dlsym(dl, "setNetworkForSocket"));
-}
-
 }  // namespace
 
 int BindToNetwork(SocketDescriptor socket, handles::NetworkHandle network) {
@@ -287,28 +269,15 @@ int BindToNetwork(SocketDescriptor socket, handles::NetworkHandle network) {
   if (network == handles::kInvalidNetworkHandle)
     return ERR_INVALID_ARGUMENT;
 
-  // Android prior to Lollipop didn't have support for binding sockets to
-  // networks.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_LOLLIPOP)
-    return ERR_NOT_IMPLEMENTED;
-
   int rv;
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_MARSHMALLOW) {
-    static MarshmallowSetNetworkForSocket marshmallow_set_network_for_socket =
-        GetMarshmallowSetNetworkForSocket();
-    if (!marshmallow_set_network_for_socket)
-      return ERR_NOT_IMPLEMENTED;
-    rv = marshmallow_set_network_for_socket(network, socket);
-    if (rv)
-      rv = errno;
-  } else {
-    static LollipopSetNetworkForSocket lollipop_set_network_for_socket =
-        GetLollipopSetNetworkForSocket();
-    if (!lollipop_set_network_for_socket)
-      return ERR_NOT_IMPLEMENTED;
-    rv = -lollipop_set_network_for_socket(network, socket);
+  static MarshmallowSetNetworkForSocket marshmallow_set_network_for_socket =
+      GetMarshmallowSetNetworkForSocket();
+  if (!marshmallow_set_network_for_socket) {
+    return ERR_NOT_IMPLEMENTED;
+  }
+  rv = marshmallow_set_network_for_socket(network, socket);
+  if (rv) {
+    rv = errno;
   }
   // If |network| has since disconnected, |rv| will be ENONET.  Surface this as
   // ERR_NETWORK_CHANGED, rather than MapSystemError(ENONET) which gives back
@@ -347,11 +316,6 @@ NET_EXPORT_PRIVATE int GetAddrInfoForNetwork(handles::NetworkHandle network,
                                              struct addrinfo** res) {
   if (network == handles::kInvalidNetworkHandle) {
     errno = EINVAL;
-    return EAI_SYSTEM;
-  }
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_MARSHMALLOW) {
-    errno = ENOSYS;
     return EAI_SYSTEM;
   }
 

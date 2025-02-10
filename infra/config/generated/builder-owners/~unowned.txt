@@ -192,7 +192,6 @@ try/android_blink_rel
 try/android_compile_dbg
 try/android_compile_x64_dbg
 try/android_compile_x86_dbg
-try/android_optional_gpu_tests_rel
 try/branch-config-verifier
 try/builder-config-verifier
 try/chromeos-amd64-generic-asan-rel
@@ -214,7 +213,6 @@ try/fuchsia-fyi-arm64-dbg
 try/fuchsia-x64-accessibility-rel
 try/fuchsia-x64-cast-receiver-rel
 try/fuchsia-x64-cast-receiver-rel-compilator
-try/gpu-fyi-cq-android-arm64
 try/ios-angle-try-intel
 try/ios-asan
 try/ios-blink-dbg-fyi
@@ -303,7 +301,6 @@ try/linux_chromium_dbg_ng
 try/linux_chromium_msan_rel_ng
 try/linux_chromium_tsan_rel_ng
 try/linux_chromium_tsan_rel_ng-compilator
-try/linux_optional_gpu_tests_rel
 try/linux_upload_clang
 try/linux_upload_rust
 try/mac-angle-chromium-try
@@ -343,7 +340,6 @@ try/mac_chromium_asan_rel_ng
 try/mac_chromium_compile_dbg_ng
 try/mac_chromium_compile_rel_ng
 try/mac_chromium_dbg_ng
-try/mac_optional_gpu_tests_rel
 try/mac_upload_clang
 try/mac_upload_clang_arm
 try/mac_upload_rust
@@ -386,7 +382,6 @@ try/win32-official
 try/win_chromium_compile_dbg_ng
 try/win_chromium_compile_rel_ng
 try/win_chromium_x64_rel_ng
-try/win_optional_gpu_tests_rel
 try/win_upload_clang
 try/win_upload_rust
 webrtc.fyi/WebRTC Chromium FYI Android Builder

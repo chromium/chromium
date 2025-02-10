@@ -153,14 +153,6 @@ std::u16string GetProfileIdentifier(const ProfileAttributesEntry& entry) {
 
 }  // namespace
 
-ProfileMenuView::IdentitySectionParams::IdentitySectionParams() = default;
-ProfileMenuView::IdentitySectionParams::~IdentitySectionParams() = default;
-ProfileMenuView::IdentitySectionParams::IdentitySectionParams(
-    IdentitySectionParams&&) = default;
-ProfileMenuView::IdentitySectionParams&
-ProfileMenuView::IdentitySectionParams::operator=(IdentitySectionParams&&) =
-    default;
-
 // ProfileMenuView ---------------------------------------------------------
 
 // static
@@ -178,6 +170,10 @@ void ProfileMenuView::BuildMenu() {
   if (profile->IsGuestSession()) {
     BuildGuestIdentity();
     MaybeBuildCloseBrowsersButton();
+    if (base::FeatureList::IsEnabled(
+            switches::kEnableImprovedGuestProfileMenu)) {
+      AddBottomMargin();
+    }
     return;
   }
 
@@ -687,22 +683,28 @@ void ProfileMenuView::BuildIdentity() {
 }
 
 void ProfileMenuView::BuildGuestIdentity() {
-  int guest_window_count = BrowserList::GetGuestBrowserCount();
-
   menu_title_ = l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME);
   menu_subtitle_ = std::u16string();
-  std::u16string management_label;
-  if (guest_window_count > 1) {
-    menu_subtitle_ = l10n_util::GetPluralStringFUTF16(
-        IDS_GUEST_WINDOW_COUNT_MESSAGE, guest_window_count);
-  }
 
-  SetProfileIdentityInfo(
-      /*profile_name=*/std::u16string(),
-      /*profile_background_color=*/SK_ColorTRANSPARENT,
-      /*edit_button_params=*/std::nullopt, profiles::GetGuestAvatar(),
-      ui::ImageModel(), menu_title_, menu_subtitle_, management_label,
-      &kGuestMenuArtIcon);
+  if (base::FeatureList::IsEnabled(switches::kEnableImprovedGuestProfileMenu)) {
+    IdentitySectionParams params;
+    params.title = menu_title_;
+    params.profile_image = profiles::GetGuestAvatar();
+    SetProfileIdentityWithCallToAction(std::move(params));
+  } else {
+    int guest_window_count = BrowserList::GetGuestBrowserCount();
+    if (guest_window_count > 1) {
+      menu_subtitle_ = l10n_util::GetPluralStringFUTF16(
+          IDS_GUEST_WINDOW_COUNT_MESSAGE, guest_window_count);
+    }
+
+    SetProfileIdentityInfo(
+        /*profile_name=*/std::u16string(),
+        /*profile_background_color=*/SK_ColorTRANSPARENT,
+        /*edit_button_params=*/std::nullopt, profiles::GetGuestAvatar(),
+        ui::ImageModel(), menu_title_, menu_subtitle_,
+        /*management_label=*/std::u16string(), &kGuestMenuArtIcon);
+  }
 
   if (GetWidget()) {
     GetWidget()->UpdateAccessibleNameForRootView();
@@ -1145,15 +1147,14 @@ void ProfileMenuView::MaybeBuildCloseBrowsersButton() {
   const int window_count = CountBrowsersFor(profile);
   base::RepeatingClosure callback = base::BindRepeating(
       &ProfileMenuView::OnExitProfileButtonClicked, base::Unretained(this));
-  if (profile->IsGuestSession()) {
-    AddFeatureButton(l10n_util::GetPluralStringFUTF16(
-                         IDS_GUEST_PROFILE_MENU_CLOSE_BUTTON, window_count),
-                     std::move(callback),
-                     vector_icons::kCloseChromeRefreshIcon);
-    return;
-  }
+  int button_title_id = IDS_PROFILE_MENU_CLOSE_PROFILE_X_WINDOWS_BUTTON;
 
-  if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+  if (profile->IsGuestSession()) {
+    button_title_id =
+        base::FeatureList::IsEnabled(switches::kEnableImprovedGuestProfileMenu)
+            ? IDS_GUEST_PROFILE_MENU_CLOSE_X_WINDOWS_BUTTON
+            : IDS_GUEST_PROFILE_MENU_CLOSE_BUTTON;
+  } else if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
     // Show the button only if the current profile has multiple windows open.
     if (window_count <= 1) {
       return;
@@ -1176,8 +1177,7 @@ void ProfileMenuView::MaybeBuildCloseBrowsersButton() {
   }
 
   AddFeatureButton(
-      l10n_util::GetPluralStringFUTF16(
-          IDS_PROFILE_MENU_CLOSE_PROFILE_X_WINDOWS_BUTTON, window_count),
+      l10n_util::GetPluralStringFUTF16(button_title_id, window_count),
       std::move(callback), vector_icons::kCloseChromeRefreshIcon);
 }
 

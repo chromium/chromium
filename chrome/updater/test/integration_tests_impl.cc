@@ -51,6 +51,7 @@
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
+#include "chrome/enterprise_companion/enterprise_companion_version.h"
 #include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/updater/activity.h"
@@ -1435,7 +1436,7 @@ void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer* test_server) {
       UpdaterScope::kSystem, test_server, enterprise_companion::kCompanionAppId,
       /*install_data_index=*/{}, UpdateService::Priority::kForeground,
       /*event_type=*/2, base::Version({0, 0, 0, 0}),
-      base::Version({1, 0, 0, 0}),
+      base::Version(kEnterpriseCompanionVersion),
       /*do_fault_injection=*/false, /*skip_download=*/false, crx_path,
       kEnterpriseCompanionCRXRun, kEnterpriseCompanionCRXArguments);
 }

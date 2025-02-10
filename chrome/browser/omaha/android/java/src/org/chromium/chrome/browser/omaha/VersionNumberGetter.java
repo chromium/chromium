@@ -13,12 +13,14 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /**
  * Stubbed class for getting version numbers from the rest of Chrome. Override the functions for
  * unit tests.
  */
+@NullMarked
 public class VersionNumberGetter {
     private static VersionNumberGetter sInstance = new VersionNumberGetter();
 

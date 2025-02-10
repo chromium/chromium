@@ -123,7 +123,7 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
       uint32_t texture_target) override;
 
   scoped_refptr<ClientSharedImage> ImportSharedImage(
-      const ExportedSharedImage& exported_shared_image) override;
+      ExportedSharedImage exported_shared_image) override;
 
   const SharedImageCapabilities& GetCapabilities() override;
 

@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -26,6 +27,8 @@ namespace media {
 // NOTE: It is illegal to call any method when end_of_stream() is true.
 class MEDIA_EXPORT DataBuffer : public base::RefCountedThreadSafe<DataBuffer> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // Constructs an empty buffer with max `capacity`, uninitialized `data_` and
   // a size of zero.
   explicit DataBuffer(size_t capacity);
@@ -33,6 +36,12 @@ class MEDIA_EXPORT DataBuffer : public base::RefCountedThreadSafe<DataBuffer> {
   // Constructs a filled buffer by moving `buffer` into the `data_` property,
   // with a size of `buffer.size()`.
   explicit DataBuffer(base::HeapArray<uint8_t> buffer);
+
+  // Allocates a buffer with a copy of `data` in it
+  DataBuffer(base::PassKey<DataBuffer>, base::span<const uint8_t> data);
+
+  enum class DataBufferType { kNormal, kEndOfStream };
+  DataBuffer(base::PassKey<DataBuffer>, DataBufferType data_buffer_type);
 
   DataBuffer(DataBuffer&&) = delete;
   DataBuffer(const DataBuffer&) = delete;
@@ -115,18 +124,10 @@ class MEDIA_EXPORT DataBuffer : public base::RefCountedThreadSafe<DataBuffer> {
 
   bool end_of_stream() const { return is_end_of_stream_; }
 
- protected:
+ private:
   friend class base::RefCountedThreadSafe<DataBuffer>;
-  enum class DataBufferType { kNormal, kEndOfStream };
-
-  // Allocates a buffer with a copy of |data| in it
-  explicit DataBuffer(base::span<const uint8_t> data);
-
-  explicit DataBuffer(DataBufferType data_buffer_type);
-
   virtual ~DataBuffer();
 
- private:
   base::TimeDelta timestamp_;
   base::TimeDelta duration_;
 

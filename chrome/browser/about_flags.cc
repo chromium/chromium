@@ -5175,6 +5175,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-isolated-web-apps", flag_descriptions::kEnableIsolatedWebAppsName,
      flag_descriptions::kEnableIsolatedWebAppsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kIsolatedWebApps)},
+    {"direct-sockets-in-shared-workers",
+     flag_descriptions::kDirectSocketsInSharedWorkersName,
+     flag_descriptions::kDirectSocketsInSharedWorkersDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(blink::features::kDirectSocketsInSharedWorkers)},
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-isolated-web-app-managed-guest-session-install",
      flag_descriptions::kEnableIsolatedWebAppManagedGuestSessionInstallName,
@@ -11639,6 +11643,22 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccountStoragePrefsThemesAndSearchEnginesDescription,
      kOsDesktop,
      MULTI_VALUE_TYPE(kAccountStoragePrefsThemesAndSearchEnginesChoices)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    {"autofill-enable-amount-extraction-desktop",
+     flag_descriptions::kAutofillEnableAmountExtractionDesktopName,
+     flag_descriptions::kAutofillEnableAmountExtractionDesktopDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableAmountExtractionDesktop)},
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+    {"enable-ax-tree-fixing", flag_descriptions::kAXTreeFixingName,
+     flag_descriptions::kAXTreeFixingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kAXTreeFixing)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

@@ -6,6 +6,9 @@
 
 #include <utility>
 
+#include "base/memory/scoped_refptr.h"
+#include "base/types/pass_key.h"
+
 namespace media {
 
 DataBuffer::DataBuffer(size_t capacity) {
@@ -17,23 +20,27 @@ DataBuffer::DataBuffer(base::HeapArray<uint8_t> buffer) : size_(buffer.size()) {
   CHECK(data_.data());
 }
 
-DataBuffer::DataBuffer(base::span<const uint8_t> data) : size_(data.size()) {
+DataBuffer::DataBuffer(base::PassKey<DataBuffer>,
+                       base::span<const uint8_t> data)
+    : size_(data.size()) {
   CHECK(!data.empty());
   data_ = base::HeapArray<uint8_t>::CopiedFrom(data);
 }
-DataBuffer::DataBuffer(DataBufferType data_buffer_type)
+DataBuffer::DataBuffer(base::PassKey<DataBuffer>,
+                       DataBufferType data_buffer_type)
     : is_end_of_stream_(data_buffer_type == DataBufferType::kEndOfStream) {}
 
 DataBuffer::~DataBuffer() = default;
 
 // static
 scoped_refptr<DataBuffer> DataBuffer::CopyFrom(base::span<const uint8_t> data) {
-  return base::WrapRefCounted(new DataBuffer(data));
+  return base::MakeRefCounted<DataBuffer>(base::PassKey<DataBuffer>(), data);
 }
 
 // static
 scoped_refptr<DataBuffer> DataBuffer::CreateEOSBuffer() {
-  return base::WrapRefCounted(new DataBuffer(DataBufferType::kEndOfStream));
+  return base::MakeRefCounted<DataBuffer>(base::PassKey<DataBuffer>(),
+                                          DataBufferType::kEndOfStream);
 }
 
 void DataBuffer::Append(base::span<const uint8_t> data) {

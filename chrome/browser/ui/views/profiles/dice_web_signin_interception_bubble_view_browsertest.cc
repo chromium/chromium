@@ -180,18 +180,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
       testing::ContainerEq(expected_histogram_total_count));
 }
 
-class DiceWebSigninInterceptionBubbleWithExplicitBrowserSigninBrowserTest
-    : public DiceWebSigninInterceptionBubbleBrowserTest {
- private:
-  // Activates some new UI behaviors around dismissing the bubles.
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
-};
-
 // Tests that the callback is called once when the bubble is dismissed.
-IN_PROC_BROWSER_TEST_F(
-    DiceWebSigninInterceptionBubbleWithExplicitBrowserSigninBrowserTest,
-    BubbleDismissedByEscapeKey) {
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
+                       BubbleDismissedByEscapeKey) {
   base::HistogramTester histogram_tester;
   // Creating the bubble through the static function.
   std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle =
@@ -244,9 +235,8 @@ IN_PROC_BROWSER_TEST_F(
 
 // Same as the above test, but dismissing by pressing the avatar button.
 // Only difference in expectations is the histograms records.
-IN_PROC_BROWSER_TEST_F(
-    DiceWebSigninInterceptionBubbleWithExplicitBrowserSigninBrowserTest,
-    BubbleDismissedByPressingAvatarButton) {
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
+                       BubbleDismissedByPressingAvatarButton) {
   base::HistogramTester histogram_tester;
   // Creating the bubble through the static function.
   std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle =
@@ -639,10 +629,6 @@ class DiceWebSigninInterceptionBubbleWithParamBrowserTest
   std::u16string expected_avatar_text() {
     return l10n_util::GetStringUTF16(GetParam().expected_avatar_text_id);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
 };
 
 IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubbleWithParamBrowserTest,

@@ -107,7 +107,7 @@ AudioDecoderForMixer::AudioDecoderForMixer(
       task_runner_(backend->GetTaskRunner()),
       buffer_pool_frames_(kInitialFillSizeFrames),
       pending_output_frames_(kNoPendingOutput),
-      pool_(new ::media::AudioBufferMemoryPool()),
+      pool_(base::MakeRefCounted<::media::AudioBufferMemoryPool>()),
       weak_factory_(this) {
   TRACE_FUNCTION_ENTRY0();
   DCHECK(backend_);

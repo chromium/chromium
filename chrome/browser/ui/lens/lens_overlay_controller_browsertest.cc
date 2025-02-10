@@ -145,6 +145,10 @@ constexpr char kPdfDocument[] = "/pdf/test.pdf";
 constexpr char kMultiPagePdf[] = "/pdf/test-bookmarks.pdf";
 constexpr char kPdfDocumentWithForm[] = "/pdf/submit_form.pdf";
 constexpr char kDocumentWithNonAsciiCharacters[] = "/non-ascii.html";
+constexpr char kImageFile[] = "/handbag.png";
+constexpr char kVideoFile[] = "/media/bear-640x360-a_frag-cenc.mp4";
+constexpr char kAudioFile[] = "/media/pink_noise_140ms.wav";
+constexpr char kJsonFile[] = "/web_apps/basic.json";
 
 constexpr char kPdfDocument12KbFileName[] = "pdf/test-title.pdf";
 
@@ -265,6 +269,15 @@ void WaitForPaintImpl(
   if (first_paint_completed) {
     return;
   }
+  // Wait for the first paint to complete. The below code works for a majority
+  // of cases, but loading non-html files can lead to the workaround failing, so
+  // this check is still needed.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return browser->tab_strip_model()
+        ->GetActiveTab()
+        ->GetContents()
+        ->CompletedFirstVisuallyNonEmptyPaint();
+  }));
   // If the first paint was not mark as completed by the WebContents, use a
   // workaround to request a frame on the WebContents. This function will only
   // return when the promise is resolved and thus there is content painted on
@@ -499,8 +512,12 @@ class LensOverlayControllerFake : public LensOverlayController {
 
   void BindOverlay(mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
                    mojo::PendingRemote<lens::mojom::LensPage> page) override {
-    fake_overlay_page_.overlay_page_.Bind(std::move(page));
+    // Reset the receiver to close any existing connection.
+    fake_overlay_page_receiver_.reset();
+    fake_overlay_page_.overlay_page_.reset();
+
     // Set up the fake overlay page to intercept the mojo call.
+    fake_overlay_page_.overlay_page_.Bind(std::move(page));
     LensOverlayController::BindOverlay(
         std::move(receiver),
         fake_overlay_page_receiver_.BindNewPipeAndPassRemote());
@@ -1967,7 +1984,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                                                   /*selection_end_index=*/0);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlayAndResults; }));
-
 
   // Verify the side panel is showing.
   auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
@@ -5154,6 +5170,10 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       "Lens.Overlay.ContextualSearchBox.ByPageContentType.Pdf.ShownInSession",
       /*sample*/ false,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Pdf.ShownInSession",
+      /*sample*/ false,
+      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
@@ -5274,6 +5294,10 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "Lens.Overlay.ContextualSearchBox.ByPageContentType.Pdf.ShownInSession",
+      /*sample*/ true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Pdf.ShownInSession",
       /*sample*/ true,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
@@ -5969,6 +5993,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText."
+      "ShownInSession",
+      /*sample*/ true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Html."
       "ShownInSession",
       /*sample*/ true,
       /*expected_bucket_count=*/1);
@@ -6689,6 +6718,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerTextEnabledSmallByteLimitTest,
       "ShownInSession",
       /*sample*/ false,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Html."
+      "ShownInSession",
+      /*sample*/ false,
+      /*expected_bucket_count=*/1);
 }
 
 class LensOverlayControllerInnerHtmlEnabledSmallByteLimitTest
@@ -6931,6 +6965,68 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
       ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
           kPageContentTypeName,
       static_cast<int64_t>(lens::MimeType::kHtml));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
+                       RecordSearchboxShownInSessionHistogramsByDocumentType) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an image, and invoke then close the overlay.
+  WaitForPaint(kImageFile);
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+
+  // Navigate to a audio file, and invoke then close the overlay.
+  WaitForPaint(kAudioFile);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+
+  // Navigate to a video file, and invoke then close the overlay.
+  WaitForPaint(kVideoFile);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+
+  // Navigate to a JSON file, and invoke then close the overlay.
+  WaitForPaint(kJsonFile);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+
+  // Verify histograms were recorded.
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Image.ShownInSession",
+      /*sample*/ true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Video.ShownInSession",
+      /*sample*/ true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Audio.ShownInSession",
+      /*sample*/ true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Json.ShownInSession",
+      /*sample*/ true,
+      /*expected_bucket_count=*/1);
 }
 
 class LensOverlayControllerContextualFeaturesDisabledTest

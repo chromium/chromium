@@ -6,20 +6,24 @@
 
 #include <optional>
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "content/browser/worker_host/shared_worker_host.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/direct_sockets_delegate.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/isolated_context_util.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
@@ -100,9 +104,19 @@ bool ValidateRequest(const Context& context,
     return true;
   }
   return std::visit(
-      base::Overloaded{[&](RenderFrameHost* rfh) {
-        return delegate->ValidateRequest(*rfh, {address, port, protocol});
-      }},
+      base::Overloaded{
+          [&](RenderFrameHost* rfh) {
+            return delegate->ValidateRequest(*rfh, {address, port, protocol});
+          },
+          [&](base::WeakPtr<SharedWorkerHost> shared_worker) {
+            if (!shared_worker) {
+              return false;
+            }
+            return delegate->ValidateRequestForSharedWorker(
+                CHECK_DEREF(shared_worker->GetProcessHost())
+                    .GetBrowserContext(),
+                shared_worker->instance().url(), {address, port, protocol});
+          }},
       context);
 }
 
@@ -140,6 +154,10 @@ bool RequiresPrivateNetworkAccess(const net::AddressList& addresses) {
 void RequestPrivateNetworkAccess(const Context& context,
                                  base::OnceCallback<void(bool)> callback) {
   auto* delegate = GetContentClient()->browser()->GetDirectSocketsDelegate();
+  if (!delegate) {
+    std::move(callback).Run(/*access_allowed=*/true);
+    return;
+  }
   return std::visit(
       base::Overloaded{
           [&](content::RenderFrameHost* rfh) {
@@ -149,14 +167,19 @@ void RequestPrivateNetworkAccess(const Context& context,
               std::move(callback).Run(/*access_allowed=*/false);
               return;
             }
-            if (!delegate) {
-              // No additional rules from the embedder.
-              std::move(callback).Run(/*access_allowed=*/true);
-              return;
-            }
             delegate->RequestPrivateNetworkAccess(*rfh, std::move(callback));
           },
-      },
+          [&](base::WeakPtr<SharedWorkerHost> shared_worker) {
+            // TODO(crbug.com/393539884): Figure out the appropriate checks wrt
+            // permissions.
+            std::move(callback)
+                .Run(/*access_allowed=*/
+                     shared_worker &&
+                     delegate->IsPrivateNetworkAccessAllowedForSharedWorker(
+                         CHECK_DEREF(shared_worker->GetProcessHost())
+                             .GetBrowserContext(),
+                         shared_worker->instance().url()));
+          }},
       context);
 }
 
@@ -335,9 +358,8 @@ class DirectSocketsServiceImpl::FirewallHoleDelegate
 };
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-DirectSocketsServiceImpl::DirectSocketsServiceImpl(
-    RenderFrameHost* render_frame_host)
-    : context_(render_frame_host),
+DirectSocketsServiceImpl::DirectSocketsServiceImpl(Context context)
+    : context_(std::move(context)),
       resolver_(network::SimpleHostResolver::Create(
           /*network_context_factory=*/base::BindRepeating(
               &DirectSocketsServiceImpl::GetNetworkContext,
@@ -374,6 +396,36 @@ void DirectSocketsServiceImpl::CreateForFrame(
   new DocumentHelper(
       base::WrapUnique(new DirectSocketsServiceImpl(render_frame_host)),
       render_frame_host, std::move(receiver));
+}
+
+// static
+void DirectSocketsServiceImpl::CreateForSharedWorker(
+    SharedWorkerHost& shared_worker,
+    mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!base::FeatureList::IsEnabled(blink::features::kDirectSockets)) {
+    mojo::ReportBadMessage(
+        "features::kDirectSockets is disabled by command line parameters or a "
+        "Finch experiment.");
+    return;
+  }
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kDirectSocketsInSharedWorkers)) {
+    mojo::ReportBadMessage(
+        "features::kDirectSocketsInSharedWorkers is disabled by command line "
+        "parameters or a Finch experiment.");
+    return;
+  }
+  if (!IsIsolatedContext(shared_worker.GetProcessHost())) {
+    mojo::ReportBadMessage(
+        "SharedWorker is not sufficiently isolated to use Direct Sockets.");
+    return;
+  }
+  // TODO(crbug.com/393539884): Figure out the appropriate checks wrt
+  // permissions.
+  mojo::MakeSelfOwnedReceiver(
+      base::WrapUnique(new DirectSocketsServiceImpl(shared_worker.AsWeakPtr())),
+      std::move(receiver));
 }
 
 void DirectSocketsServiceImpl::OpenTCPSocket(
@@ -519,7 +571,12 @@ void DirectSocketsServiceImpl::OpenTCPServerSocket(
       connection_tracker.InitWithNewPipeAndPassRemote();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  GetNetworkContext()->CreateTCPServerSocket(
+  auto* network_context = GetNetworkContext();
+  if (!network_context) {
+    FulfillWithError(std::move(callback), net::ERR_CONTEXT_SHUT_DOWN);
+    return;
+  }
+  network_context->CreateTCPServerSocket(
       options->local_addr, std::move(server_options),
       net::MutableNetworkTrafficAnnotationTag(kDirectSocketsTrafficAnnotation),
       std::move(socket),
@@ -558,7 +615,13 @@ network::mojom::NetworkContext* DirectSocketsServiceImpl::GetNetworkContext()
           [](RenderFrameHost* rfh) {
             return rfh->GetStoragePartition()->GetNetworkContext();
           },
-      },
+          [](base::WeakPtr<SharedWorkerHost> shared_worker)
+              -> network::mojom::NetworkContext* {
+            return shared_worker ? CHECK_DEREF(shared_worker->GetProcessHost())
+                                       .GetStoragePartition()
+                                       ->GetNetworkContext()
+                                 : nullptr;
+          }},
       context_);
 }
 
@@ -614,7 +677,12 @@ void DirectSocketsServiceImpl::CreateTCPConnectedSocketImpl(
     mojo::PendingReceiver<network::mojom::TCPConnectedSocket> socket,
     mojo::PendingRemote<network::mojom::SocketObserver> observer,
     OpenTCPSocketCallback callback) {
-  GetNetworkContext()->CreateTCPConnectedSocket(
+  auto* network_context = GetNetworkContext();
+  if (!network_context) {
+    FulfillWithError(std::move(callback), net::ERR_CONTEXT_SHUT_DOWN);
+    return;
+  }
+  network_context->CreateTCPConnectedSocket(
       /*local_addr=*/std::nullopt,
       /*remote_addr_list=*/resolved_addresses, std::move(options),
       net::MutableNetworkTrafficAnnotationTag(kDirectSocketsTrafficAnnotation),
@@ -685,7 +753,12 @@ void DirectSocketsServiceImpl::CreateRestrictedUDPSocketImpl(
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
     base::OnceCallback<void(int32_t, const std::optional<net::IPEndPoint>&)>
         callback) {
-  GetNetworkContext()->CreateRestrictedUDPSocket(
+  auto* network_context = GetNetworkContext();
+  if (!network_context) {
+    FulfillWithError(std::move(callback), net::ERR_CONTEXT_SHUT_DOWN);
+    return;
+  }
+  network_context->CreateRestrictedUDPSocket(
       peer_addr, mode,
       /*traffic_annotation=*/
       net::MutableNetworkTrafficAnnotationTag(kDirectSocketsTrafficAnnotation),

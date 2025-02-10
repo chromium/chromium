@@ -2665,16 +2665,19 @@ TEST_F(PaymentsDataManagerTest, ProcessCardArtUrlChanges) {
 // Params:
 // 1. Whether the benefits toggle is turned on or off.
 // 2. Whether the American Express benefits flag is enabled.
+// 3. Whether the BMO benefits flag is enabled.
 class PaymentsDataManagerStartupBenefitsTest
     : public PaymentsDataManagerHelper,
       public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   PaymentsDataManagerStartupBenefitsTest() {
     feature_list_.InitWithFeatureStates(
         /*feature_states=*/
         {{features::kAutofillEnableCardBenefitsForAmericanExpress,
-          AreAmericanExpressBenefitsEnabled()}});
+          AreAmericanExpressBenefitsEnabled()},
+         {features::kAutofillEnableCardBenefitsForBmo,
+          AreBmoBenefitsEnabled()}});
     SetUpTest();
   }
 
@@ -2684,6 +2687,7 @@ class PaymentsDataManagerStartupBenefitsTest
   bool AreAmericanExpressBenefitsEnabled() const {
     return std::get<1>(GetParam());
   }
+  bool AreBmoBenefitsEnabled() const { return std::get<2>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -2692,6 +2696,7 @@ class PaymentsDataManagerStartupBenefitsTest
 INSTANTIATE_TEST_SUITE_P(,
                          PaymentsDataManagerStartupBenefitsTest,
                          testing::Combine(testing::Bool(),
+                                          testing::Bool(),
                                           testing::Bool()));
 
 // Tests that on startup we log the value of the card benefits pref.
@@ -2701,13 +2706,13 @@ TEST_P(PaymentsDataManagerStartupBenefitsTest,
   prefs::SetPaymentCardBenefits(prefs_.get(), IsBenefitsPrefTurnedOn());
   base::HistogramTester histogram_tester;
   ResetPaymentsDataManager();
-  if (AreAmericanExpressBenefitsEnabled()) {
+  if (!AreAmericanExpressBenefitsEnabled() && !AreBmoBenefitsEnabled()) {
+    histogram_tester.ExpectTotalCount(
+        "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup", 0);
+  } else {
     histogram_tester.ExpectUniqueSample(
         "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup",
         IsBenefitsPrefTurnedOn(), 1);
-  } else {
-    histogram_tester.ExpectTotalCount(
-        "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup", 0);
   }
 }
 

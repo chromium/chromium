@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.browser_controls;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Allows for sizing the browser controls, as well as manipulating visibility and retrieving state.
  *
  * <p>Note that only top-level UI coordinator classes should change the browser controls size.
  */
+@NullMarked
 public interface BrowserControlsSizer extends BrowserControlsVisibilityManager {
     /** Sets the height of the bottom controls. */
     void setBottomControlsHeight(int bottomControlsHeight, int bottomControlsMinHeight);

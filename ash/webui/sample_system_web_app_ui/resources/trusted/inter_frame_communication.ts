@@ -23,14 +23,14 @@ class ParentTrustedPageImpl implements ParentTrustedPage {
     this.receiver_.$.bindHandle(pendingReceiver.handle);
   }
 
-  async doSomethingForChild(task: string) {
+  doSomethingForChild(task: string) {
     document.querySelector<HTMLDivElement>('#child-task')!.innerText = task;
 
     // Mojo interface's JS implementation should return an Object, even if the
     // method only has one return value.
     //
     // Each field should match their return value name defined in .mojom file.
-    return {resp: 'Task done'};
+    return Promise.resolve({resp: 'Task done'});
   }
 }
 

@@ -10,9 +10,11 @@
 
 #include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
+#include "url/gurl.h"
 
 namespace content {
 
+class BrowserContext;
 class RenderFrameHost;
 
 // Allows the embedder to alter the logic of some operations in
@@ -31,13 +33,18 @@ class CONTENT_EXPORT DirectSocketsDelegate {
 
   // Allows embedders to introduce additional rules for specific
   // addresses/ports.
-  virtual bool ValidateRequest(content::RenderFrameHost& rfh,
-                               const RequestDetails&) = 0;
+  virtual bool ValidateRequest(RenderFrameHost& rfh, const RequestDetails&) = 0;
+  virtual bool ValidateRequestForSharedWorker(BrowserContext* browser_context,
+                                              const GURL& shared_worker_url,
+                                              const RequestDetails&) = 0;
 
   // Allows embedders to introduce additional rules for private network access.
   virtual void RequestPrivateNetworkAccess(
-      content::RenderFrameHost& rfh,
+      RenderFrameHost& rfh,
       base::OnceCallback<void(/*access_allowed=*/bool)>) = 0;
+  virtual bool IsPrivateNetworkAccessAllowedForSharedWorker(
+      BrowserContext* browser_context,
+      const GURL& shared_worker_url) = 0;
 };
 
 }  // namespace content

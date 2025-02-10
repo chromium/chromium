@@ -301,12 +301,12 @@ class AppInstallDialogElement extends HTMLElement {
                          DialogState.FAILED_INSTALL_ERROR);
   }
 
-  private async onOpenAppButtonClick() {
+  private onOpenAppButtonClick() {
     this.dialogArgs!.appInfoArgs!.actions.launchApp();
     this.proxy.handler.closeDialog();
   }
 
-  private async onTryAgainButtonClick() {
+  private onTryAgainButtonClick() {
     this.dialogArgs!.connectionErrorActions!.tryAgain();
     // TODO(b/333460441): Run the retry logic within the same dialog instead of
     // creating a new one.

@@ -471,15 +471,6 @@ class HistoryService : public KeyedService,
       GetLastVisitCallback callback,
       base::CancelableTaskTracker* tracker);
 
-  // Gets the last time `url` was visited before `end_time`. If the given URL
-  // has not been visited in the past, the callback will be called with a null
-  // base::Time.
-  base::CancelableTaskTracker::TaskId GetLastVisitToURL(
-      const GURL& url,
-      base::Time end_time,
-      GetLastVisitCallback callback,
-      base::CancelableTaskTracker* tracker);
-
   using GetDailyVisitsToOriginCallback =
       base::OnceCallback<void(DailyVisitsResult)>;
 

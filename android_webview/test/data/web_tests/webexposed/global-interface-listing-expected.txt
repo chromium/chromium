@@ -6368,6 +6368,7 @@ interface NavigateEvent : Event
     method commit
     method constructor
     method intercept
+    method redirect
     method scroll
 interface Navigation : EventTarget
     attribute @@toStringTag

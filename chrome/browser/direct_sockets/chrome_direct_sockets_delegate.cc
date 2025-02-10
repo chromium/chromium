@@ -68,6 +68,14 @@ bool ValidateAddressAndPortForIwa(const RequestDetails& request) {
   }
 }
 
+bool IsContentSettingAllowedForUrl(content::BrowserContext* browser_context,
+                                   const GURL& url,
+                                   ContentSettingsType content_setting) {
+  return HostContentSettingsMapFactory::GetForProfile(browser_context)
+             ->GetContentSetting(url, url, content_setting) ==
+         CONTENT_SETTING_ALLOW;
+}
+
 }  // namespace
 
 bool ChromeDirectSocketsDelegate::ValidateRequest(
@@ -83,9 +91,8 @@ bool ChromeDirectSocketsDelegate::ValidateRequest(
   }
 
   const GURL& url = rfh.GetMainFrame()->GetLastCommittedURL();
-  if (HostContentSettingsMapFactory::GetForProfile(rfh.GetBrowserContext())
-          ->GetContentSetting(url, url, ContentSettingsType::DIRECT_SOCKETS) !=
-      CONTENT_SETTING_ALLOW) {
+  if (!IsContentSettingAllowedForUrl(rfh.GetBrowserContext(), url,
+                                     ContentSettingsType::DIRECT_SOCKETS)) {
     return false;
   }
 
@@ -94,6 +101,15 @@ bool ChromeDirectSocketsDelegate::ValidateRequest(
   }
 
   return false;
+}
+
+bool ChromeDirectSocketsDelegate::ValidateRequestForSharedWorker(
+    content::BrowserContext* browser_context,
+    const GURL& shared_worker_url,
+    const RequestDetails& request) {
+  return IsContentSettingAllowedForUrl(browser_context, shared_worker_url,
+                                       ContentSettingsType::DIRECT_SOCKETS) &&
+         ValidateAddressAndPortForIwa(request);
 }
 
 void ChromeDirectSocketsDelegate::RequestPrivateNetworkAccess(
@@ -106,13 +122,17 @@ void ChromeDirectSocketsDelegate::RequestPrivateNetworkAccess(
     return;
   }
 
-  // TODO(crbug.com/368266657): Show a permission prompt for DS-PNA & ponder
-  // whether this requires transient activation.
-  const GURL& url = rfh.GetMainFrame()->GetLastCommittedURL();
-  std::move(callback).Run(
-      HostContentSettingsMapFactory::GetForProfile(rfh.GetBrowserContext())
-          ->GetContentSetting(
-              url, url,
-              ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS) ==
-      CONTENT_SETTING_ALLOW);
+  // TODO(crbug.com/368266657): Show a permission prompt for DS-PNA &
+  // ponder whether this requires transient activation.
+  std::move(callback).Run(IsContentSettingAllowedForUrl(
+      rfh.GetBrowserContext(), rfh.GetMainFrame()->GetLastCommittedURL(),
+      ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS));
+}
+
+bool ChromeDirectSocketsDelegate::IsPrivateNetworkAccessAllowedForSharedWorker(
+    content::BrowserContext* browser_context,
+    const GURL& shared_worker_url) {
+  return IsContentSettingAllowedForUrl(
+      browser_context, shared_worker_url,
+      ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS);
 }

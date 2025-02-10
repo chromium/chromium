@@ -29,7 +29,6 @@
 #include "cc/animation/scroll_timeline.h"
 #include "cc/animation/worklet_animation.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
-#include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {

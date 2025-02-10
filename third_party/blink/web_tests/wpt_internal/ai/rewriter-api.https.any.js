@@ -90,6 +90,21 @@ promise_test(async () => {
 
 promise_test(async (t) => {
   const rewriter = await ai.rewriter.create();
+  let result = await rewriter.rewrite('');
+  assert_equals(result, '');
+  result = await rewriter.rewrite(' ');
+  assert_equals(result, ' ');
+}, 'AIRewriter.rewrite() with an empty input or whitespace returns the ' +
+    'original input');
+
+promise_test(async (t) => {
+  const rewriter = await ai.rewriter.create();
+  const result = await rewriter.rewrite('hello', {context: ' '});
+  assert_not_equals(result, '');
+}, 'AIRewriter.rewrite() with a whitespace context returns a non-empty result');
+
+promise_test(async (t) => {
+  const rewriter = await ai.rewriter.create();
   rewriter.destroy();
   await promise_rejects_dom(t, 'InvalidStateError', rewriter.rewrite('hello'));
 }, 'AIRewriter.rewrite() fails after destroyed');

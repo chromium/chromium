@@ -12,9 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/nix/xdg_util.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -105,19 +103,6 @@ void XdgActivation::Activate(wl_surface* surface,
 
 void XdgActivation::RequestNewToken(
     base::nix::XdgActivationTokenCallback callback) const {
-  auto task_runner = connection_->user_input_task_runner();
-  CHECK(task_runner);
-  if (!task_runner->RunsTasksInCurrentSequence()) {
-    // This is not guaranteed to be called from the UI thread always.
-    // So post a task to avoid race conditions if the request queue is accessed
-    // simultaneously from requests and completion callbacks and handle the case
-    // where the call may be from a non-sequenced task.
-    task_runner->PostTask(FROM_HERE,
-                          base::BindOnce(&XdgActivation::RequestNewToken,
-                                         weak_ptr_factory_.GetMutableWeakPtr(),
-                                         std::move(callback)));
-    return;
-  }
   constexpr size_t kMaxQueueSize = 100;
   if (token_request_queue_.size() >= kMaxQueueSize) {
     LOG(WARNING) << "Max token request limit reached. "
@@ -155,14 +140,13 @@ XdgActivation::TokenRequest::TokenRequest(
     base::nix::XdgActivationTokenCallback callback)
     : xdg_activation_(xdg_activation),
       connection_(connection),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)) {}
+
+void XdgActivation::TokenRequest::InitiateRequest() {
   constexpr auto kMaxTokenRequestDelay = base::Milliseconds(500);
   timer_.Start(FROM_HERE, kMaxTokenRequestDelay,
                base::BindOnce(&XdgActivation::TokenRequest::OnTimeout,
                               base::Unretained(this)));
-}
-
-void XdgActivation::TokenRequest::InitiateRequest() {
   auto* const token = xdg_activation_v1_get_activation_token(xdg_activation_);
   if (!token) {
     LOG(WARNING) << "Could not get an XDG activation token!";

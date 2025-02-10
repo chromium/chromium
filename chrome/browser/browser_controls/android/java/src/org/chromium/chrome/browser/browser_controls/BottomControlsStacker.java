@@ -14,6 +14,8 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.OffsetTagConstraints;
@@ -27,6 +29,7 @@ import java.lang.annotation.RetentionPolicy;
  * Coordinator class for UI layers in the bottom browser controls. This class manages the relative
  * y-axis position for every registered bottom control elements, and their background colors.
  */
+@NullMarked
 public class BottomControlsStacker implements BrowserControlsStateProvider.Observer {
     private static final String TAG = "BotControlsStacker";
 
@@ -142,7 +145,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     private int mTotalHeightFromSetter = INVALID_HEIGHT;
     private int mTotalMinHeightFromSetter = INVALID_HEIGHT;
 
-    private BrowserControlsOffsetTagsInfo mOffsetTagsInfo;
+    private @Nullable BrowserControlsOffsetTagsInfo mOffsetTagsInfo;
 
     // The default state is used before any visibility constraint changes occur (ex. reopening
     // chrome after it has been closed.) It must be set to SHOWN to allow the browser to initialize
@@ -782,7 +785,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                         + layerYOffset);
     }
 
-    public BottomControlsLayer getLayerForTesting(@LayerType int layerType) {
+    public @Nullable BottomControlsLayer getLayerForTesting(@LayerType int layerType) {
         return mLayers.get(layerType);
     }
 }

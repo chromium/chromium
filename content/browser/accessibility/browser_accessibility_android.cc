@@ -390,6 +390,16 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
   // when swiping by heading, landmark, etc. So we will also mark the
   // children of a link as not interesting to prevent double utterances.
   const BrowserAccessibility* parent = PlatformGetParent();
+
+  // Should not read options in a multiselect combobox as it is invisible.
+  // TODO(crbug.com/395134019): We should be able to select options in
+  // aria list box.
+  if (parent && parent->GetRole() == ax::mojom::Role::kListBox &&
+      parent->HasState(ax::mojom::State::kMultiselectable) &&
+      GetRole() == ax::mojom::Role::kListBoxOption) {
+    return false;
+  }
+
   while (parent) {
     if (ui::IsControl(parent->GetRole()) && !IsFocusable()) {
       return false;

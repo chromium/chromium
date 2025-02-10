@@ -142,10 +142,9 @@ class MockCapturerSource : public media::AudioCapturerSource {
   MOCK_METHOD1(SetOutputDeviceForAec,
                void(const std::string& output_device_id));
 
- protected:
+ private:
   ~MockCapturerSource() override = default;
 
- private:
   StartCallback start_callback_;
   StopCallback stop_callback_;
   raw_ptr<CaptureCallback, AcrossTasksDanglingUntriaged> capture_callback_;

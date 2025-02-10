@@ -95,10 +95,9 @@ class BLINK_PLATFORM_EXPORT WebAudioSourceProviderImpl
 
   bool IsAudioBeingCaptured() const;
 
- protected:
+ private:
   ~WebAudioSourceProviderImpl() override;
 
- private:
   friend class WebAudioSourceProviderImplTest;
 
   // Calls setFormat() on |client_| from the Blink renderer thread.

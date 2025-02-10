@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -1320,6 +1321,70 @@ public class StripLayoutHelperManagerTest {
         showTransition
                 .verify(mStatusBarColorController)
                 .setTabStripColorOverlay(mToolbarPrimaryColor, 0f);
+    }
+
+    @Test
+    public void testHeightTransitionAcrossWindowingModes() {
+        // Simulate a height transition to hide the strip.
+        mStripLayoutHelperManager.onHeightChanged(0, /* applyScrimOverlay= */ true);
+        mStripLayoutHelperManager.onHeightTransitionFinished();
+        // Verify the strip visibility.
+        assertNotEquals(
+                "StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION should be set.",
+                0,
+                StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION
+                        & mStripLayoutHelperManager.getStripVisibilityState());
+
+        // Simulate a switch to a small desktop window.
+        int topPadding = 5;
+        mStripLayoutHelperManager.onHeightChanged(
+                TAB_STRIP_HEIGHT_PX + topPadding, /* applyScrimOverlay= */ false);
+        mStripLayoutHelperManager.onHeightTransitionFinished();
+        mStripLayoutHelperManager.onFadeTransitionRequested(1f, 0);
+
+        // Verify the strip visibility.
+        assertEquals(
+                "StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION should be unset.",
+                0,
+                StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION
+                        & mStripLayoutHelperManager.getStripVisibilityState());
+        assertNotEquals(
+                "StripVisibilityState.HIDDEN_BY_FADE should be set.",
+                0,
+                StripVisibilityState.HIDDEN_BY_FADE
+                        & mStripLayoutHelperManager.getStripVisibilityState());
+    }
+
+    @Test
+    public void testFadeTransitionAcrossWindowingModes() {
+        // Simulate a fade transition to hide the strip.
+        mStripLayoutHelperManager.onFadeTransitionRequested(1f, 0);
+        // Verify the strip visibility.
+        assertNotEquals(
+                "StripVisibilityState.HIDDEN_BY_FADE should be set.",
+                0,
+                StripVisibilityState.HIDDEN_BY_FADE
+                        & mStripLayoutHelperManager.getStripVisibilityState());
+
+        // Simulate switching out of desktop windowing mode.
+        mStripLayoutHelperManager.onHeightChanged(
+                TAB_STRIP_HEIGHT_PX, /* applyScrimOverlay= */ true);
+        mStripLayoutHelperManager.onHeightTransitionFinished();
+        // Verify the strip visibility.
+        assertEquals(
+                "Strip visibility is incorrect.",
+                0,
+                mStripLayoutHelperManager.getStripVisibilityState());
+        assertEquals(
+                "StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION should be unset.",
+                0,
+                StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION
+                        & mStripLayoutHelperManager.getStripVisibilityState());
+        assertEquals(
+                "StripVisibilityState.HIDDEN_BY_FADE should be unset.",
+                0,
+                StripVisibilityState.HIDDEN_BY_FADE
+                        & mStripLayoutHelperManager.getStripVisibilityState());
     }
 
     private void resizeDesktopWindowAndTriggerFadeTransition(boolean showStrip) {

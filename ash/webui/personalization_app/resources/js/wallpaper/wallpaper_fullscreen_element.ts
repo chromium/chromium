@@ -217,11 +217,11 @@ export class WallpaperFullscreenElement extends WithPersonalizationStore {
     }
   }
 
-  private async onClickExit_() {
+  private onClickExit_() {
     this.dispatch(setFullscreenStateAction(FullscreenPreviewState.OFF));
   }
 
-  private async onClickConfirm_() {
+  private onClickConfirm_() {
     // Confirm the preview wallpaper before exiting fullscreen. In tablet
     // splitscreen, this prevents `WallpaperController::OnOverviewModeWillStart`
     // from triggering first, which leads to preview wallpaper getting canceled

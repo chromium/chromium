@@ -467,6 +467,14 @@ void BuildProfileTitleAndSubtitle(Browser* browser,
 
 }  // namespace
 
+ProfileMenuViewBase::IdentitySectionParams::IdentitySectionParams() = default;
+ProfileMenuViewBase::IdentitySectionParams::~IdentitySectionParams() = default;
+ProfileMenuViewBase::IdentitySectionParams::IdentitySectionParams(
+    IdentitySectionParams&&) = default;
+ProfileMenuViewBase::IdentitySectionParams&
+ProfileMenuViewBase::IdentitySectionParams::operator=(IdentitySectionParams&&) =
+    default;
+
 // ProfileMenuViewBase ---------------------------------------------------------
 
 ProfileMenuViewBase::EditButtonParams::EditButtonParams(
@@ -612,6 +620,10 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
     const std::u16string& subtitle,
     const std::u16string& management_label,
     const gfx::VectorIcon* header_art_icon) {
+  // This function can be deleted when `kEnableImprovedGuestProfileMenu` is
+  // launched.
+  CHECK(
+      !base::FeatureList::IsEnabled(switches::kEnableImprovedGuestProfileMenu));
   ui::ThemedVectorIcon avatar_header_art;
   if (header_art_icon != nullptr) {
     avatar_header_art = ui::ThemedVectorIcon(
@@ -1170,13 +1182,7 @@ void ProfileMenuViewBase::AddProfileManagementFeatureButton(
     const std::u16string& text,
     base::RepeatingClosure action) {
   // Initialize layout if this is the first time a button is added.
-  if (!profile_mgmt_features_container_->GetLayoutManager()) {
-    profile_mgmt_features_container_->SetLayoutManager(
-        std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kVertical));
-    profile_mgmt_features_container_->SetBorder(
-        views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, kDefaultMargin, 0)));
-  }
+  AddBottomMargin();
 
   auto icon_view =
       std::make_unique<FeatureButtonIconView>(icon, /*icon_to_image_ratio=*/1);
@@ -1187,6 +1193,17 @@ void ProfileMenuViewBase::AddProfileManagementFeatureButton(
       /*secondary_view=*/nullptr,
       /*add_vertical_label_spacing=*/
       !switches::IsImprovedSigninUIOnDesktopEnabled()));
+}
+
+void ProfileMenuViewBase::AddBottomMargin() {
+  // Create an empty container with a bottom margin.
+  if (!profile_mgmt_features_container_->GetLayoutManager()) {
+    profile_mgmt_features_container_->SetLayoutManager(
+        std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kVertical));
+    profile_mgmt_features_container_->SetBorder(
+        views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, kDefaultMargin, 0)));
+  }
 }
 
 gfx::ImageSkia ProfileMenuViewBase::ColoredImageForMenu(
@@ -1316,6 +1333,10 @@ void ProfileMenuViewBase::BuildIdentityInfoColorCallback(
     return;
   }
 
+  // Delete this code when `switches::kEnableImprovedGuestProfileMenu` is
+  // launched.
+  CHECK(
+      !base::FeatureList::IsEnabled(switches::kEnableImprovedGuestProfileMenu));
   profile_background_container_->SetBackground(
       views::CreateBackgroundFromPainter(
           views::Painter::CreateSolidRoundRectPainter(

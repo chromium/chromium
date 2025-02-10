@@ -3513,6 +3513,35 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
               }));
 }
 
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
+                       TopFrameRedirectToFirstPartyPage) {
+  SetBlockThirdPartyCookies(true);
+  EnsureUserInteractionOn(kHostB);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  NavigateToPageWithFrame(kHostA);
+  // Header will be 'none' first time we navigate to `kHostB` since the
+  // permission grant does not exist yet.
+  NavigateFrameTo(GetURL(kHostB));
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  GURL redirect_dest_url = GetURL(kHostB, "/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), RedirectViaHosts({kHostB}, redirect_dest_url)));
+
+  // Since kHostB is top-level for the redirect, expect the
+  // `Sec-Fetch-Storage-Access` header is not included in the request.
+  EXPECT_THAT(
+      ObservedRequestHeaders(),
+      IsSupersetOf<PathAndHeaderMapMatchers>({
+          Pair("/", Contains(Pair(kSecFetchStorageAccess, "none"))),
+          Pair(ServerRedirectPath(redirect_dest_url),
+               Not(Contains(Key(kSecFetchStorageAccess)))),
+          Pair("/empty.html", Not(Contains(Key(kSecFetchStorageAccess)))),
+      }));
+}
+
 class StorageAccessHeadersWithThirdPartyCookiesBrowserTest
     : public StorageAccessHeadersBrowserTest {
  public:

@@ -2041,7 +2041,7 @@ public class CronetUrlRequestContextTest {
                         getTestStorage(mTestRule.getTestFramework().getContext()));
     }
 
-    private static class TestBadLibraryLoader extends CronetEngine.Builder.LibraryLoader {
+    public static class TestBadLibraryLoader extends CronetEngine.Builder.LibraryLoader {
         private boolean mWasCalled;
 
         @Override
@@ -2053,29 +2053,6 @@ public class CronetUrlRequestContextTest {
         boolean wasCalled() {
             return mWasCalled;
         }
-    }
-
-    @Test
-    @SmallTest
-    @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
-            reason = "LibraryLoader is supported only by the native implementation")
-    public void testSetLibraryLoaderIsEnforcedByDefaultEmbeddedProvider() throws Exception {
-        CronetEngine.Builder builder =
-                new CronetEngine.Builder(mTestRule.getTestFramework().getContext());
-        TestBadLibraryLoader loader = new TestBadLibraryLoader();
-        builder.setLibraryLoader(loader);
-
-        assertThrows(
-                "Native library should not be loaded", UnsatisfiedLinkError.class, builder::build);
-        assertThat(loader.wasCalled()).isTrue();
-
-        // The init thread is started *before* the library is loaded, so the init thread is running
-        // despite the library loading failure. Init thread initialization can race against test
-        // cleanup (e.g. Context access). We work around the issue by ensuring test cleanup will
-        // call shutdown() on a real engine, which will block until the init thread initialization
-        // is done.
-        mTestRule.getTestFramework().startEngine();
     }
 
     @Test

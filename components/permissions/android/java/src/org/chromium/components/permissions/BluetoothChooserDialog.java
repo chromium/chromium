@@ -4,6 +4,7 @@
 
 package org.chromium.components.permissions;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -177,12 +178,8 @@ public class BluetoothChooserDialog
             BluetoothChooserAndroidDelegate delegate,
             long nativeBluetoothChooserDialogPtr) {
         mWindowAndroid = windowAndroid;
-        Activity activity = windowAndroid.getActivity().get();
-        assert activity != null;
-        mActivity = activity;
-        Context context = windowAndroid.getContext().get();
-        assert context != null;
-        mContext = context;
+        mActivity = assertNonNull(windowAndroid.getActivity().get());
+        mContext = assertNonNull(windowAndroid.getContext().get());
         mOrigin = origin;
         mSecurityLevel = securityLevel;
         mDelegate = delegate;

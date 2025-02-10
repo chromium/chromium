@@ -503,10 +503,6 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
   // Create LayerTreeFrameSink with the browser end of CompositorFrameSink.
   cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams params;
   params.compositor_task_runner = compositor->task_runner();
-  params.gpu_memory_buffer_manager =
-      compositor->context_factory()
-          ? compositor->context_factory()->GetGpuMemoryBufferManager()
-          : nullptr;
   params.pipes.compositor_frame_sink_associated_remote = std::move(sink_remote);
   params.pipes.client_receiver = std::move(client_receiver);
 

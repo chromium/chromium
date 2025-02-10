@@ -146,6 +146,13 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Filtered"/>
 </enum>
 
+<enum name="ComputeEmbeddingsStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Model Unavailable"/>
+  <int value="2" label="Execution Failure"/>
+  <int value="3" label="Execution Canceled"/>
+</enum>
+
 <enum name="CookieOrCacheDeletion">
   <int value="0" label="Neither"/>
   <int value="1" label="Only cookies"/>

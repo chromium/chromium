@@ -9,7 +9,6 @@
 #include "base/containers/heap_array.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -19,8 +18,7 @@ sk_sp<PaintFilter> MakeOneTextShadowFilter(
     const ShadowData& shadow,
     const Color& current_color,
     mojom::blink::ColorScheme color_scheme,
-    DropShadowPaintFilter::ShadowMode shadow_mode,
-    const bool is_horizontal) {
+    DropShadowPaintFilter::ShadowMode shadow_mode) {
   const Color& color = shadow.GetColor().Resolve(current_color, color_scheme);
   // Detect when there's no effective shadow.
   if (color.IsFullyTransparent()) {
@@ -31,23 +29,18 @@ sk_sp<PaintFilter> MakeOneTextShadowFilter(
   const float blur = shadow.Blur();
   DCHECK_GE(blur, 0);
   const auto sigma = BlurRadiusToStdDev(blur);
-
-  const float shadow_x = is_horizontal ? offset.x() : offset.y();
-  const float shadow_y = is_horizontal ? offset.y() : -offset.x();
-
-  return sk_make_sp<DropShadowPaintFilter>(shadow_x, shadow_y, sigma, sigma,
+  return sk_make_sp<DropShadowPaintFilter>(offset.x(), offset.y(), sigma, sigma,
                                            color.toSkColor4f(), shadow_mode,
                                            nullptr);
 }
 
-sk_sp<PaintFilter> MakeTextShadowFilter(const TextPaintStyle& text_style,
-                                        const bool is_horizontal) {
+sk_sp<PaintFilter> MakeTextShadowFilter(const TextPaintStyle& text_style) {
   DCHECK(text_style.shadow);
   const auto& shadow_list = text_style.shadow->Shadows();
   if (shadow_list.size() == 1) {
     return MakeOneTextShadowFilter(
         shadow_list[0], text_style.current_color, text_style.color_scheme,
-        DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, is_horizontal);
+        DropShadowPaintFilter::ShadowMode::kDrawShadowOnly);
   }
   auto shadow_filters =
       base::HeapArray<sk_sp<PaintFilter>>::WithSize(shadow_list.size());
@@ -55,8 +48,7 @@ sk_sp<PaintFilter> MakeTextShadowFilter(const TextPaintStyle& text_style,
   for (const ShadowData& shadow : shadow_list) {
     if (sk_sp<PaintFilter> shadow_filter = MakeOneTextShadowFilter(
             shadow, text_style.current_color, text_style.color_scheme,
-            DropShadowPaintFilter::ShadowMode::kDrawShadowOnly,
-            is_horizontal)) {
+            DropShadowPaintFilter::ShadowMode::kDrawShadowOnly)) {
       shadow_filters[count++] = std::move(shadow_filter);
     }
   }
@@ -71,23 +63,15 @@ sk_sp<PaintFilter> MakeTextShadowFilter(const TextPaintStyle& text_style,
 
 }  // namespace
 
-void ScopedTextShadowPainter::ApplyShadowList(GraphicsContext& context,
-                                              const TextPaintStyle& text_style,
-                                              const gfx::RectF& bounds,
-                                              const bool is_horizontal) {
-  sk_sp<PaintFilter> shadow_filter =
-      MakeTextShadowFilter(text_style, is_horizontal);
+void ScopedTextShadowPainter::ApplyShadowList(
+    GraphicsContext& context,
+    const TextPaintStyle& text_style) {
+  sk_sp<PaintFilter> shadow_filter = MakeTextShadowFilter(text_style);
   if (!shadow_filter) {
     return;
   }
   context_ = &context;
-  const gfx::RectF* layer_bounds = nullptr;
-  if (RuntimeEnabledFeatures::TextShadowPaintingOptimizationEnabled()) {
-    // We assume that the bounds already include the contribution from the
-    // shadows. (This is true for ink overflow.)
-    layer_bounds = &bounds;
-  }
-  context_->BeginLayer(std::move(shadow_filter), layer_bounds);
+  context_->BeginLayer(std::move(shadow_filter));
 }
 
 }  // namespace blink

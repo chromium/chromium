@@ -128,6 +128,20 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
               'isPrivacySandboxAdsApiUxEnhancementsEnabled');
         },
       },
+
+      /**
+       * If true, the Ad Topics Content parity should be shown.
+       */
+      shouldShowAdTopicsContentParity_: {
+        type: Boolean,
+        value: false,
+      },
+
+      adTopicsToggleSubLabel_: {
+        type: String,
+        computed:
+            'computeAdTopicsToggleSubLabel_(shouldShowAdTopicsContentParity_)',
+      },
     };
   }
 
@@ -148,12 +162,20 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
   private shouldShowBlockTopicDialog_: boolean;
   private blockTopicDialogTitle_: string;
   private blockTopicDialogBody_: string;
+  private shouldShowAdTopicsContentParity_: boolean;
 
   override ready() {
     super.ready();
 
     this.privacySandboxBrowserProxy_.getTopicsState().then(
         state => this.onTopicsStateChanged_(state));
+    this.privacySandboxBrowserProxy_
+        .shouldShowPrivacySandboxAdTopicsContentParity()
+        .then(
+            shouldShow => {
+              this.shouldShowAdTopicsContentParity_ = shouldShow;
+            },
+        );
   }
 
   // Goal is to not show anything but the toggle and disclaimer when the pref is
@@ -336,6 +358,12 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
   private onPrivacyPolicyLinkClicked_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.AdTopics.PrivacyPolicyLinkClicked');
+  }
+
+  private computeAdTopicsToggleSubLabel_(): string {
+    return this.i18n(
+        this.shouldShowAdTopicsContentParity_ ? 'adTopicsPageToggleSubLabel' :
+                                                'topicsPageToggleSubLabel');
   }
 }
 

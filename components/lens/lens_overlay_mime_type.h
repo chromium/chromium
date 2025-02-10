@@ -18,6 +18,10 @@ enum class MimeType {
   kPdf = 1,        // "application/pdf"
   kHtml = 2,       // "text/html"
   kPlainText = 3,  // "text/plain"
+  kImage = 4,      // "image/*"
+  kVideo = 5,      // "video/*"
+  kAudio = 6,      // "audio/*"
+  kJson = 7,       // "application/json"
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayMimeType)
 // When adding a value here, also update:

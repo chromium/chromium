@@ -84,9 +84,10 @@ struct ProfileMenuViewPixelTestParam {
   ProfileMenuDesignVersion profile_menu_uno_redesign =
       ProfileMenuDesignVersion::kExplicitSignin;
   bool use_multiple_profiles = false;
-  // param to be removed when `kOutlineSilhouetteIcon` is enabled by default.
-  bool outline_silhouette_icon = false;
   bool account_image_available = true;
+
+  // Extra feature flags.
+  base::flat_map<base::test::FeatureRef, bool> extra_features_state_;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -130,19 +131,23 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
      .signin_status = SigninStatusPixelTestParam::kWebSignedIn},
     {.pixel_test_param = {.test_suffix = "SignedOut_MultipleProfiles"},
      .use_multiple_profiles = true},
-    {.pixel_test_param = {.test_suffix =
-                              "SignedOut_MultipleProfiles_OutlineSilhouette"},
-     .use_multiple_profiles = true,
-     .outline_silhouette_icon = true},
+    {
+        .pixel_test_param =
+            {.test_suffix = "SignedOut_MultipleProfiles_OutlineSilhouette"},
+        .use_multiple_profiles = true,
+        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
+    },
     {.pixel_test_param = {.test_suffix = "SignedOut_MultipleProfiles_DarkTheme",
                           .use_dark_theme = true},
      .use_multiple_profiles = true},
-    {.pixel_test_param =
-         {.test_suffix =
-              "SignedOut_MultipleProfiles_DarkTheme_OutlineSilhouette",
-          .use_dark_theme = true},
-     .use_multiple_profiles = true,
-     .outline_silhouette_icon = true},
+    {
+        .pixel_test_param =
+            {.test_suffix =
+                 "SignedOut_MultipleProfiles_DarkTheme_OutlineSilhouette",
+             .use_dark_theme = true},
+        .use_multiple_profiles = true,
+        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
+    },
     {.pixel_test_param = {.test_suffix = "SignInPending_Nosync"},
      .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync},
     {.pixel_test_param = {.test_suffix = "SignInPending_Nosync_RTL",
@@ -168,52 +173,68 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
                           .use_right_to_left_language = true},
      .profile_menu_uno_redesign =
          ProfileMenuDesignVersion::kExplicitSigninImproved},
-    {.pixel_test_param = {.test_suffix = "SignedOut_MultipleProfiles_Improved"},
-     .profile_menu_uno_redesign =
-         ProfileMenuDesignVersion::kExplicitSigninImproved,
-     .use_multiple_profiles = true,
-     .outline_silhouette_icon = true},
-    {.pixel_test_param = {.test_suffix =
-                              "SignedOut_MultipleProfiles_DarkTheme_Improved",
-                          .use_dark_theme = true},
-     .profile_menu_uno_redesign =
-         ProfileMenuDesignVersion::kExplicitSigninImproved,
-     .use_multiple_profiles = true,
-     .outline_silhouette_icon = true},
-    {.pixel_test_param = {.test_suffix = "WebSignedIn_Improved"},
-     .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
-     .profile_menu_uno_redesign =
-         ProfileMenuDesignVersion::kExplicitSigninImproved,
-     .outline_silhouette_icon = true},
-    {.pixel_test_param = {.test_suffix =
-                              "WebSignedIn_PlaceholderIcon_Improved"},
-     .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
-     .profile_menu_uno_redesign =
-         ProfileMenuDesignVersion::kExplicitSigninImproved,
-     .outline_silhouette_icon = true,
-     .account_image_available = false},
-    {.pixel_test_param = {.test_suffix =
-                              "WebSignedIn_PlaceholderIcon_DarkTheme_Improved",
-                          .use_dark_theme = true},
-     .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
-     .profile_menu_uno_redesign =
-         ProfileMenuDesignVersion::kExplicitSigninImproved,
-     .outline_silhouette_icon = true,
-     .account_image_available = false},
-    {.pixel_test_param = {.test_suffix = "SignedIn_MultipleProfiles_Improved"},
-     .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-     .profile_menu_uno_redesign =
-         ProfileMenuDesignVersion::kExplicitSigninImproved,
-     .use_multiple_profiles = true,
-     .outline_silhouette_icon = true},
-    {.pixel_test_param = {.test_suffix =
-                              "SignedIn_MultipleProfiles_DarkTheme_Improved",
-                          .use_dark_theme = true},
-     .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-     .profile_menu_uno_redesign =
-         ProfileMenuDesignVersion::kExplicitSigninImproved,
-     .use_multiple_profiles = true,
-     .outline_silhouette_icon = true},
+    {
+        .pixel_test_param = {.test_suffix =
+                                 "SignedOut_MultipleProfiles_Improved"},
+        .profile_menu_uno_redesign =
+            ProfileMenuDesignVersion::kExplicitSigninImproved,
+        .use_multiple_profiles = true,
+        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
+    },
+    {
+        .pixel_test_param =
+            {.test_suffix = "SignedOut_MultipleProfiles_DarkTheme_Improved",
+             .use_dark_theme = true},
+        .profile_menu_uno_redesign =
+            ProfileMenuDesignVersion::kExplicitSigninImproved,
+        .use_multiple_profiles = true,
+        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
+    },
+    {
+        .pixel_test_param = {.test_suffix = "WebSignedIn_Improved"},
+        .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
+        .profile_menu_uno_redesign =
+            ProfileMenuDesignVersion::kExplicitSigninImproved,
+        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
+    },
+    {
+        .pixel_test_param = {.test_suffix =
+                                 "WebSignedIn_PlaceholderIcon_Improved"},
+        .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
+        .profile_menu_uno_redesign =
+            ProfileMenuDesignVersion::kExplicitSigninImproved,
+        .account_image_available = false,
+        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
+    },
+    {
+        .pixel_test_param =
+            {.test_suffix = "WebSignedIn_PlaceholderIcon_DarkTheme_Improved",
+             .use_dark_theme = true},
+        .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
+        .profile_menu_uno_redesign =
+            ProfileMenuDesignVersion::kExplicitSigninImproved,
+        .account_image_available = false,
+        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
+    },
+    {
+        .pixel_test_param = {.test_suffix =
+                                 "SignedIn_MultipleProfiles_Improved"},
+        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+        .profile_menu_uno_redesign =
+            ProfileMenuDesignVersion::kExplicitSigninImproved,
+        .use_multiple_profiles = true,
+        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
+    },
+    {
+        .pixel_test_param = {.test_suffix =
+                                 "SignedIn_MultipleProfiles_DarkTheme_Improved",
+                             .use_dark_theme = true},
+        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+        .profile_menu_uno_redesign =
+            ProfileMenuDesignVersion::kExplicitSigninImproved,
+        .use_multiple_profiles = true,
+        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
+    },
     {.pixel_test_param = {.test_suffix = "SignedIn_Sync_Improved"},
      .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
      .profile_menu_uno_redesign =
@@ -237,13 +258,15 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
      .management_status = ManagementStatus::kAccountManaged,
      .profile_menu_uno_redesign =
          ProfileMenuDesignVersion::kExplicitSigninImproved},
-    {.pixel_test_param = {.test_suffix = "SignedIn_BrowserManaged_Improved",
-                          .use_dark_theme = true},
-     .signin_status = SigninStatusPixelTestParam::kSignedOut,
-     .management_status = ManagementStatus::kBrowserManaged,
-     .profile_menu_uno_redesign =
-         ProfileMenuDesignVersion::kExplicitSigninImproved,
-     .outline_silhouette_icon = true},
+    {
+        .pixel_test_param = {.test_suffix = "SignedIn_BrowserManaged_Improved",
+                             .use_dark_theme = true},
+        .signin_status = SigninStatusPixelTestParam::kSignedOut,
+        .management_status = ManagementStatus::kBrowserManaged,
+        .profile_menu_uno_redesign =
+            ProfileMenuDesignVersion::kExplicitSigninImproved,
+        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
+    },
     {.pixel_test_param = {.test_suffix =
                               "SignedIn_BrowserSupervised_DarkTheme_Improved",
                           .use_dark_theme = true},
@@ -272,7 +295,29 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
      .management_status = ManagementStatus::kSupervisedUser,
      .profile_menu_uno_redesign =
          ProfileMenuDesignVersion::kExplicitSigninImproved},
-
+    {
+        .pixel_test_param = {.test_suffix = "Guest_Improved"},
+        .profile_type_param = ProfileTypePixelTestParam::kGuest,
+        .profile_menu_uno_redesign =
+            ProfileMenuDesignVersion::kExplicitSigninImproved,
+        .extra_features_state_ = {{switches::kEnableImprovedGuestProfileMenu,
+                                   true}},
+    },
+    {
+        .pixel_test_param = {.test_suffix = "Guest_Dark_Improved",
+                             .use_dark_theme = true},
+        .profile_type_param = ProfileTypePixelTestParam::kGuest,
+        .profile_menu_uno_redesign =
+            ProfileMenuDesignVersion::kExplicitSigninImproved,
+        .extra_features_state_ = {{switches::kEnableImprovedGuestProfileMenu,
+                                   true}},
+    },
+    {.pixel_test_param = {.test_suffix = "Incognito_Improved"},
+     .profile_type_param = ProfileTypePixelTestParam::kIncognito,
+     .profile_menu_uno_redesign =
+         ProfileMenuDesignVersion::kExplicitSigninImproved,
+     .extra_features_state_ = {{switches::kEnableImprovedGuestProfileMenu,
+                                true}}},
 };
 
 }  // namespace
@@ -287,13 +332,20 @@ class ProfileMenuViewPixelTest
         GetParam().profile_menu_uno_redesign ==
             ProfileMenuDesignVersion::kExplicitSigninImproved;
 
-    feature_list_.InitWithFeatureStates(
-        {{switches::kImprovedSigninUIOnDesktop, should_enable_improved_design},
-         {kOutlineSilhouetteIcon, GetParam().outline_silhouette_icon},
-         {features::kEnterpriseProfileBadgingForMenu,
-          should_enable_improved_design},
-         {features::kEnterpriseProfileBadgingPolicies,
-          should_enable_improved_design}});
+    base::flat_map<base::test::FeatureRef, bool> features_state = {
+        {switches::kImprovedSigninUIOnDesktop, should_enable_improved_design},
+        // False by default but may be overridden by `extra_features_state_`.
+        {kOutlineSilhouetteIcon, false},
+        {features::kEnterpriseProfileBadgingForMenu,
+         should_enable_improved_design},
+        {features::kEnterpriseProfileBadgingPolicies,
+         should_enable_improved_design},
+        // False by default but may be overridden by `extra_features_state_`.
+        {switches::kEnableImprovedGuestProfileMenu, false}};
+    for (const auto& [feature, state] : GetParam().extra_features_state_) {
+      features_state[feature] = state;
+    }
+    feature_list_.InitWithFeatureStates(std::move(features_state));
 
     // The Profile menu view seems not to be resizied properly on changes which
     // causes the view to go out of bounds. This should not happen and needs to

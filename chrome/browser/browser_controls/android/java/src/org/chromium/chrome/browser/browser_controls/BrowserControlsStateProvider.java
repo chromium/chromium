@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.browser_controls;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.input.BrowserControlsState;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** An interface for retrieving and monitoring browser controls state. */
+@NullMarked
 public interface BrowserControlsStateProvider {
     /**
      * The possible positions of the control container, which contains the browsing mode toolbar.

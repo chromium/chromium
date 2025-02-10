@@ -1014,37 +1014,6 @@ bool VisitDatabase::GetLastVisitToOrigin(const url::Origin& origin,
   return true;
 }
 
-bool VisitDatabase::GetLastVisitToURL(const GURL& url,
-                                      base::Time end_time,
-                                      base::Time* last_visit) {
-  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS())
-    return false;
-
-  sql::Statement statement(GetDB().GetCachedStatement(
-      SQL_FROM_HERE,
-      "SELECT "
-      "  v.visit_time "
-      "FROM visits v INNER JOIN urls u ON v.url = u.id "
-      "WHERE "
-      "  u.url = ? AND "
-      "  v.visit_time < ? "
-      "ORDER BY v.visit_time DESC "
-      "LIMIT 1"));
-  statement.BindString(0, url.spec());
-  statement.BindTime(1, end_time);
-
-  if (!statement.Step()) {
-    // If there are no entries from the statement, the URL may not have been
-    // visited in the given time range. Zero the time result and report the
-    // success of the statement.
-    *last_visit = base::Time();
-    return statement.Succeeded();
-  }
-
-  *last_visit = statement.ColumnTime(0);
-  return true;
-}
-
 DailyVisitsResult VisitDatabase::GetDailyVisitsToHost(const GURL& host,
                                                       base::Time begin_time,
                                                       base::Time end_time) {

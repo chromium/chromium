@@ -14,7 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -388,9 +388,9 @@ void BufferFeeder::FeedBuffer() {
 
 void BufferFeeder::FeedPcm() {
   const int num_frames = 512;
-  scoped_refptr<::media::DecoderBuffer> silence_buffer(
-      new ::media::DecoderBuffer(num_frames * audio_config_.channel_number *
-                                 audio_config_.bytes_per_channel));
+  auto silence_buffer = base::MakeRefCounted<::media::DecoderBuffer>(
+      num_frames * audio_config_.channel_number *
+      audio_config_.bytes_per_channel);
   memset(silence_buffer->writable_data(), 0, silence_buffer->size());
   pending_buffer_ = new media::DecoderBufferAdapter(silence_buffer);
   pending_buffer_->set_timestamp(timestamp_helper_->GetTimestamp());

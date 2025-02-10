@@ -899,12 +899,13 @@ ValidateDequantizeLinearAndInferOutput(
         label, "The data type of input and zero point must be the same."));
   }
 
+  static constexpr char kScaleParam[] = "scale";
   if (!context_properties.data_type_limits.dequantize_linear_scale.Has(
           scale.data_type())) {
     return base::unexpected(ErrorWithLabel(
         label,
-        NotSupportedInputArgumentTypeError(
-            scale.data_type(),
+        NotSupportedArgumentTypeError(
+            kScaleParam, scale.data_type(),
             context_properties.data_type_limits.dequantize_linear_scale)));
   }
 

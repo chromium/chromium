@@ -309,6 +309,8 @@ class MEDIA_EXPORT AudioBuffer
 class MEDIA_EXPORT AudioBufferMemoryPool
     : public base::RefCountedThreadSafe<AudioBufferMemoryPool> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   explicit AudioBufferMemoryPool(int alignment = AudioBus::kChannelAlignment);
   AudioBufferMemoryPool(const AudioBufferMemoryPool&) = delete;
   AudioBufferMemoryPool& operator=(const AudioBufferMemoryPool&) = delete;

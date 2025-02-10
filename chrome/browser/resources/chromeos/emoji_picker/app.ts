@@ -663,7 +663,7 @@ export class EmojiPickerApp extends PolymerElement {
     this.insertVisualContent(category, ev.detail);
   }
 
-  private async insertText(category: CategoryEnum, item: events.TextItem) {
+  private insertText(category: CategoryEnum, item: events.TextItem) {
     const {text, isVariant} = item;
     this.$.message.textContent = text + ' inserted.';
 

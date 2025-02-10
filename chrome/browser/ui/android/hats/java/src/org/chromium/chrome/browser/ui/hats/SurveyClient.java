@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.ui.hats;
 
 import android.app.Activity;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 import java.util.Map;
 
 /** SurveyClient created in charged to show survey. */
+@NullMarked
 public interface SurveyClient {
     /**
      * Show survey in the given activity.

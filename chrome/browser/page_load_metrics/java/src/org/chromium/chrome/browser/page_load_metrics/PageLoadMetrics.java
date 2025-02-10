@@ -8,6 +8,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -16,6 +17,7 @@ import org.chromium.content_public.browser.WebContents;
  *
  * Threading: everything here must happen on the UI thread.
  */
+@NullMarked
 public class PageLoadMetrics {
     public static final String FIRST_CONTENTFUL_PAINT = "firstContentfulPaint";
     public static final String LARGEST_CONTENTFUL_PAINT = "largestContentfulPaint";

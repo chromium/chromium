@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.history_clusters;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
 /** Bridge between the C++ and Java Chrome Memories HistoryClustersTabHelper. */
+@NullMarked
 public class HistoryClustersTabHelper {
     /**
      * Notify Memories service that the current tab's URL has been copied.

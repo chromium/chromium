@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
@@ -53,30 +54,45 @@ RuntimeServiceImpl::~RuntimeServiceImpl() {
 cast_receiver::Status RuntimeServiceImpl::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  std::string runtime_id =
-      command_line->GetSwitchValueASCII(cast::core::kCastCoreRuntimeIdSwitch);
+  std::string runtime_id = command_line->GetSwitchValueASCII(
+      cast::core::switches::kCastCoreRuntimeId);
   if (runtime_id.empty()) {
     // This may happen during unfreeze of the browser process. Usually the cast
     // service process is dead, too, but a certain condition how this happens on
     // Android is not known. Most probable cause is OS reboot/update etc.
     LOG(ERROR) << "Runtime id must be specified in command line with: --"
-               << cast::core::kCastCoreRuntimeIdSwitch;
+               << cast::core::switches::kCastCoreRuntimeId;
     return cast_receiver::Status(
         cast_receiver::StatusCode::kFailedPrecondition);
   }
 
-  std::string runtime_service_path =
-      command_line->GetSwitchValueASCII(cast::core::kRuntimeServicePathSwitch);
+  std::string runtime_service_path = command_line->GetSwitchValueASCII(
+      cast::core::switches::kRuntimeServicePath);
   if (runtime_service_path.empty()) {
     // This may happen during unfreeze of the browser process with cast service
     // process dead.
     LOG(ERROR)
         << "Runtime service endpoint must be specified in command line with: --"
-        << cast::core::kRuntimeServicePathSwitch;
+        << cast::core::switches::kRuntimeServicePath;
     return cast_receiver::Status(
         cast_receiver::StatusCode::kFailedPrecondition);
   }
-  return Start(runtime_id, runtime_service_path);
+
+  auto status = Start(runtime_id, runtime_service_path);
+  if (!status.ok()) {
+    return status;
+  }
+
+  bool enable_grpc_over_tcpip =
+      command_line->HasSwitch(cast::core::switches::kEnableGrpcOverTcpIp);
+  std::string cast_core_service_endpoint = command_line->GetSwitchValueASCII(
+      cast::core::switches::kCastCoreServiceEndpoint);
+  std::string authentication_token = command_line->GetSwitchValueASCII(
+      cast::core::switches::kRuntimeAuthToken);
+  MaybeAuthenticateRuntime(enable_grpc_over_tcpip, runtime_id,
+                           cast_core_service_endpoint, authentication_token);
+
+  return status;
 }
 
 cast_receiver::Status RuntimeServiceImpl::Start(
@@ -85,9 +101,6 @@ cast_receiver::Status RuntimeServiceImpl::Start(
   CHECK(!grpc_server_);
   CHECK(!runtime_id.empty());
   CHECK(!runtime_service_endpoint.empty());
-
-  LOG(INFO) << "Starting runtime service: runtime_id=" << runtime_id
-            << ", endpoint=" << runtime_service_endpoint;
 
   grpc_server_.emplace();
   grpc_server_
@@ -126,15 +139,21 @@ cast_receiver::Status RuntimeServiceImpl::Start(
                                  weak_factory_.GetWeakPtr())));
 
   auto status = grpc_server_->Start(std::string(runtime_service_endpoint));
-  // Browser runtime must crash if the runtime service failed to start to avoid
-  // the process to dangle without any proper connection to the Cast Core.
+  // Browser runtime must crash if the runtime service failed to start to
+  // avoid the process to dangle without any proper connection to the Cast
+  // Core.
   if (!status.ok()) {
     LOG(ERROR) << "Failed to start runtime service: status="
                << status.error_message();
     return cast_receiver::Status(cast_receiver::StatusCode::kInvalidArgument);
   }
 
-  LOG(INFO) << "Runtime service started";
+  LOG(INFO) << "Runtime service started: runtime_id=" << runtime_id
+#if DCHECK_IS_ON()
+            << ", endpoint=" << grpc_server_->endpoint()
+#endif  // DCHECK_IS_ON()
+      ;
+
   return cast_receiver::OkStatus();
 }
 
@@ -143,8 +162,8 @@ void RuntimeServiceImpl::ResetGrpcServices() {
 
   if (heartbeat_reactor_) {
     heartbeat_timer_.Stop();
-    // Reset the writes callback as we're not expecting any more responses from
-    // gRPC framework.
+    // Reset the writes callback as we're not expecting any more responses
+    // from gRPC framework.
     heartbeat_reactor_->SetWritesAvailableCallback(base::DoNothing());
     heartbeat_reactor_->Write(grpc::Status::OK);
     heartbeat_reactor_ = nullptr;
@@ -358,7 +377,8 @@ void RuntimeServiceImpl::HandleStartMetricsRecorder(
     return;
   }
 
-  LOG(INFO) << "Started recording metrics";
+  DLOG(INFO) << "Started recording metrics: endpoint="
+             << request.metrics_recorder_service_info().grpc_endpoint();
   metrics_recorder_stub_.emplace(
       request.metrics_recorder_service_info().grpc_endpoint());
   reactor->Write(cast::runtime::StartMetricsRecorderResponse());
@@ -414,6 +434,12 @@ void RuntimeServiceImpl::OnApplicationLoaded(
 
   cast::runtime::LoadApplicationResponse response;
   response.mutable_message_port_info();
+  response.mutable_runtime_application_service_info()->set_grpc_endpoint(
+      platform_app->endpoint());
+
+  DLOG(INFO) << "Runtime application service loaded: endpoint="
+             << platform_app->endpoint();
+
   reactor->Write(std::move(response));
 }
 
@@ -500,6 +526,50 @@ void RuntimeServiceImpl::OnHeartbeatSent(
       base::BindPostTask(task_runner_,
                          base::BindOnce(&RuntimeServiceImpl::SendHeartbeat,
                                         weak_factory_.GetWeakPtr())));
+}
+
+void RuntimeServiceImpl::MaybeAuthenticateRuntime(
+    bool enable_grpc_over_tcpip,
+    const std::string& runtime_id,
+    const std::string& cast_core_service_endpoint,
+    const std::string& authentication_token) {
+  if (!enable_grpc_over_tcpip) {
+    LOG(INFO) << "Skipping runtime authentication as not requested";
+    return;
+  }
+
+  CHECK(!cast_core_service_endpoint.empty())
+      << "Cast Core service endpoint must be specified for authentication";
+  CHECK(!authentication_token.empty())
+      << "Auth token must be present for TCP/IP endpoints";
+
+  cast_core_service_stub_.emplace(cast_core_service_endpoint);
+  auto call =
+      cast_core_service_stub_
+          ->CreateCall<cast::core::CastCoreServiceStub::AuthenticateRuntime>();
+  call.request().set_runtime_id(runtime_id);
+  call.request().set_authentication_token(authentication_token);
+  call.request().mutable_runtime_service_info()->set_grpc_endpoint(
+      grpc_server_->endpoint());
+  call.request().set_challenge("my challenge");
+  std::move(call).InvokeAsync(base::BindPostTask(
+      task_runner_, base::BindOnce(&RuntimeServiceImpl::OnRuntimeAuthenticated,
+                                   weak_factory_.GetWeakPtr())));
+}
+
+void RuntimeServiceImpl::OnRuntimeAuthenticated(
+    cast::utils::GrpcStatusOr<cast::core::AuthenticateRuntimeResponse>
+        response_or) {
+  if (!response_or.ok()) {
+    LOG(ERROR) << "Failed to authenticate runtime";
+    return;
+  }
+
+  LOG(INFO) << "Runtime is authenticated: sig="
+            << response_or->challenge_signature()
+            << ", chain=" << response_or->certificate_chain_size();
+
+  // TODO(vigeni): Add signature verification.
 }
 
 void RuntimeServiceImpl::RecordMetrics(

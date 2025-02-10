@@ -194,10 +194,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
 // Used to create and show the actions users can execute when they tap on a row
 // in the tableView. These actions are displayed a pop-up.
-// TODO(crbug.com/40284033): Remove available guard when min deployment target
-// is bumped to iOS 16.0.
-@property(nonatomic, strong)
-    UIEditMenuInteraction* interactionMenu API_AVAILABLE(ios(16));
+@property(nonatomic, strong) UIEditMenuInteraction* interactionMenu;
 
 @end
 
@@ -1441,12 +1438,9 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
 #pragma mark - UIEditMenuInteractionDelegate
 
-// TODO(crbug.com/40284033): Remove available guard when min deployment target
-// is bumped to iOS 16.0.
 - (UIMenu*)editMenuInteraction:(UIEditMenuInteraction*)interaction
           menuForConfiguration:(UIEditMenuConfiguration*)configuration
-              suggestedActions:(NSArray<UIMenuElement*>*)suggestedActions
-    API_AVAILABLE(ios(16)) {
+              suggestedActions:(NSArray<UIMenuElement*>*)suggestedActions {
   NSUInteger itemType =
       [base::apple::ObjCCast<NSNumber>(configuration.identifier) intValue];
 

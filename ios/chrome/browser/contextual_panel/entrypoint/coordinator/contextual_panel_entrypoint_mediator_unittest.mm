@@ -428,7 +428,6 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
       &feature_engagement::kIPHiOSContextualPanelSampleModelFeature;
   configuration->iph_text = "test_text";
   configuration->iph_title = "test_title";
-  configuration->iph_image_name = "test_image";
 
   OCMStub([mocked_entrypoint_help_handler_
               showContextualPanelEntrypointIPHWithConfig:configuration.get()

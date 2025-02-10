@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.browser_controls;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 
 /** Interface represented in the bottom controls stack. */
+@NullMarked
 public interface BottomControlsLayer {
     /** Return the type of the layer. This should not change once the layer is created. */
     @LayerType

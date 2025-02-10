@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.regional_capabilities;
 import android.text.TextUtils;
 
 import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -17,6 +16,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
 
 /**
@@ -27,8 +28,9 @@ import org.chromium.components.search_engines.SearchEngineChoiceService;
  * profiles, it also allows an instance to be created before the native is initialized.
  */
 @JNINamespace("regional_capabilities")
+@NullMarked
 public class RegionalCapabilitiesServiceClientAndroid {
-    private static RegionalCapabilitiesServiceClientAndroid sInstance;
+    private static @Nullable RegionalCapabilitiesServiceClientAndroid sInstance;
 
     /** Returns the instance of the singleton. Creates the instance if needed. */
     @MainThread
@@ -43,7 +45,8 @@ public class RegionalCapabilitiesServiceClientAndroid {
     /** Overrides the instance of the singleton for tests. */
     @MainThread
     @VisibleForTesting
-    public static void setInstanceForTests(RegionalCapabilitiesServiceClientAndroid instance) {
+    public static void setInstanceForTests(
+            @Nullable RegionalCapabilitiesServiceClientAndroid instance) {
         ThreadUtils.checkUiThread();
         sInstance = instance;
         if (instance != null) {
@@ -57,7 +60,7 @@ public class RegionalCapabilitiesServiceClientAndroid {
         ThreadUtils.checkUiThread();
     }
 
-    private void requestDeviceCountryInternal(Callback<String> deviceCountryCallback) {
+    private void requestDeviceCountryInternal(Callback<@Nullable String> deviceCountryCallback) {
         // TODO(crbug.com/388792357): Don't call into `SearchEngineChoiceService`, manage a
         // dedicated access to the device country instead. This will allow the other service
         // to not be created most of the time.

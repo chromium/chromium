@@ -877,8 +877,12 @@ class MockAutofillDriver : public TestAutofillDriver {
 class MockAmountExtractionManager : public payments::AmountExtractionManager {
  public:
   explicit MockAmountExtractionManager(TestBrowserAutofillManager* test_manager)
-      : AmountExtractionManager(
-            static_cast<BrowserAutofillManager*>(test_manager)) {}
+      : AmountExtractionManager(test_manager) {
+    ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+                test_manager->client().GetAutofillOptimizationGuide()),
+            IsEligibleForBuyNowPayLater)
+        .WillByDefault(Return(true));
+  }
 
   MOCK_METHOD(void, TriggerCheckoutAmountExtraction, (), (override));
 };
@@ -2793,7 +2797,6 @@ TEST_F(BrowserAutofillManagerTest,
        ShouldNotTriggerAmountExtraction_IfNonCreditCardFormIsClicked) {
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillEnableAmountExtractionDesktop};
-
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
@@ -2839,7 +2842,6 @@ TEST_F(BrowserAutofillManagerTest,
        ShouldNotTriggerAmountExtraction_IfAutofillDisabled) {
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillEnableAmountExtractionDesktop};
-
   // Set up our form data.
   FormData form =
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
