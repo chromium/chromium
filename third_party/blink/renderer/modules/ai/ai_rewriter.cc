@@ -79,7 +79,7 @@ ScriptPromise<IDLString> AIRewriter::rewrite(
   }
   auto pending_remote = CreateModelExecutionResponder(
       script_state, signal, resolver, task_runner_,
-      AIMetrics::AISessionType::kWriter,
+      AIMetrics::AISessionType::kRewriter,
       /*complete_callback=*/base::DoNothing(),
       /*overflow_callback=*/base::DoNothing());
   remote_->Rewrite(input, context_string, std::move(pending_remote));
@@ -116,7 +116,8 @@ ReadableStream* AIRewriter::rewriteStreaming(
   }
   auto [readable_stream, pending_remote] =
       CreateModelExecutionStreamingResponder(
-          script_state, signal, task_runner_, AIMetrics::AISessionType::kWriter,
+          script_state, signal, task_runner_,
+          AIMetrics::AISessionType::kRewriter,
           /*complete_callback=*/base::DoNothing(),
           /*overflow_callback=*/base::DoNothing());
   remote_->Rewrite(input, context_string, std::move(pending_remote));
