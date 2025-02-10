@@ -650,6 +650,14 @@ def _check_specs_for_consistency(bucket_name, builder_name, entries):
                 ),
             ))
 
+def _get_builder_owner_description(description, contact_email):
+    if not contact_email:
+        return description
+
+    if description:
+        description += "<br/>"
+    return "{}Builder owner: <a href=mailto:{}>{}</a>".format(description, contact_email, contact_email)
+
 def _get_builder_mirror_description(bucket_name, builder, bc_state):
     node = _BUILDER_CONFIG.get(bucket_name, builder.name)
     if not node:
@@ -842,7 +850,8 @@ def _set_builder_config_property(ctx):
             )
             builder.properties = json.encode(builder_properties)
 
-            builder.description_html = _get_builder_mirror_description(bucket_name, builder, bc_state)
+            mirror_description = _get_builder_mirror_description(bucket_name, builder, bc_state)
+            builder.description_html = _get_builder_owner_description(mirror_description, builder.contact_team_email)
 
             # Enforce that most gardened CI bots have a matching trybot.
             rotations = get_gardener_rotations(bucket_name, builder.name)
