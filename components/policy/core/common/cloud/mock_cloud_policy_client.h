@@ -146,6 +146,12 @@ class MockCloudPolicyClient : public CloudPolicyClient {
               (bool, base::Value::Dict, ResultCallback),
               (override));
   MOCK_METHOD(void,
+              UploadSecurityEvent,
+              (bool,
+               ::chrome::cros::reporting::proto::UploadEventsRequest request,
+               ResultCallback),
+              (override));
+  MOCK_METHOD(void,
               UploadAppInstallReport,
               (base::Value::Dict value, ResultCallback callback),
               (override));

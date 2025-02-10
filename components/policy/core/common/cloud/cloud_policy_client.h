@@ -24,6 +24,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/enterprise/common/proto/upload_request_response.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -430,6 +431,12 @@ class POLICY_EXPORT CloudPolicyClient {
   // If |include_device_info| is true, information specific to the device such
   // as the device name, user, id and OS will be included in the report. The
   // |callback| will be called when the operation completes.
+  virtual void UploadSecurityEvent(
+      bool include_device_info,
+      ::chrome::cros::reporting::proto::UploadEventsRequest request,
+      ResultCallback callback);
+
+  // DEPRECATED: Use |UploadSecurityEvent| instead.
   virtual void UploadSecurityEventReport(bool include_device_info,
                                          base::Value::Dict report,
                                          ResultCallback callback);
@@ -850,6 +857,13 @@ class POLICY_EXPORT CloudPolicyClient {
   // enterprise connectors are added to the request uploading the report.
   // |callback| is invoked once the report is uploaded.
   DeviceManagementService::Job* CreateNewRealtimeReportingJob(
+      ::chrome::cros::reporting::proto::UploadEventsRequest request,
+      const std::string& server_url,
+      bool include_device_info,
+      ResultCallback callback);
+
+  // DEPRECATED: Use CreateNewRealtimeReportingJob instead.
+  DeviceManagementService::Job* CreateNewRealtimeReportingJobDeprecated(
       base::Value::Dict report,
       const std::string& server_url,
       bool include_device_info,

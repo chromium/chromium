@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/values.h"
+#include "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/policy_export.h"
@@ -57,6 +58,9 @@ class POLICY_EXPORT ReportingJobConfigurationBase
     static base::Value::Dict BuildDeviceDictionary(
         const std::string& dm_token,
         const std::string& client_id);
+    static ::chrome::cros::reporting::proto::Device BuildDeviceProto(
+        const std::string& dm_token,
+        const std::string& client_id);
 
     static std::string GetDMTokenPath();
     static std::string GetClientIdPath();
@@ -83,6 +87,9 @@ class POLICY_EXPORT ReportingJobConfigurationBase
     static const char kBrowserKey[];
 
     static base::Value::Dict BuildBrowserDictionary(bool include_device_info);
+
+    static ::chrome::cros::reporting::proto::Browser BuildBrowserProto(
+        bool include_device_info);
 
     static std::string GetBrowserIdPath();
     static std::string GetUserAgentPath();
