@@ -43,7 +43,6 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
       const autofill::FormStructure& form,
       const autofill::AutofillField& field) const override;
   bool IsUserEligible() const override;
-  void UserClickedLearnMore() override;
   void MaybeImportForm(
       std::unique_ptr<autofill::FormStructure> form,
       base::OnceCallback<void(std::unique_ptr<autofill::FormStructure> form,

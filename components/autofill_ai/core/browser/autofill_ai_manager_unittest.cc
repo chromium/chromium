@@ -626,13 +626,6 @@ TEST_F(AutofillAiManagerTest,
                             autofill_callback.Get());
 }
 
-// Tests that the prediction improvements settings page is opened when the
-// manage prediction improvements link is clicked.
-TEST_F(AutofillAiManagerTest, OpenSettingsWhenManagePILinkIsClicked) {
-  EXPECT_CALL(client(), OpenAutofillAiSettings);
-  manager().UserClickedLearnMore();
-}
-
 // TODO(crbug.com/376016081): Refactor test to expect if suggestions are
 // included so that `ShouldSkipAutofillSuggestion()` can be move to the
 // anonymous namespace.

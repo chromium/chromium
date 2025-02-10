@@ -210,11 +210,9 @@ void ChromeAutofillAiClient::ShowSaveAutofillAiBubble(
 #if !BUILDFLAG(IS_ANDROID)
   if (auto* controller = autofill_ai::SaveAutofillAiDataController::GetOrCreate(
           &*web_contents_)) {
-    controller->OfferSave(
-        std::move(entity), std::move(prompt_acceptance_callback),
-        base::BindRepeating(
-            &autofill_ai::AutofillAiManager::UserClickedLearnMore,
-            prediction_improvements_manager_.GetWeakPtr()));
+    controller->OfferSave(std::move(entity),
+                          std::move(prompt_acceptance_callback),
+                          base::DoNothing());
     return;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

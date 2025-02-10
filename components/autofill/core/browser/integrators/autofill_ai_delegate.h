@@ -48,10 +48,6 @@ class AutofillAiDelegate {
   // experience.
   virtual bool IsUserEligible() const = 0;
 
-  // Called when users click the "learn more" link.
-  // TODO(crbug.com/365512352): Remove if not needed.
-  virtual void UserClickedLearnMore() = 0;
-
   // Displays an import bubble for `form` if Autofill AI is interested in the
   // form and then calls `autofill_callback`. It is guaranteed that `form` is
   // non-null.

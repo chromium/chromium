@@ -273,12 +273,6 @@ void AutofillAiManager::OnReceivedAXTree(
       std::move(ax_tree_update), base::DoNothing());
 }
 
-// TODO(crbug.com/362468426): Rename this method to
-// `UserClickedManagePredictionsImprovements()`.
-void AutofillAiManager::UserClickedLearnMore() {
-  client_->OpenAutofillAiSettings();
-}
-
 void AutofillAiManager::OnSuggestionsShown(
     const autofill::DenseSet<SuggestionType>& shown_suggestion_types,
     const autofill::FormData& form,
