@@ -5,6 +5,7 @@
 #include "base/process/process_metrics.h"
 
 #include <AvailabilityMacros.h>
+#import <Foundation/Foundation.h>
 #include <mach/mach.h>
 #include <mach/mach_time.h>
 #include <stddef.h>
@@ -249,21 +250,12 @@ size_t GetSystemCommitCharge() {
 }
 
 bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
-  struct host_basic_info hostinfo;
-  mach_msg_type_number_t count = HOST_BASIC_INFO_COUNT;
+  NSProcessInfo* process_info = [NSProcessInfo processInfo];
+  meminfo->total = static_cast<int>(process_info.physicalMemory / 1024);
+
   base::apple::ScopedMachSendRight host(mach_host_self());
-  int result = host_info(host.get(), HOST_BASIC_INFO,
-                         reinterpret_cast<host_info_t>(&hostinfo), &count);
-  if (result != KERN_SUCCESS) {
-    return false;
-  }
-
-  DCHECK_EQ(HOST_BASIC_INFO_COUNT, count);
-  meminfo->total = static_cast<int>(hostinfo.max_mem / 1024);
-
   vm_statistics64_data_t vm_info;
-  count = HOST_VM_INFO64_COUNT;
-
+  mach_msg_type_number_t count = HOST_VM_INFO64_COUNT;
   if (host_statistics64(host.get(), HOST_VM_INFO64,
                         reinterpret_cast<host_info64_t>(&vm_info),
                         &count) != KERN_SUCCESS) {
