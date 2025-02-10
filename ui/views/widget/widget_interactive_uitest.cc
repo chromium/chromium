@@ -2676,7 +2676,7 @@ class DesktopWidgetDragTestInteractive : public DesktopWidgetTestInteractive,
 #define MAYBE_CancelShellDrag CancelShellDrag
 #endif
 TEST_F(DesktopWidgetDragTestInteractive, MAYBE_CancelShellDrag) {
-  WidgetAutoclosePtr widget(new Widget);
+  auto widget = std::make_unique<Widget>();
 
   auto cancel = [&]() {
     drag_entered_ = true;
