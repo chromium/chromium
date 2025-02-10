@@ -194,13 +194,7 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
 // Tests signing in with a personal account during the FRE. This shouldn't have
 // any particular side-effects; it mostly exists as a base case for
 // `testSignInWithManagedAccount`.
-// TODO(crbug.com/395067901): Test is flaky on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testSignInWithPersonalAccount FLAKY_testSignInWithPersonalAccount
-#else
-#define MAYBE_testSignInWithPersonalAccount testSignInWithPersonalAccount
-#endif
-- (void)MAYBE_testSignInWithPersonalAccount {
+- (void)testSignInWithPersonalAccount {
   FakeSystemIdentity* const personalIdentity =
       [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:personalIdentity];
@@ -240,7 +234,8 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
 
 // Tests signing in with a managed account during the FRE. This should convert
 // the existing profile to a managed profile.
-- (void)testSignInWithManagedAccount {
+// TODO(crbug.com/394536438): Test is flaky.
+- (void)FLAKY_testSignInWithManagedAccount {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
