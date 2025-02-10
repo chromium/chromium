@@ -40,6 +40,7 @@ void SetupFonts() {
       base_path.Append(FILE_PATH_LITERAL("/test_fonts/Ahem.ttf"));
 
   DWriteFontProxyImpl::SideLoadFontForTesting(font_path);
+  gfx::win::SideLoadFontForTesting(font_path);
 }
 
 }  // namespace
