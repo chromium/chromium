@@ -105,7 +105,7 @@ BASE_FEATURE(kPasswordManualFallbackAvailable,
 
 BASE_FEATURE(kReuseDetectionBasedOnPasswordHashes,
              "ReuseDetectionBasedOnPasswordHashes",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kRestartToGainAccessToKeychain,
