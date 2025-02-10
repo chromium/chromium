@@ -10,7 +10,7 @@
 #include "third_party/webrtc/api/units/time_delta.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
 
-namespace rtc {
+namespace webrtc {
 
 // Overrides WebRTC's internal event implementation to use Chromium's.
 class RTC_EXPORT Event {
@@ -48,6 +48,14 @@ using ScopedAllowBaseSyncPrimitives = base::ScopedAllowBaseSyncPrimitives;
 using ScopedAllowBaseSyncPrimitivesForTesting =
     base::ScopedAllowBaseSyncPrimitivesForTesting;
 
+}  // namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace rtc {
+using ::webrtc::Event;
+using ::webrtc::ScopedAllowBaseSyncPrimitives;
+using ::webrtc::ScopedAllowBaseSyncPrimitivesForTesting;
 }  // namespace rtc
 
 #endif  // THIRD_PARTY_WEBRTC_OVERRIDES_RTC_BASE_EVENT_H_
