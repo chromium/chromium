@@ -30,6 +30,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -471,6 +473,11 @@ void ConsolidatedConsentScreen::RecordConsents(
 
 void ConsolidatedConsentScreen::ReportUsageOptIn(bool is_enabled) {
   DCHECK(is_owner_.has_value());
+  // Attempt to disable pre-consent metrics if present.
+  if (metrics::CrOSPreConsentMetricsManager::Get()) {
+    metrics::CrOSPreConsentMetricsManager::Get()->Disable();
+  }
+
   if (is_owner_.value()) {
     StatsReportingController::Get()->SetEnabled(
         ProfileManager::GetActiveUserProfile(), is_enabled);
