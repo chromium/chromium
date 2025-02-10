@@ -76,14 +76,12 @@ class CORE_EXPORT TextPainter {
   TextPainter(GraphicsContext& context,
               const SvgContextPaints* svg_context_paints,
               const Font& font,
-              std::optional<AffineTransform> rotation,
               const gfx::Rect& visual_rect,
               const LineRelativeOffset& text_origin,
               bool horizontal)
       : graphics_context_(context),
         svg_context_paints_(svg_context_paints),
         font_(font),
-        rotation_(rotation),
         visual_rect_(visual_rect),
         text_origin_(text_origin),
         horizontal_(horizontal) {}
@@ -126,8 +124,6 @@ class CORE_EXPORT TextPainter {
 
   void SetEmphasisMark(const AtomicString&, TextEmphasisPosition);
 
-  gfx::RectF VisualRectInLocalSpace() const;
-
  protected:
   const Font& font() const { return font_; }
   const LineRelativeOffset& text_origin() const { return text_origin_; }
@@ -148,7 +144,6 @@ class CORE_EXPORT TextPainter {
   GraphicsContext& graphics_context_;
   const SvgContextPaints* svg_context_paints_;
   const Font& font_;
-  std::optional<AffineTransform> rotation_;
   const gfx::Rect visual_rect_;
   const LineRelativeOffset text_origin_;
   const bool horizontal_;

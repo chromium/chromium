@@ -4333,10 +4333,6 @@
       status: "stable",
     },
     {
-      name: "TextShadowPaintingOptimization",
-      status: "stable",
-    },
-    {
       // crbug.com/379254069
       name: "TextTransformAndSecurityFix",
       status: "stable",

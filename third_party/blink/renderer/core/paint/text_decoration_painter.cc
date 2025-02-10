@@ -188,8 +188,7 @@ void TextDecorationPainter::PaintUnderOrOverLineDecorations(
           }
         }
       },
-      paint_info_.context, text_style, text_painter_.VisualRectInLocalSpace(),
-      style_.IsHorizontalWritingMode());
+      paint_info_.context, text_style, style_.IsHorizontalWritingMode());
 }
 
 void TextDecorationPainter::PaintLineThroughDecorations(
@@ -221,8 +220,7 @@ void TextDecorationPainter::PaintLineThroughDecorations(
           }
         }
       },
-      paint_info_.context, text_style, text_painter_.VisualRectInLocalSpace(),
-      style_.IsHorizontalWritingMode());
+      paint_info_.context, text_style, style_.IsHorizontalWritingMode());
 }
 
 void TextDecorationPainter::PaintExceptLineThrough(
