@@ -73,6 +73,7 @@ class NavigateEvent final : public Event,
   Element* sourceElement() const { return source_element_.Get(); }
   void intercept(NavigationInterceptOptions*, ExceptionState&);
   void commit(ExceptionState&);
+  void redirect(const String& url, ExceptionState&);
 
   // If intercept() was called, this is called after dispatch to either commit
   // the navigation or set the appropritate state for a deferred commit.
@@ -97,6 +98,7 @@ class NavigateEvent final : public Event,
 
  private:
   bool PerformSharedChecks(const String& function_name, ExceptionState&);
+  bool PerformSharedCommitChecks(const String& function_name, ExceptionState&);
 
   bool ShouldCommitImmediately();
   void CommitNow();
