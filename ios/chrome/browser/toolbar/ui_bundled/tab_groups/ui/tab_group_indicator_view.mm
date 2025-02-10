@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
+#import "ios/chrome/browser/share_kit/model/sharing_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_height_delegate.h"
@@ -18,6 +19,8 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/ios/uikit_util.h"
+
+using tab_groups::SharingState;
 
 @implementation TabGroupIndicatorView {
   // Stores the tab group informations.
@@ -42,11 +45,8 @@
   UIViewController* _facePileViewController;
   // Whether the share option is available.
   BOOL _shareAvailable;
-  // Whether the group is shared.
-  BOOL _shared;
-  // Whether the user owns the shared group.
-  // This should only be checked if `_shared` is true.
-  BOOL _owner;
+  // Sharing state of the saved tab group.
+  SharingState _sharingState;
 }
 
 - (instancetype)init {
@@ -93,9 +93,8 @@
   [self configureMenuButton];
 }
 
-- (void)setShared:(BOOL)shared owner:(BOOL)owner {
-  _shared = shared;
-  _owner = owner;
+- (void)setSharingState:(SharingState)state {
+  _sharingState = state;
   [self configureMenuButton];
 }
 
@@ -216,7 +215,7 @@
 
   // Shared actions.
   NSMutableArray<UIAction*>* sharedActions = [[NSMutableArray alloc] init];
-  if (_shared) {
+  if (_sharingState != SharingState::kNotShared) {
     [sharedActions addObject:[actionFactory actionToManageTabGroupWithBlock:^{
                      [weakSelf.mutator manageGroup];
                    }]];
@@ -244,7 +243,7 @@
   [editActions addObject:[actionFactory actionToAddNewTabInGroupWithBlock:^{
                  [weakSelf.mutator addNewTabInGroup];
                }]];
-  if (!_shared) {
+  if (_sharingState == SharingState::kNotShared) {
     [editActions addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
                    [weakSelf.mutator unGroupWithConfirmation:YES];
                  }]];
@@ -263,23 +262,28 @@
           [weakSelf.mutator closeGroup];
         }]];
     if (!_incognito) {
-      if (_shared) {
-        if (_owner) {
+      switch (_sharingState) {
+        case SharingState::kNotShared: {
           [destructiveActions
-              addObject:[actionFactory actionToDeleteSharedTabGroupWithBlock:^{
-                [weakSelf.mutator deleteSharedGroupWithConfirmation:YES];
+              addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+                [weakSelf.mutator deleteGroupWithConfirmation:YES];
               }]];
-        } else {
+          break;
+        }
+        case SharingState::kShared: {
           [destructiveActions
               addObject:[actionFactory actionToLeaveSharedTabGroupWithBlock:^{
                 [weakSelf.mutator leaveSharedGroupWithConfirmation:YES];
               }]];
+          break;
         }
-      } else {
-        [destructiveActions
-            addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-              [weakSelf.mutator deleteGroupWithConfirmation:YES];
-            }]];
+        case SharingState::kSharedAndOwned: {
+          [destructiveActions
+              addObject:[actionFactory actionToDeleteSharedTabGroupWithBlock:^{
+                [weakSelf.mutator deleteSharedGroupWithConfirmation:YES];
+              }]];
+          break;
+        }
       }
     }
   } else {

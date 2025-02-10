@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
+#import "ios/chrome/browser/share_kit/model/sharing_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -44,6 +45,7 @@ using ScopedTabGroupSyncObservation =
 using ScopedDataSharingSyncObservation =
     base::ScopedObservation<data_sharing::DataSharingService,
                             data_sharing::DataSharingService::Observer>;
+using tab_groups::SharingState;
 
 namespace {
 // The preferred size in points for the avatar icons.
@@ -172,10 +174,10 @@ constexpr CGFloat kFacePileAvatarSize = 20;
         HasTabGroupIndicatorVisible()) {
       [_consumer setTabGroupTitle:tabGroup->GetTitle()
                        groupColor:tabGroup->GetColor()];
-      [self updateTabGroupSharedState:tabGroup];
+      [self updateTabGroupSharingState:tabGroup];
     } else {
       [_consumer setTabGroupTitle:nil groupColor:nil];
-      [_consumer setShared:NO owner:NO];
+      [_consumer setSharingState:SharingState::kNotShared];
     }
     [self updateFacePileUI];
   }
@@ -311,7 +313,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 
 - (void)tabGroupSyncServiceInitialized {
   [self presentForegroundIPHIfNeeded];
-  [self updateTabGroupSharedState:[self currentTabGroup]];
+  [self updateTabGroupSharingState:[self currentTabGroup]];
   [self updateFacePileUI];
 }
 
@@ -323,7 +325,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   if (!tabGroup || newGroup.local_group_id() != tabGroup->tab_group_id()) {
     return;
   }
-  [self updateTabGroupSharedState:tabGroup];
+  [self updateTabGroupSharingState:tabGroup];
   [self updateFacePileUI];
 }
 
@@ -331,7 +333,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 
 - (void)dataSharingServiceInitialized {
   [self presentForegroundIPHIfNeeded];
-  [self updateTabGroupSharedState:[self currentTabGroup]];
+  [self updateTabGroupSharingState:[self currentTabGroup]];
   [self updateFacePileUI];
 }
 
@@ -382,7 +384,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
     return;
   }
 
-  [self updateTabGroupSharedState:tabGroup];
+  [self updateTabGroupSharingState:tabGroup];
   [self updateFacePileUI];
 }
 
@@ -456,7 +458,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   tab_groups::CollaborationId savedCollabID =
       tab_groups::utils::GetTabGroupCollabID(tabGroup, _tabGroupSyncService);
   BOOL isShared = !savedCollabID.value().empty();
-  [self updateTabGroupSharedState:tabGroup];
+  [self updateTabGroupSharingState:tabGroup];
 
   // Prevent the face pile from being set up for tab groups that are not shared.
   if (!isShared) {
@@ -498,14 +500,22 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   return _webStateList->GetGroupOfWebStateAt(_webStateList->active_index());
 }
 
-// Updates the shared state of for the given `tabGroup`.
-- (void)updateTabGroupSharedState:(const TabGroup*)tabGroup {
+// Updates the sharing state for the given `tabGroup`.
+- (void)updateTabGroupSharingState:(const TabGroup*)tabGroup {
   BOOL shared =
       tab_groups::utils::IsTabGroupShared(tabGroup, _tabGroupSyncService);
+  if (!shared) {
+    [_consumer setSharingState:SharingState::kNotShared];
+    return;
+  }
+
   data_sharing::MemberRole userRole = tab_groups::utils::GetUserRoleForGroup(
       tabGroup, _tabGroupSyncService, _collaborationService);
-  [_consumer setShared:shared
-                 owner:userRole == data_sharing::MemberRole::kOwner];
+
+  SharingState state = userRole == data_sharing::MemberRole::kOwner
+                           ? SharingState::kSharedAndOwned
+                           : SharingState::kShared;
+  [_consumer setSharingState:state];
 }
 
 @end
