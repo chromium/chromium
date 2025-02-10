@@ -60,7 +60,14 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   void Stop(const cast::runtime::StopApplicationRequest& request,
             StatusCallback callback);
 
-  const std::string& app_id() { return runtime_application_->GetAppId(); }
+  // Returns current application ID.
+  const std::string& app_id() const { return runtime_application_->GetAppId(); }
+
+  // Returns RuntimeApplicationService gRPC server endpoint.
+  const std::string& endpoint() const {
+    CHECK(grpc_server_);
+    return grpc_server_->endpoint();
+  }
 
   // EmbedderApplication implementation:
   void NotifyApplicationStarted() override;
