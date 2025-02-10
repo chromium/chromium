@@ -363,10 +363,8 @@ class UserAgentUtilsTest : public testing::Test,
 
 TEST_F(UserAgentUtilsTest, UserAgentStringOrdering) {
 #if BUILDFLAG(IS_ANDROID)
-  const char* const kArguments[] = {"chrome"};
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
-  command_line->InitFromArgv(1, kArguments);
 
   // Do it for regular devices.
   ASSERT_FALSE(command_line->HasSwitch(switches::kUseMobileUserAgent));
@@ -447,10 +445,8 @@ TEST_F(UserAgentUtilsTest, UserAgentStringReduced) {
 #if BUILDFLAG(IS_ANDROID)
   // Verify the correct user agent is returned when the UseMobileUserAgent
   // command line flag is present.
-  const char* const kArguments[] = {"chrome"};
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
-  command_line->InitFromArgv(1, kArguments);
   const std::string major_version_number =
       version_info::GetMajorVersionNumber();
   const char* const major_version = major_version_number.c_str();
@@ -538,10 +534,8 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
       {blink::features::kReduceUserAgentAndroidVersionDeviceModel});
   // Verify the correct user agent is returned when the UseMobileUserAgent
   // command line flag is present.
-  const char* const kArguments[] = {"chrome"};
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
-  command_line->InitFromArgv(1, kArguments);
 
   // Verify the mobile platform and oscpu user agent string is not reduced when
   // not using a mobile user agent.
@@ -609,10 +603,8 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentAndroidVersionDeviceModel) {
       {});
   // Verify the correct user agent is returned when the UseMobileUserAgent
   // command line flag is present.
-  const char* const kArguments[] = {"chrome"};
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
-  command_line->InitFromArgv(1, kArguments);
 
   // Verify the mobile deviceModel and androidVersion in the user agent string
   // is reduced when not using a mobile user agent.
