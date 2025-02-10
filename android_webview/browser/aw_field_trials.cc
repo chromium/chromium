@@ -96,6 +96,8 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   }
   internal::AwFeatureOverrides aw_feature_overrides(*feature_list);
 
+  aw_feature_overrides.EnableFeature(::features::kWebViewFrameRateHints);
+
   // Disable third-party storage partitioning on WebView.
   aw_feature_overrides.DisableFeature(
       net::features::kThirdPartyStoragePartitioning);
