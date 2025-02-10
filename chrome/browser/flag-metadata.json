@@ -4073,7 +4073,7 @@
   {
     "name": "enable-web-printing-api",
     "owners": [ "//chrome/browser/printing/web_api/OWNERS" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 150
   },
   {
     "name": "enable-webassembly-baseline",
