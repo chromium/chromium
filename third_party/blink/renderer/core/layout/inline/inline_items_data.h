@@ -30,7 +30,7 @@ struct CORE_EXPORT InlineItemsData : public GarbageCollected<InlineItemsData> {
   // Text content for all inline items represented by a single InlineNode.
   // Encoded either as UTF-16 or latin-1 depending on the content.
   String text_content;
-  HeapVector<InlineItem> items;
+  InlineItems items;
 
   // Cache RunSegmenter segments when at least one item has multiple runs.
   // Set to nullptr when all items has only single run, which is common case for

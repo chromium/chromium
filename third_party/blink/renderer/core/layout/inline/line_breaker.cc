@@ -273,10 +273,9 @@ inline void RemoveLastItem(LineInfo* line_info) {
 // padding, border, or margin.
 // The inline-end size from all of these ancestors contribute to the "used
 // size" of the float, and may cause the float to be pushed down.
-LayoutUnit ComputeFloatAncestorInlineEndSize(
-    const ConstraintSpace& space,
-    const HeapVector<InlineItem>& items,
-    wtf_size_t item_index) {
+LayoutUnit ComputeFloatAncestorInlineEndSize(const ConstraintSpace& space,
+                                             const InlineItems& items,
+                                             wtf_size_t item_index) {
   LayoutUnit inline_end_size;
   for (const auto& item : base::span(items).subspan(item_index)) {
     if (item.Type() == InlineItem::kCloseTag) {
@@ -935,7 +934,7 @@ void LineBreaker::NextLine(LineInfo* line_info) {
 
 void LineBreaker::BreakLine(LineInfo* line_info) {
   DCHECK(!line_info->IsLastLine());
-  const HeapVector<InlineItem>& items = Items();
+  const InlineItems& items = Items();
   // If `kMinContent`, the line will overflow. Avoid calling `HandleOverflow()`
   // for the performance.
   if (mode_ == LineBreakerMode::kMinContent) [[unlikely]] {
@@ -2814,7 +2813,7 @@ void LineBreaker::HandleForcedLineBreak(const InlineItem* item,
     // This is not a defined behavior, but legacy/WebKit do this for preserved
     // newlines and <br>s. Gecko does this only for preserved newlines (but
     // not for <br>s).
-    const HeapVector<InlineItem>& items = Items();
+    const InlineItems& items = Items();
     while (!IsAtEnd()) {
       const InlineItem& next_item = items[current_.item_index];
       if (next_item.Type() == InlineItem::kCloseTag) {
@@ -4343,7 +4342,7 @@ void LineBreaker::Rewind(unsigned new_end, LineInfo* line_info) {
     //   [7] kCloseTag 13-13 <i>
     // Note: We can have multiple empty |LayoutText| by ::first-letter, nested
     // <q>, Text.splitText(), etc.
-    const HeapVector<InlineItem>& items = Items();
+    const InlineItems& items = Items();
     while (!IsAtEnd() &&
            items[current_.item_index].Type() == InlineItem::kText &&
            !items[current_.item_index].Length()) {
@@ -4528,7 +4527,7 @@ void LineBreaker::MoveToNextOf(const InlineItem& item) {
   current_.text_offset = item.EndOffset();
   current_.item_index++;
 #if DCHECK_IS_ON()
-  const HeapVector<InlineItem>& items = Items();
+  const InlineItems& items = Items();
   if (current_.item_index < items.size()) {
     items[current_.item_index].AssertOffset(current_.text_offset);
   } else {
@@ -4563,7 +4562,7 @@ const InlineBreakToken* LineBreaker::CreateBreakToken(
 #endif
 
   DCHECK(current_style_);
-  const HeapVector<InlineItem>& items = Items();
+  const InlineItems& items = Items();
   DCHECK_LE(current_.item_index, items.size());
   // If we have reached the end, create no break token.
   if (IsAtEnd()) {

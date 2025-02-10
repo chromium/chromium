@@ -183,7 +183,7 @@ const char* InlineItem::InlineItemTypeToString(InlineItemType val) const {
 }
 
 void InlineItem::SetSegmentData(const RunSegmenter::RunSegmenterRange& range,
-                                HeapVector<InlineItem>* items) {
+                                InlineItems* items) {
   unsigned segment_data = InlineItemSegment::PackSegmentData(range);
   for (InlineItem& item : *items) {
     if (item.Type() == InlineItem::kText) {
@@ -201,7 +201,7 @@ void InlineItem::SetSegmentData(const RunSegmenter::RunSegmenterRange& range,
 // @param end_offset The exclusive end offset to set.
 // @param level The level to set.
 // @return The index of the next item.
-unsigned InlineItem::SetBidiLevel(HeapVector<InlineItem>& items,
+unsigned InlineItem::SetBidiLevel(InlineItems& items,
                                   unsigned index,
                                   unsigned end_offset,
                                   UBiDiLevel level) {
@@ -256,9 +256,7 @@ String InlineItem::ToString() const {
 // @param items The list of InlineItem.
 // @param index The index to split.
 // @param offset The offset to split at.
-void InlineItem::Split(HeapVector<InlineItem>& items,
-                       unsigned index,
-                       unsigned offset) {
+void InlineItem::Split(InlineItems& items, unsigned index, unsigned offset) {
   DCHECK_GT(offset, items[index].start_offset_);
   DCHECK_LT(offset, items[index].end_offset_);
   items[index].shape_result_ = nullptr;

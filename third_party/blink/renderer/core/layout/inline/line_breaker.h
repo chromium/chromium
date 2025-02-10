@@ -137,7 +137,7 @@ class CORE_EXPORT LineBreaker {
   Document& GetDocument() const { return node_.GetDocument(); }
 
   const String& Text() const { return text_content_; }
-  const HeapVector<InlineItem>& Items() const { return items_data_->items; }
+  const InlineItems& Items() const { return items_data_->items; }
 
   String TextContentForLineBreak() const;
 
