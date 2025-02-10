@@ -1031,8 +1031,7 @@ class SaveCardBubbleViewsSyncTransportFullFormBrowserTest
  protected:
   SaveCardBubbleViewsSyncTransportFullFormBrowserTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillUpstream,
-                              switches::kExplicitBrowserSigninUIOnDesktop},
+        /*enabled_features=*/{features::kAutofillUpstream},
         /*disabled_features=*/{});
   }
 

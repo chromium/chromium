@@ -50,8 +50,6 @@ void AutofillBubbleSignInPromoController::OnSignInToChromeClicked(
     const AccountInfo& account) {
   // Signing in is triggered by the user interacting with the sign-in promo.
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
-
   base::UmaHistogramEnumeration("Signin.SignInPromo.Accepted", access_point_);
 
   Profile* profile =

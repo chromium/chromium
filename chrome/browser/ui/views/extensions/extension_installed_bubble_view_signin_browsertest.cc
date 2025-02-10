@@ -108,9 +108,7 @@ class ExtensionInstalledBubbleViewsExplicitSignInBrowserTest
  public:
   ExtensionInstalledBubbleViewsExplicitSignInBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {switches::kExplicitBrowserSigninUIOnDesktop,
-         syncer::kSyncEnableExtensionsInTransportMode},
-        {});
+        {syncer::kSyncEnableExtensionsInTransportMode}, {});
   }
 
  protected:
