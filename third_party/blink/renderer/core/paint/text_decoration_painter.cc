@@ -188,7 +188,7 @@ void TextDecorationPainter::PaintUnderOrOverLineDecorations(
           }
         }
       },
-      paint_info_.context, text_style, style_.IsHorizontalWritingMode());
+      paint_info_.context, text_style);
 }
 
 void TextDecorationPainter::PaintLineThroughDecorations(
@@ -220,7 +220,7 @@ void TextDecorationPainter::PaintLineThroughDecorations(
           }
         }
       },
-      paint_info_.context, text_style, style_.IsHorizontalWritingMode());
+      paint_info_.context, text_style);
 }
 
 void TextDecorationPainter::PaintExceptLineThrough(
@@ -285,11 +285,10 @@ void TextDecorationPainter::ClipIfNeeded(
 
   if (clip_rect_) {
     state_saver.SaveIfNeeded();
-    if (phase_ == kSelection) {
+    if (phase_ == kSelection)
       paint_info_.context.Clip(*clip_rect_);
-    } else {
+    else
       paint_info_.context.ClipOut(*clip_rect_);
-    }
   }
 }
 
