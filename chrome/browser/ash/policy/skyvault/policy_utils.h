@@ -48,7 +48,8 @@ enum class MigrationUploadError {
   kAuthRequired = 9,        // OneDrive reauthentication required.
   kMoveFailed = 10,         // Generic catch-all move error.
   kCancelled = 11,          // Upload explicitly cancelled.
-  kMaxValue = kCancelled,
+  kNetworkError = 12,  // Failure or interruption due to disconnected network.
+  kMaxValue = kNetworkError,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseSkyVaultMigrationUploadError)
 
