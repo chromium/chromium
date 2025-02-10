@@ -56,6 +56,10 @@ class AmountExtractionManager {
   // failure.
   void OnCheckoutAmountReceived(const std::string& extracted_amount);
 
+  // Check whether the host of the checkout webpage exists in the amount
+  // extraction allowlists.
+  bool IsUrlEligibleForAmountExtraction() const;
+
   // Get the driver associated with the main frame as the final checkout amount
   // is on the main frame.
   AutofillDriver* GetMainFrameDriver();
