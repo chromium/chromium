@@ -259,13 +259,6 @@ void ThrottleManager::DidFinishInFrameNavigation(
       statistics_ = std::make_unique<subresource_filter::PageLoadStatistics>(
           filter->activation_state(),
           kFingerprintingProtectionRulesetConfig.uma_tag);
-      if (filter->activation_state().enable_logging) {
-        CHECK(filter->activation_state().activation_level !=
-              subresource_filter::mojom::ActivationLevel::kDisabled);
-        frame_host->AddMessageToConsole(
-            blink::mojom::ConsoleMessageLevel::kWarning,
-            kActivationConsoleMessage);
-      }
     }
     RecordUmaHistogramsForRootNavigation(
         navigation_handle,
@@ -409,15 +402,13 @@ void ThrottleManager::MaybeNotifyOnBlockedResource(
     web_contents_helper_->NotifyOnBlockedSubresource(
         filter_handle->filter()->activation_state().activation_level);
 
-#if defined(NDEBUG)
     if (features::IsFingerprintingProtectionConsoleLoggingEnabled()) {
       // Log generic "subresource blocked" message in non-debug builds. In debug
       // builds, a more specific message logs per blocked subresource.
       frame_host->GetMainFrame()->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
-          kDisallowSubresourceConsoleMessage);
+          kDisallowFirstResourceConsoleMessage);
     }
-#endif
   }
 }
 

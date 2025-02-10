@@ -205,7 +205,7 @@ MATCHER_P(GURLWith,
 
 TEST_F(RendererURLLoaderThrottleTest, BlocksMatchingUrlLoad) {
   GURL url("https://blocked.com/");
-  EXPECT_CALL(renderer_agent_, OnSubresourceDisallowed("https://blocked.com/"));
+  EXPECT_CALL(renderer_agent_, OnSubresourceDisallowed());
 
   bool defer = false;
   network::ResourceRequest request =
