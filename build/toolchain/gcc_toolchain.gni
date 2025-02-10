@@ -380,7 +380,7 @@ template("single_gcc_toolchain") {
       if (current_os == "aix") {
         # AIX does not support either -D (deterministic output) or response
         # files.
-        command = "$ar -X64 {{arflags}} -r -c -s {{output}} {{inputs}}"
+        command = "$ar -X64 {{arflags}} -r -c {{output}} {{inputs}}"
       } else {
         rspfile = "{{output}}.rsp"
         rspfile_content = "{{inputs}}"
