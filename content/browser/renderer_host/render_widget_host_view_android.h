@@ -158,7 +158,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   gfx::Rect GetViewBounds() override;
   gfx::Size GetRequestedRendererSizeDevicePx() override;
   gfx::Size GetVisibleViewportSize() override;
-  gfx::Size GetVisibleViewportSizeDevicePx() override;
   void SetInsets(const gfx::Insets& insets) override;
   gfx::Size GetCompositorViewportPixelSize() override;
   bool IsSurfaceAvailableForCopy() override;
