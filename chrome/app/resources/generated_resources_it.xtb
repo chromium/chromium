@@ -2298,6 +2298,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2575713839157415345">{YEARS,plural, =1{Questo dispositivo verrà salvato per 1 anno e la prossima volta potrai connetterti senza un codice. Questa impostazione è stata configurata dal tuo amministratore.}other{Questo dispositivo verrà salvato per {YEARS} anni e la prossima volta potrai connetterti senza un codice. Questa impostazione è stata configurata dal tuo amministratore.}}</translation>
 <translation id="2577127557293415225">Chiudi brevemente entrambi gli occhi</translation>
 <translation id="257779572837908839">Configura come Chromebox per videoconferenze</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perderà immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />" e non potrà più interagire con te nei servizi Google.</translation>
 <translation id="2580889980133367162">Consenti sempre a <ph name="HOST" /> di scaricare più file</translation>
 <translation id="258095186877893873">Lungo</translation>
 <translation id="2581455244799175627">Scopri di più sull'autorizzazione dei cookie di terze parti</translation>

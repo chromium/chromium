@@ -70,6 +70,7 @@
 <translation id="2459183986985456602">Отваряне на последния ми раздел в Chromium.</translation>
 <translation id="2476409803017965813">Можете да актуализирате избора си по всяко време от настройките на Chromium.</translation>
 <translation id="2478931088402984578">Изберете <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2485774047568879945">Задайте Chromium като браузър по подразбиране, за да споделяте и отваряте връзки с лекота</translation>
 <translation id="2512597191798760956">Натиснете и задръжте иконата на Chromium и кликнете върху „Редактиране на началния екран“</translation>
 <translation id="2517624234762908348">Синхронизиране на данните ви в Chromium</translation>
 <translation id="2592940277904433508">Продължаване на използването на Chromium</translation>
@@ -167,6 +168,7 @@
 <translation id="5088872414922783602">Осъществявайте по-бърз достъп до Chromium от лентата Dock на началния екран.</translation>
 <translation id="5124429847818367226">Вече можете да използвате Chromium всеки път, когато преглеждате съобщения, документи и други приложения или докоснете връзки в тях.</translation>
 <translation id="5131565040785979529">Организацията ви (<ph name="DOMAIN" />) управлява профила, в който сте влезли, и начина на използване на Chromium.</translation>
+<translation id="5134464247000681876">Отваряйте в Chromium връзки от Gmail, Карти, YouTube и други приложения</translation>
 <translation id="5224391634244552924">Няма запазени пароли. Chromium може да проверява паролите ви, когато ги запазите.</translation>
 <translation id="5259423875997548710">Търсене на визуални елементи в Chromium.</translation>
 <translation id="5308226104666789935">Chromium не може да провери за актуализации</translation>
@@ -260,6 +262,7 @@
 <translation id="7674213385180944843">Отворете „Settings“ &gt; „Privacy“ &gt; „Camera“ &gt; „Chromium“ и включете камерата.</translation>
 <translation id="7733418656985455268">Съвет за Chromium: Търсене с Обектив</translation>
 <translation id="7747820849741499258">Търсене в Chromium</translation>
+<translation id="7753923083404296545">Отворено в режим „инкогнито“ на Chromium</translation>
 <translation id="7762622637388462191">Заключване на разделите в режим „инкогнито“, когато излезете от Chromium или превключите към друго приложение.</translation>
 <translation id="7763454117143368771">Използвайте Chromium като браузър по подразбиране. Той ще ви предпазва от опасни сайтове и ще се грижи за сигурността на паролите ви</translation>
 <translation id="7784950022329154821">Заключване на разделите в режим „инкогнито“ при затваряне на Chromium</translation>

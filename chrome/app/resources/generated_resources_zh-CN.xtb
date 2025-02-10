@@ -2285,6 +2285,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{此设备将被保存 1 年，下次您无需代码即可连接。这项设置是由您的管理员指定的。}other{此设备将被保存 {YEARS} 年，下次您无需代码即可连接。这项设置是由您的管理员指定的。}}</translation>
 <translation id="2577127557293415225">短暂闭上双眼</translation>
 <translation id="257779572837908839">设为 Chromebox 会易设备</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) 将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且将无法再在各项 Google 服务中与您互动。</translation>
 <translation id="2580889980133367162">始终允许 <ph name="HOST" /> 下载多个文件</translation>
 <translation id="258095186877893873">长</translation>
 <translation id="2581455244799175627">详细了解如何允许第三方 Cookie</translation>

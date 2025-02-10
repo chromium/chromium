@@ -449,6 +449,7 @@
 <translation id="3122883569442693641">Maelezo zaidi</translation>
 <translation id="3124039320086536031">Kifaa kimeunganishwa.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Ungependa kuondoa ukurasa huu?}=1{Ungependa kuondoa ukurasa wa {PAGE_NUMBER}?}other{Ungependa kuondoa ukurasa wa {PAGE_NUMBER}?}}</translation>
+<translation id="3134486240968249588">Mambo machache ya kukumbuka</translation>
 <translation id="3140130301071865159">theluji</translation>
 <translation id="3146655726035122603">Inapatikana kwenye <ph name="PRODUCT_NAME" /> pekee</translation>
 <translation id="315116470104423982">Data ya mtandao wa simu</translation>
@@ -1648,7 +1649,6 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="8747900814994928677">Thibitisha mabadiliko</translation>
 <translation id="8749478549112817787">Mandharinyuma ya Kamera</translation>
 <translation id="8755946156089753497">mnara</translation>
-<translation id="8756235582947991808">Jinsi ya kutayarisha ukitumia AI na mambo machache ya kukumbuka</translation>
 <translation id="8760616037557661287">Vidokezo vya awali</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Albamu ya Picha kwenye Google</translation>

@@ -449,6 +449,7 @@
 <translation id="3122883569442693641">مزید تفصیلات</translation>
 <translation id="3124039320086536031">آلہ منسلک ہے۔</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{صفحہ ہٹائیں؟}=1{{PAGE_NUMBER} صفحہ ہٹائیں؟}other{{PAGE_NUMBER} صفحہ ہٹائیں؟}}</translation>
+<translation id="3134486240968249588">ذہن میں رکھنے کے لیے چند چیزیں</translation>
 <translation id="3140130301071865159">برف</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> کیلئے مخصوص</translation>
 <translation id="315116470104423982">موبائل ڈیٹا</translation>
@@ -552,6 +553,7 @@
 <translation id="3628462041319107639">ٹرانسکرپشن ماڈل ڈاؤن لوڈ ہو رہا ہے…</translation>
 <translation id="3632040286124154621">اچھی تجویز</translation>
 <translation id="3632579075709132555">رازداری کی اسکرین کو ٹوگل کرنے کی کلید</translation>
+<translation id="3634941468757842845">ایک تھیم منتخب کریں</translation>
 <translation id="3639873154908477486">‏نام (A سے Z)</translation>
 <translation id="3644695927181369554">بری تجویز</translation>
 <translation id="3651050199673793219">درجۂ حرارت کی یونٹ منتخب کریں</translation>
@@ -1531,6 +1533,7 @@
 <translation id="8132480444149501833">ٹریفک کاؤنٹرز کی درخواست کریں</translation>
 <translation id="8135609423982943441">‏آپ کے Chromebook کو محفوظ ڈیفالٹس پر ری سیٹ کر دیا گیا۔ آپ ترتیبات میں کسی بھی وقت ان تبدیلیوں کو ایڈجسٹ کر سکتے ہیں۔</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8140591278915222789">خود اپنی بنائیں</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> منتخب کریں</translation>
 <translation id="8151185429379586178">ڈویلپر ٹولز</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />، <ph name="ACCELERATOR_INFO" />۔</translation>
@@ -1648,7 +1651,6 @@
 <translation id="8747900814994928677">تبدیلی کی توثیق کریں</translation>
 <translation id="8749478549112817787">کیمرے کا پس منظر</translation>
 <translation id="8755946156089753497">ٹاور</translation>
-<translation id="8756235582947991808">‏AI کے ساتھ تخلیق کرنے اور کچھ چیزیں یاد رکھنے کا طریقہ</translation>
 <translation id="8760616037557661287">پچھلے پرامپٹس</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏Google تصاویر کا البم</translation>

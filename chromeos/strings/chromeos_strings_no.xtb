@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Lag sammendrag</translation>
 <translation id="123124571410524056">Mistanke om portal</translation>
 <translation id="1232610416724362657">foss</translation>
+<translation id="1238163879850290856">Tilbakestill for å forhindre at andre får tilgang til data. Bruk bare inndatametoder du stoler på.</translation>
 <translation id="1238612778414822719">HTTPS-tidsforsinkelse</translation>
 <translation id="1252766349417594414">Joystick</translation>
 <translation id="1270369111467284986">Mistanke om obligatorisk side</translation>
@@ -449,6 +450,7 @@
 <translation id="3122883569442693641">Mer informasjon</translation>
 <translation id="3124039320086536031">Enheten er tilkoblet.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Vil du fjerne siden?}=1{Vil du fjerne side {PAGE_NUMBER}?}other{Vil du fjerne side {PAGE_NUMBER}?}}</translation>
+<translation id="3134486240968249588">Ting du bør huske på</translation>
 <translation id="3140130301071865159">snø</translation>
 <translation id="3146655726035122603">Kun på <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobildata</translation>
@@ -766,6 +768,7 @@
 <translation id="4650608062294027130">Høyre Shift</translation>
 <translation id="4654549501020883054">Endre daglig</translation>
 <translation id="4655868084888499342">Bildet er angitt som bakgrunn</translation>
+<translation id="4660989616054030633">Generativ AI kan ta feil, blant annet om personer, så dobbeltsjekk svarene den gir</translation>
 <translation id="4661249927038176904">Surrealistisk</translation>
 <translation id="4661392828086261436">Denne oppdateringen leveres av enhetsprodusenten og er ikke bekreftet av Google</translation>
 <translation id="4664651912255946953">pels</translation>
@@ -1065,6 +1068,7 @@
 <translation id="6074752328838739425">Skjul sammendraget</translation>
 <translation id="6075872808778243331">(Android) HTTP-tidsforsinkelse</translation>
 <translation id="6078323886959318429">Legg til snarvei</translation>
+<translation id="6079693086494835199">Tilbakestill for å sikre at standard-startsiden ikke er et nettsted som driver med nettfisking. Bruk bare nettsteder du stoler på.</translation>
 <translation id="6091080061796993741">gul</translation>
 <translation id="6104112872696127344">Skanningen er avbrutt</translation>
 <translation id="6106186594183574873">For å fullføre passordendringen, skriv inn det gamle passordet</translation>
@@ -1088,6 +1092,7 @@
 <translation id="6156030503438652198">rødbrun og rosa</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Tilbakestill for å forhindre andre fra å bruke mikrofonen din eller kameraet ditt. Gi bare tillatelser til nettsteder du stoler på.</translation>
 <translation id="6188737759358894319">Laget <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Batterikapasiteten avtar med bruken</translation>
 <translation id="6189987971574353264">Spill av</translation>
@@ -1114,6 +1119,7 @@
 <translation id="629550705077076970">tastaturdimming</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />testen er avbrutt</translation>
 <translation id="631063167932043783">Utforsk-appen</translation>
+<translation id="6314333689576767865">Chromebooken er tilbakestilt til trygge standardinnstillinger. Du kan når som helst gjøre endringer i innstillingene.</translation>
 <translation id="6318437367327684789">for alltid</translation>
 <translation id="6319207335391420837">Oppdater fastvaren på <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Slå på skjermspareren</translation>
@@ -1250,6 +1256,7 @@
 <translation id="6862416241246624313">Tilbakemeldingen er sendt</translation>
 <translation id="6866732840889595464">tusenfryd</translation>
 <translation id="6871256179359663621">lys lilla</translation>
+<translation id="6887967050249348172">Utvidelser er deaktivert for å forhindre endringer i innstillingene. Slå bare på utvidelser du stoler på.</translation>
 <translation id="6889786074662672253">Ikke koble fra denne eksterne enheten eller slå av datamaskinen mens enheten startes på nytt. Du kan minimere dette vinduet. Dette kan ta noen minutter, og det kan hende den eksterne enheten ikke fungerer i dette tidsrommet.</translation>
 <translation id="6899460405678814458">Vis sammendraget</translation>
 <translation id="6900701049656042631">Dette albumet inneholder ingen bilder. For å legge til bilder, gå til <ph name="LINK" /></translation>
@@ -1340,6 +1347,7 @@
 <translation id="7233782086689993269">Hurtigtasten er gjenopprettet</translation>
 <translation id="725133483556299729">Velg en e-postadresse</translation>
 <translation id="7255187042098209569">rosa og lilla</translation>
+<translation id="7267918995585557751">Tilbakestill for å sikre at standard-oppstartssiden ikke er et nettsted som driver med nettfisking. Bruk bare nettsteder du stoler på.</translation>
 <translation id="7271000785316964275">klassisisme</translation>
 <translation id="7271040990581020067">Skanneren er i bruk for øyeblikket. Prøv på nytt senere.</translation>
 <translation id="7271932918253517778">En hurtigtast som bruker taster på øverste rad, må inneholde <ph name="META_KEY" />-tasten.</translation>
@@ -1485,6 +1493,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="7903695460270716054">Velg utvalgt grafikk og utvalgte bilder</translation>
 <translation id="7912005977894000746">Tilbake til hovedsiden</translation>
 <translation id="7915220255123750251">Administrer APN-innstillingene for nettverket. APN oppretter en tilkobling mellom et mobilnettverk og internett.</translation>
+<translation id="7915759923880480519">Tilbakestill for å beskytte data som sendes via nettverkene dine. Bruk bare nettverk du stoler på.</translation>
 <translation id="7936303884198020182">Fant ingen navnetjenere</translation>
 <translation id="7942349550061667556">Rød</translation>
 <translation id="7943235353293548836">Vedvarende keepalive-intervall</translation>
@@ -1648,7 +1657,6 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8747900814994928677">Bekreft endringen</translation>
 <translation id="8749478549112817787">Kamerabakgrunn</translation>
 <translation id="8755946156089753497">tårn</translation>
-<translation id="8756235582947991808">Slik lager du innhold med AI – og noen ting du bør huske på</translation>
 <translation id="8760616037557661287">Tidligere forespørsler</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Foto-album</translation>
@@ -1710,6 +1718,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="89945434909472341">landsby</translation>
 <translation id="8997710128084572139">Enheten har <ph name="BATTERY_PERCENTAGE" /> % batteri.</translation>
 <translation id="8998289560386111590">Ikke tilgjengelig på enheten din</translation>
+<translation id="9000871120886759611">Tilbakestill for å sikre at du har tilgang til informasjon på språket du foretrekker. Sjekk at bare foretrukne språk brukes.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Frekvens</translation>
 <translation id="901834265349196618">e-post</translation>

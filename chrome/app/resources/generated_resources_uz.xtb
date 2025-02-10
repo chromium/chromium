@@ -1362,6 +1362,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1936157145127842922">Jildda ko‘rsatish</translation>
 <translation id="1936931585862840749">Chop etish uchun nusxalar sonini kiriting (1-<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> protsessorli qurilmangizga <ph name="ARCHITECTURE_CONTAINER" /> turidagi zaxiraviy nusxasi tiklanmaydi. Arxivni boshqa turdagi protsessorli qurilmada tiklash yoki Fayllar ilovasi orqali tarkibidagi zaxiralangan fayllarini ochish mumkin.</translation>
+<translation id="1938116692670653897">Joriy rang mavzusi</translation>
 <translation id="1938351510777341717">Tashqi buyruq</translation>
 <translation id="1940221956626514677">Asboblar panelini moslash</translation>
 <translation id="1940546824932169984">Ulangan qurilmalar</translation>
@@ -2131,6 +2132,10 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2462332841984057083">Steam allaqachon sozlanmoqda. Sozlash tugallanishini kuting.</translation>
 <translation id="2462724976360937186">Sertifikat markazi kaliti identifikatori</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> qo‘shildi</translation>
+<translation id="2464075479326723132">Microsoft SharePoint va OneDrive xizmatlarida oxirgi harakatlarga qaytishni osonlashtirish uchun tavsiya etilgan fayllar chiqyapti.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Sozlamalarni kartochka menyusidan boshqarishingiz yoki boshqa sozlamalarnini “Chromeni moslash” orqali koʻrishingiz mumkin.</translation>
 <translation id="2464079411014186876">Muzqaymoq</translation>
 <translation id="2467755475704469005">Hech qanday qurilma aniqlanmadi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" /> va yana <ph name="NUM_OTHER_MEMBERS" /> kishi ulashgan Sahifa guruhiga qoʻshilish</translation>
@@ -2295,6 +2300,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2575713839157415345">{YEARS,plural, =1{Bu qurilma 1 yil davomida saqlanadi va unga keyingi safar kodsiz ulanish mumkin. Bu administrator tomonidan sozlangan.}other{Bu qurilma {YEARS} yil davomida saqlanadi va unga keyingi safar kodsiz ulanish mumkin. Bu administrator tomonidan sozlangan.}}</translation>
 <translation id="2577127557293415225">Ikkala koʻzni yuming</translation>
 <translation id="257779572837908839">Video muloqotlar uchun Chromebox sifatida foydalanish</translation>
+<translation id="2577981599306533385">“<ph name="GROUP_NAME" />” varaqlar guruhiga ruxsat darhol yopiladi va keyin <ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) siz bilan Google xizmatlari orqali muloqot qila olmaydi.</translation>
 <translation id="2580889980133367162"><ph name="HOST" /> saytidan har doim birdaniga bir nechta fayl yuklab olishga ruxsat berilsin</translation>
 <translation id="258095186877893873">Uzoq</translation>
 <translation id="2581455244799175627">Tashqi cookie fayllariga ruxsat berish haqida batafsil</translation>
@@ -3988,6 +3994,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3787434344076711519">Tarjimasi kutilmoqda</translation>
 <translation id="3788301286821743879">Kiosk ilovasi ishga tushmadi.</translation>
 <translation id="3788401245189148511">Ruxsatlar:</translation>
+<translation id="3789432704615470433">SharePoint va OneDrive fayllari</translation>
 <translation id="3789841737615482174">O‘rnatish</translation>
 <translation id="3790417903123637354">Xatolik yuz berdi. Keyinroq qayta urining</translation>
 <translation id="379082410132524484">Kartangiz muddati tugagan</translation>
@@ -6176,6 +6183,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5360150013186312835">Asboblar panelida ko‘rsatish</translation>
 <translation id="5362741141255528695">Yopiq kalit faylini tanlang.</translation>
 <translation id="536278396489099088">ChromeOS tizim holati va shikoyatlar</translation>
+<translation id="5362916924854054326">SharePoint va OneDrive fayllari chiqmasin</translation>
 <translation id="5363109466694494651">Powerwash va Revert</translation>
 <translation id="5365881113273618889">Tanlangan jildda maxfiy maʼlumotlar mavjud. “<ph name="APP_NAME" />” ilovasiga ushbu jildga yozish uchun doimiy ruxsat berilsinmi?</translation>
 <translation id="536638840841140142">Hech qanday</translation>
@@ -10754,6 +10762,10 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="865936634714975126">Sahifani yuklashda turlarni tanlash uchun URL manzilga soʻrov parametrini qoʻshing. Misol: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> kontaktlari</translation>
 <translation id="8659609431223166673">Oyna pastga olindi</translation>
+<translation id="8660288500924118793">Outlook Taqvimdagi keyingi tadbirni oson ochishingiz uchun sizga taqvim moduli chiqarildi.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Sozlamalarni kartochka menyusidan boshqarishingiz yoki boshqa sozlamalarnini “Chromeni moslash” orqali koʻrishingiz mumkin.</translation>
 <translation id="8661290697478713397">Havolani &amp;inkognito rejimida ochish</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> hisobiga kirish</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> tarmoqqa ulanish</translation>

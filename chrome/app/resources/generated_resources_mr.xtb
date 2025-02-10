@@ -1372,6 +1372,7 @@
 <translation id="1936157145127842922">फोल्डरमध्ये दर्शवा</translation>
 <translation id="1936931585862840749">किती प्रती प्रिंट करायच्या ते दर्शवण्यासाठी संख्या वापरा (१ ते <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> असलेल्या या डिव्हाइस सह <ph name="ARCHITECTURE_CONTAINER" /> प्रकारचे आर्किटेक्चर कंटेनर इंपोर्ट करू शकत नाही. तुम्ही हा कंटेनर वेगळ्या डिव्हाइसमध्ये रिस्टोअर करण्याचा प्रयत्न करू शकता किंवा तुम्ही या कंटेनर प्रतिमेच्या फाइल Files ॲपमध्ये उघडून ॲक्सेस करू शकता.</translation>
+<translation id="1938116692670653897">सद्य रंग थीम</translation>
 <translation id="1938351510777341717">बाह्य कमांड</translation>
 <translation id="1940221956626514677">टूलबार कस्टमाइझ करा</translation>
 <translation id="1940546824932169984">कनेक्‍ट केलेली डिव्हाइस</translation>
@@ -2141,6 +2142,10 @@
 <translation id="2462332841984057083">Steam आधीपासून सेट करत आहे. सेटअप पूर्ण होण्याची प्रतीक्षा करा.</translation>
 <translation id="2462724976360937186">प्रमाणन अधिकृतता की आयडी</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> जोडले</translation>
+<translation id="2464075479326723132">Microsoft SharePoint आणि OneDrive मधील तुमच्या अलीकडील अ‍ॅक्टिव्हिटीवर सहज परत जाण्यात तुम्हाला मदत करण्यासाठी तुम्हाला सुचवलेल्या फाइल दिसत आहेत.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        तुम्ही कार्ड मेनूमधून सेटिंग्ज व्यवस्थापित करू शकता किंवा Chrome कस्टमाइझ करा यामध्ये आणखी पर्याय पाहू शकता.</translation>
 <translation id="2464079411014186876">आईस्क्रीम</translation>
 <translation id="2467755475704469005">कोणतेही डिव्हाइस डिटेक्ट केले नाही. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" /> आणि आणखी <ph name="NUM_OTHER_MEMBERS" /> लोकांसोबत टॅब गटामध्ये सामील व्हा</translation>
@@ -2305,6 +2310,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{हे डिव्हाइस एका वर्षासाठी सेव्ह केले जाईल आणि तुम्ही पुढच्या वेळी कोडशिवाय कनेक्ट करू शकता. हे तुमच्या अ‍ॅडमिनिस्ट्रेटरने सेट केलेले आहे.}other{हे डिव्हाइस {YEARS} वर्षांसाठी सेव्ह केले जाईल आणि तुम्ही पुढच्या वेळी कोडशिवाय कनेक्ट करू शकता. हे तुमच्या अ‍ॅडमिनिस्ट्रेटरने सेट केलेले आहे.}}</translation>
 <translation id="2577127557293415225">थोड्या वेळासाठी दोन्ही डोळे बंद करा</translation>
 <translation id="257779572837908839">मीटिंगसाठी Chromebox म्हणून सेट अप करा</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) हे त्वरित “<ph name="GROUP_NAME" />” या टॅब गटाचा ॲक्सेस गमवतील आणि त्यांना यापुढे तुमच्याशी संपूर्ण Google सेवांवर संवाद साधता येणार नाही.</translation>
 <translation id="2580889980133367162">एकापेक्षा जास्त फाइल डाउनलोड करण्यास <ph name="HOST" /> ला नेहमी अनुमती द्या</translation>
 <translation id="258095186877893873">दीर्घ</translation>
 <translation id="2581455244799175627">तृतीय पक्ष कुकीना अनुमती देण्याबद्दल अधिक</translation>
@@ -4000,6 +4006,7 @@
 <translation id="3787434344076711519">भाषांतराची प्रतीक्षा करत आहे</translation>
 <translation id="3788301286821743879">कियोस्क ॲप्लिकेशन लाँच करता आले नाही.</translation>
 <translation id="3788401245189148511">ते करू शकले असते:</translation>
+<translation id="3789432704615470433">SharePoint आणि OneDrive फाइल</translation>
 <translation id="3789841737615482174">स्थापना करा</translation>
 <translation id="3790417903123637354">काहीतरी चूक झाली. नंतर पुन्हा प्रयत्न करा</translation>
 <translation id="379082410132524484">तुमचे कार्ड एक्सपायर झालेले आहे</translation>
@@ -6187,6 +6194,7 @@
 <translation id="5360150013186312835">टूलबारमध्ये दर्शवा</translation>
 <translation id="5362741141255528695">खासगी की फाइल निवडा.</translation>
 <translation id="536278396489099088">ChromeOS सिस्टीम स्थिती आणि अहवाल</translation>
+<translation id="5362916924854054326">SharePoint आणि OneDrive फाइल दाखवू नका</translation>
 <translation id="5363109466694494651">Powerwash करा आणि परत करा</translation>
 <translation id="5365881113273618889">तुम्ही निवडलेल्या फोल्डरमध्ये संवेदनशील फाइल आहेत. तुम्हाला नक्की "<ph name="APP_NAME" />" ला या फोल्डरचा कायमचा राइट अ‍ॅक्सेस द्यायचा आहे का?</translation>
 <translation id="536638840841140142">काहीही नाही</translation>
@@ -10769,6 +10777,10 @@ I feel - विटांची इमारत</translation>
 <translation id="865936634714975126">पेज लोडवर प्रकार निवडण्यासाठी URL मध्ये क्वेरी पॅरामीटर जोडा. उदाहरणार्थ: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> साठी संपर्क</translation>
 <translation id="8659609431223166673">विंडो खालच्या बाजूला हलवली</translation>
+<translation id="8660288500924118793">Outlook Calendar वरील तुमच्या पुढील इव्हेंटवर सहजपणे नेव्हिगेट करण्यात तुमची मदत करण्यासाठी तुम्हाला तुमचे कॅलेंडर दिसत आहे.
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        तुम्ही कार्ड मेनूमधून सेटिंग्ज व्यवस्थापित करू शकता किंवा Chrome कस्टमाइझ करा यामध्ये आणखी पर्याय पाहू शकता.</translation>
 <translation id="8661290697478713397">गुप्त विंडोमध्ये लिंक उघडा</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> मध्ये साइन इन करा</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्कमध्‍‍‍‍ये सामील व्‍हा</translation>

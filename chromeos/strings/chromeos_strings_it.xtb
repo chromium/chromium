@@ -450,6 +450,7 @@
 <translation id="3122883569442693641">Altri dettagli</translation>
 <translation id="3124039320086536031">Il dispositivo è collegato.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Rimuovere la pagina?}=1{Rimuovere pagina {PAGE_NUMBER}?}other{Rimuovere pagina {PAGE_NUMBER}?}}</translation>
+<translation id="3134486240968249588">Alcuni aspetti da tenere presente</translation>
 <translation id="3140130301071865159">neve</translation>
 <translation id="3146655726035122603">In esclusiva per <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Dati mobili</translation>
@@ -1656,7 +1657,6 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8747900814994928677">Conferma modifica</translation>
 <translation id="8749478549112817787">Sfondo fotocamera</translation>
 <translation id="8755946156089753497">torre</translation>
-<translation id="8756235582947991808">Come creare con l'AI e alcuni aspetti da ricordare</translation>
 <translation id="8760616037557661287">Prompt precedenti</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album di Google Foto</translation>

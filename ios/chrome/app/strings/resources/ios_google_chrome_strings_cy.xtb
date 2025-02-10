@@ -121,6 +121,7 @@ Arhoswch ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y d
 <translation id="4064699917955374540">I ddefnyddio a chadw data Chrome yn eich Cyfrif Google, cadarnhewch mai chi sydd yno.</translation>
 <translation id="417201473131094001">Ni chefnogir ar Chrome Canary</translation>
 <translation id="424864128008805179">Allgofnodi o Chrome?</translation>
+<translation id="4430797724889237570">Agorwch ddolenni o Gmail, Maps, YouTube ac apiau eraill yn Chrome</translation>
 <translation id="447252321002412580">Helpu i Wella nodweddion a pherfformiad Chrome</translation>
 <translation id="4523886039239821078">Mae rhai ychwanegion yn achosi i Chrome dorri. Dadosodwch:</translation>
 <translation id="4633328489441962921">Ni all Chrome wirio am ddiweddariadau</translation>
@@ -206,6 +207,7 @@ Arhoswch ychydig funudau cyn newid cyfrif. Os byddwch yn newid cyfrif nawr, bydd
 
 Mae eich data wedi'u hamgryptio â'ch cyfrinymadrodd. Rhowch ef i ddefnyddio a chadw data Chrome yn eich Cyfrif Google.</translation>
 <translation id="6533470733797826516">Mewngofnodwch yn gyflymach gydag awtolenwi Chrome</translation>
+<translation id="6536544321553662809">Gosodwch Chrome fel eich porwr diofyn i rannu ac agor dolenni yn hawdd</translation>
 <translation id="6545449117344801102">Mae Chrome yn canfod cyfeiriadau ac yn defnyddio Google Maps i roi cyfarwyddiadau a gwybodaeth leol i chi.</translation>
 <translation id="6636941099779251629">Mae eich sefydliad yn gofyn i chi fewngofnodi i ddefnyddio Chrome. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Yn anfon rhan o'r URL sydd wedi'i dwyllo at Google drwy weinydd preifatrwydd sy'n cuddio eich cyfeiriad IP. Os yw gwefan yn ceisio dwyn eich cyfrinair, neu pan fyddwch yn lawrlwytho ffeil niweidiol, gall Chrome hefyd anfon cyfeiriadau URL, gan gynnwys darnau o gynnwys tudalen, i Google.</translation>
@@ -291,6 +293,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="8370517070665726704">Hawlfraint <ph name="YEAR" /> Google LLC. Cedwir pob hawl.</translation>
 <translation id="8371138994040262994">Yn agor y gosodiadau yn Chrome.</translation>
 <translation id="8387459386171870978">Parhau i ddefnyddio Chrome</translation>
+<translation id="8392023217086447677">Agorwyd yn Chrome Anhysbys</translation>
 <translation id="840168496893712993">Mae rhai ychwanegion yn achosi i Chrome dorri. Rhowch gynnig ar ddadosod nhw.</translation>
 <translation id="8413500425974960807">Awgrym Chrome: Symudwch Chrome i'r doc</translation>
 <translation id="8413795581997394485">Yn amddiffyn rhag gwefannau, lawrlwythiadau ac estyniadau y gwyddys eu bod yn beryglus. Pan fyddwch yn ymweld â gwefan, mae Chrome yn anfon rhan o'r URL sydd wedi'i dwyllo at Google drwy weinydd preifatrwydd sy'n cuddio eich cyfeiriad IP. Os yw gwefan yn gwneud rhywbeth amheus, bydd URL llawn a darnau o gynnwys tudalen hefyd yn cael eu hanfon.</translation>

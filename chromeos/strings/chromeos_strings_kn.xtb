@@ -450,6 +450,7 @@
 <translation id="3122883569442693641">ಇನ್ನಷ್ಟು ವಿವರಗಳು</translation>
 <translation id="3124039320086536031">ಸಾಧನವು ಕನೆಕ್ಟ್ ಆಗಿದೆ.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ಪುಟವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?}=1{{PAGE_NUMBER} ನೇ ಪುಟವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?}one{{PAGE_NUMBER} ನೇ ಪುಟವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?}other{{PAGE_NUMBER} ನೇ ಪುಟವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?}}</translation>
+<translation id="3134486240968249588">ನೆನಪಿನಲ್ಲಿಟ್ಟುಕೊಳ್ಳಬೇಕಾದ ಕೆಲವು ವಿಷಯಗಳು</translation>
 <translation id="3140130301071865159">ಹಿಮಪಾತ</translation>
 <translation id="3146655726035122603">ವಿಶೇಷವಾಗಿ <ph name="PRODUCT_NAME" /> ಗೆ ಆಗಿದೆ</translation>
 <translation id="315116470104423982">ಮೊಬೈಲ್ ಡೇಟಾ</translation>
@@ -1656,7 +1657,6 @@
 <translation id="8747900814994928677">ಬದಲಾವಣೆಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="8749478549112817787">ಕ್ಯಾಮರಾದ ಹಿನ್ನೆಲೆ</translation>
 <translation id="8755946156089753497">ಗೋಪುರ</translation>
-<translation id="8756235582947991808">AI ಮೂಲಕ ರಚಿಸುವುದು ಹೇಗೆ ಹಾಗೂ ನೆನಪಿಡಬೇಕಾದ ಕೆಲವು ವಿಷಯಗಳು</translation>
 <translation id="8760616037557661287">ಹಿಂದಿನ ಪ್ರಾಂಪ್ಟ್‌ಗಳು</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ಆಲ್ಬಮ್‌</translation>

@@ -220,6 +220,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="114721135501989771">Google pintar di Chrome</translation>
 <translation id="1147322039136785890">Kini giliran <ph name="SUPERVISED_USER_NAME" /> pula</translation>
 <translation id="1147991416141538220">Untuk meminta akses, hubungi pentadbir peranti ini.</translation>
+<translation id="1148464196693569530">Benarkan Skrip Pengguna</translation>
 <translation id="1148624853678088576">Anda telah bersedia!</translation>
 <translation id="1148669835763563782">Anda menerima kemaskinian perisian terkini untuk meningkatkan keselamatan dan ciri Chromebook terbaharu. Kemaskinian ini merangkumi peningkatan pengalaman penyediaan untuk membantu anda mendapatkan permulaan Chromebook yang lancar.</translation>
 <translation id="1149401351239820326">Bulan tamat tempoh</translation>
@@ -2311,6 +2312,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2575713839157415345">{YEARS,plural, =1{Peranti ini akan disimpan selama 1 tahun dan anda boleh menyambung tanpa kod pada masa akan datang. Ini ditetapkan oleh pentadbir anda.}other{Peranti ini akan disimpan selama {YEARS} tahun dan anda boleh menyambung tanpa kod pada masa akan datang. Ini ditetapkan oleh pentadbir anda.}}</translation>
 <translation id="2577127557293415225">Tutup kedua-dua belah mata sebentar</translation>
 <translation id="257779572837908839">Sediakan Chromebox untuk mesyuarat</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) akan kehilangan akses kepada kumpulan tab “<ph name="GROUP_NAME" />” dengan serta-merta dan tidak akan dapat berinteraksi dengan anda lagi merentas perkhidmatan Google.</translation>
 <translation id="2580889980133367162">Sentiasa benarkan <ph name="HOST" /> memuat turun berbilang fail</translation>
 <translation id="258095186877893873">Lama</translation>
 <translation id="2581455244799175627">Lagi tentang membenarkan kuki pihak ketiga</translation>
@@ -6781,6 +6783,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5794414402486823030">Sentiasa buka dengan alat lihat sistem</translation>
 <translation id="5794700615121138172">Folder kongsi Linux</translation>
 <translation id="5794786537412027208">Hentikan semua Apl Chrome</translation>
+<translation id="5795422263272161110">Paparkan bersebelahan</translation>
 <translation id="5796485699458186843">&amp;Tab Inkognito baharu</translation>
 <translation id="5796956053441619942">URL daripada peranti jauh tidak disokong</translation>
 <translation id="5797934230382081317">Ketahui cara bermula pada &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; dan &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -7309,6 +7312,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6170498031581934115">Tidak dapat mendayakan penyahpepijatan ADB. Buka Tetapan dan cuba lagi.</translation>
 <translation id="6170675927290506430">Akses tetapan pemberitahuan</translation>
 <translation id="6171779718418683144">Tanya setiap kali melawat</translation>
+<translation id="6172020488605056255">Klik kanan untuk menggunakan Bantu saya baca</translation>
 <translation id="617213288191670920">Tiada bahasa ditambah</translation>
 <translation id="6173623053897475761">Taipkan PIN anda sekali lagi</translation>
 <translation id="6174909075810107548">Gunakan “5” untuk menekan butang tetikus</translation>
@@ -8335,6 +8339,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6910190732484284349">Padamkan kunci laluan untuk nama pengguna: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Dipadamkan</translation>
 <translation id="6910274140210351823">Gelap</translation>
+<translation id="691102290537033604">Sambungan akan dapat menjalankan kod yang belum disemak oleh Google. Hal ini mungkin tidak selamat dan anda mestilah mendayakan sambungan ini jika anda tahu perkara yang anda sedang lakukan sahaja.</translation>
 <translation id="6911734910326569517">Jejak memori</translation>
 <translation id="6912007319859991306">PIN SIM Selular</translation>
 <translation id="6912380255120084882">Cuba peranti yang berbeza</translation>
@@ -9847,6 +9852,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7990863024647916394">Suara <ph name="DISPLAY_NAME" /> <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Pindahkan Wi-Fi secara automatik daripada telefon Android anda</translation>
 <translation id="7991296728590311172">Tetapan Akses Suis</translation>
+<translation id="7992080146463834191">Ringkaskan kandungan, permudahkan bahasa yang kompleks atau tanya soalan.</translation>
 <translation id="7992203134935383159">Sintesis pertuturan</translation>
 <translation id="799570308305997052">Paparan web</translation>
 <translation id="7997826902155442747">Keutamaan Proses</translation>
@@ -11105,6 +11111,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" dimatikan</translation>
 <translation id="8874647982044395866">Organik</translation>
 <translation id="8874790741333031443">Cuba berikan kebenaran sementara untuk kuki pihak ketiga yang boleh mengurangkan perlindungan penyemakan imbas tetapi ciri laman lebih berkemungkinan untuk berfungsi seperti yang dijangka.</translation>
+<translation id="8875221558267407626">Ringkaskan kandungan, permudahkan bahasa yang kompleks atau tanya soalan</translation>
 <translation id="8875520811099717934">Peningkatan Linux</translation>
 <translation id="8875736897340638404">Pilih keterlihatan anda</translation>
 <translation id="8876307312329369159">Tetapan ini tidak boleh ditukar dalam sesi tunjuk cara.</translation>
@@ -11158,6 +11165,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8915916167043355778">Tutup semua</translation>
 <translation id="8916476537757519021">Subbingkai Inkognito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Ya, Saya Ikut Serta</translation>
+<translation id="8917980324687233736">Paparkan bersebelahan</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Memasang apl...</translation>
 <translation id="891931289445130855">Padamkan data dan kebenaran</translation>

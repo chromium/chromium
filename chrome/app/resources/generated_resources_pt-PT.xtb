@@ -2298,6 +2298,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2575713839157415345">{YEARS,plural, =1{Este dispositivo vai ser guardado durante 1 ano e pode associar sem um código da próxima vez. Esta opção é definida pelo administrador.}other{Este dispositivo vai ser guardado durante {YEARS} anos e pode associar sem um código da próxima vez. Esta opção é definida pelo administrador.}}</translation>
 <translation id="2577127557293415225">Fechar brevemente os 2 olhos</translation>
 <translation id="257779572837908839">Configurar como Chromebox para reuniões</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) vai perder imediatamente o acesso ao grupo de separadores "<ph name="GROUP_NAME" />" e vai deixar de poder interagir consigo nos serviços Google.</translation>
 <translation id="2580889980133367162">Permitir sempre que o <ph name="HOST" /> transfira vários ficheiros</translation>
 <translation id="258095186877893873">Longo</translation>
 <translation id="2581455244799175627">Mais informações sobre a autorização de cookies de terceiros</translation>

@@ -450,6 +450,7 @@
 <translation id="3122883569442693641">Lagi butiran</translation>
 <translation id="3124039320086536031">Peranti disambungkan.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Alih keluar halaman?}=1{Alih keluar halaman {PAGE_NUMBER}?}other{Alih keluar halaman {PAGE_NUMBER}?}}</translation>
+<translation id="3134486240968249588">Beberapa perkara yang perlu diingati</translation>
 <translation id="3140130301071865159">salji</translation>
 <translation id="3146655726035122603">Eksklusif untuk <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Data mudah alih</translation>
@@ -553,6 +554,7 @@
 <translation id="3628462041319107639">Memuat turun model transkrip…</translation>
 <translation id="3632040286124154621">Cadangan bagus</translation>
 <translation id="3632579075709132555">Togol skrin privasi</translation>
+<translation id="3634941468757842845">Pilih tema</translation>
 <translation id="3639873154908477486">Nama (A hingga Z)</translation>
 <translation id="3644695927181369554">Cadangan tidak bagus</translation>
 <translation id="3651050199673793219">Pilih unit suhu</translation>
@@ -1539,6 +1541,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8132480444149501833">Minta Pembilang Trafik</translation>
 <translation id="8135609423982943441">Chromebook anda ditetapkan semula kepada lalai selamat. Anda boleh melaraskan perubahan ini pada bila-bila masa dalam Tetapan.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8140591278915222789">Buat komuniti anda sendiri</translation>
 <translation id="8143951647992294073">Pilih <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Alat pembangun</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
@@ -1656,7 +1659,6 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8747900814994928677">Sahkan penukaran</translation>
 <translation id="8749478549112817787">Latar Kamera</translation>
 <translation id="8755946156089753497">menara</translation>
-<translation id="8756235582947991808">Cara mencipta dengan AI dan beberapa perkara untuk diingati</translation>
 <translation id="8760616037557661287">Gesaan sebelumnya</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Photos</translation>

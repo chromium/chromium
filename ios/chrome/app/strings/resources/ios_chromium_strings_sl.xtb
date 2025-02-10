@@ -70,6 +70,7 @@ Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatk
 <translation id="2459183986985456602">Odpiranje zadnjega zavihka v Chromiumu.</translation>
 <translation id="2476409803017965813">Izbire lahko kadar koli posodobite v nastavitvah za Chromium.</translation>
 <translation id="2478931088402984578">Izberite <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2485774047568879945">Nastavite Chromium kot privzeti brskalnik, če želite preprosto deliti in odpirati povezave</translation>
 <translation id="2512597191798760956">Pridržite ikono Chromiuma in kliknite »Uredi začetni zaslon«</translation>
 <translation id="2517624234762908348">Sinhroniziranje podatkov v Chromiumu</translation>
 <translation id="2592940277904433508">Še naprej uporabljaj Chromium</translation>
@@ -167,6 +168,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chromi
 <translation id="5088872414922783602">Hitrejši dostop do Chromiuma iz vrstice Dock na začetnem zaslonu.</translation>
 <translation id="5124429847818367226">Zdaj lahko uporabljate Chromium, kadar koli brskate po povezavah ali se jih dotaknete v sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="5131565040785979529">Vaša organizacija <ph name="DOMAIN" /> upravlja račun, v katerega ste prijavljeni, in način uporabe Chromiuma.</translation>
+<translation id="5134464247000681876">Odpiranje povezav iz Gmaila, Zemljevidov, YouTuba in drugih aplikacij v Chromiumu</translation>
 <translation id="5224391634244552924">Ni shranjenih gesel. Chromium lahko preveri gesla, če jih shranite.</translation>
 <translation id="5259423875997548710">Slikovno iskanje v Chromiumu.</translation>
 <translation id="5308226104666789935">Chromium ne more preveriti, ali so na voljo posodobitve</translation>
@@ -260,6 +262,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="7674213385180944843">Odprite Settings &gt; Privacy &gt; Camera &gt; Chromium in vklopite fotoaparat.</translation>
 <translation id="7733418656985455268">Nasvet za Chromium: Iščite z Googlom Lens</translation>
 <translation id="7747820849741499258">Iskanje v Chromiumu</translation>
+<translation id="7753923083404296545">Odprto v anonimnem načinu Chromiuma</translation>
 <translation id="7762622637388462191">Zaklepanje anonimnih zavihkov, ko zapustite Chromium ali preklopite na drugo aplikacijo.</translation>
 <translation id="7763454117143368771">Uporabljajte Chromium kot privzeti brskalnik, če se želite zaščititi pred nevarnimi spletnimi mesti in poskrbeti za varnost gesel.</translation>
 <translation id="7784950022329154821">Zaklepanje anonimnih zavihkov po zaprtju Chromiuma</translation>

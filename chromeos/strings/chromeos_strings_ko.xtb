@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">요약</translation>
 <translation id="123124571410524056">포털 의심됨</translation>
 <translation id="1232610416724362657">폭포</translation>
+<translation id="1238163879850290856">다른 사용자가 데이터에 액세스하지 못하도록 재설정하고 신뢰할 수 있는 입력 방법만 사용하세요.</translation>
 <translation id="1238612778414822719">HTTPS 지연 시간</translation>
 <translation id="1252766349417594414">조이스틱</translation>
 <translation id="1270369111467284986">종속 포털로 의심됨</translation>
@@ -449,6 +450,7 @@
 <translation id="3122883569442693641">세부정보 더보기</translation>
 <translation id="3124039320086536031">기기가 연결되어 있습니다.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{페이지를 삭제하시겠습니까?}=1{{PAGE_NUMBER}페이지를 삭제하시겠습니까?}other{{PAGE_NUMBER}페이지를 삭제하시겠습니까?}}</translation>
+<translation id="3134486240968249588">주의사항</translation>
 <translation id="3140130301071865159">눈</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> 전용</translation>
 <translation id="315116470104423982">모바일 데이터</translation>
@@ -766,6 +768,7 @@
 <translation id="4650608062294027130">오른쪽 시프트</translation>
 <translation id="4654549501020883054">매일 변경</translation>
 <translation id="4655868084888499342">이미지를 배경화면으로 설정</translation>
+<translation id="4660989616054030633">생성형 AI는 인물 등에 관한 정보 제공 시 실수를 할 수 있으니 다시 한번 확인하세요</translation>
 <translation id="4661249927038176904">초현실적</translation>
 <translation id="4661392828086261436">이 업데이트는 기기 제조업체에서 제공하며 Google의 확인을 거치지 않았습니다.</translation>
 <translation id="4664651912255946953">모피</translation>
@@ -1065,6 +1068,7 @@
 <translation id="6074752328838739425">요약 숨기기</translation>
 <translation id="6075872808778243331">(Android) HTTP 지연 시간</translation>
 <translation id="6078323886959318429">바로가기 추가</translation>
+<translation id="6079693086494835199">기본 홈페이지가 피싱 사이트가 아님을 확인하려면 재설정하고 신뢰할 수 있는 웹사이트만 사용하세요.</translation>
 <translation id="6091080061796993741">노란색</translation>
 <translation id="6104112872696127344">스캔이 취소되었습니다.</translation>
 <translation id="6106186594183574873">완료하려면 이전 비밀번호를 입력하세요.</translation>
@@ -1088,6 +1092,7 @@
 <translation id="6156030503438652198">적갈색 및 분홍색</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">다른 사람이 내 마이크나 카메라를 사용하지 못하도록 하려면 재설정하고 신뢰할 수 있는 사이트에만 권한을 부여하세요.</translation>
 <translation id="6188737759358894319"><ph name="DATE" />에 생성됨</translation>
 <translation id="6189418609903030344">배터리 용량은 사용함에 따라 감소함</translation>
 <translation id="6189987971574353264">재생</translation>
@@ -1114,6 +1119,7 @@
 <translation id="629550705077076970">키보드 밝기 낮추기</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> 테스트가 취소됨</translation>
 <translation id="631063167932043783">탐색 앱</translation>
+<translation id="6314333689576767865">Chromebook이 안전한 기본값으로 재설정되었습니다. 설정에서 언제든지 옵션을 변경할 수 있습니다</translation>
 <translation id="6318437367327684789">계속</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> 펌웨어 업데이트</translation>
 <translation id="6321407676395378991">화면 보호기 사용 설정</translation>
@@ -1250,6 +1256,7 @@
 <translation id="6862416241246624313">의견 제출함</translation>
 <translation id="6866732840889595464">데이지</translation>
 <translation id="6871256179359663621">연한 보라색</translation>
+<translation id="6887967050249348172">설정 변경을 방지하기 위해 확장 프로그램이 사용 중지되었습니다. 신뢰할 수 있는 확장 프로그램만 사용 설정하세요.</translation>
 <translation id="6889786074662672253">다시 시작하는 동안 외부 기기를 분리하거나 컴퓨터를 종료하지 마세요. 이 창을 최소화할 수 있습니다. 다시 시작하는 데 몇 분 정도 걸릴 수 있으며 이 시간 동안 외부 기기가 작동하지 않을 수도 있습니다.</translation>
 <translation id="6899460405678814458">요약 표시</translation>
 <translation id="6900701049656042631">앨범에 사진이 없습니다. 사진을 추가하려면 <ph name="LINK" />(으)로 이동하세요.</translation>
@@ -1340,6 +1347,7 @@
 <translation id="7233782086689993269">단축키가 복원됨</translation>
 <translation id="725133483556299729">이메일 선택</translation>
 <translation id="7255187042098209569">분홍색 및 보라색</translation>
+<translation id="7267918995585557751">기본 시작 페이지가 피싱 웹사이트가 아님을 확인하려면 재설정하고 신뢰할 수 있는 웹사이트만 사용하세요.</translation>
 <translation id="7271000785316964275">고전주의</translation>
 <translation id="7271040990581020067">현재 스캐너를 사용하고 있습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="7271932918253517778">맨 위 행의 단축키에는 <ph name="META_KEY" /> 키가 포함되어야 합니다.</translation>
@@ -1485,6 +1493,7 @@
 <translation id="7903695460270716054">선별된 포스터 및 이미지 선택</translation>
 <translation id="7912005977894000746">기본 페이지로 돌아가기</translation>
 <translation id="7915220255123750251">네트워크 APN 설정을 관리하세요. APN은 셀룰러 네트워크와 인터넷 간의 연결을 설정합니다.</translation>
+<translation id="7915759923880480519">네트워크를 통해 전송되는 데이터를 보호하려면 재설정하고 신뢰할 수 있는 네트워크만 사용하세요.</translation>
 <translation id="7936303884198020182">네임서버를 찾을 수 없습니다.</translation>
 <translation id="7942349550061667556">빨간색</translation>
 <translation id="7943235353293548836">영구 연결 유지 간격</translation>
@@ -1648,7 +1657,6 @@
 <translation id="8747900814994928677">변경사항 확인</translation>
 <translation id="8749478549112817787">카메라 배경</translation>
 <translation id="8755946156089753497">탑</translation>
-<translation id="8756235582947991808">AI로 만드는 방법과 주의사항</translation>
 <translation id="8760616037557661287">이전 프롬프트</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google 포토 앨범</translation>
@@ -1710,6 +1718,7 @@
 <translation id="89945434909472341">마을</translation>
 <translation id="8997710128084572139">기기 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
 <translation id="8998289560386111590">내 기기에서 사용할 수 없음</translation>
+<translation id="9000871120886759611">선호하는 언어로 정보에 액세스할 수 있도록 재설정하고 선호하는 언어만 사용되었는지 확인하세요.</translation>
 <translation id="9003499805101629690">피자</translation>
 <translation id="9003704114456258138">주파수</translation>
 <translation id="901834265349196618">이메일</translation>

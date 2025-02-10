@@ -450,6 +450,7 @@
 <translation id="3122883569442693641">Қосымша мәліметтер</translation>
 <translation id="3124039320086536031">Құрылғы жалғанды.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Бетті өшіру керек пе?}=1{{PAGE_NUMBER}-бетті өшіру керек пе?}other{{PAGE_NUMBER}-бетті өшіру керек пе?}}</translation>
+<translation id="3134486240968249588">Есте сақтау керек нәрселер</translation>
 <translation id="3140130301071865159">қар</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> үшін эксклюзивті</translation>
 <translation id="315116470104423982">Мобильді деректер</translation>
@@ -1656,7 +1657,6 @@
 <translation id="8747900814994928677">Өзгерісті растау</translation>
 <translation id="8749478549112817787">Камера фоны</translation>
 <translation id="8755946156089753497">мұнара</translation>
-<translation id="8756235582947991808">AI көмегімен контент жасау жолы және ескеру керек нәрселер</translation>
 <translation id="8760616037557661287">Алдыңғы нұсқаулар</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos альбомы</translation>

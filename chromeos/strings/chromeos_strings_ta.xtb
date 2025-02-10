@@ -449,6 +449,7 @@
 <translation id="3122883569442693641">கூடுதல் விவரங்கள்</translation>
 <translation id="3124039320086536031">சாதனம் இணைக்கப்பட்டுள்ளது.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{பக்கத்தை அகற்றவா?}=1{{PAGE_NUMBER}வது பக்கத்தை அகற்றவா?}other{{PAGE_NUMBER}வது பக்கத்தை அகற்றவா?}}</translation>
+<translation id="3134486240968249588">நீங்கள் நினைவில் கொள்ள வேண்டிய சில விஷயங்கள்</translation>
 <translation id="3140130301071865159">பனி</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> சாதனத்திற்குப் பிரத்தியேகமானவை</translation>
 <translation id="315116470104423982">மொபைல் டேட்டா</translation>
@@ -1648,7 +1649,6 @@
 <translation id="8747900814994928677">மாற்றத்தை உறுதிப்படுத்துங்கள்</translation>
 <translation id="8749478549112817787">கேமராவின் பின்புலம்</translation>
 <translation id="8755946156089753497">கோபுரம்</translation>
-<translation id="8756235582947991808">AI மூலம் உருவாக்குதலும் நினைவில் கொள்ள வேண்டிய சில விஷயங்களும்</translation>
 <translation id="8760616037557661287">முந்தைய ப்ராம்ப்ட்டுகள்</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ஆல்பம்</translation>

@@ -449,6 +449,7 @@
 <translation id="3122883569442693641">আরও বিবরণ</translation>
 <translation id="3124039320086536031">ডিভাইস কানেক্ট করা আছে।</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{পৃষ্ঠাটি সরাতে চান?}=1{{PAGE_NUMBER} নম্বর পৃষ্ঠাটি সরাতে চান?}one{{PAGE_NUMBER} নম্বর পৃষ্ঠাটি সরাতে চান?}other{{PAGE_NUMBER} নম্বর পৃষ্ঠাটি সরাতে চান?}}</translation>
+<translation id="3134486240968249588">কিছু কিছু বিষয় মনে রাখলে ভালো</translation>
 <translation id="3140130301071865159">তুষার</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" />-এর জন্য এক্সক্লুসিভ</translation>
 <translation id="315116470104423982">মোবাইল ডেটা</translation>
@@ -1648,7 +1649,6 @@
 <translation id="8747900814994928677">পরিবর্তন কনফার্ম করুন</translation>
 <translation id="8749478549112817787">ক্যামেরা ব্যাকগ্রাউন্ড</translation>
 <translation id="8755946156089753497">টাওয়ার</translation>
-<translation id="8756235582947991808">AI ব্যবহার করে কীভাবে তৈরি করতে হয় এবং মনে রাখার মতো কয়েকটি বিষয়</translation>
 <translation id="8760616037557661287">আগের প্রম্পট</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos অ্যালবাম</translation>

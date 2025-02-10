@@ -450,6 +450,7 @@
 <translation id="3122883569442693641">Mais detalhes</translation>
 <translation id="3124039320086536031">O dispositivo está conectado.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Remover página?}=1{Remover página {PAGE_NUMBER}?}one{Remover página {PAGE_NUMBER}?}other{Remover página {PAGE_NUMBER}?}}</translation>
+<translation id="3134486240968249588">Alguns lembretes</translation>
 <translation id="3140130301071865159">neve</translation>
 <translation id="3146655726035122603">Exclusivo do <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Dados do celular</translation>
@@ -1656,7 +1657,6 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8747900814994928677">Confirmar alteração</translation>
 <translation id="8749478549112817787">Plano de fundo da câmera</translation>
 <translation id="8755946156089753497">Torre</translation>
-<translation id="8756235582947991808">Como criar com IA e algumas observações importantes</translation>
 <translation id="8760616037557661287">Comandos anteriores</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Álbum do Google Fotos</translation>

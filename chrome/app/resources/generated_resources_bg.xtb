@@ -1369,6 +1369,7 @@
 <translation id="1936157145127842922">Показване в папката</translation>
 <translation id="1936931585862840749">Въведете число между 1 и <ph name="MAX_COPIES" />, за да укажете колко копия да се отпечатат .</translation>
 <translation id="1937774647013465102">Архитектурата на контейнера е от тип <ph name="ARCHITECTURE_CONTAINER" /> и не може да се импортира в това устройство, което е от тип <ph name="ARCHITECTURE_DEVICE" />. Можете да опитате да възстановите контейнера на друго устройство или да използвате файловете в образа му, като го отворите в приложението „Файлове“.</translation>
+<translation id="1938116692670653897">Текуща цветова тема</translation>
 <translation id="1938351510777341717">Външен клавиш Command</translation>
 <translation id="1940221956626514677">Персонализиране на лентата с инструменти</translation>
 <translation id="1940546824932169984">Свързани устройства</translation>
@@ -2138,6 +2139,10 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2462332841984057083">Steam вече се настройва. Изчакайте процесът да завърши.</translation>
 <translation id="2462724976360937186">Идентификатор (ИД) на ключ на сертифициращия орган</translation>
 <translation id="2462752602710430187">Добавихте <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Показват се предложени файлове, с чиято помощ лесно да се върнете към скорошната си активност в Microsoft SharePoint и OneDrive.
+        <ph name="BREAK" />
+<ph name="BREAK" />
+Можете да управлявате настройките от менюто на картата или да видите още опции в „Персонализиране на Chrome“.</translation>
 <translation id="2464079411014186876">Сладолед</translation>
 <translation id="2467755475704469005">Няма открити устройства. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Присъединяване към групата раздели с(ъс) <ph name="OWNER_FIRST_NAME" /> и още <ph name="NUM_OTHER_MEMBERS" /></translation>
@@ -2302,6 +2307,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2575713839157415345">{YEARS,plural, =1{Това устройство ще бъде запазено за 1 година. Следващия път ще можете да се свържете без код. Настройката е зададена от администратора ви.}other{Това устройство ще бъде запазено за {YEARS} години. Следващия път ще можете да се свържете без код. Настройката е зададена от администратора ви.}}</translation>
 <translation id="2577127557293415225">Затваряне на двете очи за кратко</translation>
 <translation id="257779572837908839">Настройване като Chromebox за срещи</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) незабавно ще загуби достъп до групата раздели „<ph name="GROUP_NAME" />“ и вече няма да може да взаимодейства с вас в услугите на Google.</translation>
 <translation id="2580889980133367162">Винаги да е разрешено на <ph name="HOST" /> да изтегля няколко файла</translation>
 <translation id="258095186877893873">Дълго</translation>
 <translation id="2581455244799175627">Още за разрешаването на „бисквитки“ на трети страни</translation>
@@ -3997,6 +4003,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3787434344076711519">Изчаква се превод</translation>
 <translation id="3788301286821743879">Неуспешно стартиране на павилионното приложение.</translation>
 <translation id="3788401245189148511">То би имало възможност за:</translation>
+<translation id="3789432704615470433">Файловете в SharePoint и OneDrive</translation>
 <translation id="3789841737615482174">Инсталиране</translation>
 <translation id="3790417903123637354">Нещо се обърка. Опитайте отново по-късно</translation>
 <translation id="379082410132524484">Картата ви е изтекла</translation>
@@ -6187,6 +6194,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5360150013186312835">Показване в лентата с инструменти</translation>
 <translation id="5362741141255528695">Изберете файла с личен ключ.</translation>
 <translation id="536278396489099088">Състояние и отчети на системата ChromeOS</translation>
+<translation id="5362916924854054326">Без показване на файловете в SharePoint и OneDrive</translation>
 <translation id="5363109466694494651">Powerwash и възстановяване</translation>
 <translation id="5365881113273618889">Избраната от вас папка съдържа поверителни файлове. Наистина ли искате да предоставите на <ph name="APP_NAME" /> постоянен достъп за записване в тази папка?</translation>
 <translation id="536638840841140142">Няма</translation>
@@ -10769,6 +10777,10 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="865936634714975126">За да изберете типове при зареждането на страницата, добавете към URL адреса параметър на заявката. Пример: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Контакти в „<ph name="FEATURE_NAME" />“</translation>
 <translation id="8659609431223166673">Прозорецът бе преместен надолу</translation>
+<translation id="8660288500924118793">Виждате календара си, за да можете лесно да навигирате до следващото си събитие в Outlook Calendar.
+       <ph name="BREAK" />
+<ph name="BREAK" />
+Можете да управлявате настройките от менюто на картата или да видите още опции в „Персонализиране на Chrome“.</translation>
 <translation id="8661290697478713397">Отваряне на връзката в прозорец при използване на функ&amp;цията „инкогнито“</translation>
 <translation id="8662474268934425487">Вход в(ъв) <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Присъединяване към <ph name="TYPE" /> мрежа</translation>

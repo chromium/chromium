@@ -220,6 +220,7 @@
 <translation id="114721135501989771">ისარგებლეთ Google-ის გონიერი ფუნქციებით Chrome-ში</translation>
 <translation id="1147322039136785890">ახლა <ph name="SUPERVISED_USER_NAME" />-ის ჯერია</translation>
 <translation id="1147991416141538220">წვდომის მოთხოვნით მიმართეთ ამ მოწყობილობის ადმინისტრატორს.</translation>
+<translation id="1148464196693569530">მომხმარებლის სცენარების დაშვება</translation>
 <translation id="1148624853678088576">ყველაფერი მზადაა!</translation>
 <translation id="1148669835763563782">თქვენ იღებთ პროგრამული უზრუნველყოფის ბოლო განახლებას, გაუმჯობესებული უსაფრთხოებითა და Chromebook-ის უახლესი ფუნქციებით რომ ისარგებლოთ. აღნიშნული განახლება მოიცავს დაყენების გაუმჯობესებულ პროცესსაც, რომელიც დაგეხმარებათ, დაუბრკოლებლად დაიწყოთ თქვენი Chromebook-ის გამოყენება.</translation>
 <translation id="1149401351239820326">ვადის გასვლის თვე</translation>
@@ -2293,6 +2294,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{ეს მოწყობილობა შეინახება 1 წლის განმავლობაში. შემდეგში დაკავშირება კოდის გარეშე შეგეძლებათ. აღნიშნული დადგენილია თქვენი ადმინისტრატორის მიერ.}other{ეს მოწყობილობა შეინახება {YEARS} წლის განმავლობაში. შემდეგში დაკავშირება კოდის გარეშე შეგეძლებათ. აღნიშნული დადგენილია თქვენი ადმინისტრატორის მიერ.}}</translation>
 <translation id="2577127557293415225">სრულად დახუჭეთ თვალები</translation>
 <translation id="257779572837908839">დაყენდეს, როგორც Chromebox შეხვედრებისთვის</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) მომენტალურად დაკარგავს წვდომას ჩანართების ჯგუფზე „<ph name="GROUP_NAME" />“ და ვეღარ შეძლებს თქვენთან ინტერაქციას Google სერვისებში.</translation>
 <translation id="2580889980133367162">ყოველთვის დართეთ ნება <ph name="HOST" />-ს ჩამოტვირთოს რამოდენიმე ფაილი</translation>
 <translation id="258095186877893873">ხანგრძლივი</translation>
 <translation id="2581455244799175627">ვრცლად მესამე მხარის ქუქი-ჩანაწერების დაშვების შესახებ</translation>
@@ -6761,6 +6763,7 @@
 <translation id="5794414402486823030">ყოველთვის გახსნა სისტემის დამთვალიერებლით</translation>
 <translation id="5794700615121138172">Linux-ის გაზიარებული საქაღალდეები</translation>
 <translation id="5794786537412027208">Chrome-ის ყველა პროგრამის დახურვა</translation>
+<translation id="5795422263272161110">გვერდიგვერდ ჩვენება</translation>
 <translation id="5796485699458186843">ახალი ინკოგნიტო ჩან&amp;ართი</translation>
 <translation id="5796956053441619942">დისტანციური მოწყობილობიდან URL არ არის მხარდაჭერილი</translation>
 <translation id="5797934230382081317">შეიტყვეთ, რა გჭირდებათ დასაწყისისთვის &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android-სა&lt;/a&gt; და &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS-ზე&lt;/a&gt;</translation>
@@ -7289,6 +7292,7 @@
 <translation id="6170498031581934115">ADB გამართვის ჩართვა ვერ მოხერხდა. გადადით პარამეტრებზე და ცადეთ ხელახლა.</translation>
 <translation id="6170675927290506430">შეტყობინების პარამეტრებზე გადასვლა</translation>
 <translation id="6171779718418683144">შეკითხვა ყოველი ვიზიტისას</translation>
+<translation id="6172020488605056255">კითხვაში დახმარების გამოსაყენებლად დააწკაპუნეთ მარჯვენა ღილაკზე</translation>
 <translation id="617213288191670920">ენები დამატებული არ არის</translation>
 <translation id="6173623053897475761">ხელახლა აკრიფეთ PIN-კოდი</translation>
 <translation id="6174909075810107548">გამოიყენეთ „5“, რომ დააჭიროთ მაუსის ღილაკს</translation>
@@ -8315,6 +8319,7 @@
 <translation id="6910190732484284349">წვდომის გასაღების წაშლა მომხმარებლის სახელისთვის: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">წაშლილი</translation>
 <translation id="6910274140210351823">მუქი</translation>
+<translation id="691102290537033604">გაფართოება გაუშვებს კოდს, რომელიც არ შეუმოწმებია Google-ს. შეიძლება ეს საფრთხის შემცველი იყოს, ამიტომ მხოლოდ იმ შემთხვევაში უნდა ჩართოთ, თუ დარწმუნებული ხართ თქვენს მოქმედებაში.</translation>
 <translation id="6911734910326569517">მეხსიერების მოხმარება</translation>
 <translation id="6912007319859991306">SIM ბარათის დაბლოკვა PIN-კოდით ფიჭური ქსელის მეშვეობით</translation>
 <translation id="6912380255120084882">ცადეთ სხვა მოწყობილობა</translation>
@@ -9825,6 +9830,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> ხმა <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">ავტომატურად გადაიტანეთ Wi-Fi თქვენი Android ტელეფონიდან</translation>
 <translation id="7991296728590311172">გადამრთველით წვდომის პარამეტრები</translation>
+<translation id="7992080146463834191">კონტენტის შეჯამება, რთული ენის გამარტივება ან შეკითხვების დასმა.</translation>
 <translation id="7992203134935383159">მეტყველების სინთეზი</translation>
 <translation id="799570308305997052">ვებხედი</translation>
 <translation id="7997826902155442747">პროცესის პრიორიტეტი</translation>
@@ -11077,6 +11083,7 @@
 <translation id="8874448314264883207">„<ph name="EXTENSION_NAME" />“ გამოირთო</translation>
 <translation id="8874647982044395866">ორგანული</translation>
 <translation id="8874790741333031443">ცადეთ მესამე მხარის ქუქი-ჩანაწერების დროებით დაშვება, რაც ნიშნავს, რომ ვების დათვალიერებისას ნაკლებად იქნებით დაცული, თუმცა საიტის ფუნქციები უფრო დიდი ალბათობით იმუშავებს მოლოდინისამებრ.</translation>
+<translation id="8875221558267407626">კონტენტის შეჯამება, რთული ენის გამარტივება ან შეკითხვების დასმა</translation>
 <translation id="8875520811099717934">Linux-ის ვერსიის განახლება</translation>
 <translation id="8875736897340638404">აირჩიეთ ხილვადობა</translation>
 <translation id="8876307312329369159">ამ პარამეტრის შეცვლა ვერ მოხერხდება დემო-სესიისას.</translation>
@@ -11130,6 +11137,7 @@
 <translation id="8915916167043355778">ყველას დახურვა</translation>
 <translation id="8916476537757519021">ანონიმური ქვეჩარჩო: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">დიახ, თანახმა ვარ</translation>
+<translation id="8917980324687233736">გვერდიგვერდ ჩვენება</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />-ის <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">აპი ინსტალირდება...</translation>
 <translation id="891931289445130855">მონაცემთა და ნებართვების წაშლა</translation>

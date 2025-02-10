@@ -70,6 +70,7 @@
 <translation id="2459183986985456602">Миний сүүлийн табыг Chromium-д нээнэ үү.</translation>
 <translation id="2476409803017965813">Та сонголтуудаа Chromium-н тохиргоонд хүссэн үедээ шинэчлэх боломжтой.</translation>
 <translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />-г сонгоно уу</translation>
+<translation id="2485774047568879945">Холбоосыг хялбархан хуваалцаж, нээхийн тулд Chromium-г өгөгдмөл хөтчөөрөө тохируулна уу</translation>
 <translation id="2512597191798760956">Chromium-н дүрс тэмдгийг удаан дараад, "Үндсэн нүүрийг засах"-ыг товшино уу</translation>
 <translation id="2517624234762908348">Chromium-н өгөгдлөө синк хийх</translation>
 <translation id="2592940277904433508">Chromium-г үргэлжлүүлэн ашиглах</translation>
@@ -167,6 +168,7 @@
 <translation id="5088872414922783602">Үндсэн нүүрнийхээ суурилуулагчаас Chromium-д илүү хурдан хандана уу.</translation>
 <translation id="5124429847818367226">Та одоо мессеж, документ болон бусад апп дахь холбоосыг үзэх эсвэл товшихын тулд Chromium-г хүссэн үедээ ашиглах боломжтой.</translation>
 <translation id="5131565040785979529">Танай байгууллага, <ph name="DOMAIN" /> таны нэвтэрсэн бүртгэл болон Chromium-г хэрхэн ашиглахыг удирдана.</translation>
+<translation id="5134464247000681876">Gmail, Газрын зураг, YouTube болон бусад аппын холбоосыг Chromium-д нээнэ үү</translation>
 <translation id="5224391634244552924">Хадгалсан ямар ч нууц үг алга. Таныг нууц үгсээ хадгалах үед Chromium тэднийг шалгах боломжтой.</translation>
 <translation id="5259423875997548710">Chromium-с визуал хайгаарай.</translation>
 <translation id="5308226104666789935">Chromium-н шинэчлэлтийг шалгах боломжгүй байна</translation>
@@ -260,6 +262,7 @@
 <translation id="7674213385180944843">Тохиргоо &gt; Нууцлал &gt; Камер &gt; Chromium-г нээж, камерыг асаана уу.</translation>
 <translation id="7733418656985455268">Chromium-н зөвлөгөө: Lens-р хайх</translation>
 <translation id="7747820849741499258">Chromium-с хайх</translation>
+<translation id="7753923083404296545">Chromium-н Нууцлалтай горимд нээсэн</translation>
 <translation id="7762622637388462191">Таныг Chromium-с гарах эсвэл өөр апп руу шилжихэд нууцлалтай табуудыг тань түгжинэ.</translation>
 <translation id="7763454117143368771">Аюултай сайтуудаас хамгаалалттай байх болон нууц үгнүүдээ аюулгүй байлгахын тулд Chromium-г өгөгдмөл хөтчөөрөө ашиглана уу</translation>
 <translation id="7784950022329154821">Таныг Chromium-г хаахад нууцлалтай табуудыг түгжинэ</translation>

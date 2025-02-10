@@ -121,6 +121,7 @@ Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatk
 <translation id="4064699917955374540">Če želite v računu Google uporabljati in shranjevati podatke iz Chroma, potrdite, da ste to vi.</translation>
 <translation id="417201473131094001">Ni podprto v Chromu Canary</translation>
 <translation id="424864128008805179">Se želite odjaviti iz Chroma?</translation>
+<translation id="4430797724889237570">Odpiranje povezav iz Gmaila, Zemljevidov, YouTuba in drugih aplikacij v Chromu</translation>
 <translation id="447252321002412580">Pomagajte izboljšati funkcije in delovanje Chroma</translation>
 <translation id="4523886039239821078">Nekateri dodatki povzročajo zrušitve Chroma. Odstranite jih:</translation>
 <translation id="4633328489441962921">Chrome ne more preveriti, ali so na voljo posodobitve</translation>
@@ -206,6 +207,7 @@ Počakajte nekaj minut, preden preklopite račun. Če zdaj preklopite med račun
 
 Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma uporabljati in shranjevati v računu Google.</translation>
 <translation id="6533470733797826516">Hitrejša prijava s samodejnim izpolnjevanjem v Chromu</translation>
+<translation id="6536544321553662809">Nastavite Chrome kot privzeti brskalnik, če želite preprosto deliti in odpirati povezave</translation>
 <translation id="6545449117344801102">Chrome zaznava naslove ter z uporabo Google Zemljevidov prikazuje navodila za pot in lokalne informacije.</translation>
 <translation id="6636941099779251629">Vaša organizacija zahteva, da se za uporabo Chroma prijavite. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Googlu pošlje zakriti del URL-ja prek strežnika za zasebnost, ki skrije vaš naslov IP. Če vam spletno mesto poskusi ukrasti geslo ali ko prenašate škodljivo datoteko, lahko Chrome Googlu prav tako pošlje URL-je, vključno z delčki vsebine strani.</translation>
@@ -291,6 +293,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Vse pravice pridržane.</translation>
 <translation id="8371138994040262994">V Chromu odpre nastavitve.</translation>
 <translation id="8387459386171870978">Še naprej uporabljaj Chrome</translation>
+<translation id="8392023217086447677">Odprto v anonimnem oknu Chroma</translation>
 <translation id="840168496893712993">Nekateri dodatki povzročajo zrušitve Chroma. Poskusite jih odstraniti.</translation>
 <translation id="8413500425974960807">Nasvet za Chrome: Chrome premaknite v vrstico Dock</translation>
 <translation id="8413795581997394485">Ščiti pred spletnimi mesti, prenosi in razširitvami, za katere vemo, da so nevarni. Ko obiščete spletno mesto, Chrome Googlu pošlje zakriti del URL-ja prek strežnika za zasebnost, ki skrije vaš naslov IP. Če spletno mesto naredi kaj sumljivega, se pošljejo tudi celotni URL-ji in delčki vsebine strani.</translation>

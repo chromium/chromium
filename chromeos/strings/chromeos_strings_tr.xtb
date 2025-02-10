@@ -449,6 +449,7 @@
 <translation id="3122883569442693641">Diğer ayrıntılar</translation>
 <translation id="3124039320086536031">Cihaz bağlandı.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Sayfa kaldırılsın mı?}=1{{PAGE_NUMBER}. sayfa kaldırılsın mı?}other{{PAGE_NUMBER}. sayfa kaldırılsın mı?}}</translation>
+<translation id="3134486240968249588">Unutulmaması gereken birkaç nokta</translation>
 <translation id="3140130301071865159">kar</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> cihazlara özel</translation>
 <translation id="315116470104423982">Mobil veriler</translation>
@@ -1648,7 +1649,6 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8747900814994928677">Değişikliği onaylayın</translation>
 <translation id="8749478549112817787">Kamera Arka Planı</translation>
 <translation id="8755946156089753497">kule</translation>
-<translation id="8756235582947991808">Yapay zeka ile içerik üretme ve dikkat edilmesi gereken birkaç nokta</translation>
 <translation id="8760616037557661287">Önceki istemler</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Fotoğraflar albümü</translation>

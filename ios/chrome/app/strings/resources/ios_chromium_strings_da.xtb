@@ -70,6 +70,7 @@ Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes
 <translation id="2459183986985456602">Åbn min seneste fane i Chromium.</translation>
 <translation id="2476409803017965813">Du kan til enhver tid opdatere dine valg i Chromium-indstillingerne.</translation>
 <translation id="2478931088402984578">Vælg <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2485774047568879945">Angiv Chromium som din standardbrowser, så du nemt kan dele og åbne links</translation>
 <translation id="2512597191798760956">Hold fingeren på Chromium-ikonet, og klik på "Rediger hjemmeskærm"</translation>
 <translation id="2517624234762908348">Synkroniser dine Chromium-data</translation>
 <translation id="2592940277904433508">Fortsæt med at bruge Chromium</translation>
@@ -167,6 +168,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chromium-d
 <translation id="5088872414922783602">Få hurtigere adgang til Chromium via docken på din startskærm.</translation>
 <translation id="5124429847818367226">Du kan nu bruge Chromium, hver gang du browser eller trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="5131565040785979529">Din organisation, <ph name="DOMAIN" />, administrerer den konto, du er logget ind på, og hvordan Chromium bruges.</translation>
+<translation id="5134464247000681876">Åbn links fra Gmail, Maps, YouTube og andre apps i Chromium</translation>
 <translation id="5224391634244552924">Der er ingen gemte adgangskoder. Chromium kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="5259423875997548710">Søg efter visuelle elementer i Chromium.</translation>
 <translation id="5308226104666789935">Chromium kan ikke søge efter opdateringer</translation>
@@ -260,6 +262,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="7674213385180944843">Åbn Indstillinger &gt; Privatliv &gt; Kamera &gt; Chromium, og slå kameraet til.</translation>
 <translation id="7733418656985455268">Tip til Chromium: Søg med Lens</translation>
 <translation id="7747820849741499258">Søg i Chromium</translation>
+<translation id="7753923083404296545">Åbnet i inkognitotilstand i Chromium</translation>
 <translation id="7762622637388462191">Lås dine inkognitofaner, når du forlader Chromium eller skifter til en anden app.</translation>
 <translation id="7763454117143368771">Brug Chromium som din standardbrowser for at blive beskyttet mod skadelige websites og holde dine adgangskoder private</translation>
 <translation id="7784950022329154821">Lås inkognitofaner, når du lukker Chromium</translation>

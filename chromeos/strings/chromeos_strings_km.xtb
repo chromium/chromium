@@ -450,6 +450,7 @@
 <translation id="3122883569442693641">ព័ត៌មានលម្អិតបន្ថែម</translation>
 <translation id="3124039320086536031">ឧបករណ៍ត្រូវបានភ្ជាប់។</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{លុប​ទំព័រឬ?}=1{លុប​ទំព័រទី {PAGE_NUMBER} ឬ?}other{លុប​ទំព័រទី {PAGE_NUMBER} ឬ?}}</translation>
+<translation id="3134486240968249588">ចំណុច​មួយចំនួន​ដែលត្រូវ​ចងចាំ</translation>
 <translation id="3140130301071865159">ព្រិល</translation>
 <translation id="3146655726035122603">មានសម្រាប់តែ <ph name="PRODUCT_NAME" /> ប៉ុណ្ណោះ</translation>
 <translation id="315116470104423982">ទិន្នន័យទូរស័ព្ទ</translation>
@@ -1656,7 +1657,6 @@
 <translation id="8747900814994928677">បញ្ជាក់​ការ​ផ្លាស់ប្ដូរ</translation>
 <translation id="8749478549112817787">ផ្ទៃ​ខាងក្រោយ​កាមេរ៉ា</translation>
 <translation id="8755946156089753497">ប៉ម</translation>
-<translation id="8756235582947991808">របៀបបង្កើតដោយប្រើ AI និងសកម្មភាពមួយចំនួនដែលត្រូវចងចាំ</translation>
 <translation id="8760616037557661287">សារតម្រុយ​ពីមុន</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">អាល់ប៊ុម Google រូបថត</translation>

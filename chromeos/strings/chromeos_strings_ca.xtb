@@ -449,6 +449,7 @@
 <translation id="3122883569442693641">Més detalls</translation>
 <translation id="3124039320086536031">El dispositiu està connectat.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Vols suprimir la pàgina?}=1{Vols suprimir la pàgina {PAGE_NUMBER}?}other{Vols suprimir les pàgines {PAGE_NUMBER}?}}</translation>
+<translation id="3134486240968249588">Coses que cal tenir en compte</translation>
 <translation id="3140130301071865159">neu</translation>
 <translation id="3146655726035122603">Exclusiu de <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Dades mòbils</translation>
@@ -1648,7 +1649,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8747900814994928677">Confirma el canvi</translation>
 <translation id="8749478549112817787">Fons de la càmera</translation>
 <translation id="8755946156089753497">torre</translation>
-<translation id="8756235582947991808">Com es poden fer creacions amb IA i quines consideracions cal tenir en compte</translation>
 <translation id="8760616037557661287">Indicacions anteriors</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Àlbum de Google Fotos</translation>
