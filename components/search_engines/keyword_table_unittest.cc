@@ -287,6 +287,8 @@ TEST_F(KeywordTableTest, SanitizeShortName) {
   }
 }
 
+namespace {
+
 struct TestCase {
   bool encryption_enabled;
   bool feature_enabled;
@@ -301,9 +303,11 @@ struct TestCase {
   }
 };
 
+}  // namespace
+
 class KeywordTableTestEncryption
     : public KeywordTableTest,
-      public ::testing::WithParamInterface<TestCase> {
+      public ::testing::WithParamInterface<::TestCase> {
  public:
   KeywordTableTestEncryption() {
     feature_.InitWithFeatureState(features::kKeywordTableHashVerification,
@@ -343,46 +347,50 @@ INSTANTIATE_TEST_SUITE_P(
     /*empty*/,
     KeywordTableTestEncryption,
     ::testing::Values(
-        TestCase{.encryption_enabled = false,
-                 .feature_enabled = false,
-                 .tamper = true,
-                 .expected_histogram_sample = /*kNotVerifiedFeatureDisabled*/ 5,
-                 .expected_keyword_count = 1u},
-        TestCase{.encryption_enabled = false,
-                 .feature_enabled = true,
-                 .tamper = true,
-                 .expected_histogram_sample = /*kNotVerifiedNoCrypto*/ 4,
-                 .expected_keyword_count = 1u},
-        TestCase{.encryption_enabled = true,
-                 .feature_enabled = false,
-                 .tamper = true,
-                 .expected_histogram_sample = /*kNotVerifiedFeatureDisabled*/ 5,
-                 .expected_keyword_count = 1u},
-        TestCase{.encryption_enabled = true,
-                 .feature_enabled = true,
-                 .tamper = true,
-                 .expected_histogram_sample = /*kIncorrectHash*/ 3,
-                 .expected_keyword_count = 0},
-        TestCase{.encryption_enabled = false,
-                 .feature_enabled = false,
-                 .tamper = false,
-                 .expected_histogram_sample = /*kNotVerifiedFeatureDisabled*/ 5,
-                 .expected_keyword_count = 1u},
-        TestCase{.encryption_enabled = false,
-                 .feature_enabled = true,
-                 .tamper = false,
-                 .expected_histogram_sample = /*kNotVerifiedNoCrypto*/ 4,
-                 .expected_keyword_count = 1u},
-        TestCase{.encryption_enabled = true,
-                 .feature_enabled = false,
-                 .tamper = false,
-                 .expected_histogram_sample = /*kNotVerifiedFeatureDisabled*/ 5,
-                 .expected_keyword_count = 1u},
-        TestCase{.encryption_enabled = true,
-                 .feature_enabled = true,
-                 .tamper = false,
-                 .expected_histogram_sample = /*kSuccess*/ 0,
-                 .expected_keyword_count = 1u}),
+        ::TestCase{
+            .encryption_enabled = false,
+            .feature_enabled = false,
+            .tamper = true,
+            .expected_histogram_sample = /*kNotVerifiedFeatureDisabled*/ 5,
+            .expected_keyword_count = 1u},
+        ::TestCase{.encryption_enabled = false,
+                   .feature_enabled = true,
+                   .tamper = true,
+                   .expected_histogram_sample = /*kNotVerifiedNoCrypto*/ 4,
+                   .expected_keyword_count = 1u},
+        ::TestCase{
+            .encryption_enabled = true,
+            .feature_enabled = false,
+            .tamper = true,
+            .expected_histogram_sample = /*kNotVerifiedFeatureDisabled*/ 5,
+            .expected_keyword_count = 1u},
+        ::TestCase{.encryption_enabled = true,
+                   .feature_enabled = true,
+                   .tamper = true,
+                   .expected_histogram_sample = /*kIncorrectHash*/ 3,
+                   .expected_keyword_count = 0},
+        ::TestCase{
+            .encryption_enabled = false,
+            .feature_enabled = false,
+            .tamper = false,
+            .expected_histogram_sample = /*kNotVerifiedFeatureDisabled*/ 5,
+            .expected_keyword_count = 1u},
+        ::TestCase{.encryption_enabled = false,
+                   .feature_enabled = true,
+                   .tamper = false,
+                   .expected_histogram_sample = /*kNotVerifiedNoCrypto*/ 4,
+                   .expected_keyword_count = 1u},
+        ::TestCase{
+            .encryption_enabled = true,
+            .feature_enabled = false,
+            .tamper = false,
+            .expected_histogram_sample = /*kNotVerifiedFeatureDisabled*/ 5,
+            .expected_keyword_count = 1u},
+        ::TestCase{.encryption_enabled = true,
+                   .feature_enabled = true,
+                   .tamper = false,
+                   .expected_histogram_sample = /*kSuccess*/ 0,
+                   .expected_keyword_count = 1u}),
     [](const auto& info) { return info.param.Name(); });
 
 TEST_F(KeywordTableTest, KeywordBadCrypto) {
