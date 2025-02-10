@@ -82,8 +82,8 @@ mojom::PanelState CreatePanelState(bool widget_visible,
   return panel_state;
 }
 
-GlicButton* GetGlicButton(Browser* browser) {
-  return browser->window()
+GlicButton* GetGlicButton(const Browser& browser) {
+  return browser.window()
       ->AsBrowserView()
       ->tab_strip_region_view()
       ->GetGlicButton();
@@ -182,7 +182,7 @@ class GlicWindowController::AnchorObserver : public views::ViewObserver,
   void OnViewBoundsChanged(views::View* anchor_view) override {
     CHECK(controller_->attached_browser());
     controller_->MovePositionToBrowserGlicButton(
-        controller_->attached_browser(),
+        *controller_->attached_browser(),
         /*animate=*/false);
   }
 
@@ -191,7 +191,7 @@ class GlicWindowController::AnchorObserver : public views::ViewObserver,
                              const gfx::Rect& bounds) override {
     CHECK(controller_->attached_browser());
     controller_->MovePositionToBrowserGlicButton(
-        controller_->attached_browser(),
+        *controller_->attached_browser(),
         /*animate=*/false);
   }
   // No need to observe widget destroy because the observed view will be removed
@@ -354,7 +354,7 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
         maybe_close();
       } else {
         // Button clicked on a different browser: attach to that one.
-        AttachToBrowser(new_attached_browser);
+        AttachToBrowser(*new_attached_browser);
       }
       return;
     }
@@ -440,8 +440,15 @@ void GlicWindowController::AuthCheckDoneBeforeShow(
       break;
   }
 
+  // Since this method is called asynchronously, check that the profile wasn't
+  // disabled since the request was made.
+  if (!GlicEnabling::IsEnabledForProfile(profile_)) {
+    state_ = State::kClosed;
+    return;
+  }
+
   if (browser_for_attachment) {
-    OpenAttached(browser_for_attachment.get());
+    OpenAttached(*browser_for_attachment.get());
   } else {
     OpenDetached();
   }
@@ -476,8 +483,9 @@ gfx::Rect GlicWindowController::GetInitialDetachedBounds() {
   return initial_rect;
 }
 
-void GlicWindowController::OpenAttached(Browser* browser) {
-  GlicButton* glic_button = browser ? GetGlicButton(browser) : nullptr;
+void GlicWindowController::OpenAttached(Browser& browser) {
+  GlicButton* glic_button = GetGlicButton(browser);
+  CHECK(glic_button);
 
   // If summoned from the tab strip button. This will always show up attached
   // because it is tied to a views::View object within the current browser
@@ -676,7 +684,7 @@ void GlicWindowController::Attach() {
     if (!IsBrowserGlicCompatible(browser)) {
       continue;
     }
-    AttachToBrowser(browser);
+    AttachToBrowser(*browser);
     return;
   }
 }
@@ -701,14 +709,14 @@ void GlicWindowController::DetachFinished() {
   state_ = State::kOpen;
 }
 
-void GlicWindowController::AttachToBrowser(Browser* browser) {
+void GlicWindowController::AttachToBrowser(Browser& browser) {
   CHECK(GetGlicWidget());
-  attached_browser_ = browser;
+  attached_browser_ = &browser;
   MovePositionToBrowserGlicButton(browser, /*animate=*/true);
   // Close the holder window.
   holder_widget_.reset();
 
-  BrowserView* browser_view = browser->window()->AsBrowserView();
+  BrowserView* browser_view = browser.window()->AsBrowserView();
   CHECK(browser_view);
   // Although the glic widget is conceptually anchored to the glic button, we
   // intentionally observe its parent view, the tab strip region, for bounds
@@ -735,7 +743,7 @@ void GlicWindowController::AttachToBrowser(Browser* browser) {
   GetGlicWidget()->SetVisibleOnAllWorkspaces(false);
 #endif
 
-  browser_close_subscription_ = browser->RegisterBrowserDidClose(
+  browser_close_subscription_ = browser.RegisterBrowserDidClose(
       base::BindRepeating(&GlicWindowController::AttachedBrowserDidClose,
                           base::Unretained(this)));
 
@@ -874,7 +882,7 @@ void GlicWindowController::Close() {
   if (attached_browser_) {
     state_ = State::kCloseAnimation;
     GetGlicView()->web_view()->SetWebContents(nullptr);
-    GlicButton* glic_button = GetGlicButton(attached_browser_);
+    GlicButton* glic_button = GetGlicButton(*attached_browser_);
     // The widget is going away so it's fine to replace any existing animation.
     AnimateBounds(
         glic_button->GetBoundsWithInset(),
@@ -986,7 +994,7 @@ void GlicWindowController::HandleAttachmentToBrowserWindows() {
     return;
   }
   // Attach to the found browser.
-  AttachToBrowser(browser);
+  AttachToBrowser(*browser);
 }
 
 void GlicWindowController::HandleGlicButtonIndicator() {
@@ -996,7 +1004,7 @@ void GlicWindowController::HandleGlicButtonIndicator() {
     scoped_glic_button_indicator_.reset();
     return;
   }
-  GlicButton* glic_button = GetGlicButton(browser);
+  GlicButton* glic_button = GetGlicButton(*browser);
   // If there isn't an existing scoped indicator for this button, create one.
   if (!scoped_glic_button_indicator_ ||
       scoped_glic_button_indicator_->GetGlicButton() != glic_button) {
@@ -1056,8 +1064,9 @@ Browser* GlicWindowController::FindBrowserForAttachment() {
   return nullptr;
 }
 
-void GlicWindowController::MovePositionToBrowserGlicButton(Browser* browser,
-                                                           bool animate) {
+void GlicWindowController::MovePositionToBrowserGlicButton(
+    const Browser& browser,
+    bool animate) {
   if (!GetGlicWidget()) {
     return;
   }
@@ -1066,7 +1075,7 @@ void GlicWindowController::MovePositionToBrowserGlicButton(Browser* browser,
   // will be removed so we can't anchor to it. We could work around this by
   // keeping the button but disabling and making it invisible but this is an
   // edge-case, not sure it's worth the effort.
-  if (!GlicEnabling::IsEnabledForProfile(browser->profile())) {
+  if (!GlicEnabling::IsEnabledForProfile(browser.profile())) {
     return;
   }
 

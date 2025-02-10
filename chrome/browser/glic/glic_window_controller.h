@@ -228,7 +228,7 @@ class GlicWindowController : public views::WidgetObserver {
   // difference: currently attached has an animation, so we immediately show the
   // widget. Detached does not have an animation, and we wait until glic is
   // ready to show anything.
-  void OpenAttached(Browser* browser);
+  void OpenAttached(Browser& browser);
   void OpenDetached();
 
   // Creates the glic view, waits for the web client to initialize, and then
@@ -274,7 +274,7 @@ class GlicWindowController : public views::WidgetObserver {
 
   // Reparents the glic widget under 'browser' and runs an animation to move it
   // to its target position.
-  void AttachToBrowser(Browser* browser);
+  void AttachToBrowser(Browser& browser);
 
   // If glic is within attachment distance of a browser window's glic
   // button, attach the glic window to the button's position.
@@ -294,7 +294,7 @@ class GlicWindowController : public views::WidgetObserver {
 
   // Updates the position of the glic window to that of the glic button of
   // `browser`'s window. This position change is animated if `animate` is true.
-  void MovePositionToBrowserGlicButton(Browser* browser, bool animate);
+  void MovePositionToBrowserGlicButton(const Browser& browser, bool animate);
 
   // Called when the move animation finishes when attaching.
   void AttachAnimationFinished();
