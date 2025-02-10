@@ -4,9 +4,13 @@
 
 package org.chromium.chrome.browser.omaha;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.Locale;
 
 /** Utility for dealing with Chrome version numbers. */
+@NullMarked
 public class VersionNumber {
     private final int[] mVersion = {0, 0, 0, 0};
 
@@ -15,7 +19,7 @@ public class VersionNumber {
      * @param str a version number of the format a.b.c.d, where each is an integer.
      * @return A VersionNumber containing the version info, or null if it couldn't be parsed.
      */
-    public static VersionNumber fromString(String str) {
+    public static @Nullable VersionNumber fromString(String str) {
         if (str == null) {
             return null;
         }

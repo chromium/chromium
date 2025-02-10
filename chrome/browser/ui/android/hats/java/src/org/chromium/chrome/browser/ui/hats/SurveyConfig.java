@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui.hats;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -14,6 +13,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.HashMap;
@@ -26,10 +27,11 @@ import java.util.Optional;
  * //chrome/browser/ui/hats/survey_config.*
  */
 @JNINamespace("hats")
+@NullMarked
 public class SurveyConfig {
 
     private static boolean sForceUsingTestingConfig;
-    private static SurveyConfig sConfigForTesting;
+    private static @Nullable SurveyConfig sConfigForTesting;
 
     /** Unique key associate with the config. */
     final String mTrigger;
@@ -90,8 +92,7 @@ public class SurveyConfig {
      * @param trigger The trigger associated with the SurveyConfig.
      * @return SurveyConfig if the survey exists and is enabled.
      */
-    @Nullable
-    public static SurveyConfig get(Profile profile, String trigger) {
+    public static @Nullable SurveyConfig get(Profile profile, String trigger) {
         return get(profile, trigger, "");
     }
 
@@ -104,8 +105,8 @@ public class SurveyConfig {
      *     triggerId set to suppliedTriggerId
      * @return SurveyConfig if the survey exists and is enabled.
      */
-    @Nullable
-    public static SurveyConfig get(Profile profile, String trigger, String suppliedTriggerId) {
+    public static @Nullable SurveyConfig get(
+            Profile profile, String trigger, String suppliedTriggerId) {
         SurveyConfig config;
         if (sForceUsingTestingConfig) {
             config = sConfigForTesting;
@@ -159,8 +160,8 @@ public class SurveyConfig {
         Holder.clearAll();
     }
 
-    static SurveyConfig getConfigWithSuppliedTriggerIdIfPresent(
-            SurveyConfig config, String suppliedTriggerId) {
+    static @Nullable SurveyConfig getConfigWithSuppliedTriggerIdIfPresent(
+            @Nullable SurveyConfig config, String suppliedTriggerId) {
         if (config != null && !TextUtils.isEmpty(suppliedTriggerId)) {
             return new SurveyConfig(
                     config.mTrigger,
@@ -201,7 +202,7 @@ public class SurveyConfig {
     /** Holder that stores all the active surveys for Android. */
     static class Holder {
 
-        private static Holder sInstance;
+        private static @Nullable Holder sInstance;
         private final Map<String, SurveyConfig> mTriggers;
         private long mNativeInstance;
 
@@ -223,7 +224,7 @@ public class SurveyConfig {
             }
         }
 
-        SurveyConfig getSurveyConfig(String trigger) {
+        @Nullable SurveyConfig getSurveyConfig(String trigger) {
             return mTriggers.get(trigger);
         }
 

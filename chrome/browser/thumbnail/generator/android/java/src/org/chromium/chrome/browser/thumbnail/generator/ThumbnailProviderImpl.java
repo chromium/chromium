@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.thumbnail.generator;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.collection.LruCache;
 
 import org.chromium.base.DiscardableReferencePool;
@@ -17,6 +17,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.BitmapCache;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 
@@ -37,6 +39,7 @@ import java.util.Locale;
  * TODO(dfalcantara): Figure out how to send requests simultaneously to the utility process without
  *                    duplicating work to decode the same image for two different requests.
  */
+@NullMarked
 public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorageDelegate {
     @IntDef({ClientType.DOWNLOAD_HOME, ClientType.NTP_SUGGESTIONS})
     @Retention(RetentionPolicy.SOURCE)
@@ -74,7 +77,7 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
     private final Deque<ThumbnailRequest> mRequestQueue = new ArrayDeque<>();
 
     /** Request that is currently having its thumbnail retrieved. */
-    private ThumbnailRequest mCurrentRequest;
+    private @Nullable ThumbnailRequest mCurrentRequest;
 
     private ThumbnailDiskStorage mStorage;
 
@@ -171,7 +174,7 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
         return String.format(Locale.US, "id=%s, size=%d", contentId, bitmapSizePx);
     }
 
-    private Bitmap getBitmapFromCache(String contentId, int bitmapSizePx) {
+    private @Nullable Bitmap getBitmapFromCache(String contentId, int bitmapSizePx) {
         String key = getKey(contentId, bitmapSizePx);
         Bitmap cachedBitmap = mBitmapCache.getBitmap(key);
         assert cachedBitmap == null || !cachedBitmap.isRecycled();
@@ -190,7 +193,7 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
         mCurrentRequest = mRequestQueue.poll();
 
         Bitmap cachedBitmap =
-                getBitmapFromCache(mCurrentRequest.getContentId(), mCurrentRequest.getIconSize());
+                getBitmapFromCache(assumeNonNull(mCurrentRequest.getContentId()), mCurrentRequest.getIconSize());
         if (cachedBitmap == null) {
             handleCacheMiss(mCurrentRequest);
         } else {
@@ -211,7 +214,9 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
     private void handleCacheMiss(ThumbnailProvider.ThumbnailRequest request) {
         boolean providedByThumbnailRequest =
                 request.getThumbnail(
-                        bitmap -> onThumbnailRetrieved(request.getContentId(), bitmap));
+                        bitmap ->
+                                onThumbnailRetrieved(
+                                        assumeNonNull(request.getContentId()), bitmap));
 
         if (!providedByThumbnailRequest) {
             // Asynchronously process the file to make a thumbnail.
@@ -227,7 +232,7 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
      * @param bitmap The thumbnail retrieved.
      */
     @Override
-    public void onThumbnailRetrieved(@NonNull String contentId, @Nullable Bitmap bitmap) {
+    public void onThumbnailRetrieved(String contentId, @Nullable Bitmap bitmap) {
         // Early-out if we have no actual current request.
         if (mCurrentRequest == null) return;
 

@@ -6,7 +6,6 @@ package org.chromium.base;
 
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.errorprone.annotations.DoNotMock;
@@ -17,6 +16,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Java counterpart to the native base::Token. A {@link Token} is a random 128-bit integer. */
 @NullMarked

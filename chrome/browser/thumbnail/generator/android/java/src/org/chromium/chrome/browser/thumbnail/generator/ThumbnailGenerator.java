@@ -7,14 +7,14 @@ package org.chromium.chrome.browser.thumbnail.generator;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * This class generates thumbnails for a given {@link ThumbnailRequest} by calling the native
@@ -23,6 +23,7 @@ import org.chromium.base.ThreadUtils;
  *
  * After {@link ThumbnailGenerator#destroy()}, assume that this class will not be called again.
  */
+@NullMarked
 public class ThumbnailGenerator {
     // The native side pointer that is owned and destroyed by the Java class.
     private long mNativeThumbnailGenerator;
@@ -74,7 +75,7 @@ public class ThumbnailGenerator {
     @CalledByNative
     @VisibleForTesting
     void onThumbnailRetrieved(
-            @NonNull String contentId,
+            String contentId,
             int requestedIconSizePx,
             @Nullable Bitmap bitmap,
             ThumbnailGeneratorCallback callback) {
@@ -97,9 +98,9 @@ public class ThumbnailGenerator {
         void retrieveThumbnail(
                 long nativeThumbnailGenerator,
                 ThumbnailGenerator caller,
-                String contentId,
-                String filePath,
-                String mimeType,
+                @Nullable String contentId,
+                @Nullable String filePath,
+                @Nullable String mimeType,
                 int thumbnailSize,
                 ThumbnailGeneratorCallback callback);
     }

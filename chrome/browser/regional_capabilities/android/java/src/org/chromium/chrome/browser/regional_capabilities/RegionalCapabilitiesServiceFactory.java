@@ -10,6 +10,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 
@@ -18,8 +20,9 @@ import org.chromium.components.regional_capabilities.RegionalCapabilitiesService
  * hold a {@link RegionalCapabilitiesService} instance.
  */
 @JNINamespace("regional_capabilities")
+@NullMarked
 public class RegionalCapabilitiesServiceFactory {
-    private static RegionalCapabilitiesService sRegionalCapabilitiesServiceForTesting;
+    private static @Nullable RegionalCapabilitiesService sRegionalCapabilitiesServiceForTesting;
 
     private RegionalCapabilitiesServiceFactory() {}
 

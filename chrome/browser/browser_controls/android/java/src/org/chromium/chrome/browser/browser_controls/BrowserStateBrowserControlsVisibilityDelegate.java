@@ -13,6 +13,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -23,6 +24,7 @@ import org.chromium.ui.util.TokenHolder;
  * Determines the desired visibility of the browser controls based on the current state of the
  * running activity.
  */
+@NullMarked
 public class BrowserStateBrowserControlsVisibilityDelegate extends BrowserControlsVisibilityDelegate
         implements Destroyable {
     /** Minimum duration (in milliseconds) that the controls are shown when requested. */

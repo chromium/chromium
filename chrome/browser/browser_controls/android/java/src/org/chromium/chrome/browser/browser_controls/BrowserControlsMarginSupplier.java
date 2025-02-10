@@ -8,12 +8,14 @@ import android.graphics.Rect;
 
 import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * An implementation of {@link DestroyableObservableSupplier} that monitors changes to browser
  * controls and updates a Rect indicating top/bottom margins for Views that should be inset by the
  * browser control(s) height(s).
  */
+@NullMarked
 public class BrowserControlsMarginSupplier extends ObservableSupplierImpl<Rect>
         implements BrowserControlsStateProvider.Observer, DestroyableObservableSupplier<Rect> {
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;

@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.Random;
 
@@ -32,6 +33,7 @@ import javax.annotation.concurrent.NotThreadSafe;
  * SharedPreferences.
  */
 @NotThreadSafe
+@NullMarked
 public class ExponentialBackoffScheduler {
     // TODO(crbug.com/40150188): remove and use OmahaBase.TAG when OmahaBase.java is modularized.
     // Used in various org.chromium.chrome.browser.omaha files.
