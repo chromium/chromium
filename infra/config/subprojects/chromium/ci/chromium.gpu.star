@@ -60,6 +60,7 @@ consoles.console_view(
 
 ci.gpu.linux_builder(
     name = "Android Release (Nexus 5X)",
+    description_html = "Runs a subset of release GPU tests on stable Nexus 5X configs",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -124,7 +125,7 @@ ci.gpu.linux_builder(
 ci.gpu.linux_builder(
     name = "Android Release (Pixel 2)",
     branch_selector = branches.selector.ANDROID_BRANCHES,
-    description_html = "Runs GPU tests on Pixel 2 phones",
+    description_html = "Runs a subset of release GPU tests on stable Pixel 2 configs",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -182,6 +183,7 @@ ci.gpu.linux_builder(
 ci.gpu.linux_builder(
     name = "GPU Linux Builder",
     branch_selector = branches.selector.LINUX_BRANCHES,
+    description_html = "Builds release Linux x64 binaries for GPU testing",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -223,6 +225,7 @@ ci.gpu.linux_builder(
 
 ci.gpu.linux_builder(
     name = "GPU Linux Builder (dbg)",
+    description_html = "Builds debug Linux x64 binaries for GPU testing",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -258,6 +261,7 @@ ci.gpu.linux_builder(
 ci.gpu.mac_builder(
     name = "GPU Mac Builder",
     branch_selector = branches.selector.MAC_BRANCHES,
+    description_html = "Builds release Mac x64 binaries for GPU testing",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -302,6 +306,7 @@ ci.gpu.mac_builder(
 
 ci.gpu.mac_builder(
     name = "GPU Mac Builder (dbg)",
+    description_html = "Builds debug Mac x64 binaries for GPU testing",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -339,6 +344,7 @@ ci.gpu.mac_builder(
 ci.gpu.windows_builder(
     name = "GPU Win x64 Builder",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
+    description_html = "Builds release x64 Windows binaries for GPU testing",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -380,6 +386,7 @@ ci.gpu.windows_builder(
 
 ci.gpu.windows_builder(
     name = "GPU Win x64 Builder (dbg)",
+    description_html = "Builds debug Windows x64 binaries for GPU testing",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -413,6 +420,7 @@ ci.gpu.windows_builder(
 
 ci.thin_tester(
     name = "Linux Debug (NVIDIA)",
+    description_html = "Runs a subset of debug GPU tests on stable Linux/NVIDIA GTX 1660 configs",
     triggered_by = ["GPU Linux Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -460,6 +468,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Linux Release (NVIDIA)",
     branch_selector = branches.selector.LINUX_BRANCHES,
+    description_html = "Runs a subset of release GPU tests on stable Linux/NVIDIA GTX 1660 configs",
     triggered_by = ["ci/GPU Linux Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -508,6 +517,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac Debug (Intel)",
+    description_html = "Runs a subset of debug GPU tests on stable Mac/Intel UHD 630 Mac Mini configs",
     triggered_by = ["GPU Mac Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -554,6 +564,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac Release (Intel)",
     branch_selector = branches.selector.MAC_BRANCHES,
+    description_html = "Runs a subset of release GPU tests on stable Mac/Intel UHD 630 Mac Mini configs",
     triggered_by = ["ci/GPU Mac Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -593,6 +604,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac Retina Debug (AMD)",
+    description_html = "Runs a subset of debug GPU tests on stable Mac/AMD Macbook Pro configs",
     triggered_by = ["GPU Mac Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -638,6 +650,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac Retina Release (AMD)",
     branch_selector = branches.selector.MAC_BRANCHES,
+    description_html = "Runs a subset of release GPU tests on stable Mac/AMD Macbook Pro configs",
     triggered_by = ["ci/GPU Mac Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -677,6 +690,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Win10 x64 Debug (NVIDIA)",
+    description_html = "Runs a subset of debug GPU tests on stable Windows 10/NVIDIA GTX 1660 configs",
     triggered_by = ["GPU Win x64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -734,6 +748,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Win10 x64 Release (NVIDIA)",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
+    description_html = "Runs a subset of release GPU tests on stable Windows 10/NVIDIA GTX 1660 configs",
     triggered_by = ["ci/GPU Win x64 Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,

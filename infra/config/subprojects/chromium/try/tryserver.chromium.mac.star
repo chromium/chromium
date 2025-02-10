@@ -770,6 +770,8 @@ ios_builder(
 try_.gpu.optional_tests_builder(
     name = "mac_optional_gpu_tests_rel",
     branch_selector = branches.selector.IOS_BRANCHES,
+    description_html = ("Runs GPU tests on Mac Minis with Intel UHD 630 GPUs and Macbook Pros with AMD GPUs. " +
+                        "Only automatically added to CLs that touch GPU-related files."),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -809,6 +811,7 @@ try_.gpu.optional_tests_builder(
     ),
     cpu = cpu.ARM64,
     ssd = None,
+    contact_team_email = "chrome-gpu-infra@google.com",
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [

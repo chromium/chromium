@@ -1018,6 +1018,8 @@ try_.builder(
 try_.gpu.optional_tests_builder(
     name = "linux_optional_gpu_tests_rel",
     branch_selector = branches.selector.LINUX_BRANCHES,
+    description_html = ("Runs GPU tests on Linux machines with NVIDIA GTX 1660 and Intel UHD 630 GPUs. " +
+                        "Only automatically added to CLs that touch GPU-related files."),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1056,6 +1058,7 @@ try_.gpu.optional_tests_builder(
         browser_config = targets.browser_config.RELEASE,
         os_type = targets.os_type.LINUX,
     ),
+    contact_team_email = "chrome-gpu-infra@google.com",
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
