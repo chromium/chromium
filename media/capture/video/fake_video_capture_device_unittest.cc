@@ -28,10 +28,12 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/media_switches.h"
 #include "media/capture/video/fake_video_capture_device_factory.h"
 #include "media/capture/video/mock_video_capture_device_client.h"
 #include "media/capture/video/video_capture_device.h"
+#include "media/capture/video/video_capture_gpu_channel_host.h"
 #include "media/capture/video_capture_types.h"
 #include "media/video/fake_gpu_memory_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -95,7 +97,13 @@ class FakeVideoCaptureDeviceTestBase : public ::testing::Test {
         image_capture_client_(base::MakeRefCounted<ImageCaptureClient>()),
         video_capture_device_factory_(new FakeVideoCaptureDeviceFactory()) {}
 
-  void SetUp() override { EXPECT_CALL(*client_, OnError(_, _, _)).Times(0); }
+  void SetUp() override {
+    EXPECT_CALL(*client_, OnError(_, _, _)).Times(0);
+    test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+    test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
+    VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
+        test_sii_);
+  }
 
   std::unique_ptr<MockVideoCaptureDeviceClient> CreateClient() {
     return MockVideoCaptureDeviceClient::CreateMockClientWithBufferAllocator(
@@ -135,6 +143,7 @@ class FakeVideoCaptureDeviceTestBase : public ::testing::Test {
   VideoCaptureFormat last_format_;
   const std::unique_ptr<FakeVideoCaptureDeviceFactory>
       video_capture_device_factory_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
 class FakeVideoCaptureDeviceTest
