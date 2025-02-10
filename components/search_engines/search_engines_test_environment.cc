@@ -6,16 +6,62 @@
 
 #include <utility>
 
+#include "base/test/bind.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_test_util.h"
 
 namespace search_engines {
 
-SearchEnginesTestEnvironment::SearchEnginesTestEnvironment(const Deps& deps) {
+namespace {
+SearchEnginesTestEnvironment::ServiceFactories CreateDefaultFactories(
+    const SearchEnginesTestEnvironment::Deps& deps) {
+  SearchEnginesTestEnvironment::ServiceFactories default_factories;
+
+  default_factories.regional_capabilities_service_factory =
+      base::BindRepeating([](SearchEnginesTestEnvironment& environment) {
+        return regional_capabilities::CreateServiceWithFakeClient(
+            environment.pref_service());
+      });
+  default_factories.search_engine_choice_service_factory =
+      base::BindRepeating([](SearchEnginesTestEnvironment& environment) {
+        return std::make_unique<SearchEngineChoiceService>(
+            environment.pref_service(), &environment.local_state(),
+            environment.regional_capabilities_service(),
+            /*is_profile_eligible_for_dse_guest_propagation=*/false);
+      });
+
+  default_factories.template_url_service_factory = base::BindLambdaForTesting(
+      [deps](SearchEnginesTestEnvironment& environment) {
+        return std::make_unique<TemplateURLService>(
+            environment.pref_service(),
+            environment.search_engine_choice_service(),
+            deps.template_url_service_initializer);
+      });
+
+  return default_factories;
+}
+}  // namespace
+
+SearchEnginesTestEnvironment::ServiceFactories::ServiceFactories() = default;
+
+SearchEnginesTestEnvironment::ServiceFactories::ServiceFactories(
+    const ServiceFactories& other) = default;
+SearchEnginesTestEnvironment::ServiceFactories&
+SearchEnginesTestEnvironment::ServiceFactories::operator=(
+    const ServiceFactories& other) = default;
+
+SearchEnginesTestEnvironment::ServiceFactories::~ServiceFactories() = default;
+
+SearchEnginesTestEnvironment::SearchEnginesTestEnvironment(
+    const Deps& deps,
+    const ServiceFactories& lazy_factories)
+    : service_factories_overrides_(lazy_factories),
+      default_factories_(CreateDefaultFactories(deps)) {
   local_state_ = deps.local_state;
   pref_service_ = deps.pref_service;
 
@@ -31,19 +77,12 @@ SearchEnginesTestEnvironment::SearchEnginesTestEnvironment(const Deps& deps) {
     local_state_ = owned_local_state_.get();
     local_state_->registry()->RegisterBooleanPref(
         metrics::prefs::kMetricsReportingEnabled, true);
+    SearchEngineChoiceService::RegisterLocalStatePrefs(
+        local_state_->registry());
   }
-
-  regional_capabilities_service_ =
-      regional_capabilities::CreateServiceWithFakeClient(*pref_service_);
-
-  search_engine_choice_service_ = std::make_unique<SearchEngineChoiceService>(
-      *pref_service_, local_state_, *regional_capabilities_service_,
-      /*is_profile_eligible_for_dse_guest_propagation=*/false);
-
-  template_url_service_ = std::make_unique<TemplateURLService>(
-      *pref_service_, *search_engine_choice_service_,
-      deps.template_url_service_initializer);
 }
+
+SearchEnginesTestEnvironment::~SearchEnginesTestEnvironment() = default;
 
 sync_preferences::TestingPrefServiceSyncable&
 SearchEnginesTestEnvironment::pref_service() {
@@ -59,12 +98,40 @@ TestingPrefServiceSimple& SearchEnginesTestEnvironment::local_state() {
   return *local_state_;
 }
 
+regional_capabilities::RegionalCapabilitiesService&
+SearchEnginesTestEnvironment::regional_capabilities_service() {
+  if (!regional_capabilities_service_) {
+    regional_capabilities_service_ =
+        service_factories_overrides_.regional_capabilities_service_factory
+            ? service_factories_overrides_.regional_capabilities_service_factory
+                  .Run(*this)
+            : default_factories_.regional_capabilities_service_factory.Run(
+                  *this);
+  }
+  return *regional_capabilities_service_;
+}
+
 SearchEngineChoiceService&
 SearchEnginesTestEnvironment::search_engine_choice_service() {
+  if (!search_engine_choice_service_) {
+    search_engine_choice_service_ =
+        service_factories_overrides_.search_engine_choice_service_factory
+            ? service_factories_overrides_.search_engine_choice_service_factory
+                  .Run(*this)
+            : default_factories_.search_engine_choice_service_factory.Run(
+                  *this);
+  }
   return *search_engine_choice_service_;
 }
 
 TemplateURLService* SearchEnginesTestEnvironment::template_url_service() {
+  if (!template_url_service_ && !released_template_url_service_) {
+    template_url_service_ =
+        service_factories_overrides_.template_url_service_factory
+            ? service_factories_overrides_.template_url_service_factory.Run(
+                  *this)
+            : default_factories_.template_url_service_factory.Run(*this);
+  }
   return template_url_service_.get();
 }
 
@@ -75,9 +142,11 @@ const TemplateURLService* SearchEnginesTestEnvironment::template_url_service()
 
 std::unique_ptr<TemplateURLService>
 SearchEnginesTestEnvironment::ReleaseTemplateURLService() {
+  // Lazily create the service, which should fail if a previous instance has
+  // already been released.
+  CHECK(template_url_service());
+  released_template_url_service_ = true;
   return std::move(template_url_service_);
 }
-
-SearchEnginesTestEnvironment::~SearchEnginesTestEnvironment() = default;
 
 }  // namespace search_engines

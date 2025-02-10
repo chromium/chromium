@@ -148,6 +148,7 @@ static_library("test_support") {
   defines = []
   deps = [
     "//chrome/browser:global_features",
+    "//chrome/browser/regional_capabilities",
     "//chrome/browser/ui:ui_features",
   ]
   public_deps = []

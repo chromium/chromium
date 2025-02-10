@@ -26,7 +26,6 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
-#include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/version_info/version_info.h"
@@ -51,7 +50,6 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
 
  private:
   sync_preferences::TestingPrefServiceSyncable pref_service_;
-  std::unique_ptr<TemplateURLService> template_url_service_;
 };
 
 TEST_F(SearchEngineChoiceUtilsTest, ChoiceScreenDisplayState_ToDict) {

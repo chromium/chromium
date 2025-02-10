@@ -18,8 +18,6 @@
 
 namespace regional_capabilities {
 
-class RegionalCapabilitiesService;
-
 std::unique_ptr<RegionalCapabilitiesService> CreateServiceWithFakeClient(
     PrefService& profile_prefs,
     int country_id = country_codes::kCountryIDUnknown);

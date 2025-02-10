@@ -33,6 +33,7 @@
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -180,14 +181,17 @@ ProfileResetterTest::~ProfileResetterTest() = default;
 void ProfileResetterTest::SetUp() {
   extensions::ExtensionServiceTestBase::SetUp();
   ExtensionServiceInitParams params;
-  params.testing_factories = {TestingProfile::TestingFactory(
-      NtpCustomBackgroundServiceFactory::GetInstance(),
-      base::BindRepeating(&CreateFakeNtpCustomBackgroundService))};
+  params.testing_factories = {
+      TestingProfile::TestingFactory(
+          NtpCustomBackgroundServiceFactory::GetInstance(),
+          base::BindRepeating(&CreateFakeNtpCustomBackgroundService)),
+      TestingProfile::TestingFactory(
+          TemplateURLServiceFactory::GetInstance(),
+          TemplateURLServiceTestUtil::GetTemplateURLServiceTestingFactory()),
+  };
 
   InitializeExtensionService(std::move(params));
 
-  TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
-      profile(), base::BindRepeating(&CreateTemplateURLServiceForTesting));
   google_brand::BrandForTesting brand_for_testing("");
   resetter_ = std::make_unique<ProfileResetter>(profile());
 }
