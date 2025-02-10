@@ -7,7 +7,7 @@ import {microsoftAuthModuleDescriptor, MicrosoftAuthProxyImpl, ParentTrustedDocu
 import {MicrosoftAuthPageHandlerRemote} from 'chrome://new-tab-page/microsoft_auth.mojom-webui.js';
 import {MicrosoftAuthUntrustedDocumentRemote} from 'chrome://new-tab-page/ntp_microsoft_auth_shared_ui.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -20,7 +20,7 @@ suite('MicrosoftAuthModule', () => {
   let microsoftAuthModule: MicrosoftAuthModuleElement;
   const modulesMicrosoftAuthName = 'Microsoft Authentication';
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues(
         {modulesMicrosoftAuthName: modulesMicrosoftAuthName});
@@ -37,15 +37,21 @@ suite('MicrosoftAuthModule', () => {
     // Set fake metrics. Otherwise, tests fail when creating descriptor
     // because of the mock |WindowProxy|.
     fakeMetricsPrivate();
+  });
 
+  async function createMicrosoftAuthElement() {
+    handler.setResultFor('shouldShowModule', Promise.resolve({show: true}));
     microsoftAuthModule = await microsoftAuthModuleDescriptor.initialize(0) as
         MicrosoftAuthModuleElement;
     assertTrue(!!microsoftAuthModule);
     document.body.append(microsoftAuthModule);
     await microtasksFinished();
-  });
+  }
 
   test('clicking the disable button fires a disable module event', async () => {
+    // Arrange.
+    await createMicrosoftAuthElement();
+
     // Act.
     const whenFired = eventToPromise('disable-module', microsoftAuthModule);
     const disableButton =
@@ -62,6 +68,9 @@ suite('MicrosoftAuthModule', () => {
   });
 
   test('dismisses and restores module', async () => {
+    // Arrange.
+    await createMicrosoftAuthElement();
+
     // Act.
     const whenFired =
         eventToPromise('dismiss-module-instance', microsoftAuthModule);
@@ -82,10 +91,23 @@ suite('MicrosoftAuthModule', () => {
   });
 
   test('clicking sign in sends message to child document', async () => {
+    // Arrange.
+    await createMicrosoftAuthElement();
+
     // Act.
     microsoftAuthModule.$.signInButton.click();
 
     // Assert.
     assertEquals(1, childDocument.getCallCount('acquireTokenPopup'));
+  });
+
+  test('does not populate module if handler says not to', async () => {
+    // Arrange/Act.
+    handler.setResultFor('shouldShowModule', Promise.resolve({show: false}));
+    microsoftAuthModule = await microsoftAuthModuleDescriptor.initialize(0) as
+        MicrosoftAuthModuleElement;
+
+    // Assert.
+    assertFalse(!!microsoftAuthModule);
   });
 });
