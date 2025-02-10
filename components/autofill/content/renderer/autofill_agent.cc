@@ -1082,9 +1082,7 @@ void AutofillAgent::ApplyFieldsAction(
 
     formless_elements_were_autofilled_ |= std::ranges::any_of(
         filled_fields_and_forms,
-        [](std::pair<FieldRendererId, FormRendererId>& filled_field_and_form) {
-          return !filled_field_and_form.second;
-        });
+        std::not_fn(&std::pair<FieldRendererId, FormRendererId>::second));
 
     base::flat_set<FormRendererId> extracted_form_ids;
     std::vector<FormData> filled_forms;
