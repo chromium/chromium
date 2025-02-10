@@ -10184,12 +10184,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP" desc="Dynamic tooltip to display on hover over named tab group.">
         <ph name="GROUP_NAME">$1<ex>New Group</ex></ph> - <ph name="GROUP_CONTENT_STRING">$2<ex>"New Tab" and one other</ex></ph>
       </message>
-      <message name="IDS_GLIC_PROMO_TITLE" desc="Glic promo title.">
-        [placeholder text]
-      </message>
-      <message name="IDS_GLIC_PROMO_BODY" desc="Glic promo body text.">
-        [placeholder text]
-      </message>
       <message name="IDS_SHARED_HIGHLIGHTING_PROMO" desc="The title of in-product-help message encouraging users to interact with the highlight">
         To create a highlight like this one, select any text and right-click.
       </message>
@@ -15882,9 +15876,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_TOOLTIP_TAB_ALERT_STATE_VR_PRESENTING" desc="Extra tool tip text, when the tab is presenting VR content to a headset.">
         This tab is presenting VR content to a headset
       </message>
-      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_ACCESSING" desc="[Placeholder Description]">
-        [Placeholder String]
-      </message>
 
       <!-- Tab accessibility labels -->
       <message name="IDS_TAB_AX_LABEL_MEDIA_RECORDING_FORMAT" is_accessibility_with_no_ui="true" desc="Accessibility label text, when the tab is recording media. Example: 'Google Hangouts - Camera and microphone recording'">
@@ -15936,11 +15927,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <ph name="WINDOW_TITLE">
           $1<ex>A VR-enabled website</ex>
         </ph> - VR presenting to headset
-      </message>
-      <message name="IDS_TAB_AX_LABEL_GLIC_ACCESSING" is_accessibility_with_no_ui="true" desc="[Placeholder Description]">
-        <ph name="WINDOW_TITLE">
-          $1<ex>Google Photos</ex>
-        </ph> - [Placeholder String]
       </message>
       <message name="IDS_TAB_AX_LABEL_UNNAMED_GROUP_FORMAT" desc="Accessibility label text for a tab, when it is in a group that has not been named by the user. Example: 'Google Search - Part of unnamed group'">
         <ph name="WINDOW_TITLE">$1<ex>Google Search</ex></ph> - Part of unnamed group
@@ -18643,65 +18629,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_SELECT_AUDIO_OUTPUT_DIALOG_CHOOSE_DEVICE" desc="Text displayed above the list of audio output devices in the selection dialog.">
       Choose an audio output device
     </message>
-
-    <!-- Glic status tray icon strings -->
-    <if expr="enable_glic">
-      <!-- TODO(https://crbug.com/382287104): Replace with finalized strings -->
-      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered.">
-        Open
-      </message>
-      <message name="IDS_GLIC_STATUS_ICON_MENU_SHOW" translateable="false" desc="This is the menu item for showing the glic UI.">
-        Open glic
-      </message>
-      <message name="IDS_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT" translateable="false" desc="This is the menu item for customizing the keyboard shortcut.">
-        Customize keyboard shortcut
-      </message>
-      <if expr="is_macosx">
-        <message name="IDS_GLIC_STATUS_ICON_MENU_REMOVE_ICON" translateable="false" desc="This is the menu item for removing the glic icon from the menu bar.">
-          Disable glic in menu bar
-        </message>
-      </if>
-      <if expr="is_win or is_linux">
-        <message name="IDS_GLIC_STATUS_ICON_MENU_REMOVE_ICON" translateable="false" desc="This is the menu item for removing the glic icon from the notifications area.">
-          Disable glic in notifications area
-        </message>
-      </if>
-      <if expr="is_win or is_linux">
-        <message name="IDS_GLIC_STATUS_ICON_MENU_EXIT" translateable="false" desc="This is the menu item for exiting Chrome.">
-          Exit
-        </message>
-      </if>
-      <message name="IDS_GLIC_STATUS_ICON_MENU_SETTINGS" translateable="false" desc="This is the menu item for opening the glic settings.">
-        Settings...
-      </message>
-      <message name="IDS_GLIC_OS_WIDGET_TOGGLE_HELP_BUBBLE" translateable="false" desc="Help bubble above the toggle for turning off the glic os widget.">
-        Disable glic here
-      </message>
-      <message name="IDS_GLIC_OS_WIDGET_KEYBOARD_SHORTCUT_HELP_BUBBLE" translateable="false" desc="Help bubble message above the keyboard shortcut editor that allows customizing it.">
-        Customize the keyboard shortcut here
-      </message>
-      <message name="IDS_GLIC_OFFLINE_NOTICE_HEADER" translateable="false" desc="This is the headline on the glic offline notice informing the user that there is no network connection.">
-        Your connection is interrupted
-      </message>
-      <message name="IDS_GLIC_OFFLINE_NOTICE" translateable="false" desc="This is the description of the issue on the glic offline notice.">
-        Glic isn't available right now.
-      </message>
-      <message name="IDS_GLIC_OFFLINE_NOTICE_ACTION" translateable="false" desc="This is the suggested user action for the glic offline notice.">
-        Check your internet connection and try again.
-      </message>
-      <message name="IDS_GLIC_OFFLINE_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for the glic offline notice.">
-        Retry connection
-      </message>
-      <message name="IDS_GLIC_ERROR_NOTICE_HEADER" translateable="false" desc="This is the headline on the glic error notice.">
-        Something went wrong
-      </message>
-      <message name="IDS_GLIC_ERROR_NOTICE" translateable="false" desc="This is the text of the glic error notice.">
-        Glic isn't available right now. Try again later
-      </message>
-      <message name="IDS_GLIC_ERROR_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for the glic error notice.">
-        Try again
-      </message>
-    </if>
 
     <!-- Smart Card Readers -->
     <if expr="is_chromeos">

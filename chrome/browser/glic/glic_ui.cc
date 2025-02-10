@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/glic_fre_page_handler.h"
 #include "chrome/browser/glic/glic_page_handler.h"
 #include "chrome/browser/glic/guest_util.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -83,6 +84,8 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddInteger("minLoadingTimeMs", features::kGlicMinLoadingTimeMs.Get());
   source->AddInteger("maxLoadingTimeMs", features::kGlicMaxLoadingTimeMs.Get());
   source->AddBoolean("simulateNoConnection", simulate_no_connection_);
+
+  source->AddResourcePath("glic_logo.svg", IDR_GLIC_LOGO);
 
   // Set up guest api source.
   // This comes from 'glic_api_injection' in

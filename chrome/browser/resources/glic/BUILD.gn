@@ -13,10 +13,7 @@ build_webui("build") {
   static_files = [
     "glic.css",
     "glic.html",
-    "glic_logo.svg",
     "glic_fre/fre.html",
-    "glic_status_icon_dark.png",
-    "glic_status_icon_light.png",
   ]
 
   non_web_component_files = [

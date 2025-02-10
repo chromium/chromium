@@ -9961,7 +9961,6 @@ test("unit_tests") {
       "../browser/ui/views/tabs/tab_hover_card_bubble_view_unittest.cc",
       "../browser/ui/views/tabs/tab_hover_card_controller_unittest.cc",
       "../browser/ui/views/tabs/tab_search_container_unittest.cc",
-      "../browser/ui/views/tabs/tab_strip_action_container_unittest.cc",
       "../browser/ui/views/tabs/tab_strip_control_button_unittest.cc",
       "../browser/ui/views/tabs/tab_strip_layout_unittest.cc",
       "../browser/ui/views/tabs/tab_strip_nudge_button_unittest.cc",
@@ -9994,6 +9993,10 @@ test("unit_tests") {
     ]
     if (!is_chrome_for_testing) {
       sources += [ "../browser/ui/views/user_education/impl/browser_feature_promo_controller_2x_unittest.cc" ]
+    }
+    if (enable_glic) {
+      sources +=
+          [ "../browser/ui/views/tabs/tab_strip_action_container_unittest.cc" ]
     }
     if (is_linux) {
       sources += [

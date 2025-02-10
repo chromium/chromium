@@ -979,7 +979,11 @@ void BackgroundModeManager::UpdateStatusTrayIconContextMenu() {
   }
 
   menu->AddSeparator(ui::NORMAL_SEPARATOR);
-  if (GlicEnabling::IsEnabledByFlags()) {
+  bool use_background_setting = false;
+#if BUILDFLAG(ENABLE_GLIC)
+  use_background_setting = GlicEnabling::IsEnabledByFlags();
+#endif
+  if (use_background_setting) {
     menu->AddCheckItemWithStringId(
         IDC_STATUS_TRAY_KEEP_CHROME_RUNNING_IN_BACKGROUND_SETTING,
         IDS_STATUS_TRAY_KEEP_CHROME_RUNNING_IN_BACKGROUND_SETTING);

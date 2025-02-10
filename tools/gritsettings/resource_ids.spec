@@ -145,10 +145,12 @@
   # because they define the same resources, but only one of them is built
   # depending on whether src_internal is available.
   "chrome/browser/glic/resources/internal/browser_resources.grd": {
-    "includes": [2540],
+    "messages": [2540],
+    "includes": [2600],
   },
   "chrome/browser/glic/resources/browser_resources.grd": {
-    "includes": [2540],
+    "messages": [2540],
+    "includes": [2600],
   },
   # END chrome/browser section.
 
@@ -427,7 +429,7 @@
     "includes": [4000],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/glic/resources.grd": {
-    "META": {"sizes": {"includes": [19]}},
+    "META": {"sizes": {"includes": [17]}},
     "includes": [4010],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/history/resources.grd": {

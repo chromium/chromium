@@ -46,6 +46,10 @@
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#endif
+
 namespace {
 
 // Minimum size for the picker UI.
@@ -90,9 +94,11 @@ std::string GetManagedDeviceDisclaimer() {
 }
 
 int GetMainViewTitleId(bool is_glic_version) {
+#if BUILDFLAG(ENABLE_GLIC)
   if (is_glic_version) {
     return IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC;
   }
+#endif
 
   return ProfilePicker::Shown() ? IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_V2
                                 : IDS_PROFILE_PICKER_MAIN_VIEW_TITLE;
@@ -140,20 +146,27 @@ void AddStrings(content::WebUIDataSource* html_source, bool is_glic_version) {
       {"ok", IDS_OK},
       {"signInButtonLabel",
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL},
+#if BUILDFLAG(ENABLE_GLIC)
       {"glicAddProfileHelper", IDS_PROFILE_PICKER_ADD_PROFILE_HELPER_GLIC},
       {"glicTitleNoProfile",
        IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC_NO_PROFILE},
       {"mainViewSubtitleGlicNoProfile",
        IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC_NO_PROFILE},
+#endif  // BUILDFLAG(ENABLE_GLIC)
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddLocalizedString("mainViewTitle",
                                   GetMainViewTitleId(is_glic_version));
+#if BUILDFLAG(ENABLE_GLIC)
   html_source->AddLocalizedString(
       "mainViewSubtitle", is_glic_version
                               ? IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC
                               : IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE);
+#else
+  html_source->AddLocalizedString("mainViewSubtitle",
+                                  IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE);
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
   html_source->AddLocalizedString(
       "profileTypeChoiceSubtitle",
@@ -220,11 +233,11 @@ void AddResourcePaths(content::WebUIDataSource* html_source) {
       {"left_banner_dark.svg", IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_DARK_SVG},
       {"right_banner.svg", IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_SVG},
       {"right_banner_dark.svg", IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG},
-      {"glic_banner_top_right.svg",
-       IDR_SIGNIN_IMAGES_GLIC_BANNER_TOP_RIGHT_SVG},
-      {"glic_banner_bottom_left.svg",
-       IDR_SIGNIN_IMAGES_GLIC_BANNER_BOTTOM_LEFT_SVG},
-      {"glic_logo.svg", IDR_SIGNIN_IMAGES_GLIC_LOGO_SVG},
+#if BUILDFLAG(ENABLE_GLIC)
+      {"glic_banner_top_right.svg", IDR_GLIC_PROFILE_BANNER_TOP_RIGHT},
+      {"glic_banner_bottom_left.svg", IDR_GLIC_PROFILE_BANNER_BOTTOM_LEFT},
+      {"glic_logo.svg", IDR_GLIC_PROFILE_LOGO},
+#endif  // BUILDFLAG(ENABLE_GLIC)
       {"product_logo.svg", IDR_PRODUCT_LOGO_SVG},
   };
   html_source->AddResourcePaths(kResourcePaths);
