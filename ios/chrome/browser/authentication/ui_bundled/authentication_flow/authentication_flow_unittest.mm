@@ -182,7 +182,8 @@ class AuthenticationFlowTest : public PlatformTest {
                                           viewController:view_controller_mock_
                                                  browser:browser_.get()
                                skipBrowsingDataMigration:NO
-                              mergeBrowsingDataByDefault:NO])
+                              mergeBrowsingDataByDefault:NO
+                   browsingDataMigrationDisabledByPolicy:NO])
           .andDo(^(NSInvocation*) {
             managed_confirmation_dialog_shown_count_++;
             [authentication_flow_ didAcceptManagedConfirmation:YES];

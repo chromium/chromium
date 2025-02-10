@@ -12,6 +12,7 @@
 
 @interface ManagedProfileCreationMediator () {
   BOOL _canShowBrowsingDataMigration;
+  BOOL _browsingDataMigrationDisabledByPolicy;
 }
 @end
 
@@ -19,8 +20,10 @@
 
 - (instancetype)initWithIdentityManager:
                     (signin::IdentityManager*)identityManager
-              skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration
-             mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault {
+                skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration
+               mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault
+    browsingDataMigrationDisabledByPolicy:
+        (BOOL)browsingDataMigrationDisabledByPolicy {
   self = [super init];
   if (self) {
     // We can merge if either
@@ -32,6 +35,8 @@
         AreSeparateProfilesForManagedAccountsEnabled() &&
         !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
     _keepBrowsingDataSeparate = !mergeBrowsingDataByDefault;
+    _browsingDataMigrationDisabledByPolicy =
+        browsingDataMigrationDisabledByPolicy;
   }
   return self;
 }
@@ -47,6 +52,8 @@
   }
   _consumer = consumer;
   _consumer.canShowBrowsingDataMigration = _canShowBrowsingDataMigration;
+  _consumer.browsingDataMigrationDisabledByPolicy =
+      _browsingDataMigrationDisabledByPolicy;
   [_consumer setKeepBrowsingDataSeparate:self.keepBrowsingDataSeparate];
 }
 

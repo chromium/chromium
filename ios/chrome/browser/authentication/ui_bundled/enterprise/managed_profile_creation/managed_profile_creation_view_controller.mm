@@ -42,7 +42,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 @implementation ManagedProfileCreationViewController {
   NSString* _userEmail;
   NSString* _hostedDomain;
-  BOOL _canShowBrowsingDataMigration;
   BOOL _keepBrowsinDataSeparate;
 
   UITableView* _tableView;
@@ -50,7 +49,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
 }
 
-@synthesize canShowBrowsingDataMigration = _canShowBrowsingDataMigration;
+@synthesize canShowBrowsingDataMigration;
+@synthesize browsingDataMigrationDisabledByPolicy;
 
 - (instancetype)initWithUserEmail:(NSString*)userEmail
                      hostedDomain:(NSString*)hostedDomain {
@@ -77,16 +77,26 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
   self.titleText =
       l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_TITLE);
-  self.subtitleText =
-      !self.canShowBrowsingDataMigration
-          ? l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE)
-          : [NSString
-                stringWithFormat:
-                    @"%@\n\n%@",
-                    l10n_util::GetNSString(
-                        IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE),
-                    l10n_util::GetNSString(
-                        IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_DESCRIPTION)];
+  if (self.canShowBrowsingDataMigration) {
+    self.subtitleText = [NSString
+        stringWithFormat:
+            @"%@\n\n%@",
+            l10n_util::GetNSString(
+                IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE),
+            l10n_util::GetNSString(
+                IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_DESCRIPTION)];
+  } else if (self.browsingDataMigrationDisabledByPolicy) {
+    self.subtitleText = [NSString
+        stringWithFormat:
+            @"%@\n\n%@",
+            l10n_util::GetNSString(
+                IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE),
+            l10n_util::GetNSString(
+                IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_DISABLED_DESCRIPTION)];
+  } else {
+    self.subtitleText =
+        l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE);
+  }
 
   self.disclaimerText = l10n_util::GetNSStringF(
       IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_MANAGEMENT_DISCLAIMER,

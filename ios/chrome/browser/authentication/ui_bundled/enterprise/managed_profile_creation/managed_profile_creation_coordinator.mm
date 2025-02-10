@@ -29,6 +29,7 @@
   NSString* _hostedDomain;
   BOOL _skipBrowsingDataMigration;
   BOOL _mergeBrowsingDataByDefault;
+  BOOL _browsingDataMigrationDisabledByPolicy;
   ManagedProfileCreationViewController* _viewController;
   // Used to display `_viewController` initially and
   // `_browsingDataMigrationViewController` if the user tries to modify how
@@ -44,7 +45,9 @@
                               hostedDomain:(NSString*)hostedDomain
                                    browser:(Browser*)browser
                  skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration
-                mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault {
+                mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault
+     browsingDataMigrationDisabledByPolicy:
+         (BOOL)browsingDataMigrationDisabledByPolicy {
   // TODO(crbug.com/381853288): Add a mediator to listen to the identity
   // changes.
   DCHECK(viewController);
@@ -54,6 +57,8 @@
     _hostedDomain = hostedDomain;
     _skipBrowsingDataMigration = skipBrowsingDataMigration;
     _mergeBrowsingDataByDefault = mergeBrowsingDataByDefault;
+    _browsingDataMigrationDisabledByPolicy =
+        browsingDataMigrationDisabledByPolicy;
   }
   return self;
 }
@@ -72,9 +77,11 @@
       IdentityManagerFactory::GetForProfile(profile);
 
   _mediator = [[ManagedProfileCreationMediator alloc]
-         initWithIdentityManager:identityManager
-       skipBrowsingDataMigration:_skipBrowsingDataMigration
-      mergeBrowsingDataByDefault:_mergeBrowsingDataByDefault];
+                    initWithIdentityManager:identityManager
+                  skipBrowsingDataMigration:_skipBrowsingDataMigration
+                 mergeBrowsingDataByDefault:_mergeBrowsingDataByDefault
+      browsingDataMigrationDisabledByPolicy:
+          _browsingDataMigrationDisabledByPolicy];
   _mediator.consumer = _viewController;
 
   _navigationController = [[UINavigationController alloc]
