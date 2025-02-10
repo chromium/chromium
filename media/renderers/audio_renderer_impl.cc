@@ -44,14 +44,14 @@ namespace media {
 
 AudioRendererImpl::AudioRendererImpl(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-    AudioRendererSink* sink,
+    scoped_refptr<AudioRendererSink> sink,
     const CreateAudioDecodersCB& create_audio_decoders_cb,
     MediaLog* media_log,
     MediaPlayerLoggingID media_player_id,
     SpeechRecognitionClient* speech_recognition_client)
     : task_runner_(task_runner),
       expecting_config_changes_(false),
-      sink_(sink),
+      sink_(std::move(sink)),
       media_log_(media_log),
       player_id_(media_player_id),
       client_(nullptr),
@@ -430,11 +430,11 @@ void AudioRendererImpl::OnDeviceInfoReceived(
     MEDIA_LOG(ERROR, media_log_)
         << "Output device error, falling back to null sink. device_status="
         << output_device_info.device_status();
-    sink_ = new NullAudioSink(task_runner_);
+    sink_ = base::MakeRefCounted<NullAudioSink>(task_runner_);
     output_device_info = sink_->GetOutputDeviceInfo();
   } else if (base::FeatureList::IsEnabled(kSuspendMutedAudio)) {
     // If playback is muted, we use a fake sink for output until it unmutes.
-    null_sink_ = new NullAudioSink(task_runner_);
+    null_sink_ = base::MakeRefCounted<NullAudioSink>(task_runner_);
   }
 
   current_decoder_config_ = stream->audio_decoder_config();

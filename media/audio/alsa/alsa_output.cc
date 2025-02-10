@@ -48,6 +48,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"

@@ -92,7 +92,7 @@ class MEDIA_EXPORT AudioInputDevice : public AudioCapturerSource,
   void SetOutputDeviceForAec(const std::string& output_device_id) override;
 
  private:
-  friend class base::RefCountedThreadSafe<AudioInputDevice>;
+  ~AudioInputDevice() override;
 
   // Our audio thread callback class.  See source file for details.
   class AudioThreadCallback;
@@ -114,8 +114,6 @@ class MEDIA_EXPORT AudioInputDevice : public AudioCapturerSource,
     kErrorDuringCapture = 2,
     kMaxValue = kErrorDuringCapture
   };
-
-  ~AudioInputDevice() override;
 
   // AudioInputIPCDelegate implementation.
   void OnStreamCreated(base::UnsafeSharedMemoryRegion shared_memory_region,

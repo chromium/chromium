@@ -5,6 +5,7 @@
 #include "media/test/fake_encrypted_media.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/base/cdm_key_information.h"
 #include "media/cdm/aes_decryptor.h"
 
@@ -18,7 +19,7 @@ Decryptor* FakeEncryptedMedia::TestCdmContext::GetDecryptor() {
 }
 
 FakeEncryptedMedia::FakeEncryptedMedia(AppBase* app)
-    : decryptor_(new AesDecryptor(
+    : decryptor_(base::MakeRefCounted<AesDecryptor>(
           base::BindRepeating(&FakeEncryptedMedia::OnSessionMessage,
                               base::Unretained(this)),
           base::BindRepeating(&FakeEncryptedMedia::OnSessionClosed,

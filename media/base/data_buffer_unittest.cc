@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"

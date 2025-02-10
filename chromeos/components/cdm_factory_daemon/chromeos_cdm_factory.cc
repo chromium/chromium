@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
@@ -389,12 +390,9 @@ void ChromeOsCdmFactory::CreateCdm(
   // Create the adapter that proxies calls between
   // media::ContentDecryptionModule and
   // chromeos::cdm::mojom::ContentDecryptionModule.
-  scoped_refptr<ContentDecryptionModuleAdapter> cdm =
-      base::WrapRefCounted<ContentDecryptionModuleAdapter>(
-          new ContentDecryptionModuleAdapter(
-              std::move(storage), std::move(cros_cdm), session_message_cb,
-              session_closed_cb, session_keys_change_cb,
-              session_expiration_update_cb));
+  auto cdm = base::MakeRefCounted<ContentDecryptionModuleAdapter>(
+      std::move(storage), std::move(cros_cdm), session_message_cb,
+      session_closed_cb, session_keys_change_cb, session_expiration_update_cb);
 
   // Create the OutputProtection interface to pass to the CDM.
   mojo::PendingRemote<cdm::mojom::OutputProtection> output_protection_remote;

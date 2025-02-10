@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -26,6 +27,8 @@ namespace media {
 class FakeAudioWorker::Worker
     : public base::RefCountedThreadSafe<FakeAudioWorker::Worker> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   Worker(const scoped_refptr<base::SequencedTaskRunner>& worker_task_runner,
          const AudioParameters& params);
 
@@ -69,7 +72,7 @@ class FakeAudioWorker::Worker
 FakeAudioWorker::FakeAudioWorker(
     const scoped_refptr<base::SequencedTaskRunner>& worker_task_runner,
     const AudioParameters& params)
-    : worker_(new Worker(worker_task_runner, params)) {}
+    : worker_(base::MakeRefCounted<Worker>(worker_task_runner, params)) {}
 
 FakeAudioWorker::~FakeAudioWorker() {
   DCHECK(worker_->IsStopped());

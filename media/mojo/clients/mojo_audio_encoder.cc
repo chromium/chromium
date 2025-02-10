@@ -45,7 +45,7 @@ bool MojoAudioEncoder::IsSupported(AudioCodec codec) {
 MojoAudioEncoder::MojoAudioEncoder(
     mojo::PendingRemote<mojom::AudioEncoder> remote_encoder)
     : pending_remote_encoder_(std::move(remote_encoder)),
-      buffer_pool_(new AudioBufferMemoryPool()),
+      buffer_pool_(base::MakeRefCounted<AudioBufferMemoryPool>()),
       runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   weak_this_ = weak_factory_.GetWeakPtr();
 }

@@ -12,6 +12,7 @@
 #include <algorithm>
 
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "media/base/decoder_buffer.h"
@@ -136,12 +137,11 @@ class ContentDecryptionModuleAdapterTest : public testing::Test {
     mojo::AssociatedRemote<cdm::mojom::ContentDecryptionModule> daemon_cdm_mojo;
     mock_daemon_cdm_ = std::make_unique<MockDaemonCdm>(
         daemon_cdm_mojo.BindNewEndpointAndPassDedicatedReceiver());
-    cdm_adapter_ = base::WrapRefCounted<ContentDecryptionModuleAdapter>(
-        new ContentDecryptionModuleAdapter(
-            nullptr /* storage */, std::move(daemon_cdm_mojo),
-            mock_session_message_cb_.Get(), mock_session_closed_cb_.Get(),
-            mock_session_keys_change_cb_.Get(),
-            mock_session_expiration_update_cb_.Get()));
+    cdm_adapter_ = base::MakeRefCounted<ContentDecryptionModuleAdapter>(
+        nullptr /* storage */, std::move(daemon_cdm_mojo),
+        mock_session_message_cb_.Get(), mock_session_closed_cb_.Get(),
+        mock_session_keys_change_cb_.Get(),
+        mock_session_expiration_update_cb_.Get());
   }
 
   ~ContentDecryptionModuleAdapterTest() override {

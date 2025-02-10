@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -186,7 +187,7 @@ class VideoRendererImplTest : public testing::Test {
       }
     }
 
-    scoped_refptr<DecoderBuffer> decoder_buffer(new DecoderBuffer(0));
+    auto decoder_buffer = base::MakeRefCounted<DecoderBuffer>(0);
 
     // Set |decoder_buffer| timestamp such that it won't match any of the
     // times provided to QueueFrames(). Otherwise the default timestamp of 0 may

@@ -444,7 +444,7 @@ class WebMediaPlayerImplTest
                          media::mojom::MediaStreamType::kNone);
 
     audio_sink_ =
-        base::WrapRefCounted(new NiceMock<media::MockAudioRendererSink>());
+        base::MakeRefCounted<NiceMock<media::MockAudioRendererSink>>();
 
     url_index_ = std::make_unique<UrlIndex>(&mock_resource_fetch_context_,
                                             media_thread_.task_runner());

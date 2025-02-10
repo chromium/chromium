@@ -770,7 +770,7 @@ TEST_F(AudioRendererMixerManagerTest, MixerParamsLatencyPlayback) {
 // latency when the device buffer size exceeds 20 ms.
 TEST_F(AudioRendererMixerManagerTest,
        MixerParamsLatencyPlaybackLargeDeviceBufferSize) {
-  mock_sink_ = new media::MockAudioRendererSink(
+  mock_sink_ = base::MakeRefCounted<media::MockAudioRendererSink>(
       std::string(), media::OUTPUT_DEVICE_STATUS_OK,
       AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
                       media::ChannelLayoutConfig::FromLayout<kChannelLayout>(),
@@ -810,7 +810,7 @@ TEST_F(AudioRendererMixerManagerTest,
 // Verify output bufer size of the mixer is correctly adjusted for Playback
 // latency when output audio is fake.
 TEST_F(AudioRendererMixerManagerTest, MixerParamsLatencyPlaybackFakeAudio) {
-  mock_sink_ = new media::MockAudioRendererSink(
+  mock_sink_ = base::MakeRefCounted<media::MockAudioRendererSink>(
       std::string(), media::OUTPUT_DEVICE_STATUS_OK,
       AudioParameters(AudioParameters::AUDIO_FAKE,
                       media::ChannelLayoutConfig::FromLayout<kChannelLayout>(),
@@ -892,7 +892,7 @@ TEST_F(AudioRendererMixerManagerTest, MixerParamsLatencyRtc) {
 // Verify output bufer size of the mixer is correctly adjusted for RTC latency
 // when output audio is fake.
 TEST_F(AudioRendererMixerManagerTest, MixerParamsLatencyRtcFakeAudio) {
-  mock_sink_ = new media::MockAudioRendererSink(
+  mock_sink_ = base::MakeRefCounted<media::MockAudioRendererSink>(
       std::string(), media::OUTPUT_DEVICE_STATUS_OK,
       AudioParameters(AudioParameters::AUDIO_FAKE,
                       media::ChannelLayoutConfig::FromLayout<kChannelLayout>(),
@@ -956,7 +956,7 @@ TEST_F(AudioRendererMixerManagerTest, MixerParamsLatencyInteractive) {
 // Verify output parameters are the same as input properties for bitstream
 // formats.
 TEST_F(AudioRendererMixerManagerTest, MixerParamsBitstreamFormat) {
-  mock_sink_ = new media::MockAudioRendererSink(
+  mock_sink_ = base::MakeRefCounted<media::MockAudioRendererSink>(
       std::string(), media::OUTPUT_DEVICE_STATUS_OK,
       AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
                       media::ChannelLayoutConfig::FromLayout<kChannelLayout>(),

@@ -23,6 +23,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
@@ -1257,8 +1258,8 @@ bool TexImageHelper(VideoFrame* frame,
 
   size_t output_row_bytes =
       frame->visible_rect().width() * output_bytes_per_pixel;
-  *temp_buffer =
-      new DataBuffer(output_row_bytes * frame->visible_rect().height());
+  *temp_buffer = base::MakeRefCounted<DataBuffer>(
+      output_row_bytes * frame->visible_rect().height());
   FlipAndConvertY16(frame, (*temp_buffer)->writable_data().data(), format, type,
                     flip_y, output_row_bytes);
   return true;

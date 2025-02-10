@@ -7,14 +7,16 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "media/base/audio_buffer.h"
+
 #include <stdint.h>
 
 #include <limits>
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/gtest_util.h"
 #include "base/time/time.h"
-#include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -776,7 +778,7 @@ TEST(AudioBufferTest, TrimRangeInterleaved) {
 }
 
 TEST(AudioBufferTest, AudioBufferMemoryPool) {
-  scoped_refptr<AudioBufferMemoryPool> pool(new AudioBufferMemoryPool());
+  auto pool = base::MakeRefCounted<AudioBufferMemoryPool>();
   EXPECT_EQ(0u, pool->GetPoolSizeForTesting());
 
   const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_MONO;
@@ -828,8 +830,7 @@ TEST(AudioBufferTest, AudioBufferMemoryPoolAlignment) {
   const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_6_1;
   const size_t kChannelCount = ChannelLayoutToChannelCount(kChannelLayout);
 
-  scoped_refptr<AudioBufferMemoryPool> pool(
-      new AudioBufferMemoryPool(kAlignment));
+  auto pool = base::MakeRefCounted<AudioBufferMemoryPool>(kAlignment);
   scoped_refptr<AudioBuffer> buffer =
       AudioBuffer::CreateBuffer(kSampleFormatPlanarU8, kChannelLayout,
                                 kChannelCount, kSampleRate, kSampleRate, pool);
@@ -864,7 +865,7 @@ TEST(AudioBufferTest, AudioBufferAlignmentUnpooled) {
 
 // Planar allocations use a different path, so make sure pool is used.
 TEST(AudioBufferTest, AudioBufferMemoryPoolPlanar) {
-  scoped_refptr<AudioBufferMemoryPool> pool(new AudioBufferMemoryPool());
+  auto pool = base::MakeRefCounted<AudioBufferMemoryPool>();
   EXPECT_EQ(0u, pool->GetPoolSizeForTesting());
 
   const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_MONO;

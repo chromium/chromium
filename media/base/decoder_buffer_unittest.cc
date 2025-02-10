@@ -16,6 +16,7 @@
 
 #include "base/containers/heap_array.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -26,7 +27,7 @@
 namespace media {
 
 TEST(DecoderBufferTest, Constructors) {
-  scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(0));
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(0);
   EXPECT_FALSE(buffer->data());
   EXPECT_EQ(0u, buffer->size());
   EXPECT_TRUE(buffer->empty());
@@ -35,7 +36,7 @@ TEST(DecoderBufferTest, Constructors) {
   EXPECT_FALSE(buffer->is_key_frame());
 
   const size_t kTestSize = 10;
-  scoped_refptr<DecoderBuffer> buffer3(new DecoderBuffer(kTestSize));
+  auto buffer3 = base::MakeRefCounted<DecoderBuffer>(kTestSize);
   ASSERT_TRUE(buffer3.get());
   EXPECT_EQ(kTestSize, buffer3->size());
   EXPECT_FALSE(buffer3->empty());
@@ -210,7 +211,7 @@ TEST(DecoderBufferTest, ReadingWriting) {
   const uint8_t kData[] = "hello";
   const size_t kDataSize = std::size(kData);
 
-  scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(kDataSize));
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(kDataSize);
   ASSERT_TRUE(buffer.get());
 
   uint8_t* data = buffer->writable_data();
@@ -224,7 +225,7 @@ TEST(DecoderBufferTest, ReadingWriting) {
 }
 
 TEST(DecoderBufferTest, DecryptConfig) {
-  scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(0));
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(0);
   EXPECT_FALSE(buffer->decrypt_config());
 
   const char kKeyId[] = "key id";
@@ -244,7 +245,7 @@ TEST(DecoderBufferTest, DecryptConfig) {
 }
 
 TEST(DecoderBufferTest, IsKeyFrame) {
-  scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(0));
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(0);
   EXPECT_FALSE(buffer->is_key_frame());
 
   buffer->set_is_key_frame(false);
@@ -255,7 +256,7 @@ TEST(DecoderBufferTest, IsKeyFrame) {
 }
 
 TEST(DecoderBufferTest, SideData) {
-  scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(0));
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(0);
   EXPECT_FALSE(buffer->side_data());
 
   constexpr uint64_t kSecureHandle = 42;
@@ -285,7 +286,7 @@ TEST(DecoderBufferTest, SideData) {
 }
 
 TEST(DecoderBufferTest, IsEncrypted) {
-  scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(0));
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(0);
   EXPECT_FALSE(buffer->is_encrypted());
 
   const char kKeyId[] = "key id";

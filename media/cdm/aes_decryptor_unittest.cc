@@ -21,6 +21,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -260,7 +261,7 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
   void SetUp() override {
     if (GetParam() == TestType::kAesDecryptor) {
       OnCdmCreated(
-          new AesDecryptor(
+          base::MakeRefCounted<AesDecryptor>(
               base::BindRepeating(&MockCdmClient::OnSessionMessage,
                                   base::Unretained(&cdm_client_)),
               base::BindRepeating(&MockCdmClient::OnSessionClosed,

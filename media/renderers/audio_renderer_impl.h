@@ -76,7 +76,7 @@ class MEDIA_EXPORT AudioRendererImpl
   // |decoders| contains the AudioDecoders to use when initializing.
   AudioRendererImpl(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-      AudioRendererSink* sink,
+      scoped_refptr<AudioRendererSink> sink,
       const CreateAudioDecodersCB& create_audio_decoders_cb,
       MediaLog* media_log,
       MediaPlayerLoggingID media_player_id,

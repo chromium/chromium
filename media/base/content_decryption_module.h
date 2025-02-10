@@ -110,6 +110,8 @@ class MEDIA_EXPORT ContentDecryptionModule
     : public base::RefCountedThreadSafe<ContentDecryptionModule,
                                         ContentDecryptionModuleTraits> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   ContentDecryptionModule(const ContentDecryptionModule&) = delete;
   ContentDecryptionModule& operator=(const ContentDecryptionModule&) = delete;
 
