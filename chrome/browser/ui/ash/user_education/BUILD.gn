@@ -15,7 +15,6 @@ static_library("user_education") {
   deps = [
     "//ash",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
