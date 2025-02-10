@@ -214,6 +214,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
                                          const std::u16string& text,
                                          base::RepeatingClosure action);
 
+  void AddBottomMargin();
+
   gfx::ImageSkia ColoredImageForMenu(const gfx::VectorIcon& icon,
                                      ui::ColorId color) const;
   // Should be called inside each button/link action.

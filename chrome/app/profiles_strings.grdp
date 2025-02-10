@@ -139,6 +139,18 @@
   <message name="IDS_PROFILE_MENU_PROFILE_MANAGED_HEADER" desc="Disclaimer indicating that the profile is managed">
     This profile is managed
   </message>
+  <message name="IDS_GUEST_PROFILE_MENU_CLOSE_X_WINDOWS_BUTTON" desc="The text of the button offering to close all guest windows. The number in ICU syntax represents the number of open guest windows, but it is not used in the English text and can be used to choose singular/plural in translation to other languages, if needed.[ICU Syntax]">
+    {0, plural,
+      =1 {Close Guest}
+      other {Close Guest (# windows)}
+    }
+  </message>
+  <message name="IDS_INCOGNITO_PROFILE_MENU_CLOSE_X_WINDOWS_BUTTON" desc="The text of the button offering to close all Incognito windows.">
+    {0, plural,
+      =1 {Close Incognito}
+      other {Close Incognito (# windows)}
+    }
+  </message>
   <if expr="not use_titlecase">
     <message name="IDS_PROFILES_PROFILE_MANAGE_ACCOUNTS_BUTTON" desc="Button in the avatar menu bubble view used to manage accounts for a profile.">
       Your accounts
