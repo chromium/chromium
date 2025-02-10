@@ -1422,11 +1422,11 @@ public class RootUiCoordinator
             initializeAdaptiveToolbarButton(trackerSupplier);
             mButtonDataProviders = new ArrayList<>();
 
-            if (mAdaptiveToolbarButtonController != null) {
-                mButtonDataProviders.add(mAdaptiveToolbarButtonController);
-            }
             if (mIdentityDiscController != null) {
                 mButtonDataProviders.add(mIdentityDiscController);
+            }
+            if (mAdaptiveToolbarButtonController != null) {
+                mButtonDataProviders.add(mAdaptiveToolbarButtonController);
             }
             var omniboxActionDelegate =
                     new OmniboxActionDelegateImpl(
