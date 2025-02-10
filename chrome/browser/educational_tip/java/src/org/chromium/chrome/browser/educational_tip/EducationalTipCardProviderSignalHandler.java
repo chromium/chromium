@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
@@ -73,7 +74,9 @@ public class EducationalTipCardProviderSignalHandler {
     private static float shouldShowNonRoleManagerDefaultBrowserPromo(
             EducationTipModuleActionDelegate actionDelegate) {
         return DefaultBrowserPromoUtils.getInstance()
-                        .shouldShowNonRoleManagerPromo(actionDelegate.getContext())
+                                .shouldShowNonRoleManagerPromo(actionDelegate.getContext())
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
                 ? 1.0f
                 : 0.0f;
     }
