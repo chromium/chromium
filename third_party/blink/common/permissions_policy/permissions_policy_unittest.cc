@@ -3490,12 +3490,33 @@ TEST_F(PermissionsPolicyTest, GetPermissionsPolicyFeatureListForUnload) {
   ASSERT_NEAR(total_count, 99 * 100 / 2, 71);
 }
 
-// Test that parameter parsing works.
-TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedHosts) {
+// Tests for the handling unload deprecation parameters.
+class DeprecateUnloadTest : public PermissionsPolicyTest {
+ protected:
+  const url::Origin http_origin1_ =
+      url::Origin::Create(GURL("http://testing1/"));
+  const url::Origin https_origin1_ =
+      url::Origin::Create(GURL("https://testing1/"));
+  const url::Origin http_origin2_ =
+      url::Origin::Create(GURL("http://testing2/"));
+  const url::Origin https_origin2_ =
+      url::Origin::Create(GURL("https://testing2/"));
+  const url::Origin http_origin3_ =
+      url::Origin::Create(GURL("http://testing3/"));
+  const url::Origin https_origin3_ =
+      url::Origin::Create(GURL("https://testing3/"));
+};
+
+// The parameter should default to "" and be parsed correctly.
+TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedHosts_Empty) {
+  // Make sure the default is the empty string.
+  ASSERT_EQ(features::kDeprecateUnloadAllowlist.Get(), "");
   EXPECT_EQ(std::unordered_set<std::string>({}),
             UnloadDeprecationAllowedHosts());
+}
 
-  // Now set the parameter and try again.
+// A simple list of hosts should be parsed correctly.
+TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedHosts_Simple) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{blink::features::kDeprecateUnloadByAllowList,
@@ -3506,12 +3527,8 @@ TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedHosts) {
             UnloadDeprecationAllowedHosts());
 }
 
-// Test that parameter parsing handles empty hosts.
-TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedHostsEmpty) {
-  EXPECT_EQ(std::unordered_set<std::string>({}),
-            UnloadDeprecationAllowedHosts());
-
-  // Now set the parameter and try again.
+// A messy list of hosts should be parsed correctly.
+TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedHosts_Messy) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{blink::features::kDeprecateUnloadByAllowList,
@@ -3523,53 +3540,53 @@ TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedHostsEmpty) {
             UnloadDeprecationAllowedHosts());
 }
 
-// Test that the UnloadDeprecationAllowedForHost works correctly with
-// an empty and a non-empty allowlist.
-TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedForHostHostLists) {
-  const url::Origin http_origin1 =
-      url::Origin::Create(GURL("http://testing1/"));
-  const url::Origin https_origin1 =
-      url::Origin::Create(GURL("https://testing1/"));
-  const url::Origin http_origin2 =
-      url::Origin::Create(GURL("http://testing2/"));
-  const url::Origin https_origin2 =
-      url::Origin::Create(GURL("https://testing2/"));
-  const url::Origin http_origin3 =
-      url::Origin::Create(GURL("http://testing3/"));
-  const url::Origin https_origin3 =
-      url::Origin::Create(GURL("https://testing3/"));
-
-  {
-    const auto hosts = UnloadDeprecationAllowedHosts();
-    // With no allowlist, every origin is allowed.
-    EXPECT_TRUE(UnloadDeprecationAllowedForHost(http_origin1.host(), hosts));
-    EXPECT_TRUE(UnloadDeprecationAllowedForHost(https_origin1.host(), hosts));
-    EXPECT_TRUE(UnloadDeprecationAllowedForHost(http_origin2.host(), hosts));
-    EXPECT_TRUE(UnloadDeprecationAllowedForHost(https_origin2.host(), hosts));
-    EXPECT_TRUE(UnloadDeprecationAllowedForHost(http_origin3.host(), hosts));
-    EXPECT_TRUE(UnloadDeprecationAllowedForHost(https_origin3.host(), hosts));
-  }
-
-  // Now set an allowlist and check that only the allowed domains see
-  // deprecation.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{blink::features::kDeprecateUnloadByAllowList,
-          {{features::kDeprecateUnloadAllowlist.name, "testing1,testing2"}}}},
-        /*disabled_features=*/{});
-
-    const auto hosts = UnloadDeprecationAllowedHosts();
-    EXPECT_TRUE(UnloadDeprecationAllowedForHost(http_origin1.host(), hosts));
-    EXPECT_TRUE(UnloadDeprecationAllowedForHost(https_origin1.host(), hosts));
-    EXPECT_TRUE(UnloadDeprecationAllowedForHost(http_origin2.host(), hosts));
-    EXPECT_TRUE(UnloadDeprecationAllowedForHost(https_origin2.host(), hosts));
-    EXPECT_FALSE(UnloadDeprecationAllowedForHost(http_origin3.host(), hosts));
-    EXPECT_FALSE(UnloadDeprecationAllowedForHost(https_origin3.host(), hosts));
-  }
+// Test that UnloadDeprecationAllowedForHost works correctly with an empty
+// allowlist.
+TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForHost_EmptyAllowList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kDeprecateUnloadByAllowList,
+        {{features::kDeprecateUnloadAllowlist.name, ""}}}},
+      /*disabled_features=*/{});
+  const auto hosts = UnloadDeprecationAllowedHosts();
+  // With no allowlist, every origin is allowed.
+  EXPECT_TRUE(UnloadDeprecationAllowedForHost(http_origin1_.host(), hosts));
+  EXPECT_TRUE(UnloadDeprecationAllowedForHost(https_origin1_.host(), hosts));
+  EXPECT_TRUE(UnloadDeprecationAllowedForHost(http_origin2_.host(), hosts));
+  EXPECT_TRUE(UnloadDeprecationAllowedForHost(https_origin2_.host(), hosts));
+  EXPECT_TRUE(UnloadDeprecationAllowedForHost(http_origin3_.host(), hosts));
+  EXPECT_TRUE(UnloadDeprecationAllowedForHost(https_origin3_.host(), hosts));
 }
 
-TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedForOrigin_NonHttp) {
+// Test that the UnloadDeprecationAllowedForHost works correctly with
+// an non-empty allowlist.
+TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForHost_NonEmptyAllowList) {
+  // Now set an allowlist and check that only the allowed domains see
+  // deprecation.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kDeprecateUnloadByAllowList,
+        {{features::kDeprecateUnloadAllowlist.name, "testing1,testing2"}}}},
+      /*disabled_features=*/{});
+
+  const auto hosts = UnloadDeprecationAllowedHosts();
+  EXPECT_TRUE(UnloadDeprecationAllowedForHost(http_origin1_.host(), hosts));
+  EXPECT_TRUE(UnloadDeprecationAllowedForHost(https_origin1_.host(), hosts));
+  EXPECT_TRUE(UnloadDeprecationAllowedForHost(http_origin2_.host(), hosts));
+  EXPECT_TRUE(UnloadDeprecationAllowedForHost(https_origin2_.host(), hosts));
+  EXPECT_FALSE(UnloadDeprecationAllowedForHost(http_origin3_.host(), hosts));
+  EXPECT_FALSE(UnloadDeprecationAllowedForHost(https_origin3_.host(), hosts));
+}
+
+// Non-http(s) origins should never be included in the deprecation.
+TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForOrigin_NonHttp) {
+  // Set to 100% deprecation.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kDeprecateUnload,
+        {{features::kDeprecateUnloadPercent.name, "100"},
+         {features::kDeprecateUnloadBucket.name, "0"}}}},
+      /*disabled_features=*/{});
   const url::Origin chrome_origin =
       url::Origin::Create(GURL("chrome://settings"));
   EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(chrome_origin));
@@ -3577,51 +3594,72 @@ TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedForOrigin_NonHttp) {
       UnloadDeprecationAllowedForOrigin(chrome_origin.DeriveNewOpaqueOrigin()));
 }
 
-TEST_F(PermissionsPolicyTest,
-       UnloadDeprecationAllowedForOrigin_GradualRollout) {
-  const url::Origin testing_origin =
-      url::Origin::Create(GURL("http://testing"));
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{blink::features::kDeprecateUnload,
-          {{features::kDeprecateUnloadPercent.name, "0"},
-           {features::kDeprecateUnloadBucket.name, "0"}}}},
-        /*disabled_features=*/{});
-    EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(testing_origin));
-    EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(
-        testing_origin.DeriveNewOpaqueOrigin()));
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{blink::features::kDeprecateUnload,
-          {{features::kDeprecateUnloadPercent.name, "100"},
-           {features::kDeprecateUnloadBucket.name, "0"}}}},
-        /*disabled_features=*/{});
-    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(testing_origin));
-    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(
-        testing_origin.DeriveNewOpaqueOrigin()));
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{blink::features::kDeprecateUnload,
-          {{features::kDeprecateUnloadPercent.name, "100"},
-           {features::kDeprecateUnloadBucket.name, "0"}}},
-         {blink::features::kDeprecateUnloadByAllowList,
-          {{features::kDeprecateUnloadAllowlist.name, "testing"}}}},
-        /*disabled_features=*/{});
-    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(testing_origin));
-    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(
-        testing_origin.DeriveNewOpaqueOrigin()));
-    const url::Origin disallowed_testing_origin =
-        url::Origin::Create(GURL("http://disallowed-testing"));
-    EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(disallowed_testing_origin));
-  }
+// When the rollout is at 0%, no host should be allowed.
+TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForOrigin_0Percent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kDeprecateUnload,
+        {{features::kDeprecateUnloadPercent.name, "0"},
+         {features::kDeprecateUnloadBucket.name, "0"}}}},
+      /*disabled_features=*/{});
+  EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(http_origin1_));
+  EXPECT_FALSE(
+      UnloadDeprecationAllowedForOrigin(http_origin1_.DeriveNewOpaqueOrigin()));
 }
 
-TEST_F(PermissionsPolicyTest, Headerless) {
+// When the rollout is at 100% all hosts should be allowed.
+TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForOrigin_100Percent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kDeprecateUnload,
+        {{features::kDeprecateUnloadPercent.name, "100"},
+         {features::kDeprecateUnloadBucket.name, "0"}}}},
+      /*disabled_features=*/{});
+  EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin1_));
+  EXPECT_TRUE(
+      UnloadDeprecationAllowedForOrigin(http_origin1_.DeriveNewOpaqueOrigin()));
+}
+
+// When the rollout is at 0% with an allowlist, no host should be allowed,
+// including the one on the list.
+TEST_F(DeprecateUnloadTest,
+       UnloadDeprecationAllowedForOrigin_0PercentAndAllowList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kDeprecateUnload,
+        {{features::kDeprecateUnloadPercent.name, "0"},
+         {features::kDeprecateUnloadBucket.name, "0"}}},
+       {blink::features::kDeprecateUnloadByAllowList,
+        {{features::kDeprecateUnloadAllowlist.name, http_origin1_.host()}}}},
+      /*disabled_features=*/{});
+  EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(http_origin1_));
+  EXPECT_FALSE(
+      UnloadDeprecationAllowedForOrigin(http_origin1_.DeriveNewOpaqueOrigin()));
+  // http_origin2 is not on the allow list.
+  EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(http_origin2_));
+}
+
+// When the rollout is at 100% with an allowlist, the hosts on the list should
+// be allowed.
+TEST_F(DeprecateUnloadTest,
+       UnloadDeprecationAllowedForOrigin_100PercentAndAllowList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kDeprecateUnload,
+        {{features::kDeprecateUnloadPercent.name, "100"},
+         {features::kDeprecateUnloadBucket.name, "0"}}},
+       {blink::features::kDeprecateUnloadByAllowList,
+        {{features::kDeprecateUnloadAllowlist.name, http_origin1_.host()}}}},
+      /*disabled_features=*/{});
+  EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin1_));
+  EXPECT_TRUE(
+      UnloadDeprecationAllowedForOrigin(http_origin1_.DeriveNewOpaqueOrigin()));
+  // http_origin2 is not on the allow list.
+  EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(http_origin2_));
+}
+
+// Test that we recognize the known types of headerless documents.
+TEST_F(DeprecateUnloadTest, Headerless) {
   EXPECT_FALSE(
       PermissionsPolicy::IsHeaderlessUrl(GURL("http://www.test.com/")));
   EXPECT_FALSE(
