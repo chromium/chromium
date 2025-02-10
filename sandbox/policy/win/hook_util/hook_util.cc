@@ -70,7 +70,7 @@ void* GetIATFunctionPtr(IMAGE_THUNK_DATA* iat_thunk) {
   // or IMAGE_THUNK_DATA64 for correct pointer size.
   union FunctionThunk {
     IMAGE_THUNK_DATA thunk;
-    TEMP_RAW_PTR_EXCLUSION void* pointer;
+    void* pointer;
   } iat_function;
 
   iat_function.thunk = *iat_thunk;
@@ -82,9 +82,9 @@ struct IATHookFunctionInfo {
   bool finished_operation;
   const char* imported_from_module;
   const char* function_name;
-  TEMP_RAW_PTR_EXCLUSION void* new_function;
-  TEMP_RAW_PTR_EXCLUSION void** old_function;
-  TEMP_RAW_PTR_EXCLUSION IMAGE_THUNK_DATA** iat_thunk;
+  void* new_function;
+  void** old_function;
+  IMAGE_THUNK_DATA** iat_thunk;
   DWORD return_code;
 };
 

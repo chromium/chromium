@@ -22,7 +22,7 @@ manta::proto::Request CreateTestMantaRequest(std::string_view query,
                                              int num_outputs);
 
 std::unique_ptr<manta::proto::Response> CreateFakeMantaResponse(
-    size_t num_candidates,
+    const std::vector<std::string>& queries_returned_from_server,
     const gfx::Size& image_dimensions);
 
 testing::Matcher<ash::LobsterImageCandidate> EqLobsterImageCandidate(

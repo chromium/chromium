@@ -224,7 +224,7 @@ vars = {
   # luci-go CIPD package version.
   # Make sure the revision is uploaded by infra-packagers builder.
   # https://ci.chromium.org/p/infra-internal/g/infra-packagers/console
-  'luci_go': 'git_revision:e316a0eebca382eaea58408b4bc9af0066064a34',
+  'luci_go': 'git_revision:19861b3a5b37b383e7e9555e11aa43f34d71bd48',
 
   # This can be overridden, e.g. with custom_vars, to build clang from HEAD
   # instead of downloading the prebuilt pinned revision.
@@ -253,7 +253,7 @@ vars = {
   'screen_ai_windows_386': 'version:127.15',
 
   # siso CIPD package version.
-  'siso_version': 'git_revision:55313eb59667cbb02e2c1a32956b68183fd35e0e',
+  'siso_version': 'git_revision:b4b90dd1a09f927c2900e8e967c65875d0473c95',
 
   # download libaom test data
   'download_libaom_testdata': False,
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'e1802e74d5a4494e292937b4ec8aee2d765c03f5',
+    '90cd425b86ef2a0ef0e2afcae76904f6421cea0f',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1607,7 +1607,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'dydsGP-Aju9Ozn8lE13wS9zId60qwhFdPCvMUHPFz6AC',
+          'version': 'RJxrHRsqOsFaNxFmZrADTZgM8ww6GP0Jrw9EiPozd1UC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -1943,7 +1943,7 @@ deps = {
 
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '32e86cc3b13beb2f6c2d32c72bc5e7ec772db202',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '14051a83465d5d983bc1ad5f05b651eb118b10f9',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
@@ -2866,7 +2866,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/windows-amd64',
-          'version': 'Y2CXZ8_HyluSS4BRUQXF9-V3QrJDHoEkSzwfIdGEUGMC',
+          'version': 'C13nP-0qMu6SzC6Sq-P5kaZJ6p4yEykqSj3TnK39NiUC',
         },
       ],
       'dep_type': 'cipd',
@@ -2877,7 +2877,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/mac-amd64',
-          'version': 'FbgsExsn0P2Jp9noFNwBm05l33pK1tNe3NG9-dKbBMIC',
+          'version': 'ZsOrg7xgPaaYo156AG7K_MFTx9f-wDEH0q6BFQxUiL0C',
         },
       ],
       'dep_type': 'cipd',
@@ -4538,7 +4538,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        'a4315a68bf1a854067faae5d21d9f9398bc78e38',
+        '96749c54bf0b035351eab088e169d4fdad568331',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

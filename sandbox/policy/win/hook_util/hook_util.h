@@ -7,25 +7,6 @@
 
 #include <windows.h>
 
-// TODO(crbug.com/394519481) remove once a clang roll happens.
-// Short term fix to allow raw pointers until RawPtrManualPathsToIgnore updates.
-// Cannot use raw_ptr_exclusion.h as chrome_elf cannot use //base.
-#if !defined(TEMP_RAW_PTR_EXCLUSION)
-
-#if defined(__has_attribute)
-#define SANDBOX_IAT_HOOK_HAS_ATTRIBUTE(x) __has_attribute(x)
-#else
-#define SANDBOX_IAT_HOOK_HAS_ATTRIBUTE(x) 0
-#endif
-
-#if SANDBOX_IAT_HOOK_HAS_ATTRIBUTE(annotate)
-#define TEMP_RAW_PTR_EXCLUSION __attribute__((annotate("raw_ptr_exclusion")))
-#else
-#define TEMP_RAW_PTR_EXCLUSION
-#endif
-
-#endif  // !defined(RAW_PTR_EXCLUSION)
-
 namespace sandbox::policy {
 
 //------------------------------------------------------------------------------
@@ -63,9 +44,9 @@ class IATHook {
   DWORD Unhook();
 
  private:
-  TEMP_RAW_PTR_EXCLUSION void* intercept_function_;
-  TEMP_RAW_PTR_EXCLUSION void* original_function_;
-  TEMP_RAW_PTR_EXCLUSION IMAGE_THUNK_DATA* iat_thunk_;
+  void* intercept_function_;
+  void* original_function_;
+  IMAGE_THUNK_DATA* iat_thunk_;
 };
 
 }  // namespace sandbox::policy

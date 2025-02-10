@@ -47,15 +47,6 @@ struct CORE_EXPORT InlineItemsData : public GarbageCollected<InlineItemsData> {
     CHECK_LT(static_cast<size_t>(index), items.size());
     return static_cast<unsigned>(index);
   }
-  HeapVector<InlineItem>::iterator ToItemIterator(const InlineItem& item) {
-    // SAFETY: ToItemIndex() ensures the index is valid.
-    return UNSAFE_BUFFERS(items.begin() + ToItemIndex(item));
-  }
-  HeapVector<InlineItem>::const_iterator ToItemIterator(
-      const InlineItem& item) const {
-    // SAFETY: ToItemIndex() ensures the index is valid.
-    return UNSAFE_BUFFERS(items.begin() + ToItemIndex(item));
-  }
 
   bool IsValidOffset(unsigned index, unsigned offset) const {
     return index < items.size() && items[index].IsValidOffset(offset);

@@ -29,6 +29,7 @@ ci.defaults.set(
     contact_team_email = "chrome-desktop-engprod@google.com",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.DEFAULT,
+    reclient_enabled = False,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,
@@ -866,6 +867,8 @@ ci.builder(
     reclient_bootstrap_env = {
         "RBE_ip_timeout": "10m",
     },
+    # TODO: crbug.com/379584977 - Remove this after fixing the recipe. https://crrev.com/c/6242260
+    reclient_enabled = True,
 )
 
 ci.builder(

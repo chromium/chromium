@@ -128,8 +128,11 @@ void SanitizePreviewJpgBytes(
       data_decoder, base::as_byte_span(output_data.image().serialized_bytes()),
       data_decoder::mojom::ImageCodec::kDefault,
       /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes, gfx::Size(),
-      base::BindOnce(&EncodeBitmap, id, output_data.generation_seed(), query,
-                     std::move(callback)));
+      base::BindOnce(&EncodeBitmap, id, output_data.generation_seed(),
+                     // if the `generative_prompt`is populated with the
+                     // rewritten query if query rewritter is enabled, and is
+                     // populated with the original query otherwise.
+                     output_data.generative_prompt(), std::move(callback)));
 }
 
 }  // namespace

@@ -59,8 +59,9 @@ TEST_F(LobsterCandidateResizerTest, InflateImageCallsSnapperProvider) {
              manta::MantaProtoResponseCallback done_callback) {
             std::move(done_callback)
                 .Run(CreateFakeMantaResponse(
-                         1, gfx::Size(kFullImageDimensionLength,
-                                      kFullImageDimensionLength)),
+                         /*queries_returned_from_server=*/{"a nice strawberry"},
+                         gfx::Size(kFullImageDimensionLength,
+                                   kFullImageDimensionLength)),
                      {.status_code = manta::MantaStatusCode::kOk,
                       .message = ""});
           }));
@@ -104,8 +105,9 @@ TEST_F(LobsterCandidateResizerTest,
              manta::MantaProtoResponseCallback done_callback) {
             std::move(done_callback)
                 .Run(CreateFakeMantaResponse(
-                         0, gfx::Size(kFullImageDimensionLength,
-                                      kFullImageDimensionLength)),
+                         /*queries_returned_from_server=*/{},
+                         gfx::Size(kFullImageDimensionLength,
+                                   kFullImageDimensionLength)),
                      {.status_code = manta::MantaStatusCode::kGenericError,
                       .message = "dummy error"});
           }));
@@ -145,8 +147,9 @@ TEST_F(LobsterCandidateResizerTest,
              manta::MantaProtoResponseCallback done_callback) {
             std::move(done_callback)
                 .Run(CreateFakeMantaResponse(
-                         0, gfx::Size(kFullImageDimensionLength,
-                                      kFullImageDimensionLength)),
+                         /*queries_returned_from_server=*/{},
+                         gfx::Size(kFullImageDimensionLength,
+                                   kFullImageDimensionLength)),
                      {.status_code = manta::MantaStatusCode::kOk,
                       .message = ""});
           }));
