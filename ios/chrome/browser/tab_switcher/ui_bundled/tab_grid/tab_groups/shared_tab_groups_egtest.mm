@@ -564,6 +564,33 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
       waitForUIElementToDisappearWithMatcher:TabGridGroupCellAtIndex(1)];
 }
 
+// Tests that TabGroupAppInterface creates shared tab groups correctly.
+- (void)testPreparedSharedGroupsAtStartup {
+  [TabGroupAppInterface prepareFakeSharedTabGroups:3];
+
+  [ChromeEarlGreyUI openTabGrid];
+
+  GREYAssertEqual(3, [TabGroupAppInterface countOfSavedTabGroups],
+                  @"The number of saved tab groups should be 3.");
+
+  // Verify that 3 shared tab groups created by `+prepareFakeSharedTabGroups:`
+  // exist in the tab grid.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(1)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(2)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(3)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that the context menu offers to Manage button instead of the Share
+  // button.
+  LongPressTabGroupCellAtIndex(1);
+  [[EarlGrey selectElementWithMatcher:ManageGroupButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
+      assertWithMatcher:grey_notVisible()];
+}
+
 @end
 
 // Test Shared Tab Groups feature (with group joining access only.).

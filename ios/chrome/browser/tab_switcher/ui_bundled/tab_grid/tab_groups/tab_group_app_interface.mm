@@ -13,6 +13,8 @@
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
@@ -51,6 +53,15 @@ data_sharing::DataSharingService* GetDataSharingService() {
 // Returns the sync service from the first regular profile.
 syncer::SyncService* GetSyncService() {
   return SyncServiceFactory::GetForProfile(GetRegularProfile());
+}
+
+// Returns the share kit service from the first regular profile.
+TestShareKitService* GetShareKitService() {
+  ProfileIOS* profile = GetRegularProfile();
+  CHECK(IsSharedTabGroupsJoinEnabled(profile));
+  CHECK(IsSharedTabGroupsCreateEnabled(profile));
+  return static_cast<TestShareKitService*>(
+      ShareKitServiceFactory::GetForProfile(profile));
 }
 
 // Returns a new SharedTabGroupPreview.
@@ -100,16 +111,30 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
 + (void)prepareFakeSyncedTabGroups:(NSInteger)numberOfGroups {
   CHECK(IsTabGroupSyncEnabled());
   for (NSInteger i = 0; i < numberOfGroups; i++) {
-    base::Uuid group_id = base::Uuid::GenerateRandomV4();
+    base::Uuid groupID = base::Uuid::GenerateRandomV4();
     std::vector<tab_groups::SavedTabGroupTab> tabs;
-    tab_groups::SavedTabGroupTab tab = CreateTab(group_id);
+    tab_groups::SavedTabGroupTab tab = CreateTab(groupID);
     tabs.push_back(tab);
     chrome_test_util::AddTabToFakeServer(tab);
-    chrome_test_util::AddGroupToFakeServer(CreateGroup(
-        base::NumberToString16(i) + u"RemoteGroup", tabs, group_id));
+    chrome_test_util::AddGroupToFakeServer(
+        CreateGroup(base::NumberToString16(i) + u"RemoteGroup", tabs, groupID));
   }
 
   GetSyncService()->TriggerRefresh({syncer::SAVED_TAB_GROUP});
+}
+
++ (void)prepareFakeSharedTabGroups:(NSInteger)numberOfGroups {
+  CHECK(IsTabGroupSyncEnabled());
+  for (NSInteger i = 0; i < numberOfGroups; i++) {
+    NSString* collaborationID =
+        [NSString stringWithFormat:@"CollaborationIDd%ld", i];
+
+    // Create a shared tab group in the fake server. The user (`fakeIdentity1`)
+    // will join the group as a member.
+    GetShareKitService()->CreateSharedTabGroupInFakeServer(collaborationID);
+  }
+
+  GetSyncService()->TriggerRefresh({syncer::COLLABORATION_GROUP});
 }
 
 + (void)removeAtIndex:(unsigned int)index {

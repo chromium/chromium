@@ -170,7 +170,7 @@ NSString* TestShareKitService::JoinTabGroup(ShareKitJoinConfiguration* config) {
 
   // Set the joined group completion block.
   auto joined_group_completion_block = ^(NSString* collab_id) {
-    OnTabGroupJoined(collab_id);
+    CreateSharedTabGroupInFakeServer(collab_id);
   };
 
   viewController.sharedGroupCompletionBlock = joined_group_completion_block;
@@ -286,7 +286,9 @@ void TestShareKitService::SetTabGroupCollabIdFromGroupGuid(
   }
 }
 
-void TestShareKitService::OnTabGroupJoined(NSString* collab_id) {
+void TestShareKitService::CreateSharedTabGroupInFakeServer(
+    NSString* collab_id) {
+  CHECK(!is_owner_);
   if (!tab_group_sync_service_) {
     return;
   }
