@@ -238,7 +238,7 @@ void SearchPrefetchService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 SearchPrefetchService::SearchPrefetchService(Profile* profile)
     : profile_(profile) {
-  DCHECK(!profile_->IsOffTheRecord());
+  CHECK(!profile_->IsOffTheRecord() || IsPrefetchIncognitoEnabled());
 
   if (LoadFromPrefs())
     SaveToPrefs();

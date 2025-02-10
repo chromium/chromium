@@ -4158,3 +4158,81 @@ IN_PROC_BROWSER_TEST_F(AutocompleteDictionaryPreloadBrowserTest,
   SendMemoryPressureToNetworkService();
   EXPECT_FALSE(HasPreloadedSharedDictionaryInfo());
 }
+
+class SearchNavigationPrefetchIncognitoBrowserTest
+    : public SearchPrefetchBaseBrowserTest {
+ public:
+  SearchNavigationPrefetchIncognitoBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {kSearchPrefetchServicePrefetching,
+         {{"max_attempts_per_caching_duration", "3"},
+          {"cache_size", "1"},
+          {"device_memory_threshold_MB", "0"}}},
+        {
+            kSearchNavigationPrefetch,
+            {{"allow_incognito", "true"}},
+        }};
+    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+  }
+
+  void SetUpOnMainThread() override {
+    // Close normal browser and switch the test's browser instance to an
+    // incognito instance.
+    Browser* incognito = CreateIncognitoBrowser(browser()->profile());
+    CloseBrowserSynchronously(browser());
+    SelectFirstBrowser();
+    ASSERT_EQ(browser(), incognito);
+
+    SearchPrefetchBaseBrowserTest::SetUpOnMainThread();
+
+    ASSERT_TRUE(browser()->profile()->IsOffTheRecord());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SearchNavigationPrefetchIncognitoBrowserTest,
+                       NavigationPrefetchIsServedMouseDown) {
+  SetDSEWithURL(
+      GetSearchServerQueryURL(
+          "{searchTerms}&{google:assistedQueryStats}{google:prefetchSource}"),
+      true);
+
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_NE(search_prefetch_service, nullptr);
+  std::string search_terms = "terms of service";
+  std::string user_input = "terms";
+
+  AutocompleteMatch autocomplete_match =
+      CreateSearchSuggestionMatch(search_terms, search_terms, false);
+  search_prefetch_service->OnNavigationLikely(
+      1, autocomplete_match, NavigationPredictor::kMouseDown, GetWebContents());
+
+  WaitUntilStatusChangesTo(
+      GetCanonicalSearchURL(autocomplete_match.destination_url),
+      SearchPrefetchStatus::kComplete);
+
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          GetCanonicalSearchURL(autocomplete_match.destination_url));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
+
+  auto [prefetch_url, search_url] =
+      GetSearchPrefetchAndNonPrefetch(search_terms);
+  GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      canonical_search_url);
+  EXPECT_FALSE(prefetch_status.has_value());
+
+  auto inner_html =
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "document.documentElement.innerHTML")
+          .ExtractString();
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+}

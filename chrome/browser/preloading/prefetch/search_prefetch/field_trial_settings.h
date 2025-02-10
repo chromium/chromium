@@ -71,6 +71,13 @@ bool PrefetchSearchHistorySuggestions();
 // being the default match.
 bool OnlyAllowDefaultMatchPreloading();
 
+// Allows the omnibox search prefetch in Incognito.
+//
+// Note SearchPrefetchService partially supports Incognito profile. For now,
+// it supports the on-press triggered search prefetch only. Other prefetches
+// must not be triggered in Incognito. crbug.com/394716358 for more details.
+bool IsPrefetchIncognitoEnabled();
+
 // When this feature is enabled, SearchPrefetchService will send a request to
 // the network service to preload shared dictionary from the disk storage for
 // the AutocompleteResult's `destination_url`.
