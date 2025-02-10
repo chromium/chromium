@@ -85,7 +85,6 @@ class LensOverlaySidePanelCoordinator
   bool IsEntryShowing();
 
   enum CommandID {
-    COMMAND_OPEN_IN_NEW_TAB,
     COMMAND_MY_ACTIVITY,
     COMMAND_LEARN_MORE,
     COMMAND_SEND_FEEDBACK,

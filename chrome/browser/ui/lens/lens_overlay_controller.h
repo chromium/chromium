@@ -390,6 +390,10 @@ class LensOverlayController : public LensSearchboxClient,
   // Sets the URL to be used when opening the side panel in new tab.
   void SetSidePanelNewTabUrl(const GURL& url);
 
+  // Gets the URL (with param modifications) to be used when opening the side
+  // panel in new tab.
+  GURL GetSidePanelNewTabUrl();
+
   // Sets whether the side panel should show a full error page. This is only
   // done if the side panel is not already in the state provided by the
   // parameters or on its first load.
@@ -427,12 +431,6 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Shows My Activity.
   void ActivityRequestedByEvent(int event_flags);
-
-  // Opens the side panel URL (with param modifications) in a new tab.
-  void OpenInNewTabRequestedByEvent(int event_flags);
-
-  // Returns whether opening the side panel URL in a new tab should be enabled.
-  bool ShouldEnableOpenInNewTab();
 
   // Queues a tutorial IPH to be shown if the given URL is eligible. Cancels any
   // queued IPH.
