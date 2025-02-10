@@ -11,30 +11,9 @@
 
 namespace autofill {
 
-std::optional<AttributeType> AttributeType::FromFieldType(FieldType type) {
-  switch (type) {
-    case PASSPORT_NAME_TAG:
-      return AttributeType(AttributeTypeName::kPassportName);
-    case PASSPORT_NUMBER:
-      return AttributeType(AttributeTypeName::kPassportNumber);
-    case PASSPORT_ISSUING_COUNTRY_TAG:
-      return AttributeType(AttributeTypeName::kPassportCountry);
-    case PASSPORT_EXPIRATION_DATE_TAG:
-      return AttributeType(AttributeTypeName::kPassportExpiryDate);
-    case PASSPORT_ISSUE_DATE_TAG:
-      return AttributeType(AttributeTypeName::kPassportIssueDate);
-    case LOYALTY_MEMBERSHIP_PROGRAM:
-      return AttributeType(AttributeTypeName::kLoyaltyCardProgram);
-    case LOYALTY_MEMBERSHIP_PROVIDER:
-      return AttributeType(AttributeTypeName::kLoyaltyCardProvider);
-    case LOYALTY_MEMBERSHIP_ID:
-      return AttributeType(AttributeTypeName::kLoyaltyCardMemberId);
-    default:
-      return std::nullopt;
-  }
-}
+namespace {
 
-FieldType AttributeTypeNameToFieldType(AttributeTypeName a) {
+constexpr FieldType AttributeTypeNameToFieldType(AttributeTypeName a) {
   switch (a) {
     case AttributeTypeName::kPassportName:
       return PASSPORT_NAME_TAG;
@@ -68,6 +47,35 @@ FieldType AttributeTypeNameToFieldType(AttributeTypeName a) {
   NOTREACHED();
 }
 
+// AttributeTypeNameToFieldType must be injective: distinct AttributeTypeNames
+// must be mapped to distinct FieldTypes or to UNKNOWN_TYPE.
+static_assert(
+    std::ranges::all_of(DenseSet<AttributeType>::all(), [](AttributeType a) {
+      return std::ranges::all_of(
+          DenseSet<AttributeType>::all(), [&a](AttributeType b) {
+            FieldType fta = AttributeTypeNameToFieldType(a.name());
+            FieldType ftb = AttributeTypeNameToFieldType(b.name());
+            return a == b || fta == UNKNOWN_TYPE || fta != ftb;
+          });
+    }));
+
+}  // namespace
+
+// static
+std::optional<AttributeType> AttributeType::FromFieldType(FieldType type) {
+  // This lookup table is the inverse of AttributeTypeNameToFieldType().
+  static constexpr auto kTable = []() {
+    std::array<std::optional<AttributeType>, MAX_VALID_FIELD_TYPE> arr{};
+    for (AttributeType at : DenseSet<AttributeType>::all()) {
+      FieldType ft = AttributeTypeNameToFieldType(at.name());
+      CHECK(ft == UNKNOWN_TYPE || !arr[ft]);
+      arr[ft] = ft != UNKNOWN_TYPE ? std::optional(at) : std::nullopt;
+    }
+    return arr;
+  }();
+  return 0 <= type && type < kTable.size() ? kTable[type] : std::nullopt;
+}
+
 // static
 bool EntityType::ImportOrder(const EntityType& lhs, const EntityType& rhs) {
   auto rank = [](const EntityType& t) constexpr {
@@ -85,6 +93,10 @@ bool EntityType::ImportOrder(const EntityType& lhs, const EntityType& rhs) {
     }
   };
   return rank(lhs) < rank(rhs);
+}
+
+FieldType AttributeType::field_type() const {
+  return AttributeTypeNameToFieldType(name_);
 }
 
 std::ostream& operator<<(std::ostream& os, AttributeType a) {

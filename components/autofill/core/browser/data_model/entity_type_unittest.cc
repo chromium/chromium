@@ -17,6 +17,7 @@ TEST(AutofillAttributeTypeTest, Relationships) {
   AttributeType a = AttributeType(AttributeTypeName::kPassportName);
   EXPECT_EQ(a.entity_type(), EntityType(EntityTypeName::kPassport));
   EXPECT_EQ(a.field_type(), PASSPORT_NAME_TAG);
+  EXPECT_EQ(a, AttributeType::FromFieldType(PASSPORT_NAME_TAG));
 }
 
 TEST(AutofillEntityTypeTest, Attributes) {

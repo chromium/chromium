@@ -28,11 +28,6 @@ namespace autofill {
 class EntityType;
 class AttributeType;
 
-// Customization point for mapping attributes to FieldTypes.
-// For example, a the "name" attribute type of a passport or identity card may
-// be mapped to NAME_FULL.
-FieldType AttributeTypeNameToFieldType(AttributeTypeName a);
-
 // An attribute type is the blueprint for an attribute instance, which in turn
 // represents a string value with additional metadata.
 //
@@ -53,7 +48,7 @@ class AttributeType final {
     bool operator()(const AttributeType& lhs, const AttributeType& rhs) const;
   };
 
-  // Returns `std::nullopt` if `type` cannot be mapped to any `AttributeType`.
+  // Maps each Autofill AI `FieldType` to the corresponding AttributeType.
   static std::optional<AttributeType> FromFieldType(FieldType type);
 
   constexpr explicit AttributeType(AttributeTypeName n) : name_(n) {}
@@ -67,9 +62,8 @@ class AttributeType final {
 
   EntityType entity_type() const;
 
-  // The FieldType associated with this attribute as defined in
-  // AttributeTypeNameToFieldType().
-  FieldType field_type() const { return AttributeTypeNameToFieldType(name_); }
+  // Maps this AttributeType to the corresponding Autofill AI `FieldType`.
+  FieldType field_type() const;
 
   // The string representation of the name. This is unique among all attribute
   // types of the associated entity type. (It is not globally unique!)
