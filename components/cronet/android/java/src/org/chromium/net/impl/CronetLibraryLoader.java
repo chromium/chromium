@@ -47,6 +47,8 @@ public class CronetLibraryLoader {
     private static boolean sInitialized;
 
     private static final String LIBRARY_NAME = "cronet." + ImplVersion.getCronetVersion();
+    private static final String TESTING_LIBRARY_NAME = LIBRARY_NAME + "_for_testing";
+    private static boolean sSwitchToTestLibrary;
     @VisibleForTesting public static final String TAG = CronetLibraryLoader.class.getSimpleName();
     // Thread used for initialization work and processing callbacks for
     // long-lived global singletons. This thread lives forever as things like
@@ -99,8 +101,18 @@ public class CronetLibraryLoader {
         loadLibrary();
     }
 
-    private static void loadLibrary() {
-        System.loadLibrary(LIBRARY_NAME);
+    @VisibleForTesting
+    public static void loadLibrary() {
+        if (sSwitchToTestLibrary) {
+            System.loadLibrary(TESTING_LIBRARY_NAME);
+        } else {
+            System.loadLibrary(LIBRARY_NAME);
+        }
+    }
+
+    @VisibleForTesting
+    public static void switchToTestLibrary() {
+        sSwitchToTestLibrary = true;
     }
 
     public static boolean ensureInitialized(

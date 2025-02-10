@@ -32,6 +32,7 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.httpflags.FlagValue;
 import org.chromium.net.httpflags.HttpFlagsInterceptor;
+import org.chromium.net.impl.CronetLibraryLoader;
 import org.chromium.net.impl.CronetManifest;
 import org.chromium.net.impl.CronetUrlRequestContext;
 import org.chromium.net.impl.HttpEngineNativeProvider;
@@ -566,7 +567,8 @@ public class CronetTestRule implements TestRule {
             mTestName = testName;
             mNetLogEnabled = netLogEnabled;
 
-            System.loadLibrary("cronet_tests");
+            CronetLibraryLoader.switchToTestLibrary();
+            CronetLibraryLoader.loadLibrary();
             ContextUtils.initApplicationContext(sContextWrapper);
             PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
             prepareTestStorage(getContext());

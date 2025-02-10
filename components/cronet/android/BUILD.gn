@@ -1114,17 +1114,12 @@ instrumentation_test_apk("cronet_sample_test_apk") {
   }
 }
 
+_cronet_shared_library_for_testing_name =
+    "${_cronet_shared_lib_name}_for_testing"
 shared_library("cronet_tests") {
+  output_name = _cronet_shared_library_for_testing_name
   testonly = true
-  assert_no_deps = [ ":cronet_static" ]
   sources = [
-    # While "cronet_tests" cannot depend on "cronet_static", and hence cannot
-    # call any Cronet functions, it can access fields of Cronet objects, so add
-    # Cronet header files to facilitate accessing these fields.
-    "//components/cronet/android/cronet_context_adapter.h",
-    "//components/cronet/android/cronet_url_request_adapter.h",
-    "//components/cronet/cronet_url_request.h",
-    "//components/cronet/url_request_context_config.h",
     "test/cronet_test_jni.cc",
     "test/cronet_test_util.cc",
     "test/cronet_test_util.h",
@@ -1143,6 +1138,7 @@ shared_library("cronet_tests") {
   ]
 
   deps = [
+    ":cronet_static",
     ":cronet_test_apk_jni",
     ":cronet_tests_jni_headers",
     "//base",
@@ -1341,6 +1337,7 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/CronetStressTest.java",
     "test/javatests/src/org/chromium/net/CronetTestRuleTest.java",
     "test/javatests/src/org/chromium/net/CronetUploadTest.java",
+    "test/javatests/src/org/chromium/net/CronetUrlRequestContextNoTestRuleTest.java",
     "test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java",
     "test/javatests/src/org/chromium/net/CronetUrlRequestH2Test.java",
     "test/javatests/src/org/chromium/net/CronetUrlRequestHTTPSTest.java",
@@ -1425,17 +1422,18 @@ cronet_instrumentation_test_apk("cronet_test_instrumentation_apk") {
   apk_name = "CronetTestInstrumentation"
   android_manifest = "test/javatests/AndroidManifest.xml"
 
-  shared_libraries = [
-    ":cronet",
-    ":cronet_tests",
-  ]
+  shared_libraries = [ ":cronet_tests" ]
   loadable_modules = [ "$root_out_dir/libnetty-tcnative.so" ]
 
-  sources = cronet_smoketests_native_common_srcs + [
-              "test/smoketests/src/org/chromium/net/smoke/Http2Test.java",
-              "test/smoketests/src/org/chromium/net/smoke/QuicTest.java",
-            ]
+  sources = cronet_smoketests_native_common_srcs +
+            [ "test/smoketests/src/org/chromium/net/smoke/QuicTest.java" ]
 
+  # Make sure not to depend on :cronet so we don't accidentally load it in the
+  # tests, this is especially tricky because we manipulate a global state in the
+  # CronetLibraryLoader to load a different shared library, adding this assert_no_deps
+  # will ensure that there'll only be a single shared library and any mistake will be
+  # caught immediately when trying to load the libraries.
+  assert_no_deps = [ ":cronet" ]
   deps = [
            ":cronet_all_java",
            ":cronet_combine_proguard_flags",
@@ -1523,6 +1521,7 @@ instrumentation_test_apk(
            ":cronet_api_java",
            ":cronet_combine_proguard_flags",
            ":cronet_impl_common_java",
+           ":cronet_impl_native_java",
            ":cronet_impl_platform_java",
            ":cronet_shared_java",
            ":cronet_test_apk_java",
@@ -1562,15 +1561,18 @@ instrumentation_test_apk(
 cronet_instrumentation_test_apk("cronet_smoketests_apk") {
   apk_name = "CronetSmokeTestInstrumentation"
   android_manifest = "test/javatests/AndroidManifest.xml"
-  shared_libraries = [
-    ":cronet",
-    ":cronet_tests",
-  ]
+  shared_libraries = [ ":cronet" ]
   loadable_modules = [ "$root_out_dir/libnetty-tcnative.so" ]
-  sources = cronet_smoketests_native_common_srcs + [
-              "test/smoketests/src/org/chromium/net/smoke/Http2Test.java",
-              "test/smoketests/src/org/chromium/net/smoke/QuicTest.java",
-            ]
+
+  # Make sure not to depend on :cronet so we don't accidentally load it in the
+  # tests, this is especially tricky because we manipulate a global state in the
+  # CronetLibraryLoader to load a different shared library. The goal of the smoketest
+  # is to be as close as possible from the production version so if the testing shared
+  # library happened to be inside the APK then we might accidentally load it which will
+  # mask issues that will show up in production.
+  assert_no_deps = [ ":cronet_tests" ]
+  sources = cronet_smoketests_native_common_srcs +
+            [ "test/smoketests/src/org/chromium/net/smoke/HttpTest.java" ]
   deps = [
            ":cronet_api_java",
 
@@ -1585,7 +1587,7 @@ cronet_instrumentation_test_apk("cronet_smoketests_apk") {
            "//third_party/netty-tcnative:netty-tcnative-so",
            "//third_party/netty4:netty_all_java",
          ] + cronet_tests_androidx_common_srcs
-
+  data = [ "//net/data/ssl/" ]
   proguard_enabled = true
   proguard_configs = [ "test/proguard.cfg" ]
   srcjar_deps = [
@@ -1598,11 +1600,15 @@ android_apk("cronet_perf_test_apk") {
   testonly = true
   apk_name = "CronetPerfTest"
   android_manifest = "test/javaperftests/AndroidManifest.xml"
-  shared_libraries = [
-    ":cronet",
-    ":cronet_tests",
-  ]
 
+  shared_libraries = [ ":cronet_tests" ]
+
+  # Make sure not to depend on :cronet so we don't accidentally load it in the
+  # tests, this is especially tricky because we manipulate a global state in the
+  # CronetLibraryLoader to load a different shared library, adding this assert_no_deps
+  # will ensure that there'll only be a single shared library and any mistake will be
+  # caught immediately when trying to load the libraries.
+  assert_no_deps = [ ":cronet" ]
   sources =
       [ "test/javaperftests/src/org/chromium/net/CronetPerfTestActivity.java" ]
 
@@ -1871,7 +1877,7 @@ copy("cronet_package_copy_native_lib_unstripped") {
 copy("cronet_package_copy_native_test_lib") {
   testonly = true
   sources = [
-    "$root_out_dir/libcronet_tests.so",
+    "$root_out_dir/lib${_cronet_shared_library_for_testing_name}.so",
     "$root_out_dir/libnetty-tcnative.so",
   ]
   outputs =
@@ -1885,7 +1891,7 @@ copy("cronet_package_copy_native_test_lib") {
 copy("cronet_package_copy_native_test_lib_unstripped") {
   testonly = true
   sources = [
-    "$root_out_dir/lib.unstripped/libcronet_tests.so",
+    "$root_out_dir/lib.unstripped/lib${_cronet_shared_library_for_testing_name}.so",
     "$root_out_dir/lib.unstripped/libnetty-tcnative.so",
   ]
   outputs =
