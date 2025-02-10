@@ -123,7 +123,6 @@ template("v8_fuzzer") {
                            [
                              "v8_dep",
                              "max_len",
-                             "high_end_job_required",
                            ])
 
     sources = []
@@ -191,29 +190,38 @@ v8_fuzzer("regexp_parser_fuzzer") {
 
 if (v8_enable_webassembly) {
   v8_fuzzer("multi_return_fuzzer") {
+    # TODO(https://crbug.com/394563978): Remove once experiment ends.
     high_end_job_required = true
   }
 
   v8_fuzzer("wasm_code_fuzzer") {
     max_len = 500
+
+    # TODO(https://crbug.com/394563978): Remove once experiment ends.
     high_end_job_required = true
   }
 
   v8_fuzzer("wasm_module_fuzzer") {
     max_len = 500
     seed_corpus = "//testing/libfuzzer/fuzzers/wasm_corpus/"
+
+    # TODO(https://crbug.com/394563978): Remove once experiment ends.
     high_end_job_required = true
   }
 
   v8_fuzzer("wasm_async_fuzzer") {
     max_len = 500
     seed_corpus = "//testing/libfuzzer/fuzzers/wasm_corpus/"
+
+    # TODO(https://crbug.com/394563978): Remove once experiment ends.
     high_end_job_required = true
   }
 
   v8_fuzzer("wasm_streaming_fuzzer") {
     max_len = 500
     seed_corpus = "//testing/libfuzzer/fuzzers/wasm_corpus/"
+
+    # TODO(https://crbug.com/394563978): Remove once experiment ends.
     high_end_job_required = true
   }
 
@@ -223,31 +231,43 @@ if (v8_enable_webassembly) {
   if (!is_official_build) {
     v8_fuzzer("wasm_compile_all_fuzzer") {
       max_len = 500
+
+      # TODO(https://crbug.com/394563978): Remove once experiment ends.
       high_end_job_required = true
     }
 
     v8_fuzzer("wasm_compile_fuzzer") {
       max_len = 500
+
+      # TODO(https://crbug.com/394563978): Remove once experiment ends.
       high_end_job_required = true
     }
 
     v8_fuzzer("wasm_compile_simd_fuzzer") {
       max_len = 500
+
+      # TODO(https://crbug.com/394563978): Remove once experiment ends.
       high_end_job_required = true
     }
 
     v8_fuzzer("wasm_compile_wasmgc_fuzzer") {
       max_len = 500
+
+      # TODO(https://crbug.com/394563978): Remove once experiment ends.
       high_end_job_required = true
     }
 
     v8_fuzzer("wasm_init_expr_fuzzer") {
       max_len = 500
+
+      # TODO(https://crbug.com/394563978): Remove once experiment ends.
       high_end_job_required = true
     }
 
     v8_fuzzer("wasm_deopt_fuzzer") {
       max_len = 500
+
+      # TODO(https://crbug.com/394563978): Remove once experiment ends.
       high_end_job_required = true
     }
   }
