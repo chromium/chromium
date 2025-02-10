@@ -833,10 +833,8 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
     // PasswordManager doesn't consider FORM_SUBMISSION as a sufficient
     // condition for "successful" submission.
     pwm_sources.erase(mojom::SubmissionSource::FORM_SUBMISSION);
-    if (base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
-      // PasswordManager completely ignores PROBABLY_FORM_SUBMITTED.
-      pwm_sources.erase(mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED);
-    }
+    // PasswordManager completely ignores PROBABLY_FORM_SUBMITTED.
+    pwm_sources.erase(mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED);
     return pwm_sources.size() > 1;
   }();
 
