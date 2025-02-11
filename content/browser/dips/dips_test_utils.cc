@@ -7,6 +7,9 @@
 #include <string_view>
 
 #include "base/test/bind.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "content/browser/dips/dips_service_impl.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/dips_service.h"
@@ -17,6 +20,7 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -349,48 +353,8 @@ bool TpcBlockingBrowserClient::IsFullCookieAccessAllowed(
     WebContents* web_contents,
     const GURL& url,
     const blink::StorageKey& storage_key) {
-  // TODO: crbug.com/384531044 - implement this method by subclassing
-  // `content_settings::CookieSettingsBase` and calling its
-  // `IsFullCookieAccessAllowed()`.
-  const net::SchemefulSite top_level_site = storage_key.top_level_site();
-  const net::SchemefulSite url_site(url);
-
-  if (base::Contains(tpc_1p_blocks_, top_level_site)) {
-    return false;
-  }
-
-  if (base::Contains(tpc_blocks_, std::make_pair(top_level_site, url_site))) {
-    return false;
-  }
-
-  if (!block_3pcs_) {
-    return true;
-  }
-
-  if (storage_key.ToNetSiteForCookies().IsFirstParty(url)) {
-    return true;
-  }
-
-  // XXX how should we use storage_key.origin() ?
-  if (base::Contains(tpc_1p_site_exceptions_, top_level_site)) {
-    return true;
-  }
-
-  if (base::Contains(tpc_3p_site_exceptions_, url_site)) {
-    return true;
-  }
-
-  if (base::Contains(
-          schemeless_tpc_exceptions_,
-          std::make_pair(
-              top_level_site.registrable_domain_or_host_for_testing(),
-              url_site.registrable_domain_or_host_for_testing()))) {
-    return true;
-  }
-
-  bool b =
-      base::Contains(tpc_exceptions_, std::make_pair(top_level_site, url_site));
-  return b;
+  return IsFullCookieAccessAllowed(url, storage_key.ToNetSiteForCookies(),
+                                   storage_key.origin(), /*overrides=*/{});
 }
 
 void TpcBlockingBrowserClient::GrantCookieAccessDueToHeuristic(
@@ -399,13 +363,21 @@ void TpcBlockingBrowserClient::GrantCookieAccessDueToHeuristic(
     const net::SchemefulSite& accessing_site,
     base::TimeDelta ttl,
     bool ignore_schemes) {
+  ContentSettingsPattern primary_pattern =
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(
+          accessing_site.GetURL());
+  ContentSettingsPattern secondary_pattern =
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(
+          top_frame_site.GetURL());
   if (ignore_schemes) {
-    schemeless_tpc_exceptions_.emplace(
-        top_frame_site.registrable_domain_or_host_for_testing(),
-        accessing_site.registrable_domain_or_host_for_testing());
-  } else {
-    tpc_exceptions_.emplace(top_frame_site, accessing_site);
+    primary_pattern =
+        ContentSettingsPattern::ToHostOnlyPattern(primary_pattern);
+    secondary_pattern =
+        ContentSettingsPattern::ToHostOnlyPattern(secondary_pattern);
   }
+  tpc_content_settings_.SetValue(primary_pattern, secondary_pattern,
+                                 base::Value(CONTENT_SETTING_ALLOW),
+                                 /*metadata=*/{});
 }
 
 bool TpcBlockingBrowserClient::ShouldDipsDeleteInteractionRecords(
@@ -414,22 +386,89 @@ bool TpcBlockingBrowserClient::ShouldDipsDeleteInteractionRecords(
 }
 
 void TpcBlockingBrowserClient::AllowThirdPartyCookiesOnSite(const GURL& url) {
-  tpc_1p_site_exceptions_.emplace(url);
+  tpc_content_settings_.SetValue(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(url),
+      base::Value(CONTENT_SETTING_ALLOW), /*metadata=*/{});
 }
 
 void TpcBlockingBrowserClient::GrantCookieAccessTo3pSite(const GURL& url) {
-  tpc_3p_site_exceptions_.emplace(url);
+  tpc_content_settings_.SetValue(
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(url),
+      ContentSettingsPattern::Wildcard(), base::Value(CONTENT_SETTING_ALLOW),
+      /*metadata=*/{});
 }
 
 void TpcBlockingBrowserClient::BlockThirdPartyCookiesOnSite(const GURL& url) {
-  tpc_1p_blocks_.emplace(url);
+  tpc_content_settings_.SetValue(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(url),
+      base::Value(CONTENT_SETTING_BLOCK), /*metadata=*/{});
 }
 
 void TpcBlockingBrowserClient::BlockThirdPartyCookies(
     const GURL& url,
     const GURL& first_party_url) {
-  tpc_blocks_.emplace(net::SchemefulSite(first_party_url),
-                      net::SchemefulSite(url));
+  tpc_content_settings_.SetValue(
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(url),
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url),
+      base::Value(CONTENT_SETTING_BLOCK), /*metadata=*/{});
+}
+
+// Overrides for content_settings::CookieSettingsBase
+
+bool TpcBlockingBrowserClient::ShouldIgnoreSameSiteRestrictions(
+    const GURL& url,
+    const net::SiteForCookies& site_for_cookies) const {
+  return false;
+}
+
+ContentSetting TpcBlockingBrowserClient::GetContentSetting(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    content_settings::SettingInfo* info) const {
+  if (content_type != ContentSettingsType::COOKIES) {
+    return CONTENT_SETTING_DEFAULT;
+  }
+
+  const content_settings::RuleEntry* rule_entry =
+      tpc_content_settings_.Find(primary_url, secondary_url);
+  if (rule_entry == nullptr) {
+    if (info) {
+      info->primary_pattern = ContentSettingsPattern::Wildcard();
+      info->secondary_pattern = ContentSettingsPattern::Wildcard();
+    }
+    // By default we'll allow cookies. Blocking by default will override any 3PC
+    // exemption settings.
+    return CONTENT_SETTING_ALLOW;
+  }
+  if (info) {
+    info->primary_pattern = rule_entry->first.primary_pattern;
+    info->secondary_pattern = rule_entry->first.secondary_pattern;
+  }
+  return content_settings::ValueToContentSetting(rule_entry->second.value);
+}
+
+bool TpcBlockingBrowserClient::ShouldAlwaysAllowCookies(
+    const GURL& url,
+    const GURL& first_party_url) const {
+  return false;
+}
+
+bool TpcBlockingBrowserClient::ShouldBlockThirdPartyCookies(
+    base::optional_ref<const url::Origin> top_frame_origin,
+    net::CookieSettingOverrides overrides) const {
+  return block_3pcs_;
+}
+
+bool TpcBlockingBrowserClient::MitigationsEnabledFor3pcd() const {
+  return false;
+}
+
+bool TpcBlockingBrowserClient::IsThirdPartyCookiesAllowedScheme(
+    const std::string& scheme) const {
+  return false;
 }
 
 }  // namespace content

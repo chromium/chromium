@@ -14,6 +14,8 @@
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
+#include "components/content_settings/core/common/cookie_settings_base.h"
+#include "components/content_settings/core/common/host_indexed_content_settings.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/dips/dips_service_impl.h"
 #include "content/browser/dips/dips_utils.h"
@@ -287,8 +289,11 @@ UrlAndSourceId MakeUrlAndId(std::string_view url);
 // A ContentBrowserClient that supports third-party cookie blocking. Note that
 // this can only be used directly by unit tests; browser tests must use
 // ContentBrowserTestTpcBlockingBrowserClient instead.
-class TpcBlockingBrowserClient : public ContentBrowserClient {
+class TpcBlockingBrowserClient : public ContentBrowserClient,
+                                 public content_settings::CookieSettingsBase {
  public:
+  using content_settings::CookieSettingsBase::IsFullCookieAccessAllowed;
+
   static constexpr uint64_t DATA_TYPE_HISTORY =
       BrowsingDataRemover::DATA_TYPE_CONTENT_END << 1;
 
@@ -316,14 +321,33 @@ class TpcBlockingBrowserClient : public ContentBrowserClient {
   void BlockThirdPartyCookiesOnSite(const GURL& url);
   void BlockThirdPartyCookies(const GURL& url, const GURL& first_party_url);
 
+  // Overrides for content_settings::CookieSettingsBase
+
+  bool ShouldIgnoreSameSiteRestrictions(
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies) const override;
+
+  ContentSetting GetContentSetting(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      content_settings::SettingInfo* info) const override;
+
+  bool ShouldAlwaysAllowCookies(const GURL& url,
+                                const GURL& first_party_url) const override;
+
+  bool ShouldBlockThirdPartyCookies(
+      base::optional_ref<const url::Origin> top_frame_origin,
+      net::CookieSettingOverrides overrides) const override;
+
+  bool MitigationsEnabledFor3pcd() const override;
+
+  bool IsThirdPartyCookiesAllowedScheme(
+      const std::string& scheme) const override;
+
  private:
   bool block_3pcs_ = false;
-  std::set<net::SchemefulSite> tpc_1p_site_exceptions_;
-  std::set<net::SchemefulSite> tpc_3p_site_exceptions_;
-  std::set<std::pair<std::string, std::string>> schemeless_tpc_exceptions_;
-  std::set<std::pair<net::SchemefulSite, net::SchemefulSite>> tpc_exceptions_;
-  std::set<net::SchemefulSite> tpc_1p_blocks_;
-  std::set<std::pair<net::SchemefulSite, net::SchemefulSite>> tpc_blocks_;
+  content_settings::HostIndexedContentSettings tpc_content_settings_;
 };
 
 }  // namespace content
