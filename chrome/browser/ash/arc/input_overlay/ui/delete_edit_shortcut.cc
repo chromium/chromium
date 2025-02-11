@@ -144,7 +144,7 @@ DeleteEditShortcut::CreateNonClientFrameView(views::Widget* widget) {
   // Create the customized bubble border.
   auto bubble_border =
       std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
-  bubble_border->SetColor(color());
+  bubble_border->SetColor(background_color());
   if (GetParams().round_corners) {
     bubble_border->SetCornerRadius(GetCornerRadius());
   }

@@ -281,9 +281,8 @@ void SaveAddressProfileView::AddedToWidget() {
     GetBubbleFrameView()->SetHeaderView(
         std::make_unique<ThemeTrackingNonAccessibleImageView>(
             images->light, images->dark,
-            base::BindRepeating(
-                &views::BubbleDialogDelegate::GetBackgroundColor,
-                base::Unretained(this))));
+            base::BindRepeating(&views::BubbleDialogDelegate::background_color,
+                                base::Unretained(this))));
   }
 }
 

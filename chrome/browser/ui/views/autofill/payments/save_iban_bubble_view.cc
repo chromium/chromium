@@ -82,7 +82,7 @@ void SaveIbanBubbleView::AddedToWidget() {
       std::make_unique<ThemeTrackingNonAccessibleImageView>(
           *bundle.GetImageSkiaNamed(IDR_SAVE_CARD),
           *bundle.GetImageSkiaNamed(IDR_SAVE_CARD_DARK),
-          base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+          base::BindRepeating(&views::BubbleDialogDelegate::background_color,
                               base::Unretained(this))));
 
   if (controller_->IsUploadSave()) {

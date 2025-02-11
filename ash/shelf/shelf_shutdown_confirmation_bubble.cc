@@ -145,7 +145,8 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kHigh));
   GetBubbleFrameView()->SetBubbleBorder(std::move(bubble_border));
-  GetBubbleFrameView()->SetBackgroundColor(GetBackgroundColor());
+  GetBubbleFrameView()->SetBackgroundColor(background_color());
+
   // The bubble content size changes after border setting, therefore resize
   // the widget to its content.
   // TODO(crbug.com/41493925): widget should autoresize to its content.
