@@ -80,6 +80,13 @@ void AutofillImageFetcher::FetchImagesForURLs(
   }
 }
 
+// Only implemented in Android clients. Pay with Pix is only available in Chrome
+// on Android.
+void AutofillImageFetcher::FetchPixAccountImages(
+    base::span<const GURL> image_urls) {
+  NOTREACHED();
+}
+
 GURL AutofillImageFetcher::ResolveCardArtURL(const GURL& card_art_url) {
   // TODO(crbug.com/40221039): There is only one gstatic card art image we are
   // using currently, that returns as metadata when it isn't. Remove this logic

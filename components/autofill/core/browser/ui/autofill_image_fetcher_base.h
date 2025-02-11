@@ -15,11 +15,11 @@ namespace autofill {
 
 struct CreditCardArtImage;
 
-// Abstract class that enables pre-fetching of credit card art images on browser
-// start-up.
+// Abstract class that enables pre-fetching of images from server on browser
+// start-up used by various Autofill features.
 //
 // Subclasses provide interface to use the image fetcher (as this differs per
-// platform) and can specialize handling the returned card art image.
+// platform) and can specialize handling the returned image.
 //
 // On Desktop and iOS:
 // 1. AutofillImageFetcher (in components/) extends this class, and implements
@@ -58,6 +58,10 @@ class AutofillImageFetcherBase {
       base::OnceCallback<
           void(const std::vector<std::unique_ptr<CreditCardArtImage>>&)>
           callback) = 0;
+
+  // Fetches images for the `image_urls`, treats them according to Pix image
+  // specifications, and caches them in memory.
+  virtual void FetchPixAccountImages(base::span<const GURL> image_urls) = 0;
 };
 
 }  // namespace autofill
