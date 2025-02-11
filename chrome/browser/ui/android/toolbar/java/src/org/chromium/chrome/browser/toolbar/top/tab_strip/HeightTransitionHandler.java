@@ -377,7 +377,7 @@ class HeightTransitionHandler {
                         != BrowserControlsState.BOTH;
 
         if (javaAnimationInProgress || browserControlsHasConstraint) {
-            updateTabStripHeightImpl();
+            updateTabStripHeightImpl(newHeight);
             return;
         }
 
@@ -398,21 +398,21 @@ class HeightTransitionHandler {
                             boolean bottomControlsMinHeightChanged,
                             boolean requestNewFrame,
                             boolean isVisibilityForced) {
-                        updateTabStripHeightImpl();
+                        updateTabStripHeightImpl(newHeight);
                     }
 
                     @Override
                     public void onAndroidControlsVisibilityChanged(int visibility) {
                         // Update the margin when browser control turns into invisible. This can
                         // happen before onControlsOffsetChanged.
-                        updateTabStripHeightImpl();
+                        updateTabStripHeightImpl(newHeight);
                     }
                 };
         mBrowserControlsVisibilityManager.addObserver(mTransitionKickoffObserver);
     }
 
     // TODO(crbug.com/40939440): Find a better place to set these top margins.
-    private void updateTabStripHeightImpl() {
+    private void updateTabStripHeightImpl(int height) {
         // Remove the mBrowserControlsObserver, to make sure this method is called only once.
         if (mTransitionKickoffObserver != null) {
             mBrowserControlsVisibilityManager.removeObserver(mTransitionKickoffObserver);
@@ -421,8 +421,6 @@ class HeightTransitionHandler {
 
         // Change the height when we change the margin, to reflect the actual
         // tab strip height. Check the height to make sure this is only called once.
-        // Use a non-zero height when |mForceUpdateHeight| is set.
-        int height = mTabStripVisible || mForceUpdateHeight ? calculateTabStripHeight() : 0;
         if (mTabStripHeight == height) return;
         mTabStripHeight = height;
 
@@ -513,8 +511,6 @@ class HeightTransitionHandler {
 
     private void notifyTransitionFinished(boolean measureControlContainer) {
         mBrowserControlsVisibilityManager.removeObserver(mTransitionFinishedObserver);
-        // Reset internal state after transition ends.
-        mForceUpdateHeight = false;
         mTransitionFinishedObserver = null;
 
         assert mTabStripTransitionDelegateSupplier.get() != null
