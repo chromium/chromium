@@ -178,9 +178,7 @@ class AppMenuDragAndDropInteractiveTest : public InteractiveBrowserTest {
 #if BUILDFLAG(IS_OZONE_X11) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE_WAYLAND)
 #define MAYBE_DISABLED(test_name) DISABLED_##test_name
 #else
-// TODO(crbug.com/393126961): The app menu currently always closes as a
-// temporary fix for some crashes. The tests should be re-enabled once removed.
-#define MAYBE_DISABLED(test_name) DISABLED_##test_name
+#define MAYBE_DISABLED(test_name) test_name
 #endif
 
 void SkipIfMac11() {

@@ -624,7 +624,7 @@ void BookmarkMenuDelegate::WillShowMenu(MenuItemView* menu) {
   }
 }
 
-void BookmarkMenuDelegate::DoBookmarkNodeMoved(
+void BookmarkMenuDelegate::BookmarkNodeMoved(
     const BookmarkParentFolder& old_parent,
     size_t old_index,
     const BookmarkParentFolder& new_parent,
