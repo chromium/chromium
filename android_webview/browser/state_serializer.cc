@@ -37,16 +37,61 @@ namespace {
 
 const uint32_t AW_STATE_VERSION = internal::AW_STATE_VERSION_DATA_URL;
 
+// The production implementation of NavigationHistory and NavigationHistorySink,
+// backed by a NavigationController.
+// This class could be split into two independent parts, one for each interface.
+class NavigationControllerWrapper : public internal::NavigationHistory,
+                                    public internal::NavigationHistorySink {
+ public:
+  explicit NavigationControllerWrapper(
+      content::NavigationController* controller)
+      : controller_(controller) {}
+
+  int GetEntryCount() override { return controller_->GetEntryCount(); }
+
+  int GetCurrentEntry() override {
+    return controller_->GetLastCommittedEntryIndex();
+  }
+
+  content::NavigationEntry* GetEntryAtIndex(int index) override {
+    return controller_->GetEntryAtIndex(index);
+  }
+
+  void Restore(int selected_entry,
+               std::vector<std::unique_ptr<content::NavigationEntry>>* entries)
+      override {
+    controller_->Restore(selected_entry, content::RestoreType::kRestored,
+                         entries);
+    controller_->LoadIfNecessary();
+  }
+
+ private:
+  const raw_ptr<content::NavigationController> controller_;
+};
+
 }  // namespace
 
 void WriteToPickle(content::WebContents& web_contents, base::Pickle* pickle) {
+  NavigationControllerWrapper wrapper(&web_contents.GetController());
+  internal::WriteToPickle(wrapper, pickle);
+}
+
+bool RestoreFromPickle(base::PickleIterator* iterator,
+                       content::WebContents* web_contents) {
+  DCHECK(web_contents);
+  NavigationControllerWrapper wrapper(&web_contents->GetController());
+  return RestoreFromPickle(iterator, wrapper);
+}
+
+namespace internal {
+
+void WriteToPickle(NavigationHistory& history, base::Pickle* pickle) {
   DCHECK(pickle);
 
   internal::WriteHeaderToPickle(pickle);
 
-  content::NavigationController& controller = web_contents.GetController();
-  const int entry_count = controller.GetEntryCount();
-  const int selected_entry = controller.GetLastCommittedEntryIndex();
+  const int entry_count = history.GetEntryCount();
+  const int selected_entry = history.GetCurrentEntry();
   // A NavigationEntry will always exist, so there will always be at least 1
   // entry.
   DCHECK_GE(entry_count, 1);
@@ -56,8 +101,7 @@ void WriteToPickle(content::WebContents& web_contents, base::Pickle* pickle) {
   pickle->WriteInt(entry_count);
   pickle->WriteInt(selected_entry);
   for (int i = 0; i < entry_count; ++i) {
-    internal::WriteNavigationEntryToPickle(*controller.GetEntryAtIndex(i),
-                                           pickle);
+    internal::WriteNavigationEntryToPickle(*history.GetEntryAtIndex(i), pickle);
   }
 
   // Please update AW_STATE_VERSION and IsSupportedVersion() if serialization
@@ -65,53 +109,6 @@ void WriteToPickle(content::WebContents& web_contents, base::Pickle* pickle) {
   // Make sure the serialization format is updated in a backwards compatible
   // way.
 }
-
-bool RestoreFromPickle(base::PickleIterator* iterator,
-                       content::WebContents* web_contents) {
-  DCHECK(iterator);
-  DCHECK(web_contents);
-
-  uint32_t state_version = internal::RestoreHeaderFromPickle(iterator);
-  if (!state_version)
-    return false;
-
-  int entry_count = -1;
-  int selected_entry = -2;  // -1 is a valid value
-
-  if (!iterator->ReadInt(&entry_count))
-    return false;
-
-  if (!iterator->ReadInt(&selected_entry))
-    return false;
-
-  if (entry_count < 0)
-    return false;
-  if (selected_entry < -1)
-    return false;
-  if (selected_entry >= entry_count)
-    return false;
-
-  std::unique_ptr<content::NavigationEntryRestoreContext> context =
-      content::NavigationEntryRestoreContext::Create();
-  std::vector<std::unique_ptr<content::NavigationEntry>> entries;
-  entries.reserve(entry_count);
-  for (int i = 0; i < entry_count; ++i) {
-    entries.push_back(content::NavigationEntry::Create());
-    if (!internal::RestoreNavigationEntryFromPickle(
-            state_version, iterator, entries[i].get(), context.get()))
-      return false;
-  }
-
-  // |web_contents| takes ownership of these entries after this call.
-  content::NavigationController& controller = web_contents->GetController();
-  controller.Restore(selected_entry, content::RestoreType::kRestored, &entries);
-  DCHECK_EQ(0u, entries.size());
-  controller.LoadIfNecessary();
-
-  return true;
-}
-
-namespace internal {
 
 void WriteHeaderToPickle(base::Pickle* pickle) {
   WriteHeaderToPickle(AW_STATE_VERSION, pickle);
@@ -180,6 +177,55 @@ void WriteNavigationEntryToPickle(uint32_t state_version,
   // format is changed.
   // Make sure the serialization format is updated in a backwards compatible
   // way.
+}
+
+bool RestoreFromPickle(base::PickleIterator* iterator,
+                       NavigationHistorySink& sink) {
+  DCHECK(iterator);
+
+  uint32_t state_version = internal::RestoreHeaderFromPickle(iterator);
+  if (!state_version) {
+    return false;
+  }
+
+  int entry_count = -1;
+  int selected_entry = -2;  // -1 is a valid value
+
+  if (!iterator->ReadInt(&entry_count)) {
+    return false;
+  }
+
+  if (!iterator->ReadInt(&selected_entry)) {
+    return false;
+  }
+
+  if (entry_count < 0) {
+    return false;
+  }
+  if (selected_entry < -1) {
+    return false;
+  }
+  if (selected_entry >= entry_count) {
+    return false;
+  }
+
+  std::unique_ptr<content::NavigationEntryRestoreContext> context =
+      content::NavigationEntryRestoreContext::Create();
+  std::vector<std::unique_ptr<content::NavigationEntry>> entries;
+  entries.reserve(entry_count);
+  for (int i = 0; i < entry_count; ++i) {
+    entries.push_back(content::NavigationEntry::Create());
+    if (!internal::RestoreNavigationEntryFromPickle(
+            state_version, iterator, entries[i].get(), context.get())) {
+      return false;
+    }
+  }
+
+  // |web_contents| takes ownership of these entries after this call.
+  sink.Restore(selected_entry, &entries);
+  DCHECK_EQ(0u, entries.size());
+
+  return true;
 }
 
 bool RestoreNavigationEntryFromPickle(
