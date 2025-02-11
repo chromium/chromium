@@ -20,6 +20,7 @@ this build script on Mac:
 """
 
 import argparse
+import atexit
 import glob
 import io
 import json
@@ -645,9 +646,9 @@ class Timer:
     for (phase, elapsed) in self.times:
       print('{}: {:{}.1f}'.format(phase.rjust(longest_phase), elapsed, longest_elapsed + 2))
 
-
 def main():
   timer = Timer()
+  atexit.register(Timer.dump, timer)
 
   parser = argparse.ArgumentParser(description='Build Clang.')
   parser.add_argument('--bootstrap',
@@ -1585,8 +1586,6 @@ def main():
   WriteStampFile(PACKAGE_VERSION, FORCE_HEAD_REVISION_FILE)
 
   print('Clang build was successful.')
-
-  timer.dump()
 
   return 0
 
