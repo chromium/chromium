@@ -109,12 +109,12 @@ void AutofillWebDataService::RemoveAutofillProfile(
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetAutofillProfiles(
-    WebDataServiceConsumer* consumer) {
+    WebDataServiceRequestCallback consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::GetAutofillProfiles,
                      autofill_backend_),
-      consumer);
+      std::move(consumer));
 }
 
 void AutofillWebDataService::AddEntityInstance(const EntityInstance& entity) {
@@ -149,12 +149,12 @@ void AutofillWebDataService::RemoveEntityInstancesModifiedBetween(
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetEntityInstances(
-    WebDataServiceConsumer* consumer) {
+    WebDataServiceRequestCallback consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::GetEntityInstances,
                      autofill_backend_),
-      consumer);
+      std::move(consumer));
 }
 
 WebDataServiceBase::Handle

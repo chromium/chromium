@@ -34,14 +34,13 @@ bool WebDataRequest::IsActive() {
 }
 
 WebDataRequest::WebDataRequest(WebDataRequestManager* manager,
-                               WebDataServiceConsumer* consumer,
+                               WebDataServiceRequestCallback consumer,
                                WebDataServiceBase::Handle handle)
     : task_runner_(base::SequencedTaskRunner::HasCurrentDefault()
                        ? base::SequencedTaskRunner::GetCurrentDefault()
                        : nullptr),
       atomic_manager_(manager),
-      consumer_(consumer ? consumer->GetWebDataServiceConsumerWeakPtr()
-                         : nullptr),
+      consumer_(std::move(consumer)),
       handle_(handle) {
   DCHECK(IsActive());
   static_assert(sizeof(atomic_manager_) == sizeof(manager), "size mismatch");
@@ -51,8 +50,8 @@ WebDataRequestManager* WebDataRequest::GetManager() {
   return atomic_manager_.load(std::memory_order_acquire);
 }
 
-WebDataServiceConsumer* WebDataRequest::GetConsumer() {
-  return consumer_.get();
+WebDataServiceRequestCallback WebDataRequest::ExtractConsumer() && {
+  return std::move(consumer_);
 }
 
 scoped_refptr<base::SequencedTaskRunner> WebDataRequest::GetTaskRunner() {
@@ -72,10 +71,10 @@ void WebDataRequest::MarkAsInactive() {
 WebDataRequestManager::WebDataRequestManager() : next_request_handle_(1) {}
 
 std::unique_ptr<WebDataRequest> WebDataRequestManager::NewRequest(
-    WebDataServiceConsumer* consumer) {
+    WebDataServiceRequestCallback consumer) {
   base::AutoLock l(pending_lock_);
   std::unique_ptr<WebDataRequest> request = base::WrapUnique(
-      new WebDataRequest(this, consumer, next_request_handle_));
+      new WebDataRequest(this, std::move(consumer), next_request_handle_));
   bool inserted =
       pending_requests_.emplace(next_request_handle_, request.get()).second;
   DCHECK(inserted);
@@ -129,14 +128,16 @@ void WebDataRequestManager::RequestCompletedOnThread(
     return;
   }
 
+  WebDataServiceBase::Handle handle = request->GetHandle();
+  WebDataServiceRequestCallback consumer =
+      std::move(*request).ExtractConsumer();
+
   // Stop tracking the request. The request is already finished, so "stop
   // tracking" is the same as post-facto cancellation.
-  CancelRequest(request->GetHandle());
+  CancelRequest(handle);
 
   // Notify the consumer if needed.
-  WebDataServiceConsumer* const consumer = request->GetConsumer();
-  if (consumer) {
-    consumer->OnWebDataServiceRequestDone(request->GetHandle(),
-                                          std::move(result));
+  if (!consumer.is_null()) {
+    std::move(consumer).Run(handle, std::move(result));
   }
 }

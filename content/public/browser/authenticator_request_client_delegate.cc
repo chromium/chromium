@@ -99,7 +99,7 @@ bool AuthenticatorRequestClientDelegate::IsVirtualEnvironmentEnabled() {
   return virtual_environment_;
 }
 
-void AuthenticatorRequestClientDelegate::SetAmbientCredentialTypes(
+void AuthenticatorRequestClientDelegate::SetCredentialTypes(
     int credential_type_flags) {}
 
 void AuthenticatorRequestClientDelegate::SetCredentialIdFilter(

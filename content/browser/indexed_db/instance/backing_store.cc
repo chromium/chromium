@@ -2092,7 +2092,7 @@ Status BackingStore::RenameIndex(Transaction* transaction,
   const std::string name_key = IndexMetaDataKey::Encode(
       database_id, object_store_id, metadata->id, IndexMetaDataKey::NAME);
 
-  // TODO(dmurph): Add consistancy checks & umas for old name.
+  // TODO(dmurph): Add consistency checks & umas for old name.
   Status s = PutString(transaction->transaction(), name_key, new_name);
   if (!s.ok()) {
     return s;
@@ -4623,6 +4623,13 @@ void BackingStore::Transaction::Rollback() {
   if (committing_) {
     committing_ = false;
     backing_store_->DidCommitTransaction();
+  }
+
+  // The list of blobs being written in the transaction (`blobs_to_write_`)
+  // is added to the recovery journal in commit phase one. Clean up the journal
+  // so that these blobs are deleted from the disk.
+  if (!external_object_change_map_.empty() && !backing_store_->in_memory()) {
+    backing_store_->StartJournalCleaningTimer();
   }
 
   write_state_.reset();

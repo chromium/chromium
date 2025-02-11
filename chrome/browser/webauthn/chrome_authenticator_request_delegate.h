@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "chrome/browser/webauthn/password_credential_controller.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
@@ -167,7 +168,7 @@ class ChromeAuthenticatorRequestDelegate
       std::vector<device::AuthenticatorGetAssertionResponse> responses,
       base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
           callback) override;
-  void SetAmbientCredentialTypes(int credential_type_flags) override;
+  void SetCredentialTypes(int credential_type_flags) override;
   void SetCredentialIdFilter(std::vector<device::PublicKeyCredentialDescriptor>
                                  credential_list) override;
   void SetUserEntityForMakeCredentialRequest(
@@ -237,10 +238,19 @@ class ChromeAuthenticatorRequestDelegate
   // no immediately available credentials found. This will trigger the
   // `immediate_not_found_callback_` to notify the renderer.
   bool MaybeHandleImmediateMediation(
-      const device::FidoRequestHandlerBase::TransportAvailabilityInfo& data);
+      const device::FidoRequestHandlerBase::TransportAvailabilityInfo& data,
+      const webauthn::PasswordCredentialController::PasswordCredentials&
+          passwords);
+
+  // Barriers showing the UI while waiting for
+  // - password credentials,
+  // - WebAuthn credentials,
+  // - enclave readiness.
+  void TryToShowUI();
 
   void MaybeShowUI(
-      device::FidoRequestHandlerBase::TransportAvailabilityInfo tai);
+      device::FidoRequestHandlerBase::TransportAvailabilityInfo tai,
+      webauthn::PasswordCredentialController::PasswordCredentials passwords);
 
   std::optional<device::FidoTransportProtocol> GetLastTransportUsed() const;
 
@@ -302,6 +312,9 @@ class ChromeAuthenticatorRequestDelegate
                                const std::string& rp_id);
 #endif
 
+  void OnPasswordCredentialsReceived(
+      webauthn::PasswordCredentialController::PasswordCredentials credentials);
+
   const content::GlobalRenderFrameHostId render_frame_host_id_;
   const scoped_refptr<AuthenticatorRequestDialogModel> dialog_model_;
   const std::unique_ptr<AuthenticatorRequestDialogController>
@@ -312,9 +325,8 @@ class ChromeAuthenticatorRequestDelegate
   AccountPreselectedCallback account_preselected_callback_;
   device::FidoRequestHandlerBase::RequestCallback request_callback_;
 
-  // The number of credential types that have been requested to be displayed
-  // in the Ambient credential UI.
-  int ambient_credential_types_ =
+  // The number of credential types that have been requested to be displayed.
+  int credential_types_ =
       static_cast<int>(blink::mojom::CredentialTypeFlags::kNone);
 
   // A list of credentials used to filter passkeys by ID. When non-empty,
@@ -337,6 +349,11 @@ class ChromeAuthenticatorRequestDelegate
   // state to load from the disk.
   std::unique_ptr<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
       pending_transport_availability_info_;
+
+  // Stores the password credentials while waiting for enclave state, transport
+  // availability info to be ready.
+  std::unique_ptr<webauthn::PasswordCredentialController::PasswordCredentials>
+      pending_password_credentials_;
 
   // This holds a `TrustedVaultConnection` which will be set on
   // `enclave_controller_` when it is created.

@@ -559,10 +559,13 @@ class CONTENT_EXPORT BackingStore {
   int NumBlobFilesDeletedForTesting() {
     return num_blob_files_deleted_;
   }
+#endif
   int NumAggregatedJournalCleaningRequestsForTesting() const {
     return num_aggregated_journal_cleaning_requests_;
   }
-#endif
+  void SetNumAggregatedJournalCleaningRequestsForTesting(int num_requests) {
+    num_aggregated_journal_cleaning_requests_ = num_requests;
+  }
   void SetExecuteJournalCleaningOnNoTransactionsForTesting() {
     execute_journal_cleaning_on_no_txns_ = true;
   }

@@ -50,6 +50,7 @@
 #include "chrome/browser/webauthn/change_pin_controller_impl.h"
 #include "chrome/browser/webauthn/gpm_user_verification_policy.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
+#include "chrome/browser/webauthn/password_credential_controller.h"
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -107,6 +108,8 @@ using UIPresentation =
     content::AuthenticatorRequestClientDelegate::UIPresentation;
 using device::AuthenticatorType;
 using device::FidoRequestType;
+using PasswordCredentials =
+    webauthn::PasswordCredentialController::PasswordCredentials;
 
 constexpr int GetMessageIdForTransportDescription(
     AuthenticatorTransport transport) {
@@ -643,7 +646,8 @@ bool AuthenticatorRequestDialogController::is_request_complete() const {
 }
 
 void AuthenticatorRequestDialogController::StartFlow(
-    TransportAvailabilityInfo transport_availability) {
+    TransportAvailabilityInfo transport_availability,
+    PasswordCredentials passwords) {
   DCHECK(!started_);
   DCHECK_EQ(model_->step(), Step::kNotStarted);
   DCHECK_EQ(
@@ -652,6 +656,8 @@ void AuthenticatorRequestDialogController::StartFlow(
 
   started_ = true;
   transport_availability_ = std::move(transport_availability);
+  passwords_ = std::move(passwords);
+  // TODO(crbug.com/392549444): Introduce the UI to handle passwords.
   UpdateModelForTransportAvailability();
   // All recognised credentials that are "Chrome implemented" are from the
   // same source, i.e. a platform never has two Chrome implemented platform
@@ -1703,9 +1709,8 @@ void AuthenticatorRequestDialogController::set_has_icloud_drive_enabled(
 
 #endif
 
-void AuthenticatorRequestDialogController::set_ambient_credential_types(
-    int types) {
-  ambient_credential_types_ = types;
+void AuthenticatorRequestDialogController::SetCredentialTypes(int types) {
+  credential_types_ = types;
 }
 
 content::AuthenticatorRequestClientDelegate::UIPresentation
@@ -1965,7 +1970,7 @@ void AuthenticatorRequestDialogController::StartAutofillRequest() {
         ambient_signin::AmbientSigninController::GetOrCreateForCurrentDocument(
             render_frame_host);
     controller->AddAndShowWebAuthnMethods(
-        model(), credentials, ambient_credential_types_,
+        model(), credentials, credential_types_,
         base::BindOnce(
             [](base::WeakPtr<AuthenticatorRequestDialogController> controller,
                std::vector<uint8_t> credential_id) {

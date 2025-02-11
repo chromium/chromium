@@ -464,7 +464,7 @@ class DenseSet {
 
   // Erases the element whose index matches the index of |x| and returns the
   // number of erased elements (0 or 1).
-  size_t erase(T x) {
+  constexpr size_t erase(T x) {
     bool contained = contains(x);
     bitset_.unset_bit(value_to_index(x));
     return contained ? 1 : 0;

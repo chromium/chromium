@@ -8284,6 +8284,17 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },
     {
+      name: "corner-shape",
+      longhands: [
+        "corner-top-left-shape", "corner-top-right-shape",
+        "corner-bottom-right-shape", "corner-bottom-left-shape"
+      ],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornerShape",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
       name: "flex",
       longhands: ["flex-grow", "flex-shrink", "flex-basis"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],

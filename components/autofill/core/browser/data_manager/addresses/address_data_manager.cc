@@ -350,7 +350,9 @@ void AddressDataManager::LoadProfiles() {
     return;
   }
   CancelPendingQuery(pending_profile_query_);
-  pending_profile_query_ = webdata_service_->GetAutofillProfiles(this);
+  pending_profile_query_ = webdata_service_->GetAutofillProfiles(
+      base::BindOnce(&AddressDataManager::OnWebDataServiceRequestDone,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AddressDataManager::RecordUseOf(const AutofillProfile& profile) {
@@ -733,7 +735,7 @@ void AddressDataManager::HandleNextProfileChange(const std::string& guid) {
       }
       webdata_service_->RemoveAutofillProfile(
           guid, base::BindOnce(&AddressDataManager::OnAutofillProfileChanged,
-                               weak_factory_.GetWeakPtr()));
+                               weak_ptr_factory_.GetWeakPtr()));
       break;
     }
     case AutofillProfileChange::ADD: {
@@ -747,7 +749,7 @@ void AddressDataManager::HandleNextProfileChange(const std::string& guid) {
       }
       webdata_service_->AddAutofillProfile(
           profile, base::BindOnce(&AddressDataManager::OnAutofillProfileChanged,
-                                  weak_factory_.GetWeakPtr()));
+                                  weak_ptr_factory_.GetWeakPtr()));
       break;
     }
     case AutofillProfileChange::UPDATE: {
@@ -771,7 +773,7 @@ void AddressDataManager::HandleNextProfileChange(const std::string& guid) {
       webdata_service_->UpdateAutofillProfile(
           updated_profile,
           base::BindOnce(&AddressDataManager::OnAutofillProfileChanged,
-                         weak_factory_.GetWeakPtr()));
+                         weak_ptr_factory_.GetWeakPtr()));
       break;
     }
   }

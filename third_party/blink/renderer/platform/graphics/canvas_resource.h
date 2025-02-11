@@ -93,6 +93,10 @@ class PLATFORM_EXPORT CanvasResource
   // outstanding references).
   virtual bool IsRecycleable() const = 0;
 
+  // Uploads the contents of |sk_surface| to the resource's backing memory.
+  // Should be called only if the resource is using software raster.
+  void UploadSoftwareRenderingResults(SkSurface* sk_surface);
+
   // Returns true if this instance creates TransferableResources for usage with
   // GPU compositing.
   virtual bool CreatesAcceleratedTransferableResources() const = 0;
@@ -203,6 +207,9 @@ class PLATFORM_EXPORT CanvasResource
   const scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
 
  private:
+  // Updates the resource's SyncToken to `sync_token`.
+  virtual void SetSyncToken(gpu::SyncToken sync_token) { NOTREACHED(); }
+
   // Returns true if the resource is rastered via the GPU.
   virtual bool UsesAcceleratedRaster() const = 0;
 
@@ -252,9 +259,6 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
       const override {
     return nullptr;
   }
-
-  // Uploads the contents of |sk_surface| to the resource's backing memory.
-  void UploadSoftwareRenderingResults(SkSurface* sk_surface);
 
   scoped_refptr<StaticBitmapImage> Bitmap() final;
   void NotifyResourceLost() override;
@@ -309,8 +313,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   void WillDraw();
   bool IsLost() const { return owning_thread_data().is_lost; }
 
-  // Uploads the contents of |sk_surface| to the resource's backing memory.
-  void UploadSoftwareRenderingResults(SkSurface* sk_surface);
   scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() override;
   const scoped_refptr<gpu::ClientSharedImage>& GetClientSharedImage() const;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
@@ -376,6 +378,11 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   const OwningThreadData& owning_thread_data() const {
     DCHECK(!is_cross_thread());
     return owning_thread_data_;
+  }
+
+  void SetSyncToken(gpu::SyncToken sync_token) override {
+    DCHECK(!is_cross_thread());
+    owning_thread_data().sync_token = sync_token;
   }
 
   // Can be read on any thread.

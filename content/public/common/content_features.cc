@@ -1193,11 +1193,6 @@ BASE_FEATURE(kWebAssemblyLazyCompilation,
              "WebAssemblyLazyCompilation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable WebAssembly Memory64.
-BASE_FEATURE(kWebAssemblyMemory64,
-             "WebAssemblyMemory64",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable WebAssembly tiering (Liftoff -> TurboFan).
 BASE_FEATURE(kWebAssemblyTiering,
              "WebAssemblyTiering",

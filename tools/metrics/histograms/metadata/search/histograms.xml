@@ -281,7 +281,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceReprompt{Category}"
-    enum="SearchEngineChoiceReprompt" expires_after="2025-06-08">
+    enum="SearchEngineChoiceReprompt" expires_after="2025-08-10">
   <owner>droger@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -894,7 +894,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.DefaultSearchProviderType2{Population}"
-    enum="OmniboxSearchEngineType" expires_after="2025-06-08">
+    enum="OmniboxSearchEngineType" expires_after="2025-08-10">
   <owner>mpearson@chromium.org</owner>
   <owner>ftirelo@chromium.org</owner>
   <summary>
@@ -955,7 +955,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.iOS.SelectDefaultSearchEngine"
-    enum="OmniboxSearchEngineType" expires_after="2025-04-27">
+    enum="OmniboxSearchEngineType" expires_after="2025-08-10">
   <owner>sczs@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -1454,7 +1454,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SaveGuestModeSelection" enum="BooleanYesNo"
-    expires_after="2025-06-08">
+    expires_after="2025-08-10">
   <owner>dullweber@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>

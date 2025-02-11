@@ -157,7 +157,10 @@ class ChromeWebAuthnCredentialsDelegateTest
     tai.recognized_credentials = std::move(creds);
     dialog_controller()->set_ui_presentation(
         content::AuthenticatorRequestClientDelegate::UIPresentation::kAutofill);
-    dialog_controller()->StartFlow(std::move(tai));
+    // `passwords` are not required for this test suite as
+    // `ChromeWebAuthnCredentialsDelegate` is supposed to get only passkeys from
+    // the dialog controller.
+    dialog_controller()->StartFlow(std::move(tai), /*passwords=*/{});
 #else
     delegate_->OnWebAuthnRequestPending(
         main_rfh(), creds, /*is_conditional_request=*/true,

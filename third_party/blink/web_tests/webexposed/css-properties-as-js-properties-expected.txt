@@ -161,6 +161,7 @@ cornerBottomLeftShape
 cornerBottomRightShape
 cornerEndEndShape
 cornerEndStartShape
+cornerShape
 cornerStartEndShape
 cornerStartStartShape
 cornerTopLeftShape

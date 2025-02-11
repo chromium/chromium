@@ -35,11 +35,9 @@ constexpr char kStaticLoadingScreenURL[] =
 namespace {
 content::OpenURLParams CreateOpenUrlParams(const GURL& url) {
   return content::OpenURLParams(
-      net::AppendOrReplaceRef(
           net::AppendOrReplaceQueryParameter(
               url, kMerchantTrustContextParameterName,
               kMerchantTrustContextParameterValue),
-          kMerchantTrustRef),
       content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
 }

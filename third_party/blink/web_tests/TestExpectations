@@ -8308,6 +8308,7 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/simplecall.https.html [ 
 # Temporarily disable for DevTools change
 crbug.com/325443331 http/tests/devtools/a11y-axe-core/sources/dom-breakpoints-pane-a11y-test.js [ Failure Pass ]
 crbug.com/325443331 http/tests/devtools/network/failed-request-response-mimetype.js [ Failure Pass ]
+crbug.com/325443331 http/tests/devtools/background-services/background-services-panel.js [ Failure Pass ]
 
 # Branch Gardener 2024-03-20
 crbug.com/330547706 [ Debug Mac13 ] virtual/controls-refresh-hc/fast/forms/color-scheme/select/select-multiple-appearance-basic.html [ Crash Pass ]

@@ -1269,6 +1269,45 @@ const CSSValue* Container::CSSValueFromComputedStyleInternal(
       style, layout_object, allow_visited_style, value_phase);
 }
 
+bool CornerShape::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  std::array<CSSValue*, 4> shapes = {nullptr};
+
+  if (!css_parsing_utils::ConsumeCornerShapes(shapes, stream, context)) {
+    return false;
+  }
+
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kCornerTopLeftShape, CSSPropertyID::kCornerShape,
+      *shapes[0], important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kCornerTopRightShape, CSSPropertyID::kCornerShape,
+      *shapes[1], important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kCornerBottomRightShape, CSSPropertyID::kCornerShape,
+      *shapes[2], important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kCornerBottomLeftShape, CSSPropertyID::kCornerShape,
+      *shapes[3], important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  return true;
+}
+
+const CSSValue* CornerShape::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValueForCornerShapeShorthand(style);
+}
+
 bool Flex::ParseShorthand(bool important,
                           CSSParserTokenStream& stream,
                           const CSSParserContext& context,

@@ -100,6 +100,7 @@
 #include "extensions/common/url_pattern.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
+#include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -123,6 +124,9 @@
 #include "ui/aura/window.h"
 #endif
 
+using webauthn::PasswordCredentialController;
+using PasswordCredentials = PasswordCredentialController::PasswordCredentials;
+using UIPresentation = ChromeAuthenticatorRequestDelegate::UIPresentation;
 using TransportAvailabilityInfo =
     device::FidoRequestHandlerBase::TransportAvailabilityInfo;
 
@@ -320,6 +324,13 @@ bool SkipGpmPasskeyCreationForOwnAccount(
          rp_id == kGoogleRpId &&
          (user_name == primary_account_info.email ||
           user_name == account_email_local_part);
+}
+
+bool PasswordsUsable(int credential_types, UIPresentation ui_presentation) {
+  // TODO(crbug.com/392549444): Also migrate ambient UI passwords here.
+  return ui_presentation == UIPresentation::kModalImmediate &&
+         (credential_types &
+          static_cast<int>(blink::mojom::CredentialTypeFlags::kPassword));
 }
 
 }  // namespace
@@ -758,6 +769,20 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
 #if BUILDFLAG(IS_MAC)
   ConfigureICloudKeychain(request_source, rp_id);
 #endif
+
+  if (PasswordsUsable(credential_types_,
+                      dialog_controller_->ui_presentation())) {
+    auto* controller =
+        PasswordCredentialController::MaybeGet(GetRenderFrameHost());
+    if (!controller) {
+      return;
+    }
+    controller->FetchPasswords(
+        origin.GetURL(),
+        base::BindOnce(
+            &ChromeAuthenticatorRequestDelegate::OnPasswordCredentialsReceived,
+            AsWeakPtr()));
+  }
 }
 
 void ChromeAuthenticatorRequestDelegate::SetHints(
@@ -797,9 +822,9 @@ bool ChromeAuthenticatorRequestDelegate::webauthn_ui_enabled() const {
   return dialog_controller_->ui_presentation() != UIPresentation::kDisabled;
 }
 
-void ChromeAuthenticatorRequestDelegate::SetAmbientCredentialTypes(
+void ChromeAuthenticatorRequestDelegate::SetCredentialTypes(
     int credential_type_flags) {
-  ambient_credential_types_ = credential_type_flags;
+  credential_types_ = credential_type_flags;
 }
 
 void ChromeAuthenticatorRequestDelegate::SetCredentialIdFilter(
@@ -829,18 +854,10 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     return;
   }
 
-  const bool delay_ui_for_gpm =
-      enclave_controller_ && !enclave_controller_->ready_for_ui();
-  if (delay_ui_for_gpm) {
-    // Delay showing UI until GPM state is loaded. It's only after this
-    // point that we know whether GPM will be active for this request or not.
-    pending_transport_availability_info_ = std::make_unique<
-        device::FidoRequestHandlerBase::TransportAvailabilityInfo>(
-        std::move(data));
-    return;
-  }
-
-  MaybeShowUI(std::move(data));
+  pending_transport_availability_info_ = std::make_unique<
+      device::FidoRequestHandlerBase::TransportAvailabilityInfo>(
+      std::move(data));
+  TryToShowUI();
 }
 
 bool ChromeAuthenticatorRequestDelegate::EmbedderControlsAuthenticatorDispatch(
@@ -990,7 +1007,8 @@ Profile* ChromeAuthenticatorRequestDelegate::profile() const {
 }
 
 bool ChromeAuthenticatorRequestDelegate::MaybeHandleImmediateMediation(
-    const TransportAvailabilityInfo& data) {
+    const TransportAvailabilityInfo& data,
+    const PasswordCredentials& passwords) {
   if (data.request_type != device::FidoRequestType::kGetAssertion ||
       dialog_controller_->ui_presentation() !=
           UIPresentation::kModalImmediate) {
@@ -1009,28 +1027,50 @@ bool ChromeAuthenticatorRequestDelegate::MaybeHandleImmediateMediation(
                          device::AuthenticatorType::kWinNative,
                          device::AuthenticatorType::kChromeOS,
                          device::AuthenticatorType::kTouchID};
-  int immediate_credential_count = std::ranges::count_if(
+  int immediate_webauthn_count = std::ranges::count_if(
       data.recognized_credentials,
       [&kLocalTypes](const device::AuthenticatorType& type) {
         return kLocalTypes.contains(type);
       },
       &device::DiscoverableCredentialMetadata::source);
-  if (immediate_credential_count == 0) {
+  if (immediate_webauthn_count + passwords.size() == 0) {
     return true;
   }
 
   return false;
 }
 
+void ChromeAuthenticatorRequestDelegate::TryToShowUI() {
+  if (!pending_transport_availability_info_) {
+    return;
+  }
+  if (enclave_controller_ && !enclave_controller_->ready_for_ui()) {
+    // Delay showing UI until GPM state is loaded. It's only after this
+    // point that we know whether GPM will be active for this request or not.
+    return;
+  }
+  if (PasswordsUsable(credential_types_,
+                      dialog_controller_->ui_presentation()) &&
+      !pending_password_credentials_) {
+    return;
+  }
+  auto tai = std::move(pending_transport_availability_info_);
+  auto passwords = pending_password_credentials_
+                       ? std::move(pending_password_credentials_)
+                       : std::make_unique<PasswordCredentials>();
+  MaybeShowUI(std::move(*tai), std::move(*passwords));
+}
+
 void ChromeAuthenticatorRequestDelegate::MaybeShowUI(
-    TransportAvailabilityInfo tai) {
+    TransportAvailabilityInfo tai,
+    PasswordCredentials passwords) {
   if (can_use_synced_phone_passkeys_ ||
       (enclave_controller_ && enclave_controller_->is_active())) {
     GetPhoneContactableGpmPasskeysForRpId(&tai.recognized_credentials);
   }
   FilterRecognizedCredentials(&tai);
 
-  if (MaybeHandleImmediateMediation(tai)) {
+  if (MaybeHandleImmediateMediation(tai, passwords)) {
     std::move(immediate_not_found_callback_).Run();
     return;
   }
@@ -1050,9 +1090,9 @@ void ChromeAuthenticatorRequestDelegate::MaybeShowUI(
   dialog_controller_->set_enclave_can_be_default(
       EnclaveCanBeDefault(profile()));
 
-  dialog_controller_->set_ambient_credential_types(ambient_credential_types_);
+  dialog_controller_->SetCredentialTypes(credential_types_);
 
-  dialog_controller_->StartFlow(std::move(tai));
+  dialog_controller_->StartFlow(std::move(tai), std::move(passwords));
 
   if (g_observer) {
     g_observer->UIShown(this);
@@ -1060,15 +1100,7 @@ void ChromeAuthenticatorRequestDelegate::MaybeShowUI(
 }
 
 void ChromeAuthenticatorRequestDelegate::OnReadyForUI() {
-  if (!pending_transport_availability_info_) {
-    return;
-  }
-
-  auto pending_transport_availability_info =
-      std::move(pending_transport_availability_info_);
-  pending_transport_availability_info_.reset();
-
-  MaybeShowUI(std::move(*pending_transport_availability_info));
+  TryToShowUI();
 }
 
 bool ChromeAuthenticatorRequestDelegate::ShouldPermitCableExtension(
@@ -1305,3 +1337,10 @@ void ChromeAuthenticatorRequestDelegate::ConfigureICloudKeychain(
 }
 
 #endif
+
+void ChromeAuthenticatorRequestDelegate::OnPasswordCredentialsReceived(
+    PasswordCredentials credentials) {
+  pending_password_credentials_ =
+      std::make_unique<PasswordCredentials>(std::move(credentials));
+  TryToShowUI();
+}

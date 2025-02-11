@@ -1726,10 +1726,6 @@ const char kEnableWasmGarbageCollectionDescription[] =
     "Enables the experimental Garbage Collection (GC) extensions to "
     "WebAssembly.";
 
-const char kEnableWasmMemory64Name[] = "WebAssembly Memory64";
-const char kEnableWasmMemory64Description[] =
-    "Enables 64-bit memory indices on WebAssembly operations";
-
 const char kEnableWasmRelaxedSimdName[] = "WebAssembly Relaxed SIMD";
 const char kEnableWasmRelaxedSimdDescription[] =
     "Enables the use of WebAssembly vector operations with relaxed semantics";
@@ -7666,13 +7662,6 @@ const char kWebBluetoothConfirmPairingSupportDescription[] =
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-const char kSkipUndecryptablePasswordsName[] =
-    "Skip undecryptable passwords to use the available decryptable "
-    "passwords.";
-const char kSkipUndecryptablePasswordsDescription[] =
-    "Makes the decryptable passwords available in the password manager when "
-    "there are undecryptable ones.";
-
 #if BUILDFLAG(ENABLE_PRINTING)
 const char kCupsIppPrintingBackendName[] = "CUPS IPP Printing Backend";
 const char kCupsIppPrintingBackendDescription[] =

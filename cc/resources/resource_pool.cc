@@ -362,9 +362,12 @@ bool ResourcePool::PrepareForExport(
   } else {
     Backing* software_backing = resource->software_backing();
     DCHECK(software_backing->shared_image);
-    transferable = viz::TransferableResource::MakeSoftwareSharedImage(
-        software_backing->shared_image, software_backing->mailbox_sync_token,
-        resource->size(), resource->format(), resource_source);
+    viz::TransferableResource::MetadataOverride overrides;
+    overrides.size = resource->size();
+    overrides.format = resource->format();
+    transferable = viz::TransferableResource::Make(
+        software_backing->shared_image, resource_source,
+        software_backing->mailbox_sync_token, overrides);
   }
   transferable.color_space = resource->color_space();
   resource->set_resource_id(resource_provider_->ImportResource(

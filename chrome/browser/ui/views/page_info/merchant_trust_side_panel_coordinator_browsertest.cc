@@ -350,5 +350,5 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
 
   EXPECT_EQ(side_panel_view->GetLastUrlForTesting(),
             CreateUrl(kMerchantReviewsUrl).spec() +
-                "?s=CHROME_SIDE_PANEL#reviews");
+                "?s=CHROME_SIDE_PANEL");
 }

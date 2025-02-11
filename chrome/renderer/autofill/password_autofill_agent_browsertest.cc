@@ -3174,8 +3174,10 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationTriggered_TypedPassword) {
       /*new_password_id=*/"password", /*confirm_password_id=*/nullptr);
 
   // Generation event is triggered due to focus events.
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(fake_pw_client_, GenerationElementLostFocus())
       .Times(testing::AnyNumber());
+#endif  // !BUILDFLAG(IS_ANDROID)
   SimulateUsernameTyping("NewGuy");
   SimulatePasswordTyping("NewPassword");
 
@@ -3295,8 +3297,10 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationSupersedesAutofill) {
   CheckSuggestionsNotShown();
 
   // On destruction the state is updated.
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(fake_pw_client_, GenerationElementLostFocus())
       .Times(testing::AnyNumber());
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // Tests the following scenario: 1) user triggers manual generation, 2) user

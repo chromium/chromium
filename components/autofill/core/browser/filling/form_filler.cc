@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/entity_type.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -106,13 +107,16 @@ std::optional<FieldTypeSet> GetFieldTypesToFillFromFillingProduct(
       }
       return field_types;
     case FillingProduct::kAutofillAi:
-      for (FieldType field_type : kAllFieldTypes) {
-        if (IsAddressType(field_type)) {
-          field_types.insert(field_type);
+      static constexpr auto kAutofillAiFieldTypes = []() {
+        DenseSet<FieldType> result;
+        for (AttributeType type : DenseSet<AttributeType>::all()) {
+          result.insert(type.field_type());
         }
-      }
-      field_types.insert_all({UNKNOWN_TYPE, IMPROVED_PREDICTION});
-      return field_types;
+        // Some attributes may map to `UNKNOWN_TYPE` - remove that.
+        result.erase(UNKNOWN_TYPE);
+        return result;
+      }();
+      return kAutofillAiFieldTypes;
     case FillingProduct::kPassword:
       for (FieldType field_type : kAllFieldTypes) {
         if (FieldTypeGroupSet({FieldTypeGroup::kUsernameField,

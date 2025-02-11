@@ -1433,8 +1433,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // Creates a browser with four tabs. The last two tabs are in Tab Group 1. The
 // second tab is in Tab Group 2. Dragging the second tab over one to the right
 // will result in the tab joining Tab Group 1. While this drag is still in
-// session, pressing escape will revert group of the tab to before the drag
-// session started.
+// session, pressing escape will revert group of the tab, but will not recreate
+// the group because the group was closed during dragging.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        RevertDragSingleTabGroupIntoGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
@@ -1461,16 +1461,14 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   ASSERT_TRUE(TabDragController::IsActive());
 
-  // Pressing escape will revert the tabs to original state before the drag.
+  // Reverting the drag (by pressing escape) will not rebuild the group because
+  // saved group information is not saved in the tab drag controller, so the
+  // group would be duplicated.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
                                               false, false, false));
   EXPECT_EQ("0 1 2 3", IDString(model));
   EXPECT_EQ(group_model->GetTabGroup(group1)->ListTabs(), gfx::Range(2, 4));
-  EXPECT_EQ(group_model->GetTabGroup(group2)->ListTabs(), gfx::Range(1, 2));
-  const tab_groups::TabGroupVisualData* group2_visual_data =
-      group_model->GetTabGroup(group2)->visual_data();
-  EXPECT_THAT(group2_visual_data->title(), new_data.title());
-  EXPECT_THAT(group2_visual_data->color(), new_data.color());
+  EXPECT_FALSE(group_model->ContainsTabGroup(group2));
 }
 
 // Creates a browser with four tabs. The middle two belong in the same Tab

@@ -393,7 +393,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     }
 #endif
 
-    controller_->StartFlow(std::move(transport_availability));
+    controller_->StartFlow(std::move(transport_availability), {});
     if (name.ends_with("_disabled")) {
       model_->ui_disabled_ = true;
       model_->OnSheetModelChanged();
@@ -825,7 +825,7 @@ class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
     } else {
       NOTREACHED();
     }
-    controller_->StartFlow(std::move(transport_availability));
+    controller_->StartFlow(std::move(transport_availability), {});
     if (name.ends_with("_disabled")) {
       model_->ui_disabled_ = true;
       model_->OnSheetModelChanged();

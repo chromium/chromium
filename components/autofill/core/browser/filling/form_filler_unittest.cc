@@ -1640,23 +1640,27 @@ TEST_F(FormFillerTest, PreFilledCCFieldInAddressFormDoesNotCauseCrash) {
 
 TEST_F(FormFillerTest, FillOrPreviewFormWithAutofillAi) {
   test::FormDescription form_description = {
-      .fields = {{.role = NAME_FIRST, .heuristic_type = NAME_FIRST},
-                 {.role = NAME_LAST, .heuristic_type = NAME_LAST},
+      .fields = {{.role = PASSPORT_NAME_TAG, .heuristic_type = NAME_FIRST},
+                 {.role = PASSPORT_NAME_TAG, .heuristic_type = NAME_LAST},
+                 {.role = PASSPORT_NUMBER},
                  {.role = IBAN_VALUE, .heuristic_type = IBAN_VALUE},
                  {.role = UNKNOWN_TYPE, .heuristic_type = UNKNOWN_TYPE}}};
   FormData form = test::GetFormData(form_description);
   browser_autofill_manager_->AddSeenForm(
-      form, test::GetHeuristicTypes(form_description), /*server_types=*/{});
+      form, test::GetHeuristicTypes(form_description),
+      test::GetServerTypes(form_description));
   FormsSeen({form});
   base::flat_map<FieldGlobalId, std::u16string> values_to_fill = {
       // Not filled because the value to fill is empty.
       {form.fields()[0].global_id(), u""},
       // Filled.
       {form.fields()[1].global_id(), u"Doe"},
+      // Filled.
+      {form.fields()[2].global_id(), u"123"},
       // Not filled because IBANs aren't among the supported types.
-      {form.fields()[2].global_id(), u"DE01234567890123456789"},
-      // Filled because unclassified fields are supported
-      {form.fields()[3].global_id(), u"100 John Doe Rd"}};
+      {form.fields()[3].global_id(), u"DE01234567890123456789"},
+      // Not filled because unclassified fields are not supported.
+      {form.fields()[4].global_id(), u"Hello!"}};
   std::vector<FormFieldData> filled_fields;
   EXPECT_CALL(autofill_driver_, ApplyFormAction)
       .WillOnce(DoAll(SaveArgElementsTo<2>(&filled_fields),
@@ -1667,7 +1671,7 @@ TEST_F(FormFillerTest, FillOrPreviewFormWithAutofillAi) {
       AutofillTriggerSource::kAutofillAi);
   ASSERT_EQ(filled_fields.size(), 2u);
   EXPECT_EQ(filled_fields[0].value(), u"Doe");
-  EXPECT_EQ(filled_fields[1].value(), u"100 John Doe Rd");
+  EXPECT_EQ(filled_fields[1].value(), u"123");
 }
 
 // The following Refill Tests ensure that Autofill can handle the situation

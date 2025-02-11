@@ -328,16 +328,18 @@ class ChromePasswordManagerClient
   void AutomaticGenerationAvailable(
       const autofill::password_generation::PasswordGenerationUIData& ui_data)
       override;
+  void PresaveGeneratedPassword(const autofill::FormData& form_data,
+                                const std::u16string& password_value) override;
+  void PasswordNoLongerGenerated(const autofill::FormData& form_data) override;
+#if !BUILDFLAG(IS_ANDROID)
   void ShowPasswordEditingPopup(const gfx::RectF& bounds,
                                 const autofill::FormData& form_data,
                                 autofill::FieldRendererId field_renderer_id,
                                 const std::u16string& password_value) override;
   void PasswordGenerationRejectedByTyping() override;
-  void PresaveGeneratedPassword(const autofill::FormData& form_data,
-                                const std::u16string& password_value) override;
-  void PasswordNoLongerGenerated(const autofill::FormData& form_data) override;
   void FrameWasScrolled() override;
   void GenerationElementLostFocus() override;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Observer for PasswordGenerationPopup events. Used for testing.
   void SetTestObserver(PasswordGenerationPopupObserver* observer);

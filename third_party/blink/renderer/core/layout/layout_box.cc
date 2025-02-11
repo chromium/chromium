@@ -2947,54 +2947,6 @@ void LayoutBox::InflateVisualRectForFilter(
       gfx::QuadF(gfx::RectF(Layer()->MapRectForFilter(rect))));
 }
 
-bool LayoutBox::SkipContainingBlockForPercentHeightCalculation(
-    const LayoutBox* containing_block) {
-  const bool in_quirks_mode = containing_block->GetDocument().InQuirksMode();
-  // Anonymous blocks should not impede percentage resolution on a child.
-  // Examples of such anonymous blocks are blocks wrapped around inlines that
-  // have block siblings (from the CSS spec) and multicol flow threads (an
-  // implementation detail). Another implementation detail, ruby columns, create
-  // anonymous inline-blocks, so skip those too. All other types of anonymous
-  // objects, such as table-cells, will be treated just as if they were
-  // non-anonymous.
-  if (containing_block->IsAnonymous()) {
-    if (!in_quirks_mode && containing_block->Parent() &&
-        containing_block->Parent()->IsFieldset()) {
-      return false;
-    }
-    EDisplay display = containing_block->StyleRef().Display();
-    return display == EDisplay::kBlock || display == EDisplay::kInlineBlock ||
-           display == EDisplay::kFlowRoot;
-  }
-
-  // For quirks mode, we skip most auto-height containing blocks when computing
-  // percentages.
-  if (!in_quirks_mode ||
-      !containing_block->StyleRef().LogicalHeight().HasAuto()) {
-    return false;
-  }
-
-  const Node* node = containing_block->GetNode();
-  if (node->IsInUserAgentShadowRoot()) [[unlikely]] {
-    const Element* host = node->OwnerShadowHost();
-    if (const auto* input = DynamicTo<HTMLInputElement>(host)) {
-      // In web_tests/fast/forms/range/range-thumb-height-percentage.html, a
-      // percent height for the slider thumb element should refer to the height
-      // of the INPUT box.
-      if (input->FormControlType() == FormControlType::kInputRange) {
-        return true;
-      }
-    }
-  }
-
-  return !containing_block->IsLayoutReplaced() &&
-         !containing_block->IsTableCell() &&
-         !containing_block->IsOutOfFlowPositioned() &&
-         !containing_block->IsLayoutGrid() &&
-         !containing_block->IsFlexibleBox() &&
-         !containing_block->IsLayoutCustom();
-}
-
 LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPositioned(
     const LayoutBoxModelObject* containing_block) const {
   NOT_DESTROYED();

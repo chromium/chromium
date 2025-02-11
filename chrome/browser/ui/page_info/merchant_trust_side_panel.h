@@ -13,7 +13,6 @@ class WebContents;
 
 static const char kMerchantTrustContextParameterName[] = "s";
 static const char kMerchantTrustContextParameterValue[] = "CHROME_SIDE_PANEL";
-static const char kMerchantTrustRef[] = "reviews";
 
 // Implemented by merchant_trust_side_panel_coordinator.cc in ui/views.
 void ShowMerchantTrustSidePanel(content::WebContents* web_contents,

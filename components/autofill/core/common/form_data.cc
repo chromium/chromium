@@ -95,23 +95,6 @@ FormData& FormData::operator=(FormData&&) = default;
 
 FormData::~FormData() = default;
 
-bool FormData::SameFormAs(const FormData& form) const {
-  if (name() != form.name() || id_attribute() != form.id_attribute() ||
-      name_attribute() != form.name_attribute() || url() != form.url() ||
-      action() != form.action() ||
-      likely_contains_captcha() != form.likely_contains_captcha() ||
-      renderer_id().is_null() != form.renderer_id().is_null() ||
-      fields_.size() != form.fields_.size()) {
-    return false;
-  }
-  for (size_t i = 0; i < fields_.size(); ++i) {
-    if (!fields_[i].SameFieldAs(form.fields_[i])) {
-      return false;
-    }
-  }
-  return true;
-}
-
 // static
 bool FormData::DeepEqual(const FormData& a, const FormData& b) {
   // We compare all unique identifiers first, including the field renderer IDs,

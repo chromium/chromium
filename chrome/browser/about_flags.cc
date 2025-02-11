@@ -4571,9 +4571,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-webassembly-tiering", flag_descriptions::kEnableWasmTieringName,
      flag_descriptions::kEnableWasmTieringDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kWebAssemblyTiering)},
-    {"enable-webassembly-memory64", flag_descriptions::kEnableWasmMemory64Name,
-     flag_descriptions::kEnableWasmMemory64Description, kOsAll,
-     FEATURE_VALUE_TYPE(features::kWebAssemblyMemory64)},
     {"enable-future-v8-vm-features", flag_descriptions::kV8VmFutureName,
      flag_descriptions::kV8VmFutureDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kV8VmFuture)},
@@ -5496,15 +5493,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWaylandLinuxDrmSyncobjDescription, kOsLinux,
      FEATURE_VALUE_TYPE(features::kWaylandLinuxDrmSyncobj)},
 #endif  // BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-    {"skip-undecryptable-passwords",
-     flag_descriptions::kSkipUndecryptablePasswordsName,
-     flag_descriptions::kSkipUndecryptablePasswordsDescription,
-     kOsLinux | kOsMac,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kSkipUndecryptablePasswords)},
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENABLE_VR)
     {"webxr-hand-input", flag_descriptions::kWebXrHandInputName,

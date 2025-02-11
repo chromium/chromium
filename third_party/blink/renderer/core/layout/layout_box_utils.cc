@@ -18,12 +18,7 @@
 
 namespace blink {
 
-bool LayoutBoxUtils::SkipContainingBlockForPercentHeightCalculation(
-    const LayoutBlock* cb) {
-  return LayoutBox::SkipContainingBlockForPercentHeightCalculation(cb);
-}
-
-LayoutUnit LayoutBoxUtils::InlineSize(const LayoutBox& box) {
+LayoutUnit BoxInlineSize(const LayoutBox& box) {
   DCHECK_GT(box.PhysicalFragmentCount(), 0u);
 
   // TODO(almaher): We can't assume all fragments will have the same inline
@@ -34,7 +29,7 @@ LayoutUnit LayoutBoxUtils::InlineSize(const LayoutBox& box) {
       .inline_size;
 }
 
-LayoutUnit LayoutBoxUtils::TotalBlockSize(const LayoutBox& box) {
+LayoutUnit BoxTotalBlockSize(const LayoutBox& box) {
   wtf_size_t num_fragments = box.PhysicalFragmentCount();
   DCHECK_GT(num_fragments, 0u);
 
@@ -62,8 +57,7 @@ LayoutUnit LayoutBoxUtils::TotalBlockSize(const LayoutBox& box) {
   return total_block_size;
 }
 
-// static
-LayoutPoint LayoutBoxUtils::ComputeLocation(
+LayoutPoint ComputeBoxLocation(
     const PhysicalBoxFragment& child_fragment,
     PhysicalOffset offset,
     const PhysicalBoxFragment& container_fragment,

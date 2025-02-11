@@ -1118,8 +1118,8 @@ void LayoutMultiColumnFlowThread::UpdateGeometry() {
       if (!has_processed_first_column_in_flow_thread) {
         // The offset of the flow thread is the same as that of the first
         // column.
-        frame_location_ = LayoutBoxUtils::ComputeLocation(
-            child_fragment, link.Offset(), container_fragment, break_token);
+        frame_location_ = ComputeBoxLocation(child_fragment, link.Offset(),
+                                             container_fragment, break_token);
 
         thread_size.inline_size = logical_size.inline_size;
         has_processed_first_column_in_flow_thread = true;

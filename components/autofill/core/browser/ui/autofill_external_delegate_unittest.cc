@@ -332,6 +332,16 @@ class AutofillExternalDelegateTest : public testing::Test {
                                 trigger_source, update_datalist);
   }
 
+  void IssueOnQuery(test::FormDescription form_description) {
+    queried_form_ = test::GetFormData(form_description);
+    manager().AddSeenForm(queried_form(),
+                          test::GetHeuristicTypes(form_description),
+                          test::GetServerTypes(form_description));
+    external_delegate().OnQuery(queried_form(), queried_field(), gfx::Rect(),
+                                kDefaultTriggerSource,
+                                /*update_datalist=*/false);
+  }
+
   void IssueOnQuery(
       const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source = kDefaultTriggerSource,
@@ -1168,22 +1178,19 @@ TEST_F(AutofillExternalDelegateTest, AcceptSuggestion_TriggerSource) {
 // `Suggestion::AutofillAiPayload` payload, the full form is filled
 // accordingly.
 TEST_F(AutofillExternalDelegateTest, DidAcceptFillAutofillAiFillsFullForm) {
-  FormData form = CreateTestAddressFormData();
-  ASSERT_GT(form.fields().size(), 0UL);
-  const std::u16string value_to_fill = u"John";
-  FormFieldData* field_to_fill =
-      test_api(form).FindFieldByNameForTest(u"firstname");
-  ASSERT_TRUE(field_to_fill);
+  IssueOnQuery(
+      {.fields = {{.role = PASSPORT_NAME_TAG, .heuristic_type = NAME_FIRST},
+                  {.role = PASSPORT_NAME_TAG, .heuristic_type = NAME_LAST},
+                  {.role = PASSPORT_NUMBER},
+                  {.role = IBAN_VALUE, .heuristic_type = IBAN_VALUE},
+                  {.role = UNKNOWN_TYPE, .heuristic_type = UNKNOWN_TYPE}}});
+  const std::u16string value_to_fill = u"123";
+  const FormFieldData& field_to_fill = queried_form().fields()[2];
 
-  manager().OnFormsSeen({form}, {});
-  external_delegate().OnQuery(form, *field_to_fill,
-                              /*caret_bounds=*/gfx::Rect(),
-                              AutofillSuggestionTriggerSource::kAutofillAi,
-                              /*update_datalist=*/false);
   Suggestion fill_suggestion =
-      Suggestion(u"Autocomplete", SuggestionType::kFillAutofillAi);
+      Suggestion(u"123", SuggestionType::kFillAutofillAi);
   fill_suggestion.payload = Suggestion::AutofillAiPayload(
-      {{field_to_fill->global_id(), value_to_fill}});
+      {{field_to_fill.global_id(), value_to_fill}});
 
   std::vector<FormFieldData> filled_fields;
   EXPECT_CALL(driver(), ApplyFormAction)
@@ -1194,7 +1201,7 @@ TEST_F(AutofillExternalDelegateTest, DidAcceptFillAutofillAiFillsFullForm) {
   EXPECT_THAT(filled_fields,
               ElementsAre(AllOf(
                   Property("global_id", &FormFieldData::global_id,
-                           field_to_fill->global_id()),
+                           field_to_fill.global_id()),
                   Property("value", &FormFieldData::value, value_to_fill))));
 }
 

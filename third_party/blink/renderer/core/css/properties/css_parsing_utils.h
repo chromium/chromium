@@ -439,8 +439,7 @@ CSSValue* ParseBorderWidthSide(CSSParserTokenStream&,
 const CSSValue* ParseBorderStyleSide(CSSParserTokenStream&,
                                      const CSSParserContext&);
 
-const CSSValue* ParseCornerShape(CSSParserTokenStream&,
-                                 const CSSParserContext&);
+CSSValue* ConsumeCornerShape(CSSParserTokenStream&, const CSSParserContext&);
 
 CSSValue* ConsumeGapDecorationPropertyList(CSSParserTokenStream&,
                                            const CSSParserContext&,
@@ -563,6 +562,9 @@ bool ConsumeRadii(std::array<CSSValue*, 4>& horizontal_radii,
                   CSSParserTokenStream& stream,
                   const CSSParserContext& context,
                   bool use_legacy_parsing);
+bool ConsumeCornerShapes(std::array<CSSValue*, 4>& shapes,
+                         CSSParserTokenStream& stream,
+                         const CSSParserContext& context);
 
 CSSValue* ConsumeTextDecorationLine(CSSParserTokenStream&);
 CSSValue* ConsumeTextBoxEdge(CSSParserTokenStream&);

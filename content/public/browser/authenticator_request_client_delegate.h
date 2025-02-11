@@ -230,9 +230,10 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
 
   bool IsVirtualEnvironmentEnabled();
 
-  // Set the credential types that are expected by the Ambient UI.
-  // Credential types are defined in `credential_types.mojom`.
-  virtual void SetAmbientCredentialTypes(int credential_type_flags);
+  // Set the credential types that are expected by the delegate. The types can
+  // be used by the Ambient UI or modal requests. Credential types are defined
+  // in `credential_type_flags.mojom`.
+  virtual void SetCredentialTypes(int credential_type_flags);
 
   // Sets a credential filter for conditional mediation requests, which will
   // only allow passkeys with matching credential IDs to be displayed to the
