@@ -200,7 +200,6 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
-#include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
@@ -512,7 +511,6 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(selection_);
   visitor->Trace(event_handler_);
   visitor->Trace(console_);
-  visitor->Trace(smooth_scroll_sequencer_);
   visitor->Trace(content_capture_manager_);
   visitor->Trace(system_clipboard_);
   visitor->Trace(virtual_keyboard_overlay_changed_observers_);
@@ -967,8 +965,6 @@ void LocalFrame::DidAttachDocument() {
   GetEventHandler().Clear();
   Selection().DidAttachDocument(document);
   notified_color_scheme_ = false;
-
-  smooth_scroll_sequencer_.Clear();
 
 #if !BUILDFLAG(IS_ANDROID)
   // For PWAs with display_override "window-controls-overlay", titlebar area
@@ -2691,46 +2687,6 @@ void LocalFrame::PauseSubresourceLoading(
 
 void LocalFrame::ResumeSubresourceLoading() {
   pause_handle_receivers_.Clear();
-}
-
-SmoothScrollSequencer* LocalFrame::CreateNewSmoothScrollSequence() {
-  if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
-    // If MultiSmoothScrollIntoView is enabled, we run smooth scrolls in
-    // parallel, not in sequence.
-    return nullptr;
-  }
-  if (!IsLocalRoot()) {
-    return LocalFrameRoot().CreateNewSmoothScrollSequence();
-  }
-
-  SmoothScrollSequencer* old_sequencer = smooth_scroll_sequencer_;
-  smooth_scroll_sequencer_ = MakeGarbageCollected<SmoothScrollSequencer>(*this);
-  return old_sequencer;
-}
-
-void LocalFrame::ReinstateSmoothScrollSequence(
-    SmoothScrollSequencer* sequencer) {
-  if (!IsLocalRoot()) {
-    LocalFrameRoot().ReinstateSmoothScrollSequence(sequencer);
-    return;
-  }
-
-  smooth_scroll_sequencer_ = sequencer;
-}
-
-void LocalFrame::FinishedScrollSequence() {
-  if (!IsLocalRoot()) {
-    LocalFrameRoot().FinishedScrollSequence();
-    return;
-  }
-
-  smooth_scroll_sequencer_.Clear();
-}
-
-SmoothScrollSequencer* LocalFrame::GetSmoothScrollSequencer() const {
-  if (!IsLocalRoot())
-    return LocalFrameRoot().GetSmoothScrollSequencer();
-  return smooth_scroll_sequencer_.Get();
 }
 
 void LocalFrame::UpdateTaskTime(base::TimeDelta time) {

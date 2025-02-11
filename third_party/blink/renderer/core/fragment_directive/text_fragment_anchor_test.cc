@@ -949,8 +949,7 @@ INSTANTIATE_TEST_SUITE_P(
                     mojom::blink::ScrollType::kProgrammatic,
                     mojom::blink::ScrollType::kClamping,
                     mojom::blink::ScrollType::kCompositor,
-                    mojom::blink::ScrollType::kAnchoring,
-                    mojom::blink::ScrollType::kSequenced));
+                    mojom::blink::ScrollType::kAnchoring));
 
 // Test that a user scroll cancels the scroll into view.
 TEST_P(TextFragmentAnchorScrollTest, ScrollCancelled) {

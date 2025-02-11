@@ -283,8 +283,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool IsThrottled() const override;
   ChromeClient* GetChromeClient() const override;
 
-  SmoothScrollSequencer* GetSmoothScrollSequencer() const override;
-
   void DidCompositorScroll(const gfx::PointF&) override;
 
   bool ShouldScrollOnMainThread() const override;

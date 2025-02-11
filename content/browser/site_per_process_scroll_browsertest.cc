@@ -277,9 +277,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
 
 // This test verifies that smooth scrolling works correctly inside nested OOPIFs
 // which are same origin with the parent. Note that since the frame tree has
-// a A(B(A1())) structure, if and A1 and A2 shared the same
-// SmoothScrollSequencer, then this test would time out or at best be flaky with
-// random time outs. See https://crbug.com/865446 for more context.
+// a A(B(A1())) structure. See https://crbug.com/865446 for more context.
 IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
                        SmoothScrollInNestedSameProcessOOPIF) {
   GURL main_frame(

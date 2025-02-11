@@ -2901,11 +2901,6 @@
       name: "MultiSelectDeselectWhenOnlyOption",
       status: "test",
     },
-    {
-      // https://chromestatus.com/feature/6270155647352832
-      name: "MultiSmoothScrollIntoView",
-      status: "stable",
-    },
     // crbug.com/1446498: This feature is being used for the deprecation/removal
     // of Mutation Events. Timeline summary:
     //  - Events disabled for the open web: M127 (July 23, 2024)

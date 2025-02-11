@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
-#include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -179,9 +178,6 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
   PhysicalRect absolute_rect_to_scroll = absolute_rect;
   PhysicalBoxStrut active_scroll_margin = scroll_margin;
   bool scrolled_to_area = false;
-  bool will_sequence_scrolls =
-      !RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled() &&
-      params->is_for_scroll_sequence;
 
   // TODO(bokan): Temporary, to track cross-origin scroll-into-view prevalence.
   // https://crbug.com/1339003.
@@ -209,12 +205,6 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
         GetScrollableAreaForLayoutBox(*current_box, params);
     if (area_to_scroll) {
       ScrollOffset scroll_before = area_to_scroll->GetScrollOffset();
-      CHECK(!will_sequence_scrolls ||
-            area_to_scroll->GetSmoothScrollSequencer());
-      wtf_size_t num_scroll_sequences =
-          will_sequence_scrolls
-              ? area_to_scroll->GetSmoothScrollSequencer()->GetCount()
-              : 0ul;
 
       absolute_rect_to_scroll = area_to_scroll->ScrollIntoView(
           absolute_rect_to_scroll, active_scroll_margin, params);
@@ -227,11 +217,7 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
       // asynchronously after this method returns. Thus, for scroll sequences,
       // check instead if an entry was added to the sequence which occurs only
       // if the scroll offset is changed as a result of ScrollIntoView.
-      bool scroll_changed =
-          will_sequence_scrolls
-              ? area_to_scroll->GetSmoothScrollSequencer()->GetCount() !=
-                    num_scroll_sequences
-              : area_to_scroll->GetScrollOffset() != scroll_before;
+      bool scroll_changed = area_to_scroll->GetScrollOffset() != scroll_before;
       if (scroll_changed && !params->for_focused_editable &&
           params->type == mojom::blink::ScrollType::kProgrammatic) {
         const SecurityOrigin* current_frame_origin =
@@ -328,15 +314,6 @@ void ScrollRectToVisible(const LayoutObject& layout_object,
 
   params->is_for_scroll_sequence |=
       params->type == mojom::blink::ScrollType::kProgrammatic;
-  bool will_sequence_scrolls =
-      !RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled() &&
-      params->is_for_scroll_sequence;
-
-  SmoothScrollSequencer* old_sequencer = nullptr;
-  if (will_sequence_scrolls) {
-    old_sequencer = frame->CreateNewSmoothScrollSequence();
-    frame->GetSmoothScrollSequencer()->SetScrollType(params->type);
-  }
 
   PhysicalBoxStrut scroll_margin =
       layout_object.Style() ? layout_object.Style()->ScrollMarginStrut()
@@ -346,22 +323,6 @@ void ScrollRectToVisible(const LayoutObject& layout_object,
   std::optional<PhysicalRect> updated_absolute_rect =
       PerformBubblingScrollIntoView(*enclosing_box, absolute_rect_to_scroll,
                                     params, scroll_margin, from_remote_frame);
-
-  if (will_sequence_scrolls) {
-    if (frame->GetSmoothScrollSequencer()->IsEmpty()) {
-      // If the scroll into view was a no-op (the element was already in the
-      // proper place), reinstate any previously running smooth scroll sequence
-      // so that it can continue running. This prevents unintentionally
-      // clobbering a scroll by e.g. setting focus() to an in-view element.
-      frame->ReinstateSmoothScrollSequence(old_sequencer);
-    } else {
-      // Otherwise clobber any previous sequence.
-      if (old_sequencer) {
-        old_sequencer->AbortAnimations();
-      }
-      frame->GetSmoothScrollSequencer()->RunQueuedAnimations();
-    }
-  }
 
   // If the scroll into view stopped early (i.e. before the local root),
   // there's no need to continue bubbling or finishing a scroll focused

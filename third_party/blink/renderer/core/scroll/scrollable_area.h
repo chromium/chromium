@@ -78,7 +78,6 @@ class ProgrammaticScrollAnimator;
 class ScrollAnchor;
 class ScrollAnimatorBase;
 struct SerializedAnchor;
-class SmoothScrollSequencer;
 class ScrollMarkerGroupPseudoElement;
 
 using MainThreadScrollingReasons = uint32_t;
@@ -120,10 +119,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   // Used to scale a length in dip units into a length in layout/paint units.
   virtual float ScaleFromDIP() const;
-
-  virtual SmoothScrollSequencer* GetSmoothScrollSequencer() const {
-    return nullptr;
-  }
 
   virtual ScrollResult UserScroll(ui::ScrollGranularity,
                                   const ScrollOffset&,
@@ -683,7 +678,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   bool ProgrammaticScrollHelper(const ScrollOffset&,
                                 mojom::blink::ScrollBehavior,
-                                bool is_sequenced_scroll,
                                 gfx::Vector2d animation_adjustment,
                                 ScrollCallback on_finish);
   void UserScrollHelper(const ScrollOffset&, mojom::blink::ScrollBehavior);

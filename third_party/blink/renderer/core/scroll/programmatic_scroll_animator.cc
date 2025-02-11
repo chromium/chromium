@@ -11,7 +11,6 @@
 #include "cc/trees/target_property.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
-#include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
@@ -34,31 +33,21 @@ void ProgrammaticScrollAnimator::ResetAnimationState() {
 }
 
 mojom::blink::ScrollType ProgrammaticScrollAnimator::GetScrollType() const {
-  return is_sequenced_scroll_ ? mojom::blink::ScrollType::kSequenced
-                              : mojom::blink::ScrollType::kProgrammatic;
+  return mojom::blink::ScrollType::kProgrammatic;
 }
 
 void ProgrammaticScrollAnimator::ScrollToOffsetWithoutAnimation(
-    const ScrollOffset& offset,
-    bool is_sequenced_scroll) {
+    const ScrollOffset& offset) {
   CancelAnimation();
-  is_sequenced_scroll_ = is_sequenced_scroll;
   ScrollOffsetChanged(offset, GetScrollType());
-  is_sequenced_scroll_ = false;
-  if (SmoothScrollSequencer* sequencer =
-          GetScrollableArea()->GetSmoothScrollSequencer()) {
-    sequencer->RunQueuedAnimations();
-  }
 }
 
 void ProgrammaticScrollAnimator::AnimateToOffset(
     const ScrollOffset& offset,
-    bool is_sequenced_scroll,
     ScrollableArea::ScrollCallback on_finish) {
   if (run_state_ == RunState::kPostAnimationCleanup)
     ResetAnimationState();
 
-  is_sequenced_scroll_ = is_sequenced_scroll;
   if (on_finish_) {
     std::move(on_finish_)
         .Run(ScrollableArea::ScrollCompletionMode::kInterruptedByScroll);
@@ -147,21 +136,16 @@ void ProgrammaticScrollAnimator::UpdateCompositorAnimations() {
 
     bool sent_to_compositor = false;
     if (!scrollable_area_->ShouldScrollOnMainThread()) {
-      // If MultiSmoothScrollIntoView is not enabled, we use sequenced scrolls
-      // which we cannot send to the compositor thread. crbug.com/730705.
-      if (!is_sequenced_scroll_ ||
-          RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
-        auto animation = cc::KeyframeModel::Create(
-            animation_curve_->Clone(),
-            cc::AnimationIdProvider::NextKeyframeModelId(),
-            cc::AnimationIdProvider::NextGroupId(),
-            cc::KeyframeModel::TargetPropertyId(
-                cc::TargetProperty::SCROLL_OFFSET));
+      auto animation = cc::KeyframeModel::Create(
+          animation_curve_->Clone(),
+          cc::AnimationIdProvider::NextKeyframeModelId(),
+          cc::AnimationIdProvider::NextGroupId(),
+          cc::KeyframeModel::TargetPropertyId(
+              cc::TargetProperty::SCROLL_OFFSET));
 
-        if (AddAnimation(std::move(animation))) {
-          sent_to_compositor = true;
-          run_state_ = RunState::kRunningOnCompositor;
-        }
+      if (AddAnimation(std::move(animation))) {
+        sent_to_compositor = true;
+        run_state_ = RunState::kRunningOnCompositor;
       }
     }
 
@@ -202,12 +186,6 @@ void ProgrammaticScrollAnimator::NotifyCompositorAnimationFinished(
 void ProgrammaticScrollAnimator::AnimationFinished() {
   if (on_finish_)
     std::move(on_finish_).Run(ScrollableArea::ScrollCompletionMode::kFinished);
-  if (is_sequenced_scroll_) {
-    is_sequenced_scroll_ = false;
-    if (SmoothScrollSequencer* sequencer =
-            GetScrollableArea()->GetSmoothScrollSequencer())
-      sequencer->RunQueuedAnimations();
-  }
 }
 
 void ProgrammaticScrollAnimator::Trace(Visitor* visitor) const {
