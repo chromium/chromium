@@ -143,7 +143,8 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement,
   ScrollMarkerPseudoElement* Selected() const { return selected_marker_; }
   void ActivateNextScrollMarker();
   void ActivatePrevScrollMarker();
-  void ActivateScrollMarker(ScrollMarkerPseudoElement* scroll_marker);
+  CORE_EXPORT void ActivateScrollMarker(
+      ScrollMarkerPseudoElement* scroll_marker);
 
   void DetachLayoutTree(bool performing_reattach) final;
   void Dispose() final;
