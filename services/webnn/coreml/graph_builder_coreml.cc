@@ -10,6 +10,7 @@
 #include "services/webnn/coreml/graph_builder_coreml.h"
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <limits>
 #include <memory>
@@ -128,6 +129,7 @@ constexpr char kOpConcatTypeName[] = "concat";
 constexpr char kOpConv2dTypeName[] = "conv";
 constexpr char kOpConvTranspose2dTypeName[] = "conv_transpose";
 constexpr char kOpCumulativeSumTypeName[] = "cumsum";
+constexpr char kOpDequantizeLinearTypeName[] = "dequantize";
 constexpr char kOpEluTypeName[] = "elu";
 constexpr char kOpExpandTypeName[] = "tile";
 constexpr char kOpFillTypeName[] = "fill";
@@ -996,6 +998,8 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
   static constexpr SupportedRanks kMaxRank = SupportedRanks::UpTo(5);
   static constexpr SupportedRanks kNonScalarMaxRank =
       SupportedRanks::NonScalarUpTo(5);
+  static constexpr SupportedDataTypes k8BitInts{OperandDataType::kInt8,
+                                                OperandDataType::kUint8};
 
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   return ContextProperties(
@@ -1023,9 +1027,10 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
        /*cumulative_sum_input=*/
        {kFloatsAndInt32, kMaxRank},
-       // DequantizeLinear is not implemented.
-       /*dequantize_linear_input=*/{},
-       /*dequantize_linear_scale=*/{},
+       // TODO(crbug.com/361603703): Support constant (u)int4 inputs via
+       // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS18.compression.constexpr_blockwise_shift_scale
+       /*dequantize_linear_input=*/k8BitInts,
+       /*dequantize_linear_scale=*/DataTypeConstraint::kFloat16To32,
        /*add_input=*/{kFloatsAndInt32, kMaxRank},
        /*sub_input=*/{kFloatsAndInt32, kMaxRank},
        /*mul_input=*/{kFloatsAndInt32, kMaxRank},
@@ -1153,7 +1158,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // Note that BOOL is also supported by CoreML, but WebNN does not have a
        // corresponding BOOL type. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_transformation.reshape
-       /*reshape_input=*/{kFloatsAndInt32, kMaxRank},
+       /*reshape_input=*/{kFloat16To32Int8To32AndUint8, kMaxRank},
        // TODO(crbug.com/377349382): Implement Reverse.
        /*reverse_input=*/{},
        /*scatter_elements_input=*/{kFloatsAndInt32, kMaxRank},
@@ -1294,6 +1299,11 @@ GraphBuilderCoreml::BuildCoreMLModel() {
       case mojom::Operation::Tag::kCumulativeSum: {
         RETURN_IF_ERROR(AddOperationForCumulativeSum(
             *operation->get_cumulative_sum(), block));
+        break;
+      }
+      case mojom::Operation::Tag::kDequantizeLinear: {
+        RETURN_IF_ERROR(AddOperationForDequantizeLinear(
+            *operation->get_dequantize_linear(), block));
         break;
       }
       case mojom::Operation::Tag::kElementWiseBinary: {
@@ -1503,7 +1513,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         RETURN_IF_ERROR(AddOperationForWhere(*operation->get_where(), block));
         break;
       }
-      case mojom::Operation::Tag::kDequantizeLinear:
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kQuantizeLinear:
       case mojom::Operation::Tag::kReverse:
@@ -2117,6 +2126,116 @@ GraphBuilderCoreml::AddOperationForCumulativeSum(
        {kParamExclusive, CreateScalarImmediateValue(operation.exclusive)},
        {kParamReverse, CreateScalarImmediateValue(operation.reversed)}});
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForDequantizeLinear(
+    const mojom::DequantizeLinear& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  const OperandInfo& zero_point_operand_info =
+      GetOperandInfo(operation.zero_point_operand_id);
+  const OperandInfo& scale_operand_info =
+      GetOperandInfo(operation.scale_operand_id);
+
+  const OperandDataType input_operand_data_type =
+      MILDataTypeToOperandType(input_operand_info.mil_data_type);
+  const OperandDataType scale_operand_data_type =
+      MILDataTypeToOperandType(scale_operand_info.mil_data_type);
+
+  CHECK(context_properties_.data_type_limits.dequantize_linear_input.Has(
+      input_operand_data_type));
+  CHECK(context_properties_.data_type_limits.dequantize_linear_scale.Has(
+      scale_operand_data_type));
+
+  // TODO(crbug.com/395920220): Expose these constraints via rankRange.
+  if (zero_point_operand_info.dimensions.size() > 1) {
+    return NewNotSupportedError(
+        "Unsupported options to dequantizeLinear. 'zeroPoint' must be a "
+        "scalar or vector. Blockwise dequantization is not supported.");
+  }
+
+  if (scale_operand_info.dimensions.size() > 1) {
+    return NewNotSupportedError(
+        "Unsupported options to dequantizeLinear. 'scale' must be a scalar "
+        "or vector. Blockwise dequantization is not supported.");
+  }
+
+  // TODO(crbug.com/338529226): These params must all be constant tensors.
+  if (!constant_operands_->contains(operation.zero_point_operand_id)) {
+    return NewNotSupportedError(
+        "Unsupported options to dequantizeLinear. 'zero_point' must be "
+        "constant.");
+  }
+
+  if (!constant_operands_->contains(operation.scale_operand_id)) {
+    return NewNotSupportedError(
+        "Unsupported options to dequantizeLinear. 'scale' must be constant.");
+  }
+
+  CHECK_EQ(input_operand_info.mil_data_type,
+           zero_point_operand_info.mil_data_type);
+  CHECK_EQ(scale_operand_info.mil_data_type,
+           GetOperandInfo(operation.output_operand_id).mil_data_type);
+
+  uint64_t input_operand_id = operation.input_operand_id;
+  if (input_operand_info.dimensions.empty()) {
+    ASSIGN_OR_RETURN(input_operand_id, GenerateInternalOperandInfo(
+                                           input_operand_info.mil_data_type,
+                                           std::array<uint32_t, 1>{1}));
+    RETURN_IF_ERROR(AddOperationForReshape(operation.input_operand_id,
+                                           input_operand_id, block));
+  }
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpDequantizeLinearTypeName);
+
+  static constexpr char kParamInput[] = "input";
+  RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kParamInput,
+                                      input_operand_id));
+
+  static constexpr char kParamZeroPoint[] = "zero_point";
+  static constexpr char kParamScale[] = "scale";
+
+  RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kParamZeroPoint,
+                                      operation.zero_point_operand_id));
+
+  RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kParamScale,
+                                      operation.scale_operand_id));
+
+  // An "axis" must be specified if "scale" is a vector.
+  if (!scale_operand_info.dimensions.empty()) {
+    CHECK_EQ(scale_operand_info.dimensions.size(), 1u);
+    // Find `axis` which satisfies: size(scale_vector) == input.shape[axis]
+    auto axis_it = std::ranges::find(input_operand_info.dimensions,
+                                     scale_operand_info.dimensions[0]);
+    if (axis_it == input_operand_info.dimensions.end()) {
+      return NewNotSupportedError(
+          "Unsupported options to dequantizeLinear. The length of the 'scale' "
+          "vector must match a dimension of the input. Blockwise "
+          "dequantization is not supported.");
+    }
+
+    int32_t axis = base::checked_cast<int32_t>(
+        axis_it - input_operand_info.dimensions.begin());
+    SetInputWithValue(*op->mutable_inputs(), kOpParamAxis,
+                      CreateScalarImmediateValue(axis));
+  }
+
+  if (input_operand_id != operation.input_operand_id) {
+    ASSIGN_OR_RETURN(
+        uint64_t output_operand_id,
+        GenerateInternalOperandInfo(
+            GetOperandInfo(operation.output_operand_id).mil_data_type,
+            std::array<uint32_t, 1>{1}));
+    PopulateNamedValueType(output_operand_id, *op->add_outputs());
+    RETURN_IF_ERROR(AddOperationForReshape(output_operand_id,
+                                           operation.output_operand_id, block));
+  } else {
+    PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  }
   return base::ok();
 }
 
