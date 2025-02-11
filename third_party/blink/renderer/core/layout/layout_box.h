@@ -1257,9 +1257,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutUnit ContainingBlockLogicalHeightForPositioned(
       const LayoutBoxModelObject* containing_block) const;
 
-  static bool SkipContainingBlockForPercentHeightCalculation(
-      const LayoutBox* containing_block);
-
   virtual LayoutPoint LocationInternal() const {
     NOT_DESTROYED();
     return frame_location_;
@@ -1399,9 +1396,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   Member<MeasureCache> measure_cache_;
   LayoutResultList layout_results_;
 
-  // LayoutBoxUtils is used for the LayoutNG code querying protected methods on
-  // this class, e.g. determining the static-position of OOF elements.
-  friend class LayoutBoxUtils;
   friend class LayoutBoxTest;
 
  private:

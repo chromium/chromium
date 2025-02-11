@@ -18,11 +18,6 @@
 
 namespace blink {
 
-bool LayoutBoxUtils::SkipContainingBlockForPercentHeightCalculation(
-    const LayoutBlock* cb) {
-  return LayoutBox::SkipContainingBlockForPercentHeightCalculation(cb);
-}
-
 LayoutUnit LayoutBoxUtils::InlineSize(const LayoutBox& box) {
   DCHECK_GT(box.PhysicalFragmentCount(), 0u);
 

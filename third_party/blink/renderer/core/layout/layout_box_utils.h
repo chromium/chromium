@@ -11,7 +11,6 @@ namespace blink {
 
 class BlockBreakToken;
 class LayoutBox;
-class LayoutBlock;
 class LayoutPoint;
 class PhysicalBoxFragment;
 struct PhysicalOffset;
@@ -22,9 +21,6 @@ class LayoutBoxUtils {
   STATIC_ONLY(LayoutBoxUtils);
 
  public:
-  static bool SkipContainingBlockForPercentHeightCalculation(
-      const LayoutBlock* cb);
-
   static LayoutUnit InlineSize(const LayoutBox& box);
 
   // The total block size of all fragments.
