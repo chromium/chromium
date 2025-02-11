@@ -719,7 +719,7 @@ public class ModalDialogManager {
         return mPendingDialogContainer.get(dialogType, priority);
     }
 
-    public Presenter getPresenterForTest(@ModalDialogType int dialogType) {
+    public @Nullable Presenter getPresenterForTest(@ModalDialogType int dialogType) {
         return mPresenters.get(dialogType);
     }
 

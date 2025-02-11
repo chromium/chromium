@@ -4,6 +4,8 @@
 
 package org.chromium.ui.resources;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -78,30 +80,38 @@ public class ResourceManager implements ResourceLoaderCallback {
     }
 
     /**
-     * @return A reference to the {@link DynamicResourceLoader} that provides
-     *         {@link Resource} objects to this class.
+     * @return A reference to the {@link DynamicResourceLoader} that provides {@link Resource}
+     *     objects to this class.
      */
     public DynamicResourceLoader getDynamicResourceLoader() {
-        return (DynamicResourceLoader) mResourceLoaders.get(AndroidResourceType.DYNAMIC);
+        DynamicResourceLoader ret =
+                (DynamicResourceLoader) mResourceLoaders.get(AndroidResourceType.DYNAMIC);
+        assert ret != null;
+        return ret;
     }
 
     /**
-     * @return A reference to the {@link DynamicResourceLoader} for bitmaps that provides
-     *         {@link BitmapDynamicResource} objects to this class.
+     * @return A reference to the {@link DynamicResourceLoader} for bitmaps that provides {@link
+     *     BitmapDynamicResource} objects to this class.
      */
     public DynamicResourceLoader getBitmapDynamicResourceLoader() {
-        return (DynamicResourceLoader) mResourceLoaders.get(AndroidResourceType.DYNAMIC_BITMAP);
+        DynamicResourceLoader ret =
+                (DynamicResourceLoader) mResourceLoaders.get(AndroidResourceType.DYNAMIC_BITMAP);
+        assert ret != null;
+        return ret;
     }
 
     /**
      * Automatically loads any synchronous resources specified in |syncIds| and will start
      * asynchronous reads for any asynchronous resources specified in |asyncIds|.
+     *
      * @param type AndroidResourceType which will be loaded.
      * @param syncIds Resource ids which will be loaded synchronously.
      * @param asyncIds Resource ids which will be loaded asynchronously.
      */
     public void preloadResources(int type, int[] syncIds, int[] asyncIds) {
         ResourceLoader loader = mResourceLoaders.get(type);
+        assumeNonNull(loader);
         if (asyncIds != null) {
             for (Integer resId : asyncIds) {
                 loader.preloadResource(resId);

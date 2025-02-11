@@ -33,7 +33,7 @@ class NfcHost implements WindowEventObserver {
     private @Nullable Callback<@Nullable Activity> mCallback;
 
     /** Provides access to NfcHost via context ID. */
-    public static NfcHost fromContextId(int contextId) {
+    public static @Nullable NfcHost fromContextId(int contextId) {
         return sContextHostsMap.get(contextId);
     }
 
