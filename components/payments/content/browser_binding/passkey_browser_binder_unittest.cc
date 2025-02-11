@@ -143,7 +143,7 @@ TEST_F(PasskeyBrowserBinderTest,
   EXPECT_CALL(
       *mock_web_data_service_,
       SetBrowserBoundKey(fake_credential_id_, fake_relying_party_, fake_bbk_id_,
-                         /*consumer=*/_));
+                         /*consumer=*/NotNull()));
   EXPECT_CALL(mock_callback,
               Run(AllOf(NotNull(), Pointee(Property(
                                        &BrowserBoundKey::GetPublicKeyAsCoseKey,
@@ -177,7 +177,7 @@ TEST_F(PasskeyBrowserBinderTest,
   EXPECT_CALL(
       *mock_web_data_service_,
       SetBrowserBoundKey(fake_credential_id_, fake_relying_party_, fake_bbk_id_,
-                         /*consumer=*/_));
+                         /*consumer=*/NotNull()));
   EXPECT_CALL(mock_callback,
               Run(AllOf(NotNull(), Pointee(Property(
                                        &BrowserBoundKey::GetPublicKeyAsCoseKey,

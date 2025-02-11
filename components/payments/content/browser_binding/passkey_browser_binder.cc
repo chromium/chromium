@@ -164,10 +164,11 @@ void PasskeyBrowserBinder::GetOrCreateBrowserBoundKey(
         random_bytes_as_vector_callback_.Run(kBrowserBoundKeyIdLength);
     // TODO(crbug.com/384954763): Delete the browser bound key from the key
     // store if the result was false (not successful).
-    web_data_service_->SetBrowserBoundKey(std::move(credential_id),
-                                          std::move(relying_party),
-                                          browser_bound_key_id,
-                                          /*consumer=*/nullptr);
+    WebDataServiceBase::Handle handle = web_data_service_->SetBrowserBoundKey(
+        std::move(credential_id), std::move(relying_party),
+        browser_bound_key_id,
+        /*consumer=*/this);
+    set_browser_bound_key_handlers_[handle] = base::DoNothing();
   }
   std::move(callback).Run(key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
       browser_bound_key_id, allowed_credentials));
