@@ -3497,9 +3497,14 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
 }
 
 // Home tab can't be detached.
-// TODO(crbug.com/40245163): Flaky. Enable this test.
+// TODO(crbug.com/40245163): Enable this test for Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CantDragHomeTab DISABLED_CantDragHomeTab
+#else
+#define MAYBE_CantDragHomeTab CantDragHomeTab
+#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
-                       DISABLED_CantDragHomeTab) {
+                       MAYBE_CantDragHomeTab) {
   // Install tabbed web app.
   webapps::AppId app_id = InstallMockApp(/*add_home_tab=*/true);
   Browser* app_browser =
@@ -3521,17 +3526,15 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
   // Try dragging the home tab enough that it would usually detach.
   const Tab* tab = tab_strip->tab_at(0);
   ASSERT_TRUE(PressInputAtCenter(tab));
-  ASSERT_TRUE(DragInputToCenterNotifyWhenDone(
-      tab, base::BindLambdaForTesting([&]() {
-        ASSERT_TRUE(TabDragController::IsActive());
+  ASSERT_TRUE(DragInputToCenter(tab, gfx::Vector2d(0, GetDetachY(tab_strip))));
 
-        ASSERT_TRUE(ReleaseInput());
+  ASSERT_TRUE(TabDragController::IsActive());
 
-        // There should only be one browser window containing two tabs.
-        EXPECT_EQ(1u, browser_list()->size());
-        EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
-      }),
-      gfx::Vector2d(0, GetDetachY(tab_strip))));
+  ASSERT_TRUE(ReleaseInput());
+
+  // There should only be one browser window containing two tabs.
+  EXPECT_EQ(1u, browser_list()->size());
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
 }
 
 // Tabbed web apps without a home tab do not have home tab added.
