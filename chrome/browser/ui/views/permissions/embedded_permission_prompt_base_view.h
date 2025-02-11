@@ -67,7 +67,7 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
   void Show();
   void UpdateAnchor(views::Widget* widget);
   void ClosingPermission();
-  virtual void PrepareToClose();
+  void PrepareToClose();
   permissions::feature_params::PermissionElementPromptPosition
   GetPromptPosition() const;
 

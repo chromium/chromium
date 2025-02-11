@@ -34,18 +34,10 @@ class EmbeddedPermissionPromptSystemSettingsView
   std::u16string GetWindowTitle() const override;
   void RunButtonCallback(int type) override;
 
-  // EmbeddedPermissionPromptBaseView
-  void PrepareToClose() override;
-
  protected:
   std::vector<RequestLineConfiguration> GetRequestLinesConfiguration()
       const override;
   std::vector<ButtonConfiguration> GetButtonsConfiguration() const override;
-
- private:
-  void DidBecomeActive(BrowserWindowInterface* browser_window_interface);
-
-  std::unique_ptr<base::CallbackListSubscription> browser_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_SYSTEM_SETTINGS_VIEW_H_
