@@ -21,6 +21,7 @@ class MostVisitedSites;
 }
 
 @class BrowserActionFactory;
+class ChromeAccountManagerService;
 @protocol ContentSuggestionsConsumer;
 @protocol ContentSuggestionsDelegate;
 enum class ContentSuggestionsModuleType;
@@ -94,6 +95,7 @@ class UrlLoadingBrowserAgent;
            largeIconService:(favicon::LargeIconService*)largeIconService
              largeIconCache:(LargeIconCache*)largeIconCache
      URLLoadingBrowserAgent:(UrlLoadingBrowserAgent*)URLLoadingBrowserAgent
+      accountManagerService:(ChromeAccountManagerService*)accountManagerService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

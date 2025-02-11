@@ -61,7 +61,8 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
                     prefService:&pref_service_
                largeIconService:large_icon_service
                  largeIconCache:cache
-         URLLoadingBrowserAgent:url_loader_];
+         URLLoadingBrowserAgent:url_loader_
+          accountManagerService:nullptr];
 
     metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc]
         initWithLocalState:local_state()];
