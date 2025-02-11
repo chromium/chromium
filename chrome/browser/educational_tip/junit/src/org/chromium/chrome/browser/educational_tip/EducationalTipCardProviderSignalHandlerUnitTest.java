@@ -84,7 +84,10 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
+    @EnableFeatures({
+        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
+        ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2
+    })
     public void testCreateInputContext_DefaultBrowserPromoCard() {
         assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
 
