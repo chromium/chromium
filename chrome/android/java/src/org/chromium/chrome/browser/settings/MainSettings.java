@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.settings;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -72,7 +71,6 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.HashMap;
@@ -194,13 +192,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public void onResume() {
         super.onResume();
         updatePreferences();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        // Ensure the preference disabled state is reflected when device is folded or unfolded.
-        updateAddressBarPreference();
     }
 
     private void createPreferences() {
@@ -526,16 +517,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     }
 
     private void updateAddressBarPreference() {
-        // Similar to ToolbarPositionController#isToolbarPositionCustomizationEnabled(), except
-        // - no CCT checks (settings are not accessible from CCTs),
-        // - showing on Foldables in unfolded (open) state.
-        boolean showSetting =
-                ChromeFeatureList.sAndroidBottomToolbar.isEnabled()
-                        && (BuildInfo.getInstance().isFoldable
-                                || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                                        getContext()));
-
-        if (showSetting) {
+        if (ToolbarPositionController.isToolbarPositionCustomizationEnabled(getContext(), false)) {
             Preference addressBarPreference = addPreferenceIfAbsent(PREF_ADDRESS_BAR);
             addressBarPreference.setSummary(ToolbarPositionController.getToolbarPositionResId());
         } else {
