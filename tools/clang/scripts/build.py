@@ -570,9 +570,15 @@ def DownloadDebianSysroot(platform_name, skip_download=False):
 
   toolchain_name = f'debian_bullseye_{platform_name}_sysroot'
   output = os.path.join(LLVM_BUILD_TOOLS_DIR, toolchain_name)
-  U = toolchain_bucket + hashes[platform_name]
-  if not skip_download:
-    DownloadAndUnpack(U, output)
+  stamp_file = os.path.join(output, 'stamp')
+  version = hashes[platform_name]
+  if ReadStampFile(stamp_file) == version:
+    print(f'Sysroot for {platform_name} already up to date')
+  else:
+    U = toolchain_bucket + version
+    if not skip_download:
+      DownloadAndUnpack(U, output)
+      WriteStampFile(version, stamp_file)
 
   return output
 
