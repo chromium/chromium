@@ -48,6 +48,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "The Rand Project Developers"
   cargo_pkg_name = "getrandom"
   cargo_pkg_description = "A small cross-platform library for retrieving random data from system source"
+  library_configs -= [ "//build/config/coverage:default_coverage" ]
   library_configs -= [ "//build/config/compiler:chromium_code" ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]

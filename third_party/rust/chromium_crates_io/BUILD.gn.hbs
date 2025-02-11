@@ -40,6 +40,7 @@ cargo_crate("{{this.name}}") {
   {{#with cargo_pkg_description}}
   cargo_pkg_description = "{{gn_escape this}}"
   {{/with}}
+  library_configs -= [ "//build/config/coverage:default_coverage" ]
   library_configs -= [ "//build/config/compiler:chromium_code" ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]

@@ -26,6 +26,7 @@ cargo_crate("buildrs_support") {
   cargo_pkg_name = "cxxbridge-flags"
   cargo_pkg_description =
       "Compiler configuration of the `cxx` crate (implementation detail)"
+  library_configs -= [ "//build/config/coverage:default_coverage" ]
   library_configs -= [ "//build/config/compiler:chromium_code" ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
