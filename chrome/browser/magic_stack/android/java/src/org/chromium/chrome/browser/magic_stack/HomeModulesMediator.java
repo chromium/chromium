@@ -32,7 +32,6 @@ import java.util.function.Supplier;
 /** The mediator which implements the logic to add, update and remove modules. */
 public class HomeModulesMediator {
     private static final int INVALID_INDEX = -1;
-    @VisibleForTesting static final int INVALID_FRESHNESS_SCORE = -1;
 
     /** Time to wait before rejecting any module response in milliseconds. */
     public static final long MODULE_FETCHING_TIMEOUT_MS = 5000L;
@@ -121,12 +120,27 @@ public class HomeModulesMediator {
     void onModuleViewCreated(@ModuleType int moduleType) {
         HomeModulesRankingHelper.notifyCardShown(
                 mProfileSupplier.get(), HomeModulesMetricsUtils.getModuleName(moduleType));
+
+        if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
+            HomeModulesUtils.increaseImpressionCountBeforeInteraction(moduleType);
+        }
     }
 
     /** Called to notify that a module was clicked. */
     void onModuleClicked(@ModuleType int moduleType) {
         HomeModulesRankingHelper.notifyCardInteracted(
                 mProfileSupplier.get(), HomeModulesMetricsUtils.getModuleName(moduleType));
+
+        if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
+            HomeModulesMetricsUtils.recordEducationalTipModuleImpressionCountBeforeInteraction(
+                    moduleType,
+                    mModuleDelegateHost.isHomeSurface(),
+                    HomeModulesUtils.getImpressionCountBeforeInteraction(moduleType));
+
+            // Remove the shared preference key for impression count before interaction, as the
+            // educational tip card will no longer appear once the user interacts with it.
+            HomeModulesUtils.removeImpressionCountBeforeInteractionKey(moduleType);
+        }
     }
 
     private void buildModulesAndShow(

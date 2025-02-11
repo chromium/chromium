@@ -18,6 +18,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.INVALID_IMPRESSION_COUNT_BEFORE_INTERACTION;
+
 import android.text.TextUtils;
 
 import androidx.test.filters.SmallTest;
@@ -734,5 +736,24 @@ public class HomeModulesMediatorUnitTest {
         TextUtils.equals(
                 expectedFreshnessString,
                 HomeModulesUtils.getFreshnessInputContextString(moduleType));
+    }
+
+    @Test
+    @SmallTest
+    public void testOnModuleViewCreated() {
+        @ModuleType int moduleType1 = ModuleType.TAB_GROUP_PROMO;
+        @ModuleType int moduleType2 = ModuleType.TAB_GROUP_SYNC_PROMO;
+
+        mMediator.onModuleViewCreated(moduleType1);
+        assertEquals(1, HomeModulesUtils.getImpressionCountBeforeInteraction(moduleType1));
+        assertEquals(
+                INVALID_IMPRESSION_COUNT_BEFORE_INTERACTION,
+                HomeModulesUtils.getImpressionCountBeforeInteraction(moduleType2));
+
+        mMediator.onModuleViewCreated(moduleType1);
+        assertEquals(2, HomeModulesUtils.getImpressionCountBeforeInteraction(moduleType1));
+        assertEquals(
+                INVALID_IMPRESSION_COUNT_BEFORE_INTERACTION,
+                HomeModulesUtils.getImpressionCountBeforeInteraction(moduleType2));
     }
 }

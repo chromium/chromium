@@ -34,6 +34,7 @@ import java.util.HashSet;
 public class HomeModulesUtils {
     static final long INVALID_TIMESTAMP = -1;
     static final int INVALID_FRESHNESS_SCORE = -1;
+    static final int INVALID_IMPRESSION_COUNT_BEFORE_INTERACTION = 0;
 
     private static final String SINGLE_TAB_FRESHNESS_INPUT_CONTEXT = "single_tab_freshness";
 
@@ -185,6 +186,51 @@ public class HomeModulesUtils {
         }
 
         return getFreshnessCount(moduleType);
+    }
+
+    /** Returns the preference key of the module type for impression count before interaction. */
+    private static String getImpressionCountBeforeInteractionPreferenceKey(
+            @ModuleType int moduleType) {
+        assert HomeModulesUtils.belongsToEducationalTipModule(moduleType);
+
+        return ChromePreferenceKeys.HOME_MODULES_IMPRESSION_COUNT_BEFORE_INTERACTION.createKey(
+                String.valueOf(moduleType));
+    }
+
+    /**
+     * Called to increase the impression count before interaction for the module type provided by 1.
+     * The count is increased from 0.
+     */
+    @VisibleForTesting
+    public static void increaseImpressionCountBeforeInteraction(@ModuleType int moduleType) {
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        String impressionCountBeforeInteractionKey =
+                getImpressionCountBeforeInteractionPreferenceKey(moduleType);
+        int totalCount =
+                sharedPreferencesManager.readInt(
+                                impressionCountBeforeInteractionKey,
+                                INVALID_IMPRESSION_COUNT_BEFORE_INTERACTION)
+                        + 1;
+        sharedPreferencesManager.writeInt(impressionCountBeforeInteractionKey, totalCount);
+    }
+
+    /** Gets the impression count before interaction of a module. */
+    @VisibleForTesting
+    static int getImpressionCountBeforeInteraction(@ModuleType int moduleType) {
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        String impressionCountBeforeInteractionKey =
+                getImpressionCountBeforeInteractionPreferenceKey(moduleType);
+        return sharedPreferencesManager.readInt(
+                impressionCountBeforeInteractionKey, INVALID_IMPRESSION_COUNT_BEFORE_INTERACTION);
+    }
+
+    /** Called to remove the impression count before interaction shared preference key. */
+    @VisibleForTesting
+    public static void removeImpressionCountBeforeInteractionKey(@ModuleType int moduleType) {
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        String impressionCountBeforeInteractionKey =
+                getImpressionCountBeforeInteractionPreferenceKey(moduleType);
+        sharedPreferencesManager.removeKey(impressionCountBeforeInteractionKey);
     }
 
     public static void setFreshnessCountForTesting(
