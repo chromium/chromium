@@ -615,13 +615,21 @@ public class Fido2CredentialRequest
                                 mBarrier.onFido2ApiFailed(AuthenticatorStatus.NOT_ALLOWED_ERROR);
                             });
             if (passkeyCacheEnabled) {
+                String passkeyCacheSuccessfulHistogramName =
+                        "WebAuthentication.CredentialFetchDuration.GmsCorePasskeyCache";
                 Fido2ApiCallHelper.getInstance()
                         .invokePasskeyCacheGetCredentials(
                                 mAuthenticationContextProvider,
                                 options.relyingPartyId,
-                                (credentials) ->
-                                        comparator.onCachedGetCredentialsSuccessful(
-                                                credentials.size()),
+                                (credentials) -> {
+                                    if (!credentials.isEmpty()) {
+                                        RecordHistogram.recordTimesHistogram(
+                                                passkeyCacheSuccessfulHistogramName,
+                                                SystemClock.elapsedRealtime()
+                                                        - conditionalUiCredentialListInitialTimeMs);
+                                    }
+                                    comparator.onCachedGetCredentialsSuccessful(credentials.size());
+                                },
                                 (e) -> comparator.onCachedGetCredentialsFailed());
             }
             return;

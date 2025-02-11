@@ -273,6 +273,8 @@ chromium-metrics-reviews@google.com.
     <variant name="ChromeOS" summary="ChromeOS platform API"/>
     <variant name="CredMan" summary="Credential Manager API on Android"/>
     <variant name="GmsCore" summary="GMS Core API on Android"/>
+    <variant name="GmsCorePasskeyCache"
+        summary="GMS Core cache API on Android"/>
     <variant name="ICloudKeychain" summary="ICloud Keychain API"/>
     <variant name="TouchId" summary="Chrome-native Touch ID authenticator"/>
     <variant name="WinHello" summary="Windows Hello API"/>
