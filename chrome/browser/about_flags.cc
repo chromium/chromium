@@ -9168,12 +9168,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kMediaSessionEnterPictureInPicture)},
 
-    {"auto-picture-in-picture-video-heuristics",
-     flag_descriptions::kAutoPictureInPictureVideoHeuristicsName,
-     flag_descriptions::kAutoPictureInPictureVideoHeuristicsDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(blink::features::kAutoPictureInPictureVideoHeuristics)},
-
     {"auto-picture-in-picture-for-video-playback",
      flag_descriptions::kAutoPictureInPictureForVideoPlaybackName,
      flag_descriptions::kAutoPictureInPictureForVideoPlaybackDescription,

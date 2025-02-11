@@ -756,14 +756,7 @@ const char kAutofillVirtualViewStructureAndroidDescription[] =
 const char kAutoPictureInPictureForVideoPlaybackName[] =
     "Auto picture in picture for video playback";
 const char kAutoPictureInPictureForVideoPlaybackDescription[] =
-    "Enables auto picture in picture for video playback. Requires "
-    "chrome://flags/#auto-picture-in-picture-video-heuristics to be enabled.";
-
-const char kAutoPictureInPictureVideoHeuristicsName[] =
-    "Auto picture in picture video heuristics";
-const char kAutoPictureInPictureVideoHeuristicsDescription[] =
-    "Enables the use of video heuristics for tracking HTMLVideoElement "
-    "visibility.";
+    "Enables auto picture in picture for video playback";
 
 const char kBackForwardCacheName[] = "Back-forward cache";
 const char kBackForwardCacheDescription[] =

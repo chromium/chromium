@@ -451,9 +451,6 @@ extern const char kAutofillVirtualViewStructureAndroidDescription[];
 extern const char kAutoPictureInPictureForVideoPlaybackName[];
 extern const char kAutoPictureInPictureForVideoPlaybackDescription[];
 
-extern const char kAutoPictureInPictureVideoHeuristicsName[];
-extern const char kAutoPictureInPictureVideoHeuristicsDescription[];
-
 extern const char kBackForwardCacheName[];
 extern const char kBackForwardCacheDescription[];
 
