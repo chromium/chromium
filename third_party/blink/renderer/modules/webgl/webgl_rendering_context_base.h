@@ -906,7 +906,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     // The pointer returned is owned by the image buffer map.
     CanvasResourceProvider* GetCanvasResourceProvider(
         gfx::Size size,
-        SkColorType sk_color_type,
+        viz::SharedImageFormat format,
         SkAlphaType alpha_type,
         sk_sp<SkColorSpace> sk_color_space);
 
