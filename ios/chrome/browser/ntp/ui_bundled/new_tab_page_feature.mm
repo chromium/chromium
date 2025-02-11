@@ -107,19 +107,23 @@ bool IsiPadFeedGhostCardsEnabled() {
 }
 
 bool ShouldRemoveDiscoverLabel(bool is_google_default_search_engine) {
-  return is_google_default_search_engine &&
+  return is_google_default_search_engine && ShouldDeprecateFeedHeader() &&
          base::GetFieldTrialParamByFeatureAsBool(
              kDeprecateFeedHeader, kDeprecateFeedHeaderParameterRemoveLabel,
              false);
 }
 
 bool ShouldEnlargeLogoAndFakebox() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kDeprecateFeedHeader, kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox,
-      false);
+  return ShouldDeprecateFeedHeader() &&
+         base::GetFieldTrialParamByFeatureAsBool(
+             kDeprecateFeedHeader,
+             kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox, false);
 }
 
 double TopPaddingToNTP() {
-  return base::GetFieldTrialParamByFeatureAsDouble(
-      kDeprecateFeedHeader, kDeprecateFeedHeaderParameterTopPadding, 0);
+  return ShouldDeprecateFeedHeader()
+             ? base::GetFieldTrialParamByFeatureAsDouble(
+                   kDeprecateFeedHeader,
+                   kDeprecateFeedHeaderParameterTopPadding, 0)
+             : 0;
 }

@@ -627,7 +627,7 @@ int HoursInactiveForOldUsersUntilShowingDockingPromo() {
 }
 
 bool IsWebChannelsEnabled() {
-  if (base::FeatureList::IsEnabled(kDeprecateFeedHeader)) {
+  if (ShouldDeprecateFeedHeader()) {
     return false;
   }
   std::string launched_countries[6] = {"AU", "CA", "GB", "NZ", "US", "ZA"};
@@ -1028,6 +1028,11 @@ BASE_FEATURE(kHomeCustomization,
 
 bool IsHomeCustomizationEnabled() {
   return base::FeatureList::IsEnabled(kHomeCustomization);
+}
+
+bool ShouldDeprecateFeedHeader() {
+  return IsHomeCustomizationEnabled() &&
+         base::FeatureList::IsEnabled(kDeprecateFeedHeader);
 }
 
 BASE_FEATURE(kEnableAppBackgroundRefresh,
