@@ -48,6 +48,9 @@ class ProfileAttributesStorageIOS {
   // Returns whether a profile with `name` exists.
   bool HasProfileWithName(std::string_view name) const;
 
+  // Returns whether the profile is marked for deletion.
+  bool IsProfileMarkedForDeletion(std::string_view profile_name) const;
+
   // Retrieves the information for profile at `index`. Note that the ordering of
   // profiles is arbitrary, so this is mostly useful for "for each profile"
   // types of usage.
@@ -99,7 +102,8 @@ class ProfileAttributesStorageIOS {
 
   raw_ptr<PrefService> prefs_;
 
-  // All known profile names, sorted alphabetically.
+  // All known profile names (excluding profiles marked for deletion),
+  // sorted alphabetically.
   std::vector<std::string> sorted_keys_;
 
   base::ObserverList<ProfileAttributesStorageObserverIOS, /*check_empty=*/true>

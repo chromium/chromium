@@ -53,6 +53,13 @@ constexpr TestAccount kTestAccounts[] = {
     },
 };
 
+constexpr TestAccount kDeletedAccount = {
+    .name = "DeletedProfile",
+    .gaia = "DeletedGaia",
+    .email = "deleted@example.com",
+    .last_active_time = base::Time::UnixEpoch() + base::Minutes(1),
+};
+
 constexpr char kTestProfile1[] = "Profile1";
 constexpr char kTestProfile2[] = "Profile2";
 constexpr char kTestSceneId1[] = "scene-id1";
@@ -96,8 +103,8 @@ TEST_F(MutableProfileAttributesStorageIOSTest, AddProfile) {
   EXPECT_EQ(storage.GetNumberOfProfiles(), std::size(kTestAccounts));
 }
 
-// Tests that RemoveProfile(...) removes data for a Profile.
-TEST_F(MutableProfileAttributesStorageIOSTest, RemoveProfile) {
+// Tests that MarkProfileForDeletion(...) removes data for a Profile.
+TEST_F(MutableProfileAttributesStorageIOSTest, MarkProfileForDeletion) {
   MutableProfileAttributesStorageIOS storage(pref_service());
 
   for (const TestAccount& account : kTestAccounts) {
@@ -111,9 +118,14 @@ TEST_F(MutableProfileAttributesStorageIOSTest, RemoveProfile) {
   for (const TestAccount& account : kTestAccounts) {
     EXPECT_TRUE(storage.HasProfileWithName(account.name));
 
-    storage.RemoveProfile(account.name);
+    storage.MarkProfileForDeletion(account.name);
 
     EXPECT_FALSE(storage.HasProfileWithName(account.name));
+    EXPECT_TRUE(storage.IsProfileMarkedForDeletion(account.name));
+
+    storage.ProfileDeletionComplete(account.name);
+    EXPECT_FALSE(storage.HasProfileWithName(account.name));
+    EXPECT_FALSE(storage.IsProfileMarkedForDeletion(account.name));
   }
 }
 
@@ -149,7 +161,7 @@ TEST_F(MutableProfileAttributesStorageIOSTest, RemoveProfileDisconnectScenes) {
   EXPECT_EQ(storage.GetProfileNameForSceneID(kTestSceneId1), kTestProfile1);
   EXPECT_EQ(storage.GetProfileNameForSceneID(kTestSceneId2), kTestProfile2);
 
-  storage.RemoveProfile(kTestProfile1);
+  storage.MarkProfileForDeletion(kTestProfile1);
   EXPECT_FALSE(storage.HasProfileWithName(kTestProfile1));
   EXPECT_EQ(storage.GetProfileNameForSceneID(kTestSceneId1), std::string());
   EXPECT_EQ(storage.GetProfileNameForSceneID(kTestSceneId2), kTestProfile2);
@@ -217,6 +229,72 @@ TEST_F(MutableProfileAttributesStorageIOSTest,
     EXPECT_EQ(attr.IsAuthenticated(), false);
     EXPECT_EQ(attr.GetAttachedGaiaIds().size(), 0ul);
   }
+}
+
+// Tests that GetAttributesForProfileWithName(...) returns an instance of
+// ProfileAttributesIOS corresponding to a "deleted profile" when called
+// with the name of a profile marked for deletion.
+TEST_F(MutableProfileAttributesStorageIOSTest,
+       GetAttributesForProfileWithName_DeletedProfile) {
+  MutableProfileAttributesStorageIOS storage(pref_service());
+  storage.AddProfile(kDeletedAccount.name);
+  storage.UpdateAttributesForProfileWithName(
+      kDeletedAccount.name, base::BindOnce([](ProfileAttributesIOS attr) {
+        attr.SetLastActiveTime(kDeletedAccount.last_active_time);
+        attr.SetAuthenticationInfo(GaiaId(std::string(kDeletedAccount.gaia)),
+                                   kDeletedAccount.email);
+        ProfileAttributesIOS::GaiaIdSet gaia_ids;
+        gaia_ids.insert(GaiaId(std::string(kDeletedAccount.gaia)));
+        attr.SetAttachedGaiaIds(gaia_ids);
+        return attr;
+      }));
+
+  ProfileAttributesIOS attr =
+      storage.GetAttributesForProfileWithName(kDeletedAccount.name);
+  ASSERT_FALSE(attr.IsDeletedProfile());
+  ASSERT_EQ(attr.GetGaiaId(), GaiaId(std::string(kDeletedAccount.gaia)));
+  ASSERT_FALSE(attr.GetAttachedGaiaIds().empty());
+
+  storage.MarkProfileForDeletion(kDeletedAccount.name);
+
+  ASSERT_FALSE(storage.HasProfileWithName(kDeletedAccount.name));
+  ASSERT_TRUE(storage.IsProfileMarkedForDeletion(kDeletedAccount.name));
+
+  attr = storage.GetAttributesForProfileWithName(kDeletedAccount.name);
+  EXPECT_EQ(attr.GetProfileName(), kDeletedAccount.name);
+  EXPECT_TRUE(attr.IsDeletedProfile());
+  EXPECT_EQ(attr.GetGaiaId(), GaiaId());
+  EXPECT_TRUE(attr.GetAttachedGaiaIds().empty());
+}
+
+// Tests that UpdateAttributesForProfileWithName(...) does nothing if the
+// profile is marked for deletion.
+TEST_F(MutableProfileAttributesStorageIOSTest,
+       UpdateAttributesForProfileWithName_DeletedProfile) {
+  MutableProfileAttributesStorageIOS storage(pref_service());
+  storage.AddProfile(kDeletedAccount.name);
+  storage.MarkProfileForDeletion(kDeletedAccount.name);
+
+  ASSERT_FALSE(storage.HasProfileWithName(kDeletedAccount.name));
+  ASSERT_TRUE(storage.IsProfileMarkedForDeletion(kDeletedAccount.name));
+
+  storage.UpdateAttributesForProfileWithName(
+      kDeletedAccount.name, base::BindOnce([](ProfileAttributesIOS attr) {
+        attr.SetLastActiveTime(kDeletedAccount.last_active_time);
+        attr.SetAuthenticationInfo(GaiaId(std::string(kDeletedAccount.gaia)),
+                                   kDeletedAccount.email);
+        ProfileAttributesIOS::GaiaIdSet gaia_ids;
+        gaia_ids.insert(GaiaId(std::string(kDeletedAccount.gaia)));
+        attr.SetAttachedGaiaIds(gaia_ids);
+        return attr;
+      }));
+
+  ProfileAttributesIOS attr =
+      storage.GetAttributesForProfileWithName(kDeletedAccount.name);
+  EXPECT_EQ(attr.GetProfileName(), kDeletedAccount.name);
+  EXPECT_TRUE(attr.IsDeletedProfile());
+  EXPECT_EQ(attr.GetGaiaId(), GaiaId());
+  EXPECT_TRUE(attr.GetAttachedGaiaIds().empty());
 }
 
 TEST_F(MutableProfileAttributesStorageIOSTest, FixInvalidPersonalProfileName) {

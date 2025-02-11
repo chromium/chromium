@@ -37,6 +37,9 @@ class ProfileAttributesIOS {
   static ProfileAttributesIOS WithAttrs(std::string_view profile_name,
                                         const base::Value::Dict& storage);
 
+  // Creates a ProfileAttributesIOS for a deleted profile named `profile_name`.
+  static ProfileAttributesIOS DeletedProfile(std::string_view profile_name);
+
   ProfileAttributesIOS(ProfileAttributesIOS&&);
   ProfileAttributesIOS& operator=(ProfileAttributesIOS&&);
 
@@ -45,14 +48,19 @@ class ProfileAttributesIOS {
   // Returns the name of the profile (immutable).
   const std::string& GetProfileName() const;
 
-  // Gets information related to the profile.
   // IsNewProfile() is true if the profile has been registered with
   // ProfileAttributesStorageIOS, but has never been loaded.
   bool IsNewProfile() const;
+
   // IsFullyInitialized() is true if the profile has been loaded at least once,
   // and all first-time setup steps have been completed (e.g. for work profiles,
   // this includes signing in the corresponding managed account).
   bool IsFullyInitialized() const;
+
+  // IsDeletedProfile() is true if the profile has been marked for deletion.
+  bool IsDeletedProfile() const;
+
+  // Gets information related to the profile.
   GaiaId GetGaiaId() const;
   const std::string& GetUserName() const;
   bool HasAuthenticationError() const;

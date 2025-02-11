@@ -15,13 +15,19 @@ class MutableProfileAttributesStorageIOS : public ProfileAttributesStorageIOS {
 
   ~MutableProfileAttributesStorageIOS();
 
-  // Register profile with `name`. No profile with that name must be registered
-  // yet.
-  void AddProfile(std::string_view name);
+  // Register profile with `profile_name`. No profile with that name must be
+  // registered yet.
+  void AddProfile(std::string_view profile_name);
 
-  // Remove information about profile with `name`. A profile with that name
-  // must be registered (and won't be anymore once this method returns).
-  void RemoveProfile(std::string_view name);
+  // Mark `profile_name` for deletion and remove any stored attributes. This
+  // removes all attributes for the profile, it won't show up when iterating
+  // over all profiles, it is no longer counted in GetNumberOfProfiles() but
+  // accessing the attributes returns a special "deleted profile" object and
+  // updates by name are ignored (but do not crash).
+  void MarkProfileForDeletion(std::string_view profile_name);
+
+  // Mark `profile_name` as fully deleted from disk.
+  void ProfileDeletionComplete(std::string_view profile_name);
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_MUTABLE_PROFILE_ATTRIBUTES_STORAGE_IOS_H_
