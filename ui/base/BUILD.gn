@@ -615,6 +615,7 @@ component("base") {
       "CoreVideo.framework",
       "Foundation.framework",
       "QuartzCore.framework",
+      "UniformTypeIdentifiers.framework",
     ]
 
     weak_frameworks = [
@@ -1083,6 +1084,7 @@ test("ui_base_unittests") {
   if (is_mac) {
     sources += [
       "accelerators/platform_accelerator_cocoa_unittest.mm",
+      "cocoa/appkit_utils_unittest.mm",
       "cocoa/base_view_unittest.mm",
       "cocoa/bubble_closer_unittest.mm",
       "cocoa/cocoa_base_utils_unittest.mm",
@@ -1095,6 +1097,10 @@ test("ui_base_unittests") {
       "interaction/element_tracker_mac_unittest.mm",
       "l10n/l10n_util_mac_unittest.mm",
       "test/view_tree_validator_unittest.mm",
+    ]
+    frameworks = [
+      "Foundation.framework",
+      "UniformTypeIdentifiers.framework",
     ]
   }
 
