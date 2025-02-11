@@ -845,16 +845,6 @@
     ],
     "location": "component"
   },
-  "rtcPrivate": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"],
-    "allowlist": [
-      "53041A2FA309EECED01FFC751E7399186E860B2C",  // Google Talk prod
-      "A74A4D44C7CFCD8844830E6140C8D763E12DD8F3",  // Google Talk beta
-      "E7E2461CE072DF036CF9592740196159E2D7C089",  // Google Talk alpha
-      "312745D9BF916161191143F6490085EEA0434997"   // Google Talk debug
-    ]
-  },
   "safeBrowsingPrivate": {
     "channel": "stable",
     "extension_types": ["extension"],

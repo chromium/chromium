@@ -3039,7 +3039,7 @@ Called by update_extension_permission.py.-->
   <int value="121" label="kProxy"/>
   <int value="122" label="kImageWriterPrivate"/>
   <int value="123" label="kDeleted_ReadingListPrivate"/>
-  <int value="124" label="kRtcPrivate"/>
+  <int value="124" label="kDeleted_RtcPrivate"/>
   <int value="125" label="kSearchProvider"/>
   <int value="126" label="kSearchEnginesPrivate"/>
   <int value="127" label="kSerial"/>

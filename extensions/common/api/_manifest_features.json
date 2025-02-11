@@ -29,13 +29,6 @@
     "channel": "stable",
     "extension_types": ["platform_app"],
     "allowlist": [
-      // Keep this list in sync with extensions_misc::kHangoutsExtensionIds but
-      // omit the Packaged App ids.
-      "53041A2FA309EECED01FFC751E7399186E860B2C",  // Hangouts Production.
-      "312745D9BF916161191143F6490085EEA0434997",  // Hangouts Debug.
-      "E7E2461CE072DF036CF9592740196159E2D7C089",  // Hangouts Alpha.
-      "A74A4D44C7CFCD8844830E6140C8D763E12DD8F3",  // Hangouts Beta.
-
       "5107DE9024C329EEA9C9A72D94C16723790C6422" // Apps Debugger
     ]
   },

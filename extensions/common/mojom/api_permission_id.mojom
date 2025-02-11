@@ -148,7 +148,7 @@ enum APIPermissionID {
   kProxy = 121,
   kImageWriterPrivate = 122,
   kDeleted_ReadingListPrivate = 123,
-  kRtcPrivate = 124,
+  kDeleted_RtcPrivate = 124,
   kSearchProvider = 125,
   kSearchEnginesPrivate = 126,
   kSerial = 127,
