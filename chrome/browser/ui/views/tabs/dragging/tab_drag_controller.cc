@@ -2004,6 +2004,12 @@ void TabDragController::RevertHeaderDrag(tab_groups::TabGroupId group_id) {
         group_id,
         drag_data_[first_tab_in_group_index].source_model_index.value());
   } else {
+    const tab_groups::TabGroupVisualData og_visual_data =
+        source_view_drag_data()->tab_group_data.value().group_visual_data;
+
+    source_context_->GetTabStripModel()->AddTabGroup(
+        group_drag_data_.value().group, og_visual_data);
+
     for (size_t i = first_tab_index(); i < drag_data_.size(); ++i) {
       if (drag_data_[i].contents) {
         // Contents is NULL if a tab was destroyed while the drag was under way.
@@ -2077,12 +2083,6 @@ void TabDragController::RevertDragAt(size_t drag_index) {
     }
     source_context_->GetTabStripModel()->MoveWebContentsAt(
         index, target_index, false, existing_group);
-  }
-
-  if (drag_data.has_value() && !existing_group.has_value()) {
-    source_context_->GetTabStripModel()->AddToNewGroup(
-        {target_index}, drag_data.value().group_id,
-        drag_data.value().group_visual_data);
   }
 }
 

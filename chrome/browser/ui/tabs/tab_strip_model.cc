@@ -557,7 +557,7 @@ int TabStripModel::MoveWebContentsAt(
 
 void TabStripModel::MoveSelectedTabsTo(
     int index,
-    std::optional<tab_groups::TabGroupId> group) {
+    std::optional<tab_groups::TabGroupId> into_group) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
   const int pinned_tab_count = IndexOfFirstNonPinnedTab();
@@ -569,6 +569,33 @@ void TabStripModel::MoveSelectedTabsTo(
                  static_cast<int>(pinned_selected_indices.size()) - 1,
                  pinned_tab_count - 1);
 
+  if (group_model_) {
+    std::vector<tab_groups::TabGroupId> groups_to_destroy;
+    for (const auto& group_id : group_model_->ListTabGroups()) {
+      if (into_group.has_value() && into_group.value() == group_id) {
+        continue;
+      }
+      TabGroup* tab_group = group_model_->GetTabGroup(group_id);
+      const gfx::Range tabs_in_group = tab_group->ListTabs();
+      bool all_selected = true;
+      for (size_t i = tabs_in_group.start(); i < tabs_in_group.end(); ++i) {
+        if (std::find(unpinned_selected_indices.begin(),
+                      unpinned_selected_indices.end(),
+                      static_cast<int>(i)) == unpinned_selected_indices.end()) {
+          all_selected = false;
+          break;
+        }
+      }
+      if (all_selected) {
+        groups_to_destroy.push_back(group_id);
+      }
+    }
+
+    for (const auto& group_id : groups_to_destroy) {
+      delegate_->WillCloseGroup(group_id);
+    }
+  }
+
   MoveTabsToIndexImpl(
       pinned_selected_indices,
       last_pinned_index - static_cast<int>(pinned_selected_indices.size()) + 1,
@@ -579,7 +606,8 @@ void TabStripModel::MoveSelectedTabsTo(
                  pinned_tab_count,
                  count() - static_cast<int>(unpinned_selected_indices.size()));
 
-  MoveTabsToIndexImpl(unpinned_selected_indices, first_unpinned_index, group);
+  MoveTabsToIndexImpl(unpinned_selected_indices, first_unpinned_index,
+                      into_group);
 }
 
 void TabStripModel::MoveGroupTo(const tab_groups::TabGroupId& group,

@@ -106,9 +106,13 @@ void SavedTabGroupModelListener::OnTabGroupChanged(
     // We should never get close notifications, because we destroy the
     // LocalTabGroupListener when the last tab is closed, which happens before
     // this event is sent out.
-    case TabGroupChange::kClosed:
-    // We should never get created notifications, because we only are connected
-    // to the local group after it has been created and populated.
+    // TODO (dpenning): provide closing information about the local group
+    // only prevent checks here if the group is actually closing.
+    case TabGroupChange::kClosed: {
+      return;
+    }
+    // We should never get created notifications, because we only are
+    // connected to the local group after it has been created and populated.
     case TabGroupChange::kCreated: {
       // The exception to both of these is when the group is being moved between
       // browser windows, as it gets created in the new window and destroyed in
