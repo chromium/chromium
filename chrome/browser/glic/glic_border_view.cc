@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define _USE_MATH_DEFINES  // To get M_PI on Windows.
-
-#include "chrome/browser/glic/border_view.h"
+#include "chrome/browser/glic/glic_border_view.h"
 
 #include <math.h>
 
@@ -71,23 +69,24 @@ float ClampAndInterpolate(gfx::Tween::Type type,
 
 }  // namespace
 
-class BorderView::BorderViewUpdater {
+class GlicBorderView::BorderViewUpdater {
  public:
-  explicit BorderViewUpdater(Browser* browser, BorderView* border_view)
+  explicit BorderViewUpdater(Browser* browser, GlicBorderView* border_view)
       : border_view_(border_view), browser_(browser) {
     auto* glic_service =
         GlicKeyedServiceFactory::GetGlicKeyedService(browser_->GetProfile());
 
     // Subscribe to changes in the focus tab.
-    focus_change_subscription_ = glic_service->AddFocusedTabChangedCallback(
-        base::BindRepeating(&BorderView::BorderViewUpdater::OnFocusedTabChanged,
-                            base::Unretained(this)));
+    focus_change_subscription_ =
+        glic_service->AddFocusedTabChangedCallback(base::BindRepeating(
+            &GlicBorderView::BorderViewUpdater::OnFocusedTabChanged,
+            base::Unretained(this)));
 
     // Subscribe to changes in the context access indicator status.
     indicator_change_subscription_ =
         glic_service->AddContextAccessIndicatorStatusChangedCallback(
             base::BindRepeating(
-                &BorderView::BorderViewUpdater::OnIndicatorStatusChanged,
+                &GlicBorderView::BorderViewUpdater::OnIndicatorStatusChanged,
                 base::Unretained(this)));
   }
   BorderViewUpdater(const BorderViewUpdater&) = delete;
@@ -205,7 +204,7 @@ class BorderView::BorderViewUpdater {
   }
 
   // Back pointer to the owner. Guaranteed to outlive `this`.
-  const raw_ptr<BorderView> border_view_;
+  const raw_ptr<GlicBorderView> border_view_;
 
   // Owned by `BrowserView`. Outlives all the children of the `BrowserView`.
   const raw_ptr<BrowserWindowInterface> browser_;
@@ -218,7 +217,7 @@ class BorderView::BorderViewUpdater {
   base::CallbackListSubscription indicator_change_subscription_;
 };
 
-BorderView::BorderView(Browser* browser)
+GlicBorderView::GlicBorderView(Browser* browser)
     : updater_(std::make_unique<BorderViewUpdater>(browser, this)),
       shader_(ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_GLIC_BORDER_SHADER)),
@@ -239,9 +238,9 @@ BorderView::BorderView(Browser* browser)
       glic_service->is_context_access_indicator_enabled());
 }
 
-BorderView::~BorderView() = default;
+GlicBorderView::~GlicBorderView() = default;
 
-void BorderView::OnPaint(gfx::Canvas* canvas) {
+void GlicBorderView::OnPaint(gfx::Canvas* canvas) {
   if (!compositor_) {
     return;
   }
@@ -274,7 +273,7 @@ void BorderView::OnPaint(gfx::Canvas* canvas) {
   canvas->DrawRect(gfx::RectF(GetLocalBounds()), flags);
 }
 
-void BorderView::OnAnimationStep(base::TimeTicks timestamp) {
+void GlicBorderView::OnAnimationStep(base::TimeTicks timestamp) {
   if (tester_) [[unlikely]] {
     timestamp = tester_->GetTestTimestamp();
   }
@@ -334,11 +333,11 @@ void BorderView::OnAnimationStep(base::TimeTicks timestamp) {
   SchedulePaint();
 }
 
-void BorderView::OnCompositingShuttingDown(ui::Compositor* compositor) {
+void GlicBorderView::OnCompositingShuttingDown(ui::Compositor* compositor) {
   CancelAnimation();
 }
 
-void BorderView::StartAnimation() {
+void GlicBorderView::StartAnimation() {
   if (compositor_) {
     // The user can click on the glic icon after the window is shown. The
     // animation is already playing at that time.
@@ -371,7 +370,7 @@ void BorderView::StartAnimation() {
   }
 }
 
-void BorderView::CancelAnimation() {
+void GlicBorderView::CancelAnimation() {
   if (!compositor_) {
     return;
   }
@@ -391,11 +390,11 @@ void BorderView::CancelAnimation() {
   SetVisible(false);
 }
 
-float BorderView::GetSecondsSinceCreationForTesting() const {
+float GlicBorderView::GetSecondsSinceCreationForTesting() const {
   return GetSecondsSinceCreation();
 }
 
-float BorderView::GetEmphasis(base::TimeDelta delta) const {
+float GlicBorderView::GetEmphasis(base::TimeDelta delta) const {
   if (skip_animation_) {
     return 0.f;
   }
@@ -410,7 +409,7 @@ float BorderView::GetEmphasis(base::TimeDelta delta) const {
   return ClampAndInterpolate(gfx::Tween::Type::EASE_IN_OUT_2, target, 1, 0);
 }
 
-void BorderView::ResetEmphasisAndReplay() {
+void GlicBorderView::ResetEmphasisAndReplay() {
   CHECK(compositor_);
   CHECK(compositor_->HasObserver(this));
   if (!compositor_->HasAnimationObserver(this)) {
@@ -423,7 +422,7 @@ void BorderView::ResetEmphasisAndReplay() {
   }
 }
 
-float BorderView::GetOpacity(base::TimeTicks timestamp) const {
+float GlicBorderView::GetOpacity(base::TimeTicks timestamp) const {
   if (skip_animation_) {
     return 1.0f;
   }
@@ -454,7 +453,7 @@ float BorderView::GetOpacity(base::TimeTicks timestamp) const {
   }
 }
 
-void BorderView::StartRampingDown() {
+void GlicBorderView::StartRampingDown() {
   CHECK(compositor_);
 
   // From now on the opacity will be decreased until it reaches 0.
@@ -465,7 +464,7 @@ void BorderView::StartRampingDown() {
   }
 }
 
-float BorderView::GetSecondsSinceCreation() const {
+float GlicBorderView::GetSecondsSinceCreation() const {
   if (last_animation_step_time_.is_null()) {
     return 0;
   }
@@ -474,14 +473,14 @@ float BorderView::GetSecondsSinceCreation() const {
   return time_since_creation.InSecondsF();
 }
 
-base::TimeTicks BorderView::GetCreationTime() const {
+base::TimeTicks GlicBorderView::GetCreationTime() const {
   if (tester_ && !tester_->GetTestCreationTime().is_null()) [[unlikely]] {
     return tester_->GetTestCreationTime();
   }
   return creation_time_;
 }
 
-BEGIN_METADATA(BorderView)
+BEGIN_METADATA(GlicBorderView)
 END_METADATA
 
 }  // namespace glic

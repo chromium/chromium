@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define _USE_MATH_DEFINES  // To get M_PI on Windows.
-
 #include <math.h>
 
 #include "base/numerics/ranges.h"
 #include "base/path_service.h"
 #include "cc/test/pixel_test_utils.h"
-#include "chrome/browser/glic/border_view.h"
+#include "chrome/browser/glic/glic_border_view.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -39,9 +37,9 @@ static constexpr float kFloatComparisonTolerance = 0.001f;
 static constexpr base::TimeTicks kDummyTimeStamp;
 
 // Note: make sure to install this on the border before the animation starts.
-class TesterImpl : public BorderView::Tester {
+class TesterImpl : public GlicBorderView::Tester {
  public:
-  TesterImpl(BorderView* border, base::TimeTicks next_time_tick)
+  TesterImpl(GlicBorderView* border, base::TimeTicks next_time_tick)
       : border_(border) {
     next_time_tick_ = next_time_tick;
     border_->set_tester(this);
@@ -85,7 +83,7 @@ class TesterImpl : public BorderView::Tester {
   }
 
  private:
-  const raw_ptr<BorderView> border_;
+  const raw_ptr<GlicBorderView> border_;
   base::TimeTicks next_time_tick_;
   base::TimeTicks creation_time_;
 
@@ -144,7 +142,7 @@ class GlicBorderViewUiTest : public InteractiveBrowserTest {
     return tab_strip_view->GetGlicButton();
   }
 
-  glic::GlicKeyedService* glic_service(Browser* browser) {
+  glic::GlicKeyedService* GetGlicService(Browser* browser) {
     return glic::GlicKeyedServiceFactory::GetGlicKeyedService(
         browser->GetProfile());
   }
@@ -155,7 +153,7 @@ class GlicBorderViewUiTest : public InteractiveBrowserTest {
     RunTestSequence(PressButton(kGlicButtonElementId),
                     InAnyContext(WaitForShow(kGlicViewElementId)));
     // TODO(crbug.com/390233842): We should call this in the testing web app.
-    glic_service(browser)->SetContextAccessIndicator(true);
+    GetGlicService(browser)->SetContextAccessIndicator(true);
   }
 
  protected:
@@ -364,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedWindowChange) {
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 1.f, kFloatComparisonTolerance);
 
-  BorderView* new_border = nullptr;
+  GlicBorderView* new_border = nullptr;
   std::unique_ptr<TesterImpl> new_tester;
   base::TimeTicks new_timestamp;
   {
@@ -433,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringEmphasisRampUp) {
   EXPECT_NEAR(border->emphasis_for_testing(), 0.888, kFloatComparisonTolerance);
 
   // Closing the glic window must start the ramping down process.
-  glic_service(browser())->ClosePanel();
+  GetGlicService(browser())->ClosePanel();
 
   // Calling `OnAnimationStep()` will set the start time of ramping down.
   // T = 0.333s; for opacity, T=0s.
@@ -490,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringOpacityRampUp) {
   EXPECT_NEAR(border->emphasis_for_testing(), 0.84, kFloatComparisonTolerance);
 
   // Closing the glic window must start the ramping down process.
-  glic_service(browser())->ClosePanel();
+  GetGlicService(browser())->ClosePanel();
 
   // Calling `OnAnimationStep()` will set the start time of ramping down.
   // T = 0.3s; for opacity, T=0s.
@@ -546,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringStableState) {
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
 
   // Closing the glic window must start the ramping down process.
-  glic_service(browser())->ClosePanel();
+  GetGlicService(browser())->ClosePanel();
 
   // Calling `OnAnimationStep()` will set the start time of ramping down.
   // T = 5s; for opacity, T=0s.
@@ -690,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest, RampingDown) {
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
 
   // Closing the glic window must start the ramping down process.
-  glic_service(browser())->ClosePanel();
+  GetGlicService(browser())->ClosePanel();
 
   // Calling `OnAnimationStep()` should cancel the animation immediately.
   tester.set_next_time_tick(timestamp);

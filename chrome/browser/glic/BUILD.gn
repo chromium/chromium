@@ -9,7 +9,7 @@ assert(enable_glic)
 
 source_set("glic") {
   sources = [
-    "border_view.h",
+    "glic_border_view.h",
     "glic_cookie_synchronizer.h",
     "glic_enabling.h",
     "glic_focused_tab_manager.h",
@@ -63,11 +63,11 @@ source_set("impl") {
   sources = [
     "auth_controller.cc",
     "auth_controller.h",
-    "border_view.cc",
     "browser_conditions.cc",
     "browser_conditions.h",
     "fre_util.cc",
     "fre_util.h",
+    "glic_border_view.cc",
     "glic_cookie_synchronizer.cc",
     "glic_enabling.cc",
     "glic_focused_tab_manager.cc",
@@ -226,7 +226,7 @@ source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
-    "border_view_interactive_uitest.cc",
+    "glic_border_view_interactive_uitest.cc",
     "glic_settings_util_interactive_uitest.cc",
     "glic_tab_indicator_helper_interactive_uitest.cc",
     "glic_ui_interactive_uitest.cc",

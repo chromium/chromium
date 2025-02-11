@@ -343,7 +343,7 @@
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/border_view.h"
+#include "chrome/browser/glic/glic_border_view.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -1040,8 +1040,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   // view will exist but never become visible.
   if (GlicEnabling::IsProfileEligible(browser_->profile())) {
     glic_border_ = contents_container->AddChildView(
-        views::Builder<glic::BorderView>(
-            std::make_unique<glic::BorderView>(browser_.get()))
+        views::Builder<glic::GlicBorderView>(
+            std::make_unique<glic::GlicBorderView>(browser_.get()))
             // https://crbug.com/387458471: By default the border view is
             // visible, meaning it will paint during the initial layout of the
             // browser UI, causing a flash of the border.

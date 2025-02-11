@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_BORDER_VIEW_H_
-#define CHROME_BROWSER_GLIC_BORDER_VIEW_H_
+#ifndef CHROME_BROWSER_GLIC_GLIC_BORDER_VIEW_H_
+#define CHROME_BROWSER_GLIC_GLIC_BORDER_VIEW_H_
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_animation_observer.h"
@@ -20,16 +20,16 @@ class Canvas;
 
 namespace glic {
 
-class BorderView : public views::View,
-                   public ui::CompositorAnimationObserver,
-                   public ui::CompositorObserver {
-  METADATA_HEADER(BorderView, views::View)
+class GlicBorderView : public views::View,
+                       public ui::CompositorAnimationObserver,
+                       public ui::CompositorObserver {
+  METADATA_HEADER(GlicBorderView, views::View)
 
  public:
-  explicit BorderView(Browser* browser);
-  BorderView(const BorderView&) = delete;
-  BorderView& operator=(const BorderView&) = delete;
-  ~BorderView() override;
+  explicit GlicBorderView(Browser* browser);
+  GlicBorderView(const GlicBorderView&) = delete;
+  GlicBorderView& operator=(const GlicBorderView&) = delete;
+  ~GlicBorderView() override;
 
   // `views::View`:
   void OnPaint(gfx::Canvas* canvas) override;
@@ -113,13 +113,13 @@ class BorderView : public views::View,
   raw_ptr<Browser> browser_ = nullptr;
 };
 
-BEGIN_VIEW_BUILDER(, BorderView, views::View)
+BEGIN_VIEW_BUILDER(, GlicBorderView, views::View)
 VIEW_BUILDER_PROPERTY(bool, Visible)
 VIEW_BUILDER_PROPERTY(bool, CanProcessEventsWithinSubtree)
 END_VIEW_BUILDER
 
 }  // namespace glic
 
-DEFINE_VIEW_BUILDER(, glic::BorderView)
+DEFINE_VIEW_BUILDER(, glic::GlicBorderView)
 
-#endif  // CHROME_BROWSER_GLIC_BORDER_VIEW_H_
+#endif  // CHROME_BROWSER_GLIC_GLIC_BORDER_VIEW_H_

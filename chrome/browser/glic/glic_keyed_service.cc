@@ -6,7 +6,6 @@
 
 #include "base/containers/flat_set.h"
 #include "chrome/browser/glic/auth_controller.h"
-#include "chrome/browser/glic/border_view.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_enums.h"
