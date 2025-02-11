@@ -10,13 +10,15 @@
 namespace tab_groups {
 
 TabGroupSyncDelegateAndroid::TabGroupSyncDelegateAndroid(
-    TabGroupSyncService* service)
+    TabGroupSyncService* service,
+    ScopedJavaLocalRef<jobject> j_delegate_deps)
     : tab_group_sync_service_(service) {
   DCHECK(tab_group_sync_service_);
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_obj_.Reset(env, Java_TabGroupSyncDelegate_create(
-                           env, reinterpret_cast<int64_t>(this))
-                           .obj());
+  java_obj_.Reset(env,
+                  Java_TabGroupSyncDelegate_create(
+                      env, reinterpret_cast<int64_t>(this), j_delegate_deps)
+                      .obj());
 }
 
 TabGroupSyncDelegateAndroid::~TabGroupSyncDelegateAndroid() {

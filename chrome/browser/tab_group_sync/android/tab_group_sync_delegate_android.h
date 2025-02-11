@@ -28,7 +28,9 @@ class TabGroupSyncService;
 // passes all the calls to it which hosts all the interaction logic.
 class TabGroupSyncDelegateAndroid : public TabGroupSyncDelegate {
  public:
-  explicit TabGroupSyncDelegateAndroid(TabGroupSyncService* service);
+  explicit TabGroupSyncDelegateAndroid(
+      TabGroupSyncService* service,
+      ScopedJavaLocalRef<jobject> j_delegate_deps);
   ~TabGroupSyncDelegateAndroid() override;
 
   // TabGroupSyncDelegate implementation.

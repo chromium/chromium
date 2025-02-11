@@ -4,8 +4,13 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import androidx.annotation.NonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 
 /**
  * Android implementation for TabGroupSyncDelegate. Owned by native. Internal to {@link
@@ -13,19 +18,35 @@ import org.jni_zero.JNINamespace;
  * in all windows. TODO(crbug.com/379699409): Finish implementation.
  */
 @JNINamespace("tab_groups")
-public class TabGroupSyncDelegate {
-    @CalledByNative
-    static TabGroupSyncDelegate create(long nativePtr) {
-        return new TabGroupSyncDelegate(nativePtr);
+public class TabGroupSyncDelegate implements TabWindowManager.Observer {
+
+    /** Convenient wrapper to pass dependencies needed by the delegate from chrome layer. */
+    public static class Deps {
+        /** For accessing tab models across multiple activities. */
+        public TabWindowManager tabWindowManager;
     }
 
-    private TabGroupSyncDelegate(long nativePtr) {
+    private final TabWindowManager mTabWindowManager;
+
+    @CalledByNative
+    static TabGroupSyncDelegate create(long nativePtr, TabGroupSyncDelegate.Deps delegateDeps) {
+        return new TabGroupSyncDelegate(nativePtr, delegateDeps);
+    }
+
+    private TabGroupSyncDelegate(long nativePtr, @NonNull TabGroupSyncDelegate.Deps delegateDeps) {
         assert nativePtr != 0;
-        // TODO(crbug.com/379699409): Finish implementation.
+        mTabWindowManager = delegateDeps.tabWindowManager;
+        assert mTabWindowManager != null;
+        mTabWindowManager.addObserver(this);
     }
 
     @CalledByNative
     void destroy() {
-        // TODO(crbug.com/379699409): Finish implementation.
+        mTabWindowManager.removeObserver(this);
+    }
+
+    @Override
+    public void onTabModelSelectorAdded(TabModelSelector selector) {
+        // TODO(crbug.com/379699409): Implement.
     }
 }

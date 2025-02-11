@@ -36,7 +36,12 @@
 #include "components/sync_device_info/device_info_sync_service.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
 #include "chrome/browser/tab_group_sync/android/tab_group_sync_delegate_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/TabGroupSyncDepsProvider_jni.h"
 #else
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_delegate_desktop.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -103,7 +108,10 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
   std::unique_ptr<TabGroupSyncDelegate> delegate;
 #if BUILDFLAG(IS_ANDROID)
   if (IsTabGroupSyncDelegateAndroidEnabled()) {
-    delegate = std::make_unique<TabGroupSyncDelegateAndroid>(service.get());
+    auto j_delegate_deps = Java_TabGroupSyncDepsProvider_createDeps(
+        base::android::AttachCurrentThread());
+    delegate = std::make_unique<TabGroupSyncDelegateAndroid>(service.get(),
+                                                             j_delegate_deps);
   } else {
     delegate = std::make_unique<EmptyTabGroupSyncDelegate>();
   }
