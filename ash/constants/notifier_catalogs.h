@@ -211,7 +211,8 @@ enum class NotificationCatalogName {
   kOnTaskRemoveContentFromBundle = 192,
   kScannerAction = 193,
   kChromeAppDeprecation = 194,
-  kMaxValue = kChromeAppDeprecation
+  kDownloadImageFromLobster = 195,
+  kMaxValue = kDownloadImageFromLobster
 };
 
 // A living catalog that registers system nudges.
