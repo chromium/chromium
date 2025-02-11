@@ -29,6 +29,8 @@ namespace glic {
 
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
 
+extern void* kGlicWidgetIdentifier;
+
 class GlicView;
 class WebUIContentsContainer;
 class GlicWindowResizeAnimation;
@@ -166,8 +168,6 @@ class GlicWindowController : public views::WidgetObserver {
   // views::WidgetObserver implementation, monitoring the glic window widget.
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetDestroyed(views::Widget* widget) override;
-
-  // views::WidgetObserver implementation, monitoring the attached browser.
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
 
@@ -184,7 +184,7 @@ class GlicWindowController : public views::WidgetObserver {
   content::WebContents* GetWebContents();
 
   // Return the Browser to which the panel is attached, or null if detached.
-  Browser* GetAttachedBrowserForTesting() { return attached_browser_; }
+  Browser* attached_browser() { return attached_browser_; }
 
   // See class comment for details. Public for testing.
   enum class State {
@@ -307,12 +307,8 @@ class GlicWindowController : public views::WidgetObserver {
 
   void ResetPresentationTimingState();
 
-  // Observes the widget for the attached browser.
-  base::ScopedObservation<views::Widget, WidgetObserver>
-      attached_browser_widget_observation_{this};
-
   // Observes the glic widget.
-  base::ScopedObservation<views::Widget, WidgetObserver>
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
       glic_widget_observation_{this};
 
   // Used for observing closing of the pinned browser.
@@ -345,6 +341,11 @@ class GlicWindowController : public views::WidgetObserver {
   // Used to monitor key and mouse events from native window.
   class WindowEventObserver;
   std::unique_ptr<WindowEventObserver> window_event_observer_;
+
+  // This class observes the anchor view in attached mode and moves the glic
+  // window to the desired position.
+  class AnchorObserver;
+  std::unique_ptr<AnchorObserver> anchor_observer_;
 
   // True while RunMoveLoop() has been called on a widget.
   bool in_move_loop_ = false;

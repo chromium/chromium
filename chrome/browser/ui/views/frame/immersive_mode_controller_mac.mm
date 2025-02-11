@@ -12,6 +12,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/fullscreen_util_mac.h"
@@ -415,7 +416,8 @@ bool ImmersiveModeControllerMac::ShouldMoveChild(views::Widget* child) {
       child->GetNativeWindowProperty(views::kWidgetIdentifierKey);
   if (widget_identifier ==
           constrained_window::kConstrainedWindowWidgetIdentifier ||
-      widget_identifier == kLensOverlayPreselectionWidgetIdentifier) {
+      widget_identifier == kLensOverlayPreselectionWidgetIdentifier ||
+      widget_identifier == glic::kGlicWidgetIdentifier) {
     return true;
   }
 

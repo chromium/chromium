@@ -321,6 +321,11 @@ void ImmersiveModeControllerCocoa::OnTopViewBoundsChanged(
     [immersive_mode_titlebar_view_controller_
         setVisibility:mojom::ToolbarVisibilityStyle::kAlways];
   }
+
+  // This is needed when entering split-view fullscreen. The other re-anchor
+  // signals (toolbar visibility change, reveal amount change) won't fire in
+  // this case.
+  Reanchor();
 }
 
 void ImmersiveModeControllerCocoa::UpdateToolbarVisibility(
