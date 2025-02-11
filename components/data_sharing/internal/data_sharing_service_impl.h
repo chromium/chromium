@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DATA_SHARING_INTERNAL_DATA_SHARING_SERVICE_IMPL_H_
 #define COMPONENTS_DATA_SHARING_INTERNAL_DATA_SHARING_SERVICE_IMPL_H_
 
+#include <set>
 #include <unordered_map>
 
 #include "base/memory/scoped_refptr.h"
@@ -111,6 +112,7 @@ class DataSharingServiceImpl : public DataSharingService,
   void LeaveGroup(
       const GroupId& group_id,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
+  bool IsLeavingGroup(const GroupId& group_id) override;
   std::vector<GroupEvent> GetGroupEventsSinceStartup() override;
   bool ShouldInterceptNavigationForShareURL(const GURL& url) override;
   void HandleShareURLNavigationIntercepted(
@@ -225,6 +227,11 @@ class DataSharingServiceImpl : public DataSharingService,
 
   // Stores arbitrary GroupData used for testing.
   std::unordered_map<GroupId, GroupData> group_data_for_testing_;
+
+  // The set of groups that the user has attempted to leave in the current
+  // session. Not cleared until a chrome restart.
+  std::set<GroupId>
+      groups_attempted_to_leave_by_current_user_in_current_session_;
 
   base::WeakPtrFactory<DataSharingServiceImpl> weak_ptr_factory_{this};
 };
