@@ -69,7 +69,7 @@ class MerchantTrustChipButtonInteractiveUITest : public InteractiveBrowserTest {
          {
              {"probability", "1"},
              {"user_prompted", "true"},
-             {"en_site_id", "load"},
+             {"trigger_id", "load"},
          }}};
     feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
