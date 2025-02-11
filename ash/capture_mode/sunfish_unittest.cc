@@ -1788,6 +1788,35 @@ TEST_F(SunfishTest, PanelBounds) {
             target_bounds);
 }
 
+// Tests that the default action button bounds are right aligned below the
+// capture region.
+TEST_F(SunfishTest, ActionButtonsRightAlignedBelowCaptureRegionByDefault) {
+  // Start default capture mode.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+
+  // Select a region, which should show the search button.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 50),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForCaptureModeWidgetsVisible();
+
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  CaptureModeSessionTestApi session_test_api(session);
+  const views::Widget* action_container_widget =
+      session_test_api.GetActionContainerWidget();
+  ASSERT_TRUE(action_container_widget);
+  gfx::Rect action_container_bounds =
+      action_container_widget->GetWindowBoundsInScreen();
+  EXPECT_FALSE(action_container_bounds.IsEmpty());
+  // Action buttons should be right aligned with the capture region.
+  EXPECT_EQ(action_container_bounds.right(),
+            controller->user_capture_region().right());
+  // Action buttons should be below the capture region.
+  EXPECT_GT(action_container_bounds.y(),
+            controller->user_capture_region().bottom());
+}
+
 // Tests that the sunfish launcher nudge appears and closes properly in
 // clamshell mode, and that the prefs are updated properly.
 TEST_F(SunfishTest, ClamshellLauncherNudge) {
