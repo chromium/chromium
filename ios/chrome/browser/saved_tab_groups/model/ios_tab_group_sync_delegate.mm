@@ -357,6 +357,11 @@ std::vector<LocalTabID> IOSTabGroupSyncDelegate::GetLocalTabIdsForTabGroup(
   return local_tab_ids;
 }
 
+std::u16string IOSTabGroupSyncDelegate::GetTabTitle(
+    const LocalTabID& local_tab_id) {
+  return std::u16string();
+}
+
 std::unique_ptr<SavedTabGroup>
 IOSTabGroupSyncDelegate::CreateSavedTabGroupFromLocalGroup(
     const LocalTabGroupID& local_tab_group_id) {

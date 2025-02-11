@@ -39,6 +39,7 @@ if (is_android) {
       "//base",
       "//components/saved_tab_groups/delegate",
       "//components/saved_tab_groups/public",
+      "//components/saved_tab_groups/public:conversion_utils",
       "//components/tab_groups",
     ]
   }

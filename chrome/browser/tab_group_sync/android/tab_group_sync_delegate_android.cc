@@ -4,6 +4,12 @@
 
 #include "chrome/browser/tab_group_sync/android/tab_group_sync_delegate_android.h"
 
+#include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
+#include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
+#include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
+
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/tab_group_sync/delegate_jni_headers/TabGroupSyncDelegate_jni.h"
 
@@ -58,6 +64,15 @@ TabGroupSyncDelegateAndroid::GetLocalTabGroupIds() {
 std::vector<LocalTabID> TabGroupSyncDelegateAndroid::GetLocalTabIdsForTabGroup(
     const LocalTabGroupID& local_tab_group_id) {
   return std::vector<LocalTabID>();
+}
+
+std::u16string TabGroupSyncDelegateAndroid::GetTabTitle(
+    const LocalTabID& local_tab_id) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto j_tab_id = ToJavaTabId(local_tab_id);
+  auto j_title =
+      Java_TabGroupSyncDelegate_getTabTitle(env, java_obj_, j_tab_id);
+  return base::android::ConvertJavaStringToUTF16(j_title);
 }
 
 std::unique_ptr<SavedTabGroup>

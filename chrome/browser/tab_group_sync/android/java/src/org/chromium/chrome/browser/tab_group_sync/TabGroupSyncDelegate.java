@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 
@@ -43,6 +45,18 @@ public class TabGroupSyncDelegate implements TabWindowManager.Observer {
     @CalledByNative
     void destroy() {
         mTabWindowManager.removeObserver(this);
+    }
+
+    @CalledByNative
+    private String getTabTitle(int tabId) {
+        for (TabModelSelector tabModelSelector : mTabWindowManager.getAllTabModelSelectors()) {
+            TabModel tabModel = tabModelSelector.getModel(/* incognito= */ false);
+            Tab tab = tabModel.getTabById(tabId);
+            if (tab != null) {
+                return tab.getTitle();
+            }
+        }
+        return "";
     }
 
     @Override

@@ -61,6 +61,9 @@ class TabGroupSyncDelegate {
   virtual std::vector<LocalTabID> GetLocalTabIdsForTabGroup(
       const LocalTabGroupID& local_tab_group_id) = 0;
 
+  // Called to get the title of a tab from the tab model.
+  virtual std::u16string GetTabTitle(const LocalTabID& local_tab_id) = 0;
+
   // Local To Remote mutation methods.
 
   // Helper function to create a SavedTabGroup for the given local tab group ID.
