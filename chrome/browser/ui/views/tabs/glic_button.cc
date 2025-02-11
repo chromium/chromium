@@ -24,6 +24,7 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_vector_icon_manager.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 namespace glic {
@@ -78,8 +79,9 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller)
   tab_strip_controller_ = tab_strip_controller;
   SetProperty(views::kElementIdentifierKey, kGlicButtonElementId);
 
-  // TODO(iwells): Replace the values here, values are required to compile.
-  SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_SEARCH));
+#if BUILDFLAG(ENABLE_GLIC)
+  SetTooltipText(l10n_util::GetStringUTF16(IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP));
+#endif
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SEARCH));
 
