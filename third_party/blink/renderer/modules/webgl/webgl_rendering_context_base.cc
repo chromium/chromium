@@ -8653,7 +8653,8 @@ CanvasResourceProvider* WebGLRenderingContextBase::
          provider_info.colorSpace() == SkColorSpace::MakeSRGB().get());
     if (resource_provider->Size() != size ||
         resource_provider->GetSharedImageFormat() != format ||
-        provider_info.alphaType() != alpha_type || !color_spaces_match) {
+        resource_provider->GetAlphaType() != alpha_type ||
+        !color_spaces_match) {
       continue;
     }
     BubbleToFront(i);
