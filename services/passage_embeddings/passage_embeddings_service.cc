@@ -4,6 +4,8 @@
 
 #include "services/passage_embeddings/passage_embeddings_service.h"
 
+#include <utility>
+
 #include "base/files/file.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 
@@ -36,8 +38,8 @@ void PassageEmbeddingsService::LoadModels(
 
   // Load the model files.
   if (model_params->input_window_size == 0 ||
-      !embedder_->LoadModels(&model_params->embeddings_model,
-                             &model_params->sp_model,
+      !embedder_->LoadModels(std::move(model_params->embeddings_model),
+                             std::move(model_params->sp_model),
                              model_params->input_window_size)) {
     embedder_.reset();
     std::move(callback).Run(false);
