@@ -840,13 +840,17 @@ void OwnBufferFrameDeliverer::PaintAndDeliverNextFrame(
   memset(buffer_.data(), 0, frame_size);
   frame_painter()->PaintFrame(timestamp_to_paint, buffer_.data());
   base::TimeTicks now = base::TimeTicks::Now();
+
+  VideoFrameMetadata metadata;
+  metadata.source_size = gfx::Size(frame_format.frame_size.width(),
+                                   frame_format.frame_size.height());
+  metadata.device_scale_factor = 1.0f;
   client()->OnIncomingCapturedData(
       buffer_.data(), frame_size, device_state()->format,
       GetDefaultColorSpace(device_state()->format.pixel_format),
       0 /* rotation */, false /* flip_y */, now,
       CalculateTimeSinceFirstInvocation(now),
-      /*capture_begin_timestamp=*/std::nullopt,
-      /*metadata=*/std::nullopt);
+      /*capture_begin_timestamp=*/std::nullopt, metadata);
 }
 
 ClientBufferFrameDeliverer::ClientBufferFrameDeliverer(

@@ -677,6 +677,33 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
     settings->setCursor(value);
   }
 
+#if BUILDFLAG(IS_WIN)
+  if (RuntimeEnabledFeatures::CapturedSurfaceResolutionEnabled(
+          execution_context_) &&
+      platform_settings.display_surface) {
+    std::optional<float> ratio = platform_settings.device_scale_factor;
+    if (platform_settings.display_surface ==
+            media::mojom::DisplayCaptureSurfaceType::BROWSER &&
+        zoom_level_ && ratio) {
+      ratio = zoom_level_.value() * ratio.value();
+      ratio = ratio.value() / 100.0f;
+    }
+
+    if (platform_settings.physical_frame_size) {
+      settings->setPhysicalWidth(
+          platform_settings.physical_frame_size->width());
+      settings->setPhysicalHeight(
+          platform_settings.physical_frame_size->height());
+      if (ratio) {
+        settings->setLogicalWidth(
+            platform_settings.physical_frame_size->width() / ratio.value());
+        settings->setLogicalHeight(
+            platform_settings.physical_frame_size->height() / ratio.value());
+      }
+    }
+  }
+#endif
+
   if (suppress_local_audio_playback_setting_.has_value()) {
     settings->setSuppressLocalAudioPlayback(
         suppress_local_audio_playback_setting_.value());

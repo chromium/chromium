@@ -119,6 +119,7 @@ class InvertedDesktopFrame : public webrtc::DesktopFrame {
             frame->shared_memory()) {
     set_dpi(frame->dpi());
     set_capture_time_ms(frame->capture_time_ms());
+    set_device_scale_factor(frame->device_scale_factor());
     mutable_updated_region()->Swap(frame->mutable_updated_region());
     original_frame_ = std::move(frame);
   }
@@ -142,6 +143,7 @@ class UnpackedDesktopFrame : public webrtc::DesktopFrame {
             frame->stride() * 2,
             new uint8_t[frame->stride() * 2 * frame->size().height()],
             nullptr) {
+    set_device_scale_factor(frame->device_scale_factor());
     memset(data(), kFramePaddingValue, stride() * size().height());
     CopyPixelsFrom(*frame, webrtc::DesktopVector(),
                    webrtc::DesktopRect::MakeSize(size()));
@@ -194,6 +196,7 @@ class FakeScreenCapturer : public webrtc::DesktopCapturer {
     captured_frames_++;
 
     std::unique_ptr<webrtc::DesktopFrame> frame = CreateBasicFrame(size);
+    frame->set_device_scale_factor(2.0f);
     if (generate_non_updated_frames_ &&
         captured_frames_ % no_update_period_ == 0) {
       // Indicates that no region of the screen has been updated since the last
@@ -287,10 +290,15 @@ class DesktopCaptureDeviceTest : public testing::Test {
                  base::TimeTicks /* reference_time */,
                  base::TimeDelta /* timestamp */,
                  std::optional<base::TimeTicks> /* capture_begin_time */,
-                 const std::optional<media::VideoFrameMetadata>& /* metadata */,
+                 const std::optional<media::VideoFrameMetadata>& metadata,
                  int /* frame_feedback_id */) {
     ASSERT_TRUE(output_frame_);
     ASSERT_EQ(output_frame_->stride() * output_frame_->size().height(), size);
+    ASSERT_NE(metadata, std::nullopt);
+    ASSERT_NE(metadata->source_size, std::nullopt);
+    ASSERT_EQ(metadata->source_size->width(), output_frame_->size().width());
+    ASSERT_EQ(metadata->source_size->height(), output_frame_->size().height());
+    ASSERT_EQ(metadata->device_scale_factor, 2.0f);
     memcpy(output_frame_->data(), frame, size);
   }
 

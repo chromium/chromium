@@ -771,6 +771,10 @@
       status: {"Android": "", "default": "experimental"},
     },
     {
+      name: "CapturedSurfaceResolution",
+      status: { "Win": "experimental", "default": ""},
+    },
+    {
       name: "CaptureHandle",
       depends_on: ["GetDisplayMedia"],
       status: {"Android": "", "default": "stable"},

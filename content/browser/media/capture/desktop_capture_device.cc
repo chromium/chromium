@@ -722,6 +722,14 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
   base::TimeTicks now = NowTicks();
   if (first_ref_time_.is_null())
     first_ref_time_ = now;
+
+  // This passes the information to the frame metadata for screen and non-chrome
+  // window captures.
+  media::VideoFrameMetadata metadata;
+  metadata.source_size =
+      gfx::Size(frame->size().width(), frame->size().height());
+  metadata.device_scale_factor = frame->device_scale_factor();
+
   client_->OnIncomingCapturedData(
       output_data, output_bytes,
       media::VideoCaptureFormat(
@@ -731,7 +739,7 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
                           : media::PIXEL_FORMAT_ARGB),
       frame_color_space, 0 /* clockwise_rotation */, false /* flip_y */, now,
       now - first_ref_time_, /*capture_begin_timestamp=*/std::nullopt,
-      /*metadata=*/std::nullopt);
+      metadata);
 
   ScheduleNextCaptureFrame();
 }

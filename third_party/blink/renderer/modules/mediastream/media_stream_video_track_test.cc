@@ -430,12 +430,20 @@ TEST_F(MediaStreamVideoTrackTest, DeliverFramesAndGetSettings) {
   native_track->GetSettings(settings);
   EXPECT_EQ(600, settings.width);
   EXPECT_EQ(400, settings.height);
+  EXPECT_EQ(std::nullopt, settings.physical_frame_size);
 
   auto frame2 = media::VideoFrame::CreateBlackFrame(gfx::Size(200, 300));
+
+  media::VideoFrameMetadata metadata = frame2->metadata();
+  metadata.source_size = gfx::Size(600, 400);
+  frame2->set_metadata(metadata);
   DeliverVideoFrameAndWaitForRenderer(std::move(frame2), &sink);
   native_track->GetSettings(settings);
   EXPECT_EQ(200, settings.width);
   EXPECT_EQ(300, settings.height);
+  ASSERT_NE(settings.physical_frame_size, std::nullopt);
+  EXPECT_EQ(600, settings.physical_frame_size->width());
+  EXPECT_EQ(400, settings.physical_frame_size->height());
 
   sink.DisconnectFromTrack();
 }

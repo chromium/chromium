@@ -9139,3 +9139,9 @@ crbug.com/394638725 [ Mac ] external/wpt/css/cssom/getComputedStyle-width-scroll
 # Gardener 2025-02-10
 crbug.com/356930166 [ Mac ] external/wpt/webrtc/RTCDataChannel-GC.html [ Failure Pass Skip Timeout ]
 crbug.com/394919517 [ Mac ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure Pass ]
+
+# Skipping because of unimplemented behaviour
+crbug.com/383946052 [ Android ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
+crbug.com/383946052 [ Fuchsia ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
+crbug.com/383946052 [ Linux ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
+crbug.com/383946052 [ Mac ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
