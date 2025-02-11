@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.util.Optional;
@@ -28,7 +29,7 @@ import java.util.regex.Pattern;
 public class SpannableAutocompleteEditTextModel
         implements AutocompleteEditTextModelBase, AutocompleteInputConnection.InputDelegate {
     private static final String TAG = "SpanAutocomplete";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = OmniboxFeatures.sDiagInputConnection.getValue();
 
     // A pattern that matches strings consisting of English and European character sets, numbers,
     // punctuations, and a white space.
