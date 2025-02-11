@@ -2802,7 +2802,7 @@ def CheckCrosApiNeedBrowserTest(input_api, output_api):
     has_new_crosapi = False
     has_browser_test = False
     for f in input_api.AffectedFiles():
-        path = f.LocalPath()
+        path = f.UnixLocalPath()
         if (path.startswith('chromeos/crosapi/mojom') and
             _IsMojomFile(input_api, path) and f.Action() == 'A'):
             has_new_crosapi = True
@@ -2885,10 +2885,7 @@ def CheckNoBannedFunctions(input_api, output_api):
         if not excluded_paths:
             return False
 
-        local_path = affected_file.LocalPath()
-        # Consistently use / as path separator to simplify the writing of regex
-        # expressions.
-        local_path = local_path.replace(input_api.os_path.sep, '/')
+        local_path = affected_file.UnixLocalPath()
         for item in excluded_paths:
             if input_api.re.match(item, local_path):
                 return True
@@ -3224,11 +3221,9 @@ def CheckNoInternalHeapIncludes(input_api, output_api):
     v8_wrapper_pattern = input_api.re.compile(
         r'^\s*#include\s*"third_party/blink/renderer/platform/heap/v8_wrapper/.*"'
     )
-    # Consistently use / as path separator to simplify the writing of regex
-    # expressions.
     file_filter = lambda f: not input_api.re.match(
         r"^third_party/blink/renderer/platform/heap/.*",
-        f.LocalPath().replace(input_api.os_path.sep, '/'))
+        f.UnixLocalPath())
     errors = []
 
     for f in input_api.AffectedFiles(file_filter=file_filter):
@@ -3651,11 +3646,9 @@ def CheckAddedDepsHaveTargetApprovals(input_api, output_api):
     # (via lines like "+foo/bar/baz").
     depended_on_paths = set()
 
-    # Consistently use / as path separator to simplify the writing of regex
-    # expressions.
     file_filter = lambda f: not input_api.re.match(
         r"^third_party/blink/.*",
-        f.LocalPath().replace(input_api.os_path.sep, '/'))
+        f.UnixLocalPath())
     for f in input_api.AffectedFiles(include_deletes=False,
                                      file_filter=file_filter):
         filename = input_api.os_path.basename(f.LocalPath())
@@ -4118,7 +4111,7 @@ def CheckParseErrors(input_api, output_api):
         action = get_action(affected_file)
         if not action:
             return False
-        path = affected_file.LocalPath()
+        path = affected_file.UnixLocalPath()
 
         if _MatchesFile(input_api,
                         _KNOWN_TEST_DATA_AND_INVALID_JSON_FILE_PATTERNS, path):
@@ -4136,7 +4129,7 @@ def CheckParseErrors(input_api, output_api):
         kwargs = {}
         if (action == _GetJSONParseError
                 and _MatchesFile(input_api, json_no_comments_patterns,
-                                 affected_file.LocalPath())):
+                                 affected_file.UnixLocalPath())):
             kwargs['eat_comments'] = False
         parse_error = action(input_api, affected_file.AbsoluteLocalPath(),
                              **kwargs)
@@ -4213,9 +4206,6 @@ def CheckPythonDevilInit(input_api, output_api):
 
 
 def _MatchesFile(input_api, patterns, path):
-    # Consistently use / as path separator to simplify the writing of regex
-    # expressions.
-    path = path.replace(input_api.os_path.sep, '/')
     for pattern in patterns:
         if input_api.re.search(pattern, path):
             return True
@@ -4662,7 +4652,7 @@ def CheckSetNoParent(input_api, output_api):
         # Check that every set noparent line has a corresponding file:// line
         # listed in build/OWNERS.setnoparent. An exception is made for top level
         # directories since src/OWNERS shouldn't review them.
-        linux_path = f.LocalPath().replace(input_api.os_path.sep, '/')
+        linux_path = f.UnixLocalPath()
         if (linux_path.count('/') != 1
                 and (not linux_path in _EXCLUDED_SET_NO_PARENT_PATHS)):
             for set_noparent_line in found_set_noparent_lines:
@@ -4697,12 +4687,12 @@ def CheckUselessForwardDeclarations(input_api, output_api):
     struct_pattern = input_api.re.compile(r'^struct\s+(\w+);$',
                                           input_api.re.MULTILINE)
     for f in input_api.AffectedFiles(include_deletes=False):
-        if (f.LocalPath().startswith('third_party')
-                and not f.LocalPath().startswith('third_party/blink')
-                and not f.LocalPath().startswith('third_party\\blink')):
+        local_path = f.UnixLocalPath()
+        if (local_path.startswith('third_party')
+                and not local_path.startswith('third_party/blink')):
             continue
 
-        if not f.LocalPath().endswith('.h'):
+        if not local_path.endswith('.h'):
             continue
 
         contents = input_api.ReadFile(f)
@@ -4951,10 +4941,9 @@ def _CheckAndroidTestAnnotationUsage(input_api, output_api):
 
 def _CheckAndroidNewMdpiAssetLocation(input_api, output_api):
     """Checks if MDPI assets are placed in a correct directory."""
-    file_filter = lambda f: (f.LocalPath().endswith(
-        '.png') and ('/res/drawable/'.replace('/', input_api.os_path.sep) in f.
-                     LocalPath() or '/res/drawable-ldrtl/'.replace(
-                         '/', input_api.os_path.sep) in f.LocalPath()))
+    file_filter = lambda f: (f.UnixLocalPath().endswith(
+        '.png') and ('/res/drawable/' in f.
+                     UnixLocalPath() or '/res/drawable-ldrtl/' in f.UnixLocalPath()))
     errors = []
     for f in input_api.AffectedFiles(include_deletes=False,
                                      file_filter=file_filter):
@@ -5364,9 +5353,8 @@ def CheckNoDeprecatedCss(input_api, output_api):
 def CheckForRelativeIncludes(input_api, output_api):
     bad_files = {}
     for f in input_api.AffectedFiles(include_deletes=False):
-        if (f.LocalPath().startswith('third_party')
-                and not f.LocalPath().startswith('third_party/blink')
-                and not f.LocalPath().startswith('third_party\\blink')):
+        if (f.UnixLocalPath().startswith('third_party')
+                and not f.LocalPath().startswith('third_party/blink')):
             continue
 
         if not _IsCPlusPlusFile(input_api, f.LocalPath()):
@@ -5409,9 +5397,8 @@ def CheckForCcIncludes(input_api, output_api):
     results = []
     for f in input_api.AffectedFiles(include_deletes=False):
         # We let third_party code do whatever it wants
-        if (f.LocalPath().startswith('third_party')
-                and not f.LocalPath().startswith('third_party/blink')
-                and not f.LocalPath().startswith('third_party\\blink')):
+        if (f.UnixLocalPath().startswith('third_party')
+                and not f.LocalPath().startswith('third_party/blink')):
             continue
 
         if not _IsCPlusPlusFile(input_api, f.LocalPath()):
@@ -6251,7 +6238,7 @@ def CheckForInvalidIfDefinedMacros(input_api, output_api):
     def affected_files_filter(f):
         # Normalize the local path to Linux-style path separators so that the
         # path comparisons work on Windows as well.
-        path = f.LocalPath().replace('\\', '/')
+        path = f.UnixLocalPath()
 
         for skipped_path in SKIPPED_PATHS:
             if path.startswith(skipped_path):
@@ -7288,7 +7275,7 @@ def CheckAssertAshOnlyCode(input_api, output_api):
 
 
 def _IsMiraclePtrDisallowed(input_api, affected_file):
-    path = affected_file.LocalPath()
+    path = affected_file.UnixLocalPath()
     if not _IsCPlusPlusFile(input_api, path):
         return False
 
@@ -7543,8 +7530,7 @@ def CheckLibcxxRevisionsMatch(input_api, output_api):
 
     DEPS_FILES = [ 'DEPS', 'buildtools/deps_revisions.gni' ]
 
-    file_filter = lambda f: f.LocalPath().replace(
-            input_api.os_path.sep, '/') in DEPS_FILES
+    file_filter = lambda f: f.UnixLocalPath() in DEPS_FILES
     changed_deps_files = input_api.AffectedFiles(file_filter=file_filter)
     if not changed_deps_files:
         return []
