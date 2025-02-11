@@ -1453,7 +1453,7 @@ deps = {
   },
 
   'src/docs/website': {
-    'url': Var('chromium_git') + '/website.git' + '@' + '61d3bcecee6055467a7cc10c6046afe653920e26',
+    'url': Var('chromium_git') + '/website.git' + '@' + '087e0ee5b7119e14dff6c4f2f61425eb3d8dff14',
   },
 
   'src/ios/third_party/earl_grey2/src': {
