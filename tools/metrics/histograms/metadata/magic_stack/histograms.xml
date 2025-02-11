@@ -30,13 +30,12 @@ chromium-metrics-reviews@google.com.
 <variants name="ModuleType">
   <variant name="AuxiliarySearch"/>
   <variant name="DefaultBrowserPromo"/>
-  <variant name="EducationalTip"/>
   <variant name="PriceChange"/>
-  <variant name="QuickDelete"/>
+  <variant name="QuickDeletePromo"/>
   <variant name="SafetyHub"/>
   <variant name="SingleTab"/>
-  <variant name="TabGroups"/>
-  <variant name="TabGroupSync"/>
+  <variant name="TabGroupPromo"/>
+  <variant name="TabGroupSyncPromo"/>
   <variant name="TabResumption"/>
 </variants>
 
@@ -89,17 +88,6 @@ chromium-metrics-reviews@google.com.
     Record the total count of clicks on different modules of the magic stack on
     the NewTabPage. The histogram is logged every time when a module is clicked,
     Android-only.
-  </summary>
-</histogram>
-
-<histogram name="MagicStack.Clank.NewTabPage.Module.EducationalTip.Impression"
-    enum="ModuleType" expires_after="2025-05-11">
-  <owner>xinyiji@google.com</owner>
-  <owner>hanxi@google.com</owner>
-  <summary>
-    Records the total number of times the different educational tip cards are
-    shown to the user within the magic stack. The histogram is logged when the
-    card is shown to the user in the Magic Stack. Android-only.
   </summary>
 </histogram>
 
@@ -260,6 +248,24 @@ chromium-metrics-reviews@google.com.
     magic stack of a NewTabPage. {HostSurfaceState} indicates whether the
     histogram is logged at startup, or when the user opens a new Tab. The
     histogram is logged on Android-only.
+  </summary>
+  <token key="HostSurfaceState" variants="HostSurfaceState"/>
+  <token key="ModuleType" variants="ModuleType"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.NewTabPage.{HostSurfaceState}.Module.{ModuleType}.ImpressionCountBeforeInteraction"
+    units="count" expires_after="2025-08-03">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    This histogram is currently logged only for educational tip cards. It tracks
+    the number of times a module has been shown before user interaction and is
+    recorded when users interact with it on the magic stack of a NewTabPage.
+    Once the user interacts with the card, the histogram is no longer logged.
+    The {HostSurfaceState} specifies whether the histogram logs at startup or
+    when a user opens a new tab. This histogram is exclusively logged on
+    Android.
   </summary>
   <token key="HostSurfaceState" variants="HostSurfaceState"/>
   <token key="ModuleType" variants="ModuleType"/>
