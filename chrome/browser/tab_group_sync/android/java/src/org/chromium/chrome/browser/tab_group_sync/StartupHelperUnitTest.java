@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.tab_group_sync.ClosingSource;
@@ -48,6 +49,7 @@ public class StartupHelperUnitTest {
     private static final Token TOKEN_1 = new Token(2, 3);
     private static final int ROOT_ID_1 = 1;
     private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 = new LocalTabGroupId(TOKEN_1);
+    private static final String TAB_TITLE_1 = "Tab Title";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
@@ -65,6 +67,7 @@ public class StartupHelperUnitTest {
         Mockito.doReturn(tabId).when(tab).getId();
         Mockito.doReturn(rootId).when(tab).getRootId();
         Mockito.doReturn(GURL.emptyGURL()).when(tab).getUrl();
+        Mockito.doReturn(TAB_TITLE_1).when(tab).getTitle();
         Mockito.doReturn(System.currentTimeMillis()).when(tab).getTimestampMillis();
         return tab;
     }
@@ -131,6 +134,7 @@ public class StartupHelperUnitTest {
                 mTab1, 0, TabLaunchType.FROM_TAB_GROUP_UI, TabCreationState.LIVE_IN_BACKGROUND);
         mTabModel.addTab(
                 mTab2, 1, TabLaunchType.FROM_TAB_GROUP_UI, TabCreationState.LIVE_IN_BACKGROUND);
+        mTabModel.setIndex(0, TabSelectionType.FROM_USER);
     }
 
     @Test
@@ -172,5 +176,17 @@ public class StartupHelperUnitTest {
         // Initialize. It should add the group to sync and add ID mapping to prefs.
         mStartupHelper.initializeTabGroupSync();
         verify(mRemoteMutationHelper).createRemoteTabGroup(eq(LOCAL_TAB_GROUP_ID_1));
+    }
+
+    @Test
+    public void testNotifyBackendOfActiveTabOnStartup() {
+        // Setup a group with two tabs in the tab model.
+        createLocalGroupWithTwoTabs();
+        when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(true);
+
+        // Initialize. It should notify backend about currently selected tab.
+        mStartupHelper.notifyBackendOfActiveTabOnStartup();
+        verify(mTabGroupSyncService)
+                .onTabSelected(eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), eq(TAB_TITLE_1));
     }
 }
