@@ -156,12 +156,12 @@ const int kUMAVSyncBuckets[] = {
     32000000,
 };
 
-#define UMA_HISTOGRAM_CUSTOM_TIMES_VSYNC_ALIGNED(name, sample)             \
-  do {                                                                     \
-    UMA_HISTOGRAM_CUSTOM_ENUMERATION(                                      \
-        name "2", sample.InMicroseconds(),                                 \
-        std::vector<int>(kUMAVSyncBuckets,                                 \
-                         kUMAVSyncBuckets + std::size(kUMAVSyncBuckets))); \
+#define UMA_HISTOGRAM_CUSTOM_TIMES_VSYNC_ALIGNED(name, sample) \
+  do {                                                         \
+    UMA_HISTOGRAM_CUSTOM_ENUMERATION(                          \
+        name "2", sample.InMicroseconds(),                     \
+        std::vector<int>(std::begin(kUMAVSyncBuckets),         \
+                         std::end(kUMAVSyncBuckets)));         \
   } while (false)
 
 }  // namespace
