@@ -46,6 +46,8 @@ source_set("base") {
     "cloud_session_authz_service_client_factory.h",
     "compound_buffer.cc",
     "compound_buffer.h",
+    "compute_engine_service_client.cc",
+    "compute_engine_service_client.h",
     "constants.cc",
     "constants.h",
     "corp_auth_util.cc",

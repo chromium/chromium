@@ -504,4 +504,7 @@ Refer to README.md for content description and update process.
  <item id="microsoft_files_page_handler" added_in_milestone="134" content_hash_code="0550fd5d" os_list="linux,windows,chromeos" file_path="chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files_page_handler.cc" />
  <item id="outlook_calendar_event_attachment" added_in_milestone="134" content_hash_code="07ede3aa" os_list="linux,windows,chromeos" file_path="chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.cc" />
  <item id="ip_protection_service_get_issuer_token" added_in_milestone="134" content_hash_code="018c8314" os_list="linux,windows,android,chromeos" file_path="components/ip_protection/common/ip_protection_issuer_token_direct_fetcher.cc" />
+ <item id="remoting_compute_engine_instance_identity_token" added_in_milestone="135" content_hash_code="01ae9bd2" os_list="linux,windows,chromeos,android" file_path="remoting/base/compute_engine_service_client.cc" />
+ <item id="remoting_compute_engine_instance_access_token" added_in_milestone="135" content_hash_code="0117134b" os_list="linux,windows,chromeos,android" file_path="remoting/base/compute_engine_service_client.cc" />
+ <item id="remoting_compute_engine_instance_access_token_scopes" added_in_milestone="135" content_hash_code="023331d4" os_list="linux,windows,chromeos,android" file_path="remoting/base/compute_engine_service_client.cc" />
 </annotations>

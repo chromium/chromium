@@ -366,6 +366,9 @@ after discussions on the right group.
       <annotation id="microsoft_files_page_handler"/>
       <annotation id="outlook_calendar_event_attachment"/>
       <annotation id="ip_protection_service_get_issuer_token"/>
+      <annotation id="remoting_compute_engine_instance_identity_token"/>
+      <annotation id="remoting_compute_engine_instance_access_token"/>
+      <annotation id="remoting_compute_engine_instance_access_token_scopes"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
