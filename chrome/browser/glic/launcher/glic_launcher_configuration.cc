@@ -53,9 +53,15 @@ void GlicLauncherConfiguration::RegisterLocalStatePrefs(
 }
 
 // static
-bool GlicLauncherConfiguration::IsEnabled() {
-  return g_browser_process->local_state()->GetBoolean(
-      prefs::kGlicLauncherEnabled);
+bool GlicLauncherConfiguration::IsEnabled(bool* is_default_value) {
+  PrefService* const pref_service = g_browser_process->local_state();
+  if (is_default_value) {
+    *is_default_value =
+        pref_service->FindPreference(prefs::kGlicLauncherEnabled)
+            ->IsDefaultValue();
+  }
+
+  return pref_service->GetBoolean(prefs::kGlicLauncherEnabled);
 }
 
 // static

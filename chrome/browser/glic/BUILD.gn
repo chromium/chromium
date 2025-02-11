@@ -34,6 +34,7 @@ source_set("glic") {
   public_deps = [
     ":mojo_bindings",
     "//base",
+    "//chrome/browser:shell_integration",
     "//chrome/browser/content_extraction:content_extraction",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_list",
@@ -161,6 +162,7 @@ source_set("unit_tests") {
   sources = [
     "glic_cookie_synchronizer_unittest.cc",
     "glic_enabling_unittest.cc",
+    "glic_fre_controller_unittest.cc",
     "glic_metrics_unittest.cc",
     "glic_profile_manager_unittest.cc",
   ]
@@ -168,6 +170,7 @@ source_set("unit_tests") {
     ":glic",
     ":impl",
     "//base/test:test_support",
+    "//chrome/browser/glic/launcher:launcher",
     "//chrome/browser/ui",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
