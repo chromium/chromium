@@ -18,7 +18,6 @@ source_set("page_action") {
     "page_action_triggers.h",
     "page_action_view.h",
     "page_action_view_params.h",
-    "pwa_install.h",
   ]
 
   sources = [
@@ -30,7 +29,6 @@ source_set("page_action") {
     "page_action_observer.cc",
     "page_action_triggers.cc",
     "page_action_view.cc",
-    "pwa_install.cc",
   ]
 
   public_deps = [

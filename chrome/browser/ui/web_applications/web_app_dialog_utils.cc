@@ -11,9 +11,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -268,6 +270,37 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
       base::BindOnce(OnWebAppInstalled, std::move(installed_callback)),
       fallback_behavior);
   return true;
+}
+
+void ShowPwaInstallDialog(Browser* browser) {
+  CHECK(browser);
+
+  base::RecordAction(base::UserMetricsAction("PWAInstallIcon"));
+
+  content::WebContents* const web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  CHECK(web_contents);
+
+  // Close PWA install IPH if it is showing.
+  PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown;
+  bool install_icon_clicked_after_iph_shown =
+      browser->window()->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHDesktopPwaInstallFeature,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  if (install_icon_clicked_after_iph_shown) {
+    iph_state = PwaInProductHelpState::kShown;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  metrics::structured::StructuredMetricsClient::Record(
+      metrics::structured::events::v2::cr_os_events::
+          AppDiscovery_Browser_OmniboxInstallIconClicked()
+              .SetIPHShown(install_icon_clicked_after_iph_shown));
+#endif
+
+  CreateWebAppFromManifest(web_contents,
+                           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+                           base::DoNothing(), iph_state);
 }
 
 void SetInstalledCallbackForTesting(WebAppInstalledCallback callback) {
