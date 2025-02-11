@@ -112,22 +112,27 @@ void ContextualCueingHelper::DidFinishNavigation(
   }
 }
 
-void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
+void ContextualCueingHelper::PrimaryMainDocumentElementAvailable() {
   auto* glic_nudge_controller = GetGlicNudgeController();
   if (!glic_nudge_controller) {
     return;
   }
+  // Determine if server data indicates a nudge should be shown.
+  optimization_guide_keyed_service_->CanApplyOptimization(
+      web_contents()->GetLastCommittedURL(),
+      optimization_guide::proto::GLIC_CONTEXTUAL_CUEING,
+      base::BindOnce(&ContextualCueingHelper::OnOptimizationGuideCueingMetadata,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
 
+void ContextualCueingHelper::OnOptimizationGuideCueingMetadata(
+    optimization_guide::OptimizationGuideDecision decision,
+    const optimization_guide::OptimizationMetadata& metadata) {
   std::unique_ptr<ScopedNudgeDecisionRecorder> recorder =
       std::make_unique<ScopedNudgeDecisionRecorder>(
           optimization_guide::proto::GLIC_CONTEXTUAL_CUEING,
           web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
-  optimization_guide::OptimizationMetadata metadata;
 
-  // Determine if server data indicates a nudge should be shown.
-  auto decision = optimization_guide_keyed_service_->CanApplyOptimization(
-      web_contents()->GetLastCommittedURL(),
-      optimization_guide::proto::GLIC_CONTEXTUAL_CUEING, &metadata);
   if (decision != optimization_guide::OptimizationGuideDecision::kTrue ||
       metadata.empty()) {
     recorder->set_nudge_decision(NudgeDecision::kServerDataUnavailable);

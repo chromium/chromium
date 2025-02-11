@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -36,7 +37,7 @@ class ContextualCueingHelper
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
+  void PrimaryMainDocumentElementAvailable() override;
 
   tabs::GlicNudgeController* GetGlicNudgeController();
 
@@ -44,6 +45,11 @@ class ContextualCueingHelper
   ContextualCueingHelper(content::WebContents* contents,
                          OptimizationGuideKeyedService* ogks,
                          ContextualCueingService* ccs);
+
+  // Called when optimization guide metadata is received.
+  void OnOptimizationGuideCueingMetadata(
+      optimization_guide::OptimizationGuideDecision decision,
+      const optimization_guide::OptimizationMetadata& metadata);
 
   void OnCueingDecision(
       std::unique_ptr<ScopedNudgeDecisionRecorder> decision_recorder,
