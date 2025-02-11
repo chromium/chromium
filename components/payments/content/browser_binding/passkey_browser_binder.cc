@@ -121,13 +121,18 @@ void PasskeyBrowserBinder::OnWebDataServiceRequestDone(
           .Run(result ? static_cast<WDResult<bool>*>(result.get())->GetValue()
                       : false);
       break;
-    case WDResultType::BROWSER_BOUND_KEY:
+    case WDResultType::BROWSER_BOUND_KEY: {
+      std::optional<std::vector<uint8_t>> result_value;
+      if (result) {
+        result_value =
+            static_cast<WDResult<std::optional<std::vector<uint8_t>>>*>(
+                result.get())
+                ->GetValue();
+      }
       RemoveHandler(get_browser_bound_key_handlers_, handle)
-          .Run(result
-                   ? static_cast<WDResult<std::vector<uint8_t>>*>(result.get())
-                         ->GetValue()
-                   : std::vector<uint8_t>());
+          .Run(result_value.value_or(std::vector<uint8_t>()));
       break;
+    }
     default:
       NOTREACHED();
   }
@@ -165,7 +170,7 @@ void PasskeyBrowserBinder::GetOrCreateBrowserBoundKey(
                                           /*consumer=*/nullptr);
   }
   std::move(callback).Run(key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
-      std::move(browser_bound_key_id), std::move(allowed_credentials)));
+      browser_bound_key_id, allowed_credentials));
 }
 
 }  // namespace payments
