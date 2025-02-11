@@ -164,9 +164,9 @@ void EnterpriseSearchAggregatorProvider::RequestCompleted(
 
 bool EnterpriseSearchAggregatorProvider::UpdateResults(
     const std::string& json_data) {
-  std::optional<base::Value> response =
-      base::JSONReader::Read(json_data, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!response || !response->is_dict()) {
+  std::optional<base::Value::Dict> response =
+      base::JSONReader::ReadDict(json_data, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!response) {
     return false;
   }
 
@@ -175,7 +175,8 @@ bool EnterpriseSearchAggregatorProvider::UpdateResults(
   matches_.clear();
 
   // Fill `matches_` with the new server matches.
-  ParseEnterpriseSearchAggregatorSearchResults(*response);
+  ParseEnterpriseSearchAggregatorSearchResults(
+      base::Value(std::move(*response)));
 
   return !matches_.empty();
 }
