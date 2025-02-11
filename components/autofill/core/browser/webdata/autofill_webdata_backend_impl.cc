@@ -50,6 +50,7 @@ namespace {
 // in enums.xml.
 // The ID space is a bit stretched out to enable adding new failure testing
 // inside functions where needed without destroying the order of elements.
+// LINT.IfChange(Result) -->
 enum class Result {
   kAddFormElements_Success = 0,
   kAddFormElements_Failure = 1,
@@ -127,6 +128,7 @@ enum class Result {
   kRemoveEntityInstancesModifiedBetween_Failure = 311,
   kMaxValue = kRemoveEntityInstancesModifiedBetween_Failure,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillWebDataBackendImplOperationResult)
 
 // Reports the success or failure of various operations on the database via UMA.
 //

@@ -627,18 +627,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Silent push with generic notification"/>
 </enum>
 
-<!-- LINT.IfChange(AutofillAccountStorageResult) -->
-
-<enum name="WebDatabaseAutofillAccountStorageResult">
-  <int value="0" label="In memory (flag disabled)"/>
-  <int value="1" label="In memory (signed in implicitly)"/>
-  <int value="2" label="On disk (signed out)"/>
-  <int value="3" label="On disk (signed in explicitly)"/>
-  <int value="4" label="On disk (full sync on)"/>
-</enum>
-
-<!-- LINT.ThenChange(/chrome/browser/webdata_services/web_data_service_factory.cc:AutofillAccountStorageResult) -->
-
 <!--
   Names are converted to ASCII before hashing - generate new hashes with:
   cpp: static_cast<int32_t>(base::HashMetricName(base::WideToASCII(name)))
