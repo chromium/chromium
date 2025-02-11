@@ -41,7 +41,7 @@ suite('DiceAppTest', function() {
 
   test(
       '"signInPromo" is the active view without the noAnimations param',
-      async function() {
+      function() {
         const searchParams = new URLSearchParams(window.location.search);
         searchParams.append('noAnimations', 'true');
         testElement.setupViewManagerForTest(searchParams);

@@ -353,7 +353,7 @@ suite('AutofillAiRedirectTest', function() {
   let section: SettingsAutofillAiSectionElement;
   let userAnnotationsManager: TestUserAnnotationsManagerProxyImpl;
 
-  setup(async function() {
+  setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     // Enable the Autofill AI feature so that the route is defined.

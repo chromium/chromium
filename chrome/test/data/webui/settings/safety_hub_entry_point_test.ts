@@ -26,7 +26,7 @@ suite('SafetyHubEntryPoint', function() {
     await flushTasks();
   }
 
-  setup(async function() {
+  setup(function() {
     browserProxy = new TestSafetyHubBrowserProxy();
     SafetyHubBrowserProxyImpl.setInstance(browserProxy);
   });

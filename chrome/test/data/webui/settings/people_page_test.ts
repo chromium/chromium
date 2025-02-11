@@ -139,7 +139,7 @@ suite('SigninDisallowedTests', function() {
 });
 
 suite('SyncStatusTests', function() {
-  setup(async function() {
+  setup(function() {
     loadTimeData.overrideValues({
       signinAllowed: true,
     });

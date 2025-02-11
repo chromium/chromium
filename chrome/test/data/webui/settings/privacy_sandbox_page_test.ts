@@ -216,7 +216,7 @@ suite('FledgeSubpage', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('secondDescription', async function() {
+  test('secondDescription', function() {
     const secondDescription =
         page.shadowRoot!.querySelector<HTMLElement>('#secondDescription');
     assert(secondDescription);
@@ -224,7 +224,7 @@ suite('FledgeSubpage', function() {
         secondDescription?.innerText, page.i18n('fledgePageExplanation'));
   });
 
-  test('footerLinks', async function() {
+  test('footerLinks', function() {
     assertTrue(isChildVisible(page, '#footer'));
     const links =
         page.shadowRoot!.querySelectorAll<HTMLAnchorElement>('#footer a[href]');
@@ -303,7 +303,7 @@ suite('SiteSuggestedAdsSubpageAdsApiUxEnhancement', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('footerLinksV2', async function() {
+  test('footerLinksV2', function() {
     assertTrue(isVisible(page.shadowRoot!.querySelector('#footerV2')));
     const links = page.shadowRoot!.querySelectorAll<HTMLAnchorElement>(
         '#footerV2 a[href]');
@@ -574,7 +574,7 @@ suite('TopicsSubpage', function() {
     idsToBeHidden.forEach(id => assertFalse(isChildVisible(page, id)));
   });
 
-  test('disclaimerLinks', async function() {
+  test('disclaimerLinks', function() {
     const disclaimer = page.shadowRoot!.querySelector('#disclaimer');
     assertTrue(!!disclaimer);
     assertTrue(isVisible(disclaimer));
@@ -940,7 +940,7 @@ suite('TopicsSubpage', function() {
     assertFalse(isChildVisible(page, '#currentTopicsSection'));
   });
 
-  test('footerLinks', async function() {
+  test('footerLinks', function() {
     assertTrue(isChildVisible(page, '#footer'));
     const links =
         page.shadowRoot!.querySelectorAll<HTMLAnchorElement>('#footer a[href]');
@@ -959,7 +959,7 @@ suite('TopicsSubpage', function() {
     assertDeepEquals(hrefs, expectedLinks);
   });
 
-  test('manageTopicsRow', async function() {
+  test('manageTopicsRow', function() {
     const manageTopicsRow = page.shadowRoot!.querySelector<CrLinkRowElement>(
         '#privacySandboxManageTopicsLinkRow');
     assertTrue(!!manageTopicsRow);
@@ -971,7 +971,7 @@ suite('TopicsSubpage', function() {
         manageTopicsRow.subLabel);
   });
 
-  test('clickManageTopicsRow', async function() {
+  test('clickManageTopicsRow', function() {
     const manageTopicsRow = page.shadowRoot!.querySelector<CrLinkRowElement>(
         '#privacySandboxManageTopicsLinkRow');
     assertTrue(!!manageTopicsRow);
@@ -981,7 +981,7 @@ suite('TopicsSubpage', function() {
         Router.getInstance().getCurrentRoute());
   });
 
-  test('navigateToManageTopicsPrefDisabled', async function() {
+  test('navigateToManageTopicsPrefDisabled', function() {
     page.setPrefValue('privacy_sandbox.m1.topics_enabled', false);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const manageTopicsPage = document.createElement(
@@ -1030,7 +1030,7 @@ suite('TopicsSubpageAdsApiUxEnhancementsDisabled', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('footerLinksV2NotShown', async function() {
+  test('footerLinksV2NotShown', function() {
     assertTrue(isVisible(page.shadowRoot!.querySelector('#footer')));
     const links =
         page.shadowRoot!.querySelectorAll<HTMLAnchorElement>('#footer a[href]');
@@ -1049,7 +1049,7 @@ suite('TopicsSubpageAdsApiUxEnhancementsDisabled', function() {
     assertDeepEquals(hrefs, expectedLinks);
   });
 
-  test('TopicsPageContentV2NotShown', async function() {
+  test('TopicsPageContentV2NotShown', function() {
     assertTrue(isVisible(page.shadowRoot!.querySelector('#footer')));
     assertFalse(isVisible(page.shadowRoot!.querySelector('#footerV2')));
     const footerDisclaimer =
@@ -1095,7 +1095,7 @@ suite('TopicsSubpageAdsApiUxEnhancements', function() {
   });
 
 
-  test('footerLinksV2', async function() {
+  test('footerLinksV2', function() {
     assertTrue(isVisible(page.shadowRoot!.querySelector('#footerV2')));
     const links = page.shadowRoot!.querySelectorAll<HTMLAnchorElement>(
         '#footerV2 a[href]');
@@ -1113,7 +1113,7 @@ suite('TopicsSubpageAdsApiUxEnhancements', function() {
     assertDeepEquals(hrefs, expectedLinks);
   });
 
-  test('TopicsPageContentV2', async function() {
+  test('TopicsPageContentV2', function() {
     assertFalse(isVisible(page.shadowRoot!.querySelector('#footer')));
     assertTrue(isVisible(page.shadowRoot!.querySelector('#footerV2')));
     const footerDisclaimer =
@@ -2076,7 +2076,7 @@ suite('AdMeasurementSubpageAdsApiUxEnhancementsDisabled', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('contentV2NotShown', async function() {
+  test('contentV2NotShown', function() {
     const disclaimer = page.shadowRoot!.querySelector('#disclaimer');
     assertFalse(isVisible(disclaimer));
   });
@@ -2114,7 +2114,7 @@ suite('AdMeasurementSubpageAdsApiUxEnhancements', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('contentV2', async function() {
+  test('contentV2', function() {
     const disclaimer = page.shadowRoot!.querySelector('#disclaimer');
     assertTrue(isVisible(disclaimer));
   });
@@ -2170,7 +2170,7 @@ suite('TopicsSubpageAdTopicsContentParity', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('AdTopicsContentParity', async function() {
+  test('AdTopicsContentParity', function() {
     const topicsToggle =
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#topicsToggle');
@@ -2249,7 +2249,7 @@ suite('TopicsSubpageAdTopicsContentParityDisabled', function() {
         await metricsBrowserProxy.whenCalled('recordAction'));
   });
 
-  test('AdTopicsContentParityNotShown', async function() {
+  test('AdTopicsContentParityNotShown', function() {
     const topicsToggle =
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#topicsToggle');
@@ -2312,7 +2312,7 @@ suite(
         Router.getInstance().resetRouteForTesting();
       });
 
-      test('AdsApiUxEnhancementsDisabled', async function() {
+      test('AdsApiUxEnhancementsDisabled', function() {
         const topicsToggle =
             page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
                 '#topicsToggle');

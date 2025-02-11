@@ -151,7 +151,7 @@ suite('ProtocolHandlers', function() {
    */
   let browserProxy: TestSiteSettingsPrefsBrowserProxy;
 
-  setup(async function() {
+  setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
   });

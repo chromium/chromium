@@ -37,7 +37,7 @@ suite('LocalCertsSectionV2Test', () => {
   let localCertsSection: LocalCertsSectionV2Element;
   let testProxy: TestCertificateManagerProxy;
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testProxy = new TestCertificateManagerProxy();
     CertificatesV2BrowserProxy.setInstance(testProxy);

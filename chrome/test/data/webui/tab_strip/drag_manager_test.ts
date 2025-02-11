@@ -625,7 +625,7 @@ suite('DragManager', () => {
     assertFalse(isDraggedOut);
   });
 
-  test('DragendAfterMovingDoesNotShowContextMenu', async () => {
+  test('DragendAfterMovingDoesNotShowContextMenu', () => {
     const draggedTab = delegate.children[0]!;
     const dragOverTab = delegate.children[1]!;
     const dragDetails = {
@@ -697,7 +697,7 @@ suite('DragManager', () => {
     assertFalse(draggedTab.isDraggedOut());
   });
 
-  test('DragIsPrevented', async () => {
+  test('DragIsPrevented', () => {
     // Mock the delegate to return true for shouldPreventDrag.
     delegate.shouldPreventDrag = () => true;
 

@@ -119,7 +119,7 @@ suite('ComposeApp', () => {
     await testProxy.whenCalled('acceptComposeResult');
   });
 
-  test('OnlyOneErrorShows', async () => {
+  test('OnlyOneErrorShows', () => {
     mockInput('x'.repeat(2501));
     app.$.submitButton.click();
     assertTrue(app.$.submitButton.disabled);

@@ -766,7 +766,7 @@ suite('AppListTest', () => {
     assertFalse(contextMenu.hidden);
   });
 
-  test('context menu opens on shift+f10 triggered on focused app', async () => {
+  test('context menu opens on shift+f10 triggered on focused app', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
     assertEquals(
         apps.appList[0]!.id, appListElement.shadowRoot!.activeElement?.id);

@@ -200,7 +200,7 @@ suite('CaTrustEditDialogTests', function() {
 
   const caTrustInfo: CaTrustInfo = {ssl: true, email: false, objSign: false};
 
-  setup(async function() {
+  setup(function() {
     browserProxy = new TestCertificatesBrowserProxy();
     browserProxy.setCaCertificateTrust(caTrustInfo);
 

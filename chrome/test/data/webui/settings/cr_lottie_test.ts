@@ -292,7 +292,7 @@ suite('cr_lottie_test', function() {
     assertTrue(canvas.hidden);
   });
 
-  test('TestDetachBeforeImageLoaded', async () => {
+  test('TestDetachBeforeImageLoaded', () => {
     const mockXhr = {
       onreadystatechange: () => {},
     } as unknown as XMLHttpRequest;

@@ -137,7 +137,7 @@ suite('CookiesFragment', function() {
     });
   });
 
-  test('fragmentUpdatesFromCookieChanges', async function() {
+  test('fragmentUpdatesFromCookieChanges', function() {
     const radioButtonGroup =
         fragment.shadowRoot!.querySelector<SettingsRadioGroupElement>(
             '#cookiesRadioGroupAlwaysBlock3pcsIncognito');
@@ -158,7 +158,7 @@ suite('CookiesFragment', function() {
         ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
   });
 
-  test('showsAllow3pcsAndBlock3pcsLabels', async function() {
+  test('showsAllow3pcsAndBlock3pcsLabels', function() {
     const allow3pcsLabel =
         fragment.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>(
             '#allow3pcs');
@@ -249,7 +249,7 @@ suite('CookiesFragmentAlwaysBlock3pcsIncognitoDisabled', function() {
     });
   });
 
-  test('fragmentUpdatesFromCookieChanges', async function() {
+  test('fragmentUpdatesFromCookieChanges', function() {
     const radioButtonGroup =
         fragment.shadowRoot!.querySelector<SettingsRadioGroupElement>(
             '#cookiesRadioGroup');
@@ -270,7 +270,7 @@ suite('CookiesFragmentAlwaysBlock3pcsIncognitoDisabled', function() {
         ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
   });
 
-  test('showsBlock3PIncognitoAndBlock3pcsLabels', async function() {
+  test('showsBlock3PIncognitoAndBlock3pcsLabels', function() {
     const block3PIncognitoLabel =
         fragment.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>(
             '#block3PIncognito');

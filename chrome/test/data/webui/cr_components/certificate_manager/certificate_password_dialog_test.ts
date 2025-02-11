@@ -18,7 +18,7 @@ suite('CertificatePasswordDialogTest', () => {
     document.body.appendChild(passwordDialog);
   });
 
-  test('click ok', async () => {
+  test('click ok', () => {
     // Dialog should automatically open upon being added to DOM.
     assertTrue(passwordDialog.$.dialog.open);
     assertEquals('', passwordDialog.$.password.value);
@@ -38,7 +38,7 @@ suite('CertificatePasswordDialogTest', () => {
     assertEquals('something secret', passwordDialog.value());
   });
 
-  test('click cancel', async () => {
+  test('click cancel', () => {
     passwordDialog.$.password.value = 'something secret';
     passwordDialog.$.cancel.click();
     assertFalse(passwordDialog.$.dialog.open);

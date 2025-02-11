@@ -206,7 +206,7 @@ suite('WhatsNewAppTest', function() {
     assertEquals(ModulePosition.kSpotlight1, clickedModule[1]);
   });
 
-  test('with different module name formats', async () => {
+  test('with different module name formats', () => {
     // Formats legacy format correctly.
     assertEquals('ChromeFeature', formatModuleName('123-chrome-feature'));
     // Ignores modern format.

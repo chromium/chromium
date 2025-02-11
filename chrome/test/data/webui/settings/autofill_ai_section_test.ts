@@ -17,7 +17,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 suite('AutofillAiSectionUiDisabledToggleTest', function() {
-  setup(async function() {
+  setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 

@@ -14,7 +14,7 @@ suite('TabOrganizationPageTest', () => {
   let tabSearchApp: TabSearchAppElement;
   let testProxy: TestTabSearchApiProxy;
 
-  setup(async () => {
+  setup(() => {
     testProxy = new TestTabSearchApiProxy();
     TabSearchApiProxyImpl.setInstance(testProxy);
 

@@ -123,7 +123,7 @@ suite('LanguagesPageMetricsBrowser', function() {
   });
   // </if>
 
-  test('records on language list reorder', async () => {
+  test('records on language list reorder', () => {
     // Add several languages.
     for (const language of ['en-CA', 'en-US', 'tk', 'no']) {
       languageHelper.enableLanguage(language);

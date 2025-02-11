@@ -402,7 +402,7 @@ suite('SafetyHub', function() {
     assertEquals('/safetyCheck', path);
   });
 
-  test('SafetyHubRouteNotReachableInGuestMode', async function() {
+  test('SafetyHubRouteNotReachableInGuestMode', function() {
     loadTimeData.overrideValues({isGuest: true});
     setupRoutes();
 

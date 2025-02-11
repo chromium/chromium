@@ -405,7 +405,7 @@ suite('ExperimentalAdvancedPageRefreshDisabled', () => {
     return flushTasks();
   }
 
-  test('HistorySearchVisibility', async () => {
+  test('HistorySearchVisibility', () => {
     // Hide history search row.
     loadTimeData.overrideValues({
       showHistorySearchControl: false,

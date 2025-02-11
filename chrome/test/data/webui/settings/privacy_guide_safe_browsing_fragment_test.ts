@@ -140,7 +140,7 @@ suite('SafeBrowsingFragment', function() {
     });
   });
 
-  test('fragmentUpdatesFromSafeBrowsingChanges', async function() {
+  test('fragmentUpdatesFromSafeBrowsingChanges', function() {
     const radioButtonGroup =
         fragment.shadowRoot!.querySelector<SettingsRadioGroupElement>(
             '#safeBrowsingRadioGroup');

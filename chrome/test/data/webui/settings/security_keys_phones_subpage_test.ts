@@ -147,7 +147,7 @@ suite('SecurityKeysPhonesSubpage', function() {
     assertEquals(browserProxy.getCallCount('enumerate'), 1);
   });
 
-  test('Initialization', async function() {
+  test('Initialization', function() {
     const shown = getPhones(page);
 
     // The default entries should be shown.

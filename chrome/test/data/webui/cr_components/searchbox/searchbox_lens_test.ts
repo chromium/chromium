@@ -66,7 +66,7 @@ suite('Lens search', () => {
     });
   });
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     // Set up Realbox's browser proxy.

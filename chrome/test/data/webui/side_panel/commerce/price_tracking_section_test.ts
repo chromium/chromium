@@ -97,7 +97,7 @@ suite('PriceTrackingSectionTest', () => {
             ' Actual: ' + annotationText);
   }
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     shoppingServiceApi.reset();

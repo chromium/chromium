@@ -99,7 +99,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
           element.shadowRoot!.querySelectorAll('cr-url-list-item'));
     }
 
-    test('Searches', async () => {
+    test('Searches', () => {
       assertEquals('some query', handler.getArgs('search')[0].query);
     });
 
@@ -169,7 +169,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
       }
     });
 
-    test('DisplaysResults', async () => {
+    test('DisplaysResults', () => {
       const resultsElements = getResultElements();
       assertEquals(2, resultsElements.length);
       if (enableAnswers) {
@@ -574,7 +574,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
       assertEquals(21, numChars);
     });
 
-    test('ForceFlushesQualityLogOnBeforeUnload', async () => {
+    test('ForceFlushesQualityLogOnBeforeUnload', () => {
       if (!enableAnswers) {
         return;
       }
@@ -609,7 +609,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
       assertEquals(1, handler.getCallCount('sendQualityLog'));
     });
 
-    test('ForceSupressesLogging', async () => {
+    test('ForceSupressesLogging', () => {
       element.forceSuppressLogging = true;
       const resultsElements = getResultElements();
       simulateClick(resultsElements[0]!);
@@ -925,7 +925,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
           'should ignore other directives');
     });
 
-    test('DisplaysFavicons', async () => {
+    test('DisplaysFavicons', () => {
       if (!enableAnswers) {
         // Favicons for without answers is embedded in a separate component.
         return;

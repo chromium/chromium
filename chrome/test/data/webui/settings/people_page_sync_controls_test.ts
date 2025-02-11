@@ -19,7 +19,7 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // clang-format on
 
-suite('SyncControlsTest', async function() {
+suite('SyncControlsTest', function() {
   let syncControls: SettingsSyncControlsElement;
   let browserProxy: TestSyncBrowserProxy;
   let syncEverything: CrRadioButtonElement;
@@ -258,7 +258,7 @@ suite('SyncControlsSubpageTest', function() {
 
 // Test to check that toggles are disabled when sync types are managed by
 // policy.
-suite('SyncControlsManagedTest', async function() {
+suite('SyncControlsManagedTest', function() {
   let syncControls: SettingsSyncControlsElement;
   let browserProxy: TestSyncBrowserProxy;
   let syncEverything: CrRadioButtonElement;
@@ -347,7 +347,7 @@ suite('SyncControlsManagedTest', async function() {
   });
 });
 
-suite('AutofillAndPaymentsToggles', async function() {
+suite('AutofillAndPaymentsToggles', function() {
   let autofillCheckbox: CrToggleElement;
   let paymentsCheckbox: CrToggleElement;
 

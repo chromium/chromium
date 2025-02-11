@@ -237,7 +237,7 @@ suite('StartupUrlsPage', function() {
     await browserProxy.whenCalled('useCurrentPages');
   });
 
-  test('AddPage_OpensDialog', async function() {
+  test('AddPage_OpensDialog', function() {
     const addPageButton =
         page.shadowRoot!.querySelector<HTMLElement>('#addPage > a');
     assertTrue(!!addPageButton);

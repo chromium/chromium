@@ -22,7 +22,7 @@ suite('ContainerTest', () => {
     await microtasksFinished();
   });
 
-  test('check layout', async () => {
+  test('check layout', () => {
     assertTrue(isVisible(container));
     const renderedItems = container.shadowRoot!.querySelectorAll(
         'related-website-sets-list-item');

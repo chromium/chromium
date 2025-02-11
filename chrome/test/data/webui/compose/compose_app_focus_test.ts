@@ -25,7 +25,7 @@ suite('ComposeApp', function() {
     return app;
   }
 
-  setup(async () => {
+  setup(() => {
     testProxy = new TestComposeApiProxy();
     ComposeApiProxyImpl.setInstance(testProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
