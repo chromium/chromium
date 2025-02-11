@@ -48,8 +48,12 @@ namespace {
 constexpr int kQueryCharLimit = 230;
 constexpr char kLobsterSuccessfulImageDownloadNotifierId[] =
     "ash.lobster_successful_image_download_notifier_id";
+constexpr char kLobsterFailedImageDownloadNotifierId[] =
+    "ash.lobster_failed_image_download_notifier_id";
 constexpr char kLobsterSuccessfulImageDownloadNotificationId[] =
     "lobster_successful_image_download_notification_id";
+constexpr char kLobsterFailedImageDownloadNotificationId[] =
+    "lobster_failed_image_download_notification_id";
 
 std::u16string GetDownloadNotificationSourceLabel() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -64,6 +68,26 @@ std::u16string GetSuccessfulImageDownloadNotificationTitle() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return l10n_util::GetStringUTF16(
       IDS_ASH_LOBSTER_SUCCESSFUL_IMAGE_DOWNLOAD_NOTIFICATION_TITLE);
+#else
+  return u"";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+std::u16string GetFailedImageDownloadNotificationTitle(
+    const std::string& file_name) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_LOBSTER_FAILED_IMAGE_DOWNLOAD_NOTIFICATION_TITLE,
+      base::UTF8ToUTF16(file_name));
+#else
+  return u"";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+std::u16string GetFailedImageDownloadNotificationMessage() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_LOBSTER_FAILED_IMAGE_DOWNLOAD_NOTIFICATION_MESSAGE);
 #else
   return u"";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -171,6 +195,32 @@ void DisplaySuccessfulImageDownloadNotification(
   message_center->AddNotification(std::move(notification));
 }
 
+void DisplayFailedImageDownloadNotification(const base::FilePath& image_path) {
+  std::unique_ptr<message_center::Notification> notification =
+      CreateSystemNotificationPtr(
+          /*type=*/message_center::NOTIFICATION_TYPE_IMAGE,
+          /*id=*/kLobsterFailedImageDownloadNotificationId,
+          /*title=*/
+          GetFailedImageDownloadNotificationTitle(
+              image_path.BaseName().value()),
+          /*message=*/GetFailedImageDownloadNotificationMessage(),
+          /*display_source=*/GetDownloadNotificationSourceLabel(), GURL(),
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT,
+              kLobsterFailedImageDownloadNotifierId,
+              NotificationCatalogName::kDownloadImageFromLobster),
+          message_center::RichNotificationData(),
+          /*delegate=*/nullptr,
+          /*small_image=*/vector_icons::kFileDownloadIcon,
+          /*warning_level=*/
+          message_center::SystemNotificationWarningLevel::NORMAL);
+
+  auto* message_center = message_center::MessageCenter::Get();
+  message_center->RemoveNotification(notification->id(),
+                                     /*by_user=*/false);
+  message_center->AddNotification(std::move(notification));
+}
+
 }  // namespace
 
 LobsterSessionImpl::LobsterSessionImpl(
@@ -249,8 +299,7 @@ void LobsterSessionImpl::DownloadCandidate(int candidate_id,
                         return;
                       }
 
-                      // TODO: b:378552039 - Displays unsuccessful image
-                      // download notification.
+                      DisplayFailedImageDownloadNotification(file_path);
                       RecordLobsterState(
                           LobsterMetricState::kCandidateDownloadError);
                     },
@@ -363,9 +412,8 @@ void LobsterSessionImpl::CommitAsDownload(int candidate_id,
                             LobsterMetricState::kCommitAsDownloadSuccess);
                         return;
                       }
-                      // TODO: b:378552039 - Displays unsuccessful image
-                      // download notification.
 
+                      DisplayFailedImageDownloadNotification(file_path);
                       RecordLobsterState(
                           LobsterMetricState::kCommitAsDownloadError);
                     },
