@@ -22,6 +22,7 @@ namespace content {
 
 struct CONTENT_EXPORT BtmPageVisitInfo {
   GURL url;
+  ukm::SourceId source_id;
   bool had_qualifying_storage_access = false;
   bool received_user_activation = false;
   bool had_successful_web_authn_assertion = false;
@@ -33,6 +34,7 @@ struct CONTENT_EXPORT BtmPageVisitInfo {
 
 struct CONTENT_EXPORT BtmServerRedirectInfo {
   GURL url;
+  ukm::SourceId source_id;
   bool did_write_cookies = false;
 };
 

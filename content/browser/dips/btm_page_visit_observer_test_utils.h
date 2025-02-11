@@ -68,6 +68,27 @@ MATCHER_P(HasUrl,
   return testing::ExplainMatchResult(matcher, arg.url, result_listener);
 }
 
+// Matches the `source_id` property of `BtmPageVisitInfo` or
+// `BtmServerRedirectInfo`.
+MATCHER_P(HasSourceId,
+          matcher,
+          "has source_id that " +
+              testing::DescribeMatcher<ukm::SourceId>(matcher, negation)) {
+  return testing::ExplainMatchResult(matcher, arg.source_id, result_listener);
+}
+
+// Matches the URL for the `source_id` property of `BtmPageVisitInfo` or
+// `BtmServerRedirectInfo`, as recorded by `ukm_recorder`.
+MATCHER_P2(HasSourceIdForUrl,
+           matcher,
+           ukm_recorder,
+           "has source_id with a corresponding URL that " +
+               testing::DescribeMatcher<GURL>(matcher, negation)) {
+  return testing::ExplainMatchResult(
+      matcher, ukm_recorder->GetSourceForSourceId(arg.source_id)->url(),
+      result_listener);
+}
+
 // Matches `VisitTuple::prev_page`.
 MATCHER_P(PreviousPage,
           matcher,

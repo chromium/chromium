@@ -261,7 +261,7 @@ void OpenerHeuristicTabHelper::PopupObserver::DidFinishNavigation(
     if (navigation_handle->GetRedirectChain().size() > 1) {
       // Get a source id for the URL the popup was originally opened with,
       // even though the user was redirected elsewhere.
-      initial_source_id_ = dips::GetInitialRedirectSourceId(navigation_handle);
+      initial_source_id_ = dips::GetRedirectSourceId(navigation_handle, 0);
     } else {
       // No redirect happened, get the source id for the committed page.
       initial_source_id_ = navigation_handle->GetNextPageUkmSourceId();
