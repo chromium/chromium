@@ -1145,7 +1145,7 @@
     },
     {
       name: "CSSLogicalOverflow",
-      status: "test",
+      status: "stable",
     },
     {
       name: "CSSMarkerNestedPseudoElement",
