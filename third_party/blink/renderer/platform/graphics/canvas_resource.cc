@@ -89,6 +89,34 @@ void CanvasResource::Release() {
   }
 }
 
+void CanvasResource::UploadSoftwareRenderingResults(SkSurface* sk_surface) {
+  auto scoped_mapping = GetClientSharedImage()->Map();
+  if (!scoped_mapping) {
+    LOG(ERROR) << "MapSharedImage failed.";
+    return;
+  }
+
+  sk_surface->readPixels(
+      scoped_mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()), 0, 0);
+
+  // Making the below call is not necessary for the case where the the software
+  // compositor is being used, as all accesses to the SI's backing happen via
+  // shared memory. It's also not currently trivial to add in this case as
+  // setting the sync token here would require it to later be verified before it
+  // is sent to the display compositor.
+  if (GetClientSharedImage()->is_software()) {
+    return;
+  }
+
+  // Unmap the SI, inform the service that the SharedImage's backing memory was
+  // written to on the CPU and update this resource's sync token to ensure
+  // proper sequencing of future accesses to the SI with respect to this call on
+  // the service side.
+  scoped_mapping.reset();
+  SetSyncToken(
+      GetClientSharedImage()->BackingWasExternallyUpdated(gpu::SyncToken()));
+}
+
 scoped_refptr<StaticBitmapImage> CanvasResource::CreateUnacceleratedBitmap() {
   if (!IsValid()) {
     return nullptr;
@@ -324,18 +352,6 @@ void CanvasResourceSharedBitmap::NotifyResourceLost() {
   // Release our reference to the SharedImage since the resource can
   // no longer be safely recycled and its memory is needed for copy-on-write.
   shared_image_.reset();
-}
-
-void CanvasResourceSharedBitmap::UploadSoftwareRenderingResults(
-    SkSurface* sk_surface) {
-  auto scoped_mapping = shared_image_->Map();
-  if (!scoped_mapping) {
-    LOG(ERROR) << "MapSharedImage failed.";
-    return;
-  }
-
-  sk_surface->readPixels(
-      scoped_mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()), 0, 0);
 }
 
 // CanvasResourceSharedImage
@@ -625,28 +641,6 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
 
   DCHECK(image);
   return image;
-}
-
-void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
-    SkSurface* sk_surface) {
-  DCHECK(!is_cross_thread());
-
-  auto scoped_mapping = GetClientSharedImage()->Map();
-  if (!scoped_mapping) {
-    LOG(ERROR) << "MapSharedImage failed.";
-    return;
-  }
-
-  sk_surface->readPixels(
-      scoped_mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()), 0, 0);
-
-  // Unmap the SI, inform the service that the SharedImage's backing memory was
-  // written to on the CPU and update this resource's sync token to ensure
-  // proper sequencing of future accesses to the SI with respect to this call on
-  // the service side.
-  scoped_mapping.reset();
-  owning_thread_data().sync_token =
-      GetClientSharedImage()->BackingWasExternallyUpdated(gpu::SyncToken());
 }
 
 scoped_refptr<gpu::ClientSharedImage>
