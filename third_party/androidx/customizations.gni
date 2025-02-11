@@ -24,6 +24,8 @@ template("_androidx_prebuilt") {
                "androidx_coordinatorlayout_coordinatorlayout_java") {
       # Reduce binary size. https:crbug.com/954584
       ignore_proguard_configs = true
+    } else if (target_name == "androidx_appcompat_appcompat_java") {
+      deps += [ ":core_overrides_java" ]
     } else if (target_name == "androidx_core_core_java") {
       # Target has AIDL, but we do not support it yet: http://crbug.com/644439
       ignore_aidl = true
@@ -36,7 +38,10 @@ template("_androidx_prebuilt") {
       ignore_proguard_configs = true
 
       # https://crbug.com/1414452
-      jar_excluded_patterns = [ "androidx/core/os/BuildCompat*" ]
+      jar_excluded_patterns = [
+        "androidx/core/os/BuildCompat*",
+        "androidx/core/content/res/TypedArrayUtils*",
+      ]
       public_deps = [ "//third_party/androidx/local_modifications/buildcompat:buildcompat_java" ]
 
       if (!enable_java_asserts) {
@@ -100,6 +105,13 @@ template("_androidx_prebuilt") {
       ]
     } else if (target_name == "androidx_datastore_datastore_core_android_java") {
       ignore_native_libraries = true
+    } else if (target_name == "androidx_compose_ui_ui_android_java") {
+      jar_excluded_patterns = [
+        "androidx/compose/ui/graphics/vector/compat/AndroidVectorParser*",
+        "androidx/compose/ui/graphics/vector/compat/XmlVectorParser*",
+      ]
+    } else if (target_name == "androidx_compose_ui_ui_java") {
+      public_deps = [ ":compose_ui_overrides_java" ]
     }
   }
 
