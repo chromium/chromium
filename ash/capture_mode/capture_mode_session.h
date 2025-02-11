@@ -20,6 +20,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/color/color_provider_source_observer.h"
 #include "ui/compositor/layer_delegate.h"
@@ -611,6 +612,11 @@ class ASH_EXPORT CaptureModeSession
   // translations, etc.
   std::unique_ptr<CaptureRegionOverlayController>
       capture_region_overlay_controller_;
+
+  // Timer for performing image search or requesting actions after a delay. This
+  // is to prevent too many requests if the user needs to repeatedly adjust the
+  // capture region.
+  base::OneShotTimer image_search_request_timer_;
 
   // The object which handles tab focus while in a capture session.
   std::unique_ptr<CaptureModeSessionFocusCycler> focus_cycler_;
