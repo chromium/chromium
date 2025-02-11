@@ -321,7 +321,7 @@ void ActionButtonContainerView::OnSmartActionsButtonFadedOut() {
   for (views::View* view : old_action_buttons) {
     auto action_button = action_button_row_->RemoveChildViewT(
         views::AsViewClass<ActionButtonView>(view));
-    if (action_button->rank().type != ActionButtonType::kScanner) {
+    if (action_button->GetID() != ActionButtonViewID::kSmartActionsButton) {
       action_buttons_to_keep.push_back(std::move(action_button));
     }
   }
@@ -331,7 +331,9 @@ void ActionButtonContainerView::OnSmartActionsButtonFadedOut() {
   // collapse them into icon buttons.
   for (std::unique_ptr<ActionButtonView>& action_button :
        action_buttons_to_keep) {
-    action_button->CollapseToIconButton();
+    if (action_button->rank().type != ActionButtonType::kScanner) {
+      action_button->CollapseToIconButton();
+    }
     action_button_row_->AddChildView(std::move(action_button));
   }
 
