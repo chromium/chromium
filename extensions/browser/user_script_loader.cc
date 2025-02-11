@@ -528,8 +528,18 @@ UserScriptLoader::SendUpdateResult UserScriptLoader::SendUpdate(
   // other extensions are injected into webviews.
   if (process->IsForGuestsOnly() &&
       !CanExecuteScriptEverywhere(browser_context_, host_id())) {
-    DCHECK(WebViewRendererState::GetInstance()->IsGuest(
-        process->GetDeprecatedID()));
+    // There is a race condition by which WebViewRendererState does not yet know
+    // about the newly created process. Rather than crashing, do nothing.
+    // TODO(crbug.com/40864752): Fix race condition.
+    if (!WebViewRendererState::GetInstance()->IsGuest(
+            process->GetDeprecatedID())) {
+      return SendUpdateResult::kNoActionTaken;
+    }
+
+    // TODO(crbug.com/40864752): Fix race condition and replace this with a
+    // CHECK:
+    // CHECK(WebViewRendererState::GetInstance()->IsGuest(
+    //     process->GetDeprecatedID()));
 
     std::string owner_host;
     bool found_owner = WebViewRendererState::GetInstance()->GetOwnerInfo(
