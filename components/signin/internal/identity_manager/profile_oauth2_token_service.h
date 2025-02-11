@@ -25,6 +25,10 @@
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 #include "net/base/backoff_entry.h"
 
+#if BUILDFLAG(IS_IOS)
+#include "components/signin/public/identity_manager/access_token_info.h"
+#endif
+
 namespace signin {
 class IdentityManager;
 }
@@ -127,6 +131,15 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
       const CoreAccountId& account_id,
       const OAuth2AccessTokenManager::ScopeSet& scopes,
       OAuth2AccessTokenManager::Consumer* consumer);
+
+#if BUILDFLAG(IS_IOS)
+  void GetRefreshTokenFromDevice(
+      const CoreAccountId& account_id,
+      const OAuth2AccessTokenManager::ScopeSet& scopes,
+      base::OnceCallback<void(GoogleServiceAuthError,
+                              signin::AccessTokenInfo access_token_info)>
+          callback);
+#endif
 
   // Try to get refresh token from delegate. If it is accessible (i.e. not
   // empty), return it directly (possibly after asynchronously signing

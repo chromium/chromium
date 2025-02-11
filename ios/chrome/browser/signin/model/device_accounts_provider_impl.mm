@@ -154,6 +154,9 @@ void DeviceAccountsProviderImpl::GetAccessToken(
   DCHECK(!callback.is_null());
   id<SystemIdentity> identity =
       account_manager_service_->GetIdentityWithGaiaID(gaia_id);
+  if (!identity) {
+    identity = account_manager_service_->GetIdentityOnDeviceWithGaiaID(gaia_id);
+  }
 
   // If the identity is unknown, there is no need to try to fetch the access
   // token as it will fail immediately. Post the callback with a failure.

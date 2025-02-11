@@ -33,6 +33,11 @@
 #include "components/signin/internal/identity_manager/token_binding_helper.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
+#if BUILDFLAG(IS_IOS)
+#include "components/signin/public/identity_manager/access_token_fetcher.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#endif
+
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -71,6 +76,13 @@ class ProfileOAuth2TokenServiceDelegate {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       OAuth2AccessTokenConsumer* consumer,
       const std::string& token_binding_challenge) = 0;
+
+#if BUILDFLAG(IS_IOS)
+  virtual void GetRefreshTokenFromDevice(
+      const CoreAccountId& account_id,
+      const OAuth2AccessTokenManager::ScopeSet& scopes,
+      signin::AccessTokenFetcher::TokenCallback callback) = 0;
+#endif
 
   // Returns |true| if a refresh token is available for |account_id|, and
   // |false| otherwise.

@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
+#include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 
 class AccountTrackerService;
@@ -39,6 +40,13 @@ class ProfileOAuth2TokenServiceIOSDelegate
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       OAuth2AccessTokenConsumer* consumer,
       const std::string& token_binding_challenge) override;
+
+#if BUILDFLAG(IS_IOS)
+  void GetRefreshTokenFromDevice(
+      const CoreAccountId& account_id,
+      const OAuth2AccessTokenManager::ScopeSet& scopes,
+      signin::AccessTokenFetcher::TokenCallback callback) override;
+#endif
 
   // KeyedService
   void Shutdown() override;

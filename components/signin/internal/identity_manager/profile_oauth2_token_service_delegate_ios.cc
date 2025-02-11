@@ -14,8 +14,10 @@
 #include "base/values.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/public/base/signin_client.h"
+#include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -300,6 +302,36 @@ ProfileOAuth2TokenServiceIOSDelegate::CreateAccessTokenFetcher(
   return std::make_unique<SSOAccessTokenFetcher>(consumer, provider_.get(),
                                                  account_info);
 }
+
+#if BUILDFLAG(IS_IOS)
+void ProfileOAuth2TokenServiceIOSDelegate::GetRefreshTokenFromDevice(
+    const CoreAccountId& account_id,
+    const OAuth2AccessTokenManager::ScopeSet& scopes,
+    signin::AccessTokenFetcher::TokenCallback callback) {
+  CHECK(RefreshTokenIsAvailableOnDevice(account_id));
+  std::set<std::string> scopes_set(scopes.begin(), scopes.end());
+  provider_->GetAccessToken(
+      GaiaId(account_id.ToString()),
+      GaiaUrls::GetInstance()->oauth2_chrome_client_id(), scopes_set,
+      base::BindOnce(
+          [](signin::AccessTokenFetcher::TokenCallback callback,
+             AccessTokenResult result) {
+            if (result.has_value()) {
+              const AccessTokenInfo& info = result.value();
+              std::move(callback).Run(
+                  GoogleServiceAuthError::AuthErrorNone(),
+                  signin::AccessTokenInfo(info.token, info.expiration_time,
+                                          std::string()));
+            } else {
+              std::move(callback).Run(
+                  GetGoogleServiceAuthErrorFromAuthenticationErrorCategory(
+                      result.error()),
+                  signin::AccessTokenInfo());
+            }
+          },
+          std::move(callback)));
+}
+#endif
 
 std::vector<CoreAccountId> ProfileOAuth2TokenServiceIOSDelegate::GetAccounts()
     const {
