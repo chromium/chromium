@@ -400,7 +400,6 @@ export class FlagsAppElement extends CrLitElement {
    * don't actually exist until after the template code runs; normal navigation
    * therefore doesn't work.
    */
-  // eslint-disable-next-line @typescript-eslint/require-await
   private async highlightReferencedFlag() {
     if (!window.location.hash) {
       return;

@@ -449,7 +449,7 @@ export class CertificateManagerV2Element extends
   }
 
 
-  private onClientPlatformCertsLinkRowClick_(e: Event) {
+  private async onClientPlatformCertsLinkRowClick_(e: Event) {
     e.preventDefault();
     Router.getInstance().navigateTo(Page.PLATFORM_CLIENT_CERTS);
   }

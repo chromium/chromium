@@ -267,7 +267,7 @@ async function renderUsageAndQuotaStats() {
   }
 }
 
-function renderSimulateStoragePressureButton() {
+async function renderSimulateStoragePressureButton() {
   getProxy().isSimulateStoragePressureAvailable().then(result => {
     if (!result.available) {
       document.body
