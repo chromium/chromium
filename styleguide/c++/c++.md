@@ -308,6 +308,9 @@ generator](../../mojo/public/cpp/bindings/README.md#Getting-Started)
 creates a `.mojom-forward.h` file along with every generated `.mojom.h` file
 that can be included for forward declarations of Mojo types.
 
+See [these tips](c++-dos-and-donts.md#minimize-code-in-headers) for more advice
+on minimizing code in headers.
+
 ## File headers
 
 All files in Chromium start with a common license header. That header should
