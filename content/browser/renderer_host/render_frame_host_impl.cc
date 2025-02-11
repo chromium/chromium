@@ -12581,10 +12581,27 @@ void RenderFrameHostImpl::LogWebFeatureForCurrentPage(
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(this, feature);
 }
 
-base::RepeatingClosure RenderFrameHostImpl::CreateLogWebFeatureClosure(
-    blink::mojom::WebFeature feature) {
-  return base::BindRepeating(&RenderFrameHostImpl::LogWebFeatureForCurrentPage,
-                             weak_ptr_factory_.GetWeakPtr(), feature);
+void RenderFrameHostImpl::ReportBlockingCrossPartitionBlobURL(
+    const GURL& blocked_url,
+    blink::mojom::PartitioningBlobURLInfo info) {
+  // Log the use of the web feature (increment the use counter).
+  LogWebFeatureForCurrentPage(
+      blink::mojom::WebFeature::kCrossPartitionBlobURLFetch);
+
+  // Report the DevTools issue.
+  auto details = blink::mojom::InspectorIssueDetails::New();
+  auto partitioning_blob_url_issue_details =
+      blink::mojom::PartitioningBlobURLIssueDetails::New();
+
+  partitioning_blob_url_issue_details->url = blocked_url;
+  partitioning_blob_url_issue_details->partitioning_blob_url_info = info;
+
+  details->partitioning_blob_url_issue_details =
+      std::move(partitioning_blob_url_issue_details);
+
+  ReportInspectorIssue(blink::mojom::InspectorIssueInfo::New(
+      blink::mojom::InspectorIssueCode::kPartitioningBlobURLIssue,
+      std::move(details)));
 }
 
 void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(
@@ -12595,8 +12612,9 @@ void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
       GetStorageKey(), GetLastCommittedOrigin(),
       GetProcess()->GetDeprecatedID(), std::move(receiver),
-      CreateLogWebFeatureClosure(
-          blink::mojom::WebFeature::kCrossPartitionBlobURLFetch),
+      base::BindRepeating(
+          &RenderFrameHostImpl::ReportBlockingCrossPartitionBlobURL,
+          weak_ptr_factory_.GetWeakPtr()),
       !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(
           GetBrowserContext())));
 }

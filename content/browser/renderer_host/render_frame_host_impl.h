@@ -4198,8 +4198,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   void LogWebFeatureForCurrentPage(blink::mojom::WebFeature feature);
 
-  base::RepeatingClosure CreateLogWebFeatureClosure(
-      blink::mojom::WebFeature feature);
+  // This runs when the storage_key check fails
+  // in `BlobURLStoreImpl::ResolveAsURLLoaderFactory` and increments the use
+  // counter.
+  void ReportBlockingCrossPartitionBlobURL(
+      const GURL& blocked_url,
+      blink::mojom::PartitioningBlobURLInfo info);
 
   // For frames and main thread worklets we use a navigation-associated
   // interface and bind `receiver` to a `BlobURLStore` instance, which

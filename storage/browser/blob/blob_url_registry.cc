@@ -11,6 +11,7 @@
 #include "net/base/features.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
 #include "storage/browser/blob/blob_url_utils.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "url/gurl.h"
 
 namespace storage {
@@ -33,13 +34,15 @@ void BlobUrlRegistry::AddReceiver(
     const url::Origin& renderer_origin,
     int render_process_host_id,
     mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver,
-    base::RepeatingClosure partitioned_fetch_failure_closure,
+    base::RepeatingCallback<void(const GURL&,
+                                 blink::mojom::PartitioningBlobURLInfo)>
+        partitioning_blob_url_closure,
     bool partitioning_disabled_by_policy) {
   mojo::ReceiverId receiver_id = frame_receivers_.Add(
       std::make_unique<storage::BlobURLStoreImpl>(
           storage_key, renderer_origin, render_process_host_id, AsWeakPtr(),
           storage::BlobURLValidityCheckBehavior::DEFAULT,
-          std::move(partitioned_fetch_failure_closure),
+          std::move(partitioning_blob_url_closure),
           partitioning_disabled_by_policy),
       std::move(receiver));
 
