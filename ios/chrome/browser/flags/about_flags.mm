@@ -2435,6 +2435,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"add-address-manually", flag_descriptions::kAddAddressManuallyName,
      flag_descriptions::kAddAddressManuallyDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAddAddressManually)},
+    {"lens-vsint-param-enabled", flag_descriptions::kLensVsintParamEnabledName,
+     flag_descriptions::kLensVsintParamEnabledDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kLensVsintParamEnabled)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

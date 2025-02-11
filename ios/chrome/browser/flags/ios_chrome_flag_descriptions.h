@@ -689,6 +689,10 @@ extern const char kLensUnaryApisWithHttpTransportEnabledDescription[];
 extern const char kLensUnaryHttpTransportEnabledName[];
 extern const char kLensUnaryHttpTransportEnabledDescription[];
 
+// Title and description for the flag to enable the vsint param.
+extern const char kLensVsintParamEnabledName[];
+extern const char kLensVsintParamEnabledDescription[];
+
 // Title and description for the flag to enable the Lens web page load
 // optimization.
 extern const char kLensWebPageLoadOptimizationEnabledName[];

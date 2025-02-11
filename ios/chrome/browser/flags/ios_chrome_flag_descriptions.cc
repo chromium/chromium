@@ -800,6 +800,10 @@ const char kLensUnaryHttpTransportEnabledName[] =
 const char kLensUnaryHttpTransportEnabledDescription[] =
     "Enables the HTTP transport for unary requests.";
 
+const char kLensVsintParamEnabledName[] = "Lens vsint param enabled";
+const char kLensVsintParamEnabledDescription[] =
+    "Enables the vsint param for requests.";
+
 const char kLensWebPageLoadOptimizationEnabledName[] =
     "Lens web page load optimization";
 const char kLensWebPageLoadOptimizationEnabledDescription[] =
