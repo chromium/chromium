@@ -4,6 +4,7 @@
 
 #include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 
+#include "base/containers/to_value_list.h"
 #include "base/i18n/time_formatting.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
@@ -165,7 +166,33 @@ void RealtimeReportingClientBase::OnCloudPolicyClientAvailable(
   DVLOG(1) << "Ready for safe browsing real-time event reporting.";
 }
 
-void RealtimeReportingClientBase::ReportEventWithTimestamp(
+void RealtimeReportingClientBase::ReportEvent(
+    ::chrome::cros::reporting::proto::Event event,
+    const ReportingSettings& settings) {
+  if (rejected_dm_token_timers_.contains(settings.dm_token)) {
+    return;
+  }
+
+  // Make sure real-time reporting is initialized.
+  InitRealtimeReportingClient(settings);
+  if ((settings.per_profile && !profile_client_) ||
+      (!settings.per_profile && !browser_client_)) {
+    return;
+  }
+
+  policy::CloudPolicyClient* client =
+      settings.per_profile ? profile_client_.get() : browser_client_.get();
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  MaybeCollectDeviceSignalsAndReportEvent(std::move(event), client, settings);
+#else
+  // Regardless of collecting device signals or not, upload the security event
+  // report.
+  UploadSecurityEvent(std::move(event), client, settings);
+#endif
+}
+
+void RealtimeReportingClientBase::ReportEventWithTimestampDeprecated(
     const std::string& name,
     const ReportingSettings& settings,
     base::Value::Dict event,
@@ -201,16 +228,40 @@ void RealtimeReportingClientBase::ReportEventWithTimestamp(
     event.Set(kKeyProfileUserName, GetProfileUserName());
   }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  MaybeCollectDeviceSignalsAndReportEvent(std::move(event), client, name,
-                                          settings, time);
+  MaybeCollectDeviceSignalsAndReportEventDeprecated(std::move(event), client,
+                                                    name, settings, time);
 #else
   // Regardless of collecting device signals or not, upload the security event
   // report.
-  UploadSecurityEventReport(std::move(event), client, name, settings, time);
+  UploadSecurityEventReportDeprecated(std::move(event), client, name, settings,
+                                      time);
 #endif
 }
 
-void RealtimeReportingClientBase::UploadSecurityEventReport(
+void RealtimeReportingClientBase::UploadSecurityEvent(
+    ::chrome::cros::reporting::proto::Event event,
+    policy::CloudPolicyClient* client,
+    const ReportingSettings& settings) {
+  if (base::FeatureList::IsEnabled(safe_browsing::kLocalIpAddressInEvents)) {
+    auto local_ips = GetLocalIpAddresses();
+    event.mutable_local_ips()->Add(local_ips.begin(), local_ips.end());
+  }
+
+  auto event_type =
+      enterprise_connectors::GetUmaEnumFromEventCase(event.event_case());
+  ::chrome::cros::reporting::proto::UploadEventsRequest request =
+      CreateUploadEventsRequest();
+  request.add_events()->Swap(&event);
+
+  auto upload_callback =
+      base::BindOnce(&RealtimeReportingClientBase::UploadCallback, AsWeakPtr(),
+                     request, settings.per_profile, client, event_type);
+
+  client->UploadSecurityEvent(ShouldIncludeDeviceInfo(settings.per_profile),
+                              std::move(request), std::move(upload_callback));
+}
+
+void RealtimeReportingClientBase::UploadSecurityEventReportDeprecated(
     base::Value::Dict event,
     policy::CloudPolicyClient* client,
     std::string name,
@@ -222,7 +273,7 @@ void RealtimeReportingClientBase::UploadSecurityEventReport(
           .Set(name, std::move(event));
 
   if (base::FeatureList::IsEnabled(safe_browsing::kLocalIpAddressInEvents)) {
-    event_wrapper.Set("localIps", GetLocalIpAddresses());
+    event_wrapper.Set("localIps", base::ToValueList(GetLocalIpAddresses()));
   }
 
   DVLOG(1) << "enterprise.connectors: security event: "
@@ -233,8 +284,8 @@ void RealtimeReportingClientBase::UploadSecurityEventReport(
           base::Value::List().Append(std::move(event_wrapper)), GetContext());
 
   auto upload_callback =
-      base::BindOnce(&RealtimeReportingClientBase::UploadCallback, AsWeakPtr(),
-                     report.Clone(), settings.per_profile, client,
+      base::BindOnce(&RealtimeReportingClientBase::UploadCallbackDeprecated,
+                     AsWeakPtr(), report.Clone(), settings.per_profile, client,
                      enterprise_connectors::GetUmaEnumFromEventName(name));
 
   client->UploadSecurityEventReport(

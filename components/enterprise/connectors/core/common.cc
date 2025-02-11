@@ -330,6 +330,14 @@ EnterpriseReportingEventType GetUmaEnumFromEventName(
              : EnterpriseReportingEventType::kUnknownEvent;
 }
 
+
+EnterpriseReportingEventType GetUmaEnumFromEventCase(EventCase eventCase) {
+  auto it = kEventCaseToUmaEnumMap.find(eventCase);
+  return it != kEventCaseToUmaEnumMap.end()
+             ? it->second
+             : EnterpriseReportingEventType::kUnknownEvent;
+}
+
 std::string EventResultToString(EventResult result) {
   switch (result) {
     case EventResult::UNKNOWN:

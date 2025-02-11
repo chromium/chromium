@@ -210,15 +210,15 @@ proto::BrowserCrashEvent GetBrowserCrashEvent(const std::string& channel,
   return event;
 }
 
-base::Value::List GetLocalIpAddresses() {
+std::vector<std::string> GetLocalIpAddresses() {
   net::NetworkInterfaceList list;
-  base::Value::List ip_addresses;
+  std::vector<std::string> ip_addresses;
   if (!net::GetNetworkList(&list, net::INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES)) {
     LOG(ERROR) << "GetNetworkList failed";
     return ip_addresses;
   }
   for (const auto& network_interface : list) {
-    ip_addresses.Append(network_interface.address.ToString());
+    ip_addresses.push_back(network_interface.address.ToString());
   }
   return ip_addresses;
 }
