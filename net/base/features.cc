@@ -360,6 +360,11 @@ const base::FeatureParam<std::string> kIpPrivacyIssuerTokenServerPath{
     /*name=*/"IpPrivacyIssuerTokenServerPath",
     /*default_value=*/"/v1/ipblinding/getIssuerToken"};
 
+const base::FeatureParam<bool> kIpPrivacyStoreIssuerTokens{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyStoreIssuerTokens",
+    /*default_value=*/false};
+
 const base::FeatureParam<std::string> kIpPrivacyTokenServerGetTokensPath{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyTokenServerGetTokensPath",
     /*default_value=*/"/v1/ipblinding/auth"};
