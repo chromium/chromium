@@ -78,6 +78,14 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   ModelLoadComplete,
 };
 
+// Helper method that returns the string to use as title for `savePasswordsItem`
+// and `managedSavePasswordsItem`.
+NSString* GetSavePasswordsItemTitle() {
+  return l10n_util::GetNSString(IOSPasskeysM2Enabled()
+                                    ? IDS_IOS_OFFER_TO_SAVE_PASSWORDS_PASSKEYS
+                                    : IDS_IOS_OFFER_TO_SAVE_PASSWORDS);
+}
+
 }  // namespace
 
 @interface PasswordSettingsViewController () {
@@ -429,9 +437,7 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 
   _savePasswordsItem =
       [[TableViewSwitchItem alloc] initWithType:ItemTypeSavePasswordsSwitch];
-  _savePasswordsItem.text = l10n_util::GetNSString(
-      IOSPasskeysM2Enabled() ? IDS_IOS_OFFER_TO_SAVE_PASSWORDS_PASSKEYS
-                             : IDS_IOS_OFFER_TO_SAVE_PASSWORDS);
+  _savePasswordsItem.text = GetSavePasswordsItemTitle();
   _savePasswordsItem.accessibilityIdentifier =
       kPasswordSettingsSavePasswordSwitchTableViewId;
   [self updateSavePasswordsSwitch];
@@ -447,8 +453,7 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 
   _managedSavePasswordsItem = [[TableViewInfoButtonItem alloc]
       initWithType:ItemTypeManagedSavePasswords];
-  _managedSavePasswordsItem.text =
-      l10n_util::GetNSString(IDS_IOS_OFFER_TO_SAVE_PASSWORDS);
+  _managedSavePasswordsItem.text = GetSavePasswordsItemTitle();
   _managedSavePasswordsItem.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
   _managedSavePasswordsItem.accessibilityIdentifier =

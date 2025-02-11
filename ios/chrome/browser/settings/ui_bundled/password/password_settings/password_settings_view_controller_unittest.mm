@@ -32,6 +32,14 @@ int ExpectedSectionAfterAlwaysVisibleTopSections() {
   return IOSPasskeysM2Enabled() ? 3 : 2;
 }
 
+// Helper method that returns the expected title for the managed and unmanaged
+// "offer to save passwords" table view items.
+NSString* GetExpectedSavePasswordsItemTitle() {
+  return l10n_util::GetNSString(IOSPasskeysM2Enabled()
+                                    ? IDS_IOS_OFFER_TO_SAVE_PASSWORDS_PASSKEYS
+                                    : IDS_IOS_OFFER_TO_SAVE_PASSWORDS);
+}
+
 }  // namespace
 
 class PasswordSettingsViewControllerTest : public PlatformTest {
@@ -60,8 +68,7 @@ class PasswordSettingsViewControllerTest : public PlatformTest {
 TEST_F(PasswordSettingsViewControllerTest, DisplaysOfferToSavePasswords) {
   TableViewSwitchItem* savePasswordsItem = static_cast<TableViewSwitchItem*>(
       GetTableViewItem(/*section=*/0, /*item=*/0));
-  EXPECT_NSEQ(savePasswordsItem.text,
-              l10n_util::GetNSString(IDS_IOS_OFFER_TO_SAVE_PASSWORDS));
+  EXPECT_NSEQ(savePasswordsItem.text, GetExpectedSavePasswordsItemTitle());
 }
 
 TEST_F(PasswordSettingsViewControllerTest,
@@ -72,7 +79,7 @@ TEST_F(PasswordSettingsViewControllerTest,
   TableViewInfoButtonItem* managedSavePasswordsItem =
       static_cast<TableViewInfoButtonItem*>(GetTableViewItem(/*section=*/0, 0));
   EXPECT_NSEQ(managedSavePasswordsItem.text,
-              l10n_util::GetNSString(IDS_IOS_OFFER_TO_SAVE_PASSWORDS));
+              GetExpectedSavePasswordsItemTitle());
 }
 
 TEST_F(PasswordSettingsViewControllerTest,
