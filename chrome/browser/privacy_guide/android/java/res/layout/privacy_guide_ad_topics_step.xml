@@ -60,6 +60,13 @@ found in the LICENSE file.
                 app:iconImage="@drawable/ic_security_24dp"
                 app:summaryText="@string/settings_privacy_guide_ad_topics_when_on_bullet2" />
 
+
+            <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:iconImage="@drawable/ic_auto_delete_24dp"
+                app:summaryText="@string/settings_privacy_guide_ad_topics_when_on_bullet3" />
+
             <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationHeading
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -68,14 +75,21 @@ found in the LICENSE file.
             <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:iconImage="@drawable/ic_auto_delete_24dp"
+                app:iconImage="@drawable/ic_rule_folder_24dp"
                 app:summaryText="@string/settings_privacy_guide_ad_topics_things_to_consider_bullet1" />
 
             <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:iconImage="@drawable/ic_rule_folder_24dp"
+                app:iconImage="@drawable/ic_web_24dp"
                 app:summaryText="@string/settings_privacy_guide_ad_topics_things_to_consider_bullet2" />
+
+            <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
+                android:id="@+id/ad_topics_things_to_consider_bullet3_clank"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:iconImage="@drawable/ic_gavel_24dp"
+                app:summaryText="@string/settings_privacy_guide_ad_topics_things_to_consider_bullet3_clank" />
 
         </LinearLayout>
 

@@ -35090,6 +35090,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacyGuide.AdTopicsPrivacyPolicyLinkClicked">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <description>
+    User clicks on Privacy Policy link on the Ad Topics card in Privacy Guide.
+  </description>
+</action>
+
 <action name="Settings.PrivacyGuide.BackClickAdTopics">
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>

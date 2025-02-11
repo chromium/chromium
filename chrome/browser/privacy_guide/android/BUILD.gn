@@ -87,12 +87,14 @@ robolectric_library("junit") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/prefetch/android:java",
     "//chrome/browser/privacy_sandbox/android:java",
+    "//chrome/browser/privacy_sandbox/android:test_support_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/safe_browsing/android:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/settings/android:java",
     "//components/browser_ui/site_settings/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/content_settings/android:content_settings_enums_java",
@@ -102,6 +104,7 @@ robolectric_library("junit") {
     "//components/sync/android:sync_java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
+    "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_fragment_fragment_testing_java",
@@ -112,6 +115,7 @@ robolectric_library("junit") {
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
   ]
 }
 

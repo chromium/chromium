@@ -66,7 +66,7 @@ suite('AdTopicsFragment', function() {
     assertEquals(
         loadTimeData.getString('columnHeadingConsider'),
         descriptionHeaders![1]!.innerText);
-    assertEquals(4, descriptionItems.length);
+    assertEquals(6, descriptionItems.length);
     descriptionItems.forEach(item => {
       assertTrue(isVisible(item));
     });
@@ -77,11 +77,32 @@ suite('AdTopicsFragment', function() {
         loadTimeData.getString('privacyGuideAdTopicsWhenOnBullet2'),
         descriptionItems![1]!.innerText);
     assertEquals(
-        loadTimeData.getString('privacyGuideAdTopicsThingsToConsiderBullet1'),
+        loadTimeData.getString('privacyGuideAdTopicsWhenOnBullet3'),
         descriptionItems![2]!.innerText);
     assertEquals(
-        loadTimeData.getString('privacyGuideAdTopicsThingsToConsiderBullet2'),
+        loadTimeData.getString('privacyGuideAdTopicsThingsToConsiderBullet1'),
         descriptionItems![3]!.innerText);
+    assertEquals(
+        loadTimeData.getString('privacyGuideAdTopicsThingsToConsiderBullet2'),
+        descriptionItems![4]!.innerText);
+    const thingsToConsiderBullet3DesktopText =
+        loadTimeData
+            .getString('privacyGuideAdTopicsThingsToConsiderBullet3Desktop')
+            .replace(/<[^>]*>/g, '')  // Remove HTML tags
+            .trim();
+    assertEquals(
+        thingsToConsiderBullet3DesktopText,
+        descriptionItems[5]!.innerText.trim());
+  });
+
+  test('PrivacyPolicyLink', async function() {
+    const privacyPolicyLink =
+        fragment.shadowRoot!.querySelector<HTMLElement>('#privacyPolicyLink');
+    assertTrue(!!privacyPolicyLink);
+    privacyPolicyLink.click();
+    assertEquals(
+        'Settings.PrivacyGuide.AdTopicsPrivacyPolicyLinkClicked',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
   });
 
   test('TestAdTopicsPageToggle', function() {
