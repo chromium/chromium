@@ -209,6 +209,7 @@ template("apple_mobile_create_signed_bundle") {
                              "testonly",
                              "transparent",
                              "visibility",
+                             "xcasset_compiler_flags",
                              "xcode_test_application_name",
                            ])
 
