@@ -22,12 +22,11 @@ class ScopedTextShadowPainter {
  public:
   ScopedTextShadowPainter(GraphicsContext& context,
                           const TextPaintStyle& text_style,
-                          const gfx::RectF& bounds,
                           const bool is_horizontal) {
     if (!text_style.shadow) {
       return;
     }
-    ApplyShadowList(context, text_style, bounds, is_horizontal);
+    ApplyShadowList(context, text_style, is_horizontal);
   }
   ~ScopedTextShadowPainter() {
     if (context_) {
@@ -39,7 +38,6 @@ class ScopedTextShadowPainter {
  private:
   void ApplyShadowList(GraphicsContext&,
                        const TextPaintStyle&,
-                       const gfx::RectF& bounds,
                        const bool is_horizontal);
 
   GraphicsContext* context_ = nullptr;
@@ -55,14 +53,12 @@ void PaintWithTextShadow(
     PaintProc paint_proc,
     GraphicsContext& context,
     const TextPaintStyle& text_style,
-    const gfx::RectF& bounds,
     const bool is_horizontal,
     const TextPainter::ShadowMode shadow_mode =
         TextPainter::ShadowMode::kBothShadowsAndTextProper) {
   if (text_style.shadow &&
       shadow_mode != TextPainter::ShadowMode::kTextProperOnly) {
-    ScopedTextShadowPainter shadow_painter(context, text_style, bounds,
-                                           is_horizontal);
+    ScopedTextShadowPainter shadow_painter(context, text_style, is_horizontal);
     if (shadow_painter.HasEffectiveShadow()) {
       paint_proc(TextShadowPaintPhase::kShadow);
     }
