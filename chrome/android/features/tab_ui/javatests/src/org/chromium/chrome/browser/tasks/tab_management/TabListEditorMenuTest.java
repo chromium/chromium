@@ -152,10 +152,6 @@ public class TabListEditorMenuTest {
         }
     }
 
-    // For R8 optimizer message
-    @Mock private Tab mTabDoNotUse;
-
-    // Real mocks.
     @Mock private TabModel mTabModel;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     private SelectionDelegate<Integer> mSelectionDelegate;

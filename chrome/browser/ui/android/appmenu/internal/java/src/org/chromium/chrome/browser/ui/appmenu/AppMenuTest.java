@@ -106,8 +106,6 @@ public class AppMenuTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
-    // Tell R8 not to break the ability to mock the class.
-    @Mock private AppMenu mUnused;
 
     @Captor
     private ArgumentCaptor<KeyboardVisibilityDelegate.KeyboardVisibilityListener>

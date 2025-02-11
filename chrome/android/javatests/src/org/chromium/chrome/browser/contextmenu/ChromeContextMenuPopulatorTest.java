@@ -93,9 +93,7 @@ public class ChromeContextMenuPopulatorTest {
     @Mock private Profile mProfile;
     @Mock private Profile.Natives mProfileNatives;
 
-    // Despite this being a spy, we add the @Mock annotation so that proguard doesn't strip the
-    // spied class.
-    @Mock private ChromeContextMenuPopulator mPopulator;
+    private ChromeContextMenuPopulator mPopulator;
 
     @Before
     public void setUp() {
@@ -709,8 +707,6 @@ public class ChromeContextMenuPopulatorTest {
                         /* additionalNavigationParams= */ null);
 
         int[] expected = null;
-        checkMenuOptions(expected);
-
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
         checkMenuOptions(expected);
 

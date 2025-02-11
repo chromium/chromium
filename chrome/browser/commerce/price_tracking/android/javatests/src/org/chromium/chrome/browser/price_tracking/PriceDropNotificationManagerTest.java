@@ -87,8 +87,7 @@ public class PriceDropNotificationManagerTest {
     private static final String PRODUCT_CLUSTER_ID = "cluster_id";
     private static final int NOTIFICATION_ID = 123;
 
-    @Mock NotificationManagerProxyImpl mUnusedForR8KeepRules;
-    @Mock NotificationManagerProxy mMockNotificationManager;
+    private NotificationManagerProxy mMockNotificationManager;
 
     private PriceDropNotificationManager mPriceDropNotificationManager;
     private BookmarkModel mMockBookmarkModel;

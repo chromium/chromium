@@ -14,11 +14,7 @@ import androidx.test.filters.LargeTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -31,7 +27,6 @@ import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebappD
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabOrientationController;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.init.ActivityLifecycleDispatcherImpl;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
@@ -46,10 +41,7 @@ import java.util.concurrent.TimeoutException;
 public class WebApkInitializationTest {
     @Rule public final WebApkActivityTestRule mActivityRule = new WebApkActivityTestRule();
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-
-    @Mock public ActivityLifecycleDispatcherImpl mUnusedForR8KeepRules;
-    @Mock public ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    public ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     class CreationObserver implements ApplicationStatus.ActivityStateListener {
         public CreationObserver() {}

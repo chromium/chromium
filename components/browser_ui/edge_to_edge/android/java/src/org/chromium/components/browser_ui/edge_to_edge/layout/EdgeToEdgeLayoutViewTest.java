@@ -21,7 +21,6 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -64,9 +63,6 @@ public class EdgeToEdgeLayoutViewTest {
     private static final int NAV_BAR_COLOR = Color.GREEN;
     private static final int NAV_BAR_DIVIDER_COLOR = Color.BLUE;
     private static final int BG_COLOR = Color.GRAY;
-
-    // Added to stop R8 from marking WindowInsetsCompat as final and not mock-able.
-    @Mock WindowInsetsCompat mUnused;
 
     private EdgeToEdgeLayoutCoordinator mEdgeToEdgeLayoutCoordinator;
     private FrameLayout mContentView;

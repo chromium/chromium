@@ -22,7 +22,6 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -59,11 +58,6 @@ public class UsbChooserDialogTest {
     private String mSelectedDeviceId = "";
 
     private UsbChooserDialog mChooserDialog;
-
-    // Unused member variables to avoid Java optimizer issues with Mockito.
-    @Mock ModalDialogManager mMockModalDialogManager;
-    @Mock Activity mMockActivity;
-    @Mock WindowAndroid mMockWindowAndroid;
 
     private class TestUsbChooserDialogJni implements UsbChooserDialog.Natives {
         @Override
