@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/navigation_capturing_log.h"
+#include "chrome/browser/web_applications/navigation_capturing_settings.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -26,8 +27,6 @@
 #include "content/public/common/content_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
 #endif
 
@@ -36,53 +35,6 @@ namespace web_app {
 using BrowserAndTabOverride = NavigationCapturingProcess::BrowserAndTabOverride;
 
 namespace {
-
-// Causes all new auxiliary browser contexts to share the same window container
-// type as where they were created from. For example, if an aux context was
-// created from standalone PWA, then the new context will be created in a new
-// window of the same PWA.
-// If this is off, then all auxiliary contexts will be created as browser tabs.
-const base::FeatureParam<bool> kEnableAuxContextKeepSameContainer{
-    &features::kPwaNavigationCapturing, "aux_context_keep_same_container",
-    /*default_value=*/false};
-
-// Keeping auxiliary contexts in an 'app' container was causing problems on
-// initial Canary testing, see https://crbug.com/379181271 for more information.
-// Either this will be rolled out separately or removed.
-bool ShouldDisableAuxiliaryBrowsingContextHandling(
-    const std::optional<webapps::AppId>& source_browser_app_id,
-    const GURL& url) {
-  // This is however needed on ChromeOS to support the ChromeOsWebAppExperiments
-  // code, see ChromeOsWebAppExperimentsNavigationBrowserTest for tests with
-  // this on.
-#if BUILDFLAG(IS_CHROMEOS)
-  if (source_browser_app_id.has_value() &&
-      ::web_app::ChromeOsWebAppExperiments::
-          IsNavigationCapturingReimplEnabledForSourceApp(*source_browser_app_id,
-                                                         url)) {
-    return true;
-  }
-#endif
-  return apps::features::IsNavigationCapturingReimplEnabled() &&
-         kEnableAuxContextKeepSameContainer.Get();
-}
-
-std::optional<webapps::AppId> GetWebAppControllingUrl(
-    Profile& profile,
-    const WebAppProvider* provider,
-    const GURL& url) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-          &profile)) {
-    return std::nullopt;
-  }
-  return apps::FindAppIdsToLaunchForUrl(
-             apps::AppServiceProxyFactory::GetForProfile(&profile), url)
-      .preferred;
-#else
-  return provider->registrar_unsafe().FindAppThatCapturesLinksInScope(url);
-#endif
-}
 
 bool IsDispositionValidForNavigationCapturing(
     WindowOpenDisposition disposition) {
@@ -275,6 +227,8 @@ NavigationCapturingProcess::NavigationCapturingProcess(
   WebAppProvider* provider = WebAppProvider::GetForWebApps(&*profile_);
   CHECK(provider);
   web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
+  navigation_capturing_settings_ =
+      NavigationCapturingSettings::Create(*profile_);
 
   debug_data_.Set("referrer.url", params.referrer.url.possibly_invalid_spec());
   debug_data_.Set("source_contents.url",
@@ -302,7 +256,8 @@ NavigationCapturingProcess::NavigationCapturingProcess(
   debug_data_.Set("is_user_modified_click", is_user_modified_click());
 
   first_navigation_app_id_ =
-      GetWebAppControllingUrl(profile_.get(), provider, params.url);
+      navigation_capturing_settings_->GetCapturingWebAppForUrl(params.url);
+
   debug_data_.Set("controlling_app_id",
                   first_navigation_app_id_.value_or("<none>"));
   if (first_navigation_app_id_) {
@@ -511,8 +466,9 @@ NavigationCapturingProcess::GetInitialBrowserAndTabOverrideForNavigation(
   // app browser.
   if (IsAuxiliaryBrowsingContext(params)) {
     debug_data_.Set("is_auxiliary_browsing_context", true);
-    if (!ShouldDisableAuxiliaryBrowsingContextHandling(source_browser_app_id_,
-                                                       params.url)) {
+    if (!navigation_capturing_settings_
+             ->ShouldAuxiliaryContextsKeepSameContainer(source_browser_app_id_,
+                                                        params.url)) {
       return CapturingDisabled();
     }
     if (source_browser_app_id_.has_value()) {
@@ -737,7 +693,7 @@ NavigationCapturingProcess::HandleRedirect() {
       WebAppProvider::GetForWebContents(web_contents_for_navigation);
   WebAppRegistrar& registrar = provider->registrar_unsafe();
   std::optional<webapps::AppId> target_app_id =
-      GetWebAppControllingUrl(profile_.get(), provider, final_url);
+      navigation_capturing_settings_->GetCapturingWebAppForUrl(final_url);
 
   // "Same first navigation state" case:
   // First, we can exit early if the first navigation app id matches the target
