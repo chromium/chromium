@@ -191,8 +191,9 @@ TEST_P(WellKnownChangePasswordStateTest, NoSupport_Redirect) {
 TEST_P(WellKnownChangePasswordStateTest,
        NoAwaitForPrefetchResultIfWellKnownChangePasswordSupported) {
   affiliations::MockAffiliationService mock_affiliation_service;
-  EXPECT_CALL(mock_affiliation_service, PrefetchChangePasswordURLs);
-  state()->PrefetchChangePasswordURLs(&mock_affiliation_service, {});
+  EXPECT_CALL(mock_affiliation_service, PrefetchChangePasswordURL);
+  state()->PrefetchChangePasswordURL(&mock_affiliation_service,
+                                     GURL("https://example.com"));
 
   EXPECT_CALL(*delegate(), OnProcessingFinished(true));
 
@@ -208,8 +209,9 @@ TEST_P(WellKnownChangePasswordStateTest,
 
 TEST_P(WellKnownChangePasswordStateTest, TimeoutTriggersOnProcessingFinished) {
   affiliations::MockAffiliationService mock_affiliation_service;
-  EXPECT_CALL(mock_affiliation_service, PrefetchChangePasswordURLs);
-  state()->PrefetchChangePasswordURLs(&mock_affiliation_service, {});
+  EXPECT_CALL(mock_affiliation_service, PrefetchChangePasswordURL);
+  state()->PrefetchChangePasswordURL(&mock_affiliation_service,
+                                     GURL("https://example.com"));
 
   ResponseDelayParams params = GetParam();
   RespondeToChangePasswordRequest(net::HTTP_NOT_FOUND,
@@ -245,8 +247,8 @@ TEST_P(WellKnownChangePasswordStateTest,
   affiliation_service->SetFetcherFactoryForTesting(
       std::move(mock_fetcher_factory));
 
-  state()->PrefetchChangePasswordURLs(affiliation_service.get(),
-                                      {GURL("https://example.com")});
+  state()->PrefetchChangePasswordURL(affiliation_service.get(),
+                                     GURL("https://example.com"));
 
   ResponseDelayParams params = GetParam();
   RespondeToChangePasswordRequest(net::HTTP_NOT_FOUND,

@@ -56,9 +56,9 @@ class WellKnownChangePasswordState {
       std::optional<network::ResourceRequest::TrustedParams> trusted_params =
           std::nullopt);
   // Prefetch change password URLs from |affiliation_service|.
-  void PrefetchChangePasswordURLs(
+  void PrefetchChangePasswordURL(
       affiliations::AffiliationService* affiliation_service,
-      const std::vector<GURL>& urls);
+      const GURL& url);
   // The request to .well-known/change-password is not made by this State. To
   // get the response code for the request the owner of the state has to call
   // this method to tell the state.

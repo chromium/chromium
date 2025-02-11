@@ -103,8 +103,8 @@ WellKnownChangePasswordNavigationThrottle::
           handle->GetWebContents()->GetBrowserContext()));
   CHECK(affiliation_service_);
   if (affiliation_service_->GetChangePasswordURL(request_url_).is_empty()) {
-    well_known_change_password_state_.PrefetchChangePasswordURLs(
-        affiliation_service_, {request_url_});
+    well_known_change_password_state_.PrefetchChangePasswordURL(
+        affiliation_service_, request_url_);
   }
 }
 

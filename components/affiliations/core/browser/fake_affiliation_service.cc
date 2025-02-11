@@ -16,8 +16,8 @@ FakeAffiliationService::FakeAffiliationService() = default;
 
 FakeAffiliationService::~FakeAffiliationService() = default;
 
-void FakeAffiliationService::PrefetchChangePasswordURLs(
-    const std::vector<GURL>& urls,
+void FakeAffiliationService::PrefetchChangePasswordURL(
+    const GURL& url,
     base::OnceClosure callback) {}
 GURL FakeAffiliationService::GetChangePasswordURL(const GURL& url) const {
   return GURL();

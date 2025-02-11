@@ -14,8 +14,8 @@ class FakeAffiliationService : public AffiliationService {
   FakeAffiliationService();
   ~FakeAffiliationService() override;
 
-  void PrefetchChangePasswordURLs(const std::vector<GURL>& urls,
-                                  base::OnceClosure callback) override;
+  void PrefetchChangePasswordURL(const GURL& url,
+                                 base::OnceClosure callback) override;
   GURL GetChangePasswordURL(const GURL& url) const override;
   void GetAffiliationsAndBranding(
       const FacetURI& facet_uri,

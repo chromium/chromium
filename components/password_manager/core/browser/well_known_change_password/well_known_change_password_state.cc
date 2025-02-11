@@ -104,13 +104,13 @@ void WellKnownChangePasswordState::FetchNonExistingResource(
           base::Unretained(this)));
 }
 
-void WellKnownChangePasswordState::PrefetchChangePasswordURLs(
+void WellKnownChangePasswordState::PrefetchChangePasswordURL(
     affiliations::AffiliationService* affiliation_service,
-    const std::vector<GURL>& urls) {
+    const GURL& url) {
   prefetch_timer_.Start(FROM_HERE, kPrefetchTimeout, this,
                         &WellKnownChangePasswordState::ContinueProcessing);
-  affiliation_service->PrefetchChangePasswordURLs(
-      urls,
+  affiliation_service->PrefetchChangePasswordURL(
+      url,
       base::BindOnce(
           &WellKnownChangePasswordState::PrefetchChangePasswordURLsCallback,
           weak_factory_.GetWeakPtr()));
