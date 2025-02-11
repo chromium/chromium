@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_model/entity_type.h"
 
+#include "components/autofill/core/browser/data_model/entity_type_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -77,6 +78,24 @@ TEST(AutofillEntityTypeTest, Syncable) {
   using enum EntityTypeName;
   EXPECT_FALSE(EntityType(kPassport).syncable());
   EXPECT_TRUE(EntityType(kLoyaltyCard).syncable());
+}
+
+TEST(AutofillEntityTypeTest, EntityGetNameForI18n) {
+  using enum EntityTypeName;
+  EntityType a = EntityType(kPassport);
+  EntityType b = EntityType(kDriversLicense);
+  EXPECT_EQ(a.GetNameForI18n(), u"Passport");
+  EXPECT_EQ(b.GetNameForI18n(), u"Driver's license");
+}
+
+TEST(AutofillEntityTypeTest, AttributeGetNameForI18n) {
+  using enum AttributeTypeName;
+  AttributeType a = AttributeType(kPassportCountry);
+  AttributeType b = AttributeType(kCarLicensePlate);
+  AttributeType c = AttributeType(kDriversLicenseExpirationDate);
+  EXPECT_EQ(a.GetNameForI18n(), u"Country");
+  EXPECT_EQ(b.GetNameForI18n(), u"License plate");
+  EXPECT_EQ(c.GetNameForI18n(), u"Expiration date");
 }
 
 }  // namespace

@@ -6,8 +6,11 @@
 
 #include <optional>
 
+#include "base/notreached.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -37,6 +40,65 @@ std::optional<AttributeType> AttributeType::FromFieldType(FieldType type) {
   return 0 <= type && type < kTable.size() ? kTable[type] : std::nullopt;
 }
 
+std::u16string AttributeType::GetNameForI18n() const {
+  switch (name()) {
+    case AttributeTypeName::kPassportName:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_PASSPORT_NAME_ATTRIBUTE_NAME);
+    case AttributeTypeName::kPassportNumber:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_PASSPORT_NUMBER_ATTRIBUTE_NAME);
+    case AttributeTypeName::kPassportCountry:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_PASSPORT_COUNTRY_ATTRIBUTE_NAME);
+    case AttributeTypeName::kPassportExpiryDate:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_PASSPORT_EXPIRY_DATE_ATTRIBUTE_NAME);
+    case AttributeTypeName::kPassportIssueDate:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_PASSPORT_ISSUE_DATE_ATTRIBUTE_NAME);
+    case AttributeTypeName::kLoyaltyCardProgram:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_LOYALTY_CARD_PROGRAM_ATTRIBUTE_NAME);
+    case AttributeTypeName::kLoyaltyCardProvider:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_LOYALTY_CARD_PROVIDER_ATTRIBUTE_NAME);
+    case AttributeTypeName::kLoyaltyCardMemberId:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_LOYALTY_CARD_MEMBER_ID_ATTRIBUTE_NAME);
+    case AttributeTypeName::kCarOwner:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_CAR_OWNER_ATTRIBUTE_NAME);
+    case AttributeTypeName::kCarLicensePlate:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_CAR_LICENSE_PLATE_ATTRIBUTE_NAME);
+    case AttributeTypeName::kCarRegistration:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_CAR_REGISTRATION_ATTRIBUTE_NAME);
+    case AttributeTypeName::kCarMake:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_CAR_MAKE_ATTRIBUTE_NAME);
+    case AttributeTypeName::kCarModel:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_CAR_MODEL_ATTRIBUTE_NAME);
+    case AttributeTypeName::kDriversLicenseName:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_DRIVERS_LICENSE_NAME_ATTRIBUTE_NAME);
+    case AttributeTypeName::kDriversLicenseRegion:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_DRIVERS_LICENSE_REGION_ATTRIBUTE_NAME);
+    case AttributeTypeName::kDriversLicenseNumber:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_DRIVERS_LICENSE_NUMBER_ATTRIBUTE_NAME);
+    case AttributeTypeName::kDriversLicenseExpirationDate:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_DRIVERS_LICENSE_EXPIRATION_DATE_ATTRIBUTE_NAME);
+    case AttributeTypeName::kDriversLicenseIssueDate:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_DRIVERS_LICENSE_ISSUE_DATE_ATTRIBUTE_NAME);
+  }
+  NOTREACHED();
+}
+
 // static
 bool EntityType::ImportOrder(const EntityType& lhs, const EntityType& rhs) {
   auto rank = [](const EntityType& t) constexpr {
@@ -54,6 +116,22 @@ bool EntityType::ImportOrder(const EntityType& lhs, const EntityType& rhs) {
     }
   };
   return rank(lhs) < rank(rhs);
+}
+
+std::u16string EntityType::GetNameForI18n() const {
+  switch (name()) {
+    case EntityTypeName::kPassport:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_PASSPORT_ENTITY_NAME);
+    case EntityTypeName::kLoyaltyCard:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_LOYALTY_CARD_ENTITY_NAME);
+    case EntityTypeName::kCar:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_CAR_ENTITY_NAME);
+    case EntityTypeName::kDriversLicense:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_DRIVERS_LICENSE_ENTITY_NAME);
+  }
+  NOTREACHED();
 }
 
 std::ostream& operator<<(std::ostream& os, AttributeType a) {
