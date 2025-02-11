@@ -27,6 +27,7 @@
 #include "net/http/http_version.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
@@ -74,9 +75,9 @@ blink::ParsedPermissionsPolicy CreatePermissivePolicy() {
   policy.emplace_back(
       network::mojom::PermissionsPolicyFeature::kRunAdAuction,
       /*allowed_origins=*/
-      std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(
+      std::vector{*network::OriginWithPossibleWildcards::FromOrigin(
                       url::Origin::Create(GURL("https://google.com"))),
-                  *blink::OriginWithPossibleWildcards::FromOrigin(
+                  *network::OriginWithPossibleWildcards::FromOrigin(
                       url::Origin::Create(GURL("https://foo1.com")))},
       /*self_if_matches=*/std::nullopt,
       /*matches_all_origins=*/false,
@@ -88,7 +89,7 @@ blink::ParsedPermissionsPolicy CreateRestrictivePolicy() {
   blink::ParsedPermissionsPolicy policy;
   policy.emplace_back(
       network::mojom::PermissionsPolicyFeature::kRunAdAuction,
-      /*allowed_origins=*/std::vector<blink::OriginWithPossibleWildcards>(),
+      /*allowed_origins=*/std::vector<network::OriginWithPossibleWildcards>(),
       /*self_if_matches=*/std::nullopt,
       /*matches_all_origins=*/false,
       /*matches_opaque_src=*/false);

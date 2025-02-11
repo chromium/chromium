@@ -85,10 +85,10 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
@@ -260,7 +260,7 @@ blink::ParsedPermissionsPolicy CreateRandomPermissionsPolicy(
       const auto origin =
           url::Origin::Create(GURL("https://app-" + suffix_str + ".com/"));
       permissions_policy[i].allowed_origins.emplace_back(
-          *blink::OriginWithPossibleWildcards::FromOrigin(origin));
+          *network::OriginWithPossibleWildcards::FromOrigin(origin));
     }
   }
   return permissions_policy;

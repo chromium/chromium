@@ -18,8 +18,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "url/gurl.h"
@@ -69,7 +69,7 @@ class PermissionContextBasePermissionsPolicyTest
     if (feature != network::mojom::PermissionsPolicyFeature::kNotFound) {
       frame_policy.emplace_back(
           feature,
-          std::vector({*blink::OriginWithPossibleWildcards::FromOrigin(
+          std::vector({*network::OriginWithPossibleWildcards::FromOrigin(
               url::Origin::Create(GURL(origin)))}),
           /*self_if_matches=*/std::nullopt,
           /*matches_all_origins=*/false,
@@ -93,10 +93,10 @@ class PermissionContextBasePermissionsPolicyTest
     content::RenderFrameHost* current = *rfh;
     auto navigation = content::NavigationSimulator::CreateRendererInitiated(
         current->GetLastCommittedURL(), current);
-    std::vector<blink::OriginWithPossibleWildcards> parsed_origins;
+    std::vector<network::OriginWithPossibleWildcards> parsed_origins;
     for (const std::string& origin : origins) {
       parsed_origins.emplace_back(
-          *blink::OriginWithPossibleWildcards::FromOrigin(
+          *network::OriginWithPossibleWildcards::FromOrigin(
               url::Origin::Create(GURL(origin))));
     }
     navigation->SetPermissionsPolicyHeader(
