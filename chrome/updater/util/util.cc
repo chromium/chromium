@@ -163,6 +163,11 @@ std::optional<tagging::AppArgs> GetAppArgs(const std::string& app_id) {
                                    : std::nullopt;
 }
 
+std::string GetTagLanguage() {
+  std::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
+  return tag_args ? tag_args->language : "";
+}
+
 std::string GetDecodedInstallDataFromAppArgs(const std::string& app_id) {
   const std::optional<tagging::AppArgs> app_args = GetAppArgs(app_id);
   if (!app_args) {
