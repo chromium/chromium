@@ -139,10 +139,6 @@ class SessionRestorePolicy {
                                            size_t score);
 
  protected:
-#if !BUILDFLAG(IS_ANDROID)
-  friend class TabDataAccess;
-#endif
-
   // Holds a handful of data about a tab which is used to prioritize it during
   // session restore.
   struct TabData {
@@ -202,6 +198,21 @@ class SessionRestorePolicy {
     base::CancelableOnceCallback<void(SiteDataReaderData)>
         used_in_bg_setter_cancel_callback;
   };
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Retrieves the SiteDataReaderData for `contents`, and invokes the provided
+  // callback with it.
+  void GetSiteDataReaderData(
+      content::WebContents* contents,
+      base::OnceCallback<void(TabData::SiteDataReaderData)>
+          on_site_data_reader_data_received_cb);
+
+  // Initializes the `used_in_bg` bit for the tab data associated with
+  // `contents`. Care must be taken to not call this after the tab data has been
+  // destroyed.
+  void OnSiteDataReaderDataReceived(content::WebContents* contents,
+                                    TabData::SiteDataReaderData reader_data);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // This is safe to call from the constructor if |delegate_| is already
   // initialized.
