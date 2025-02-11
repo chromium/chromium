@@ -51,11 +51,11 @@ GlicKeyedService::GlicKeyedService(Profile* profile,
                                                         /*use_for_fre=*/false)),
       profile_manager_(profile_manager) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
-  metrics_->SetWindowController(window_controller_.get());
+  metrics_->SetControllers(window_controller_.get(), &focused_tab_manager_);
 }
 
 GlicKeyedService::~GlicKeyedService() {
-  metrics_->SetWindowController(nullptr);
+  metrics_->SetControllers(nullptr, nullptr);
 }
 
 void GlicKeyedService::Shutdown() {
