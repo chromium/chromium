@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Dialogs that start open and have closedby should still function
+  assert_false: expected false got true
+[FAIL] Opening and closing a dialog during the dialog focus fixup should still leave closedby functional
+  assert_true: expected true got false
+Harness: the test ran to completion.
+
