@@ -26,6 +26,7 @@
 #include "build/build_config.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/trusted_signals_cache_impl.h"
+#include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/render_frame_host.h"
@@ -790,7 +791,10 @@ InRendererAuctionProcessManager::CreateProcessInternal(
   }
 
   mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
-  site_instance->GetOrCreateProcess()->Init();
+  static_cast<SiteInstanceImpl*>(site_instance)
+      ->GetOrCreateProcess(ProcessAllocationContext{
+          ProcessAllocationSource::kAuctionProcessManager})
+      ->Init();
   site_instance->GetProcess()->BindReceiver(
       service.InitWithNewPipeAndPassReceiver());
   return WorkletProcess::ProcessContext(std::move(service),

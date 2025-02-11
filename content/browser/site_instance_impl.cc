@@ -7,6 +7,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -329,7 +330,8 @@ SiteInstanceImpl::CreateReusableInstanceForTesting(
       ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME);
   // Proactively create a process since many callers of this function in tests
   // rely on site_instance->GetProcess().
-  site_instance->GetOrCreateProcess();
+  site_instance->GetOrCreateProcess(
+      ProcessAllocationContext{ProcessAllocationSource::kTest});
   return site_instance;
 }
 
@@ -446,20 +448,24 @@ RenderProcessHost* SiteInstanceImpl::GetProcess() {
       base::FeatureList::IsEnabled(kTraceSiteInstanceGetProcessCreation)) {
     if (kCrashOnGetProcessCreation.Get()) {
       CHECK(false);
-    } else {
-      base::debug::DumpWithoutCrashing();
     }
   }
-  return GetOrCreateProcess();
+  return GetOrCreateProcess(ProcessAllocationContext{
+      ProcessAllocationSource::kNoProcessCreationExpected});
 }
 
-RenderProcessHost* SiteInstanceImpl::GetOrCreateProcess() {
+RenderProcessHost* SiteInstanceImpl::GetOrCreateProcess(
+    const ProcessAllocationContext& context) {
   // Create a new SiteInstanceGroup and RenderProcessHost if there isn't one.
   // All SiteInstances within a SiteInstanceGroup share a process and
   // AgentSchedulingGroupHost. A group must have a process. If the process gets
   // destructed, `site_instance_group_` will get cleared, and another one with a
   // new process will be assigned the next time GetProcess() gets called.
   if (!has_group()) {
+    if (base::FeatureList::IsEnabled(kTraceSiteInstanceGetProcessCreation) &&
+        context.source == ProcessAllocationSource::kNoProcessCreationExpected) {
+      base::debug::DumpWithoutCrashing();
+    }
     // Check if the ProcessReusePolicy should be updated.
     if (ShouldUseProcessPerSite()) {
       process_reuse_policy_ = ProcessReusePolicy::PROCESS_PER_SITE;
@@ -467,11 +473,17 @@ RenderProcessHost* SiteInstanceImpl::GetOrCreateProcess() {
       process_reuse_policy_ = ProcessReusePolicy::DEFAULT;
     }
     SetProcessInternal(
-        RenderProcessHostImpl::GetProcessHostForSiteInstance(this));
+        RenderProcessHostImpl::GetProcessHostForSiteInstance(this, context));
   }
   DCHECK(site_instance_group_);
 
   return site_instance_group_->process();
+}
+
+RenderProcessHost* SiteInstanceImpl::GetOrCreateProcess() {
+  CHECK_IS_TEST();
+  return GetOrCreateProcess(
+      ProcessAllocationContext{ProcessAllocationSource::kTest});
 }
 
 SiteInstanceGroupId SiteInstanceImpl::GetSiteInstanceGroupId() {

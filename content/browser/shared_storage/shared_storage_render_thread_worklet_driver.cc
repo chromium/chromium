@@ -52,7 +52,10 @@ SharedStorageRenderThreadWorkletDriver::SharedStorageRenderThreadWorkletDriver(
   site_instance->ReuseExistingProcessIfPossible(render_frame_host.GetProcess());
 
   // TODO(yaoxia): Gracefully handle Init() error?
-  site_instance->GetOrCreateProcess()->Init();
+  site_instance
+      ->GetOrCreateProcess(ProcessAllocationContext{
+          ProcessAllocationSource::kSharedStorageRenderThreadWorkletDriver})
+      ->Init();
 
   site_instance->GetProcess()->AddObserver(this);
 

@@ -562,8 +562,9 @@ class RenderFrameHostManagerTest
         BrowsingContextGroupSwap::CreateDefault();
     TestRenderFrameHost* frame_host = static_cast<TestRenderFrameHost*>(
         manager
-            ->GetFrameHostForNavigation(frame_tree_node->navigation_request(),
-                                        &ignored_bcg_swap_info)
+            ->GetFrameHostForNavigation(
+                frame_tree_node->navigation_request(), &ignored_bcg_swap_info,
+                ProcessAllocationContext{ProcessAllocationSource::kTest})
             .value());
     CHECK(frame_host);
 
@@ -3467,11 +3468,13 @@ TEST_P(RenderFrameHostManagerTest, NavigateFromDeadRendererToWebUI) {
   // Prepare to commit, update the navigating RenderFrameHost.
   BrowsingContextGroupSwap ignored_bcg_swap_info =
       BrowsingContextGroupSwap::CreateDefault();
-  EXPECT_EQ(host, manager
-                      ->GetFrameHostForNavigation(
-                          frame_tree_node->navigation_request(),
-                          &ignored_bcg_swap_info)
-                      .value());
+  EXPECT_EQ(
+      host,
+      manager
+          ->GetFrameHostForNavigation(
+              frame_tree_node->navigation_request(), &ignored_bcg_swap_info,
+              ProcessAllocationContext{ProcessAllocationSource::kTest})
+          .value());
 
   // No pending RenderFrameHost as the current one should be reused.
   EXPECT_FALSE(GetPendingFrameHost(manager));

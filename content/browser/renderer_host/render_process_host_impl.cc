@@ -4746,7 +4746,8 @@ void RenderProcessHostImpl::RegisterSoleProcessHostForSite(
 
 // static
 RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
-    SiteInstanceImpl* site_instance) {
+    SiteInstanceImpl* site_instance,
+    const ProcessAllocationContext& allocation_context) {
   const SiteInfo& site_info = site_instance->GetSiteInfo();
   ProcessReusePolicy process_reuse_policy =
       site_instance->process_reuse_policy();
