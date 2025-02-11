@@ -162,9 +162,16 @@ void CollaborationGroupSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  const std::vector<GroupId> group_ids_to_delete = GetCollaborationGroupIds();
   ids_to_specifics_.clear();
   data_type_store_->DeleteAllDataAndMetadata(base::DoNothing());
   weak_ptr_factory_.InvalidateWeakPtrs();
+
+  for (auto& observer : observers_) {
+    observer.OnGroupsUpdated(/*added_group_ids=*/std::vector<GroupId>(),
+                             /*updated_group_ids=*/std::vector<GroupId>(),
+                             group_ids_to_delete);
+  }
 }
 
 bool CollaborationGroupSyncBridge::IsEntityDataValid(

@@ -323,6 +323,9 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldStoreAndLoadData) {
 TEST_F(CollaborationGroupSyncBridgeTest, ShouldApplyDisableSyncChanges) {
   CreateBridgeAndWaitForReadyToSync();
 
+  const GroupId id1("id1");
+  const GroupId id2("id2");
+
   // Mimics initial sync with some entities and metadata.
   std::unique_ptr<syncer::MetadataChangeList> metadata_changes =
       bridge().CreateMetadataChangeList();
@@ -333,13 +336,19 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldApplyDisableSyncChanges) {
 
   syncer::EntityChangeList intitial_entity_changes;
   intitial_entity_changes.push_back(
-      EntityChangeAddFromSpecifics(MakeSpecifics(GroupId("id1"))));
+      EntityChangeAddFromSpecifics(MakeSpecifics(id1)));
   intitial_entity_changes.push_back(
-      EntityChangeAddFromSpecifics(MakeSpecifics(GroupId("id2"))));
+      EntityChangeAddFromSpecifics(MakeSpecifics(id2)));
 
   // Mimics initial sync with some entities and metadata.
   bridge().MergeFullSyncData(std::move(metadata_changes),
                              std::move(intitial_entity_changes));
+
+  EXPECT_CALL(
+      observer(),
+      OnGroupsUpdated(/*added_group_ids*/ IsEmpty(),
+                      /*updated_group_ids*/ IsEmpty(),
+                      /*deleted_group_ids*/ UnorderedElementsAre(id1, id2)));
 
   // Should clear all data and metadata, `delete_metadata_change_list` is not
   // relevant for this implementation, so nullptr is okay.
