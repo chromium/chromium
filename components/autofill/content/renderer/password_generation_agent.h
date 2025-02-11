@@ -147,14 +147,10 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   // as a result of the user focusing a password field eligible for generation.
   void AutomaticGenerationAvailable();
 
+#if !BUILDFLAG(IS_ANDROID)
   // Show UI for editing a generated password at |generation_element_|.
   void ShowEditingPopup(const SynchronousFormCache& form_cache);
-
-  // Signals the browser that generation was rejected. This happens when the
-  // user types more characters than the maximum offer size into the password
-  // field. Upon receiving this message, the browser can choose to hide the
-  // generation UI or not, depending on the platform.
-  void GenerationRejectedByTyping();
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Stops treating a password as generated.
   void PasswordNoLongerGenerated();
