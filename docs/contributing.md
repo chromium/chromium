@@ -390,8 +390,7 @@ Approvals may be copied between patch sets in some situations.
   reviewer's +1 is no longer shown in Gerrit).
 
 If a patch set loses its approvals, these will need to be re-added before the
-patch set can be committed, inline with the requirements for the author (one
-+1 for committers, two +1s for non-committers).
+patch set can be committed (one +1 for committers, two +1s for non-committers).
 
 ## Running automated tests
 
