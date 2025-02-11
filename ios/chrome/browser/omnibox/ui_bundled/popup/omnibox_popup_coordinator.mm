@@ -168,7 +168,6 @@
                    layoutGuideCenter:LayoutGuideCenterForBrowser(self.browser)
                            incognito:isIncognito];
 
-  _popupView->SetMediator(self.mediator);
   self.mediator.popupController = _omniboxPopupController;
 
   _omniboxPopupController.delegate = self.mediator;

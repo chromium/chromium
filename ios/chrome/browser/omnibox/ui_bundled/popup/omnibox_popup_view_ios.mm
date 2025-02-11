@@ -67,14 +67,17 @@ bool OmniboxPopupViewIOS::IsPopupOpen() {
 }
 
 void OmniboxPopupViewIOS::SetTextAlignment(NSTextAlignment alignment) {
-  [mediator_ setTextAlignment:alignment];
+  [omnibox_autocomplete_controller_.omniboxPopupController
+      setTextAlignment:alignment];
 }
 
 void OmniboxPopupViewIOS::SetSemanticContentAttribute(
     UISemanticContentAttribute semanticContentAttribute) {
-  [mediator_ setSemanticContentAttribute:semanticContentAttribute];
+  [omnibox_autocomplete_controller_.omniboxPopupController
+      setSemanticContentAttribute:semanticContentAttribute];
 }
 
 void OmniboxPopupViewIOS::SetHasThumbnail(bool has_thumbnail) {
-  [mediator_ setHasThumbnail:has_thumbnail];
+  [omnibox_autocomplete_controller_.omniboxPopupController
+      setHasThumbnail:has_thumbnail];
 }

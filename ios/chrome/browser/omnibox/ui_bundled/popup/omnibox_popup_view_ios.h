@@ -11,7 +11,6 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/omnibox/browser/omnibox_popup_view.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mediator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_provider.h"
 
 @class OmniboxAutocompleteController;
@@ -45,10 +44,7 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
   bool IsPopupOpen() override;
   void SetHasThumbnail(bool has_thumbnail) override;
 
-  void SetMediator(OmniboxPopupMediator* mediator) { mediator_ = mediator; }
-
  private:
-  OmniboxPopupMediator* mediator_;
   __weak OmniboxAutocompleteController* omnibox_autocomplete_controller_;
 };
 

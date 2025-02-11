@@ -142,15 +142,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   }
 }
 
-- (void)setTextAlignment:(NSTextAlignment)alignment {
-  [self.consumer setTextAlignment:alignment];
-}
-
-- (void)setSemanticContentAttribute:
-    (UISemanticContentAttribute)semanticContentAttribute {
-  [self.consumer setSemanticContentAttribute:semanticContentAttribute];
-}
-
 - (void)setDebugInfoConsumer:
     (id<PopupDebugInfoConsumer,
         RemoteSuggestionsServiceObserver,
@@ -214,6 +205,22 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
   [self.consumer updateMatches:groups
       preselectedMatchGroupIndex:self.preselectedGroupIndex];
+}
+
+- (void)popupController:(OmniboxPopupController*)popupController
+    didUpdateTextAlignment:(NSTextAlignment)alignment {
+  [self.consumer setTextAlignment:alignment];
+}
+
+- (void)popupController:(OmniboxPopupController*)popupController
+    didUpdateSemanticContentAttribute:
+        (UISemanticContentAttribute)semanticContentAttribute {
+  [self.consumer setSemanticContentAttribute:semanticContentAttribute];
+}
+
+- (void)popupController:(OmniboxPopupController*)popupController
+    didUpdateHasThumbnail:(BOOL)hasThumbnail {
+  self.hasThumbnail = hasThumbnail;
 }
 
 #pragma mark - AutocompleteResultDataSource
