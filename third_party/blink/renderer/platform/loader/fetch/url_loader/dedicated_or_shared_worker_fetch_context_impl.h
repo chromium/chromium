@@ -132,7 +132,6 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
       override;
   std::unique_ptr<WebSocketHandshakeThrottle> CreateWebSocketHandshakeThrottle(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
-  void SetIsOfflineMode(bool is_offline_mode) override;
   bool IsDedicatedWorkerOrSharedWorkerFetchContext() const override {
     return true;
   }

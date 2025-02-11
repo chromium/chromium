@@ -144,10 +144,6 @@ class WebWorkerFetchContext : public base::RefCounted<WebWorkerFetchContext> {
   // Returns the current list of user preferred languages.
   virtual blink::WebString GetAcceptLanguages() const = 0;
 
-  // This flag is set to disallow all network accesses in the context. Used for
-  // offline capability detection in service workers.
-  virtual void SetIsOfflineMode(bool is_offline_mode) = 0;
-
   // Creates a notifier used to notify loading stats for workers.
   virtual std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
   CreateResourceLoadInfoNotifierWrapper() {
