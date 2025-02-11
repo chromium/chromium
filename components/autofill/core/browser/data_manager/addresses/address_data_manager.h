@@ -62,8 +62,7 @@ class ContactInfoPreconditionChecker;
 // performed if the profile exists. Without the queuing, if a remove operation
 // was posted before the add operation has finished, the remove would
 // incorrectly get rejected by the ADM.
-class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
-                           public WebDataServiceConsumer {
+class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -107,10 +106,8 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // AutofillWebDataServiceObserverOnUISequence:
   void OnAutofillChangedBySync(syncer::DataType data_type) override;
 
-  // WebDataServiceConsumer:
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle handle,
-      std::unique_ptr<WDTypedResult> result) override;
+  void OnWebDataServiceRequestDone(WebDataServiceBase::Handle handle,
+                                   std::unique_ptr<WDTypedResult> result);
 
   // Returns pointers to the AddressDataManager's underlying vector of Profiles.
   // Their lifetime is until the web database is updated with new information,
@@ -455,7 +452,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   const std::string app_locale_;
 
-  base::WeakPtrFactory<AddressDataManager> weak_factory_{this};
+  base::WeakPtrFactory<AddressDataManager> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

@@ -32,16 +32,8 @@ void TestEntityDataManager::RemoveEntityInstance(const base::Uuid& guid) {
 }
 
 void TestEntityDataManager::LoadEntityInstances(LoadCallback cb) {
-  static WebDataServiceBase::Handle g_next_handle = 0;
-  WebDataServiceBase::Handle handle = g_next_handle++;
-  RegisterPendingQuery(handle, std::move(cb));
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &TestEntityDataManager::OnWebDataServiceRequestDone,
-          weak_ptr_factory_.GetWeakPtr(), handle,
-          std::make_unique<WDResult<std::vector<EntityInstance>>>(
-              AUTOFILL_ENTITY_INSTANCE_RESULT, GetCopyOfEntities())));
+      FROM_HERE, base::BindOnce(std::move(cb), GetCopyOfEntities()));
 }
 
 }  // namespace autofill

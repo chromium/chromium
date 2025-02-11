@@ -19,6 +19,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -47,9 +48,12 @@ namespace {
 
 using base::Bucket;
 using base::BucketsAre;
+using testing::_;
 using testing::DoDefault;
 using testing::ElementsAre;
+using testing::IsEmpty;
 using testing::Pointee;
+using testing::ResultOf;
 using testing::UnorderedElementsAre;
 
 template <class T>
@@ -73,13 +77,27 @@ class AutofillWebDataServiceWaiter : public WebDataServiceConsumer {
   void OnWebDataServiceRequestDone(
       WebDataServiceBase::Handle handle,
       std::unique_ptr<WDTypedResult> result) final {
-    result_ = std::move(static_cast<WDResult<T>*>(result.get())->GetValue());
+    result_ = static_cast<WDResult<T>*>(result.get())->GetValue();
     run_loop_.Quit();
   }
 
   base::RunLoop run_loop_;
   T result_;
 };
+
+using WebDataServiceRequestFuture =
+    base::test::TestFuture<WebDataServiceBase::Handle,
+                           std::unique_ptr<WDTypedResult>>;
+
+template <typename T, typename Matcher>
+testing::Matcher<std::unique_ptr<WDTypedResult>> ValueOfWDResult(
+    Matcher&& matcher) {
+  return ResultOf(
+      [](const std::unique_ptr<WDTypedResult>& result) {
+        return static_cast<WDResult<T>*>(result.get())->GetValue();
+      },
+      std::forward<Matcher>(matcher));
+}
 
 constexpr base::TimeDelta kWebDataServiceTimeout = base::Seconds(8);
 
@@ -266,9 +284,10 @@ TEST_F(WebDataServiceAutofillTest, ProfileAdd) {
   done_event_.TimedWait(kWebDataServiceTimeout);
 
   // Check that it was added.
-  AutofillWebDataServiceWaiter<std::vector<AutofillProfile>> consumer;
-  wds_->GetAutofillProfiles(&consumer);
-  EXPECT_THAT(consumer.result(), UnorderedElementsAre(profile));
+  WebDataServiceRequestFuture consumer;
+  wds_->GetAutofillProfiles(consumer.GetCallback());
+  EXPECT_THAT(consumer.Get<1>(), ValueOfWDResult<std::vector<AutofillProfile>>(
+                                     UnorderedElementsAre(profile)));
 }
 
 TEST_F(WebDataServiceAutofillTest, ProfileRemove) {
@@ -281,9 +300,10 @@ TEST_F(WebDataServiceAutofillTest, ProfileRemove) {
   done_event_.TimedWait(kWebDataServiceTimeout);
 
   // Check that it was added.
-  AutofillWebDataServiceWaiter<std::vector<AutofillProfile>> consumer;
-  wds_->GetAutofillProfiles(&consumer);
-  EXPECT_THAT(consumer.result(), UnorderedElementsAre(profile));
+  WebDataServiceRequestFuture consumer;
+  wds_->GetAutofillProfiles(consumer.GetCallback());
+  EXPECT_THAT(consumer.Get<1>(), ValueOfWDResult<std::vector<AutofillProfile>>(
+                                     UnorderedElementsAre(profile)));
 
   // Check that GUID-based notification was sent.
   EXPECT_CALL(observer_,
@@ -296,9 +316,10 @@ TEST_F(WebDataServiceAutofillTest, ProfileRemove) {
   done_event_.TimedWait(kWebDataServiceTimeout);
 
   // Check that it was removed.
-  AutofillWebDataServiceWaiter<std::vector<AutofillProfile>> consumer2;
-  wds_->GetAutofillProfiles(&consumer2);
-  ASSERT_TRUE(consumer2.result().empty());
+  WebDataServiceRequestFuture consumer2;
+  wds_->GetAutofillProfiles(consumer2.GetCallback());
+  EXPECT_THAT(consumer2.Get<1>(),
+              ValueOfWDResult<std::vector<AutofillProfile>>(IsEmpty()));
 }
 
 TEST_F(WebDataServiceAutofillTest, ProfileUpdate) {
@@ -319,9 +340,10 @@ TEST_F(WebDataServiceAutofillTest, ProfileUpdate) {
   done_event_.TimedWait(kWebDataServiceTimeout);
 
   // Check that they were added.
-  AutofillWebDataServiceWaiter<std::vector<AutofillProfile>> consumer;
-  wds_->GetAutofillProfiles(&consumer);
-  EXPECT_THAT(consumer.result(), UnorderedElementsAre(profile1, profile2));
+  WebDataServiceRequestFuture consumer;
+  wds_->GetAutofillProfiles(consumer.GetCallback());
+  EXPECT_THAT(consumer.Get<1>(), ValueOfWDResult<std::vector<AutofillProfile>>(
+                                     UnorderedElementsAre(profile1, profile2)));
 
   AutofillProfile profile2_changed(profile2);
   profile2_changed.SetRawInfo(NAME_FIRST, u"Bill");
@@ -335,10 +357,11 @@ TEST_F(WebDataServiceAutofillTest, ProfileUpdate) {
   done_event_.TimedWait(kWebDataServiceTimeout);
 
   // Check that the updates were made.
-  AutofillWebDataServiceWaiter<std::vector<AutofillProfile>> consumer2;
-  wds_->GetAutofillProfiles(&consumer2);
-  EXPECT_THAT(consumer2.result(),
-              UnorderedElementsAre(profile1, profile2_changed));
+  WebDataServiceRequestFuture consumer2;
+  wds_->GetAutofillProfiles(consumer2.GetCallback());
+  EXPECT_THAT(consumer2.Get<1>(),
+              ValueOfWDResult<std::vector<AutofillProfile>>(
+                  UnorderedElementsAre(profile1, profile2_changed)));
 }
 
 TEST_F(WebDataServiceAutofillTest, CreditAdd) {

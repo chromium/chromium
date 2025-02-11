@@ -25,7 +25,7 @@ namespace autofill {
 // their own EntityDataManager instance, they use the same underlying database.
 // Therefore, it is the responsibility of the callers to ensure that no data
 // from an incognito session is persisted unintentionally.
-class EntityDataManager : public KeyedService, public WebDataServiceConsumer {
+class EntityDataManager : public KeyedService {
  public:
   using LoadCallback = base::OnceCallback<void(std::vector<EntityInstance>)>;
 
@@ -50,20 +50,12 @@ class EntityDataManager : public KeyedService, public WebDataServiceConsumer {
   // unsuccessful, `cb` is called with an empty vector.
   virtual void LoadEntityInstances(LoadCallback cb);
 
- protected:
-  void RegisterPendingQuery(WebDataServiceBase::Handle handle, LoadCallback cb);
-
-  // WebDataServiceConsumer:
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle handle,
-      std::unique_ptr<WDTypedResult> result) override;
-
  private:
   // Non-null except perhaps in TestEntityDataManager, which overrides all
   // functions that access .
   const scoped_refptr<AutofillWebDataService> webdata_service_;
 
-  std::map<WebDataServiceBase::Handle, LoadCallback> pending_queries_;
+  base::WeakPtrFactory<EntityDataManager> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

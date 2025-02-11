@@ -87,11 +87,10 @@ class AutofillWebDataService : public WebDataServiceBase {
       const std::string& guid,
       base::OnceCallback<void(const AutofillProfileChange&)> on_success);
 
-  // Initiates the request for Autofill profiles. The method
-  // OnWebDataServiceRequestDone of |consumer| gets called when the request is
-  // finished, with the profiles included in the argument |result|.
+  // Initiates the request for Autofill profiles. The profiles are passed to the
+  // `consumer` callback.
   WebDataServiceBase::Handle GetAutofillProfiles(
-      WebDataServiceConsumer* consumer);
+      WebDataServiceRequestCallback consumer);
 
   // Asynchronously adds, updates, removes, or retrieves EntityInstances.
   // See the identically named functions in `EntityTable`, especially on why
@@ -102,7 +101,7 @@ class AutofillWebDataService : public WebDataServiceBase {
   void RemoveEntityInstancesModifiedBetween(base::Time delete_begin,
                                             base::Time delete_end);
   WebDataServiceBase::Handle GetEntityInstances(
-      WebDataServiceConsumer* consumer);
+      WebDataServiceRequestCallback consumer);
 
   // Schedules a task to count the number of unique autofill values contained
   // in the time interval [|begin|, |end|). |begin| and |end| can be null

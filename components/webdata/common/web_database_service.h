@@ -22,6 +22,7 @@
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/webdata/common/web_data_service_base.h"
+#include "components/webdata/common/web_data_service_consumer.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/webdata_export.h"
 
@@ -37,7 +38,6 @@ class OSCryptAsync;
 }
 
 class WDTypedResult;
-class WebDataServiceConsumer;
 
 namespace features {
 WEBDATA_EXPORT BASE_DECLARE_FEATURE(kUseNewEncryptionKeyForWebData);
@@ -106,10 +106,18 @@ class WEBDATA_EXPORT WebDatabaseService
   // Schedule a read task on the DB sequence.
   // Retrieves a WeakPtr to the |consumer| so that |consumer| does not have to
   // outlive the `WebDatabaseService`.
+  //
+  // This function is deprecated. Use ScheduleDBTaskWithResult() instead.
   WebDataServiceBase::Handle ScheduleDBTaskWithResult(
       const base::Location& from_here,
       ReadTask task,
       WebDataServiceConsumer* consumer);
+
+  // Schedule a read task on the DB sequence.
+  WebDataServiceBase::Handle ScheduleDBTaskWithResult(
+      const base::Location& from_here,
+      ReadTask task,
+      WebDataServiceRequestCallback consumer);
 
   // Cancel an existing request for a task on the DB sequence.
   // TODO(caitkp): Think about moving the definition of the Handle type to

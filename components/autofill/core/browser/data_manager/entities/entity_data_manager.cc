@@ -12,12 +12,7 @@ EntityDataManager::EntityDataManager(
     scoped_refptr<AutofillWebDataService> webdata_service)
     : webdata_service_(std::move(webdata_service)) {}
 
-EntityDataManager::~EntityDataManager() {
-  for (auto& [handle, callback] : std::exchange(pending_queries_, {})) {
-    webdata_service_->CancelRequest(handle);
-    std::move(callback).Run({});
-  }
-}
+EntityDataManager::~EntityDataManager() = default;
 
 void EntityDataManager::AddEntityInstance(const EntityInstance& entity) {
   webdata_service_->AddEntityInstance(entity);
@@ -32,29 +27,19 @@ void EntityDataManager::RemoveEntityInstance(const base::Uuid& guid) {
 }
 
 void EntityDataManager::LoadEntityInstances(LoadCallback cb) {
-  RegisterPendingQuery(webdata_service_->GetEntityInstances(this),
-                       std::move(cb));
-}
-
-void EntityDataManager::RegisterPendingQuery(WebDataServiceBase::Handle handle,
-                                             LoadCallback cb) {
-  LoadCallback& slot = pending_queries_[handle];
-  CHECK(!slot);
-  slot = std::move(cb);
-}
-
-void EntityDataManager::OnWebDataServiceRequestDone(
-    WebDataServiceBase::Handle handle,
-    std::unique_ptr<WDTypedResult> result) {
-  std::vector<EntityInstance> entities;
-  if (result) {
-    CHECK_EQ(result->GetType(), AUTOFILL_ENTITY_INSTANCE_RESULT);
-    entities = static_cast<WDResult<std::vector<EntityInstance>>*>(result.get())
-                   ->GetValue();
-  }
-  auto nh = pending_queries_.extract(handle);
-  CHECK(!nh.empty());
-  std::move(nh.mapped()).Run(std::move(entities));
+  webdata_service_->GetEntityInstances(base::BindOnce(
+      [](LoadCallback cb, WebDataServiceBase::Handle handle,
+         std::unique_ptr<WDTypedResult> result) {
+        std::vector<EntityInstance> entities;
+        if (result) {
+          CHECK_EQ(result->GetType(), AUTOFILL_ENTITY_INSTANCE_RESULT);
+          entities =
+              static_cast<WDResult<std::vector<EntityInstance>>*>(result.get())
+                  ->GetValue();
+        }
+        std::move(cb).Run(std::move(entities));
+      },
+      std::move(cb)));
 }
 
 }  // namespace autofill
