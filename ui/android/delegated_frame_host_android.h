@@ -168,6 +168,9 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   // Called when the page has just entered BFCache.
   void DidEnterBackForwardCache();
 
+  // Called when the page was activated from BFCache.
+  void ActivatedOrEvictedFromBackForwardCache();
+
   viz::SurfaceId GetFallbackSurfaceIdForTesting() const;
 
   viz::SurfaceId GetCurrentSurfaceIdForTesting() const;
@@ -177,6 +180,8 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   }
 
   viz::SurfaceId GetFirstSurfaceIdAfterNavigationForTesting() const;
+
+  viz::SurfaceId GetBFCacheFallbackSurfaceIdForTesting() const;
 
   void SetIsFrameSinkIdOwner(bool is_owner);
 

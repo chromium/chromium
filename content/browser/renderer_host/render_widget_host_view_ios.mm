@@ -439,6 +439,10 @@ void RenderWidgetHostViewIOS::DidEnterBackForwardCache() {
   host()->ForceFirstFrameAfterNavigationTimeout();
 }
 
+void RenderWidgetHostViewIOS::ActivatedOrEvictedFromBackForwardCache() {
+  browser_compositor_->ActivatedOrEvictedFromBackForwardCache();
+}
+
 void RenderWidgetHostViewIOS::DidNavigate() {
   browser_compositor_->DidNavigate();
 }
