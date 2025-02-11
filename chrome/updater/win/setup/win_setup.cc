@@ -149,8 +149,12 @@ int Setup(UpdaterScope scope) {
                              install_list.get());
   }
 
-  install_list->AddWorkItem(
-      new RegisterWakeTaskWorkItem(run_updater_wake_command, scope));
+  WorkItem* register_wake_task =
+      new RegisterWakeTaskWorkItem(run_updater_wake_command, scope);
+
+  // Updater installs even if the task scheduler wake task creation fails.
+  register_wake_task->set_best_effort(true);
+  install_list->AddWorkItem(register_wake_task);
 
   if (!install_list->Do()) {
     LOG(ERROR) << "Install failed, rolling back...";
