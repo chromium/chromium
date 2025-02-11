@@ -1376,23 +1376,25 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
           eventFlags:0];
 }
 
-// Support for Services in context menus.
-// Currently we only support reading and writing plain strings.
 - (id)validRequestorForSendType:(NSString*)sendType
                      returnType:(NSString*)returnType {
   UTType* sendUTType = ui::UTTypeForServicesType(sendType);
-  UTType* returnUTType = ui::UTTypeForServicesType(returnType);
-  BOOL canWrite = [sendUTType isEqual:UTTypeUTF8PlainText] &&
-                  [self selectedRange].length > 0;
-  BOOL canRead = [returnUTType isEqual:UTTypeUTF8PlainText];
-  // Valid if (sendUTType, returnUTType) is either (text, nil), (nil, text),
-  // or (text, text).
-  BOOL valid =
-      [self hasTextInputClient] && ((canWrite && (canRead || !returnUTType)) ||
-                                    (canRead && (canWrite || !sendUTType)));
-  return valid
-             ? self
-             : [super validRequestorForSendType:sendType returnType:returnType];
+  UTType* acceptUTType = ui::UTTypeForServicesType(returnType);
+
+  const BOOL hasTextInputClient = [self hasTextInputClient];
+  const BOOL canSendText = [sendUTType isEqual:UTTypeUTF8PlainText] &&
+                           hasTextInputClient &&
+                           [self selectedRange].length > 0;
+  const BOOL canAcceptText =
+      [acceptUTType isEqual:UTTypeUTF8PlainText] && hasTextInputClient;
+
+  // This is a valid requestor if the send/accept types can be fulfilled or if
+  // they are `nil` (and therefore not the wrong type).
+  if ((canSendText && !acceptUTType) || (!sendUTType && canAcceptText) ||
+      (canSendText && canAcceptText)) {
+    return self;
+  }
+  return [super validRequestorForSendType:sendType returnType:returnType];
 }
 
 // NSServicesMenuRequestor protocol
