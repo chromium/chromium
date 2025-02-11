@@ -96,8 +96,13 @@ class MockObserver : public AccountProfileMapper::Observer {
   ~MockObserver() override = default;
 
   MOCK_METHOD(void, OnIdentitiesInProfileChanged, (), (override));
+  MOCK_METHOD(void, OnIdentitiesOnDeviceChanged, (), (override));
   MOCK_METHOD(void,
               OnIdentityInProfileUpdated,
+              (id<SystemIdentity>),
+              (override));
+  MOCK_METHOD(void,
+              OnIdentityOnDeviceUpdated,
               (id<SystemIdentity>),
               (override));
   MOCK_METHOD(void,
@@ -383,8 +388,9 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest, NoIdentity) {
   account_profile_mapper_->RemoveObserver(&mock_observer, kPersonalProfileName);
 }
 
-// Tests that `OnIdentitiesInProfileChanged()` is called on the appropriate
-// profile when identities are added/removed.
+// Tests that `OnIdentitiesInProfileChanged()` and
+// `OnIdentitiesOnDeviceChanged()` are called on the appropriate profile(s) when
+// identities are added/removed.
 TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
        IdentityListNotification) {
   // Separate profiles are only available in iOS 17+.
@@ -411,9 +417,11 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
 
   // The matching observer (for the personal profile) should get notified.
   EXPECT_CALL(mock_personal_observer, OnIdentitiesInProfileChanged());
+  EXPECT_CALL(mock_personal_observer, OnIdentitiesOnDeviceChanged());
   system_identity_manager_->AddIdentity(gmail_identity1);
 
-  // *Only* the matching observer should get notified.
+  // *Only* the matching observer should get notified about
+  // identities-in-profile changes.
   testing::StrictMock<MockObserver> mock_test1_observer;
   account_profile_mapper_->AddObserver(&mock_test1_observer, kTestProfile1Name);
   testing::StrictMock<MockObserver> mock_test2_observer;
@@ -422,6 +430,10 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   EXPECT_CALL(mock_personal_observer, OnIdentitiesInProfileChanged());
   EXPECT_CALL(mock_test1_observer, OnIdentitiesInProfileChanged()).Times(0);
   EXPECT_CALL(mock_test2_observer, OnIdentitiesInProfileChanged()).Times(0);
+  // But all observers should get notified about identities-on-device changes.
+  EXPECT_CALL(mock_personal_observer, OnIdentitiesOnDeviceChanged());
+  EXPECT_CALL(mock_test1_observer, OnIdentitiesOnDeviceChanged());
+  EXPECT_CALL(mock_test2_observer, OnIdentitiesOnDeviceChanged());
   system_identity_manager_->AddIdentity(gmail_identity2);
 }
 
@@ -449,6 +461,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
                                        kTestProfile1Name);
 
   EXPECT_CALL(mock_personal_observer, OnIdentitiesInProfileChanged());
+  EXPECT_CALL(mock_personal_observer, OnIdentitiesOnDeviceChanged());
+  EXPECT_CALL(mock_profile1_observer, OnIdentitiesOnDeviceChanged());
   system_identity_manager_->AddIdentity(gmail_identity1);
   EXPECT_CALL(mock_personal_observer,
               OnIdentityRefreshTokenUpdated(gmail_identity1));
@@ -472,6 +486,7 @@ TEST_F(AccountProfileMapperAccountsInSingleProfileTest,
                                        kPersonalProfileName);
 
   EXPECT_CALL(mock_personal_observer, OnIdentitiesInProfileChanged());
+  EXPECT_CALL(mock_personal_observer, OnIdentitiesOnDeviceChanged());
   system_identity_manager_->AddIdentity(gmail_identity1);
   EXPECT_CALL(mock_personal_observer,
               OnIdentityRefreshTokenUpdated(gmail_identity1));
@@ -501,13 +516,17 @@ TEST_F(AccountProfileMapperAccountsInSingleProfileTest,
 
   // Identity events should be forwarded to all observers.
   EXPECT_CALL(mock_observer0, OnIdentitiesInProfileChanged()).Times(3);
+  EXPECT_CALL(mock_observer0, OnIdentitiesOnDeviceChanged()).Times(3);
   EXPECT_CALL(mock_observer1, OnIdentitiesInProfileChanged()).Times(3);
+  EXPECT_CALL(mock_observer1, OnIdentitiesOnDeviceChanged()).Times(3);
   system_identity_manager_->AddIdentity(gmail_identity1);
   system_identity_manager_->AddIdentity(gmail_identity2);
   system_identity_manager_->AddIdentity(google_identity);
 
   EXPECT_CALL(mock_observer0, OnIdentityInProfileUpdated(gmail_identity1));
+  EXPECT_CALL(mock_observer0, OnIdentityOnDeviceUpdated(gmail_identity1));
   EXPECT_CALL(mock_observer1, OnIdentityInProfileUpdated(gmail_identity1));
+  EXPECT_CALL(mock_observer1, OnIdentityOnDeviceUpdated(gmail_identity1));
   system_identity_manager_->FireIdentityUpdatedNotification(gmail_identity1);
 
   // All identities should be visible in all profiles.
@@ -518,8 +537,10 @@ TEST_F(AccountProfileMapperAccountsInSingleProfileTest,
   EXPECT_NSEQ(expected_identities, GetIdentitiesForProfile(kTestProfile1Name));
 
   // Remove an identity; this should also apply to all profiles.
-  EXPECT_CALL(mock_observer0, OnIdentitiesInProfileChanged()).Times(1);
-  EXPECT_CALL(mock_observer1, OnIdentitiesInProfileChanged()).Times(1);
+  EXPECT_CALL(mock_observer0, OnIdentitiesInProfileChanged());
+  EXPECT_CALL(mock_observer0, OnIdentitiesOnDeviceChanged());
+  EXPECT_CALL(mock_observer1, OnIdentitiesInProfileChanged());
+  EXPECT_CALL(mock_observer1, OnIdentitiesOnDeviceChanged());
   base::RunLoop run_loop;
   system_identity_manager_->ForgetIdentity(
       gmail_identity2, base::BindOnce(
@@ -555,9 +576,11 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   testing::StrictMock<MockObserver> mock_observer;
   account_profile_mapper_->AddObserver(&mock_observer, kPersonalProfileName);
 
-  EXPECT_CALL(mock_observer, OnIdentitiesInProfileChanged()).Times(1);
+  EXPECT_CALL(mock_observer, OnIdentitiesInProfileChanged());
+  EXPECT_CALL(mock_observer, OnIdentitiesOnDeviceChanged());
   system_identity_manager_->AddIdentity(gmail_identity1);
-  EXPECT_CALL(mock_observer, OnIdentitiesInProfileChanged()).Times(1);
+  EXPECT_CALL(mock_observer, OnIdentitiesInProfileChanged());
+  EXPECT_CALL(mock_observer, OnIdentitiesOnDeviceChanged());
   system_identity_manager_->AddIdentity(gmail_identity2);
 
   NSArray* expected_identities = @[ gmail_identity1, gmail_identity2 ];
@@ -585,12 +608,16 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   account_profile_mapper_->AddObserver(&mock_observer_personal,
                                        kPersonalProfileName);
 
-  EXPECT_CALL(mock_observer_personal, OnIdentitiesInProfileChanged()).Times(1);
+  EXPECT_CALL(mock_observer_personal, OnIdentitiesInProfileChanged());
+  EXPECT_CALL(mock_observer_personal, OnIdentitiesOnDeviceChanged());
   system_identity_manager_->AddIdentity(gmail_identity1);
-  EXPECT_CALL(mock_observer_personal, OnIdentitiesInProfileChanged()).Times(1);
+  EXPECT_CALL(mock_observer_personal, OnIdentitiesInProfileChanged());
+  EXPECT_CALL(mock_observer_personal, OnIdentitiesOnDeviceChanged());
   system_identity_manager_->AddIdentity(gmail_identity2);
 
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
+  EXPECT_CALL(mock_observer_personal, OnIdentitiesInProfileChanged()).Times(0);
+  EXPECT_CALL(mock_observer_personal, OnIdentitiesOnDeviceChanged());
   system_identity_manager_->AddIdentity(google_identity);
   // A new enterprise profile should've been registered.
   EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
@@ -604,13 +631,22 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   account_profile_mapper_->AddObserver(&mock_observer_managed,
                                        managed_profile_name);
 
-  // Ensure identity events get forwarded (only) to the appropriate observer.
+  // Ensure identity-in-profile events get forwarded (only) to the appropriate
+  // observer, while identity-on-device events get forwarded to all observers.
   EXPECT_CALL(mock_observer_personal,
               OnIdentityInProfileUpdated(gmail_identity2));
+  EXPECT_CALL(mock_observer_personal,
+              OnIdentityOnDeviceUpdated(gmail_identity2));
+  EXPECT_CALL(mock_observer_managed,
+              OnIdentityOnDeviceUpdated(gmail_identity2));
   system_identity_manager_->FireIdentityUpdatedNotification(gmail_identity2);
 
   EXPECT_CALL(mock_observer_managed,
               OnIdentityInProfileUpdated(google_identity));
+  EXPECT_CALL(mock_observer_managed,
+              OnIdentityOnDeviceUpdated(google_identity));
+  EXPECT_CALL(mock_observer_personal,
+              OnIdentityOnDeviceUpdated(google_identity));
   system_identity_manager_->FireIdentityUpdatedNotification(google_identity);
 
   // Verify the assignment of identities to profiles.
@@ -642,14 +678,18 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   account_profile_mapper_->AddObserver(&mock_observer_personal,
                                        kPersonalProfileName);
 
-  EXPECT_CALL(mock_observer_personal, OnIdentitiesInProfileChanged()).Times(1);
+  EXPECT_CALL(mock_observer_personal, OnIdentitiesInProfileChanged());
+  EXPECT_CALL(mock_observer_personal, OnIdentitiesOnDeviceChanged());
   system_identity_manager_->AddIdentity(gmail_identity1);
-  EXPECT_CALL(mock_observer_personal, OnIdentitiesInProfileChanged()).Times(1);
+  EXPECT_CALL(mock_observer_personal, OnIdentitiesInProfileChanged());
+  EXPECT_CALL(mock_observer_personal, OnIdentitiesOnDeviceChanged());
   system_identity_manager_->AddIdentity(gmail_identity2);
 
   // Add a managed identity. This should trigger the registration of a new
   // profile.
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
+  EXPECT_CALL(mock_observer_personal, OnIdentitiesInProfileChanged()).Times(0);
+  EXPECT_CALL(mock_observer_personal, OnIdentitiesOnDeviceChanged());
   system_identity_manager_->AddIdentity(google_identity);
   // A new enterprise profile should've been registered.
   EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
@@ -666,6 +706,9 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   // Add another managed identity. This should again trigger the registration of
   // a new profile.
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
+  EXPECT_CALL(mock_observer_personal, OnIdentitiesInProfileChanged()).Times(0);
+  EXPECT_CALL(mock_observer_personal, OnIdentitiesOnDeviceChanged());
+  EXPECT_CALL(mock_observer_managed1, OnIdentitiesOnDeviceChanged());
   system_identity_manager_->AddIdentity(chromium_identity);
   // A new enterprise profile should've been registered.
   EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 3u);
@@ -712,13 +755,17 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   testing::StrictMock<MockObserver> mock_observer_personal;
   account_profile_mapper_->AddObserver(&mock_observer_personal,
                                        kPersonalProfileName);
-  EXPECT_CALL(mock_observer_personal, OnIdentitiesInProfileChanged()).Times(1);
+  EXPECT_CALL(mock_observer_personal, OnIdentitiesInProfileChanged());
+  EXPECT_CALL(mock_observer_personal, OnIdentitiesOnDeviceChanged());
   system_identity_manager_->AddIdentity(gmail_identity1);
-  EXPECT_CALL(mock_observer_personal, OnIdentitiesInProfileChanged()).Times(1);
+  EXPECT_CALL(mock_observer_personal, OnIdentitiesInProfileChanged());
+  EXPECT_CALL(mock_observer_personal, OnIdentitiesOnDeviceChanged());
   system_identity_manager_->AddIdentity(gmail_identity2);
 
   // Add a managed identity. This should trigger the creation of a new profile.
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
+  EXPECT_CALL(mock_observer_personal, OnIdentitiesInProfileChanged()).Times(0);
+  EXPECT_CALL(mock_observer_personal, OnIdentitiesOnDeviceChanged());
   system_identity_manager_->AddIdentity(google_identity);
   // A new enterprise profile should've been registered.
   EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
@@ -734,8 +781,9 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
 
   // Remove a personal identity.
   {
-    EXPECT_CALL(mock_observer_personal, OnIdentitiesInProfileChanged())
-        .Times(1);
+    EXPECT_CALL(mock_observer_personal, OnIdentitiesInProfileChanged());
+    EXPECT_CALL(mock_observer_personal, OnIdentitiesOnDeviceChanged());
+    EXPECT_CALL(mock_observer_managed, OnIdentitiesOnDeviceChanged());
     base::RunLoop run_loop;
     system_identity_manager_->ForgetIdentity(
         gmail_identity2, base::BindOnce(
@@ -760,7 +808,9 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
 
   // Remove the managed identity.
   {
-    EXPECT_CALL(mock_observer_managed, OnIdentitiesInProfileChanged()).Times(1);
+    EXPECT_CALL(mock_observer_managed, OnIdentitiesInProfileChanged());
+    EXPECT_CALL(mock_observer_managed, OnIdentitiesOnDeviceChanged());
+    EXPECT_CALL(mock_observer_personal, OnIdentitiesOnDeviceChanged());
     base::RunLoop run_loop;
     system_identity_manager_->ForgetIdentity(
         google_identity, base::BindOnce(
