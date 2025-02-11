@@ -110,6 +110,7 @@ class ChangeFormSubmissionVerifier {
   std::unique_ptr<password_manager::PasswordFormManager> form_manager_;
 
   bool submission_detected_ = false;
+  bool password_filled_ = false;
 
   base::WeakPtrFactory<ChangeFormSubmissionVerifier> weak_ptr_factory_{this};
 };

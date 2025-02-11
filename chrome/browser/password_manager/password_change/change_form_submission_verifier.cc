@@ -125,6 +125,9 @@ void ChangeFormSubmissionVerifier::FillChangePasswordForm(
 
 void ChangeFormSubmissionVerifier::OnPasswordFormSubmission(
     content::WebContents* web_contents) {
+  if (!password_filled_) {
+    return;
+  }
   if (!web_contents_) {
     return;
   }
@@ -134,9 +137,7 @@ void ChangeFormSubmissionVerifier::OnPasswordFormSubmission(
   if (std::exchange(submission_detected_, true)) {
     return;
   }
-  RequestAXTree();
-  // Stop timer since submission has been detected.
-  timeout_timer_.Reset();
+  timeout_timer_.FireNow();
 }
 
 void ChangeFormSubmissionVerifier::SavePassword(
@@ -179,6 +180,7 @@ void ChangeFormSubmissionVerifier::ChangePasswordFormFilled(
     return;
   }
 
+  password_filled_ = true;
   form_manager_->ProvisionallySave(
       submitted_form, form_manager_->GetDriver().get(),
       base::LRUCache<password_manager::PossibleUsernameFieldIdentifier,
@@ -187,9 +189,13 @@ void ChangeFormSubmissionVerifier::ChangePasswordFormFilled(
 }
 
 void ChangeFormSubmissionVerifier::RequestAXTree() {
-  if (!web_contents_) {
+  // If browser didn't receive confirmation about change password form
+  // submission fail immediately.
+  if (!password_filled_ || !web_contents_) {
+    std::move(callback_).Run(false);
     return;
   }
+
   base::UmaHistogramBoolean(kPasswordChangeSubmittedHistogram,
                             submission_detected_);
   web_contents_->RequestAXTreeSnapshot(
