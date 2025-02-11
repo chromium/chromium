@@ -11,6 +11,7 @@ include_rules = [
   "+services/network/public/mojom",
   "+google_apis",
   "+services/network/test",
+  "+sql",
   "+mojo/public/cpp/base",
   "+third_party/private-join-and-compute/src",
   "+third_party/private-join-and-compute/base",
@@ -23,5 +24,6 @@ specific_include_rules = {
     "+third_party/abseil-cpp/absl/time/time.h",
     "+third_party/abseil-cpp/absl/status/statusor.h",
     "+third_party/abseil-cpp/absl/types/span.h",
+    "+third_party/sqlite/sqlite3.h",
   ]
 }
