@@ -44,6 +44,8 @@ build_webui("build") {
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [
+    "folder_node.css",
+    "toolbar.css",
     "shared_style.css",
     "shared_style_lit.css",
     "shared_vars.css",

@@ -166,7 +166,11 @@ export function canReorderChildren(
 }
 
 export function hasChildFolders(id: string, nodes: NodeMap): boolean {
-  const children = nodes[id]!.children!;
+  if (!nodes[id] || !nodes[id].children) {
+    return false;
+  }
+
+  const children = nodes[id].children;
   for (let i = 0; i < children.length; i++) {
     if (nodes[children[i]!]!.children) {
       return true;
