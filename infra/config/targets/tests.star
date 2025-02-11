@@ -3040,6 +3040,14 @@ targets.tests.gpu_telemetry_test(
 )
 
 targets.tests.gpu_telemetry_test(
+    name = "webgpu_cts_compat_min_es31_tests",
+    telemetry_test_name = "webgpu_compat_cts",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
     name = "webgpu_cts_fxc_tests",
     telemetry_test_name = "webgpu_cts",
     mixins = [
