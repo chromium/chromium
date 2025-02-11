@@ -65,7 +65,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -700,9 +699,6 @@ public class ToolbarPhoneTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.TOOLBAR_PHONE_CLEANUP
-                    + ":remove_redundant_ntpupdate_in_lbvisualupdate/true")
     @LargeTest
     public void testNtpAnimation_onGTSExit() {
         // Load NTP

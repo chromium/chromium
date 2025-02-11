@@ -557,7 +557,6 @@ public abstract class ChromeFeatureList {
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
     public static final String TILE_CONTEXT_MENU_REFACTOR = "TileContextMenuRefactor";
     public static final String TINKER_TANK_BOTTOM_SHEET = "TinkerTankBottomSheet";
-    public static final String TOOLBAR_PHONE_CLEANUP = "ToolbarPhoneCleanup";
     public static final String TOOLBAR_SCROLL_ABLATION = "AndroidToolbarScrollAblation";
     public static final String TRACE_BINDER_IPC = "TraceBinderIpc";
     public static final String TRACKING_PROTECTION_3PCD = "TrackingProtection3pcd";
@@ -1331,11 +1330,6 @@ public abstract class ChromeFeatureList {
                             TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH,
                             "activity_creation_timestamp_diff_threshold_ms",
                             1000);
-    public static final BooleanCachedFeatureParam sToolbarPhoneCleanupRefactorAnimations =
-            newBooleanCachedFeatureParam(TOOLBAR_PHONE_CLEANUP, "refactor_animations", true);
-    public static final BooleanCachedFeatureParam sToolbarPhoneCleanupRemoveRedundantAnimCall =
-            newBooleanCachedFeatureParam(
-                    TOOLBAR_PHONE_CLEANUP, "remove_redundant_ntpupdate_in_lbvisualupdate", true);
 
     /** Always register to push notification service. */
     public static final BooleanCachedFeatureParam sUseChimeAndroidSdkAlwaysRegister =
@@ -1412,8 +1406,6 @@ public abstract class ChromeFeatureList {
                     sTabResumptionModuleAndroidCombineTabs,
                     sTabStateFlatBufferMigrateStaleTabs,
                     sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs,
-                    sToolbarPhoneCleanupRefactorAnimations,
-                    sToolbarPhoneCleanupRemoveRedundantAnimCall,
                     sUseChimeAndroidSdkAlwaysRegister,
                     sWebApkMinShellApkVersionValue);
 
