@@ -127,8 +127,7 @@ OnDeviceExecution::OnDeviceExecution(
       last_message_(std::move(message)),
       histogram_logger_(std::move(logger)),
       callback_(std::move(callback)),
-      cleanup_callback_(std::move(cleanup_callback)),
-      receiver_(this) {
+      cleanup_callback_(std::move(cleanup_callback)) {
   log_.mutable_model_execution_info()
       ->mutable_on_device_model_execution_info()
       ->add_execution_infos();
@@ -209,10 +208,13 @@ void OnDeviceExecution::BeginExecution(OnDeviceContext& context,
   logged_request->set_execution_string(input->ToString());
   LogRequest(opts_.logger.get(), *logged_request);
 
-  auto options = on_device_model::mojom::InputOptions::New();
-  options->input = std::move(input->input);
-  options->max_tokens = opts_.token_limits.max_execute_tokens;
-  options->ignore_context = input->should_ignore_input_context;
+  auto append_options = on_device_model::mojom::AppendOptions::New();
+  append_options->input = std::move(input->input);
+  append_options->max_tokens = opts_.token_limits.max_execute_tokens;
+  session_->Append(std::move(append_options),
+                   context_receiver_.BindNewPipeAndPassRemote());
+
+  auto options = on_device_model::mojom::GenerateOptions::New();
   options->max_output_tokens = opts_.token_limits.max_output_tokens;
   options->top_k = sampling_params.top_k;
   options->temperature = sampling_params.temperature;
@@ -224,7 +226,7 @@ void OnDeviceExecution::BeginExecution(OnDeviceContext& context,
 }
 
 void OnDeviceExecution::OnRequestSafetyResult(
-    on_device_model::mojom::InputOptionsPtr options,
+    on_device_model::mojom::GenerateOptionsPtr options,
     SafetyChecker::Result safety_result) {
   if (safety_result.failed_to_run) {
     FallbackToRemote(Result::kFailedConstructingMessage);
@@ -250,8 +252,8 @@ void OnDeviceExecution::OnRequestSafetyResult(
 }
 
 void OnDeviceExecution::BeginRequestExecution(
-    on_device_model::mojom::InputOptionsPtr options) {
-  session_->Execute(std::move(options), receiver_.BindNewPipeAndPassRemote());
+    on_device_model::mojom::GenerateOptionsPtr options) {
+  session_->Generate(std::move(options), receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(base::BindOnce(
       &OnDeviceExecution::OnResponderDisconnect, base::Unretained(this)));
 }
@@ -310,11 +312,6 @@ void OnDeviceExecution::OnComplete(
   receiver_.reset();  // Suppress expected disconnect
 
   bool has_repeats = MutableLoggedResponse()->has_repeats();
-  // TODO(holte): Make input_token_count available earlier / in more cases.
-  if (!has_repeats) {
-    MutableLoggedRequest()->set_execution_num_tokens_processed(
-        summary->input_token_count);
-  }
 
   LogResponseHasRepeats(feature_, has_repeats);
   LogResponseCompleteTokens(feature_, num_response_tokens_);
@@ -329,6 +326,10 @@ void OnDeviceExecution::OnComplete(
   opts_.model_client->OnResponseCompleted();
 
   RunRawOutputSafetyCheck(ResponseCompleteness::kComplete);
+}
+
+void OnDeviceExecution::OnComplete(uint32_t tokens_processed) {
+  MutableLoggedRequest()->set_execution_num_tokens_processed(tokens_processed);
 }
 
 void OnDeviceExecution::OnResponderDisconnect() {
@@ -552,6 +553,7 @@ void OnDeviceExecution::Cleanup(bool healthy) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   session_.reset();
   receiver_.reset();
+  context_receiver_.reset();
   callback_.Reset();
   log_.Clear();
   current_response_.clear();

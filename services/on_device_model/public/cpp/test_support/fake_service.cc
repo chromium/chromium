@@ -41,7 +41,7 @@ std::string OnDeviceInputToString(const mojom::Input& input) {
   return oss.str();
 }
 
-std::string CtxToString(const mojom::InputOptions& input) {
+std::string CtxToString(const mojom::AppendOptions& input) {
   std::string suffix;
   std::string context = OnDeviceInputToString(*input.input);
   if (input.token_offset > 0) {
@@ -90,23 +90,35 @@ FakeOnDeviceSession::~FakeOnDeviceSession() = default;
 void FakeOnDeviceSession::AddContext(
     mojom::InputOptionsPtr input,
     mojo::PendingRemote<mojom::ContextClient> client) {
+  NOTREACHED();
+}
+
+void FakeOnDeviceSession::Append(
+    mojom::AppendOptionsPtr options,
+    mojo::PendingRemote<mojom::ContextClient> client) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&FakeOnDeviceSession::AddContextInternal,
-                                weak_factory_.GetWeakPtr(), std::move(input),
+      FROM_HERE, base::BindOnce(&FakeOnDeviceSession::AppendImpl,
+                                weak_factory_.GetWeakPtr(), std::move(options),
                                 std::move(client)));
 }
 
 void FakeOnDeviceSession::Execute(
     mojom::InputOptionsPtr input,
     mojo::PendingRemote<mojom::StreamingResponder> response) {
+  NOTREACHED();
+}
+
+void FakeOnDeviceSession::Generate(
+    mojom::GenerateOptionsPtr options,
+    mojo::PendingRemote<mojom::StreamingResponder> response) {
   if (settings_->execute_delay.is_zero()) {
-    ExecuteImpl(std::move(input), std::move(response));
+    GenerateImpl(std::move(options), std::move(response));
     return;
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&FakeOnDeviceSession::ExecuteImpl,
-                     weak_factory_.GetWeakPtr(), std::move(input),
+      base::BindOnce(&FakeOnDeviceSession::GenerateImpl,
+                     weak_factory_.GetWeakPtr(), std::move(options),
                      std::move(response)),
       settings_->execute_delay);
 }
@@ -130,8 +142,8 @@ void FakeOnDeviceSession::Clone(
   model_->AddSession(std::move(session), std::move(new_session));
 }
 
-void FakeOnDeviceSession::ExecuteImpl(
-    mojom::InputOptionsPtr input,
+void FakeOnDeviceSession::GenerateImpl(
+    mojom::GenerateOptionsPtr options,
     mojo::PendingRemote<mojom::StreamingResponder> response) {
   mojo::Remote<mojom::StreamingResponder> remote(std::move(response));
   if (model_->performance_hint() ==
@@ -151,21 +163,20 @@ void FakeOnDeviceSession::ExecuteImpl(
         "Adaptation model: " + model_->data().adaptation_model_weight + "\n";
     remote->OnResponse(std::move(chunk));
   }
-  for (const auto& context : context_) {
-    auto chunk = mojom::ResponseChunk::New();
-    chunk->text = "Context: " + CtxToString(*context) + "\n";
-    remote->OnResponse(std::move(chunk));
-  }
 
   if (settings_->model_execute_result.empty()) {
-    auto chunk = mojom::ResponseChunk::New();
-    chunk->text = "Input: " + OnDeviceInputToString(*input->input) + "\n";
-    if (input->top_k > 1) {
-      chunk->text += "TopK: " + base::NumberToString(*input->top_k) +
-                     ", Temp: " + base::NumberToString(*input->temperature) +
-                     "\n";
+    for (const auto& context : context_) {
+      auto chunk = mojom::ResponseChunk::New();
+      chunk->text = "Context: " + CtxToString(*context) + "\n";
+      remote->OnResponse(std::move(chunk));
     }
-    remote->OnResponse(std::move(chunk));
+    if (options->top_k > 1) {
+      auto chunk = mojom::ResponseChunk::New();
+      chunk->text += "TopK: " + base::NumberToString(*options->top_k) +
+                     ", Temp: " + base::NumberToString(*options->temperature) +
+                     "\n";
+      remote->OnResponse(std::move(chunk));
+    }
   } else {
     for (const auto& text : settings_->model_execute_result) {
       auto chunk = mojom::ResponseChunk::New();
@@ -177,16 +188,16 @@ void FakeOnDeviceSession::ExecuteImpl(
   remote->OnComplete(std::move(summary));
 }
 
-void FakeOnDeviceSession::AddContextInternal(
-    mojom::InputOptionsPtr input,
+void FakeOnDeviceSession::AppendImpl(
+    mojom::AppendOptionsPtr options,
     mojo::PendingRemote<mojom::ContextClient> client) {
   uint32_t input_tokens =
-      static_cast<uint32_t>(OnDeviceInputToString(*input->input).size());
+      static_cast<uint32_t>(OnDeviceInputToString(*options->input).size());
   uint32_t max_tokens =
-      input->max_tokens > 0 ? input->max_tokens : input_tokens;
-  uint32_t token_offset = input->token_offset;
+      options->max_tokens > 0 ? options->max_tokens : input_tokens;
+  uint32_t token_offset = options->token_offset;
   uint32_t tokens_processed = std::min(input_tokens - token_offset, max_tokens);
-  context_.emplace_back(std::move(input));
+  context_.emplace_back(std::move(options));
   if (client) {
     mojo::Remote<mojom::ContextClient> remote(std::move(client));
     remote->OnComplete(tokens_processed);

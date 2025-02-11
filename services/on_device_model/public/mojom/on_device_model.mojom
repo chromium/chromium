@@ -62,7 +62,8 @@ struct ResponseSummary {
   // Optional safety information computed against the full response.
   SafetyInfo? safety_info;
 
-  // The total number of input tokens from the call to Execute().
+  // Deprecated: Execute() is now deprecated and input should be passed through
+  // Append().
   uint32 input_token_count;
 
   // The total number of output tokens for this response.
@@ -191,18 +192,57 @@ struct InputOptions {
   float? temperature;
 };
 
+[Stable]
+struct AppendOptions {
+  // The input for the model.
+  Input input;
+
+  // The maximum number of tokens that should be processed. If zero, will
+  // process all tokens from this input.
+  uint32 max_tokens = 0;
+
+  // After text is tokenized, the offset into that vector to start processing.
+  // If zero, will start at the first token.
+  uint32 token_offset = 0;
+};
+
+[Stable]
+struct GenerateOptions {
+  // The maximum number of tokens that should be output from a call to
+  // Execute(). If zero, will output tokens until an end token or the maximum
+  // sequence length.
+  uint32 max_output_tokens = 0;
+
+  // These params control the output sampling. Higher `top_k` means more tokens
+  // are considered, higher `temperature` means less likely tokens are more
+  // probable.
+  // `top_k` should be a value from 1 to the max top K value the model was
+  // initialized with.
+  uint32? top_k;
+  // `temperature` should be a value greater than 0.0. Values above 1.0 may give
+  // poor results.
+  float? temperature;
+};
+
 // A session for a model that allows adding context and then executing an input
 // with that context.
 [Stable]
 interface Session {
-  // Adds context to this session. Any context added here will build off of
-  // previous calls to |AddContext()|.
+  // Deprecated: use Append() instead.
   AddContext@0(InputOptions input, pending_remote<ContextClient>? client);
+  // Appends input to this session. Any input added here will build off of
+  // previous calls to |Append()|. To cancel, close the |client| pipe.
+  [MinVersion=1]
+  Append@6(AppendOptions options, pending_remote<ContextClient>? client);
 
-  // Executes model on the given input. The input will be added on top of the
-  // context provided by |AddContext()|. The response will be streamed to
-  // |response|. To cancel the request, close the |response| pipe.
+  // Deprecated: use Generate() instead.
   Execute@1(InputOptions input, pending_remote<StreamingResponder> response);
+  // Generates output from the model on top of any input added from Append().
+  // The response will be streamed to |response|. To cancel the request, close
+  // the |response| pipe.
+  [MinVersion=1]
+  Generate@7(
+      GenerateOptions options, pending_remote<StreamingResponder> response);
 
   // Gets the size of the given text in tokens. Will return 0 if the text is
   // empty or error occurred.

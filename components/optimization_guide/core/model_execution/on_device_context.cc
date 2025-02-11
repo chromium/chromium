@@ -74,11 +74,11 @@ void OnDeviceContext::CloneSession(
 }
 
 void OnDeviceContext::AddContext() {
-  auto options = on_device_model::mojom::InputOptions::New();
+  auto options = on_device_model::mojom::AppendOptions::New();
   options->input = input_.Clone();
   options->max_tokens = opts_.token_limits.max_context_tokens;
   options->token_offset = 0;
-  session_->AddContext(std::move(options), client_.BindNewPipeAndPassRemote());
+  session_->Append(std::move(options), client_.BindNewPipeAndPassRemote());
 }
 
 void OnDeviceContext::OnComplete(uint32_t tokens_processed) {

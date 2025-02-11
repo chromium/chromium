@@ -221,12 +221,9 @@ bool SessionExecuteModel(ChromeMLSession session,
     OutputChunk("Adaptation: " + instance->adaptation_data_ + "\n");
   }
   if (!instance->context_.empty()) {
-    const std::string last = instance->context_.back();
-    instance->context_.pop_back();
     for (const std::string& context : instance->context_) {
       OutputChunk("Context: " + context + "\n");
     }
-    OutputChunk("Input: " + last + "\n");
   }
   OutputChunk("");
   return true;

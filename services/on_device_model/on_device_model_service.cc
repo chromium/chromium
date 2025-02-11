@@ -48,8 +48,13 @@ class SessionWrapper final : public mojom::Session {
 
   void AddContext(mojom::InputOptionsPtr input,
                   mojo::PendingRemote<mojom::ContextClient> client) override;
+  void Append(mojom::AppendOptionsPtr options,
+              mojo::PendingRemote<mojom::ContextClient> client) override;
   void Execute(
       mojom::InputOptionsPtr input,
+      mojo::PendingRemote<mojom::StreamingResponder> response) override;
+  void Generate(
+      mojom::GenerateOptionsPtr options,
       mojo::PendingRemote<mojom::StreamingResponder> response) override;
   void GetSizeInTokens(mojom::InputPtr input,
                        GetSizeInTokensCallback callback) override;
@@ -59,11 +64,11 @@ class SessionWrapper final : public mojom::Session {
   mojo::Receiver<mojom::Session>& receiver() { return receiver_; }
 
  private:
-  void AddContextInternal(mojom::InputOptionsPtr input,
-                          mojo::PendingRemote<mojom::ContextClient> client,
-                          base::OnceClosure on_complete) {
-    session_->AddContext(std::move(input), std::move(client),
-                         std::move(on_complete));
+  void AppendInternal(mojom::AppendOptionsPtr options,
+                      mojo::PendingRemote<mojom::ContextClient> client,
+                      base::OnceClosure on_complete) {
+    session_->Append(std::move(options), std::move(client),
+                     std::move(on_complete));
   }
 
   void ExecuteInternal(mojom::InputOptionsPtr input,
@@ -71,6 +76,13 @@ class SessionWrapper final : public mojom::Session {
                        base::OnceClosure on_complete) {
     session_->Execute(std::move(input), std::move(response),
                       std::move(on_complete));
+  }
+
+  void GenerateInternal(mojom::GenerateOptionsPtr input,
+                        mojo::PendingRemote<mojom::StreamingResponder> response,
+                        base::OnceClosure on_complete) {
+    session_->Generate(std::move(input), std::move(response),
+                       std::move(on_complete));
   }
 
   void GetSizeInTokensInternal(mojom::InputPtr input,
@@ -246,15 +258,24 @@ class ModelWrapper final : public mojom::OnDeviceModel {
 void SessionWrapper::AddContext(
     mojom::InputOptionsPtr input,
     mojo::PendingRemote<mojom::ContextClient> client) {
+  auto append_options = mojom::AppendOptions::New();
+  append_options->input = std::move(input->input);
+  append_options->max_tokens = input->max_tokens;
+  append_options->token_offset = input->token_offset;
+  Append(std::move(append_options), std::move(client));
+}
+
+void SessionWrapper::Append(mojom::AppendOptionsPtr options,
+                            mojo::PendingRemote<mojom::ContextClient> client) {
   if (!model_) {
     return;
   }
 
-  auto add_context_internal = base::BindOnce(
-      &SessionWrapper::AddContextInternal, weak_ptr_factory_.GetWeakPtr(),
-      std::move(input), std::move(client));
+  auto append_internal = base::BindOnce(&SessionWrapper::AppendInternal,
+                                        weak_ptr_factory_.GetWeakPtr(),
+                                        std::move(options), std::move(client));
 
-  model_->AddAndRunPendingTask(std::move(add_context_internal),
+  model_->AddAndRunPendingTask(std::move(append_internal),
                                weak_ptr_factory_.GetWeakPtr());
 }
 
@@ -270,6 +291,21 @@ void SessionWrapper::Execute(
                                          std::move(input), std::move(response));
 
   model_->AddAndRunPendingTask(std::move(execute_internal),
+                               weak_ptr_factory_.GetWeakPtr());
+}
+
+void SessionWrapper::Generate(
+    mojom::GenerateOptionsPtr options,
+    mojo::PendingRemote<mojom::StreamingResponder> response) {
+  if (!model_) {
+    return;
+  }
+
+  auto generate_internal = base::BindOnce(
+      &SessionWrapper::GenerateInternal, weak_ptr_factory_.GetWeakPtr(),
+      std::move(options), std::move(response));
+
+  model_->AddAndRunPendingTask(std::move(generate_internal),
                                weak_ptr_factory_.GetWeakPtr());
 }
 
