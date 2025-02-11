@@ -72,18 +72,21 @@ ChromeTailoredSecurityService::ChromeTailoredSecurityService(Profile* profile)
           profile_,
           prefs::kTailoredSecuritySyncFlowRetryState,
           prefs::kTailoredSecurityNextSyncFlowTimestamp,
+          kRetryAttemptStartupDelay,
           kRetryNextAttemptDelay,
+          kWaitingPeriodInterval,
           base::BindOnce(&ChromeTailoredSecurityService::
                              TailoredSecurityTimestampUpdateCallback,
                          base::Unretained(this)),
-          base::BindOnce(
-              &ChromeTailoredSecurityService::HistorySyncEnabledForUser,
-              base::Unretained(this)),
           "SafeBrowsing.TailoredSecurity.ShouldRetryOutcome",
           prefs::kAccountTailoredSecurityUpdateTimestamp,
           prefs::kEnhancedProtectionEnabledViaTailoredSecurity)) {
   AddObserver(this);
-  retry_handler_->MaybeStartRetryTimer();
+  if (HistorySyncEnabledForUser() &&
+      !SafeBrowsingPolicyHandler::IsSafeBrowsingProtectionLevelSetByPolicy(
+          prefs())) {
+    retry_handler_->StartRetryTimer();
+  }
 }
 
 ChromeTailoredSecurityService::~ChromeTailoredSecurityService() {
