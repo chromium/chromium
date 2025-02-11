@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/values_equivalent.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/themes/browser_theme_pack.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -24,6 +26,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/page_action/action_ids.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
@@ -300,8 +303,29 @@ bool AppBrowserController::HasTitlebarContentSettings() const {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-std::vector<PageActionIconType> AppBrowserController::GetTitleBarPageActions()
+std::vector<actions::ActionId> AppBrowserController::GetTitleBarPageActions()
     const {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (system_app()) {
+    return {};
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  std::vector<actions::ActionId> types_enabled = {
+      kActionShowTranslate,
+  };
+
+#if DCHECK_IS_ON()
+  for (auto action_id : types_enabled) {
+    DCHECK(base::Contains(page_actions::kActionIds, action_id));
+  }
+#endif
+
+  return types_enabled;
+}
+
+std::vector<PageActionIconType>
+AppBrowserController::GetTitleBarPageActionTypes() const {
 #if BUILDFLAG(IS_CHROMEOS)
   if (system_app()) {
     return {PageActionIconType::kFind, PageActionIconType::kZoom};

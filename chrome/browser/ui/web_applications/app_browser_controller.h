@@ -23,6 +23,7 @@
 #include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRegion.h"
+#include "ui/actions/action_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
 #include "url/gurl.h"
@@ -126,8 +127,13 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // Whether to show content settings in the titlebar toolbar.
   virtual bool HasTitlebarContentSettings() const;
 
-  // Returns which PageActionIconTypes should appear in the titlebar toolbar.
-  virtual std::vector<PageActionIconType> GetTitleBarPageActions() const;
+  // Returns which page actions which should should appear in the titlebar
+  // toolbar.
+  virtual std::vector<actions::ActionId> GetTitleBarPageActions() const;
+  // The page actions framework is currently undergoing a migration.
+  // This is method is used by the legacy framework and will be removed once
+  // the migration is complete.
+  virtual std::vector<PageActionIconType> GetTitleBarPageActionTypes() const;
 
   // Whether to show the Back and Refresh buttons in the web app toolbar.
   virtual bool HasMinimalUiButtons() const = 0;
