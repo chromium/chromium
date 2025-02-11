@@ -8,6 +8,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
+#include "third_party/omnibox_proto/entity_info.pb.h"
 
 AutocompleteMatch CreateAutocompleteMatch(std::string name,
                                           AutocompleteMatchType::Type type,
@@ -25,6 +26,10 @@ AutocompleteMatch CreateSearchMatch(std::u16string contents = u"text");
 AutocompleteMatch CreateStarterPackMatch(std::u16string keyword);
 
 AutocompleteMatch CreateFeaturedEnterpriseSearch(std::u16string keyword);
+
+AutocompleteMatch CreateActionInSuggestMatch(
+    std::u16string description,
+    std::vector<omnibox::ActionInfo::ActionType> action_types);
 
 AutocompleteMatch CreateSearchMatch(std::string name,
                                     bool allowed_to_be_default_match,
