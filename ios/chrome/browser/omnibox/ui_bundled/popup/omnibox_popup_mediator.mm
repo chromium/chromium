@@ -476,17 +476,17 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   }
 }
 
+/// Log action in suggest shown but not used for the current result.
 - (void)logActionsInSuggestShownForCurrentResult {
-  NSArray<id<AutocompleteSuggestion>>* allMatches =
-      [self extractMatches:self.autocompleteResult];
-
-  for (id<AutocompleteSuggestion> match in allMatches) {
-    if (match.actionsInSuggest.count == 0) {
-      continue;
-    }
-    for (SuggestAction* action in match.actionsInSuggest) {
-      OmniboxActionInSuggest::RecordShownAndUsedMetrics(action.type,
-                                                        false /* used */);
+  for (id<AutocompleteSuggestionGroup> group in self.nonPedalSuggestions) {
+    for (id<AutocompleteSuggestion> suggestion in group.suggestions) {
+      if (suggestion.actionsInSuggest.count == 0) {
+        continue;
+      }
+      for (SuggestAction* action in suggestion.actionsInSuggest) {
+        OmniboxActionInSuggest::RecordShownAndUsedMetrics(action.type,
+                                                          false /* used */);
+      }
     }
   }
 }
@@ -672,11 +672,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   self.preselectedGroupIndex = self.currentPedals ? MIN(1, groups.count) : 0;
 
   return groups;
-}
-
-- (const AutocompleteResult&)autocompleteResult {
-  DCHECK(self.autocompleteController);
-  return self.autocompleteController->result();
 }
 
 - (void)callActionTapped {

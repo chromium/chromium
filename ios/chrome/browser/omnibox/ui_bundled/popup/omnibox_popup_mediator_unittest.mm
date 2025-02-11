@@ -13,7 +13,10 @@
 #import "base/test/task_environment.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
+#import "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
+#import "components/omnibox/browser/autocomplete_match.h"
+#import "components/omnibox/browser/autocomplete_match_test_util.h"
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #import "components/omnibox/browser/mock_autocomplete_provider_client.h"
@@ -22,6 +25,7 @@
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_client.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/favicon_retriever.h"
@@ -127,6 +131,53 @@ TEST_F(OmniboxPopupMediatorTest, SelectManagePasswordSuggestionMetricLogged) {
   histogram_tester.ExpectBucketCount(
       "PasswordManager.ManagePasswordsReferrer",
       password_manager::ManagePasswordsReferrer::kOmniboxPedalSuggestion, 1);
+}
+
+// Tests action in suggestion shown logged when selecting a non-action
+// suggestion.
+TEST_F(OmniboxPopupMediatorTest, ActionInSuggestMetricLogged) {
+  ACMatches matches = {CreateActionInSuggestMatch(
+                           u"Action", {omnibox::ActionInfo_ActionType_REVIEWS}),
+                       CreateSearchMatch(u"Clear History"),
+                       CreateSearchMatch(u"search 1"),
+                       CreateSearchMatch(u"search 2")};
+  AutocompleteResult result = AutocompleteResult();
+  result.AppendMatches(matches);
+  [mediator_ popupController:nil didSortResults:result];
+
+  id<AutocompleteSuggestion> actionSuggestion =
+      mediator_.nonPedalSuggestions[0].suggestions[0];
+  EXPECT_EQ(actionSuggestion.actionsInSuggest.count, 1u);
+
+  id<AutocompleteSuggestion> nonActionSuggestion =
+      mediator_.nonPedalSuggestions[0].suggestions[1];
+  EXPECT_EQ(nonActionSuggestion.actionsInSuggest.count, 0u);
+
+  // Review type from ActionInSuggestType enum.
+  const int kActionTypeReview = 4;
+
+  base::HistogramTester histogram_tester;
+
+  histogram_tester.ExpectBucketCount("Omnibox.ActionInSuggest.Shown",
+                                     kActionTypeReview, 0);
+
+  // Select an action suggestion.
+  [mediator_ autocompleteResultConsumer:nil
+                    didSelectSuggestion:actionSuggestion
+                                  inRow:0];
+
+  // Expect Shown not logged when selecting an action.
+  histogram_tester.ExpectBucketCount("Omnibox.ActionInSuggest.Shown",
+                                     kActionTypeReview, 0);
+
+  // Select another suggestion.
+  [mediator_ autocompleteResultConsumer:nil
+                    didSelectSuggestion:nonActionSuggestion
+                                  inRow:1];
+
+  // Expect Shown logged.
+  histogram_tester.ExpectBucketCount("Omnibox.ActionInSuggest.Shown",
+                                     kActionTypeReview, 1);
 }
 
 }  // namespace
