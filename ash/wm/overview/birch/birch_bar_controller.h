@@ -23,11 +23,6 @@ class PrefRegistrySimple;
 
 namespace ash {
 
-inline constexpr char kUserFeedbackPrompt[] =
-    "Auto-generated logs:\n";
-
-inline constexpr char kMarkdownBackticks[] = "```";
-
 class BirchBarMenuModelAdapter;
 class BirchBarView;
 class BirchChipButton;

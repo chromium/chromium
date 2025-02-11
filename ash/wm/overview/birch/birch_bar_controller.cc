@@ -253,11 +253,8 @@ void BirchBarController::ProvideFeedbackForCoral() {
   }
   Shell::Get()->coral_controller()->OpenFeedbackDialog(
       /*group_description=*/
-      base::StrCat({kUserFeedbackPrompt, kMarkdownBackticks, "json\n",
-                    base::WriteJsonWithOptions(
-                        root, base::JSONWriter::OPTIONS_PRETTY_PRINT)
-                        .value_or(std::string()),
-                    "\n", kMarkdownBackticks}));
+      base::WriteJsonWithOptions(root, base::JSONWriter::OPTIONS_PRETTY_PRINT)
+          .value_or(std::string()));
 }
 
 void BirchBarController::ExecuteMenuCommand(int command_id, bool from_chip) {
