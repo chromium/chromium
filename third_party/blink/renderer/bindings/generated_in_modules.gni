@@ -3270,8 +3270,8 @@ generated_typedef_sources_in_modules = [
 generated_union_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_adproperties_adpropertiessequence.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_adproperties_adpropertiessequence.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_ailminitialpromptlinedict_ailmpromptcontentdict_string_string.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_ailminitialpromptlinedict_ailmpromptcontentdict_string_string.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_ailm_initial_prompt_line.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_ailm_initial_prompt_line.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_ailmpromptcontentdict_ailmpromptcontentdictorstringorailmpromptlinedictorstringsequence_ailmpromptlinedict_string_string.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_ailmpromptcontentdict_ailmpromptcontentdictorstringorailmpromptlinedictorstringsequence_ailmpromptlinedict_string_string.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_ailmpromptcontentdict_ailmpromptlinedict_string_string.cc",
