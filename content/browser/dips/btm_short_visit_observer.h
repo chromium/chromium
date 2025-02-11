@@ -24,9 +24,10 @@ namespace content {
 class CONTENT_EXPORT BtmShortVisitObserver
     : public content::WebContentsObserver {
  public:
-  explicit BtmShortVisitObserver(content::WebContents* web_contents,
-                                 const base::Clock* clock = nullptr);
+  explicit BtmShortVisitObserver(content::WebContents* web_contents);
   ~BtmShortVisitObserver() override;
+
+  static const base::Clock* SetDefaultClockForTesting(const base::Clock* clock);
 
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
