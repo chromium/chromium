@@ -83,6 +83,11 @@ HeadlessScreen::HeadlessScreen(const gfx::Size& window_size,
       display.UpdateWorkAreaFromInsets(it.work_area_insets);
     }
 
+    if (it.rotation) {
+      CHECK(display::Display::IsValidRotation(it.rotation));
+      display.SetRotationAsDegree(it.rotation);
+    }
+
     if (it.is_internal) {
       internal_display_ids.insert(display.id());
     }

@@ -683,6 +683,11 @@ HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     "--screen-info={600x800}")
 
 HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    ScreenRotationAngle,
+    "sanity/screen-rotation-angle.js",
+    "--screen-info={rotation=180}")
+
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     ScreenOrientationLockNaturalLandscape,
     "sanity/screen-orientation-lock-natural-landscape.js",
     "--screen-info={800x600}")

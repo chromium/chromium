@@ -23,6 +23,7 @@ struct HEADLESS_EXPORT HeadlessScreenInfo {
   float device_pixel_ratio = 1.0f;
   bool is_internal = false;
   std::string label;
+  int rotation = 0;
 
   bool operator==(const HeadlessScreenInfo& other) const;
 
@@ -37,12 +38,13 @@ struct HEADLESS_EXPORT HeadlessScreenInfo {
   // Available named parameters:
   //  colorDepth=24
   //  devicePixelRatio=1
-  //  isInternal=true
+  //  isInternal=0|1|false|true
   //  label='primary monitor'
   //  workAreaLeft=0
   //  workAreaRight=0
   //  workAreaTop=0
   //  workAreaBottom=0
+  //  rotation=0|90|180|270
   //
   // The first screen specified is assumed to be the primary screen. If origin
   // is omitted for a secondary screen it will be automatically calculated to
