@@ -1153,10 +1153,11 @@ void UpdateServiceImplImpl::InstallImpl(
     // registration is removed later if the app install encounters an error.
     config_->GetUpdaterPersistedData()->RegisterApp(registration);
   } else {
-    // Update ap.
+    // Update ap and iid.
     RegistrationRequest request;
     request.app_id = registration.app_id;
     request.ap = registration.ap;
+    request.install_id = registration.install_id;
     config_->GetUpdaterPersistedData()->RegisterApp(request);
   }
 

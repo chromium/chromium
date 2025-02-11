@@ -55,6 +55,22 @@ detect and properly represent any overinstallations of an application, which are
 done by users or third-party software on macOS (and don't otherwise interact
 with the updater).
 
+##### Install ID
+The tag may carry a unique identifier called an "install ID" or "iid". The
+install ID is transmitted back to the server as part of the install event
+associated with running the installer, and as part of the first update check
+for the app that reports activity. It is then deleted from the client. It is not
+sent as part of update event reports, nor as part of non-active update checks,
+nor as part of active update checks after the first.
+
+If a user runs an installer when the software is already installed, the install
+ID for the software will be updated to match, and the new value will be
+transmitted during the install event and the next active update check.
+
+The install ID is meant to enable the app distributor to correlate each
+installer's download with the outcome of running that particular installer, and
+whether or not the installed software is eventually actively used at least once.
+
 #### Elevation (Windows)
 The metainstaller parses its tag and re-launches itself at high integrity if
 it is being run at medium integrity with UAC on and installing an application
