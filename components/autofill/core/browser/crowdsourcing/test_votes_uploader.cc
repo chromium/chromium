@@ -62,10 +62,12 @@ bool TestVotesUploader::MaybeStartVoteUploadProcess(
     base::TimeTicks initial_interaction_timestamp,
     const std::u16string& last_unlocked_credit_card_cvc,
     ukm::SourceId ukm_source_id) {
+  FormStructure* form_ptr = form.get();
   if (VotesUploader::MaybeStartVoteUploadProcess(
           std::move(form), observed_submission, current_page_language,
           initial_interaction_timestamp, last_unlocked_credit_card_cvc,
           ukm_source_id)) {
+    last_uploaded_form_associations_ = form_ptr->form_associations();
     // The purpose of this runloop is to ensure that the field type
     // determination finishes.
     base::RunLoop run_loop;

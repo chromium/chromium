@@ -841,17 +841,6 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
         }
 
         submitted_form->set_submission_source(source);
-        if (submitted_form->IsAutofillable()) {
-          // Associate the form signatures of recently submitted
-          // address/credit card forms to `submitted_form`, if it is an
-          // address/credit card form itself. This information is attached to
-          // the vote.
-          if (std::optional<FormStructure::FormAssociations> associations =
-                  client->GetFormDataImporter()->GetFormAssociations(
-                      submitted_form->form_signature())) {
-            submitted_form->set_form_associations(*associations);
-          }
-        }
 
         if (manager) {
           manager->LogSubmissionMetrics(submitted_form.get(),

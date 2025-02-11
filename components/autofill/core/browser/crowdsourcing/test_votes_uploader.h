@@ -63,9 +63,15 @@ class TestVotesUploader : public VotesUploader {
     expected_observed_submission_ = expected;
   }
 
+  const FormStructure::FormAssociations& get_last_uploaded_form_associations()
+      const {
+    return last_uploaded_form_associations_;
+  }
+
  private:
   friend class TestBrowserAutofillManager;
 
+  FormStructure::FormAssociations last_uploaded_form_associations_;
   std::string submitted_form_signature_;
   std::optional<bool> expected_observed_submission_;
   std::vector<FieldTypeSet> expected_submitted_field_types_;

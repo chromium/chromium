@@ -159,6 +159,7 @@ using ::testing::Matcher;
 using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::Not;
+using ::testing::Optional;
 using ::testing::Property;
 using ::testing::Ref;
 using ::testing::Return;
@@ -7573,6 +7574,88 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_THAT(suggestions[0],
               EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
                                address_home_line1));
+}
+
+// Tests that the form signatures of import-worthy forms submitted shortly after
+// another (within a 5 minutes time window) are set accordingly in their form
+// associations. Regression test for crbug.com/395812863.
+TEST_F(BrowserAutofillManagerTest,
+       FormAssociationSetOnFilledAndSubmittedForms) {
+  // The `url` of the forms created in this test. Forms need to share the same
+  // origin to be associated with each other.
+  const GURL url = GURL("https://myform.com/form.html");
+  // Used for setting `unique_id` in `CreateTestAddressFormData()` that will
+  // make the form's signature unique.
+  size_t address_form_unique_id = 0;
+  // Creates an address or credit card form, fills and submits it. Lastly,
+  // returns a pointer to the `FormStructure`.
+  auto create_fill_submit_and_find_cached_form =
+      [this, &url,
+       &address_form_unique_id](bool is_credit_card_form) -> FormStructure* {
+    FormData form =
+        is_credit_card_form
+            ? CreateTestCreditCardFormData(/*is_https=*/true,
+                                           /*use_month_type=*/false)
+            : CreateTestAddressFormData(
+                  base::NumberToString(++address_form_unique_id).c_str());
+    form.set_url(url);
+    form.set_main_frame_origin(url::Origin::Create(url));
+
+    FormsSeen({form});
+
+    FormData filled_form = FillAutofillFormDataAndGetResults(
+        form, form.fields()[0],
+        is_credit_card_form ? MakeGuid(4) : kElvisProfileGuid);
+
+    FormSubmitted(filled_form);
+
+    return manager().FindCachedFormById(filled_form.global_id());
+  };
+
+  const FormStructure::FormAssociations& last_uploaded_form_associations =
+      client().GetVotesUploader().get_last_uploaded_form_associations();
+
+  // After the `first_address_form` was submitted, expect that its form
+  // signature is set to the `last_address_form_submitted` on its form
+  // associations.
+  FormStructure* first_address_form =
+      create_fill_submit_and_find_cached_form(/*is_credit_card_form=*/false);
+  ASSERT_TRUE(first_address_form);
+  EXPECT_THAT(last_uploaded_form_associations.last_address_form_submitted,
+              Optional(first_address_form->form_signature()));
+  EXPECT_EQ(last_uploaded_form_associations.second_last_address_form_submitted,
+            std::nullopt);
+  EXPECT_EQ(last_uploaded_form_associations.last_credit_card_form_submitted,
+            std::nullopt);
+
+  // After the `second_address_form` was submitted, expect that its form
+  // signature is set to the `last_address_form_submitted` on its form
+  // associations. The signature of the `first_address_form` is expected to be
+  // the `second_last_address_form_signature` now.
+  FormStructure* second_address_form =
+      create_fill_submit_and_find_cached_form(/*is_credit_card_form=*/false);
+  ASSERT_TRUE(second_address_form);
+  EXPECT_THAT(last_uploaded_form_associations.last_address_form_submitted,
+              Optional(second_address_form->form_signature()));
+  EXPECT_THAT(
+      last_uploaded_form_associations.second_last_address_form_submitted,
+      Optional(first_address_form->form_signature()));
+  EXPECT_EQ(last_uploaded_form_associations.last_credit_card_form_submitted,
+            std::nullopt);
+
+  // Expect that `last_credit_card_form_submitted` is also set with the form
+  // submission of the `credit_card_form`. The address form signatures are
+  // expected to be set before.
+  FormStructure* credit_card_form =
+      create_fill_submit_and_find_cached_form(/*is_credit_card_form=*/true);
+  ASSERT_TRUE(credit_card_form);
+  EXPECT_THAT(last_uploaded_form_associations.last_address_form_submitted,
+              Optional(second_address_form->form_signature()));
+  EXPECT_THAT(
+      last_uploaded_form_associations.second_last_address_form_submitted,
+      Optional(first_address_form->form_signature()));
+  EXPECT_THAT(last_uploaded_form_associations.last_credit_card_form_submitted,
+              Optional(credit_card_form->form_signature()));
 }
 
 class BrowserAutofillManagerPlusAddressTest
