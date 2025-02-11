@@ -2438,6 +2438,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"lens-vsint-param-enabled", flag_descriptions::kLensVsintParamEnabledName,
      flag_descriptions::kLensVsintParamEnabledDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kLensVsintParamEnabled)},
+    {"lens-unary-client-data-header-enabled",
+     flag_descriptions::kLensUnaryClientDataHeaderEnabledName,
+     flag_descriptions::kLensUnaryClientDataHeaderEnabledDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensUnaryClientDataHeaderEnabled)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -684,6 +684,11 @@ extern const char kLensTranslateToggleModeEnabledDescription[];
 extern const char kLensUnaryApisWithHttpTransportEnabledName[];
 extern const char kLensUnaryApisWithHttpTransportEnabledDescription[];
 
+// Title and description for the flag to enable client data header for unary
+// requests.
+extern const char kLensUnaryClientDataHeaderEnabledName[];
+extern const char kLensUnaryClientDataHeaderEnabledDescription[];
+
 // Title and description for the flag to enable HTTP transport for unary
 // requests.
 extern const char kLensUnaryHttpTransportEnabledName[];
