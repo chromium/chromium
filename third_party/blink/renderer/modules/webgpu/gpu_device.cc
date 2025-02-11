@@ -175,7 +175,11 @@ void GPUDevice::Initialize(wgpu::Device handle,
                       WebFeature::kWebGPUSubgroupsFeatures);
   }
 
+#ifdef WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
+  wgpu::Limits limits = {};
+#else
   wgpu::SupportedLimits limits = {};
+#endif  // WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
   GetHandle().GetLimits(&limits);
   limits_ = MakeGarbageCollected<GPUSupportedLimits>(limits);
 

@@ -176,7 +176,11 @@ GPUAdapter::GPUAdapter(
 
   features_ = MakeFeatureNameSet(GetHandle(), gpu_->GetExecutionContext());
 
+#ifdef WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
+  wgpu::Limits limits = {};
+#else
   wgpu::SupportedLimits limits = {};
+#endif  // WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
   GetHandle().GetLimits(&limits);
   limits_ = MakeGarbageCollected<GPUSupportedLimits>(limits);
 
@@ -326,7 +330,11 @@ ScriptPromise<GPUDevice> GPUAdapter::requestDevice(
 
   wgpu::DeviceDescriptor dawn_desc = {};
 
+#ifdef WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
+  wgpu::Limits required_limits = {};
+#else
   wgpu::RequiredLimits required_limits = {};
+#endif  // WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
   if (descriptor->hasRequiredLimits()) {
     dawn_desc.requiredLimits = &required_limits;
     GPUSupportedLimits::MakeUndefined(&required_limits);
