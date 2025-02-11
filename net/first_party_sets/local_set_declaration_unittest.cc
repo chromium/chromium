@@ -118,14 +118,15 @@ TEST(LocalSetDeclarationTest, Invalid) {
       },
       {{associated2_cctld, associated2}}));
 
-  // If an alias has an explicit entry, it must match the canonical's entry.
+  // An alias must not have an explicit entry, even one that matches the
+  // canonical's entry.
+  FirstPartySetEntry associated_entry(primary, SiteType::kAssociated, 0);
   EXPECT_FALSE(LocalSetDeclaration::Create(
       {
           {primary,
            FirstPartySetEntry(primary, SiteType::kPrimary, std::nullopt)},
-          {associated, FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
-          {associated_cctld,
-           FirstPartySetEntry(primary, SiteType::kAssociated, 1)},
+          {associated, associated_entry},
+          {associated_cctld, associated_entry},
       },
       {{associated_cctld, associated}}));
 
