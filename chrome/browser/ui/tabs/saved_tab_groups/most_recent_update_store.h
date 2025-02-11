@@ -8,6 +8,12 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/saved_tab_groups/public/types.h"
 
+class BrowserView;
+
+namespace ui {
+class TrackedElement;
+}  // namespace ui
+
 namespace tab_groups {
 
 using TabIdentifiers = std::pair<LocalTabGroupID, std::optional<LocalTabID>>;
@@ -25,6 +31,9 @@ class MostRecentUpdateStore {
   MostRecentUpdateStore& operator=(const MostRecentUpdateStore& other) = delete;
   ~MostRecentUpdateStore();
 
+  // Returns whether |tab_identifiers| has been set.
+  bool HasUpdate() { return last_updated_tab_.has_value(); }
+
   // Gets the identifiers of the most recent locally-updated shared tab.
   std::optional<TabIdentifiers> GetLastUpdatedTab() {
     return last_updated_tab_;
@@ -35,6 +44,9 @@ class MostRecentUpdateStore {
   // from this tab group.
   void SetLastUpdatedTab(LocalTabGroupID group_id,
                          std::optional<LocalTabID> tab_id);
+
+  // Returns the anchor for shared tab activity as a TrackedElement.
+  ui::TrackedElement* GetIPHAnchor(BrowserView* browser_view);
 
  private:
   // Attempt to trigger the IPH after a relevant change.

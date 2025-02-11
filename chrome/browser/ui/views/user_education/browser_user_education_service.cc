@@ -19,9 +19,11 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/singleton_tabs.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_update_store.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -887,6 +889,42 @@ void MaybeRegisterChromeFeaturePromos(
             .SetMetadata(127, "dpenning@chromium.org",
                          "triggered on startup when the saved tab groups are "
                          "defaulted to saved for the first time.")));
+  }
+
+  if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
+    registry.RegisterFeature(std::move(
+        FeaturePromoSpecification::CreateForCustomAction(
+            feature_engagement::kIPHTabGroupsSharedTabChangedFeature,
+            kTopContainerElementId, IDS_DATA_SHARING_USER_ED_FIRST_TAB_CHANGE,
+            IDS_LEARN_MORE,
+            CreateNavigationAction(GURL(chrome::kCollaborationLearnMoreURL)))
+            .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+            .SetAnchorElementFilter(base::BindRepeating(
+                [](const ui::ElementTracker::ElementList& elements)
+                    -> ui::TrackedElement* {
+                  if (elements.empty()) {
+                    return nullptr;
+                  }
+                  BrowserView* const browser_view =
+                      views::ElementTrackerViews::GetInstance()
+                          ->GetFirstMatchingViewAs<BrowserView>(
+                              kBrowserViewElementId, elements[0]->context());
+
+                  tab_groups::MostRecentUpdateStore* most_recent_update_store =
+                      browser_view->browser()
+                          ->GetFeatures()
+                          .most_recent_update_store();
+
+                  if (!most_recent_update_store ||
+                      !most_recent_update_store->HasUpdate()) {
+                    return nullptr;
+                  }
+
+                  return most_recent_update_store->GetIPHAnchor(browser_view);
+                }))
+            .SetMetadata(
+                134, "mickeyburks@google.org",
+                "triggered the first time a user updates a shared tab.")));
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
