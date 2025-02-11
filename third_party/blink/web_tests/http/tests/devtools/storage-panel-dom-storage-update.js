@@ -39,12 +39,13 @@ import * as Application from 'devtools/panels/application/application.js';
   var view = null;
 
   function dumpDataGrid(rootNode) {
-    var nodes = rootNode.children;
+    var nodes = rootNode.querySelectorAll('tr');
     var rows = [];
     for (var i = 0; i < nodes.length; ++i) {
-      var node = nodes[i];
-      if (typeof node.data.key === 'string')
-        rows.push(node.data.key + ' = ' + node.data.value);
+      var cells = nodes[i].querySelectorAll('td');
+      if (cells.length) {
+        rows.push(cells[0].textContent.trim() + ' = ' + cells[1].textContent.trim());
+      }
     }
     rows.sort();
     TestRunner.addResult('Table rows: [' + rows.join(', ') + ']');
@@ -74,14 +75,14 @@ import * as Application from 'devtools/panels/application/application.js';
 
       Application.ResourcesPanel.ResourcesPanel.instance().showDOMStorage(storage);
       view = Application.ResourcesPanel.ResourcesPanel.instance().domStorageView;
-      TestRunner.addSniffer(view.grid, 'showItems', viewUpdated);
+      TestRunner.addSniffer(view, 'showItems', viewUpdated);
     },
 
     function addItemTest(next) {
       var indicesToAdd = [1, 2, 3, 4, 5, 6];
 
       function itemAdded() {
-        dumpDataGrid(view.dataGridForTesting.rootNode());
+        dumpDataGrid(view.contentElement.querySelector('devtools-data-grid'));
         addItem();
       }
 
@@ -105,7 +106,7 @@ import * as Application from 'devtools/panels/application/application.js';
       var indicesToRemove = [1, 3, 5];
 
       function itemRemoved() {
-        dumpDataGrid(view.dataGridForTesting.rootNode());
+        dumpDataGrid(view.contentElement.querySelector('devtools-data-grid'));
         removeItem();
       }
 
@@ -133,14 +134,14 @@ import * as Application from 'devtools/panels/application/application.js';
       TestRunner.evaluateInPage(command);
 
       function itemUpdated() {
-        dumpDataGrid(view.dataGridForTesting.rootNode());
+        dumpDataGrid(view.contentElement.querySelector('devtools-data-grid'));
         next();
       }
     },
 
     function clearTest(next) {
       function itemsCleared() {
-        dumpDataGrid(view.dataGridForTesting.rootNode());
+        dumpDataGrid(view.contentElement.querySelector('devtools-data-grid'));
         next();
       }
 
