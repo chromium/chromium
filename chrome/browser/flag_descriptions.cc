@@ -1412,10 +1412,16 @@ const char kEnableIsolatedWebAppsDescription[] =
     "Enables experimental support for Isolated Web Apps. "
     "See https://github.com/reillyeon/isolated-web-apps for more information.";
 
+const char kDirectSocketsInServiceWorkersName[] =
+    "Direct Sockets API in Service Workers";
+const char kDirectSocketsInServiceWorkersDescription[] =
+    "Enables access to the Direct Sockets API in service workers. See "
+    "https://github.com/WICG/direct-sockets for details.";
+
 const char kDirectSocketsInSharedWorkersName[] =
     "Direct Sockets API in Shared Workers";
 const char kDirectSocketsInSharedWorkersDescription[] =
-    "Enable access to the Direct Sockets API in shared workers. See "
+    "Enables access to the Direct Sockets API in shared workers. See "
     "https://github.com/WICG/direct-sockets for details.";
 
 #if BUILDFLAG(IS_CHROMEOS)

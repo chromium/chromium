@@ -10905,6 +10905,7 @@ from previous Chrome versions.
   <int value="-1280673966" label="PluginVmFullscreen:disabled"/>
   <int value="-1280274244" label="OmniboxClosePopupWithEscape:disabled"/>
   <int value="-1279151596" label="TreatBootstrapAsDefault:enabled"/>
+  <int value="-1278986008" label="DirectSocketsInServiceWorkers:disabled"/>
   <int value="-1278796760" label="QueryInOmnibox:enabled"/>
   <int value="-1277216823" label="ClearUndecryptablePasswords:disabled"/>
   <int value="-1276912933" label="enable-quick-unlock-pin"/>
@@ -14245,6 +14246,7 @@ from previous Chrome versions.
   <int value="54258707" label="NewTabstripAnimation:enabled"/>
   <int value="54571864" label="EnableDisplayZoomSetting:enabled"/>
   <int value="54837460" label="EnableCertManagementUIV2Write:disabled"/>
+  <int value="55852946" label="DirectSocketsInServiceWorkers:enabled"/>
   <int value="56072855" label="VaapiWebPImageDecodeAcceleration:disabled"/>
   <int value="56723110" label="enable-webfonts-intervention"/>
   <int value="56900498" label="OmniboxOneClickUnelide:enabled"/>

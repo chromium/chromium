@@ -1961,6 +1961,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "direct-sockets-in-service-workers",
+    "owners": [ "//content/browser/direct_sockets/OWNERS" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "direct-sockets-in-shared-workers",
     "owners": [ "//content/browser/direct_sockets/OWNERS" ],
     "expiry_milestone": 150

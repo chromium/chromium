@@ -858,6 +858,9 @@ extern const char kEnableGamepadMultitouchDescription[];
 extern const char kEnableIsolatedWebAppsName[];
 extern const char kEnableIsolatedWebAppsDescription[];
 
+extern const char kDirectSocketsInServiceWorkersName[];
+extern const char kDirectSocketsInServiceWorkersDescription[];
+
 extern const char kDirectSocketsInSharedWorkersName[];
 extern const char kDirectSocketsInSharedWorkersDescription[];
 
