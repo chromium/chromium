@@ -231,6 +231,29 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/accessibility/web_contents_accessibility_android.cc:AccessibilityPredicateType) -->
 
+<!-- LINT.IfChange(AccessibilitySetValueRole)-->
+
+<enum name="AccessibilitySetValueRole">
+  <summary>
+    Subset of accessibility node roles possibly used for kSetValue.
+  </summary>
+  <int value="0" label="None"/>
+  <int value="17" label="ColorWell"/>
+  <int value="27" label="Date"/>
+  <int value="28" label="DateTime"/>
+  <int value="102" label="InputTime"/>
+  <int value="150" label="ScrollBar"/>
+  <int value="153" label="SearchBox"/>
+  <int value="155" label="Slider"/>
+  <int value="156" label="SpinButton"/>
+  <int value="157" label="Splitter"/>
+  <int value="170" label="TextField"/>
+  <int value="171" label="TextFieldWithComboBox"/>
+  <int value="181" label="Unknown"/>
+</enum>
+
+<!-- LINT.ThenChange(//ui/accessibility/ax_enums.mojom:Role) -->
+
 <!-- LINT.IfChange(AccessibilityTreeUnserializeError) -->
 
 <enum name="AccessibilityTreeUnserializeError">

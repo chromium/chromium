@@ -39,6 +39,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -4707,11 +4708,15 @@ bool AXNodeObject::OnNativeSetSelectedAction(bool selected) {
 }
 
 bool AXNodeObject::OnNativeSetValueAction(const String& string) {
-  if (!GetNode() || !GetNode()->IsElementNode())
+  base::UmaHistogramEnumeration("Accessibility.SetValue.Role", RoleValue());
+
+  if (!GetNode() || !GetNode()->IsElementNode()) {
     return false;
+  }
   const LayoutObject* layout_object = GetLayoutObject();
-  if (!layout_object || !layout_object->IsBoxModelObject())
+  if (!layout_object || !layout_object->IsBoxModelObject()) {
     return false;
+  }
 
   auto* html_input_element = DynamicTo<HTMLInputElement>(*GetNode());
   if (html_input_element && layout_object->IsTextField()) {

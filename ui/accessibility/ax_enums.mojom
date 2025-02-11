@@ -112,6 +112,12 @@ enum Event {
 // Web: this attribute is only used in web content.
 //
 // Native: this attribute is only used in native UI.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(Role)
+//
 // Next version: 8
 // Next value: 213
 [Extensible, Stable, Uuid="d258eb73-e0cc-490c-b881-80ee11d3fec2"]
@@ -356,6 +362,7 @@ enum Role {
   kWebView = 183,
   kWindow = 184,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilitySetValueRole)
 
 // Bitfield value. Each state can either be true or false.
 //

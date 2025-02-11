@@ -3152,6 +3152,18 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.SetValue.Role" enum="AccessibilitySetValueRole"
+    expires_after="2026-02-06">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>aluh@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Accessibility node roles where kSetValue is being called on. This should
+    help us determine whether we can deprecate kSetValue. Recorded whenever a
+    set value action is requested on an accessibility node.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.VTTContainsStyleBlock" enum="BooleanEnabled"
     expires_after="2025-06-27">
   <owner>evliu@google.com</owner>
