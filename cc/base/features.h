@@ -206,6 +206,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60Hz);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kStopExportDFCMetrics);
 CC_BASE_EXPORT extern bool StopExportDFCMetrics();
 
+// When enabled, we save the `EventMetrics` for a scroll, even when the result
+// is no damage. So that the termination can be per properly attributed to the
+// end of frame production for the given VSync.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kZeroScrollMetricsUpdate);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

@@ -209,4 +209,8 @@ bool StopExportDFCMetrics() {
   return base::FeatureList::IsEnabled(features::kStopExportDFCMetrics);
 }
 
+BASE_FEATURE(kZeroScrollMetricsUpdate,
+             "ZeroScrollMetricsUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
