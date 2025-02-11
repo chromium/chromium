@@ -337,9 +337,6 @@ public class ToolbarPhone extends ToolbarLayout
             setWillNotDraw(false);
             mUrlFocusTranslationX =
                     getResources().getDimensionPixelSize(R.dimen.toolbar_url_focus_translation_x);
-
-            // Set hover tooltip texts for toolbar buttons shared between phones and tablets.
-            super.setTooltipTextForToolbarButtons();
         }
     }
 

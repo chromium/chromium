@@ -155,6 +155,7 @@ found in the LICENSE file.
             android:clickable="true"
             android:focusable="true"
             android:contentDescription="@string/accessibility_toolbar_btn_menu"
+            android:tooltipText="@string/accessibility_toolbar_btn_menu"
             android:background="@null"
             app:tint="@color/default_icon_color_tint_list" />
 
