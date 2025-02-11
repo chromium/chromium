@@ -4747,7 +4747,6 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequiredForEvent(
     case ax::mojom::blink::Event::kRowExpanded:
     case ax::mojom::blink::Event::kScrolledToAnchor:
     case ax::mojom::blink::Event::kSelectedChildrenChanged:
-    case ax::mojom::blink::Event::kValueChanged:
       return true;
 
     case ax::mojom::blink::Event::kDocumentTitleChanged:
@@ -4757,6 +4756,9 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequiredForEvent(
     case ax::mojom::blink::Event::kRowCountChanged:
     case ax::mojom::blink::Event::kScrollPositionChanged:
     case ax::mojom::blink::Event::kTextChanged:
+    // Value changes can be fired at a fast rate, so only respond quickly if the
+    // value is on the focused object itself.
+    case ax::mojom::blink::Event::kValueChanged:
       return false;
 
     // These events are not fired from Blink.
