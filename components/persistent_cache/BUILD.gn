@@ -12,6 +12,8 @@ component("persistent_cache") {
     "entry.h",
     "persistent_cache.cc",
     "persistent_cache.h",
+    "sqlite/sqlite_entry_impl.cc",
+    "sqlite/sqlite_entry_impl.h",
   ]
 
   # Cross-process file locks are not available on Fuchsia.
@@ -46,6 +48,7 @@ source_set("unit_tests") {
     "mock/mock_entry_impl.cc",
     "mock/mock_entry_impl.h",
     "persistent_cache_unittest.cc",
+    "sqlite/sqlite_entry_unittest.cc",
   ]
 
   # Cross-process file locks are not available on Fuchsia.
