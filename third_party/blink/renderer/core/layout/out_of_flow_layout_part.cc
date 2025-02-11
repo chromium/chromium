@@ -812,8 +812,7 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
           containing_block->StyleRef().GetWritingDirection();
       LogicalSize size = containing_block_fragment->Size().ConvertToLogical(
           writing_direction.GetWritingMode());
-      size.block_size =
-          LayoutBoxUtils::TotalBlockSize(*To<LayoutBox>(containing_block));
+      size.block_size = BoxTotalBlockSize(*To<LayoutBox>(containing_block));
 
       // TODO(1079031): This should eventually include scrollbar and border.
       BoxStrut border = To<PhysicalBoxFragment>(containing_block_fragment)
@@ -933,8 +932,8 @@ void OutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
     const LayoutBox* containing_block = inline_containg_block.key;
     InlineContainingBlockInfo& inline_info = inline_containg_block.value;
 
-    LogicalSize size(LayoutBoxUtils::InlineSize(*containing_block),
-                     LayoutBoxUtils::TotalBlockSize(*containing_block));
+    LogicalSize size(BoxInlineSize(*containing_block),
+                     BoxTotalBlockSize(*containing_block));
     PhysicalSize container_builder_physical_size =
         ToPhysicalSize(size, containing_block->StyleRef().GetWritingMode());
 

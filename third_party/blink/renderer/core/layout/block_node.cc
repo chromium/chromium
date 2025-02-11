@@ -1394,9 +1394,9 @@ void BlockNode::CopyChildFragmentPosition(
 
   DCHECK(layout_box->Parent()) << "Should be called on children only.";
 
-  LayoutPoint point = LayoutBoxUtils::ComputeLocation(
-      child_fragment, offset, container_fragment,
-      previous_container_break_token);
+  LayoutPoint point =
+      ComputeBoxLocation(child_fragment, offset, container_fragment,
+                         previous_container_break_token);
   layout_box->SetLocation(point);
 
   if (needs_invalidation_check)
