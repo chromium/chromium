@@ -585,8 +585,6 @@ class Module(object):
       self.flags = list()
       self.rustlibs = set()
       self.proc_macros = set()
-      if name == 'host':
-        self.compile_multilib = '64'
 
     def to_string(self, output):
       nested_out = []
@@ -602,6 +600,7 @@ class Module(object):
       self._output_field(nested_out, 'generated_headers')
       self._output_field(nested_out, 'export_generated_headers')
       self._output_field(nested_out, 'ldflags')
+      self._output_field(nested_out, 'compile_multilib')
       self._output_field(nested_out, 'stem')
       self._output_field(nested_out, "edition")
       self._output_field(nested_out, 'cfgs')
@@ -611,9 +610,6 @@ class Module(object):
       self._output_field(nested_out, 'proc_macros')
 
       if nested_out:
-        # This is added here to make sure it doesn't add a `host` arch-specific module just for
-        # `compile_multilib` flag.
-        self._output_field(nested_out, 'compile_multilib')
         output.append('    %s: {' % self.name)
         for line in nested_out:
           output.append('    %s' % line)
@@ -2570,6 +2566,10 @@ def create_cc_defaults_module():
       # base, so it is removed unconditionally for host targets.
       '-UANDROID',
   ]
+  # Don't build 32-bit binaries for the host - otherwise
+  # cronet_aml_base_base__testing fails to build on aosp_cheetah due to
+  # partition_alloc failing on a static assertion that pointers are 64-bit.
+  defaults.target['host'].compile_multilib = '64'
   defaults.stl = 'none'
   defaults.cpp_std = CPP_VERSION
   defaults.min_sdk_version = _MIN_SDK_VERSION
