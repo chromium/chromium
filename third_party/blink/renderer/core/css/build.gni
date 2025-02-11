@@ -243,6 +243,8 @@ blink_core_sources_css = [
   "css_primitive_value.cc",
   "css_primitive_value.h",
   "css_primitive_value_mappings.h",
+  "css_progress_value.cc",
+  "css_progress_value.h",
   "css_property_equality.cc",
   "css_property_equality.h",
   "css_property_name.cc",
