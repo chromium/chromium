@@ -1419,7 +1419,7 @@ class LensOverlayController::UnderlyingWebContentsObserver
       return;
     }
     if (lens_overlay_controller_->state() == State::kLivePageAndResults) {
-      lens_overlay_controller_->UpdateNavigationTime();
+      lens_overlay_controller_->UpdateNavigationMetrics();
       lens_overlay_controller_->NotifyPageContentUpdated();
       return;
     }
@@ -2437,6 +2437,16 @@ void LensOverlayController::OnFocusChanged(bool focused) {
   }
 
   if (IsContextualSearchbox()) {
+    if (!contextual_searchbox_focused_in_session_) {
+      // This is the first time the searchbox is focused in this session.
+      // Record the time between the overlay being invoked and the searchbox
+      // being focused.
+      lens::RecordContextualSearchboxTimeToFirstFocus(
+          base::TimeTicks::Now() - invocation_time_,
+          initialization_data_->page_content_type_);
+    } else {
+      RecordContextualSearchboxTimeToFocusAfterNavigation();
+    }
     contextual_searchbox_focused_in_session_ = true;
 
     // If the searchbox becomes focused, showing intent to issue a new query,
@@ -3062,6 +3072,18 @@ void LensOverlayController::RecordTimeToFirstInteraction(
 }
 
 void LensOverlayController::
+    RecordContextualSearchboxTimeToFocusAfterNavigation() {
+  if (!last_navigation_time_.has_value() || contextual_searchbox_focused_after_navigation_) {
+    return;
+  }
+  base::TimeDelta time_to_focus =
+      base::TimeTicks::Now() - last_navigation_time_.value();
+  lens::RecordContextualSearchboxTimeToFocusAfterNavigation(
+      time_to_focus, initialization_data_->page_content_type_);
+  contextual_searchbox_focused_after_navigation_ = true;
+}
+
+void LensOverlayController::
     RecordContextualSearchboxTimeToInteractionAfterNavigation() {
   if (!last_navigation_time_.has_value()) {
     return;
@@ -3207,8 +3229,9 @@ void LensOverlayController::MaybeShowDelayedTutorialIPH(const GURL& url) {
   }
 }
 
-void LensOverlayController::UpdateNavigationTime() {
+void LensOverlayController::UpdateNavigationMetrics() {
   last_navigation_time_ = base::TimeTicks::Now();
+  contextual_searchbox_focused_after_navigation_ = false;
 }
 
 bool LensOverlayController::IsUrlEligibleForTutorialIPH(const GURL& url) {

@@ -123,6 +123,18 @@ void RecordUKMSessionEndMetrics(
 // a response is generated.
 void RecordLensResponseTime(base::TimeDelta response_time);
 
+// Records the time between the overlay is invoked and the contextual searchbox
+// is first focused.
+void RecordContextualSearchboxTimeToFirstFocus(
+    base::TimeDelta time_to_focus,
+    lens::MimeType page_content_type);
+
+// Records the time from the time the user navigates the document to when the
+// contextual search box is interacted with, sliced by page content type.
+void RecordContextualSearchboxTimeToFocusAfterNavigation(
+    base::TimeDelta time_to_focus,
+    lens::MimeType page_content_type);
+
 // Records the time from the time the user navigates the document to when the
 // contextual search box is interacted with, sliced by content type.
 void RecordContextualSearchboxTimeToInteractionAfterNavigation(
