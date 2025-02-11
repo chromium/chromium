@@ -744,6 +744,8 @@ if (enable_extensions) {
     deps = [
       ":common",
       "//base",
+      "//content/public/common",
+      "//content/test:test_support",
       "//extensions:test_support",
     ]
 

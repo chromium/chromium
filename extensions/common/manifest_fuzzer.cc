@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
@@ -18,6 +19,8 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
+#include "content/public/common/content_client.h"
+#include "content/public/test/content_test_suite_base.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
@@ -43,13 +46,28 @@ const mojom::ManifestLocation kLocations[] = {
     mojom::ManifestLocation::kExternalComponent,
 };
 
-// Holds state shared across all fuzzer calls.
-struct Environment {
-  Environment() { ExtensionsClient::Set(&extensions_client); }
+class FakeContentClient : public content::ContentClient {
+ public:
+  FakeContentClient() = default;
+  FakeContentClient(const FakeContentClient&) = delete;
+  FakeContentClient& operator=(const FakeContentClient&) = delete;
+  ~FakeContentClient() override = default;
+};
+
+// Holds state shared across all fuzzer calls. The base class supports
+// registering URL schemes required to load manifest features.
+struct Environment : public content::ContentTestSuiteBase {
+  Environment() : ContentTestSuiteBase(0, nullptr) {
+    RegisterContentSchemes(&content_client);
+    extensions_client = std::make_unique<TestExtensionsClient>();
+    ExtensionsClient::Set(extensions_client.get());
+  }
 
   // Singleton objects needed for the tested code.
   base::AtExitManager at_exit;
-  TestExtensionsClient extensions_client;
+  FakeContentClient content_client;
+  // This must be created after content schemes are registered.
+  std::unique_ptr<TestExtensionsClient> extensions_client;
 };
 
 bool InitFuzzedCommandLine(FuzzedDataProvider& fuzzed_data_provider) {
