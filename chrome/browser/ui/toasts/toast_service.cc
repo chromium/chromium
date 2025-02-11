@@ -233,7 +233,7 @@ void ToastService::RegisterToasts(
                               GetForProfile(profile);
                       if (collaboration_messaging_observer) {
                         collaboration_messaging_observer
-                            ->ManageSharingForCurrentInstantMessage();
+                            ->ManageSharingForCurrentInstantMessage(window);
                       }
                     },
                     base::Unretained(browser_window_interface)))

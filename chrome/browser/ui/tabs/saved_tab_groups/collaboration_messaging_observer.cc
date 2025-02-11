@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_observer.h"
 
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -252,7 +254,8 @@ void CollaborationMessagingObserver::ReopenTabForCurrentInstantMessage() {
   }
 }
 
-void CollaborationMessagingObserver::ManageSharingForCurrentInstantMessage() {
+void CollaborationMessagingObserver::ManageSharingForCurrentInstantMessage(
+    BrowserWindowInterface* current_browser_window_interface) {
   CHECK(instant_message_queue_processor_.IsMessageShowing());
 
   const InstantMessage& message =
@@ -265,7 +268,27 @@ void CollaborationMessagingObserver::ManageSharingForCurrentInstantMessage() {
   std::optional<LocalTabGroupID> group_id =
       tab_group_metadata->local_tab_group_id;
   if (!group_id.has_value()) {
-    return;
+    // No local group id means the group is not open.
+    // Try to open the group first.
+    std::optional<base::Uuid> sync_tab_group_id =
+        tab_group_metadata->sync_tab_group_id;
+    if (!sync_tab_group_id.has_value()) {
+      return;
+    }
+    auto* tab_group_service =
+        TabGroupSyncServiceFactory::GetForProfile(profile_);
+    CHECK(tab_group_service);
+    tab_group_service->OpenTabGroup(
+        sync_tab_group_id.value(),
+        std::make_unique<TabGroupActionContextDesktop>(
+            current_browser_window_interface->GetBrowserForMigrationOnly(),
+            OpeningSource::kOpenedFromToastAction));
+    auto save_group = tab_group_service->GetGroup(sync_tab_group_id.value());
+    if (!save_group) {
+      return;
+    }
+    CHECK(save_group->local_group_id());
+    group_id = save_group->local_group_id();
   }
 
   if (Browser* browser =
