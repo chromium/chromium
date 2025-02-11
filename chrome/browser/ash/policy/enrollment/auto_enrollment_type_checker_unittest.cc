@@ -631,8 +631,15 @@ class AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP
 };
 
 TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, Default) {
-  EXPECT_EQ(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled(),
-            IsOfficialGoogleOS());
+  if (!fake_statistics_provider_.IsRunningOnVm()) {
+    EXPECT_EQ(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled(),
+              IsOfficialGoogleOS());
+  } else {
+    // No state determination when running ChromeOS in Chrome (unless forced by
+    // flag).
+    EXPECT_FALSE(
+        AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled());
+  }
 }
 
 TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, OfficialBuild) {
@@ -640,8 +647,15 @@ TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, OfficialBuild) {
       ash::switches::kEnterpriseEnableUnifiedStateDetermination,
       AutoEnrollmentTypeChecker::kUnifiedStateDeterminationOfficialBuild);
 
-  EXPECT_EQ(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled(),
-            IsOfficialGoogleOS());
+  if (!fake_statistics_provider_.IsRunningOnVm()) {
+    EXPECT_EQ(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled(),
+              IsOfficialGoogleOS());
+  } else {
+    // No state determination when running ChromeOS in Chrome (unless forced by
+    // flag).
+    EXPECT_FALSE(
+        AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled());
+  }
 }
 
 TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, Never) {
