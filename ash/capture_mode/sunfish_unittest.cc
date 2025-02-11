@@ -3567,6 +3567,47 @@ TEST_F(ScannerTest, ActionButtonsUpdatedWhenRegionAdjustedWithKeyboard) {
                   ActionButtonIdIs(ActionButtonViewID::kCopyTextButton)));
 }
 
+// Tests that Scanner actions are updated when the user selects or adjusts a
+// capture region with their keyboard in Sunfish mode.
+TEST_F(ScannerTest,
+       ActionButtonsUpdatedWhenRegionAdjustedWithKeyboardInSunfishMode) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_actions_future;
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillRepeatedly(WithArg<1>(InvokeFuture(fetch_actions_future)));
+
+  // Hit space to select a default region.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_SPACE, event_generator);
+  // Simulate two fetched actions.
+  auto output1 = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& objects1 = *output1->add_objects();
+  objects1.add_actions()->mutable_new_event()->set_title("Event 1");
+  objects1.add_actions()->mutable_new_event()->set_title("Event 2");
+  fetch_actions_future.Take().Run(std::move(output1), manta::MantaStatus());
+
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  EXPECT_THAT(session_test_api.GetActionButtons(), SizeIs(2));
+
+  // Hit tab to focus the whole region, then shift the region using an arrow
+  // key.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  SendKey(ui::VKEY_RIGHT, event_generator);
+  // Simulate one fetched action.
+  auto output2 = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& objects2 = *output2->add_objects();
+  objects2.add_actions()->mutable_new_event()->set_title("Event 3");
+  fetch_actions_future.Take().Run(std::move(output2), manta::MantaStatus());
+
+  EXPECT_THAT(session_test_api.GetActionButtons(), SizeIs(1));
+}
+
 // Tests that the capture label is hidden while capturing an image to send to
 // the Scanner backend.
 TEST_F(ScannerTest, CaptureLabelHiddenWhilePerformingCaptureForScanner) {

@@ -1468,7 +1468,12 @@ void CaptureModeSession::OnScannerActionsFetched(
   CHECK(capture_region_overlay_controller_);
   capture_region_overlay_controller_->PauseGlowAnimation();
 
-  CHECK(action_container_widget_);
+  // Create the action container widget if needed.
+  UpdateActionContainerWidget();
+  if (!action_container_widget_) {
+    return;
+  }
+
   if (!actions_response.has_value()) {
     action_container_view_->ShowErrorView(
         actions_response.error(),
