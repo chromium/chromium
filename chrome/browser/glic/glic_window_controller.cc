@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
+#include "chrome/browser/ui/views/tabs/window_finder.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
@@ -207,6 +208,7 @@ GlicWindowController::GlicWindowController(Profile* profile,
                                            GlicKeyedService* glic_service)
     : profile_(profile),
       fre_controller_(std::make_unique<GlicFreController>()),
+      window_finder_(std::make_unique<WindowFinder>()),
       glic_service_(glic_service) {}
 
 GlicWindowController::~GlicWindowController() = default;
@@ -991,6 +993,15 @@ Browser* GlicWindowController::FindBrowserForAttachment() {
                                 attachment_zone.right() + kAttachmentBuffer,
                                 attachment_zone.bottom());
 
+    // If both the left center of the attachment zone and glic button right
+    // center are occluded, don't consider for attachment.
+    if (IsBrowserOccludedAtPoint(browser, attachment_zone.left_center()) &&
+        IsBrowserOccludedAtPoint(browser, tab_strip_region_view->GetGlicButton()
+                                              ->GetBoundsInScreen()
+                                              .right_center())) {
+      continue;
+    }
+
     if (attachment_zone.Contains(glic_top_right)) {
       return browser;
     }
@@ -1174,6 +1185,18 @@ void GlicWindowController::Shutdown() {
 void GlicWindowController::ResetPresentationTimingState() {
   show_start_time_ = base::TimeTicks();
   starting_mode_ = mojom::WebClientMode::kUnknown;
+}
+
+bool GlicWindowController::IsBrowserOccludedAtPoint(Browser* browser,
+                                                    gfx::Point point) {
+  std::set<gfx::NativeWindow> exclude = {
+      GetGlicView()->GetWidget()->GetNativeWindow()};
+  gfx::NativeWindow window =
+      window_finder_->GetLocalProcessWindowAtPoint(point, exclude);
+  if (browser->GetBrowserView().GetWidget()->GetNativeWindow() != window) {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace glic
