@@ -100,7 +100,7 @@ std::vector<ExternalInstallOptions> GetChromeBrandedApps(
       GetConfigForGemini(device_info),
       GetConfigForGoogleCalendar(),
       GetConfigForGoogleChat(/*is_standalone=*/true,
-                             /*only_for_new_users=*/true),
+                             /*only_for_new_users=*/false),
       GetConfigForGoogleMeet(),
 #endif  // BUILDFLAG(IS_CHROMEOS)
   };
