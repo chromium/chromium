@@ -44,14 +44,14 @@ bool LaunchDefaultAppsSettingsModernDialog(std::wstring_view protocol) {
       L"!microsoft.windows.immersivecontrolpanel";
 
   Microsoft::WRL::ComPtr<IApplicationActivationManager> activator;
-  HRESULT hr = ::CoCreateInstance(CLSID_ApplicationActivationManager, nullptr,
-                                  CLSCTX_ALL, IID_PPV_ARGS(&activator));
+  HRESULT hr =
+      ::CoCreateInstance(CLSID_ApplicationActivationManager, nullptr,
+                         CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&activator));
   if (FAILED(hr)) {
     return false;
   }
 
   DWORD pid = 0;
-  ::CoAllowSetForegroundWindow(activator.Get(), nullptr);
   hr = activator->ActivateApplication(
       kControlPanelAppModelId, L"page=SettingsPageAppsDefaults", AO_NONE, &pid);
   if (FAILED(hr)) {
