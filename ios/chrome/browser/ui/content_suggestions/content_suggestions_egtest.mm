@@ -125,9 +125,7 @@ void TapMagicStackEditButton() {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kEnableFeedAblation);
   config.additional_args.push_back("--test-ios-module-ranker=mvt");
-  if ([self isRunningTest:@selector
-            (DISABLED_testMagicStackSetUpListCompleteAllItems)] ||
-      [self isRunningTest:@selector(testMagicStackEditButton)] ||
+  if ([self isRunningTest:@selector(testMagicStackEditButton)] ||
       [self isRunningTest:@selector
             (testMagicStackCompactedSetUpListCompleteAllItems)]) {
     config.features_disabled.push_back(kContentPushNotifications);
@@ -320,83 +318,6 @@ void TapMagicStackEditButton() {
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST)]
       assertWithMatcher:grey_nil()];
-}
-
-// Tests that the "All Set" module is shown after completing all Set Up List
-// Hero Cell modules in the Magic Stack.
-// TODO(crbug.com/41493926): Test is flaky, re-enable when fixed.
-- (void)DISABLED_testMagicStackSetUpListCompleteAllItems {
-  [self prepareToTestSetUpListInMagicStack];
-
-  // Tap the default browser item.
-  TapView(set_up_list::kDefaultBrowserItemID);
-  // Ensure the Default Browser Promo is displayed.
-  id<GREYMatcher> defaultBrowserView = grey_accessibilityID(
-      first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:defaultBrowserView]
-      assertWithMatcher:grey_notNil()];
-  // Dismiss Default Browser Promo.
-  TapPromoStyleSecondaryActionButton();
-
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                                set_up_list::kAutofillItemID),
-                                            grey_sufficientlyVisible(), nil)]
-        assertWithMatcher:grey_notNil()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(
-      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
-      @"Timeout waiting for Autofill Set Up List Item expired.");
-  // Tap the autofill item.
-  TapView(set_up_list::kAutofillItemID);
-  // TODO - verify the CPE promo is displayed.
-  id<GREYMatcher> CPEPromoView =
-      grey_accessibilityID(@"kCredentialProviderPromoAccessibilityId");
-  [[EarlGrey selectElementWithMatcher:CPEPromoView]
-      assertWithMatcher:grey_notNil()];
-  // Dismiss the CPE promo.
-  TapSecondaryActionButton();
-
-  condition = ^{
-    NSError* error = nil;
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                                set_up_list::kSignInItemID),
-                                            grey_sufficientlyVisible(), nil)]
-        assertWithMatcher:grey_notNil()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(
-      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
-      @"Timeout waiting for Sign in Set Up List Item expired.");
-
-  // Tap the signin item.
-  TapView(set_up_list::kSignInItemID);
-  [ChromeEarlGreyUI waitForAppToIdle];
-  // The fake signin UI appears. Dismiss it.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kFakeAuthCancelButtonIdentifier)]
-      performAction:grey_tap()];
-
-  // Verify the All Set item is shown.
-  condition = ^{
-    NSError* error = nil;
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                                set_up_list::kAllSetItemID),
-                                            grey_sufficientlyVisible(), nil)]
-        assertWithMatcher:grey_sufficientlyVisible()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(
-      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
-      @"Timeout waiting for the All Set Module to show expired.");
 }
 
 // Attempts to complete the Set Up List through the Compacted Magic Stack
