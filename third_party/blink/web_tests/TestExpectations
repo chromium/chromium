@@ -9125,3 +9125,6 @@ crbug.com/383946052 [ Android ] external/wpt/screen-capture/tentative/getdisplay
 crbug.com/383946052 [ Fuchsia ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
 crbug.com/383946052 [ Linux ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
 crbug.com/383946052 [ Mac ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
+
+# Gardener 2025-02-11
+crbug.com/395891728 [ Win ] external/wpt/FileAPI/BlobURL/cross-partition-navigation.https.html [ Failure ]
