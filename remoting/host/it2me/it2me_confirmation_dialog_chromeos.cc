@@ -15,6 +15,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -33,6 +34,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace remoting {
 
@@ -110,6 +112,8 @@ class It2MeConfirmationDialogChromeOS::Core : public ash::SessionObserver {
 
   void ShowConfirmationDialog();
 
+  views::DialogDelegate& GetDialogDelegate();
+
  private:
   void OnConfirmationDialogResult(MessageBox::Result result);
 
@@ -154,6 +158,11 @@ void It2MeConfirmationDialogChromeOS::Core::OnConfirmationDialogResult(
 void It2MeConfirmationDialogChromeOS::Core::OnSessionStateChanged(
     session_manager::SessionState state) {
   message_box_->ChangeParentContainer(GetParentContainer());
+}
+
+views::DialogDelegate&
+It2MeConfirmationDialogChromeOS::Core::GetDialogDelegate() {
+  return message_box_->GetDialogDelegate();
 }
 
 It2MeConfirmationDialogChromeOS::It2MeConfirmationDialogChromeOS(
@@ -256,6 +265,12 @@ const gfx::VectorIcon& It2MeConfirmationDialogChromeOS::GetIcon() const {
 
 const ui::ImageModel It2MeConfirmationDialogChromeOS::GetDialogIcon() const {
   return ui::ImageModel::FromVectorIcon(GetIcon());
+}
+
+views::DialogDelegate&
+It2MeConfirmationDialogChromeOS::GetDialogDelegateForTest() {
+  CHECK_IS_TEST();
+  return core_->GetDialogDelegate();
 }
 
 std::unique_ptr<It2MeConfirmationDialog>

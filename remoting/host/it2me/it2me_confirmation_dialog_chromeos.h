@@ -13,6 +13,7 @@
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace remoting {
 
@@ -30,6 +31,8 @@ class It2MeConfirmationDialogChromeOS : public It2MeConfirmationDialog {
   // It2MeConfirmationDialog implementation.
   void Show(const std::string& remote_user_email,
             ResultCallback callback) override;
+
+  views::DialogDelegate& GetDialogDelegateForTest();
 
  private:
   class Core;
