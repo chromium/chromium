@@ -450,6 +450,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
       PasswordChangeDelegate::State::kPasswordSuccessfullyChanged, 1);
+  histogram_tester.ExpectTotalCount("PasswordManager.PasswordChangeTimeOverall",
+                                    1);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
