@@ -336,7 +336,8 @@ TEST_F(AndroidWebViewStateSerializerTest, TestHugeDataURLSerialization) {
   EXPECT_EQ(huge_data_url, copy->GetDataURLAsString()->as_string());
 }
 
-TEST_F(AndroidWebViewStateSerializerTest, TestSerializeMultipleEntries) {
+TEST_F(AndroidWebViewStateSerializerTest, TestHistorySerialization) {
+  // Tests serializing all the entries in history.
   TestNavigationController controller;
 
   controller.Add(CreateNavigationEntry("http://url1"));
@@ -345,6 +346,33 @@ TEST_F(AndroidWebViewStateSerializerTest, TestSerializeMultipleEntries) {
 
   base::Pickle pickle;
   internal::WriteToPickle(controller, &pickle);
+
+  TestNavigationController copy;
+  base::PickleIterator iterator(pickle);
+  internal::RestoreFromPickle(&iterator, copy);
+
+  EXPECT_EQ(controller.GetEntryCount(), copy.GetEntryCount());
+  EXPECT_EQ(controller.GetCurrentEntry(), controller.GetCurrentEntry());
+  for (int i = 0; i < controller.GetEntryCount(); i++) {
+    AssertEntriesEqual(controller.GetEntryAtIndex(i), copy.GetEntryAtIndex(i));
+  }
+}
+
+TEST_F(AndroidWebViewStateSerializerTest,
+       TestChronologicalEntriesBackwardsCompat) {
+  // Ensures that the deserializer, updated with
+  // AW_STATE_VERSION_REVERSE_ENTRIES can read state written from earlier
+  // versions where the order of entries was not reversed.
+
+  TestNavigationController controller;
+
+  controller.Add(CreateNavigationEntry("http://url1"));
+  controller.Add(CreateNavigationEntry("http://url2"));
+  controller.Add(CreateNavigationEntry("http://url3"));
+
+  base::Pickle pickle;
+  internal::WriteToPickle(internal::AW_STATE_VERSION_DATA_URL, controller,
+                          &pickle);
 
   TestNavigationController copy;
   base::PickleIterator iterator(pickle);
