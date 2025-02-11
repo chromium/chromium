@@ -112,6 +112,9 @@ class SingleThreadIdleTaskRunner
   raw_ptr<Delegate, DanglingUntriaged> delegate_;  // NOT OWNED
   base::WeakPtr<SingleThreadIdleTaskRunner> weak_scheduler_ptr_;
   base::WeakPtrFactory<SingleThreadIdleTaskRunner> weak_factory_{this};
+
+ public:
+  using RunTaskDecltype = decltype(&SingleThreadIdleTaskRunner::RunTask);
 };
 
 }  // namespace scheduler

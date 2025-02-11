@@ -8,8 +8,38 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 
-namespace blink {
-namespace scheduler {
+using SingleThreadIdleTaskRunner = blink::scheduler::SingleThreadIdleTaskRunner;
+
+namespace base {
+
+// Cancellation traits for `RunTask` callbacks bound in this file. Without this,
+// `RunTask` callbacks bound in this file wouldn't be considered cancelled when
+// the `IdleTask` they wrap is cancelled.
+template <>
+struct CallbackCancellationTraits<
+    SingleThreadIdleTaskRunner::RunTaskDecltype,
+    std::tuple<base::WeakPtr<SingleThreadIdleTaskRunner>,
+               SingleThreadIdleTaskRunner::IdleTask>> {
+  static constexpr bool is_cancellable = true;
+
+  static bool IsCancelled(
+      SingleThreadIdleTaskRunner::RunTaskDecltype,
+      const base::WeakPtr<SingleThreadIdleTaskRunner>& task_runner,
+      const SingleThreadIdleTaskRunner::IdleTask& idle_task) {
+    return !task_runner || idle_task.IsCancelled();
+  }
+
+  static bool MaybeValid(
+      SingleThreadIdleTaskRunner::RunTaskDecltype,
+      const base::WeakPtr<SingleThreadIdleTaskRunner>& task_runner,
+      const SingleThreadIdleTaskRunner::IdleTask& idle_task) {
+    return task_runner.MaybeValid();
+  }
+};
+
+}  // namespace base
+
+namespace blink::scheduler {
 
 SingleThreadIdleTaskRunner::SingleThreadIdleTaskRunner(
     scoped_refptr<base::SingleThreadTaskRunner> idle_priority_task_runner,
@@ -101,5 +131,4 @@ void SingleThreadIdleTaskRunner::RunTask(IdleTask idle_task) {
   delegate_->DidProcessIdleTask();
 }
 
-}  // namespace scheduler
-}  // namespace blink
+}  // namespace blink::scheduler
