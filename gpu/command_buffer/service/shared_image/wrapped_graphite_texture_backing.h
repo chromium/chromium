@@ -69,6 +69,15 @@ class WrappedGraphiteTextureBacking : public ClearTrackingSharedImageBacking {
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
 
+  // Only used for testing 1-copy path where CopySharedImageToGLTexture is
+  // called via passthrough command decoder with GL context. This happens on
+  // test scenarios with Graphite-Swiftshader-Vulkan backend whereas in
+  // production IOSurfaceImageBacking would be used.
+  std::unique_ptr<SkiaGaneshImageRepresentation> ProduceSkiaGanesh(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<SharedContextState> context_state) override;
+
 #if BUILDFLAG(SKIA_USE_DAWN)
   std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(SharedImageManager* manager,
