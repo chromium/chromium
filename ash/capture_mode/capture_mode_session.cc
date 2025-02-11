@@ -2346,7 +2346,37 @@ void CaptureModeSession::PaintSunfishCaptureRegion(gfx::Canvas* canvas) {
                   /*circle_top=*/region.bottom() - arc_diameter,
                   /*start_angle=*/90);
 
-  // TODO(crbug.com/395483324): Paint focus rings.
+  // Draw a focus ring if the region or one of the drag handles circles
+  // currently has focus.
+  // TODO(crbug.com/395483324): Update the focus ring styling based on the new
+  // Sunfish mode region selection UI.
+  cc::PaintFlags focus_ring_flags;
+  focus_ring_flags.setAntiAlias(true);
+  focus_ring_flags.setColor(color_provider->GetColor(ui::kColorAshFocusRing));
+  focus_ring_flags.setStyle(cc::PaintFlags::kStroke_Style);
+  focus_ring_flags.setStrokeWidth(kFocusRingStrokeWidthDp);
+  const FineTunePosition focused_fine_tune_position =
+      focus_cycler_->GetFocusedFineTunePosition();
+  switch (focused_fine_tune_position) {
+    case FineTunePosition::kNone:
+      break;
+    case FineTunePosition::kCenter: {
+      gfx::RectF focus_rect(region);
+      focus_rect.Inset(
+          gfx::InsetsF(-kFocusRingSpacingDp - kFocusRingStrokeWidthDp / 2));
+      canvas->DrawRect(focus_rect, focus_ring_flags);
+      break;
+    }
+    default: {
+      const float radius =
+          dsf * (kAffordanceCircleRadiusDp + kFocusRingSpacingDp +
+                 kFocusRingStrokeWidthDp / 2);
+      canvas->DrawCircle(capture_mode_util::GetLocationForFineTunePosition(
+                             region, focused_fine_tune_position),
+                         radius, focus_ring_flags);
+      break;
+    }
+  }
 }
 
 void CaptureModeSession::MaybePaintCaptureRegionOverlay(
