@@ -4,13 +4,28 @@
 
 #include "components/ip_protection/common/ip_protection_issuer_token_direct_fetcher.h"
 
+#include <cstddef>
 #include <cstdint>
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
 
-#include "base/task/bind_post_task.h"
+#include "base/check.h"
+#include "base/debug/crash_logging.h"
+#include "base/functional/bind.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/ip_protection/common/ip_protection_issuer_token_fetcher.h"
+#include "net/base/net_errors.h"
+#include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/net_ipc_param_traits.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "url/gurl.h"
 // The ASSIGN_OR_RETURN macro is defined in the both the base::expected code and
 // the private-join-and-compute code. We need to undefine the macro here to
 // avoid compiler errors.
@@ -18,9 +33,7 @@
 #include "components/ip_protection/common/ip_protection_issuer_token_crypter.h"
 #include "components/ip_protection/get_issuer_token.pb.h"
 #include "net/base/features.h"
-#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"
 
 namespace ip_protection {

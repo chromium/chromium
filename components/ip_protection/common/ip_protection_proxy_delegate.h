@@ -5,12 +5,18 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_DELEGATE_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_DELEGATE_H_
 
+#include <cstddef>
 #include <deque>
+#include <string>
 
-#include "base/component_export.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
+#include "net/proxy_resolution/proxy_retry_info.h"
 
 class GURL;
 

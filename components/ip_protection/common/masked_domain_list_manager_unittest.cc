@@ -23,6 +23,7 @@
 #include "services/network/public/mojom/proxy_config.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 #include "url/url_util.h"
 
 namespace ip_protection {

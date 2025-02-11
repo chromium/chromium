@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "testing/gtest/include/gtest/gtest.h"
 

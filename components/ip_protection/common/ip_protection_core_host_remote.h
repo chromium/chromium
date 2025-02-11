@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_HOST_REMOTE_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_HOST_REMOTE_H_
 
-#include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/ip_protection/mojom/core.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ip_protection {

@@ -6,9 +6,14 @@
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_CONFIG_MANAGER_IMPL_H_
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"

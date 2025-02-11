@@ -4,14 +4,19 @@
 
 #include "components/ip_protection/common/ip_protection_telemetry_uma.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <optional>
+#include <string>
 
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
+#include "net/base/proxy_chain.h"
 
 namespace ip_protection {
 

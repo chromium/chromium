@@ -4,18 +4,24 @@
 
 #include "components/ip_protection/common/ip_protection_proxy_delegate.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
@@ -23,16 +29,25 @@
 #include "components/ip_protection/common/ip_protection_token_manager.h"
 #include "components/ip_protection/common/masked_domain_list_manager.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
+#include "net/base/features.h"
+#include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_chain.h"
+#include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/base/request_priority.h"
+#include "net/base/schemeful_site.h"
+#include "net/http/http_response_headers.h"
 #include "net/proxy_resolution/proxy_info.h"
+#include "net/proxy_resolution/proxy_retry_info.h"
 #include "net/test/gtest_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/proxy_config.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

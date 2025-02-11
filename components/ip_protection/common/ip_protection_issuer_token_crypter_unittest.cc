@@ -4,7 +4,11 @@
 
 #include "components/ip_protection/common/ip_protection_issuer_token_crypter.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"

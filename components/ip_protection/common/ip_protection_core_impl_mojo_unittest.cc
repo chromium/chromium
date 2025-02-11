@@ -4,6 +4,14 @@
 
 #include "components/ip_protection/common/ip_protection_core_impl_mojo.h"
 
+#include <map>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/functional/callback_forward.h"
+#include "base/notreached.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"

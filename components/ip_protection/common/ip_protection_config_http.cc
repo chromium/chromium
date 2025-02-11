@@ -4,20 +4,25 @@
 
 #include "components/ip_protection/common/ip_protection_config_http.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/types/expected.h"
 #include "net/base/features.h"
+#include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/mutable_network_traffic_annotation_tag_mojom_traits.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace ip_protection {

@@ -4,12 +4,15 @@
 
 #include "components/ip_protection/common/masked_domain_list_manager.h"
 
+#include <cstddef>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_set>
 #include <vector>
 
-#include "base/containers/contains.h"
+#include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
@@ -20,7 +23,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/features.h"
-#include "url/url_constants.h"
+#include "services/network/public/mojom/proxy_config.mojom-shared.h"
 
 namespace ip_protection {
 namespace {

@@ -4,34 +4,38 @@
 
 #include "components/ip_protection/common/ip_protection_issuer_token_direct_fetcher.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <iostream>
+#include <map>
+#include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
+#include "base/debug/crash_logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/ip_protection/common/ip_protection_issuer_token_fetcher.h"
+#include "components/ip_protection/get_issuer_token.pb.h"
+#include "net/base/features.h"
+#include "net/base/net_errors.h"
+#include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 // The ASSIGN_OR_RETURN macro is defined in the both the base::expected code and
 // the private-join-and-compute code. We need to undefine the macro here to
 // avoid compiler errors.
 #undef ASSIGN_OR_RETURN
-#include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/ip_protection_issuer_token_crypter.h"
-#include "net/url_request/url_request.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_context_builder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/public/mojom/url_response_head.mojom-shared.h"
-#include "services/network/test/test_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"

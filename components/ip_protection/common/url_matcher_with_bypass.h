@@ -5,8 +5,12 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_URL_MATCHER_WITH_BYPASS_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_URL_MATCHER_WITH_BYPASS_H_
 
+#include <cstddef>
 #include <map>
 #include <memory>
+#include <optional>
+#include <set>
+#include <string>
 #include <string_view>
 #include <unordered_set>
 #include <utility>
@@ -14,12 +18,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_usage_estimator.h"
-#include "base/types/optional_ref.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/scheme_host_port_matcher.h"
-#include "net/base/scheme_host_port_matcher_result.h"
-#include "net/base/scheme_host_port_matcher_rule.h"
 #include "net/base/schemeful_site.h"
 #include "url/gurl.h"
 

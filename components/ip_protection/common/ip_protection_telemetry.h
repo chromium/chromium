@@ -5,10 +5,11 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_TELEMETRY_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_TELEMETRY_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <optional>
 
 #include "base/time/time.h"
-#include "net/base/proxy_chain.h"
 
 namespace ip_protection {
 

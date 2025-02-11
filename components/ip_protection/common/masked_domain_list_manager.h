@@ -5,19 +5,21 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_MASKED_DOMAIN_LIST_MANAGER_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_MASKED_DOMAIN_LIST_MANAGER_H_
 
+#include <cstddef>
 #include <map>
 #include <optional>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/url_matcher_with_bypass.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/network_anonymization_key.h"
-#include "net/base/scheme_host_port_matcher.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/network_service.mojom-forward.h"
+#include "services/network/public/mojom/proxy_config.mojom-shared.h"
+#include "url/gurl.h"
 
 namespace ip_protection {
 

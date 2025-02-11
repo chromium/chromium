@@ -5,9 +5,13 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_ISSUER_TOKEN_FETCHER_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_ISSUER_TOKEN_FETCHER_H_
 
+#include <cstdint>
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 
 namespace ip_protection {

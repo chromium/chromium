@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_ISSUER_TOKEN_CRYPTER_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_ISSUER_TOKEN_CRYPTER_H_
 
+#include <cstddef>
+#include <memory>
 #include <string>
 #include <vector>
 

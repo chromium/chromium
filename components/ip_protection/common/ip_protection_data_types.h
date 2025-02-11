@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_DATA_TYPES_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_DATA_TYPES_H_
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 

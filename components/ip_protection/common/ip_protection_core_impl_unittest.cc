@@ -8,10 +8,12 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
-#include "base/strings/stringprintf.h"
+#include "base/functional/callback_forward.h"
+#include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -26,6 +28,8 @@
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
+#include "net/base/proxy_server.h"
+#include "services/network/public/mojom/proxy_config.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ip_protection {

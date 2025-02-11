@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_TELEMETRY_UMA_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_TELEMETRY_UMA_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <optional>
 
 #include "base/time/time.h"

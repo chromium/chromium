@@ -4,10 +4,23 @@
 
 #include "components/ip_protection/common/ip_protection_token_manager_impl.h"
 
+#include <algorithm>
+#include <cstddef>
+#include <deque>
+#include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
+#include <vector>
 
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/location.h"
+#include "base/logging.h"
 #include "base/rand_util.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"

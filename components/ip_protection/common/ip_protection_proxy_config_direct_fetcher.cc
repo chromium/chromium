@@ -4,11 +4,15 @@
 
 #include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 
+#include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
-#include "base/base64.h"
-#include "base/functional/callback.h"
+#include "base/check.h"
+#include "base/debug/crash_logging.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -18,11 +22,13 @@
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/time/time.h"
 #include "url/gurl.h"

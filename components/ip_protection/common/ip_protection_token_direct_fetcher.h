@@ -5,21 +5,23 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_TOKEN_DIRECT_FETCHER_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_TOKEN_DIRECT_FETCHER_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_token_fetcher.h"
 #include "components/ip_protection/common/ip_protection_token_fetcher_helper.h"
-#include "components/signin/public/identity_manager/access_token_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ip_protection {
