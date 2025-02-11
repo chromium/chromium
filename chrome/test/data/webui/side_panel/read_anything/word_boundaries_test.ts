@@ -8,6 +8,7 @@ import {PauseActionSource, ToolbarEvent, WordBoundaryMode} from 'chrome-untruste
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp, createSpeechSynthesisVoice, emitEvent} from './common.js';
+import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 
 suite('WordBoundariesUsedForSpeech', () => {
   let app: AppElement;
@@ -63,6 +64,9 @@ suite('WordBoundariesUsedForSpeech', () => {
 
     app = await createApp();
     app.enabledLangs = ['en-US'];
+    const speechSynthesis = new FakeSpeechSynthesis();
+    speechSynthesis.setMaxSegments(1);
+    app.synth = speechSynthesis;
     const selectedVoice =
         createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'});
     await emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
