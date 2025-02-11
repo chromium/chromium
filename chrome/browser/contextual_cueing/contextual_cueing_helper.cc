@@ -149,13 +149,32 @@ void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
 bool ContextualCueingHelper::IsBrowserBlockingNudges(
     ScopedNudgeDecisionRecorder* recorder) {
   // Determine if the Browser is available for nudging.
-  if (tabs::TabInterface::GetFromContents(web_contents())
-          ->GetBrowserWindowInterface()
-          ->GetUserEducationInterface()
-          ->IsFeaturePromoActive(feature_engagement::kIPHGlicPromoFeature)) {
+  if (!web_contents()) {
+    return false;
+  }
+
+  auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents());
+  if (!tab_interface) {
+    return false;
+  }
+
+  auto* browser_window_interface = tab_interface->GetBrowserWindowInterface();
+  if (!browser_window_interface) {
+    return false;
+  }
+
+  auto* user_education_interface =
+      browser_window_interface->GetUserEducationInterface();
+  if (!user_education_interface) {
+    return false;
+  }
+
+  if (user_education_interface->IsFeaturePromoActive(
+          feature_engagement::kIPHGlicPromoFeature)) {
     recorder->set_nudge_decision(NudgeDecision::kNudgeNotShownIPH);
     return true;
   }
+
   return false;
 }
 
