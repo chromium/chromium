@@ -125,6 +125,13 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
 
   void OnReadyStateChanged(WebMediaStreamSource::ReadyState state);
 
+  // Registers callback that is triggered whenever the delivered frame's
+  // metadata source_size or device_scale_factor changes.
+  void RegisterCaptureSurfaceResolutionChangeCallback(
+      base::RepeatingCallback<void(bool)> callback) {
+    captured_surface_resolution_callback_ = std::move(callback);
+  }
+
   const std::optional<bool>& noise_reduction() const {
     return noise_reduction_;
   }
@@ -161,6 +168,14 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
     width_ = frame_size.width();
     height_ = frame_size.height();
     computed_frame_rate_ = frame_rate;
+
+    bool resolution_changed =
+        (captured_frame_physical_size_ != metadata_source_size) ||
+        (device_scale_factor_ != device_scale_factor);
+    if (resolution_changed && captured_surface_resolution_callback_) {
+      captured_surface_resolution_callback_.Run(/*has_changed=*/true);
+    }
+
     captured_frame_physical_size_ = metadata_source_size;
     device_scale_factor_ = device_scale_factor;
   }
@@ -275,6 +290,7 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   std::optional<double> computed_frame_rate_;
   media::VideoCaptureFormat computed_source_format_;
   base::RepeatingTimer refresh_timer_;
+  base::RepeatingCallback<void(bool)> captured_surface_resolution_callback_;
 
   base::WeakPtrFactory<MediaStreamVideoTrack> weak_factory_{this};
 };

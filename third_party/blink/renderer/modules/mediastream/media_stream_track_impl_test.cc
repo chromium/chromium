@@ -68,6 +68,11 @@ std::unique_ptr<MockMediaStreamVideoSource> MakeMockMediaStreamVideoSource() {
       true));
 }
 
+class MockEventListener : public NativeEventListener {
+ public:
+  MOCK_METHOD(void, Invoke, (ExecutionContext*, Event*));
+};
+
 std::unique_ptr<blink::LocalMediaStreamAudioSource>
 MakeLocalMediaStreamAudioSource() {
   blink::MediaStreamDevice device;
@@ -250,7 +255,8 @@ TEST_F(MediaStreamTrackImplTest, MutedStateUpdates) {
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(MediaStreamTrackImplTest, ZoomStateUpdates) {
+TEST_F(MediaStreamTrackImplTest,
+       ZoomStateUpdatesAndTriggersConfigurationChangeEvent) {
   V8TestingScope v8_scope;
   MediaStreamComponent* component;
   MockMediaStreamVideoSource* platform_source_ptr;
@@ -259,6 +265,11 @@ TEST_F(MediaStreamTrackImplTest, ZoomStateUpdates) {
 
   MediaStreamTrackImpl* track = MakeGarbageCollected<MediaStreamTrackImpl>(
       v8_scope.GetExecutionContext(), component);
+  testing::StrictMock<MockEventListener>* event_listener =
+      MakeGarbageCollected<testing::StrictMock<MockEventListener>>();
+  track->addEventListener(event_type_names::kConfigurationchange,
+                          event_listener);
+  EXPECT_CALL(*event_listener, Invoke(_, _)).Times(1);
 
   // Start the source.
   platform_source_ptr->StartMockedSource();

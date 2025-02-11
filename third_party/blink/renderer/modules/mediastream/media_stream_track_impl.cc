@@ -302,6 +302,13 @@ MediaStreamTrackImpl::MediaStreamTrackImpl(
   if (source_device && source_device->display_media_info) {
     zoom_level_ = source_device->display_media_info->initial_zoom_level;
   }
+
+  if (video_track) {
+    video_track->RegisterCaptureSurfaceResolutionChangeCallback(
+        WTF::BindRepeating(
+            &MediaStreamTrackImpl::MaybeDispatchConfigurationChange,
+            WrapWeakPersistent(this)));
+  }
 }
 
 MediaStreamTrackImpl::~MediaStreamTrackImpl() = default;
@@ -964,8 +971,11 @@ void MediaStreamTrackImpl::SourceChangedZoomLevel(int zoom_level) {
     return;
   }
 
+  const bool zoom_level_changed = (zoom_level_ != zoom_level);
   zoom_level_ = zoom_level;
-  // TODO(383946052): Send an event to notify resolution change.
+  if (zoom_level_changed) {
+    MaybeDispatchConfigurationChange(true);
+  }
 }
 #endif
 
