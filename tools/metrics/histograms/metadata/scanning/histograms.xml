@@ -86,7 +86,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.MultiPageScan.PageScanResult"
-    enum="ScanJobFailureReason" expires_after="2025-03-10">
+    enum="ScanJobFailureReason" expires_after="2026-03-10">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -130,7 +130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.NumCompletedScansInSession" units="scans"
-    expires_after="2025-03-10">
+    expires_after="2026-03-10">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -203,7 +203,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Scanning.ReadyTime" units="ms" expires_after="2025-03-10">
+<histogram name="Scanning.ReadyTime" units="ms" expires_after="2026-03-10">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
