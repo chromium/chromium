@@ -48,23 +48,28 @@ ContextImplOrt::ContextImplOrt(
 
 ContextImplOrt::~ContextImplOrt() = default;
 
-// TODO(https://github.com/shiyi9801/chromium/issues/103): Investigate how to
-// set the tensor byte length limit and supported tensor ranks
-static constexpr uint64_t kTensorByteLengthLimit =
-    std::numeric_limits<int32_t>::max();
-
 // static
 ContextProperties ContextImplOrt::GetContextProperties() {
+  // TODO(https://github.com/shiyi9801/chromium/issues/103): Investigate how to
+  // set the tensor byte length limit and supported tensor ranks
+  static constexpr uint64_t kTensorByteLengthLimit =
+      std::numeric_limits<int32_t>::max();
+
+  static constexpr SupportedRanks kMaxRank = SupportedRanks::UpTo(8);
+  static constexpr SupportedRanks kNonScalarMaxRank =
+      SupportedRanks::NonScalarUpTo(8);
+
   return ContextProperties(
       InputOperandLayout::kNchw, Resample2DAxes::kChannelsFirst,
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
       {/*input=*/SupportedDataTypes::All(),
        /*constant=*/SupportedDataTypes::All(),
-       /*arg_min_max_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
+       /*arg_min_max_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kNonScalarMaxRank},
        /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
        /*batch_normalization_input=*/DataTypeConstraint::kFloat16To32,
-       /*cast_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*clamp_input=*/DataTypeConstraint::kFloat16To32,
+       /*cast_input=*/{DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       /*clamp_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*concat_inputs=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
        /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
        /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
@@ -72,61 +77,63 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*dequantize_linear_input=*/{},
        /*dequantize_linear_scale=*/{},
        /*add_input=*/
-       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*sub_input=*/
-       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*mul_input=*/
-       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*div_input=*/
-       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*max_input=*/
-       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*min_input=*/
-       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*pow_input=*/
-       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*equal_input=*/
-       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*greater_input=*/
-       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*greater_or_equal_input=*/
-       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*lesser_input=*/
-       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*lesser_or_equal_input=*/
-       {DataTypeConstraint::kAllDataTypesAtLeast8bits, SupportedRanks::UpTo(8)},
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*not_equal_input=*/{},
        /*logical_and_input=*/
-       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(8)},
+       {DataTypeConstraint::kUint8, kMaxRank},
        /*logical_or_input=*/
-       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(8)},
+       {DataTypeConstraint::kUint8, kMaxRank},
        /*logical_xor_input=*/
-       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(8)},
-       /*logical_not_input=*/DataTypeConstraint::kUint8,
+       {DataTypeConstraint::kUint8, kMaxRank},
+       /*logical_not_input=*/{DataTypeConstraint::kUint8, kMaxRank},
        /*logical_output=*/DataTypeConstraint::kUint8,
-       /*abs_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*ceil_input=*/DataTypeConstraint::kFloat16To32,
-       /*cos_input=*/DataTypeConstraint::kFloat16To32,
-       /*erf_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*exp_input=*/DataTypeConstraint::kFloat16To32,
-       /*floor_input=*/DataTypeConstraint::kFloat16To32,
-       /*identity_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*log_input=*/DataTypeConstraint::kFloat16To32,
-       /*neg_input=*/DataTypeConstraint::kFloat16To32Int8To64,
-       /*reciprocal_input=*/DataTypeConstraint::kFloat16To32,
-       /*sign_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*sin_input=*/DataTypeConstraint::kFloat16To32,
-       /*sqrt_input=*/DataTypeConstraint::kFloat16To32,
-       /*tan_input=*/DataTypeConstraint::kFloat16To32,
+       /*abs_input=*/{DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       /*ceil_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*cos_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*erf_input=*/{DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       /*exp_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*floor_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*identity_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       /*log_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*neg_input=*/{DataTypeConstraint::kFloat16To32Int8To64, kMaxRank},
+       /*reciprocal_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*sign_input=*/{DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       /*sin_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*sqrt_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*tan_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*elu_input=*/{},
-       /*expand_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
+       /*expand_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*gather_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
        /*gather_indices=*/DataTypeConstraint::kInt32To64,
        /*gather_elements_input=*/{},
        /*gather_elements_indices=*/{},
        /*gather_nd_input=*/{},
        /*gather_nd_indices=*/{},
-       /*gelu_input=*/DataTypeConstraint::kFloat16To32,
+       /*gelu_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*gemm_input=*/DataTypeConstraint::kFloat16To32Ints32To64,
        /*gru_input=*/{},
        /*gru_cell_input=*/{},
@@ -139,46 +146,67 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*lstm_input=*/{},
        /*lstm_cell_input=*/{},
        /*matmul_input=*/
-       {DataTypeConstraint::kFloat16To32Ints32To64, SupportedRanks::UpTo(8)},
+       {DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
        // TODO: Support more data types including int4.
        // https://github.com/shiyi9801/chromium/issues/85
-       /*pad_input=*/DataTypeConstraint::kFloat16To32,
-       /*average_pool2d_input=*/DataTypeConstraint::kFloat16To32,
-       /*l2_pool2d_input=*/DataTypeConstraint::kFloat16To32,
-       /*max_pool2d_input=*/DataTypeConstraint::kFloat16To32,
+       /*pad_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*average_pool2d_input=*/
+       {DataTypeConstraint::kFloat16To32, kNonScalarMaxRank},
+       /*l2_pool2d_input=*/
+       {DataTypeConstraint::kFloat16To32, kNonScalarMaxRank},
+       /*max_pool2d_input=*/
+       {DataTypeConstraint::kFloat16To32, kNonScalarMaxRank},
        /*prelu_input=*/{},
        /*quantize_linear_input=*/{},
        /*quantize_linear_zero_point=*/{},
-       /*reduce_l1_input=*/DataTypeConstraint::kFloat16To32Ints32To64,
-       /*reduce_l2_input=*/DataTypeConstraint::kFloat16To32Ints32To64,
-       /*reduce_log_sum_input=*/DataTypeConstraint::kFloat16To32Ints32To64,
-       /*reduce_log_sum_exp_input=*/DataTypeConstraint::kFloat16To32Ints32To64,
-       /*reduce_max_input=*/DataTypeConstraint::kFloat16To32Ints32To64,
-       /*reduce_mean_input=*/DataTypeConstraint::kFloat16To32Ints32To64,
-       /*reduce_min_input=*/DataTypeConstraint::kFloat16To32Ints32To64,
-       /*reduce_product_input=*/DataTypeConstraint::kFloat16To32Ints32To64,
-       /*reduce_sum_input=*/DataTypeConstraint::kFloat16To32Ints32To64,
-       /*reduce_sum_square_input=*/DataTypeConstraint::kFloat16To32Ints32To64,
-       /*relu_input=*/DataTypeConstraint::kFloat16To32Int8To32,
-       /*resample2d_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*reshape_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
+       /*reduce_l1_input=*/
+       {DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
+       /*reduce_l2_input=*/
+       {DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
+       /*reduce_log_sum_input=*/
+       {DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
+       /*reduce_log_sum_exp_input=*/
+       {DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
+       /*reduce_max_input=*/
+       {DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
+       /*reduce_mean_input=*/
+       {DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
+       /*reduce_min_input=*/
+       {DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
+       /*reduce_product_input=*/
+       {DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
+       /*reduce_sum_input=*/
+       {DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
+       /*reduce_sum_square_input=*/
+       {DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
+       /*relu_input=*/{DataTypeConstraint::kFloat16To32Int8To32, kMaxRank},
+       /*resample2d_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       /*reshape_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*reverse_input=*/{},
        /*scatter_elements_input=*/{},
        /*scatter_elements_indices=*/{},
        /*scatter_nd_input=*/{},
        /*scatter_nd_indices=*/{},
-       /*sigmoid_input=*/DataTypeConstraint::kFloat16To32,
-       /*slice_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*softmax_input=*/DataTypeConstraint::kFloat16To32,
+       /*scatter_nd_updates=*/{},
+       /*sigmoid_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*slice_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       /*softmax_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*softplus_input=*/{},
        /*softsign_input=*/{},
-       /*split_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
+       /*split_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*tanh_input=*/{},
        /*tile_input=*/{},
-       /*transpose_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*triangular_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*where_condition=*/DataTypeConstraint::kUint8,
-       /*where_value=*/DataTypeConstraint::kAllDataTypesAtLeast8bits});
+       /*transpose_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       /*triangular_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       /*where_condition=*/{DataTypeConstraint::kUint8, kMaxRank},
+       /*where_value=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank}});
 }
 
 base::WeakPtr<WebNNContextImpl> ContextImplOrt::AsWeakPtr() {

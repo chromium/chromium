@@ -937,7 +937,7 @@ GraphBuilderOrt::AddExpandOperation(const mojom::Expand& expand) {
   std::vector<uint32_t> shape_dims = {
       base::checked_cast<uint32_t>(output_shape.size())};
   std::vector<int64_t> shape_values;
-  base::ranges::transform(
+  std::ranges::transform(
       output_shape, std::back_inserter(shape_values),
       [](uint32_t dim) { return static_cast<int64_t>(dim); });
   ASSIGN_OR_RETURN(const std::string shape_name,
@@ -1168,7 +1168,7 @@ GraphBuilderOrt::AddLayerNormalizationOperation(
   }
 
   // TODO: crbug.com/356905058: Figure out if unordered axes should be allowed.
-  if (!base::ranges::is_sorted(axes)) {
+  if (!std::ranges::is_sorted(axes)) {
     return NewNotSupportedError("Axes must be ordered for layerNormalization.");
   }
   const auto axes_size = axes.size();
@@ -1194,7 +1194,7 @@ GraphBuilderOrt::AddLayerNormalizationOperation(
 
   std::vector<uint32_t> scale_dims;
   scale_dims.reserve(axes_size);
-  base::ranges::transform(
+  std::ranges::transform(
       axes, std::back_inserter(scale_dims),
       [&input_shape](uint32_t axis) { return input_shape[axis]; });
 
@@ -1273,10 +1273,10 @@ GraphBuilderOrt::AddPadOperation(const mojom::Pad& pad) {
   // paddings is an operand with data type int64, not an attribute.
   std::vector<int64_t> paddings;
   paddings.reserve(padding_length);
-  base::ranges::transform(
+  std::ranges::transform(
       pad.beginning_padding, std::back_inserter(paddings),
       [](uint32_t value) { return base::checked_cast<int64_t>(value); });
-  base::ranges::transform(
+  std::ranges::transform(
       pad.ending_padding, std::back_inserter(paddings),
       [](uint32_t value) { return base::checked_cast<int64_t>(value); });
 
@@ -1542,7 +1542,7 @@ GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
   std::vector<uint32_t> shape_dims = {
       base::checked_cast<uint32_t>(output_shape.size())};
   std::vector<int64_t> shape_values;
-  base::ranges::transform(
+  std::ranges::transform(
       output_shape, std::back_inserter(shape_values),
       [](uint32_t dim) { return static_cast<int64_t>(dim); });
   ASSIGN_OR_RETURN(const std::string shape_name,
