@@ -20,6 +20,10 @@ namespace base {
 class Version;
 }
 
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
+
 namespace updater {
 
 using RpcError = HRESULT;
@@ -40,6 +44,7 @@ class UpdateServiceProxyImpl
       base::OnceCallback<void(base::expected<base::Version, RpcError>)>
           callback);
   void FetchPolicies(
+      policy::PolicyFetchReason reason,
       base::OnceCallback<void(base::expected<int, RpcError>)> callback);
   void RegisterApp(
       const RegistrationRequest& request,

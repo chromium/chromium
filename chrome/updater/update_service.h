@@ -17,6 +17,10 @@
 #include "chrome/updater/util/util.h"
 #include "components/update_client/update_client.h"
 
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
+
 namespace updater {
 
 struct RegistrationRequest;
@@ -232,7 +236,8 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   virtual void GetVersion(base::OnceCallback<void(const base::Version&)>) = 0;
 
   // Fetches policies from device management.
-  virtual void FetchPolicies(base::OnceCallback<void(int)> callback) = 0;
+  virtual void FetchPolicies(policy::PolicyFetchReason reason,
+                             base::OnceCallback<void(int)> callback) = 0;
 
   // Registers given request to the updater.
   virtual void RegisterApp(const RegistrationRequest& request,

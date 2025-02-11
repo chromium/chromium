@@ -15,6 +15,7 @@
 #include "base/version.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
+#include "components/policy/core/common/policy_types.h"
 
 namespace updater {
 
@@ -32,7 +33,8 @@ class UpdateServiceImplInactive : public UpdateService {
         FROM_HERE, base::BindOnce(std::move(callback), base::Version()));
   }
 
-  void FetchPolicies(base::OnceCallback<void(int)> callback) override {
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     base::OnceCallback<void(int)> callback) override {
     VLOG(1) << __func__ << " (Inactive)";
     std::move(callback).Run(-1);
   }

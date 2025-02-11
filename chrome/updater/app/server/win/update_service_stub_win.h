@@ -10,6 +10,10 @@
 #include "base/sequence_checker.h"
 #include "chrome/updater/update_service.h"
 
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
+
 namespace updater {
 
 // Receives calls from the client and delegates them to an UpdateService
@@ -27,7 +31,8 @@ class UpdateServiceStubWin : public UpdateService {
 
   // updater::UpdateService overrides.
   void GetVersion(base::OnceCallback<void(const base::Version&)>) override;
-  void FetchPolicies(base::OnceCallback<void(int)> callback) override;
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     base::OnceCallback<void(int)> callback) override;
   void RegisterApp(const RegistrationRequest& request,
                    base::OnceCallback<void(int)> callback) override;
   void GetAppStates(

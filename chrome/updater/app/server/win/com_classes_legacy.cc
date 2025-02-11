@@ -60,6 +60,7 @@
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/win_constants.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_client.h"
 
@@ -1610,7 +1611,8 @@ STDMETHODIMP PolicyStatusImpl::refreshPolicies() {
         if (!update_service) {
           return;
         }
-        update_service->FetchPolicies(base::DoNothing());
+        update_service->FetchPolicies(policy::PolicyFetchReason::kUserRequest,
+                                      base::DoNothing());
       },
       PolicyStatusImplPtr(this)));
   return S_OK;

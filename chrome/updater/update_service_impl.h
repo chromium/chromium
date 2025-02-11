@@ -19,6 +19,10 @@ class FilePath;
 class Version;
 }  // namespace base
 
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
+
 namespace updater {
 class Configurator;
 struct RegistrationRequest;
@@ -31,7 +35,8 @@ class UpdateServiceImpl : public UpdateService {
   // Overrides for updater::UpdateService.
   void GetVersion(
       base::OnceCallback<void(const base::Version&)> callback) override;
-  void FetchPolicies(base::OnceCallback<void(int)> callback) override;
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     base::OnceCallback<void(int)> callback) override;
   void RegisterApp(const RegistrationRequest& request,
                    base::OnceCallback<void(int)> callback) override;
   void GetAppStates(

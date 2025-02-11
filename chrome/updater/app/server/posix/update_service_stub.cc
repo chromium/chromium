@@ -171,9 +171,10 @@ class UpdateServiceStubUntrusted : public mojom::UpdateService {
     impl_->RunPeriodicTasks(std::move(callback));
   }
 
-  void FetchPolicies(FetchPoliciesCallback callback) override {
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     FetchPoliciesCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    impl_->FetchPolicies(std::move(callback));
+    impl_->FetchPolicies(reason, std::move(callback));
   }
 
   void UpdateAll(UpdateAllCallback callback) override {
@@ -254,10 +255,11 @@ void UpdateServiceStub::GetVersion(GetVersionCallback callback) {
           .Then(task_end_listener_));
 }
 
-void UpdateServiceStub::FetchPolicies(FetchPoliciesCallback callback) {
+void UpdateServiceStub::FetchPolicies(policy::PolicyFetchReason reason,
+                                      FetchPoliciesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
-  impl_->FetchPolicies(std::move(callback).Then(task_end_listener_));
+  impl_->FetchPolicies(reason, std::move(callback).Then(task_end_listener_));
 }
 
 void UpdateServiceStub::RegisterApp(mojom::RegistrationRequestPtr request,

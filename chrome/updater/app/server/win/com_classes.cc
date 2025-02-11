@@ -35,6 +35,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/win_util.h"
+#include "components/policy/core/common/policy_types.h"
 
 namespace updater {
 namespace {
@@ -255,7 +256,8 @@ HRESULT UpdaterImpl::FetchPolicies(IUpdaterCallback* callback) {
           std::move(updater_callback).Run(-1);
           return;
         }
-        update_service->FetchPolicies(std::move(updater_callback));
+        update_service->FetchPolicies(policy::PolicyFetchReason::kUserRequest,
+                                      std::move(updater_callback));
       },
       std::move(updater_callback)));
   return S_OK;
