@@ -299,9 +299,6 @@ class GlicWindowController : public views::WidgetObserver {
   // Called when the move animation finishes when attaching.
   void AttachAnimationFinished();
 
-  // Checks if 'browser' is compatible with glic.
-  bool IsBrowserGlicCompatible(Browser* browser);
-
   // This method should be called anytime:
   //  * state_ transitions to or from kClosed.
   //  * attached_browser_ changes.

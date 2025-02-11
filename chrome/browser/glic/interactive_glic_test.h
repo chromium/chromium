@@ -282,15 +282,25 @@ class InteractiveGlicTestT : public T {
     return steps;
   }
 
-  // Ensures a mock glic button is visible and then clicks it.
-  //
-  // The mock glic window takes a moment to resize to the correct size for the
-  // window, so some elements may start offscreen/unrendered.
+  // Ensures a mock glic button is present and then clicks it. Works even if the
+  // element is off-screen.
   auto ClickMockGlicElement(
       const WebContentsInteractionTestUtil::DeepQuery& where) {
-    auto steps =
-        Api::Steps(Api::WaitForElementVisible(kGlicContentsElementId, where),
-                   Api::ClickElement(kGlicContentsElementId, where));
+    auto steps = Api::Steps(
+        // Note: Elements on the test client don't need to be in the viewport to
+        // be used. Ideally we would wait until the element is visible, but not
+        // necessarily on screen. Because we don't have any elements that get
+        // hidden on the test client, waiting for body visibility is good
+        // enough.
+        Api::WaitForElementVisible(kGlicContentsElementId, {"body"}),
+        // TODO(dfried): Figure out why Api::CheckJsResultAt() here doesn't
+        // work. Error:
+        // Interactive test failed on step 28 (ClickMockGlicElement:
+        // CheckJsResultAt( {"#contextAccessIndicator"}, " ... with reason
+        // kSequenceDestroyed; step type kShown; id ElementIdentifier
+        // kGlicContentsElementId.
+        Api::ExecuteJsAt(kGlicContentsElementId, where, "(el)=>el.click()"));
+
     Api::AddDescriptionPrefix(steps, "ClickMockGlicElement");
     return steps;
   }

@@ -128,6 +128,16 @@ class GlicUiInteractiveUiTestBase : public test::InteractiveGlicTest {
     return steps;
   }
 
+  auto CheckMockElementChecked(const DeepQuery& where, bool checked) {
+    MultiStep steps = Steps(InAnyContext(WaitForElementVisible(
+                                test::kGlicContentsElementId, {"body"})),
+                            InAnyContext(CheckJsResultAt(
+                                test::kGlicContentsElementId, where,
+                                "(el) => el.checked", testing::Eq(checked))));
+    AddDescriptionPrefix(steps, "CheckElementChecked");
+    return steps;
+  }
+
   auto ChangeConnectionState(bool online) {
     return ExecuteJs(test::kGlicHostElementId,
                      base::StringPrintf(R"(
@@ -185,6 +195,27 @@ IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest,
       WaitForState(kGlicUiStateHistory, IsCurrently(WebUiState::kReady)),
       ChangeConnectionState(false), CheckElementVisible(kContentsPanel, true),
       CheckState(kGlicUiStateHistory, IsCurrently(WebUiState::kReady)));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest, CanAttachWithBrowserWindow) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents),
+                  CheckMockElementChecked({"#canAttachCheckbox"}, true));
+}
+
+// DISABLED: Not reliable yet.
+IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest,
+                       DISABLED_CanNotAttachWithMinimizedBrowser) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached,
+                     GlicInstrumentMode::kHostAndContents),
+      CheckMockElementChecked({"#canAttachCheckbox"}, true),
+      Do([&]() { browser()->GetBrowserView().Minimize(); }),
+      // TODO(harringtond): Ideally this would wait until not checked, rather
+      // than check only once. There's no guarantee the web client
+      // has been updated before this code runs. Currently, this
+      // test works, though it's a risk for flakiness.
+      CheckMockElementChecked({"#canAttachCheckbox"}, false));
 }
 
 // Tests the network being unavailable at startup.

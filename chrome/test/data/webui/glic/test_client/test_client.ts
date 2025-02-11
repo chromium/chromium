@@ -53,6 +53,7 @@ interface PageElementTypes {
   desktopScreenshotImg: HTMLImageElement;
   desktopScreenshotErrorReason: HTMLSpanElement;
   createTabInBackground: HTMLInputElement;
+  canAttachCheckbox: HTMLInputElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -78,7 +79,7 @@ class WebClient implements GlicWebClient {
     const ver = await browser.getChromeVersion();
     logMessage(`Chrome version: ${JSON.stringify(ver)}`);
 
-    const focusedTabState = await this.browser.getFocusedTabState!();
+    const focusedTabState = this.browser.getFocusedTabState!();
     focusedTabState.subscribe(focusedTabChanged);
 
     // Initialize permission switches and subscribe for updates.
@@ -95,6 +96,9 @@ class WebClient implements GlicWebClient {
         updatePermissionSwitch(permission, enabled);
       });
     }
+    browser.canAttachPanel?.().subscribe((canAttach) => {
+      $.canAttachCheckbox.checked = canAttach;
+    });
   }
 
   async notifyPanelWillOpen(panelState: PanelState):

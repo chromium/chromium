@@ -86,6 +86,11 @@ class WebClientImpl implements WebClientInterface {
     });
   }
 
+  notifyPanelCanAttachChange(canAttach: boolean) {
+    this.sender.requestNoResponse(
+        'glicWebClientCanAttachStateChanged', {canAttach});
+  }
+
   notifyMicrophonePermissionStateChanged(enabled: boolean): void {
     this.sender.requestNoResponse(
         'glicWebClientNotifyMicrophonePermissionStateChanged', {
@@ -152,6 +157,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
         build: chromeVersion[2] || 0,
         patch: chromeVersion[3] || 0,
       },
+      canAttach: initialState.canAttach,
     };
   }
 

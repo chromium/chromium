@@ -36,6 +36,7 @@ export declare interface HostRequestTypes {
       panelState: PanelState,
       focusedTab: TabDataPrivate|undefined,
       chromeVersion: ChromeVersion,
+      canAttach: boolean,
     },
   };
   // This message is sent after the client returns successfully from
@@ -204,6 +205,12 @@ export declare interface WebClientRequestTypes {
   glicWebClientPanelStateChanged: {
     request: {
       panelState: PanelState,
+    },
+    response: void,
+  };
+  glicWebClientCanAttachStateChanged: {
+    request: {
+      canAttach: boolean,
     },
     response: void,
   };

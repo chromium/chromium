@@ -11,6 +11,7 @@
 #include "base/version_info/version_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/auth_controller.h"
+#include "chrome/browser/glic/browser_conditions.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
@@ -40,7 +41,8 @@ namespace glic {
 // then many classes will break.
 class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                              public GlicWindowController::StateObserver,
-                             public GlicWebClientAccess {
+                             public GlicWebClientAccess,
+                             public BrowserAttachObserver {
  public:
   explicit GlicWebClientHandler(
       GlicPageHandler* page_handler,
@@ -87,6 +89,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::BindRepeating(&GlicWebClientHandler::OnFocusedTabChanged,
                             base::Unretained(this)));
 
+    browser_attach_observation_ = ObserveBrowserForAttachment(profile_, this);
+
     auto state = glic::mojom::WebClientInitialState::New();
     state->chrome_version = version_info::GetVersion();
     state->microphone_permission_enabled =
@@ -100,6 +104,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         glic_service_->window_controller().GetPanelState().Clone();
 
     state->focused_tab = CreateTabData(glic_service_->GetFocusedTab());
+    state->can_attach = browser_attach_observation_->CanAttachToBrowser();
 
     std::move(callback).Run(std::move(state));
     glic_service_->WebClientCreated();
@@ -279,6 +284,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(done)));
   }
 
+  // BrowserAttachmentObserver implementation.
+  void CanAttachToBrowserChanged(bool can_attach) override {
+    web_client_->NotifyPanelCanAttachChange(can_attach);
+  }
+
  private:
   void Uninstall() {
     SetAudioDucking(false, base::DoNothing());
@@ -288,6 +298,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     pref_change_registrar_.Reset();
     glic_service_->window_controller().RemoveStateObserver(this);
     focus_changed_subscription_ = {};
+    browser_attach_observation_.reset();
   }
 
   void WebClientDisconnected() { Uninstall(); }
@@ -318,6 +329,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   base::CallbackListSubscription focus_changed_subscription_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
+  std::unique_ptr<BrowserAttachObservation> browser_attach_observation_;
 };
 
 GlicPageHandler::GlicPageHandler(
