@@ -47,7 +47,6 @@ chromium-metrics-reviews@google.com.
   <variant name="HistoryInMemoryDB" summary="HistoryInMemoryDB"/>
   <variant name="InterestGroups" summary="InterestGroups"/>
   <variant name="InterestGroupStorage" summary="InterestGroupStorage"/>
-  <variant name="IpProtectionIssuerTokens" summary="IpProtectionIssuerTokens"/>
   <variant name="KAnonymityService" summary="KAnonymityService"/>
   <variant name="LocalTraces" summary="LocalTraces"/>
   <variant name="MediaDeviceSalts" summary="MediaDeviceSalts"/>
