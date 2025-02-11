@@ -14,7 +14,8 @@
   <settings-toggle-button
       id="launcherToggle" pref="{{prefs.glic.launcher_enabled}}"
       label="$i18n{glicOsWidgetToggle}"
-      checked="{{launcherToggleOn_}}" on-change="onToggleChange_">
+      checked="{{launcherToggleOn_}}"
+      on-settings-boolean-control-change="onToggleChange_">
   </settings-toggle-button>
   <cr-collapse opened="[[launcherToggleOn_]]">
     <div class="cr-row" id="keyboardShortcutSetting">
