@@ -43,7 +43,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.ActivityFinisher;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -70,7 +69,6 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
-@DisabledTest(message = "https://crbug.com/394870141")
 public class TabSwitcherSearchTest {
     private static final int SERVER_PORT = 13245;
     private static final String URL_PREFIX = "127.0.0.1:" + SERVER_PORT;
@@ -293,8 +291,8 @@ public class TabSwitcherSearchTest {
                                 mTestServer, mInitialPage, urlsToOpen, /* incognito= */ false)
                         .openRegularTabSwitcher()
                         .openTabSwitcherSearch();
-        tabSwitcherSearchStation.typeInOmnibox(urlsToOpen.get(0));
-        tabSwitcherSearchStation.checkSuggestionsShown(true);
+        tabSwitcherSearchStation.typeInOmnibox("test.html");
+        tabSwitcherSearchStation.waitForSuggestionAtIndexWithTitleText(0, "android/test.html");
 
         clickSuggestion(urlsToOpen.get(0), /* includePrefix= */ true);
         CriteriaHelper.pollUiThread(
@@ -322,7 +320,7 @@ public class TabSwitcherSearchTest {
                         .openRegularTabSwitcher()
                         .openTabSwitcherSearch();
         tabSwitcherSearchStation.typeInOmnibox("one.html");
-        tabSwitcherSearchStation.checkSuggestionsShown(true);
+        tabSwitcherSearchStation.waitForSuggestionAtIndexWithTitleText(0, "One");
 
         clickSuggestion(urlsToOpen.get(0), /* includePrefix= */ true);
         CriteriaHelper.pollUiThread(
@@ -349,7 +347,7 @@ public class TabSwitcherSearchTest {
                         .openIncognitoTabSwitcher()
                         .openTabSwitcherSearch();
         tabSwitcherSearchStation.typeInOmnibox("one.html");
-        tabSwitcherSearchStation.checkSuggestionsShown(true);
+        tabSwitcherSearchStation.waitForSuggestionAtIndexWithTitleText(0, "One");
 
         verifySuggestions(urlsToOpen, /* includePrefix= */ true);
     }
@@ -368,7 +366,8 @@ public class TabSwitcherSearchTest {
         TabSwitcherSearchStation tabSwitcherSearchStation =
                 mInitialPage.openRegularTabSwitcher().openTabSwitcherSearch();
         tabSwitcherSearchStation.typeInOmnibox("foobar");
-        tabSwitcherSearchStation.checkSuggestionsShown(true);
+        tabSwitcherSearchStation.waitForSectionAtIndexWithText(0, "Search the web");
+        tabSwitcherSearchStation.waitForSuggestionAtIndexWithTitleText(1, "foobar");
 
         clickSuggestion("foobar", /* includePrefix= */ false);
         CriteriaHelper.pollUiThread(
@@ -398,7 +397,8 @@ public class TabSwitcherSearchTest {
                         .openIncognitoTabSwitcher()
                         .openTabSwitcherSearch();
         tabSwitcherSearchStation.typeInOmnibox("foobar");
-        tabSwitcherSearchStation.checkSuggestionsShown(true);
+        tabSwitcherSearchStation.waitForSectionAtIndexWithText(0, "Search the web");
+        tabSwitcherSearchStation.waitForSuggestionAtIndexWithTitleText(1, "foobar");
 
         clickSuggestion("foobar", /* includePrefix= */ false);
         CriteriaHelper.pollUiThread(
@@ -425,7 +425,7 @@ public class TabSwitcherSearchTest {
                 mInitialPage
                         .openNewTabFast()
                         .loadWebPageProgrammatically(
-                                mTestServer.getURL("/chrome/test/data/android/test.html"));
+                                mTestServer.getURL("/chrome/test/data/android/navigate/one.html"));
         BookmarkTestUtil.waitForBookmarkModelLoaded();
 
         // Click star button to bookmark the current tab.
@@ -436,15 +436,12 @@ public class TabSwitcherSearchTest {
 
         TabSwitcherSearchStation tabSwitcherSearchStation =
                 openPage.loadWebPageProgrammatically(
-                                mTestServer.getURL("/chrome/test/data/android/navigate/one.html"))
+                                mTestServer.getURL("/chrome/test/data/android/test.html"))
                         .openRegularTabSwitcher()
                         .openTabSwitcherSearch();
-        tabSwitcherSearchStation.typeInOmnibox("test.html");
-        tabSwitcherSearchStation.checkSuggestionsShown(true);
-
-        verifySuggestions(
-                Arrays.asList("/chrome/test/data/android/test.html"), /* includePrefix= */ true);
-        ViewUtils.onViewWaiting(withText("Bookmarks")).check(matches(isCompletelyDisplayed()));
+        tabSwitcherSearchStation.typeInOmnibox("one.html");
+        tabSwitcherSearchStation.waitForSectionAtIndexWithText(0, "Bookmarks");
+        tabSwitcherSearchStation.waitForSuggestionAtIndexWithTitleText(1, "One");
     }
 
     @Test
@@ -456,17 +453,14 @@ public class TabSwitcherSearchTest {
                 mInitialPage
                         .openNewTabFast()
                         .loadWebPageProgrammatically(
-                                mTestServer.getURL("/chrome/test/data/android/test.html"))
-                        .loadWebPageProgrammatically(
                                 mTestServer.getURL("/chrome/test/data/android/navigate/one.html"))
+                        .loadWebPageProgrammatically(
+                                mTestServer.getURL("/chrome/test/data/android/test.html"))
                         .openRegularTabSwitcher()
                         .openTabSwitcherSearch();
-        tabSwitcherSearchStation.typeInOmnibox("test.html");
-        tabSwitcherSearchStation.checkSuggestionsShown(true);
-
-        verifySuggestions(
-                Arrays.asList("/chrome/test/data/android/test.html"), /* includePrefix= */ true);
-        ViewUtils.onViewWaiting(withText("History")).check(matches(isDisplayed()));
+        tabSwitcherSearchStation.typeInOmnibox("one.html");
+        tabSwitcherSearchStation.waitForSectionAtIndexWithText(0, "History");
+        tabSwitcherSearchStation.waitForSuggestionAtIndexWithTitleText(1, "One");
     }
 
     private void closeSearchAndVerify() {

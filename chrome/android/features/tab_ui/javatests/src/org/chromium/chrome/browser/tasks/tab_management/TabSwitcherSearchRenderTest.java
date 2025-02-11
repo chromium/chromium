@@ -24,7 +24,6 @@ import org.chromium.base.test.ActivityFinisher;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -46,7 +45,6 @@ import org.chromium.ui.test.util.RenderTestRule.Component;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /** Tests for search in the tab switcher. */
@@ -54,7 +52,6 @@ import java.util.concurrent.ExecutionException;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
-@DisabledTest(message = "https://crbug.com/382536935")
 public class TabSwitcherSearchRenderTest {
     private static final int SERVER_PORT = 13245;
 
@@ -64,7 +61,7 @@ public class TabSwitcherSearchRenderTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(8)
+                    .setRevision(9)
                     .setBugComponent(Component.UI_BROWSER_MOBILE_TAB_SWITCHER)
                     .build();
 
@@ -122,9 +119,11 @@ public class TabSwitcherSearchRenderTest {
     @Restriction(PHONE)
     public void testHubSearchBox_Phone_Incognito() throws IOException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
         TabSwitcherSearchTestUtils.openUrls(
-                        mTestServer, mInitialPage, urlsToOpen, /* incognito= */ true)
+                        mTestServer,
+                        mInitialPage,
+                        Arrays.asList("/chrome/test/data/android/navigate/one.html"),
+                        /* incognito= */ true)
                 .openIncognitoTabSwitcher();
 
         mRenderTestRule.render(
@@ -230,7 +229,7 @@ public class TabSwitcherSearchRenderTest {
                         .openRegularTabSwitcher()
                         .openTabSwitcherSearch();
         tabSwitcherSearchStation.typeInOmnibox("one.html");
-        tabSwitcherSearchStation.checkSuggestionsShown(true);
+        tabSwitcherSearchStation.waitForSuggestionAtIndexWithTitleText(0, "One");
 
         mRenderTestRule.render(
                 tabSwitcherSearchStation.getActivity().findViewById(android.R.id.content),
@@ -250,7 +249,7 @@ public class TabSwitcherSearchRenderTest {
                         .openIncognitoTabSwitcher()
                         .openTabSwitcherSearch();
         tabSwitcherSearchStation.typeInOmnibox("one.html");
-        tabSwitcherSearchStation.checkSuggestionsShown(true);
+        tabSwitcherSearchStation.waitForSuggestionAtIndexWithTitleText(0, "One");
 
         mRenderTestRule.render(
                 tabSwitcherSearchStation.getActivity().findViewById(android.R.id.content),
