@@ -4,6 +4,7 @@
 
 package org.chromium.ui;
 
+import static android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;
 import static android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
 
 import android.content.Context;
@@ -355,11 +356,21 @@ public class UiUtils {
      * Sets the navigation bar icons to dark or light.
      *
      * @param rootView The root view used to request updates to the system UI theme.
-     * @param useDarkIcons Whether the navigation bar icons should be dark.
+     * @param lightNavigationBar Whether the navigation bar has a light appearance with dark icons.
      */
-    public static void setNavigationBarIconColor(View rootView, boolean useDarkIcons) {
+    public static void setNavigationBarIconColor(View rootView, boolean lightNavigationBar) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            WindowInsetsController controller = rootView.getWindowInsetsController();
+            if (controller != null) {
+                controller.setSystemBarsAppearance(
+                        lightNavigationBar ? APPEARANCE_LIGHT_NAVIGATION_BARS : 0,
+                        APPEARANCE_LIGHT_NAVIGATION_BARS);
+                return;
+            }
+        }
+
         int systemUiVisibility = rootView.getSystemUiVisibility();
-        if (useDarkIcons) {
+        if (lightNavigationBar) {
             systemUiVisibility |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
         } else {
             systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;

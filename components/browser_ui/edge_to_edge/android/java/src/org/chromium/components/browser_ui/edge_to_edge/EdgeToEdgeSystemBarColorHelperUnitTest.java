@@ -4,12 +4,12 @@
 
 package org.chromium.components.browser_ui.edge_to_edge;
 
+import static android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;
 import static android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -48,6 +48,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
     @Mock private View mDecorView;
     @Mock private WindowInsetsController mWindowInsetsController;
     @Captor private ArgumentCaptor<Integer> mStatusBarAppearanceCaptor;
+    @Captor private ArgumentCaptor<Integer> mNavigationBarAppearanceCaptor;
     @Mock private SystemBarColorHelper mDelegateColorHelper;
 
     private EdgeToEdgeSystemBarColorHelper mEdgeToEdgeColorHelper;
@@ -65,6 +66,11 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
                 .when(mWindowInsetsController)
                 .setSystemBarsAppearance(
                         mStatusBarAppearanceCaptor.capture(), eq(APPEARANCE_LIGHT_STATUS_BARS));
+        doNothing()
+                .when(mWindowInsetsController)
+                .setSystemBarsAppearance(
+                        mNavigationBarAppearanceCaptor.capture(),
+                        eq(APPEARANCE_LIGHT_NAVIGATION_BARS));
         doReturn(true).when(mDelegateColorHelper).canSetStatusBarColor();
     }
 
@@ -130,6 +136,16 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
     }
 
     @Test
+    public void setNavigationBarColor_VerifyNavigationBarAppearance() {
+        initEdgeToEdgeColorHelper();
+
+        mEdgeToEdgeColorHelper.setNavigationBarColor(Color.WHITE);
+        verifyNavigationBarAppearance(/* isLight= */ true);
+        mEdgeToEdgeColorHelper.setNavigationBarColor(Color.BLACK);
+        verifyNavigationBarAppearance(/* isLight= */ false);
+    }
+
+    @Test
     public void switchIntoEdgeToEdge() {
         mDelegateHelperSupplier.set(mDelegateColorHelper);
         initEdgeToEdgeColorHelper();
@@ -137,7 +153,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         verify(mWindow).setNavigationBarColor(Color.RED);
         verify(mDelegateColorHelper, times(0)).setNavigationBarColor(anyInt());
         verify(mWindow).setNavigationBarContrastEnforced(true);
-        verify(mDecorView).setSystemUiVisibility(anyInt());
+        verifyNavigationBarAppearance(/* isLight= */ false);
         clearInvocations(mDecorView);
 
         mEdgeToEdgeColorHelper.setStatusBarColor(Color.RED);
@@ -158,7 +174,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         verify(mWindow).setNavigationBarContrastEnforced(false);
         verify(mWindow).setStatusBarContrastEnforced(false);
         verifyStatusBarAppearance(/* isLight= */ false);
-        verify(mDecorView, atLeastOnce()).setSystemUiVisibility(anyInt());
+        verifyNavigationBarAppearance(/* isLight= */ false);
     }
 
     @Test
@@ -170,7 +186,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         verify(mDelegateColorHelper).setNavigationBarColor(Color.RED);
         verify(mWindow, times(0)).setNavigationBarColor(Color.TRANSPARENT);
         verify(mWindow).setNavigationBarContrastEnforced(false);
-        verify(mDecorView).setSystemUiVisibility(anyInt());
+        verifyNavigationBarAppearance(/* isLight= */ false);
         clearInvocations(mDecorView);
 
         mEdgeToEdgeColorHelper.setStatusBarColor(Color.RED);
@@ -188,7 +204,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         verify(mWindow).setNavigationBarContrastEnforced(true);
         verify(mWindow).setStatusBarContrastEnforced(true);
         verifyStatusBarAppearance(/* isLight= */ false);
-        verify(mDecorView, atLeastOnce()).setSystemUiVisibility(anyInt());
+        verifyNavigationBarAppearance(/* isLight= */ false);
     }
 
     // A test case for #canSetStatusBarColor, and should be remove when all the method override
@@ -221,7 +237,6 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         verify(mWindow, never()).setStatusBarColor(anyInt());
         verify(mDelegateColorHelper, never()).setStatusBarColor(anyInt());
         verify(mWindowInsetsController, never()).setSystemBarsAppearance(anyInt(), anyInt());
-        verify(mDecorView, never()).setSystemUiVisibility(anyInt());
     }
 
     private void initEdgeToEdgeColorHelper() {
@@ -246,6 +261,20 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
                     "The status bar should not have a light appearance.",
                     0,
                     (int) mStatusBarAppearanceCaptor.getValue());
+        }
+    }
+
+    private void verifyNavigationBarAppearance(boolean isLight) {
+        if (isLight) {
+            assertEquals(
+                    "The navigation bar should have a light appearance.",
+                    APPEARANCE_LIGHT_NAVIGATION_BARS,
+                    (int) mNavigationBarAppearanceCaptor.getValue());
+        } else {
+            assertEquals(
+                    "The navigation bar should not have a light appearance.",
+                    0,
+                    (int) mNavigationBarAppearanceCaptor.getValue());
         }
     }
 }

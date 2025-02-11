@@ -10,6 +10,7 @@
 #include "net/socket/transport_connect_job.h"
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -1133,6 +1134,142 @@ TEST_F(TransportConnectJobTest, DedupIPEndPoints) {
   EXPECT_EQ(attempts[3].endpoint, IPEndPoint(ParseIP("2::"), 443));
   EXPECT_THAT(attempts[4].result, test::IsError(ERR_CONNECTION_FAILED));
   EXPECT_EQ(attempts[4].endpoint, IPEndPoint(ParseIP("2.2.2.2"), 443));
+}
+
+TEST_F(TransportConnectJobTest,
+       OnDestinationDnsAliasesResolved_Skipped_IfNoAliases) {
+  host_resolver_.set_synchronous_mode(true);
+  client_socket_factory_.set_default_client_socket_type(
+      MockTransportClientSocketFactory::Type::kSynchronous);
+
+  std::vector<std::string> aliases;
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(kHostName, "2.2.2.2",
+                                                         std::move(aliases));
+
+  TestConnectJobDelegate test_delegate;
+  TransportConnectJob transport_connect_job(
+      DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+      DefaultParams(), &test_delegate, /*net_log=*/nullptr);
+
+  test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
+                                        /*expect_sync_result=*/true);
+
+  // Ensure the delegate method is NOT invoked because no DNS aliases were
+  // resolved.
+  EXPECT_FALSE(test_delegate.on_dns_aliases_resolved_called());
+}
+
+TEST_F(TransportConnectJobTest,
+       OnDestinationDnsAliasesResolved_Skipped_IfOnlyDestinationEndpoint) {
+  std::vector<std::string> aliases({kHostName});
+
+  host_resolver_.set_synchronous_mode(true);
+  client_socket_factory_.set_default_client_socket_type(
+      MockTransportClientSocketFactory::Type::kSynchronous);
+
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(kHostName, "2.2.2.2",
+                                                         std::move(aliases));
+
+  TestConnectJobDelegate test_delegate;
+  TransportConnectJob transport_connect_job(
+      DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+      DefaultParams(), &test_delegate, /*net_log=*/nullptr);
+
+  test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
+                                        /*expect_sync_result=*/true);
+
+  // Ensure the delegate method is NOT invoked because aliases only contain the
+  // destination endpoint.
+  EXPECT_FALSE(test_delegate.on_dns_aliases_resolved_called());
+}
+
+TEST_F(TransportConnectJobTest,
+       OnDestinationDnsAliasesResolved_Invoked_IfOneAlias) {
+  std::vector<std::string> aliases({"alias1"});
+  std::set<std::string> aliases_set(aliases.begin(), aliases.end());
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(kHostName, "2.2.2.2",
+                                                         std::move(aliases));
+  host_resolver_.set_synchronous_mode(true);
+  client_socket_factory_.set_default_client_socket_type(
+      MockTransportClientSocketFactory::Type::kSynchronous);
+
+  TestConnectJobDelegate test_delegate;
+  TransportConnectJob transport_connect_job(
+      DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+      DefaultParams(), &test_delegate, /*net_log=*/nullptr);
+
+  test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
+                                        /*expect_sync_result=*/true);
+
+  // Verify that the delegate method was called when aliases are resolved.
+  EXPECT_TRUE(test_delegate.on_dns_aliases_resolved_called());
+  EXPECT_EQ(test_delegate.dns_aliases(), aliases_set);
+}
+
+TEST_F(TransportConnectJobTest, OnDestinationDnsAliasesResolved_Invoked_OK) {
+  std::vector<std::string> aliases({"alias1", "alias2", kHostName});
+  std::set<std::string> aliases_set(aliases.begin(), aliases.end());
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(kHostName, "2.2.2.2",
+                                                         std::move(aliases));
+
+  for (bool host_resolution_synchronous : {false, true}) {
+    SCOPED_TRACE(host_resolution_synchronous);
+    for (bool connection_synchronous : {false, true}) {
+      SCOPED_TRACE(connection_synchronous);
+      host_resolver_.set_synchronous_mode(host_resolution_synchronous);
+      client_socket_factory_.set_default_client_socket_type(
+          connection_synchronous
+              ? MockTransportClientSocketFactory::Type::kSynchronous
+              : MockTransportClientSocketFactory::Type::kPending);
+
+      TestConnectJobDelegate test_delegate;
+      TransportConnectJob transport_connect_job(
+          DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+          DefaultParams(), &test_delegate, /*net_log=*/nullptr);
+
+      test_delegate.StartJobExpectingResult(
+          &transport_connect_job, OK,
+          host_resolution_synchronous && connection_synchronous);
+
+      // Verify that the delegate method was called when aliases are resolved.
+      EXPECT_TRUE(test_delegate.on_dns_aliases_resolved_called());
+      EXPECT_EQ(test_delegate.dns_aliases(), aliases_set);
+    }
+  }
+}
+
+TEST_F(TransportConnectJobTest, OnDestinationDnsAliasesResolved_Invoked_Error) {
+  std::vector<std::string> aliases({"alias1", "alias2", kHostName});
+  std::set<std::string> aliases_set(aliases.begin(), aliases.end());
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(kHostName, "2.2.2.2",
+                                                         std::move(aliases));
+
+  for (bool host_resolution_synchronous : {false, true}) {
+    SCOPED_TRACE(host_resolution_synchronous);
+    for (bool connection_synchronous : {false, true}) {
+      SCOPED_TRACE(connection_synchronous);
+      host_resolver_.set_synchronous_mode(host_resolution_synchronous);
+      client_socket_factory_.set_default_client_socket_type(
+          connection_synchronous
+              ? MockTransportClientSocketFactory::Type::kFailing
+              : MockTransportClientSocketFactory::Type::kPendingFailing);
+
+      TestConnectJobDelegate test_delegate;
+      TransportConnectJob transport_connect_job(
+          DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+          DefaultParams(), &test_delegate, /*net_log=*/nullptr);
+      test_delegate.set_error_for_on_destination_dns_aliases_resolved(
+          ERR_PROXY_REQUIRED);
+
+      test_delegate.StartJobExpectingResult(&transport_connect_job,
+                                            ERR_PROXY_REQUIRED,
+                                            host_resolution_synchronous);
+
+      // Verify that the delegate method was called when aliases are resolved.
+      EXPECT_TRUE(test_delegate.on_dns_aliases_resolved_called());
+      EXPECT_EQ(test_delegate.dns_aliases(), aliases_set);
+    }
+  }
 }
 
 }  // namespace

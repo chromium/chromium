@@ -39,8 +39,9 @@ class FadeTransitionHandler {
         mTabStripTransitionThreshold = ViewUtils.dpToPx(displayMetrics, TRANSITION_THRESHOLD_DP);
     }
 
-    void onTabStripSizeChanged(int width, boolean forceFadeInStrip) {
-        if (width == mTabStripWidth) return;
+    void onTabStripSizeChanged(
+            int width, boolean forceFadeInStrip, boolean desktopWindowingModeChanged) {
+        if (width == mTabStripWidth && !desktopWindowingModeChanged) return;
         mTabStripWidth = width;
         requestTransition(forceFadeInStrip);
     }

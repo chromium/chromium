@@ -197,6 +197,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
     "glic_browsertest.cc",
+    "glic_fre_controller_browsertest.cc",
     "glic_policy_browsertest.cc",
     "glic_window_resize_animation_browsertest.cc",
     "guest_util_browsertest.cc",

@@ -757,6 +757,9 @@ NET_ERROR(PROXY_HTTP_1_1_REQUIRED, -366)
 // The PAC script terminated fatally and must be reloaded.
 NET_ERROR(PAC_SCRIPT_TERMINATED, -367)
 
+// Signals that the request requires the IPP proxy.
+NET_ERROR(PROXY_REQUIRED, -368)
+
 // Obsolete. Kept here to avoid reuse.
 // Request is throttled because of a Backoff header.
 // See: crbug.com/486891.

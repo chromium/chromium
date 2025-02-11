@@ -98,6 +98,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
+#include "pdf/pdf_ink_metrics_handler.h"
 #include "pdf/pdfium/pdfium_ink_reader.h"
 #include "pdf/pdfium/pdfium_ink_writer.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
@@ -4565,13 +4566,25 @@ void PDFiumEngine::DiscardStroke(int page_index, InkStrokeId id) {
   ink_stroke_objects_map_.erase(it);
 }
 
-bool PDFiumEngine::ContainsV2InkPath() const {
+PDFLoadedWithV2InkAnnotations PDFiumEngine::ContainsV2InkPath(
+    const base::TimeDelta& timeout) const {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   for (const auto& page : pages_) {
-    if (PageContainsV2InkPath(page->GetPage())) {
-      return true;
+    if (base::TimeTicks::Now() - start_time >= timeout) {
+      return PDFLoadedWithV2InkAnnotations::kUnknown;
+    }
+
+    bool page_already_loaded = !!page->page();
+    bool contains_v2_ink_path = PageContainsV2InkPath(page->GetPage());
+    if (!page_already_loaded) {
+      // Unload the page to avoid loading all pages into memory.
+      page->Unload();
+    }
+    if (contains_v2_ink_path) {
+      return PDFLoadedWithV2InkAnnotations::kTrue;
     }
   }
-  return false;
+  return PDFLoadedWithV2InkAnnotations::kFalse;
 }
 
 std::map<InkModeledShapeId, ink::PartitionedMesh>

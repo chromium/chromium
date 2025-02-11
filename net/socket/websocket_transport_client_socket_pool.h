@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/proxy_chain.h"
 #include "net/log/net_log_with_source.h"
@@ -128,6 +129,8 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
                           HttpAuthController* auth_controller,
                           base::OnceClosure restart_with_auth_callback,
                           ConnectJob* job) override;
+    Error OnDestinationDnsAliasesResolved(const std::set<std::string>& aliases,
+                                          ConnectJob* job) override;
 
     // Calls Connect() on |connect_job|, and takes ownership. Returns Connect's
     // return value.

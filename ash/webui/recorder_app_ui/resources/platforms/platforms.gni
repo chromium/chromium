@@ -16,6 +16,7 @@ platform_files = [
   "swa/handler.ts",
   "swa/metrics.ts",
   "swa/on_device_model.ts",
+  "swa/on_device_model_utils.ts",
   "swa/soda_session.ts",
   "swa/types.ts",
 ]

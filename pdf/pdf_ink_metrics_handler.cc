@@ -4,6 +4,8 @@
 
 #include "pdf/pdf_ink_metrics_handler.h"
 
+#include <optional>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -158,8 +160,10 @@ void ReportEraseStroke(float size, ink::StrokeInput::ToolType tool_type) {
   ReportStrokeInputDeviceType(tool_type);
 }
 
-void RecordPdfLoadedWithV2InkAnnotations(bool has_annotations) {
-  base::UmaHistogramBoolean("PDF.LoadedWithV2InkAnnotations", has_annotations);
+void RecordPdfLoadedWithV2InkAnnotations(
+    PDFLoadedWithV2InkAnnotations loaded_with_annotations) {
+  base::UmaHistogramEnumeration("PDF.LoadedWithV2InkAnnotations2",
+                                loaded_with_annotations);
 }
 
 }  // namespace chrome_pdf

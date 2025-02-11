@@ -61,10 +61,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "cc/paint/paint_flags.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -211,6 +213,12 @@ constexpr int kFeedbackButtonSpacing = 10;
 // The animation duration for fading in Scanner action buttons.
 constexpr base::TimeDelta kScannerActionButtonFadeInDuration =
     base::Milliseconds(100);
+
+// The delay before sending out an image search request after a capture region
+// is adjusted using keyboard events. This is to prevent too many requests if
+// the user needs to repeatedly adjust the capture region. Note that this delay
+// does not apply to region adjustments that end in a mouse release event.
+constexpr base::TimeDelta kImageSearchRequestStartDelay = base::Seconds(1);
 
 // The preferred alignment of a widget positioned near the capture region.
 enum class CaptureRegionWidgetAlignment {
@@ -2724,9 +2732,24 @@ void CaptureModeSession::UpdateCaptureRegion(
   ClearActionContainer();
   UpdateDimensionsLabelWidget(is_resizing);
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
-  // The following may end the session and delete `this`, but we can ignore the
-  // result since it's the last line of this method.
-  std::ignore = ShowDefaultActionButtonsOrPerformSearch();
+
+  // Start a timer to request default actions or perform search after a delay.
+  // This is to prevent too many requests if the user needs to repeatedly adjust
+  // the capture region. Note that this delay does not apply to region
+  // adjustments that end in a mouse release event, since those follow a
+  // separate codepath in `OnLocatedEventReleased`.
+  image_search_request_timer_.Start(
+      FROM_HERE, kImageSearchRequestStartDelay,
+      base::BindOnce(
+          [](base::WeakPtr<CaptureModeSession> capture_mode_session) {
+            if (capture_mode_session) {
+              // The following may end the session and delete
+              // `capture_mode_session`, but we can ignore the result here.
+              std::ignore = capture_mode_session
+                                ->ShowDefaultActionButtonsOrPerformSearch();
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CaptureModeSession::UpdateDimensionsLabelWidget(bool is_resizing) {
@@ -3348,6 +3371,9 @@ void CaptureModeSession::ClearActionContainer() {
 
 [[nodiscard]] bool
 CaptureModeSession::ShowDefaultActionButtonsOrPerformSearch() {
+  // Cancel previous search requests if needed.
+  InvalidateImageSearch();
+
   // Early exit if we can't show the action container, i.e. a drag is in
   // progress or capture region is empty. This will be checked again if an
   // asynchronous function invokes `AddActionButton()`.
@@ -3505,6 +3531,7 @@ void CaptureModeSession::RefreshGlowRegion() {
 
 void CaptureModeSession::InvalidateImageSearch() {
   weak_token_factory_.InvalidateWeakPtrs();
+  image_search_request_timer_.Stop();
   MaybeRemoveGlowAnimation();
 }
 

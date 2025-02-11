@@ -42,6 +42,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -876,11 +877,29 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
+    public void smallDesktopWindowToSmallFullscreenWindow_TokenNotInUse() {
+        doTestDesktopWindowModeChanged(
+                /* enterDesktopWindow= */ false,
+                /* smallSourceWindow= */ true,
+                /* smallDestinationWindow= */ true,
+                /* tokenInUse= */ false);
+    }
+
+    @Test
     public void smallDesktopWindowToLargeFullscreenWindow_TokenNotInUse() {
         doTestDesktopWindowModeChanged(
                 /* enterDesktopWindow= */ false,
                 /* smallSourceWindow= */ true,
                 /* smallDestinationWindow= */ false,
+                /* tokenInUse= */ false);
+    }
+
+    @Test
+    public void largeDesktopWindowToSmallFullscreenWindow_TokenNotInUse() {
+        doTestDesktopWindowModeChanged(
+                /* enterDesktopWindow= */ false,
+                /* smallSourceWindow= */ false,
+                /* smallDestinationWindow= */ true,
                 /* tokenInUse= */ false);
     }
 
@@ -894,11 +913,29 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
+    public void smallDesktopWindowToSmallFullscreenWindow_TokenInUse() {
+        doTestDesktopWindowModeChanged(
+                /* enterDesktopWindow= */ false,
+                /* smallSourceWindow= */ true,
+                /* smallDestinationWindow= */ true,
+                /* tokenInUse= */ true);
+    }
+
+    @Test
     public void smallDesktopWindowToLargeFullscreenWindow_TokenInUse() {
         doTestDesktopWindowModeChanged(
                 /* enterDesktopWindow= */ false,
                 /* smallSourceWindow= */ true,
                 /* smallDestinationWindow= */ false,
+                /* tokenInUse= */ true);
+    }
+
+    @Test
+    public void largeDesktopWindowToSmallFullscreenWindow_TokenInUse() {
+        doTestDesktopWindowModeChanged(
+                /* enterDesktopWindow= */ false,
+                /* smallSourceWindow= */ false,
+                /* smallDestinationWindow= */ true,
                 /* tokenInUse= */ true);
     }
 
@@ -909,6 +946,38 @@ public class TabStripTransitionCoordinatorUnitTest {
                 /* smallSourceWindow= */ false,
                 /* smallDestinationWindow= */ false,
                 /* tokenInUse= */ true);
+    }
+
+    @Test
+    public void multipleWindowingModeSwitchesWithoutWidthChange() {
+        int count = mDelegate.fadeTransitionCallback.getCallCount();
+
+        // Open a small fullscreen window and switch to a small desktop window.
+        doTestDesktopWindowModeChanged(
+                /* enterDesktopWindow= */ true,
+                /* smallSourceWindow= */ true,
+                /* smallDestinationWindow= */ true,
+                /* tokenInUse= */ false);
+
+        // Switch to a fullscreen window of the same width.
+        simulateAppHeaderStateChanged(NARROW_DESKTOP_WINDOW_WIDTH, false);
+        simulateLayoutChange(NARROW_DESKTOP_WINDOW_WIDTH);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        Assert.assertEquals("Height is not as expected.", 0, mObserver.heightRequested);
+        Assert.assertTrue("Scrim overlay is not applied as expected.", mDelegate.applyScrimOverlay);
+
+        // Switch to a desktop window of the same width.
+        simulateAppHeaderStateChanged(NARROW_DESKTOP_WINDOW_WIDTH, true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        // Fade transition should be requested once initially while switching to a small desktop
+        // window, and again when switching back to a small window of the same width after switching
+        // out of desktop windowing mode to a window of the same width.
+        Assert.assertEquals(
+                "Fade transition was not requested twice.",
+                count + 2,
+                mDelegate.fadeTransitionCallback.getCallCount());
+        verifyFadeTransitionState(1f);
     }
 
     private void doTestDesktopWindowModeChanged(
@@ -946,6 +1015,7 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         // Simulate switching desktop windowing mode.
         simulateAppHeaderStateChanged(destinationWidth, enterDesktopWindow);
+        simulateLayoutChange(destinationWidth);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         // Verify the last height request made to the transition delegate.
@@ -1251,6 +1321,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         public boolean heightTransitionFinished;
         public float scrimOpacityRequested = NOTHING_OBSERVED;
         public boolean applyScrimOverlay;
+        public final CallbackHelper fadeTransitionCallback = new CallbackHelper();
         private @StripVisibilityState int mStripVisibilityState;
 
         void reset() {
@@ -1285,6 +1356,7 @@ public class TabStripTransitionCoordinatorUnitTest {
                     newOpacity == 0f
                             ? StripVisibilityState.VISIBLE
                             : StripVisibilityState.HIDDEN_BY_FADE;
+            fadeTransitionCallback.notifyCalled();
         }
 
         @Override

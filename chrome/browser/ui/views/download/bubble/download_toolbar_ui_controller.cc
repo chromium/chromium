@@ -513,10 +513,11 @@ void DownloadToolbarUIController::UpdateDownloadIcon(
 
   if (updates.show_animation && show_download_started_animation_) {
     has_pending_download_started_animation_ = true;
-    auto* container = GetPinnedToolbarActionsContainer(browser_view_);
-    container->GetAnimatingLayoutManager()->PostOrQueueAction(base::BindOnce(
-        &DownloadToolbarUIController::ShowPendingDownloadStartedAnimation,
-        base::Unretained(this)));
+    if (auto* container = GetPinnedToolbarActionsContainer(browser_view_)) {
+      container->GetAnimatingLayoutManager()->PostOrQueueAction(base::BindOnce(
+          &DownloadToolbarUIController::ShowPendingDownloadStartedAnimation,
+          weak_factory_.GetWeakPtr()));
+    }
   }
   if (updates.new_state && *updates.new_state != state_) {
     update_icon = true;

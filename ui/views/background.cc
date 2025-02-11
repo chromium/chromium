@@ -12,6 +12,7 @@
 #include "cc/paint/paint_flags.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -195,6 +196,10 @@ std::optional<gfx::RoundedCornersF> Background::GetRoundedCornerRadii() const {
   return std::nullopt;
 }
 
+/////////////////////////////////////////////////////////////////////////////
+// Factory methods implementations:
+/////////////////////////////////////////////////////////////////////////////
+
 std::unique_ptr<Background> CreateSolidBackground(SkColor color) {
   return std::make_unique<SolidBackground>(color);
 }
@@ -267,6 +272,25 @@ std::unique_ptr<Background> CreateThemedSolidBackground(ui::ColorId color_id) {
 std::unique_ptr<Background> CreateBackgroundFromPainter(
     std::unique_ptr<Painter> painter) {
   return std::make_unique<BackgroundPainter>(std::move(painter));
+}
+
+std::unique_ptr<Background> CreateSolidOrThemedBackground(
+    ui::ColorVariant color) {
+  if (auto color_id = color.GetColorId()) {
+    return CreateThemedSolidBackground(*color_id);
+  } else {
+    return CreateSolidBackground(*color.GetSkColor());
+  }
+}
+
+std::unique_ptr<Background> CreateSolidOrThemedRoundedRectBackground(
+    ui::ColorVariant color,
+    const gfx::RoundedCornersF& radii) {
+  if (auto color_id = color.GetColorId()) {
+    return CreateThemedRoundedRectBackground(*color_id, radii);
+  } else {
+    return CreateRoundedRectBackground(*color.GetSkColor(), radii);
+  }
 }
 
 }  // namespace views

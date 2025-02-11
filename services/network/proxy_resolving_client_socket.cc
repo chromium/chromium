@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <optional>
+#include <set>
 #include <string>
 #include <utility>
 
@@ -332,6 +333,14 @@ void ProxyResolvingClientSocket::OnNeedsProxyAuth(
   connect_job_.reset();
 
   OnIOComplete(net::ERR_PROXY_AUTH_REQUESTED);
+}
+
+net::Error ProxyResolvingClientSocket::OnDestinationDnsAliasesResolved(
+    const std::set<std::string>& aliases,
+    net::ConnectJob* job) {
+  // Ignore DNS aliases for proxy hostnames since higher-level layers will not
+  // take action on these.
+  return net::OK;
 }
 
 int ProxyResolvingClientSocket::ReconsiderProxyAfterError(int error) {

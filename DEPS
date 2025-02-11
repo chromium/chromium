@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '2e3ced92c6ec19d5a56a50fc483c6f30384ccc13',
+  'devtools_frontend_revision': 'eb76d9d386bb4b44d66f5f60d5a3281da3dc255a',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1119,7 +1119,7 @@ deps = {
   },
 
   'src/chrome/release_scripts': {
-      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '4fabd6b8924a5820085d93448224db17ed962885',
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '6c9c04b6a45748146fd2fb251ccdb7844e44c54b',
       'condition': 'checkout_chrome_release_scripts',
   },
 
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'f7e228e5dfdb1421f0d88218686d50a120585275',
+    '687f797f67ffe442194a90925ea7e4cce4bc5f41',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2918,7 +2918,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/eche_app/app',
-        'version': 'nV-L6Oyv8HBr9kbRx7ZelMBJYIGtgMlLD8AYurWSQSIC',
+        'version': 'u0tVz72sHSexa_mvF_EcRyfsT9wyQTtkAAy8yfj_GSwC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4472,7 +4472,7 @@ deps = {
 
   'src/components/optimization_guide/internal': {
       'url': Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        '0af40f4af6bd8c2da5dc7d8f45b2d591ccf07603',
+        '7bceac7b89ee4b436e6140a5890da32fe61bbbe4',
       'condition': 'checkout_src_internal',
   },
 

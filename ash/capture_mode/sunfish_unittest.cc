@@ -90,6 +90,8 @@
 
 namespace ash {
 
+namespace {
+
 using ::base::test::InvokeFuture;
 using ::base::test::RunOnceCallback;
 using ::specialized_features::FeatureAccessFailure;
@@ -116,6 +118,8 @@ constexpr char kCaptureModeTextCopiedToastId[] = "capture_mode_text_copied";
 
 // The number of focusable points or areas for the region overlay.
 constexpr int kRegionFocusCount = 9;
+
+constexpr base::TimeDelta kImageSearchRequestStartDelay = base::Seconds(1);
 
 void WaitForImageCapturedForSearch(PerformCaptureType expected_capture_type) {
   base::test::TestFuture<void> image_captured_future;
@@ -1269,6 +1273,42 @@ TEST_F(SunfishTest, ShowSearchButtonOnRegionAdjusted) {
   EXPECT_EQ(container_widget->GetLayer()->GetTargetOpacity(), 1.f);
   ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
   EXPECT_TRUE(session_test_api.GetActionButtons()[0]->GetVisible());
+}
+
+// Tests that there is a delay before showing the search button after the user
+// adjusts a capture region with their keyboard. This is to prevent the search
+// button repeatedly appearing and disappearing while the user adjusts the
+// capture region with arrow keys.
+TEST_F(SunfishTest, SearchButtonShownWithDelayAfterRegionAdjustedWithKeyboard) {
+  // Start default capture mode.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+
+  // Hit space to select a default region, then simulate a delay less than
+  // `kImageSearchRequestStartDelay`.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_SPACE, event_generator);
+  task_environment()->FastForwardBy(base::Milliseconds(150));
+
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  EXPECT_FALSE(session_test_api.GetActionButtonByViewId(
+      ActionButtonViewID::kSearchButton));
+
+  // Press tab until the whole region is focused, shift the region using arrow
+  // keys, then simulate a delay less than `kImageSearchRequestStartDelay`.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/6);
+  SendKey(ui::VKEY_RIGHT, event_generator, /*count=*/3);
+  task_environment()->FastForwardBy(base::Milliseconds(150));
+
+  EXPECT_FALSE(session_test_api.GetActionButtonByViewId(
+      ActionButtonViewID::kSearchButton));
+
+  // Simulate a delay of `kImageSearchRequestStartDelay`.
+  task_environment()->FastForwardBy(kImageSearchRequestStartDelay);
+
+  EXPECT_TRUE(session_test_api.GetActionButtonByViewId(
+      ActionButtonViewID::kSearchButton));
 }
 
 // Tests that the search action button is shown in default capture mode.
@@ -3566,6 +3606,7 @@ TEST_F(ScannerTest, ActionButtonsUpdatedWhenRegionAdjustedWithKeyboard) {
   // Hit space to select a default region.
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   SendKey(ui::VKEY_SPACE, event_generator);
+  task_environment()->FastForwardBy(kImageSearchRequestStartDelay);
   detect_text_future.Take().Run("detected text");
 
   const CaptureModeSessionTestApi session_test_api(
@@ -3580,6 +3621,7 @@ TEST_F(ScannerTest, ActionButtonsUpdatedWhenRegionAdjustedWithKeyboard) {
   // arrow key.
   SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/6);
   SendKey(ui::VKEY_RIGHT, event_generator);
+  task_environment()->FastForwardBy(kImageSearchRequestStartDelay);
   detect_text_future.Take().Run("");
 
   // No action buttons should be shown since there was no detected text.
@@ -3587,6 +3629,7 @@ TEST_F(ScannerTest, ActionButtonsUpdatedWhenRegionAdjustedWithKeyboard) {
 
   // Shift the region again.
   SendKey(ui::VKEY_RIGHT, event_generator);
+  task_environment()->FastForwardBy(kImageSearchRequestStartDelay);
   detect_text_future.Take().Run("detected text again");
 
   // Action buttons should be shown again since there was detected text.
@@ -3613,6 +3656,7 @@ TEST_F(ScannerTest,
   // Hit space to select a default region.
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   SendKey(ui::VKEY_SPACE, event_generator);
+  task_environment()->FastForwardBy(kImageSearchRequestStartDelay);
   // Simulate two fetched actions.
   auto output1 = std::make_unique<manta::proto::ScannerOutput>();
   manta::proto::ScannerObject& objects1 = *output1->add_objects();
@@ -3628,6 +3672,7 @@ TEST_F(ScannerTest,
   // key.
   SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
   SendKey(ui::VKEY_RIGHT, event_generator);
+  task_environment()->FastForwardBy(kImageSearchRequestStartDelay);
   // Simulate one fetched action.
   auto output2 = std::make_unique<manta::proto::ScannerOutput>();
   manta::proto::ScannerObject& objects2 = *output2->add_objects();
@@ -3635,6 +3680,41 @@ TEST_F(ScannerTest,
   fetch_actions_future.Take().Run(std::move(output2), manta::MantaStatus());
 
   EXPECT_THAT(session_test_api.GetActionButtons(), SizeIs(1));
+}
+
+// Tests that there is a delay when requesting actions after the user adjusts a
+// capture region with their keyboard. This is to prevent too many requests if
+// the user repeatedly adjusts the capture region with arrow keys.
+TEST_F(ScannerTest,
+       ActionButtonsUpdatedWithDelayAfterRegionAdjustedWithKeyboard) {
+  // Start default capture mode.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  // Expect OCR to be triggered exactly once, after the user has finished
+  // adjusting the capture region.
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .Times(1)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  // Hit space to select a default region, tab until the whole region is
+  // focused, then shift the region using arrow keys.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_SPACE, event_generator);
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/6);
+  SendKey(ui::VKEY_RIGHT, event_generator, /*count=*/3);
+  task_environment()->FastForwardBy(kImageSearchRequestStartDelay);
+  detect_text_future.Take().Run("detected text");
+
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  // Action buttons should be shown since there was detected text.
+  EXPECT_THAT(
+      session_test_api.GetActionButtons(),
+      ElementsAre(ActionButtonIdIs(ActionButtonViewID::kSmartActionsButton),
+                  ActionButtonIdIs(ActionButtonViewID::kCopyTextButton)));
 }
 
 // Tests that the capture label is hidden while capturing an image to send to
@@ -4178,5 +4258,7 @@ TEST_F(
           kSunfishConsentDisclaimerAccepted));
   EXPECT_TRUE(controller->IsActive());
 }
+
+}  // namespace
 
 }  // namespace ash

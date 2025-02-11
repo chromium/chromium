@@ -170,4 +170,8 @@ void GlicFreController::OnCheckIsDefaultBrowserFinished(
                                                  true);
   }
 }
+
+bool GlicFreController::IsShowingDialogForTesting() const {
+  return !!fre_widget_;
+}
 }  // namespace glic

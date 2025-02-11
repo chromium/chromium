@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_initial_prompt_role.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ailm_initial_prompt_line_dict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ailm_prompt_content_dict.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_ailminitialpromptlinedict_ailmpromptcontentdict_string_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_ailm_initial_prompt_line.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_ailmpromptcontentdict_string.h"
 #include "third_party/blink/renderer/core/events/progress_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"

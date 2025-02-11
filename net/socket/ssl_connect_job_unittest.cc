@@ -1571,5 +1571,99 @@ TEST_F(SSLConnectJobTest, LegacyCryptoThenECHRecovery) {
                                       2 /* kSuccessRetry */, 1);
 }
 
+TEST_F(SSLConnectJobTest,
+       OnDestinationDnsAliasesResolved_IsInvokedIfDirectAndAliases_Ok) {
+  std::vector<std::string> aliases({"alias1", "alias2", kHostHttps.host()});
+  std::set<std::string> aliases_set(aliases.begin(), aliases.end());
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(
+      kHostHttps.host(), "2.2.2.2", std::move(aliases));
+
+  for (IoMode io_mode : {SYNCHRONOUS, ASYNC}) {
+    SCOPED_TRACE(io_mode);
+    host_resolver_.set_synchronous_mode(io_mode == SYNCHRONOUS);
+    StaticSocketDataProvider data;
+    data.set_connect_data(MockConnect(io_mode, OK));
+    socket_factory_.AddSocketDataProvider(&data);
+    SSLSocketDataProvider ssl(io_mode, OK);
+    socket_factory_.AddSSLSocketDataProvider(&ssl);
+
+    TestConnectJobDelegate test_delegate;
+    std::unique_ptr<ConnectJob> ssl_connect_job =
+        CreateConnectJob(&test_delegate, ProxyChain::Direct(), MEDIUM);
+
+    test_delegate.StartJobExpectingResult(ssl_connect_job.get(), OK,
+                                          io_mode == SYNCHRONOUS);
+
+    EXPECT_TRUE(test_delegate.on_dns_aliases_resolved_called());
+    EXPECT_EQ(test_delegate.dns_aliases(), aliases_set);
+  }
+}
+
+TEST_F(SSLConnectJobTest,
+       OnDestinationDnsAliasesResolved_IsInvokedIfDirectAndAliases_Error) {
+  std::vector<std::string> aliases({"alias1", "alias2", kHostHttps.host()});
+  std::set<std::string> aliases_set(aliases.begin(), aliases.end());
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(
+      kHostHttps.host(), "2.2.2.2", std::move(aliases));
+
+  for (IoMode io_mode : {SYNCHRONOUS, ASYNC}) {
+    SCOPED_TRACE(io_mode);
+    host_resolver_.set_synchronous_mode(io_mode == SYNCHRONOUS);
+    StaticSocketDataProvider data;
+    data.set_connect_data(MockConnect(io_mode, OK));
+    socket_factory_.AddSocketDataProvider(&data);
+    SSLSocketDataProvider ssl(io_mode, OK);
+    socket_factory_.AddSSLSocketDataProvider(&ssl);
+
+    TestConnectJobDelegate test_delegate;
+    test_delegate.set_error_for_on_destination_dns_aliases_resolved(
+        ERR_PROXY_REQUIRED);
+    std::unique_ptr<ConnectJob> ssl_connect_job =
+        CreateConnectJob(&test_delegate, ProxyChain::Direct(), MEDIUM);
+
+    test_delegate.StartJobExpectingResult(
+        ssl_connect_job.get(), ERR_PROXY_REQUIRED, io_mode == SYNCHRONOUS);
+
+    EXPECT_TRUE(test_delegate.on_dns_aliases_resolved_called());
+    EXPECT_EQ(test_delegate.dns_aliases(), aliases_set);
+  }
+}
+
+TEST_F(SSLConnectJobTest, OnDestinationDnsAliasesResolved_NotInvokedForProxy) {
+  std::set<std::string> aliases = {"proxy.example.com",
+                                   kHttpProxyServer.GetHost()};
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(
+      kHttpProxyServer.GetHost(), "2.2.2.2", std::move(aliases));
+  const uint8_t kSOCKS5Request[] = {0x05, 0x01, 0x00, 0x03, 0x09, 's',
+                                    'o',  'c',  'k',  's',  'h',  'o',
+                                    's',  't',  0x01, 0xBB};
+
+  MockWrite writes[] = {
+      MockWrite(SYNCHRONOUS, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
+      MockWrite(SYNCHRONOUS, reinterpret_cast<const char*>(kSOCKS5Request),
+                std::size(kSOCKS5Request)),
+  };
+
+  MockRead reads[] = {
+      MockRead(SYNCHRONOUS, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
+      MockRead(SYNCHRONOUS, kSOCKS5OkResponse, kSOCKS5OkResponseLength),
+  };
+
+  host_resolver_.set_synchronous_mode(true);
+  StaticSocketDataProvider data(reads, writes);
+  data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(SYNCHRONOUS, OK);
+  socket_factory_.AddSSLSocketDataProvider(&ssl);
+
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> ssl_connect_job = CreateConnectJob(
+      &test_delegate, PacResultElementToProxyChain("SOCKS5 foo:333"));
+  test_delegate.StartJobExpectingResult(ssl_connect_job.get(), OK,
+                                        /*expect_sync_result=*/true);
+  EXPECT_TRUE(test_delegate.socket()->GetDnsAliases().empty());
+  EXPECT_FALSE(test_delegate.on_dns_aliases_resolved_called());
+}
+
 }  // namespace
 }  // namespace net

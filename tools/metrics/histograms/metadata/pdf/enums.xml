@@ -222,6 +222,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//pdf/pdf_ink_metrics_handler.h:PDFInk2StrokePenColor) -->
 
+<!-- LINT.IfChange(PDFLoadedWithV2InkAnnotations) -->
+
+<enum name="PDFLoadedWithV2InkAnnotations">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="True"/>
+  <int value="2" label="False"/>
+</enum>
+
+<!-- LINT.ThenChange(//pdf/pdf_ink_metrics_handler.h:PDFLoadedWithV2InkAnnotations) -->
+
 <enum name="PDFPostMessageDataType">
 <!-- This must be kept current with PostMessageDataType in
      chrome/browser/resources/pdf/pdf_viewer.ts. -->
