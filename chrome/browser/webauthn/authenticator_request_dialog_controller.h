@@ -18,6 +18,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
+#include "chrome/browser/webauthn/password_credential_controller.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
@@ -90,12 +91,14 @@ class AuthenticatorRequestDialogController
   // is only resolved after the UI is dismissed.
   bool is_request_complete() const;
 
-  // Starts the UX flow, by either showing the transport selection screen or
-  // the guided flow for them most likely transport.
+  // Starts the UX flow, by either showing the transport or password selection
+  // screen or the guided flow for the most likely transport.
   //
   // Valid action when at step: kNotStarted.
-  void StartFlow(device::FidoRequestHandlerBase::TransportAvailabilityInfo
-                     transport_availability);
+  void StartFlow(
+      device::FidoRequestHandlerBase::TransportAvailabilityInfo
+          transport_availability,
+      webauthn::PasswordCredentialController::PasswordCredentials passwords);
 
   // Starts a modal WebAuthn flow (i.e. what you normally get if you call
   // WebAuthn with no mediation parameter) from a conditional request.
@@ -346,7 +349,7 @@ class AuthenticatorRequestDialogController
   void set_has_icloud_drive_enabled(bool);
 #endif
 
-  void set_ambient_credential_types(int types);
+  void SetCredentialTypes(int types);
 
   content::AuthenticatorRequestClientDelegate::UIPresentation ui_presentation()
       const;
@@ -505,6 +508,8 @@ class AuthenticatorRequestDialogController
   device::FidoRequestHandlerBase::TransportAvailabilityInfo
       transport_availability_;
 
+  webauthn::PasswordCredentialController::PasswordCredentials passwords_;
+
   content::AuthenticatorRequestClientDelegate::AccountPreselectedCallback
       account_preselected_callback_;
   RequestCallback request_callback_;
@@ -602,9 +607,8 @@ class AuthenticatorRequestDialogController
 
   bool enclave_can_be_default_ = true;
 
-  // The credential types that are being asked for in an ambient UI
-  // request.
-  int ambient_credential_types_ =
+  // The credential types that are being asked for
+  int credential_types_ =
       static_cast<int>(blink::mojom::CredentialTypeFlags::kNone);
 
   // ChallengeUrl support. The URL is the destination to fetch the challenge

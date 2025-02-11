@@ -1590,8 +1590,9 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
                        std::move(client_data_json_params)));
   }
 
-  if (options->mediation == blink::mojom::Mediation::CONDITIONAL) {
-    req_state_->request_delegate->SetAmbientCredentialTypes(
+  if (options->mediation == blink::mojom::Mediation::CONDITIONAL ||
+      options->mediation == blink::mojom::Mediation::IMMEDIATE) {
+    req_state_->request_delegate->SetCredentialTypes(
         options->requested_credential_type_flags);
   }
 
