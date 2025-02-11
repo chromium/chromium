@@ -62,14 +62,10 @@ found in the LICENSE file.
         <item name="android:windowAnimationStyle">@null</item>
     </style>
 
-    <!-- Extend base theme rather than Theme.Chromium.WithWindowAnimation to avoid values-v27
-         navigation bar colors from being applied -->
-    <style name="Theme.Chromium.SearchActivity" parent="Base.Theme.Chromium.WithWindowAnimation" />
+    <style name="Theme.Chromium.SearchActivity" parent="Theme.Chromium.WithWindowAnimation" />
 
     <!-- Web app themes -->
-    <!-- Extend base theme rather than Theme.Chromium.WithWindowAnimation to avoid values-v27
-        navigation bar colors from being applied -->
-    <style name="Theme.Chromium.Webapp" parent="Base.Theme.Chromium.WithWindowAnimation">
+    <style name="Theme.Chromium.Webapp" parent="Theme.Chromium.WithWindowAnimation">
         <item name="android:windowBackground">@null</item>
         <item name="android:windowDisablePreview">true</item>
     </style>
