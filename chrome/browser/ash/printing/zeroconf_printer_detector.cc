@@ -174,12 +174,6 @@ bool ConvertToPrinter(const std::string& service_type,
                        << " printer with missing service name.";
     return false;
   }
-  if (service_description.ip_address.empty()) {
-    PRINTER_LOG(ERROR) << "Found zeroconf " << service_type
-                       << " printer named '" << service_description.service_name
-                       << "' with missing IP address.";
-    return false;
-  }
   if (service_description.address.port() == 0) {
     // Bonjour printers are required to register the _printer._tcp name even if
     // they don't support LPD.  If they don't support LPD, they use a port of 0
@@ -191,6 +185,12 @@ bool ConvertToPrinter(const std::string& service_type,
                          << "' with invalid port.";
     }
     return false;
+  }
+  if (service_description.ip_address.empty()) {
+    PRINTER_LOG(DEBUG) << "Zeroconf " << service_type << " printer named '"
+                       << service_description.service_name
+                       << "' is missing IP address.  Continuing with hostname: "
+                       << service_description.address.HostForURL();
   }
 
   chromeos::Printer& printer = detected_printer->printer;
