@@ -45,7 +45,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, Appearance) {
   RunTest("side_panel/customize_chrome/appearance_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, Categories) {
+// TODO(crbug.com/394712092): Flaky on multiple platforms.
+IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, DISABLED_Categories) {
   RunTest("side_panel/customize_chrome/categories_test.js", "mocha.run()");
 }
 
