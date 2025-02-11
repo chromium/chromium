@@ -105,6 +105,9 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   // Marks Orca consent status as rejected and disable the feature.
   virtual void DisableOrcaFeature() = 0;
 
+  // Marks Lobster settings toggle off.
+  virtual void DisableLobsterSettings() = 0;
+
   // Returns true if Quick Answers or Mahi card should be shown (either consent
   // is approved or pending).
   bool ShouldShowHmrCard();

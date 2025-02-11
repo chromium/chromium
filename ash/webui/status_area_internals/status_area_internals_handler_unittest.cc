@@ -71,6 +71,7 @@ class TestMagicBoostState : public chromeos::MagicBoostState {
   int32_t AsyncIncrementHMRConsentWindowDismissCount() override { return 0; }
   void AsyncWriteHMREnabled(bool enabled) override {}
   void DisableOrcaFeature() override {}
+  void DisableLobsterSettings() override {}
 };
 
 }  // namespace

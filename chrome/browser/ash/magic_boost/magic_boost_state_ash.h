@@ -42,6 +42,7 @@ class MagicBoostStateAsh : public chromeos::MagicBoostState,
   void ShouldIncludeOrcaInOptIn(
       base::OnceCallback<void(bool)> callback) override;
   void DisableOrcaFeature() override;
+  void DisableLobsterSettings() override;
 
   // Virtual for testing.
   virtual void EnableOrcaFeature();

@@ -99,6 +99,11 @@ void MagicBoostStateAsh::DisableOrcaFeature() {
   GetEditorPanelManager()->OnMagicBoostPromoCardDeclined();
 }
 
+void MagicBoostStateAsh::DisableLobsterSettings() {
+  pref_change_registrar_->prefs()->SetBoolean(ash::prefs::kLobsterEnabled,
+                                              false);
+}
+
 void MagicBoostStateAsh::EnableOrcaFeature() {
   // Note that we just need to change consent status to enable the Orca feature,
   // since when Orca consent status is unset, `kOrcaEnabled` should be enabled
