@@ -46,6 +46,7 @@ config("config") {
     "//ios/third_party/earl_grey2/src/TestLib/Condition",
     "//ios/third_party/earl_grey2/src/TestLib/Config",
     "//ios/third_party/earl_grey2/src/TestLib/DistantObject",
+    "//ios/third_party/earl_grey2/src/TestLib/EarlGreyImpl",
     "//ios/third_party/earl_grey2/src/TestLib/Exception",
     "//ios/third_party/earl_grey2/src/TestLib/Execution",
     "//ios/third_party/earl_grey2/src/TestLib/FailureHandler",
