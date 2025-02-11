@@ -20,6 +20,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 
 class GURL;
 
@@ -37,14 +38,17 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
 
   // Binds receivers corresponding to connections from renderer frame
   // contexts and stores them in `frame_receivers_`.
-  // `partitioned_fetch_failure_closure` runs when the storage_key check fails
-  // in `BlobURLStoreImpl::ResolveAsURLLoaderFactory`.
+  // `partitioning_blob_url_closure` runs when the storage_key check fails
+  // in `BlobURLStoreImpl::ResolveAsURLLoaderFactory` and increments the use
+  // counter.
   void AddReceiver(
       const blink::StorageKey& storage_key,
       const url::Origin& renderer_origin,
       int render_process_host_id,
       mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver,
-      base::RepeatingClosure partitioned_fetch_failure_closure,
+      base::RepeatingCallback<void(const GURL&,
+                                   blink::mojom::PartitioningBlobURLInfo)>
+          partitioning_blob_url_closure,
       bool partitioning_disabled_by_policy = false);
 
   // Binds receivers corresponding to connections from renderer worker

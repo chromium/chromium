@@ -1205,26 +1205,6 @@ TEST_F(AutofillExternalDelegateTest, DidAcceptFillAutofillAiFillsFullForm) {
                   Property("value", &FormFieldData::value, value_to_fill))));
 }
 
-// Tests that on acceptance of a `kFillAutofillAi` suggestion with
-// `Suggestion::ValueToFill` payload, the queried field is filled.
-TEST_F(AutofillExternalDelegateTest, DidAcceptFillAutofillAiFillsSingleField) {
-  IssueOnQuery();
-  ASSERT_GT(queried_form().fields().size(), 0UL);
-  const std::u16string value_to_fill = u"John";
-
-  Suggestion fill_suggestion =
-      Suggestion(u"Autocomplete", SuggestionType::kFillAutofillAi);
-  fill_suggestion.payload = Suggestion::ValueToFill(value_to_fill);
-
-  EXPECT_CALL(
-      manager(),
-      FillOrPreviewField(mojom::ActionPersistence::kFill,
-                         mojom::FieldActionType::kReplaceAll,
-                         HasQueriedFormId(), HasQueriedFieldId(), value_to_fill,
-                         SuggestionType::kFillAutofillAi, _));
-  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
-}
-
 // Tests that the `AutofillAutofillAiDelegate` is notified when the
 // `kAutofillAiLoadingState` suggestion is shown.
 TEST_F(AutofillExternalDelegateTest,

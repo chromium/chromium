@@ -329,6 +329,7 @@ struct AuthenticatorRequestDialogModel
       const std::vector<uint8_t> user_id;
     };
     using Credential = base::StrongAlias<class CredentialTag, CredentialInfo>;
+    using Password = base::StrongAlias<class PasswordTag, absl::monostate>;
     using Transport =
         base::StrongAlias<class TransportTag, AuthenticatorTransport>;
     using WindowsAPI = base::StrongAlias<class WindowsAPITag, absl::monostate>;
@@ -340,6 +341,7 @@ struct AuthenticatorRequestDialogModel
     using SignInAgain =
         base::StrongAlias<class SignInAgainTag, absl::monostate>;
     using Type = absl::variant<Credential,
+                               Password,
                                Transport,
                                WindowsAPI,
                                Phone,

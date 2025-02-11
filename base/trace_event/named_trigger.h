@@ -21,27 +21,21 @@ inline constexpr char kStartupTracingTriggerName[] = "startup";
 // trigger caused a scenario to either begin recording or finalize the trace
 // depending on the config, or false if the trigger had no effect. If the
 // trigger specified isn't active in the config, this will do nothing.
-BASE_EXPORT bool EmitNamedTrigger(const std::string& trigger_name,
-                                  std::optional<int32_t> value = std::nullopt);
+BASE_EXPORT bool EmitNamedTrigger(
+    const std::string& trigger_name,
+    std::optional<int32_t> value = std::nullopt,
+    std::optional<uint64_t> flow_id = std::nullopt);
 
 class NamedTriggerManager {
  public:
   virtual bool DoEmitNamedTrigger(const std::string& trigger_name,
-                                  std::optional<int32_t> value) = 0;
+                                  std::optional<int32_t> value,
+                                  uint64_t flow_id) = 0;
 
  protected:
   // Sets the instance returns by GetInstance() globally to |manager|.
   BASE_EXPORT static void SetInstance(NamedTriggerManager* manager);
 };
-
-// Returns a flow id that connects to a background tracing trigger.
-BASE_EXPORT uint64_t TriggerFlowId(const std::string_view& name,
-                                   std::optional<int32_t> value = std::nullopt);
-
-// Returns a perfetto flow that connects to a background tracing trigger.
-BASE_EXPORT perfetto::Flow TriggerFlow(
-    const std::string_view& name,
-    std::optional<int32_t> value = std::nullopt);
 
 }  // namespace base::trace_event
 

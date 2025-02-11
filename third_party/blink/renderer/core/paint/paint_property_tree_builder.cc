@@ -1874,7 +1874,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateViewTransitionEffect() {
 
     const bool needs_view_transition_effect =
         is_view_transition_element ||
-        (object_.IsLayoutView() && !IsInLocalSubframe(object_) &&
+        (object_.IsLayoutView() && object_.GetFrame()->IsOutermostMainFrame() &&
          !object_.GetDocument().IsSVGDocument());
 
     if (needs_view_transition_effect) {

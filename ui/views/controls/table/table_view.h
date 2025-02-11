@@ -18,6 +18,7 @@
 #include "ui/gfx/render_text.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/metadata/view_factory.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
@@ -27,6 +28,14 @@ namespace ui {
 struct AXActionData;
 
 }  // namespace ui
+
+namespace task_manager {
+
+// Forward declaring TaskManagerView to use as a PassKey because it has
+// permission to disable alternating row colors on macOS.
+class TaskManagerView;
+
+}  // namespace task_manager
 
 // A TableView is a view that displays multiple rows with any number of columns.
 // TableView is driven by a TableModel. The model returns the contents
@@ -269,6 +278,12 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // If enabled, hovering over a row causes the row's background color to
   // change.
   void SetMouseHoveringEnabled(bool enabled);
+
+  // Updates whether table rows will render with alternating colors. Enabling
+  // only works on macOS, other platforms results in a no-op.
+  void SetAlternatingRowColorsEnabled(
+      base::PassKey<task_manager::TaskManagerView> key,
+      bool enabled);
 
   // Returns the proper ax sort direction.
   ax::mojom::SortDirection GetFirstSortDescriptorDirection() const;
@@ -596,6 +611,11 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
 
   // The row beneath the cursor, if the table is focused.
   std::optional<size_t> hovered_row_ = std::nullopt;
+
+  // If enabled, rows will alternate between kColorTableBackground and
+  // kColorTableBackgroundAlternate.
+  bool alternating_row_colors_ =
+      PlatformStyle::kTableViewSupportsAlternatingRowColors;
 
   TableType table_type_ = TableType::kTextOnly;
 

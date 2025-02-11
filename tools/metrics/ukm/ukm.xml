@@ -9323,6 +9323,49 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Glic.Response">
+  <owner>erikchen@chromium.org</owner>
+  <owner>iwells@google.com</owner>
+  <summary>
+    Recorded when a response starts and was visible. The source id reflects the
+    targeted tab, and can be an empty source ID if no tab is targeted.
+  </summary>
+  <metric name="Attached" enum="Boolean">
+    <summary>
+      Whether the glic window was attached or detached.
+    </summary>
+  </metric>
+  <metric name="InvocationSource" enum="GlicInvocationSource">
+    <summary>
+      The source of the invocation of the glic window.
+    </summary>
+  </metric>
+  <metric name="WebClientMode" enum="GlicWebClientMode">
+    <summary>
+      The mode of the glic window.
+    </summary>
+  </metric>
+</event>
+
+<event name="Glic.WindowOpen">
+  <owner>erikchen@chromium.org</owner>
+  <owner>iwells@google.com</owner>
+  <summary>
+    Recorded when a glic window opens. The source id reflects the targeted tab,
+    and can be an empty source ID if no tab is targeted.
+  </summary>
+  <metric name="Attached" enum="Boolean">
+    <summary>
+      Whether the glic window was attached or detached.
+    </summary>
+  </metric>
+  <metric name="InvocationSource" enum="GlicInvocationSource">
+    <summary>
+      The source of the invocation of the glic window.
+    </summary>
+  </metric>
+</event>
+
 <event name="GoogleDocsOfflineExtension">
   <owner>dullweber@chromium.org</owner>
   <owner>arabm@google.com</owner>

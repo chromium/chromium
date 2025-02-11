@@ -151,7 +151,7 @@ suite('SidePanelShoppingListTest', () => {
     window.localStorage[LOCAL_STORAGE_EXPAND_STATUS_KEY] = undefined;
   });
 
-  test('RenderShoppingList', async () => {
+  test('RenderShoppingList', () => {
     const productElements = getProductElements(shoppingList);
     assertEquals(2, products.length);
 

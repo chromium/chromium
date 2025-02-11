@@ -25,7 +25,7 @@ suite('CertificateManagerV2Test', () => {
   let certManager: CertificateManagerV2Element;
   let testProxy: TestCertificateManagerProxy;
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testProxy = new TestCertificateManagerProxy();
     CertificatesV2BrowserProxy.setInstance(testProxy);

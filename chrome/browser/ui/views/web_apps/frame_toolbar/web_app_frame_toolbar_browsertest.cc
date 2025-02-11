@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
@@ -166,8 +167,9 @@ SkColor GetFrameColor(Browser* browser) {
 class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
  public:
   WebAppFrameToolbarBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kPinnableDownloadsButton);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kPinnableDownloadsButton, features::kPageActionsMigration},
+        {});
   }
 
   WebAppFrameToolbarTestHelper* helper() {
@@ -212,13 +214,25 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   EXPECT_EQ(toolbar_right_container->parent(),
             helper()->web_app_frame_toolbar());
 
-  std::vector<const PageActionIconView*> page_actions =
-      helper()
-          ->web_app_frame_toolbar()
-          ->GetPageActionIconControllerForTesting()
-          ->GetPageActionIconViewsForTesting();
-  for (const PageActionIconView* action : page_actions) {
+  std::vector<const views::View*> page_action_views = {};
+  for (auto action_id : helper()
+                            ->app_browser()
+                            ->GetAppBrowserController()
+                            ->GetTitleBarPageActions()) {
+    auto* page_action_view =
+        helper()->web_app_frame_toolbar()->GetPageActionView(action_id);
+    ASSERT_NE(nullptr, page_action_view);
+    EXPECT_EQ(page_action_view->parent(),
+              toolbar_right_container->page_action_container());
+    page_action_views.push_back(page_action_view);
+  }
+  for (const PageActionIconView* action :
+       helper()
+           ->web_app_frame_toolbar()
+           ->GetPageActionIconControllerForTesting()
+           ->GetPageActionIconViewsForTesting()) {
     EXPECT_EQ(action->parent(), toolbar_right_container);
+    page_action_views.emplace_back(action);
   }
 
   views::View* const menu_button =
@@ -239,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
 #endif
 
   // Initially the page action icons are not visible.
-  EXPECT_EQ(GetLastVisible(page_actions), nullptr);
+  EXPECT_EQ(GetLastVisible(page_action_views), nullptr);
   const int original_menu_button_width = menu_button->width();
   EXPECT_GT(original_menu_button_width, 0);
 
@@ -262,14 +276,15 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   EXPECT_LT(window_title->width(), original_window_title_width);
 #endif
 
-  EXPECT_NE(GetLastVisible(page_actions), nullptr);
+  EXPECT_NE(GetLastVisible(page_action_views), nullptr);
   EXPECT_EQ(menu_button->width(), original_menu_button_width);
 
   // Resize the WebAppFrameToolbarView just enough to clip out the page action
   // icons (and toolbar contents left of them).
   const int original_toolbar_width = helper()->web_app_frame_toolbar()->width();
-  const int new_toolbar_width = toolbar_right_container->width() -
-                                GetLastVisible(page_actions)->bounds().right();
+  const int new_toolbar_width =
+      toolbar_right_container->width() -
+      GetLastVisible(page_action_views)->bounds().right();
   const int new_frame_width = helper()->frame_view()->width() -
                               original_toolbar_width + new_toolbar_width;
 
@@ -289,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
 
   // The page action icons should be hidden while the app menu button retains
   // its full width.
-  EXPECT_EQ(GetLastVisible(page_actions), nullptr);
+  EXPECT_EQ(GetLastVisible(page_action_views), nullptr);
   EXPECT_EQ(menu_button->width(), original_menu_button_width);
 }
 

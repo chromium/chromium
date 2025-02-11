@@ -51,6 +51,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
@@ -2752,6 +2753,9 @@ void EnclaveManager::Load(base::OnceClosure closure) {
         FROM_HERE, std::move(closure));
     return;
   }
+
+  load_duration_timer_ = std::make_unique<base::ElapsedTimer>();
+
   load_callbacks_.emplace_back(std::move(closure));
   Act();
 }
@@ -3647,6 +3651,12 @@ void EnclaveManager::Act() {
 
 void EnclaveManager::LoadComplete(std::optional<std::string> contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (load_duration_timer_) {
+    base::UmaHistogramTimes("WebAuthentication.EnclaveLoadDuration",
+                            load_duration_timer_->Elapsed());
+    load_duration_timer_.reset();
+  }
 
   loading_ = false;
   if (contents) {

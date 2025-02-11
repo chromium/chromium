@@ -226,7 +226,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     testElement.remove();
   });
 
-  test('Notification Permission strings', async function() {
+  test('Notification Permission strings', function() {
     const entries = getEntries();
 
     // Check that the text describing the changed permissions is correct.

@@ -94,7 +94,6 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   bool CanShareGroups() const;
   bool IsGroupSaved() const;
   bool IsGroupShared() const;
-  bool HasRecentActivity() const;
   bool ShouldShowSavedFooter() const;
   // Returns true if the user created the group. Returns false in cases where
   // the user was invited to join the group.

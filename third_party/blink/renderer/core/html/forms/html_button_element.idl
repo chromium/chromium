@@ -37,7 +37,7 @@
 
     // Command Invokers
     [RuntimeEnabled=HTMLCommandAttributes, CEReactions, Reflect=commandfor] attribute Element? commandForElement;
-    [RuntimeEnabled=HTMLCommandAttributes, CEReactions, Reflect] attribute DOMString command;
+    [RuntimeEnabled=HTMLCommandAttributes, CEReactions] attribute DOMString command;
 
     readonly attribute boolean willValidate;
     readonly attribute ValidityState validity;

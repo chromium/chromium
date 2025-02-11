@@ -108,6 +108,7 @@ class CaptureModeBehavior {
   // Returns true if the behavior can show action buttons at all.
   // TODO(b/377570562): Consolidate these APIs.
   virtual bool CanShowActionButtons() const;
+  virtual bool ShouldPaintSunfishCaptureRegion() const;
   virtual bool ShouldShowCaptureButtonAfterRegionSelected() const;
   virtual bool ShouldEndSessionOnShowingSearchResults() const;
   virtual bool ShouldEndSessionOnSearchResultClicked() const;

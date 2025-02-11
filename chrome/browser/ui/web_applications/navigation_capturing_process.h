@@ -22,6 +22,8 @@ struct NavigateParams;
 
 namespace web_app {
 
+class NavigationCapturingSettings;
+
 // This class encompasses all of the logic for navigations in the browser to be
 // captured into installed web app launches.
 //
@@ -210,6 +212,8 @@ class NavigationCapturingProcess
   }
 
   PipelineState state_ = PipelineState::kCreated;
+
+  std::unique_ptr<NavigationCapturingSettings> navigation_capturing_settings_;
 
   // These fields are copied or derived from the NavigateParams of the original
   // navigation.

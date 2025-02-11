@@ -17,6 +17,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_change_service_interface.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
@@ -74,10 +75,16 @@ void Autofill(PasswordManagerClient* client,
     logger->LogMessage(Logger::STRING_PASSWORDMANAGER_AUTOFILL);
   }
 
+  // TODO(crbug.com/394297841): Check password change availability per website.
+  // Finch experiment should not be started without fixing it.
+  bool notify_browser_of_successful_filling =
+      client->GetPasswordChangeService() &&
+      client->GetPasswordChangeService()->IsPasswordChangeAvailable();
+
   PasswordFormFillData fill_data = CreatePasswordFormFillData(
       form_for_autofill, best_matches, std::move(preferred_match),
       client->GetLastCommittedOrigin(), wait_for_username,
-      suggestion_banned_fields);
+      suggestion_banned_fields, notify_browser_of_successful_filling);
   if (logger) {
     logger->LogBoolean(Logger::STRING_WAIT_FOR_USERNAME, wait_for_username);
   }
@@ -255,12 +262,15 @@ PasswordFormFillData CreatePasswordFormFillData(
     std::optional<PasswordForm> preferred_match,
     const Origin& main_frame_origin,
     bool wait_for_username,
-    base::span<autofill::FieldRendererId> suggestion_banned_fields) {
+    base::span<const autofill::FieldRendererId> suggestion_banned_fields,
+    bool notify_browser_of_successful_filling) {
   PasswordFormFillData result;
 
   result.form_renderer_id = form_on_page.form_data.renderer_id();
   result.url = form_on_page.url;
   result.wait_for_username = wait_for_username;
+  result.notify_browser_of_successful_filling =
+      notify_browser_of_successful_filling;
 
   if (!form_on_page.only_for_fallback &&
       (form_on_page.HasPasswordElement() || form_on_page.IsSingleUsername())) {

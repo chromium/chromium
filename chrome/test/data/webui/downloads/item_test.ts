@@ -546,7 +546,7 @@ suite('ItemTest', function() {
     await microtasksFinished();
 
     // The event should never be fired.
-    item.addEventListener('save-dangerous-click', async () => {
+    item.addEventListener('save-dangerous-click', () => {
       assertNotReached('Unexpected event fired');
     });
 

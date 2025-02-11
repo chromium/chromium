@@ -395,6 +395,9 @@ NET_EXPORT extern const base::FeatureParam<std::string>
 NET_EXPORT extern const base::FeatureParam<std::string>
     kIpPrivacyIssuerTokenServerPath;
 
+// If true, the issuer tokens will be stored to disk.
+NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyStoreIssuerTokens;
+
 // Sets the path component of the IP protection auth token server URL used for
 // getting blind-signed tokens.
 NET_EXPORT extern const base::FeatureParam<std::string>

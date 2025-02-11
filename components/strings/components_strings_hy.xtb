@@ -210,7 +210,6 @@
 <translation id="1337692097987160377">Կիսվել</translation>
 <translation id="1339601241726513588">Տիրույթի գրանցում`</translation>
 <translation id="1340482604681802745">Ստացման հասցեն</translation>
-<translation id="134204716678666126">Օգտագործեք ձախ և աջ ստեղները՝ կարծիք հայտնելու կոճակներին անցնելու համար։</translation>
 <translation id="1343356790768851700">Այս կայքը որոշում է ձեր նախասիրությունները և դրանց հիման վրա գովազդ է առաջարկում այլ կայքերի</translation>
 <translation id="1346748346194534595">Աջ</translation>
 <translation id="1348779747280417563">Անվան հաստատում</translation>
@@ -1065,7 +1064,6 @@
 <translation id="2902312830803030883">Այլ գործողություններ</translation>
 <translation id="2903493209154104877">Հասցեներ</translation>
 <translation id="290376772003165898">Էջը <ph name="LANGUAGE" /> չէ՞</translation>
-<translation id="2904165004205947971">Կառավարեք ձեր տեղեկությունները</translation>
 <translation id="2905107382358353958">Վճարումների նոր կարգավորման մասին ծանուցում</translation>
 <translation id="2909946352844186028">Ցանցը փոփվել է:</translation>
 <translation id="2911255567212929079">Մեքենայական ուսուցում և արհեստական բանականություն</translation>
@@ -1574,7 +1572,6 @@
 <translation id="3727309136762649052">Անվանատարածք</translation>
 <translation id="3727850735097852673">Google գաղտնաբառերի կառավարիչը macOS Keychain-ի միջոցով օգտագործելու համար վերագործարկեք Chrome-ը և թույլատրեք Keychain-ի օգտագործումը։ Ձեր ներդիրները կբացվեն վերագործարկումից հետո։</translation>
 <translation id="3728173127485570463">Chrome դիտարկիչն այլևս չի պահանջի ձեր մատնահետքը գաղտնաբառերի ինքնալրացման համար</translation>
-<translation id="3735143108516366187">Սեղմեք Enter՝ կանխատեսումների բարելավումները կառավարելու համար</translation>
 <translation id="3736739313435669994">Դուք արգելափակել եք՝ ձեր գործողությունները դիտարկիչում հետագծելու նպատակով կայքերի մեծամասնության կողմից երրորդ կողմի քուքիների օգտագործումը։ Անցեք կարգավորումներ՝ <ph name="LINK" /> համար։</translation>
 <translation id="3738166223076830879">Ձեր դիտարկիչը կառավարվում է ադմինիստրատորի կողմից։</translation>
 <translation id="3738428049780661523">Ստեղծվել է <ph name="DATE" /></translation>
@@ -1675,7 +1672,6 @@
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3909899182024383590">Պահված տեղեկությունները և <ph name="WEBSITE" /> կայքի էջը կուղարկվեն Google-ին։ Մեր մասնագետները կարող են ստուգել այդ տվյալները՝ այս գործառույթը բարելավելու նպատակով։</translation>
 <translation id="3910231615117880630">Իմանալ ավելին ներկառուցված բովանդակության մասին</translation>
-<translation id="3915878244842478983">Chrome-ին չհաջողվեց ստանալ ձեր տվյալները</translation>
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Ինչպես կարող եք կառավարել ձեր տվյալները․<ph name="END_BOLD" /> Chrome-ը ավտոմատ ջնջում է այն կայքերը, որոնք ավելացվել են առնվազն 30 օր առաջ։ Եթե դուք նորից այցելեք որոշակի կայք, այն կրկին կարող է հայտնվել ցանկում։ Դուք նաև ցանկացած ժամանակ Chrome-ի կարգավորումներում կարող եք արգելել կայքին գովազդ առաջարկել կամ ընդհանրապես անջատել կայքերի կողմից առաջարկվող գովազդների ցուցադրումը։</translation>
 <translation id="3921869355029467742">Մուտքագրեք ձեր անվտանգությամ կոդը</translation>
 <translation id="3927538228901078312">Համեմատման աղյուսակներ չկան</translation>
@@ -2876,7 +2872,6 @@
 <translation id="6058977677006700226">Օգտագործե՞լ քարտերը ձեր բոլոր սարքերում</translation>
 <translation id="6059925163896151826">USB սարքեր</translation>
 <translation id="6060009363608157444">DnsOverHttps ռեժիմն անվավեր է:</translation>
-<translation id="6060132878120844000">ու ևս 1 դաշտ</translation>
 <translation id="6061154937977953833">Ըմբշամարտ</translation>
 <translation id="6062937464449575061">Այլևս չհետագծել գինը</translation>
 <translation id="6063415549109819824">Հիփոթեքային վարկեր</translation>
@@ -2942,7 +2937,6 @@
 <translation id="6180316780098470077">Կրկնության միջակայք</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome-ն ավտոմատ սահմանափակում է երրորդ կողմի քուքիները</translation>
-<translation id="6188479691141473408">ու ևս <ph name="N_FIELDS" /> դաշտ</translation>
 <translation id="6190518157737269631">Ստեղնաշարի կամ որոշ ստեղների, օրինակ՝ Esc-ի, փոխարինում</translation>
 <translation id="6194209731893739467">Տեսեք բոլոր ապրանքները, որոնք հետագծում եք, այստեղ</translation>
 <translation id="6195163219142236913">Երրորդ կողմի քուքիները սահմանափակված են</translation>
@@ -3171,7 +3165,6 @@
 <translation id="6569060085658103619">Դուք դիտում եք ընդլայնման էջը</translation>
 <translation id="6572867903637058088">Տեղեկությունն օգտակա՞ր է</translation>
 <translation id="6573200754375280815">Երկու անցք աջ կողմում</translation>
-<translation id="6574762126505704998">Լցում</translation>
 <translation id="6575408526598156416">Պահել հաշվում</translation>
 <translation id="6577792494180292262">Վենչուրային կապիտալ</translation>
 <translation id="6578434528542148658">Ընդլայնման ID-ն անվավեր է։</translation>
@@ -3988,7 +3981,6 @@
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Սեղմեք Tab, ապա՝ Enter, որպեսզի Chrome-ը դարձնեք համակարգի կանխադրված դիտարկիչը։</translation>
 <translation id="8027077570865220386">Դարակ 15</translation>
 <translation id="8027585818882015174">«Անցնել Chrome-ի անվտանգության ստուգում» կոճակ․ ակտիվացրեք՝ Chrome-ի կարգավորումներում անվտանգության ստուգում անցնելու համար</translation>
-<translation id="8028138772801251745">Ինքնալրացում ԱԲ-ի օգնությամբ</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Google Ձևաթղթերում արագ ձև ստեղծելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="8028892419725165118">Թեթև խաղեր</translation>
 <translation id="8028960012888758725">Կտրել առաջադրանքից հետո</translation>

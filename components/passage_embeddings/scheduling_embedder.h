@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -46,6 +47,10 @@ class SchedulingEmbedder
                      bool use_performance_scenario);
   ~SchedulingEmbedder() override;
 
+  // Returns latest metadata; may be zero/invalid if embedder is not yet ready.
+  EmbedderMetadata GetEmbedderMetadata() const { return embedder_metadata_; }
+
+  // Embedder:
   // Computes embeddings for each entry in `passages`. Will invoke callback on
   // done. If successful, it is guaranteed that the number of passages in
   // `passages` will match the number of entries in the embeddings vector and in
@@ -59,13 +64,15 @@ class SchedulingEmbedder
 
   // Sets the callback to run when the embedder is ready to process requests.
   // The callback is invoked immediately if the embedder is ready beforehand.
-  void SetOnEmbedderReady(OnEmbedderReadyCallback callback) override;
+  void SetOnEmbedderReadyCallback(OnEmbedderReadyCallback callback) override;
 
   // Cancels computation of embeddings iff none of the passages given to
   // `ComputePassagesEmbeddings()` has been submitted to the embedder yet.
   // If successful, the callback for the canceled task will be invoked with
   // `ComputeEmbeddingsStatus::kCanceled` status.
   bool TryCancel(TaskId task_id) override;
+
+  void SetEmbedderMetadata(EmbedderMetadata metadata) override;
 
 #if BUILDFLAG(USE_BLINK)
   // PerformanceScenarioObserver:
@@ -110,12 +117,6 @@ class SchedulingEmbedder
     base::ElapsedTimer timer;
   };
 
-  // Intercepts metadata so that work can be queued up while the primary
-  // embedder isn't ready. For the MlEmbedder, this avoids failing when the
-  // model hasn't loaded yet. We just wait until it's ready, then start work.
-  void OnEmbedderReady(OnEmbedderReadyCallback callback,
-                       EmbedderMetadata metadata);
-
   // Invoked after the embedding for the current job has been computed.
   // Continues processing next job if one is pending.
   void OnEmbeddingsComputed(std::vector<std::string> passages,
@@ -153,8 +154,8 @@ class SchedulingEmbedder
   // This may be slow, and we await results before sending the next request.
   std::unique_ptr<Embedder> embedder_;
 
-  // Starts false; set true when valid metadata is received from `embedder_`.
-  bool embedder_ready_{false};
+  // Starts empty; set when valid metadata is received from `embedder_`.
+  EmbedderMetadata embedder_metadata_{0, 0};
 
   // The maximum number of embeddings to submit to the primary embedder.
   size_t scheduled_max_;
@@ -170,6 +171,35 @@ class SchedulingEmbedder
 #endif
 
   base::WeakPtrFactory<SchedulingEmbedder> weak_ptr_factory_{this};
+};
+
+// This is a common use embedder type that simply routes its requests to
+// a non-owned SchedulingEmbedder.
+class SchedulingClientEmbedder : public Embedder {
+ public:
+  SchedulingClientEmbedder(SchedulingEmbedder* embedder,
+                           base::OnceCallback<void(Embedder*)> detach);
+  ~SchedulingClientEmbedder() override;
+
+  // Embedder:
+  TaskId ComputePassagesEmbeddings(
+      PassagePriority priority,
+      std::vector<std::string> passages,
+      ComputePassagesEmbeddingsCallback callback) override;
+
+  bool TryCancel(TaskId task_id) override;
+
+  void SetOnEmbedderReadyCallback(OnEmbedderReadyCallback callback) override;
+
+  void SetEmbedderMetadata(EmbedderMetadata metadata) override;
+
+ private:
+  raw_ptr<SchedulingEmbedder> scheduling_embedder_;
+
+  base::OnceCallback<void(Embedder*)> detach_;
+
+  // Called once the embedder is ready.
+  OnEmbedderReadyCallback on_embedder_ready_;
 };
 
 }  // namespace passage_embeddings

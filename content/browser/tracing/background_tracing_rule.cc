@@ -18,6 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/histogram_scope.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "components/variations/hashing.h"
@@ -60,7 +61,8 @@ void BackgroundTracingRule::Uninstall() {
   DoUninstall();
 }
 
-bool BackgroundTracingRule::OnRuleTriggered(std::optional<int32_t> value) {
+bool BackgroundTracingRule::OnRuleTriggered(std::optional<int32_t> value,
+                                            uint64_t flow_id) {
   if (!installed()) {
     return false;
   }
@@ -69,6 +71,7 @@ bool BackgroundTracingRule::OnRuleTriggered(std::optional<int32_t> value) {
     return false;
   }
   triggered_value_ = value;
+  flow_id_ = flow_id;
   if (delay_) {
     trigger_timer_.Start(FROM_HERE, *delay_,
                          base::BindOnce(base::IgnoreResult(trigger_callback_),
@@ -77,11 +80,6 @@ bool BackgroundTracingRule::OnRuleTriggered(std::optional<int32_t> value) {
   } else {
     return trigger_callback_.Run(this);
   }
-}
-
-uint64_t BackgroundTracingRule::GetFlowId() const {
-  return base::trace_event::TriggerFlowId(GetDefaultRuleName(),
-                                          triggered_value_);
 }
 
 std::string BackgroundTracingRule::GetDefaultRuleName() const {
@@ -265,16 +263,20 @@ class HistogramRule : public BackgroundTracingRule,
         tracing::mojom::BackgroundTracingRule::New(rule_name()));
   }
 
-  void OnHistogramChangedCallback(base::Histogram::Sample32 reference_lower_value,
-                                  base::Histogram::Sample32 reference_upper_value,
-                                  const char* histogram_name,
-                                  uint64_t name_hash,
-                                  base::Histogram::Sample32 actual_value) {
+  void OnHistogramChangedCallback(
+      base::Histogram::Sample32 reference_lower_value,
+      base::Histogram::Sample32 reference_upper_value,
+      const char* histogram_name,
+      uint64_t name_hash,
+      base::Histogram::Sample32 actual_value) {
     DCHECK_EQ(histogram_name, histogram_name_);
     if (reference_lower_value > actual_value ||
         reference_upper_value < actual_value) {
       return;
     }
+
+    uint64_t flow_id = base::trace_event::HistogramScope::GetFlowId().value_or(
+        base::trace_event::GetNextGlobalTraceId());
 
     // Add the histogram name and its corresponding value to the trace.
     const auto trace_details = [&](perfetto::EventContext& ctx) {
@@ -282,13 +284,13 @@ class HistogramRule : public BackgroundTracingRule,
           ctx.event()->set_chrome_histogram_sample();
       new_sample->set_name_hash(base::HashMetricName(histogram_name));
       new_sample->set_sample(actual_value);
-      perfetto::Flow::Global(GetFlowId())(ctx);
+      perfetto::Flow::Global(flow_id)(ctx);
     };
     TRACE_EVENT_INSTANT(
         "toplevel,latency", "HistogramSampleTrigger",
         perfetto::Track::FromPointer(this, perfetto::ProcessTrack::Current()),
         base::TimeTicks::Now(), trace_details);
-    OnRuleTriggered(actual_value);
+    OnRuleTriggered(actual_value, flow_id);
   }
 
  protected:
@@ -312,7 +314,9 @@ class TimerRule : public BackgroundTracingRule {
     return base::WrapUnique<TimerRule>(new TimerRule());
   }
 
-  void DoInstall() override { OnRuleTriggered(std::nullopt); }
+  void DoInstall() override {
+    OnRuleTriggered(std::nullopt, base::trace_event::GetNextGlobalTraceId());
+  }
   void DoUninstall() override {}
 
   void GenerateMetadataProto(
@@ -416,7 +420,7 @@ class RepeatingIntervalRule : public BackgroundTracingRule {
   }
 
   void OnTick() {
-    OnRuleTriggered(std::nullopt);
+    OnRuleTriggered(std::nullopt, base::trace_event::GetNextGlobalTraceId());
     ScheduleNextTick();
   }
 

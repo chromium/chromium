@@ -54,6 +54,10 @@ found in the LICENSE file.
 
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/favicon"
+        android:layout_width="@dimen/recent_activity_favicon_bg_size"
+        android:layout_height="@dimen/recent_activity_favicon_bg_size"
+        android:layout_marginHorizontal="16dp"
+        android:background="@drawable/oval_surface_2"
         style="@style/ListItemEndIcon" />
 
 </LinearLayout>

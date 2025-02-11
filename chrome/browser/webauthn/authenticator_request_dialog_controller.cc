@@ -55,6 +55,7 @@
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/password_manager/core/browser/credential_manager_utils.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -84,6 +85,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_elider.h"
+#include "url/scheme_host_port.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/webauthn_api.h"
@@ -657,7 +659,6 @@ void AuthenticatorRequestDialogController::StartFlow(
   started_ = true;
   transport_availability_ = std::move(transport_availability);
   passwords_ = std::move(passwords);
-  // TODO(crbug.com/392549444): Introduce the UI to handle passwords.
   UpdateModelForTransportAvailability();
   // All recognised credentials that are "Chrome implemented" are from the
   // same source, i.e. a platform never has two Chrome implemented platform
@@ -1354,6 +1355,12 @@ void AuthenticatorRequestDialogController::SetAccountPreselectedCallback(
     content::AuthenticatorRequestClientDelegate::AccountPreselectedCallback
         callback) {
   account_preselected_callback_ = callback;
+}
+
+void AuthenticatorRequestDialogController::SetPasswordSelectedCallback(
+    content::AuthenticatorRequestClientDelegate::PasswordSelectedCallback
+        callback) {
+  password_selected_callback_ = callback;
 }
 
 void AuthenticatorRequestDialogController::SetBluetoothAdapterPowerOnCallback(
@@ -2140,6 +2147,17 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
           AuthenticatorRequestDialogModel::GetMechanismDescription(
               cred.source, model_->priority_phone_name);
     }
+    for (const auto& password : passwords_) {
+      Mechanism mechanism(
+          Mechanism::Password(), password->username_value,
+          password->username_value, vector_icons::kPasswordManagerIcon,
+          base::BindRepeating(
+              &AuthenticatorRequestDialogController::OnPasswordSelected,
+              weak_factory_.GetWeakPtr(), password->username_value,
+              password->password_value));
+      mechanism.description = u"Password (UT)";
+      model_->mechanisms.emplace_back(std::move(mechanism));
+    }
   }
 
   std::vector<AuthenticatorTransport> transports_to_list_if_active;
@@ -2398,6 +2416,7 @@ AuthenticatorRequestDialogController::IndexOfGetAssertionPriorityMechanism() {
     std::optional<std::pair<size_t, const Mechanism::CredentialInfo*>>
         best_cred;
     bool multiple_distinct_creds = false;
+    bool has_password = false;
 
     for (size_t i = 0; i < model_->mechanisms.size(); ++i) {
       const auto& type = model_->mechanisms[i].type;
@@ -2415,10 +2434,12 @@ AuthenticatorRequestDialogController::IndexOfGetAssertionPriorityMechanism() {
         } else {
           multiple_distinct_creds = true;
         }
+      } else if (absl::holds_alternative<Mechanism::Password>(type)) {
+        has_password = true;
       }
     }
     // If one of the passkeys is a valid default, go to that.
-    if (!multiple_distinct_creds && best_cred.has_value() &&
+    if (!has_password && !multiple_distinct_creds && best_cred.has_value() &&
         (best_cred->second->source != AuthenticatorType::kEnclave ||
          CanDefaultToEnclave(Profile::FromBrowserContext(
                                  GetRenderFrameHost()->GetBrowserContext())
@@ -2589,4 +2610,16 @@ void AuthenticatorRequestDialogController::StartPasskeyUpgradeRequest() {
           },
           weak_factory_.GetWeakPtr()));
   SetCurrentStep(Step::kPasskeyUpgrade);
+}
+
+void AuthenticatorRequestDialogController::OnPasswordSelected(
+    std::u16string username,
+    std::u16string password) {
+  // TODO(crbug.com/392549444): Consider adding screen lock auth, etc. for
+  // password selection. Also `PasswordCredentialController` may be a better
+  // place to handle password related work. For prototyping this should be
+  // alright.
+  password_selected_callback_.Run(password_manager::CredentialInfo(
+      password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD, username,
+      username, GURL(), password, url::SchemeHostPort()));
 }

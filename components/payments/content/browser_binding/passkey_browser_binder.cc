@@ -121,13 +121,18 @@ void PasskeyBrowserBinder::OnWebDataServiceRequestDone(
           .Run(result ? static_cast<WDResult<bool>*>(result.get())->GetValue()
                       : false);
       break;
-    case WDResultType::BROWSER_BOUND_KEY:
+    case WDResultType::BROWSER_BOUND_KEY: {
+      std::optional<std::vector<uint8_t>> result_value;
+      if (result) {
+        result_value =
+            static_cast<WDResult<std::optional<std::vector<uint8_t>>>*>(
+                result.get())
+                ->GetValue();
+      }
       RemoveHandler(get_browser_bound_key_handlers_, handle)
-          .Run(result
-                   ? static_cast<WDResult<std::vector<uint8_t>>*>(result.get())
-                         ->GetValue()
-                   : std::vector<uint8_t>());
+          .Run(result_value.value_or(std::vector<uint8_t>()));
       break;
+    }
     default:
       NOTREACHED();
   }
@@ -159,13 +164,14 @@ void PasskeyBrowserBinder::GetOrCreateBrowserBoundKey(
         random_bytes_as_vector_callback_.Run(kBrowserBoundKeyIdLength);
     // TODO(crbug.com/384954763): Delete the browser bound key from the key
     // store if the result was false (not successful).
-    web_data_service_->SetBrowserBoundKey(std::move(credential_id),
-                                          std::move(relying_party),
-                                          browser_bound_key_id,
-                                          /*consumer=*/nullptr);
+    WebDataServiceBase::Handle handle = web_data_service_->SetBrowserBoundKey(
+        std::move(credential_id), std::move(relying_party),
+        browser_bound_key_id,
+        /*consumer=*/this);
+    set_browser_bound_key_handlers_[handle] = base::DoNothing();
   }
   std::move(callback).Run(key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
-      std::move(browser_bound_key_id), std::move(allowed_credentials)));
+      browser_bound_key_id, allowed_credentials));
 }
 
 }  // namespace payments

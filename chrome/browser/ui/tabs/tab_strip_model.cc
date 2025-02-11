@@ -63,12 +63,14 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
+#include "chrome/browser/ui/tabs/unpinned_tab_collection.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
@@ -1208,6 +1210,8 @@ void TabStripModel::AddTabGroup(const tab_groups::TabGroupId group_id,
   CHECK(SupportsTabGroups());
   group_model_->AddTabGroup(group_id, visual_data,
                             base::PassKey<TabStripModel>());
+  contents_data_->CreateGroup(
+      std::make_unique<tabs::TabGroupTabCollection>(group_id));
 }
 
 tab_groups::TabGroupId TabStripModel::AddToNewGroup(
@@ -2716,6 +2720,8 @@ void TabStripModel::AddToNewGroupImpl(
 
   group_model_->AddTabGroup(new_group, visual_data,
                             base::PassKey<TabStripModel>());
+  contents_data_->CreateGroup(
+      std::make_unique<tabs::TabGroupTabCollection>(new_group));
 
   // Find a destination for the first tab that's not pinned or inside another
   // group. We will stack the rest of the tabs up to its right.
@@ -2920,11 +2926,11 @@ std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
     }
   }
 
-  ValidateTabStripModel();
-
   if (group_model_ && old_group) {
     TabGroupStateChanged(index, tab, old_group, std::nullopt);
   }
+
+  ValidateTabStripModel();
 
   return old_data;
 }
@@ -2948,12 +2954,9 @@ void TabStripModel::MoveTabToIndexImpl(
   }
 
   TabStripSelectionChange selection(GetActiveTab(), selection_model_);
-
   contents_data_->MoveTabRecursive(initial_index, final_index, group, pin);
 
   UpdateSelectionModelForMove(initial_index, final_index, select_after_move);
-
-  ValidateTabStripModel();
 
   selection.new_model = selection_model_;
   selection.new_tab = GetActiveTab();
@@ -2975,6 +2978,8 @@ void TabStripModel::MoveTabToIndexImpl(
       TabGroupStateChanged(final_index, tab, initial_group, tab->GetGroup());
     }
   }
+
+  ValidateTabStripModel();
 }
 
 void TabStripModel::MoveTabsToIndexImpl(
@@ -3005,8 +3010,6 @@ void TabStripModel::MoveTabsToIndexImpl(
 
   UpdateSelectionModelForMoves(tab_indices, destination_index);
 
-  ValidateTabStripModel();
-
   for (auto notification : notifications) {
     const int final_index = GetIndexOfTab(notification.tab);
     tabs::TabInterface* tab = GetTabAtIndex(final_index);
@@ -3022,6 +3025,8 @@ void TabStripModel::MoveTabsToIndexImpl(
       }
     }
   }
+
+  ValidateTabStripModel();
 }
 
 void TabStripModel::TabGroupStateChanged(
@@ -3070,6 +3075,7 @@ void TabStripModel::RemoveTabFromGroupModel(
 
   if (tab_group->IsEmpty()) {
     group_model_->RemoveTabGroup(group, base::PassKey<TabStripModel>());
+    contents_data_->CloseDetachedGroup(group);
   }
 }
 

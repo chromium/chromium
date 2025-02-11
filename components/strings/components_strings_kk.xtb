@@ -206,7 +206,6 @@
 <translation id="1337692097987160377">Осы қойындыны бөлісу</translation>
 <translation id="1339601241726513588">Тіркеу домені:</translation>
 <translation id="1340482604681802745">Алып кету мекенжайы</translation>
-<translation id="134204716678666126">Пікір түймелеріне өту үшін сол және оң жақ пернелерді басыңыз.</translation>
 <translation id="1343356790768851700">Бұл сайт сізге ұнайтын нәрселерді анықтайды, одан кейін басқа сайттарға жарнамалар ұсынады.</translation>
 <translation id="1346748346194534595">Оңға</translation>
 <translation id="1348779747280417563">Атты растау</translation>
@@ -1061,7 +1060,6 @@
 <translation id="2902312830803030883">Қосымша әрекеттер</translation>
 <translation id="2903493209154104877">Мекенжайлар</translation>
 <translation id="290376772003165898">Бет <ph name="LANGUAGE" /> тілінде емес пе?</translation>
-<translation id="2904165004205947971">Ақпаратты реттеу</translation>
 <translation id="2905107382358353958">Жаңа төлем параметрі туралы хабарландыру</translation>
 <translation id="2909946352844186028">Желі өзгерісі анықталды.</translation>
 <translation id="2911255567212929079">Машинаны оқыту және жасанды интеллект</translation>
@@ -1567,7 +1565,6 @@
 <translation id="3727309136762649052">Атау кеңістігі</translation>
 <translation id="3727850735097852673">Google Password Manager қызметін macOS кілттер тізбегімен бірге пайдалану үшін Chrome-ды қайта іске қосып, кілттер тізбегін пайдалануға рұқсат беріңіз. Қайта іске қосқаннан кейін, қойындылар қайта ашылады.</translation>
 <translation id="3728173127485570463">Chrome браузері құпия сөздерді автоматты түрде толтыру үшін енді саусақ ізін сұрамайды.</translation>
-<translation id="3735143108516366187">Болжамдарды жақсарту функциясын реттеу үшін Enter пернесін басыңыз</translation>
 <translation id="3736739313435669994">Сіз сайттарды браузерді пайдаланғаныңызды бақылайтын үшінші тарап cookie файлдарын пайдаланудан блоктадыңыз. <ph name="LINK" /> үшін параметрлерге өтіңіз.</translation>
 <translation id="3738166223076830879">Браузеріңізді әкімші басқарады.</translation>
 <translation id="3738428049780661523">Жасалған күні: <ph name="DATE" /></translation>
@@ -1666,7 +1663,6 @@
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3909899182024383590"><ph name="WEBSITE" /> веб-сайтындағы сақталған ақпарат пен бет Google-ға жіберіледі. Оларды осы функцияны жақсарту үшін тексерушілер қарауы мүмкін.</translation>
 <translation id="3910231615117880630">Ендірілген контент туралы толық ақпарат</translation>
-<translation id="3915878244842478983">Chrome ақпаратыңызды ала алмады</translation>
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Деректеріңізді басқару жолы:<ph name="END_BOLD" /> Chrome браузері 30 күннен асқан сайттарды автоматты жояды. Сіз қайта кірген сайт тізімде қайта пайда болуы мүмкін. Сонымен қатар кез келген уақытта Chrome параметрлерінде сайттың сізге жарнамалар ұсынуын бөгей аласыз және сайт ұсынған жарнамаларды өшіре аласыз.</translation>
 <translation id="3921869355029467742">Қауіпсіздік кодын енгізіңіз</translation>
 <translation id="3927538228901078312">Салыстыру кестелері жоқ</translation>
@@ -2866,7 +2862,6 @@
 <translation id="6058977677006700226">Карталарыңыз барлық құрылғыларда пайдаланылсын ба?</translation>
 <translation id="6059925163896151826">USB құрылғылары</translation>
 <translation id="6060009363608157444">DnsOverHttps режимі жарамсыз.</translation>
-<translation id="6060132878120844000">және тағы 1 өріс</translation>
 <translation id="6061154937977953833">Күрес</translation>
 <translation id="6062937464449575061">Баға бақылауды тоқтату</translation>
 <translation id="6063415549109819824">Тұрғын үйді қаржыландыру</translation>
@@ -2932,7 +2927,6 @@
 <translation id="6180316780098470077">Қайталау аралығы</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome үшінші тарап cookie файлдарына автоматты түрде шектеу қояды.</translation>
-<translation id="6188479691141473408">және тағы <ph name="N_FIELDS" /> өріс</translation>
 <translation id="6190518157737269631">Пернетақтадағы Esc сияқты кейбір пернелерді қайта анықтау</translation>
 <translation id="6194209731893739467">Бақылайтын барлық өнімді осы жерден көре аласыз.</translation>
 <translation id="6195163219142236913">Үшінші тарап cookie файлдарына шектеу қойылды.</translation>
@@ -3161,7 +3155,6 @@
 <translation id="6569060085658103619">Кеңейтім бетін көрудесіз</translation>
 <translation id="6572867903637058088">Пайдалы болды ма?</translation>
 <translation id="6573200754375280815">Оң жағын екі рет тесу</translation>
-<translation id="6574762126505704998">Толтыру</translation>
 <translation id="6575408526598156416">Аккаунтқа сақтау</translation>
 <translation id="6577792494180292262">Венчурлық капитал</translation>
 <translation id="6578434528542148658">Кеңейтім идентификаторы жарамсыз.</translation>
@@ -3978,7 +3971,6 @@
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ды жүйенің әдепкі браузері етіп орнату үшін қойындыны басып, Enter пернесін басыңыз</translation>
 <translation id="8027077570865220386">15-науа</translation>
 <translation id="8027585818882015174">"Chrome қауіпсіздік тексерісін іске қосу" түймесі, Chrome параметрлерінде қауіпсіздік тексерісін іске қосу үшін белсендіріңіз</translation>
-<translation id="8028138772801251745">Жасанды интеллект көмегімен автотолтыру</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms-да жылдам жаңа үлгі жасау үшін Tab, cодан кейін Enter пернесін басыңыз.</translation>
 <translation id="8028892419725165118">Қарапайым ойындар</translation>
 <translation id="8028960012888758725">Тапсырмадан кейін кесу</translation>

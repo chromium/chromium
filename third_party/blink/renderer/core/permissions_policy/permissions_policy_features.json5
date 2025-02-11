@@ -2,7 +2,7 @@
   // All permissions policy (https://github.com/w3c/webappsec-permissions-policy)
   // features are defined here.
   // For more details on adding a new permissions policy, see:
-  // https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/common/permissions_policy/README.md
+  // https://chromium.googlesource.com/chromium/src/+/main/services/network/public/cpp/permissions_policy/README.md
   // TODO(yashard): Add all permissions policy features here.
 
   parameters: {

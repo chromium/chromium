@@ -287,7 +287,8 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
                 &VideoTrackAdapterFixtureTest::OnEncodedVideoFrameDelivered,
                 base::Unretained(this)),
             /*sub_capture_target_version_callback=*/base::DoNothing(),
-            /*settings_callback=*/base::DoNothing(),
+            base::BindRepeating(&VideoTrackAdapterFixtureTest::OnFrameSettings,
+                                base::Unretained(this)),
             /*format_callback=*/base::DoNothing(), adapter_settings));
   }
 
@@ -297,6 +298,10 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
 
   void SetFrameDroppedCallback(VideoCaptureNotifyFrameDroppedCB callback) {
     frame_dropped_callback_ = std::move(callback);
+  }
+
+  void SetFrameSettingsCallback(VideoTrackSettingsCallback callback) {
+    frame_settings_callback_ = std::move(callback);
   }
 
   // Deliver |frame| to |adapter_| and wait until OnFrameDelivered signals that
@@ -333,6 +338,17 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) {
     if (frame_dropped_callback_) {
       frame_dropped_callback_.Run(reason);
+      frame_processed_.Signal();
+    }
+  }
+
+  void OnFrameSettings(gfx::Size frame_size,
+                       double frame_rate,
+                       std::optional<gfx::Size> metadata_source_size,
+                       std::optional<float> device_scale_factor) {
+    if (frame_settings_callback_) {
+      frame_settings_callback_.Run(frame_size, frame_rate, metadata_source_size,
+                                   device_scale_factor);
       frame_processed_.Signal();
     }
   }
@@ -445,6 +461,7 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
   base::WaitableEvent frame_processed_;
   VideoCaptureDeliverFrameCB frame_validation_callback_;
   VideoCaptureNotifyFrameDroppedCB frame_dropped_callback_;
+  VideoTrackSettingsCallback frame_settings_callback_;
 
   // For testing we use a nullptr for MediaStreamVideoTrack.
   std::unique_ptr<MediaStreamVideoTrack> null_track_;
@@ -607,13 +624,17 @@ TEST_F(VideoTrackAdapterFixtureTest,
 
   base::WaitableEvent settings_callback_run_;
   // This lambda callback method validates that the |settings_callback|
-  // (MediaStreamVideoTrack::SetSizeAndComputedFrameRate) is run with the
+  // (MediaStreamVideoTrack::SetVideoFrameSettings) is run with the
   // frame_size & frame_rate stored in the adapter's |track_settings_|. These
   // values should have been set when we delivered a frame for the first
   // track.
-  auto check_dimensions = [&](gfx::Size frame_size, double frame_rate) {
+  auto check_dimensions = [&](gfx::Size frame_size, double frame_rate,
+                              std::optional<gfx::Size> metadata_source_size,
+                              std::optional<float> device_scale_factor) {
     EXPECT_EQ(frame_size, kNaturalSize);
     EXPECT_EQ(frame_rate, kFrameRate);
+    EXPECT_EQ(metadata_source_size, std::nullopt);
+    EXPECT_EQ(device_scale_factor, std::nullopt);
     settings_callback_run_.Signal();
   };
 
@@ -633,6 +654,42 @@ TEST_F(VideoTrackAdapterFixtureTest,
           /*settings_callback=*/base::BindLambdaForTesting(check_dimensions),
           /*track_callback=*/base::DoNothing(), adapter_settings));
   settings_callback_run_.Wait();
+}
+
+// Tests that we run the |settings_callback| for a track.
+TEST_F(VideoTrackAdapterFixtureTest, SettingsCallback) {
+  // Attributes for initial track's incoming frame.
+  const gfx::Size kCodedSize(480, 640);
+  const gfx::Rect kVisibleRect(0, 0, 480, 640);
+  const double kFrameRate = 30.0;
+  auto test_frame =
+      CreateTestFrame(kCodedSize, kVisibleRect, kCodedSize,
+                      /*storage_type=*/media::VideoFrame::STORAGE_OWNED_MEMORY);
+  media::VideoFrameMetadata metadata;
+  metadata.source_size = kCodedSize;
+  metadata.device_scale_factor = 2.0f;
+  test_frame->set_metadata(metadata);
+  const media::VideoCaptureFormat stream_format(kCodedSize, kFrameRate,
+                                                media::PIXEL_FORMAT_I420);
+  CreateAdapter(stream_format);
+
+  // We don't provide a target size for the initial track.
+  VideoTrackAdapterSettings adapter_settings(
+      /*target_size=*/std::nullopt,
+      /*min_aspect_ratio=*/0.0000,
+      /*max_aspect_ratio=*/640.0000, kFrameRate);
+  ConfigureTrack(adapter_settings);
+
+  auto check_dimensions = [&](gfx::Size frame_size, double frame_rate,
+                              std::optional<gfx::Size> metadata_source_size,
+                              std::optional<float> device_scale_factor) {
+    EXPECT_EQ(frame_size, kCodedSize);
+    EXPECT_EQ(frame_rate, kFrameRate);
+    EXPECT_EQ(metadata_source_size, kCodedSize);
+    EXPECT_EQ(device_scale_factor, 2.0f);
+  };
+  SetFrameSettingsCallback(base::BindLambdaForTesting(check_dimensions));
+  DeliverAndValidateFrame(test_frame, base::TimeTicks());
 }
 
 TEST_F(VideoTrackAdapterFixtureTest, FrameRateReduction) {

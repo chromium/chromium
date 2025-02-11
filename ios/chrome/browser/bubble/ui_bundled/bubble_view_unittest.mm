@@ -102,7 +102,6 @@ TEST_F(BubbleViewTest, CloseButtonIsNotPresent) {
                                               alignment:alignment_
                                        showsCloseButton:NO
                                                   title:nil
-                                                  image:nil
                                       showsSnoozeButton:NO
                                           textAlignment:text_alignment_
                                                delegate:nil];
@@ -120,7 +119,6 @@ TEST_F(BubbleViewTest, CloseButtonActionAndPresent) {
                                               alignment:alignment_
                                        showsCloseButton:YES
                                                   title:nil
-                                                  image:nil
                                       showsSnoozeButton:NO
                                           textAlignment:text_alignment_
                                                delegate:delegate];
@@ -151,7 +149,6 @@ TEST_F(BubbleViewTest, TitleIsPresentAndCorrect) {
                                               alignment:alignment_
                                        showsCloseButton:NO
                                                   title:short_text_
-                                                  image:nil
                                       showsSnoozeButton:NO
                                           textAlignment:text_alignment_
                                                delegate:nil];
@@ -169,7 +166,6 @@ TEST_F(BubbleViewTest, TitleIsAligned) {
                                               alignment:alignment_
                                        showsCloseButton:NO
                                                   title:short_text_
-                                                  image:nil
                                       showsSnoozeButton:NO
                                           textAlignment:NSTextAlignmentNatural
                                                delegate:nil];
@@ -180,36 +176,6 @@ TEST_F(BubbleViewTest, TitleIsAligned) {
   ASSERT_EQ(title_label.textAlignment, NSTextAlignmentNatural);
 }
 
-// Tests that the image is not showed when the image is empty.
-TEST_F(BubbleViewTest, ImageIsNotPresent) {
-  BubbleView* bubble = [[BubbleView alloc] initWithText:long_text_
-                                         arrowDirection:arrow_direction_
-                                              alignment:alignment_];
-  UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
-  [superview addSubview:bubble];
-  UIImageView* image_view = GetImageViewFromBubbleView(bubble);
-  ASSERT_FALSE(image_view);
-}
-
-// Tests that the image is present and correct.
-TEST_F(BubbleViewTest, ImageIsPresentAndCorrect) {
-  UIImage* testImage = [[UIImage alloc] init];
-  BubbleView* bubble = [[BubbleView alloc] initWithText:long_text_
-                                         arrowDirection:arrow_direction_
-                                              alignment:alignment_
-                                       showsCloseButton:NO
-                                                  title:nil
-                                                  image:testImage
-                                      showsSnoozeButton:NO
-                                          textAlignment:text_alignment_
-                                               delegate:nil];
-  UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
-  [superview addSubview:bubble];
-  UIImageView* image_view = GetImageViewFromBubbleView(bubble);
-  ASSERT_TRUE(image_view);
-  EXPECT_EQ(image_view.image, testImage);
-}
-
 // Tests that the snooze button is not showed when the option is set to hidden.
 TEST_F(BubbleViewTest, SnoozeButtonIsNotPresent) {
   BubbleView* bubble = [[BubbleView alloc] initWithText:long_text_
@@ -217,7 +183,6 @@ TEST_F(BubbleViewTest, SnoozeButtonIsNotPresent) {
                                               alignment:alignment_
                                        showsCloseButton:NO
                                                   title:nil
-                                                  image:nil
                                       showsSnoozeButton:NO
                                           textAlignment:text_alignment_
                                                delegate:nil];
@@ -235,7 +200,6 @@ TEST_F(BubbleViewTest, SnoozeButtonActionAndPresent) {
                                               alignment:alignment_
                                        showsCloseButton:NO
                                                   title:nil
-                                                  image:nil
                                       showsSnoozeButton:YES
                                           textAlignment:text_alignment_
                                                delegate:delegate];

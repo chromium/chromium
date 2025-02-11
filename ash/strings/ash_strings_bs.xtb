@@ -248,7 +248,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1786487376942610288">Prebacivanje između prozora slike u slici u maksimalnoj ili trenutnoj veličini</translation>
 <translation id="1787955149152357925">Isključeno</translation>
 <translation id="1796561540704213354">Web lokacije uključujući posjećene i otvorene stranice</translation>
-<translation id="179842970735685253">Googleovim Uslovima korištenja usluge</translation>
 <translation id="1805407494113167797">Reprodukcija Zvukova fokusiranja nije uspjela</translation>
 <translation id="181103072419391116">Jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja vaš administrator</translation>
 <translation id="1815039896005206046">Oznaka "Ne sviđa mi se" šalje povratne informacije o tome da vam se ne sviđa ova predložena grupa</translation>
@@ -1248,7 +1247,6 @@ Također možete upotrijebiti prečicu na tastaturi. Prvo istaknite tekst, a zat
 <translation id="5121628974188116412">Odlazak na dno stranice</translation>
 <translation id="5122517996953421795">Pregled radne površine <ph name="DESK_NAME" />. Neaktivna radna površina.</translation>
 <translation id="5136175204352732067">Povezana je drugačija tastatura</translation>
-<translation id="5140105873789567560">Morate imati najmanje 18 godina da koristite Pomoć u pisanju i Pomoć u čitanju.</translation>
 <translation id="5144005092084035179">Promijeniti ulaz zvuka?</translation>
 <translation id="5147567197700016471">Otključano</translation>
 <translation id="5150070631291639005">Postavke privatnosti</translation>
@@ -1403,7 +1401,6 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Potvrđivanje lozinke nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="5632485077360054581">Pokaži mi kako</translation>
-<translation id="5633826232582408011">Kada uključite Pomoć u pisanju i Pomoć u čitanju, uneseni tekst, sadržaj dokumenta i URL web stranice se šalju na servere Google AI-ja radi generiranja prijedloga za pisanje i sažetaka, odgovaranja na pitanja i poboljšanja proizvoda podložno dokumentu <ph name="LINK_TO_SERVICE_TERMS" />. Nemojte uključivati ništa što je lične, osjetljive ili povjerljive prirode.</translation>
 <translation id="5648021990716966815">Priključak za mikrofon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> traži da reagirate.</translation>
 <translation id="5662075790140998213">10. radna površina</translation>
@@ -2032,7 +2029,6 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7749443890790263709">Dostigli ste maksimalni broj radnih površina.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Prikaži sve</translation>
-<translation id="7759183637555564029">U svakom trenutku možete isključiti Pomoć u pisanju i Pomoć u čitanju u Postavkama. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Odaberite za govor</translation>
 <translation id="7769299611924763557">GIF će uskoro biti spreman</translation>
 <translation id="7773536009433685931">Umjesto toga uključite WiFi</translation>
@@ -2042,7 +2038,6 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7781829728241885113">Jučer</translation>
 <translation id="7787212146956232129">Ulazni i izlazni uređaji su postavljeni. Idite u Postavke da promijenite.</translation>
 <translation id="7792590255364786396">Vidljivo</translation>
-<translation id="7793389284006812057">Generativni AI je eksperimentalan, u ranoj je fazi razvoja i trenutno je njegova dostupnost ograničena.</translation>
 <translation id="7796735576426975947">Novo obavještenje je skriveno</translation>
 <translation id="7798302898096527229">Za otkazivanje pritisnite tipku za pretraživanje ili Shift.</translation>
 <translation id="780301667611848630">Ne, hvala</translation>

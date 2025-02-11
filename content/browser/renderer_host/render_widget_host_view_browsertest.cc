@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
-
-#include <stdint.h>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -35,6 +35,7 @@
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -582,6 +583,20 @@ viz::SurfaceId GetFallbackSurfaceId(RenderWidgetHostView* view) {
   return surface_id;
 }
 
+viz::SurfaceId GetBFCacheFallbackSurfaceId(RenderWidgetHostView* view) {
+  viz::SurfaceId surface_id;
+#if BUILDFLAG(IS_ANDROID)
+  ui::DelegatedFrameHostAndroid* dfh = GetDelegatedFrameHost(view);
+  EXPECT_TRUE(dfh);
+  surface_id = dfh->GetBFCacheFallbackSurfaceIdForTesting();
+#else
+  DelegatedFrameHost* dfh = GetDelegatedFrameHost(view);
+  EXPECT_TRUE(dfh);
+  surface_id = dfh->GetBFCacheFallbackSurfaceIdForTesting();
+#endif
+  return surface_id;
+}
+
 class BFCachedRenderWidgetHostViewBrowserTest
     : public NoCompositingRenderWidgetHostViewBrowserTest {
  public:
@@ -843,6 +858,37 @@ IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
             ->CollectSurfaceIdsForEviction();
     ASSERT_TRUE(base::Contains(evicted_ids, id_after_cached));
   }
+}
+
+// Tests that if a page is evicted from BFCache, it notifies the
+// DelegatedFrameHost{Android} to clear all the BFCached states.
+IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
+                       EvictedPageShouldNotifyDelegatedFrameHost) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  RenderFrameHostWrapper rfh1(shell()->web_contents()->GetPrimaryMainFrame());
+  const auto embedded_id =
+      GetCurrentSurfaceIdOnDelegatedFrameHost(rfh1->GetView());
+  EXPECT_TRUE(embedded_id.is_valid());
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
+  EXPECT_TRUE(
+      static_cast<RenderFrameHostImpl*>(rfh1.get())->IsInBackForwardCache());
+  // The fallback ID of the BFCached page should be equal to the embedded ID
+  // before entering the BFCache.
+  const auto bfcache_fallback = GetBFCacheFallbackSurfaceId(rfh1->GetView());
+  EXPECT_TRUE(bfcache_fallback.is_valid());
+  EXPECT_EQ(embedded_id, bfcache_fallback);
+
+  const uint64_t reason = DisallowActivationReasonId::kForTesting;
+  EXPECT_TRUE(rfh1->IsInactiveAndDisallowActivation(reason));
+  const auto bfcache_fallback_after_eviction =
+      GetBFCacheFallbackSurfaceId(rfh1->GetView());
+  EXPECT_FALSE(bfcache_fallback_after_eviction.is_valid());
+  EXPECT_EQ(bfcache_fallback_after_eviction.local_surface_id(),
+            viz::LocalSurfaceId());
 }
 
 // Tests that if a pending commit attempts to swap from a RenderFrameHost which

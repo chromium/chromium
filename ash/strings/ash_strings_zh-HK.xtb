@@ -246,7 +246,6 @@
 <translation id="1786487376942610288">將畫中畫視窗最大化或還原為目前大小</translation>
 <translation id="1787955149152357925">關閉</translation>
 <translation id="1796561540704213354">網站，包括你瀏覽過的網頁和目前開啟的頁面</translation>
-<translation id="179842970735685253">Google 服務條款</translation>
 <translation id="1805407494113167797">無法播放「專注模式」音效</translation>
 <translation id="181103072419391116">訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
 <translation id="1815039896005206046">按一下不喜歡就可以給負評予這個建議群組</translation>
@@ -1241,7 +1240,6 @@
 <translation id="5121628974188116412">前往頁面底部</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> 預覽。唔係用緊嘅桌面。</translation>
 <translation id="5136175204352732067">已連接不同的鍵盤</translation>
-<translation id="5140105873789567560">你必須年滿 18 歲才可使用「幫我寫」和「幫我讀」。</translation>
 <translation id="5144005092084035179">要切換音訊輸入裝置嗎？</translation>
 <translation id="5147567197700016471">已解鎖</translation>
 <translation id="5150070631291639005">私隱設定</translation>
@@ -1396,7 +1394,6 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">無法驗證您的密碼。請再試一次。</translation>
 <translation id="5632485077360054581">顯示方法</translation>
-<translation id="5633826232582408011">當你啟用「幫我寫」和「幫我讀」後，輸入的文字、文件內容和網頁網址將傳送至 Google AI 伺服器，以生成寫作建議、產生摘要、回答問題及根據《<ph name="LINK_TO_SERVICE_TERMS" />》改善產品。請勿加入任何個人、敏感或機密內容。</translation>
 <translation id="5648021990716966815">麥克風插孔</translation>
 <translation id="5652575806481723716">「<ph name="FOCUSED_APP_NAME" />」有新嘅要求需要你處理。</translation>
 <translation id="5662075790140998213">桌面 10</translation>
@@ -2022,7 +2019,6 @@
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">顯示全部</translation>
-<translation id="7759183637555564029">你可以隨時在「設定」中關閉「幫我寫」和「幫我讀」。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">揀選朗讀內容</translation>
 <translation id="7769299611924763557">GIF 很快就能使用</translation>
 <translation id="7773536009433685931">改為開啟 Wi-Fi</translation>
@@ -2032,7 +2028,6 @@
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7787212146956232129">已設定輸入和輸出裝置。如要變更，請前往「設定」。</translation>
 <translation id="7792590255364786396">顯示</translation>
-<translation id="7793389284006812057">生成式 AI 是實驗版功能，仍在初期開發階段，目前僅供部分使用者使用。</translation>
 <translation id="7796735576426975947">已隱藏新通知</translation>
 <translation id="7798302898096527229">按下搜尋鍵或 Shift 鍵即可取消。</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>

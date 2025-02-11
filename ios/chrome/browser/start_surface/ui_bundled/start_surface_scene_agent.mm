@@ -126,6 +126,13 @@ bool IsEmptyNTP(const web::WebState* web_state) {
     [self logBackgroundDurationMetricForActivationLevel:level];
     [self showStartSurfaceIfNecessary];
   }
+  // If the Scene is disconnect during the application startup, then there
+  // is no point trying to present the Start Surface and the Scene will be
+  // destroyed soon.
+  if (level == SceneActivationLevelDisconnected) {
+    self.waitingForProfileStateAfterSceneStateReady = NO;
+    [self.sceneState.profileState removeObserver:self];
+  }
   self.previousActivationLevel = level;
 }
 
@@ -137,12 +144,23 @@ bool IsEmptyNTP(const web::WebState* web_state) {
     return;
   }
 
-  Browser* browser =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
+  // The Scene is not in foreground, wait until it enter foreground before
+  // presenting the Start Surface.
+  if (self.sceneState.activationLevel <
+      SceneActivationLevelForegroundInactive) {
+    self.previousActivationLevel = SceneActivationLevelUnattached;
+    return;
+  }
+
+  // -browserProviderInterface should only be nil if the UI has not been
+  // created yet (impossible as the profile has reached kFinal stage) or
+  // has been destroyed (impossible as the SceneState is not disconnected).
+  // See https://crbug.com/395114945 for discussion.
+  CHECK(self.sceneState.browserProviderInterface);
 
   // TODO(crbug.com/343699504): Remove pre-fetching capabilities once these
   // are loaded in iSL.
-  ProfileIOS* profile = browser->GetProfile();
+  ProfileIOS* profile = self.sceneState.profileState.profile;
   RunSystemCapabilitiesPrefetch(signin::GetIdentitiesOnDevice(profile));
 
   if (!ShouldShowStartSurfaceForSceneState(self.sceneState)) {
@@ -154,6 +172,9 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   if (self.sceneState.controller.isTabGridVisible) {
     return;
   }
+
+  Browser* browser =
+      self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
 
   // If there is no active tab, a NTP will be added, and since there is no
   // recent tab.

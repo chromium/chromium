@@ -148,6 +148,7 @@ if (is_android) {
     ]
 
     deps = [
+      ":java_resources",
       "//base:callback_java",
       "//base:supplier_java",
       "//base:tasks_java",

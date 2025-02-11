@@ -5636,7 +5636,6 @@
 <translation id="4946998421534856407">эхлүүлэгч + дээш сум</translation>
 <translation id="4947376546135294974">Таны зочилж буй сайтын өгөгдөл</translation>
 <translation id="4950100687509657457">Профайл үүсгэх</translation>
-<translation id="4950360215042327246">[Орлуулагчийн мөр]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="495170559598752135">Авах арга хэмжээ</translation>
 <translation id="4951966678293618079">Энэ сайтад нууц үгнүүдийг хэзээ ч бүү хадгал</translation>
@@ -7993,7 +7992,6 @@
 <translation id="6679947539429331601">12 цагийн турш нуух</translation>
 <translation id="6680442031740878064">Сул зай: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Үнэлэх</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Орлуулагчийн мөр]</translation>
 <translation id="6683022854667115063">Чихэвч</translation>
 <translation id="6683087162435654533">Бүх табыг сэргээх</translation>
 <translation id="6683433919380522900">Зөвшөөрөл нь <ph name="PERMISSION_STATE" /> байна</translation>
@@ -9211,7 +9209,6 @@
 <translation id="7561196759112975576">Үргэлж</translation>
 <translation id="7561759921596375678">Дууг асаах</translation>
 <translation id="7561982940498449837">Цэсийг хаах</translation>
-<translation id="7563970324931922582">[орлуулагч текст]</translation>
 <translation id="756445078718366910">Хөтөч цонхыг нээх</translation>
 <translation id="7564847347806291057">Процессийг дуусга</translation>
 <translation id="756503097602602175">Та нэвтэрсэн Google Бүртгэлүүдийг <ph name="LINK_BEGIN" />Тохиргоо<ph name="LINK_END" /> хэсэгт удирдах боломжтой. Таны вебсайтууд болон аппуудад өгсөн зөвшөөрөл нь бүх бүртгэлд хэрэгжиж болзошгүй. Хэрэв та сайтууд болон аппуудыг таны бүртгэлийн мэдээлэлд хандахыг хүсэхгүй байвал <ph name="DEVICE_TYPE" />-д зочноор нэвтрэх эсвэл <ph name="LINK_2_BEGIN" />Нууцлалтай цонх<ph name="LINK_2_END" />-оор веб үзэх боломжтой.</translation>

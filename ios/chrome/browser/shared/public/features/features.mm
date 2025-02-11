@@ -627,7 +627,7 @@ int HoursInactiveForOldUsersUntilShowingDockingPromo() {
 }
 
 bool IsWebChannelsEnabled() {
-  if (base::FeatureList::IsEnabled(kDeprecateFeedHeader)) {
+  if (ShouldDeprecateFeedHeader()) {
     return false;
   }
   std::string launched_countries[6] = {"AU", "CA", "GB", "NZ", "US", "ZA"};
@@ -956,7 +956,7 @@ BASE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch,
 
 BASE_FEATURE(kIOSTipsNotifications,
              "IOSTipsNotifications",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kIOSTipsNotificationsUnknownTriggerTimeParam[] =
     "unknown_trigger_time";
@@ -1030,6 +1030,11 @@ bool IsHomeCustomizationEnabled() {
   return base::FeatureList::IsEnabled(kHomeCustomization);
 }
 
+bool ShouldDeprecateFeedHeader() {
+  return IsHomeCustomizationEnabled() &&
+         base::FeatureList::IsEnabled(kDeprecateFeedHeader);
+}
+
 BASE_FEATURE(kEnableAppBackgroundRefresh,
              "EnableAppBackgroundRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1050,14 +1055,6 @@ BASE_FEATURE(kHomeMemoryImprovements,
 
 bool IsHomeMemoryImprovementsEnabled() {
   return base::FeatureList::IsEnabled(kHomeMemoryImprovements);
-}
-
-BASE_FEATURE(kRichBubbleWithoutImage,
-             "RichBubbleWithoutImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsRichBubbleWithoutImageEnabled() {
-  return base::FeatureList::IsEnabled(kRichBubbleWithoutImage);
 }
 
 BASE_FEATURE(kIdentityConfirmationSnackbar,

@@ -6,23 +6,16 @@
 #define COMPONENTS_PASSAGE_EMBEDDINGS_ML_EMBEDDER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "components/passage_embeddings/embedder.h"
-
-namespace optimization_guide {
-class OptimizationGuideModelProvider;
-}  // namespace optimization_guide
 
 namespace passage_embeddings {
 
 class PassageEmbeddingsServiceController;
 
 // An embedder that returns embeddings from a machine learning model.
-class MlEmbedder : public Embedder,
-                   public optimization_guide::OptimizationTargetModelObserver {
+class MlEmbedder : public Embedder {
  public:
-  MlEmbedder(optimization_guide::OptimizationGuideModelProvider* model_provider,
-             PassageEmbeddingsServiceController* service_controller);
+  explicit MlEmbedder(PassageEmbeddingsServiceController* service_controller);
   ~MlEmbedder() override;
 
   // Embedder:
@@ -33,21 +26,11 @@ class MlEmbedder : public Embedder,
 
   bool TryCancel(TaskId task_id) override;
 
-  void SetOnEmbedderReady(OnEmbedderReadyCallback callback) override;
+  void SetOnEmbedderReadyCallback(OnEmbedderReadyCallback callback) override;
+
+  void SetEmbedderMetadata(EmbedderMetadata metadata) override;
 
  private:
-  // OptimizationTargetModelObserver:
-  void OnModelUpdated(
-      optimization_guide::proto::OptimizationTarget optimization_target,
-      base::optional_ref<const optimization_guide::ModelInfo> model_info)
-      override;
-
-  // The provider of the embeddings model. It may be nullptr if
-  // `optimization_guide::kOptimizationHints` feature is disabled. Otherwise, it
-  // is guaranteed to outlive `this` since HistoryEmbeddingsServiceFactory
-  // depends on OptimizationGuideKeyedServiceFactory.
-  raw_ptr<optimization_guide::OptimizationGuideModelProvider> model_provider_;
-
   // The controller used to interact with the PassageEmbeddingsService.
   // It is a singleton and guaranteed not to be nullptr.
   raw_ptr<PassageEmbeddingsServiceController> service_controller_;

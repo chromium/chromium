@@ -229,6 +229,17 @@ size_t TabStripCollection::TotalTabCount() const {
   return TabCountRecursive();
 }
 
+void TabStripCollection::CreateGroup(
+    std::unique_ptr<tabs::TabGroupTabCollection> tab_group_collection) {
+  CHECK(tab_group_collection);
+  detached_group_collections_.push_back(std::move(tab_group_collection));
+}
+
+void TabStripCollection::CloseDetachedGroup(
+    const tab_groups::TabGroupId& group_id) {
+  PopDetachedGroupCollection(group_id).reset();
+}
+
 TabGroupTabCollection* TabStripCollection::MaybeCreateNewGroupCollectionForTab(
     int index,
     const tab_groups::TabGroupId& new_group) {
@@ -248,7 +259,25 @@ TabGroupTabCollection* TabStripCollection::MaybeCreateNewGroupCollectionForTab(
                 .value();
 
   return unpinned_collection_->AddTabGroup(
-      std::make_unique<TabGroupTabCollection>(new_group), dst_index);
+      PopDetachedGroupCollection(new_group), dst_index);
+}
+
+std::unique_ptr<tabs::TabGroupTabCollection>
+TabStripCollection::PopDetachedGroupCollection(
+    const tab_groups::TabGroupId& group_id) {
+  auto it = std::find_if(
+      detached_group_collections_.begin(), detached_group_collections_.end(),
+      [group_id](
+          const std::unique_ptr<tabs::TabGroupTabCollection>& collection) {
+        return collection->GetTabGroupId() == group_id;
+      });
+  CHECK(it != detached_group_collections_.end());
+
+  std::unique_ptr<tabs::TabGroupTabCollection> group_collection =
+      std::move(*it);
+  detached_group_collections_.erase(it);
+
+  return group_collection;
 }
 
 void TabStripCollection::MaybeRemoveGroupCollection(
@@ -257,11 +286,13 @@ void TabStripCollection::MaybeRemoveGroupCollection(
       unpinned_collection_->GetTabGroupCollection(group);
 
   if (group_collection && group_collection->TabCountRecursive() == 0) {
-    unpinned_collection_->CloseTabGroup(group_collection);
+    detached_group_collections_.push_back(
+        unpinned_collection_->RemoveGroup(group_collection));
   }
 }
 
 void TabStripCollection::ValidateData() {
+  CHECK(detached_group_collections_.empty());
   unpinned_collection_->ValidateCollections();
 }
 

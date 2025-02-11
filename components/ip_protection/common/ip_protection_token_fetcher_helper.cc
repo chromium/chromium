@@ -4,6 +4,7 @@
 
 #include "components/ip_protection/common/ip_protection_token_fetcher_helper.h"
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <utility>
@@ -11,11 +12,10 @@
 
 #include "base/base64.h"
 #include "base/logging.h"
+#include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
-#include "net/base/features.h"
-#include "net/base/proxy_string_util.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/blind_sign_auth_options.pb.h"

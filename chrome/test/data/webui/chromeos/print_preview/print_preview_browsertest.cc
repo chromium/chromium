@@ -147,8 +147,13 @@ class PrintPreviewSidebarTest : public PrintPreviewBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewSidebarTest,
-                       SettingsSectionsVisibilityChange) {
-  RunTestCase("SettingsSectionsVisibilityChange");
+                       SettingAvailabilityChangesSettingVisibility) {
+  RunTestCase("SettingAvailabilityChangesSettingVisibility");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewSidebarTest,
+                       ManagedPrintOptionsAppliedChangesSettingVisibility) {
+  RunTestCase("ManagedPrintOptionsAppliedChangesSettingVisibility");
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewSidebarTest, SheetCountWithDuplex) {
@@ -1471,5 +1476,10 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewManagedPrintOptionsTest,
 IN_PROC_BROWSER_TEST_F(PrintPreviewManagedPrintOptionsTest,
                        AllowedValuesIgnored) {
   RunTestCase("AllowedValuesIgnored");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewManagedPrintOptionsTest,
+                       DestinationPolicyAllowsSingleSettingValue) {
+  RunTestCase("DestinationPolicyAllowsSingleSettingValue");
 }
 #endif

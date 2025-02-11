@@ -21,7 +21,22 @@ enum class CollaborationServiceJoinEvent {
   kOpenedNewGroup = 6,
   kOpenedExistingGroup = 7,
   kFlowRequirementsMet = 8,
-  kMaxValue = kFlowRequirementsMet,
+  kParsingFailure = 9,
+  kSigninVerificationFailed = 10,
+  kSigninVerified = 11,
+  kSigninVerifiedInObserver = 12,
+  kFoundCollaborationWithoutTabGroup = 13,
+  kReadNewGroupFailed = 14,
+  kReadNewGroupSuccess = 15,
+  kAddedUserToGroup = 16,
+  kPreviewGroupFullError = 17,
+  kPreviewFailure = 18,
+  kPreviewSuccess = 19,
+  kGroupExistsWhenJoined = 20,
+  kTabGroupFetched = 21,
+  kPeopleGroupFetched = 22,
+  kPromoteTabGroup = 23,
+  kMaxValue = kPromoteTabGroup,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceJoinEvent)
 
@@ -39,7 +54,17 @@ enum class CollaborationServiceShareOrManageEvent {
   kTabGroupShared = 6,
   kUrlReadyToShare = 7,
   kFlowRequirementsMet = 8,
-  kMaxValue = kFlowRequirementsMet,
+  kSigninVerificationFailed = 9,
+  kSigninVerified = 10,
+  kSigninVerifiedInObserver = 11,
+  kSyncedTabGroupNotFound = 12,
+  kCollaborationIdMissing = 13,
+  kCollaborationIdInvalid = 14,
+  kTabGroupMissingBeforeMigration = 15,
+  kMigrationFailure = 16,
+  kReadGroupFailed = 17,
+  kUrlCreationFailed = 18,
+  kMaxValue = kUrlCreationFailed,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceShareOrManageEvent)
 

@@ -166,6 +166,9 @@ void HTMLDialogElement::close(const String& return_value,
   SetBooleanAttribute(html_names::kOpenAttr, false);
   bool was_modal = IsModal();
   SetIsModal(false);
+  // Because we set `is_closing_` above, the `open` attribute setter will not
+  // run its actions. We need to therefore manage the open dialogs list here.
+  DCHECK(GetDocument().AllOpenDialogs().Contains(this));
   GetDocument().AllOpenDialogs().erase(this);
 
   // If this dialog is open as a non-modal dialog and open as a popover at the
@@ -439,12 +442,6 @@ void HTMLDialogElement::show(ExceptionState& exception_state) {
     return;
   }
   SetBooleanAttribute(html_names::kOpenAttr, true);
-  DCHECK(!GetDocument().AllOpenDialogs().Contains(this));
-  GetDocument().AllOpenDialogs().insert(this);
-
-  if (RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled()) {
-    CreateCloseWatcher();
-  }
 
   // The layout must be updated here because setFocusForDialog calls
   // Element::isFocusable, which requires an up-to-date layout.
@@ -575,16 +572,20 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
   }
 
   document.AddToTopLayer(this);
-  SetBooleanAttribute(html_names::kOpenAttr, true);
   SetIsModal(true);
-  DCHECK(!GetDocument().AllOpenDialogs().Contains(this));
-  GetDocument().AllOpenDialogs().insert(this);
+  SetBooleanAttribute(html_names::kOpenAttr, true);
 
   // Refresh the AX cache first, because most of it is changing.
   InertSubtreesChanged(document, old_modal_dialog);
   document.UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
-  CreateCloseWatcher();
+  // If HTMLDialogLightDismiss is enabled, then setting the open attribute
+  // already created the close watcher.
+  if (RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled()) {
+    DCHECK(close_watcher_);
+  } else {
+    CreateCloseWatcher();
+  }
 
   // Proposed new behavior: top layer elements like dialogs and fullscreen
   // elements can be nested inside popovers.
@@ -614,6 +615,7 @@ void HTMLDialogElement::RemovedFrom(ContainerNode& insertion_point) {
   }
 
   SetIsModal(false);
+  document.RemoveFromTopLayerImmediately(this);
 
   if (close_watcher_) {
     close_watcher_->destroy();
@@ -741,23 +743,34 @@ void HTMLDialogElement::AttributeChanged(
 
 void HTMLDialogElement::ParseAttribute(
     const AttributeModificationParams& params) {
-  if (params.name == html_names::kOpenAttr && params.new_value.IsNull() &&
-      !is_closing_) {
-    // The open attribute has been removed explicitly, without calling close().
-    if (RuntimeEnabledFeatures::DialogCloseWhenOpenRemovedEnabled()) {
-      AddConsoleMessage(
-          mojom::blink::ConsoleMessageSource::kOther,
-          mojom::blink::ConsoleMessageLevel::kWarning,
-          "The open attribute was removed from a dialog element while it was "
-          "open. This is not recommended. Please close it using the "
-          "dialog.close() method instead.");
-      close(/*return_value=*/String(), /*ignore_open_attribute=*/true,
-            /*async_focus=*/true);
-    } else {
-      GetDocument().AllOpenDialogs().erase(this);
-      if (close_watcher_) {
-        close_watcher_->destroy();
-        close_watcher_ = nullptr;
+  if (params.name == html_names::kOpenAttr && !is_closing_) {
+    if (params.new_value.IsNull()) {
+      // The open attribute has been removed explicitly, without calling
+      // close().
+      if (RuntimeEnabledFeatures::DialogCloseWhenOpenRemovedEnabled()) {
+        AddConsoleMessage(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "The open attribute was removed from a dialog element while it was "
+            "open. This is not recommended. Please close it using the "
+            "dialog.close() method instead.");
+        close(/*return_value=*/String(), /*ignore_open_attribute=*/true,
+              /*async_focus=*/true);
+      } else {
+        DCHECK(GetDocument().AllOpenDialogs().Contains(this));
+        GetDocument().AllOpenDialogs().erase(this);
+        if (close_watcher_) {
+          close_watcher_->destroy();
+          close_watcher_ = nullptr;
+        }
+      }
+    } else if (params.old_value.IsNull()) {
+      // The `open` attribute is being added - we need to ensure there's a
+      // closewatcher created and the open dialogs list is up to date.
+      DCHECK(!GetDocument().AllOpenDialogs().Contains(this));
+      GetDocument().AllOpenDialogs().insert(this);
+      if (RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled()) {
+        CreateCloseWatcher();
       }
     }
   }

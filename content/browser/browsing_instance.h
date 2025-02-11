@@ -16,7 +16,6 @@
 #include "base/memory/ref_counted.h"
 #include "content/browser/isolation_context.h"
 #include "content/browser/security/coop/coop_related_group.h"
-#include "content/browser/site_instance_group_manager.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
@@ -141,12 +140,6 @@ class CONTENT_EXPORT BrowsingInstance final
   // navigations in the frames belonging to this BrowsingInstance. For <webview>
   // tags, this always returns true.
   bool is_fixed_storage_partition() { return is_fixed_storage_partition_; }
-
-  // Get the SiteInstanceGroupManager that controls all of the SiteInstance
-  // groups associated with this BrowsingInstance.
-  SiteInstanceGroupManager& site_instance_group_manager() {
-    return site_instance_group_manager_;
-  }
 
   // Returns whether this BrowsingInstance has registered a SiteInstance for
   // the site of |site_info|.
@@ -302,9 +295,6 @@ class CONTENT_EXPORT BrowsingInstance final
   // BrowsingInstance must belong.
   const IsolationContext isolation_context_;
 
-  // Manages all SiteInstance groups for this BrowsingInstance.
-  SiteInstanceGroupManager site_instance_group_manager_;
-
   // Map of site to SiteInstance, to ensure we only have one SiteInstance per
   // site.  The site string should be the possibly_invalid_spec() of a GURL
   // obtained with SiteInstanceImpl::GetSiteForURL.  Note that this map may not
@@ -321,11 +311,8 @@ class CONTENT_EXPORT BrowsingInstance final
   size_t active_contents_count_;
 
   // SiteInstance to use if a URL does not correspond to an instance in
-  // |site_instance_map_| and it does not require a dedicated process.
-  // This field and site_instance_group_manager_.default_process_ are mutually
-  // exclusive and this field should only be set if
-  // kProcessSharingWithStrictSiteInstances is not enabled. This is a raw
-  // pointer to avoid a reference cycle between the BrowsingInstance and the
+  // |site_instance_map_| and it does not require a dedicated process. This is a
+  // raw pointer to avoid a reference cycle between the BrowsingInstance and the
   // SiteInstanceImpl. Note: This can hold cross-origin isolated SiteInstances.
   // It will however only do so under certain specific circumstances (for
   // example on a low memory device), which don't use the COOP isolation

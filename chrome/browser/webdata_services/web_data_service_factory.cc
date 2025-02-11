@@ -82,7 +82,7 @@ enum class AutofillAccountStorageResult {
   kOnDisk_SyncFeatureEnabled = 4,
   kMaxValue = kOnDisk_SyncFeatureEnabled
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/others/enums.xml:WebDatabaseAutofillAccountStorageResult)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:WebDatabaseAutofillAccountStorageResult)
 
 // See `ShouldUseInMemoryAutofillAccountDatabase()` for details about how this
 // function is useful. Instead of returning a boolean, this function returns an

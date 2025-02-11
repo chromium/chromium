@@ -24,7 +24,8 @@ class BackgroundTracingAgentClientRecorder
   void OnInitialized() override { ++on_initialized_count_; }
 
   void OnTriggerBackgroundTrace(tracing::mojom::BackgroundTracingRulePtr rule,
-                                std::optional<int32_t> value) override {
+                                std::optional<int32_t> value,
+                                uint64_t flow_id) override {
     ++on_trigger_background_trace_count_;
     on_trigger_background_trace_rule_id_ = rule->rule_id;
   }

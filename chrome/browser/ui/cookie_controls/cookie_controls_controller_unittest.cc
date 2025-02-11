@@ -1787,6 +1787,14 @@ class CookieControlsUserBypassTrackingProtectionUiTest
   CookieControlsUserBypassTrackingProtectionUiTest() = default;
   ~CookieControlsUserBypassTrackingProtectionUiTest() override = default;
 
+  void TearDown() override {
+    incognito_cookie_controls_->RemoveObserver(incognito_mock());
+    incognito_cookie_controls_.reset();
+    incognito_web_contents_ = nullptr;
+    incognito_profile_ = nullptr;
+    CookieControlsUserBypassTest::TearDown();
+  }
+
   void SetUp() override {
     CookieControlsUserBypassTest::SetUp();
 
@@ -1804,6 +1812,25 @@ class CookieControlsUserBypassTrackingProtectionUiTest
                                         true);
     }
     feature_list_.InitWithFeatures(enabled_features, {});
+
+    incognito_profile_ =
+        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    incognito_web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        incognito_profile_, nullptr);
+    content_settings::PageSpecificContentSettings::CreateForWebContents(
+        incognito_web_contents_.get(),
+        std::make_unique<PageSpecificContentSettingsDelegate>(
+            incognito_web_contents_.get()));
+
+    incognito_cookie_controls_ =
+        std::make_unique<content_settings::CookieControlsController>(
+            CookieSettingsFactory::GetForProfile(incognito_profile_),
+            CookieSettingsFactory::GetForProfile(profile()),
+            HostContentSettingsMapFactory::GetForProfile(incognito_profile_),
+            TrackingProtectionSettingsFactory::GetForProfile(
+                incognito_profile_),
+            /*is_incognito_profile=*/true);
+    incognito_cookie_controls_->AddObserver(incognito_mock());
   }
 
   std::vector<TrackingProtectionFeature> GetFeatureVector(
@@ -1812,7 +1839,10 @@ class CookieControlsUserBypassTrackingProtectionUiTest
     std::vector<TrackingProtectionFeature> features_list;
     features_list.push_back(
         {FeatureType::kThirdPartyCookies, enforcement,
-         protections_on ? BlockingStatus::kBlocked : BlockingStatus::kAllowed});
+         protections_on &&
+                 enforcement == CookieControlsEnforcement::kNoEnforcement
+             ? BlockingStatus::kBlocked
+             : BlockingStatus::kAllowed});
     // Currently these ACT features do not support different enforcement types.
     if (std::get<1>(GetParam())) {
       features_list.push_back({FeatureType::kIpProtection,
@@ -1829,53 +1859,99 @@ class CookieControlsUserBypassTrackingProtectionUiTest
     return features_list;
   }
 
-  void AddUserBypassException(Profile* profile) {
-    if (std::get<0>(GetParam())) {
-      CookieSettingsFactory::GetForProfile(profile)->SetThirdPartyCookieSetting(
-          GURL(kUrl), ContentSetting::CONTENT_SETTING_BLOCK);
-    } else {
-      TrackingProtectionSettingsFactory::GetForProfile(profile)
-          ->AddTrackingProtectionException(GURL(kUrl));
-      CookieSettingsFactory::GetForProfile(profile)->SetThirdPartyCookieSetting(
-          GURL(kUrl), ContentSetting::CONTENT_SETTING_ALLOW);
-    }
+  content::WebContents* incognito_web_contents() {
+    return incognito_web_contents_.get();
+  }
+
+  Profile* incognito_profile() { return incognito_profile_.get(); }
+
+  MockCookieControlsObserver* incognito_mock() { return &incognito_mock_; }
+
+  content_settings::CookieControlsController* incognito_cookie_controls() {
+    return incognito_cookie_controls_.get();
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  MockCookieControlsObserver incognito_mock_;
+  raw_ptr<Profile> incognito_profile_;
+  std::unique_ptr<content::WebContents> incognito_web_contents_;
+  std::unique_ptr<content_settings::CookieControlsController>
+      incognito_cookie_controls_;
 };
 
 TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
        AddsActFeaturesToVectorInIncognitoBasedOnFeatureAndExceptionStatus) {
-  auto* incognito_profile =
-      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  std::unique_ptr<content::WebContents> incognito_web_contents =
-      content::WebContentsTester::CreateTestWebContents(incognito_profile,
-                                                        nullptr);
-  content_settings::PageSpecificContentSettings::CreateForWebContents(
-      incognito_web_contents.get(),
-      std::make_unique<PageSpecificContentSettingsDelegate>(
-          incognito_web_contents.get()));
-  content_settings::CookieControlsController incognito_cookie_controls(
-      CookieSettingsFactory::GetForProfile(incognito_profile),
-      CookieSettingsFactory::GetForProfile(profile()),
-      HostContentSettingsMapFactory::GetForProfile(incognito_profile),
-      TrackingProtectionSettingsFactory::GetForProfile(incognito_profile),
-      /*is_incognito_profile=*/true);
-  MockCookieControlsObserver incognito_mock;
-  incognito_cookie_controls.AddObserver(&incognito_mock);
-  AddUserBypassException(incognito_profile);
-  auto* tester = content::WebContentsTester::For(incognito_web_contents.get());
+  auto* tester = content::WebContentsTester::For(incognito_web_contents());
   tester->NavigateAndCommit(GURL(kUrl));
+  incognito_cookie_controls()->Update(incognito_web_contents());
+  incognito_cookie_controls()->OnCookieBlockingEnabledForSite(
+      std::get<0>(GetParam()));
 
-  EXPECT_CALL(incognito_mock,
+  EXPECT_CALL(*incognito_mock(),
               OnStatusChanged(
                   /*controls_visible=*/true, std::get<0>(GetParam()),
                   CookieControlsEnforcement::kNoEnforcement,
                   CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration(),
                   GetFeatureVector(CookieControlsEnforcement::kNoEnforcement)));
-  incognito_cookie_controls.Update(incognito_web_contents.get());
-  testing::Mock::VerifyAndClearExpectations(&incognito_mock);
+  incognito_cookie_controls()->Update(incognito_web_contents());
+  testing::Mock::VerifyAndClearExpectations(incognito_mock());
+}
+
+TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
+       ProtectionsOnForActFeaturesWhenCookiesAreEnforced) {
+  NavigateAndCommit(GURL(kUrl));
+  cookie_controls()->Update(web_contents());
+  auto* tester = content::WebContentsTester::For(incognito_web_contents());
+  tester->NavigateAndCommit(GURL(kUrl));
+  incognito_cookie_controls()->Update(incognito_web_contents());
+  incognito_cookie_controls()->OnCookieBlockingEnabledForSite(
+      std::get<0>(GetParam()));
+
+  // Allowing 3PCs in regular mode should allow & enforce them in incognito.
+  // Protections (i.e. the toggle) should still be on iff ACT features are
+  // enabled.
+  EXPECT_CALL(*mock(), OnStatusChanged(
+                           /*controls_visible=*/true,
+                           /*protections_on=*/false,
+                           CookieControlsEnforcement::kNoEnforcement,
+                           CookieBlocking3pcdStatus::kNotIn3pcd, expiration(),
+                           GetThirdPartyCookiesFeatureForEnforcement(
+                               CookieControlsEnforcement::kNoEnforcement,
+                               BlockingStatus::kAllowed)));
+
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
+                           /*icon_visible=*/true,
+                           /*protections_on=*/false,
+                           CookieBlocking3pcdStatus::kNotIn3pcd,
+                           /*should_highlight=*/false));
+
+  bool act_features_enabled =
+      std::get<1>(GetParam()) || std::get<2>(GetParam());
+  bool protections_on = act_features_enabled && std::get<0>(GetParam());
+
+  EXPECT_CALL(
+      *incognito_mock(),
+      OnStatusChanged(
+          /*controls_visible=*/true, protections_on,
+          CookieControlsEnforcement::kEnforcedByCookieSetting,
+          CookieBlocking3pcdStatus::kNotIn3pcd,
+          std::get<0>(GetParam()) && !act_features_enabled ? expiration()
+                                                           : zero_expiration(),
+          GetFeatureVector(
+              CookieControlsEnforcement::kEnforcedByCookieSetting)));
+
+  EXPECT_CALL(*incognito_mock(),
+              OnCookieControlsIconStatusChanged(
+                  /*icon_visible=*/
+                  !protections_on,  // Icon shown when
+                                    // protections are off
+                  protections_on, CookieBlocking3pcdStatus::kNotIn3pcd,
+                  /*should_highlight=*/false));
+
+  cookie_controls()->OnCookieBlockingEnabledForSite(false);
+  testing::Mock::VerifyAndClearExpectations(mock());
+  testing::Mock::VerifyAndClearExpectations(incognito_mock());
 }
 
 INSTANTIATE_TEST_SUITE_P(

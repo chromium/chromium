@@ -310,6 +310,14 @@ export class PrintPreviewDestinationSettingsElement extends
 
   private onDestinationCapabilitiesReady_() {
     this.notifyPath('destination.capabilities');
+
+    this.notifyPath('destination.allowedManagedPrintOptionsApplied.mediaSize');
+    this.notifyPath('destination.allowedManagedPrintOptionsApplied.mediaType');
+    this.notifyPath('destination.allowedManagedPrintOptionsApplied.duplex');
+    this.notifyPath('destination.allowedManagedPrintOptionsApplied.color');
+    this.notifyPath('destination.allowedManagedPrintOptionsApplied.dpi');
+    this.notifyPath('destination.allowedManagedPrintOptionsApplied.quality');
+
     this.updateRecentDestinations_();
     if (this.destinationState === DestinationState.SET) {
       this.destinationState = DestinationState.UPDATED;

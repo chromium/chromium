@@ -407,6 +407,9 @@ bool ParseBackgroundOrMask(bool,
                            const CSSParserLocalContext&,
                            HeapVector<CSSPropertyValue, 64>&);
 
+CORE_EXPORT CSSValue* ConsumeProgressType(CSSParserTokenStream&,
+                                          const CSSParserContext&);
+
 CSSValue* ConsumeCoordBoxOrNoClip(CSSParserTokenStream&);
 
 CSSRepeatStyleValue* ConsumeRepeatStyleValue(CSSParserTokenStream& stream);

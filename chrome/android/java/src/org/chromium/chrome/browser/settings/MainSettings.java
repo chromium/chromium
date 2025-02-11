@@ -11,9 +11,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.SuperscriptSpan;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.Lifecycle;
 import androidx.preference.Preference;
 
@@ -42,6 +46,8 @@ import org.chromium.chrome.browser.password_manager.PasswordAccessLossDialogHelp
 import org.chromium.chrome.browser.password_manager.PasswordExportLauncher;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.password_manager.settings.PasswordsPreference;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -64,6 +70,7 @@ import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -72,6 +79,8 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -107,6 +116,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_PLUS_ADDRESSES = "plus_addresses";
     public static final String PREF_SAFETY_HUB = "safety_hub";
     public static final String PREF_ADDRESS_BAR = "address_bar";
+    @VisibleForTesting static final int ADDRESS_BAR_NEW_LABEL_MAX_VIEW_COUNT = 6;
 
     private final Map<String, Preference> mAllPreferences = new HashMap<>();
 
@@ -520,8 +530,45 @@ public class MainSettings extends ChromeBaseSettingsFragment
         if (ToolbarPositionController.isToolbarPositionCustomizationEnabled(getContext(), false)) {
             Preference addressBarPreference = addPreferenceIfAbsent(PREF_ADDRESS_BAR);
             addressBarPreference.setSummary(ToolbarPositionController.getToolbarPositionResId());
+            addressBarPreference.setTitle(getAddressBarPreferenceTitle());
+            addressBarPreference.setOnPreferenceClickListener(
+                    (unused) -> {
+                        ChromeSharedPreferences.getInstance()
+                                .incrementInt(ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_CLICKED);
+                        return false;
+                    });
         } else {
             removePreferenceIfPresent(PREF_ADDRESS_BAR);
+        }
+    }
+
+    CharSequence getAddressBarPreferenceTitle() {
+        boolean clicked =
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_CLICKED, false);
+        int viewCount =
+                ChromeSharedPreferences.getInstance()
+                        .readInt(ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_VIEW_COUNT, 0);
+        boolean showNewLabelForAddressBarPref =
+                !clicked && viewCount < ADDRESS_BAR_NEW_LABEL_MAX_VIEW_COUNT;
+        Context context = getContext();
+        if (showNewLabelForAddressBarPref) {
+            ChromeSharedPreferences.getInstance()
+                    .incrementInt(ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_VIEW_COUNT);
+            return SpanApplier.applySpans(
+                    context.getString(R.string.address_bar_settings),
+                    new SpanInfo(
+                            "<new>",
+                            "</new>",
+                            new SuperscriptSpan(),
+                            new RelativeSizeSpan(0.75f),
+                            new ForegroundColorSpan(
+                                    SemanticColorUtils.getDefaultTextColorAccent1(context))));
+        } else {
+            return SpanApplier.removeSpanText(
+                            context.getString(R.string.address_bar_settings),
+                            new SpanInfo("<new>", "</new>"))
+                    .trim();
         }
     }
 

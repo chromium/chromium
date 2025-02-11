@@ -7,16 +7,23 @@
 #include "base/check.h"
 #include "base/hash/hash.h"
 #include "base/strings/strcat.h"
+#include "base/trace_event/trace_id_helper.h"
 
 namespace base::trace_event {
+namespace {
 
 // |g_named_trigger_manager| is intentionally leaked on shutdown.
 NamedTriggerManager* g_named_trigger_manager = nullptr;
 
+}  // namespace
+
 bool EmitNamedTrigger(const std::string& trigger_name,
-                      std::optional<int32_t> value) {
+                      std::optional<int32_t> value,
+                      std::optional<uint64_t> flow_id) {
   if (g_named_trigger_manager) {
-    return g_named_trigger_manager->DoEmitNamedTrigger(trigger_name, value);
+    return g_named_trigger_manager->DoEmitNamedTrigger(
+        trigger_name, value,
+        flow_id.value_or(base::trace_event::GetNextGlobalTraceId()));
   }
   return false;
 }
@@ -24,17 +31,6 @@ bool EmitNamedTrigger(const std::string& trigger_name,
 void NamedTriggerManager::SetInstance(NamedTriggerManager* manager) {
   DCHECK(g_named_trigger_manager == nullptr || manager == nullptr);
   g_named_trigger_manager = manager;
-}
-
-uint64_t TriggerFlowId(const std::string_view& name,
-                       std::optional<int32_t> value) {
-  size_t name_hash = base::FastHash(name);
-  return base::HashInts(name_hash, static_cast<uint32_t>(value.value_or(0)));
-}
-
-perfetto::Flow TriggerFlow(const std::string_view& name,
-                           std::optional<int32_t> value) {
-  return perfetto::Flow::Global(TriggerFlowId(name, value));
 }
 
 }  // namespace base::trace_event

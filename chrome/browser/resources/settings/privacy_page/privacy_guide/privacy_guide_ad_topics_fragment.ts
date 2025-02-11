@@ -98,6 +98,14 @@ export class PrivacyGuideAdTopicsFragmentElement extends
         target.checked ? 'Settings.PrivacyGuide.ChangeAdTopicsOn' :
                          'Settings.PrivacyGuide.ChangeAdTopicsOff');
   }
+
+  // Opens up a new tab when clicked. The on-click function and href for the
+  // link is all handled in
+  // settings_localized_strings_privacy_sandbox_provider.cc
+  private onPrivacyPolicyLinkClicked_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacyGuide.AdTopicsPrivacyPolicyLinkClicked');
+  }
 }
 
 declare global {

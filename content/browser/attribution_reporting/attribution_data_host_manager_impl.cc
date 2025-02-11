@@ -146,6 +146,33 @@ void RecordRegistrationMethod(RegistrationMethod method) {
   base::UmaHistogramEnumeration("Conversions.RegistrationMethod2", method);
 }
 
+std::string_view ToString(RegistrationMethod method) {
+  switch (method) {
+    case RegistrationMethod::kNavForeground:
+      return "kNavForeground";
+    case RegistrationMethod::kNavBackgroundBlink:
+      return "kNavBackgroundBlink";
+    case RegistrationMethod::kNavBackgroundBlinkViaSW:
+      return "kNavBackgroundBlinkViaSW";
+    case RegistrationMethod::kNavBackgroundBrowser:
+      return "kNavBackgroundBrowser";
+    case RegistrationMethod::kFencedFrameBeacon:
+      return "kFencedFrameBeacon";
+    case RegistrationMethod::kFencedFrameAutomaticBeacon:
+      return "kFencedFrameAutomaticBeacon";
+    case RegistrationMethod::kForegroundBlink:
+      return "kForegroundBlink";
+    case RegistrationMethod::kForegroundBlinkViaSW:
+      return "kForegroundBlinkViaSW";
+    case RegistrationMethod::kBackgroundBlink:
+      return "kBackgroundBlink";
+    case RegistrationMethod::kBackgroundBlinkViaSW:
+      return "kBackgroundBlinkViaSW";
+    case RegistrationMethod::kForegroundOrBackgroundBrowser:
+      return "kForegroundOrBackgroundBrowser";
+  }
+}
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -524,6 +551,10 @@ class AttributionDataHostManagerImpl::RegistrationContext {
       }
       SCOPED_CRASH_KEY_STRING32("AttributionReporting", "unmatched_context",
                                 unmatched_field);
+      SCOPED_CRASH_KEY_STRING32("AttributionReporting", "first_method",
+                                ToString(method_));
+      SCOPED_CRASH_KEY_STRING32("AttributionReporting", "second_method",
+                                ToString(other.method_));
       base::debug::DumpWithoutCrashing();
     }
     return is_equivalent;

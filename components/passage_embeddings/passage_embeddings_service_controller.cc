@@ -14,7 +14,6 @@
 #include "components/passage_embeddings/ml_embedder.h"
 #include "components/passage_embeddings/passage_embeddings_features.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
-#include "components/passage_embeddings/scheduling_embedder.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom-shared.h"
 
@@ -72,10 +71,17 @@ class ScopedEmbeddingsModelInfoStatusLogger {
 
 }  // namespace
 
-PassageEmbeddingsServiceController::PassageEmbeddingsServiceController() =
-    default;
-PassageEmbeddingsServiceController::~PassageEmbeddingsServiceController() =
-    default;
+PassageEmbeddingsServiceController::PassageEmbeddingsServiceController()
+    : scheduling_embedder_(std::make_unique<SchedulingEmbedder>(
+          std::make_unique<MlEmbedder>(this),
+          1,
+          false)) {
+  observer_list_.AddObserver(scheduling_embedder_.get());
+}
+
+PassageEmbeddingsServiceController::~PassageEmbeddingsServiceController() {
+  observer_list_.RemoveObserver(scheduling_embedder_.get());
+}
 
 bool PassageEmbeddingsServiceController::MaybeUpdateModelInfo(
     base::optional_ref<const optimization_guide::ModelInfo> model_info) {
@@ -127,6 +133,7 @@ bool PassageEmbeddingsServiceController::MaybeUpdateModelInfo(
 
   CHECK(EmbedderReady());
   logger.set_status(EmbeddingsModelInfoStatus::kValid);
+  observer_list_.Notify(&Embedder::SetEmbedderMetadata, GetEmbedderMetadata());
   return true;
 }
 
@@ -168,7 +175,12 @@ std::unique_ptr<Embedder> PassageEmbeddingsServiceController::MakeEmbedder() {
   // TODO(crbug.com/394893724): Rework embedder readiness and use central
   //  SchedulingEmbedder. The existing observation is more complex than
   //  necessary and can be simplified now since this class knows readiness.
-  return std::make_unique<MlEmbedder>(nullptr, this);
+  auto client = std::make_unique<SchedulingClientEmbedder>(
+      scheduling_embedder_.get(),
+      base::BindOnce(&PassageEmbeddingsServiceController::RemoveObserver,
+                     weak_ptr_factory_.GetWeakPtr()));
+  observer_list_.AddObserver(client.get());
+  return client;
 }
 
 void PassageEmbeddingsServiceController::GetEmbeddings(
@@ -213,6 +225,10 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
                          std::move(callback)),
           std::vector<mojom::PassageEmbeddingsResultPtr>()));
   next_request_id_++;
+}
+
+void PassageEmbeddingsServiceController::RemoveObserver(Embedder* embedder) {
+  observer_list_.RemoveObserver(embedder);
 }
 
 bool PassageEmbeddingsServiceController::EmbedderReady() {

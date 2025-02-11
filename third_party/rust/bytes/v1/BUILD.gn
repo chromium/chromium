@@ -44,6 +44,7 @@ cargo_crate("lib") {
       "Carl Lerche <me@carllerche.com>, Sean McArthur <sean@seanmonstar.com>"
   cargo_pkg_name = "bytes"
   cargo_pkg_description = "Types and traits for working with bytes"
+  library_configs -= [ "//build/config/coverage:default_coverage" ]
   library_configs -= [ "//build/config/compiler:chromium_code" ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]

@@ -77,10 +77,6 @@ class Tracker;
 
 @property(nonatomic, readonly, assign) FaviconLoader* faviconLoader;
 
-/// Sets the semantic content attribute of the popup content.
-- (void)setSemanticContentAttribute:
-    (UISemanticContentAttribute)semanticContentAttribute;
-
 @property(nonatomic, weak) id<AutocompleteResultConsumer> consumer;
 /// Consumer for debug info.
 @property(nonatomic, weak) id<PopupDebugInfoConsumer,
@@ -121,12 +117,6 @@ class Tracker;
       autocompleteController:(AutocompleteController*)autocompleteController
     remoteSuggestionsService:(RemoteSuggestionsService*)remoteSuggestionsService
                      tracker:(feature_engagement::Tracker*)tracker;
-
-/// Sets the text alignment of the popup content.
-- (void)setTextAlignment:(NSTextAlignment)alignment;
-
-/// Sets whether the omnibox has a thumbnail.
-- (void)setHasThumbnail:(BOOL)hasThumbnail;
 
 // Disconnects all observers set by the mediator.
 - (void)disconnect;

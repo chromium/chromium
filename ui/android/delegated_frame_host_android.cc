@@ -8,6 +8,7 @@
 
 #include "base/android/build_info.h"
 #include "base/check_op.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -289,6 +290,11 @@ DelegatedFrameHostAndroid::GetFirstSurfaceIdAfterNavigationForTesting() const {
                         first_local_surface_id_after_navigation_);
 }
 
+viz::SurfaceId
+DelegatedFrameHostAndroid::GetBFCacheFallbackSurfaceIdForTesting() const {
+  return viz::SurfaceId(frame_sink_id_, bfcache_fallback_);
+}
+
 void DelegatedFrameHostAndroid::ClearFallbackSurfaceForCommitPending() {
   const std::optional<viz::SurfaceId> fallback_surface_id =
       content_layer_->oldest_acceptable_fallback();
@@ -319,16 +325,7 @@ void DelegatedFrameHostAndroid::ResetFallbackToFirstNavigationSurface() {
       !first_local_surface_id_after_navigation_.is_valid()) {
     // If we have a valid `pre_navigation_local_surface_id_`, we must not be in
     // BFCache.
-    {
-      // TODO(https://crbug.com/349073060): Remove the scope when the bug is
-      // fixed.
-      SCOPED_CRASH_KEY_STRING64("crbug/349073060", "bfc_fallback_crashed",
-                                bfcache_fallback_.ToString().c_str());
-      SCOPED_CRASH_KEY_STRING64(
-          "crbug/349073060", "pre_nav_lsid_crashed",
-          pre_navigation_local_surface_id_.ToString().c_str());
-      CHECK(!bfcache_fallback_.is_valid());
-    }
+    CHECK(!bfcache_fallback_.is_valid());
     EvictDelegatedFrame(frame_evictor_->CollectSurfaceIdsForEviction());
     content_layer_->SetBackgroundColor(SkColors::kTransparent);
   }
@@ -595,6 +592,24 @@ void DelegatedFrameHostAndroid::DidNavigateMainFramePreCommit() {
   pre_navigation_local_surface_id_ = local_surface_id_;
   first_local_surface_id_after_navigation_ = viz::LocalSurfaceId();
   SetLocalSurfaceId(viz::LocalSurfaceId());
+
+  // The page is either activated or evicted from BFCache without notifying the
+  // DelegatedFrameHost. In either cases, `bfcache_fallback_` must be
+  // invalidated.
+  //
+  // TODO(https://crbug.com/356337182): Remove the DumpWithoutCrashing when the
+  // bug is fixed.
+  if (bfcache_fallback_.is_valid()) {
+    SCOPED_CRASH_KEY_STRING64("crbug-356337182", "bfc_fallback_crashed",
+                              bfcache_fallback_.ToString().c_str());
+    SCOPED_CRASH_KEY_STRING64(
+        "crbug-356337182", "pre_nav_lsid_crashed",
+        pre_navigation_local_surface_id_.ToString().c_str());
+    SCOPED_CRASH_KEY_STRING64("crbug-356337182", "current_lsid_crashed",
+                              local_surface_id_.ToString().c_str());
+    base::debug::DumpWithoutCrashing();
+    bfcache_fallback_ = viz::LocalSurfaceId();
+  }
 }
 
 void DelegatedFrameHostAndroid::DidEnterBackForwardCache() {
@@ -615,6 +630,10 @@ void DelegatedFrameHostAndroid::DidEnterBackForwardCache() {
     bfcache_fallback_ = pre_navigation_local_surface_id_;
     pre_navigation_local_surface_id_ = viz::LocalSurfaceId();
   }
+}
+
+void DelegatedFrameHostAndroid::ActivatedOrEvictedFromBackForwardCache() {
+  bfcache_fallback_ = viz::LocalSurfaceId();
 }
 
 void DelegatedFrameHostAndroid::

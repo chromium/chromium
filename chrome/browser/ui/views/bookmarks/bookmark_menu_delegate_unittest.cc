@@ -694,14 +694,15 @@ TEST_F(BookmarkMenuDelegateTest, DragAndDropBeforeOtherNode) {
 }
 
 // Tests moving a bookmark between two normal bookmark folders.
-// TODO(crbug.com/393126961): Re-enable the test once the crashes are resolved.
-TEST_F(BookmarkMenuDelegateTest, DISABLED_MovingBookmarksBetweenNormalFolders) {
+TEST_F(BookmarkMenuDelegateTest, MovingBookmarksBetweenNormalFolders) {
   NewAndBuildFullMenu();
   views::MenuItemView* root_item = menu();
-  views::MenuItemView* f1_item = root_item->GetSubmenu()->GetMenuItemAt(2);
-  views::MenuItemView* f2_item = root_item->GetSubmenu()->GetMenuItemAt(3);
+  views::MenuItemView* f1_item = root_item->GetSubmenu()->GetMenuItemAt(4);
+  views::MenuItemView* f2_item = root_item->GetSubmenu()->GetMenuItemAt(5);
 
   // Folders haven't been loaded yet.
+  ASSERT_TRUE(f1_item->HasSubmenu());
+  ASSERT_TRUE(f2_item->HasSubmenu());
   EXPECT_TRUE(f1_item->GetSubmenu()->GetMenuItems().empty());
   EXPECT_TRUE(f2_item->GetSubmenu()->GetMenuItems().empty());
 
@@ -737,8 +738,7 @@ TEST_F(BookmarkMenuDelegateTest, DISABLED_MovingBookmarksBetweenNormalFolders) {
 
 // Tests that the bookmarks title is appropriately added and removed when moving
 // bookmarks into/out of the bookmarks bar for an embedded menu.
-// TODO(crbug.com/393126961): Re-enable the test once the crashes are resolved.
-TEST_F(BookmarkMenuDelegateTest, DISABLED_MovingBookmarkUpdatesBookmarksTitle) {
+TEST_F(BookmarkMenuDelegateTest, MovingBookmarkUpdatesBookmarksTitle) {
   NewAndBuildFullMenuWithBookmarksTitle();
   views::MenuItemView* root_menu = menu();
   EXPECT_EQ(7u, root_menu->GetSubmenu()->GetMenuItems().size());
@@ -775,13 +775,11 @@ TEST_F(BookmarkMenuDelegateTest, DISABLED_MovingBookmarkUpdatesBookmarksTitle) {
 
 // Tests that the separator in the "other" bookmarks menu is appropriately added
 // and removed when moving bookmarks into/out of it.
-// TODO(crbug.com/393126961): Re-enable the test once the crashes are resolved.
-TEST_F(BookmarkMenuDelegateTest,
-       DISABLED_MovingBookmarkUpdatesOtherNodeHeader) {
+TEST_F(BookmarkMenuDelegateTest, MovingBookmarkUpdatesOtherNodeHeader) {
   NewAndBuildFullMenu();
   views::MenuItemView* root_item = menu();
   views::MenuItemView* other_node_menu =
-      root_item->GetSubmenu()->GetMenuItemAt(4);
+      root_item->GetSubmenu()->GetMenuItemAt(6);
   bookmark_menu_delegate_->WillShowMenu(other_node_menu);
 
   EXPECT_EQ(3u, other_node_menu->GetSubmenu()->GetMenuItems().size());
@@ -815,8 +813,7 @@ TEST_F(BookmarkMenuDelegateTest,
 
 // Tests that moving bookmarks into/out of a folder built with a "start index"
 // respescts the initially provided start index.
-// TODO(crbug.com/393126961): Re-enable the test once the crashes are resolved.
-TEST_F(BookmarkMenuDelegateTest, DISABLED_MovingBookmarkRespectsStartIndex) {
+TEST_F(BookmarkMenuDelegateTest, MovingBookmarkRespectsStartIndex) {
   const BookmarkNode* bookmark_bar_node = model()->bookmark_bar_node();
   ASSERT_EQ(3u, bookmark_bar_node->children().size());
 
@@ -839,9 +836,7 @@ TEST_F(BookmarkMenuDelegateTest, DISABLED_MovingBookmarkRespectsStartIndex) {
 }
 
 // Tests that moving a bookmark into the hidden section of a menu does nothing.
-// TODO(crbug.com/393126961): Re-enable the test once the crashes are resolved.
-TEST_F(BookmarkMenuDelegateTest,
-       DISABLED_MovingBookmarkBeforeStartIndexDoesNothing) {
+TEST_F(BookmarkMenuDelegateTest, MovingBookmarkBeforeStartIndexDoesNothing) {
   const BookmarkNode* bookmark_bar_node = model()->bookmark_bar_node();
   ASSERT_EQ(3u, bookmark_bar_node->children().size());
 

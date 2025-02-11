@@ -235,6 +235,11 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
                                          expected_response_str);
   }
 
+  void EnableLocalIpAddressInEvents() {
+    scoped_feature_list_.InitAndEnableFeature(
+        safe_browsing::kLocalIpAddressInEvents);
+  }
+
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<ChromeEnterpriseRealTimeUrlLookupService>
@@ -248,6 +253,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
   raw_ptr<TestingProfile> test_profile_;
   syncer::TestSyncService test_sync_service_;
   std::unique_ptr<MockReferrerChainProvider> referrer_chain_provider_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
@@ -276,6 +282,7 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
 
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
        TestStartLookup_RequestWithDmTokenAndAccessToken) {
+  EnableLocalIpAddressInEvents();
   GURL url("http://example.test/");
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
                         RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
@@ -307,6 +314,7 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
         EXPECT_EQ("dm_token", request_proto.browser_dm_token());
         EXPECT_TRUE(request_proto.has_client_reporting_metadata());
         EXPECT_EQ("", request_proto.profile_dm_token());
+        EXPECT_FALSE(request_proto.local_ips().empty());
         EXPECT_EQ(ChromeUserPopulation::SAFE_BROWSING,
                   request_proto.population().user_population());
         EXPECT_TRUE(request_proto.population().is_history_sync_enabled());

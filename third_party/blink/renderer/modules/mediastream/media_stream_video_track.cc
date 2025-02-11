@@ -852,9 +852,9 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
           &MediaStreamVideoTrack::FrameDeliverer::
               NewSubCaptureTargetVersionOnVideoTaskRunner,
           frame_deliverer_)),
-      base::BindPostTaskToCurrentDefault(WTF::BindRepeating(
-          &MediaStreamVideoTrack::SetSizeAndComputedFrameRate,
-          weak_factory_.GetWeakPtr())),
+      base::BindPostTaskToCurrentDefault(
+          WTF::BindRepeating(&MediaStreamVideoTrack::SetVideoFrameSettings,
+                             weak_factory_.GetWeakPtr())),
       base::BindPostTaskToCurrentDefault(
           WTF::BindRepeating(&MediaStreamVideoTrack::set_computed_source_format,
                              weak_factory_.GetWeakPtr())),
@@ -904,9 +904,9 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
           &MediaStreamVideoTrack::FrameDeliverer::
               NewSubCaptureTargetVersionOnVideoTaskRunner,
           frame_deliverer_)),
-      base::BindPostTaskToCurrentDefault(WTF::BindRepeating(
-          &MediaStreamVideoTrack::SetSizeAndComputedFrameRate,
-          weak_factory_.GetWeakPtr())),
+      base::BindPostTaskToCurrentDefault(
+          WTF::BindRepeating(&MediaStreamVideoTrack::SetVideoFrameSettings,
+                             weak_factory_.GetWeakPtr())),
       base::BindPostTaskToCurrentDefault(
           WTF::BindRepeating(&MediaStreamVideoTrack::set_computed_source_format,
                              weak_factory_.GetWeakPtr())),
@@ -1136,7 +1136,7 @@ void MediaStreamVideoTrack::GetSettings(
             : *adapter_frame_rate;
   } else {
     // For other tracks, use the computed frame rate reported via
-    // SetSizeAndComputedFrameRate().
+    // SetVideoFrameSettings().
     if (computed_frame_rate_)
       settings.frame_rate = *computed_frame_rate_;
   }
@@ -1152,6 +1152,9 @@ void MediaStreamVideoTrack::GetSettings(
     settings.logical_surface = info->logical_surface;
     settings.cursor = info->cursor;
   }
+
+  settings.physical_frame_size = captured_frame_physical_size_;
+  settings.device_scale_factor = device_scale_factor_;
 }
 
 MediaStreamTrackPlatform::VideoFrameStats

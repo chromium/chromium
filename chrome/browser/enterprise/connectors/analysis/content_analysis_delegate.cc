@@ -859,7 +859,8 @@ void ContentAnalysisDelegate::PrepareTextRequest() {
         base::BindOnce(&ContentAnalysisDelegate::StringRequestCallback,
                        weak_ptr_factory_.GetWeakPtr()));
 
-    PrepareRequest(BULK_DATA_ENTRY, request.get());
+    InitializeRequest(request.get());
+    request->set_analysis_connector(BULK_DATA_ENTRY);
     request->set_destination(url_.spec());
     std::string source_string =
         data_controls::ReportingService::GetClipboardSourceString(
@@ -900,7 +901,8 @@ void ContentAnalysisDelegate::PrepareImageRequest() {
         base::BindOnce(&ContentAnalysisDelegate::ImageRequestCallback,
                        weak_ptr_factory_.GetWeakPtr()));
 
-    PrepareRequest(BULK_DATA_ENTRY, request.get());
+    InitializeRequest(request.get());
+    request->set_analysis_connector(BULK_DATA_ENTRY);
     UploadImageForDeepScanning(std::move(request));
   }
 }
@@ -917,7 +919,8 @@ void ContentAnalysisDelegate::PreparePageRequest() {
         base::BindOnce(&ContentAnalysisDelegate::PageRequestCallback,
                        weak_ptr_factory_.GetWeakPtr()));
 
-    PrepareRequest(PRINT, request.get());
+    InitializeRequest(request.get());
+    request->set_analysis_connector(PRINT);
     request->set_filename(title_);
     if (!data_.printer_name.empty()) {
       request->set_printer_name(data_.printer_name);
@@ -938,53 +941,6 @@ void ContentAnalysisDelegate::PreparePageRequest() {
       UploadPageForDeepScanning(std::move(request));
     }
   }
-}
-
-// This method only prepares requests for print and paste events. File events
-// are handled by
-// chrome/browser/enterprise/connectors/analysis/files_request_handler.h
-void ContentAnalysisDelegate::PrepareRequest(
-    AnalysisConnector connector,
-    BinaryUploadService::Request* request) {
-  if (settings().cloud_or_local_settings.is_cloud_analysis()) {
-    request->set_device_token(settings().cloud_or_local_settings.dm_token());
-  }
-
-  // Include tab page title, user action id, and count of requests per user
-  // action in local content analysis requests.
-  if (settings().cloud_or_local_settings.is_local_analysis()) {
-    request->set_user_action_requests_count(user_action_requests_count());
-    request->set_tab_title(tab_title());
-    request->set_user_action_id(user_action_id());
-  }
-
-  request->set_analysis_connector(connector);
-  request->set_email(email());
-  request->set_url(url());
-  request->set_tab_url(tab_url());
-  request->set_per_profile_request(settings().per_profile);
-
-  for (const auto& tag : settings().tags) {
-    request->add_tag(tag.first);
-  }
-
-  if (settings().client_metadata) {
-    request->set_client_metadata(*settings().client_metadata);
-  }
-
-  if (reason() != ContentAnalysisRequest::UNKNOWN) {
-    request->set_reason(reason());
-  }
-
-  if (base::FeatureList::IsEnabled(safe_browsing::kLocalIpAddressInEvents)) {
-    for (const auto& ip_address :
-         enterprise_connectors::GetLocalIpAddresses()) {
-      request->add_local_ips(ip_address.GetString());
-    }
-  }
-
-  request->set_blocking(settings().block_until_verdict !=
-                        BlockUntilVerdict::kNoBlock);
 }
 
 void ContentAnalysisDelegate::FillAllResultsWith(bool status) {

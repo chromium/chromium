@@ -688,7 +688,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                              'layout-test-results', 'external', 'wpt',
                              'variant_foo=baz-actual.txt')))
 
-    def test_extract_text_reset_results_testharness(self):
+    def test_reset_results_testharness(self):
         self.processor.reset_results = True
         with self.fs.patch_builtins():
             self._event(action='test_start', test='/variant.html?foo=baz')
@@ -702,8 +702,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertEqual(
             self.fs.read_text_file(
                 self.path_finder.path_from_web_tests(
-                    'platform', 'test-linux-trusty', 'external', 'wpt',
-                    'variant_foo=baz-expected.txt')),
+                    'external', 'wpt', 'variant_foo=baz-expected.txt')),
             textwrap.dedent("""\
                 This is a testharness.js-based test.
                 All subtests passed and are omitted for brevity.
@@ -711,7 +710,109 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 Harness: the test ran to completion.
                 """))
 
-    def test_extract_text_reset_results_wdspec(self):
+    def test_reset_results_flag_specific(self):
+        self.processor.reset_results = True
+        self.fs.write_text_file(
+            self.path_finder.path_from_web_tests('FlagSpecificConfig'),
+            json.dumps([{
+                'name': 'fake-flag',
+                'args': ['--enable-features=FakeFeature']
+            }]))
+        self.processor.port.set_option_default('flag_specific', 'fake-flag')
+
+        generic_baseline_path = self.path_finder.path_from_web_tests(
+            'external', 'wpt', 'variant_foo=baz-expected.txt')
+        flag_spec_baseline_path = self.path_finder.path_from_web_tests(
+            'flag-specific', 'fake-flag', 'external', 'wpt',
+            'variant_foo=baz-expected.txt')
+        self.fs.write_text_file(
+            generic_baseline_path,
+            textwrap.dedent("""\
+                This is a testharness.js-based test.
+                [FAIL] don't overwrite this
+                Harness: the test ran to completion.
+
+                """))
+
+        with self.fs.patch_builtins():
+            self._event(action='test_start', test='/variant.html?foo=baz')
+            self._event(action='test_status',
+                        test='/variant.html?foo=baz',
+                        subtest='failing subtest',
+                        status='FAIL')
+            self._event(action='test_end',
+                        test='/variant.html?foo=baz',
+                        status='OK')
+
+        self.assertEqual(
+            self.fs.read_text_file(generic_baseline_path),
+            textwrap.dedent("""\
+                This is a testharness.js-based test.
+                [FAIL] don't overwrite this
+                Harness: the test ran to completion.
+
+                """))
+        self.assertEqual(
+            self.fs.read_text_file(flag_spec_baseline_path),
+            textwrap.dedent("""\
+                This is a testharness.js-based test.
+                [FAIL] failing subtest
+                Harness: the test ran to completion.
+
+                """))
+
+    def test_reset_results_replace_existing_platform_specific(self):
+        self.processor.reset_results = True
+        generic_baseline_path = self.path_finder.path_from_web_tests(
+            'external', 'wpt', 'variant_foo=baz-expected.txt')
+        platform_baseline_path = self.path_finder.path_from_web_tests(
+            'platform', 'test-linux-trusty', 'external', 'wpt',
+            'variant_foo=baz-expected.txt')
+        self.fs.write_text_file(
+            generic_baseline_path,
+            textwrap.dedent("""\
+                This is a testharness.js-based test.
+                [FAIL] don't overwrite this
+                Harness: the test ran to completion.
+
+                """))
+        self.fs.write_text_file(
+            platform_baseline_path,
+            textwrap.dedent("""\
+                This is a testharness.js-based test.
+                [FAIL] overwrite this
+                Harness: the test ran to completion.
+
+                """))
+
+        with self.fs.patch_builtins():
+            self._event(action='test_start', test='/variant.html?foo=baz')
+            self._event(action='test_status',
+                        test='/variant.html?foo=baz',
+                        subtest='failing subtest',
+                        status='FAIL')
+            self._event(action='test_end',
+                        test='/variant.html?foo=baz',
+                        status='OK')
+
+        self.assertEqual(
+            self.fs.read_text_file(generic_baseline_path),
+            textwrap.dedent("""\
+                This is a testharness.js-based test.
+                [FAIL] don't overwrite this
+                Harness: the test ran to completion.
+
+                """))
+        self.assertEqual(
+            self.fs.read_text_file(platform_baseline_path),
+            textwrap.dedent("""\
+                This is a testharness.js-based test.
+                [FAIL] failing subtest
+                Harness: the test ran to completion.
+
+                """))
+
+    def test_reset_results_wdspec(self):
         self.processor.reset_results = True
         with self.fs.patch_builtins():
             self._event(action='test_start', test='/test.py')
@@ -722,9 +823,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
             self._event(action='test_end', test='/test.py', status='OK')
         self.assertEqual(
             self.fs.read_text_file(
-                self.path_finder.path_from_web_tests('platform',
-                                                     'test-linux-trusty',
-                                                     'external', 'wpt',
+                self.path_finder.path_from_web_tests('external', 'wpt',
                                                      'test-expected.txt')),
             textwrap.dedent("""\
                 This is a wdspec test.

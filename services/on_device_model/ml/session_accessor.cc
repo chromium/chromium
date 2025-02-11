@@ -115,6 +115,7 @@ void SessionAccessor::CreateInternal(
     ChromeMLAdaptationDescriptor descriptor = {
         .max_tokens = params->max_tokens,
         .enable_image_input = params->enable_image_input,
+        .enable_audio_input = params->enable_audio_input,
     };
 
     ChromeMLModelData data;

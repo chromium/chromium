@@ -33,9 +33,19 @@ enum class CardInfoRetrievalEnrolledLoggingEvent {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class CardInfoRetrievalEnrolledUnmaskResult {
+  // Default value, should never be used in logging.
+  kUnknown = 0,
   // Card unmask completed successfully without further authentication steps.
-  kRiskBasedUnmasked = 0,
-  kMaxValue = kRiskBasedUnmasked,
+  kRiskBasedUnmasked = 1,
+  // Card unmask completed successfully via OTP authentication method.
+  kAuthenticationUnmasked = 2,
+  // Card unmask failed due to some generic authentication errors.
+  kAuthenticationError = 3,
+  // Card unmask was aborted due to user cancellation.
+  kFlowCancelled = 4,
+  // Card unmask failed due to unexpected errors.
+  kUnexpectedError = 5,
+  kMaxValue = kUnexpectedError,
 };
 
 // Log the suggestion event regarding card info retrieval enrolled.

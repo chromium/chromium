@@ -312,6 +312,14 @@ TEST_F(MagicBoostStateAshTest, EnableOrcaFeature) {
   testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
 }
 
+TEST_F(MagicBoostStateAshTest, DisableLobsterSettings) {
+  ASSERT_TRUE(prefs()->GetBoolean(ash::prefs::kLobsterEnabled));
+
+  magic_boost_state()->DisableLobsterSettings();
+
+  EXPECT_FALSE(prefs()->GetBoolean(ash::prefs::kLobsterEnabled));
+}
+
 struct MagicBoostHmrCardShowConditionTestCase {
   std::string test_name;
   bool magic_boost_revamp_enabled;

@@ -27,6 +27,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Shadaj Laddad <shadaj@users.noreply.github.com>, Manish Goregaokar <manishsmail@gmail.com>, Quinn Okabayashi <QnnOkabayashi@users.noreply.github.com>"
   cargo_pkg_name = "diplomat"
   cargo_pkg_description = "The diplomat FFI generation macro"
+  library_configs -= [ "//build/config/coverage:default_coverage" ]
   library_configs -= [ "//build/config/compiler:chromium_code" ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]

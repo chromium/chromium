@@ -86,7 +86,7 @@ suite('Main', function() {
     Router.getInstance().navigateTo(routes.BASIC);
   });
 
-  test('ChromeRootStorePage', async function() {
+  test('ChromeRootStorePage', function() {
     // Chrome Root Store Help link should not be present since
     // kEnableCertManagementUIV2 feature flag is enabled by
     // SettingsSecurityPageTest constructor.
@@ -1121,7 +1121,7 @@ suite('SafeBrowsing', function() {
     assertFalse(isChildVisible(page, '#whenOnBulFive'));
   });
 
-  test('NoProtectionText', async () => {
+  test('NoProtectionText', () => {
     const noProtection = page.$.safeBrowsingDisabled;
     const npSubLabel = loadTimeData.getString('safeBrowsingNoneDesc');
     assertEquals(npSubLabel, noProtection.subLabel);

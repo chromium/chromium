@@ -121,6 +121,7 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="4064699917955374540">To use and save Chrome data in your Google Account, verify that it's you.</translation>
 <translation id="417201473131094001">Not supported on Chrome Canary</translation>
 <translation id="424864128008805179">Sign out of Chrome?</translation>
+<translation id="4430797724889237570">Open links from Gmail, Maps, YouTube and other apps in Chrome</translation>
 <translation id="447252321002412580">Help improve Chrome's features and performance</translation>
 <translation id="4523886039239821078">Some add-ons cause Chrome to crash. Please uninstall:</translation>
 <translation id="4633328489441962921">Chrome can't check for updates</translation>
@@ -206,6 +207,7 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
 
 Your data is encrypted with your passphrase. Enter it to use and save Chrome data in your Google Account.</translation>
 <translation id="6533470733797826516">Sign in faster with Chrome autofill</translation>
+<translation id="6536544321553662809">Set Chrome as your default browser to easily share and open links</translation>
 <translation id="6545449117344801102">Chrome detects addresses and uses Google Maps to give you directions and local info.</translation>
 <translation id="6636941099779251629">Your organisation requires you to sign in to use Chrome. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Google.</translation>
@@ -291,6 +293,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8371138994040262994">Opens the settings in Chrome.</translation>
 <translation id="8387459386171870978">Continue using Chrome</translation>
+<translation id="8392023217086447677">Opened in Chrome Incognito</translation>
 <translation id="840168496893712993">Some add-ons cause Chrome to crash. Please try uninstalling them.</translation>
 <translation id="8413500425974960807">Chrome tip: Move Chrome to the dock</translation>
 <translation id="8413795581997394485">Protects against sites, downloads and extensions that are known to be dangerous. When you visit a site, Chrome sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address. If a site does something suspicious, full URLs and bits of page content are also sent.</translation>

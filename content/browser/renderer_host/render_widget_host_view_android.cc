@@ -1598,6 +1598,10 @@ void RenderWidgetHostViewAndroid::DidEnterBackForwardCache() {
   host()->ForceFirstFrameAfterNavigationTimeout();
 }
 
+void RenderWidgetHostViewAndroid::ActivatedOrEvictedFromBackForwardCache() {
+  delegated_frame_host_->ActivatedOrEvictedFromBackForwardCache();
+}
+
 void RenderWidgetHostViewAndroid::SetDoubleTapSupportEnabled(bool enabled) {
   gesture_provider_.SetDoubleTapSupportForPlatformEnabled(enabled);
 }

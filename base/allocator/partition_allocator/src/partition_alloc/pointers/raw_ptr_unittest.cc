@@ -1312,6 +1312,20 @@ TEST_F(RawPtrTest, OperatorsUseGetForComparison) {
 
 // This test checks how the std library handles collections like
 // std::vector<raw_ptr<T>>.
+//
+// Currently, reallocating std::vector's storage (e.g. when growing the vector)
+// requires calling raw_ptr's destructor on the old storage (after
+// std::move-ing the data to the new storage).  In the future we hope that
+// TRIVIAL_ABI (or [trivially_relocatable]] proposed by P1144 [1]) will allow
+// memcpy-ing the elements into the new storage (without invoking destructors
+// and move constructors and/or move assignment operators).  At that point, the
+// assert in the test should be modified to capture the new, better behavior.
+//
+// In the meantime, this test ensures that raw_ptr<T> stored in a std::vector
+// passes basic smoke tests.
+//
+// [1]
+// http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p1144r5.html#wording-attribute
 TEST_F(RawPtrTest, TrivialRelocability) {
   std::vector<CountingRawPtr<int>> vector;
   int x = 123;
@@ -1328,7 +1342,19 @@ TEST_F(RawPtrTest, TrivialRelocability) {
     }
     number_of_capacity_changes++;
   } while (number_of_capacity_changes < 10);
+#if PA_BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||   \
+    PA_BUILDFLAG(USE_RAW_PTR_ASAN_UNOWNED_IMPL) || \
+    PA_BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) ||     \
+    PA_BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
+  // TODO(lukasza): In the future (once C++ language and std library
+  // support custom trivially relocatable objects) this #if branch can
+  // be removed (keeping only the right long-term expectation from the
+  // #else branch).
+  EXPECT_NE(0, RawPtrCountingImpl::release_wrapped_ptr_cnt);
+#else
+  // This is the right long-term expectation.
   EXPECT_EQ(0, RawPtrCountingImpl::release_wrapped_ptr_cnt);
+#endif
   // Basic smoke test that raw_ptr elements in a vector work okay.
   for (const auto& elem : vector) {
     EXPECT_EQ(elem.get(), &x);

@@ -5132,13 +5132,6 @@ void ChromeContentBrowserClient::SessionEnding(
 bool ChromeContentBrowserClient::ShouldEnableAudioProcessHighPriority() {
   return IsAudioProcessHighPriorityEnabled();
 }
-
-bool ChromeContentBrowserClient::ShouldUseFontDataManager(
-    const GURL& site_url) {
-  return IsTopChromeWebUIURL(site_url) &&
-         base::FeatureList::IsEnabled(features::kFontDataService);
-}
-
 #endif  // BUILDFLAG(IS_WIN)
 
 void ChromeContentBrowserClient::

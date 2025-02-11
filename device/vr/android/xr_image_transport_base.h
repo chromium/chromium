@@ -102,7 +102,7 @@ class XrImageTransportBase {
   // Runs before the rest of the initialization for the XrImageTransport to
   // allow for any specialized gl context setup or other setup that may be
   // needed by the particular runtime that's in use.
-  virtual void DoRuntimeInitialization(int texture_target) = 0;
+  virtual void DoRuntimeInitialization() = 0;
 
   std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge_;
 

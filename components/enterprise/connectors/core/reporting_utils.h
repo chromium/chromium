@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_UTILS_H_
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_UTILS_H_
 
-#include "base/values.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "url/gurl.h"
@@ -53,7 +52,7 @@ chrome::cros::reporting::proto::BrowserCrashEvent GetBrowserCrashEvent(
     const std::string& platform);
 
 // Returns a list of the local IPv4 and IPv6 addresses of the device.
-base::Value::List GetLocalIpAddresses();
+std::vector<std::string> GetLocalIpAddresses();
 
 }  // namespace enterprise_connectors
 

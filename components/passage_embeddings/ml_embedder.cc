@@ -5,29 +5,15 @@
 #include "components/passage_embeddings/ml_embedder.h"
 
 #include "base/task/sequenced_task_runner.h"
-#include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/passage_embeddings/passage_embeddings_service_controller.h"
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
 
 namespace passage_embeddings {
 
-MlEmbedder::MlEmbedder(
-    optimization_guide::OptimizationGuideModelProvider* model_provider,
-    PassageEmbeddingsServiceController* service_controller)
-    : model_provider_(model_provider), service_controller_(service_controller) {
-  if (model_provider_) {
-    model_provider_->AddObserverForOptimizationTargetModel(
-        optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER,
-        /*model_metadata=*/std::nullopt, this);
-  }
-}
+MlEmbedder::MlEmbedder(PassageEmbeddingsServiceController* service_controller)
+    : service_controller_(service_controller) {}
 
-MlEmbedder::~MlEmbedder() {
-  if (model_provider_) {
-    model_provider_->RemoveObserverForOptimizationTargetModel(
-        optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER, this);
-  }
-}
+MlEmbedder::~MlEmbedder() = default;
 
 Embedder::TaskId MlEmbedder::ComputePassagesEmbeddings(
     PassagePriority priority,
@@ -58,29 +44,17 @@ bool MlEmbedder::TryCancel(TaskId task_id) {
   return false;
 }
 
-void MlEmbedder::OnModelUpdated(
-    optimization_guide::proto::OptimizationTarget optimization_target,
-    base::optional_ref<const optimization_guide::ModelInfo> model_info) {
-  if (optimization_target !=
-      optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER) {
-    return;
-  }
-
-  if (!service_controller_->MaybeUpdateModelInfo(model_info)) {
-    return;
-  }
-
-  if (on_embedder_ready_) {
-    std::move(on_embedder_ready_)
-        .Run(service_controller_->GetEmbedderMetadata());
-  }
-}
-
-void MlEmbedder::SetOnEmbedderReady(OnEmbedderReadyCallback callback) {
+void MlEmbedder::SetOnEmbedderReadyCallback(OnEmbedderReadyCallback callback) {
   if (service_controller_->EmbedderReady()) {
     std::move(callback).Run(service_controller_->GetEmbedderMetadata());
   } else {
     on_embedder_ready_ = std::move(callback);
+  }
+}
+
+void MlEmbedder::SetEmbedderMetadata(EmbedderMetadata metadata) {
+  if (on_embedder_ready_) {
+    std::move(on_embedder_ready_).Run(metadata);
   }
 }
 

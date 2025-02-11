@@ -45,7 +45,7 @@ class MockCannedChecks(object):
             # Shelling out to the SCM to determine the changed region can be
             # quite expensive on Win32. Assuming that most files will be kept
             # problem-free, we can skip the SCM operations most of the time.
-            extension = str(f.LocalPath()).rsplit('.', 1)[-1]
+            extension = str(f.UnixLocalPath()).rsplit('.', 1)[-1]
             if all(callable_rule(extension, line) for line in f.NewContents()):
                 # No violation found in full text: can skip considering diff.
                 continue
@@ -162,7 +162,7 @@ class MockInputApi(object):
                                   include_deletes=False)
 
     def FilterSourceFile(self, file, files_to_check=(), files_to_skip=()):
-        local_path = file.LocalPath()
+        local_path = file.UnixLocalPath()
         found_in_files_to_check = not files_to_check
         if files_to_check:
             if type(files_to_check) is str:
@@ -297,6 +297,12 @@ class MockFile(object):
 
     def AbsoluteLocalPath(self):
         return os.path.join(_REPO_ROOT, self._local_path)
+
+    # This method must be functionally identical to
+    # AffectedFile.UnixLocalPath(), but must normalize Windows-style
+    # paths even on non-Windows platforms because tests contain them
+    def UnixLocalPath(self):
+        return self._local_path.replace('\\', '/')
 
     def GenerateScmDiff(self):
         return self._scm_diff

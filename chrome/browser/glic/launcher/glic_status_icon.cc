@@ -9,6 +9,7 @@
 
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/version_info/channel.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -47,6 +49,23 @@ gfx::ImageSkia GetIconForTheme(const ui::NativeTheme* native_theme) {
   return gfx::CreateVectorIcon(icon, SK_ColorWHITE);
 #endif
 }
+
+int GetTooltipMessageId() {
+  switch (chrome::GetChannel()) {
+    case version_info::Channel::CANARY: {
+      return IDS_GLIC_STATUS_ICON_TOOLTIP_CANARY;
+    }
+    case version_info::Channel::DEV: {
+      return IDS_GLIC_STATUS_ICON_TOOLTIP_DEV;
+    }
+    case version_info::Channel::BETA: {
+      return IDS_GLIC_STATUS_ICON_TOOLTIP_BETA;
+    }
+    default: {
+      return IDS_GLIC_STATUS_ICON_TOOLTIP;
+    }
+  }
+}
 }  // namespace
 
 namespace glic {
@@ -58,7 +77,7 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   status_icon_ = status_tray_->CreateStatusIcon(
       StatusTray::GLIC_ICON, GetIconForTheme(native_theme),
-      l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_TOOLTIP));
+      l10n_util::GetStringUTF16(GetTooltipMessageId()));
 
   // If the StatusIcon cannot be created, don't configure it.
   if (!status_icon_) {

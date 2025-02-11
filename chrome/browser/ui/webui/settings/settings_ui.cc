@@ -88,6 +88,9 @@
 #include "chrome/grit/settings_resources.h"
 #include "chrome/grit/settings_resources_map.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/payments/bnpl_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/shopping_service.h"
@@ -412,6 +415,13 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enablePasswordLeakToggleMove",
       base::FeatureList::IsEnabled(safe_browsing::kPasswordLeakToggleMove));
+
+  html_source->AddBoolean(
+      "shouldShowPayOverTimeSettingsToggle",
+      autofill::ContentAutofillClient::FromWebContents(web_ui->GetWebContents())
+          ->GetPaymentsAutofillClient()
+          ->GetPaymentsBnplManager()
+          ->ShouldShowBnplSettingsToggle());
 
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));

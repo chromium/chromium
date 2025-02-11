@@ -249,6 +249,7 @@ bool ProfileManagerIOSImpl::CanCreateProfileWithName(
 }
 
 std::string ProfileManagerIOSImpl::ReserveNewProfileName() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string profile_name;
   do {
     const base::Uuid uuid = base::Uuid::GenerateRandomV4();
@@ -366,19 +367,12 @@ void ProfileManagerIOSImpl::UnloadAllProfiles() {
 }
 
 void ProfileManagerIOSImpl::MarkProfileForDeletion(std::string_view name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(CanDeleteProfileWithName(name));
-
-  // Use a local block to ensure that the change to the local state are
-  // committed and propagated before progressing further with marking
-  // the profile for deletion.
-  {
-    ScopedListPrefUpdate update(local_state_, prefs::kProfilesToRemove);
-    update->Append(base::Value(name));
-  }
 
   // Remove the profile from the ProfileAttributesStorageIOS to prevent
   // people iterating over all profiles from seeing it anymore.
-  profile_attributes_storage_.RemoveProfile(name);
+  profile_attributes_storage_.MarkProfileForDeletion(name);
 
   // If the profile is not loaded, nor loading, return.
   auto iter = profiles_map_.find(name);
@@ -408,9 +402,8 @@ void ProfileManagerIOSImpl::MarkProfileForDeletion(std::string_view name) {
 
 bool ProfileManagerIOSImpl::IsProfileMarkedForDeletion(
     std::string_view name) const {
-  const base::Value::List& profiles_to_remove =
-      local_state_->GetList(prefs::kProfilesToRemove);
-  return base::Contains(profiles_to_remove, name);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return profile_attributes_storage_.IsProfileMarkedForDeletion(name);
 }
 
 ProfileAttributesStorageIOS*

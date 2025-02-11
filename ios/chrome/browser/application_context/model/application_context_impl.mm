@@ -17,6 +17,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "base/time/default_clock.h"
@@ -92,38 +93,6 @@
 #import "components/optimization_guide/core/model_execution/on_device_model_component.h"  // nogncheck
 #import "ios/chrome/browser/optimization_guide/model/on_device_model_service_controller_ios.h"
 #endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
-
-namespace {
-
-// Requests a network::mojom::ProxyResolvingSocketFactory on the UI thread.
-// Note that this cannot be called on a thread that is not the UI thread.
-void RequestProxyResolvingSocketFactoryOnUIThread(
-    ApplicationContextImpl* app_context,
-    mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
-        receiver) {
-  network::mojom::NetworkContext* network_context =
-      app_context->GetSystemNetworkContext();
-  network_context->CreateProxyResolvingSocketFactory(std::move(receiver));
-}
-
-// Wrapper on top of the method above. This does a PostTask to the UI thread.
-void RequestProxyResolvingSocketFactory(
-    ApplicationContextImpl* app_context,
-    mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
-        receiver) {
-  web::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&RequestProxyResolvingSocketFactoryOnUIThread,
-                                app_context, std::move(receiver)));
-}
-
-// Passed to NetworkConnectionTracker to bind a NetworkChangeManager receiver.
-void BindNetworkChangeManagerReceiver(
-    network::NetworkChangeManager* network_change_manager,
-    mojo::PendingReceiver<network::mojom::NetworkChangeManager> receiver) {
-  network_change_manager->AddReceiver(std::move(receiver));
-}
-
-}  // namespace
 
 ApplicationContextImpl::ApplicationContextImpl(
     base::SequencedTaskRunner* local_state_task_runner,
@@ -479,7 +448,7 @@ ApplicationContextImpl::GetNetworkConnectionTracker() {
         std::make_unique<network::NetworkChangeManager>(nullptr);
     network_connection_tracker_ =
         std::make_unique<network::NetworkConnectionTracker>(base::BindRepeating(
-            &BindNetworkChangeManagerReceiver,
+            &network::NetworkChangeManager::AddReceiver,
             base::Unretained(network_change_manager_.get())));
   }
   return network_connection_tracker_.get();
@@ -759,14 +728,27 @@ void ApplicationContextImpl::CreateGCMDriver() {
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
 
   gcm_driver_ = gcm::CreateGCMDriverDesktop(
-      base::WrapUnique(new gcm::GCMClientFactory), GetLocalState(), store_path,
-      // Because ApplicationContextImpl is destroyed after all WebThreads have
-      // been shut down, base::Unretained() is safe here.
-      base::BindRepeating(&RequestProxyResolvingSocketFactory,
-                          base::Unretained(this)),
+      std::make_unique<gcm::GCMClientFactory>(), GetLocalState(), store_path,
+      // This callback may be invoked on a background sequence, but it calls a
+      // method of ApplicationContextImpl which is a sequence-affine object,
+      // so wrap the call in BindPostTask(...) to ensure the method happens on
+      // the correct sequence.
+      base::BindPostTask(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindRepeating(
+              &ApplicationContextImpl::RequestProxyResolvingSocketFactory,
+              weak_ptr_factory_.GetWeakPtr())),
       GetSharedURLLoaderFactory(),
       GetApplicationContext()->GetNetworkConnectionTracker(), ::GetChannel(),
       IOSChromeGCMProfileServiceFactory::GetProductCategoryForSubtypes(),
       web::GetUIThreadTaskRunner({}), web::GetIOThreadTaskRunner({}),
       blocking_task_runner);
+}
+
+void ApplicationContextImpl::RequestProxyResolvingSocketFactory(
+    mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
+        receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  network::mojom::NetworkContext* network_context = GetSystemNetworkContext();
+  network_context->CreateProxyResolvingSocketFactory(std::move(receiver));
 }

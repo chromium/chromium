@@ -80,8 +80,7 @@ class BrowserUserEducationInterface {
   virtual user_education::FeaturePromoResult CanShowFeaturePromo(
       const base::Feature& iph_feature) const = 0;
 
-  // Maybe shows an in-product help promo. Returns true if the promo is shown.
-  // In cases where there is no promo controller, immediately returns false.
+  // Maybe shows an in-product help promo.
   //
   // If this feature promo is likely to be shown at browser startup, prefer
   // calling `MaybeShowStartupFeaturePromo()` instead.

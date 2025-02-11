@@ -13,11 +13,12 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 // <if expr="is_chromeos">
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
+
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 
 import {NativeLayerStub} from './native_layer_stub.js';
-import {getDefaultInitialSettings} from './print_preview_test_utils.js';
+import {getDefaultInitialSettings, toggleMoreSettings} from './print_preview_test_utils.js';
 import {TestPluginProxy} from './test_plugin_proxy.js';
 
 
@@ -138,13 +139,6 @@ suite('PolicyTest', function() {
   }
   // </if>
 
-  function toggleMoreSettings() {
-    const moreSettingsElement =
-        page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
-            .querySelector('print-preview-more-settings')!;
-    moreSettingsElement.$.label.click();
-  }
-
   function getCheckbox(settingName: string): CrCheckboxElement {
     return page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
         .querySelector('print-preview-other-options-settings')!.shadowRoot!
@@ -197,7 +191,8 @@ suite('PolicyTest', function() {
         allowedMode: subtestParams.allowedMode,
         defaultMode: subtestParams.defaultMode,
       }]);
-      toggleMoreSettings();
+      toggleMoreSettings(
+          page.shadowRoot!.querySelector('print-preview-sidebar')!);
       const checkbox = getCheckbox('headerFooter');
       assertEquals(subtestParams.expectedDisabled, checkbox.disabled);
       assertEquals(subtestParams.expectedChecked, checkbox.checked);
@@ -252,7 +247,8 @@ suite('PolicyTest', function() {
         allowedMode: subtestParams.allowedMode,
         defaultMode: subtestParams.defaultMode,
       }]);
-      toggleMoreSettings();
+      toggleMoreSettings(
+          page.shadowRoot!.querySelector('print-preview-sidebar')!);
       const checkbox = getCheckbox('cssBackground');
       assertEquals(subtestParams.expectedDisabled, checkbox.disabled);
       assertEquals(subtestParams.expectedChecked, checkbox.checked);
@@ -285,7 +281,8 @@ suite('PolicyTest', function() {
         allowedMode: undefined,
         defaultMode: subtestParams.defaultMode,
       }]);
-      toggleMoreSettings();
+      toggleMoreSettings(
+          page.shadowRoot!.querySelector('print-preview-sidebar')!);
       const mediaSettingsSelect =
           page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
               .querySelector('print-preview-media-size-settings')!.shadowRoot!
@@ -566,7 +563,8 @@ suite('PolicyTest', function() {
         allowedMode: subtestParams.allowedMode,
         defaultMode: subtestParams.defaultMode,
       }]);
-      toggleMoreSettings();
+      toggleMoreSettings(
+          page.shadowRoot!.querySelector('print-preview-sidebar')!);
       const duplexSettingsSection =
           page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
               .querySelector('print-preview-duplex-settings')!;
@@ -750,7 +748,8 @@ suite('PolicyTest', function() {
             defaultMode: undefined,
           }],
           /*isPdf=*/ subtestParams.isPdf);
-      toggleMoreSettings();
+      toggleMoreSettings(
+          page.shadowRoot!.querySelector('print-preview-sidebar')!);
       const checkbox = getCheckbox('rasterize');
       assertEquals(
           subtestParams.expectedHidden,
@@ -828,7 +827,8 @@ suite('PolicyTest', function() {
             },
           ],
           /*isPdf=*/ true);
-      toggleMoreSettings();
+      toggleMoreSettings(
+          page.shadowRoot!.querySelector('print-preview-sidebar')!);
       const checkbox = getCheckbox('rasterize');
       assertFalse((checkbox.parentNode!.parentNode! as HTMLElement).hidden);
       assertEquals(subtestParams.expectedChecked, checkbox.checked);

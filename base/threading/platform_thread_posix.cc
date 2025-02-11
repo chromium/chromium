@@ -218,7 +218,9 @@ PlatformThreadId PlatformThreadBase::CurrentId() {
   // Pthreads doesn't have the concept of a thread ID, so we have to reach down
   // into the kernel.
 #if BUILDFLAG(IS_APPLE)
-  return PlatformThreadId(pthread_mach_thread_np(pthread_self()));
+  uint64_t tid;
+  CHECK_EQ(pthread_threadid_np(nullptr, &tid), 0);
+  return PlatformThreadId(tid);
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Workaround false-positive MSAN use-of-uninitialized-value on
   // thread_local storage for loaded libraries:

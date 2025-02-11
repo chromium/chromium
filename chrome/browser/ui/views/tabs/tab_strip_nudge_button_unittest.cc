@@ -34,8 +34,8 @@ class TabStripNudgeButtonTest : public ChromeViewsTestBase {
   void MockButtonCallback() { button_callback_count_++; }
 
  protected:
-  std::unique_ptr<TabStripNudgeButton> button_;
   std::unique_ptr<TabStripController> tab_strip_controller_;
+  std::unique_ptr<TabStripNudgeButton> button_;
   int button_callback_count_ = 0;
 };
 

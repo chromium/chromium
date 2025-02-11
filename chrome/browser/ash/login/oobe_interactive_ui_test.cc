@@ -644,6 +644,14 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
     command_line->AppendSwitchASCII(
         policy::switches::kPolicyVerificationKey,
         policy::PolicyBuilder::GetEncodedPolicyVerificationKey());
+
+    // Most tests actually do not need state determination.
+    // Exceptions should remove and re-append this switch.
+    // TODO(crbug.com/375564225) Remove `kUnifiedStateDeterminationNever` to
+    // make tests more realistic.
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableUnifiedStateDetermination,
+        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -929,7 +937,10 @@ class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableInitialEnrollment,
         policy::AutoEnrollmentTypeChecker::kInitialEnrollmentAlways);
-    // TODO(b/353731379): Remove when removing legacy state determination code.
+    // TODO(crbug.com/353731379): Turn on Unified State Determination when
+    // removing legacy state determination code.
+    command_line->RemoveSwitch(
+        switches::kEnterpriseEnableUnifiedStateDetermination);
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableUnifiedStateDetermination,
         policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
@@ -1239,6 +1250,13 @@ class OobeFlexInteractiveUITest
     command_line->AppendSwitchASCII(
         policy::switches::kPolicyVerificationKey,
         policy::PolicyBuilder::GetEncodedPolicyVerificationKey());
+
+    // We want enrollment state determination to return "No enrollment".
+    // TODO(crbug.com/375564225) Remove `kUnifiedStateDeterminationNever` to
+    // make tests more realistic.
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableUnifiedStateDetermination,
+        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
   }
 
   test::EnrollmentUIMixin enrollment_ui_{&mixin_host_};

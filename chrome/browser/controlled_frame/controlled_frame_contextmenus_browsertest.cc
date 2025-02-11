@@ -293,7 +293,13 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameContextMenusTest, RemoveAll) {
   ASSERT_EQ(0u, menu_manager->MenuItemsSize(extension_key));
 }
 
-IN_PROC_BROWSER_TEST_F(ControlledFrameContextMenusTest, OnShow) {
+// TODO(crbug.com/392208013): Fix and enable on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_OnShow DISABLED_OnShow
+#else
+#define MAYBE_OnShow OnShow
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(ControlledFrameContextMenusTest, MAYBE_OnShow) {
   web_app::IsolatedWebAppUrlInfo url_info =
       CreateAndInstallEmptyApp(web_app::ManifestBuilder());
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());

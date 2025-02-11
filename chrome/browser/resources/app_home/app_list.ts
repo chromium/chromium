@@ -106,7 +106,7 @@ export class AppListElement extends CrLitElement {
   }
 
   private launchFocusedApp() {
-    const activeElementId = this.shadowRoot!.activeElement?.id;
+    const activeElementId = this.shadowRoot.activeElement?.id;
     if (activeElementId !== undefined &&
         this.apps_.some(app => activeElementId === app.id)) {
       BrowserProxy.getInstance().handler.launchApp(activeElementId!, null);
@@ -114,7 +114,7 @@ export class AppListElement extends CrLitElement {
   }
 
   private launchContextMenuForFocusedApp() {
-    const activeElementId = this.shadowRoot!.activeElement?.id;
+    const activeElementId = this.shadowRoot.activeElement?.id;
     if (!activeElementId) {
       return;
     }
@@ -124,7 +124,7 @@ export class AppListElement extends CrLitElement {
       return;
     }
 
-    const appElement = this.shadowRoot!.getElementById('container')
+    const appElement = this.shadowRoot.getElementById('container')
                            ?.querySelector('#' + this.apps_[currIndex]!.id);
     if (!appElement) {
       return;
@@ -138,7 +138,7 @@ export class AppListElement extends CrLitElement {
   private handleNavigateWithArrows(e: KeyboardEvent) {
     const numApps = this.apps_.length;
     const cssProps =
-        window.getComputedStyle(this.shadowRoot!.getElementById('container')!);
+        window.getComputedStyle(this.shadowRoot.getElementById('container')!);
     const numColumns: number =
         cssProps!.getPropertyValue('grid-template-columns')!.split(' ').length;
     const keyActions = {
@@ -152,9 +152,9 @@ export class AppListElement extends CrLitElement {
       return;
     }
 
-    const activeElementId = this.shadowRoot!.activeElement?.id;
+    const activeElementId = this.shadowRoot.activeElement?.id;
     if (!activeElementId) {
-      this.shadowRoot!.getElementById('container')
+      this.shadowRoot.getElementById('container')
           ?.querySelector<HTMLElement>('#' + this.apps_[0]!.id)!.focus();
       return;
     }
@@ -172,7 +172,7 @@ export class AppListElement extends CrLitElement {
       nextIndex = currIndex;
     }
 
-    this.shadowRoot!.getElementById('container')
+    this.shadowRoot.getElementById('container')
         ?.querySelector<HTMLElement>('#' + this.apps_[nextIndex]!.id)!.focus();
   }
 

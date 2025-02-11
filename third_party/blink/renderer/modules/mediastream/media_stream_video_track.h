@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -124,6 +125,13 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
 
   void OnReadyStateChanged(WebMediaStreamSource::ReadyState state);
 
+  // Registers callback that is triggered whenever the delivered frame's
+  // metadata source_size or device_scale_factor changes.
+  void RegisterCaptureSurfaceResolutionChangeCallback(
+      base::RepeatingCallback<void(bool)> callback) {
+    captured_surface_resolution_callback_ = std::move(callback);
+  }
+
   const std::optional<bool>& noise_reduction() const {
     return noise_reduction_;
   }
@@ -153,10 +161,23 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   // Setting information about the track size.
   // Passed as callback on MediaStreamVideoTrack::AddTrack, and run from
   // VideoFrameResolutionAdapter on frame delivery to update track settings.
-  void SetSizeAndComputedFrameRate(gfx::Size frame_size, double frame_rate) {
+  void SetVideoFrameSettings(gfx::Size frame_size,
+                             double frame_rate,
+                             std::optional<gfx::Size> metadata_source_size,
+                             std::optional<float> device_scale_factor) {
     width_ = frame_size.width();
     height_ = frame_size.height();
     computed_frame_rate_ = frame_rate;
+
+    bool resolution_changed =
+        (captured_frame_physical_size_ != metadata_source_size) ||
+        (device_scale_factor_ != device_scale_factor);
+    if (resolution_changed && captured_surface_resolution_callback_) {
+      captured_surface_resolution_callback_.Run(/*has_changed=*/true);
+    }
+
+    captured_frame_physical_size_ = metadata_source_size;
+    device_scale_factor_ = device_scale_factor;
   }
 
   // Setting information about the source format. The format is computed based
@@ -263,9 +284,13 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   // Remembering our desired video size and frame rate.
   int width_ = 0;
   int height_ = 0;
+
+  std::optional<gfx::Size> captured_frame_physical_size_;
+  std::optional<float> device_scale_factor_;
   std::optional<double> computed_frame_rate_;
   media::VideoCaptureFormat computed_source_format_;
   base::RepeatingTimer refresh_timer_;
+  base::RepeatingCallback<void(bool)> captured_surface_resolution_callback_;
 
   base::WeakPtrFactory<MediaStreamVideoTrack> weak_factory_{this};
 };

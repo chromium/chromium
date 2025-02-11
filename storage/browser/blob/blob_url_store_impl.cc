@@ -16,6 +16,7 @@
 #include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/blob/blob_url_utils.h"
 #include "storage/browser/blob/features.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "url/url_util.h"
 
 namespace storage {
@@ -71,15 +72,16 @@ BlobURLStoreImpl::BlobURLStoreImpl(
     int render_process_host_id,
     base::WeakPtr<BlobUrlRegistry> registry,
     BlobURLValidityCheckBehavior validity_check_behavior,
-    base::RepeatingClosure partitioned_fetch_failure_closure,
+    base::RepeatingCallback<void(const GURL&,
+                                 blink::mojom::PartitioningBlobURLInfo)>
+        partitioning_blob_url_closure,
     bool partitioning_disabled_by_policy)
     : storage_key_(storage_key),
       renderer_origin_(renderer_origin),
       render_process_host_id_(render_process_host_id),
       registry_(std::move(registry)),
       validity_check_behavior_(validity_check_behavior),
-      partitioned_fetch_failure_closure_(
-          std::move(partitioned_fetch_failure_closure)),
+      partitioning_blob_url_closure_(std::move(partitioning_blob_url_closure)),
       partitioning_disabled_by_policy_(partitioning_disabled_by_policy) {}
 
 BlobURLStoreImpl::~BlobURLStoreImpl() {
@@ -131,7 +133,9 @@ void BlobURLStoreImpl::ResolveAsURLLoaderFactory(
   }
   if (!registry_->IsUrlMapped(BlobUrlUtils::ClearUrlFragment(url),
                               storage_key_)) {
-    partitioned_fetch_failure_closure_.Run();
+    partitioning_blob_url_closure_.Run(
+        url,
+        blink::mojom::PartitioningBlobURLInfo::kBlockedCrossPartitionFetching);
     if (base::FeatureList::IsEnabled(
             features::kBlockCrossPartitionBlobUrlFetching) &&
         !partitioning_disabled_by_policy_) {
@@ -165,7 +169,9 @@ void BlobURLStoreImpl::ResolveForNavigation(
   if (!is_top_level_navigation &&
       !registry_->IsUrlMapped(BlobUrlUtils::ClearUrlFragment(url),
                               storage_key_)) {
-    partitioned_fetch_failure_closure_.Run();
+    partitioning_blob_url_closure_.Run(
+        url,
+        blink::mojom::PartitioningBlobURLInfo::kBlockedCrossPartitionFetching);
     if (base::FeatureList::IsEnabled(
             features::kBlockCrossPartitionBlobUrlFetching) &&
         !partitioning_disabled_by_policy_) {

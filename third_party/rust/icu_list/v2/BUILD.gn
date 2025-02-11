@@ -30,6 +30,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "icu_list"
   cargo_pkg_description = "ECMA-402 ListFormatter"
+  library_configs -= [ "//build/config/coverage:default_coverage" ]
   library_configs -= [ "//build/config/compiler:chromium_code" ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]

@@ -2704,7 +2704,6 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/395214642 external/wpt/svg/pservers/reftests/fill-fallback-invalid-uri.svg [ Failure ]
 crbug.com/395482243 external/wpt/webdriver/tests/bidi/browsing_context/context_created/context_created.py [ Timeout ]
 crbug.com/395482243 external/wpt/webdriver/tests/bidi/browsing_context/context_destroyed/original_opener.py [ Timeout ]
 crbug.com/395482243 external/wpt/webdriver/tests/bidi/browsing_context/get_tree/original_opener.py [ Timeout ]
@@ -2724,28 +2723,11 @@ crbug.com/394656809 [ Mac13 ] external/wpt/css/css-overflow/scroll-marker-group-
 crbug.com/394331189 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?7-8 [ Crash Failure ]
 crbug.com/394331189 [ Mac13 ] external/wpt/html/cross-origin-opener-policy/popup-unsafe-none-with-same-origin.https.html [ Crash ]
 crbug.com/393523568 external/wpt/css/css-text/line-breaking/segment-break-transformation-currency-001.html [ Failure ]
-crbug.com/393420204 [ Mac15-arm64 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby-crash.html [ Crash ]
-crbug.com/393420204 [ Mac15 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby-crash.html [ Crash ]
-crbug.com/393420204 [ Mac14-arm64 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby-crash.html [ Crash ]
-crbug.com/393420204 [ Mac13-arm64 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby-crash.html [ Crash ]
-crbug.com/393420204 [ Mac13 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby-crash.html [ Crash ]
-crbug.com/393420204 [ Mac12-arm64 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby-crash.html [ Crash ]
-crbug.com/393420204 [ Mac12 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby-crash.html [ Crash ]
-crbug.com/393420204 [ Mac11-arm64 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby-crash.html [ Crash ]
-crbug.com/393420204 [ Mac11 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby-crash.html [ Crash ]
-crbug.com/393420204 [ Mac14 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby-crash.html [ Crash Failure ]
-crbug.com/393420204 [ Linux ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby-crash.html [ Crash ]
-crbug.com/393420204 [ Win ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby-crash.html [ Crash ]
-crbug.com/393420204 external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-open-add-closedby-crash.html [ Crash ]
-crbug.com/393420204 external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-requestclose-crash.html [ Crash ]
 crbug.com/394102145 external/wpt/svg/animations/reftests/discard-check-remove-duplicate.svg [ Failure ]
 crbug.com/394102145 external/wpt/svg/animations/reftests/discard-check-remove-duplicate2.svg [ Failure ]
 crbug.com/394102145 external/wpt/svg/animations/reftests/discard-check-remove-replace2.svg [ Failure ]
 crbug.com/393435830 [ Mac15-arm64 ] external/wpt/webrtc/simulcast/vp9-scalability-mode.https.html [ Skip Timeout ]
 crbug.com/393435830 [ Mac15 ] external/wpt/webrtc/simulcast/vp9-scalability-mode.https.html [ Skip Timeout ]
-crbug.com/393420204 virtual/dialog-close-when-open-removed-disabled/external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby-crash.html [ Crash ]
-crbug.com/393420204 virtual/dialog-close-when-open-removed-disabled/external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-open-add-closedby-crash.html [ Crash ]
-crbug.com/393420204 virtual/dialog-close-when-open-removed-disabled/external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-requestclose-crash.html [ Crash ]
 external/wpt/clear-site-data/clear-cache-partitioning.sub.https.html [ Failure Timeout ]  # Flaky `*-expected.txt` output
 crbug.com/393612637 external/wpt/css/css-text/line-breaking/segment-break-transformation-punctuation-002.html [ Failure ]
 crbug.com/393411227 external/wpt/css/cssom/adoptedstylesheets-adopt-link.tentative.html [ Failure ]
@@ -9130,8 +9112,6 @@ crbug.com/390565845 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wp
 # Gardener 2025-02-04
 crbug.com/389946963 [ Mac13 ] external/wpt/mediacapture-fromelement/capture.html [ Failure Pass ]
 
-crbug.com/394287937 http/tests/devtools/storage-panel-dom-storage-update.js [ Failure Pass ]
-
 # Gardener 2025-02-06
 crbug.com/385054996 external/wpt/css/css-pseudo/input-element-pseudo-open.optional.html [ Crash Pass Timeout ]
 crbug.com/394638725 [ Mac ] external/wpt/css/cssom/getComputedStyle-width-scroll.tentative.html [ Failure Pass ]
@@ -9139,3 +9119,19 @@ crbug.com/394638725 [ Mac ] external/wpt/css/cssom/getComputedStyle-width-scroll
 # Gardener 2025-02-10
 crbug.com/356930166 [ Mac ] external/wpt/webrtc/RTCDataChannel-GC.html [ Failure Pass Skip Timeout ]
 crbug.com/394919517 [ Mac ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure Pass ]
+
+# Skipping because of unimplemented behaviour
+crbug.com/383946052 [ Android ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
+crbug.com/383946052 [ Fuchsia ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
+crbug.com/383946052 [ Linux ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
+crbug.com/383946052 [ Mac ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
+
+# Gardener 2025-02-11
+crbug.com/395891728 [ Win ] external/wpt/FileAPI/BlobURL/cross-partition-navigation.https.html [ Failure ]
+# Also failing on WebKit Linux ASAN
+crbug.com/391728750 [ Linux ] external/wpt/ai/translator/ai_translator_translate.tentative.https.any.html [ Failure Timeout ]
+crbug.com/391728750 [ Linux ] external/wpt/ai/translator/ai_translator_translate.tentative.https.any.worker.html [ Failure Timeout ]
+crbug.com/391728750 [ Linux ] external/wpt/ai/translator/translator_translate.tentative.any.html [ Failure Timeout ]
+crbug.com/391728750 [ Linux ] external/wpt/ai/translator/translator_translate.tentative.any.serviceworker.html [ Failure Timeout ]
+crbug.com/391728750 [ Linux ] external/wpt/ai/translator/translator_translate.tentative.any.sharedworker.html [ Failure Timeout ]
+crbug.com/391728750 [ Linux ] external/wpt/ai/translator/translator_translate.tentative.any.worker.html [ Failure Timeout ]

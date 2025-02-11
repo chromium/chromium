@@ -4,10 +4,19 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
 
 import android.os.Bundle;
 
@@ -28,7 +37,10 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.privacy_sandbox.FakePrivacySandboxBridge;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -42,15 +54,20 @@ public class AdTopicsFragmentTest {
     @Mock private Profile mProfile;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefService;
+    @Mock private SettingsCustomTabLauncher mCustomTabLauncher;
 
     private FragmentScenario mScenario;
+    private Fragment mFragment;
     private MaterialSwitchWithText mAdTopicsButton;
     private final UserActionTester mActionTester = new UserActionTester();
+    private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
 
     @Before
     public void setUp() {
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+        mFakePrivacySandboxBridge = new FakePrivacySandboxBridge();
+        PrivacySandboxBridgeJni.setInstanceForTesting(mFakePrivacySandboxBridge);
     }
 
     @After
@@ -77,13 +94,14 @@ public class AdTopicsFragmentTest {
                                 Fragment fragment = super.instantiate(classLoader, className);
                                 if (fragment instanceof AdTopicsFragment) {
                                     ((AdTopicsFragment) fragment).setProfile(mProfile);
+                                    ((AdTopicsFragment) fragment)
+                                            .setCustomTabLauncher(mCustomTabLauncher);
                                 }
+                                mFragment = fragment;
                                 return fragment;
                             }
                         });
-        mScenario.onFragment(
-                fragment ->
-                        mAdTopicsButton = fragment.getView().findViewById(R.id.ad_topics_switch));
+        mAdTopicsButton = mFragment.getView().findViewById(R.id.ad_topics_switch);
     }
 
     @Test
@@ -124,5 +142,24 @@ public class AdTopicsFragmentTest {
         initFragmentWithAdTopicsState(false);
         mAdTopicsButton.performClick();
         assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeAdTopicsOn"));
+    }
+
+    @Test
+    public void testPrivacyPolicyLink() {
+        initFragmentWithAdTopicsState(false);
+        String disclaimerText =
+                mFragment
+                        .getResources()
+                        .getString(
+                                R.string
+                                        .settings_privacy_guide_ad_topics_things_to_consider_bullet3_clank);
+        String matcherText = disclaimerText.replaceAll("<link>|</link>", "");
+
+        onView(withText(matcherText)).perform(scrollTo()).check(matches(isDisplayed()));
+        onView(withText(matcherText)).perform(clickOnClickableSpan(0));
+        assertEquals(
+                1,
+                mActionTester.getActionCount(
+                        "Settings.PrivacyGuide.AdTopicsPrivacyPolicyLinkClicked"));
     }
 }

@@ -83,6 +83,8 @@ struct ComputedSettings {
   base::TimeDelta prev_frame_timestamp = base::TimeDelta::Max();
   base::TimeTicks new_frame_rate_timestamp;
   base::TimeTicks last_update_timestamp;
+  std::optional<gfx::Size> metadata_frame_source_size;
+  std::optional<float> device_scale_factor;
 };
 
 int ClampToValidDimension(int dimension) {
@@ -334,7 +336,9 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::AddCallbacks(
   if (!callbacks_.empty() && track_settings_.frame_size.width() > 0 &&
       track_settings_.frame_size.height() > 0) {
     settings_callback.Run(track_settings_.frame_size,
-                          track_settings_.frame_rate);
+                          track_settings_.frame_rate,
+                          track_settings_.metadata_frame_source_size,
+                          track_settings_.device_scale_factor);
   }
 
   VideoTrackCallbacks track_callbacks = {
@@ -567,10 +571,18 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeUpdateTrackSettings(
   ComputeFrameRate(frame.timestamp(), &track_settings_.frame_rate,
                    &track_settings_.prev_frame_timestamp);
   if (MaybeUpdateFrameRate(&track_settings_) ||
-      frame.natural_size() != track_settings_.frame_size) {
+      frame.natural_size() != track_settings_.frame_size ||
+      frame.metadata().source_size !=
+          track_settings_.metadata_frame_source_size ||
+      frame.metadata().device_scale_factor !=
+          track_settings_.device_scale_factor) {
     track_settings_.frame_size = frame.natural_size();
+    track_settings_.metadata_frame_source_size = frame.metadata().source_size;
+    track_settings_.device_scale_factor = frame.metadata().device_scale_factor;
     settings_callback.Run(track_settings_.frame_size,
-                          track_settings_.frame_rate);
+                          track_settings_.frame_rate,
+                          track_settings_.metadata_frame_source_size,
+                          track_settings_.device_scale_factor);
   }
 }
 void VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeUpdateTracksFormat(
@@ -590,7 +602,10 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeUpdateTracksFormat(
 void VideoTrackAdapter::VideoFrameResolutionAdapter::ResetFrameRate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
   for (const auto& callback : callbacks_) {
-    callback.second.settings_callback.Run(track_settings_.frame_size, 0.0);
+    callback.second.settings_callback.Run(
+        track_settings_.frame_size, 0.0,
+        track_settings_.metadata_frame_source_size,
+        track_settings_.device_scale_factor);
   }
 }
 

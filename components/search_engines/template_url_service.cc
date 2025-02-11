@@ -243,6 +243,15 @@ TemplateURLData UpdateTemplateURLDataIfPrepopulated(
   return data;
 }
 
+bool IsAccountDataActive(const TemplateURL* turl) {
+  if (turl->GetAccountData() &&
+      &turl->GetAccountData().value() == &turl->data()) {
+    return true;
+  }
+  CHECK_EQ(&turl->GetLocalData().value(), &turl->data());
+  return false;
+}
+
 }  // namespace
 
 // TemplateURLService::LessWithPrefix -----------------------------------------
@@ -941,7 +950,10 @@ void TemplateURLService::ResetTemplateURL(TemplateURL* url,
   data.last_modified = clock_->Now();
   data.is_active = TemplateURLData::ActiveStatus::kTrue;
 
-  Update(url, TemplateURL(data));
+  Update(url, base::FeatureList::IsEnabled(
+                  syncer::kSeparateLocalAndAccountSearchEngines)
+                  ? TemplateURL(data, data)
+                  : TemplateURL(data));
 }
 
 void TemplateURLService::SetIsActiveTemplateURL(TemplateURL* url,
@@ -959,7 +971,10 @@ void TemplateURLService::SetIsActiveTemplateURL(TemplateURL* url,
     histogram_name.append(".Deactivated");
   }
 
-  Update(url, TemplateURL(data));
+  Update(url, base::FeatureList::IsEnabled(
+                  syncer::kSeparateLocalAndAccountSearchEngines)
+                  ? TemplateURL(data, data)
+                  : TemplateURL(data));
 
   base::UmaHistogramEnumeration(
       histogram_name, url->GetBuiltinEngineType(),
@@ -1120,7 +1135,7 @@ void TemplateURLService::UpdateProviderFavicons(
         turl->favicon_url() != favicon_url) {
       TemplateURLData data(turl->data());
       data.favicon_url = favicon_url;
-      Update(turl, TemplateURL(data));
+      UpdateData(turl, data);
     }
   }
 }
@@ -1296,8 +1311,7 @@ void TemplateURLService::RepairPrepopulatedSearchEngines() {
   // Edit items.
   for (auto i(actions.edited_engines.begin()); i < actions.edited_engines.end();
        ++i) {
-    TemplateURL new_values(i->second);
-    Update(i->first, new_values);
+    UpdateData(i->first, i->second);
   }
 
   // Add items.
@@ -1363,7 +1377,7 @@ void TemplateURLService::RepairStarterPackEngines() {
   // Edit items.
   for (auto i(actions.edited_engines.begin()); i < actions.edited_engines.end();
        ++i) {
-    Update(i->first, TemplateURL(i->second));
+    UpdateData(i->first, i->second);
   }
 
   // Add items.
@@ -1846,7 +1860,7 @@ std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
 }
 
 void TemplateURLService::StopSyncing(syncer::DataType type) {
-  DCHECK_EQ(type, syncer::SEARCH_ENGINES);
+  CHECK_EQ(type, syncer::SEARCH_ENGINES);
   models_associated_ = false;
   sync_processor_.reset();
 
@@ -1898,12 +1912,12 @@ void TemplateURLService::ProcessTemplateURLChange(
 
   if (base::FeatureList::IsEnabled(
           syncer::kSeparateLocalAndAccountSearchEngines)) {
-    if (type == syncer::SyncChange::ACTION_ADD ||
-        type == syncer::SyncChange::ACTION_UPDATE) {
+    if (type == syncer::SyncChange::ACTION_ADD) {
       // Dual-write active value to local and account.
       turl->CopyActiveValueToLocalAndAccount();
     } else if (!turl->GetAccountData()) {
-      CHECK_EQ(type, syncer::SyncChange::ACTION_DELETE);
+      CHECK(type == syncer::SyncChange::ACTION_DELETE ||
+            type == syncer::SyncChange::ACTION_UPDATE);
       // Nothing to commit if there was no account data to begin with.
       return;
     }
@@ -2340,6 +2354,26 @@ bool TemplateURLService::Update(TemplateURL* existing_turl,
     return false;
   }
 
+  // Avoid using account data in `new_values` if sync is not running, but not
+  // when processing changes from sync.
+  const bool should_remove_account_data =
+      new_values.GetAccountData() &&
+      (!base::FeatureList::IsEnabled(
+           syncer::kSeparateLocalAndAccountSearchEngines) ||
+       (!models_associated_ && !processing_syncer_changes_));
+  // Mark if account data has changed, since it is possible that only the
+  // current local data was updated. In such case, avoid sending any update to
+  // sync.
+  const bool account_data_changed =
+      !base::FeatureList::IsEnabled(
+          syncer::kSeparateLocalAndAccountSearchEngines) ||
+      (new_values.GetAccountData() != existing_turl->GetAccountData());
+  // It is possible that corresponding local data didn't exist before and now
+  // `new_values` writes local data. In such case, an add operation needs to be
+  // performed on the database instead of update.
+  const bool is_newly_adding_local_data =
+      new_values.GetLocalData() && !existing_turl->GetLocalData();
+
   Scoper scoper(this);
   model_mutated_notification_pending_ = true;
 
@@ -2351,19 +2385,29 @@ bool TemplateURLService::Update(TemplateURL* existing_turl,
   // already can pick the best engine out of duplicates. Replaceable duplicates
   // will be culled during next startup's Add() loop. We did this to keep
   // Update() simple: it never fails, and never deletes |existing_engine|.
-  existing_turl->CopyFrom(new_values);
+  if (should_remove_account_data) {
+    existing_turl->CopyFrom(TemplateURL(*new_values.GetLocalData()));
+  } else {
+    existing_turl->CopyFrom(new_values);
+  }
   existing_turl->set_id(previous_id);
 
   AddToMaps(existing_turl);
 
   if (existing_turl->type() == TemplateURL::NORMAL) {
-    if (web_data_service_) {
-      web_data_service_->UpdateKeyword(existing_turl->data());
+    if (web_data_service_ && existing_turl->GetLocalData()) {
+      if (is_newly_adding_local_data) {
+        web_data_service_->AddKeyword(*existing_turl->GetLocalData());
+      } else {
+        web_data_service_->UpdateKeyword(*existing_turl->GetLocalData());
+      }
     }
 
-    // Inform sync of the update.
-    ProcessTemplateURLChange(FROM_HERE, existing_turl,
-                             syncer::SyncChange::ACTION_UPDATE);
+    if (account_data_changed) {
+      // Inform sync of the update.
+      ProcessTemplateURLChange(FROM_HERE, existing_turl,
+                               syncer::SyncChange::ACTION_UPDATE);
+    }
   }
 
   // Even if the DSE is controlled by an extension or policy, update the user
@@ -2373,6 +2417,15 @@ bool TemplateURLService::Update(TemplateURL* existing_turl,
   }
 
   return true;
+}
+
+bool TemplateURLService::UpdateData(TemplateURL* existing_turl,
+                                    TemplateURLData new_data) {
+  return IsAccountDataActive(existing_turl)
+             ? Update(existing_turl,
+                      TemplateURL(existing_turl->GetLocalData(), new_data))
+             : Update(existing_turl,
+                      TemplateURL(new_data, existing_turl->GetAccountData()));
 }
 
 void TemplateURLService::MaybeUpdateDSEViaPrefs(TemplateURL* synced_turl) {
@@ -2452,7 +2505,7 @@ std::set<std::string> TemplateURLService::GetUnscopedModeExtensionIds() const {
 void TemplateURLService::UpdateTemplateURLVisitTime(TemplateURL* url) {
   TemplateURLData data(url->data());
   data.last_visited = clock_->Now();
-  Update(url, TemplateURL(data));
+  UpdateData(url, data);
 }
 
 void TemplateURLService::AddTabToSearchVisit(const TemplateURL& t_url) {
@@ -2578,7 +2631,7 @@ bool TemplateURLService::ApplyDefaultSearchChangeNoMetrics(
         update_data.SetKeyword(default_search_provider_->keyword());
         update_data.SetShortName(default_search_provider_->short_name());
       }
-      Update(default_search_provider_, TemplateURL(update_data));
+      UpdateData(default_search_provider_, update_data);
     } else {
       // Normally the prepopulated fallback should be present in
       // |template_urls_|, but in a few cases it might not be:
@@ -2597,7 +2650,7 @@ bool TemplateURLService::ApplyDefaultSearchChangeNoMetrics(
     }
     TemplateURLData new_data(*data);
     if (default_search_provider_) {
-      Update(default_search_provider_, TemplateURL(new_data));
+      UpdateData(default_search_provider_, new_data);
     } else {
       new_data.id = kInvalidTemplateURLID;
       default_search_provider_ = Add(std::make_unique<TemplateURL>(new_data));
@@ -2679,10 +2732,11 @@ void TemplateURLService::ApplyEnterpriseSearchChanges(
     } else if (ShouldMergeEnterpriseSearchEngines(
                    /*existing_turl=*/*it->second,
                    /*new_values=*/*search_engine)) {
-      Update(/*existing_turl=*/it->second,
-             /*new_values=*/MergeEnterpriseSearchEngines(
-                 /*existing_turl=*/*it->second,
-                 /*new_values=*/*search_engine));
+      UpdateData(/*existing_turl=*/it->second,
+                 /*new_data=*/MergeEnterpriseSearchEngines(
+                     /*existing_turl=*/*it->second,
+                     /*new_values=*/*search_engine)
+                     .data());
     }
   }
 }
@@ -2710,7 +2764,9 @@ TemplateURL* TemplateURLService::Add(std::unique_ptr<TemplateURL> template_url,
 
   // Remove account data from `template_url` if sync is not running yet, but not
   // when processing sync changes.
-  if (!models_associated_ && !processing_syncer_changes_ &&
+  if ((!base::FeatureList::IsEnabled(
+           syncer::kSeparateLocalAndAccountSearchEngines) ||
+       (!models_associated_ && !processing_syncer_changes_)) &&
       template_url->GetAccountData()) {
     if (!template_url->GetLocalData()) {
       return nullptr;
@@ -2836,7 +2892,7 @@ void TemplateURLService::ResetTemplateURLGUID(TemplateURL* url,
 
   TemplateURLData data(url->data());
   data.sync_guid = guid;
-  Update(url, TemplateURL(data));
+  UpdateData(url, data);
 }
 
 void TemplateURLService::MergeInSyncTemplateURL(

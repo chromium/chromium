@@ -5,6 +5,7 @@
 #include "chrome/browser/direct_sockets/chrome_direct_sockets_delegate.h"
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/render_frame_host.h"
@@ -112,6 +113,15 @@ bool ChromeDirectSocketsDelegate::ValidateRequestForSharedWorker(
          ValidateAddressAndPortForIwa(request);
 }
 
+bool ChromeDirectSocketsDelegate::ValidateRequestForServiceWorker(
+    content::BrowserContext* browser_context,
+    const url::Origin& origin,
+    const RequestDetails& request) {
+  return IsContentSettingAllowedForUrl(browser_context, origin.GetURL(),
+                                       ContentSettingsType::DIRECT_SOCKETS) &&
+         ValidateAddressAndPortForIwa(request);
+}
+
 void ChromeDirectSocketsDelegate::RequestPrivateNetworkAccess(
     content::RenderFrameHost& rfh,
     base::OnceCallback<void(bool)> callback) {
@@ -134,5 +144,14 @@ bool ChromeDirectSocketsDelegate::IsPrivateNetworkAccessAllowedForSharedWorker(
     const GURL& shared_worker_url) {
   return IsContentSettingAllowedForUrl(
       browser_context, shared_worker_url,
+      ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS);
+}
+
+bool ChromeDirectSocketsDelegate::IsPrivateNetworkAccessAllowedForServiceWorker(
+    content::BrowserContext* browser_context,
+    const url::Origin& origin) {
+  const GURL& url = origin.GetURL();
+  return IsContentSettingAllowedForUrl(
+      browser_context, url,
       ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS);
 }

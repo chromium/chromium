@@ -1663,14 +1663,14 @@ TEST_F(ComputedStyleTest, DerivedDebugDiff) {
   ASSERT_EQ(2u, style1->DebugDiffFields(*style2).size());
 
   EXPECT_EQ(DebugField::forces_stacking_context_,
-            style1->DebugDiffFields(*style2)[0].field);
-  EXPECT_EQ("1", style1->DebugDiffFields(*style2)[0].actual);
-  EXPECT_EQ("0", style1->DebugDiffFields(*style2)[0].correct);
+            style1->DebugDiffFields(*style2)[1].field);
+  EXPECT_EQ("1", style1->DebugDiffFields(*style2)[1].actual);
+  EXPECT_EQ("0", style1->DebugDiffFields(*style2)[1].correct);
 
   EXPECT_EQ(DebugField::is_stacking_context_without_containment_,
-            style1->DebugDiffFields(*style2)[1].field);
-  EXPECT_EQ("true", style1->DebugDiffFields(*style2)[1].actual);
-  EXPECT_EQ("false", style1->DebugDiffFields(*style2)[1].correct);
+            style1->DebugDiffFields(*style2)[0].field);
+  EXPECT_EQ("true", style1->DebugDiffFields(*style2)[0].actual);
+  EXPECT_EQ("false", style1->DebugDiffFields(*style2)[0].correct);
 }
 
 TEST_F(ComputedStyleTest, DerivedDebugDiffLazy) {

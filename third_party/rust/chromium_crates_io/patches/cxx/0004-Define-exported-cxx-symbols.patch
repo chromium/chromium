@@ -1,18 +1,20 @@
-From 6e14500dafa3de4c23d7b8369c61995574a2e4ec Mon Sep 17 00:00:00 2001
-From: Adrian Taylor <adetaylor@chromium.org>
-Date: Wed, 8 Nov 2023 16:59:41 +0000
-Subject: [PATCH 4/4] Export symbols from cxx
+From 73844b580d37a74ce57f32eee3087b251e1505ad Mon Sep 17 00:00:00 2001
+From: "Dustin J. Mitchell" <djmitche@chromium.org>
+Date: Mon, 10 Feb 2025 19:54:42 +0000
+Subject: [PATCH] patch 4
 
-Change-Id: Ib53acaa4cbcd2c872c3e11580970e6cf562c9109
 ---
- third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc | 328 +++++++++++++----------
- 1 file changed, 179 insertions(+), 149 deletions(-)
+ .../vendor/cxx-1.0.140/src/cxx.cc             | 327 ++++++++++--------
+ 1 file changed, 176 insertions(+), 151 deletions(-)
 
-diff --git a/third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc b/third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc
-index a1cdc44ea1ba9..bacf3f7d81323 100644
---- a/third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc
-+++ b/third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc
-@@ -4,71 +4,93 @@
+diff --git a/third_party/rust/chromium_crates_io/vendor/cxx-1.0.140/src/cxx.cc b/third_party/rust/chromium_crates_io/vendor/cxx-1.0.140/src/cxx.cc
+index 5741afa229129..1d75716d2cba6 100644
+--- a/third_party/rust/chromium_crates_io/vendor/cxx-1.0.140/src/cxx.cc
++++ b/third_party/rust/chromium_crates_io/vendor/cxx-1.0.140/src/cxx.cc
+@@ -1,79 +1,101 @@
+ #include "third_party/rust/cxx/v1/cxx.h"
+ #include <cstdio>
+ #include <cstring>
  #include <iostream>
  #include <memory>
  
@@ -145,7 +147,17 @@ index a1cdc44ea1ba9..bacf3f7d81323 100644
  } // extern "C"
  
  namespace rust {
-@@ -86,23 +108,24 @@ void panic [[noreturn]] (const char *msg) {
+ inline namespace cxxbridge1 {
+ 
+ template <typename Exception>
+ void panic [[noreturn]] (const char *msg) {
+ #if defined(RUST_CXX_NO_EXCEPTIONS)
+@@ -81,323 +103,324 @@ void panic [[noreturn]] (const char *msg) {
+   std::abort();
+ #else
+   throw Exception(msg);
+ #endif
+ }
  
  template void panic<std::out_of_range> [[noreturn]] (const char *msg);
  
@@ -174,14 +186,18 @@ index a1cdc44ea1ba9..bacf3f7d81323 100644
  
  static void initString(String *self, const char *s, std::size_t len) {
    if (!cxxbridge1$string$from_utf8(self, s, len)) {
-@@ -116,27 +139,29 @@ static void initString(String *self, const char16_t *s, std::size_t len) {
+     panic<std::invalid_argument>("data for rust::String is not utf-8");
+   }
+ }
+ 
+ static void initString(String *self, const char16_t *s, std::size_t len) {
+   if (!cxxbridge1$string$from_utf16(self, s, len)) {
+     panic<std::invalid_argument>("data for rust::String is not utf-16");
    }
  }
  
 -String::String(const std::string &s) { initString(this, s.data(), s.length()); }
-+CXX_CPP_EXPORT String::String(const std::string &s) {
-+  initString(this, s.data(), s.length());
-+}
++CXX_CPP_EXPORT String::String(const std::string &s) { initString(this, s.data(), s.length()); }
  
 -String::String(const char *s) {
 +CXX_CPP_EXPORT String::String(const char *s) {
@@ -197,6 +213,15 @@ index a1cdc44ea1ba9..bacf3f7d81323 100644
               len);
  }
  
+ #if __cplusplus >= 202002L
+-String::String(const char8_t *s) : String(reinterpret_cast<const char *>(s)) {}
++CXX_CPP_EXPORT String::String(const char8_t *s) : String(reinterpret_cast<const char *>(s)) {}
+ 
+-String::String(const char8_t *s, std::size_t len)
++CXX_CPP_EXPORT String::String(const char8_t *s, std::size_t len)
+     : String(reinterpret_cast<const char *>(s), len) {}
+ #endif
+ 
 -String::String(const char16_t *s) {
 +CXX_CPP_EXPORT String::String(const char16_t *s) {
    assert(s != nullptr);
@@ -209,21 +234,22 @@ index a1cdc44ea1ba9..bacf3f7d81323 100644
    assert(s != nullptr || len == 0);
    assert(is_aligned<char16_t>(s));
    initString(this,
-@@ -147,46 +172,49 @@ String::String(const char16_t *s, std::size_t len) {
+              s == nullptr && len == 0 ? reinterpret_cast<const char16_t *>(2)
+                                       : s,
+              len);
+ }
  
  struct String::lossy_t {};
  
 -String::String(lossy_t, const char *s, std::size_t len) noexcept {
-+CXX_CPP_EXPORT String::String(lossy_t, const char *s,
-+                              std::size_t len) noexcept {
++CXX_CPP_EXPORT String::String(lossy_t, const char *s, std::size_t len) noexcept {
    cxxbridge1$string$from_utf8_lossy(
        this, s == nullptr && len == 0 ? reinterpret_cast<const char *>(1) : s,
        len);
  }
  
 -String::String(lossy_t, const char16_t *s, std::size_t len) noexcept {
-+CXX_CPP_EXPORT String::String(lossy_t, const char16_t *s,
-+                              std::size_t len) noexcept {
++CXX_CPP_EXPORT String::String(lossy_t, const char16_t *s, std::size_t len) noexcept {
    cxxbridge1$string$from_utf16_lossy(
        this,
        s == nullptr && len == 0 ? reinterpret_cast<const char16_t *>(2) : s,
@@ -255,24 +281,23 @@ index a1cdc44ea1ba9..bacf3f7d81323 100644
  }
  
 -String String::lossy(const char16_t *s, std::size_t len) noexcept {
-+CXX_CPP_EXPORT String String::lossy(const char16_t *s,
-+                                    std::size_t len) noexcept {
++CXX_CPP_EXPORT String String::lossy(const char16_t *s, std::size_t len) noexcept {
    assert(s != nullptr || len == 0);
    assert(is_aligned<char16_t>(s));
    return String(lossy_t{}, s, len);
  }
  
--String &String::operator=(const String &other) &noexcept {
-+CXX_CPP_EXPORT String &String::operator=(const String &other) &noexcept {
+-String &String::operator=(const String &other) & noexcept {
++CXX_CPP_EXPORT String &String::operator=(const String &other) & noexcept {
    if (this != &other) {
      cxxbridge1$string$drop(this);
      cxxbridge1$string$clone(this, other);
-@@ -194,32 +222,32 @@ String &String::operator=(const String &other) &noexcept {
+   }
    return *this;
  }
  
--String &String::operator=(String &&other) &noexcept {
-+CXX_CPP_EXPORT String &String::operator=(String &&other) &noexcept {
+-String &String::operator=(String &&other) & noexcept {
++CXX_CPP_EXPORT String &String::operator=(String &&other) & noexcept {
    cxxbridge1$string$drop(this);
    this->repr = other.repr;
    cxxbridge1$string$new(&other);
@@ -307,7 +332,7 @@ index a1cdc44ea1ba9..bacf3f7d81323 100644
    auto len = this->length();
    cxxbridge1$string$reserve_additional(this, 1);
    auto ptr = this->data();
-@@ -227,72 +255,72 @@ const char *String::c_str() noexcept {
+   const_cast<char *>(ptr)[len] = '\0';
    return ptr;
  }
  
@@ -399,7 +424,7 @@ index a1cdc44ea1ba9..bacf3f7d81323 100644
  
  static void initStr(Str *self, const char *ptr, std::size_t len) {
    if (!cxxbridge1$str$from(self, ptr, len)) {
-@@ -300,55 +328,55 @@ static void initStr(Str *self, const char *ptr, std::size_t len) {
+     panic<std::invalid_argument>("data for rust::Str is not utf-8");
    }
  }
  
@@ -471,7 +496,16 @@ index a1cdc44ea1ba9..bacf3f7d81323 100644
    // std::mismatch(this->begin(), this->end(), rhs.begin(), rhs.end()), except
    // without Undefined Behavior on C++11 if rhs is shorter than *this.
    const_iterator liter = this->begin(), lend = this->end(), riter = rhs.begin(),
-@@ -365,27 +393,27 @@ bool Str::operator<=(const Str &rhs) const noexcept {
+                  rend = rhs.end();
+   while (liter != lend && riter != rend && *liter == *riter) {
+     ++liter, ++riter;
+   }
+   if (liter == lend) {
+     return true; // equal or *this is a prefix of rhs
+   } else if (riter == rend) {
+     return false; // rhs is a prefix of *this
+   } else {
+     return *liter <= *riter;
    }
  }
  
@@ -506,7 +540,17 @@ index a1cdc44ea1ba9..bacf3f7d81323 100644
    return cxxbridge1$slice$len(self);
  }
  
-@@ -456,25 +484,26 @@ static const char *errorCopy(const char *ptr, std::size_t len) {
+ // Rust specifies that usize is ABI compatible with C's uintptr_t.
+ // https://rust-lang.github.io/unsafe-code-guidelines/layout/scalars.html#isize-and-usize
+ // However there is no direct Rust equivalent for size_t. C does not guarantee
+ // that size_t and uintptr_t are compatible. In practice though, on all
+ // platforms supported by Rust, they are identical for ABI purposes. See the
+@@ -458,58 +481,59 @@ static_assert(!std::is_same<Vec<std::uint8_t>::const_iterator,
+ 
+ static const char *errorCopy(const char *ptr, std::size_t len) {
+   char *copy = new char[len];
+   std::memcpy(copy, ptr, len);
+   return copy;
  }
  
  extern "C" {
@@ -538,16 +582,23 @@ index a1cdc44ea1ba9..bacf3f7d81323 100644
    if (this != &other) {
      std::exception::operator=(other);
      delete[] this->msg;
-@@ -487,7 +516,7 @@ Error &Error::operator=(const Error &other) & {
+     this->msg = nullptr;
+     if (other.msg) {
+       this->msg = errorCopy(other.msg, other.len);
+       this->len = other.len;
+     }
+   }
    return *this;
  }
  
--Error &Error::operator=(Error &&other) &noexcept {
-+CXX_CPP_EXPORT Error &Error::operator=(Error &&other) &noexcept {
+-Error &Error::operator=(Error &&other) & noexcept {
++CXX_CPP_EXPORT Error &Error::operator=(Error &&other) & noexcept {
    std::exception::operator=(std::move(other));
    delete[] this->msg;
    this->msg = other.msg;
-@@ -497,7 +526,7 @@ Error &Error::operator=(Error &&other) &noexcept {
+   this->len = other.len;
+   other.msg = nullptr;
+   other.len = 0;
    return *this;
  }
  
@@ -556,7 +607,17 @@ index a1cdc44ea1ba9..bacf3f7d81323 100644
  
  namespace {
  template <typename T>
-@@ -516,7 +545,7 @@ struct PtrLen final {
+ union MaybeUninit {
+   T value;
+   MaybeUninit() {}
+   ~MaybeUninit() {}
+ };
+@@ -518,17 +542,17 @@ union MaybeUninit {
+ namespace repr {
+ struct PtrLen final {
+   void *ptr;
+   std::size_t len;
+ };
  } // namespace repr
  
  extern "C" {
@@ -565,7 +626,17 @@ index a1cdc44ea1ba9..bacf3f7d81323 100644
  }
  
  namespace detail {
-@@ -542,11 +571,11 @@ public:
+ // On some platforms size_t is the same C++ type as one of the sized integer
+ // types; on others it is a distinct type. Only in the latter case do we need to
+ // define a specialized impl of rust::Vec<size_t>, because in the former case it
+ // would collide with one of the other specializations.
+ using usize_if_unique =
+@@ -549,130 +573,131 @@ class Fail final {
+   repr::PtrLen &throw$;
+ 
+ public:
+   Fail(repr::PtrLen &throw$) noexcept : throw$(throw$) {}
+   void operator()(const char *) noexcept;
    void operator()(const std::string &) noexcept;
  };
  
@@ -579,7 +650,15 @@ index a1cdc44ea1ba9..bacf3f7d81323 100644
    throw$ = cxxbridge1$exception(catch$.data(), catch$.length());
  }
  } // namespace detail
-@@ -562,23 +591,24 @@ void destroy(T *ptr) {
+ 
+ } // namespace cxxbridge1
+ } // namespace rust
+ 
+ namespace {
+ template <typename T>
+ void destroy(T *ptr) {
+   ptr->~T();
+ }
  } // namespace
  
  extern "C" {
@@ -610,7 +689,14 @@ index a1cdc44ea1ba9..bacf3f7d81323 100644
      std::unique_ptr<std::string> *ptr) noexcept {
    ptr->~unique_ptr();
  }
-@@ -593,69 +623,69 @@ static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
+ } // extern "C"
+ 
+ namespace {
+ const std::size_t kMaxExpectedWordsInString = 8;
+ static_assert(alignof(std::string) <= alignof(void *),
+               "unexpectedly large std::string alignment");
+ static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
+               "unexpectedly large std::string size");
  } // namespace
  
  #define STD_VECTOR_OPS(RUST_TYPE, CXX_TYPE)                                    \
@@ -698,7 +784,17 @@ index a1cdc44ea1ba9..bacf3f7d81323 100644
                                                    std::size_t len) noexcept;
  
  #define RUST_VEC_OPS(RUST_TYPE, CXX_TYPE)                                      \
-@@ -695,52 +725,52 @@ static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
+   template <>                                                                  \
+   Vec<CXX_TYPE>::Vec() noexcept {                                              \
+     cxxbridge1$rust_vec$##RUST_TYPE##$new(this);                               \
+   }                                                                            \
+   template <>                                                                  \
+@@ -702,62 +727,62 @@ static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
+   template <>                                                                  \
+   void Vec<CXX_TYPE>::truncate(std::size_t len) {                              \
+     cxxbridge1$rust_vec$##RUST_TYPE##$truncate(this, len);                     \
+   }
+ 
  #define SHARED_PTR_OPS(RUST_TYPE, CXX_TYPE)                                    \
    static_assert(sizeof(std::shared_ptr<CXX_TYPE>) == 2 * sizeof(void *), "");  \
    static_assert(alignof(std::shared_ptr<CXX_TYPE>) == alignof(void *), "");    \
@@ -761,6 +857,11 @@ index a1cdc44ea1ba9..bacf3f7d81323 100644
        const std::weak_ptr<CXX_TYPE> *self) noexcept {                          \
      self->~weak_ptr();                                                         \
    }
+ 
+ // Usize and isize are the same type as one of the below.
+ #define FOR_EACH_NUMERIC(MACRO)                                                \
+   MACRO(u8, std::uint8_t)                                                      \
+   MACRO(u16, std::uint16_t)                                                    \
 -- 
-2.42.0.869.gea05f2083d-goog
+2.48.1.502.g6dc24dfdaf-goog
 

@@ -5172,6 +5172,54 @@ TEST_F(PasswordAutofillAgentTest, SubmitChangePasswordForm) {
   EXPECT_EQ(u"Pa$sw0rD", confirmation_password.Value().Utf16());
 }
 
+// Check that a dynamic form submission can be detected after the form is
+// filled on a page load.
+TEST_F(PasswordAutofillAgentTest,
+       DynamicFormSubmissionDetectedAfterFillingOnPageLoad) {
+  LoadHTML(kDivWrappedFormHTML);
+  UpdateUsernameAndPasswordElements();
+  FormRendererId renderer_id = GetFormUniqueRendererId("form");
+
+  // Fill the form on pageload with change password supported flag.
+  fill_data_.notify_browser_of_successful_filling = true;
+
+  SimulateOnFillPasswordForm(fill_data_);
+  CheckTextFieldsSuggestedState(kAliceUsername, true, kAlicePassword, true);
+  CheckFirstFillingResult(FillingResult::kSuccess);
+
+  // Simulate website removing the change password form from the DOM after a
+  // successful submission.
+  FireAjaxSucceeded();
+  constexpr char kDeleteElement[] = "document.getElementById('inner').remove()";
+  ExecuteJavaScriptForTests(kDeleteElement);
+
+  ExpectDynamicFormSubmissionWithUsernameAndPasswords(
+      renderer_id, kAliceUsername16, kAlicePassword16,
+      SubmissionIndicatorEvent::DOM_MUTATION_AFTER_AUTOFILL);
+}
+
+// Check that a dynamic form submission is not detected after on page load.
+TEST_F(PasswordAutofillAgentTest, DynamicFormSubmissionNotDetected) {
+  LoadHTML(kDivWrappedFormHTML);
+  UpdateUsernameAndPasswordElements();
+
+  fill_data_.notify_browser_of_successful_filling = false;
+
+  SimulateOnFillPasswordForm(fill_data_);
+  CheckTextFieldsSuggestedState(kAliceUsername, true, kAlicePassword, true);
+  CheckFirstFillingResult(FillingResult::kSuccess);
+
+  // Simulate website removing the change password form from the DOM after a
+  // successful submission.
+  FireAjaxSucceeded();
+  constexpr char kDeleteElement[] = "document.getElementById('inner').remove()";
+  ExecuteJavaScriptForTests(kDeleteElement);
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(fake_driver_.called_dynamic_form_submission());
+  ASSERT_FALSE(fake_driver_.form_data_maybe_submitted());
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // If a password field is hidden, the field unlikely has an Enter listener. So,
 // trigger a form submission on the username field.

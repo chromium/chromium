@@ -11,28 +11,31 @@ namespace passage_embeddings {
 
 PassageEmbedderModelObserver::PassageEmbedderModelObserver(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
-    PassageEmbeddingsServiceController* service_controller)
-    : model_provider_(model_provider), service_controller_(service_controller) {
+    PassageEmbeddingsServiceController* service_controller,
+    bool experimental)
+    : model_provider_(model_provider),
+      service_controller_(service_controller),
+      target_(experimental ? optimization_guide::proto::
+                                 OPTIMIZATION_TARGET_EXPERIMENTAL_EMBEDDER
+                           : optimization_guide::proto::
+                                 OPTIMIZATION_TARGET_PASSAGE_EMBEDDER) {
   if (model_provider_) {
     model_provider_->AddObserverForOptimizationTargetModel(
-        optimization_guide::proto::OPTIMIZATION_TARGET_EXPERIMENTAL_EMBEDDER,
+        target_,
         /*model_metadata=*/std::nullopt, this);
   }
 }
 
 PassageEmbedderModelObserver::~PassageEmbedderModelObserver() {
   if (model_provider_) {
-    model_provider_->RemoveObserverForOptimizationTargetModel(
-        optimization_guide::proto::OPTIMIZATION_TARGET_EXPERIMENTAL_EMBEDDER,
-        this);
+    model_provider_->RemoveObserverForOptimizationTargetModel(target_, this);
   }
 }
 
 void PassageEmbedderModelObserver::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
     base::optional_ref<const optimization_guide::ModelInfo> model_info) {
-  if (optimization_target !=
-      optimization_guide::proto::OPTIMIZATION_TARGET_EXPERIMENTAL_EMBEDDER) {
+  if (optimization_target != target_) {
     return;
   }
 

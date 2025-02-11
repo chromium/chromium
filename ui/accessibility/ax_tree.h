@@ -232,10 +232,7 @@ class AX_EXPORT AXTree {
   // accessibility tree, if any, adjusting its endpoints to be within unignored
   // nodes. (An "ignored" node is a node that is not exposed to platform APIs:
   // See `AXNode::IsIgnored`.)
-  // If non_text_endpoints is true, returns an unignored selection but the
-  // endpoints are adjusted so that they never fall on text objects, but are
-  // moved to the text nodes' parents instead.
-  AXSelection GetUnignoredSelection(bool for_hypertext = false) const;
+  AXSelection GetUnignoredSelection() const;
 
   bool GetTreeUpdateInProgressState() const;
 

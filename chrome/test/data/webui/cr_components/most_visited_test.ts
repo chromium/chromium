@@ -846,7 +846,7 @@ suite('Modification', () => {
       assertTrue(mostVisited.$.toast.open);
     });
 
-    test('no toast when not editted', async () => {
+    test('no toast when not editted', () => {
       assertFalse(mostVisited.$.toast.open);
       saveButton.click();
       assertFalse(mostVisited.$.toast.open);

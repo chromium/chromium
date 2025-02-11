@@ -20,6 +20,7 @@ this build script on Mac:
 """
 
 import argparse
+import atexit
 import glob
 import io
 import json
@@ -570,9 +571,15 @@ def DownloadDebianSysroot(platform_name, skip_download=False):
 
   toolchain_name = f'debian_bullseye_{platform_name}_sysroot'
   output = os.path.join(LLVM_BUILD_TOOLS_DIR, toolchain_name)
-  U = toolchain_bucket + hashes[platform_name]
-  if not skip_download:
-    DownloadAndUnpack(U, output)
+  stamp_file = os.path.join(output, 'stamp')
+  version = hashes[platform_name]
+  if ReadStampFile(stamp_file) == version:
+    print(f'Sysroot for {platform_name} already up to date')
+  else:
+    U = toolchain_bucket + version
+    if not skip_download:
+      DownloadAndUnpack(U, output)
+      WriteStampFile(version, stamp_file)
 
   return output
 
@@ -639,9 +646,9 @@ class Timer:
     for (phase, elapsed) in self.times:
       print('{}: {:{}.1f}'.format(phase.rjust(longest_phase), elapsed, longest_elapsed + 2))
 
-
 def main():
   timer = Timer()
+  atexit.register(Timer.dump, timer)
 
   parser = argparse.ArgumentParser(description='Build Clang.')
   parser.add_argument('--bootstrap',
@@ -1579,8 +1586,6 @@ def main():
   WriteStampFile(PACKAGE_VERSION, FORCE_HEAD_REVISION_FILE)
 
   print('Clang build was successful.')
-
-  timer.dump()
 
   return 0
 

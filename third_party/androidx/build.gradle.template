@@ -109,6 +109,9 @@ dependencies {
     compileLatest 'androidx.sqlite:sqlite-android:{{androidx_dependency_version}}'
     compileLatest 'androidx.concurrent:concurrent-futures-ktx:{{androidx_dependency_version}}'
 
+    compileLatest 'androidx.credentials.registry:registry-provider:{{androidx_dependency_version}}'
+    compileLatest 'androidx.credentials.registry:registry-provider-play-services:{{androidx_dependency_version}}'
+
     String media3Version = '1.2.0'
     compile "androidx.media3:media3-common:${media3Version}"
     compile "androidx.media3:media3-database:${media3Version}"

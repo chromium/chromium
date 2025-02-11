@@ -7,8 +7,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_window_controller.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace glic {
 
@@ -125,6 +131,7 @@ GlicMetrics::GlicMetrics(Profile* profile) : profile_(profile) {
       FROM_HERE, base::Minutes(15),
       base::BindRepeating(&GlicMetrics::OnImpressionTimerFired,
                           base::Unretained(this)));
+  source_id_ = ukm::NoURLSourceId();
 }
 GlicMetrics::~GlicMetrics() = default;
 
@@ -144,7 +151,7 @@ void GlicMetrics::OnResponseStarted() {
     return;
   }
 
-  if (!controller_->IsShowing()) {
+  if (!window_controller_->IsShowing()) {
     base::UmaHistogramEnumeration("Glic.Metrics.Error",
                                   Error::kResponseStartWhileHidingOrHidden);
     return;
@@ -174,7 +181,7 @@ void GlicMetrics::OnResponseStarted() {
   ++session_responses_;
 
   // More detailed metrics.
-  bool attached = controller_->IsAttached();
+  bool attached = window_controller_->IsAttached();
   base::UmaHistogramBoolean("Glic.Response.Attached", attached);
   base::UmaHistogramEnumeration("Glic.Response.InvocationSource",
                                 invocation_source_);
@@ -182,6 +189,13 @@ void GlicMetrics::OnResponseStarted() {
   base::UmaHistogramEnumeration(
       "Glic.Response.Segmentation",
       GetResponseSegmentation(attached, input_mode_, invocation_source_));
+
+  ukm::SourceId source_id = GetSourceId();
+  ukm::builders::Glic_Response(source_id)
+      .SetAttached(attached)
+      .SetInvocationSource(static_cast<int64_t>(invocation_source_))
+      .SetWebClientMode(static_cast<int64_t>(input_mode_))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void GlicMetrics::OnResponseStopped() {
@@ -215,6 +229,12 @@ void GlicMetrics::OnGlicWindowOpen(bool attached, InvocationSource source) {
   invocation_source_ = source;
   base::UmaHistogramBoolean("Glic.Session.Open.Attached", attached);
   base::UmaHistogramEnumeration("Glic.Session.Open.InvocationSource", source);
+
+  ukm::SourceId source_id = GetSourceId();
+  ukm::builders::Glic_WindowOpen(source_id)
+      .SetAttached(attached)
+      .SetInvocationSource(static_cast<int64_t>(source))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void GlicMetrics::OnGlicWindowClose() {
@@ -234,12 +254,15 @@ void GlicMetrics::OnGlicWindowClose() {
   session_start_time_ = base::TimeTicks();
 }
 
-void GlicMetrics::SetWindowController(GlicWindowController* controller) {
-  controller_ = controller;
+void GlicMetrics::SetControllers(GlicWindowController* window_controller,
+                                 GlicFocusedTabManager* tab_manager) {
+  window_controller_ = window_controller;
+  tab_manager_ = tab_manager;
 }
 
 void GlicMetrics::OnImpressionTimerFired() {
-  bool passed_fre = !controller_->fre_controller()->ShouldShowFreDialog();
+  bool passed_fre =
+      !window_controller_->fre_controller()->ShouldShowFreDialog();
   EntryPointImpression impression;
   if (passed_fre) {
     bool glic_enabled = GlicEnabling::IsEnabledForProfile(profile_);
@@ -252,6 +275,15 @@ void GlicMetrics::OnImpressionTimerFired() {
     impression = EntryPointImpression::kBeforeFre;
   }
   base::UmaHistogramEnumeration("Glic.EntryPoint.Impression", impression);
+}
+
+ukm::SourceId GlicMetrics::GetSourceId() {
+  content::WebContents* web_contents =
+      tab_manager_->GetWebContentsForFocusedTab();
+  if (web_contents) {
+    return web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  }
+  return source_id_;
 }
 
 }  // namespace glic

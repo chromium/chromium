@@ -4,11 +4,11 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {playFromSelectionTimeout, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
+import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
-import {createApp, emitEvent, waitForPlayFromSelection} from './common.js';
+import {createApp, emitEvent} from './common.js';
 
 suite('ReadAloudHighlight', () => {
   let app: AppElement;
@@ -218,13 +218,15 @@ suite('ReadAloudHighlight', () => {
         });
   });
 
-  suite('on speaking from selection', async () => {
+  suite('on speaking from selection', () => {
     let currentHighlight: HTMLElement|null;
     let previousHighlights: NodeListOf<Element>;
+    let mockTimer: MockTimer;
 
-    async function selectAndPlay(
+    function selectAndPlay(
         anchorId: number, anchorOffset: number, focusId: number,
-        focusOffset: number): Promise<void> {
+        focusOffset: number): void {
+      mockTimer.install();
       const selectedTree = Object.assign(
           {
             selection: {
@@ -237,15 +239,15 @@ suite('ReadAloudHighlight', () => {
           },
           axTree);
       chrome.readingMode.setContentForTesting(selectedTree, leafIds);
-      await microtasksFinished();
       app.updateSelection();
-      await microtasksFinished();
       app.playSpeech();
-      return waitForPlayFromSelection();
+      mockTimer.tick(playFromSelectionTimeout);
+      mockTimer.uninstall();
     }
 
     setup(() => {
-      return selectAndPlay(3, 1, 3, 5);
+      mockTimer = new MockTimer();
+      selectAndPlay(3, 1, 3, 5);
     });
 
     test('shows correct highlights', () => {

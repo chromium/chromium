@@ -492,3 +492,12 @@ export class FakeMediaQueryList extends EventTarget implements MediaQueryList {
     }
   }
 }
+
+/**
+ * @param sidebar Print Preview sidebar element.
+ */
+export function toggleMoreSettings(sidebar: HTMLElement) {
+  const moreSettingsElement =
+      sidebar.shadowRoot!.querySelector('print-preview-more-settings')!;
+  moreSettingsElement.$.label.click();
+}

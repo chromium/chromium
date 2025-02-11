@@ -23,6 +23,10 @@
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if BUILDFLAG(IS_IOS)
+#include "components/signin/public/identity_manager/access_token_fetcher.h"
+#endif
+
 namespace {
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -149,6 +153,15 @@ ProfileOAuth2TokenService::StartRequest(
     OAuth2AccessTokenManager::Consumer* consumer) {
   return token_manager_->StartRequest(account_id, scopes, consumer);
 }
+
+#if BUILDFLAG(IS_IOS)
+void ProfileOAuth2TokenService::GetRefreshTokenFromDevice(
+    const CoreAccountId& account_id,
+    const OAuth2AccessTokenManager::ScopeSet& scopes,
+    signin::AccessTokenFetcher::TokenCallback callback) {
+  delegate_->GetRefreshTokenFromDevice(account_id, scopes, std::move(callback));
+}
+#endif
 
 void ProfileOAuth2TokenService::StartRequestForMultilogin(
     signin::OAuthMultiloginTokenRequest& request,

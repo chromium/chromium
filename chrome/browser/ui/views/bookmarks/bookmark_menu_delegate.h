@@ -145,20 +145,12 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
   void BookmarkNodeMoved(const BookmarkParentFolder& old_parent,
                          size_t old_index,
                          const BookmarkParentFolder& new_parent,
-                         size_t new_index) override {}
+                         size_t new_index) override;
   void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override {}
   void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
   void BookmarkParentFolderChildrenReordered(
       const BookmarkParentFolder& folder) override {}
   void BookmarkAllUserNodesRemoved() override {}
-
-  // TODO(crbug.com/393126961): Update this to override the base
-  // BookmarkNodeMoved method, once the crashes are resolved.
-  // Until then, this method won't be invoked.
-  void DoBookmarkNodeMoved(const BookmarkParentFolder& old_parent,
-                           size_t old_index,
-                           const BookmarkParentFolder& new_parent,
-                           size_t new_index);
 
   // BookmarkContextMenuObserver methods.
   void WillRemoveBookmarks(

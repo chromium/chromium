@@ -9,7 +9,7 @@ const float4 light_color = vec4(116.0, 119.0, 117.0, 255.0) / 255.0;
 const float max_extent = 25.0;
 const float border_width = 5.0;
 const float half_pixel = 0.5;
-uniform int u_time;
+uniform float u_time;
 uniform int u_dark;
 uniform float u_emphasis;
 uniform float u_corner_radius;

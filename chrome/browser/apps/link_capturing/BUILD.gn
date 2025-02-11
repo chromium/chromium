@@ -53,6 +53,8 @@ source_set("link_capturing") {
       "chromeos_reimpl_navigation_capturing_throttle.h",
       "metrics/intent_handling_metrics.cc",
       "metrics/intent_handling_metrics.h",
+      "navigation_capturing_settings_cros_impl.cc",
+      "navigation_capturing_settings_cros_impl.h",
     ]
     deps += [
       "//ash/webui/projector_app/public/cpp",
@@ -84,15 +86,9 @@ source_set("link_capturing") {
 }
 
 source_set("features") {
-  sources = [
-    "link_capturing_features.cc",
-    "link_capturing_features.h",
-  ]
+  sources = [ "link_capturing_features.h" ]
   public_deps = [ "//base" ]
-  deps = [
-    "//chrome/common:chrome_features",
-    "//content/public/common",
-  ]
+  deps = [ "//chrome/browser/web_applications:web_applications" ]
 }
 
 source_set("test_support") {

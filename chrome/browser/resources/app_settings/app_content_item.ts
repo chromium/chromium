@@ -54,7 +54,7 @@ export class AppContentItemElement extends CrLitElement {
   override firstUpdated() {
     // Disable hover styles from cr-actionable-row-style because they do not
     // match the style of App Settings.
-    this.shadowRoot!.querySelector('cr-link-row')!.toggleAttribute(
+    this.shadowRoot.querySelector('cr-link-row')!.toggleAttribute(
         'effectively-disabled_', true);
   }
 

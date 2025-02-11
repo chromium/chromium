@@ -78,4 +78,11 @@ interface FontDataService {
   // function is strongly discouraged as it iterates over all installed fonts.
   [Sync]
   GetAllFamilyNames() => (array<string> result);
+
+  // Returns a typeface matching |family_name| and |style|, or the default
+  // typeface if |family_name| is null. Use of this function is discouraged,
+  // prefer |MatchFamilyName*|.
+  [Sync]
+  LegacyMakeTypeface(string? family_name, TypefaceStyle style) =>
+      (MatchFamilyNameResult? result);
 };

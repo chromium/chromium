@@ -190,7 +190,9 @@ PatternAccountRestriction PatternAccountRestrictionFromPreference(
 ChromeAccountManagerService::ChromeAccountManagerService(
     PrefService* local_state,
     std::string_view profile_name)
-    : local_state_(local_state), profile_name_(profile_name) {
+    : local_state_(local_state),
+      profile_name_(profile_name),
+      weak_ptr_factory_(this) {
   // `local_state_` may be null in a test environment. In the prod environment,
   // `local_state_` comes from GetApplicationContext()->GetLocalState() and
   // couldn't be null.
@@ -378,6 +380,11 @@ void ChromeAccountManagerService::OnIdentityAccessTokenRefreshFailed(
   for (auto& observer : observer_list_) {
     observer.OnAccessTokenRefreshFailed(identity, error);
   }
+}
+
+base::WeakPtr<ChromeAccountManagerService>
+ChromeAccountManagerService::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void ChromeAccountManagerService::UpdateRestriction() {

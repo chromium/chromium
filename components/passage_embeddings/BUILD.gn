@@ -41,6 +41,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "ml_embedder_unittest.cc",
+    "passage_embedder_model_observer_unittest.cc",
     "scheduling_embedder_unittest.cc",
   ]
 

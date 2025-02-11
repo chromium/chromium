@@ -825,7 +825,8 @@ TEST_F(
 TEST_F(RealTimeUrlLookupServiceTest,
        TestStartLookup_AttachTokenWhenWithTokenIsEnabled) {
   base::HistogramTester histograms;
-  EnableRealTimeUrlLookup({kSafeBrowsingRemoveCookiesInAuthRequests}, {});
+  EnableRealTimeUrlLookup(
+      {kSafeBrowsingRemoveCookiesInAuthRequests, kLocalIpAddressInEvents}, {});
   EnableTokenFetchesInClient();
   GURL url(kTestUrl);
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
@@ -846,6 +847,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
         EXPECT_FALSE(request_proto.has_browser_dm_token());
         EXPECT_FALSE(request_proto.has_profile_dm_token());
         EXPECT_FALSE(request_proto.has_client_reporting_metadata());
+        EXPECT_TRUE(request_proto.local_ips().empty());
 
         // Cookies should be removed when token is set.
         EXPECT_EQ(request.credentials_mode,
@@ -879,7 +881,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
 TEST_F(RealTimeUrlLookupServiceTest,
        TestStartLookup_NoTokenWhenTokenIsUnavailable) {
   base::HistogramTester histograms;
-  EnableRealTimeUrlLookup({kSafeBrowsingRemoveCookiesInAuthRequests}, {});
+  EnableRealTimeUrlLookup(
+      {kSafeBrowsingRemoveCookiesInAuthRequests, kLocalIpAddressInEvents}, {});
   EnableTokenFetchesInClient();
   GURL url(kTestUrl);
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
@@ -900,6 +903,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
         EXPECT_FALSE(request_proto.has_browser_dm_token());
         EXPECT_FALSE(request_proto.has_profile_dm_token());
         EXPECT_FALSE(request_proto.has_client_reporting_metadata());
+        EXPECT_TRUE(request_proto.local_ips().empty());
 
         EXPECT_FALSE(
             request.headers.HasHeader(net::HttpRequestHeaders::kAuthorization));

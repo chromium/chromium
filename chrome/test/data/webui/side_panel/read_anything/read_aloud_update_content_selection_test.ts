@@ -8,7 +8,7 @@ import {PauseActionSource} from 'chrome-untrusted://read-anything-side-panel.top
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, waitForPlayFromSelection} from './common.js';
+import {createApp, playFromSelectionWithMockTimer} from './common.js';
 
 suite('ReadAloud_UpdateContentSelection', () => {
   let app: AppElement;
@@ -121,8 +121,8 @@ suite('ReadAloud_UpdateContentSelection', () => {
 
   suite('While Read Aloud playing', () => {
     setup(() => {
-      app.playSpeech();
-      return waitForPlayFromSelection();
+      playFromSelectionWithMockTimer(app);
+      return microtasksFinished();
     });
 
     test('inner html of container matches expected html', () => {
@@ -155,9 +155,8 @@ suite('ReadAloud_UpdateContentSelection', () => {
   });
 
   suite('While Read Aloud paused', () => {
-    setup(async () => {
-      app.playSpeech();
-      await waitForPlayFromSelection();
+    setup(() => {
+      playFromSelectionWithMockTimer(app);
       app.stopSpeech(PauseActionSource.BUTTON_CLICK);
     });
     test('inner html of container matches expected html', () => {

@@ -22,8 +22,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
@@ -180,17 +178,8 @@ public class ChildProcessLauncherIntegrationTest {
                 new Runnable() {
                     @Override
                     public void run() {
-                        if (ContentFeatureMap.isEnabled(
-                                ContentFeatureList.PROCESS_SHARING_WITH_STRICT_SITE_INSTANCES)) {
-                            // If this feature is turned on all the URLs will use the same process.
-                            // Verify that the process has not lost its importance now that the
-                            // data: URL is also in the same process as the file: URLs.
-                            Assert.assertEquals(1, connections.size());
-                            connections.get(0).throwIfDroppedBothVisibleAndStrongBinding();
-                        } else {
-                            Assert.assertEquals(2, connections.size());
-                            connections.get(1).throwIfDroppedBothVisibleAndStrongBinding();
-                        }
+                        Assert.assertEquals(2, connections.size());
+                        connections.get(1).throwIfDroppedBothVisibleAndStrongBinding();
                     }
                 });
     }
@@ -233,25 +222,17 @@ public class ChildProcessLauncherIntegrationTest {
                 new Runnable() {
                     @Override
                     public void run() {
-                        if (ContentFeatureMap.isEnabled(
-                                ContentFeatureList.PROCESS_SHARING_WITH_STRICT_SITE_INSTANCES)) {
-                            // If this feature is turned on all the URLs will use the same process
-                            // and this test will not observe any kills.
-                            Assert.assertEquals(1, connections.size());
-                            Assert.assertFalse(connections.get(0).isKilledByUs());
-                        } else {
-                            // The file: URLs and data: URL are expected to be in different
-                            // processes and the data: URL is expected to kill the process used
-                            // for the file:
-                            // URLs.
-                            // Note: The default SiteInstance process model also follows this path
-                            // because
-                            // file: URLs are not allowed in the default SiteInstance process while
-                            // data:
-                            // URLs are.
-                            Assert.assertEquals(2, connections.size());
-                            Assert.assertTrue(connections.get(0).isKilledByUs());
-                        }
+                        // The file: URLs and data: URL are expected to be in different
+                        // processes and the data: URL is expected to kill the process used
+                        // for the file:
+                        // URLs.
+                        // Note: The default SiteInstance process model also follows this path
+                        // because
+                        // file: URLs are not allowed in the default SiteInstance process while
+                        // data:
+                        // URLs are.
+                        Assert.assertEquals(2, connections.size());
+                        Assert.assertTrue(connections.get(0).isKilledByUs());
                     }
                 });
     }

@@ -52,7 +52,7 @@ suite('PrivateStateTokensAppTest', () => {
     assertFalse(isVisible(app.$.drawer));
   });
 
-  test('check rendered item', async () => {
+  test('check rendered item', () => {
     const container = app.shadowRoot!.querySelector<HTMLElement>('#container')!
                           .querySelector<HTMLElement>('#content');
     assertTrue(!!container);

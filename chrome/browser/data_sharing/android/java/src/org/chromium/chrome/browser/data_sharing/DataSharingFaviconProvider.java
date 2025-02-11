@@ -37,7 +37,7 @@ public class DataSharingFaviconProvider implements RecentActivityListCoordinator
         mContext = context;
         mBulkFaviconUtil = bulkFaviconUtil;
         mFaviconSize =
-                mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_icon_size_modern);
+                mContext.getResources().getDimensionPixelSize(R.dimen.recent_activity_favicon_size);
         mProfile = profile;
     }
 

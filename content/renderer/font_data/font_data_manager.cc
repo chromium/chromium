@@ -243,7 +243,27 @@ sk_sp<SkTypeface> FontDataManager::onMakeFromFile(const char path[],
 sk_sp<SkTypeface> FontDataManager::onLegacyMakeTypeface(
     const char requested_family_name[],
     SkFontStyle requested_style) const {
-  return onMatchFamilyStyle(requested_family_name, requested_style);
+  std::optional<std::string> cpp_requested_family_name;
+  if (requested_family_name) {
+    cpp_requested_family_name = requested_family_name;
+  }
+
+  // Proxy the font request to the font service.
+  mojom::TypefaceStylePtr style(mojom::TypefaceStyle::New());
+  style->weight = requested_style.weight();
+  style->width = requested_style.width();
+  style->slant = ConvertToMojomFontStyle(requested_style.slant());
+
+  mojom::MatchFamilyNameResultPtr match_result;
+  {
+    TRACE_EVENT1("fonts", "FontDataManager::onLegacyMakeTypeface",
+                 "family_name", cpp_requested_family_name);
+
+    GetRemoteFontDataService().LegacyMakeTypeface(
+        cpp_requested_family_name, std::move(style), &match_result);
+  }
+
+  return CreateTypefaceFromMatchResult(std::move(match_result));
 }
 
 void FontDataManager::SetFontServiceForTesting(

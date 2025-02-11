@@ -29,6 +29,8 @@ inline constexpr std::string_view kAutofillAblationSeedPref =
     BUILDFLAG(IS_CHROMEOS)
 // Boolean that is true if BNPL on Autofill is enabled.
 inline constexpr char kAutofillBnplEnabled[] = "autofill.bnpl_enabled";
+// Boolean that is true if the user has ever seen a BNPL suggestion.
+inline constexpr char kAutofillHasSeenBnpl[] = "autofill.has_seen_bnpl";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 // Boolean that is true if Autofill is enabled and allowed to save credit card
@@ -242,6 +244,13 @@ void SetAutofillBnplEnabled(PrefService* prefs, bool value);
 
 bool IsAutofillBnplEnabled(const PrefService* prefs);
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+void SetAutofillHasSeenBnpl(PrefService* prefs);
+
+bool HasSeenBnpl(const PrefService* prefs);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 }  // namespace autofill::prefs
 
 #endif  // COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_PREFS_H_

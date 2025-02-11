@@ -131,8 +131,17 @@ bool AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled() {
   }
 #endif
 
-  // Official Google OSes support unified state determination.
-  return IsOfficialGoogleOS();
+  if (!ash::system::StatisticsProvider::GetInstance()->IsRunningOnVm()) {
+    // Official Google OSes support unified state determination.
+    return IsOfficialGoogleOS();
+  } else {
+    // When running ChromeOS in Chrome (see go/simplerchrome), enrollment
+    // state determination will fail due to machine info retrieval error, see
+    // crbug.com/376252857
+    // If you really want to run into that, use the command line switch
+    // `--enterprise-enable-unified-state-determination=always` to turn it on.
+    return false;
+  }
 }
 
 // static

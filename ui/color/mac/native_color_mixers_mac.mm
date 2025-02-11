@@ -122,6 +122,8 @@ void AddNativeUiColorMixer(ColorProvider* provider,
         properties.dark ? SK_ColorLTGRAY : SK_ColorDKGRAY};
     mixer[kColorMenuItemForegroundSelected] = {properties.dark ? SK_ColorBLACK
                                                                : SK_ColorWHITE};
+
+    mixer[kColorTableRowHighlight] = {kColorSysStateHoverOnSubtle};
   };
 
   [AppearanceForKey(key) performAsCurrentDrawingAppearance:load_colors];

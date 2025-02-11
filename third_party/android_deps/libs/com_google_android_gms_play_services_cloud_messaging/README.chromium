@@ -9,7 +9,7 @@ Security Critical: yes
 Shipped: yes
 
 Description:
-Firebase Cloud Messaging library that interfaces with GmsCore.
+Firebase Cloud Messaging library that interfaces with gmscore.
 
 Local Modifications:
 No modifications.

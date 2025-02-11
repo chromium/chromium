@@ -668,7 +668,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, FilterGoogleComPasskeys) {
     delegate.RegisterActionCallbacks(base::DoNothing(), base::DoNothing(),
                                      base::DoNothing(), base::DoNothing(),
                                      base::DoNothing(), base::DoNothing(),
-                                     base::DoNothing());
+                                     base::DoNothing(), base::DoNothing());
     delegate.OnTransportAvailabilityEnumerated(std::move(data));
 
     EXPECT_EQ(result.has_platform_authenticator_credential,
@@ -717,7 +717,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
   delegate.RegisterActionCallbacks(base::DoNothing(), base::DoNothing(),
                                    base::DoNothing(), base::DoNothing(),
                                    base::DoNothing(), base::DoNothing(),
-                                   base::DoNothing());
+                                   base::DoNothing(), base::DoNothing());
   delegate.OnTransportAvailabilityEnumerated(std::move(data));
 
   // Despite lacking the user ID prefix, credentials are not filtered from
@@ -949,7 +949,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateWithPasswordsTest,
   delegate.RegisterActionCallbacks(base::DoNothing(), mock_closure.Get(),
                                    base::DoNothing(), base::DoNothing(),
                                    base::DoNothing(), base::DoNothing(),
-                                   base::DoNothing());
+                                   base::DoNothing(), base::DoNothing());
   delegate.SetUIPresentation(UIPresentation::kModalImmediate);
   delegate.SetCredentialTypes(kRequestPassword | kRequestPublicKey);
   delegate.SetRelyingPartyId(kRpId);
@@ -986,7 +986,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateWithPasswordsTest,
   delegate.RegisterActionCallbacks(base::DoNothing(), mock_closure.Get(),
                                    base::DoNothing(), base::DoNothing(),
                                    base::DoNothing(), base::DoNothing(),
-                                   base::DoNothing());
+                                   base::DoNothing(), base::DoNothing());
   delegate.SetUIPresentation(UIPresentation::kModalImmediate);
   delegate.SetCredentialTypes(kRequestPassword | kRequestPublicKey);
   delegate.SetRelyingPartyId(kRpId);

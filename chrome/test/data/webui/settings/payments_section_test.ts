@@ -680,4 +680,105 @@ suite('PaymentsSection', function() {
     assertFalse(cardBenefitsToggle.checked);
     assertFalse(cardBenefitsToggle.pref!.value);
   });
+
+  test('verifyPayOverTimeToggleIsShown', async function() {
+    loadTimeData.overrideValues({
+      shouldShowPayOverTimeSettingsToggle: true,
+    });
+
+    const section = await createPaymentsSection(
+        /*creditCards=*/[], /*ibans=*/[], {
+          credit_card_enabled: {value: true},
+        });
+    const payOverTimeToggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#payOverTimeToggle');
+
+    assertTrue(!!payOverTimeToggle);
+    assertEquals(
+        loadTimeData.getString('autofillPayOverTimeSettingsLabel'),
+        payOverTimeToggle.label.toString());
+    assertEquals(
+        loadTimeData.getString('autofillPayOverTimeSettingsSublabel'),
+        payOverTimeToggle.subLabelWithLink.toString());
+  });
+
+  test(
+      'verifyPayOverTimeToggleIsNotShownWhenShouldShowPayOverTimeSettingsToggleIsFalse',
+      async function() {
+        loadTimeData.overrideValues({
+          shouldShowPayOverTimeSettingsToggle: false,
+        });
+
+        const section = await createPaymentsSection(
+            /*creditCards=*/[], /*ibans=*/[], {
+              credit_card_enabled: {value: true},
+            });
+
+        assertFalse(!!section.shadowRoot!.querySelector('#payOverTimeToggle'));
+      });
+
+  test(
+      'verifyPayOverTimeToggleIsDisabledWhenCreditCardEnabledIsOff',
+      async function() {
+        loadTimeData.overrideValues({
+          shouldShowPayOverTimeSettingsToggle: true,
+        });
+
+        const section = await createPaymentsSection(
+            /*creditCards=*/[], /*ibans=*/[], {
+              credit_card_enabled: {value: false},
+            });
+        const payOverTimeToggle =
+            section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#payOverTimeToggle');
+
+        assertTrue(!!payOverTimeToggle);
+        assertTrue(payOverTimeToggle.disabled);
+      });
+
+  test('verifyPayOverTimeToggleSublabelLinkClickOpensUrl', async function() {
+    loadTimeData.overrideValues({
+      shouldShowPayOverTimeSettingsToggle: true,
+    });
+
+    const section = await createPaymentsSection(
+        /*creditCards=*/[], /*ibans=*/[], {
+          credit_card_enabled: {value: true},
+        });
+    const payOverTimeToggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#payOverTimeToggle');
+    assertTrue(!!payOverTimeToggle);
+
+    const link = payOverTimeToggle.shadowRoot!.querySelector('a');
+    assertTrue(!!link);
+    link.click();
+
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(
+        loadTimeData.getString('autofillPayOverTimeSettingsLearnMoreUrl'), url);
+  });
+
+  test('verifyPayOverTimePrefIsFalseWhenToggleIsOff', async function() {
+    loadTimeData.overrideValues({
+      shouldShowPayOverTimeSettingsToggle: true,
+    });
+
+    const section = await createPaymentsSection(
+        /*creditCards=*/[], /*ibans=*/[], {
+          credit_card_enabled: {value: true},
+          bnpl_enabled: {value: true},
+        });
+    const payOverTimeToggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#payOverTimeToggle');
+    assertTrue(!!payOverTimeToggle);
+    assertTrue(payOverTimeToggle.checked);
+
+    payOverTimeToggle.click();
+
+    assertFalse(payOverTimeToggle.checked);
+    assertFalse(payOverTimeToggle.pref!.value);
+  });
 });

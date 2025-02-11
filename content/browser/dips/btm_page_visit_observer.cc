@@ -30,7 +30,9 @@ BtmPageVisitObserver::BtmPageVisitObserver(WebContents* web_contents,
     : WebContentsObserver(web_contents),
       callback_(callback),
       current_page_{
-          .url = web_contents->GetPrimaryMainFrame()->GetLastCommittedURL()},
+          .url = web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
+          .source_id =
+              web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()},
       clock_(CHECK_DEREF(clock)),
       last_page_change_time_(clock_->Now()) {}
 
@@ -72,6 +74,7 @@ class NavigationState
     for (size_t i = 1; i < navigation_handle.GetRedirectChain().size(); ++i) {
       navigation.server_redirects.emplace_back(
           navigation_handle.GetRedirectChain()[i - 1],
+          dips::GetRedirectSourceId(&navigation_handle, i - 1),
           IsWrite(accesses[i - 1]));
     }
 
@@ -131,8 +134,10 @@ void BtmPageVisitObserver::DidFinishNavigation(
                      weak_factory_.GetWeakPtr()),
       base::Seconds(1));
 
-  current_page_ = BtmPageVisitInfo{navigation_handle->GetURL(),
-                                   IsWrite(final_url_cookie_access)};
+  current_page_ = BtmPageVisitInfo{
+      .url = navigation_handle->GetURL(),
+      .source_id = navigation_handle->GetNextPageUkmSourceId(),
+      .had_qualifying_storage_access = IsWrite(final_url_cookie_access)};
   last_page_change_time_ = now;
 }
 

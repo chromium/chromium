@@ -81,7 +81,6 @@
       [[BubbleViewControllerPresenter alloc]
                initWithText:IPHTitle
                       title:nil
-                      image:nil
              arrowDirection:BubbleArrowDirectionUp
                   alignment:BubbleAlignmentCenter
                  bubbleType:BubbleViewTypeDefault

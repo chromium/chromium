@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/display/display.h"
 
 using re2::RE2;
 
@@ -27,6 +28,7 @@ constexpr char kInvalidScreenIsInternal[] = "Invalid screen is internal: ";
 constexpr char kInvalidScreenDevicePixelRatio[] =
     "Invalid screen device pixel ratio: ";
 constexpr char kInvalidWorkAreaInset[] = "Invalid work area inset: ";
+constexpr char kInvalidRotation[] = "Invalid rotation: ";
 
 // Screen Info parameters, keep in sync with window.getScreenDetails() output.
 constexpr char kColorDepth[] = "colorDepth";
@@ -37,6 +39,7 @@ constexpr char kWorkAreaLeft[] = "workAreaLeft";
 constexpr char kWorkAreaRight[] = "workAreaRight";
 constexpr char kWorkAreaTop[] = "workAreaTop";
 constexpr char kWorkAreaBottom[] = "workAreaBottom";
+constexpr char kRotation[] = "rotation";
 
 constexpr int kMinColorDepth = 1;
 constexpr float kMinDevicePixelRatio = 0.5f;
@@ -92,7 +95,7 @@ std::string ParseScreenInfoParameter(std::string_view key,
     return {};
   }
 
-  // isInternal={0|1|false|true}
+  // isInternal=0|1|false|true
   if (key == kIsInternal) {
     std::optional<bool> is_internal_opt = GetBooleanParam(value);
     if (!is_internal_opt) {
@@ -150,6 +153,18 @@ std::string ParseScreenInfoParameter(std::string_view key,
     }
 
     screen_info->work_area_insets.set_bottom(work_area_bottom);
+    return {};
+  }
+
+  // rotation=0|90|180|270
+  if (key == kRotation) {
+    int rotation;
+    if (!base::StringToInt(value, &rotation) ||
+        !display::Display::IsValidRotation(rotation)) {
+      return kInvalidRotation + std::string(value);
+    }
+
+    screen_info->rotation = rotation;
     return {};
   }
 
@@ -246,9 +261,11 @@ HeadlessScreenInfo::FromString(std::string_view screen_info) {
 
 std::string HeadlessScreenInfo::ToString() const {
   return base::StringPrintf(
-      "%s color_depth=%d device_pixel_ratio=%g is_internal=%d label='%s'",
+      "%s color_depth=%d device_pixel_ratio=%g is_internal=%d label='%s' "
+      "workarea TLBR={%d,%d,%d,%d} rotation=%d",
       bounds.ToString().c_str(), color_depth, device_pixel_ratio, is_internal,
-      label.c_str());
+      label.c_str(), work_area_insets.top(), work_area_insets.left(),
+      work_area_insets.bottom(), work_area_insets.right(), rotation);
 }
 
 }  // namespace headless

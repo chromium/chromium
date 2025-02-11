@@ -47,9 +47,8 @@ class InternalAuthenticatorAndroid : public webauthn::InternalAuthenticator {
   void MakeCredential(
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
       blink::mojom::Authenticator::MakeCredentialCallback callback) override;
-  void GetAssertion(
-      blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
-      blink::mojom::Authenticator::GetAssertionCallback callback) override;
+  void GetAssertion(blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+                    GetAssertionCallback callback) override;
   void IsUserVerifyingPlatformAuthenticatorAvailable(
       blink::mojom::Authenticator::
           IsUserVerifyingPlatformAuthenticatorAvailableCallback callback)
@@ -88,8 +87,7 @@ class InternalAuthenticatorAndroid : public webauthn::InternalAuthenticator {
   base::android::ScopedJavaGlobalRef<jobject> java_internal_authenticator_ref_;
   blink::mojom::Authenticator::MakeCredentialCallback
       make_credential_response_callback_;
-  blink::mojom::Authenticator::GetAssertionCallback
-      get_assertion_response_callback_;
+  GetAssertionCallback get_assertion_response_callback_;
   blink::mojom::Authenticator::
       IsUserVerifyingPlatformAuthenticatorAvailableCallback is_uvpaa_callback_;
   webauthn::GetMatchingCredentialIdsCallback

@@ -235,7 +235,7 @@ suite('ReadingListAppTest', () => {
 
   test(
       'Keyboard navigation left/right cycles through list item elements',
-      async () => {
+      () => {
         const firstItem =
             readingListApp.shadowRoot!.querySelector('reading-list-item')!;
         // Focus first item.

@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/memory/raw_ref.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
@@ -119,7 +119,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
         const ParsedPermissionsPolicyDeclaration& parsed_declaration);
 
     // Adds a single origin with possible wildcards to the allowlist.
-    void Add(const blink::OriginWithPossibleWildcards& origin);
+    void Add(const network::OriginWithPossibleWildcards& origin);
 
     // Add an origin representing self to the allowlist.
     void AddSelf(std::optional<url::Origin> self);
@@ -149,7 +149,8 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
     // the 'src' keyword.
     bool MatchesOpaqueSrc() const;
 
-    const std::vector<OriginWithPossibleWildcards>& AllowedOrigins() const {
+    const std::vector<network::OriginWithPossibleWildcards>& AllowedOrigins()
+        const {
       return allowed_origins_;
     }
 
@@ -157,12 +158,13 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
     // Permissions-Policy HTTP header than the permissions policy declared in
     // its Web App Manifest.
     void SetAllowedOrigins(
-        const std::vector<OriginWithPossibleWildcards>& allowed_origins) {
+        const std::vector<network::OriginWithPossibleWildcards>&
+            allowed_origins) {
       allowed_origins_ = allowed_origins;
     }
 
    private:
-    std::vector<OriginWithPossibleWildcards> allowed_origins_;
+    std::vector<network::OriginWithPossibleWildcards> allowed_origins_;
     std::optional<url::Origin> self_if_matches_;
     bool matches_all_origins_{false};
     bool matches_opaque_src_{false};

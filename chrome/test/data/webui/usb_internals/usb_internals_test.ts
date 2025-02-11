@@ -139,19 +139,19 @@ class FakeUsbDeviceRemote extends TestBrowserProxy implements
     this.receiver = new UsbDeviceReceiver(this);
   }
 
-  async controlTransferIn(
+  controlTransferIn(
       params: UsbControlTransferParams, length: number, _timeout: number):
       Promise<{status: UsbTransferStatus, data: ReadOnlyBuffer}> {
     const response =
         this.responses.get(usbControlTransferParamsToString(params));
     if (!response) {
-      return {
+      return Promise.resolve({
         status: UsbTransferStatus.TRANSFER_ERROR,
         data: {buffer: []},
-      };
+      });
     }
     response.data = {buffer: response.data.slice(0, length)};
-    return response;
+    return Promise.resolve(response);
   }
 
   /**

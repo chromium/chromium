@@ -814,8 +814,8 @@ void HangWatcher::WatchStateSnapShot::Init(
       // the next capture then they'll already be marked and will be included
       // in the capture at that time.
       if (thread_marked && all_threads_marked) {
-        hung_watch_state_copies_.push_back(WatchStateCopy{
-            deadline, watch_state.get()->GetSystemWideThreadID()});
+        hung_watch_state_copies_.push_back(
+            WatchStateCopy{deadline, watch_state.get()->GetThreadID()});
       } else {
         all_threads_marked = false;
       }
@@ -884,7 +884,8 @@ std::string HangWatcher::WatchStateSnapShot::PrepareHungThreadListCrashKey()
 
   // Add as many thread ids to the crash key as possible.
   for (const WatchStateCopy& copy : hung_watch_state_copies_) {
-    std::string fragment = base::NumberToString(copy.thread_id) + kSeparator;
+    std::string fragment =
+        base::NumberToString(copy.thread_id.raw()) + kSeparator;
     if (list_of_hung_thread_ids.size() + fragment.size() <
         static_cast<std::size_t>(debug::CrashKeySize::Size256)) {
       list_of_hung_thread_ids += fragment;
@@ -1223,9 +1224,6 @@ uint64_t HangWatchDeadline::SwitchBitsForTesting() {
 
 HangWatchState::HangWatchState(HangWatcher::ThreadType thread_type)
     : resetter_(&hang_watch_state, this, nullptr), thread_type_(thread_type) {
-#if BUILDFLAG(IS_MAC)
-  pthread_threadid_np(pthread_self(), &system_wide_thread_id_);
-#endif
   thread_id_ = PlatformThread::CurrentId();
 }
 
@@ -1327,15 +1325,6 @@ HangWatchState* HangWatchState::GetHangWatchStateForCurrentThread() {
 
 PlatformThreadId HangWatchState::GetThreadID() const {
   return thread_id_;
-}
-
-uint64_t HangWatchState::GetSystemWideThreadID() const {
-#if BUILDFLAG(IS_MAC)
-  return system_wide_thread_id_;
-#else
-  CHECK_NE(thread_id_, kInvalidThreadId);
-  return static_cast<uint64_t>(thread_id_);
-#endif
 }
 
 }  // namespace internal

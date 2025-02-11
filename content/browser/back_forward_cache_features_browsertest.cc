@@ -5091,13 +5091,17 @@ class TestAuthenticator : public blink::mojom::Authenticator {
                               nullptr, nullptr);
     }
   }
-  void GetAssertion(blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
-                    GetAssertionCallback callback) override {
+  void GetCredential(blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+                     GetCredentialCallback callback) override {
     if (behavior_ == kStallRequest) {
-      pending_get_assertion_callback_ = std::move(callback);
+      pending_get_credential_callback_ = std::move(callback);
     } else {
-      std::move(callback).Run(blink::mojom::AuthenticatorStatus::ABORT_ERROR,
-                              nullptr, nullptr);
+      auto get_assertion_response = blink::mojom::GetAssertionResponse::New(
+          blink::mojom::AuthenticatorStatus::ABORT_ERROR, nullptr, nullptr);
+      auto get_credential_response =
+          blink::mojom::GetCredentialResponse::NewGetAssertionResponse(
+              std::move(get_assertion_response));
+      std::move(callback).Run(std::move(get_credential_response));
     }
   }
   void GetClientCapabilities(GetClientCapabilitiesCallback callback) override {}
@@ -5111,7 +5115,7 @@ class TestAuthenticator : public blink::mojom::Authenticator {
   void Cancel() override {}
 
   MakeCredentialCallback pending_make_credential_callback_;
-  GetAssertionCallback pending_get_assertion_callback_;
+  GetCredentialCallback pending_get_credential_callback_;
   TestAuthenticatorBehavior behavior_;
   mojo::Receiver<blink::mojom::Authenticator> receiver_{this};
 };

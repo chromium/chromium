@@ -218,7 +218,6 @@ void BrowserAccessibilityStateImplWin::UpdateHistogramsOnOtherThread() {
 
   // Look for DLLs of assistive technology known to work with Chrome.
   size_t module_count = bytes_required / sizeof(HMODULE);
-  bool satogo = false;  // Very few users -- do not need uniques
   for (size_t i = 0; i < module_count; i++) {
     TCHAR filename[MAX_PATH];
     GetModuleFileName(modules[i], filename, std::size(filename));
@@ -237,12 +236,6 @@ void BrowserAccessibilityStateImplWin::UpdateHistogramsOnOtherThread() {
       base::debug::SetCrashKeyString(ax_nvda_crash_key, "true");
       g_nvda = true;
     }
-    if (base::EqualsCaseInsensitiveASCII(module_name, "stsaw32.dll")) {
-      static auto* ax_satogo_crash_key = base::debug::AllocateCrashKeyString(
-          "ax_satogo", base::debug::CrashKeySize::Size32);
-      base::debug::SetCrashKeyString(ax_satogo_crash_key, "true");
-      satogo = true;
-    }
     if (base::EqualsCaseInsensitiveASCII(module_name, "dolwinhk.dll")) {
       static auto* ax_supernova_crash_key = base::debug::AllocateCrashKeyString(
           "ax_supernova", base::debug::CrashKeySize::Size32);
@@ -260,7 +253,6 @@ void BrowserAccessibilityStateImplWin::UpdateHistogramsOnOtherThread() {
 
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinJAWS", g_jaws);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNVDA", g_nvda);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinSAToGo", satogo);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinSupernova", g_supernova);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZoomText", g_zoomtext);
 }

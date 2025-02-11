@@ -16,6 +16,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
@@ -41,6 +42,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
+#include "components/sync/base/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -143,6 +145,10 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
     return BookmarkModelFactory::GetForBrowserContext(profile());
   }
 
+  BookmarkMergedSurfaceService* service() {
+    return BookmarkMergedSurfaceServiceFactory::GetForProfile(profile());
+  }
+
   void WaitForBookmarkModelToLoad() {
     bookmarks::test::WaitForBookmarkModelToLoad(model());
   }
@@ -152,6 +158,13 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
   void AddNodesToBookmarkBarFromModelString(const std::string& string) {
     bookmarks::test::AddNodesFromModelString(
         model(), model()->bookmark_bar_node(), string);
+    views::test::RunScheduledLayout(bookmark_bar_view());
+  }
+
+  void AddNodesToAccountBookmarkBarFromModelString(const std::string& string) {
+    CHECK(model()->account_bookmark_bar_node());
+    bookmarks::test::AddNodesFromModelString(
+        model(), model()->account_bookmark_bar_node(), string);
     views::test::RunScheduledLayout(bookmark_bar_view());
   }
 
@@ -199,6 +212,8 @@ class BookmarkBarViewTest : public BookmarkBarViewBaseTest {
   }
 
  private:
+  base::test::ScopedFeatureList features_{
+      syncer::kSyncEnableBookmarksInTransportMode};
   std::unique_ptr<BookmarkBarView> bookmark_bar_view_;
 };
 
@@ -380,6 +395,69 @@ TEST_F(BookmarkBarViewTest, RemoveNode) {
                   bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
   views::test::RunScheduledLayout(bookmark_bar_view());
   ASSERT_EQ("c", GetStringForVisibleButtons());
+
+  model()->CreateAccountPermanentFolders();
+  AddNodesToAccountBookmarkBarFromModelString("1 2 3 ");
+
+  model()->Remove(model()->account_bookmark_bar_node()->children()[1].get(),
+                  bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  views::test::RunScheduledLayout(bookmark_bar_view());
+  EXPECT_EQ("1", GetStringForVisibleButtons());
+
+  // Remove first node, should force a new button (for the '3' node).
+  model()->Remove(model()->account_bookmark_bar_node()->children()[0].get(),
+                  bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  views::test::RunScheduledLayout(bookmark_bar_view());
+  ASSERT_EQ("3", GetStringForVisibleButtons());
+}
+
+TEST_F(BookmarkBarViewTest, RemoveAccountNodes) {
+  model()->CreateAccountPermanentFolders();
+  AddNodesToBookmarkBarFromModelString("a b c d e f ");
+  AddNodesToAccountBookmarkBarFromModelString("A1 A2 A3 A4 ");
+  EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
+  SizeUntilButtonsVisible(10);
+  EXPECT_EQ(10u, test_helper_->GetBookmarkButtonCount());
+  EXPECT_EQ("A1 A2 A3 A4 a b c d e f", GetStringForVisibleButtons());
+
+  // Remove the account nodes, local nodes should still be visible.
+  model()->RemoveAccountPermanentFolders();
+  views::test::RunScheduledLayout(bookmark_bar_view());
+  EXPECT_EQ("a b c d e f", GetStringForVisibleButtons());
+}
+
+TEST_F(BookmarkBarViewTest, RemoveAccountNodesCustomOrder) {
+  model()->CreateAccountPermanentFolders();
+  AddNodesToBookmarkBarFromModelString("a b c d e f ");
+  AddNodesToAccountBookmarkBarFromModelString("A1 A2 A3 A4 ");
+  EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
+  SizeUntilButtonsVisible(10);
+  EXPECT_EQ("A1 A2 A3 A4 a b c d e f", GetStringForVisibleButtons());
+
+  service()->Move(model()->account_bookmark_bar_node()->children()[1].get(),
+                  BookmarkParentFolder::BookmarkBarFolder(), 10u,
+                  /*browser=*/nullptr);
+  views::test::RunScheduledLayout(bookmark_bar_view());
+  EXPECT_EQ("A1 A3 A4 a b c d e f A2", GetStringForVisibleButtons());
+
+  // Remove the account nodes, local nodes should still be visible.
+  model()->RemoveAccountPermanentFolders();
+  views::test::RunScheduledLayout(bookmark_bar_view());
+  EXPECT_EQ("a b c d e f", GetStringForVisibleButtons());
+}
+
+TEST_F(BookmarkBarViewTest, RemoveAccountNodesNotAllAccountNodesVisible) {
+  model()->CreateAccountPermanentFolders();
+  AddNodesToBookmarkBarFromModelString("a b c d e f ");
+  AddNodesToAccountBookmarkBarFromModelString("1 2 3 4 ");
+  EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
+  SizeUntilButtonsVisible(2);
+  EXPECT_EQ("1 2", GetStringForVisibleButtons());
+
+  // Remove the account nodes, local nodes should still be visible.
+  model()->RemoveAccountPermanentFolders();
+  views::test::RunScheduledLayout(bookmark_bar_view());
+  EXPECT_EQ("a b", GetStringForVisibleButtons());
 }
 
 // Assertions for moving a node on the bookmark bar.

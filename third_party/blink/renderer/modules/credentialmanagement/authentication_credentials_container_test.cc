@@ -134,9 +134,13 @@ class MockAuthenticatorInterface : public mojom::blink::Authenticator {
 
   void InvokeGetCallback() {
     EXPECT_TRUE(receiver_.is_bound());
-    std::move(get_callback_)
-        .Run(blink::mojom::blink::AuthenticatorStatus::NOT_ALLOWED_ERROR,
-             nullptr, nullptr);
+    auto assertion_response = mojom::blink::GetAssertionResponse::New(
+        blink::mojom::blink::AuthenticatorStatus::NOT_ALLOWED_ERROR, nullptr,
+        nullptr);
+    auto credential_response =
+        mojom::blink::GetCredentialResponse::NewGetAssertionResponse(
+            std::move(assertion_response));
+    std::move(get_callback_).Run(std::move(credential_response));
   }
 
   void Reset() { loop_ = std::make_unique<base::RunLoop>(); }
@@ -145,9 +149,9 @@ class MockAuthenticatorInterface : public mojom::blink::Authenticator {
   void MakeCredential(
       blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr options,
       MakeCredentialCallback callback) override {}
-  void GetAssertion(
+  void GetCredential(
       blink::mojom::blink::PublicKeyCredentialRequestOptionsPtr options,
-      GetAssertionCallback callback) override {
+      GetCredentialCallback callback) override {
     get_callback_ = std::move(callback);
     loop_->Quit();
   }
@@ -164,7 +168,7 @@ class MockAuthenticatorInterface : public mojom::blink::Authenticator {
  private:
   mojo::Receiver<::blink::mojom::blink::Authenticator> receiver_{this};
 
-  GetAssertionCallback get_callback_;
+  GetCredentialCallback get_callback_;
   std::unique_ptr<base::RunLoop> loop_;
 };
 

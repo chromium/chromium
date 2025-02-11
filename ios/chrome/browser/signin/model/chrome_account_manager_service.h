@@ -11,6 +11,7 @@
 #import <vector>
 
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
 #import "base/scoped_observation.h"
 #import "base/types/pass_key.h"
@@ -159,6 +160,9 @@ class ChromeAccountManagerService : public KeyedService,
       id<SystemIdentity> identity,
       id<RefreshAccessTokenError> error) override;
 
+  // Gets base::WeakPtr to the object.
+  base::WeakPtr<ChromeAccountManagerService> GetWeakPtr();
+
  private:
   // Updates PatternAccountRestriction with the current `local_state_`. If
   // `local_state_` is null, no identity will be filtered.
@@ -187,6 +191,8 @@ class ChromeAccountManagerService : public KeyedService,
   ResizedAvatarCache* large_avatar_cache_;
 
   const std::string profile_name_;
+
+  base::WeakPtrFactory<ChromeAccountManagerService> weak_ptr_factory_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_CHROME_ACCOUNT_MANAGER_SERVICE_H_

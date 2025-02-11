@@ -1,5 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
+  <!-- TODO(crbug.com/395807244): Make entity strings translateable. -->
+  <!-- Entities -->
+  <message name="IDS_AUTOFILL_AI_PASSPORT_ENTITY_NAME" desc="Used as a general label for the passport entity." translateable="false">
+    Passport
+  </message>
+  <message name="IDS_AUTOFILL_AI_LOYALTY_CARD_ENTITY_NAME" desc="Used as a general label for the loyalty card entity." translateable="false">
+    Loyalty card
+  </message>
+  <message name="IDS_AUTOFILL_AI_CAR_ENTITY_NAME" desc="Used as a general label for the car entity." translateable="false">
+    Car
+  </message>
+  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_ENTITY_NAME" desc="Used as a general label for the driver's license entity." translateable="false">
+    Driver's license
+  </message>
+
+  <!-- TODO(crbug.com/395807244): Make passport strings translateable. -->
+  <!-- Attributes of the passport entity -->
+  <message name="IDS_AUTOFILL_AI_PASSPORT_NAME_ATTRIBUTE_NAME" desc="Used as a general label for the passport name attribute." translateable="false">
+    Name
+  </message>
+  <message name="IDS_AUTOFILL_AI_PASSPORT_NUMBER_ATTRIBUTE_NAME" desc="Used as a general label for the passport number attribute." translateable="false">
+    Number
+  </message>
+  <message name="IDS_AUTOFILL_AI_PASSPORT_COUNTRY_ATTRIBUTE_NAME" desc="Used as a general label for the passport country attribute." translateable="false">
+    Country
+  </message>
+  <message name="IDS_AUTOFILL_AI_PASSPORT_EXPIRY_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the passport expiry date attribute." translateable="false">
+    Expiry date
+  </message>
+  <message name="IDS_AUTOFILL_AI_PASSPORT_ISSUE_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the passport issue date attribute." translateable="false">
+    Issue date
+  </message>
+
+  <!-- TODO(crbug.com/395807244): Make loyalty card strings translateable. -->
+  <!-- Attributes of the loyalty card entity -->
+  <message name="IDS_AUTOFILL_AI_LOYALTY_CARD_PROGRAM_ATTRIBUTE_NAME" desc="Used as a general label for the loyalty card program attribute." translateable="false">
+    Program
+  </message>
+  <message name="IDS_AUTOFILL_AI_LOYALTY_CARD_PROVIDER_ATTRIBUTE_NAME" desc="Used as a general label for the loyalty card provider attribute." translateable="false">
+    Provider
+  </message>
+  <message name="IDS_AUTOFILL_AI_LOYALTY_CARD_MEMBER_ID_ATTRIBUTE_NAME" desc="Used as a general label for the loyalty card member ID attribute." translateable="false">
+    Member ID
+  </message>
+
+  <!-- TODO(crbug.com/395807244): Make car strings translateable. -->
+  <!-- Attributes of the car entity -->
+  <message name="IDS_AUTOFILL_AI_CAR_OWNER_ATTRIBUTE_NAME" desc="Used as a general label for the car owner attribute." translateable="false">
+    Owner
+  </message>
+  <message name="IDS_AUTOFILL_AI_CAR_LICENSE_PLATE_ATTRIBUTE_NAME" desc="Used as a general label for the car license plate attribute." translateable="false">
+    License plate
+  </message>
+  <message name="IDS_AUTOFILL_AI_CAR_REGISTRATION_ATTRIBUTE_NAME" desc="Used as a general label for the car registration attribute." translateable="false">
+    Registration
+  </message>
+  <message name="IDS_AUTOFILL_AI_CAR_MAKE_ATTRIBUTE_NAME" desc="Used as a general label for the car make attribute." translateable="false">
+    Make
+  </message>
+  <message name="IDS_AUTOFILL_AI_CAR_MODEL_ATTRIBUTE_NAME" desc="Used as a general label for the car model attribute." translateable="false">
+    Model
+  </message>
+
+  <!-- TODO(crbug.com/395807244): Make driver's license strings translateable. -->
+  <!-- Attributes of the driver's license entity -->
+  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_NAME_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license name attribute." translateable="false">
+    Name
+  </message>
+  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_REGION_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license region attribute." translateable="false">
+    Region
+  </message>
+  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_NUMBER_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license number attribute." translateable="false">
+    Number
+  </message>
+  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_EXPIRATION_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license expiration date attribute." translateable="false">
+    Expiration date
+  </message>
+  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_ISSUE_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license issue date attribute." translateable="false">
+    Issue date
+  </message>
+
   <!-- Fill suggestion -->
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_ALL_MAIN_TEXT" desc="Suggestion shown on the second level menu of Autofill with AI, used to fill all fields.">
     Fill fields with AI

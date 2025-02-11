@@ -1014,8 +1014,7 @@ suite('CookiesCardNavigations', function() {
 
   // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
   test(
-      'cookiesCardNotVisibleWhenAlwaysBlock3pcsIncognitoDisabled',
-      async function() {
+      'cookiesCardNotVisibleWhenAlwaysBlock3pcsIncognitoDisabled', function() {
         loadTimeData.overrideValues({
           isAlwaysBlock3pcsIncognitoEnabled: false,
           is3pcdCookieSettingsRedesignEnabled: false,

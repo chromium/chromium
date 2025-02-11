@@ -5641,7 +5641,6 @@
 <translation id="4946998421534856407">λειτουργία εκκίνησης εφαρμογών + πάνω βέλος</translation>
 <translation id="4947376546135294974">Δεδομένα από τον ιστότοπο που επισκέπτεστε</translation>
 <translation id="4950100687509657457">Δημιουργία προφίλ</translation>
-<translation id="4950360215042327246">[Συμβολοσειρά placeholder]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ένα αρχείο}other{# αρχεία}}</translation>
 <translation id="495170559598752135">Ενέργειες</translation>
 <translation id="4951966678293618079">Να μην γίνεται ποτέ αποθήκευση των κωδικών πρόσβασης για αυτόν τον ιστότοπο</translation>
@@ -7999,7 +7998,6 @@
 <translation id="6679947539429331601">Απόκρυψη για 12 ώρες</translation>
 <translation id="6680442031740878064">Διαθέσιμος χώρος: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Βαθμολόγηση</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Συμβολοσειρά placeholder]</translation>
 <translation id="6683022854667115063">Ακουστικά</translation>
 <translation id="6683087162435654533">Επαναφορά όλων των καρτελών</translation>
 <translation id="6683433919380522900">Έχει οριστεί η επιλογή <ph name="PERMISSION_STATE" /> για την άδεια</translation>
@@ -9218,7 +9216,6 @@
 <translation id="7561196759112975576">Πάντα</translation>
 <translation id="7561759921596375678">Ενεργοποίηση έντασης ήχου</translation>
 <translation id="7561982940498449837">Κλείσιμο μενού</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">Άνοιγμα παραθύρου προγράμματος περιήγησης</translation>
 <translation id="7564847347806291057">Τερματισμός διαδικασίας</translation>
 <translation id="756503097602602175">Μπορείτε να διαχειριστείτε τους συνδεδεμένους Λογαριασμούς Google από τις <ph name="LINK_BEGIN" />Ρυθμίσεις<ph name="LINK_END" />. Οι άδειες που έχετε εκχωρήσει σε ιστοτόπους και εφαρμογές ενδέχεται να ισχύουν για όλους τους λογαριασμούς. Εάν δεν θέλετε οι ιστότοποι ή οι εφαρμογές να έχουν πρόσβαση στις πληροφορίες του λογαριασμού σας, μπορείτε να συνδεθείτε στη συσκευή <ph name="DEVICE_TYPE" /> ως επισκέπτης ή να περιηγηθείτε στον ιστό μέσω ενός <ph name="LINK_2_BEGIN" />παραθύρου για ανώνυμη περιήγηση<ph name="LINK_2_END" />.</translation>

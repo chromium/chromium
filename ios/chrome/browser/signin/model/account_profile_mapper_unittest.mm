@@ -253,12 +253,11 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
 
   void MarkProfileForDeletion(std::string_view name) override {
     DCHECK(CanDeleteProfileWithName(name));
-    profiles_marked_for_deletion_.insert(std::string(name));
-    profile_attributes_storage_.RemoveProfile(name);
+    profile_attributes_storage_.MarkProfileForDeletion(name);
   }
 
   bool IsProfileMarkedForDeletion(std::string_view name) const override {
-    return base::Contains(profiles_marked_for_deletion_, name);
+    return profile_attributes_storage_.IsProfileMarkedForDeletion(name);
   }
 
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override {
@@ -270,8 +269,6 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
 
   std::map<std::string, std::unique_ptr<FakeProfileIOS>, std::less<>>
       profiles_map_;
-
-  std::set<std::string, std::less<>> profiles_marked_for_deletion_;
 };
 
 class AccountProfileMapperTest : public PlatformTest {

@@ -795,10 +795,19 @@ const char kLensUnaryApisWithHttpTransportEnabledName[] =
 const char kLensUnaryApisWithHttpTransportEnabledDescription[] =
     "Enables the unary APIs with HTTP transport.";
 
+const char kLensUnaryClientDataHeaderEnabledName[] =
+    "Lens unary client data header enabled";
+const char kLensUnaryClientDataHeaderEnabledDescription[] =
+    "Enables the client data header for unary request.";
+
 const char kLensUnaryHttpTransportEnabledName[] =
     "Lens unary HTTP transport enabled";
 const char kLensUnaryHttpTransportEnabledDescription[] =
     "Enables the HTTP transport for unary requests.";
+
+const char kLensVsintParamEnabledName[] = "Lens vsint param enabled";
+const char kLensVsintParamEnabledDescription[] =
+    "Enables the vsint param for requests.";
 
 const char kLensWebPageLoadOptimizationEnabledName[] =
     "Lens web page load optimization";
@@ -1066,11 +1075,6 @@ const char kRemoveExcessNTPsExperimentName[] = "Remove extra New Tab Pages";
 const char kRemoveExcessNTPsExperimentDescription[] =
     "When enabled, extra tabs with the New Tab Page open and no navigation "
     "history will be removed.";
-
-const char kRichBubbleWithoutImageName[] = "Remove image from rich IPH bubble";
-const char kRichBubbleWithoutImageDescription[] =
-    "When enabled, the rich bubble IPH type will not feature an image, instead "
-    "will only have a title and body text.";
 
 const char kSafeBrowsingAsyncRealTimeCheckName[] =
     "Safe Browsing Async Real Time Check";

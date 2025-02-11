@@ -28,7 +28,7 @@ suite('AppTest', () => {
     await microtasksFinished();
   });
 
-  test('check initial state', async () => {
+  test('check initial state', () => {
     assertEquals(1, testProxy.handler.getCallCount('getRelatedWebsiteSets'));
     assertTrue(isVisible(app.$.toolbar));
     assertTrue(isVisible(app.$.sidebar));
@@ -73,7 +73,7 @@ suite('AppTest', () => {
         'test', app.$.toolbar.$.mainToolbar.getSearchField().getValue());
   });
 
-  test('UI search box updates URL parameters', async () => {
+  test('UI search box updates URL parameters', () => {
     app.$.toolbar.$.mainToolbar.getSearchField().setValue('hello');
     const urlParams = new URLSearchParams(window.location.search);
     const query = urlParams.get('q');

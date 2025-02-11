@@ -61,8 +61,7 @@ IN_PROC_BROWSER_TEST_F(BookmarksTest, Router) {
   RunTest("bookmarks/router_test.js", "mocha.run()");
 }
 
-// https://crbug.com/369045912: Flaky.
-IN_PROC_BROWSER_TEST_F(BookmarksTest, DISABLED_FolderNode) {
+IN_PROC_BROWSER_TEST_F(BookmarksTest, FolderNode) {
   RunTest("bookmarks/folder_node_test.js", "mocha.run()");
 }
 

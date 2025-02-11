@@ -165,26 +165,6 @@ public class ToolbarTablet extends ToolbarLayout
         mShouldAnimateButtonVisibilityChange = false;
         mToolbarButtonsVisible = true;
         mToolbarButtons = new ImageButton[] {mBackButton, mForwardButton, mReloadButton};
-
-        setTooltipTextForToolbarButtons();
-    }
-
-    // Set hover tooltip texts for tablets buttons.
-    @Override
-    public void setTooltipTextForToolbarButtons() {
-        // Set hover tooltip texts for toolbar buttons shared between phones and tablets.
-        super.setTooltipTextForToolbarButtons();
-
-        // Set hover tooltip texts for toolbar buttons that only on tablets.
-        super.setTooltipText(
-                mBackButton, getContext().getString(R.string.accessibility_toolbar_btn_back));
-        super.setTooltipText(
-                mForwardButton, getContext().getString(R.string.accessibility_menu_forward));
-        super.setTooltipText(
-                mReloadButton, getContext().getString(R.string.accessibility_btn_refresh));
-        super.setTooltipText(
-                mBookmarkButton, getContext().getString(R.string.accessibility_menu_bookmark));
-        super.setTooltipText(mSaveOfflineButton, getContext().getString(R.string.download_page));
     }
 
     @Override

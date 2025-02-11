@@ -70,6 +70,7 @@ Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsan
 <translation id="2459183986985456602">Chromium'daki en son sekmemi aç</translation>
 <translation id="2476409803017965813">Seçimlerinizi istediğiniz zaman Chromium ayarlarından güncelleyebilirsiniz.</translation>
 <translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />'u seçin</translation>
+<translation id="2485774047568879945">Bağlantıları kolayca paylaşmak ve açmak için Chromium'u varsayılan tarayıcınız olarak ayarlayın</translation>
 <translation id="2512597191798760956">Chromium simgesini basılı tutup "Ana ekranı düzenle"yi tıklayın</translation>
 <translation id="2517624234762908348">Chromium verilerimi senkronize et</translation>
 <translation id="2592940277904433508">Chromium'u kullanmaya devam et</translation>
@@ -167,6 +168,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chromium v
 <translation id="5088872414922783602">Ana ekran yuvanızdan Chromium'a daha hızlı erişin.</translation>
 <translation id="5124429847818367226">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantılara göz attığınızda veya dokunduğunuzda Chromium'u kullanabilirsiniz.</translation>
 <translation id="5131565040785979529">Oturum açtığınız hesabı ve Chromium'un kullanılma şeklini kuruluşunuz (<ph name="DOMAIN" />) yönetiyor.</translation>
+<translation id="5134464247000681876">Gmail, Haritalar, YouTube ve diğer uygulamalardaki bağlantıları Chromium'da açın</translation>
 <translation id="5224391634244552924">Kaydedilen şifre yok. Chromium, kaydetmeniz halinde şifrelerinizi kontrol edebilir.</translation>
 <translation id="5259423875997548710">Chromium'da görsel arayın.</translation>
 <translation id="5308226104666789935">Chromium, güncellemeleri denetleyemiyor</translation>
@@ -260,6 +262,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="7674213385180944843">Ayarlar &gt; Gizlilik &gt; Kamera &gt; Chromium'a gidin ve kamerayı açın.</translation>
 <translation id="7733418656985455268">Chromium İpucu: Lens ile Arama Yapın</translation>
 <translation id="7747820849741499258">Chromium'da ara</translation>
+<translation id="7753923083404296545">Chromium Gizli modda açıldı</translation>
 <translation id="7762622637388462191">Chromium'dan çıktığınızda veya farklı bir uygulamaya geçtiğinizde gizli sekmelerinizi kilitleyin.</translation>
 <translation id="7763454117143368771">Tehlikeli sitelere karşı koruma altında kalmak ve şifrelerinizi güvende tutmak için varsayılan tarayıcınız olarak Chromium'u kullanın</translation>
 <translation id="7784950022329154821">Chromium'u kapattığınızda Gizli sekmeler kilitlensin</translation>

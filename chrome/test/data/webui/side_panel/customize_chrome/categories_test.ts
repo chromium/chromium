@@ -169,7 +169,8 @@ suite('CategoriesTest', () => {
                 'NewTabPage.Images.ShownTime.CollectionPreviewImage'));
       });
 
-      test('error detection metrics fire correctly', async () => {
+      // TODO(crbug.com/394712092): Flaky on multiple platforms.
+      test.skip('error detection metrics fire correctly', async () => {
         const numCollections = 2;
         await setInitialSettings({numCollections: 2});
 

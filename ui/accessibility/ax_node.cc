@@ -875,11 +875,11 @@ AXSelection AXNode::GetSelection() const {
   return tree()->GetSelection();
 }
 
-AXSelection AXNode::GetUnignoredSelection(bool non_text_endpoints) const {
+AXSelection AXNode::GetUnignoredSelection() const {
   DCHECK(tree()) << "Cannot retrieve the current selection if the node is not "
                     "attached to an accessibility tree.\n"
                  << *this;
-  AXSelection selection = tree()->GetUnignoredSelection(non_text_endpoints);
+  AXSelection selection = tree()->GetUnignoredSelection();
 
   // "selection.anchor_offset" and "selection.focus_ofset" might need to be
   // adjusted if the anchor or the focus nodes include ignored children.

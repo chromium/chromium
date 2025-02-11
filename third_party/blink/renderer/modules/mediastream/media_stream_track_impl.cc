@@ -302,6 +302,13 @@ MediaStreamTrackImpl::MediaStreamTrackImpl(
   if (source_device && source_device->display_media_info) {
     zoom_level_ = source_device->display_media_info->initial_zoom_level;
   }
+
+  if (video_track) {
+    video_track->RegisterCaptureSurfaceResolutionChangeCallback(
+        WTF::BindRepeating(
+            &MediaStreamTrackImpl::MaybeDispatchConfigurationChange,
+            WrapWeakPersistent(this)));
+  }
 }
 
 MediaStreamTrackImpl::~MediaStreamTrackImpl() = default;
@@ -677,6 +684,33 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
     settings->setCursor(value);
   }
 
+#if BUILDFLAG(IS_WIN)
+  if (RuntimeEnabledFeatures::CapturedSurfaceResolutionEnabled(
+          execution_context_) &&
+      platform_settings.display_surface) {
+    std::optional<float> ratio = platform_settings.device_scale_factor;
+    if (platform_settings.display_surface ==
+            media::mojom::DisplayCaptureSurfaceType::BROWSER &&
+        zoom_level_ && ratio) {
+      ratio = zoom_level_.value() * ratio.value();
+      ratio = ratio.value() / 100.0f;
+    }
+
+    if (platform_settings.physical_frame_size) {
+      settings->setPhysicalWidth(
+          platform_settings.physical_frame_size->width());
+      settings->setPhysicalHeight(
+          platform_settings.physical_frame_size->height());
+      if (ratio) {
+        settings->setLogicalWidth(
+            platform_settings.physical_frame_size->width() / ratio.value());
+        settings->setLogicalHeight(
+            platform_settings.physical_frame_size->height() / ratio.value());
+      }
+    }
+  }
+#endif
+
   if (suppress_local_audio_playback_setting_.has_value()) {
     settings->setSuppressLocalAudioPlayback(
         suppress_local_audio_playback_setting_.value());
@@ -937,8 +971,11 @@ void MediaStreamTrackImpl::SourceChangedZoomLevel(int zoom_level) {
     return;
   }
 
+  const bool zoom_level_changed = (zoom_level_ != zoom_level);
   zoom_level_ = zoom_level;
-  // TODO(383946052): Send an event to notify resolution change.
+  if (zoom_level_changed) {
+    MaybeDispatchConfigurationChange(true);
+  }
 }
 #endif
 

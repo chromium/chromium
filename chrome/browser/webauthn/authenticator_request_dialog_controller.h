@@ -239,6 +239,9 @@ class AuthenticatorRequestDialogController
   void SetAccountPreselectedCallback(
       content::AuthenticatorRequestClientDelegate::AccountPreselectedCallback
           callback);
+  void SetPasswordSelectedCallback(
+      content::AuthenticatorRequestClientDelegate::PasswordSelectedCallback
+          callback);
   void SetBluetoothAdapterPowerOnCallback(
       base::RepeatingClosure bluetooth_adapter_power_on_callback);
   void SetRequestBlePermissionCallback(BlePermissionCallback callback);
@@ -477,6 +480,8 @@ class AuthenticatorRequestDialogController
   void MaybeStartChallengeFetch();
   void OnChallengeFetched();
 
+  void OnPasswordSelected(std::u16string username, std::u16string password);
+
   raw_ptr<AuthenticatorRequestDialogModel> model_;
 
   // Identifier for the RenderFrameHost of the frame that initiated the current
@@ -512,6 +517,8 @@ class AuthenticatorRequestDialogController
 
   content::AuthenticatorRequestClientDelegate::AccountPreselectedCallback
       account_preselected_callback_;
+  content::AuthenticatorRequestClientDelegate::PasswordSelectedCallback
+      password_selected_callback_;
   RequestCallback request_callback_;
   base::RepeatingClosure bluetooth_adapter_power_on_callback_;
 

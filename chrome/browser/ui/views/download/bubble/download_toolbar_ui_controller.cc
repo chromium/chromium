@@ -868,9 +868,9 @@ views::ImageView* DownloadToolbarUIController::GetImageBadgeForTesting() {
 
 DownloadToolbarUIController::BubbleCloser::BubbleCloser(
     views::Button* toolbar_button,
-    base::OnceClosure press_callback)
-    : toolbar_button_(toolbar_button), callback_(std::move(press_callback)) {
-  CHECK(toolbar_button_);
+    base::WeakPtr<DownloadDisplay> download_display)
+    : download_display_(download_display) {
+  CHECK(toolbar_button);
   if (toolbar_button->GetWidget() &&
       toolbar_button->GetWidget()->GetNativeWindow()) {
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
@@ -889,7 +889,9 @@ void DownloadToolbarUIController::BubbleCloser::OnEvent(
     return;
   }
 
-  std::move(callback_).Run();
+  if (download_display_) {
+    download_display_->HideDetails();
+  }
   // `this` will be deleted.
 }
 
@@ -966,9 +968,8 @@ void DownloadToolbarUIController::CreateBubbleDialogDelegate() {
   if (ShouldShowBubbleAsInactive()) {
     if (button) {
       bubble_delegate_->GetWidget()->ShowInactive();
-      bubble_closer_ = std::make_unique<BubbleCloser>(
-          button, base::BindOnce(&DownloadToolbarUIController::HideDetails,
-                                 base::Unretained(this)));
+      bubble_closer_ =
+          std::make_unique<BubbleCloser>(button, weak_factory_.GetWeakPtr());
       bubble_delegate_->GetWidget()
           ->GetRootView()
           ->GetViewAccessibility()

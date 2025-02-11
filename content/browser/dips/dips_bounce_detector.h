@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
+#include "content/browser/dips/btm_short_visit_observer.h"
 #include "content/browser/dips/cookie_access_filter.h"
 #include "content/browser/dips/dips_service_impl.h"
 #include "content/browser/dips/dips_utils.h"
@@ -231,9 +232,12 @@ class CONTENT_EXPORT ServerBounceDetectionState
     const GURL destination_url;
   };
 
+  // A BtmRedirectInfoPtr if the navigation started with a client redirect; a
+  // UrlAndSourceId otherwise.
   BtmNavigationStart navigation_start;
   CookieAccessFilter filter;
   std::vector<ServerRedirectData> server_redirects;
+  std::vector<ukm::SourceId> server_redirect_source_ids;
   base::TimeTicks last_server_redirect;
 
  private:
@@ -271,7 +275,9 @@ class CONTENT_EXPORT BtmNavigationHandle {
 
   // Get a SourceId of type REDIRECT_ID for the index'th URL in the redirect
   // chain.
-  ukm::SourceId GetRedirectSourceId(int index) const;
+  ukm::SourceId GetRedirectSourceId(size_t index);
+  // Create a ukm::SourceId of type REDIRECT_ID for the given redirector URL.
+  ukm::SourceId MakeRedirectSourceId(const GURL& url) const;
   // Calls ServerBounceDetectionState::GetOrCreateForNavigationHandle(). We
   // declare this instead of making BtmNavigationHandle a subclass of
   // SupportsUserData, because ServerBounceDetectionState inherits from
@@ -454,6 +460,7 @@ class CONTENT_EXPORT RedirectChainDetector
   void NotifyOnRedirectChainEnded(std::vector<BtmRedirectInfoPtr> redirects,
                                   BtmRedirectChainInfoPtr chain);
 
+  BtmShortVisitObserver short_visit_observer_;
   BtmBounceDetector detector_;
   DelayedChainHandler delayed_handler_;
   base::ObserverList<Observer> observers_;
@@ -573,7 +580,8 @@ class CONTENT_EXPORT BtmWebContentsObserver
 
 namespace dips {
 
-ukm::SourceId GetInitialRedirectSourceId(NavigationHandle* navigation_handle);
+ukm::SourceId GetRedirectSourceId(NavigationHandle* navigation_handle,
+                                  size_t index);
 
 CONTENT_EXPORT bool IsOrWasInPrimaryPage(RenderFrameHost* render_frame_host);
 

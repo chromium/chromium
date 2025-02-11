@@ -4,12 +4,15 @@
 
 #include "components/ip_protection/common/ip_protection_core_impl.h"
 
+#include <cstddef>
+#include <map>
+#include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
-#include "base/functional/bind.h"
-#include "base/task/task_traits.h"
-#include "base/time/time.h"
+#include "base/check.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
@@ -22,7 +25,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
-#include "net/base/proxy_string_util.h"
+#include "url/gurl.h"
 
 namespace ip_protection {
 

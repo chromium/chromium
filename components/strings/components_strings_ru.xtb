@@ -206,7 +206,6 @@
 <translation id="1337692097987160377">Поделиться вкладкой</translation>
 <translation id="1339601241726513588">Регистрация домена:</translation>
 <translation id="1340482604681802745">Адрес выдачи</translation>
-<translation id="134204716678666126">Используйте клавиши со стрелками вправо и влево, чтобы перейти к кнопкам для отправки отзыва.</translation>
 <translation id="1343356790768851700">Этот сайт определяет ваши интересы и предлагает рекламу на их основе другим сайтам</translation>
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1348779747280417563">Подтверждение</translation>
@@ -1061,7 +1060,6 @@
 <translation id="2902312830803030883">Другие действия</translation>
 <translation id="2903493209154104877">Адреса</translation>
 <translation id="290376772003165898">Язык страницы не <ph name="LANGUAGE" />?</translation>
-<translation id="2904165004205947971">Управляйте своими данными</translation>
 <translation id="2905107382358353958">Оповещение о новых платежных настройках</translation>
 <translation id="2909946352844186028">Похоже, вы подключились к другой сети.</translation>
 <translation id="2911255567212929079">Машинное обучение и искусственный интеллект</translation>
@@ -1567,7 +1565,6 @@
 <translation id="3727309136762649052">Пространство имен</translation>
 <translation id="3727850735097852673">Чтобы использовать Google Менеджер паролей со Связкой ключей macOS, перезапустите Chrome и предоставьте доступ к Связке ключей. После перезапуска вкладки будут снова открыты.</translation>
 <translation id="3728173127485570463">Chrome перестанет требовать ваш отпечаток пальца для автозаполнения паролей.</translation>
-<translation id="3735143108516366187">Нажмите Ввод, чтобы настроить улучшенные подсказки</translation>
 <translation id="3736739313435669994">Вы запретили сайтам использовать сторонние файлы cookie для отслеживания ваших действий в интернете. Чтобы <ph name="LINK" />, перейдите в настройки.</translation>
 <translation id="3738166223076830879">Этим браузером управляет администратор.</translation>
 <translation id="3738428049780661523">Создано <ph name="DATE" /></translation>
@@ -1666,7 +1663,6 @@
 <translation id="3909695131102177774"><ph name="LABEL" />. <ph name="ERROR" />.</translation>
 <translation id="3909899182024383590">Сохраненные данные и страница сайта <ph name="WEBSITE" /> будут отправлены в Google. Наши специалисты могут проверить эти данные, чтобы улучшить функцию.</translation>
 <translation id="3910231615117880630">Подробнее о встроенном контенте…</translation>
-<translation id="3915878244842478983">Chrome не удалось получить ваши данные</translation>
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Как вы можете управлять своими данными.<ph name="END_BOLD" /> Chrome автоматически удаляет сайты, добавленные более 30 дней назад. Если вы повторно посетите сайт, он может вновь появиться в списке. Также в настройках Chrome можно запретить некоторым или всем сайтам предлагать вам рекламу.</translation>
 <translation id="3921869355029467742">Ввести защитный код</translation>
 <translation id="3927538228901078312">Нет сравнительных таблиц.</translation>
@@ -2866,7 +2862,6 @@
 <translation id="6058977677006700226">Хотите использовать карты на всех устройствах?</translation>
 <translation id="6059925163896151826">USB-устройства</translation>
 <translation id="6060009363608157444">Недопустимый режим DnsOverHttps.</translation>
-<translation id="6060132878120844000">и ещё 1 поле</translation>
 <translation id="6061154937977953833">Борьба</translation>
 <translation id="6062937464449575061">Перестать отслеживать цену</translation>
 <translation id="6063415549109819824">Ипотечное кредитование</translation>
@@ -2932,7 +2927,6 @@
 <translation id="6180316780098470077">Интервал повтора</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome автоматически ограничивает использование сторонних файлов cookie</translation>
-<translation id="6188479691141473408">и ещё несколько полей (<ph name="N_FIELDS" />)</translation>
 <translation id="6190518157737269631">Переопределение некоторых клавиш, например Esc.</translation>
 <translation id="6194209731893739467">Здесь вы найдете все отслеживаемые товары</translation>
 <translation id="6195163219142236913">Использование сторонних файлов cookie ограничено</translation>
@@ -3161,7 +3155,6 @@
 <translation id="6569060085658103619">Вы просматриваете страницу расширения</translation>
 <translation id="6572867903637058088">Эта информация полезна?</translation>
 <translation id="6573200754375280815">Два отверстия справа</translation>
-<translation id="6574762126505704998">Заполнить</translation>
 <translation id="6575408526598156416">Сохранить в аккаунте</translation>
 <translation id="6577792494180292262">Венчурный капитал</translation>
 <translation id="6578434528542148658">Недействительный идентификатор расширения.</translation>
@@ -3979,7 +3972,6 @@
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы сделать Chrome браузером по умолчанию.</translation>
 <translation id="8027077570865220386">Лоток 15</translation>
 <translation id="8027585818882015174">Кнопка "Запустить проверку безопасности". Нажмите ее, чтобы запустить проверку безопасности в Chrome.</translation>
-<translation id="8028138772801251745">Автозаполнение с помощью ИИ</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать форму Google, нажмите Tab, а затем Ввод.</translation>
 <translation id="8028892419725165118">Казуальные игры</translation>
 <translation id="8028960012888758725">Подрезать после завершения задания</translation>

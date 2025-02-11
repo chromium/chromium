@@ -134,7 +134,7 @@ suite('PrivacyPage', function() {
     assertTrue(!!dialog);
   });
 
-  test('cookiesLinkRowSublabel', async function() {
+  test('cookiesLinkRowSublabel', function() {
     page.set(
         'prefs.profile.cookie_controls_mode.value', CookieControlsMode.OFF);
     const thirdPartyCookiesLinkRow =

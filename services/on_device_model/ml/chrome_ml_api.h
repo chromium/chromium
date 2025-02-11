@@ -117,6 +117,9 @@ struct ChromeMLAdaptationDescriptor {
 
   // Whether this model will handle InputPieces containing images.
   bool enable_image_input;
+
+  // Whether this model will handle InputPieces containing audio.
+  bool enable_audio_input;
 };
 
 // A status value included with each output chunk.

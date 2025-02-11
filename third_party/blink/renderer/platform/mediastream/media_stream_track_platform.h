@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_frame_stats_accumulator.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 class WebMediaStreamAudioSink;
@@ -64,6 +65,10 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     std::optional<bool> logical_surface;
     std::optional<media::mojom::CursorCaptureType> cursor;
     std::optional<bool> suppress_local_audio_playback;
+
+    // Captured Surface Resolution API
+    std::optional<gfx::Size> physical_frame_size;
+    std::optional<float> device_scale_factor;
   };
 
   struct VideoFrameStats {

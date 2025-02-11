@@ -20,7 +20,6 @@
 <translation id="1054745118061919935">തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK" />സേവന നിബന്ധനകൾ<ph name="END_LINK" /> അംഗീകരിക്കുന്നു.</translation>
 <translation id="10614374240317010">ഒരിക്കലും സംരക്ഷിച്ചില്ല</translation>
 <translation id="1062138828266376352">നിങ്ങളുടെ പിൻ മാറ്റിയിട്ടില്ല. നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
-<translation id="1066060668811609597">സമന്വയം മാനേജ് ചെയ്യുക</translation>
 <translation id="1076421457278169141">കോഡ് സ്‌കാൻ ചെയ്‌തു</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} ടാബ്}other{{count} ടാബുകൾ}}</translation>
 <translation id="1082554859195167538">നിങ്ങൾക്കുള്ള ഉൽപ്പന്ന റിവ്യൂകൾ</translation>
@@ -895,6 +894,7 @@
 <translation id="4936354130727646074">ഒരിക്കലും നീക്കരുത്</translation>
 <translation id="4937410517508563815">അക്കൗണ്ടിൽ പാസ്‌വേഡുകൾ സംരക്ഷിക്കുക</translation>
 <translation id="4938338714234463591">ഇത് നിങ്ങളുടെ ശബ്‌ദം ചില ഫീച്ചറുകളോടെ വെബ്‌സൈറ്റുകളിൽ ഉപയോഗിക്കാൻ അനുവദിക്കും.</translation>
+<translation id="4938560988715301237">എല്ലാം സ്വയമേവ പൂരിപ്പിക്കൽ</translation>
 <translation id="4938716880833771969">നിങ്ങളുടെ അറിയിപ്പുകൾ നിശബ്ദമായാണ് നൽകുന്നത്</translation>
 <translation id="4941089862236492464">ക്ഷമിക്കണം, നിങ്ങളുടെ ഇനം പങ്കിടുന്നതിൽ ഒരു പ്രശ്‌നമുണ്ടായിരുന്നു.</translation>
 <translation id="4944543191714094452">പേജില്‍ കണ്ടെത്തുക…</translation>
@@ -999,6 +999,7 @@
 <translation id="543338862236136125">പാസ്‌വേഡ് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="5433691172869980887">ഉപയോക്തൃനാമം പകർത്തി</translation>
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> ആയി സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്നു</translation>
+<translation id="5443636120437209490">ഡിഫോൾട്ടായി കൂടുതൽ മെച്ചപ്പെട്ട ബ്രൗസിംഗ്</translation>
 <translation id="5444892875087332195">ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="5452354193031718372">ശക്തമായ പാസ്‌വേഡ് ഉപയോഗിക്കുക:</translation>
 <translation id="5454211924362324495">നിങ്ങളുടെ പാസ്‌വേഡ് മറ്റുള്ളവർ ഉപയോഗിക്കുന്നത് നിർത്താൻ, <ph name="BEGIN_LINK" />അത് <ph name="WEBSITE" /> എന്നതിൽ മാറ്റുക<ph name="END_LINK" /></translation>
@@ -1151,7 +1152,6 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059103953801602038">നിങ്ങൾ പിന്തുടരുന്ന സൈറ്റുകൾ നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കുന്നു. Discover ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് അവ മാനേജ് ചെയ്യാനാകും.</translation>
 <translation id="6059830886158432458">നിങ്ങളുടെ സ്‌റ്റോറികളും ആക്റ്റിവിറ്റികളും ഇവിടെ നിയന്ത്രിക്കുക</translation>
-<translation id="6064824697233747382">സമന്വയിപ്പിക്കൽ ഓഫാക്കാൻ നിങ്ങളുടെ സ്ഥാപനം ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="6066301408025741299">റദ്ദാക്കുന്നതിന് ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="6074656473835429958">അറിയിപ്പുകൾ നേടുക</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) അപ്‌ലോഡ് ചെയ്യാനായില്ല</translation>

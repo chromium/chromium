@@ -118,12 +118,12 @@ export class PermissionItemElement extends CrLitElement {
 
   resetToggle() {
     const currentValue = this.getValue_();
-    this.shadowRoot!.querySelector<ToggleRowElement>('#toggle-row')!.setToggle(
+    this.shadowRoot.querySelector<ToggleRowElement>('#toggle-row')!.setToggle(
         currentValue);
   }
 
   private onClick_() {
-    this.shadowRoot!.querySelector<ToggleRowElement>('#toggle-row')!.click();
+    this.shadowRoot.querySelector<ToggleRowElement>('#toggle-row')!.click();
   }
 
   private togglePermission_() {

@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Përmblidh</translation>
 <translation id="123124571410524056">Dyshohet për portal</translation>
 <translation id="1232610416724362657">ujëvarë</translation>
+<translation id="1238163879850290856">Rivendose për të parandaluar qasjen te të dhënat nga të tjerët. Përdor vetëm metodat e hyrjes që u beson.</translation>
 <translation id="1238612778414822719">Vonesa e HTTPS</translation>
 <translation id="1252766349417594414">Leva e kontrollit</translation>
 <translation id="1270369111467284986">U dyshua portal izolues</translation>
@@ -767,6 +768,7 @@
 <translation id="4650608062294027130">Tasti i djathë "Shift"</translation>
 <translation id="4654549501020883054">Ndrysho çdo ditë</translation>
 <translation id="4655868084888499342">Imazhi u caktua si imazh sfondi</translation>
+<translation id="4660989616054030633">IA-ja gjeneruese mund të bëjë gabime, duke përfshirë edhe për njerëzit, prandaj kontrolloje përsëri</translation>
 <translation id="4661249927038176904">surreale</translation>
 <translation id="4661392828086261436">Ky përditësim ofrohet nga prodhuesi i pajisjes dhe nuk është verifikuar nga Google</translation>
 <translation id="4664651912255946953">gëzof</translation>
@@ -1066,6 +1068,7 @@
 <translation id="6074752328838739425">Fshih përmbledhjen</translation>
 <translation id="6075872808778243331">(Android) Vonesa e HTTP-së</translation>
 <translation id="6078323886959318429">Shto një shkurtore</translation>
+<translation id="6079693086494835199">Rivendose për t'u siguruar që faqja kryesore e parazgjedhur të mos jetë një sajt mashtrimi. Përdor vetëm uebsajtet që u beson.</translation>
 <translation id="6091080061796993741">të verdhë</translation>
 <translation id="6104112872696127344">Skanimi është anuluar</translation>
 <translation id="6106186594183574873">Për të përfunduar, fut fjalëkalimin tënd të vjetër</translation>
@@ -1089,6 +1092,7 @@
 <translation id="6156030503438652198">gështenjë dhe rozë</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Rivendose për të ndaluar të tjerët që të mos përdorin mikrofonin ose kamerën tënde. Jepu leje vetëm sajteve që u beson.</translation>
 <translation id="6188737759358894319">Krijuar më <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Kapaciteti i baterisë bie me përdorimin e saj</translation>
 <translation id="6189987971574353264">Luaj</translation>
@@ -1115,6 +1119,7 @@
 <translation id="629550705077076970">zbehja e tastierës</translation>
 <translation id="6302401976930124515">Testi "<ph name="TEST_NAME" />" është anuluar</translation>
 <translation id="631063167932043783">Aplikacioni "Eksploro"</translation>
+<translation id="6314333689576767865">Pajisja jote Chromebook u rivendos te parazgjedhjet e sigurta. Mund të bësh ndryshime në çdo kohë te "Cilësimet".</translation>
 <translation id="6318437367327684789">përgjithmonë</translation>
 <translation id="6319207335391420837">Përditëso firmuerin në <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Aktivizo mbrojtësin e ekranit</translation>
@@ -1251,6 +1256,7 @@
 <translation id="6862416241246624313">Komentet u dërguan</translation>
 <translation id="6866732840889595464">luledele</translation>
 <translation id="6871256179359663621">vjollcë e çelur</translation>
+<translation id="6887967050249348172">Shtesat janë çaktivizuar për të parandaluar ndryshimin e cilësimeve. Aktivizo vetëm shtesat që u beson.</translation>
 <translation id="6889786074662672253">Gjatë rinisjes, mos e hiq nga priza pajisjen e jashtme dhe mos e fik kompjuterin. Mund ta minimizosh këtë dritare. Kjo mund të zgjasë disa minuta dhe pajisja jote e jashtme mund të mos funksionojë gjatë kësaj kohe.</translation>
 <translation id="6899460405678814458">Shfaq përmbledhjen</translation>
 <translation id="6900701049656042631">Ky album nuk ka asnjë fotografi. Për të shtuar fotografi, shko te <ph name="LINK" /></translation>
@@ -1341,6 +1347,7 @@
 <translation id="7233782086689993269">Shkurtorja u restaurua</translation>
 <translation id="725133483556299729">Zgjidh email-in</translation>
 <translation id="7255187042098209569">rozë dhe vjollcë</translation>
+<translation id="7267918995585557751">Rivendose për t'u siguruar që faqja e parë e parazgjedhur të mos jetë një sajt mashtrimi. Përdor vetëm uebsajtet që u beson.</translation>
 <translation id="7271000785316964275">klasik</translation>
 <translation id="7271040990581020067">Skaneri është aktualisht në përdorim. Provo përsëri më vonë.</translation>
 <translation id="7271932918253517778">Shkurtorja me tastet e rreshtit të sipërm duhet të përfshijë tastin "<ph name="META_KEY" />".</translation>
@@ -1486,6 +1493,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7903695460270716054">Zgjidh ilustrime dhe imazhe të seleksionuara</translation>
 <translation id="7912005977894000746">Kthehu prapa te faqja kryesore</translation>
 <translation id="7915220255123750251">Menaxho cilësimet e APN-së së rrjetit. APN-të vendosin një lidhje mes një rrjeti celular dhe internetit.</translation>
+<translation id="7915759923880480519">Rivendose për të mbrojtur të dhënat e dërguara nëpërmjet rrjeteve të tua. Përdor vetëm rrjetet që u beson.</translation>
 <translation id="7936303884198020182">Nuk u gjetën serverë DNS</translation>
 <translation id="7942349550061667556">E kuqe</translation>
 <translation id="7943235353293548836">Intervali i procesit të vazhdueshëm të mbajtjes aktive</translation>
@@ -1710,6 +1718,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="89945434909472341">fshat</translation>
 <translation id="8997710128084572139">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri.</translation>
 <translation id="8998289560386111590">Nuk ofrohet në pajisjen tënde</translation>
+<translation id="9000871120886759611">Rivendose për t'u siguruar që mund të qasesh tek informacionet në gjuhën tënde të preferuar. Kontrollo që të përdoren vetëm gjuhët e preferuara.</translation>
 <translation id="9003499805101629690">picë</translation>
 <translation id="9003704114456258138">Frekuenca</translation>
 <translation id="901834265349196618">mail</translation>

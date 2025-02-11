@@ -12,6 +12,7 @@ namespace content {
 
 std::ostream& operator<<(std::ostream& out, const BtmPageVisitInfo& page) {
   return out << "BtmPageVisitInfo{url=" << page.url
+             << ", source_id=" << page.source_id
              << ", had_qualifying_storage_access="
              << page.had_qualifying_storage_access
              << ", received_user_activation=" << page.received_user_activation
@@ -23,6 +24,7 @@ std::ostream& operator<<(std::ostream& out, const BtmPageVisitInfo& page) {
 std::ostream& operator<<(std::ostream& out,
                          const BtmServerRedirectInfo& redirect) {
   return out << "BtmServerRedirectInfo{url=" << redirect.url
+             << ", source_id=" << redirect.source_id
              << ", did_write_cookies=" << redirect.did_write_cookies << "}";
 }
 

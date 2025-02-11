@@ -121,6 +121,7 @@ Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous dé
 <translation id="4064699917955374540">Pour utiliser et enregistrer des données Chrome dans votre compte Google, confirmez qu'il s'agit bien de vous.</translation>
 <translation id="417201473131094001">Application non prise en charge par Chrome Canary</translation>
 <translation id="424864128008805179">Se déconnecter de Chrome?</translation>
+<translation id="4430797724889237570">Ouvrez des liens à partir de Gmail, Maps, YouTube et d'autres applis dans Chrome.</translation>
 <translation id="447252321002412580">Nous aider à améliorer les fonctionnalités et les performances de Chrome</translation>
 <translation id="4523886039239821078">Certains modules complémentaires provoquent le plantage de Chrome. Veuillez désinstaller :</translation>
 <translation id="4633328489441962921">Chrome ne peut pas vérifier s'il y a des mises à jour</translation>
@@ -206,6 +207,7 @@ Essayez d'attendre quelques minutes avant de changer de compte. Si vous changez 
 
 Vos données sont chiffrées avec votre phrase de passe. Saisissez-la pour utiliser et enregistrer les données Chrome dans votre compte Google.</translation>
 <translation id="6533470733797826516">Connectez-vous plus rapidement avec le remplissage automatique de Chrome</translation>
+<translation id="6536544321553662809">Définissez Chrome comme navigateur par défaut pour partager et ouvrir facilement des liens.</translation>
 <translation id="6545449117344801102">Chrome détecte les adresses et utilise Google Maps pour vous fournir des itinéraires et des informations locales.</translation>
 <translation id="6636941099779251629">Votre organisation vous demande de vous connecter pour utiliser Chrome. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Envoie une partie brouillée de l'URL à Google à l'aide d'un serveur confidentiel qui masque votre adresse IP. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut aussi envoyer les URL concernées, y compris des extraits du contenu de pages, à Google.</translation>
@@ -291,6 +293,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
 <translation id="8371138994040262994">Ouvre les paramètres dans Chrome.</translation>
 <translation id="8387459386171870978">Continuer à utiliser Chrome</translation>
+<translation id="8392023217086447677">Ouvert en mode Navigation privée dans Chrome</translation>
 <translation id="840168496893712993">Certains modules complémentaires provoquent le plantage de Chrome. Veuillez essayer de les désinstaller.</translation>
 <translation id="8413500425974960807">Astuce Chrome : Déplacez Chrome vers le Dock</translation>
 <translation id="8413795581997394485">Protège contre les sites, les extensions et les téléchargements qui sont réputés être dangereux. Lorsque vous visitez un site, Chrome envoie une partie brouillée de l'URL à Google au moyen d'un serveur confidentiel qui masque votre adresse IP. Si un site présente un comportement suspect, les URL complètes ainsi que des extraits du contenu des pages sont aussi envoyés.</translation>

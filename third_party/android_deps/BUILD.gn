@@ -298,7 +298,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt(
       "com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java") {
-    aar_path = "cipd/libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework/accessibility-test-framework-4.1.1.aar"
+    aar_path = "cipd/libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework/accessibility-test-framework-4.0.0.aar"
     info_path = "libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework/com_google_android_accessibility_test_framework.info"
     enable_bytecode_checks = false
     testonly = true
@@ -310,9 +310,6 @@ if (!limit_android_deps) {
       "//third_party/android_deps:material_design_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_core_core_java",
-      "//third_party/androidx:androidx_test_espresso_espresso_core_java",
-      "//third_party/androidx:androidx_test_rules_java",
-      "//third_party/androidx:androidx_test_runner_java",
       "//third_party/androidx:androidx_test_services_storage_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_library_java",
@@ -407,7 +404,7 @@ if (!limit_android_deps) {
       info_path = "libs/com_google_android_gms_play_services_basement/com_google_android_gms_play_services_basement.info"
       enable_bytecode_checks = false
       deps = [
-        "//third_party/androidx:androidx_collection_collection_jvm_java",
+        "//third_party/androidx:androidx_collection_collection_java",
         "//third_party/androidx:androidx_fragment_fragment_java",
       ]
 
@@ -470,7 +467,7 @@ if (!limit_android_deps) {
       info_path = "libs/com_google_android_gms_play_services_fido/com_google_android_gms_play_services_fido.info"
       enable_bytecode_checks = false
       deps = [
-        ":org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java",
+        ":org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
         "$google_play_services_package:google_play_services_base_java",
         "$google_play_services_package:google_play_services_basement_java",
         "$google_play_services_package:google_play_services_tasks_java",
@@ -622,9 +619,10 @@ if (!limit_android_deps) {
       visibility = [ "//third_party/android_deps:*" ]
       deps = [
         ":com_google_errorprone_error_prone_annotations_java",
+        ":org_jetbrains_kotlin_kotlin_bom_java",
         "//third_party/androidx:androidx_activity_activity_java",
         "//third_party/androidx:androidx_annotation_annotation_experimental_java",
-        "//third_party/androidx:androidx_annotation_annotation_jvm_java",
+        "//third_party/androidx:androidx_annotation_annotation_java",
         "//third_party/androidx:androidx_appcompat_appcompat_java",
         "//third_party/androidx:androidx_cardview_cardview_java",
         "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
@@ -813,6 +811,7 @@ if (!limit_android_deps) {
     output_name = "com_googlecode_java_diff_utils_diffutils"
     supports_android = true
     enable_bytecode_checks = false
+    testonly = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -840,12 +839,13 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_squareup_wire_wire_runtime_jvm_java") {
-    jar_path = "cipd/libs/com_squareup_wire_wire_runtime_jvm/wire-runtime-jvm-5.0.0.jar"
+    jar_path = "cipd/libs/com_squareup_wire_wire_runtime_jvm/wire-runtime-jvm-5.2.1.jar"
     output_name = "com_squareup_wire_wire_runtime_jvm"
     supports_android = true
     enable_bytecode_checks = false
+    testonly = true
     deps = [
-      ":com_squareup_okio_okio_jvm_java",
+      ":com_squareup_okio_okio_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -883,6 +883,7 @@ if (!limit_android_deps) {
 
     # Please depend on //third_party/byte_buddy:byte_buddy_android_java instead.
     visibility = [ "//third_party/byte_buddy:*" ]
+    testonly = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -891,6 +892,7 @@ if (!limit_android_deps) {
     output_name = "org_ccil_cowan_tagsoup_tagsoup"
     supports_android = true
     enable_bytecode_checks = false
+    testonly = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -948,7 +950,8 @@ if (!limit_android_deps) {
     supports_android = true
     enable_bytecode_checks = false
     deps = [
-      ":org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java",
+      ":org_jetbrains_kotlinx_kotlinx_coroutines_bom_java",
+      ":org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
     requires_android = true
@@ -960,7 +963,10 @@ if (!limit_android_deps) {
     output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm"
     supports_android = true
     enable_bytecode_checks = false
-    deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+    deps = [
+      ":org_jetbrains_kotlinx_kotlinx_coroutines_bom_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -970,7 +976,8 @@ if (!limit_android_deps) {
     supports_android = true
     enable_bytecode_checks = false
     deps = [
-      ":org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java",
+      ":org_jetbrains_kotlinx_kotlinx_coroutines_bom_java",
+      ":org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
     requires_android = true
@@ -982,7 +989,10 @@ if (!limit_android_deps) {
     output_name = "org_jetbrains_kotlinx_kotlinx_serialization_core_jvm"
     supports_android = true
     enable_bytecode_checks = false
-    deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+    deps = [
+      ":org_jetbrains_kotlinx_kotlinx_serialization_bom_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -991,6 +1001,7 @@ if (!limit_android_deps) {
     output_name = "org_jsoup_jsoup"
     supports_android = true
     enable_bytecode_checks = false
+    testonly = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1094,8 +1105,7 @@ if (!limit_android_deps) {
         ":*",
         "//third_party/androidx:*",
       ]
-      deps =
-          [ "//third_party/androidx:androidx_annotation_annotation_jvm_java" ]
+      deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
     }
   }
 
@@ -1231,6 +1241,7 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/androidx:*",
     ]
+    testonly = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1286,7 +1297,7 @@ if (!limit_android_deps) {
       ]
       deps = [
         "$google_play_services_package:google_firebase_firebase_annotations_java",
-        "//third_party/androidx:androidx_annotation_annotation_jvm_java",
+        "//third_party/androidx:androidx_annotation_annotation_java",
       ]
     }
   }
@@ -1305,8 +1316,7 @@ if (!limit_android_deps) {
         ":*",
         "//third_party/androidx:*",
       ]
-      deps =
-          [ "//third_party/androidx:androidx_annotation_annotation_jvm_java" ]
+      deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 
       # https://crbug.com/1412551
       requires_android = true
@@ -1328,7 +1338,7 @@ if (!limit_android_deps) {
       ]
       deps = [
         "$google_play_services_package:google_firebase_firebase_encoders_java",
-        "//third_party/androidx:androidx_annotation_annotation_jvm_java",
+        "//third_party/androidx:androidx_annotation_annotation_java",
       ]
     }
   }
@@ -1428,6 +1438,7 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/androidx:*",
     ]
+    testonly = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1443,6 +1454,7 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/androidx:*",
     ]
+    testonly = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1458,10 +1470,45 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/androidx:*",
     ]
+    testonly = true
     deps = [
-      ":com_squareup_okio_okio_jvm_java",
+      ":com_squareup_okio_okio_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_group("com_squareup_okio_okio_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    deps = [ ":com_squareup_okio_okio_jvm_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_group("com_squareup_okio_okio_bom_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    testonly = true
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_group("com_squareup_wire_wire_runtime_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    testonly = true
+    deps = [ ":com_squareup_wire_wire_runtime_jvm_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1493,6 +1540,7 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/androidx:*",
     ]
+    testonly = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1508,6 +1556,7 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/androidx:*",
     ]
+    testonly = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1522,6 +1571,7 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/androidx:*",
     ]
+    testonly = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1537,6 +1587,7 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/androidx:*",
     ]
+    testonly = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1556,6 +1607,49 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_group("org_jetbrains_kotlin_kotlin_bom_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_group("org_jetbrains_kotlinx_kotlinx_coroutines_bom_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_group("org_jetbrains_kotlinx_kotlinx_coroutines_core_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    deps = [ ":org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_group("org_jetbrains_kotlinx_kotlinx_coroutines_test_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    testonly = true
+    deps = [ ":org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm_java") {
     jar_path = "cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm/kotlinx-coroutines-test-jvm-1.7.3.jar"
     output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm"
@@ -1568,10 +1662,33 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/androidx:*",
     ]
+    testonly = true
     deps = [
-      ":org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java",
+      ":org_jetbrains_kotlinx_kotlinx_coroutines_bom_java",
+      ":org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_group("org_jetbrains_kotlinx_kotlinx_serialization_bom_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_group("org_jetbrains_kotlinx_kotlinx_serialization_core_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    deps = [ ":org_jetbrains_kotlinx_kotlinx_serialization_core_jvm_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1587,6 +1704,7 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/androidx:*",
     ]
+    testonly = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1601,6 +1719,7 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/androidx:*",
     ]
+    testonly = true
     is_robolectric = true
   }
 
@@ -1663,6 +1782,7 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/androidx:*",
     ]
+    testonly = true
     is_robolectric = true
   }
 
@@ -1865,6 +1985,7 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/androidx:*",
     ]
+    testonly = true
   }
 }
 # === Generated Code End ===

@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/common/chrome_features.h"
@@ -43,11 +44,16 @@ base::FilePath GetCacheBundleDirectoryWithVersion(
 }
 
 base::FilePath GetBundleFullName(
+    const base::FilePath& bundle_dir_with_version) {
+  return bundle_dir_with_version.AppendASCII(kMainSwbnFileName);
+}
+
+base::FilePath GetBundleFullName(
     const base::FilePath& cache_dir,
     const web_package::SignedWebBundleId& web_bundle_id,
     const base::Version& version) {
-  return GetCacheBundleDirectoryWithVersion(cache_dir, web_bundle_id, version)
-      .AppendASCII(kMainSwbnFileName);
+  return GetBundleFullName(
+      GetCacheBundleDirectoryWithVersion(cache_dir, web_bundle_id, version));
 }
 
 // Expects the following bundle path:
@@ -72,7 +78,7 @@ std::optional<base::Version> ExtractVersionFromCacheBundlePath(
 
 // This function is blocking. It should be called by
 // `GetCacheFilePath`.
-std::optional<base::FilePath> GetCacheFilePathImpl(
+std::optional<IwaCacheClient::CachedBundleData> GetCacheFilePathImpl(
     const web_package::SignedWebBundleId& web_bundle_id,
     const std::optional<base::Version>& version,
     const base::FilePath& cache_dir) {
@@ -80,7 +86,8 @@ std::optional<base::FilePath> GetCacheFilePathImpl(
     base::FilePath expected_file_path =
         GetBundleFullName(cache_dir, web_bundle_id, version.value());
     if (base::PathIsReadable(expected_file_path)) {
-      return expected_file_path;
+      return IwaCacheClient::CachedBundleData(std::move(expected_file_path),
+                                              std::move(version.value()));
     } else {
       return std::nullopt;
     }
@@ -103,7 +110,13 @@ std::optional<base::FilePath> GetCacheFilePathImpl(
     }
   });
 
-  return newest_version_path;
+  if (!newest_version_path) {
+    return std::nullopt;
+  }
+
+  return IwaCacheClient::CachedBundleData(
+      std::move(newest_version_path.value()),
+      std::move(newest_version.value()));
 }
 
 base::FilePath GetCacheDir(const base::FilePath& base) {
@@ -113,6 +126,36 @@ base::FilePath GetCacheDir(const base::FilePath& base) {
     return base.AppendASCII(IwaCacheClient::kKioskDirName);
   }
   NOTREACHED() << "Unsupported session type for IWA caching";
+}
+
+// This function is blocking. It should be called by `CopyBundleToCache`.
+base::expected<IwaCacheClient::CopyBundleToCacheSuccess,
+               IwaCacheClient::CopyBundleToCacheError>
+CopyBundleToCacheImpl(const base::FilePath& copy_from_bundle_path,
+                      const web_package::SignedWebBundleId& web_bundle_id,
+                      base::Version version,
+                      const base::FilePath& cache_dir) {
+  base::FilePath bundle_dir_with_version =
+      GetCacheBundleDirectoryWithVersion(cache_dir, web_bundle_id, version);
+  if (base::File::Error error;
+      !base::CreateDirectoryAndGetError(bundle_dir_with_version, &error)) {
+    LOG(ERROR) << "Failed to create IWA cache directory with path: "
+               << bundle_dir_with_version << ", error: " << error;
+    return base::unexpected(
+        IwaCacheClient::CopyBundleToCacheError::kFailedToCreateDir);
+  }
+
+  const base::FilePath destination_bundle_path =
+      GetBundleFullName(bundle_dir_with_version);
+  if (!base::CopyFile(copy_from_bundle_path, destination_bundle_path)) {
+    base::DeleteFile(destination_bundle_path);
+    LOG(ERROR) << "Failed to copy IWA bundle to cache, destination path: "
+               << destination_bundle_path;
+    return base::unexpected(
+        IwaCacheClient::CopyBundleToCacheError::kFailedToCopyFile);
+  }
+
+  return IwaCacheClient::CopyBundleToCacheSuccess(destination_bundle_path);
 }
 
 }  // namespace
@@ -133,10 +176,23 @@ IwaCacheClient::IwaCacheClient()
 void IwaCacheClient::GetCacheFilePath(
     const web_package::SignedWebBundleId& web_bundle_id,
     const std::optional<base::Version>& version,
-    base::OnceCallback<void(std::optional<base::FilePath>)> callback) {
+    base::OnceCallback<void(std::optional<CachedBundleData>)> callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&GetCacheFilePathImpl, web_bundle_id, version, cache_dir_),
+      std::move(callback));
+}
+
+void IwaCacheClient::CopyBundleToCache(
+    const base::FilePath& copy_from_bundle_path,
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const base::Version& version,
+    base::OnceCallback<void(base::expected<CopyBundleToCacheSuccess,
+                                           CopyBundleToCacheError>)> callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&CopyBundleToCacheImpl, copy_from_bundle_path,
+                     web_bundle_id, version, cache_dir_),
       std::move(callback));
 }
 

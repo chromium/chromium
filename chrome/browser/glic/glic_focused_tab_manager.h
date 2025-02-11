@@ -45,7 +45,8 @@ class GlicFocusedTabManager : public BrowserListObserver,
   GlicFocusedTabManager& operator=(const GlicFocusedTabManager&) = delete;
 
   // Returns the currently focused tab or nullptr if nothing is focused.
-  content::WebContents* GetWebContentsForFocusedTab();
+  // Virtual for testing.
+  virtual content::WebContents* GetWebContentsForFocusedTab();
 
   // BrowserListObserver
   void OnBrowserSetLastActive(Browser* browser) override;

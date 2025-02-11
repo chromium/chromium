@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_window_controller.h"
@@ -15,7 +16,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
@@ -38,6 +43,18 @@ class MockWindowController : public GlicWindowController {
   bool attached_ = false;
 };
 
+class MockTabManager : public GlicFocusedTabManager {
+ public:
+  MockTabManager(Profile* profile, GlicWindowController& window_controller)
+      : GlicFocusedTabManager(profile, window_controller) {}
+  ~MockTabManager() override = default;
+  content::WebContents* GetWebContentsForFocusedTab() override {
+    return contents_;
+  }
+  void SetWebContents(content::WebContents* contents) { contents_ = contents; }
+  raw_ptr<content::WebContents> contents_;
+};
+
 class GlicMetricsTest : public testing::Test {
  public:
   GlicMetricsTest()
@@ -45,20 +62,26 @@ class GlicMetricsTest : public testing::Test {
   void SetUp() override {
     controller_ = std::make_unique<MockWindowController>(
         &profile_, identity_env_.identity_manager());
+    tab_manager_ = std::make_unique<MockTabManager>(&profile_, *controller_);
+
     metrics_ = std::make_unique<GlicMetrics>(&profile_);
-    metrics_->SetWindowController(controller_.get());
+    metrics_->SetControllers(controller_.get(), tab_manager_.get());
   }
 
  protected:
+  content::BrowserTaskEnvironment task_environment_;
+
+  content::RenderViewHostTestEnabler enabler_;
+
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
-
-  content::BrowserTaskEnvironment task_environment_;
+  ukm::TestAutoSetUkmRecorder ukm_tester_;
 
   TestingProfile profile_;
   signin::IdentityTestEnvironment identity_env_;
 
   std::unique_ptr<MockWindowController> controller_;
+  std::unique_ptr<MockTabManager> tab_manager_;
   std::unique_ptr<GlicMetrics> metrics_;
 };
 
@@ -93,6 +116,86 @@ TEST_F(GlicMetricsTest, BasicVisible) {
   EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponseStart"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponseStop"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponse"), 1);
+}
+
+TEST_F(GlicMetricsTest, BasicUkm) {
+  controller_->showing_ = true;
+  metrics_->OnGlicWindowOpen(/*attached=*/false, InvocationSource::kFre);
+  for (int i = 0; i < 2; ++i) {
+    metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+    metrics_->OnResponseStarted();
+    metrics_->OnResponseStopped();
+  }
+
+  {
+    auto entries = ukm_tester_.GetEntriesByName("Glic.WindowOpen");
+    ASSERT_EQ(entries.size(), 1u);
+    auto entry = entries[0];
+    ukm_tester_.ExpectEntryMetric(entry, "Attached", false);
+    ukm_tester_.ExpectEntryMetric(entry, "InvocationSource",
+                                  static_cast<int64_t>(InvocationSource::kFre));
+    auto* source = ukm_tester_.GetSourceForSourceId(entry->source_id);
+    EXPECT_FALSE(source);
+  }
+
+  {
+    auto entries = ukm_tester_.GetEntriesByName("Glic.Response");
+    ASSERT_EQ(entries.size(), 2u);
+    for (int i = 0; i < 2; ++i) {
+      auto entry = entries[i];
+      ukm_tester_.ExpectEntryMetric(entry, "Attached", false);
+      ukm_tester_.ExpectEntryMetric(
+          entry, "WebClientMode",
+          static_cast<int64_t>(mojom::WebClientMode::kText));
+      ukm_tester_.ExpectEntryMetric(
+          entry, "InvocationSource",
+          static_cast<int64_t>(InvocationSource::kFre));
+      auto* source = ukm_tester_.GetSourceForSourceId(entry->source_id);
+      EXPECT_FALSE(source);
+    }
+  }
+}
+TEST_F(GlicMetricsTest, BasicUkmWithTarget) {
+  // Create a SiteInstance, which is required to build a WebContents.
+  scoped_refptr<content::SiteInstance> site_instance =
+      content::SiteInstance::Create(&profile_);
+
+  // Use WebContentsTester::CreateTestWebContents(...) to create a real
+  // WebContents suitable for unit testing.
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(&profile_,
+                                                        site_instance.get());
+  auto* tester = content::WebContentsTester::For(web_contents.get());
+
+  GURL url("https://www.google.com");
+  tester->NavigateAndCommit(url);
+
+  tab_manager_->SetWebContents(web_contents.get());
+
+  controller_->showing_ = true;
+  metrics_->OnGlicWindowOpen(/*attached=*/false, InvocationSource::kFre);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_->OnResponseStarted();
+  metrics_->OnResponseStopped();
+
+  ukm::SourceId ukm_id =
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
+  {
+    auto entries = ukm_tester_.GetEntriesByName("Glic.WindowOpen");
+    ASSERT_EQ(entries.size(), 1u);
+    auto entry = entries[0];
+    EXPECT_EQ(entry->source_id, ukm_id);
+  }
+
+  {
+    auto entries = ukm_tester_.GetEntriesByName("Glic.Response");
+    ASSERT_EQ(entries.size(), 1u);
+    auto entry = entries[0];
+    EXPECT_EQ(entry->source_id, ukm_id);
+  }
+
+  tab_manager_->SetWebContents(nullptr);
 }
 
 TEST_F(GlicMetricsTest, SegmentationOsButtonAttachedText) {

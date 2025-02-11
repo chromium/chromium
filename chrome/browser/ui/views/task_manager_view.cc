@@ -608,7 +608,11 @@ void TaskManagerView::Init() {
   tab_table->SetGrouperVisibility(!table_config_.layout_refresh);
   tab_table->SetSortOnPaint(true);
   if (table_config_.layout_refresh) {
+    // Disables alternating row colors on all platforms, including macOS.
+    tab_table->SetAlternatingRowColorsEnabled(base::PassKey<TaskManagerView>(),
+                                              false);
     tab_table->SetMouseHoveringEnabled(true);
+
     tab_table->SetRowPadding(views::DISTANCE_TABLE_VERTICAL_TEXT_PADDING);
   }
   tab_table->set_observer(this);

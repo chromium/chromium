@@ -179,7 +179,7 @@ suite('ManageProfileTests', function() {
   });
 
   // Tests profile name is not editable for work profile.
-  test('ManageProfileNameDisabledForEnterprise', async function() {
+  test('ManageProfileNameDisabledForEnterprise', function() {
     loadTimeData.overrideValues({hasEnterpriseLabel: true});
     manageProfile = createManageProfileElement();
     flush();

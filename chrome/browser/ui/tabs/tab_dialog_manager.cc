@@ -262,7 +262,7 @@ void TabDialogManager::ShowDialogAndBlockTabInteraction(views::Widget* widget) {
       tab_interface_->GetContents(), /*blocked=*/true);
   tab_dialog_widget_observer_ =
       std::make_unique<TabDialogWidgetObserver>(this, widget_.get());
-  // TODO(crbug.com/377820808): Call tab_interface_->ShowModalUI().
+  showing_modal_ui_ = tab_interface_->ShowModalUI();
   if (tab_interface_->IsActivated()) {
     browser_window_widget_observer_ =
         std::make_unique<BrowserWindowWidgetObserver>(browser_window_interface,
@@ -296,6 +296,7 @@ void TabDialogManager::CloseDialog() {
 void TabDialogManager::WidgetDestroyed(views::Widget* widget) {
   CHECK_EQ(widget, widget_.get());
   widget_ = nullptr;
+  showing_modal_ui_.reset();
   tab_dialog_widget_observer_.reset();
   scoped_ignore_input_events_.reset();
   browser_window_widget_observer_.reset();
@@ -339,6 +340,13 @@ void TabDialogManager::TabDidEnterForeground(TabInterface* tab_interface) {
     browser_window_widget_observer_ =
         std::make_unique<BrowserWindowWidgetObserver>(
             tab_interface_->GetBrowserWindowInterface(), widget_.get());
+    // Check if the tab was detached and dragged to a new browser window. This
+    // ensures the widget is properly reparented.
+    auto* parent_widget =
+        tab_interface->GetBrowserWindowInterface()->TopContainer()->GetWidget();
+    if (parent_widget != widget_->parent()) {
+      widget_->Reparent(parent_widget);
+    }
     widget_->SetVisible(true);
   }
 }

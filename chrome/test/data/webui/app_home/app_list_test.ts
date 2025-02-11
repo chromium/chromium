@@ -14,6 +14,7 @@ import type {AppListElement} from 'chrome://apps/app_list.js';
 import {BrowserProxy} from 'chrome://apps/browser_proxy.js';
 import type {DeprecatedAppsLinkElement} from 'chrome://apps/deprecated_apps_link.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -138,24 +139,24 @@ suite('AppListTest', () => {
         1,
         metricsPrivateMock.getUserActionCount(AppHomeUserAction.APP_HOME_INIT));
 
-    const appItems = appListElement.shadowRoot!.querySelectorAll('app-item');
+    const appItems = appListElement.shadowRoot.querySelectorAll('app-item');
     assertTrue(!!appItems);
     assertEquals(apps.appList.length, appItems.length);
 
     assertEquals(
-        appItems[0]!.shadowRoot!.querySelector('#textContainer')!.textContent,
+        appItems[0]!.shadowRoot.querySelector('#textContainer')!.textContent,
         apps.appList[0]!.name);
     assertEquals(
-        appItems[0]!.shadowRoot!.querySelector<HTMLImageElement>(
-                                    '#iconImage')!.src,
+        appItems[0]!.shadowRoot.querySelector<HTMLImageElement>(
+                                   '#iconImage')!.src,
         apps.appList[0]!.iconUrl.url);
 
     assertEquals(
-        appItems[1]!.shadowRoot!.querySelector('#textContainer')!.textContent,
+        appItems[1]!.shadowRoot.querySelector('#textContainer')!.textContent,
         apps.appList[1]!.name);
     assertEquals(
-        appItems[1]!.shadowRoot!.querySelector<HTMLImageElement>(
-                                    '#iconImage')!.src,
+        appItems[1]!.shadowRoot.querySelector<HTMLImageElement>(
+                                   '#iconImage')!.src,
         apps.appList[1]!.iconUrl.url + '?grayscale=true');
   });
 
@@ -164,29 +165,29 @@ suite('AppListTest', () => {
     callbackRouterRemote.addApp(testAppInfo);
     await callbackRouterRemote.$.flushForTesting();
     let appItemList =
-        Array.from(appListElement.shadowRoot!.querySelectorAll('app-item'));
+        Array.from(appListElement.shadowRoot.querySelectorAll('app-item'));
     assertTrue(
-        appItemList[0]!.shadowRoot!.querySelector(
-                                       '#textContainer')!.textContent ===
+        appItemList[0]!.shadowRoot.querySelector(
+                                      '#textContainer')!.textContent ===
         testAppInfo.name);
 
     // Test removing an app
     callbackRouterRemote.removeApp(testAppInfo);
     await callbackRouterRemote.$.flushForTesting();
     appItemList =
-        Array.from(appListElement.shadowRoot!.querySelectorAll('app-item'));
+        Array.from(appListElement.shadowRoot.querySelectorAll('app-item'));
     assertFalse(!!appItemList.find(
         appItem =>
-            appItem.shadowRoot!.querySelector('#textContainer')!.textContent ===
+            appItem.shadowRoot.querySelector('#textContainer')!.textContent ===
             testAppInfo.name));
   });
 
   test('context menu locally installed', () => {
     // Get the first app item.
-    const appItem = appListElement.shadowRoot!.querySelector('app-item');
+    const appItem = appListElement.shadowRoot.querySelector('app-item');
     assertTrue(!!appItem);
 
-    const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
+    const contextMenu = appItem.shadowRoot.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
     assertFalse(contextMenu.open);
 
@@ -233,12 +234,12 @@ suite('AppListTest', () => {
 
   test('context menu not locally installed', () => {
     // Get the second app item that's not locally installed.
-    const appList = appListElement.shadowRoot!.querySelectorAll('app-item');
+    const appList = appListElement.shadowRoot.querySelectorAll('app-item');
     assertEquals(appList.length, 2);
     const appItem = appList[1];
     assertTrue(!!appItem);
 
-    const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
+    const contextMenu = appItem.shadowRoot.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
     assertFalse(contextMenu.open);
     assertEquals(
@@ -266,13 +267,13 @@ suite('AppListTest', () => {
   });
 
   test('toggle open in window', async () => {
-    const appItem = appListElement.shadowRoot!.querySelector('app-item');
+    const appItem = appListElement.shadowRoot.querySelector('app-item');
     assertTrue(!!appItem);
 
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
 
     assertTrue(apps.appList.length >= 1);
-    const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
+    const contextMenu = appItem.shadowRoot.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
     const openInWindow =
         contextMenu.querySelector<CrCheckboxElement>('#openInWindow');
@@ -302,13 +303,13 @@ suite('AppListTest', () => {
   });
 
   test('toggle launch on startup', async () => {
-    const appItem = appListElement.shadowRoot!.querySelector('app-item');
+    const appItem = appListElement.shadowRoot.querySelector('app-item');
     assertTrue(!!appItem);
 
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
 
     assertTrue(apps.appList.length >= 1);
-    const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
+    const contextMenu = appItem.shadowRoot.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
     const launchOnStartup =
         contextMenu.querySelector<CrCheckboxElement>('#launchOnStartup');
@@ -338,14 +339,14 @@ suite('AppListTest', () => {
   });
 
   test('toggle launch on startup disabled', async () => {
-    const appList = appListElement.shadowRoot!.querySelectorAll('app-item');
+    const appList = appListElement.shadowRoot.querySelectorAll('app-item');
     assertEquals(appList.length, 2);
     const appItem = appList[1];
     assertTrue(!!appItem);
 
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
 
-    const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
+    const contextMenu = appItem.shadowRoot.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
     const launchOnStartup =
         contextMenu.querySelector<CrCheckboxElement>('#launchOnStartup');
@@ -367,13 +368,13 @@ suite('AppListTest', () => {
   });
 
   test('click uninstall', async () => {
-    const appItem = appListElement.shadowRoot!.querySelector('app-item');
+    const appItem = appListElement.shadowRoot.querySelector('app-item');
     assertTrue(!!appItem);
 
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
 
     const uninstall =
-        appItem.shadowRoot!.querySelector<HTMLElement>('#uninstall');
+        appItem.shadowRoot.querySelector<HTMLElement>('#uninstall');
     assertTrue(!!uninstall);
 
     uninstall.click();
@@ -384,13 +385,13 @@ suite('AppListTest', () => {
   });
 
   test('click app settings', async () => {
-    const appItem = appListElement.shadowRoot!.querySelector('app-item');
+    const appItem = appListElement.shadowRoot.querySelector('app-item');
     assertTrue(!!appItem);
 
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
 
     const appSettings =
-        appItem.shadowRoot!.querySelector<HTMLElement>('#appSettings');
+        appItem.shadowRoot.querySelector<HTMLElement>('#appSettings');
     assertTrue(!!appSettings);
 
     appSettings.click();
@@ -403,13 +404,13 @@ suite('AppListTest', () => {
   });
 
   test('click create shortcut', async () => {
-    const appItem = appListElement.shadowRoot!.querySelector('app-item');
+    const appItem = appListElement.shadowRoot.querySelector('app-item');
     assertTrue(!!appItem);
 
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
 
     const createShortcut =
-        appItem.shadowRoot!.querySelector<HTMLElement>('#createShortcut');
+        appItem.shadowRoot.querySelector<HTMLElement>('#createShortcut');
     assertTrue(!!createShortcut);
 
     createShortcut.click();
@@ -422,18 +423,18 @@ suite('AppListTest', () => {
   });
 
   test('click install locally', async () => {
-    const appItem = appListElement.shadowRoot!.querySelectorAll('app-item')[1];
+    const appItem = appListElement.shadowRoot.querySelectorAll('app-item')[1];
     assertTrue(!!appItem);
 
     assertEquals(
-        appItem.shadowRoot!.querySelector<HTMLImageElement>('#iconImage')!.src,
+        appItem.shadowRoot.querySelector<HTMLImageElement>('#iconImage')!.src,
         apps.appList[1]!.iconUrl.url + '?grayscale=true');
 
     assertEquals(appItem.ariaLabel, 'Test App 2 (not locally installed)');
 
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
 
-    const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
+    const contextMenu = appItem.shadowRoot.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
 
     assertTrue(contextMenu.querySelector<HTMLElement>('#openInWindow')!.hidden);
@@ -445,7 +446,7 @@ suite('AppListTest', () => {
         contextMenu.querySelector<HTMLElement>('#removeFromChrome')!.hidden);
 
     const installLocally =
-        appItem.shadowRoot!.querySelector<HTMLElement>('#installLocally');
+        appItem.shadowRoot.querySelector<HTMLElement>('#installLocally');
     assertTrue(!!installLocally);
     assertFalse(installLocally.hidden);
 
@@ -455,7 +456,7 @@ suite('AppListTest', () => {
 
     await callbackRouterRemote.$.flushForTesting();
     assertEquals(
-        appItem.shadowRoot!.querySelector<HTMLImageElement>('#iconImage')!.src,
+        appItem.shadowRoot.querySelector<HTMLImageElement>('#iconImage')!.src,
         apps.appList[1]!.iconUrl.url);
 
     assertEquals(appItem.ariaLabel, 'Test App 2');
@@ -477,7 +478,7 @@ suite('AppListTest', () => {
   });
 
   test('click launch launches app', async () => {
-    const appItem = appListElement.shadowRoot!.querySelectorAll('app-item')[1];
+    const appItem = appListElement.shadowRoot.querySelectorAll('app-item')[1];
     assertTrue(!!appItem);
 
     const mouseEvent: MouseEvent = new MouseEvent('click', {
@@ -509,8 +510,7 @@ suite('AppListTest', () => {
       () => {
         assertTrue(!!appListElement);
 
-        const appItems =
-            appListElement.shadowRoot!.querySelectorAll('app-item');
+        const appItems = appListElement.shadowRoot.querySelectorAll('app-item');
         assertTrue(!!appItems);
         assertEquals(apps.appList.length, appItems.length);
         assertTrue(!!appItems[0]);
@@ -518,9 +518,9 @@ suite('AppListTest', () => {
 
         appItems[0].dispatchEvent(new CustomEvent('contextmenu'));
         const contextMenu1 =
-            appItems[0].shadowRoot!.querySelector('cr-action-menu');
+            appItems[0].shadowRoot.querySelector('cr-action-menu');
         const contextMenu2 =
-            appItems[1].shadowRoot!.querySelector('cr-action-menu');
+            appItems[1].shadowRoot.querySelector('cr-action-menu');
         assertTrue(!!contextMenu1);
         assertTrue(!!contextMenu2);
         assertTrue(contextMenu1.open);
@@ -536,13 +536,13 @@ suite('AppListTest', () => {
   test('context menu close on right click on document', () => {
     assertTrue(!!appListElement);
 
-    const appItems = appListElement.shadowRoot!.querySelectorAll('app-item');
+    const appItems = appListElement.shadowRoot.querySelectorAll('app-item');
     assertTrue(!!appItems);
     assertEquals(apps.appList.length, appItems.length);
     assertTrue(!!appItems[0]);
 
     appItems[0].dispatchEvent(new CustomEvent('contextmenu'));
-    const contextMenu = appItems[0].shadowRoot!.querySelector('cr-action-menu');
+    const contextMenu = appItems[0].shadowRoot.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
     assertTrue(contextMenu.open);
 
@@ -553,44 +553,44 @@ suite('AppListTest', () => {
   });
 
   test('navigate with arrow keys', async () => {
-    appListElement.shadowRoot!.getElementById(
-                                  'container')!.style.gridTemplateColumns =
+    appListElement.shadowRoot.getElementById(
+                                 'container')!.style.gridTemplateColumns =
         'repeat(2, max(100% / 2, 112px))';
     callbackRouterRemote.addApp(testAppInfo);
     await callbackRouterRemote.$.flushForTesting();
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
     assertEquals(
-        apps.appList[0]!.id, appListElement.shadowRoot!.activeElement?.id);
+        apps.appList[0]!.id, appListElement.shadowRoot.activeElement?.id);
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
     assertEquals(
-        apps.appList[1]!.id, appListElement.shadowRoot!.activeElement?.id);
+        apps.appList[1]!.id, appListElement.shadowRoot.activeElement?.id);
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
     assertEquals(
-        apps.appList[1]!.id, appListElement.shadowRoot!.activeElement?.id);
+        apps.appList[1]!.id, appListElement.shadowRoot.activeElement?.id);
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
     assertEquals(
-        apps.appList[0]!.id, appListElement.shadowRoot!.activeElement?.id);
+        apps.appList[0]!.id, appListElement.shadowRoot.activeElement?.id);
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
     assertEquals(
-        apps.appList[0]!.id, appListElement.shadowRoot!.activeElement?.id);
+        apps.appList[0]!.id, appListElement.shadowRoot.activeElement?.id);
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
     assertEquals(
-        apps.appList[2]!.id, appListElement.shadowRoot!.activeElement?.id);
+        apps.appList[2]!.id, appListElement.shadowRoot.activeElement?.id);
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
     assertEquals(
-        apps.appList[2]!.id, appListElement.shadowRoot!.activeElement?.id);
+        apps.appList[2]!.id, appListElement.shadowRoot.activeElement?.id);
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}));
     assertEquals(
-        apps.appList[0]!.id, appListElement.shadowRoot!.activeElement?.id);
+        apps.appList[0]!.id, appListElement.shadowRoot.activeElement?.id);
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}));
     assertEquals(
-        apps.appList[0]!.id, appListElement.shadowRoot!.activeElement?.id);
+        apps.appList[0]!.id, appListElement.shadowRoot.activeElement?.id);
   });
 
   test('enter when focused on app launches app', async () => {
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
     assertEquals(
-        apps.appList[0]!.id, appListElement.shadowRoot!.activeElement?.id);
+        apps.appList[0]!.id, appListElement.shadowRoot.activeElement?.id);
 
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
     const [appId, clickEvent] =
@@ -607,16 +607,16 @@ suite('AppListTest', () => {
 
     assertTrue(!!deprecatedAppsLink);
     const linkContainer =
-        deprecatedAppsLink.shadowRoot!.querySelector<HTMLImageElement>(
+        deprecatedAppsLink.shadowRoot.querySelector<HTMLImageElement>(
             '#container');
     assertNull(linkContainer, 'Deprecation link is not hidden.');
 
-    const appItems = appListElement.shadowRoot!.querySelectorAll('app-item');
+    const appItems = appListElement.shadowRoot.querySelectorAll('app-item');
     assertTrue(!!appItems, 'No apps.');
 
     appItems.forEach((item) => {
       const deprecatedIcon =
-          item!.shadowRoot!.querySelector<HTMLImageElement>('#deprecatedIcon')!;
+          item!.shadowRoot.querySelector<HTMLImageElement>('#deprecatedIcon')!;
       assertTrue(
           deprecatedIcon.hidden,
           'Non-deprecated app should not have deprecation icon');
@@ -632,7 +632,7 @@ suite('AppListTest', () => {
     await microtasksFinished();
     assertTrue(!!deprecatedAppsLink);
     const linkContainer =
-        deprecatedAppsLink.shadowRoot!.querySelector<HTMLImageElement>(
+        deprecatedAppsLink.shadowRoot.querySelector<HTMLImageElement>(
             '#container');
     assertTrue(!!linkContainer);
   });
@@ -642,13 +642,14 @@ suite('AppListTest', () => {
     callbackRouterRemote.addApp(deprecatedAppInfo);
     await callbackRouterRemote.$.flushForTesting();
 
-    const appItems = appListElement.shadowRoot!.querySelectorAll('.item');
+    const appItems =
+        appListElement.shadowRoot.querySelectorAll<CrLitElement>('.item');
     assertTrue(!!appItems, 'No apps.');
 
     let found = false;
     appItems.forEach((item) => {
       const deprecatedIcon =
-          item!.shadowRoot!.querySelector<HTMLImageElement>('#deprecatedIcon')!;
+          item!.shadowRoot.querySelector<HTMLImageElement>('#deprecatedIcon')!;
       if (item!.id === deprecatedAppInfo.id) {
         found = true;
         assertFalse(
@@ -669,7 +670,7 @@ suite('AppListTest', () => {
     await callbackRouterRemote.$.flushForTesting();
 
     const appItem =
-        appListElement.shadowRoot!.querySelector('#' + deprecatedAppInfo.id)!;
+        appListElement.shadowRoot.querySelector('#' + deprecatedAppInfo.id)!;
     assertTrue(!!appItem, 'No apps.');
 
     const mouseEvent: MouseEvent = new MouseEvent('click', {
@@ -700,7 +701,7 @@ suite('AppListTest', () => {
     await microtasksFinished();
 
     assertTrue(!!deprecatedAppsLink);
-    const link = deprecatedAppsLink.shadowRoot!.querySelector<HTMLImageElement>(
+    const link = deprecatedAppsLink.shadowRoot.querySelector<HTMLImageElement>(
         '#deprecated-apps-link')!;
 
     link.click();
@@ -719,15 +720,15 @@ suite('AppListTest', () => {
     callbackRouterRemote.removeApp(deprecatedAppInfo);
     await callbackRouterRemote.$.flushForTesting();
 
-    const appItems = appListElement.shadowRoot!.querySelectorAll('app-item');
+    const appItems = appListElement.shadowRoot.querySelectorAll('app-item');
     assertEquals(appItems.length, 0);
 
     const text: HTMLParagraphElement =
-        emptyPage.shadowRoot!.querySelector<HTMLParagraphElement>('p')!;
+        emptyPage.shadowRoot.querySelector<HTMLParagraphElement>('p')!;
     assertEquals(text.innerText, 'Web apps that you install appear here');
 
     const button: HTMLAnchorElement =
-        emptyPage.shadowRoot!.querySelector<HTMLAnchorElement>('a')!;
+        emptyPage.shadowRoot.querySelector<HTMLAnchorElement>('a')!;
     assertEquals(
         button.href, 'https://support.google.com/chrome?p=install_web_apps');
     assertEquals(button.innerText, 'Learn how to install web apps');
@@ -736,13 +737,13 @@ suite('AppListTest', () => {
   test('context menu not closed on checkbox click', async () => {
     // Test for crbug.com/1435592: Clicking the checkbox options on
     // the context menu does not close it.
-    const appItem = appListElement.shadowRoot!.querySelector('app-item');
+    const appItem = appListElement.shadowRoot.querySelector('app-item');
     assertTrue(!!appItem);
 
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
     assertTrue(apps.appList.length >= 1);
 
-    const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
+    const contextMenu = appItem.shadowRoot.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
     const launchOnStartup =
         contextMenu.querySelector<CrCheckboxElement>('#launchOnStartup');
@@ -766,18 +767,18 @@ suite('AppListTest', () => {
     assertFalse(contextMenu.hidden);
   });
 
-  test('context menu opens on shift+f10 triggered on focused app', async () => {
+  test('context menu opens on shift+f10 triggered on focused app', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
     assertEquals(
-        apps.appList[0]!.id, appListElement.shadowRoot!.activeElement?.id);
+        apps.appList[0]!.id, appListElement.shadowRoot.activeElement?.id);
 
     document.dispatchEvent(
         new KeyboardEvent('keydown', {key: 'F10', shiftKey: true}));
 
-    const appItem = appListElement.shadowRoot!.querySelector('app-item');
+    const appItem = appListElement.shadowRoot.querySelector('app-item');
     assertTrue(!!appItem);
 
-    const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
+    const contextMenu = appItem.shadowRoot.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
     assertFalse(contextMenu.hidden);
   });

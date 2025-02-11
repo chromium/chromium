@@ -5630,7 +5630,6 @@
 <translation id="4946998421534856407">啟動器鍵 + 向上箭咀鍵</translation>
 <translation id="4947376546135294974">來自你正在瀏覽網站的資料</translation>
 <translation id="4950100687509657457">建立設定檔</translation>
-<translation id="4950360215042327246">[佔位符字串]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 個檔案}other{# 個檔案}}</translation>
 <translation id="495170559598752135">動作</translation>
 <translation id="4951966678293618079">一律不儲存此網站的密碼</translation>
@@ -7983,7 +7982,6 @@
 <translation id="6679947539429331601">隱藏 12 小時</translation>
 <translation id="6680442031740878064">可用空間：<ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">語速</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [佔位符字串]</translation>
 <translation id="6683022854667115063">耳機</translation>
 <translation id="6683087162435654533">還原所有分頁</translation>
 <translation id="6683433919380522900">權限係<ph name="PERMISSION_STATE" /></translation>
@@ -9201,7 +9199,6 @@
 <translation id="7561196759112975576">永遠使用</translation>
 <translation id="7561759921596375678">開啟音量</translation>
 <translation id="7561982940498449837">關閉選單</translation>
-<translation id="7563970324931922582">[佔位符文字]</translation>
 <translation id="756445078718366910">開啟瀏覽器視窗</translation>
 <translation id="7564847347806291057">結束處理程序</translation>
 <translation id="756503097602602175">您可透過<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />管理已登入的 Google 帳戶。您向網站和應用程式授予的權限，可能會套用到所有帳戶。如果您不想網站和應用程式存取您的帳戶資料，請以訪客身分登入您的 <ph name="DEVICE_TYPE" />，或透過<ph name="LINK_2_BEGIN" />無痕式視窗<ph name="LINK_2_END" />瀏覽網頁。</translation>

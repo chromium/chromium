@@ -201,7 +201,6 @@
 <translation id="1337692097987160377">ఈ ట్యాబ్‌ను షేర్ చేయి</translation>
 <translation id="1339601241726513588">నమోదిత డొమైన్:</translation>
 <translation id="1340482604681802745">పికప్ అడ్రస్‌</translation>
-<translation id="134204716678666126">ఫీడ్‌బ్యాక్ బటన్‌లకు నావిగేట్ చేయడానికి ఎడమ, కుడి వైపు కీలను ఉపయోగించండి.</translation>
 <translation id="1343356790768851700">మీకు నచ్చిన విషయాలను ఈ సైట్ నిర్ణయించి, ఆపై యాడ్‌లను ఇతర సైట్‌లకు సూచిస్తుంది</translation>
 <translation id="1346748346194534595">కుడి</translation>
 <translation id="1348779747280417563">పేరును నిర్ధారించండి</translation>
@@ -1056,7 +1055,6 @@
 <translation id="2902312830803030883">మరిన్ని చర్యలు</translation>
 <translation id="2903493209154104877">అడ్రస్‌లు</translation>
 <translation id="290376772003165898">పేజీ <ph name="LANGUAGE" />లో లేదా?</translation>
-<translation id="2904165004205947971">మీ సమాచారాన్ని మేనేజ్ చేయండి</translation>
 <translation id="2905107382358353958">కొత్త పేమెంట్ సెట్టింగ్ గురించిన అలర్ట్</translation>
 <translation id="2909946352844186028">నెట్‌వర్క్ మార్పు గుర్తించబడింది.</translation>
 <translation id="2911255567212929079">మెషిన్ లెర్నింగ్ &amp; ఆర్టిఫిషియల్ ఇంటెలిజెన్స్</translation>
@@ -1563,7 +1561,6 @@
 <translation id="3727309136762649052">నేమ్‌స్పేస్</translation>
 <translation id="3727850735097852673">MacOS కీచెయిన్‌తో Google Password Managerను ఉపయోగించడానికి, Chromeను రీ-లాంచ్ చేసి, కీచెయిన్ యాక్సెస్‌ను అనుమతించండి. మీ ట్యాబ్‌లు రీ-లాంచ్ చేసిన తర్వాత మళ్లీ తెరవబడతాయి.</translation>
 <translation id="3728173127485570463">Chrome బ్రౌజర్‌లో పాస్‌వర్డ్‌లను ఆటోఫిల్ చేయడానికి ఇకపై మీ వేలిముద్ర అవసరం ఉండదు</translation>
-<translation id="3735143108516366187">సూచన మెరుగుదలలను మేనేజ్ చేయడానికి enter నొక్కండి</translation>
 <translation id="3736739313435669994">మీరు బ్రౌజ్ చేస్తున్నప్పుడు మిమ్మల్ని ట్రాక్ చేయడానికి థర్డ్-పార్టీ కుక్కీలను ఉపయోగించకుండా సైట్‌లను బ్లాక్ చేశారు. <ph name="LINK" /> సెట్టింగ్‌లను చూడండి.</translation>
 <translation id="3738166223076830879">మీ బ్రౌజర్ మీ అడ్మినిస్ట్రేట‌ర్ ద్వారా మేనేజ్ చేయబడుతోంది.</translation>
 <translation id="3738428049780661523">క్రియేట్ అయిన సమయం <ph name="DATE" /></translation>
@@ -1662,7 +1659,6 @@
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3909899182024383590"><ph name="WEBSITE" /> నుండి సేవ్ చేసిన సమాచారం, పేజీ Googleకు పంపబడతాయి, ఈ ఫీచర్‌ను మెరుగుపరచడానికి రివ్యూవర్‌లు చూడవచ్చు.</translation>
 <translation id="3910231615117880630">పొందుపరచబడిన కంటెంట్ గురించి మరింత తెలుసుకోండి</translation>
-<translation id="3915878244842478983">మీ సమాచారాన్ని పొందడంలో Chromeకు సమస్య ఉంది</translation>
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />మీ డేటాను మీరు ఎలా మేనేజ్ చేయవచ్చు:<ph name="END_BOLD" /> 30 రోజుల కంటే పాతవైన సైట్‌లను Chrome ఆటోమేటిక్‌గా లిస్ట్ నుండి తొలగిస్తుంది. మీరు మళ్లీ చూసే సైట్, లిస్ట్‌లో మళ్లీ కనిపించవచ్చు. మీకు యాడ్‌లను సూచించకుండా సైట్‌ను మీరు కూడా బ్లాక్ చేయవచ్చు, సైట్-సూచించిన యాడ్‌లను ఎప్పుడైనా Chrome సెట్టింగ్‌లలో ఆఫ్ చేయవచ్చు.</translation>
 <translation id="3921869355029467742">మీ సెక్యూరిటీ కోడ్‌ను ఎంటర్ చేయండి</translation>
 <translation id="3927538228901078312">కంపారిజన్ టేబుల్స్ ఏవీ లేవు</translation>
@@ -2862,7 +2858,6 @@
 <translation id="6058977677006700226">మీ కార్డ్‌లను మీ అన్ని పరికరాలలో ఉపయోగించాలా?</translation>
 <translation id="6059925163896151826">USB పరికరాలు</translation>
 <translation id="6060009363608157444">చెల్లని DnsOverHttps మోడ్.</translation>
-<translation id="6060132878120844000">&amp; ఇంకా మరో 1 ఫీల్డ్</translation>
 <translation id="6061154937977953833">కుస్తీ</translation>
 <translation id="6062937464449575061">ధరను అన్‌ట్రాక్ చేయండి</translation>
 <translation id="6063415549109819824">హోమ్ ఫైనాన్సింగ్</translation>
@@ -2928,7 +2923,6 @@
 <translation id="6180316780098470077">పునఃప్రయత్నాల మధ్య విరామం</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome థర్డ్-పార్టీ కుక్కీలను ఆటోమేటిక్‌గా పరిమితం చేస్తుంది</translation>
-<translation id="6188479691141473408">&amp; <ph name="N_FIELDS" />, ఇంకా మరిన్ని ఫీల్డ్‌లు</translation>
 <translation id="6190518157737269631">మీ కీబోర్డ్‌లోని కొన్ని కీలను ఓవర్‌రైడ్ చేయండి, ఉదా., Esc</translation>
 <translation id="6194209731893739467">మీరు ట్రాక్ చేసిన అన్ని ప్రోడక్ట్‌లను ఇక్కడ చూడండి</translation>
 <translation id="6195163219142236913">థర్డ్-పార్టీ కుక్కీలు పరిమితం చేయబడ్డాయి</translation>
@@ -3157,7 +3151,6 @@
 <translation id="6569060085658103619">మీరు ఎక్స్‌టెన్షన్‌ పేజీని వీక్షిస్తున్నారు</translation>
 <translation id="6572867903637058088">ఇది సహాయకరంగా ఉందా?</translation>
 <translation id="6573200754375280815">కుడివైపు రెండు రంధ్రాలు</translation>
-<translation id="6574762126505704998">నింపండి</translation>
 <translation id="6575408526598156416">ఖాతాలో సేవ్ చేయండి</translation>
 <translation id="6577792494180292262">వెంచర్ క్యాపిటల్</translation>
 <translation id="6578434528542148658">చెల్లని ఎక్స్‌టెన్షన్ ID.</translation>
@@ -3975,7 +3968,6 @@
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeను సిస్టమ్ ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయడానికి tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="8027077570865220386">ట్రే 15</translation>
 <translation id="8027585818882015174">'Chrome సేఫ్టీ చెక్‌ను రన్ చేయండి' బటన్, Chrome సెట్టింగ్‌లలో సేఫ్టీ చెక్‌ను రన్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
-<translation id="8028138772801251745">AI సహాయంతో ఆటోఫిల్ చేయండి</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Formsలో త్వరగా కొత్త ఫారమ్‌ను క్రియేట్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="8028892419725165118">సరదా గేమ్‌లు</translation>
 <translation id="8028960012888758725">పని తర్వాత కత్తిరించండి</translation>

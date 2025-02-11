@@ -116,6 +116,9 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     // `profile_image` must not be empty. It does not need to be circular.
     ui::ImageModel profile_image;
     bool has_dotted_ring = false;
+    // This padding does not make the avatar larger in the menu.
+    // `profile_image` is drawn smaller to leave space around for the padding.
+    int profile_image_padding = 0;
 
     // Must not be empty.
     std::u16string title;

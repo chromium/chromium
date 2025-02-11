@@ -78,10 +78,10 @@ bool SuspendableThreadDelegateMac::ScopedSuspendThread::WasSuccessful() const {
 
 SuspendableThreadDelegateMac::SuspendableThreadDelegateMac(
     SamplingProfilerThreadToken thread_token)
-    : thread_port_(thread_token.id.raw()),
-      thread_stack_base_address_(
-          reinterpret_cast<uintptr_t>(pthread_get_stackaddr_np(
-              pthread_from_mach_thread_np(thread_token.id.raw())))) {
+    : thread_id_(thread_token.id),
+      thread_port_(pthread_mach_thread_np(thread_token.pthread_id)),
+      thread_stack_base_address_(reinterpret_cast<uintptr_t>(
+          pthread_get_stackaddr_np(thread_token.pthread_id))) {
   // This class suspends threads, and those threads might be suspended in dyld.
   // Therefore, for all the system functions that might be linked in dynamically
   // that are used while threads are suspended, make calls to them to make sure
@@ -98,7 +98,7 @@ SuspendableThreadDelegateMac::CreateScopedSuspendThread() {
 }
 
 PlatformThreadId SuspendableThreadDelegateMac::GetThreadId() const {
-  return PlatformThreadId(thread_port_);
+  return thread_id_;
 }
 
 // NO HEAP ALLOCATIONS.

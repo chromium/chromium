@@ -238,9 +238,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         if (!ChromeFeatureList.sCctIntentFeatureOverrides.isEnabled()) {
             maybeInitMinimizeButton();
         }
-
-        // Set hover tooltip texts for toolbar buttons.
-        super.setTooltipTextForToolbarButtons();
     }
 
     @Override

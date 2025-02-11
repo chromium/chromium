@@ -82,7 +82,7 @@ void Process::TerminateCurrentProcessImmediately(int exit_code) {
 #if BUILDFLAG(CLANG_PROFILING)
   WriteClangProfilingProfile();
 #endif
-  ::TerminateProcess(GetCurrentProcess(), static_cast<UINT>(exit_code));
+  ::TerminateProcess(::GetCurrentProcess(), static_cast<UINT>(exit_code));
   // There is some ambiguity over whether the call above can return. Rather than
   // hitting confusing crashes later on we should crash right here.
   ImmediateCrash();
@@ -93,7 +93,7 @@ bool Process::IsValid() const {
 }
 
 ProcessHandle Process::Handle() const {
-  return is_current_process_ ? GetCurrentProcess() : process_.get();
+  return is_current_process_ ? ::GetCurrentProcess() : process_.get();
 }
 
 Process Process::Duplicate() const {
@@ -103,7 +103,7 @@ Process Process::Duplicate() const {
 
   ProcessHandle out_handle;
   if (!IsValid() ||
-      !::DuplicateHandle(GetCurrentProcess(), Handle(), GetCurrentProcess(),
+      !::DuplicateHandle(::GetCurrentProcess(), Handle(), ::GetCurrentProcess(),
                          &out_handle, 0, FALSE, DUPLICATE_SAME_ACCESS)) {
     return Process();
   }
@@ -165,7 +165,7 @@ bool Process::Terminate(int exit_code, bool wait) const {
     // undocumented-but-expected result if the process has already exited or
     // started exiting when TerminateProcess is called, so don't print an error
     // message in that case.
-    if (GetLastError() != ERROR_ACCESS_DENIED) {
+    if (::GetLastError() != ERROR_ACCESS_DENIED) {
       DPLOG(ERROR) << "Unable to terminate process";
     }
     // A non-zero timeout is necessary here for the same reasons as above.
@@ -181,7 +181,7 @@ bool Process::Terminate(int exit_code, bool wait) const {
 }
 
 Process::WaitExitStatus Process::WaitForExitOrEvent(
-    const base::win::ScopedHandle& stop_event_handle,
+    const win::ScopedHandle& stop_event_handle,
     int* exit_code) const {
   HANDLE events[] = {Handle(), stop_event_handle.get()};
   DWORD wait_result =
@@ -246,7 +246,7 @@ void Process::Exited(int exit_code) const {}
 
 Process::Priority Process::GetPriority() const {
   DCHECK(IsValid());
-  int priority = GetOSPriority();
+  const int priority = GetOSPriority();
   if (priority == 0) {
     return Priority::kUserBlocking;  // Failure case. Use default value.
   }

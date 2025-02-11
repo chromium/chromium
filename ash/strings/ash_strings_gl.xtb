@@ -246,7 +246,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1786487376942610288">Cambiar entre o tamaño máximo e o actual da ventá da pantalla superposta</translation>
 <translation id="1787955149152357925">Desactivado</translation>
 <translation id="1796561540704213354">Sitios web que inclúen as páxinas que visitaches e as abertas</translation>
-<translation id="179842970735685253">Condicións de servizo de Google</translation>
 <translation id="1805407494113167797">Non se puideron reproducir os sons do modo Sen distraccións</translation>
 <translation id="181103072419391116">Intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
 <translation id="1815039896005206046">Co botón Non me gusta indicas que non che gusta este grupo suxerido</translation>
@@ -1243,7 +1242,6 @@ Tamén podes usar o atallo de teclado. Primeiro, destaca o texto e, a continuaci
 <translation id="5121628974188116412">Vai á parte inferior da páxina</translation>
 <translation id="5122517996953421795">Vista previa de <ph name="DESK_NAME" />. Escritorio inactivo.</translation>
 <translation id="5136175204352732067">Conectouse un teclado diferente</translation>
-<translation id="5140105873789567560">Debes ter 18 anos como mínimo para poder usar Axúdame a escribir e Axúdame a ler.</translation>
 <translation id="5144005092084035179">Queres cambiar a entrada de audio?</translation>
 <translation id="5147567197700016471">Desbloqueouse</translation>
 <translation id="5150070631291639005">Configuración de privacidade</translation>
@@ -1398,7 +1396,6 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Non se puido verificar o teu contrasinal. Téntao de novo.</translation>
 <translation id="5632485077360054581">Ver como facelo</translation>
-<translation id="5633826232582408011">Cando activas Axúdame a escribir e Axúdame a ler, o texto introducido, o contido do documento e o URL da páxina web envíanse aos servidores da IA de Google para xerar suxestións de escritura e resumos, responder preguntas e mellorar o produto, todo de acordo co establecido nas <ph name="LINK_TO_SERVICE_TERMS" />. Non inclúas información persoal, delicada nin confidencial.</translation>
 <translation id="5648021990716966815">Conector do micrófono</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> require a túa atención.</translation>
 <translation id="5662075790140998213">Escritorio 10</translation>
@@ -2025,7 +2022,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7749443890790263709">Alcanzouse o número máximo de escritorios.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Mostrar todo</translation>
-<translation id="7759183637555564029">Podes desactivar Axúdame a escribir e Axúdame a ler cando queiras en Configuración. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Escoitar selección</translation>
 <translation id="7769299611924763557">O teu GIF estará listo decontado</translation>
 <translation id="7773536009433685931">Activar wifi</translation>
@@ -2035,7 +2031,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7781829728241885113">Onte</translation>
 <translation id="7787212146956232129">Definíronse os dispositivos de saída e entrada. Para cambialos, vai a Configuración.</translation>
 <translation id="7792590255364786396">Visible</translation>
-<translation id="7793389284006812057">A IA xenerativa é experimental, está nas primeiras etapas de programación e actualmente ten dispoñibilidade limitada.</translation>
 <translation id="7796735576426975947">Ocultouse unha nova notificación</translation>
 <translation id="7798302898096527229">Preme Buscar ou Maiúsculas para cancelar.</translation>
 <translation id="780301667611848630">Non, grazas</translation>

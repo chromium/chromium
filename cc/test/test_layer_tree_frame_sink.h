@@ -23,10 +23,6 @@
 #include "components/viz/test/test_shared_image_interface_provider.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 
-namespace viz {
-class CompositorFrameSinkSupport;
-}  // namespace viz
-
 namespace cc {
 
 class TaskRunnerProvider;
@@ -154,7 +150,8 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   gfx::DisplayColorSpaces display_color_spaces_;
 
   // Uses surface_manager_.
-  std::unique_ptr<viz::CompositorFrameSinkSupport> support_;
+  class TestCompositorFrameSinkSupport;
+  std::unique_ptr<TestCompositorFrameSinkSupport> support_;
 
   std::unique_ptr<viz::SyntheticBeginFrameSource> begin_frame_source_;
   raw_ptr<viz::BeginFrameSource>

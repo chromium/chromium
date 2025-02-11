@@ -9,7 +9,7 @@ Security Critical: yes
 Shipped: yes
 
 Description:
-Bridge interfaces for Firebase analytics into GmsCore.
+Bridge interfaces for Firebase analytics into gmscore.
 
 Local Modifications:
 No modifications.

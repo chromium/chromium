@@ -66,7 +66,7 @@ suite('DisableRelatedWebsiteSets', function() {
   });
 
   // Initialize a site-list before each test.
-  setup(async function() {
+  setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     prefsVarious = createSiteSettingsPrefs([], [
@@ -892,7 +892,7 @@ suite('DisableRelatedWebsiteSets', function() {
     cancelDialog();
   });
 
-  test('dynamic strings', async function() {
+  test('dynamic strings', function() {
     // Single origin, no apps.
     const siteGroup = structuredClone(TEST_MULTIPLE_SITE_GROUP);
     testElement.siteGroupMap.set(
@@ -1112,7 +1112,7 @@ suite('EnableRelatedWebsiteSets', function() {
 
 
   // Initialize a site-list before each test.
-  setup(async function() {
+  setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
@@ -1199,15 +1199,14 @@ suite('EnableRelatedWebsiteSets', function() {
         await metricsBrowserProxy.whenCalled('recordDeleteBrowsingDataAction'));
   });
 
-  test(
-      'cancelling the confirm dialog on removing site works', async function() {
-        const siteGroup = structuredClone(TEST_MULTIPLE_SITE_GROUP);
-        siteGroup.rwsOwner = 'google.com';
-        testElement.siteGroupMap.set(
-            siteGroup.groupingKey, structuredClone(siteGroup));
-        testElement.forceListUpdateForTesting();
-        removeSiteViaOverflowMenu('cancel-button');
-      });
+  test('cancelling the confirm dialog on removing site works', function() {
+    const siteGroup = structuredClone(TEST_MULTIPLE_SITE_GROUP);
+    siteGroup.rwsOwner = 'google.com';
+    testElement.siteGroupMap.set(
+        siteGroup.groupingKey, structuredClone(siteGroup));
+    testElement.forceListUpdateForTesting();
+    removeSiteViaOverflowMenu('cancel-button');
+  });
 
   test('click and remove site entry with remove button', async function() {
     testElement.siteGroupMap.set(
@@ -1224,8 +1223,7 @@ suite('EnableRelatedWebsiteSets', function() {
   });
 
   test(
-      'click and cancel dialog site entry with remove button',
-      async function() {
+      'click and cancel dialog site entry with remove button', function() {
         testElement.siteGroupMap.set(
             TEST_MULTIPLE_SITE_GROUP.groupingKey,
             structuredClone(TEST_MULTIPLE_SITE_GROUP));
@@ -1235,7 +1233,7 @@ suite('EnableRelatedWebsiteSets', function() {
         cancelDialog();
       });
 
-  test('filter sites by related website set owner', async function() {
+  test('filter sites by related website set owner', function() {
     TEST_SITE_GROUPS.forEach(siteGroup => {
       testElement.siteGroupMap.set(
           siteGroup.groupingKey, structuredClone(siteGroup));

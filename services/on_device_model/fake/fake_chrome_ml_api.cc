@@ -75,6 +75,7 @@ struct FakeSessionInstance {
   std::vector<std::string> context_;
   bool cloned;
   bool enable_image_input;
+  bool enable_audio_input;
 };
 
 struct FakeTsModelInstance {
@@ -123,6 +124,7 @@ ChromeMLSession CreateSession(ChromeMLModel model,
   auto* instance = new FakeSessionInstance{};
   if (descriptor) {
     instance->enable_image_input = descriptor->enable_image_input;
+    instance->enable_audio_input = descriptor->enable_audio_input;
     if (descriptor->model_data) {
       if (model_instance->backend_type_ == ml::ModelBackendType::kGpuBackend) {
         instance->adaptation_data_ =
@@ -145,6 +147,7 @@ ChromeMLSession CloneSession(ChromeMLSession session) {
       .context_ = instance->context_,
       .cloned = true,
       .enable_image_input = instance->enable_image_input,
+      .enable_audio_input = instance->enable_audio_input,
   });
 }
 
@@ -175,7 +178,8 @@ bool SessionExecuteModel(ChromeMLSession session,
 
     CHECK(!std::holds_alternative<SkBitmap>(piece) ||
           instance->enable_image_input);
-
+    CHECK(!std::holds_alternative<ml::AudioBuffer>(piece) ||
+          instance->enable_audio_input);
     text += PieceToString(piece);
   }
   if (options->token_offset > 0) {

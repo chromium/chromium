@@ -8,6 +8,7 @@
 
 #import "base/time/time.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_data.h"
 #import "url/gurl.h"
 
 @implementation TabResumptionItem {
@@ -40,6 +41,7 @@
   _contentImage = item.contentImage;
   _URLKey = item.URLKey;
   _requestID = item.requestID;
+  _shopCardData = item.shopCardData;
 }
 
 #pragma mark - properties

@@ -206,11 +206,6 @@ class CORE_EXPORT MessageEvent final : public Event {
 
   void LockToAgentCluster();
 
-  [[nodiscard]] v8::Local<v8::Object> AssociateWithWrapper(
-      v8::Isolate*,
-      const WrapperTypeInfo*,
-      v8::Local<v8::Object> wrapper) override;
-
  private:
   enum DataType {
     kDataTypeNull,  // For "messageerror" events.

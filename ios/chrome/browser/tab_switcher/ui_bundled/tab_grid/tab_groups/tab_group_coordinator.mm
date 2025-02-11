@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_confirmation_coordinator.h"
 #import "ios/web/public/web_state_id.h"
+#import "ui/base/device_form_factor.h"
 
 namespace {
 constexpr CGFloat kTabGroupPresentationDuration = 0.3;
@@ -463,6 +464,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
                          browser:self.browser
                       actionType:actionType
                       sourceView:self.baseViewController.view];
+
   _lastTabClosingAlert.primaryAction = action;
 
   __weak TabGroupCoordinator* weakSelf = self;
@@ -471,6 +473,11 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   };
 
   _lastTabClosingAlert.tabGroupName = _tabGroup->GetTitle();
+
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    _lastTabClosingAlert.showAsAlert = YES;
+  }
+
   [_lastTabClosingAlert start];
 }
 

@@ -181,6 +181,9 @@ class CONTENT_EXPORT DelegatedFrameHost
   // Called when the page has just entered BFCache.
   void DidEnterBackForwardCache();
 
+  // Called when the page was activated or evicted from BFCache.
+  void ActivatedOrEvictedFromBackForwardCache();
+
   void WindowTitleChanged(const std::string& title);
 
   // If our SurfaceLayer doesn't have a fallback, use the fallback info of
@@ -208,6 +211,8 @@ class CONTENT_EXPORT DelegatedFrameHost
   }
 
   viz::SurfaceId GetFirstSurfaceIdAfterNavigationForTesting() const;
+
+  viz::SurfaceId GetBFCacheFallbackSurfaceIdForTesting() const;
 
   void SetIsFrameSinkIdOwner(bool is_owner);
 

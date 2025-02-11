@@ -97,7 +97,7 @@ void InternalAuthenticatorAndroid::MakeCredential(
 
 void InternalAuthenticatorAndroid::GetAssertion(
     blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
-    blink::mojom::Authenticator::GetAssertionCallback callback) {
+    GetAssertionCallback callback) {
   JNIEnv* env = AttachCurrentThread();
   JavaRef<jobject>& obj = GetJavaObject();
   DCHECK(!obj.is_null());

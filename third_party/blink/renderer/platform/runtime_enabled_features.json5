@@ -771,6 +771,10 @@
       status: {"Android": "", "default": "experimental"},
     },
     {
+      name: "CapturedSurfaceResolution",
+      status: { "Win": "experimental", "default": ""},
+    },
+    {
       name: "CaptureHandle",
       depends_on: ["GetDisplayMedia"],
       status: {"Android": "", "default": "stable"},
@@ -1141,7 +1145,7 @@
     },
     {
       name: "CSSLogicalOverflow",
-      status: "test",
+      status: "stable",
     },
     {
       name: "CSSMarkerNestedPseudoElement",

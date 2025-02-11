@@ -20,7 +20,6 @@
 <translation id="1054745118061919935">تعني المتابعة موافقتك على <ph name="BEGIN_LINK" />بنود الخدمة<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">المواقع التي لن تحفظ كلمات المرور أبدًا</translation>
 <translation id="1062138828266376352">لم يتم تغيير رقم التعريف الشخصي. يُرجى التأكّد من الاتصال بالإنترنت، ثم إعادة المحاولة</translation>
-<translation id="1066060668811609597">إدارة المزامنة</translation>
 <translation id="1076421457278169141">تم مسح الرمز ضوئيًا</translation>
 <translation id="1081932398873105675">{count,plural, =1{علامة تبويب واحدة ({count})}zero{‫{count} علامة تبويب}two{علامتا تبويب ({count})}few{‫{count} علامات تبويب}many{‫{count} علامة تبويب}other{‫{count} علامة تبويب}}</translation>
 <translation id="1082554859195167538">مراجعات المنتجات المخصّصة لك</translation>
@@ -1150,7 +1149,6 @@
 <translation id="605721222689873409">العام</translation>
 <translation id="6059103953801602038">‏تم حفظ المواقع الإلكترونية التي تُتابعها في حسابك على Google. ويمكنك إدارة هذه المواقع الإلكترونية من خلال إعدادات ميزة "اقتراحات".</translation>
 <translation id="6059830886158432458">يمكنك التحكُّم بقصصك ونشاطك هنا.</translation>
-<translation id="6064824697233747382">تفرض عليك مؤسستك إيقاف المزامنة.</translation>
 <translation id="6066301408025741299">انقر للإلغاء.</translation>
 <translation id="6074656473835429958">الحصول على إشعارات</translation>
 <translation id="607620096698446287">تعذر تحميل <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>

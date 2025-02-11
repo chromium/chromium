@@ -12,7 +12,12 @@
 #import "base/threading/scoped_blocking_call.h"
 #import "components/favicon/core/fallback_url_util.h"
 #import "components/ntp_tiles/ntp_tile.h"
+#import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_provider.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/widget_kit/model/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/ntp_tile/ntp_tile.h"
@@ -25,8 +30,10 @@
 
 namespace content_suggestions_tile_saver {
 
-// Write the `most_visited_sites` to disk.
-void WriteSavedMostVisited(NSDictionary<NSURL*, NTPTile*>* most_visited_sites);
+// Writes the `most_visited_sites` to disk.
+void WriteSavedMostVisited(
+    NSDictionary<NSURL*, NTPTile*>* most_visited_sites,
+    ChromeAccountManagerService* account_manager_service);
 
 // Checks if every site in `tiles` has had its favicons fetched. If so, writes
 // the info to disk, saving the favicons to `favicons_directory`.
@@ -40,14 +47,17 @@ NSString* GetFaviconFileName(const GURL& url);
 // `tile`.
 void WriteSingleUpdatedTileToDisk(NTPTile* tile);
 
-// Get the favicons using `favicon_provider` and writes them to disk.
-void GetFaviconsAndSave(const ntp_tiles::NTPTilesVector& most_visited_data,
-                        FaviconAttributesProvider* favicon_provider,
-                        NSURL* favicons_directory);
+// Gets the favicons using `favicon_provider` and writes them to disk.
+void GetFaviconsAndSave(
+    const ntp_tiles::NTPTilesVector& most_visited_data,
+    __strong FaviconAttributesProvider* favicon_provider,
+    __strong NSURL* favicons_directory,
+    base::WeakPtr<ChromeAccountManagerService> weak_account_manager_service);
 
 // Updates the list of tiles that must be displayed in the content suggestion
 // widget.
-void UpdateTileList(const ntp_tiles::NTPTilesVector& most_visited_data);
+void UpdateTileList(const ntp_tiles::NTPTilesVector& most_visited_data,
+                    ChromeAccountManagerService* account_manager_service);
 
 // Deletes icons contained in `favicons_directory` and corresponding to no URL
 // in `most_visited_data`.
@@ -58,7 +68,8 @@ void ClearOutdatedIcons(const ntp_tiles::NTPTilesVector& most_visited_data,
 
 namespace content_suggestions_tile_saver {
 
-void UpdateTileList(const ntp_tiles::NTPTilesVector& most_visited_data) {
+void UpdateTileList(const ntp_tiles::NTPTilesVector& most_visited_data,
+                    ChromeAccountManagerService* account_manager_service) {
   NSMutableDictionary<NSURL*, NTPTile*>* tiles =
       [[NSMutableDictionary alloc] init];
   NSDictionary<NSURL*, NTPTile*>* old_tiles = ReadSavedMostVisited();
@@ -84,7 +95,7 @@ void UpdateTileList(const ntp_tiles::NTPTilesVector& most_visited_data) {
     }
     [tiles setObject:tile forKey:tile.URL];
   }
-  WriteSavedMostVisited(tiles);
+  WriteSavedMostVisited(tiles, account_manager_service);
 }
 
 NSString* GetFaviconFileName(const GURL& url) {
@@ -92,12 +103,21 @@ NSString* GetFaviconFileName(const GURL& url) {
       stringByAppendingString:@".png"];
 }
 
-void GetFaviconsAndSave(const ntp_tiles::NTPTilesVector& most_visited_data,
-                        FaviconAttributesProvider* favicon_provider,
-                        NSURL* favicons_directory) {
+void GetFaviconsAndSave(
+    const ntp_tiles::NTPTilesVector& most_visited_data,
+    __strong FaviconAttributesProvider* favicon_provider,
+    __strong NSURL* favicons_directory,
+    base::WeakPtr<ChromeAccountManagerService> weak_account_manager_service) {
+  ChromeAccountManagerService* account_manager_service =
+      weak_account_manager_service.get();
+  if (!account_manager_service) {
+    return;
+  }
+
   for (size_t i = 0; i < most_visited_data.size(); i++) {
     const GURL& gurl = most_visited_data[i].url;
-    UpdateSingleFavicon(gurl, favicon_provider, favicons_directory);
+    UpdateSingleFavicon(gurl, favicon_provider, favicons_directory,
+                        account_manager_service);
   }
 }
 
@@ -125,33 +145,34 @@ void ClearOutdatedIcons(const ntp_tiles::NTPTilesVector& most_visited_data,
   }
 }
 
-void SaveMostVisitedToDisk(const ntp_tiles::NTPTilesVector& most_visited_data,
-                           FaviconAttributesProvider* favicon_provider,
-                           NSURL* favicons_directory) {
+void SaveMostVisitedToDisk(
+    const ntp_tiles::NTPTilesVector& most_visited_data,
+    __strong FaviconAttributesProvider* favicon_provider,
+    __strong NSURL* favicons_directory,
+    ChromeAccountManagerService* account_manager_service) {
   if (favicons_directory == nil) {
     return;
   }
-  UpdateTileList(most_visited_data);
+  UpdateTileList(most_visited_data, account_manager_service);
 
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&ClearOutdatedIcons, most_visited_data,
                      favicons_directory),
-      base::BindOnce(
-          ^(const ntp_tiles::NTPTilesVector& inner_most_visited_data) {
-            GetFaviconsAndSave(inner_most_visited_data, favicon_provider,
-                               favicons_directory);
-          },
-          most_visited_data));
+      base::BindOnce(&GetFaviconsAndSave, most_visited_data, favicon_provider,
+                     favicons_directory,
+                     account_manager_service->GetWeakPtr()));
 }
 
-void WriteSingleUpdatedTileToDisk(NTPTile* tile) {
+void WriteSingleUpdatedTileToDisk(
+    NTPTile* tile,
+    ChromeAccountManagerService* account_manager_service) {
   NSMutableDictionary* tiles = [ReadSavedMostVisited() mutableCopy];
   if (![tiles objectForKey:tile.URL]) {
     return;
   }
   [tiles setObject:tile forKey:tile.URL];
-  WriteSavedMostVisited(tiles);
+  WriteSavedMostVisited(tiles, account_manager_service);
 }
 
 // Updates the Shortcut's widget with the user's current most visited sites
@@ -161,7 +182,11 @@ void UpdateShortcutsWidget() {
 #endif
 }
 
-void WriteSavedMostVisited(NSDictionary<NSURL*, NTPTile*>* most_visited_data) {
+void WriteSavedMostVisited(
+    NSDictionary<NSURL*, NTPTile*>* most_visited_data,
+    ChromeAccountManagerService* account_manager_service) {
+  DCHECK(account_manager_service);
+
   NSDate* last_modification_date = NSDate.date;
   NSError* error = nil;
   NSData* data = [NSKeyedArchiver archivedDataWithRootObject:most_visited_data
@@ -175,9 +200,54 @@ void WriteSavedMostVisited(NSDictionary<NSURL*, NTPTile*>* most_visited_data) {
 
   NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
 
+  // TODO(crbug.com/387971524): To be removed once ios_enable_widgets_for_mim is
+  // enabled by default.
   [sharedDefaults setObject:data forKey:app_group::kSuggestedItems];
   [sharedDefaults setObject:last_modification_date
                      forKey:app_group::kSuggestedItemsLastModificationDate];
+
+  NSMutableDictionary* suggested_items = [[sharedDefaults
+      objectForKey:app_group::kSuggestedItemsForMultiprofile] mutableCopy];
+  if (suggested_items == nil) {
+    suggested_items = [NSMutableDictionary dictionary];
+  }
+
+  NSMutableDictionary* last_modification_dates = [[sharedDefaults
+      objectForKey:app_group::
+                       kSuggestedItemsLastModificationDateForMultiprofile]
+      mutableCopy];
+  if (last_modification_dates == nil) {
+    last_modification_dates = [NSMutableDictionary dictionary];
+  }
+
+  std::string profileName = account_manager_service->GetProfileName();
+  std::string personalProfileName = GetApplicationContext()
+                                        ->GetAccountProfileMapper()
+                                        ->GetPersonalProfileName();
+
+  if (profileName == personalProfileName) {
+    // If we are in personal profile, data is saved also to "Default". This will
+    // be used to retrieve data for a widget with no signed-in account.
+    [suggested_items setObject:data forKey:@"Default"];
+    [last_modification_dates setObject:last_modification_date
+                                forKey:@"Default"];
+  }
+
+  // Update stored info for all identities in the current profile.
+  for (id<SystemIdentity> identity in account_manager_service
+           ->GetAllIdentities()) {
+    NSString* gaia_id = identity.gaiaID;
+    [suggested_items setObject:data forKey:gaia_id];
+    [last_modification_dates setObject:last_modification_date forKey:gaia_id];
+  }
+
+  // Update NSUserDefaults keys.
+  [sharedDefaults setObject:suggested_items
+                     forKey:app_group::kSuggestedItemsForMultiprofile];
+  [sharedDefaults
+      setObject:last_modification_dates
+         forKey:app_group::kSuggestedItemsLastModificationDateForMultiprofile];
+
   UpdateShortcutsWidget();
 }
 
@@ -200,7 +270,8 @@ NSDictionary* ReadSavedMostVisited() {
 
 void UpdateSingleFavicon(const GURL& site_url,
                          FaviconAttributesProvider* favicon_provider,
-                         NSURL* favicons_directory) {
+                         NSURL* favicons_directory,
+                         ChromeAccountManagerService* account_manager_service) {
   NSURL* siteNSURL = net::NSURLWithGURL(site_url);
 
   void (^faviconAttributesBlock)(FaviconAttributes*) =
@@ -235,7 +306,7 @@ void UpdateSingleFavicon(const GURL& site_url,
           tile.fallbackBackgroundColor = attributes.backgroundColor;
           tile.fallbackIsDefaultColor = attributes.defaultBackgroundColor;
           tile.fallbackMonogram = attributes.monogramString;
-          WriteSingleUpdatedTileToDisk(tile);
+          WriteSingleUpdatedTileToDisk(tile, account_manager_service);
           // Favicon is outdated. Delete it.
           NSString* faviconFileName =
               GetFaviconFileName(net::GURLWithNSURL(siteNSURL));

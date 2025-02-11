@@ -193,6 +193,9 @@ BASE_FEATURE(kIPHTabGroupsSaveV2IntroFeature,
 BASE_FEATURE(kIPHTabGroupsSaveV2CloseGroupFeature,
              "IPH_TabGroupsSaveV2CloseGroup",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHTabGroupsSharedTabChangedFeature,
+             "IPH_TabGroupsSharedTabChanged",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHTabOrganizationSuccessFeature,
              "IPH_TabOrganizationSuccess",
              base::FEATURE_DISABLED_BY_DEFAULT);

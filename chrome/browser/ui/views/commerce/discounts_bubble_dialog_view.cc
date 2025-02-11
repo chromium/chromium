@@ -82,7 +82,7 @@ DiscountsBubbleDialogView::CreateMainPageHeaderView() {
   return std::make_unique<ThemeTrackingNonAccessibleImageView>(
       *bundle.GetImageSkiaNamed(IDR_DISCOUNTS_BUBBLE_HEADER_LIGHT),
       *bundle.GetImageSkiaNamed(IDR_DISCOUNTS_BUBBLE_HEADER_DARK),
-      base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+      base::BindRepeating(&views::BubbleDialogDelegate::background_color,
                           base::Unretained(this)));
 }
 

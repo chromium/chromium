@@ -294,6 +294,9 @@ class ASH_EXPORT CaptureModeSession
   // Paints the current capture region depending on the current capture source.
   void PaintCaptureRegion(gfx::Canvas* canvas);
 
+  // Paints the capture region with sunfish mode styling.
+  void PaintSunfishCaptureRegion(gfx::Canvas* canvas);
+
   // Paints the capture region overlay onto `canvas` if supported by the
   // behavior, otherwise does nothing.
   void MaybePaintCaptureRegionOverlay(gfx::Canvas& canvas) const;

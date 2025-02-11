@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Özetle</translation>
 <translation id="123124571410524056">Portal olabilir</translation>
 <translation id="1232610416724362657">şelale</translation>
+<translation id="1238163879850290856">Başka kişilerin verilerinize erişmesini önlemek için sıfırlayın. Yalnızca güvendiğiniz giriş yöntemlerini kullanın.</translation>
 <translation id="1238612778414822719">HTTPS Gecikmesi</translation>
 <translation id="1252766349417594414">Kontrol çubuğu</translation>
 <translation id="1270369111467284986">Giriş portalı şüpheli</translation>
@@ -767,6 +768,7 @@
 <translation id="4650608062294027130">Sağ üst karakter</translation>
 <translation id="4654549501020883054">Günlük Olarak Değiştir</translation>
 <translation id="4655868084888499342">Resim, duvar kağıdı olarak ayarlandı</translation>
+<translation id="4660989616054030633">Üretken yapay zeka, kişiler de dahil olmak üzere farklı konular hakkında yanlış bilgi verebildiğinden yanıtlarını doğrulayın</translation>
 <translation id="4661249927038176904">Gerçeküstü</translation>
 <translation id="4661392828086261436">Bu güncelleme cihaz üreticisi tarafından sağlanmış, ancak Google tarafından doğrulanmamıştır</translation>
 <translation id="4664651912255946953">kürk</translation>
@@ -1066,6 +1068,7 @@
 <translation id="6074752328838739425">Özeti gizle</translation>
 <translation id="6075872808778243331">(Android) HTTP Gecikmesi</translation>
 <translation id="6078323886959318429">Kısayol ekle</translation>
+<translation id="6079693086494835199">Varsayılan ana sayfanın kimlik avı sitesi olmadığından emin olmak için sıfırlayın. Yalnızca güvendiğiniz web sitelerini kullanın.</translation>
 <translation id="6091080061796993741">sarı</translation>
 <translation id="6104112872696127344">Tarama iptal edildi</translation>
 <translation id="6106186594183574873">Bitirmek için eski şifrenizi girin</translation>
@@ -1089,6 +1092,7 @@
 <translation id="6156030503438652198">bordo ve pembe</translation>
 <translation id="6165508094623778733">Daha fazla bilgi</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Başka kişilerin mikrofonunuzu veya kameranızı kullanmasını engellemek için sıfırlayın. Yalnızca güvendiğiniz sitelere izin verin.</translation>
 <translation id="6188737759358894319">Oluşturulma tarihi: <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Pil kapasitesi kullanıldıkça azalır</translation>
 <translation id="6189987971574353264">Çal</translation>
@@ -1115,6 +1119,7 @@
 <translation id="629550705077076970">klavye karartma</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> testi iptal edildi</translation>
 <translation id="631063167932043783">Keşfet uygulaması</translation>
+<translation id="6314333689576767865">Chromebook'unuz güvenli varsayılan ayarlara sıfırlandı. Ayarlar'da istediğiniz zaman değişiklik yapabilirsiniz.</translation>
 <translation id="6318437367327684789">sonsuza kadar</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> cihazındaki donanım yazılımını güncelleyin</translation>
 <translation id="6321407676395378991">Ekran koruyucuyu aç</translation>
@@ -1251,6 +1256,7 @@
 <translation id="6862416241246624313">Geri bildirim gönderildi</translation>
 <translation id="6866732840889595464">papatya</translation>
 <translation id="6871256179359663621">açık mor</translation>
+<translation id="6887967050249348172">Ayarlarda değişiklik yapılmasını önlemek için uzantılar devre dışı bırakıldı. Yalnızca güvendiğiniz uzantıları etkinleştirin.</translation>
 <translation id="6889786074662672253">Yeniden başlatılırken bu harici cihazı çıkarmayın ya da bilgisayarınızı kapatmayın. Bu pencereyi simge durumuna küçültebilirsiniz. Güncelleme birkaç dakika sürebilir ve bu süre boyunca harici cihazınız çalışmayabilir.</translation>
 <translation id="6899460405678814458">Özeti göster</translation>
 <translation id="6900701049656042631">Bu albümde fotoğraf yok. Fotoğraf eklemek için <ph name="LINK" /> adresine gidin</translation>
@@ -1341,6 +1347,7 @@
 <translation id="7233782086689993269">Kısayol geri yüklendi</translation>
 <translation id="725133483556299729">E-posta'yı seçme</translation>
 <translation id="7255187042098209569">pembe ve mor</translation>
+<translation id="7267918995585557751">Varsayılan başlangıç sayfasının kimlik avı web sitesi olmadığından emin olmak için sıfırlayın. Yalnızca güvendiğiniz web sitelerini kullanın.</translation>
 <translation id="7271000785316964275">klasisist</translation>
 <translation id="7271040990581020067">Tarayıcı şu anda kullanımda. Daha sonra tekrar deneyin.</translation>
 <translation id="7271932918253517778">Üst sıra tuşlarını kullanan kısayolun <ph name="META_KEY" /> tuşunu içermesi gerekir.</translation>
@@ -1486,6 +1493,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="7903695460270716054">Özel olarak seçilen posterleri ve resimleri kullanın</translation>
 <translation id="7912005977894000746">Ana sayfaya dön</translation>
 <translation id="7915220255123750251">Ağ APN ayarlarını yönetin. APN'ler, hücresel ağ ve internet arasında bir bağlantı oluşturur.</translation>
+<translation id="7915759923880480519">Ağlarınız üzerinden gönderilen verileri korumak için sıfırlayın. Yalnızca güvendiğiniz ağları kullanın.</translation>
 <translation id="7936303884198020182">Alan adı sunucusu bulunamadı</translation>
 <translation id="7942349550061667556">Kırmızı</translation>
 <translation id="7943235353293548836">Kalıcı keepalive Aralığı</translation>
@@ -1710,6 +1718,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="89945434909472341">köy</translation>
 <translation id="8997710128084572139">Cihazın pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
 <translation id="8998289560386111590">Cihazınızda kullanılamıyor</translation>
+<translation id="9000871120886759611">Bilgilere tercih ettiğiniz dilde erişebildiğinizden emin olmak için sıfırlayın. Yalnızca tercih ettiğiniz dillerin kullanıldığını doğrulayın.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Frekans</translation>
 <translation id="901834265349196618">e-posta</translation>

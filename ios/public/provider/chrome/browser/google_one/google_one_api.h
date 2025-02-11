@@ -23,6 +23,9 @@
 // A callback that will be used to open URLs.
 @property(nonatomic, strong) void (^openURLCallback)(NSURL*);
 
+// A callback that will is called at the end of the Google One flow.
+@property(nonatomic, strong) void (^flowDidEndWithErrorCallback)(NSError*);
+
 @end
 
 @protocol GoogleOneController <NSObject>

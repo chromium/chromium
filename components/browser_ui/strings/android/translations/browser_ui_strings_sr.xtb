@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Снижење на отвореним картицама}one{Снижења на отвореним картицама}few{Снижења на отвореним картицама}other{Снижења на отвореним картицама}}</translation>
 <translation id="5186036860380548585">Опција је доступна у врху екрана</translation>
 <translation id="5197729504361054390">Контакти које изаберете ће се делити са <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5198930230016462977">Прилагодите затворену доњу табелу странице нове картице</translation>
 <translation id="5216942107514965959">Последњи посећен данас</translation>
 <translation id="5225463052809312700">Укључи камеру</translation>
 <translation id="5234764350956374838">Одбаци</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Праћење руку</translation>
 <translation id="5771720122942595109">Дозвола <ph name="PERMISSION_1" /> је блокирана</translation>
 <translation id="5804241973901381774">Дозволе</translation>
+<translation id="5822675474983796325">Прилагодите доњу табелу странице нове картице отворену на целом екрану</translation>
 <translation id="5844448279347999754">Када је укључено, сајтови могу да траже да виде текст и слике сачуване у привременој меморији. Када је искључено, сајтови не могу да виде текст или слике сачуване у привременој меморији.</translation>
 <translation id="5853982612236235577">Када је укључено, сајтови могу да траже да шаљу обавештења. Када је искључено, сајтови не могу да шаљу обавештења.</translation>
 <translation id="5860033963881614850">Искључено</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Проширено</translation>
 <translation id="7219254577985949841">Желите да избришете податке сајта?</translation>
 <translation id="723171743924126238">Изаберите слике</translation>
+<translation id="7243246278722455312">Прилагодите доњу табелу странице нове картице</translation>
 <translation id="7243308994586599757">Опције су доступне у дну екрана</translation>
 <translation id="7250468141469952378">Изабрали сте <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Одобрене су дозволе <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /></translation>

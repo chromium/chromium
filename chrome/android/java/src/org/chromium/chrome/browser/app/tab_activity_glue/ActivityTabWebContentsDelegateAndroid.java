@@ -201,19 +201,18 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         boolean success =
                 tabCreator.createTabWithWebContents(
                         mTab, webContents, TabLaunchType.FROM_LONGPRESS_FOREGROUND, url);
+        if (!success) return false;
 
-        if (success) {
-            if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB) {
-                RecordUserAction.record("LinkNavigationOpenedInForegroundTab");
-            } else if (disposition == WindowOpenDisposition.NEW_POPUP) {
-                PolicyAuditor auditor = PolicyAuditor.maybeCreate();
-                if (auditor != null) {
-                    auditor.notifyAuditEvent(
-                            ContextUtils.getApplicationContext(),
-                            AuditEvent.OPEN_POPUP_URL_SUCCESS,
-                            url.getSpec(),
-                            "");
-                }
+        if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB) {
+            RecordUserAction.record("LinkNavigationOpenedInForegroundTab");
+        } else if (disposition == WindowOpenDisposition.NEW_POPUP) {
+            PolicyAuditor auditor = PolicyAuditor.maybeCreate();
+            if (auditor != null) {
+                auditor.notifyAuditEvent(
+                        ContextUtils.getApplicationContext(),
+                        AuditEvent.OPEN_POPUP_URL_SUCCESS,
+                        url.getSpec(),
+                        "");
             }
         }
 
@@ -221,12 +220,12 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         if (sourceTab == null
                 || sourceTab.getTabGroupId() == null
                 || !ChromeFeatureList.isEnabled(ChromeFeatureList.GROUP_NEW_TAB_WITH_PARENT)) {
-            return success;
+            return true;
         }
 
         if (disposition != WindowOpenDisposition.NEW_FOREGROUND_TAB
                 && disposition != WindowOpenDisposition.NEW_BACKGROUND_TAB) {
-            return success;
+            return true;
         }
 
         Tab newTab = fromWebContents(webContents);
@@ -241,7 +240,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
             }
         }
 
-        return success;
+        return true;
     }
 
     @Override

@@ -43,6 +43,8 @@ export class PrintPreviewDuplexSettingsElement extends
 
   static get properties() {
     return {
+      allowedValuesApplied: Boolean,
+
       dark: Boolean,
 
       disabled: Boolean,
@@ -64,6 +66,7 @@ export class PrintPreviewDuplexSettingsElement extends
     ];
   }
 
+  allowedValuesApplied: boolean;
   dark: boolean;
   disabled: boolean;
 
@@ -87,11 +90,18 @@ export class PrintPreviewDuplexSettingsElement extends
   }
 
   /**
+   * Expand the collapse if either is true:
+   * - The current destination has managed print job options that allow only
+   *   a specific set of duplex modes.
+   * - It's possible to use any duplex mode with this destination.
    * @return Whether to expand the collapse for the dropdown.
    */
   private getOpenCollapse_(): boolean {
-    return this.getSetting('duplexShortEdge').available &&
-        (this.getSettingValue('duplex') as boolean);
+    if (this.getSettingValue('duplex') as boolean) {
+      return this.allowedValuesApplied ||
+          this.getSetting('duplexShortEdge').available;
+    }
+    return false;
   }
 
 

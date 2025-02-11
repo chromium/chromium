@@ -67,6 +67,7 @@ static_library("url_lookup_service_base") {
   deps = [
     "//base:base",
     "//components/enterprise/common/proto:connectors_proto",
+    "//components/enterprise/connectors/core",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/safe_browsing:buildflags",

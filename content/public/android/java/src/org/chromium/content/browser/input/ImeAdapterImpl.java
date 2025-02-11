@@ -365,8 +365,9 @@ public class ImeAdapterImpl
     @CalledByNative
     private void onStylusWritingGestureActionCompleted(
             int id, @HandwritingGestureResult.EnumType int result) {
-        if (mOngoingGestures.get(id) != null) {
-            mOngoingGestures.get(id).onGestureHandled(result);
+        OngoingGesture gesture = mOngoingGestures.get(id);
+        if (gesture != null) {
+            gesture.onGestureHandled(result);
             mOngoingGestures.remove(id);
         } else {
             assert id == -1;

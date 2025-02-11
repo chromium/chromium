@@ -710,61 +710,64 @@ class InlineNodeDataEditor final {
     items.ReserveInitialCapacity(data_->items.size() + 3);
 
     // Copy items before replaced range
-    auto end = data_->items.end();
-    auto it = data_->items.begin();
-    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-    for (; it != end && it->end_offset_ < start_offset; UNSAFE_TODO(++it)) {
-      CHECK(it != data_->items.end(), base::NotFatalUntil::M130);
-      items.push_back(*it);
+    base::span<InlineItem> old_items{data_->items};
+    for (; !old_items.empty() && old_items.front().end_offset_ < start_offset;
+         old_items = old_items.subspan<1>()) {
+      items.push_back(old_items.front());
     }
 
-    while (it != end) {
+    while (!old_items.empty()) {
       // Copy part of item before replaced range.
-      if (it->start_offset_ < start_offset) {
-        const InlineItem& new_item = CopyItemBefore(*it, start_offset);
-        items.push_back(new_item);
-        if (new_item.EndOffset() < start_offset) {
-          items.push_back(
-              InlineItem(*it, new_item.EndOffset(), start_offset, nullptr));
+      {
+        const InlineItem& old_item = old_items.front();
+        if (old_item.start_offset_ < start_offset) {
+          const InlineItem& new_item = CopyItemBefore(old_item, start_offset);
+          items.push_back(new_item);
+          if (new_item.EndOffset() < start_offset) {
+            items.push_back(InlineItem(old_item, new_item.EndOffset(),
+                                       start_offset, nullptr));
+          }
         }
       }
 
       // Skip items in replaced range.
-      while (it != end && it->end_offset_ < end_offset) {
-        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-        UNSAFE_TODO(++it);
+      while (!old_items.empty() && old_items.front().end_offset_ < end_offset) {
+        old_items = old_items.subspan<1>();
       }
 
-      if (it == end)
+      if (old_items.empty()) {
         break;
+      }
 
       // Inserted text
       const int diff = new_length - old_length;
-      const unsigned inserted_end = AdjustOffset(end_offset, diff);
-      if (start_offset < inserted_end)
-        items.push_back(InlineItem(*it, start_offset, inserted_end, nullptr));
-
-      // Copy part of item after replaced range.
-      if (end_offset < it->end_offset_) {
-        const InlineItem& new_item = CopyItemAfter(*it, end_offset);
-        if (end_offset < new_item.StartOffset()) {
+      {
+        const unsigned inserted_end = AdjustOffset(end_offset, diff);
+        const InlineItem& old_item = old_items.front();
+        if (start_offset < inserted_end) {
           items.push_back(
-              InlineItem(*it, end_offset, new_item.StartOffset(), nullptr));
+              InlineItem(old_item, start_offset, inserted_end, nullptr));
+        }
+
+        // Copy part of item after replaced range.
+        if (end_offset < old_item.end_offset_) {
+          const InlineItem& new_item = CopyItemAfter(old_item, end_offset);
+          if (end_offset < new_item.StartOffset()) {
+            items.push_back(InlineItem(old_item, end_offset,
+                                       new_item.StartOffset(), nullptr));
+            ShiftItem(&items.back(), diff);
+          }
+          items.push_back(new_item);
           ShiftItem(&items.back(), diff);
         }
-        items.push_back(new_item);
-        ShiftItem(&items.back(), diff);
       }
 
       // Copy items after replaced range
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-      UNSAFE_TODO(++it);
-      while (it != end) {
-        DCHECK_LE(end_offset, it->start_offset_);
-        items.push_back(*it);
+      old_items = old_items.subspan<1>();
+      for (const InlineItem& old_item : old_items) {
+        DCHECK_LE(end_offset, old_item.start_offset_);
+        items.push_back(old_item);
         ShiftItem(&items.back(), diff);
-        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-        UNSAFE_TODO(++it);
       }
       break;
     }

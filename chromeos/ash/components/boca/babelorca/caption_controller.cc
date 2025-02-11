@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "chromeos/ash/components/boca/babelorca/babel_orca_caption_bubble_settings.h"
+#include "chromeos/ash/components/boca/babelorca/caption_bubble_settings_impl.h"
 #include "components/live_caption/caption_bubble_context.h"
 #include "components/live_caption/caption_bubble_controller.h"
 #include "components/live_caption/caption_controller_base.h"
@@ -18,6 +18,7 @@
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "ui/native_theme/caption_style.h"
 #include "ui/native_theme/native_theme_observer.h"
@@ -28,7 +29,7 @@ CaptionController::CaptionController(
     std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context,
     PrefService* profile_prefs,
     const std::string& application_locale,
-    std::unique_ptr<BabelOrcaCaptionBubbleSettings> caption_bubble_settings,
+    std::unique_ptr<CaptionBubbleSettingsImpl> caption_bubble_settings,
     std::unique_ptr<Delegate> delegate)
     : ::captions::CaptionControllerBase(profile_prefs,
                                         application_locale,

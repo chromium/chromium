@@ -28,6 +28,22 @@ source_set("utils") {
 }
 
 if (is_android) {
+  static_library("android") {
+    sources = [
+      "android/tab_group_sync_delegate_android.cc",
+      "android/tab_group_sync_delegate_android.h",
+    ]
+
+    deps = [
+      ":delegate_jni_headers",
+      "//base",
+      "//components/saved_tab_groups/delegate",
+      "//components/saved_tab_groups/public",
+      "//components/saved_tab_groups/public:conversion_utils",
+      "//components/tab_groups",
+    ]
+  }
+
   android_library("factory_java") {
     srcjar_deps = [ ":factory_jni_headers" ]
     sources = [ "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncServiceFactory.java" ]
@@ -47,7 +63,10 @@ if (is_android) {
   }
 
   android_library("java") {
-    srcjar_deps = [ ":jni_headers" ]
+    srcjar_deps = [
+      ":delegate_jni_headers",
+      ":jni_headers",
+    ]
     sources = [
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/LocalTabGroupMutationHelper.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/LogUtils.java",
@@ -57,6 +76,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/StartupHelper.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabCreationDelegateImpl.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncControllerImpl.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncDelegate.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncLocalObserver.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncRemoteObserver.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncUtils.java",
@@ -120,6 +140,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/StartupHelperUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabCreationDelegateImplUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncControllerImplUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncDelegateUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncLocalObserverUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncRemoteObserverUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncTestUtils.java",
@@ -184,6 +205,10 @@ if (is_android) {
 
   generate_jni("jni_headers") {
     sources = [ "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncUtils.java" ]
+  }
+
+  generate_jni("delegate_jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncDelegate.java" ]
   }
 
   generate_jni("utils_jni_headers") {

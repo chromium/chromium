@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -222,6 +223,18 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
       profiles, [](const AutofillProfile* profile) { return *profile; });
   std::vector<CreditCard> copied_credit_cards = base::ToVector(
       credit_cards, [](const CreditCard* card) { return *card; });
+
+  if (form->IsAutofillable()) {
+    // Associate the form signatures of recently submitted
+    // address/credit card forms to `submitted_form`, if it is an
+    // address/credit card form itself. This information is attached to
+    // the vote.
+    if (std::optional<FormStructure::FormAssociations> associations =
+            client_->GetFormDataImporter()->GetFormAssociations(
+                form->form_signature())) {
+      form->set_form_associations(*associations);
+    }
+  }
 
   // Annotate the form with the source language of the page.
   form->set_current_page_language(current_page_language);

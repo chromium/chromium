@@ -9,6 +9,7 @@
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/test_push_notification_client.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/platform_test.h"
 
 namespace {
@@ -49,6 +50,7 @@ class PushNotificationClientManagerTest : public PlatformTest {
   const scoped_refptr<base::SequencedTaskRunner> main_task_runner_{
       base::SequencedTaskRunner::GetCurrentDefault()};
 
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<PushNotificationClientManager> manager_ =
       std::make_unique<PushNotificationClientManager>(main_task_runner_);
 };

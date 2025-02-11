@@ -49,7 +49,7 @@ void AddressSignInPromoView::AddedToWidget() {
       std::make_unique<ThemeTrackingNonAccessibleImageView>(
           ui::ImageModel::FromResourceId(IDR_SAVE_ADDRESS),
           ui::ImageModel::FromResourceId(IDR_SAVE_ADDRESS_DARK),
-          base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+          base::BindRepeating(&views::BubbleDialogDelegate::background_color,
                               base::Unretained(this))));
 }
 

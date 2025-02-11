@@ -249,29 +249,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "14-desktop-x64-emulator",
-    generate_pyl_entry = False,
-    description = "Run with android_34_desktop_x64",
-    args = [
-        "--avd-config=../../tools/android/avd/proto/android_34_desktop_x64.textpb",
-    ],
-    swarming = targets.swarming(
-        # soft affinity so that bots with caches will be picked first
-        optional_dimensions = {
-            60: {
-                "caches": "android_34_desktop_x64",
-            },
-        },
-        named_caches = [
-            swarming.cache(
-                name = "android_34_desktop_x64",
-                path = ".android_emulator/android_34_desktop_x64",
-            ),
-        ],
-    ),
-)
-
-targets.mixin(
     name = "15-desktop-x64-emulator",
     generate_pyl_entry = False,
     description = "Run with android_35_google_apis_tablet_x64",

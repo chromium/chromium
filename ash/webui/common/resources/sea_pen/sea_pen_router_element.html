@@ -1,6 +1,8 @@
 <style>
   :host {
     --sea-pen-top-container-min-height: 168px;
+    /* The templates page shows an extra link when freeform is enabled and requires more space. */
+    --sea-pen-top-container-min-height-for-templates-with-freeform: 190px;
     --sea-pen-freeform-top-container-min-height: 160px;
   }
 
@@ -86,6 +88,11 @@
     top: var(--sea-pen-top-container-min-height);
   }
 
+  :host(.always-show-top) #bottomContainer.add-extra-spacing,
+  #topContainer:has(sea-pen-template-query) + #bottomContainer.add-extra-spacing {
+    top: var(--sea-pen-top-container-min-height-for-templates-with-freeform);
+  }
+
   sea-pen-recent-wallpapers {
     margin-top: 8px;
   }
@@ -117,7 +124,7 @@
     </sea-pen-template-query>
   </template>
 </div>
-<div id="bottomContainer" on-click="onBottomContainerClicked_">
+<div id="bottomContainer" class$="[[getBottomContainerClass_(relativePath_)]]" on-click="onBottomContainerClicked_">
   <iron-location path="{{path_}}" query="{{query_}}" dwell-time="200">
   </iron-location>
   <iron-query-params params-object="{{queryParams_}}" params-string="{{query_}}">

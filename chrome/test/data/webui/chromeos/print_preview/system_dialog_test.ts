@@ -9,7 +9,7 @@ import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
-import {getDefaultInitialSettings, selectOption} from './print_preview_test_utils.js';
+import {getDefaultInitialSettings, selectOption, toggleMoreSettings} from './print_preview_test_utils.js';
 import {TestPluginProxy} from './test_plugin_proxy.js';
 
 suite('SystemDialogTest', function() {
@@ -85,9 +85,7 @@ suite('SystemDialogTest', function() {
     assertFalse(linkContainer.disabled);
     assertFalse(link.hidden);
 
-    const moreSettingsElement =
-        sidebar.shadowRoot!.querySelector('print-preview-more-settings')!;
-    moreSettingsElement.$.label.click();
+    toggleMoreSettings(sidebar);
     const scalingSettings =
         sidebar.shadowRoot!.querySelector('print-preview-scaling-settings')!;
     assertFalse(scalingSettings.hidden);

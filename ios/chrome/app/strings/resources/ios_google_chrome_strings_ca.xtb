@@ -121,6 +121,7 @@ Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sess
 <translation id="4064699917955374540">Per utilitzar i desar les dades de Chrome al teu Compte de Google, verifica la teva identitat.</translation>
 <translation id="417201473131094001">No s'admeten a Chrome Canary</translation>
 <translation id="424864128008805179">Vols tancar la sessió de Chrome?</translation>
+<translation id="4430797724889237570">Obre enllaços de Gmail, Maps, YouTube i altres aplicacions a Chrome</translation>
 <translation id="447252321002412580">Ajuda a millorar les funcions i el rendiment de Chrome</translation>
 <translation id="4523886039239821078">Alguns complements fan que Chrome falli. Desinstal·la'ls.</translation>
 <translation id="4633328489441962921">Chrome no pot cercar actualitzacions</translation>
@@ -206,6 +207,7 @@ Espera uns quants minuts abans de canviar de compte. Si canvies de compte ara, a
 
 Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i desar les dades de Chrome al teu Compte de Google, introdueix la frase de contrasenya.</translation>
 <translation id="6533470733797826516">Inicia la sessió més de pressa amb Emplenament automàtic de Chrome</translation>
+<translation id="6536544321553662809">Estableix Chrome com a navegador predeterminat per compartir i obrir enllaços fàcilment</translation>
 <translation id="6545449117344801102">Chrome detecta les adreces i utilitza Google Maps per oferir-te indicacions i informació local.</translation>
 <translation id="6636941099779251629">La teva organització requereix que iniciïs la sessió per utilitzar Chrome. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Envia una part ofuscada de l'URL a Google mitjançant un servidor de privadesa que amaga la teva adreça IP. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Google.</translation>
@@ -291,6 +293,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Tots els drets reservats.</translation>
 <translation id="8371138994040262994">Obre la configuració a Chrome.</translation>
 <translation id="8387459386171870978">Continua utilitzant Chrome</translation>
+<translation id="8392023217086447677">S'ha obert en mode d'incògnit a Chrome</translation>
 <translation id="840168496893712993">Alguns complements fan que Chrome es bloquegi. Proveu de desinstal·lar-los.</translation>
 <translation id="8413500425974960807">Consell de Chrome: mou Chrome al Dock</translation>
 <translation id="8413795581997394485">Protegeix contra llocs web, baixades i extensions que se sap que són perillosos. Quan visites un lloc web, Chrome envia una part ofuscada de l'URL a Google mitjançant un servidor de privadesa que amaga la teva adreça IP. Si un lloc web fa res sospitós, també s'envien URL complets i fragments de contingut de la pàgina.</translation>

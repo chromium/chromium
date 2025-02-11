@@ -95,9 +95,9 @@ class FakePageHandler implements PageHandlerInterface {
   reviewDangerousRequiringGesture(_id: string) {}
   deepScan(_id: string) {}
   bypassDeepScanRequiringGesture(_id: string) {}
-  async isEligibleForEsbPromo(): Promise<{result: boolean}> {
+  isEligibleForEsbPromo(): Promise<{result: boolean}> {
     this.callTracker_.methodCalled('isEligibleForEsbPromo');
-    return {result: this.eligibleForEsbPromo_};
+    return Promise.resolve({result: this.eligibleForEsbPromo_});
   }
   setEligbleForEsbPromo(eligible: boolean) {
     this.eligibleForEsbPromo_ = eligible;

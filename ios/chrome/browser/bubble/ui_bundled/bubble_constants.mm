@@ -12,9 +12,6 @@ NSString* const kBubbleViewTitleLabelIdentifier =
     @"BubbleViewTitleLabelIdentifier";
 // Accessibility identifier for the label.
 NSString* const kBubbleViewLabelIdentifier = @"BubbleViewLabelIdentifier";
-// Accessibility identifier for the image view.
-NSString* const kBubbleViewImageViewIdentifier =
-    @"BubbleViewImageViewIdentifier";
 // Accessibility identifier for the snooze button.
 NSString* const kBubbleViewSnoozeButtonIdentifier =
     @"kBubbleViewSnoozeButtonIdentifier";

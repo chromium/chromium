@@ -981,7 +981,8 @@ void BackgroundTracingManagerImpl::RemoveNamedTriggerObserver(
 
 bool BackgroundTracingManagerImpl::DoEmitNamedTrigger(
     const std::string& trigger_name,
-    std::optional<int32_t> value) {
+    std::optional<int32_t> value,
+    uint64_t flow_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto it = named_trigger_observers_.find(trigger_name);
@@ -989,9 +990,9 @@ bool BackgroundTracingManagerImpl::DoEmitNamedTrigger(
     return false;
   }
   for (BackgroundTracingRule& obs : it->second) {
-    if (obs.OnRuleTriggered(value)) {
-      TRACE_EVENT_INSTANT("toplevel", "NamedTrigger",
-                          base::trace_event::TriggerFlow(trigger_name, value));
+    if (obs.OnRuleTriggered(value, flow_id)) {
+      TRACE_EVENT_INSTANT("toplevel,latency", "NamedTrigger",
+                          perfetto::Flow::Global(flow_id));
       return true;
     }
   }

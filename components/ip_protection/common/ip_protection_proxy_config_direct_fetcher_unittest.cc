@@ -4,8 +4,12 @@
 
 #include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 
+#include <map>
 #include <memory>
 #include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -20,9 +24,14 @@
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/get_proxy_config.pb.h"
 #include "net/base/features.h"
+#include "net/base/net_errors.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/proxy_server.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/public/mojom/url_response_head.mojom-shared.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"

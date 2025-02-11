@@ -440,7 +440,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertFalse(btn.disabled);
   });
 
-  test('AddsCreatedBookmark', async () => {
+  test('AddsCreatedBookmark', () => {
     bookmarksApi.callbackRouter.onCreated.callListeners('999', {
       id: '999',
       title: 'New bookmark',
@@ -626,7 +626,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertEquals(originalShownBookmarkCount - 1, getBookmarks().length);
   });
 
-  test('SetsCompactDescription', async () => {
+  test('SetsCompactDescription', () => {
     const folder = getBookmarkWithId('5');
     assertTrue(!!folder);
 

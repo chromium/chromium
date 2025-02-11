@@ -16,6 +16,7 @@ mojom("mojom") {
   ]
   webui_module_path = "/"
 
+
   cpp_typemaps = [
     {
       types = [

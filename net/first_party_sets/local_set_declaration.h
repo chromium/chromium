@@ -53,7 +53,7 @@ class NET_EXPORT LocalSetDeclaration {
 
   bool empty() const { return entries_.empty(); }
 
-  size_t size() const { return entries_.size(); }
+  size_t size() const { return entries_.size() + aliases_.size(); }
 
   // Computes the SetsMutation that can be used to implement the changes
   // described in this instance.

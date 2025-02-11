@@ -940,18 +940,12 @@ class CONTENT_EXPORT RenderProcessHostImpl
     // contents.
     kPdf = 1 << 2,
 
-#if BUILDFLAG(IS_WIN)
-    // Indicates whether this RenderProcessHost should use FontDataManager as
-    // the default font manager.
-    kFontDataManager = 1 << 3,
-#endif
-
     // Indicates whether v8 optimizations are disabled in this renderer process.
-    kV8OptimizationsDisabled = 1 << 4,
+    kV8OptimizationsDisabled = 1 << 3,
 
     // Indicates whether v8 feature flag overrides are disallowed in this
     // renderer process.
-    kDisallowV8FeatureFlagOverrides = 1 << 5,
+    kDisallowV8FeatureFlagOverrides = 1 << 4,
   };
 
   // A RenderProcessHostImpl's IO thread implementation of the

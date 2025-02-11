@@ -46,7 +46,7 @@ reading-list-item:first-of-type:last-of-type {
 
 .sp-card {
   display: flex;
-  height: calc(100% - var(--sp-footer-height) - 4 * var(--sp-body-padding));
+  max-height: calc(100% - var(--sp-footer-height) - 4 * var(--sp-body-padding));
   margin: var(--sp-body-padding);
 }
 

@@ -3096,6 +3096,10 @@ void RenderWidgetHostViewAura::DidEnterBackForwardCache() {
   host()->ForceFirstFrameAfterNavigationTimeout();
 }
 
+void RenderWidgetHostViewAura::ActivatedOrEvictedFromBackForwardCache() {
+  delegated_frame_host_->ActivatedOrEvictedFromBackForwardCache();
+}
+
 const viz::FrameSinkId& RenderWidgetHostViewAura::GetFrameSinkId() const {
   return frame_sink_id_;
 }

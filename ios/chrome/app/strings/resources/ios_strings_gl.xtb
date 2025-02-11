@@ -20,7 +20,6 @@
 <translation id="1054745118061919935">Ao continuar, aceptas as <ph name="BEGIN_LINK" />Condicións de servizo<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Contrasinais que non se gardan nunca</translation>
 <translation id="1062138828266376352">Non se modificou o PIN. Comproba a túa conexión a Internet e téntao de novo</translation>
-<translation id="1066060668811609597">Xestionar sincronización</translation>
 <translation id="1076421457278169141">Escaneouse o código</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} pestana}other{{count} pestanas}}</translation>
 <translation id="1082554859195167538">Recensións de produtos para ti</translation>
@@ -1152,7 +1151,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="605721222689873409">AA</translation>
 <translation id="6059103953801602038">Os sitios que segues gárdanse na túa Conta de Google. Podes xestionalos na configuración de Discover.</translation>
 <translation id="6059830886158432458">Controla as túas historias e a túa actividade aquí</translation>
-<translation id="6064824697233747382">A túa organización esixe que desactives a sincronización.</translation>
 <translation id="6066301408025741299">Toca para cancelar.</translation>
 <translation id="6074656473835429958">Recibe notificacións</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) non se puido cargar</translation>

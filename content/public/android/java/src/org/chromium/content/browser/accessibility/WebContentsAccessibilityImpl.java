@@ -940,8 +940,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     @CalledByNative
     public void clearNodeInfoCacheForGivenId(int virtualViewId) {
         // Recycle and remove the element in our cache for this |virtualViewId|.
-        if (mNodeInfoCache.get(virtualViewId) != null) {
-            mNodeInfoCache.get(virtualViewId).recycle();
+        AccessibilityNodeInfoCompat nodeInfo = mNodeInfoCache.get(virtualViewId);
+        if (nodeInfo != null) {
+            nodeInfo.recycle();
             mNodeInfoCache.remove(virtualViewId);
         }
         // Remove this node from requested image data nodes in case data changed with update.
@@ -999,7 +1000,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 return cachedNode;
             } else {
                 // If the node is no longer valid, wipe it from the cache and return null
-                mNodeInfoCache.get(virtualViewId).recycle();
+                AccessibilityNodeInfoCompat nodeInfo = mNodeInfoCache.get(virtualViewId);
+                assumeNonNull(nodeInfo).recycle();
                 mNodeInfoCache.remove(virtualViewId);
                 mHistogramRecorder.endAccessibilityNodeInfoConstruction();
                 return null;

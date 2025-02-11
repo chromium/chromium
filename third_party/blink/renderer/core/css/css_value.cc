@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_system_font_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/css_progress_value.h"
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
 #include "third_party/blink/renderer/core/css/css_ratio_value.h"
 #include "third_party/blink/renderer/core/css/css_ray_value.h"
@@ -300,6 +301,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<CSSShadowValue>(*this, other);
       case kStringClass:
         return CompareCSSValues<CSSStringValue>(*this, other);
+      case kProgressClass:
+        return CompareCSSValues<cssvalue::CSSProgressValue>(*this, other);
       case kLinearTimingFunctionClass:
         return CompareCSSValues<cssvalue::CSSLinearTimingFunctionValue>(*this,
                                                                         other);
@@ -470,6 +473,8 @@ String CSSValue::CssText() const {
       return To<CSSShadowValue>(this)->CustomCSSText();
     case kStringClass:
       return To<CSSStringValue>(this)->CustomCSSText();
+    case kProgressClass:
+      return To<cssvalue::CSSProgressValue>(this)->CustomCSSText();
     case kLinearTimingFunctionClass:
       return To<cssvalue::CSSLinearTimingFunctionValue>(this)->CustomCSSText();
     case kCubicBezierTimingFunctionClass:
@@ -594,6 +599,7 @@ unsigned CSSValue::Hash() const {
     case kRadialGradientClass:
     case kConicGradientClass:
     case kConstantGradientClass:
+    case kProgressClass:
     case kLinearTimingFunctionClass:
     case kCubicBezierTimingFunctionClass:
     case kStepsTimingFunctionClass:
@@ -825,6 +831,9 @@ void CSSValue::Trace(Visitor* visitor) const {
     case kStringClass:
       To<CSSStringValue>(this)->TraceAfterDispatch(visitor);
       return;
+    case kProgressClass:
+      To<cssvalue::CSSProgressValue>(this)->TraceAfterDispatch(visitor);
+      return;
     case kLinearTimingFunctionClass:
       To<cssvalue::CSSLinearTimingFunctionValue>(this)->TraceAfterDispatch(
           visitor);
@@ -975,6 +984,8 @@ String CSSValue::ClassTypeToString() const {
       return "ConicGradientClass";
     case kConstantGradientClass:
       return "ConstantGradientClass";
+    case kProgressClass:
+      return "kProgressTypeClass";
     case kLinearTimingFunctionClass:
       return "LinearTimingFunctionClass";
     case kCubicBezierTimingFunctionClass:

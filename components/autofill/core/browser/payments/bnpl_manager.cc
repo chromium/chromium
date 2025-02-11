@@ -233,4 +233,18 @@ void BnplManager::MaybeUpdateSuggestionsWithBnpl(
       .Run(update_suggestions_result.suggestions, trigger_source);
 }
 
+std::set<std::string> BnplManager::GetBnplSupportedCountries() {
+  return {"US"};
+}
+
+bool BnplManager::ShouldShowBnplSettingsToggle() const {
+  return !payments_autofill_client_->GetPaymentsDataManager()
+              .GetBnplIssuers()
+              .empty() &&
+         (base::FeatureList::IsEnabled(
+              features::kAutofillEnableBuyNowPayLaterForAffirm) ||
+          base::FeatureList::IsEnabled(
+              features::kAutofillEnableBuyNowPayLaterForZip));
+}
+
 }  // namespace autofill::payments

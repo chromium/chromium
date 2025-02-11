@@ -1262,30 +1262,6 @@ Politika, Devre dışı değerine ayarlanırsa alternatif tarayıcıya son sekme
       Bu kurumsal politika varsayılan olarak devre dışıdır.</translation>
 <translation id="1947848925128084608">Giriş ekranında yüksek kontrastı devre dışı bırak ve kullanıcının bunu geçici olarak etkinleştirmesine izin ver</translation>
 <translation id="1949584741547056205">Bil bakalım</translation>
-<translation id="1951288262199783797">Dosya türü uzantısına dayalı indirme uyarılarından muaf tutulacak dosya türü uzantılarını ve muafiyetin geçerli olacağı alanların listesini içeren bir sözlük oluşturmak için bu politikayı etkinleştirebilirsiniz. Böylece kuruluş yöneticileri, listedeki alanlarla ilişkili dosyalar için dosya türü uzantısına dayalı indirme uyarılarını engelleyebilirler. Örneğin "jnlp" uzantısı "website1.com" ile ilişkilendirilmişse kullanıcılar, "website1.com"dan "jnlp" dosyalarını indirirken uyarı almaz ancak "website2.com"dan "jnlp" dosyalarını indirirken uyarı alır.
-
-      Bu politikada tanımlanan alanlar için belirtilen dosya türü uzantılarına sahip dosyalar da, karma içerik indirme uyarısı ve Güvenli Tarama uyarısı gibi dosya türü uzantısına dayalı olmayan güvenlik uyarılarına tabidir.
-
-      Bu politikayı devre dışı bırakır veya yapılandırmazsanız uzantıya dayalı indirme uyarılarını tetikleyen dosya türleri kullanıcıya uyarı verir.
-
-      Bu politikayı etkinleştirirseniz:
-
-      * URL kalıpları https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresindeki kurallara uygun olarak biçimlendirilmelidir.
-      * Dosya uzantıları küçük harflerle ASCII olarak girilmelidir. Dosya türü uzantısı listelenirken ayırıcı eklenmemelidir, yani ".jnlp" yerine "jnlp" şeklinde yazmanız gerekir.
-
-      Örnek:
-
-      Aşağıdaki örnek değer *.example.com alanlarında swf, exe ve jnlp uzantıları için dosya türü uzantısına dayalı indirme uyarılarını önler. Diğer tüm alanlarda kullanıcıya exe ve jnlp dosyaları için dosya türü uzantısına dayalı indirme uyarısı gösterir ancak swf dosyaları için göstermez.
-
-      [
-        { "file_extension": "jnlp", "domains": ["example.com"] },
-        { "file_extension": "exe", "domains": ["example.com"] },
-        { "file_extension": "swf", "domains": ["*"] }
-      ]
-
-      Bu örnekte "swf" dosyaları için dosya türü uzantısına dayalı indirme uyarılarının tüm alanlarda engellendiğini görebilirsiniz. Güvenlik riski nedeniyle, tehlikeli dosya türü uzantıları için bu gibi uyarıların tüm alanlarda engellenmesi önerilmez. Bu örnek yalnızca böyle bir yapılandırmanın mümkün olduğunu göstermek amacıyla verilmiştir.
-
-      Bu politika <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> ile birlikte etkinleştirildiğinde, DownloadRestrictions politikası tehlikeli dosya türlerini engelleyecek şekilde ayarlanmışsa öncelik DownloadRestrictions tarafından uygulanan indirme engelleme işlemlerine verilir. Örneğin, DownloadRestrictions kötü amaçlı indirmeleri ve tehlikeli dosya türlerini engelleyecek şekilde ayarlanmışsa, bu politika "website1.com"dan "exe" uzantılı indirmelere izin verecek şekilde ayarlanmış olsa bile "exe" uzantılı indirmeler tüm alanlarda engellenir. DownloadRestrictions tehlikeli dosya türlerini engelleyecek şekilde ayarlanmamışsa bu politikada belirtilen dosya türleri, belirtilen alanlarda dosya türü uzantısına dayalı indirme uyarılarına tabi olmaz. DownloadRestrictions hakkında daha fazla bilgi edinin (https://chromeenterprise.google/policies/?policy=DownloadRestrictions).</translation>
 <translation id="1954612656043024615">Paylaşılan pano özelliğini etkinleştir</translation>
 <translation id="1955063069502242812">Düşük pil seviyesi sesini etkinleştir</translation>
 <translation id="1955806069704957172">Desk connector API ile ilgili ayarları kontrol eder.</translation>

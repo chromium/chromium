@@ -4,6 +4,7 @@
 
 #include "remoting/host/remoting_register_support_host_request.h"
 
+#include "base/logging.h"
 #include "base/strings/stringize_macros.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/base/oauth_token_getter.h"
@@ -241,6 +242,8 @@ void RemotingRegisterSupportHostRequest::OnRegisterHostResult(
     std::unique_ptr<apis::v1::RegisterSupportHostResponse> response) {
   if (!status.ok()) {
     state_ = State::NOT_STARTED;
+    LOG(ERROR) << "Failed to register support host: " << status.error_message()
+               << " (" << static_cast<int>(status.error_code()) << ")";
     RunCallback({}, {}, MapError(status.error_code()));
     return;
   }

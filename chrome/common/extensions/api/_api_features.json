@@ -841,10 +841,6 @@
       "chrome://print/*"
     ]
   }],
-  "rtcPrivate": {
-    "dependencies": ["permission:rtcPrivate"],
-    "contexts": ["privileged_extension"]
-  },
   "safeBrowsingPrivate": {
     "dependencies": ["permission:safeBrowsingPrivate"],
     "contexts": ["privileged_extension"]

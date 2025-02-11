@@ -38,6 +38,8 @@ namespace {
 
 using base::test::TestFuture;
 using DialogStyle = It2MeConfirmationDialog::DialogStyle;
+using remoting::features::kEnableCrdSharedSessionToUnattendedDevice;
+
 constexpr char kTestingRemoteEmail[] = "remote@gmail.com";
 constexpr char kModalDialogClassName[] = "MessageBoxView";
 constexpr char kTestUserEmail[] = "user@test.com";
@@ -101,6 +103,58 @@ class It2MeConfirmationDialogChromeOSTest
     ash::AshTestBase::TearDown();
   }
 
+  void EnableFeature(const base::Feature& feature) {
+    feature_list_.Reset();
+    feature_list_.InitAndEnableFeature(feature);
+  }
+
+  void DisableFeature(const base::Feature& feature) {
+    feature_list_.Reset();
+    feature_list_.InitAndDisableFeature(feature);
+  }
+
+  std::u16string FormatMessage(const std::string& remote_user_email,
+                               DialogStyle style) {
+    int message_id = (style == DialogStyle::kEnterprise
+                          ? IDS_SHARE_CONFIRM_DIALOG_MESSAGE_ADMIN_INITIATED
+                          : IDS_SHARE_CONFIRM_DIALOG_MESSAGE_WITH_USERNAME);
+
+    return base::i18n::MessageFormatter::FormatWithNumberedArgs(
+        l10n_util::GetStringUTF16(message_id),
+        base::UTF8ToUTF16(remote_user_email),
+        l10n_util::GetStringUTF16(IDS_SHARE_CONFIRM_DIALOG_DECLINE),
+        l10n_util::GetStringUTF16(IDS_SHARE_CONFIRM_DIALOG_CONFIRM));
+  }
+
+  It2MeConfirmationDialog::ResultCallback DoNothingCallback() {
+    return It2MeConfirmationDialog::ResultCallback();
+  }
+
+  void CreateAndShowDialog(const std::string& remote_user_email,
+                           It2MeConfirmationDialog::ResultCallback callback) {
+    dialog_ = CreateDialog(GetParam());
+    dialog_->Show(remote_user_email, std::move(callback));
+  }
+
+ private:
+  std::unique_ptr<It2MeConfirmationDialog> CreateDialog(
+      DialogStyle dialog_style) {
+    It2MeConfirmationDialogFactory dialog_factory{dialog_style};
+    return dialog_factory.Create();
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<It2MeConfirmationDialog> dialog_;
+};
+
+class It2MeConfirmationDialogChromeOSTestWithCrdUnattendedDisabled
+    : public It2MeConfirmationDialogChromeOSTest {
+ public:
+  void SetUp() override {
+    DisableFeature(kEnableCrdSharedSessionToUnattendedDevice);
+    It2MeConfirmationDialogChromeOSTest::SetUp();
+  }
+
   message_center::MessageCenter& message_center() const {
     return *message_center::MessageCenter::Get();
   }
@@ -145,41 +199,10 @@ class It2MeConfirmationDialogChromeOSTest
     ASSERT_GE(button_index, 0);
     notification->delegate()->Click(button_index, std::nullopt);
   }
-
-  std::u16string FormatMessage(const std::string& remote_user_email,
-                               DialogStyle style) {
-    int message_id = (style == DialogStyle::kEnterprise
-                          ? IDS_SHARE_CONFIRM_DIALOG_MESSAGE_ADMIN_INITIATED
-                          : IDS_SHARE_CONFIRM_DIALOG_MESSAGE_WITH_USERNAME);
-
-    return base::i18n::MessageFormatter::FormatWithNumberedArgs(
-        l10n_util::GetStringUTF16(message_id),
-        base::UTF8ToUTF16(remote_user_email),
-        l10n_util::GetStringUTF16(IDS_SHARE_CONFIRM_DIALOG_DECLINE),
-        l10n_util::GetStringUTF16(IDS_SHARE_CONFIRM_DIALOG_CONFIRM));
-  }
-
-  It2MeConfirmationDialog::ResultCallback DoNothingCallback() {
-    return It2MeConfirmationDialog::ResultCallback();
-  }
-
-  void CreateAndShowDialog(const std::string& remote_user_email,
-                           It2MeConfirmationDialog::ResultCallback callback) {
-    dialog_ = CreateDialog(GetParam());
-    dialog_->Show(remote_user_email, std::move(callback));
-  }
-
- private:
-  std::unique_ptr<It2MeConfirmationDialog> CreateDialog(
-      DialogStyle dialog_style) {
-    It2MeConfirmationDialogFactory dialog_factory{dialog_style};
-    return dialog_factory.Create();
-  }
-
-  std::unique_ptr<It2MeConfirmationDialog> dialog_;
 };
 
-TEST_P(It2MeConfirmationDialogChromeOSTest, NotificationShouldHaveDesiredText) {
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedDisabled,
+       NotificationShouldHaveDesiredText) {
   CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
 
   const message_center::Notification* notification = GetFirstNotification();
@@ -190,7 +213,8 @@ TEST_P(It2MeConfirmationDialogChromeOSTest, NotificationShouldHaveDesiredText) {
             FormatMessage(kTestingRemoteEmail, GetParam()));
 }
 
-TEST_P(It2MeConfirmationDialogChromeOSTest, NotificationShouldBePersistent) {
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedDisabled,
+       NotificationShouldBePersistent) {
   CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
 
   const message_center::Notification* notification = GetFirstNotification();
@@ -199,7 +223,7 @@ TEST_P(It2MeConfirmationDialogChromeOSTest, NotificationShouldBePersistent) {
             message_center::NotificationPriority::SYSTEM_PRIORITY);
 }
 
-TEST_P(It2MeConfirmationDialogChromeOSTest,
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedDisabled,
        NotificationShouldBeShownInDoNotDisturbMode) {
   CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
 
@@ -212,7 +236,7 @@ TEST_P(It2MeConfirmationDialogChromeOSTest,
             message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
 }
 
-TEST_P(It2MeConfirmationDialogChromeOSTest,
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedDisabled,
        NotificationShouldHaveConfirmAndCancelButton) {
   CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
 
@@ -228,7 +252,7 @@ TEST_P(It2MeConfirmationDialogChromeOSTest,
             0);  // Confirm button
 }
 
-TEST_P(It2MeConfirmationDialogChromeOSTest,
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedDisabled,
        NotificationShouldBeRemovedAndReturnCancelAfterUserCancels) {
   TestFuture<It2MeConfirmationDialog::Result> result_future;
   CreateAndShowDialog(kTestingRemoteEmail, result_future.GetCallback());
@@ -239,7 +263,7 @@ TEST_P(It2MeConfirmationDialogChromeOSTest,
   EXPECT_EQ(result_future.Get(), It2MeConfirmationDialog::Result::CANCEL);
 }
 
-TEST_P(It2MeConfirmationDialogChromeOSTest,
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedDisabled,
        NotificationShouldBeRemovedAndReturnOkAfterUserConfirms) {
   TestFuture<It2MeConfirmationDialog::Result> result_future;
   CreateAndShowDialog(kTestingRemoteEmail, result_future.GetCallback());
@@ -255,8 +279,7 @@ class It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled
     : public It2MeConfirmationDialogChromeOSTest {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        remoting::features::kEnableCrdSharedSessionToUnattendedDevice);
+    EnableFeature(kEnableCrdSharedSessionToUnattendedDevice);
     It2MeConfirmationDialogChromeOSTest::SetUp();
   }
 
@@ -267,9 +290,6 @@ class It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled
   void SimulateDeviceOnLoginScreen() {
     BlockUserSession(UserSessionBlockReason::BLOCKED_BY_LOGIN_SCREEN);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
@@ -359,13 +379,15 @@ TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
   ASSERT_TRUE(DialogVisibleInParentContainer(kLockScreen));
 }
 
-INSTANTIATE_TEST_SUITE_P(EnterpriseDialog,
-                         It2MeConfirmationDialogChromeOSTest,
-                         testing::Values(DialogStyle::kEnterprise));
+INSTANTIATE_TEST_SUITE_P(
+    EnterpriseDialog,
+    It2MeConfirmationDialogChromeOSTestWithCrdUnattendedDisabled,
+    testing::Values(DialogStyle::kEnterprise));
 
-INSTANTIATE_TEST_SUITE_P(ConsumerDialog,
-                         It2MeConfirmationDialogChromeOSTest,
-                         testing::Values(DialogStyle::kConsumer));
+INSTANTIATE_TEST_SUITE_P(
+    ConsumerDialog,
+    It2MeConfirmationDialogChromeOSTestWithCrdUnattendedDisabled,
+    testing::Values(DialogStyle::kConsumer));
 
 INSTANTIATE_TEST_SUITE_P(
     EnterpriseDialog,

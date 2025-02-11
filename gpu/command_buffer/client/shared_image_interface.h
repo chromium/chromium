@@ -252,25 +252,6 @@ class GPU_EXPORT SharedImageInterface
       const SyncToken& sync_token,
       scoped_refptr<ClientSharedImage> client_shared_image) = 0;
 
-  // Adds another owning reference to the SharedImage. It must be released via
-  // DestroySharedImage in the same way as for SharedImages created via
-  // CreateSharedImage(). Note: The image must have been created on different
-  // gpu channel and each can have only single reference.
-  // Note: `usage` must be the same value as passed to CreateSharedImage call
-  // and is just stored without validation.
-  // Note: `texture_target` is the texture target that should be used for this
-  // SharedImage.
-  virtual scoped_refptr<ClientSharedImage> AddReferenceToSharedImage(
-      const SyncToken& sync_token,
-      const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      uint32_t texture_target);
-
   // Imports SharedImage to this interface and returns an owning reference. It
   // must be released via DestroySharedImage in the same way as for SharedImages
   // created via CreateSharedImage().

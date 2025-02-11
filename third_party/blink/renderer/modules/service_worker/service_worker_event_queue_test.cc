@@ -148,9 +148,9 @@ TEST_F(ServiceWorkerEventQueueTest, IdleTimer) {
       base::Seconds(mojom::blink::kServiceWorkerDefaultIdleDelayInSeconds);
 
   bool is_idle = false;
-  ServiceWorkerEventQueue event_queue(
-      base::NullCallback(), CreateReceiverWithCalledFlag(&is_idle),
-      task_runner(), task_runner()->GetMockTickClock());
+  ServiceWorkerEventQueue event_queue(CreateReceiverWithCalledFlag(&is_idle),
+                                      task_runner(),
+                                      task_runner()->GetMockTickClock());
   task_runner()->FastForwardBy(kIdleInterval);
   // Nothing should happen since the event queue has not started yet.
   EXPECT_FALSE(is_idle);
@@ -209,9 +209,9 @@ TEST_F(ServiceWorkerEventQueueTest, InflightEventBeforeStart) {
       base::Seconds(mojom::blink::kServiceWorkerDefaultIdleDelayInSeconds);
 
   bool is_idle = false;
-  ServiceWorkerEventQueue event_queue(
-      base::DoNothing(), CreateReceiverWithCalledFlag(&is_idle), task_runner(),
-      task_runner()->GetMockTickClock());
+  ServiceWorkerEventQueue event_queue(CreateReceiverWithCalledFlag(&is_idle),
+                                      task_runner(),
+                                      task_runner()->GetMockTickClock());
   MockEvent event;
   event.EnqueueTo(&event_queue);
   event_queue.Start();
@@ -221,8 +221,7 @@ TEST_F(ServiceWorkerEventQueueTest, InflightEventBeforeStart) {
 }
 
 TEST_F(ServiceWorkerEventQueueTest, EventTimer) {
-  ServiceWorkerEventQueue event_queue(base::DoNothing(), base::DoNothing(),
-                                      task_runner(),
+  ServiceWorkerEventQueue event_queue(base::DoNothing(), task_runner(),
                                       task_runner()->GetMockTickClock());
   event_queue.Start();
 
@@ -245,8 +244,7 @@ TEST_F(ServiceWorkerEventQueueTest, EventTimer) {
 }
 
 TEST_F(ServiceWorkerEventQueueTest, CustomTimeouts) {
-  ServiceWorkerEventQueue event_queue(base::DoNothing(), base::DoNothing(),
-                                      task_runner(),
+  ServiceWorkerEventQueue event_queue(base::DoNothing(), task_runner(),
                                       task_runner()->GetMockTickClock());
   event_queue.Start();
   MockEvent event1, event2;
@@ -274,9 +272,9 @@ TEST_F(ServiceWorkerEventQueueTest, CustomTimeouts) {
 
 TEST_F(ServiceWorkerEventQueueTest, BecomeIdleAfterAbort) {
   bool is_idle = false;
-  ServiceWorkerEventQueue event_queue(
-      base::DoNothing(), CreateReceiverWithCalledFlag(&is_idle), task_runner(),
-      task_runner()->GetMockTickClock());
+  ServiceWorkerEventQueue event_queue(CreateReceiverWithCalledFlag(&is_idle),
+                                      task_runner(),
+                                      task_runner()->GetMockTickClock());
   event_queue.Start();
 
   MockEvent event;
@@ -294,8 +292,7 @@ TEST_F(ServiceWorkerEventQueueTest, BecomeIdleAfterAbort) {
 TEST_F(ServiceWorkerEventQueueTest, AbortAllOnDestruction) {
   MockEvent event1, event2;
   {
-    ServiceWorkerEventQueue event_queue(base::DoNothing(), base::DoNothing(),
-                                        task_runner(),
+    ServiceWorkerEventQueue event_queue(base::DoNothing(), task_runner(),
                                         task_runner()->GetMockTickClock());
     event_queue.Start();
 
@@ -318,8 +315,7 @@ TEST_F(ServiceWorkerEventQueueTest, AbortAllOnDestruction) {
 }
 
 TEST_F(ServiceWorkerEventQueueTest, PushPendingTask) {
-  ServiceWorkerEventQueue event_queue(base::DoNothing(), base::DoNothing(),
-                                      task_runner(),
+  ServiceWorkerEventQueue event_queue(base::DoNothing(), task_runner(),
                                       task_runner()->GetMockTickClock());
   event_queue.Start();
   task_runner()->FastForwardBy(
@@ -341,8 +337,7 @@ TEST_F(ServiceWorkerEventQueueTest, PushPendingTask) {
 // Test that pending tasks are run when StartEvent() is called while there the
 // idle event_queue.delay is zero. Regression test for https://crbug.com/878608.
 TEST_F(ServiceWorkerEventQueueTest, RunPendingTasksWithZeroIdleTimerDelay) {
-  ServiceWorkerEventQueue event_queue(base::DoNothing(), base::DoNothing(),
-                                      task_runner(),
+  ServiceWorkerEventQueue event_queue(base::DoNothing(), task_runner(),
                                       task_runner()->GetMockTickClock());
   event_queue.Start();
   event_queue.SetIdleDelay(base::Seconds(0));
@@ -370,9 +365,9 @@ TEST_F(ServiceWorkerEventQueueTest, RunPendingTasksWithZeroIdleTimerDelay) {
 TEST_F(ServiceWorkerEventQueueTest, SetIdleTimerDelayToZero) {
   {
     bool is_idle = false;
-    ServiceWorkerEventQueue event_queue(
-        base::DoNothing(), CreateReceiverWithCalledFlag(&is_idle),
-        task_runner(), task_runner()->GetMockTickClock());
+    ServiceWorkerEventQueue event_queue(CreateReceiverWithCalledFlag(&is_idle),
+                                        task_runner(),
+                                        task_runner()->GetMockTickClock());
     event_queue.Start();
     EXPECT_FALSE(is_idle);
 
@@ -384,9 +379,9 @@ TEST_F(ServiceWorkerEventQueueTest, SetIdleTimerDelayToZero) {
 
   {
     bool is_idle = false;
-    ServiceWorkerEventQueue event_queue(
-        base::DoNothing(), CreateReceiverWithCalledFlag(&is_idle),
-        task_runner(), task_runner()->GetMockTickClock());
+    ServiceWorkerEventQueue event_queue(CreateReceiverWithCalledFlag(&is_idle),
+                                        task_runner(),
+                                        task_runner()->GetMockTickClock());
     event_queue.Start();
     MockEvent event;
     event.EnqueueTo(&event_queue);
@@ -403,9 +398,9 @@ TEST_F(ServiceWorkerEventQueueTest, SetIdleTimerDelayToZero) {
 
   {
     bool is_idle = false;
-    ServiceWorkerEventQueue event_queue(
-        base::DoNothing(), CreateReceiverWithCalledFlag(&is_idle),
-        task_runner(), task_runner()->GetMockTickClock());
+    ServiceWorkerEventQueue event_queue(CreateReceiverWithCalledFlag(&is_idle),
+                                        task_runner(),
+                                        task_runner()->GetMockTickClock());
     event_queue.Start();
     MockEvent event1, event2;
     event1.EnqueueTo(&event_queue);
@@ -429,9 +424,9 @@ TEST_F(ServiceWorkerEventQueueTest, SetIdleTimerDelayToZero) {
 
   {
     bool is_idle = false;
-    ServiceWorkerEventQueue event_queue(
-        base::DoNothing(), CreateReceiverWithCalledFlag(&is_idle),
-        task_runner(), task_runner()->GetMockTickClock());
+    ServiceWorkerEventQueue event_queue(CreateReceiverWithCalledFlag(&is_idle),
+                                        task_runner(),
+                                        task_runner()->GetMockTickClock());
     event_queue.Start();
     std::unique_ptr<StayAwakeToken> token_1 =
         event_queue.CreateStayAwakeToken();
@@ -458,8 +453,7 @@ TEST_F(ServiceWorkerEventQueueTest, SetIdleTimerDelayToZero) {
 TEST_F(ServiceWorkerEventQueueTest, AbortInFlightEventOnDestruction) {
   MockEvent event;
   {
-    ServiceWorkerEventQueue event_queue(base::DoNothing(), base::DoNothing(),
-                                        task_runner(),
+    ServiceWorkerEventQueue event_queue(base::DoNothing(), task_runner(),
                                         task_runner()->GetMockTickClock());
     event_queue.Start();
     event.EnqueueTo(&event_queue);
@@ -477,8 +471,7 @@ TEST_F(ServiceWorkerEventQueueTest, AbortInFlightEventOnDestruction) {
 TEST_F(ServiceWorkerEventQueueTest, AbortQueuedEventOnDestruction) {
   MockEvent event;
   {
-    ServiceWorkerEventQueue event_queue(base::DoNothing(), base::DoNothing(),
-                                        task_runner(),
+    ServiceWorkerEventQueue event_queue(base::DoNothing(), task_runner(),
                                         task_runner()->GetMockTickClock());
     event_queue.Start();
     task_runner()->FastForwardBy(
@@ -498,8 +491,7 @@ TEST_F(ServiceWorkerEventQueueTest, AbortQueuedEventOnDestruction) {
 
 // Timer for timeout of each event starts when the event is queued.
 TEST_F(ServiceWorkerEventQueueTest, TimeoutNotStartedEvent) {
-  ServiceWorkerEventQueue event_queue(base::DoNothing(), base::DoNothing(),
-                                      task_runner(),
+  ServiceWorkerEventQueue event_queue(base::DoNothing(), task_runner(),
                                       task_runner()->GetMockTickClock());
   event_queue.Start();
   task_runner()->FastForwardBy(

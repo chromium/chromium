@@ -219,6 +219,10 @@ void RecordOpenDatabaseFailureReason(const std::string& histogram_tag,
 }  // namespace
 
 DatabaseOptions::DatabaseOptions() = default;
+DatabaseOptions::DatabaseOptions(const DatabaseOptions&) = default;
+DatabaseOptions::DatabaseOptions(DatabaseOptions&&) = default;
+DatabaseOptions& DatabaseOptions::operator=(const DatabaseOptions&) = default;
+DatabaseOptions& DatabaseOptions::operator=(DatabaseOptions&&) = default;
 DatabaseOptions::~DatabaseOptions() = default;
 
 // static
@@ -385,6 +389,12 @@ bool Database::Open(const base::FilePath& path) {
   DCHECK_NE(path_string, kSqliteOpenInMemoryPath)
       << "Path conflicts with SQLite magic identifier";
 
+  // Preload the database before opening it to ensure it's working with the
+  // exclusive mode.
+  if (options_.preload_) {
+    PreloadInternal(path);
+  }
+
   {
     ScopedOpenErrorReporter reporter(this,
                                      "Sql.Database.Open.FirstAttempt.Error");
@@ -519,18 +529,7 @@ void Database::Preload() {
   CHECK(!options_.exclusive_database_file_lock_)
       << "Cannot preload an exclusively locked database.";
 
-  std::optional<base::ScopedBlockingCall> scoped_blocking_call;
-  InitScopedBlockingCall(FROM_HERE, &scoped_blocking_call);
-
-  // Maximum number of bytes that will be prefetched from the database.
-  //
-  // This limit is very aggressive. The main trade-off involved is that having
-  // SQLite block on reading from disk has a high impact on Chrome startup cost
-  // for the databases that are on the critical path to startup. So, the limit
-  // must exceed the expected sizes of databases on the critical path.
-  constexpr int kPreReadSize = 128 * 1024 * 1024;  // 128 MB
-  base::PreReadFile(DbPath(), /*is_executable=*/false, /*sequential=*/false,
-                    kPreReadSize);
+  PreloadInternal(DbPath());
 }
 
 // SQLite keeps unused pages associated with a database in a cache.  It asks
@@ -2272,6 +2271,29 @@ bool Database::OpenInternal(const std::string& db_file_path) {
                         timer.Elapsed());
 
   return true;
+}
+
+void Database::PreloadInternal(const base::FilePath& path) {
+  TRACE_EVENT0("sql", "Database::PreloadInternal");
+
+  // TODO(crbug.com/40904059): Consider moving this to a DCHECK after fixing
+  // or migrating callsites that call Preload(...) on in-memory databases.
+  if (!in_memory_) {
+    return;
+  }
+
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  // Maximum number of bytes that will be prefetched from the database.
+  //
+  // This limit is very aggressive. The main trade-off involved is that having
+  // SQLite block on reading from disk has a high impact on Chrome startup cost
+  // for the databases that are on the critical path to startup. So, the limit
+  // must exceed the expected sizes of databases on the critical path.
+  static constexpr int kPreReadSize = 128 * 1024 * 1024;  // 128 MB
+  base::PreReadFile(path, /*is_executable=*/false, /*sequential=*/false,
+                    kPreReadSize);
 }
 
 void Database::ConfigureSqliteDatabaseObject() {

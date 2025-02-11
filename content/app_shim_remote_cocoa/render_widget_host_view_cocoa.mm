@@ -2632,25 +2632,20 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
 - (id)validRequestorForSendType:(NSString*)sendType
                      returnType:(NSString*)returnType {
   UTType* sendUTType = ui::UTTypeForServicesType(sendType);
-  UTType* returnUTType = ui::UTTypeForServicesType(returnType);
-  id requestor = nil;
-  BOOL sendTypeIsPlainText = [sendUTType isEqual:UTTypeUTF8PlainText];
-  BOOL returnTypeIsPlainText = [returnUTType isEqual:UTTypeUTF8PlainText];
-  BOOL hasText = !_textSelectionRange.is_empty();
-  BOOL takesText = _textInputType != ui::TEXT_INPUT_TYPE_NONE;
+  UTType* acceptUTType = ui::UTTypeForServicesType(returnType);
 
-  if (sendTypeIsPlainText && hasText && !returnUTType) {
-    requestor = self;
-  } else if (!sendUTType && returnTypeIsPlainText && takesText) {
-    requestor = self;
-  } else if (sendTypeIsPlainText && returnTypeIsPlainText && hasText &&
-             takesText) {
-    requestor = self;
-  } else {
-    requestor =
-        [super validRequestorForSendType:sendType returnType:returnType];
+  const BOOL canSendText = [sendUTType isEqual:UTTypeUTF8PlainText] &&
+                           !_textSelectionRange.is_empty();
+  const BOOL canAcceptText = [acceptUTType isEqual:UTTypeUTF8PlainText] &&
+                             _textInputType != ui::TEXT_INPUT_TYPE_NONE;
+
+  // This is a valid requestor if the send/accept types can be fulfilled or if
+  // they are `nil` (and therefore not the wrong type).
+  if ((canSendText && !acceptUTType) || (!sendUTType && canAcceptText) ||
+      (canSendText && canAcceptText)) {
+    return self;
   }
-  return requestor;
+  return [super validRequestorForSendType:sendType returnType:returnType];
 }
 
 - (BOOL)shouldChangeCurrentCursor {

@@ -414,7 +414,7 @@ void TabGroupEditorBubbleView::UpdateMenuContentsVisibility() {
         break;
       }
       case TAB_GROUP_HEADER_CXMENU_RECENT_ACTIVITY: {
-        button->SetVisible(IsGroupShared() && HasRecentActivity());
+        button->SetVisible(IsGroupShared());
         break;
       }
     }
@@ -758,11 +758,6 @@ bool TabGroupEditorBubbleView::IsGroupShared() const {
   }
 
   return maybe_saved_group.value().is_shared_tab_group();
-}
-
-bool TabGroupEditorBubbleView::HasRecentActivity() const {
-  return tab_groups::SavedTabGroupUtils::HasRecentActivity(browser_->profile(),
-                                                           group_);
 }
 
 bool TabGroupEditorBubbleView::ShouldShowSavedFooter() const {

@@ -1779,25 +1779,25 @@ const FeatureEntry::FeatureVariation kTabstripDeclutterVariations[] = {
 
 #if !BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam kTabstripComboButtonNoBackground[] = {
-    {"has_background", "false"}};
+const FeatureEntry::FeatureParam kTabstripComboButtonBackground[] = {
+    {"has_background", "true"}};
 
 const FeatureEntry::FeatureParam kTabstripComboButtonReverseButtonOrder[] = {
     {"reverse_button_order", "true"}};
 
 const FeatureEntry::FeatureParam
-    kTabstripComboButtonReverseButtonOrderNoBackground[] = {
-        {"has_background", "false"},
+    kTabstripComboButtonReverseButtonOrderBackground[] = {
+        {"has_background", "true"},
         {"reverse_button_order", "true"}};
 
 const FeatureEntry::FeatureVariation kTabstripComboButtonVariations[] = {
-    {" - without background", kTabstripComboButtonNoBackground,
-     std::size(kTabstripComboButtonNoBackground)},
+    {" - with background", kTabstripComboButtonBackground,
+     std::size(kTabstripComboButtonBackground)},
     {" - reverse button order", kTabstripComboButtonReverseButtonOrder,
      std::size(kTabstripComboButtonReverseButtonOrder)},
-    {" - reverse button order & without background",
-     kTabstripComboButtonReverseButtonOrderNoBackground,
-     std::size(kTabstripComboButtonReverseButtonOrderNoBackground)},
+    {" - reverse button order & with background",
+     kTabstripComboButtonReverseButtonOrderBackground,
+     std::size(kTabstripComboButtonReverseButtonOrderBackground)},
 };
 
 #endif
@@ -4329,6 +4329,7 @@ const FeatureEntry::FeatureVariation kTabSwitcherColorBlendAnimateVariations[] =
 const char kAccountStoragePrefsThemesAndSearchEnginesFeatures[] =
     "EnablePreferencesAccountStorage,"
     "SeparateLocalAndAccountSearchEngines,"
+    "MoveThemePrefsToSpecifics,"
     "SeparateLocalAndAccountThemes,"
     "ThemesBatchUpload";
 
@@ -5179,6 +5180,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-isolated-web-apps", flag_descriptions::kEnableIsolatedWebAppsName,
      flag_descriptions::kEnableIsolatedWebAppsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kIsolatedWebApps)},
+    {"direct-sockets-in-service-workers",
+     flag_descriptions::kDirectSocketsInServiceWorkersName,
+     flag_descriptions::kDirectSocketsInServiceWorkersDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(blink::features::kDirectSocketsInServiceWorkers)},
     {"direct-sockets-in-shared-workers",
      flag_descriptions::kDirectSocketsInSharedWorkersName,
      flag_descriptions::kDirectSocketsInSharedWorkersDescription, kOsDesktop,
@@ -6869,6 +6874,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpDummyModulesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpDummyModules)},
 #endif
+
+    {"ntp-footer", flag_descriptions::kNtpFooterName,
+     flag_descriptions::kNtpFooterDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpFooter)},
 
     {"ntp-middle-slot-promo-dismissal",
      flag_descriptions::kNtpMiddleSlotPromoDismissalName,
@@ -9163,12 +9172,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMediaSessionEnterPictureInPictureDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kMediaSessionEnterPictureInPicture)},
-
-    {"auto-picture-in-picture-video-heuristics",
-     flag_descriptions::kAutoPictureInPictureVideoHeuristicsName,
-     flag_descriptions::kAutoPictureInPictureVideoHeuristicsDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(blink::features::kAutoPictureInPictureVideoHeuristics)},
 
     {"auto-picture-in-picture-for-video-playback",
      flag_descriptions::kAutoPictureInPictureForVideoPlaybackName,

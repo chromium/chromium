@@ -17,6 +17,7 @@
 using ::testing::IsEmpty;
 using ::testing::Optional;
 using ::testing::Pair;
+using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 
 namespace net {
@@ -35,10 +36,11 @@ TEST(LocalSetDeclarationTest, Valid_Basic) {
       {associated, FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
   });
 
+  LocalSetDeclaration local_set_declaration =
+      LocalSetDeclaration::Create(entries, /*aliases=*/{}).value();
+
   EXPECT_THAT(
-      LocalSetDeclaration::Create(entries, /*aliases=*/{})
-          .value()
-          .ComputeMutation(),
+      local_set_declaration.ComputeMutation(),
       SetsMutation(
           /*replacement_sets=*/
           {
@@ -50,6 +52,7 @@ TEST(LocalSetDeclarationTest, Valid_Basic) {
               },
           },
           /*addition_sets=*/{}, /*aliases=*/{}));
+  EXPECT_THAT(local_set_declaration, SizeIs(2));
 }
 
 TEST(LocalSetDeclarationTest, Valid_BasicWithAliases) {
@@ -66,13 +69,13 @@ TEST(LocalSetDeclarationTest, Valid_BasicWithAliases) {
   base::flat_map<SchemefulSite, SchemefulSite> aliases(
       {{primary_cctld, primary}, {associated_cctld, associated}});
 
-  LocalSetDeclaration local_set =
+  LocalSetDeclaration local_set_declaration =
       LocalSetDeclaration::Create(entries, aliases).value();
 
   // LocalSetDeclaration should allow these to pass through, after passing
   // validation.
   EXPECT_THAT(
-      local_set.ComputeMutation(),
+      local_set_declaration.ComputeMutation(),
       SetsMutation(
           /*replacement_sets=*/
           {
@@ -93,6 +96,8 @@ TEST(LocalSetDeclarationTest, Valid_BasicWithAliases) {
               {associated_cctld, associated},
               {primary_cctld, primary},
           }));
+
+  EXPECT_THAT(local_set_declaration, SizeIs(4));
 }
 
 TEST(LocalSetDeclarationTest, Invalid) {
@@ -113,14 +118,15 @@ TEST(LocalSetDeclarationTest, Invalid) {
       },
       {{associated2_cctld, associated2}}));
 
-  // If an alias has an explicit entry, it must match the canonical's entry.
+  // An alias must not have an explicit entry, even one that matches the
+  // canonical's entry.
+  FirstPartySetEntry associated_entry(primary, SiteType::kAssociated, 0);
   EXPECT_FALSE(LocalSetDeclaration::Create(
       {
           {primary,
            FirstPartySetEntry(primary, SiteType::kPrimary, std::nullopt)},
-          {associated, FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
-          {associated_cctld,
-           FirstPartySetEntry(primary, SiteType::kAssociated, 1)},
+          {associated, associated_entry},
+          {associated_cctld, associated_entry},
       },
       {{associated_cctld, associated}}));
 

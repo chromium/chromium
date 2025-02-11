@@ -923,7 +923,7 @@ suite('NoticeEEAAdsApiUxEnhancement', function() {
     assertFalse(collapseElement!.opened);
   }
 
-  test('siteSuggestedAdsLearnMoreClicked', async function() {
+  test('siteSuggestedAdsLearnMoreClicked', function() {
     verifyCollapseSectionOpensAndCloses(
         '#siteSuggestedAdsLearnMore',
         PrivacySandboxPromptAction.NOTICE_SITE_SUGGESTED_ADS_MORE_INFO_OPENED,
@@ -931,7 +931,7 @@ suite('NoticeEEAAdsApiUxEnhancement', function() {
         browserProxy);
   });
 
-  test('adsMeasurementLearnMoreClicked', async function() {
+  test('adsMeasurementLearnMoreClicked', function() {
     verifyCollapseSectionOpensAndCloses(
         '#adsMeasurementLearnMore',
         PrivacySandboxPromptAction.NOTICE_ADS_MEASUREMENT_MORE_INFO_OPENED,

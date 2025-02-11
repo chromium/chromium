@@ -1,4 +1,8 @@
 <style include="common cros-button-style wallpaper">
+  :host {
+    --sea-pen-tab-height: 48px;
+  }
+
   #heading,
   #samplePromptHeading {
     display: flex;
@@ -14,7 +18,7 @@
   #tabContainer cr-button {
     background-color: transparent;
     border-radius: 0 0 16px 16px;
-    height: 48px;
+    height: var(--sea-pen-tab-height);
     padding: 4px;
   }
 
@@ -45,6 +49,10 @@
   #tabContainer,
   #promptingGuide {
     flex-grow: 1;
+  }
+
+  #seaPenImagesContainer {
+    height: calc(100% - var(--sea-pen-tab-height));
   }
 
   #seaPenImagesHeading {

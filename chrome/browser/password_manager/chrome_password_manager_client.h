@@ -431,10 +431,12 @@ class ChromePasswordManagerClient
       const std::optional<
           autofill::password_generation::PasswordGenerationUIData>& ui_data);
 
+#if !BUILDFLAG(IS_ANDROID)
   void ShowPasswordGenerationPopup(
       autofill::password_generation::PasswordGenerationType type,
       password_manager::ContentPasswordManagerDriver* driver,
       const autofill::password_generation::PasswordGenerationUIData& ui_data);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   gfx::RectF TransformToRootCoordinates(
       content::RenderFrameHost* frame_host,

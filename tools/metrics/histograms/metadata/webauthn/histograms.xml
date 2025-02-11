@@ -303,6 +303,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.EnclaveLoadDuration" units="ms"
+    expires_after="2025-07-31">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the time duration that was taken for the Enclave state to load.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.EnclaveRequestResult.{RequestType}"
     enum="WebAuthenticationEnclaveRequestResult" expires_after="2025-06-30">
   <owner>kenrb@chromium.org</owner>

@@ -1718,7 +1718,8 @@
         "merge": {
           "args": [
             "--lightweight",
-            "--skip-perf"
+            "--skip-perf",
+            "--upload-skia-json"
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -1818,6 +1819,9 @@
           "--assert-gpu-compositing"
         ],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",

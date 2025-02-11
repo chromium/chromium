@@ -82,6 +82,7 @@
 <translation id="2094648590148273905">ChromeOS Flexৰ চৰ্তাৱলী</translation>
 <translation id="2094919256425865063">যিকোনো প্ৰকাৰে Chrome বন্ধ কৰিবনে?</translation>
 <translation id="2106831557840787829"><ph name="BEGIN_LINK_LINUX_OSS" />Linux বিকাশৰ পৰিৱেশ<ph name="END_LINK_LINUX_OSS" />ৰ দৰে ChromeOS Flexক অতিৰিক্ত <ph name="BEGIN_LINK_CROS_OSS" />মুক্ত উৎসৰ ছফ্টৱেৰ<ph name="END_LINK_CROS_OSS" />ৰ দ্বাৰা তৈয়াৰ কৰা হৈছে।</translation>
+<translation id="2108778574543343055">এপৰ বাবে পটভূমিত চলি থকা Chrome অক্ষম কৰক</translation>
 <translation id="2120620239521071941">ইয়াৰ ফলত এই ডিভাইচৰ পৰা <ph name="ITEMS_COUNT" />টা বস্তু মচা হ'ব। আপোনাৰ ডেটা পাছত পুনৰুদ্ধাৰ কৰিবলৈ Chromeত <ph name="USER_EMAIL" /> হিচাপে ছাইন ইন কৰক।</translation>
 <translation id="2121284319307530122">&amp;Chrome আপডে'ট কৰিবলৈ পুনৰ লঞ্চ কৰক</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />বর্তমানৰ ছেটিংসমূহ<ph name="END_LINK" />ৰ সম্পর্কে প্ৰতিবেদন দি Chromeক উন্নত কৰাত সহায় কৰক</translation>
@@ -143,6 +144,7 @@
 <translation id="2797864378188255696"><ph name="USER_EMAIL" />ৰ জৰিয়তে Gmail বা Youtubeৰ দৰে Google সেৱাসমূহত ছাইন ইন কৰাৰ সময়ত, আপুনি একেটা একাউণ্ট ব্যৱহাৰ কৰি স্বয়ংক্ৰিয়ভাৱে Chromeত ছাইন ইন কৰিব পাৰে</translation>
 <translation id="2799162042226656283">আপোনাৰ Chrome</translation>
 <translation id="2799223571221894425">পুনৰ লঞ্চ কৰক</translation>
+<translation id="2818684386420968393">এপৰ বাবে পটভূমিত চলি থকা Chrome অক্ষম কৰক</translation>
 <translation id="2825024317344269723">বিপজ্জনক ছাইট। Chromeএ জাননীৰ অনুমতি আঁতৰাইছে।</translation>
 <translation id="2841525013647267359">এই ভাষাটোৰ পৰা অনুবাদ কৰক</translation>
 <translation id="2846251086934905009">ইনষ্টল কৰোঁতে আসোঁৱাহ হৈছে: ইনষ্টলাৰটোৱে সম্পূৰ্ণ কৰিব নোৱাৰিলে। ইনষ্টলেশ্বনটো বন্ধ কৰি দিয়া হৈছে।</translation>

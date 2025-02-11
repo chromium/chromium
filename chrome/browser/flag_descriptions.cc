@@ -756,14 +756,7 @@ const char kAutofillVirtualViewStructureAndroidDescription[] =
 const char kAutoPictureInPictureForVideoPlaybackName[] =
     "Auto picture in picture for video playback";
 const char kAutoPictureInPictureForVideoPlaybackDescription[] =
-    "Enables auto picture in picture for video playback. Requires "
-    "chrome://flags/#auto-picture-in-picture-video-heuristics to be enabled.";
-
-const char kAutoPictureInPictureVideoHeuristicsName[] =
-    "Auto picture in picture video heuristics";
-const char kAutoPictureInPictureVideoHeuristicsDescription[] =
-    "Enables the use of video heuristics for tracking HTMLVideoElement "
-    "visibility.";
+    "Enables auto picture in picture for video playback";
 
 const char kBackForwardCacheName[] = "Back-forward cache";
 const char kBackForwardCacheDescription[] =
@@ -1412,10 +1405,16 @@ const char kEnableIsolatedWebAppsDescription[] =
     "Enables experimental support for Isolated Web Apps. "
     "See https://github.com/reillyeon/isolated-web-apps for more information.";
 
+const char kDirectSocketsInServiceWorkersName[] =
+    "Direct Sockets API in Service Workers";
+const char kDirectSocketsInServiceWorkersDescription[] =
+    "Enables access to the Direct Sockets API in service workers. See "
+    "https://github.com/WICG/direct-sockets for details.";
+
 const char kDirectSocketsInSharedWorkersName[] =
     "Direct Sockets API in Shared Workers";
 const char kDirectSocketsInSharedWorkersDescription[] =
-    "Enable access to the Direct Sockets API in shared workers. See "
+    "Enables access to the Direct Sockets API in shared workers. See "
     "https://github.com/WICG/direct-sockets for details.";
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -5082,6 +5081,11 @@ const char kNtpDummyModulesDescription[] =
     "Adds dummy modules to New Tab Page when 'NTP Modules Redesigned' is "
     "enabled.";
 #endif
+
+const char kNtpFooterName[] = "NTP Footer";
+const char kNtpFooterDescription[] =
+    "Adds footer to New Tab Page that encapsulates customize buttons and "
+    "background/theme attributions.";
 
 const char kNtpMicrosoftAuthenticationModuleName[] =
     "NTP Microsoft Authentication Module";

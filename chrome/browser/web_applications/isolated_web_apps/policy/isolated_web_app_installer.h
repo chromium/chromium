@@ -121,7 +121,21 @@ class IwaInstaller {
 
  private:
 #if BUILDFLAG(IS_CHROMEOS)
-  void OnGetCacheFilePath(std::optional<base::FilePath> cache_file);
+  void OnGetCacheFilePath(
+      std::optional<IwaCacheClient::CachedBundleData> cached_bundle);
+
+  // Installing of the IWA using the cached bundle.
+  void InstallFromCache(const base::FilePath& cache_file,
+                        const base::Version& version);
+  void OnIwaInstalledFromCache(
+      base::expected<InstallIsolatedWebAppCommandSuccess,
+                     InstallIsolatedWebAppCommandError> result);
+
+  // Bundle should be copied to cache after the successful installation from the
+  // Internet.
+  void OnBundleCopiedToCache(
+      base::expected<IwaCacheClient::CopyBundleToCacheSuccess,
+                     IwaCacheClient::CopyBundleToCacheError> result);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   void CreateTempFile(base::OnceClosure next_step_callback);
@@ -149,9 +163,11 @@ class IwaInstaller {
                              int32_t net_error);
 
   // Installing of the IWA using the downloaded Signed Web Bundle.
-  void RunInstallCommand(base::Version expected_version);
-  void OnIwaInstalled(base::expected<InstallIsolatedWebAppCommandSuccess,
-                                     InstallIsolatedWebAppCommandError> result);
+  void RunInstallFromInternetCommand(base::Version expected_version);
+  void OnIwaInstalledFromInternet(
+      base::Version installed_version,
+      base::expected<InstallIsolatedWebAppCommandSuccess,
+                     InstallIsolatedWebAppCommandError> result);
 
   void Finish(Result result);
 

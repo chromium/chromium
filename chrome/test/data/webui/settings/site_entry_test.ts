@@ -488,7 +488,7 @@ suite('SiteEntry', function() {
     assertEquals(1, originList.length);
   });
 
-  test('unpartitioned entry remains collapsed', async function() {
+  test('unpartitioned entry remains collapsed', function() {
     // Check that a single origin containing unpartitioned storage only is
     // correctly collapsed.
     testElement.siteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
@@ -609,7 +609,7 @@ suite('SiteEntry', function() {
         assertTrue(isChildVisible(testElement, '#removeSiteButton'));
       });
 
-  test('extension site group is shown correctly', async function() {
+  test('extension site group is shown correctly', function() {
     const extensionSiteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
     extensionSiteGroup.displayName = 'Test Extension';
     extensionSiteGroup.origins[0]!.origin =

@@ -120,6 +120,7 @@ Provo të presësh për disa minuta para se të dalësh nga ajo. Nëse del tani,
 <translation id="4064699917955374540">Për të përdorur dhe për të ruajtur të dhënat e Chrome në "Llogarinë tënde të Google", verifiko që je ti.</translation>
 <translation id="417201473131094001">Nuk mbështetet në Chrome Canary</translation>
 <translation id="424864128008805179">Do të dalësh nga Chrome?</translation>
+<translation id="4430797724889237570">Hap lidhjet nga Gmail, Maps, YouTube dhe aplikacione të tjera në Chrome</translation>
 <translation id="447252321002412580">Ndihmo në përmirësimin e funksioneve dhe cilësisë së funksionimit të Chrome</translation>
 <translation id="4523886039239821078">Disa komponentë shtesë i shkaktojnë Chrome ndërprerje aksidentale. Çinstalo:</translation>
 <translation id="4633328489441962921">Chrome nuk mund të kontrollojë për përditësime</translation>
@@ -205,6 +206,7 @@ Provo të presësh për disa minuta para se të ndërrosh llogaritë. Nëse i nd
 
 Të dhënat e tua janë të enkriptuara me frazën tënde të kalimit. Fute atë për të përdorur dhe ruajtur të dhënat e Chrome në "Llogarinë tënde të Google".</translation>
 <translation id="6533470733797826516">Identifikohu më shpejt me plotësimin automatik në Chrome</translation>
+<translation id="6536544321553662809">Cakto Chrome si shfletuesin tënd të parazgjedhur për të ndarë dhe hapur me lehtësi lidhjet</translation>
 <translation id="6545449117344801102">Chrome zbulon adresat dhe përdor Google Maps për të të dhënë udhëzime dhe informacione lokale.</translation>
 <translation id="6636941099779251629">Organizata jote kërkon që të identifikohesh për të përdorur Chrome. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Dërgon një pjesë të pakuptueshme të URL-së te Google nëpërmjet një serveri të privatësisë që e fsheh adresën tënde IP. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë gjithashtu URL-të, duke përfshirë pjesë të përmbajtjes së faqeve, te Google.</translation>
@@ -290,6 +292,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="8370517070665726704">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>
 <translation id="8371138994040262994">Hap cilësimet në Chrome.</translation>
 <translation id="8387459386171870978">Vazhdo të përdorësh Chrome</translation>
+<translation id="8392023217086447677">U hap në modalitetin "I fshehtë" të Chrome</translation>
 <translation id="840168496893712993">Disa shtesa bëjnë që Chrome të ndërpritet aksidentalisht. Provo t'i çinstalosh ato.</translation>
 <translation id="8413500425974960807">Këshillë për Chrome: Zhvendose Chrome te stacioni</translation>
 <translation id="8413795581997394485">Të mbron kundër sajteve, shkarkimeve dhe shtesave që njihen si të rrezikshme. Kur ti viziton një sajt, Chrome dërgon një pjesë të pakuptueshme të URL-së te Google nëpërmjet një serveri të privatësisë që e fsheh adresën tënde IP. Nëse një sajt bën diçka të dyshimtë, dërgohen edhe URL-të e plota dhe pjesët e përmbajtjeve të faqeve.</translation>

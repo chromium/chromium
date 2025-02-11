@@ -229,6 +229,8 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET1},
       {"privacyGuideAdTopicsWhenOnBullet2",
        IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET2},
+      {"privacyGuideAdTopicsWhenOnBullet3",
+       IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET3},
       {"privacyGuideAdTopicsThingsToConsiderBullet1",
        IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET1},
       {"privacyGuideAdTopicsThingsToConsiderBullet2",
@@ -408,6 +410,15 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
           l10n_util::GetStringUTF16(
               IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_LINK_ARIA_DESCRIPTION),
           kPrivacyPolicyFunc, kPrivacyPolicyIdV2));
+  // Privacy Guide Ad Topics Card - Ad Topics Content Parity
+  html_source->AddString(
+      "privacyGuideAdTopicsThingsToConsiderBullet3Desktop",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET3_DESKTOP,
+          base::ASCIIToUTF16(privacy_policy_url),
+          l10n_util::GetStringUTF16(
+              IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_LINK_ARIA_DESCRIPTION),
+          kPrivacyPolicyFunc, kPrivacyPolicyId));
 }
 
 }  // namespace settings

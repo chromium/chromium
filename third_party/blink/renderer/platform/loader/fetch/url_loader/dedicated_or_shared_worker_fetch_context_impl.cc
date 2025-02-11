@@ -454,12 +454,6 @@ DedicatedOrSharedWorkerFetchContextImpl::CreateWebSocketHandshakeThrottle(
       ancestor_frame_token_, std::move(task_runner));
 }
 
-void DedicatedOrSharedWorkerFetchContextImpl::SetIsOfflineMode(
-    bool is_offline_mode) {
-  // Worker doesn't support offline mode. There should be no callers.
-  NOTREACHED();
-}
-
 void DedicatedOrSharedWorkerFetchContextImpl::OnControllerChanged(
     mojom::ControllerServiceWorkerMode mode) {
   set_controller_service_worker_mode(mode);

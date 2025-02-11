@@ -684,10 +684,19 @@ extern const char kLensTranslateToggleModeEnabledDescription[];
 extern const char kLensUnaryApisWithHttpTransportEnabledName[];
 extern const char kLensUnaryApisWithHttpTransportEnabledDescription[];
 
+// Title and description for the flag to enable client data header for unary
+// requests.
+extern const char kLensUnaryClientDataHeaderEnabledName[];
+extern const char kLensUnaryClientDataHeaderEnabledDescription[];
+
 // Title and description for the flag to enable HTTP transport for unary
 // requests.
 extern const char kLensUnaryHttpTransportEnabledName[];
 extern const char kLensUnaryHttpTransportEnabledDescription[];
+
+// Title and description for the flag to enable the vsint param.
+extern const char kLensVsintParamEnabledName[];
+extern const char kLensVsintParamEnabledDescription[];
 
 // Title and description for the flag to enable the Lens web page load
 // optimization.
@@ -946,10 +955,6 @@ extern const char kRefactorToolbarUIDescription[];
 // navigation history.
 extern const char kRemoveExcessNTPsExperimentName[];
 extern const char kRemoveExcessNTPsExperimentDescription[];
-
-// Title and description for the flag to remove the image from rich IPH bubble.
-extern const char kRichBubbleWithoutImageName[];
-extern const char kRichBubbleWithoutImageDescription[];
 
 // Title and description for the flag to enable async real time checks.
 extern const char kSafeBrowsingAsyncRealTimeCheckName[];

@@ -5,13 +5,14 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_IMPL_MOJO_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_IMPL_MOJO_H_
 
+#include <map>
 #include <memory>
 
-#include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/ip_protection/common/ip_protection_core_impl.h"
 #include "components/ip_protection/mojom/core.mojom.h"
-#include "components/ip_protection/mojom/data_types.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace ip_protection {

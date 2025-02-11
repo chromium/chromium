@@ -78,18 +78,18 @@ TEST_F(FaceGazeBubbleControllerTest, UpdateColor) {
   ui::ColorProvider* color_provider = GetView()->GetColorProvider();
   EXPECT_EQ(
       color_provider->GetColor(cros_tokens::kCrosSysSystemBaseElevatedOpaque),
-      GetView()->color());
+      GetView()->background_color());
 
   Update(u"Warning", /*is_warning=*/true);
   EXPECT_TRUE(GetView());
   EXPECT_EQ(color_provider->GetColor(cros_tokens::kCrosSysWarningContainer),
-            GetView()->color());
+            GetView()->background_color());
 
   Update(u"Default", /*is_warning=*/false);
   EXPECT_TRUE(GetView());
   EXPECT_EQ(
       color_provider->GetColor(cros_tokens::kCrosSysSystemBaseElevatedOpaque),
-      GetView()->color());
+      GetView()->background_color());
 }
 
 TEST_F(FaceGazeBubbleControllerTest, AccessibleProperties) {

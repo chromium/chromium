@@ -1059,7 +1059,7 @@ void BubbleDialogModelHost::OnWidgetInitialized() {
         banner.Rasterize(contents_view_->GetColorProvider()),
         (dark_mode_banner.IsEmpty() ? banner : dark_mode_banner)
             .Rasterize(contents_view_->GetColorProvider()),
-        base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+        base::BindRepeating(&views::BubbleDialogDelegate::background_color,
                             base::Unretained(this)));
     // The banner is supposed to be purely decorative.
     banner_view->GetViewAccessibility().SetIsIgnored(true);
@@ -1144,7 +1144,7 @@ void BubbleDialogModelHost::UpdateWindowIcon(
       model_->dark_mode_icon(DialogModelHost::GetPassKey());
   if (!dark_mode_icon.IsEmpty() &&
       color_utils::IsDark(
-          GetBackgroundColor().ConvertToSkColor(color_provider))) {
+          background_color().ConvertToSkColor(color_provider))) {
     SetIcon(dark_mode_icon);
     return;
   }

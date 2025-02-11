@@ -581,7 +581,7 @@ std::unique_ptr<views::View> PlusAddressCreationDialogDelegate::CreateLogo() {
                                      kGoogleGLogoWidth),
       ui::ImageModel::FromVectorIcon(kDarkGoogleGLogoIcon, ui::kColorIcon,
                                      kGoogleGLogoWidth),
-      base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+      base::BindRepeating(&views::BubbleDialogDelegate::background_color,
                           base::Unretained(this)));
   logo->SetProperty(views::kMarginsKey,
                     gfx::Insets::VH(kPlusAddressLabelVerticalMargin, 0));

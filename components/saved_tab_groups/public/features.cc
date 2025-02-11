@@ -42,6 +42,12 @@ BASE_FEATURE(kTabGroupSyncServiceDesktopMigration,
              "TabGroupSyncServiceDesktopMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature flag for Java controller layer migration to use TabGroupSyncDelegate.
+// Noop when disabled.
+BASE_FEATURE(kTabGroupSyncDelegateAndroid,
+             "TabGroupSyncDelegateAndroid",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Feature flag specific to Desktop platforms. When enabled, desktop platforms
 // will defer remote navigations in a tab group when the tab is in a
 // backgrounded state.
@@ -97,6 +103,10 @@ bool IsTabGroupsSaveV2Enabled() {
 
 bool IsTabGroupSyncServiceDesktopMigrationEnabled() {
   return base::FeatureList::IsEnabled(kTabGroupSyncServiceDesktopMigration);
+}
+
+bool IsTabGroupSyncDelegateAndroidEnabled() {
+  return base::FeatureList::IsEnabled(kTabGroupSyncDelegateAndroid);
 }
 
 bool IsTabGroupsDeferringRemoteNavigations() {

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -94,7 +95,7 @@ class MemberMetaDataBase;
 class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
  public:
   ClassMetaData();
-  ClassMetaData(std::string file, int line);
+  ClassMetaData(std::string_view file LIFETIME_BOUND, int line);
   ClassMetaData(const ClassMetaData&) = delete;
   ClassMetaData& operator=(const ClassMetaData&) = delete;
   virtual ~ClassMetaData();
@@ -104,7 +105,7 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
       const {
     return members_;
   }
-  const std::string& file() const { return file_; }
+  const std::string_view file() const { return file_; }
   const int& line() const { return line_; }
   const std::string& GetUniqueName() const;
   void AddMemberData(std::unique_ptr<MemberMetaDataBase> member_data);
@@ -178,7 +179,7 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
   mutable std::string unique_name_;
   std::vector<raw_ptr<MemberMetaDataBase, VectorExperimental>> members_;
   raw_ptr<ClassMetaData> parent_class_meta_data_ = nullptr;
-  std::string file_;
+  const std::string_view file_;
   const int line_ = 0;
 };
 

@@ -2175,8 +2175,6 @@ source_set("browser") {
     "site_info.h",
     "site_instance_group.cc",
     "site_instance_group.h",
-    "site_instance_group_manager.cc",
-    "site_instance_group_manager.h",
     "site_instance_impl.cc",
     "site_instance_impl.h",
     "sms/sms_fetcher_impl.cc",
@@ -3466,6 +3464,7 @@ source_set("browser") {
 
     deps += [
       "//components/device_event_log",
+      "//components/password_manager/core/common",
       "//components/soda:constants",
       "//components/soda:soda",
       "//components/soda:utils",

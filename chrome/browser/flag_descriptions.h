@@ -451,9 +451,6 @@ extern const char kAutofillVirtualViewStructureAndroidDescription[];
 extern const char kAutoPictureInPictureForVideoPlaybackName[];
 extern const char kAutoPictureInPictureForVideoPlaybackDescription[];
 
-extern const char kAutoPictureInPictureVideoHeuristicsName[];
-extern const char kAutoPictureInPictureVideoHeuristicsDescription[];
-
 extern const char kBackForwardCacheName[];
 extern const char kBackForwardCacheDescription[];
 
@@ -857,6 +854,9 @@ extern const char kEnableGamepadMultitouchDescription[];
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kEnableIsolatedWebAppsName[];
 extern const char kEnableIsolatedWebAppsDescription[];
+
+extern const char kDirectSocketsInServiceWorkersName[];
+extern const char kDirectSocketsInServiceWorkersDescription[];
 
 extern const char kDirectSocketsInSharedWorkersName[];
 extern const char kDirectSocketsInSharedWorkersDescription[];
@@ -2971,6 +2971,9 @@ extern const char kNtpDriveModuleShowSixFilesDescription[];
 extern const char kNtpDummyModulesName[];
 extern const char kNtpDummyModulesDescription[];
 #endif
+
+extern const char kNtpFooterName[];
+extern const char kNtpFooterDescription[];
 
 extern const char kNtpMicrosoftAuthenticationModuleName[];
 extern const char kNtpMicrosoftAuthenticationModuleDescription[];

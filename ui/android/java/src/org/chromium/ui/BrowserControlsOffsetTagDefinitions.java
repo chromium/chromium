@@ -16,6 +16,11 @@ public final class BrowserControlsOffsetTagDefinitions {
     private final BrowserControlsOffsetTags mTags;
     private final BrowserControlsOffsetTagConstraints mConstraints;
 
+    public BrowserControlsOffsetTagDefinitions() {
+        mTags = new BrowserControlsOffsetTags(null, null, null);
+        mConstraints = new BrowserControlsOffsetTagConstraints(null, null, null);
+    }
+
     public BrowserControlsOffsetTagDefinitions(
             BrowserControlsOffsetTags tags, BrowserControlsOffsetTagConstraints constraints) {
         mTags = tags;

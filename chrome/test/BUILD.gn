@@ -150,6 +150,7 @@ static_library("test_support") {
     "//chrome/browser:global_features",
     "//chrome/browser/regional_capabilities",
     "//chrome/browser/ui:ui_features",
+    "//chrome/test/data/webui:resources",
   ]
   public_deps = []
   testonly = true
@@ -248,7 +249,15 @@ static_library("test_support") {
     "base/tracing.h",
     "base/web_feature_histogram_tester.cc",
     "base/web_feature_histogram_tester.h",
+    "base/web_ui_mocha_browser_test.cc",
+    "base/web_ui_mocha_browser_test.h",
+    "base/web_ui_test_data_source.cc",
+    "base/web_ui_test_data_source.h",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//ash/webui/common:trusted_types_util" ]
+  }
 
   if (is_chromeos && is_chromeos_device) {
     sources += [
@@ -284,6 +293,13 @@ static_library("test_support") {
     }
   }
 
+  if (is_android) {
+    sources += [
+      "base/android/android_ui_test_utils.cc",
+      "base/android/android_ui_test_utils.h",
+    ]
+  }
+
   if (enable_extensions_core) {
     sources += [
       "../browser/extensions/api_test_util.cc",
@@ -303,8 +319,6 @@ static_library("test_support") {
       "../browser/extensions/extension_platform_apitest.h",
       "../browser/extensions/platform_test_extension_loader.cc",
       "../browser/extensions/platform_test_extension_loader.h",
-      "base/android/android_ui_test_utils.cc",
-      "base/android/android_ui_test_utils.h",
     ]
 
     public_deps += [
@@ -1614,6 +1628,8 @@ if (is_android) {
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/webaudio:browser_tests",
+      "//chrome/test/data/webui:browser_tests",
+      "//chrome/test/data/webui:resources",
       "//components/autofill/content/browser:test_support",
       "//components/autofill/content/renderer:test_support",
       "//components/autofill/core/common:common",
@@ -1729,6 +1745,7 @@ if (is_android) {
       "$root_gen_dir/chrome/android/chrome_apk_paks/resources.pak",
       "$root_gen_dir/components/components_resources.pak",
       "$root_gen_dir/components/dev_ui_components_resources.pak",
+      "$root_out_dir/browser_tests.pak",
       "//components/test/data/ads_observer/",
       "//components/test/data/payments/",
       "//chrome/test/data/android/customtabs/",
@@ -1893,10 +1910,14 @@ if (is_android) {
     deps = []
 
     # These are grit() rules so they are in $root_gen_dir.
-    deps += [ "//components/resources" ]
+    deps += [
+      "//chrome:browser_tests_pak",
+      "//components/resources",
+    ]
     sources += [
       "$root_gen_dir/components/components_resources.pak",
       "$root_gen_dir/components/dev_ui_components_resources.pak",
+      "$root_out_dir/browser_tests.pak",
     ]
 
     # These are assets rules so we can just depend on them.
@@ -2193,7 +2214,7 @@ if (!is_android) {
       "//chrome/common/privacy_budget:test_support",
       "//chrome/renderer",
       "//chrome/services/removable_storage_writer:lib",
-      "//chrome/test/data/webui:resources_grit",
+      "//chrome/test/data/webui:resources",
       "//chrome/test/data/webui/mojo:mojo_bindings",
       "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
       "//chrome/test/payments:test_support",

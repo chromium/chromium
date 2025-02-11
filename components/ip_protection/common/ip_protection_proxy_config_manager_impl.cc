@@ -4,9 +4,15 @@
 
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
+#include <utility>
+#include <vector>
 
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_core.h"

@@ -131,6 +131,7 @@ BtmWebContentsObserver::~BtmWebContentsObserver() = default;
 RedirectChainDetector::RedirectChainDetector(WebContents* web_contents)
     : WebContentsObserver(web_contents),
       WebContentsUserData<RedirectChainDetector>(*web_contents),
+      short_visit_observer_(web_contents),
       detector_(this,
                 base::DefaultTickClock::GetInstance(),
                 base::DefaultClock::GetInstance()),
@@ -173,9 +174,19 @@ BtmBounceDetectorDelegate::~BtmBounceDetectorDelegate() = default;
 
 BtmNavigationHandle::~BtmNavigationHandle() = default;
 
-ukm::SourceId BtmNavigationHandle::GetRedirectSourceId(int index) const {
+ukm::SourceId BtmNavigationHandle::GetRedirectSourceId(size_t index) {
+  CHECK_LT(index, GetRedirectChain().size());
+  ServerBounceDetectionState* server_state = GetServerState();
+  while (index >= server_state->server_redirect_source_ids.size()) {
+    server_state->server_redirect_source_ids.push_back(MakeRedirectSourceId(
+        GetRedirectChain()[server_state->server_redirect_source_ids.size()]));
+  }
+  return server_state->server_redirect_source_ids[index];
+}
+
+ukm::SourceId BtmNavigationHandle::MakeRedirectSourceId(const GURL& url) const {
   return ukm::UkmRecorder::GetSourceIdForRedirectUrl(
-      base::PassKey<BtmNavigationHandle>(), GetRedirectChain()[index]);
+      base::PassKey<BtmNavigationHandle>(), url);
 }
 
 BtmRedirectContext::BtmRedirectContext(BtmRedirectChainHandler handler,
@@ -1115,9 +1126,10 @@ void BtmBounceDetector::DidFinishNavigation(
     // For uncommitted navigations, treat the last URL visited as a server
     // redirect, so it is considered a potential tracker.
     const size_t i = access_types.size() - 1;
+    const GURL& last_url = navigation_handle->GetRedirectChain()[i];
     redirects.push_back(BtmRedirectInfo::CreateForServer(
-        /*url=*/UrlAndSourceId(navigation_handle->GetRedirectChain()[i],
-                               navigation_handle->GetRedirectSourceId(i)),
+        /*url=*/UrlAndSourceId(
+            last_url, navigation_handle->MakeRedirectSourceId(last_url)),
         /*access_type=*/access_types[i],
         /*time=*/clock_->Now(),
         /*was_response_cached=*/navigation_handle->WasResponseCached(),
@@ -1237,9 +1249,10 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(BtmWebContentsObserver);
 
 namespace dips {
 
-ukm::SourceId GetInitialRedirectSourceId(NavigationHandle* navigation_handle) {
+ukm::SourceId GetRedirectSourceId(NavigationHandle* navigation_handle,
+                                  size_t index) {
   BtmNavigationHandleImpl handle(navigation_handle);
-  return handle.GetRedirectSourceId(0);
+  return handle.GetRedirectSourceId(index);
 }
 
 }  // namespace dips

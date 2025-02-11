@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <optional>
 
-#include "base/containers/map_util.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -27,22 +27,19 @@ bool CheckPreconditions(
   };
 
   if (!std::ranges::all_of(aliases, [&](const auto& p) {
-        const FirstPartySetEntry* alias_entry =
-            base::FindOrNull(entries, p.first);
-        const FirstPartySetEntry* canonical_entry =
-            base::FindOrNull(entries, p.second);
-        // The canonical entry must exist. If the alias entry exists explicitly,
-        // it must be the same as the canonical entry.
-        if (!canonical_entry) {
+        const auto& [alias_site, canonical_site] = p;
+        // The canonical entry must exist.
+        if (!base::Contains(entries, canonical_site)) {
           emit(
               "Invalid local Related Website Set: alias names a site that has "
               "no entry in the set.");
           return false;
         }
-        if (alias_entry && *alias_entry != *canonical_entry) {
+        // The alias entry must not exist explicitly.
+        if (base::Contains(entries, alias_site)) {
           emit(
-              "Invalid local Related Website Set: alias entry differs from the "
-              "canonical entry.");
+              "Invalid local Related Website Set: alias site should not be "
+              "listed in `entries`.");
           return false;
         }
         return true;

@@ -21,13 +21,14 @@ GlicFreDialogView::GlicFreDialogView(Profile* profile,
   SetShowCloseButton(false);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetModalType(ui::mojom::ModalType::kChild);
+  SetOwnedByWidget(false);
   SetOwnershipOfNewWidget(
       views::Widget::InitParams::Ownership::CLIENT_OWNS_WIDGET);
   // TODO(cuianthony): Share this constant in GlicWindowController to use with
   // both the FRE dialog and the main glic window.
   set_corner_radius(12);
 
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetUseDefaultFillLayout(true);
 
   auto web_view = std::make_unique<views::WebView>(profile);
   web_view->SetSize(initial_size);

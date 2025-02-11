@@ -58,6 +58,10 @@ class VIEWS_EXPORT PlatformStyle {
   static constexpr bool kTableViewSupportsKeyboardNavigationByCell =
       !BUILDFLAG(IS_MAC);
 
+  // Whether TableView will show rows with alternating colors.
+  static constexpr bool kTableViewSupportsAlternatingRowColors =
+      BUILDFLAG(IS_MAC);
+
   // Whether selecting a row in a TreeView selects the entire row or only the
   // label for that row.
   static constexpr bool kTreeViewSelectionPaintsEntireRow = BUILDFLAG(IS_MAC);

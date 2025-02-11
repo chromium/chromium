@@ -14,8 +14,8 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/origin.h"
 
@@ -54,10 +54,10 @@ class MediaDevicesPermissionCheckerTest : public RenderViewHostImplTestHarness {
       bool enabled) {
     auto navigation = NavigationSimulator::CreateBrowserInitiated(
         origin_.GetURL(), web_contents());
-    std::vector<blink::OriginWithPossibleWildcards> allowlist;
+    std::vector<network::OriginWithPossibleWildcards> allowlist;
     if (enabled) {
       allowlist.emplace_back(
-          *blink::OriginWithPossibleWildcards::FromOrigin(origin_));
+          *network::OriginWithPossibleWildcards::FromOrigin(origin_));
     }
     navigation->SetPermissionsPolicyHeader({{feature, allowlist,
                                              /*self_if_matches=*/std::nullopt,

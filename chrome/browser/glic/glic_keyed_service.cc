@@ -6,7 +6,6 @@
 
 #include "base/containers/flat_set.h"
 #include "chrome/browser/glic/auth_controller.h"
-#include "chrome/browser/glic/border_view.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_enums.h"
@@ -51,11 +50,11 @@ GlicKeyedService::GlicKeyedService(Profile* profile,
                                                         /*use_for_fre=*/false)),
       profile_manager_(profile_manager) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
-  metrics_->SetWindowController(window_controller_.get());
+  metrics_->SetControllers(window_controller_.get(), &focused_tab_manager_);
 }
 
 GlicKeyedService::~GlicKeyedService() {
-  metrics_->SetWindowController(nullptr);
+  metrics_->SetControllers(nullptr, nullptr);
 }
 
 void GlicKeyedService::Shutdown() {

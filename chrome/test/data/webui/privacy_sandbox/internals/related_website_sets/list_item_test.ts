@@ -26,7 +26,7 @@ suite('ListItemTest', () => {
     await microtasksFinished();
   });
 
-  test('check layout', async () => {
+  test('check layout', () => {
     assertTrue(isVisible(item));
     assertFalse(item.$.expandedContent.opened);
     const enterpriseIcon = item.shadowRoot!.querySelector('cr-icon');

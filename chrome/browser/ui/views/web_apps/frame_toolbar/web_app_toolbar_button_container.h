@@ -9,10 +9,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -76,6 +78,10 @@ class WebAppToolbarButtonContainer : public views::View,
 
   PageActionIconController* page_action_icon_controller() {
     return page_action_icon_controller_.get();
+  }
+
+  page_actions::PageActionContainerView* page_action_container() {
+    return page_action_container_.get();
   }
 
   ExtensionsToolbarContainer* extensions_container() {
@@ -149,6 +155,9 @@ class WebAppToolbarButtonContainer : public views::View,
   void AppShimChanged(const webapps::AppId& changed_app_id);
 #endif
 
+  // Calculates the appropriate insets for a page action, given the icon's size.
+  gfx::Insets PageActionIconInsetsFromSize(int icon_size) const;
+
   // Timers for synchronising their respective parts of the titlebar animation.
   base::OneShotTimer animation_start_delay_;
   base::OneShotTimer icon_fade_in_delay_;
@@ -162,6 +171,7 @@ class WebAppToolbarButtonContainer : public views::View,
 
   std::unique_ptr<PageActionIconController> page_action_icon_controller_;
   int page_action_insertion_point_ = 0;
+  raw_ptr<page_actions::PageActionContainerView> page_action_container_;
 
   std::unique_ptr<ExtensionsToolbarCoordinator> extensions_toolbar_coordinator_;
 

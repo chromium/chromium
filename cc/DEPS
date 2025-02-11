@@ -89,7 +89,4 @@ specific_include_rules = {
     "+gpu/config",
     "+gpu/ipc",
   ],
-  "draw_property_utils\.cc" : [
-    "+components/crash/core/common",
-  ],
 }

@@ -609,7 +609,7 @@ suite('SyncSettings', function() {
     assertEquals(router.getRoutes().PEOPLE, router.getCurrentRoute());
   });
 
-  test('EnterExistingPassphraseDoesNotExistIfSignedOut', async function() {
+  test('EnterExistingPassphraseDoesNotExistIfSignedOut', function() {
     syncPage.syncStatus = {
       signedInState: SignedInState.SIGNED_IN,
       disabled: false,

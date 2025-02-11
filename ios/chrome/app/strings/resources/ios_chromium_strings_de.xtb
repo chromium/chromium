@@ -69,6 +69,7 @@ Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, wer
 <translation id="2459183986985456602">Aktuellen Tab in Chromium öffnen.</translation>
 <translation id="2476409803017965813">Du kannst deine Auswahl jederzeit in den Chromium-Einstellungen ändern.</translation>
 <translation id="2478931088402984578">Wähle <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> aus</translation>
+<translation id="2485774047568879945">Lege Chromium als Standardbrowser fest, um Links ganz einfach zu teilen und zu öffnen</translation>
 <translation id="2512597191798760956">Halte das Chromium-Symbol gedrückt und klicke auf „Startbildschirm bearbeiten“</translation>
 <translation id="2517624234762908348">Chromium-Daten synchronisieren</translation>
 <translation id="2592940277904433508">Chromium weiterhin verwenden</translation>
@@ -166,6 +167,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="5088872414922783602">Über das Startbildschirm-Dock schneller auf Chromium zugreifen.</translation>
 <translation id="5124429847818367226">Du kannst jetzt Chromium jederzeit nutzen, wenn du surfst oder auf Links in Nachrichten, Dokumenten und anderen Apps tippst.</translation>
 <translation id="5131565040785979529">Deine Organisation, <ph name="DOMAIN" />, verwaltet das Konto, in dem du angemeldet bist, und die Nutzung von Chromium.</translation>
+<translation id="5134464247000681876">Links aus Gmail, Maps, YouTube und anderen Apps in Chromium öffnen</translation>
 <translation id="5224391634244552924">Keine gespeicherten Passwörter. Chromium kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
 <translation id="5259423875997548710">Bilder in Chromium suchen.</translation>
 <translation id="5308226104666789935">Chromium kann nicht nach Aktualisierungen suchen</translation>
@@ -259,6 +261,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="7674213385180944843">Öffne „Einstellungen“ &gt; „Datenschutz“ &gt; „Kamera“ &gt; „Chromium“ und aktiviere die Kamera.</translation>
 <translation id="7733418656985455268">Chromium-Tipp: Mit Lens suchen</translation>
 <translation id="7747820849741499258">In Chromium suchen</translation>
+<translation id="7753923083404296545">Im Inkognitomodus von Chromium geöffnet</translation>
 <translation id="7762622637388462191">Du kannst Inkognitotabs sperren lassen, wenn du Chromium verlässt oder zu einer anderen App wechselst.</translation>
 <translation id="7763454117143368771">Wenn du Chromium als Standardbrowser verwendest, bist du bestmöglich vor gefährlichen Websites geschützt und kannst auch deine Passwörter besser schützen</translation>
 <translation id="7784950022329154821">Inkognitotabs sperren, wenn Chromium geschlossen wird</translation>

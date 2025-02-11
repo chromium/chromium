@@ -54,7 +54,6 @@ class FontDataServiceImpl : public mojom::FontDataService {
   }
 
   // FontDataService:
-
   // Provides font data from a cache that is populated on-demand. Font data will
   // match based on the `family_name` and `style` inputs. If there is no such
   // match, the font data will be null.
@@ -73,6 +72,12 @@ class FontDataServiceImpl : public mojom::FontDataService {
   // Gets all the available font families on the system. Usage of this function
   // is strongly discouraged as it iterates over all installed fonts.
   void GetAllFamilyNames(GetAllFamilyNamesCallback callback) override;
+
+  // Gets a typeface matching `family_name` and `style`, or the default typeface
+  // if `family_name` is `nullopt`.
+  void LegacyMakeTypeface(const std::optional<std::string>& family_name,
+                          mojom::TypefaceStylePtr style,
+                          LegacyMakeTypefaceCallback callback) override;
 
  protected:
   // Returns a file handle based on the SkTypeface. The file handle may be empty

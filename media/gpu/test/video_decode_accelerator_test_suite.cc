@@ -137,13 +137,9 @@ VideoDecodeAcceleratorTestSuite* VideoDecodeAcceleratorTestSuite::Create(
                                           // Options below are handled by Chrome
         it->first == "use-gl" || it->first == "v" || it->first == "vmodule" ||
         it->first == "enable-features" || it->first == "disable-features" ||
-        it->first == "test-launcher-shard-index" ||
-        it->first == "test-launcher-summary-output" ||
-        it->first == "test-launcher-total-shards" ||
+        it->first.find("test-launcher-") == 0 ||
         it->first == "enable-primary-node-access-for-vkms-testing" ||
         it->first == "single-process-tests" ||
-        it->first == "test-launcher-output" ||
-        it->first == "test-launcher-retries-left" ||
         it->first == "enable-clear-hevc-for-testing") {
       continue;
     }

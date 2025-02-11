@@ -246,7 +246,6 @@
 <translation id="1786487376942610288">将画中画窗口最大化或还原为当前大小</translation>
 <translation id="1787955149152357925">关闭</translation>
 <translation id="1796561540704213354">一系列网站，包含您访问过的网页和打开的网页</translation>
-<translation id="179842970735685253">Google 的服务条款</translation>
 <translation id="1805407494113167797">无法播放专注模式音乐</translation>
 <translation id="181103072419391116">信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
 <translation id="1815039896005206046">选择“不喜欢”将提交您不喜欢这条分组建议的反馈</translation>
@@ -1241,7 +1240,6 @@
 <translation id="5121628974188116412">转到网页底部</translation>
 <translation id="5122517996953421795">“<ph name="DESK_NAME" />”预览。非活动桌面。</translation>
 <translation id="5136175204352732067">所连接的键盘已不是原来的那个</translation>
-<translation id="5140105873789567560">您必须年满 18 周岁，才能使用“帮我写”和“帮我读”功能。</translation>
 <translation id="5144005092084035179">要切换音频输入设备吗？</translation>
 <translation id="5147567197700016471">已解锁</translation>
 <translation id="5150070631291639005">隐私设置</translation>
@@ -1395,7 +1393,6 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">无法验证您的密码。请重试。</translation>
 <translation id="5632485077360054581">操作步骤</translation>
-<translation id="5633826232582408011">开启“帮我写”和“帮我读”功能后，系统会将输入文本、文档内容和网页网址发送到 Google AI 服务器，以根据 <ph name="LINK_TO_SERVICE_TERMS" />生成写作建议、总结内容、回答问题并改进产品。请勿包含任何个人、敏感或机密信息。</translation>
 <translation id="5648021990716966815">麦克风耳机插孔</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />中有需要您关注的新动态。</translation>
 <translation id="5662075790140998213">桌面 10</translation>
@@ -2022,7 +2019,6 @@
 <translation id="7749443890790263709">已达到桌面数量上限。</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">全部显示</translation>
-<translation id="7759183637555564029">您可以随时在“设置”中关闭“帮我写”和“帮我读”功能。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">随选朗读</translation>
 <translation id="7769299611924763557">您的 GIF 很快便能就绪</translation>
 <translation id="7773536009433685931">改为开启 Wi-Fi</translation>
@@ -2032,7 +2028,6 @@
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7787212146956232129">输入和输出设备均已设置。如需更改，请前往“设置”。</translation>
 <translation id="7792590255364786396">可见</translation>
-<translation id="7793389284006812057">生成式 AI 尚处于早期开发实验阶段，目前仅面向部分用户推出。</translation>
 <translation id="7796735576426975947">已隐藏新通知</translation>
 <translation id="7798302898096527229">按搜索键或按 Shift 键可取消。</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>

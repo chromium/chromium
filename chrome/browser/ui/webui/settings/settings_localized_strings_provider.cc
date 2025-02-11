@@ -1363,6 +1363,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_DIALOG_TITLE},
       {"autofillAiDeleteAllEntriesDialogText",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_DIALOG_TEXT},
+      {"autofillPayOverTimeSettingsLabel", IDS_AUTOFILL_BNPL_SETTINGS_LABEL},
   };
 
   html_source->AddString("manageAddressesUrl",
@@ -1387,6 +1388,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                          chrome::kSyncTrustedVaultOptInURL);
   html_source->AddString("trustedVaultLearnMoreUrl",
                          chrome::kSyncTrustedVaultLearnMoreURL);
+  html_source->AddString("autofillPayOverTimeSettingsLearnMoreUrl",
+                         chrome::kPayOverTimeLearnMoreUrl);
 
   bool is_guest_mode = false;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1476,6 +1479,11 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TOGGLE_SUB_LABEL,
           chrome::kAutofillAiLearnMoreURL));
+
+  html_source->AddString(
+      "autofillPayOverTimeSettingsSublabel",
+      l10n_util::GetStringFUTF16(IDS_AUTOFILL_BNPL_SETTINGS_SUBLABEL,
+                                 chrome::kPayOverTimeLearnMoreUrl));
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,

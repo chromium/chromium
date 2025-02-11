@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_POPUP_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_POPUP_CONTROLLER_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import "ui/base/window_open_disposition.h"
 
@@ -62,6 +62,19 @@ class AutocompleteResult;
 
 /// Notifies of call action.
 - (void)onCallAction;
+
+// OmniboxText events should only contain events that don't impact autocomplete.
+#pragma mark - OmniboxText events
+
+/// Updates the popup text alignment.
+- (void)setTextAlignment:(NSTextAlignment)alignment;
+
+/// Updates the popup semantic content attribute.
+- (void)setSemanticContentAttribute:
+    (UISemanticContentAttribute)semanticContentAttribute;
+
+/// Notifies thumbnail update.
+- (void)setHasThumbnail:(BOOL)hasThumbnail;
 
 @end
 

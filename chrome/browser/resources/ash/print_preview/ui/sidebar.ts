@@ -285,6 +285,30 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
   printerExistsInDisplayedDestinations(): boolean {
     return this.$.destinationSettings.printerExistsInDisplayedDestinations();
   }
+
+  /**
+   * Normally (without printer specific policies) the setting is hidden if
+   * the printer only supports a single value for this setting.
+   *
+   * Successful application of printer specific policies already implicitly
+   * implies that the printer supports multiple values for this setting.
+   * However, the setting should not be hidden even if the policy allows
+   * only a single value for this setting (setting would not be considered
+   * "available" in that case).
+   * @param settingAvailable Whether the current printer supports multiple
+   *     values for this setting.
+   * @param allowedManagedPrintOptionsApplied Whether this setting is managed on
+   *     the current printer by the per-printer policy. See
+   *     AllowedManagedPrintOptionsApplied in
+   *     print_preview/data/destination_cros.ts for more info.
+   * @returns Whether to hide the setting.
+   */
+
+  private hideSetting_(
+      settingAvailable: boolean,
+      allowedManagedPrintOptionsApplied: boolean): boolean {
+    return !settingAvailable && !allowedManagedPrintOptionsApplied;
+  }
   // </if>
 }
 

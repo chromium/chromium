@@ -4968,6 +4968,8 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Declined after accepting"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillWebDataBackendImplOperationResult) -->
+
 <enum name="AutofillWebDataBackendImplOperationResult">
   <int value="0" label="AddFormElements: Success"/>
   <int value="1" label="AddFormElements: Failure"/>
@@ -5044,6 +5046,8 @@ Called by update_autofill_enums.py.-->
   <int value="310" label="RemoveEntityInstancesModifiedBetween: Success"/>
   <int value="311" label="RemoveEntityInstancesModifiedBetween: Failure"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/webdata/autofill_webdata_backend_impl.cc:Result) -->
 
 <enum name="BooleanAutofillAddressSuggestionOnTypingAcceptance">
   <int value="0" label="Not accepted"/>
@@ -5168,8 +5172,13 @@ Called by update_autofill_enums.py.-->
 </enum>
 
 <enum name="CardInfoRetrievalEnrolledUnmaskResult">
-  <int value="0"
+  <int value="0" label="Unknown result"/>
+  <int value="1"
       label="Completed risk-based unmasking, no user-facing authentication"/>
+  <int value="2" label="Completed unmasking via authentication"/>
+  <int value="3" label="Authentication-related errors"/>
+  <int value="4" label="Flow was cancelled"/>
+  <int value="5" label="Unexpected errors"/>
 </enum>
 
 <enum name="CheckBoxStatus">
@@ -5961,6 +5970,18 @@ Called by update_autofill_enums.py.-->
   <int value="5" label="User opted in from settings"/>
   <int value="6" label="User already opted into FIDO auth, no need to offer"/>
 </enum>
+
+<!-- LINT.IfChange(AutofillAccountStorageResult) -->
+
+<enum name="WebDatabaseAutofillAccountStorageResult">
+  <int value="0" label="In memory (flag disabled)"/>
+  <int value="1" label="In memory (signed in implicitly)"/>
+  <int value="2" label="On disk (signed out)"/>
+  <int value="3" label="On disk (signed in explicitly)"/>
+  <int value="4" label="On disk (full sync on)"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/webdata_services/web_data_service_factory.cc:AutofillAccountStorageResult) -->
 
 </enums>
 

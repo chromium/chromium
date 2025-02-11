@@ -143,6 +143,7 @@ class ChromeAuthenticatorRequestDelegate
       base::OnceClosure immediate_not_found_callback,
       base::RepeatingClosure start_over_callback,
       AccountPreselectedCallback account_preselected_callback,
+      PasswordSelectedCallback password_selected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
       base::RepeatingClosure bluetooth_adapter_power_on_callback,
       base::RepeatingCallback<
@@ -323,6 +324,7 @@ class ChromeAuthenticatorRequestDelegate
   base::OnceClosure immediate_not_found_callback_;
   base::RepeatingClosure start_over_callback_;
   AccountPreselectedCallback account_preselected_callback_;
+  PasswordSelectedCallback password_selected_callback_;
   device::FidoRequestHandlerBase::RequestCallback request_callback_;
 
   // The number of credential types that have been requested to be displayed.

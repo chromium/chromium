@@ -135,7 +135,7 @@ suite('CertificateViewer', function() {
     assertTrue(modificationsTab.hidden);
   });
 
-  test('InvalidCert', async function() {
+  test('InvalidCert', function() {
     // Error should be shown instead of cert fields.
     assertFalse(getRequiredElement('general-error').hidden);
     assertTrue(getRequiredElement('general-fields').hidden);
@@ -157,7 +157,7 @@ suite('CertificateViewer', function() {
     assertTrue(modificationsPanel.constraints.includes('127.0.0.1/24'));
   }
 
-  test('CheckMetadataNotEditable', async function() {
+  test('CheckMetadataNotEditable', function() {
     const modificationsTab = getRequiredElement('modifications-tab');
     assertFalse(modificationsTab.hidden);
     // Select the modifications tab to allow for visibility checks
@@ -182,7 +182,7 @@ suite('CertificateViewer', function() {
     assertFalse(isVisible(deleteButton));
   });
 
-  test('CheckMetadataNotEditableNoConstraints', async function() {
+  test('CheckMetadataNotEditableNoConstraints', function() {
     const modificationsTab = getRequiredElement('modifications-tab');
     assertFalse(modificationsTab.hidden);
     // Select the modifications tab to allow for visibility checks
@@ -201,7 +201,7 @@ suite('CertificateViewer', function() {
     assertFalse(isVisible(modificationsPanel.$.addConstraintSection));
   });
 
-  test('CheckMetadataEditable', async function() {
+  test('CheckMetadataEditable', function() {
     const modificationsTab = getRequiredElement('modifications-tab');
     assertFalse(modificationsTab.hidden);
     // Select the modifications tab to allow for visibility checks
@@ -228,7 +228,7 @@ suite('CertificateViewer', function() {
     assertFalse(deleteButton.disabled);
   });
 
-  test('CheckMetadataEditableNoConstraints', async function() {
+  test('CheckMetadataEditableNoConstraints', function() {
     const modificationsTab = getRequiredElement('modifications-tab');
     assertFalse(modificationsTab.hidden);
     // Select the modifications tab to allow for visibility checks

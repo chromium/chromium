@@ -22,6 +22,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -230,7 +231,7 @@ class RealtimeReportingClientUmaTest
   policy::CloudPolicyClient::ResultCallback upload_callback;
 };
 
-TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadSucceeds) {
+TEST_P(RealtimeReportingClientUmaTest, TestDeprecatedUmaEventUploadSucceeds) {
 // Profile reporting is not supported on Ash.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (is_profile_reporting()) {
@@ -261,7 +262,47 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadSucceeds) {
   histogram_.ExpectTotalCount("Enterprise.ReportingEventUploadFailure", 0);
 }
 
-TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
+TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadSucceeds) {
+// Profile reporting is not supported on Ash.
+#if BUILDFLAG(IS_CHROMEOS)
+  if (is_profile_reporting()) {
+    return;
+  }
+#endif
+
+  is_profile_reporting()
+      ? reporting_client_->SetProfileCloudPolicyClientForTesting(client_.get())
+      : reporting_client_->SetBrowserCloudPolicyClientForTesting(client_.get());
+
+  ReportingSettings settings;
+  settings.per_profile = is_profile_reporting();
+  ::chrome::cros::reporting::proto::Event extension_install_event;
+  extension_install_event.mutable_browser_extension_install_event()->set_id(
+      "extension_id");
+
+  EXPECT_EQ(EnterpriseReportingEventType::kExtensionInstallEvent,
+            enterprise_connectors::GetUmaEnumFromEventCase(
+                extension_install_event.event_case()));
+  EXPECT_EQ(::chrome::cros::reporting::proto::Event::EventCase::
+                kBrowserExtensionInstallEvent,
+            extension_install_event.event_case());
+
+  EXPECT_CALL(*client_.get(), UploadSecurityEvent(_, _, _))
+      .WillOnce(MoveArg<2>(&upload_callback));
+
+  reporting_client_->ReportEvent(std::move(extension_install_event),
+                                 std::move(settings));
+
+  std::move(upload_callback)
+      .Run(policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS));
+
+  histogram_.ExpectUniqueSample(
+      "Enterprise.ReportingEventUploadSuccess",
+      EnterpriseReportingEventType::kExtensionInstallEvent, 1);
+  histogram_.ExpectTotalCount("Enterprise.ReportingEventUploadFailure", 0);
+}
+
+TEST_P(RealtimeReportingClientUmaTest, TestDeprecatedUmaEventUploadFails) {
 // Profile reporting is not supported on Ash.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (is_profile_reporting()) {
@@ -282,6 +323,46 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
 
   reporting_client_->ReportRealtimeEvent(kExtensionInstallEvent,
                                          std::move(settings), std::move(event));
+
+  std::move(upload_callback)
+      .Run(policy::CloudPolicyClient::Result(policy::DM_STATUS_REQUEST_FAILED));
+
+  histogram_.ExpectUniqueSample(
+      "Enterprise.ReportingEventUploadFailure",
+      EnterpriseReportingEventType::kExtensionInstallEvent, 1);
+  histogram_.ExpectTotalCount("Enterprise.ReportingEventUploadSuccess", 0);
+}
+
+TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
+// Profile reporting is not supported on Ash.
+#if BUILDFLAG(IS_CHROMEOS)
+  if (is_profile_reporting()) {
+    return;
+  }
+#endif
+
+  is_profile_reporting()
+      ? reporting_client_->SetProfileCloudPolicyClientForTesting(client_.get())
+      : reporting_client_->SetBrowserCloudPolicyClientForTesting(client_.get());
+
+  ReportingSettings settings;
+  settings.per_profile = is_profile_reporting();
+  ::chrome::cros::reporting::proto::Event extension_install_event;
+  extension_install_event.mutable_browser_extension_install_event()->set_id(
+      "extension_id");
+
+  EXPECT_EQ(EnterpriseReportingEventType::kExtensionInstallEvent,
+            enterprise_connectors::GetUmaEnumFromEventCase(
+                extension_install_event.event_case()));
+  EXPECT_EQ(::chrome::cros::reporting::proto::Event::EventCase::
+                kBrowserExtensionInstallEvent,
+            extension_install_event.event_case());
+
+  EXPECT_CALL(*client_.get(), UploadSecurityEvent(_, _, _))
+      .WillOnce(MoveArg<2>(&upload_callback));
+
+  reporting_client_->ReportEvent(std::move(extension_install_event),
+                                 std::move(settings));
 
   std::move(upload_callback)
       .Run(policy::CloudPolicyClient::Result(policy::DM_STATUS_REQUEST_FAILED));

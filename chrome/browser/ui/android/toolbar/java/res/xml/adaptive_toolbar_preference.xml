@@ -10,6 +10,7 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarHeaderPreference
+        android:selectable="false"
         android:key="adaptive_toolbar_header" />
 
        <org.chromium.components.browser_ui.settings.ChromeSwitchPreference

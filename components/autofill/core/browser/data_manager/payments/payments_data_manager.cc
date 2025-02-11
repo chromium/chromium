@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/wallet_usage_data_metrics.h"
+#include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_data_cleaner.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
@@ -799,7 +800,8 @@ bool PaymentsDataManager::HasMaskedBankAccounts() const {
 }
 
 base::span<const BnplIssuer> PaymentsDataManager::GetLinkedBnplIssuers() const {
-  if (!IsAutofillPaymentMethodsEnabled() || !IsAutofillBnplPrefEnabled()) {
+  if (!IsAutofillPaymentMethodsEnabled() || !IsAutofillBnplPrefEnabled() ||
+      !AreBnplIssuersSupported()) {
     return {};
   }
   return linked_bnpl_issuers_;
@@ -926,14 +928,16 @@ const gfx::Image* PaymentsDataManager::GetCachedCardArtImageForUrl(
 
 base::span<const BnplIssuer> PaymentsDataManager::GetUnlinkedBnplIssuers()
     const {
-  if (!IsAutofillPaymentMethodsEnabled() || !IsAutofillBnplPrefEnabled()) {
+  if (!IsAutofillPaymentMethodsEnabled() || !IsAutofillBnplPrefEnabled() ||
+      !AreBnplIssuersSupported()) {
     return {};
   }
   return unlinked_bnpl_issuers_;
 }
 
 std::vector<BnplIssuer> PaymentsDataManager::GetBnplIssuers() const {
-  if (!IsAutofillPaymentMethodsEnabled() || !IsAutofillBnplPrefEnabled()) {
+  if (!IsAutofillPaymentMethodsEnabled() || !IsAutofillBnplPrefEnabled() ||
+      !AreBnplIssuersSupported()) {
     return {};
   }
 
@@ -1014,6 +1018,18 @@ bool PaymentsDataManager::IsAutofillHasSeenIbanPrefEnabled() const {
 void PaymentsDataManager::SetAutofillHasSeenIban() {
   prefs::SetAutofillHasSeenIban(pref_service_);
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+bool PaymentsDataManager::IsAutofillHasSeenBnplPrefEnabled() const {
+  return prefs::HasSeenBnpl(pref_service_);
+}
+
+void PaymentsDataManager::SetAutofillHasSeenBnpl() {
+  prefs::SetAutofillHasSeenBnpl(pref_service_);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 bool PaymentsDataManager::IsAutofillWalletImportEnabled() const {
   if (is_syncing_for_test_) {
@@ -2027,8 +2043,9 @@ bool PaymentsDataManager::AreEwalletAccountsSupported() const {
 bool PaymentsDataManager::AreBnplIssuersSupported() const {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableBuyNowPayLaterSyncing);
+  return app_locale_ == "en-US" &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillEnableBuyNowPayLaterSyncing);
 #else
   return false;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||

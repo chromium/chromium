@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_H_
 
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
-#include "base/component_export.h"
 
 class GURL;
 

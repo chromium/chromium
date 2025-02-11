@@ -314,5 +314,29 @@ TEST(ScreenInfoTest, WorkArea) {
               "Invalid work area inset: -42");
 }
 
+TEST(ScreenInfoTest, Rotation) {
+  EXPECT_EQ(HeadlessScreenInfo::FromString("{ rotation=0 }").value()[0],
+            HeadlessScreenInfo({.rotation = 0}));
+
+  EXPECT_EQ(HeadlessScreenInfo::FromString("{ rotation=90 }").value()[0],
+            HeadlessScreenInfo({.rotation = 90}));
+
+  EXPECT_EQ(HeadlessScreenInfo::FromString("{ rotation=180 }").value()[0],
+            HeadlessScreenInfo({.rotation = 180}));
+
+  EXPECT_EQ(HeadlessScreenInfo::FromString("{ rotation=270 }").value()[0],
+            HeadlessScreenInfo({.rotation = 270}));
+
+  // Invalid.
+  EXPECT_THAT(HeadlessScreenInfo::FromString("{ rotation=abc }").error(),
+              "Invalid rotation: abc");
+
+  EXPECT_THAT(HeadlessScreenInfo::FromString("{ rotation=-42 }").error(),
+              "Invalid rotation: -42");
+
+  EXPECT_THAT(HeadlessScreenInfo::FromString("{ rotation=42 }").error(),
+              "Invalid rotation: 42");
+}
+
 }  // namespace
 }  // namespace headless

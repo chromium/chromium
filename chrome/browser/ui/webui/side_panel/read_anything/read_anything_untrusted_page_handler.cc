@@ -73,7 +73,10 @@
 using ash::language_packs::LanguagePackManager;
 using ash::language_packs::PackResult;
 #else
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/component_updater/wasm_tts_engine_component_installer.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "components/update_client/crx_update_item.h"
 #endif
 
 using content::TtsController;
@@ -315,7 +318,14 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
 
 #if !BUILDFLAG(IS_CHROMEOS)
   content::TtsController::GetInstance()->AddUpdateLanguageStatusDelegate(this);
-  extensions::ExtensionRegistry::Get(profile_)->AddObserver(this);
+
+  if (features::IsWasmTtsComponentUpdaterEnabled()) {
+    component_updater_observation_.Observe(
+        g_browser_process->component_updater());
+  } else {
+    extensions::ExtensionRegistry::Get(profile_)->AddObserver(this);
+  }
+
 #endif
   side_panel_controller_ = ReadAnythingSidePanelControllerGlue::FromWebContents(
                                web_ui_->GetWebContents())
@@ -509,6 +519,21 @@ void ReadAnythingUntrustedPageHandler::OnExtensionReady(
     return;
   }
   page_->OnTtsEngineInstalled();
+}
+
+// component_updater::ServiceObserver:
+void ReadAnythingUntrustedPageHandler::OnEvent(
+    const update_client::CrxUpdateItem& item) {
+  if (item.id !=
+      component_updater::WasmTtsEngineComponentInstallerPolicy::GetId()) {
+    return;
+  }
+
+  // Once the component has been updated, send a signal so reading mode
+  // can check for new voices.
+  if (item.state == update_client::ComponentState::kUpdated) {
+    page_->OnTtsEngineInstalled();
+  }
 }
 #endif
 

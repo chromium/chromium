@@ -42,7 +42,8 @@ bool MockEmbedder::TryCancel(TaskId task_id) {
   return false;
 }
 
-void MockEmbedder::SetOnEmbedderReady(OnEmbedderReadyCallback callback) {
+void MockEmbedder::SetOnEmbedderReadyCallback(
+    OnEmbedderReadyCallback callback) {
   // The mock embedder is always ready, so we invoke the callback directly.
   std::move(callback).Run({kModelVersion, kOutputSize});
 }
@@ -52,5 +53,7 @@ std::vector<Embedding> MockEmbedder::ComputeEmbeddingsForPassages(
   return std::vector<Embedding>(passages.size(),
                                 ComputeEmbeddingForPassage(""));
 }
+
+void MockEmbedder::SetEmbedderMetadata(EmbedderMetadata metadata) {}
 
 }  // namespace passage_embeddings

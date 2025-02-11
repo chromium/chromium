@@ -16,7 +16,7 @@ suite('chrome://flags/deprecated', function() {
   let searchTextArea: HTMLInputElement;
   let browserProxy: TestFlagsBrowserProxy;
 
-  setup(async function() {
+  setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     browserProxy = new TestFlagsBrowserProxy();
     FlagsBrowserProxyImpl.setInstance(browserProxy);

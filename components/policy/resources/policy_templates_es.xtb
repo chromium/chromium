@@ -1244,30 +1244,6 @@ Si se inhabilita, <ph name="PRODUCT_NAME" /> cerrará la pestaña después de ca
       Esta política de empresa está inhabilitada de forma predeterminada.</translation>
 <translation id="1947848925128084608">Inhabilitar el contraste alto en la pantalla de inicio de sesión y permitir que el usuario lo habilite temporalmente</translation>
 <translation id="1949584741547056205">Respuestas rápidas</translation>
-<translation id="1951288262199783797">Puedes habilitar esta política para crear un diccionario de extensiones de archivo con una lista de dominios en los que no se mostrarán estas advertencias de descarga. De este modo, los administradores de empresas pueden bloquear las advertencias de descarga de tipos de archivo que estén asociados a un dominio de la lista. Por ejemplo, si la extensión "jnlp" se asocia con "sitioweb1.com", los usuarios no verían una advertencia al descargar archivos "jnlp" desde "sitioweb1.com", pero sí la verían al descargar archivos "jnlp" desde "sitioweb2.com".
-
-      Los archivos con extensiones de archivo incluidas en los dominios que identifique esta política seguirán estando sujetos a otros tipos de advertencias de seguridad, como las de descarga de contenido mixto y las de Navegación segura.
-
-      Si inhabilitas esta política o no la configuras, los usuarios seguirán viendo advertencias con los tipos de archivo que activan las advertencias de descarga de tipos de archivo.
-
-      Si habilitas esta política:
-
-      * El patrón de URL debería seguir el formato indicado en https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-      * La extensión de archivo introducida debe estar escrita en minúsculas con caracteres ASCII. No se debe incluir el separador inicial al añadir una extensión de archivo a la lista, así que deberías añadir "jnlp" en lugar de ".jnlp".
-
-      Ejemplo:
-
-      El siguiente valor de ejemplo evitaría que se mostraran advertencias de descarga de tipos de archivo "swf", "exe" y "jnlp" en dominios *.example.com. En cualquier otro dominio, el usuario vería una advertencia de descarga de tipos de archivo "exe" y "jnlp", pero no de "swf".
-
-      [
-        { "file_extension": "jnlp", "domains": ["example.com"] },
-        { "file_extension": "exe", "domains": ["example.com"] },
-        { "file_extension": "swf", "domains": ["*"] }
-      ]
-
-      Ten en cuenta que, aunque en el ejemplo anterior estén desactivadas las advertencias de descarga de tipos de archivo "swf" en todos los dominios, por motivos de seguridad, no se recomienda hacer esto con los tipos de archivo peligrosos. En el ejemplo se ha hecho solo para demostrar que puede hacerse.
-
-      Si esta política se habilita junto a <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> y DownloadRestrictions se configura para bloquear tipos de archivo peligrosos, los bloqueos de descargas indicados en DownloadRestrictions tienen preferencia. Por ejemplo, si esta política se configura para habilitar las descargas de archivos "exe" en "sitioweb1.com" y DownloadRestrictions se configura para bloquear descargas maliciosas y tipos de archivo peligrosos, las descargas de archivos "exe" se bloquearán en todos los dominios. Si DownloadRestrictions no se configura para bloquear tipos de archivo peligrosos, los tipos de archivo indicados en esta política no mostrarán advertencias de descarga de tipos de archivo en los dominios especificados. Consulta más información sobre DownloadRestrictions (https://chromeenterprise.google/policies/?policy=DownloadRestrictions).</translation>
 <translation id="1954612656043024615">Habilitar la función de portapapeles compartido</translation>
 <translation id="1955063069502242812">Habilitar sonido de batería baja</translation>
 <translation id="1955806069704957172">Controla la configuración de la API Desk Connector.</translation>

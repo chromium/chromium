@@ -176,8 +176,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kPdfViewerPrivate, "pdfViewerPrivate"},
     {APIPermissionID::kResourcesPrivate, "resourcesPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermissionID::kRtcPrivate, "rtcPrivate",
-     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kSafeBrowsingPrivate, "safeBrowsingPrivate"},
     {APIPermissionID::kSettingsPrivate, "settingsPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},

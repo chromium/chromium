@@ -98,6 +98,7 @@
 <translation id="2343156876103232566">Да бисте послали број са овог уређаја на Android телефон, пријавите се у Chromium на оба уређаја.</translation>
 <translation id="2359808026110333948">Настави</translation>
 <translation id="2361918034042471035">Додатак <ph name="EXTENSION_NAME" /> жели да се пријавите у Chromium</translation>
+<translation id="236943522426971115">Онемогући Chromium који ради у позадини за апликације</translation>
 <translation id="2374216753258219393">Да бисте користили овај додатак као <ph name="USER_EMAIL_ADDRESS" />, пријавите се у Chromium.</translation>
 <translation id="2384373936468275798">Chromium ОС не може да синхронизује податке зато што су подаци за пријављивање на налог застарели.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Један или више додатака за Chromium су приступали 1 HID уређају}=1{Један или више додатака за Chromium приступају 1 HID уређају}one{Један или више додатака за Chromium приступају # HID уређају}few{Један или више додатака за Chromium приступају HID уређајима (#)}other{Један или више додатака за Chromium приступају HID уређајима (#)}}</translation>
@@ -180,6 +181,7 @@
 <translation id="3406848076815591792">Желите да пређете на постојећи Chromium профил?</translation>
 <translation id="3412460710772753638">У Менаџеру лозинки на овом уређају</translation>
 <translation id="3430503420100763906">Помоћу Chromium профила можете да раздвојите све Chromium садржаје. Направите профиле за пријатеље и породицу или раздвојите посао и забаву.</translation>
+<translation id="3451656833730006755">Да би вам додаци и други садржај били доступни на свим рачунарима, пријавите се у Chromium</translation>
 <translation id="347328004046849135">Chromium ће вас обавестити када се пријавите помоћу угрожене лозинке</translation>
 <translation id="3474745554856756813">Овим ћете избрисати <ph name="ITEMS_COUNT" /> ставке(и) са овог уређаја. Да бисте касније вратили податке, пријавите се у Chromium као <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Помоћу пречице <ph name="SHORTCUT" /> можете да прелазите са једног Chromium профила на други</translation>
@@ -505,6 +507,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8013436988911883588">Када Chromium добије приступ, веб-сајтови ће моћи да затраже приступ.</translation>
 <translation id="80471789339884597">Хвала вам на инсталацији. Морате да рестартујете све прегледаче пре него што почнете да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Увек приказуј пречицу за претрагу слика</translation>
+<translation id="8077498902115777962">Онемогући Chromium који ради у позадини за апликације</translation>
 <translation id="80790299200510644">Претрага слика</translation>
 <translation id="8086881907087796310">Инсталирање није успело зато што рачунар не испуњава минималне захтеве за хардвер.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> – Google Chrome for Testing</translation>

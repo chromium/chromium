@@ -206,7 +206,6 @@
 <translation id="1337692097987160377">இந்தப் பக்கத்தைப் பகிர்</translation>
 <translation id="1339601241726513588">பதிவுக் களம்:</translation>
 <translation id="1340482604681802745">பிக்கப் முகவரி</translation>
-<translation id="134204716678666126">கருத்தை வழங்குவதற்கான பட்டன்களுக்கு இடையே மாற இடது மற்றும் வலது பட்டன்களைப் பயன்படுத்தவும்.</translation>
 <translation id="1343356790768851700">உங்களுக்குப் பிடித்தவற்றைத் தீர்மானித்து, பிற தளங்களுக்கு விளம்பரங்களை இந்தத் தளம் பரிந்துரைக்கிறது</translation>
 <translation id="1346748346194534595">வலது</translation>
 <translation id="1348779747280417563">பெயரை உறுதிப்படுத்தவும்</translation>
@@ -1061,7 +1060,6 @@
 <translation id="2902312830803030883">மேலும் செயல்கள்</translation>
 <translation id="2903493209154104877">முகவரிகள்</translation>
 <translation id="290376772003165898"><ph name="LANGUAGE" /> மொழியில் பக்கம் இல்லையா?</translation>
-<translation id="2904165004205947971">உங்கள் தகவல்களை நிர்வகியுங்கள்</translation>
 <translation id="2905107382358353958">புதிய பேமெண்ட் அமைப்பு குறித்த விழிப்பூட்டல்</translation>
 <translation id="2909946352844186028">நெட்வொர்க் மாற்றம் கண்டறியப்பட்டது.</translation>
 <translation id="2911255567212929079">மெஷின் லேர்னிங் மற்றும் செயற்கை நுண்ணறிவு</translation>
@@ -1564,7 +1562,6 @@
 <translation id="3727309136762649052">பெயரிடம்</translation>
 <translation id="3727850735097852673">macOS Keychain உடன் Google Password Managerரைப் பயன்படுத்த, Chromeமை மீண்டும் தொடங்கி Keychain அணுகலை வழங்கவும். மீண்டும் தொடங்கியதும் உங்கள் உலாவிப் பக்கங்கள் மீண்டும் திறக்கும்.</translation>
 <translation id="3728173127485570463">கடவுச்சொற்களைத் தானாக நிரப்ப இனி Chrome பிரவுசருக்கு உங்கள் கைரேகை தேவைப்படாது</translation>
-<translation id="3735143108516366187">கணிப்பு மேம்பாடுகளை நிர்வகிக்க Enter பட்டனை அழுத்தவும்</translation>
 <translation id="3736739313435669994">நீங்கள் உலாவும்போது உங்களைக் கண்காணிப்பதற்கு மூன்றாம் தரப்புக் குக்கீகளைத் தளங்கள் பயன்படுத்துவதைத் தடுத்துள்ளீர்கள். அமைப்புகளுக்குச் சென்று <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">உங்கள் உலாவி உங்கள் நிர்வாகியால் நிர்வகிக்கப்படுகிறது.</translation>
 <translation id="3738428049780661523">உருவாக்கியது: <ph name="DATE" /></translation>
@@ -1663,7 +1660,6 @@
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3909899182024383590"><ph name="WEBSITE" /> தளத்தில் இருந்து சேமித்த தகவல்களும் பக்கமும் Googleளுக்கு அனுப்பப்பட்டு இந்த அம்சத்தை மேம்படுத்த மதிப்பாய்வாளர்களுக்குக் காட்டப்படலாம்.</translation>
 <translation id="3910231615117880630">உட்பொதிக்கப்பட்ட உள்ளடக்கம் குறித்து மேலும் அறிக</translation>
-<translation id="3915878244842478983">உங்கள் தகவல்களைப் பெறுவதில் Chromeக்குச் சிக்கல் ஏற்பட்டது</translation>
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />உங்கள் தரவை நீங்கள் எப்படி நிர்வகிக்கலாம்?<ph name="END_BOLD" /> 30 நாட்களுக்கு முந்தைய தளங்களை Chrome தானாக நீக்கிவிடும். மீண்டும் நீங்கள் பார்க்கும் தளம் பட்டியலில் மீண்டும் காட்டப்படக்கூடும். எப்போது வேண்டுமானாலும் Chrome அமைப்புகளுக்குச் சென்று, விளம்பரங்களைப் பரிந்துரைக்கும் தளத்தைத் தடுக்கலாம், தளம் பரிந்துரைக்கும் விளம்பரங்களை முடக்கலாம்.</translation>
 <translation id="3921869355029467742">உங்கள் பாதுகாப்புக் குறியீட்டை உள்ளிடவும்</translation>
 <translation id="3927538228901078312">ஒப்பீட்டு அட்டவணைகள் எதுவுமில்லை</translation>
@@ -2863,7 +2859,6 @@
 <translation id="6058977677006700226">உங்கள் சாதனங்கள் அனைத்திலும் உங்கள் கார்டுகளைப் பயன்படுத்தவா?</translation>
 <translation id="6059925163896151826">USB சாதனங்கள்</translation>
 <translation id="6060009363608157444">தவறான DnsOverHttps பயன்முறை.</translation>
-<translation id="6060132878120844000">மற்றும் 1 புலம்</translation>
 <translation id="6061154937977953833">மல்யுத்தம்</translation>
 <translation id="6062937464449575061">விலையைக் கண்காணிப்பதை நிறுத்து</translation>
 <translation id="6063415549109819824">வீட்டுக் கடன்</translation>
@@ -2928,7 +2923,6 @@
 <translation id="6180316780098470077">மீண்டும் முயல்வதற்கான இடைவெளி</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome தானாகவே மூன்றாம் தரப்புக் குக்கீகளைக் கட்டுப்படுத்தும்</translation>
-<translation id="6188479691141473408">மேலும் <ph name="N_FIELDS" /> புலங்கள்</translation>
 <translation id="6190518157737269631">Esc போன்ற சில பட்டன்களை உங்கள் கீபோர்டில் மீறிச் செயல்படுதல்</translation>
 <translation id="6194209731893739467">நீங்கள் கண்காணிக்கும் தயாரிப்புகள் இங்கே காட்டப்படும்</translation>
 <translation id="6195163219142236913">மூன்றாம் தரப்புக் குக்கீகள் வரம்பிடப்பட்டுள்ளன</translation>
@@ -3157,7 +3151,6 @@
 <translation id="6569060085658103619">நீட்டிப்புப் பக்கத்தைப் பார்க்கிறீர்கள்</translation>
 <translation id="6572867903637058088">இது உதவிகரமாக இருக்கிறதா?</translation>
 <translation id="6573200754375280815">டூயல் பஞ்ச் ரைட்</translation>
-<translation id="6574762126505704998">முழுத் திரை</translation>
 <translation id="6575408526598156416">கணக்கில் சேமி</translation>
 <translation id="6577792494180292262">துணிகர முதலீடு</translation>
 <translation id="6578434528542148658">தவறான நீட்டிப்பு ஐடி.</translation>
@@ -3975,7 +3968,6 @@
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, சிஸ்டத்தின் இயல்பு உலாவியாக Chromeமை அமைக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="8027077570865220386">டிரே 15</translation>
 <translation id="8027585818882015174">Chrome பாதுகாப்புச் சரிபார்ப்பை இயக்குவதற்கான பட்டன். Chrome அமைப்புகளில் பாதுகாப்புச் சரிபார்ப்பை இயக்க இதை இயக்குங்கள்</translation>
-<translation id="8028138772801251745">AI மூலம் தானாக நிரப்புதல்</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Formsஸில் புதிய படிவத்தை விரைவாக உருவாக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="8028892419725165118">சிம்பிள் கேம்கள்</translation>
 <translation id="8028960012888758725">டிரிம் ஆஃப்டர் ஜாப்</translation>

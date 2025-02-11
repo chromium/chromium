@@ -11,6 +11,7 @@
 
 #include "base/check_deref.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -51,6 +52,12 @@ bool ProfileAttributesStorageIOS::HasProfileWithName(
   return GetIndexOfProfileWithName(name) != std::string::npos;
 }
 
+bool ProfileAttributesStorageIOS::IsProfileMarkedForDeletion(
+    std::string_view profile_name) const {
+  return base::Contains(prefs_->GetList(prefs::kProfilesToRemove),
+                        profile_name);
+}
+
 ProfileAttributesIOS
 ProfileAttributesStorageIOS::GetAttributesForProfileAtIndex(
     size_t index) const {
@@ -61,6 +68,10 @@ ProfileAttributesStorageIOS::GetAttributesForProfileAtIndex(
 ProfileAttributesIOS
 ProfileAttributesStorageIOS::GetAttributesForProfileWithName(
     std::string_view name) const {
+  if (IsProfileMarkedForDeletion(name)) {
+    return ProfileAttributesIOS::DeletedProfile(name);
+  }
+
   const base::Value::Dict& values =
       CHECK_DEREF(prefs_->GetDict(prefs::kProfileInfoCache).FindDict(name));
   return ProfileAttributesIOS::WithAttrs(name, values);
@@ -76,14 +87,18 @@ void ProfileAttributesStorageIOS::UpdateAttributesForProfileAtIndex(
 void ProfileAttributesStorageIOS::UpdateAttributesForProfileWithName(
     std::string_view name,
     ProfileAttributesCallback callback) {
+  if (IsProfileMarkedForDeletion(name)) {
+    return;
+  }
+
   const base::Value::Dict& values =
       CHECK_DEREF(prefs_->GetDict(prefs::kProfileInfoCache).FindDict(name));
 
-  base::Value::Dict updated_values =
-      std::move(callback)
-          .Run(ProfileAttributesIOS::WithAttrs(name, values))
-          .GetStorage();
+  ProfileAttributesIOS attr =
+      std::move(callback).Run(ProfileAttributesIOS::WithAttrs(name, values));
+  CHECK(!attr.IsDeletedProfile());
 
+  base::Value::Dict updated_values = std::move(attr).GetStorage();
   if (values != updated_values) {
     // Note: The block is there to ensure the pref update gets committed before
     // observers are notified, so they see the new value.
@@ -142,6 +157,7 @@ void ProfileAttributesStorageIOS::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kLastActiveProfiles);
   registry->RegisterDictionaryPref(prefs::kProfileForScene);
   registry->RegisterStringPref(prefs::kPersonalProfileName, std::string());
+  registry->RegisterListPref(prefs::kProfilesToRemove);
 }
 
 size_t ProfileAttributesStorageIOS::GetIndexOfProfileWithName(

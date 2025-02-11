@@ -39,6 +39,7 @@ cargo_crate("lib") {
       "Alice Maz <alice@alicemaz.com>, Marshall Pierce <marshall@mpierce.org>"
   cargo_pkg_name = "base64"
   cargo_pkg_description = "encodes and decodes base64 as bytes or utf8"
+  library_configs -= [ "//build/config/coverage:default_coverage" ]
   library_configs -= [ "//build/config/compiler:chromium_code" ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]

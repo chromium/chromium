@@ -95,18 +95,19 @@ void GlicFreController::ShowFreDialogAfterAuthCheck(
   // Close any existing FRE dialog before showing.
   DismissFre();
 
-  fre_view_ = new GlicFreDialogView(
-      profile_, gfx::Size(kFreDefaultWidth, kFreDefaultHeight));
-
   tabs::TabInterface* tab_interface = tabs::TabInterface::GetFromContents(
       browser->tab_strip_model()->GetActiveWebContents());
 
-  // TODO(crbug.com/393400004): This returned widget should be configured to
-  // use a synchronous close.
-  fre_widget_ = tab_interface->GetTabFeatures()
-                    ->tab_dialog_manager()
-                    ->CreateShowDialogAndBlockTabInteraction(fre_view_);
-  scoped_tab_modal_ui_ = tab_interface->ShowModalUI();
+  if (tab_interface->CanShowModalUI()) {
+    fre_view_ = new GlicFreDialogView(
+        profile_, gfx::Size(kFreDefaultWidth, kFreDefaultHeight));
+
+    // TODO(crbug.com/393400004): This returned widget should be configured to
+    // use a synchronous close.
+    fre_widget_ = tab_interface->GetTabFeatures()
+                      ->tab_dialog_manager()
+                      ->CreateShowDialogAndBlockTabInteraction(fre_view_);
+  }
 }
 
 void GlicFreController::AcceptFre() {
@@ -140,7 +141,6 @@ void GlicFreController::DismissFre() {
   if (fre_widget_) {
     fre_view_ = nullptr;
     fre_widget_.reset();
-    scoped_tab_modal_ui_.reset();
   }
 }
 

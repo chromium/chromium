@@ -38,9 +38,6 @@
 
 namespace blink {
 
-// extern
-const V8PrivateProperty::SymbolKey kPrivatePropertyMessageEventCachedData;
-
 static inline bool IsValidSource(EventTarget* source) {
   return !source || source->ToDOMWindow() || source->ToMessagePort() ||
          source->ToServiceWorker();
@@ -396,40 +393,6 @@ void MessageEvent::Trace(Visitor* visitor) const {
 
 void MessageEvent::LockToAgentCluster() {
   locked_to_agent_cluster_ = true;
-}
-
-v8::Local<v8::Object> MessageEvent::AssociateWithWrapper(
-    v8::Isolate* isolate,
-    const WrapperTypeInfo* wrapper_type,
-    v8::Local<v8::Object> wrapper) {
-  wrapper = Event::AssociateWithWrapper(isolate, wrapper_type, wrapper);
-
-  // Let V8 know the memory usage of the platform object, especially of |data|
-  // IDL attribute which could consume huge memory, so that V8 can best schedule
-  // GCs.
-  switch (data_type_) {
-    case kDataTypeNull:
-    // V8 is already aware of memory usage of ScriptValue.
-    case kDataTypeScriptValue:
-    case kDataTypeSerializedScriptValue:
-      break;
-    case kDataTypeString:
-      V8PrivateProperty::GetSymbol(isolate,
-                                   kPrivatePropertyMessageEventCachedData)
-          .Set(wrapper, V8String(isolate, data_as_string_));
-      break;
-    case kDataTypeBlob:
-      break;
-    case kDataTypeArrayBuffer:
-      V8PrivateProperty::GetSymbol(isolate,
-                                   kPrivatePropertyMessageEventCachedData)
-          .Set(wrapper, ToV8Traits<DOMArrayBuffer>::ToV8(
-                            ScriptState::ForRelevantRealm(isolate, wrapper),
-                            data_as_array_buffer_));
-      break;
-  }
-
-  return wrapper;
 }
 
 }  // namespace blink

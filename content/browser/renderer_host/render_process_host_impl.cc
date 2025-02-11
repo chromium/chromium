@@ -1416,18 +1416,6 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
       flags |= RenderProcessFlags::kV8OptimizationsDisabled;
     }
   }
-#if BUILDFLAG(IS_WIN)
-  // kControlWithoutSpareRenderer is a control bucket w/o spare renderer for the
-  // FontDataService experiment i.e. Both SpareRenderer and FontDataManager are
-  // not used.
-  if (site_instance &&
-      GetContentClient()->browser()->ShouldUseFontDataManager(
-          site_instance->GetSiteURL()) &&
-      features::kFontDataServiceTypefaceType.Get() !=
-          features::FontDataServiceTypefaceType::kControlWithoutSpareRenderer) {
-    flags |= RenderProcessFlags::kFontDataManager;
-  }
-#endif
 
   if (site_instance &&
       GetContentClient()->browser()->DisallowV8FeatureFlagOverridesForSite(
@@ -3309,10 +3297,6 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
   command_line->AppendSwitchASCII(
       switches::kDeviceScaleFactor,
       base::NumberToString(display::win::GetDPIScale()));
-
-  if (!!(flags_ & RenderProcessFlags::kFontDataManager)) {
-    command_line->AppendSwitch(switches::kUseFontDataManager);
-  }
 #endif
 
   AppendCompositorCommandLineFlags(command_line);
@@ -4808,17 +4792,6 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
         site_instance->is_for_service_worker())) {
     render_process_host =
         UnmatchedServiceWorkerProcessTracker::MatchWithSite(site_instance);
-  }
-
-  // If a process hasn't been selected yet, check whether there is a process
-  // tracked by the SiteInstanceGroupManager that could be reused by this
-  // SiteInstance.  This method is used to place all SiteInstances within a
-  // group into a single process. It also allows the SiteInstanceGroupManager to
-  // place SiteInstances with similar requirements in different groups, but
-  // still allow them to share a process (e.g. default process mode).
-  if (!render_process_host) {
-    render_process_host =
-        site_instance->GetSiteInstanceGroupProcessIfAvailable();
   }
 
   if (render_process_host) {

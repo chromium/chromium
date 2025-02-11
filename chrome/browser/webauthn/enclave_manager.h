@@ -39,6 +39,10 @@
 
 class GaiaId;
 
+namespace base {
+class ElapsedTimer;
+}
+
 namespace crypto {
 class RefCountedUserVerifyingSigningKey;
 }  // namespace crypto
@@ -423,6 +427,10 @@ class EnclaveManager : public EnclaveManagerInterface {
       identity_key_;
 
   unsigned store_keys_count_ = 0;
+
+  // Timer for recording a metric measuring the delay to load the Enclave
+  // state.
+  std::unique_ptr<base::ElapsedTimer> load_duration_timer_;
 
   base::ObserverList<Observer> observer_list_;
 

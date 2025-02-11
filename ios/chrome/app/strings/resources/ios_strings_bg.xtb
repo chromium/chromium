@@ -20,7 +20,6 @@
 <translation id="1054745118061919935">Продължавайки, приемате <ph name="BEGIN_LINK" />Общите условия<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Незапазвани никога</translation>
 <translation id="1062138828266376352">ПИН кодът ви не бе променен. Проверете връзката си с интернет и опитайте отново</translation>
-<translation id="1066060668811609597">Управление на синхронизирането</translation>
 <translation id="1076421457278169141">Кодът бе сканиран</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} раздел}other{{count} раздела}}</translation>
 <translation id="1082554859195167538">Подходящи за вас отзиви за продукт</translation>
@@ -1153,7 +1152,6 @@
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059103953801602038">Сайтовете, които следвате, се запазват в профила ви в Google. Можете да ги управлявате от настройките за Discover.</translation>
 <translation id="6059830886158432458">Управлявайте материалите и активността си тук</translation>
-<translation id="6064824697233747382">Организацията ви изисква да изключите синхронизирането.</translation>
 <translation id="6066301408025741299">Докоснете, за да анулирате.</translation>
 <translation id="6074656473835429958">Получаване на известия</translation>
 <translation id="607620096698446287">Файлът <ph name="FILENAME" /> (<ph name="FILESIZE" />) не бе качен</translation>

@@ -53,7 +53,7 @@ constexpr char kStableAndBetaServiceBaseUrl[] =
     "https://chromesyncsharedentities-pa.googleapis.com/v1";
 
 // How many share entities to retrieve for preview.
-constexpr int kDefaultPreviewDataSize = 100;
+constexpr int kDefaultPreviewDataSize = 550;
 constexpr base::FeatureParam<int> kPreviewDataSize{
     &features::kDataSharingFeature, "preview_data_size",
     kDefaultPreviewDataSize};

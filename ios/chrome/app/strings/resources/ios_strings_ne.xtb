@@ -20,7 +20,6 @@
 <translation id="1054745118061919935">तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_LINK" />सेवाका सर्तहरू<ph name="END_LINK" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ।</translation>
 <translation id="10614374240317010">कहिले पनि बचत नगर्नुहोस्</translation>
 <translation id="1062138828266376352">तपाईंको PIN परिवर्तन गरिएको छैन। इन्टरनेट कनेक्सन जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
-<translation id="1066060668811609597">सिंक व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1076421457278169141">कोड स्क्यान गरियो</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} ट्याब}other{{count} वटा ट्याब}}</translation>
 <translation id="1082554859195167538">उत्पादनसम्बन्धी समीक्षाहरू</translation>
@@ -999,6 +998,7 @@
 <translation id="543338862236136125">पासवर्ड सम्पादन गर्नुहोस्</translation>
 <translation id="5433691172869980887">युजरनेम कपी गरियो</translation>
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> मार्फत साइन इन गरिएको छ</translation>
+<translation id="5443636120437209490">स्वतः अझ राम्रो ब्राउजिङ</translation>
 <translation id="5444892875087332195">बुकमार्कहरू</translation>
 <translation id="5452354193031718372">भरपर्दो पासवर्ड प्रयोग गर्नुहोस्:</translation>
 <translation id="5454211924362324495">अरूलाई आफ्नो पासवर्ड प्रयोग गर्न नदिन <ph name="BEGIN_LINK" /><ph name="WEBSITE" /> मा गई पासवर्ड बदल्नुहोस्<ph name="END_LINK" /></translation>
@@ -1151,7 +1151,6 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059103953801602038">तपाईंले फलो गर्ने साइटहरू तपाईंको Google खातामा सेभ गरिन्छन्। तपाईं Discover सम्बन्धी सेटिङमा गई ती साइटहरू व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
 <translation id="6059830886158432458">यहाँ आफ्नो समाचार फिडमा देखिने सामग्री तथा क्रियाकलाप नियन्त्रण गर्नुहोस्</translation>
-<translation id="6064824697233747382">तपाईंको सङ्गठनको नीतिअनुसार तपाईंले सिंक गर्ने सुविधा अफ गर्नु पर्ने हुन्छ।</translation>
 <translation id="6066301408025741299">रद्द गर्न ट्याप गर्नुहोस्।</translation>
 <translation id="6074656473835429958">नोटिफिकेसनहरू प्राप्त गर्नुहोस्</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) अपलोड गर्न सकिएन</translation>

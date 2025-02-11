@@ -220,6 +220,7 @@
 <translation id="114721135501989771">Chrome-дағы Google ақылды функциялары</translation>
 <translation id="1147322039136785890">Енді <ph name="SUPERVISED_USER_NAME" /> құрылғыны пайдалана алады</translation>
 <translation id="1147991416141538220">Пайдалану рұқсатын алу үшін құрылғының әкімшісіне хабарласыңыз.</translation>
+<translation id="1148464196693569530">Пайдаланушы скриптілеріне рұқсат беру</translation>
 <translation id="1148624853678088576">Барлығын орнаттыңыз!</translation>
 <translation id="1148669835763563782">Жақсартылған қауіпсіздік және ең жаңа Chromebook мүмкіндіктері үшін соңғы бағдарламалық құрал жаңартуын алып жатырсыз. Бұл жаңарту Chromebook құрылғысын оңай іске қосуға көмектесетін жақсартылған орнату тәжірибесін қамтиды.</translation>
 <translation id="1149401351239820326">Жарамдылық мерзімі бітетін ай</translation>
@@ -5622,7 +5623,6 @@
 <translation id="4946998421534856407">іске қосу тақтасы пернесі + жоғары бағыт пернесі</translation>
 <translation id="4947376546135294974">Сіз кіретін сайт деректері</translation>
 <translation id="4950100687509657457">Профиль жасау</translation>
-<translation id="4950360215042327246">[Плейсхолдер жолы]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{файл}other{# файл}}</translation>
 <translation id="495170559598752135">Әрекеттер</translation>
 <translation id="4951966678293618079">Бұл сайт үшін құпия сөздерді ешқашан сақтамау</translation>
@@ -6760,6 +6760,7 @@
 <translation id="5794414402486823030">Әрқашан жүйе көру құралымен ашу</translation>
 <translation id="5794700615121138172">Linux ортақ қалталары</translation>
 <translation id="5794786537412027208">Барлық Chrome қолданбаларынан шығу</translation>
+<translation id="5795422263272161110">Қатар көрсету</translation>
 <translation id="5796485699458186843">Жаңа инкогнито қойындысы</translation>
 <translation id="5796956053441619942">Қашықтағы құрылғыдағы URL мекенжайына қолдау көрсетілмейді.</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; және &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; жүйелерінде жұмысты бастау жолын біліп алыңыз.</translation>
@@ -7287,6 +7288,7 @@
 <translation id="6170498031581934115">ADB түзетуі қосылмады. "Параметрлер" бөліміне өтіп, қайта қосып көріңіз.</translation>
 <translation id="6170675927290506430">Хабарландыру параметрлеріне өту</translation>
 <translation id="6171779718418683144">Кірген сайын сұрау</translation>
+<translation id="6172020488605056255">"Оқуға көмектес" функциясын пайдалану үшін тінтуірдің оң жақ түймесін басыңыз.</translation>
 <translation id="617213288191670920">Ешқандай тіл қосылмаған</translation>
 <translation id="6173623053897475761">PIN кодын қайта теріңіз</translation>
 <translation id="6174909075810107548">Тінтуір түймесін басу үшін "5" пернесін басыңыз.</translation>
@@ -7975,7 +7977,6 @@
 <translation id="6679947539429331601">12 сағат жасыру</translation>
 <translation id="6680442031740878064">Бос: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Жылдамдық</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [плейсхолдер жолы]</translation>
 <translation id="6683022854667115063">Құлақаспап</translation>
 <translation id="6683087162435654533">Барлық қойындыны қалпына келтіру</translation>
 <translation id="6683433919380522900">Рұқсат күйі: <ph name="PERMISSION_STATE" /></translation>
@@ -8313,6 +8314,7 @@
 <translation id="6910190732484284349"><ph name="USER_EMAIL" /> пайдаланушы атына арналған кіру кілтін жою</translation>
 <translation id="6910211073230771657">Жойылды</translation>
 <translation id="6910274140210351823">Қараңғы</translation>
+<translation id="691102290537033604">Кеңейтім Google тексермеген кодты іске қоса алады. Бұл функция қауіпті болуы мүмкін, сол себепті оны сенімді болсаңыз ғана қосуыңыз керек.</translation>
 <translation id="6911734910326569517">Пайдаланылатын жад көлемі</translation>
 <translation id="6912007319859991306">SIM картасының PIN коды</translation>
 <translation id="6912380255120084882">Басқа құрылғыны пайдаланып көріңіз</translation>
@@ -9192,7 +9194,6 @@
 <translation id="7561196759112975576">Әрқашан</translation>
 <translation id="7561759921596375678">Дыбыс деңгейін қосу</translation>
 <translation id="7561982940498449837">Мәзірді жабу</translation>
-<translation id="7563970324931922582">[плейсхолдер мәтіні]</translation>
 <translation id="756445078718366910">Браузер терезесін ашу</translation>
 <translation id="7564847347806291057">Процесті аяқтау</translation>
 <translation id="756503097602602175">Кірген Google аккаунттарыңызды <ph name="LINK_BEGIN" />Параметрлерден<ph name="LINK_END" /> басқара аласыз. Веб-сайттар мен қолданбаларға берген рұқсаттар барлық аккаунтқа қолданылуы мүмкін. Егер сайттар мен қолданбалардың аккаунтыңыз туралы ақпаратты пайдаланғанын қаламасаңыз, <ph name="DEVICE_TYPE" /> құрылғысына қонақ ретінде кіре аласыз немесе интернетті <ph name="LINK_2_BEGIN" />инкогнито терезесінде<ph name="LINK_2_END" /> пайдалана аласыз.</translation>
@@ -9823,6 +9824,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />, дауыс <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Android телефоныңыздан Wi-Fi-ды автоматты түрде тасымалдаңыз</translation>
 <translation id="7991296728590311172">Switch Access параметрлері</translation>
+<translation id="7992080146463834191">Контентті қорытындылап, күрделі тілмен жазылған мәтінді қысқартып, сұрақтарға жауап береді.</translation>
 <translation id="7992203134935383159">Сөз синтезі</translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Өңдеу басымдығы</translation>
@@ -11079,6 +11081,7 @@
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" өшірілген</translation>
 <translation id="8874647982044395866">Табиғи</translation>
 <translation id="8874790741333031443">Үшінші тарап cookie файлдарына уақытша рұқсат беріп көріңіз. Бұл жағдайда қорғаныс дәрежесі төмен болады, бірақ сайт функцияларының ойдағыдай жұмыс істеу ықтималдығы артады.</translation>
+<translation id="8875221558267407626">Контентті қорытындылап, күрделі тілмен жазылған мәтінді қысқартып, сұрақтарға жауап береді</translation>
 <translation id="8875520811099717934">Linux жүйесін жаңарту</translation>
 <translation id="8875736897340638404">Көрсетілу параметрін таңдаңыз</translation>
 <translation id="8876307312329369159">Бұл параметр демо сеанста өзгертілмейді.</translation>
@@ -11132,6 +11135,7 @@
 <translation id="8915916167043355778">Барлығын жабу</translation>
 <translation id="8916476537757519021">Инкогнито режиміндегі ішкі жақтау: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Жарайды</translation>
+<translation id="8917980324687233736">Қатар көрсету</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> иелік ететін <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">Қолданба орнатылып жатыр...</translation>
 <translation id="891931289445130855">Деректер мен рұқсаттарды жою</translation>

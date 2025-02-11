@@ -80,7 +80,7 @@ void PoisonMetadataRecorder::RecordAndZap(void* ptr, size_t size) {
       Pack(reinterpret_cast<uintptr_t*>(trace), len,
            slot_metadata.deallocation_stack_trace,
            sizeof(slot_metadata.deallocation_stack_trace));
-  slot_metadata.dealloc.tid = AllocationInfo::GetCurrentTid();
+  slot_metadata.dealloc.tid = base::PlatformThread::CurrentId();
   slot_metadata.dealloc.trace_collected = true;
 
   LightweightDetectorState::PseudoAddress encoded_metadata_id =

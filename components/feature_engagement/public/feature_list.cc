@@ -222,6 +222,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHSignoutWebInterceptFeature,
     &kIPHTabGroupsSaveV2IntroFeature,
     &kIPHTabGroupsSaveV2CloseGroupFeature,
+    &kIPHTabGroupsSharedTabChangedFeature,
     &kIPHTabOrganizationSuccessFeature,
     &kIPHTabSearchFeature,
     &kIPHWebUITabStripFeature,

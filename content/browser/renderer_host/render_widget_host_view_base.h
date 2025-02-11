@@ -411,6 +411,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // unloaded and stored in the BFCache.
   virtual void DidEnterBackForwardCache() {}
 
+  // Perform some tasks after the page is activated or evicted from BFCache.
+  virtual void ActivatedOrEvictedFromBackForwardCache() {}
+
   // Called by WebContentsImpl to notify the view about a change in visibility
   // of context menu. The view can then perform platform specific tasks and
   // changes.

@@ -21,6 +21,7 @@ constexpr std::string_view kAttachedGaiaIdsKey = "attached_gaia_ids";
 constexpr std::string_view kUserNameKey = "user_name";
 constexpr std::string_view kNewProfile = "new_profile";
 constexpr std::string_view kIsFullyInitializedKey = "fully_initialized";
+constexpr std::string_view kIsDeletedProfile = "deleted_profile";
 constexpr std::string_view kDiscardedSessions = "discarded_sessions";
 constexpr std::string_view kNotificationPermissions =
     "notification_permissions";
@@ -143,6 +144,13 @@ ProfileAttributesIOS ProfileAttributesIOS::WithAttrs(
   return ProfileAttributesIOS(profile_name, storage.Clone());
 }
 
+ProfileAttributesIOS ProfileAttributesIOS::DeletedProfile(
+    std::string_view profile_name) {
+  base::Value::Dict dict;
+  SetBool(dict, kIsDeletedProfile, true);
+  return ProfileAttributesIOS(profile_name, std::move(dict));
+}
+
 ProfileAttributesIOS::ProfileAttributesIOS(ProfileAttributesIOS&&) = default;
 
 ProfileAttributesIOS& ProfileAttributesIOS::operator=(ProfileAttributesIOS&&) =
@@ -161,6 +169,10 @@ bool ProfileAttributesIOS::IsNewProfile() const {
 
 bool ProfileAttributesIOS::IsFullyInitialized() const {
   return GetBool(storage_, kIsFullyInitializedKey);
+}
+
+bool ProfileAttributesIOS::IsDeletedProfile() const {
+  return GetBool(storage_, kIsDeletedProfile);
 }
 
 GaiaId ProfileAttributesIOS::GetGaiaId() const {

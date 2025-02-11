@@ -217,18 +217,27 @@ CookieControlsController::Status CookieControlsController::GetStatus(
   }
 
   SettingInfo info;
-  bool is_allowed = cookie_settings_->IsThirdPartyAccessAllowed(url, &info);
+  bool cookies_allowed =
+      cookie_settings_->IsThirdPartyAccessAllowed(url, &info);
   CookieControlsEnforcement enforcement =
       GetEnforcementForThirdPartyCookieBlocking(blocking_status, url, info,
-                                                is_allowed);
+                                                cookies_allowed);
+
+  // If 3PC blocking is the only protection controllable on a site, reflect
+  // that state. If ACT features are controllable, reflect ACT state.
+  bool protections_disabled =
+      ShowActFeatures()
+          ? tracking_protection_settings_->HasTrackingProtectionException(url,
+                                                                          &info)
+          : cookies_allowed;
 
   std::vector<TrackingProtectionFeature> features =
       CreateTrackingProtectionFeatureList(
-          enforcement, is_allowed,
+          enforcement, cookies_allowed,
           tracking_protection_settings_->HasTrackingProtectionException(url));
   return {// Hide controls if the exception is from a metadata grant.
           enforcement != CookieControlsEnforcement::kEnforcedByTpcdGrant,
-          /*protections_on=*/!is_allowed,
+          /*protections_on=*/!protections_disabled,
           enforcement,
           blocking_status,
           info.metadata.expiration(),

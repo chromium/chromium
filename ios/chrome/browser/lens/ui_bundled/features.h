@@ -49,4 +49,10 @@ BASE_DECLARE_FEATURE(kLensInkMultiSampleModeDisabled);
 // Whether to disable gesture text selection.
 BASE_DECLARE_FEATURE(kLensGestureTextSelectionDisabled);
 
+// Whether to enable the vsint param.
+BASE_DECLARE_FEATURE(kLensVsintParamEnabled);
+
+// Whether to enable the unary client data header.
+BASE_DECLARE_FEATURE(kLensUnaryClientDataHeaderEnabled);
+
 #endif  // IOS_CHROME_BROWSER_LENS_UI_BUNDLED_FEATURES_H_

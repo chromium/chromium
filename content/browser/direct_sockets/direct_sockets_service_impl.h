@@ -24,6 +24,7 @@ class NetworkContext;
 
 namespace content {
 
+class ServiceWorkerVersion;
 class SharedWorkerHost;
 
 // Implementation of the DirectSocketsService Mojo service.
@@ -31,7 +32,8 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
     : public blink::mojom::DirectSocketsService {
  public:
   using Context = std::variant<const raw_ptr<RenderFrameHost>,
-                               base::WeakPtr<SharedWorkerHost>>;
+                               base::WeakPtr<SharedWorkerHost>,
+                               base::WeakPtr<ServiceWorkerVersion>>;
 
   ~DirectSocketsServiceImpl() override;
 
@@ -41,6 +43,10 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
 
   static void CreateForSharedWorker(
       SharedWorkerHost&,
+      mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver);
+
+  static void CreateForServiceWorker(
+      ServiceWorkerVersion&,
       mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver);
 
   // blink::mojom::DirectSocketsService:

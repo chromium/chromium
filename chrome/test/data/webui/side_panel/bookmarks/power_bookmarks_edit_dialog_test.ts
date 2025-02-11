@@ -90,7 +90,7 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
     await delegate.whenCalled('onBookmarksLoaded');
   });
 
-  test('ShowsCorrectRowCount', async () => {
+  test('ShowsCorrectRowCount', () => {
     const topLevelBookmarks = service.getTopLevelBookmarks();
     powerBookmarksEditDialog.showDialog(
         [],

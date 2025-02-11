@@ -122,11 +122,11 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
   bookmarks::BookmarkModel* bookmark_model() { return bookmark_model_.get(); }
 
  protected:
-  std::unique_ptr<PushNotificationService> push_notification_service_;
   TestingPrefServiceSimple pref_service_;
   TestingPrefServiceSimple local_state_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<PushNotificationService> push_notification_service_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_;
   raw_ptr<AuthenticationService> auth_service_;

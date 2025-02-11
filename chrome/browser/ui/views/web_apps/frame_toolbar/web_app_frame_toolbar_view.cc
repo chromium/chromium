@@ -215,9 +215,8 @@ PageActionIconView* WebAppFrameToolbarView::GetPageActionIconView(
 
 page_actions::PageActionView* WebAppFrameToolbarView::GetPageActionView(
     actions::ActionId action_id) {
-  // TODO(crbug.com/386376455): Return the appropriate view once web apps
-  // support the new Page Actions framework.
-  return nullptr;
+  return right_container_->page_action_container()->GetPageActionView(
+      action_id);
 }
 
 AppMenuButton* WebAppFrameToolbarView::GetAppMenuButton() {

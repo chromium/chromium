@@ -16,7 +16,7 @@ import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js'
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import type {InputPiece, ResponseChunk, ResponseSummary} from './on_device_model.mojom-webui.js';
+import type {InputPiece, ResponseChunk, ResponseSummary,AudioData} from './on_device_model.mojom-webui.js';
 import {LoadModelResult, OnDeviceModelRemote, PerformanceClass, SessionRemote, StreamingResponderCallbackRouter, Token} from './on_device_model.mojom-webui.js';
 import {ModelPerformanceHint} from './on_device_model_service.mojom-webui.js';
 import {getTemplate} from './tools.html.js';
@@ -35,6 +35,7 @@ interface OnDeviceInternalsToolsElement {
     temperatureInput: CrInputElement,
     textInput: CrInputElement,
     imageInput: HTMLInputElement,
+    audioInput: HTMLInputElement,
     topKInput: CrInputElement,
     performanceHintSelect: HTMLSelectElement,
   };
@@ -149,6 +150,11 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
         type: Object,
         value: null,
       },
+      audioFile_: {
+        type: Object,
+        value: null,
+      },
+      audioError_: String,
       performanceHint_: {
         type: String,
         value: 'kHighestQuality',
@@ -162,6 +168,7 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
       'onModelOrErrorChanged_(model_, error_)',
     ];
   }
+
 
   private contextExpanded_: boolean;
   private contextLength_: number;
@@ -180,7 +187,10 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
   private text_: string;
   private topK_: number;
   private imageFile_: File|null;
+  private enableAudioInput_: boolean;
   private enableImageInput_: boolean;
+  private audioFile_: File|null;
+  private audioError_: string;
   private performanceHint_: string;
   private loadedPerformanceHint_: ModelPerformanceHint|null;
 
@@ -195,6 +205,8 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     this.$.temperatureInput.inputElement.step = '0.1';
     this.$.imageInput.addEventListener(
         'change', this.onImageChange_.bind(this));
+    this.$.audioInput.addEventListener(
+        'change', this.onAudioChange_.bind(this));
   }
 
   private async getPerformanceClass_() {
@@ -219,10 +231,20 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     this.$.imageInput.click();
   }
 
+  private onAddAudioClick_() {
+    this.$.audioInput.click();
+  }
+
   private onRemoteImageClick_() {
     this.imageFile_ = null;
     this.$.imageInput.value = '';
   }
+
+  private onRemoteAudioClick_() {
+    this.audioFile_ = null;
+    this.$.audioInput.value = '';
+  }
+
 
   private onPerformanceHintChange_() {
     this.performanceHint_ = this.$.performanceHintSelect.value;
@@ -250,6 +272,16 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     }
   }
 
+  private onAudioChange_() {
+    this.audioError_ = '';
+    if ((this.$.audioInput.files?.length ?? 0) > 0) {
+      this.audioFile_ = this.$.audioInput.files!.item(0) ?? null;
+    } else {
+      this.audioFile_ = null;
+    }
+  }
+
+
   private async onModelSelected_() {
     this.error_ = '';
     if (this.baseModel_) {
@@ -259,6 +291,7 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
       this.model_.$.close();
     }
     this.imageFile_ = null;
+    this.audioFile_ = null;
     this.baseModel_ = null;
     this.model_ = null;
     this.loadModelStart_ = new Date().getTime();
@@ -277,10 +310,12 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     let {result} = await this.proxy_.handler.loadModel(
         {path: processedPath}, performanceHint,
         baseModel.$.bindNewPipeAndPassReceiver());
-    if (result === LoadModelResult.kSuccess && this.enableImageInput_) {
+    if (result === LoadModelResult.kSuccess &&
+        (this.enableImageInput_ || this.enableAudioInput_)) {
       result = (await baseModel.loadAdaptation(
                     {
-                      enableImageInput: true,
+                      enableImageInput: this.enableImageInput_,
+                      enableAudioInput: this.enableAudioInput_,
                       maxTokens: 0,
                       assets: {
                         weights: null,
@@ -375,7 +410,21 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     const {bitmap} = await this.proxy_.handler.decodeBitmap(bigBuffer);
     return bitmap;
   }
+  private async decodeAudio_(): Promise<AudioData|null> {
+    const audioCtx = new AudioContext({sampleRate: 48000});
+    const buffer =
+        await audioCtx.decodeAudioData(await this.audioFile_!.arrayBuffer());
+    if (buffer.numberOfChannels > 1) {
+      return null;
+    }
+    return {
 
+      sampleRate: buffer.sampleRate,
+      channelCount: buffer.numberOfChannels,
+      frameCount: buffer.length,
+      data: Array.from(buffer.getChannelData(0)),
+    };
+  }
   private async onExecute_() {
     this.imageError_ = '';
     if (this.session_ === null) {
@@ -395,6 +444,16 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
       } else {
         this.imageFile_ = null;
         this.imageError_ = 'Image is invalid';
+        return;
+      }
+    }
+    if (this.audioFile_ !== null) {
+      const audio = await this.decodeAudio_();
+      if (audio) {
+        pieces.unshift({audio});
+      } else {
+        this.audioFile_ = null;
+        this.audioError_ = 'Audio is invalid';
         return;
       }
     }
@@ -448,7 +507,11 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
   }
 
   private imagesEnabled_(): boolean {
-    return this.model_ !== this.baseModel_;
+    return this.model_ !== this.baseModel_ && this.enableImageInput_;
+  }
+
+  private audioEnabled_(): boolean {
+    return this.model_ !== this.baseModel_ && this.enableAudioInput_;
   }
 
   private getModelText_(): string {
@@ -459,6 +522,9 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
         this.loadModelDuration_ + 'ms ';
     if (this.imagesEnabled_()) {
       text += '[images enabled]';
+    }
+    if (this.audioEnabled_()) {
+      text += '[audio enabled]';
     }
     if (this.loadedPerformanceHint_ ===
         ModelPerformanceHint.kFastestInference) {

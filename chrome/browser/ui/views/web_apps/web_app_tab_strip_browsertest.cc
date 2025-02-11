@@ -784,7 +784,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
   // Navigate to home tab using the same URL.
   app_browser->OpenURL(OpenURLParams(start_url, content::Referrer(),
                                      WindowOpenDisposition::CURRENT_TAB,
-                                     ui::PAGE_TRANSITION_TYPED, false),
+                                     ui::PAGE_TRANSITION_LINK, false),
                        /*navigation_handle_callback=*/{});
 
   // Expect the JS variable to still be set, meaning the page was not navigated.
@@ -1271,7 +1271,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MiddleClickHomeTabLink) {
   // Middle click home tab link from the home tab.
   app_browser->OpenURL(OpenURLParams(start_url, content::Referrer(),
                                      WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                                     ui::PAGE_TRANSITION_TYPED, false),
+                                     ui::PAGE_TRANSITION_LINK, false),
                        /*navigation_handle_callback=*/{});
 
   // Check we stayed in the home tab.
@@ -1285,7 +1285,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MiddleClickHomeTabLink) {
   // Middle click home tab link from a different tab.
   app_browser->OpenURL(OpenURLParams(start_url, content::Referrer(),
                                      WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                                     ui::PAGE_TRANSITION_TYPED, false),
+                                     ui::PAGE_TRANSITION_LINK, false),
                        /*navigation_handle_callback=*/{});
 
   // Check it was opened in the home tab.

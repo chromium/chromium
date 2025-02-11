@@ -33,7 +33,7 @@ function createMockTrackedProduct(): BookmarkProductInfo {
 suite('SidePanelPowerBookmarksLabelsTest', () => {
   let element: PowerBookmarksLabelsElement;
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({

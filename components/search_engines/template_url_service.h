@@ -624,6 +624,9 @@ class TemplateURLService final : public WebDataServiceConsumer,
   FRIEND_TEST_ALL_PREFIXES(TemplateURLServiceSyncTest, MergeInSyncTemplateURL);
   FRIEND_TEST_ALL_PREFIXES(LocationBarModelTest, GoogleBaseURL);
   FRIEND_TEST_ALL_PREFIXES(TemplateURLServiceUnitTest, SessionToken);
+  FRIEND_TEST_ALL_PREFIXES(
+      TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+      ShouldNotDualWriteUponUpdateTemplateURLVisitTime);
 
   friend class InstantUnitTestBase;
   friend class Scoper;
@@ -739,6 +742,11 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // NOTE: This should not be called with an extension keyword as there are no
   // updates needed in that case.
   bool Update(TemplateURL* existing_turl, const TemplateURL& new_values);
+
+  // Similar to Update(), however updates only the current active value of
+  // `existing_turl` with `new_data`. The current active value can either be the
+  // local value or the account value.
+  bool UpdateData(TemplateURL* existing_turl, TemplateURLData new_data);
 
   // If the TemplateURL's sync GUID matches the kSyncedDefaultSearchProviderGUID
   // preference it will be used to update the DSE in prefs.

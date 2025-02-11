@@ -53,11 +53,15 @@
 namespace autofill {
 namespace {
 
+using CardInfoRetrievalEnrolledUnmaskResult =
+    autofill_metrics::CardInfoRetrievalEnrolledUnmaskResult;
 using PaymentsRpcCardType =
     payments::PaymentsAutofillClient::PaymentsRpcCardType;
 using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
 using Result =
     CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse::Result;
+using ServerCardUnmaskFlowType = autofill_metrics::ServerCardUnmaskFlowType;
+using ServerCardUnmaskResult = autofill_metrics::ServerCardUnmaskResult;
 
 // Timeout to wait for unmask details from Google Payments.
 constexpr auto kUnmaskDetailsResponseTimeout = base::Seconds(3);
@@ -228,16 +232,14 @@ void CreditCardAccessManager::GetUnmaskDetailsIfUserIsVerifiable(
 
 void CreditCardAccessManager::LogMetricsAndFillFormForServerUnmaskFlows(
     UnmaskAuthFlowType unmask_auth_flow_type) {
+  ServerCardUnmaskFlowType flow_type = ServerCardUnmaskFlowType::kUnspecified;
   switch (unmask_auth_flow_type) {
     case UnmaskAuthFlowType::kCvcThenFido:
     case UnmaskAuthFlowType::kFido:
       form_event_logger_->LogCardUnmaskAuthenticationPromptCompleted(
           unmask_auth_flow_type_);
       if (card_->record_type() == CreditCard::RecordType::kVirtualCard) {
-        autofill_metrics::LogServerCardUnmaskResult(
-            autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked,
-            PaymentsRpcCardType::kVirtualCard,
-            autofill_metrics::ServerCardUnmaskFlowType::kFidoOnly);
+        flow_type = ServerCardUnmaskFlowType::kFidoOnly;
       }
       if (!card_->cvc().empty()) {
         autofill_metrics::LogCvcFilling(
@@ -245,18 +247,10 @@ void CreditCardAccessManager::LogMetricsAndFillFormForServerUnmaskFlows(
       }
       break;
     case UnmaskAuthFlowType::kOtp:
-      autofill_metrics::LogServerCardUnmaskResult(
-          autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked,
-          card_->record_type() == CreditCard::RecordType::kVirtualCard
-              ? PaymentsRpcCardType::kVirtualCard
-              : PaymentsRpcCardType::kServerCard,
-          autofill_metrics::ServerCardUnmaskFlowType::kOtpOnly);
+      flow_type = ServerCardUnmaskFlowType::kOtpOnly;
       break;
     case UnmaskAuthFlowType::kOtpFallbackFromFido:
-      autofill_metrics::LogServerCardUnmaskResult(
-          autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked,
-          PaymentsRpcCardType::kVirtualCard,
-          autofill_metrics::ServerCardUnmaskFlowType::kOtpFallbackFromFido);
+      flow_type = ServerCardUnmaskFlowType::kOtpFallbackFromFido;
       break;
     case UnmaskAuthFlowType::kThreeDomainSecure:
       // TODO(crbug.com/41494927): Add logging for kThreeDomainSecure.
@@ -267,6 +261,20 @@ void CreditCardAccessManager::LogMetricsAndFillFormForServerUnmaskFlows(
     case UnmaskAuthFlowType::kCvcFallbackFromFido:
     case UnmaskAuthFlowType::kNone:
       NOTREACHED();
+  }
+  autofill_metrics::LogServerCardUnmaskResult(
+      ServerCardUnmaskResult::kAuthenticationUnmasked,
+      card_->record_type() == CreditCard::RecordType::kVirtualCard
+          ? PaymentsRpcCardType::kVirtualCard
+          : PaymentsRpcCardType::kServerCard,
+      flow_type);
+  if (card_->card_info_retrieval_enrollment_state() ==
+          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled &&
+      card_->record_type() == CreditCard::RecordType::kMaskedServerCard &&
+      (unmask_auth_flow_type == UnmaskAuthFlowType::kOtp ||
+       unmask_auth_flow_type == UnmaskAuthFlowType::kOtpFallbackFromFido)) {
+    autofill_metrics::LogCardInfoRetrievalEnrolledUnmaskResult(
+        CardInfoRetrievalEnrolledUnmaskResult::kAuthenticationUnmasked);
   }
   std::move(on_credit_card_fetched_callback_).Run(*card_);
 }
@@ -359,8 +367,8 @@ void CreditCardAccessManager::FetchCreditCard(
     base::UmaHistogramCounts1000(metrics_name, ++it->second.cache_uses);
 
     autofill_metrics::LogServerCardUnmaskResult(
-        autofill_metrics::ServerCardUnmaskResult::kLocalCacheHit, record_type,
-        autofill_metrics::ServerCardUnmaskFlowType::kUnspecified);
+        ServerCardUnmaskResult::kLocalCacheHit, record_type,
+        ServerCardUnmaskFlowType::kUnspecified);
 
     Reset();
     return;
@@ -473,10 +481,8 @@ void CreditCardAccessManager::StartAuthenticationFlowForVirtualCard(
             /*is_permanent_error=*/true));
     Reset();
     autofill_metrics::LogServerCardUnmaskResult(
-        autofill_metrics::ServerCardUnmaskResult::
-            kOnlyFidoAvailableButNotOptedIn,
-        PaymentsRpcCardType::kVirtualCard,
-        autofill_metrics::ServerCardUnmaskFlowType::kFidoOnly);
+        ServerCardUnmaskResult::kOnlyFidoAvailableButNotOptedIn,
+        PaymentsRpcCardType::kVirtualCard, ServerCardUnmaskFlowType::kFidoOnly);
     return;
   }
 
@@ -842,9 +848,9 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
 
     if (card_->record_type() == CreditCard::RecordType::kVirtualCard) {
       autofill_metrics::LogServerCardUnmaskResult(
-          autofill_metrics::ServerCardUnmaskResult::kVirtualCardRetrievalError,
+          ServerCardUnmaskResult::kVirtualCardRetrievalError,
           PaymentsRpcCardType::kVirtualCard,
-          autofill_metrics::ServerCardUnmaskFlowType::kFidoOnly);
+          ServerCardUnmaskFlowType::kFidoOnly);
     }
     Reset();
   } else {
@@ -885,37 +891,54 @@ void CreditCardAccessManager::OnOtpAuthenticationComplete(
     LogMetricsAndFillFormForServerUnmaskFlows(unmask_auth_flow_type_);
   } else {
     // Authentication failed, log the proper error metrics.
-    autofill_metrics::ServerCardUnmaskResult result;
+    ServerCardUnmaskResult server_card_unmask_result =
+        ServerCardUnmaskResult::kUnknown;
+    CardInfoRetrievalEnrolledUnmaskResult
+        card_info_retrieval_enrolled_card_unmask_result =
+            CardInfoRetrievalEnrolledUnmaskResult::kUnknown;
     switch (response.result) {
       case OtpAuthenticationResponse::Result::kFlowCancelled:
-        result = autofill_metrics::ServerCardUnmaskResult::kFlowCancelled;
+        server_card_unmask_result = ServerCardUnmaskResult::kFlowCancelled;
+        card_info_retrieval_enrolled_card_unmask_result =
+            CardInfoRetrievalEnrolledUnmaskResult::kFlowCancelled;
         break;
       case OtpAuthenticationResponse::Result::kGenericError:
-        result = autofill_metrics::ServerCardUnmaskResult::kUnexpectedError;
+        server_card_unmask_result = ServerCardUnmaskResult::kUnexpectedError;
+        card_info_retrieval_enrolled_card_unmask_result =
+            CardInfoRetrievalEnrolledUnmaskResult::kUnexpectedError;
         break;
       case OtpAuthenticationResponse::Result::kAuthenticationError:
-        result = autofill_metrics::ServerCardUnmaskResult::kAuthenticationError;
+        server_card_unmask_result =
+            ServerCardUnmaskResult::kAuthenticationError;
+        card_info_retrieval_enrolled_card_unmask_result =
+            CardInfoRetrievalEnrolledUnmaskResult::kAuthenticationError;
         break;
       case OtpAuthenticationResponse::Result::kVirtualCardRetrievalError:
-        result = autofill_metrics::ServerCardUnmaskResult::
-            kVirtualCardRetrievalError;
+        server_card_unmask_result =
+            ServerCardUnmaskResult::kVirtualCardRetrievalError;
         break;
       case OtpAuthenticationResponse::Result::kSuccess:
       case OtpAuthenticationResponse::Result::kUnknown:
         NOTREACHED();
     }
 
-    autofill_metrics::ServerCardUnmaskFlowType flow_type;
+    ServerCardUnmaskFlowType flow_type;
     if (unmask_auth_flow_type_ == UnmaskAuthFlowType::kOtp) {
-      flow_type = autofill_metrics::ServerCardUnmaskFlowType::kOtpOnly;
+      flow_type = ServerCardUnmaskFlowType::kOtpOnly;
     } else {
       DCHECK(unmask_auth_flow_type_ ==
              UnmaskAuthFlowType::kOtpFallbackFromFido);
-      flow_type =
-          autofill_metrics::ServerCardUnmaskFlowType::kOtpFallbackFromFido;
+      flow_type = ServerCardUnmaskFlowType::kOtpFallbackFromFido;
     }
     autofill_metrics::LogServerCardUnmaskResult(
-        result, PaymentsRpcCardType::kVirtualCard, flow_type);
+        server_card_unmask_result, PaymentsRpcCardType::kVirtualCard,
+        flow_type);
+    if (card_->card_info_retrieval_enrollment_state() ==
+            CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled &&
+        card_->record_type() == CreditCard::RecordType::kMaskedServerCard) {
+      autofill_metrics::LogCardInfoRetrievalEnrolledUnmaskResult(
+          card_info_retrieval_enrolled_card_unmask_result);
+    }
   }
 
   HandleFidoOptInStatusChange();
@@ -1327,9 +1350,8 @@ void CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived(
       break;
     case Result::kAuthenticationCancelled:
       autofill_metrics::LogServerCardUnmaskResult(
-          autofill_metrics::ServerCardUnmaskResult::kFlowCancelled,
-          card_->record_type(),
-          autofill_metrics::ServerCardUnmaskFlowType::kRiskBased);
+          ServerCardUnmaskResult::kFlowCancelled, card_->record_type(),
+          ServerCardUnmaskFlowType::kRiskBased);
       Reset();
       break;
     case Result::kError:
@@ -1340,11 +1362,11 @@ void CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived(
       payments_autofill_client().ShowAutofillErrorDialog(
           response.error_dialog_context);
       autofill_metrics::LogServerCardUnmaskResult(
-          autofill_metrics::ServerCardUnmaskResult::kAuthenticationError,
+          ServerCardUnmaskResult::kAuthenticationError,
           card_->record_type() == CreditCard::RecordType::kVirtualCard
               ? PaymentsRpcCardType::kVirtualCard
               : PaymentsRpcCardType::kServerCard,
-          autofill_metrics::ServerCardUnmaskFlowType::kRiskBased);
+          ServerCardUnmaskFlowType::kRiskBased);
       Reset();
       break;
     case Result::kVirtualCardRetrievalError:
@@ -1355,9 +1377,9 @@ void CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived(
       payments_autofill_client().ShowAutofillErrorDialog(
           response.error_dialog_context);
       autofill_metrics::LogServerCardUnmaskResult(
-          autofill_metrics::ServerCardUnmaskResult::kVirtualCardRetrievalError,
+          ServerCardUnmaskResult::kVirtualCardRetrievalError,
           PaymentsRpcCardType::kVirtualCard,
-          autofill_metrics::ServerCardUnmaskFlowType::kRiskBased);
+          ServerCardUnmaskFlowType::kRiskBased);
       Reset();
       break;
     case Result::kUnknown:
@@ -1400,17 +1422,16 @@ void CreditCardAccessManager::OnNonInteractiveAuthenticationSuccess(
                 GetNonInteractivePaymentMethodType(record_type));
 
     autofill_metrics::LogServerCardUnmaskResult(
-        autofill_metrics::ServerCardUnmaskResult::kRiskBasedUnmasked,
+        ServerCardUnmaskResult::kRiskBasedUnmasked,
         record_type == CreditCard::RecordType::kVirtualCard
             ? PaymentsRpcCardType::kVirtualCard
             : PaymentsRpcCardType::kServerCard,
-        autofill_metrics::ServerCardUnmaskFlowType::kRiskBased);
+        ServerCardUnmaskFlowType::kRiskBased);
 
     if (card_->card_info_retrieval_enrollment_state() ==
         CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled) {
       autofill_metrics::LogCardInfoRetrievalEnrolledUnmaskResult(
-          autofill_metrics::CardInfoRetrievalEnrolledUnmaskResult::
-              kRiskBasedUnmasked);
+          CardInfoRetrievalEnrolledUnmaskResult::kRiskBasedUnmasked);
     }
 
     if (!card_->cvc().empty()) {
@@ -1495,17 +1516,16 @@ void CreditCardAccessManager::OnVirtualCardUnmaskCancelled() {
     payments_autofill_client().GetOtpAuthenticator()->Reset();
   }
 
-  autofill_metrics::ServerCardUnmaskFlowType flow_type;
+  ServerCardUnmaskFlowType flow_type;
   switch (unmask_auth_flow_type_) {
     case UnmaskAuthFlowType::kOtp:
-      flow_type = autofill_metrics::ServerCardUnmaskFlowType::kOtpOnly;
+      flow_type = ServerCardUnmaskFlowType::kOtpOnly;
       break;
     case UnmaskAuthFlowType::kOtpFallbackFromFido:
-      flow_type =
-          autofill_metrics::ServerCardUnmaskFlowType::kOtpFallbackFromFido;
+      flow_type = ServerCardUnmaskFlowType::kOtpFallbackFromFido;
       break;
     case UnmaskAuthFlowType::kNone:
-      flow_type = autofill_metrics::ServerCardUnmaskFlowType::kRiskBased;
+      flow_type = ServerCardUnmaskFlowType::kRiskBased;
       break;
     case UnmaskAuthFlowType::kFido:
     case UnmaskAuthFlowType::kCvcThenFido:
@@ -1524,8 +1544,8 @@ void CreditCardAccessManager::OnVirtualCardUnmaskCancelled() {
       return;
   }
   autofill_metrics::LogServerCardUnmaskResult(
-      autofill_metrics::ServerCardUnmaskResult::kFlowCancelled,
-      PaymentsRpcCardType::kVirtualCard, flow_type);
+      ServerCardUnmaskResult::kFlowCancelled, PaymentsRpcCardType::kVirtualCard,
+      flow_type);
   Reset();
 }
 
@@ -1677,10 +1697,9 @@ void CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling(
         autofill_metrics::CvcFillingFlowType::kMandatoryReauth, record_type);
   }
   autofill_metrics::LogServerCardUnmaskResult(
-      successful_auth
-          ? autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked
-          : autofill_metrics::ServerCardUnmaskResult::kAuthenticationError,
-      record_type, autofill_metrics::ServerCardUnmaskFlowType::kDeviceUnlock);
+      successful_auth ? ServerCardUnmaskResult::kAuthenticationUnmasked
+                      : ServerCardUnmaskResult::kAuthenticationError,
+      record_type, ServerCardUnmaskFlowType::kDeviceUnlock);
 
   if (successful_auth) {
     std::move(on_credit_card_fetched_callback_).Run(*card);
@@ -1699,20 +1718,19 @@ void CreditCardAccessManager::OnVcn3dsAuthenticationComplete(
     CHECK(response.card.has_value());
     std::move(on_credit_card_fetched_callback_).Run(response.card.value());
     autofill_metrics::LogServerCardUnmaskResult(
-        autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked,
+        ServerCardUnmaskResult::kAuthenticationUnmasked,
         PaymentsRpcCardType::kVirtualCard,
-        autofill_metrics::ServerCardUnmaskFlowType::kThreeDomainSecure);
+        ServerCardUnmaskFlowType::kThreeDomainSecure);
     form_event_logger_->LogCardUnmaskAuthenticationPromptCompleted(
         unmask_auth_flow_type_);
   } else {
     autofill_metrics::LogServerCardUnmaskResult(
         response.result == payments::PaymentsWindowManager::
                                Vcn3dsAuthenticationResult::kAuthenticationFailed
-            ? autofill_metrics::ServerCardUnmaskResult::
-                  kVirtualCardRetrievalError
-            : autofill_metrics::ServerCardUnmaskResult::kFlowCancelled,
+            ? ServerCardUnmaskResult::kVirtualCardRetrievalError
+            : ServerCardUnmaskResult::kFlowCancelled,
         PaymentsRpcCardType::kVirtualCard,
-        autofill_metrics::ServerCardUnmaskFlowType::kThreeDomainSecure);
+        ServerCardUnmaskFlowType::kThreeDomainSecure);
   }
   Reset();
 }

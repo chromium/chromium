@@ -206,7 +206,6 @@
 <translation id="1337692097987160377">Distribuie această filă</translation>
 <translation id="1339601241726513588">Domeniu de înregistrare:</translation>
 <translation id="1340482604681802745">Adresa de preluare</translation>
-<translation id="134204716678666126">Folosește tastele săgeată la stânga și la dreapta pentru a naviga la butoanele de feedback.</translation>
 <translation id="1343356790768851700">Acest site stabilește lucrurile care te interesează, apoi sugerează anunțuri altor site-uri</translation>
 <translation id="1346748346194534595">Dreapta</translation>
 <translation id="1348779747280417563">Confirmă numele</translation>
@@ -1061,7 +1060,6 @@
 <translation id="2902312830803030883">Mai multe acțiuni</translation>
 <translation id="2903493209154104877">Adrese</translation>
 <translation id="290376772003165898">Pagina nu este în <ph name="LANGUAGE" />?</translation>
-<translation id="2904165004205947971">Gestionează-ți informațiile</translation>
 <translation id="2905107382358353958">Alertă cu privire la noua setare pentru plăți</translation>
 <translation id="2909946352844186028">A fost detectată o schimbare a rețelei.</translation>
 <translation id="2911255567212929079">Învățare automată și inteligență artificială</translation>
@@ -1568,7 +1566,6 @@
 <translation id="3727309136762649052">Spațiu de nume</translation>
 <translation id="3727850735097852673">Pentru a folosi Managerul de parole Google cu macOS Keychain, relansează Chrome și permite accesul Keychain. Filele se vor redeschide după relansare.</translation>
 <translation id="3728173127485570463">Browserul Chrome nu va mai avea nevoie de amprente pentru a completa automat parolele</translation>
-<translation id="3735143108516366187">Apasă pe Enter pentru a gestiona îmbunătățirile de predicție</translation>
 <translation id="3736739313435669994">Ai împiedicat site-urile să folosească cookie-uri terță parte pentru a te urmări în timp ce navighezi. Accesează setările pentru a <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Browserul este gestionat de administratorul tău.</translation>
 <translation id="3738428049780661523">Creat pe <ph name="DATE" /></translation>
@@ -1667,7 +1664,6 @@
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3909899182024383590">Informațiile salvate și pagina de la <ph name="WEBSITE" /> sunt trimise la Google și pot fi văzute de evaluatori umani pentru a îmbunătăți această funcție.</translation>
 <translation id="3910231615117880630">Află mai multe despre conținutul încorporat</translation>
-<translation id="3915878244842478983">Chrome a întâmpinat probleme la preluarea informațiilor</translation>
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Cum îți poți gestiona datele:<ph name="END_BOLD" /> Chrome șterge automat site-urile mai vechi de 30 de zile. Un site pe care îl accesezi din nou poate să reapară în listă. Poți să nu permiți unui site să îți sugereze anunțuri și să dezactivezi oricând anunțurile sugerate de site-uri din setările Chrome.</translation>
 <translation id="3921869355029467742">Introdu codul de securitate</translation>
 <translation id="3927538228901078312">Nu există tabele de comparație</translation>
@@ -2867,7 +2863,6 @@
 <translation id="6058977677006700226">Folosești cardurile pe toate dispozitivele?</translation>
 <translation id="6059925163896151826">Dispozitive USB</translation>
 <translation id="6060009363608157444">Mod DnsOverHttps nevalid.</translation>
-<translation id="6060132878120844000">și încă un câmp</translation>
 <translation id="6061154937977953833">Wrestling</translation>
 <translation id="6062937464449575061">Anulează urmărirea prețului</translation>
 <translation id="6063415549109819824">Credite imobiliare</translation>
@@ -2933,7 +2928,6 @@
 <translation id="6180316780098470077">Intervalul de reîncercare</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome limitează automat cookie-urile terță parte</translation>
-<translation id="6188479691141473408">și încă <ph name="N_FIELDS" /> câmpuri</translation>
 <translation id="6190518157737269631">Înlocuiește unele taste de pe tastatură, cum ar fi Esc</translation>
 <translation id="6194209731893739467">Vezi toate produsele urmărite aici</translation>
 <translation id="6195163219142236913">Cookie-uri terță parte limitate</translation>
@@ -3162,7 +3156,6 @@
 <translation id="6569060085658103619">Se afișează pagina unei extensii</translation>
 <translation id="6572867903637058088">Este util?</translation>
 <translation id="6573200754375280815">Perforare dublă în dreapta</translation>
-<translation id="6574762126505704998">Umplere</translation>
 <translation id="6575408526598156416">Salvează în cont</translation>
 <translation id="6577792494180292262">Capital de risc</translation>
 <translation id="6578434528542148658">Codul extensiei nu este valid.</translation>
@@ -3980,7 +3973,6 @@ Detalii suplimentare:
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe tab, apoi pe Enter ca să setezi Chrome ca browser prestabilit pentru sistem</translation>
 <translation id="8027077570865220386">Tava 15</translation>
 <translation id="8027585818882015174">Butonul Rulează verificarea de siguranță pentru Chrome, activează pentru a rula verificarea de siguranță în setările Chrome</translation>
-<translation id="8028138772801251745">Completează automat cu AI</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a crea rapid un formular în Formulare Google</translation>
 <translation id="8028892419725165118">Jocuri ocazionale</translation>
 <translation id="8028960012888758725">Decupare după sarcină</translation>

@@ -648,6 +648,10 @@ void RenderWidgetHostViewMac::DidEnterBackForwardCache() {
   host()->ForceFirstFrameAfterNavigationTimeout();
 }
 
+void RenderWidgetHostViewMac::ActivatedOrEvictedFromBackForwardCache() {
+  browser_compositor_->ActivatedOrEvictedFromBackForwardCache();
+}
+
 void RenderWidgetHostViewMac::SetIsLoading(bool is_loading) {
   is_loading_ = is_loading;
   // If we ever decide to show the waiting cursor while the page is loading

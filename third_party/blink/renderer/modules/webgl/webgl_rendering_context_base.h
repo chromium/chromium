@@ -908,7 +908,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
         gfx::Size size,
         viz::SharedImageFormat format,
         SkAlphaType alpha_type,
-        sk_sp<SkColorSpace> sk_color_space);
+        const gfx::ColorSpace& color_space);
 
    private:
     void BubbleToFront(wtf_size_t idx);

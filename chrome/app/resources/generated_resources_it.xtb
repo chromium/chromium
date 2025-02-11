@@ -220,6 +220,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="114721135501989771">Tutta l'intelligenza Google in Chrome</translation>
 <translation id="1147322039136785890">È il turno di <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Per richiedere l'accesso, contatta l'amministratore del dispositivo.</translation>
+<translation id="1148464196693569530">Consenti script utente</translation>
 <translation id="1148624853678088576">Fatto.</translation>
 <translation id="1148669835763563782">Stai ricevendo l'ultimo aggiornamento software per una maggiore sicurezza e le ultime funzionalità di Chromebook. Questo aggiornamento include un'esperienza di configurazione migliorata che ti aiuta a iniziare a usare Chromebook senza problemi.</translation>
 <translation id="1149401351239820326">Mese di scadenza</translation>
@@ -5627,7 +5628,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4946998421534856407">Avvio app + Freccia su</translation>
 <translation id="4947376546135294974">Dati dal sito che stai visitando</translation>
 <translation id="4950100687509657457">Crea profilo</translation>
-<translation id="4950360215042327246">[Stringa segnaposto]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{un file}other{# file}}</translation>
 <translation id="495170559598752135">Azioni</translation>
 <translation id="4951966678293618079">Non salvare mai le password per questo sito</translation>
@@ -6766,6 +6766,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5794414402486823030">Apri sempre con visualizzatore di sistema</translation>
 <translation id="5794700615121138172">Cartelle condivise di Linux</translation>
 <translation id="5794786537412027208">Chiudi tutte le app di Chrome</translation>
+<translation id="5795422263272161110">Mostra affiancate</translation>
 <translation id="5796485699458186843">Nuova scheda di navigazione in incognito</translation>
 <translation id="5796956053441619942">L'URL del dispositivo remoto non è supportato</translation>
 <translation id="5797934230382081317">Scopri come iniziare su &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; e &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -7293,6 +7294,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6170498031581934115">Impossibile attivare il debug ADB. Vai alle impostazioni e riprova.</translation>
 <translation id="6170675927290506430">Vai alle impostazioni di notifica</translation>
 <translation id="6171779718418683144">Chiedi a ogni visita</translation>
+<translation id="6172020488605056255">Fai clic con il tasto destro del mouse per usare Aiutami a leggere</translation>
 <translation id="617213288191670920">Nessuna lingua aggiunta</translation>
 <translation id="6173623053897475761">Digita di nuovo il PIN</translation>
 <translation id="6174909075810107548">Usa il tasto "5" per premere un tasto del mouse</translation>
@@ -7981,7 +7983,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6679947539429331601">Nascondi per 12 ore</translation>
 <translation id="6680442031740878064">Disponibile: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocità</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [stringa segnaposto]</translation>
 <translation id="6683022854667115063">Cuffie</translation>
 <translation id="6683087162435654533">Ripristina tutt&amp;e le schede</translation>
 <translation id="6683433919380522900">L'autorizzazione è <ph name="PERMISSION_STATE" /></translation>
@@ -8319,6 +8320,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6910190732484284349">Elimina passkey per il nome utente: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Eliminato</translation>
 <translation id="6910274140210351823">Scuro</translation>
+<translation id="691102290537033604">L'estensione potrà eseguire codici che non sono stati esaminati da Google. L'opzione potrebbe non essere sicura e dovresti attivarla solo se non hai dubbi.</translation>
 <translation id="6911734910326569517">Footprint di memoria</translation>
 <translation id="6912007319859991306">PIN SIM rete mobile</translation>
 <translation id="6912380255120084882">Prova con un altro dispositivo</translation>
@@ -9200,7 +9202,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7561759921596375678">Attiva il volume</translation>
 <translation id="7561982940498449837">Chiudi menu</translation>
-<translation id="7563970324931922582">[Testo segnaposto]</translation>
 <translation id="756445078718366910">Apri finestra del browser</translation>
 <translation id="7564847347806291057">Termina processo</translation>
 <translation id="756503097602602175">Puoi gestire gli Account Google a cui hai eseguito l'accesso dalle <ph name="LINK_BEGIN" />Impostazioni<ph name="LINK_END" />. Le autorizzazioni concesse ai siti web e alle app potrebbero essere applicate a tutti gli account. Se non vuoi consentire a siti o app di accedere alle informazioni del tuo account, puoi accedere a <ph name="DEVICE_TYPE" /> come ospite oppure navigare sul Web in una <ph name="LINK_2_BEGIN" />finestra di navigazione in incognito<ph name="LINK_2_END" />.</translation>
@@ -9831,6 +9832,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Voce <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Trasferisci automaticamente il Wi-Fi dal tuo smartphone Android</translation>
 <translation id="7991296728590311172">Impostazioni Switch Access</translation>
+<translation id="7992080146463834191">Riepiloga i contenuti, semplifica il linguaggio complesso o poni domande.</translation>
 <translation id="7992203134935383159">Sintesi vocale</translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Priorità processo</translation>
@@ -11088,6 +11090,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8874448314264883207">L'estensione "<ph name="EXTENSION_NAME" />" è stata disattivata</translation>
 <translation id="8874647982044395866">Biologico</translation>
 <translation id="8874790741333031443">Prova a consentire temporaneamente i cookie di terze parti. In questo modo avrai meno protezione durante la navigazione, ma è più probabile che le funzionalità del sito operino come previsto.</translation>
+<translation id="8875221558267407626">Riepiloga i contenuti, semplifica il linguaggio complesso o poni domande</translation>
 <translation id="8875520811099717934">Upgrade di Linux</translation>
 <translation id="8875736897340638404">Scegli la visibilità</translation>
 <translation id="8876307312329369159">Questa impostazione non può essere modificata in una sessione demo.</translation>
@@ -11141,6 +11144,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8915916167043355778">Chiudi tutte</translation>
 <translation id="8916476537757519021">Frame secondario modalità di navigazione in incognito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Sì, accetto</translation>
+<translation id="8917980324687233736">Mostra affiancate</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> di <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Installazione dell'app in corso…</translation>
 <translation id="891931289445130855">Elimina dati e autorizzazioni</translation>

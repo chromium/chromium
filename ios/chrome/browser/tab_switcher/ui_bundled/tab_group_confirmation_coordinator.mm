@@ -81,6 +81,9 @@
                      barButtonItem:_sourceButtonItem];
   }
 
+  _actionSheetCoordinator.alertStyle = _showAsAlert
+                                           ? UIAlertControllerStyleAlert
+                                           : UIAlertControllerStyleActionSheet;
   _actionSheetCoordinator.popoverArrowDirection =
       UIPopoverArrowDirectionDown | UIPopoverArrowDirectionUp;
 

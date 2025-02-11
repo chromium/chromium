@@ -4,8 +4,10 @@
 
 #include "android_webview/browser/state_serializer.h"
 
+#include <iterator>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
@@ -15,6 +17,7 @@
 #include "content/public/browser/navigation_entry_restore_context.h"
 #include "content/public/common/content_client.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "url/gurl.h"
@@ -25,11 +28,12 @@ namespace android_webview {
 
 namespace {
 
-std::unique_ptr<content::NavigationEntry> CreateNavigationEntry() {
+std::unique_ptr<content::NavigationEntry> CreateNavigationEntry(
+    string url = "http://url") {
   std::unique_ptr<content::NavigationEntry> entry(
       content::NavigationEntry::Create());
 
-  const GURL url("http://url");
+  const GURL gurl(url);
   const GURL virtual_url("http://virtual_url");
   content::Referrer referrer;
   referrer.url = GURL("http://referrer_url");
@@ -43,7 +47,7 @@ std::unique_ptr<content::NavigationEntry> CreateNavigationEntry() {
   const base::Time timestamp = base::Time::FromInternalValue(12345);
   const int http_status_code = 404;
 
-  entry->SetURL(url);
+  entry->SetURL(gurl);
   entry->SetVirtualURL(virtual_url);
   entry->SetReferrer(referrer);
   entry->SetTitle(title);
@@ -59,6 +63,24 @@ std::unique_ptr<content::NavigationEntry> CreateNavigationEntry() {
   entry->SetTimestamp(timestamp);
   entry->SetHttpStatusCode(http_status_code);
   return entry;
+}
+
+void AssertEntriesEqual(content::NavigationEntry* lhs,
+                        content::NavigationEntry* rhs) {
+  EXPECT_EQ(lhs->GetURL(), rhs->GetURL());
+  EXPECT_EQ(lhs->GetVirtualURL(), rhs->GetVirtualURL());
+  EXPECT_EQ(lhs->GetReferrer().url, rhs->GetReferrer().url);
+  EXPECT_EQ(lhs->GetReferrer().policy, rhs->GetReferrer().policy);
+  EXPECT_EQ(lhs->GetTitle(), rhs->GetTitle());
+  EXPECT_EQ(lhs->GetPageState(), rhs->GetPageState());
+  EXPECT_EQ(lhs->GetHasPostData(), rhs->GetHasPostData());
+  EXPECT_EQ(lhs->GetOriginalRequestURL(), rhs->GetOriginalRequestURL());
+  EXPECT_EQ(lhs->GetBaseURLForDataURL(), rhs->GetBaseURLForDataURL());
+  EXPECT_EQ(lhs->GetDataURLAsString()->as_string(),
+            rhs->GetDataURLAsString()->as_string());
+  EXPECT_EQ(lhs->GetIsOverridingUserAgent(), rhs->GetIsOverridingUserAgent());
+  EXPECT_EQ(lhs->GetTimestamp(), rhs->GetTimestamp());
+  EXPECT_EQ(lhs->GetHttpStatusCode(), rhs->GetHttpStatusCode());
 }
 
 class AndroidWebViewStateSerializerTest : public testing::Test {
@@ -81,6 +103,38 @@ class AndroidWebViewStateSerializerTest : public testing::Test {
  private:
   content::ContentClient content_client_;
   content::ContentBrowserClient browser_client_;
+};
+
+// A fake navigation controller that holes a simple list of navigation entries,
+// and can restore to that list.
+class TestNavigationController : public internal::NavigationHistory,
+                                 public internal::NavigationHistorySink {
+ public:
+  int GetEntryCount() override { return entries_.size(); }
+
+  int GetCurrentEntry() override { return current_entry_; }
+
+  content::NavigationEntry* GetEntryAtIndex(int index) override {
+    return entries_.at(index).get();
+  }
+
+  void Add(std::unique_ptr<content::NavigationEntry> entry) {
+    entries_.push_back(std::move(entry));
+    current_entry_ = entries_.size() - 1;
+  }
+
+  void Restore(int selected_entry,
+               std::vector<std::unique_ptr<content::NavigationEntry>>* entries)
+      override {
+    current_entry_ = selected_entry;
+    entries_.insert(entries_.end(), std::make_move_iterator(entries->begin()),
+                    std::make_move_iterator(entries->end()));
+    entries->clear();
+  }
+
+ private:
+  int current_entry_ = 0;
+  std::vector<std::unique_ptr<content::NavigationEntry>> entries_;
 };
 
 }  // namespace
@@ -129,21 +183,7 @@ TEST_F(AndroidWebViewStateSerializerTest, TestNavigationEntrySerialization) {
       &iterator, copy.get(), context.get());
   EXPECT_TRUE(result);
 
-  EXPECT_EQ(entry->GetURL(), copy->GetURL());
-  EXPECT_EQ(entry->GetVirtualURL(), copy->GetVirtualURL());
-  EXPECT_EQ(entry->GetReferrer().url, copy->GetReferrer().url);
-  EXPECT_EQ(entry->GetReferrer().policy, copy->GetReferrer().policy);
-  EXPECT_EQ(entry->GetTitle(), copy->GetTitle());
-  EXPECT_EQ(entry->GetPageState(), copy->GetPageState());
-  EXPECT_EQ(entry->GetHasPostData(), copy->GetHasPostData());
-  EXPECT_EQ(entry->GetOriginalRequestURL(), copy->GetOriginalRequestURL());
-  EXPECT_EQ(entry->GetBaseURLForDataURL(), copy->GetBaseURLForDataURL());
-  EXPECT_EQ(entry->GetDataURLAsString()->as_string(),
-            copy->GetDataURLAsString()->as_string());
-  EXPECT_EQ(entry->GetIsOverridingUserAgent(),
-            copy->GetIsOverridingUserAgent());
-  EXPECT_EQ(entry->GetTimestamp(), copy->GetTimestamp());
-  EXPECT_EQ(entry->GetHttpStatusCode(), copy->GetHttpStatusCode());
+  AssertEntriesEqual(entry.get(), copy.get());
 }
 
 TEST_F(AndroidWebViewStateSerializerTest,
@@ -294,6 +334,55 @@ TEST_F(AndroidWebViewStateSerializerTest, TestHugeDataURLSerialization) {
       &iterator, copy.get(), context.get());
   EXPECT_TRUE(result);
   EXPECT_EQ(huge_data_url, copy->GetDataURLAsString()->as_string());
+}
+
+TEST_F(AndroidWebViewStateSerializerTest, TestHistorySerialization) {
+  // Tests serializing all the entries in history.
+  TestNavigationController controller;
+
+  controller.Add(CreateNavigationEntry("http://url1"));
+  controller.Add(CreateNavigationEntry("http://url2"));
+  controller.Add(CreateNavigationEntry("http://url3"));
+
+  base::Pickle pickle;
+  internal::WriteToPickle(controller, &pickle);
+
+  TestNavigationController copy;
+  base::PickleIterator iterator(pickle);
+  internal::RestoreFromPickle(&iterator, copy);
+
+  EXPECT_EQ(controller.GetEntryCount(), copy.GetEntryCount());
+  EXPECT_EQ(controller.GetCurrentEntry(), controller.GetCurrentEntry());
+  for (int i = 0; i < controller.GetEntryCount(); i++) {
+    AssertEntriesEqual(controller.GetEntryAtIndex(i), copy.GetEntryAtIndex(i));
+  }
+}
+
+TEST_F(AndroidWebViewStateSerializerTest,
+       TestChronologicalEntriesBackwardsCompat) {
+  // Ensures that the deserializer, updated with
+  // AW_STATE_VERSION_REVERSE_ENTRIES can read state written from earlier
+  // versions where the order of entries was not reversed.
+
+  TestNavigationController controller;
+
+  controller.Add(CreateNavigationEntry("http://url1"));
+  controller.Add(CreateNavigationEntry("http://url2"));
+  controller.Add(CreateNavigationEntry("http://url3"));
+
+  base::Pickle pickle;
+  internal::WriteToPickle(internal::AW_STATE_VERSION_DATA_URL, controller,
+                          &pickle);
+
+  TestNavigationController copy;
+  base::PickleIterator iterator(pickle);
+  internal::RestoreFromPickle(&iterator, copy);
+
+  EXPECT_EQ(controller.GetEntryCount(), copy.GetEntryCount());
+  EXPECT_EQ(controller.GetCurrentEntry(), controller.GetCurrentEntry());
+  for (int i = 0; i < controller.GetEntryCount(); i++) {
+    AssertEntriesEqual(controller.GetEntryAtIndex(i), copy.GetEntryAtIndex(i));
+  }
 }
 
 }  // namespace android_webview

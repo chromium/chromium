@@ -36,6 +36,7 @@ const ReadingListAppElementBase = HelpBubbleMixinLit(CrLitElement);
 
 export interface ReadingListAppElement {
   $: {
+    footer: HTMLElement,
     readingListList: CrLazyListElement,
   };
 }
@@ -68,6 +69,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
       buttonRipples: {type: Boolean},
       loadingContent_: {type: Boolean},
       itemSize_: {type: Number},
+      minViewportHeight_: {type: Number},
       scrollTarget_: {type: Object},
       unreadHeader_: {type: String},
       readHeader_: {type: String},
@@ -85,6 +87,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
   buttonRipples: boolean = loadTimeData.getBoolean('useRipples');
   protected loadingContent_: boolean = true;
   protected itemSize_: number = 48;
+  protected minViewportHeight_: number = 0;
   protected scrollTarget_: HTMLElement|null = null;
   private unreadHeader_: string = loadTimeData.getString('unreadHeader');
   private readHeader_: string = loadTimeData.getString('readHeader');
@@ -105,6 +108,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
       // state.
       if (document.visibilityState === 'visible') {
         this.updateReadLaterEntries_();
+        this.updateViewportHeight_();
       }
     };
   }
@@ -126,6 +130,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
 
     this.scrollTarget_ = this.$.readingListList;
     this.updateReadLaterEntries_();
+    this.updateViewportHeight_();
     this.apiProxy_.updateCurrentPageActionButtonState();
 
     this.readingListEventTracker_.add(
@@ -185,6 +190,15 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     if (changedPrivateProperties.has('focusedIndex_')) {
       this.updateFocusedItem_();
     }
+  }
+
+  private updateViewportHeight_() {
+    this.apiProxy_.getWindowData().then(({windows}) => {
+      const activeWindow = windows.find((w) => w.active);
+      const windowHeight =
+          activeWindow ? activeWindow!.height : windows[0]!.height;
+      this.minViewportHeight_ = windowHeight - this.$.footer.offsetHeight;
+    });
   }
 
   getFocusedIndexForTesting() {

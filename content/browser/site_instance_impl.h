@@ -431,13 +431,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // about the current BrowsingInstance.
   const IsolationContext& GetIsolationContext();
 
-  // Returns a process suitable for this SiteInstance if the
-  // SiteInstanceGroupManager has one available. A null pointer will be returned
-  // if this SiteInstance's group does not have a process yet or the
-  // SiteInstanceGroupManager does not have a default process that can be reused
-  // by this SiteInstance.
-  RenderProcessHost* GetSiteInstanceGroupProcessIfAvailable();
-
   // Returns true if this object was constructed as a default site instance.
   bool IsDefaultSiteInstance() const;
 
@@ -536,7 +529,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
 
  private:
   friend class BrowsingInstance;
-  friend class SiteInstanceGroupManager;
   friend class SiteInstanceTestBrowserClient;
 
   // Friend tests that need direct access to IsSameSite().
@@ -559,13 +551,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // restricts access to a specific site, then the lock will be upgraded to a
   // "lock_to_site" lock.
   void LockProcessIfNeeded();
-
-  // If kProcessSharingWithStrictSiteInstances is enabled, this will check
-  // whether both a site and a process have been assigned to this SiteInstance,
-  // and if this doesn't require a dedicated process, will offer process_ to
-  // BrowsingInstance as the default process for SiteInstances that don't need
-  // a dedicated process.
-  void MaybeSetBrowsingInstanceDefaultProcess();
 
   // Sets the SiteInfo and other fields so that this instance becomes a
   // default SiteInstance.

@@ -205,6 +205,8 @@ source_set("web_applications") {
     "jobs/uninstall/uninstall_job.cc",
     "jobs/uninstall/uninstall_job.h",
     "jobs/uninstall/web_app_uninstall_and_replace_job.h",
+    "link_capturing_features.cc",
+    "link_capturing_features.h",
     "locks/all_apps_lock.cc",
     "locks/all_apps_lock.h",
     "locks/app_lock.cc",
@@ -235,6 +237,8 @@ source_set("web_applications") {
     "manifest_update_utils.h",
     "navigation_capturing_log.cc",
     "navigation_capturing_log.h",
+    "navigation_capturing_settings.cc",
+    "navigation_capturing_settings.h",
     "os_integration/file_handling_sub_manager.cc",
     "os_integration/file_handling_sub_manager.h",
     "os_integration/os_integration_manager.cc",
@@ -465,6 +469,13 @@ source_set("web_applications") {
     sources += [
       "policy/web_app_settings_policy_handler.cc",
       "policy/web_app_settings_policy_handler.h",
+    ]
+  }
+
+  if (!is_chromeos) {
+    sources += [
+      "navigation_capturing_settings_impl.cc",
+      "navigation_capturing_settings_impl.h",
     ]
   }
 
@@ -1108,6 +1119,7 @@ source_set("web_applications_browser_tests") {
     sources += [
       "commands/install_app_from_verified_manifest_command_browsertest.cc",
       "isolated_web_apps/isolated_web_app_managed_configuration_api_browsertest.cc",
+      "isolated_web_apps/policy/isolated_web_app_cache_browsertest.cc",
       "isolated_web_apps/policy/isolated_web_app_policy_manager_ash_browsertest.cc",
       "web_app_run_on_os_login_manager_browsertest.cc",
     ]
@@ -1167,6 +1179,7 @@ source_set("web_applications_browser_tests") {
     deps += [
       "//ash/constants",
       "//chrome/browser/ash/app_list",
+      "//chrome/browser/ash/app_mode/test:test_support",
       "//chrome/browser/ash/file_manager:test_support",
       "//chrome/browser/ash/login:test_support",
       "//chrome/browser/ash/policy/core",

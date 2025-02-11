@@ -7,6 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
+// Represents a price drop for a shopping URL -
+// the current price and previous price.
+struct PriceDrop {
+  // Formatted current price
+  NSString* current_price;
+  // Formatted previous price
+  NSString* previous_price;
+};
+
 enum class ShopCardItemType {
   kUnknown = 0,
   kPriceDropForTrackedProducts,
@@ -20,6 +31,9 @@ enum class ShopCardItemType {
 
 // Type of ShopCard.
 @property(nonatomic, readwrite) ShopCardItemType shopCardItemType;
+
+// Price Drop if it exists for the URL corresponding to the ShopCard.
+@property(nonatomic, assign) std::optional<PriceDrop> priceDrop;
 
 @end
 

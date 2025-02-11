@@ -166,7 +166,7 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
       .WillOnce(
           [&expected_bytes](
               blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
-              blink::mojom::Authenticator::GetAssertionCallback callback) {
+              webauthn::InternalAuthenticator::GetAssertionCallback callback) {
             EXPECT_EQ(options->challenge, expected_bytes);
             auto struct_ptr_is_not_null = Property(
                 &mojo::StructPtr<
@@ -285,7 +285,7 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
       .WillOnce(
           [client_data_json](
               blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
-              blink::mojom::Authenticator::GetAssertionCallback callback) {
+              webauthn::InternalAuthenticator::GetAssertionCallback callback) {
             auto authenticator_response =
                 blink::mojom::GetAssertionAuthenticatorResponse::New();
             authenticator_response->info =

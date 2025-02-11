@@ -193,6 +193,27 @@ export class SettingsPaymentsSectionElement extends
           return loadTimeData.getString('cardBenefitsToggleSublabel');
         },
       },
+
+      /**
+       * Checks if the pay over time settings toggle should be shown.
+       */
+      shouldShowPayOverTimeSettingsToggle_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('shouldShowPayOverTimeSettingsToggle');
+        },
+      },
+
+      /**
+       * Sublabel for the pay over time toggle. The sublabel text also includes
+       * a link to learn about pay over time.
+       */
+      payOverTimeSublabel_: {
+        type: String,
+        value() {
+          return loadTimeData.getString('autofillPayOverTimeSettingsSublabel');
+        },
+      },
     };
   }
 
@@ -683,6 +704,15 @@ export class SettingsPaymentsSectionElement extends
     return this.i18n(
         card === undefined ? 'enableCvcStorageAriaLabelForNoCvcSaved' :
                              'enableCvcStorageLabel');
+  }
+
+  /**
+   * Opens an article to learn about pay over time when the pay over time
+   * toggle sublabel link is clicked.
+   */
+  private onPayOverTimeSublabelLinkClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('autofillPayOverTimeSettingsLearnMoreUrl'));
   }
 }
 

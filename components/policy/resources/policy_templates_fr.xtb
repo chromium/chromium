@@ -1243,30 +1243,6 @@ Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ferme l'onglet apr�
       Cette règle est désactivée par défaut.</translation>
 <translation id="1947848925128084608">Désactiver le contraste élevé sur l'écran de connexion et autoriser l'utilisateur à l'activer temporairement</translation>
 <translation id="1949584741547056205">Réponses rapides</translation>
-<translation id="1951288262199783797">Vous pouvez activer cette règle afin de créer un dictionnaire d'extensions de fichier et une liste correspondante de domaines qui seront exemptés d'avertissements de téléchargement basés sur l'extension. Cela permet aux administrateurs de l'entreprise de bloquer ces avertissements pour les fichiers associés à un domaine listé. Par exemple, si l'extension "jnlp" est associée à "website1.com", les utilisateurs verront un avertissement s'ils téléchargent des fichiers "jnlp" depuis "website1.com". En revanche, ils n'en verront pas s'ils téléchargent des fichiers "jnlp" depuis "website2.com".
-
-      Le téléchargement, depuis les domaines identifiés par cette règle, de fichiers dont l'extension est spécifiée fera toutefois l'objet d'avertissements de sécurité (non basés sur l'extension) pour signaler, par exemple, un contenu mixte ou une navigation sécurisée.
-
-      Si vous désactivez cette règle, ou que vous ne la configurez pas, les utilisateurs verront des avertissements s'ils téléchargent des fichiers des types spécifiés.
-
-      Si vous activez cette règle :
-
-      * Les URL doivent avoir le format décrit sur https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-      * L'extension doit être saisie au format ASCII, en minuscules. Les extensions doivent être listées sans le séparateur qui les précède (par exemple, indiquez "jlnp" et non ".jlnp").
-
-      Exemple :
-
-      La configuration suivante empêche que des avertissements s'affichent en cas de téléchargement de fichiers de type swf, exe et jnlp depuis le domaine *.example.com. L'utilisateur voit un avertissement s'il télécharge un fichier exe ou jnlp depuis un autre domaine, mais pas s'il télécharge un fichier swf.
-
-      [
-        { "file_extension": "jnlp", "domains": ["example.com"] },
-        { "file_extension": "exe", "domains": ["example.com"] },
-        { "file_extension": "swf", "domains": ["*"] }
-      ]
-
-      Notez que même si les avertissements basés sur l'extension sont ici supprimés en cas de téléchargement d'un fichier swf depuis n'importe quel domaine, il n'est pas recommandé d'appliquer ce type de configuration aux extensions dangereuses, pour des raisons de sécurité. Cet exemple ne vise qu'à montrer qu'il est possible de le faire.
-
-      Si cette règle est activée en même temps que <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> et que cette autre règle est configurée pour bloquer les types de fichiers dangereux, les blocages de téléchargement qu'elle définit prévalent. Par exemple, si cette règle est configurée pour permettre les téléchargements de fichiers "exe" depuis "website1.com" et que la règle DownloadRestrictions est configurée pour bloquer les téléchargements malveillants et les types de fichiers dangereux, le téléchargement des fichiers "exe" sera alors quand même bloqué pour tous les domaines. Si la règle DownloadRestrictions n'est pas configurée pour bloquer les types de fichiers dangereux, les types de fichiers spécifiés dans cette règle seront exemptés des avertissements de téléchargement basé sur l'extension dans les domaines spécifiés. Pour en savoir plus sur la règle DownloadRestrictions, consultez la page https://chromeenterprise.google/policies/?policy=DownloadRestrictions.</translation>
 <translation id="1954612656043024615">Activer la fonctionnalité de presse-papiers partagé</translation>
 <translation id="1955063069502242812">Activer le son de batterie faible</translation>
 <translation id="1955806069704957172">Contrôle les paramètres de l'API du connecteur de bureau.</translation>

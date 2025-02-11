@@ -542,11 +542,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "auto-picture-in-picture-video-heuristics",
-    "owners": [ "bkeen@google.com", "media-dev@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "autofill-across-iframes",
     "owners": [
       "vincb@google.com",
@@ -679,7 +674,7 @@
   {
     "name": "autofill-enable-prefetching-risk-data-for-retrieval",
     "owners": ["hvs@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 145
   },
   {
     "name": "autofill-enable-ranking-formula-address-profiles",
@@ -754,7 +749,7 @@
   {
     "name": "autofill-isolated-world-ios",
     "owners": [ "eic@google.com", "bling-transactions@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 137
   },
   {
     "name": "autofill-more-prominent-popup",
@@ -1958,6 +1953,11 @@
   {
     "name": "devtools-privacy-ui",
     "owners": [ "jalonthomas@chromium.com", "shuuran@chromium.org", "masnoble@chromium.com" ],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "direct-sockets-in-service-workers",
+    "owners": [ "//content/browser/direct_sockets/OWNERS" ],
     "expiry_milestone": 150
   },
   {
@@ -5686,8 +5686,18 @@
     "expiry_milestone": 140
   },
   {
+    "name": "lens-unary-client-data-header-enabled",
+    "owners": ["cmyang@google.com", "brandonli@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "lens-unary-http-transport-enabled",
     "owners": ["cmyang@google.com", "brandonli@google.com", "lihailong@google.com"],
+    "expiry_milestone": 140
+  },
+  {
+    "name": "lens-vsint-param-enabled",
+    "owners": ["cmyang@google.com"],
     "expiry_milestone": 140
   },
   {
@@ -5948,7 +5958,7 @@
   {
     "name": "move-theme-prefs-to-specifics",
     "owners": [ "ankushkush@google.com", "chrome-sync-dev@google.com" ],
-    "expiry_milestone": 134
+    "expiry_milestone": 136
   },
   {
     "name": "multi-calendar-in-quick-settings",
@@ -6130,6 +6140,11 @@
     "name": "ntp-dummy-modules",
     "owners": [ "pauladedeji@chromium.org", "tiborg@chromium.org" ],
     "expiry_milestone": 108
+  },
+  {
+    "name": "ntp-footer",
+    "owners": [ "pauladedeji@chromium.org", "tiborg@chromium.org" ],
+    "expiry_milestone": 140
   },
   {
     "name": "ntp-microsoft-authentication-module",
@@ -7543,11 +7558,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "rich-bubble-without-image",
-    "owners": [ "nicolasmacbeth@google.com", "bling-mony-pod@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "right-edge-goes-forward-gesture-nav",
     "owners": [ "eleanorlee@google.com", "lazzzis@google.com", "twellington@chromium.org" ],
     "expiry_milestone": 150
@@ -8214,10 +8224,10 @@
   {
     "name": "supervised-profile-youtube-reauth",
     "owners": [
-      "ljjlee@google.com",
+      "tju@google.com",
       "chrome-kids-eng@google.com"
     ],
-    "expiry_milestone": 133
+    "expiry_milestone": 134
   },
   {
     "name": "supervised-user-local-web-approvals",

@@ -1221,30 +1221,6 @@
       在預設狀態下，系統會停用這項企業政策。</translation>
 <translation id="1947848925128084608">在登入畫面上停用高對比模式，並允許使用者暫時啟用</translation>
 <translation id="1949584741547056205">快速解答</translation>
-<translation id="1951288262199783797">你可以啟用這項政策以建立檔案類型副檔名字典和對應的網域清單，這些網域就不會針對特定檔案類型副檔名顯示下載警告。這樣企業管理員可以針對與所列網域相關聯的檔案，封鎖特定檔案類型副檔名的下載警告。舉例來說，如果「jnlp」副檔名與「website1.com」相關聯，使用者從「website1.com」下載「jnlp」檔案時不會看到警告訊息，但從「website2.com」下載「jnlp」檔案時就會看到警告訊息。
-
-      如果檔案位於這項政策指定的網域，且符合設定的檔案類型副檔名，仍必須遵守非檔案類型副檔名安全性警告的相關限制，例如複合型內容下載警告和安全瀏覽警告。
-
-      如果停用或不設定這項政策，則會觸發副檔名下載警告的檔案類型仍會向使用者顯示警告訊息。
-
-      如果啟用這項政策：
-
-      * 網址模式的格式必須符合 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns 中的規定。
-      * 提供的檔案類型副檔名必須是小寫的 ASCII。列出檔案類型副檔名時，請勿加入開頭的分隔符，因此請輸入「jnlp」，而非「.jnlp」。
-
-      範例：
-
-      以下範例值會針對 *.example.com 網域停用 swf、exe 和 jnlp 的檔案類型副檔名下載警告。在其他網域上，系統會針對 exe 和 jnlp 檔案顯示檔案類型副檔名下載警告，但不會針對 swf 檔案顯示。
-
-      [
-        { "file_extension": "jnlp", "domains": ["example.com"] },
-        { "file_extension": "exe", "domains": ["example.com"] },
-        { "file_extension": "swf", "domains": ["*"] }
-      ]
-
-      請注意，雖然前一個範例的設定是針對所有網域的「swf」檔案停用檔案類型副檔名警告，但基於安全考量，不建議將這種停用警告訊息的做法套用到所有網域的任何危險檔案類型副檔名。這只是用來說明設定方式而已。
-
-      如果啟用這項政策，且 <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> 和 DownloadRestrictions 政策設為封鎖危險檔案類型，則系統會優先採用 DownloadRestrictions 的禁止下載設定。比方說，如果這項政策設為可從「website1.com」下載「exe」副檔名，且 DownloadRestrictions 設為封鎖惡意下載內容和危險檔案類型，則系統仍會禁止從所有網域下載「exe」副檔名。如果 DownloadRestrictions 未設定為封鎖危險檔案類型，那麼從指定網域下載這項政策設定的檔案類型時，系統就不會顯示檔案類型副檔名下載警告。進一步瞭解 DownloadRestrictions 政策 (https://chromeenterprise.google/policies/?policy=DownloadRestrictions)。</translation>
 <translation id="1954612656043024615">啟用剪貼簿共用功能</translation>
 <translation id="1955063069502242812">啟用低電量音效</translation>
 <translation id="1955806069704957172">控管桌面連接器 API 的設定。</translation>

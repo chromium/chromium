@@ -809,6 +809,32 @@ void OnGetAssertionComplete(
   }
 }
 
+void OnAuthenticatorGetCredentialComplete(
+    std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
+    std::unique_ptr<ScopedAbortState> scoped_abort_state,
+    FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle feature_handle,
+    Mediation mediation,
+    mojom::blink::GetCredentialResponsePtr get_credential_response) {
+  if (!get_credential_response) {
+    return;
+  }
+  if (get_credential_response->is_get_assertion_response()) {
+    auto get_assertion_response =
+        std::move(get_credential_response->get_get_assertion_response());
+    OnGetAssertionComplete(
+        std::move(scoped_resolver), std::move(scoped_abort_state),
+        std::move(feature_handle), mediation,
+        std::move(get_assertion_response->status),
+        std::move(get_assertion_response->credential),
+        std::move(get_assertion_response->dom_exception_details));
+    return;
+  }
+  auto password_response =
+      std::move(get_credential_response->get_password_response());
+  OnGetComplete(std::move(scoped_resolver), RequiredOriginType::kSecure,
+                CredentialManagerError::SUCCESS, std::move(password_response));
+}
+
 void OnSmsReceive(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
                   std::unique_ptr<ScopedAbortState> scoped_abort_state,
                   base::TimeTicks start_time,
@@ -1534,10 +1560,10 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
           requested_credential_types;
       auto* authenticator =
           CredentialManagerProxy::From(script_state)->Authenticator();
-      authenticator->GetAssertion(
+      authenticator->GetCredential(
           std::move(mojo_options),
           WTF::BindOnce(
-              &OnGetAssertionComplete,
+              &OnAuthenticatorGetCredentialComplete,
               std::make_unique<ScopedPromiseResolver>(resolver),
               std::move(scoped_abort_state),
               RuntimeEnabledFeatures::

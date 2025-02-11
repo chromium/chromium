@@ -246,7 +246,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1786487376942610288">Přepnout mezi maximální a aktuální velikostí okna obrazu v obraze</translation>
 <translation id="1787955149152357925">Vyp</translation>
 <translation id="1796561540704213354">Weby, včetně navštívených a otevřených stránek</translation>
-<translation id="179842970735685253">smluvní podmínky společnosti Google</translation>
 <translation id="1805407494113167797">Zvuky k soustředění nelze přehrát</translation>
 <translation id="181103072419391116">Síla signálu: <ph name="SIGNAL_STRENGTH" />, spravováno vaším administrátorem</translation>
 <translation id="1815039896005206046">Palec dolů odešle zpětnou vazbu, že se vám tato navrhovaná skupina nelíbí</translation>
@@ -1242,7 +1241,6 @@ Můžete také použít klávesovou zkratku. Nejdříve zvýrazněte text a pak
 <translation id="5121628974188116412">Přejít na konec stránky</translation>
 <translation id="5122517996953421795">Náhled plochy <ph name="DESK_NAME" />. Neaktivní plocha.</translation>
 <translation id="5136175204352732067">Je připojena jiná klávesnice</translation>
-<translation id="5140105873789567560">Funkce Pomoz mi psát a Pomoz mi číst můžou používat pouze uživatelé starší 18 let.</translation>
 <translation id="5144005092084035179">Přepnout zvukový vstup?</translation>
 <translation id="5147567197700016471">Odemknuto</translation>
 <translation id="5150070631291639005">Nastavení soukromí</translation>
@@ -1397,7 +1395,6 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Heslo se nepodařilo ověřit. Zkuste to znovu.</translation>
 <translation id="5632485077360054581">Ukázat postup</translation>
-<translation id="5633826232582408011">Když zapnete funkce Pomoz mi psát a Pomoz mi číst, zadaný text, obsah dokumentu a adresa URL webové stránky se odešlou na servery Google AI k vygenerování návrhů a shrnutí, zodpovězení otázek a zlepšování služby. Platí <ph name="LINK_TO_SERVICE_TERMS" />. Neuvádějte žádné osobní, citlivé ani důvěrné informace.</translation>
 <translation id="5648021990716966815">Konektor mikrofonu</translation>
 <translation id="5652575806481723716">Aplikace <ph name="FOCUSED_APP_NAME" /> vyžaduje vaši pozornost.</translation>
 <translation id="5662075790140998213">Plocha 10</translation>
@@ -2023,7 +2020,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7749443890790263709">Byl dosažen maximální počet ploch.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Zobrazit vše</translation>
-<translation id="7759183637555564029">Funkce Pomoz mi psát a Pomoz mi číst můžete v Nastavení kdykoli vypnout. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Poslech vybraného textu</translation>
 <translation id="7769299611924763557">Váš GIF bude brzy připraven</translation>
 <translation id="7773536009433685931">Místo toho zapnout Wi-Fi</translation>
@@ -2033,7 +2029,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7781829728241885113">Včera</translation>
 <translation id="7787212146956232129">Vstupní a výstupní zařízení jsou nastavena. Můžete je změnit v nastavení.</translation>
 <translation id="7792590255364786396">Viditelné</translation>
-<translation id="7793389284006812057">Generativní umělá inteligence je experimentální, na počátku vývoje a v současnosti má omezenou dostupnost.</translation>
 <translation id="7796735576426975947">Nové upozornění bylo skryto</translation>
 <translation id="7798302898096527229">Vypnete jej stisknutím klávesy Hledat nebo Shift.</translation>
 <translation id="780301667611848630">Ne, děkuji</translation>

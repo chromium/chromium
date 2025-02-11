@@ -4152,8 +4152,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns true if this frame requires a proxy to talk to its parent.
   // Note: Using a proxy to talk to a parent does not imply that the parent
   // is in a different process.
-  // (e.g. kProcessSharingWithStrictSiteInstances mode uses proxies for frames
-  //  that are in the same process.)
   bool RequiresProxyToParent();
 
   // Increases by one `commit_navigation_sent_counter_`.
@@ -4200,8 +4198,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   void LogWebFeatureForCurrentPage(blink::mojom::WebFeature feature);
 
-  base::RepeatingClosure CreateLogWebFeatureClosure(
-      blink::mojom::WebFeature feature);
+  // This runs when the storage_key check fails
+  // in `BlobURLStoreImpl::ResolveAsURLLoaderFactory` and increments the use
+  // counter.
+  void ReportBlockingCrossPartitionBlobURL(
+      const GURL& blocked_url,
+      blink::mojom::PartitioningBlobURLInfo info);
 
   // For frames and main thread worklets we use a navigation-associated
   // interface and bind `receiver` to a `BlobURLStore` instance, which

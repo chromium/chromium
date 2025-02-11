@@ -495,6 +495,7 @@ BASE_DECLARE_FEATURE(kEnableWebChannels);
 // the feed. When this feature is enabled, there would not be a separate
 // following feed.
 BASE_DECLARE_FEATURE(kDeprecateFeedHeader);
+bool ShouldDeprecateFeedHeader();
 
 // Feature flag to disable the feed.
 BASE_DECLARE_FEATURE(kEnableFeedAblation);
@@ -873,11 +874,6 @@ BASE_DECLARE_FEATURE(kHomeMemoryImprovements);
 
 // Whether Home memory improvements are enabled.
 bool IsHomeMemoryImprovementsEnabled();
-
-// Feature to enable the removal of the image in the rich IPH bubble.
-BASE_DECLARE_FEATURE(kRichBubbleWithoutImage);
-
-bool IsRichBubbleWithoutImageEnabled();
 
 // Feature flag to enable account confirmation snackbar on startup.
 BASE_DECLARE_FEATURE(kIdentityConfirmationSnackbar);

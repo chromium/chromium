@@ -29,6 +29,9 @@ source_set("model") {
     "//components/omnibox/browser",
     "//components/open_from_clipboard",
     "//ios/chrome/browser/omnibox/ui_bundled:model_interface",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ui/base:types",
   ]
 
@@ -44,6 +47,10 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/omnibox/browser",
     "//components/omnibox/browser:test_support",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",

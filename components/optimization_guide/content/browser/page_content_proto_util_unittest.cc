@@ -462,6 +462,49 @@ TEST(PageContentProtoUtilTest, ConvertGeometry) {
   EXPECT_TRUE(geometry.is_fixed_or_sticky_position());
 }
 
+TEST(PageContentProtoUtilTest, ConvertInteractionInfo) {
+  auto root_content = CreatePageContent();
+  auto text_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kText);
+  text_node->content_attributes->interaction_info =
+      blink::mojom::AIPageContentInteractionInfo::New();
+  text_node->content_attributes->interaction_info->scrolls_overflow_x = true;
+  text_node->content_attributes->interaction_info->scrolls_overflow_y = true;
+  text_node->content_attributes->interaction_info->is_selectable = true;
+  text_node->content_attributes->interaction_info->is_editable = true;
+  text_node->content_attributes->interaction_info->can_resize_horizontal = true;
+  text_node->content_attributes->interaction_info->can_resize_vertical = true;
+  text_node->content_attributes->interaction_info->is_focusable = true;
+  text_node->content_attributes->interaction_info->is_focused = true;
+  text_node->content_attributes->interaction_info->is_draggable = true;
+  text_node->content_attributes->interaction_info->is_clickable = true;
+  root_content->root_node->children_nodes.emplace_back(std::move(text_node));
+
+  proto::AnnotatedPageContent proto;
+  EXPECT_TRUE(ConvertAIPageContentToProto(root_content, proto));
+
+  EXPECT_EQ(proto.version(),
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  ASSERT_EQ(proto.root_node().children_nodes_size(), 1);
+  EXPECT_EQ(
+      proto.root_node().children_nodes(0).content_attributes().attribute_type(),
+      optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  const auto& interaction_info = proto.root_node()
+                                     .children_nodes(0)
+                                     .content_attributes()
+                                     .interaction_info();
+  EXPECT_TRUE(interaction_info.scrolls_overflow_x());
+  EXPECT_TRUE(interaction_info.scrolls_overflow_y());
+  EXPECT_TRUE(interaction_info.is_selectable());
+  EXPECT_TRUE(interaction_info.is_editable());
+  EXPECT_TRUE(interaction_info.can_resize_horizontal());
+  EXPECT_TRUE(interaction_info.can_resize_vertical());
+  EXPECT_TRUE(interaction_info.is_focusable());
+  EXPECT_TRUE(interaction_info.is_focused());
+  EXPECT_TRUE(interaction_info.is_draggable());
+  EXPECT_TRUE(interaction_info.is_clickable());
+}
+
 TEST(PageContentProtoUtilTest, ConvertAnnotatedRoles) {
   auto root_content = CreatePageContent();
   auto container_node =

@@ -14,8 +14,8 @@
 #include "base/test/bind.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/boca/babelorca/caption_bubble_settings_impl.h"
 #include "chromeos/ash/components/boca/babelorca/caption_controller.h"
-#include "chromeos/ash/components/boca/babelorca/consumer_caption_bubble_settings.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_caption_controller_delegate.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_request_data_provider.h"
@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/boca/babelorca/pref_names.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_streaming_client.h"
+#include "chromeos/ash/components/boca/babelorca/testing_utils.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/services/boca/babelorca/mojom/tachyon_parsing_service.mojom.h"
 #include "components/live_caption/caption_bubble_context.h"
@@ -47,44 +48,11 @@ const std::string kApplicationLocale = "en-US";
 const GaiaId::Literal kGaiaId("gaia-id");
 const std::string kSessionId = "session_id";
 const std::string kEmail = "test@school.edu";
-const std::string kTranslationTargetLocale = "de-DE";
-
-const std::string kCaptionsTextSize = "20%";
-const std::string kCaptionsTextFont = "aerial";
-const std::string kCaptionsTextColor = "255,99,71";
-const std::string kCaptionsBackgroundColor = "90,255,50";
-const std::string kCaptionsTextShadow = "10px";
-
-constexpr int kCaptionsTextOpacity = 50;
-constexpr int kCaptionsBackgroundOpacity = 30;
-
-void RegisterPrefs(TestingPrefServiceSimple* pref_service) {
-  pref_service->registry()->RegisterStringPref(
-      ::prefs::kAccessibilityCaptionsTextSize, kCaptionsTextSize);
-  pref_service->registry()->RegisterStringPref(
-      ::prefs::kAccessibilityCaptionsTextFont, kCaptionsTextFont);
-  pref_service->registry()->RegisterStringPref(
-      ::prefs::kAccessibilityCaptionsTextColor, kCaptionsTextColor);
-  pref_service->registry()->RegisterIntegerPref(
-      ::prefs::kAccessibilityCaptionsTextOpacity, kCaptionsTextOpacity);
-  pref_service->registry()->RegisterStringPref(
-      ::prefs::kAccessibilityCaptionsBackgroundColor, kCaptionsBackgroundColor);
-  pref_service->registry()->RegisterStringPref(
-      ::prefs::kAccessibilityCaptionsTextShadow, kCaptionsTextShadow);
-  pref_service->registry()->RegisterIntegerPref(
-      ::prefs::kAccessibilityCaptionsBackgroundOpacity,
-      kCaptionsBackgroundOpacity);
-  pref_service->registry()->RegisterStringPref(
-      ::prefs::kUserMicrophoneCaptionLanguageCode, kApplicationLocale);
-  pref_service->registry()->RegisterStringPref(
-      ash::babelorca::prefs::kTranslateTargetLanguageCode,
-      kTranslationTargetLocale);
-}
 
 class BabelOrcaConsumerTest : public testing::Test {
  protected:
   void SetUp() override {
-    RegisterPrefs(&pref_service_);
+    RegisterPrefsForTesting(&pref_service_);
     account_info_ = identity_test_env_.MakeAccountAvailable("test@school.edu");
     identity_test_env_.SetPrimaryAccount(account_info_.email,
                                          signin::ConsentLevel::kSync);
@@ -96,9 +64,8 @@ class BabelOrcaConsumerTest : public testing::Test {
     auto caption_controller_delegate =
         std::make_unique<FakeCaptionControllerDelegate>();
     caption_controller_delegate_ = caption_controller_delegate.get();
-    auto caption_bubble_settings =
-        std::make_unique<ConsumerCaptionBubbleSettings>(&pref_service_,
-                                                        kApplicationLocale);
+    auto caption_bubble_settings = std::make_unique<CaptionBubbleSettingsImpl>(
+        &pref_service_, kApplicationLocale);
     caption_bubble_settings_ = caption_bubble_settings.get();
     auto caption_controller = std::make_unique<CaptionController>(
         /*caption_bubble_context=*/
@@ -161,7 +128,7 @@ class BabelOrcaConsumerTest : public testing::Test {
   TachyonStreamingClient::OnMessageCallback on_message_cb_;
   std::unique_ptr<BabelOrcaConsumer> consumer_;
   base::test::RepeatingTestFuture<void> streaming_client_waiter_;
-  raw_ptr<ConsumerCaptionBubbleSettings> caption_bubble_settings_;
+  raw_ptr<CaptionBubbleSettingsImpl> caption_bubble_settings_;
   raw_ptr<FakeCaptionControllerDelegate> caption_controller_delegate_;
   base::WeakPtr<FakeBabelOrcaTranslationDispatcher>
       fake_translation_dispatcher_;

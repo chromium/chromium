@@ -246,7 +246,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1786487376942610288">Skiptu á milli hámarksstærð eða núverandi stærðar af mynd í mynd-glugganum</translation>
 <translation id="1787955149152357925">Slökkt</translation>
 <translation id="1796561540704213354">Vefsvæði að meðtöldum síðum sem þú hefur heimsótt og opnar síður</translation>
-<translation id="179842970735685253">Þjónustuskilmálar Google</translation>
 <translation id="1805407494113167797">Ekki tókst að spila einbeitingarhljóð</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> sendistyrkur, stjórnað af kerfisstjóra</translation>
 <translation id="1815039896005206046">„Þumall niður“ myndi senda inn þau viðbrögð að þér líki ekki við hópinn sem stungið er upp á</translation>
@@ -1242,7 +1241,6 @@ Eitt tæki er tengt.</translation>
 <translation id="5121628974188116412">Fara neðst á síðu</translation>
 <translation id="5122517996953421795">Forskoðun <ph name="DESK_NAME" />. Óvirkt skrifborð.</translation>
 <translation id="5136175204352732067">Annað lyklaborð tengt</translation>
-<translation id="5140105873789567560">Þú verður að hafa náð 18 ára aldri til að mega nota „Hjálpaðu mér að skrifa“ og „Hjálpaðu mér að lesa“.</translation>
 <translation id="5144005092084035179">Skipta um hljóðinntak?</translation>
 <translation id="5147567197700016471">Ólæst</translation>
 <translation id="5150070631291639005">Persónuverndarstillingar</translation>
@@ -1397,7 +1395,6 @@ Engin tæki eru tengd.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Ekki var hægt að staðfesta auðkenni þitt. Reyndu aftur.</translation>
 <translation id="5632485077360054581">Fá leiðbeiningar</translation>
-<translation id="5633826232582408011">Þegar þú kveikir á „Hjálpaðu mér að skrifa“ og „Hjálpaðu mér að lesa“ er textinn, efni skjalsins og slóð vefsíðunnar send til gervigreindarþjóna Google í því skyni að búa til tillögur að skrifum, samantektir, svara spurningum og bæta vöruna í samræmi við <ph name="LINK_TO_SERVICE_TERMS" />. Ekki slá inn persónulegar upplýsingar, viðkvæmar upplýsingar eða trúnaðarupplýsingar.</translation>
 <translation id="5648021990716966815">Hljóðnematengi</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> vill ná athygli þinni.</translation>
 <translation id="5662075790140998213">Skrifborð 10</translation>
@@ -2024,7 +2021,6 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7749443890790263709">Hámarksfjölda skjáborða náð.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Sýna allt</translation>
-<translation id="7759183637555564029">Þú getur slökkt á „Hjálpaðu mér að skrifa“ og „Hjálpaðu mér að lesa“ hvenær sem er í stillingunum. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Textaupplestur</translation>
 <translation id="7769299611924763557">GIF verður tilbúið innan skamms</translation>
 <translation id="7773536009433685931">Kveikja á WiFi í staðinn</translation>
@@ -2034,7 +2030,6 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7781829728241885113">Í gær</translation>
 <translation id="7787212146956232129">Inntaks- og úttakstæki eru stillt. Farðu í stillingar til að breyta.</translation>
 <translation id="7792590255364786396">Sýnilegt</translation>
-<translation id="7793389284006812057">Skapandi gervigreind er á tilraunastigi, á fyrstu stigum þróunar og stendur ekki öllum til boða eins og er.</translation>
 <translation id="7796735576426975947">Ný tilkynning falin</translation>
 <translation id="7798302898096527229">Ýttu á leitar- eða Shift-lykil til að hætta við.</translation>
 <translation id="780301667611848630">Nei, takk</translation>

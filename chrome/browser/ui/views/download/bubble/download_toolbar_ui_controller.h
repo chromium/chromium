@@ -134,7 +134,7 @@ class DownloadToolbarUIController
   class BubbleCloser : public ui::EventObserver {
    public:
     explicit BubbleCloser(views::Button* toolbar_button,
-                          base::OnceClosure press_callback);
+                          base::WeakPtr<DownloadDisplay> download_display);
 
     BubbleCloser(const BubbleCloser& other) = delete;
     BubbleCloser& operator=(const BubbleCloser& other) = delete;
@@ -145,8 +145,7 @@ class DownloadToolbarUIController
     void OnEvent(const ui::Event& event) override;
 
    private:
-    raw_ptr<views::Button> toolbar_button_ = nullptr;
-    base::OnceClosure callback_;
+    base::WeakPtr<DownloadDisplay> download_display_;
     std::unique_ptr<views::EventMonitor> event_monitor_;
   };
 

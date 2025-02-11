@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
@@ -629,6 +630,14 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
     std::string profile_dm_token = GetProfileDMTokenString();
     if (!profile_dm_token.empty()) {
       request->set_profile_dm_token(std::move(profile_dm_token));
+    }
+
+    // The IP addresses are only needed for enterprise requests.
+    if (base::FeatureList::IsEnabled(safe_browsing::kLocalIpAddressInEvents)) {
+      for (const auto& ip_address :
+           enterprise_connectors::GetLocalIpAddresses()) {
+        request->add_local_ips(ip_address);
+      }
     }
   }
 

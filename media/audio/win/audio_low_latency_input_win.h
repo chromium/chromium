@@ -168,18 +168,6 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // Returns whether raw audio processing is supported or not for the selected
   // capture device.
   bool RawProcessingSupported();
-  // The Windows.Media.Effects.AudioEffectsManager UWP API contains a method
-  // called CreateAudioCaptureEffectsManagerWithMode() which is needed to
-  // enumerate active audio effects on the capture stream. This UWP method
-  // needs a device ID which differs from what can be derived from the default
-  // Win32 API in CoreAudio. The GetUWPDeviceId() method builds up the required
-  // device ID that the audio effects manager needs. Note that it is also
-  // possible to get the ID directly from the Windows.Devices.Enumeration UWP
-  // API but that is rather complex and requires use of asynchronous methods.
-  std::string GetUWPDeviceId();
-  // For the selected |uwp_device_id|, generate two lists of enabled audio
-  // effects and store them in |default_effect_types_| and |raw_effect_types_|.
-  HRESULT GetAudioCaptureEffects(const std::string& uwp_device_id);
   // Returns the native number of channels that the audio engine uses for its
   // internal processing of shared-mode streams.
   HRESULT GetAudioEngineNumChannels(WORD* channels);
@@ -195,6 +183,10 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   bool DesiredFormatIsSupported(HRESULT* hr);
   void SetupConverterAndStoreFormatInfo();
   HRESULT InitializeAudioEngine();
+  // Checks an echo cancellation effect is present and active on the already
+  // initialized input device.
+  HRESULT GetAcousticEchoCancellationEffectStatus(bool& aec_effect_is_present,
+                                                  bool& aec_effect_is_on);
   void ReportOpenResult(HRESULT hr);
   // Reports stats for format related audio client initialization
   // (IAudioClient::Initialize) errors, that is if |hr| is an error related to
@@ -349,14 +341,6 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // Also added to a UMS histogram.
   bool raw_processing_supported_ = false;
 
-  // List of supported and active capture effects for the selected device in
-  // default (normal) audio processing mode.
-  std::vector<ABI::Windows::Media::Effects::AudioEffectType>
-      default_effect_types_;
-  // List of supported and active capture effects for the selected device in
-  // raw (minimal) audio processing mode. Will be empty in most cases.
-  std::vector<ABI::Windows::Media::Effects::AudioEffectType> raw_effect_types_;
-
   // Set to true if the absolute difference between a QPC timestamp converted
   // into a TimeTick value and a default base::TimeTicks::Now() is larger than
   // 500 msec. A true return value should trigger usage of "fake" audio
@@ -366,6 +350,10 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // Controls whether an attempt to enable native echo cancellation is done or
   // not. Only supported for non-loopback devices on Windows 24H2 and later.
   bool use_echo_cancellation_ = false;
+
+  // Set to true if an attempt to enable the echo cancellation effect was
+  // requested and the initialized input device also supports the effect.
+  bool echo_cancellation_is_active_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_POPUP_CONTROLLER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_POPUP_CONTROLLER_DELEGATE_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 class AutocompleteResult;
 @class OmniboxPopupController;
@@ -25,6 +25,18 @@ class AutocompleteResult;
 - (void)popupController:(OmniboxPopupController*)popupController
          didSortResults:(const AutocompleteResult&)results;
 
+/// Notifies the delegate of text alignment change.
+- (void)popupController:(OmniboxPopupController*)popupController
+    didUpdateTextAlignment:(NSTextAlignment)alignment;
+
+/// Notifies the delegate of semantic content attribute change
+- (void)popupController:(OmniboxPopupController*)popupController
+    didUpdateSemanticContentAttribute:
+        (UISemanticContentAttribute)semanticContentAttribute;
+
+/// Notifies the delegate of thumbnail update.
+- (void)popupController:(OmniboxPopupController*)popupController
+    didUpdateHasThumbnail:(BOOL)hasThumbnail;
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_POPUP_CONTROLLER_DELEGATE_H_

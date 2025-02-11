@@ -29,6 +29,7 @@
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/search_engines/util.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -3475,4 +3476,249 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
   EXPECT_EQ(1u, processor()->change_list_size());
   EXPECT_EQ(processor()->change_for_guid("accountguid").change_type(),
             syncer::SyncChange::ACTION_DELETE);
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       ShouldDualWriteUponResetTemplateURLIfLocalOnly) {
+  // Local only search engine.
+  TemplateURL* turl = model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"key", /*url=*/"http://url.com", /*guid=*/"guid"));
+
+  // Start syncing.
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES,
+                                    syncer::SyncDataList{}, PassProcessor());
+  ASSERT_EQ(0u, processor()->change_list_size());
+
+  model()->ResetTemplateURL(turl, u"newtitle", u"newkey", "http://newurl.com");
+
+  // This should update and write the new value to both local and account.
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"key"));
+  EXPECT_EQ(turl, model()->GetTemplateURLForKeyword(u"newkey"));
+  EXPECT_EQ(turl->GetLocalData(), turl->GetAccountData());
+  // Update should be committed.
+  EXPECT_EQ(1u, processor()->change_list_size());
+  EXPECT_EQ(processor()->change_for_guid("guid").change_type(),
+            syncer::SyncChange::ACTION_UPDATE);
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       ShouldDualWriteUponResetTemplateURLIfAccountOnly) {
+  // Start syncing.
+  syncer::SyncDataList initial_data;
+  // Account-only search engine.
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"key", /*url=*/"http://url.com",
+          /*guid=*/"guid")
+          ->data()));
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES, initial_data,
+                                    PassProcessor());
+
+  TemplateURL* turl = model()->GetTemplateURLForKeyword(u"key");
+  model()->ResetTemplateURL(turl, u"newtitle", u"newkey", "http://newurl.com");
+
+  // This should update and write the new value to both local and account.
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"key"));
+  EXPECT_EQ(turl, model()->GetTemplateURLForKeyword(u"newkey"));
+  EXPECT_EQ(turl->GetLocalData(), turl->GetAccountData());
+  // Update should be committed.
+  EXPECT_EQ(1u, processor()->change_list_size());
+  EXPECT_EQ(processor()->change_for_guid("guid").change_type(),
+            syncer::SyncChange::ACTION_UPDATE);
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       ShouldDualWriteUponResetTemplateURL) {
+  // Start syncing.
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES,
+                                    syncer::SyncDataList{}, PassProcessor());
+
+  // Add a search engine to local and account.
+  TemplateURL* turl = model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"key", /*url=*/"http://url.com", /*guid=*/"guid"));
+
+  model()->ResetTemplateURL(turl, u"newtitle", u"newkey", "http://newurl.com");
+
+  // This should update and write the new value to both local and account.
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"key"));
+  EXPECT_EQ(turl, model()->GetTemplateURLForKeyword(u"newkey"));
+  EXPECT_EQ(turl->GetLocalData(), turl->GetAccountData());
+  // Update should be committed.
+  EXPECT_EQ(processor()->change_for_guid("guid").change_type(),
+            syncer::SyncChange::ACTION_UPDATE);
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       ShouldDualWriteUponSetIsActiveTemplateURL) {
+  TemplateURL* turl = model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"key", /*url=*/"http://url.com", /*guid=*/"guid"));
+
+  // Start syncing.
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES,
+                                    syncer::SyncDataList{}, PassProcessor());
+
+  ASSERT_EQ(turl->is_active(), TemplateURLData::ActiveStatus::kUnspecified);
+
+  model()->SetIsActiveTemplateURL(turl, /*is_active=*/true);
+  // This should update and write the activated turl to both local and account.
+  ASSERT_EQ(turl->is_active(), TemplateURLData::ActiveStatus::kTrue);
+  EXPECT_EQ(turl->GetLocalData(), turl->GetAccountData());
+  // Update should be committed.
+  EXPECT_EQ(1u, processor()->change_list_size());
+  EXPECT_EQ(processor()->change_for_guid("guid").change_type(),
+            syncer::SyncChange::ACTION_UPDATE);
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       ShouldNotDualWriteUponUpdateProviderFavicons) {
+  // Local-only search engine.
+  TemplateURL* turl = model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"key", /*url=*/"http://url.com", /*guid=*/"guid"));
+
+  // Start syncing.
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES,
+                                    syncer::SyncDataList{}, PassProcessor());
+
+  model()->UpdateProviderFavicons(
+      GURL("https://enterprise_search.com/q=searchTerm"),
+      GURL("https://enterprise_search.com/newfavicon.ico"));
+
+  // This should not write the new value to account.
+  EXPECT_FALSE(turl->GetAccountData());
+  EXPECT_EQ(0u, processor()->change_list_size());
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       ShouldNotDualWriteUponProcessSyncUpdateChanges) {
+  // Add local template url.
+  model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"localkey", /*url=*/"http://localurl.com", /*guid=*/"guid",
+      /*last_modified=*/base::Time::FromTimeT(10)));
+
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"accountkey", /*url=*/"http://accounturl.com",
+          /*guid=*/"guid",
+          /*last_modified=*/base::Time::FromTimeT(100))
+          ->data()));
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES, initial_data,
+                                    PassProcessor());
+
+  const TemplateURL* turl = model()->GetTemplateURLForGUID("guid");
+  ASSERT_TRUE(turl);
+  EXPECT_EQ(u"accountkey", turl->keyword());
+  EXPECT_EQ("http://accounturl.com", turl->url());
+
+  syncer::SyncChangeList changes;
+  changes.push_back(CreateTestSyncChange(
+      syncer::SyncChange::ACTION_UPDATE,
+      CreateTestTemplateURL(
+          /*keyword=*/u"newkey", /*url=*/"http://newurl.com", /*guid=*/"guid",
+          /*last_modified=*/base::Time::FromTimeT(100))));
+  ASSERT_FALSE(model()->ProcessSyncChanges(FROM_HERE, changes));
+
+  // This should not write the updated account value to local.
+  EXPECT_NE(turl->GetAccountData(), turl->GetLocalData());
+  EXPECT_EQ(turl->GetLocalData()->keyword(), u"localkey");
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       ShouldNotDualWriteUponStopSyncingWithLocalAndAccountValue) {
+  // Add local template url.
+  const TemplateURL* turl = model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"localkey", /*url=*/"http://localurl.com", /*guid=*/"guid",
+      /*last_modified=*/base::Time::FromTimeT(10)));
+
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"accountkey", /*url=*/"http://accounturl.com",
+          /*guid=*/"guid",
+          /*last_modified=*/base::Time::FromTimeT(100))
+          ->data()));
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES, initial_data,
+                                    PassProcessor());
+
+  ASSERT_FALSE(model()->GetTemplateURLForKeyword(u"localkey"));
+  ASSERT_EQ(turl, model()->GetTemplateURLForKeyword(u"accountkey"));
+  ASSERT_NE(turl->GetAccountData(), turl->GetLocalData());
+
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  // This should not write the local and the account value to the other store.
+  EXPECT_FALSE(turl->GetAccountData());
+  EXPECT_EQ(turl, model()->GetTemplateURLForKeyword(u"localkey"));
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       ShouldNotDualWriteUponUpdateTemplateURLVisitTime) {
+  TemplateURL* turl1 = model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"localkey1", /*url=*/"http://localurl1.com",
+      /*guid=*/"guid1",
+      /*last_modified=*/base::Time::FromTimeT(100)));
+  TemplateURL* turl2 = model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"localkey2", /*url=*/"http://localurl2.com",
+      /*guid=*/"guid2", /*last_modified=*/base::Time::FromTimeT(10)));
+
+  // Start syncing.
+  syncer::SyncDataList initial_data;
+  // Local turl1 has the more recent last_modified time and thus is the active
+  // value.
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"accountkey1", /*url=*/"http://accounturl1.com",
+          /*guid=*/"guid1", /*last_modified=*/base::Time::FromTimeT(10))
+          ->data()));
+  // Account turl2 has the more recent last_modified time and thus is the active
+  // value.
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"accountkey2", /*url=*/"http://accounturl1.com",
+          /*guid=*/"guid2", /*last_modified=*/base::Time::FromTimeT(100))
+          ->data()));
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES, initial_data,
+                                    PassProcessor());
+  ASSERT_EQ(0u, processor()->change_list_size());
+
+  const base::Time time_now = base::Time::Now();
+
+  // Update last_visited time for `turl1`. This should update the local value.
+  model()->UpdateTemplateURLVisitTime(turl1);
+  ASSERT_TRUE(turl1->GetLocalData());
+  ASSERT_TRUE(turl1->GetAccountData());
+  EXPECT_NE(turl1->GetLocalData(), turl1->GetAccountData());
+  // Local last_visited has been updated whereas the account last_visited stays
+  // null.
+  EXPECT_GT(turl1->GetLocalData()->last_visited, time_now);
+  EXPECT_EQ(turl1->GetAccountData()->last_visited, base::Time());
+  // No change is committed since only the local data was updated.
+  EXPECT_EQ(0u, processor()->change_list_size());
+
+  // Update last_visited time for `turl2`. This should update only the account
+  // value.
+  model()->UpdateTemplateURLVisitTime(turl2);
+  ASSERT_TRUE(turl2->GetLocalData());
+  ASSERT_TRUE(turl2->GetAccountData());
+  EXPECT_NE(turl2->GetLocalData(), turl2->GetAccountData());
+  // Account last_visited is updated whereas the local last_visited stays null.
+  EXPECT_EQ(turl2->GetLocalData()->last_visited, base::Time());
+  EXPECT_GT(turl2->GetAccountData()->last_visited, time_now);
+  EXPECT_EQ(1u, processor()->change_list_size());
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       ShouldNotDualWriteUponSetUserSelectedDefaultSearchProvider) {
+  TemplateURL* turl = model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"key", /*url=*/"http://url.com", /*guid=*/"guid"));
+  ASSERT_NE(model()->GetDefaultSearchProvider(), turl);
+
+  // Start syncing.
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES,
+                                    syncer::SyncDataList{}, PassProcessor());
+
+  model()->SetUserSelectedDefaultSearchProvider(turl);
+  // Default search engines are not taken care of by sync anymore.
+  ASSERT_EQ(model()->GetDefaultSearchProvider(), turl);
+  EXPECT_FALSE(turl->GetAccountData());
+  EXPECT_EQ(0u, processor()->change_list_size());
 }

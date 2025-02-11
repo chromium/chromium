@@ -9,8 +9,11 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "ios/chrome/browser/shared/model/application_context/application_context.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 
 namespace base {
 class CommandLine;
@@ -119,6 +122,11 @@ class ApplicationContextImpl : public ApplicationContext {
   // Create the gcm driver.
   void CreateGCMDriver();
 
+  // Requests a network::mojom::ProxyResolvingSocketFactory.
+  void RequestProxyResolvingSocketFactory(
+      mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
+          receiver);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Used internally for tracking whether the call to StartTearDown() has
@@ -180,6 +188,9 @@ class ApplicationContextImpl : public ApplicationContext {
   scoped_refptr<optimization_guide::OnDeviceModelServiceController>
       on_device_model_service_controller_;
 #endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
+
+  // Must be the last member variable.
+  base::WeakPtrFactory<ApplicationContextImpl> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_APPLICATION_CONTEXT_MODEL_APPLICATION_CONTEXT_IMPL_H_

@@ -272,7 +272,7 @@ void PasswordBubbleViewBase::SetBubbleHeader(int light_image_id,
   auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
       *bundle.GetImageSkiaNamed(light_image_id),
       *bundle.GetImageSkiaNamed(dark_image_id),
-      base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+      base::BindRepeating(&views::BubbleDialogDelegate::background_color,
                           base::Unretained(this)));
 
   gfx::Size preferred_size = image_view->GetPreferredSize();

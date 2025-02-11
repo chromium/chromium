@@ -12329,6 +12329,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_THIS_TAB" desc="A description of the user changing the current tab for the recent activity dialog.">
           <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> changed this tab
         </message>
+        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_NO_UPDATES" desc="A description of the user changing the current tab for the recent activity dialog.">
+          No updates to this group
+        </message>
       <!-- /Recent Activity -->
 
       <!-- Page Action -->

@@ -304,6 +304,9 @@ class GraphBuilderCoreml {
   AddOperationForCumulativeSum(const mojom::CumulativeSum& operation,
                                CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddOperationForDequantizeLinear(const mojom::DequantizeLinear& operation,
+                                  CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddOperationForElementwiseBinary(
       std::variant<uint64_t, CoreML::Specification::MILSpec::Value> lhs_operand,
       std::variant<uint64_t, CoreML::Specification::MILSpec::Value> rhs_operand,
@@ -587,6 +590,7 @@ class GraphBuilderCoreml {
       OperandDataType data_type,
       base::span<const uint32_t> dimensions,
       base::span<const std::pair<size_t, size_t>> new_order);
+
   // A reference to the WebNN compute graph that `this` instance is
   // converting to CoreML model. The creator of `this` must ensure the
   // GraphInfo reference passed into `CreateAndBuild()` is valid for as long

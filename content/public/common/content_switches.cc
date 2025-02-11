@@ -774,12 +774,6 @@ const char kUseFakeUIForFedCM[] = "use-fake-ui-for-fedcm";
 // with screen/tab capture.
 const char kUseFakeUIForMediaStream[]     = "use-fake-ui-for-media-stream";
 
-#if BUILDFLAG(IS_WIN)
-// This will replace the existing font manager with FontDataManager in the
-// renderer.
-const char kUseFontDataManager[] = "use-font-data-manager";
-#endif
-
 // Texture target for CHROMIUM_image backed video frame textures.
 const char kVideoImageTextureTarget[] = "video-image-texture-target";
 

@@ -93,6 +93,7 @@ const char kTargetUrlField[] = "url";
 const char kTargetFaviconUrlField[] = "faviconUrl";
 const char kTargetWebSocketDebuggerUrlField[] = "webSocketDebuggerUrl";
 const char kTargetDevtoolsFrontendUrlField[] = "devtoolsFrontendUrl";
+const char kMissingGitRevision[] = "@0000000000000000000000000000000000000000";
 
 const int32_t kSendBufferSizeForDevTools = 256 * 1024 * 1024;  // 256Mb
 const int32_t kReceiveBufferSizeForDevTools = 100 * 1024 * 1024;  // 100Mb
@@ -522,15 +523,16 @@ std::string DevToolsHttpHandler::GetFrontendURLInternal(
     const std::string& id,
     const std::string& host) {
   std::string frontend_url;
-  if (delegate_->HasBundledFrontendResources()) {
+  std::string git_revision = GetChromiumGitRevision();
+  if (git_revision == kMissingGitRevision &&
+      delegate_->HasBundledFrontendResources()) {
     frontend_url = "/devtools/inspector.html";
   } else {
     std::string type = agent_host->GetType();
     bool is_worker = type == DevToolsAgentHost::kTypeServiceWorker ||
                      type == DevToolsAgentHost::kTypeSharedWorker;
-    frontend_url =
-        base::StringPrintf(kRemoteUrlPattern, GetChromiumGitRevision().c_str(),
-                           is_worker ? "worker_app" : "inspector");
+    frontend_url = base::StringPrintf(kRemoteUrlPattern, git_revision.c_str(),
+                                      is_worker ? "worker_app" : "inspector");
   }
   return base::StringPrintf("%s?ws=%s%s%s", frontend_url.c_str(), host.c_str(),
                             kPageUrlPrefix, id.c_str());

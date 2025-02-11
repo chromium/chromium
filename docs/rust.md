@@ -114,6 +114,10 @@ might exist if the "foo" crate was patched with a couple of changes:
 //third_party/rust/chromium_crates_io/patches/foo/patches/0002-Other-changes.diff
 ```
 
+Patches are applied with `-p6 --directory
+third_party/rust/chromium_crates_io/vendor/<crate>-<version>`, effectively
+ignoring the version numbers in the patch files.
+
 The recommended procedure to create such patches is:
 
 1. Commit the plain new version of the crate to your local git branch

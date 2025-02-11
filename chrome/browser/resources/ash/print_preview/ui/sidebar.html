@@ -69,7 +69,10 @@
   </print-preview-layout-settings>
   <print-preview-color-settings settings="[[settings]]"
       disabled="[[controlsDisabled_]]"
-      hidden$="[[!settings.color.available]]" class="settings-section">
+      hidden$="[[hideSetting_(
+          settings.color.available,
+          destination.allowedManagedPrintOptionsApplied.color)]]"
+      class="settings-section">
   </print-preview-color-settings>
   <print-preview-more-settings
       settings-expanded-by-user="{{settingsExpandedByUser_}}"
@@ -82,13 +85,18 @@
     <print-preview-media-size-settings settings="[[settings]]"
         capability="[[destination.capabilities.printer.media_size]]"
         disabled="[[controlsDisabled_]]"
-        hidden$="[[!settings.mediaSize.available]]"
+        hidden$="[[hideSetting_(
+            settings.mediaSize.available,
+            destination.allowedManagedPrintOptionsApplied.mediaSize)]]"
         class="settings-section">
     </print-preview-media-size-settings>
     <print-preview-media-type-settings settings="[[settings]]" state="[[state]]"
         capability="[[destination.capabilities.printer.media_type]]"
         disabled="[[controlsDisabled_]]"
-        hidden$="[[!settings.mediaType.available]]" class="settings-section">
+        hidden$="[[hideSetting_(
+            settings.mediaType.available,
+            destination.allowedManagedPrintOptionsApplied.mediaType)]]"
+        class="settings-section">
     </print-preview-media-type-settings>
     <print-preview-pages-per-sheet-settings settings="[[settings]]"
         disabled="[[controlsDisabled_]]"
@@ -103,7 +111,10 @@
     <print-preview-dpi-settings settings="[[settings]]"
         capability="[[destination.capabilities.printer.dpi]]"
         disabled="[[controlsDisabled_]]"
-        hidden$="[[!settings.dpi.available]]" class="settings-section">
+        hidden$="[[hideSetting_(
+            settings.dpi.available,
+            destination.allowedManagedPrintOptionsApplied.dpi)]]"
+        class="settings-section">
     </print-preview-dpi-settings>
     <print-preview-scaling-settings settings="[[settings]]"
         disabled="[[controlsDisabled_]]" is-pdf="[[isPdf]]"
@@ -112,7 +123,11 @@
     </print-preview-scaling-settings>
     <print-preview-duplex-settings settings="[[settings]]"
         disabled="[[controlsDisabled_]]" dark="[[inDarkMode]]"
-        hidden$="[[!settings.duplex.available]]"
+        allowed-values-applied="[[
+            destination.allowedManagedPrintOptionsApplied.duplex]]"
+        hidden$="[[hideSetting_(
+            settings.duplex.available,
+            destination.allowedManagedPrintOptionsApplied.duplex)]]"
         class="settings-section">
     </print-preview-duplex-settings>
     <print-preview-other-options-settings settings="[[settings]]"

@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
+#include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"
@@ -17,6 +18,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -236,6 +238,83 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
           "await blob.text();}"
           "test();",
           blob_url)));
+}
+
+class BlobUrlDevToolsIssueTest : public ContentBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    SetupCrossSiteRedirector(embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void WaitForIssueAndCheckUrl(const std::string& url,
+                               TestDevToolsProtocolClient* client) {
+    auto is_blob_url_issue = [](const base::Value::Dict& params) {
+      const std::string* issue_code =
+          params.FindStringByDottedPath("issue.code");
+      return issue_code && *issue_code == "PartitioningBlobURLIssue";
+    };
+
+    // Wait for notification of a Partitioning Blob URL Issue.
+    base::Value::Dict params = client->WaitForMatchingNotification(
+        "Audits.issueAdded", base::BindRepeating(is_blob_url_issue));
+
+    EXPECT_EQ(*params.FindStringByDottedPath("issue.code"),
+              "PartitioningBlobURLIssue");
+
+    base::Value::Dict* partitioning_blob_url_issue_details =
+        params.FindDictByDottedPath(
+            "issue.details.partitioningBlobURLIssueDetails");
+    ASSERT_TRUE(partitioning_blob_url_issue_details);
+
+    // Verify the reported blob_url match the expected url.
+    std::string* blob_url_ptr =
+        partitioning_blob_url_issue_details->FindString("url");
+    EXPECT_EQ(*blob_url_ptr, url);
+
+    // Clear existing notifications so subsequent calls don't fail by checking
+    // `url` against old notifications.
+    client->ClearNotifications();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(BlobUrlDevToolsIssueTest, PartitioningBlobUrlIssue) {
+  GURL main_url = embedded_test_server()->GetURL(
+      "c.com", "/cross_site_iframe_factory.html?c(b(c))");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHost* rfh_c = shell()->web_contents()->GetPrimaryMainFrame();
+
+  std::string blob_url_string =
+      EvalJs(
+          rfh_c,
+          "const blob_url = URL.createObjectURL(new "
+          "Blob(['<!doctype html><body>potato</body>'], {type: 'text/html'}));"
+          "blob_url;")
+          .ExtractString();
+  GURL blob_url(blob_url_string);
+
+  RenderFrameHost* rfh_b = ChildFrameAt(rfh_c, 0);
+  RenderFrameHost* rfh_c_2 = ChildFrameAt(rfh_b, 0);
+
+  std::unique_ptr<content::TestDevToolsProtocolClient> client =
+      std::make_unique<content::TestDevToolsProtocolClient>();
+  client->AttachToFrameTreeHost(rfh_c_2);
+  client->SendCommandSync("Audits.enable");
+  client->ClearNotifications();
+
+  EXPECT_TRUE(ExecJs(
+      rfh_c_2,
+      JsReplace(
+          "async function test() {"
+          "const blob = await fetch($1).then(response => response.blob());"
+          "await blob.text();}"
+          "test();",
+          blob_url)));
+  WaitForIssueAndCheckUrl(blob_url_string, client.get());
+  client->DetachProtocolClient();
 }
 
 class BlobURLBrowserTestP : public base::test::WithFeatureOverride,

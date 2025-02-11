@@ -357,7 +357,7 @@ bool IsTabstripComboButtonEnabled() {
 }
 
 const base::FeatureParam<bool> kTabstripComboButtonHasBackground{
-    &kTabstripComboButton, "has_background", true};
+    &kTabstripComboButton, "has_background", false};
 
 const base::FeatureParam<bool> kTabstripComboButtonHasReverseButtonOrder{
     &kTabstripComboButton, "reverse_button_order", false};
@@ -825,6 +825,14 @@ constexpr base::FeatureParam<int> kLinuxLowMemoryMonitorCriticalLevel{
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 BASE_FEATURE(kListWebAppsSwitch,
              "ListWebAppsSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+#if BUILDFLAG(IS_MAC)
+// If enabled, emails links directly instead of going through the macOS share
+// extension system. Speculative fix for https://crbug.com/356643975.
+BASE_FEATURE(kMacDirectEmailShare,
+             "DirectEmailShare",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 

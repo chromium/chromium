@@ -29,7 +29,8 @@ class PassageEmbedderModelObserver
   // and never nullptr.
   PassageEmbedderModelObserver(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
-      PassageEmbeddingsServiceController* service_controller);
+      PassageEmbeddingsServiceController* service_controller,
+      bool experimental);
   ~PassageEmbedderModelObserver() override;
 
  private:
@@ -46,6 +47,9 @@ class PassageEmbedderModelObserver
   // The controller used to interact with the PassageEmbeddingsService.
   // It is a singleton and guaranteed not to be nullptr and to outlive `this`.
   raw_ptr<PassageEmbeddingsServiceController> service_controller_;
+
+  // The model target being observed; may be experimental.
+  optimization_guide::proto::OptimizationTarget target_;
 };
 
 }  // namespace passage_embeddings

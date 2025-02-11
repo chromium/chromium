@@ -5638,7 +5638,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4946998421534856407">клавиша „стартов панел“ + стрелката за нагоре</translation>
 <translation id="4947376546135294974">Данни от сайта, който посещавате</translation>
 <translation id="4950100687509657457">Създаване на потребителски профил</translation>
-<translation id="4950360215042327246">[Заместващ низ]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{файл}other{# файла}}</translation>
 <translation id="495170559598752135">Действия</translation>
 <translation id="4951966678293618079">Без запазване на паролите за този сайт</translation>
@@ -7996,7 +7995,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6679947539429331601">Скриване за 12 часа</translation>
 <translation id="6680442031740878064">Свободно място: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Скорост</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [Заместващ низ]</translation>
 <translation id="6683022854667115063">Слушалки</translation>
 <translation id="6683087162435654533">Възстановяване на всички раздели</translation>
 <translation id="6683433919380522900">Разрешението е „<ph name="PERMISSION_STATE" />“</translation>
@@ -9215,7 +9213,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7561196759112975576">Винаги</translation>
 <translation id="7561759921596375678">Включване на звука</translation>
 <translation id="7561982940498449837">Затваряне на менюто</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">Отваряне на прозореца на браузъра</translation>
 <translation id="7564847347806291057">Прекратяване на процеса</translation>
 <translation id="756503097602602175">Можете да управлявате профилите в Google, в които сте влезли, от <ph name="LINK_BEGIN" />настройките<ph name="LINK_END" />. Разрешенията, които сте предоставили на уебсайтове и приложения, може да важат за всички профили. Ако не искате сайтове или приложения да имат достъп до информацията в профила ви, можете да влезете в своя <ph name="DEVICE_TYPE" /> като гост или да сърфирате в мрежата в <ph name="LINK_2_BEGIN" />прозорец в режим „инкогнито“<ph name="LINK_2_END" />.</translation>

@@ -6,6 +6,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "url/gurl.h"
@@ -68,6 +69,21 @@ AutocompleteMatch CreateFeaturedEnterpriseSearch(std::u16string keyword) {
   match.associated_keyword = std::make_unique<AutocompleteMatch>(
       nullptr, 1000, false, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
   match.associated_keyword->keyword = keyword;
+  return match;
+}
+
+AutocompleteMatch CreateActionInSuggestMatch(
+    std::u16string description,
+    std::vector<omnibox::ActionInfo::ActionType> action_types) {
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::Type::SEARCH_SUGGEST_ENTITY;
+  match.description = description;
+  for (auto action_type : action_types) {
+    omnibox::ActionInfo action_info;
+    action_info.set_action_type(action_type);
+    match.actions.push_back(base::MakeRefCounted<OmniboxActionInSuggest>(
+        std::move(action_info), std::nullopt));
+  }
   return match;
 }
 

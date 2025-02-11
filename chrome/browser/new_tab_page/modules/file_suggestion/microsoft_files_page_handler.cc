@@ -26,7 +26,7 @@ const char kBaseIconUrl[] =
     "https://res.cdn.office.net/files/fabric-cdn-prod_20240925.001/assets/"
     "item-types/16/";
 
-const char kTrendingJustificationText[] = "Trending in your organization";
+const char kTrendingJustificationText[] = "Suggested for you";
 
 constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
     net::DefineNetworkTrafficAnnotation("microsoft_files_page_handler", R"(

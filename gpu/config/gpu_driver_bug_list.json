@@ -1315,7 +1315,7 @@
       "os": {
         "type": "android"
       },
-      "gl_vendor": "Intel.*",
+      "gl_vendor": ".*Intel.*",
       "features": [
         "msaa_is_slow"
       ]

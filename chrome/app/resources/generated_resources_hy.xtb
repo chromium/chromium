@@ -1365,6 +1365,7 @@
 <translation id="1936157145127842922">Ցուցադրել պանակում</translation>
 <translation id="1936931585862840749">Թվերով նշեք՝ քանի օրինակ է անհրաժեշտ տպել (1-ից <ph name="MAX_COPIES" />)։</translation>
 <translation id="1937774647013465102">Կոնտեյների կառուցվածքի <ph name="ARCHITECTURE_CONTAINER" /> տեսակը չի կարող ներմուծվել այս սարք, քանի որ այն <ph name="ARCHITECTURE_DEVICE" /> է: Կարող եք փորձել վերականգնել այս կոնտեյները մեկ այլ սարքում կամ բացել կոնտեյների պատկերը «Ֆայլեր» հավելվածում և օգտվել ֆայլերից:</translation>
+<translation id="1938116692670653897">Ընթացիկ գունային թեման</translation>
 <translation id="1938351510777341717">Արտաքին Command ստեղն</translation>
 <translation id="1940221956626514677">Հարմարեցնել գործիքագոտին</translation>
 <translation id="1940546824932169984">Միացված սարքեր</translation>
@@ -2131,6 +2132,10 @@
 <translation id="2462332841984057083">Steam-ն արդեն կարգավորվում է։ Սպասեք, մինչև կարգավորումն ավարտվի։</translation>
 <translation id="2462724976360937186">Հավաստագրման կենտրոնի բանալու ID</translation>
 <translation id="2462752602710430187">Ավելացվեց <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Առաջարկվող ֆայլերը կօգնեն ձեզ հեշտությամբ վերադառնալ ձեր վերջին գործողություններին Microsoft SharePoint-ում և OneDrive-ում։
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Դուք կարող եք կառավարել կարգավորումները քարտի ընտրացանկից կամ դիտել լրացուցիչ ընտրանքները «Կարգավորել Chrome-ը» բաժնում։</translation>
 <translation id="2464079411014186876">Պաղպաղակ</translation>
 <translation id="2467755475704469005">Սարքեր չեն հայտնաբերվել։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Միացեք ներդիրների խմբին, որում <ph name="OWNER_FIRST_NAME" />-ն է ու ևս <ph name="NUM_OTHER_MEMBERS" /> օգտատեր</translation>
@@ -3987,6 +3992,7 @@
 <translation id="3787434344076711519">Թարգմանությունն ընթացքի մեջ է</translation>
 <translation id="3788301286821743879">Չհաջողվեց գործարկել կրպակ-հավելվածը։</translation>
 <translation id="3788401245189148511">Կարող է՝</translation>
+<translation id="3789432704615470433">SharePoint և OneDrive ֆայլեր</translation>
 <translation id="3789841737615482174">Տեղադրել</translation>
 <translation id="3790417903123637354">Սխալ առաջացավ: Փորձեք ավելի ուշ։</translation>
 <translation id="379082410132524484">Քարտի գործողության ժամկետը սպառվել է</translation>
@@ -5620,7 +5626,6 @@
 <translation id="4946998421534856407">գործարկիչ + վերև սլաք</translation>
 <translation id="4947376546135294974">Տվյալներ կայքից, որն այցելում եք</translation>
 <translation id="4950100687509657457">Ստեղծել պրոֆիլ</translation>
-<translation id="4950360215042327246">[Տեղապահի տող]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ֆայլ}one{# ֆայլ}other{# ֆայլ}}</translation>
 <translation id="495170559598752135">Գործողություններ</translation>
 <translation id="4951966678293618079">Երբեք չպահել գաղտնաբառեր այս կայքի համար</translation>
@@ -6175,6 +6180,7 @@
 <translation id="5360150013186312835">Ցույց տալ գործիքագոտիում</translation>
 <translation id="5362741141255528695">Ընտրեք մասնավոր բանալու ֆայլը:</translation>
 <translation id="536278396489099088">ChromeOS համակարգի վիճակը և հաշվետվությունները</translation>
+<translation id="5362916924854054326">Ցույց չտալ SharePoint և OneDrive ֆայլերը</translation>
 <translation id="5363109466694494651">Powerwash և վերադարձ</translation>
 <translation id="5365881113273618889">Ձեր ընտրած պանակը պարունակում է վտանգավոր ֆայլեր: Ուզո՞ւմ եք <ph name="APP_NAME" /> հավելվածին այս պանակ մշտական մուտքի իրավունք տալ:</translation>
 <translation id="536638840841140142">Առանց լուսանցքի</translation>
@@ -7974,7 +7980,6 @@
 <translation id="6679947539429331601">Թաքցնել 12 ժամով</translation>
 <translation id="6680442031740878064">Հասանելի է <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Խոսքի արագությունը</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Տեղապահի տող]</translation>
 <translation id="6683022854667115063">Ականջակալներ</translation>
 <translation id="6683087162435654533">Վերականգնել բոլոր ներդիրները</translation>
 <translation id="6683433919380522900">Թույլտվության տեսակը՝ <ph name="PERMISSION_STATE" /></translation>
@@ -9192,7 +9197,6 @@
 <translation id="7561196759112975576">Միշտ</translation>
 <translation id="7561759921596375678">Միացնել ձայնը</translation>
 <translation id="7561982940498449837">Փակել ընտրացանկը</translation>
-<translation id="7563970324931922582">[տեղապահ տեքստ]</translation>
 <translation id="756445078718366910">Բացել դիտարկիչի պատուհան</translation>
 <translation id="7564847347806291057">Ավարտել գործընթացը</translation>
 <translation id="756503097602602175">Դուք կարող եք <ph name="LINK_BEGIN" />Կարգավորումներում<ph name="LINK_END" /> կառավարել Google հաշիվները, որոնցում մուտք եք գործել։ Կայքերին ու հավելվածներին տրված ձեր թույլտվությունները կարող են կիրառվել բոլոր հաշիվների համար։ Եթե չեք ուզում, որ ձեր հաշվի տվյալները հասանելի լինեն կայքերին ու հավելվածներին, կարող եք <ph name="DEVICE_TYPE" /> սարքում մուտք գործել որպես հյուր կամ կայքերը բացել <ph name="LINK_2_BEGIN" />ինկոգնիտո պատուհանում<ph name="LINK_2_END" />։</translation>
@@ -10752,6 +10756,10 @@
 <translation id="865936634714975126">Էջի բեռնման տեսակներն ընտրելու համար URL-ում ավելացրեք հարցման պարամետր։ Օրինակ՝ chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Կոնտակտները, որոնք օգտագործում են «<ph name="FEATURE_NAME" />» գործառույթը</translation>
 <translation id="8659609431223166673">Պատուհանը տեղափոխվեց ներքև</translation>
+<translation id="8660288500924118793">Օրացույցի պատուհանը կօգնի ձեզ հեշտությամբ անցնել ձեր հաջորդ միջոցառմանը Outlook Calendar-ում։
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Դուք կարող եք կառավարել կարգավորումները քարտի ընտրացանկից կամ դիտել լրացուցիչ ընտրանքները «Կարգավորել Chrome-ը» բաժնում։</translation>
 <translation id="8661290697478713397">Բացել հղումը ինկոգ&amp;նիտո պատուհանով</translation>
 <translation id="8662474268934425487">Մուտք գործեք <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Նոր <ph name="TYPE" /> ցանց</translation>

@@ -19,7 +19,6 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import org.chromium.base.ActivityState;
@@ -152,7 +151,6 @@ public class TabPersistentStoreTest {
         final MockTabPersistentStoreObserver mTabPersistentStoreObserver;
         private final TabModelOrderController mTabModelOrderController;
         // Required to ensure TabContentManager is not null.
-        @Mock // Annotation required to disable R8 optimization of the class.
         private final TabContentManager mMockTabContentManager;
 
         public TestTabModelSelector(Context context) throws Exception {

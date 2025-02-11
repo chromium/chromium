@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "components/ukm/content/source_url_recorder.h"
 #include "content/browser/dips/btm_page_visit_observer_test_utils.h"
 #include "content/browser/dips/dips_test_utils.h"
 #include "content/browser/dips/dips_utils.h"
@@ -44,6 +45,11 @@ class BtmPageVisitObserverBrowserTest : public ContentBrowserTest {
         net::EmbeddedTestServer::CERT_TEST_NAMES);
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
+
+  void PreRunTestOnMainThread() override {
+    ContentBrowserTest::PreRunTestOnMainThread();
+    ukm::InitializeSourceUrlRecorderForWebContents(shell()->web_contents());
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, SmokeTest) {
@@ -74,6 +80,7 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, CreatedWhileOnPage) {
       embedded_https_test_server().GetURL("b.test", "/empty.html");
   const GURL url3 =
       embedded_https_test_server().GetURL("c.test", "/empty.html");
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   WebContents* web_contents = shell()->web_contents();
 
   ASSERT_TRUE(NavigateToURL(web_contents, url1));
@@ -83,11 +90,17 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, CreatedWhileOnPage) {
   ASSERT_TRUE(NavigateToURL(web_contents, url3));
   ASSERT_TRUE(recorder.WaitForSize(2));
 
-  ASSERT_THAT(recorder.visits(),
-              // The first visit should have a previous page URL of url1, rather
-              // than a blank URL.
-              ElementsAre(AllOf(PreviousPage(HasUrl(url1)), HasUrl(url2)),
-                          AllOf(PreviousPage(HasUrl(url2)), HasUrl(url3))));
+  EXPECT_THAT(
+      recorder.visits(),
+      // The first visit should have a previous page URL of url1, rather
+      // than a blank URL.
+      ElementsAre(
+          AllOf(PreviousPage(AllOf(HasUrl(url1),
+                                   HasSourceIdForUrl(url1, &ukm_recorder))),
+                HasUrl(url2)),
+          AllOf(PreviousPage(AllOf(HasUrl(url2),
+                                   HasSourceIdForUrl(url2, &ukm_recorder))),
+                HasUrl(url3))));
 }
 
 IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, Redirects) {
@@ -101,6 +114,7 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, Redirects) {
       "b.test", "/cross-site?c.test%2Fempty.html");
   const GURL url3 =
       embedded_https_test_server().GetURL("c.test", "/empty.html");
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   WebContents* web_contents = shell()->web_contents();
   BtmPageVisitRecorder recorder(web_contents);
 
@@ -109,15 +123,21 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, Redirects) {
   ASSERT_TRUE(recorder.WaitForSize(2));
 
   // The first redirect accessed cookies, and the second did not.
-  ASSERT_THAT(
+  EXPECT_THAT(
       recorder.visits(),
-      ElementsAre(AllOf(PreviousPage(HasUrl(GURL())),
-                        Navigation(ServerRedirects(IsEmpty())), HasUrl(url1)),
-                  AllOf(PreviousPage(HasUrl(url1)),
-                        Navigation(ServerRedirects(ElementsAre(
-                            AllOf(HasUrl(url2), DidWriteCookies(true)),
-                            AllOf(HasUrl(url2b), DidWriteCookies(false))))),
-                        HasUrl(url3))));
+      ElementsAre(
+          AllOf(PreviousPage(
+                    AllOf(HasUrl(GURL()), HasSourceId(ukm::kInvalidSourceId))),
+                Navigation(ServerRedirects(IsEmpty())), HasUrl(url1)),
+          AllOf(
+              PreviousPage(
+                  AllOf(HasUrl(url1), HasSourceIdForUrl(url1, &ukm_recorder))),
+              Navigation(ServerRedirects(ElementsAre(
+                  AllOf(HasUrl(url2), HasSourceIdForUrl(url2, &ukm_recorder),
+                        DidWriteCookies(true)),
+                  AllOf(HasUrl(url2b), HasSourceIdForUrl(url2b, &ukm_recorder),
+                        DidWriteCookies(false))))),
+              HasUrl(url3))));
 }
 
 IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, DocumentCookie) {

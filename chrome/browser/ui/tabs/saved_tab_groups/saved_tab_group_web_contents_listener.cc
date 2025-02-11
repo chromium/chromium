@@ -13,8 +13,10 @@
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_update_store.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -63,6 +65,12 @@ bool IsUserTriggeredMainFrameNavigation(
   }
 
   return true;
+}
+
+bool IsMainFrameRendererNavigation(
+    content::NavigationHandle* navigation_handle) {
+  return navigation_handle->IsInPrimaryMainFrame() &&
+         navigation_handle->IsRendererInitiated();
 }
 
 bool WasNavigationInitiatedFromSync(
@@ -238,7 +246,9 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
     return;
   }
 
-  if (IsUserTriggeredMainFrameNavigation(navigation_handle)) {
+  const bool is_user_triggered =
+      IsUserTriggeredMainFrameNavigation(navigation_handle);
+  if (is_user_triggered) {
     // Once the tab state is remove, restrictions will be removed from it.
     TabGroupSyncTabState::Reset(contents());
   }
@@ -258,6 +268,20 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
 
   service_->NavigateTab(group->local_group_id().value(), local_tab_id(),
                         contents()->GetURL(), contents()->GetTitle());
+
+  if (is_user_triggered || IsMainFrameRendererNavigation(navigation_handle)) {
+    // We additionally want to record the last share update if it is due
+    // to a renderer navigation in the main frame.
+    // Note: this does not overlap with the conditions checked in
+    // IsUserTriggeredMainFrameNavigation.
+    if (MostRecentUpdateStore* most_recent_update_store =
+            local_tab_->GetBrowserWindowInterface()
+                ->GetFeatures()
+                .most_recent_update_store()) {
+      most_recent_update_store->SetLastUpdatedTab(
+          group->local_group_id().value(), local_tab_id());
+    }
+  }
 }
 
 void SavedTabGroupWebContentsListener::DidGetUserInteraction(

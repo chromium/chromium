@@ -845,7 +845,10 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kRetrieveAutofillAi:
       return;
     case SuggestionType::kFillAutofillAi:
-      FillAutofillAiData(suggestion);
+      manager_->FillOrPreviewFormWithAutofillAiData(
+          mojom::ActionPersistence::kFill, query_form_, query_field_,
+          suggestion.GetPayload<Suggestion::AutofillAiPayload>()
+              .values_to_fill);
       break;
     case SuggestionType::kEditAutofillAiData:
       if (AutofillAiDelegate* delegate =
@@ -1140,27 +1143,6 @@ void AutofillExternalDelegate::FillAutofillFormData(
             ? CreditCard::CreateVirtualCard(*credit_card)
             : *credit_card,
         trigger_source);
-  }
-}
-
-void AutofillExternalDelegate::FillAutofillAiData(
-    const Suggestion& suggestion) {
-  // Single field filling.
-  if (absl::holds_alternative<Suggestion::ValueToFill>(suggestion.payload)) {
-    const std::u16string value_to_fill =
-        suggestion.GetPayload<Suggestion::ValueToFill>().value();
-    manager_->FillOrPreviewField(mojom::ActionPersistence::kFill,
-                                 mojom::FieldActionType::kReplaceAll,
-                                 query_form_, query_field_, value_to_fill,
-                                 SuggestionType::kFillAutofillAi,
-                                 /*field_type_used=*/std::nullopt);
-  } else {
-    // Full form filling.
-    Suggestion::AutofillAiPayload payload =
-        suggestion.GetPayload<Suggestion::AutofillAiPayload>();
-    manager_->FillOrPreviewFormWithAutofillAiData(
-        mojom::ActionPersistence::kFill, query_form_, query_field_,
-        payload.values_to_fill);
   }
 }
 

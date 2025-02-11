@@ -5642,7 +5642,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4946998421534856407">런처 + 위쪽 화살표</translation>
 <translation id="4947376546135294974">방문 중인 사이트의 데이터</translation>
 <translation id="4950100687509657457">프로필 만들기</translation>
-<translation id="4950360215042327246">[자리표시자 문자열]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{파일 1개}other{파일 #개}}</translation>
 <translation id="495170559598752135">작업</translation>
 <translation id="4951966678293618079">이 사이트의 비밀번호를 저장하지 않습니다</translation>
@@ -7999,7 +7998,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6679947539429331601">12시간 동안 숨기기</translation>
 <translation id="6680442031740878064">사용 가능한 저장용량: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">속도</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [자리표시자 문자열]</translation>
 <translation id="6683022854667115063">헤드폰</translation>
 <translation id="6683087162435654533">모든 탭 복원(&amp;E)</translation>
 <translation id="6683433919380522900">권한: <ph name="PERMISSION_STATE" /></translation>
@@ -9217,7 +9215,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7561196759112975576">항상</translation>
 <translation id="7561759921596375678">볼륨 켜기</translation>
 <translation id="7561982940498449837">메뉴 닫기</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">브라우저 창 열기</translation>
 <translation id="7564847347806291057">프로세스 종료</translation>
 <translation id="756503097602602175">로그인된 Google 계정을 <ph name="LINK_BEGIN" />설정<ph name="LINK_END" />에서 관리할 수 있습니다. 웹사이트와 앱에 부여한 권한이 모든 계정에 적용될 수 있습니다. 사이트나 앱에서 계정 정보에 액세스하기를 원하지 않으면 게스트로 <ph name="DEVICE_TYPE" />에 로그인하거나 <ph name="LINK_2_BEGIN" />시크릿 창<ph name="LINK_2_END" />에서 웹을 탐색하세요.</translation>

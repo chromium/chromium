@@ -657,6 +657,16 @@ bool DawnSharedContext::Initialize(
   descriptor.requiredFeatureCount = std::size(features);
 
   // Use best limits for the device.
+#ifdef WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
+  wgpu::Limits supportedLimits = {};
+  if (adapter_.GetLimits(&supportedLimits) != wgpu::Status::Success) {
+    LogInitFailure("Failed to call adapter.GetLimits().",
+                   /*generate_crash_report=*/true, backend_type,
+                   force_fallback_adapter);
+    return false;
+  }
+  descriptor.requiredLimits = &supportedLimits;
+#else
   wgpu::SupportedLimits supportedLimits = {};
   if (adapter_.GetLimits(&supportedLimits) != wgpu::Status::Success) {
     LogInitFailure("Failed to call adapter.GetLimits().",
@@ -668,6 +678,7 @@ bool DawnSharedContext::Initialize(
   wgpu::RequiredLimits deviceCreationLimits = {};
   deviceCreationLimits.limits = supportedLimits.limits;
   descriptor.requiredLimits = &deviceCreationLimits;
+#endif  // WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
 
   // ANGLE always tries creating D3D11 device with debug layer when dcheck is
   // on, so tries creating dawn device with backend validation as well.

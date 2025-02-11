@@ -66,4 +66,20 @@
   [self.omniboxAutocompleteController onCallAction];
 }
 
+#pragma mark - OmniboxText events
+
+- (void)setTextAlignment:(NSTextAlignment)alignment {
+  [self.delegate popupController:self didUpdateTextAlignment:alignment];
+}
+
+- (void)setSemanticContentAttribute:
+    (UISemanticContentAttribute)semanticContentAttribute {
+  [self.delegate popupController:self
+      didUpdateSemanticContentAttribute:semanticContentAttribute];
+}
+
+- (void)setHasThumbnail:(BOOL)hasThumbnail {
+  [self.delegate popupController:self didUpdateHasThumbnail:hasThumbnail];
+}
+
 @end

@@ -80,6 +80,7 @@
 <translation id="2094648590148273905">ChromeOS Flex ನಿಯಮಗಳು</translation>
 <translation id="2094919256425865063">ಹೇಗಿದ್ದರೂ Chrome ಅನ್ನು ಮುಚ್ಚುವುದೇ?</translation>
 <translation id="2106831557840787829">ಹೆಚ್ಚುವರಿ <ph name="BEGIN_LINK_CROS_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್‌<ph name="END_LINK_CROS_OSS" /> ನಿಂದ ChromeOS Flex ರಚನೆ ಸಾಧ್ಯವಾಯಿತು, ಹಾಗೆಯೇ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ಡೆವಲಪ್‌ಮೆಂಟ್ ಎನ್ವಿರಾನ್‌ಮೆಂಟ್‌ನ<ph name="END_LINK_LINUX_OSS" /> ರಚನೆಯೂ ಅದರಿಂದಲೇ ಸಾಧ್ಯವಾಯಿತು.</translation>
+<translation id="2108778574543343055">ಆ್ಯಪ್‌ಗಳಿಗೆ ಹಿನ್ನೆಲೆಯಲ್ಲಿ ರನ್ ಆಗುತ್ತಿರುವ Chrome ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="2120620239521071941">ಈ ಸಾಧನದಿಂದ <ph name="ITEMS_COUNT" /> ಐಟಂಗಳನ್ನು ಇದು ಅಳಿಸುತ್ತದೆ. ನಂತರ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಮರುಪಡೆಯಲು, <ph name="USER_EMAIL" /> ನಂತೆ Chrome ಗೆ ಸೈನ್‌‌ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="2121284319307530122">&amp;Chrome ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />ಪ್ರಸ್ತುತ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು<ph name="END_LINK" /> ವರದಿ ಮಾಡುವುದರ ಮೂಲಕ Chrome ಅನ್ನು ಉತ್ತಮಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡಿ</translation>
@@ -141,6 +142,7 @@
 <translation id="2797864378188255696"><ph name="USER_EMAIL" /> ಬಳಸಿಕೊಂಡು Gmail ಅಥವಾ YouTube ನಂತಹ Google ಸೇವೆಗಳಿಗೆ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದರೆ, ನೀವು ಅದೇ ಖಾತೆಯೊಂದಿಗೆ Chrome ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು</translation>
 <translation id="2799162042226656283">ನಿಮ್ಮ Chrome</translation>
 <translation id="2799223571221894425">ಮರುಪ್ರಾರಂಭಿಸು</translation>
+<translation id="2818684386420968393">ಆ್ಯಪ್‌ಗಳಿಗೆ ಹಿನ್ನೆಲೆಯಲ್ಲಿ ರನ್ ಆಗುತ್ತಿರುವ Chrome ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="2825024317344269723">ಅಪಾಯಕಾರಿ ಸೈಟ್. Chrome ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿದೆ.</translation>
 <translation id="2841525013647267359">ಈ ಭಾಷೆಯಿಂದ ಅನುವಾದಿಸಿ</translation>
 <translation id="2846251086934905009">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವಾಗ ದೋಷ: ಇನ್‌ಸ್ಟಾಲರ್‌‌ ಪೂರ್ಣಗೊಂಡಿಲ್ಲ. ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಅನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ.</translation>

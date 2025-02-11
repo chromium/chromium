@@ -36,12 +36,13 @@ import * as Application from 'devtools/panels/application/application.js';
   }
 
   function dumpDataGridContent(dataGrid) {
-    var nodes = dataGrid.rootNode().children;
+    var nodes = dataGrid.querySelectorAll('tr');
     var rows = [];
     for (var i = 0; i < nodes.length; ++i) {
-      var node = nodes[i];
-      if (!node.isCreationNode)
-        rows.push(node.data.key + node.data.value);
+      var cells = nodes[i].querySelectorAll('td');
+      if (cells.length) {
+        rows.push(cells[0].textContent + cells[1].textContent);
+      }
     }
     rows.sort();
     TestRunner.addResult('KeyValue pairs: ' + rows.join(''));
@@ -59,7 +60,7 @@ import * as Application from 'devtools/panels/application/application.js';
     TestRunner.deprecatedRunAfterPendingDispatches(function() {
       TestRunner.addResult(name(storage) + ' content: ');
       var view = Application.ResourcesPanel.ResourcesPanel.instance().domStorageView;
-      dumpDataGridContent(view.dataGridForTesting);
+      dumpDataGridContent(view.contentElement.querySelector('devtools-data-grid'));
       TestRunner.deprecatedRunAfterPendingDispatches(() => testStorageInView(storages));
     });
   }

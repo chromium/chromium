@@ -20,6 +20,8 @@ struct EmbedderMetadata {
         output_size(output_size),
         search_score_threshold(search_score_threshold) {}
 
+  bool IsValid() { return model_version != 0 && output_size != 0; }
+
   int64_t model_version;
   size_t output_size;
   std::optional<double> search_score_threshold;

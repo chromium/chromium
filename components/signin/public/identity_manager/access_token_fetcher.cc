@@ -182,8 +182,20 @@ void AccessTokenFetcher::StartAccessTokenRequest() {
     return;
   }
 
-  access_token_request_ =
-      token_service_->StartRequest(account_id_, scopes_, this);
+  switch (token_source_) {
+    case Source::kProfile:
+      access_token_request_ =
+          token_service_->StartRequest(account_id_, scopes_, this);
+      return;
+#if BUILDFLAG(IS_IOS)
+    case Source::kDevice:
+      token_service_->GetRefreshTokenFromDevice(
+          account_id_, scopes_,
+          base::BindOnce(&AccessTokenFetcher::RunCallbackAndMaybeDie,
+                         base::Unretained(this)));
+      return;
+#endif
+  }
 }
 
 void AccessTokenFetcher::OnRefreshTokenAvailable(

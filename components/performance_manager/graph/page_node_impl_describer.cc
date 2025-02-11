@@ -11,6 +11,7 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/node_data_describer_util.h"
+#include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace performance_manager {

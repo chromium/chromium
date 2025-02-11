@@ -26,8 +26,6 @@ class WaitableEvent;
 
 namespace blink {
 
-class InternetDisconnectedURLLoaderFactory;
-
 class BLINK_EXPORT WebServiceWorkerFetchContextImpl final
     : public WebServiceWorkerFetchContext,
       public mojom::blink::RendererPreferenceWatcher,
@@ -79,7 +77,6 @@ class BLINK_EXPORT WebServiceWorkerFetchContextImpl final
   std::unique_ptr<WebSocketHandshakeThrottle> CreateWebSocketHandshakeThrottle(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   WebString GetAcceptLanguages() const override;
-  void SetIsOfflineMode(bool) override;
 
   // mojom::blink::SubresourceLoaderUpdater implementation:
   void UpdateSubresourceLoaderFactories(
@@ -108,10 +105,6 @@ class BLINK_EXPORT WebServiceWorkerFetchContextImpl final
 
   // Responsible for regular loads from the service worker (i.e., Fetch API).
   std::unique_ptr<URLLoaderFactory> url_loader_factory_;
-  // Responsible for loads which always fail as INTERNET_DISCONNECTED
-  // error, which is used in offline mode.
-  std::unique_ptr<InternetDisconnectedURLLoaderFactory>
-      internet_disconnected_url_loader_factory_;
   // Responsible for script loads from the service worker (i.e., the
   // classic/module main script, module imported scripts, or importScripts()).
   std::unique_ptr<URLLoaderFactory> web_script_loader_factory_;
@@ -138,7 +131,6 @@ class BLINK_EXPORT WebServiceWorkerFetchContextImpl final
   WeakPersistent<AcceptLanguagesWatcher> accept_languages_watcher_;
 
   Vector<String> cors_exempt_header_list_;
-  bool is_offline_mode_ = false;
 
   bool is_third_party_context_ = false;
 };

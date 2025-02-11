@@ -4,14 +4,21 @@
 
 #include "components/ip_protection/common/ip_protection_core_impl_mojo.h"
 
+#include <map>
+#include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/task_traits.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_core_host_remote.h"
+#include "components/ip_protection/common/ip_protection_core_impl.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
@@ -19,10 +26,11 @@
 #include "components/ip_protection/common/ip_protection_token_manager.h"
 #include "components/ip_protection/common/ip_protection_token_manager_impl.h"
 #include "components/ip_protection/common/ip_protection_token_mojo_fetcher.h"
+#include "components/ip_protection/mojom/core.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
-#include "net/base/proxy_string_util.h"
 
 namespace ip_protection {
 

@@ -1348,10 +1348,13 @@ public class Fido2CredentialRequestTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    authenticator.getAssertion(
+                    authenticator.getCredential(
                             mRequestOptions,
-                            (status, response, dom_exception) ->
-                                    mCallback.onSignResponse(status, response));
+                            (getCredentialResponse) ->
+                                    mCallback.onSignResponse(
+                                            getCredentialResponse.getGetAssertionResponse().status,
+                                            getCredentialResponse.getGetAssertionResponse()
+                                                    .credential));
                 });
         mCallback.blockUntilCalled();
         Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
@@ -1383,10 +1386,13 @@ public class Fido2CredentialRequestTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    authenticator.getAssertion(
+                    authenticator.getCredential(
                             mRequestOptions,
-                            (status, response, dom_exception) ->
-                                    mCallback.onSignResponse(status, response));
+                            (getCredentialResponse) ->
+                                    mCallback.onSignResponse(
+                                            getCredentialResponse.getGetAssertionResponse().status,
+                                            getCredentialResponse.getGetAssertionResponse()
+                                                    .credential));
                 });
         mCallback.blockUntilCalled();
 
@@ -1399,7 +1405,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    public void testAuthenticatorImplGetAssertion_resultCanceled() {
+    public void testAuthenticatorImplGetCredential_resultCanceled() {
         AuthenticatorImpl authenticator =
                 new AuthenticatorImpl(
                         mContext,
@@ -1411,10 +1417,13 @@ public class Fido2CredentialRequestTest {
         mIntentSender.setNextResult(Activity.RESULT_CANCELED, null);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    authenticator.getAssertion(
+                    authenticator.getCredential(
                             mRequestOptions,
-                            (status, response, dom_exception) ->
-                                    mCallback.onSignResponse(status, response));
+                            (getCredentialResponse) ->
+                                    mCallback.onSignResponse(
+                                            getCredentialResponse.getGetAssertionResponse().status,
+                                            getCredentialResponse.getGetAssertionResponse()
+                                                    .credential));
                 });
         mCallback.blockUntilCalled();
         Assert.assertEquals(
@@ -1426,7 +1435,7 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     @DisabledTest(message = "crbug.com/347310677")
-    public void testInternalAuthenticatorGetAssertionWithUvmRequestedWithUvmResponded_success() {
+    public void testInternalAuthenticatorGetCredentialWithUvmRequestedWithUvmResponded_success() {
         InternalAuthenticator authenticator =
                 InternalAuthenticator.createForTesting(
                         mContext, mIntentSender, mFrameHost, mOrigin);
@@ -1446,7 +1455,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    public void testInternalAuthenticatorGetAssertion_resultCanceled() {
+    public void testInternalAuthenticatorGetCredential_resultCanceled() {
         InternalAuthenticator authenticator =
                 InternalAuthenticator.createForTesting(
                         mContext, mIntentSender, mFrameHost, mOrigin);
@@ -1613,7 +1622,7 @@ public class Fido2CredentialRequestTest {
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
             message = "crbug.com/347310677")
-    public void testGetAssertion_emptyAllowCredentials1() {
+    public void testGetCredential_emptyAllowCredentials1() {
         // Passes conversion and gets rejected by GmsCore
         PublicKeyCredentialRequestOptions customOptions = mRequestOptions;
         customOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
@@ -1649,7 +1658,7 @@ public class Fido2CredentialRequestTest {
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
             message = "crbug.com/347310677")
-    public void testGetAssertion_emptyAllowCredentials2() {
+    public void testGetCredential_emptyAllowCredentials2() {
         // Passes conversion and gets rejected by GmsCore
         PublicKeyCredentialRequestOptions customOptions = mRequestOptions;
         customOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];

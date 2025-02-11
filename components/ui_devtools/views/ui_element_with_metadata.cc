@@ -136,7 +136,7 @@ void UIElementWithMetaData::InitSources() {
        metadata != nullptr; metadata = metadata->parent_class_meta_data()) {
     // If class has Metadata properties, add their sources.
     if (!metadata->members().empty()) {
-      AddSource(metadata->file(), metadata->line());
+      AddSource(std::string(metadata->file()), metadata->line());
     }
   }
 }

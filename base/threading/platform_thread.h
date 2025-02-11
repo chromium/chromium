@@ -29,8 +29,6 @@
 #include "base/win/windows_types.h"
 #elif BUILDFLAG(IS_FUCHSIA)
 #include <zircon/types.h>
-#elif BUILDFLAG(IS_APPLE)
-#include <mach/mach_types.h>
 #elif BUILDFLAG(IS_POSIX)
 #include <pthread.h>
 #include <unistd.h>
@@ -56,8 +54,7 @@ class BASE_EXPORT PlatformThreadId {
 #elif BUILDFLAG(IS_FUCHSIA)
   using UnderlyingType = zx_koid_t;
 #elif BUILDFLAG(IS_APPLE)
-  // TODO(crbug.com/40187449): Use uint64_t ids from pthread_threadid_np.
-  using UnderlyingType = mach_port_t;
+  using UnderlyingType = uint64_t;
 #elif BUILDFLAG(IS_POSIX)
   using UnderlyingType = pid_t;
 #endif

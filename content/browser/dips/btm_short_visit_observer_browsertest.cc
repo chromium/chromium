@@ -26,6 +26,13 @@ namespace {
 
 class BtmShortVisitObserverBrowserTest : public ContentBrowserTest {
  public:
+  void SetUp() override {
+    clock_.Advance(base::Days(1));
+    BtmShortVisitObserver::SetDefaultClockForTesting(&clock_);
+
+    ContentBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -41,6 +48,8 @@ class BtmShortVisitObserverBrowserTest : public ContentBrowserTest {
   }
 
   WebContents* web_contents() { return shell()->web_contents(); }
+
+  base::SimpleTestClock clock_;
 };
 
 // Extracts the source URLs from the return value of
@@ -68,15 +77,11 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest, VisitDuration) {
       embedded_https_test_server().GetURL("b.test", "/empty.html");
   const GURL url3 =
       embedded_https_test_server().GetURL("c.test", "/empty.html");
-  base::SimpleTestClock clock;
-  clock.Advance(base::Days(1));
 
   ASSERT_TRUE(NavigateToURL(web_contents(), url1));
-  clock.Advance(base::Seconds(1));
-  BtmShortVisitObserver obs(web_contents(), &clock);
-  clock.Advance(base::Milliseconds(2499));
+  clock_.Advance(base::Milliseconds(2499));
   ASSERT_TRUE(NavigateToURL(web_contents(), url2));
-  clock.Advance(base::Milliseconds(3500));
+  clock_.Advance(base::Milliseconds(3500));
   ASSERT_TRUE(NavigateToURL(web_contents(), url3));
 
   auto entries = ukm_recorder.GetEntriesByName("BTM.ShortVisit");
@@ -94,14 +99,11 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest, IgnoreLongVisits) {
       embedded_https_test_server().GetURL("b.test", "/empty.html");
   const GURL url3 =
       embedded_https_test_server().GetURL("c.test", "/empty.html");
-  base::SimpleTestClock clock;
-  clock.Advance(base::Days(1));
 
   ASSERT_TRUE(NavigateToURL(web_contents(), url1));
-  BtmShortVisitObserver obs(web_contents(), &clock);
-  clock.Advance(base::Seconds(9));
+  clock_.Advance(base::Seconds(9));
   ASSERT_TRUE(NavigateToURL(web_contents(), url2));
-  clock.Advance(base::Seconds(11));
+  clock_.Advance(base::Seconds(11));
   ASSERT_TRUE(NavigateToURL(web_contents(), url3));
 
   // The 11-second visit is not reported.
@@ -121,7 +123,6 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
       embedded_https_test_server().GetURL("c.test", "/empty.html");
 
   ASSERT_TRUE(NavigateToURL(web_contents(), url1));
-  BtmShortVisitObserver obs(web_contents());
   ASSERT_TRUE(NavigateToURL(web_contents(), url2));
   ASSERT_TRUE(NavigateToURLFromRenderer(web_contents(), url3));
 
@@ -142,7 +143,6 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest, ExitHadUserGesture) {
       embedded_https_test_server().GetURL("c.test", "/empty.html");
 
   ASSERT_TRUE(NavigateToURL(web_contents(), url1));
-  BtmShortVisitObserver obs(web_contents());
   ASSERT_TRUE(NavigateToURLFromRenderer(web_contents(), url2));
   ASSERT_TRUE(
       NavigateToURLFromRendererWithoutUserGesture(web_contents(), url3));
@@ -164,7 +164,6 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest, ExitPageTransition) {
       embedded_https_test_server().GetURL("b.test", "/title1.html");
 
   ASSERT_TRUE(NavigateToURL(web_contents(), url1));
-  BtmShortVisitObserver obs(web_contents());
   ASSERT_TRUE(NavigateToURL(web_contents(), url2));
   TestNavigationObserver same_tab_observer(web_contents());
   // Click a link to navigate to url3.
@@ -198,7 +197,6 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest, PreviousSiteSame) {
       embedded_https_test_server().GetURL("c.test", "/empty.html");
 
   ASSERT_TRUE(NavigateToURL(web_contents(), url1));
-  BtmShortVisitObserver obs(web_contents());
   ASSERT_TRUE(NavigateToURL(web_contents(), url2a));
   ASSERT_TRUE(NavigateToURL(web_contents(), url2b));
   ASSERT_TRUE(NavigateToURL(web_contents(), url3));
@@ -207,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest, PreviousSiteSame) {
   ASSERT_THAT(EntryURLs(ukm_recorder, entries),
               testing::ElementsAre(url1, url2a, url2b));
   // Previous site unknown.
-  ukm_recorder.ExpectEntryMetric(entries[0], "PreviousSiteSame", -1);
+  ukm_recorder.ExpectEntryMetric(entries[0], "PreviousSiteSame", 0);
   // Previous site not same.
   ukm_recorder.ExpectEntryMetric(entries[1], "PreviousSiteSame", 0);
   // Previous site same.
@@ -226,7 +224,6 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest, NextSiteSame) {
       embedded_https_test_server().GetURL("c.test", "/empty.html");
 
   ASSERT_TRUE(NavigateToURL(web_contents(), url1));
-  BtmShortVisitObserver obs(web_contents());
   ASSERT_TRUE(NavigateToURL(web_contents(), url2a));
   ASSERT_TRUE(NavigateToURL(web_contents(), url2b));
   ASSERT_TRUE(NavigateToURL(web_contents(), url3));
@@ -252,7 +249,6 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
       embedded_https_test_server().GetURL("sub.b.test", "/title1.html");
 
   ASSERT_TRUE(NavigateToURL(web_contents(), url1));
-  BtmShortVisitObserver obs(web_contents());
   ASSERT_TRUE(NavigateToURL(web_contents(), url2));
   ASSERT_TRUE(NavigateToURL(web_contents(), url3));
   ASSERT_TRUE(NavigateToURL(web_contents(), url4));
@@ -260,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
   auto entries = ukm_recorder.GetEntriesByName("BTM.ShortVisit");
   ASSERT_THAT(EntryURLs(ukm_recorder, entries),
               testing::ElementsAre(url1, url2, url3));
-  ukm_recorder.ExpectEntryMetric(entries[0], "PreviousAndNextSiteSame", -1);
+  ukm_recorder.ExpectEntryMetric(entries[0], "PreviousAndNextSiteSame", 0);
   ukm_recorder.ExpectEntryMetric(entries[1], "PreviousAndNextSiteSame", 0);
   ukm_recorder.ExpectEntryMetric(entries[2], "PreviousAndNextSiteSame", 1);
 }
@@ -274,16 +270,13 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
   const GURL url2 = embedded_https_test_server().GetURL("b.test", "/nocontent");
   const GURL url3 =
       embedded_https_test_server().GetURL("a.test", "/title1.html");
-  base::SimpleTestClock clock;
-  clock.Advance(base::Days(1));
 
   ASSERT_TRUE(NavigateToURL(web_contents(), url1));
-  BtmShortVisitObserver obs(web_contents(), &clock);
-  clock.Advance(base::Seconds(2));
+  clock_.Advance(base::Seconds(2));
   // Note: Since it doesn't commit, after the navigation to `url2` finishes, the
   // user will still be on `url1`.
   ASSERT_TRUE(NavigateToURL(web_contents(), url2, url1));
-  clock.Advance(base::Seconds(3));
+  clock_.Advance(base::Seconds(3));
   ASSERT_TRUE(NavigateToURLFromRenderer(web_contents(), url3));
 
   auto entries = ukm_recorder.GetEntriesByName("BTM.ShortVisit");

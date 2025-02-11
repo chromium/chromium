@@ -624,33 +624,45 @@
       <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_TOGGLE_LABEL" desc="Text for the Ad topics toggle button on the Ad Topics card of the Privacy Guide." formatter_data="android_java">
         Ad topics
       </message>
-      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET1" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." formatter_data="android_java">
-        Ad topics older than 4 weeks are automatically deleted. Topics include things like Sports, Apparel, and more
-      </message>
       <if expr="_google_chrome">
         <then>
           <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET1" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
-            Chrome notes topics of interest based on your recent browsing history
+            Chrome notes topics of interest based on your recent browsing history. For example, things like Sports, Apparel, and more
           </message>
           <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET2" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
-            Sites you visit can ask Chrome for topics to show you relevant ads while protecting your browsing history and identity
+            Sites you visit can ask Chrome for topics that help limit what sites and their advertising partners can learn about you to show you personalized ads
           </message>
-          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET2" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." formatter_data="android_java">
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET3" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
+            Chrome auto-deletes ad topics that are older than 4 weeks
+          </message>
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET1" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." formatter_data="android_java">
             You can see your ad topics in Chrome settings and block the ones you don't want shared with sites
           </message>
         </then>
         <else>
           <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET1" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
-            Chromium notes topics of interest based on your recent browsing history
+            Chromium notes topics of interest based on your recent browsing history. For example, things like Sports, Apparel, and more
           </message>
           <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET2" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
-            Sites you visit can ask Chromium for topics to show you relevant ads while protecting your browsing history and identity
+            Sites you visit can ask Chromium for topics that help limit what sites and their advertising partners can learn about you to show you personalized ads
           </message>
-          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET2" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." formatter_data="android_java">
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET3" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
+            Chromium auto-deletes ad topics that are older than 4 weeks
+          </message>
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET1" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." formatter_data="android_java">
             You can see your ad topics in Chromium settings and block the ones you don't want shared with sites
           </message>
         </else>
       </if>
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET2" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." formatter_data="android_java">
+        Some sites may use your activity to personalize your experience for more than just ads. They may also store ad topics for longer than 4 weeks and may combine it with other information they already know about you
+      </message>
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET3_DESKTOP" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide.">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK1">&lt;a href="$1" aria-description="$2" on-click="$3" id="$4" target="_blank"&gt;</ph>Learn more in our Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>.
+      </message>
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET3_CLANK" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." formatter_data="android_java">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more in our Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
       <!--Ad Topics Content Parity - Ad Topics Settings-->
       <message name="IDS_SETTINGS_AD_TOPICS_PAGE_TOGGLE_SUB_LABEL" desc="A description of the new Ad topics setting page. This sits under the toggle to turn on the topics API." translateable="false">
         Topics are based on your recent browsing history and help limit what sites and their advertising partners can learn about you to show you personalized ads

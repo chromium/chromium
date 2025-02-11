@@ -26,7 +26,7 @@ struct SpeechRecognitionResult;
 
 namespace ash::babelorca {
 
-class BabelOrcaCaptionBubbleSettings;
+class CaptionBubbleSettingsImpl;
 
 class CaptionController : public ::captions::CaptionControllerBase {
  public:
@@ -34,7 +34,7 @@ class CaptionController : public ::captions::CaptionControllerBase {
       std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context,
       PrefService* profile_prefs,
       const std::string& application_locale,
-      std::unique_ptr<BabelOrcaCaptionBubbleSettings> caption_bubble_settings,
+      std::unique_ptr<CaptionBubbleSettingsImpl> caption_bubble_settings,
       std::unique_ptr<Delegate> delegate = nullptr);
 
   CaptionController(const CaptionController&) = delete;
@@ -62,8 +62,7 @@ class CaptionController : public ::captions::CaptionControllerBase {
   captions::CaptionBubbleSettings* caption_bubble_settings() override;
 
   std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context_;
-  const std::unique_ptr<BabelOrcaCaptionBubbleSettings>
-      caption_bubble_settings_;
+  const std::unique_ptr<CaptionBubbleSettingsImpl> caption_bubble_settings_;
 };
 
 }  // namespace ash::babelorca

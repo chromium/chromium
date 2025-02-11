@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_TOKEN_MOJO_FETCHER_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_TOKEN_MOJO_FETCHER_H_
 
-#include "base/functional/callback.h"
+#include <cstdint>
+
 #include "base/memory/scoped_refptr.h"
 #include "components/ip_protection/common/ip_protection_token_fetcher.h"
 

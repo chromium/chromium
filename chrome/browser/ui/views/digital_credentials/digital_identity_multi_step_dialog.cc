@@ -14,6 +14,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_variant.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_utils.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -212,7 +213,7 @@ ui::ColorVariant DigitalIdentityMultiStepDialog::GetBackgroundColor() {
   if (!widget_delegate) {
     return gfx::kPlaceholderColor;
   }
-  return widget_delegate->GetBackgroundColor();
+  return widget_delegate->background_color();
 }
 
 DigitalIdentityMultiStepDialog::Delegate*

@@ -70,6 +70,7 @@
 <translation id="2459183986985456602">在 Chromium 中打开我最近打开的标签页。</translation>
 <translation id="2476409803017965813">您可以随时在 Chromium 设置中更新您的选择。</translation>
 <translation id="2478931088402984578">选择 <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2485774047568879945">将 Chromium 设为默认浏览器，即可轻松分享和打开链接</translation>
 <translation id="2512597191798760956">按住 Chromium 图标，然后点击“修改主屏幕”</translation>
 <translation id="2517624234762908348">同步您的 Chromium 数据</translation>
 <translation id="2592940277904433508">继续使用 Chromium</translation>
@@ -167,6 +168,7 @@
 <translation id="5088872414922783602">从主屏幕上的程序坞更快速地访问 Chromium。</translation>
 <translation id="5124429847818367226">现在，每当浏览或点按消息、文档和其他应用中的链接时，您都可以使用 Chromium 打开链接。</translation>
 <translation id="5131565040785979529">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号以及 Chromium 的使用方式。</translation>
+<translation id="5134464247000681876">在 Chromium 中打开 Gmail、Google 地图、YouTube 和其他应用中的链接</translation>
 <translation id="5224391634244552924">尚未保存任何密码。您需要先保存密码才能使用 Chromium 的密码检查功能。</translation>
 <translation id="5259423875997548710">在 Chromium 中搜索影像内容。</translation>
 <translation id="5308226104666789935">Chromium 无法检查是否有更新</translation>
@@ -260,6 +262,7 @@
 <translation id="7674213385180944843">打开“设置”&gt;“隐私”&gt;“相机”&gt;“Chromium”，然后开启相机。</translation>
 <translation id="7733418656985455268">Chromium 提示：使用智能镜头搜索</translation>
 <translation id="7747820849741499258">在 Chromium 中搜索</translation>
+<translation id="7753923083404296545">已在 Chromium 无痕模式下打开</translation>
 <translation id="7762622637388462191">在您退出 Chromium 或切换到其他应用时，锁定无痕式标签页。</translation>
 <translation id="7763454117143368771">使用 Chromium 作为默认浏览器不仅可让您免受危险网站的侵害，还可保护您的密码</translation>
 <translation id="7784950022329154821">在您关闭 Chromium 时锁定无痕式标签页</translation>

@@ -51,7 +51,7 @@ class ChromePermissionManagerTest : public ChromeRenderViewHostTestHarness {
     if (feature != network::mojom::PermissionsPolicyFeature::kNotFound) {
       frame_policy.emplace_back(
           feature,
-          std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(
+          std::vector{*network::OriginWithPossibleWildcards::FromOrigin(
               url::Origin::Create(origin))},
           /*self_if_matches=*/std::nullopt,
           /*matches_all_origins=*/false,

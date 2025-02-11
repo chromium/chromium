@@ -2,16 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CC_TEST_TASK_GRAPH_RUNNER_TEST_TEMPLATE_H_
 #define CC_TEST_TASK_GRAPH_RUNNER_TEST_TEMPLATE_H_
 
-#include "cc/raster/task_graph_runner.h"
-
+#include <array>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -19,6 +13,7 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/simple_thread.h"
 #include "cc/raster/task_category.h"
+#include "cc/raster/task_graph_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -50,7 +45,8 @@ class TaskGraphRunnerTestBase {
     bool has_external_dependency;
   };
 
-  TaskGraphRunnerTestBase() {}
+  TaskGraphRunnerTestBase();
+  ~TaskGraphRunnerTestBase();
 
   void SetTaskGraphRunner(TaskGraphRunner* task_graph_runner);
   void ResetIds(int namespace_index);
@@ -63,7 +59,7 @@ class TaskGraphRunnerTestBase {
   void ScheduleTasks(int namespace_index, const std::vector<TaskInfo>& tasks);
   void ExternalDependencyCompletedForTask(int namespace_index, int task_index);
 
-  static const int kNamespaceCount = 3;
+  static constexpr int kNamespaceCount = 3;
 
  protected:
   class FakeTaskImpl : public Task {
@@ -105,8 +101,8 @@ class TaskGraphRunnerTestBase {
     ~FakeDependentTaskImpl() override {}
   };
 
-  raw_ptr<TaskGraphRunner> task_graph_runner_;
-  NamespaceToken namespace_token_[kNamespaceCount];
+  raw_ptr<TaskGraphRunner> task_graph_runner_ = nullptr;
+  std::array<NamespaceToken, kNamespaceCount> namespace_token_;
   Task::Vector tasks_[kNamespaceCount];
   Task::Vector dependents_[kNamespaceCount];
   std::vector<unsigned> run_task_ids_[kNamespaceCount];
@@ -123,8 +119,9 @@ class TaskGraphRunnerTest : public TaskGraphRunnerTestBase,
     delegate_.StartTaskGraphRunner();
     SetTaskGraphRunner(delegate_.GetTaskGraphRunner());
 
-    for (int i = 0; i < kNamespaceCount; ++i)
-      namespace_token_[i] = task_graph_runner_->GenerateNamespaceToken();
+    for (NamespaceToken& namespace_token : namespace_token_) {
+      namespace_token = task_graph_runner_->GenerateNamespaceToken();
+    }
   }
   void TearDown() override {
     delegate_.StopTaskGraphRunner();
@@ -326,8 +323,8 @@ TYPED_TEST_P(SingleThreadTaskGraphRunnerTest, Priority) {
         TaskInfo(i, 0u, 2u, 1u, 0u, 1u, false),  // Priority 1
         TaskInfo(i, 1u, 3u, 1u, 0u, 0u, false)   // Priority 0
     };
-    this->ScheduleTasks(i,
-                        std::vector<TaskInfo>(tasks, tasks + std::size(tasks)));
+    this->ScheduleTasks(
+        i, std::vector<TaskInfo>(std::begin(tasks), std::end(tasks)));
   }
 
   for (int i = 0; i < kNamespaceCount; ++i) {

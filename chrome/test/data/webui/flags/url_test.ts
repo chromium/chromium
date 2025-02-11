@@ -77,7 +77,7 @@ suite('UrlWithSupportedFeatureTest', function() {
     await app.experimentalFeaturesReadyForTesting();
   });
 
-  test('check referenced experiment is highlighted', async function() {
+  test('check referenced experiment is highlighted', function() {
     // check the available tab is selected
     const crTabs = app.getRequiredElement('cr-tabs');
     assertEquals(0, crTabs.selected);
@@ -109,7 +109,7 @@ suite('UrlWithUnsupportedFeatureTest', function() {
     await app.experimentalFeaturesReadyForTesting();
   });
 
-  test('check referenced experiment is highlighted', async function() {
+  test('check referenced experiment is highlighted', function() {
     // check the unavailable tab is selected
     const crTabs = app.getRequiredElement('cr-tabs');
     assertEquals(1, crTabs.selected);

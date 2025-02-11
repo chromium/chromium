@@ -801,28 +801,6 @@ std::optional<data_sharing::GroupId> SavedTabGroupUtils::GetDataSharingGroupId(
 }
 
 // static
-bool SavedTabGroupUtils::HasRecentActivity(Profile* profile,
-                                           LocalTabGroupID group_id) {
-  auto* messaging_service =
-      collaboration::messaging::MessagingBackendServiceFactory::GetForProfile(
-          profile);
-  CHECK(messaging_service);
-
-  std::optional<data_sharing::GroupId> collaboration_group_id =
-      SavedTabGroupUtils::GetDataSharingGroupId(profile, group_id);
-  if (!collaboration_group_id.has_value()) {
-    return false;
-  }
-
-  collaboration::messaging::ActivityLogQueryParams activity_log_params;
-  activity_log_params.result_length = 1;
-  activity_log_params.collaboration_id = collaboration_group_id.value();
-
-  auto activity_log = messaging_service->GetActivityLog(activity_log_params);
-  return !activity_log.empty();
-}
-
-// static
 std::vector<collaboration::messaging::ActivityLogItem>
 SavedTabGroupUtils::GetRecentActivity(Profile* profile,
                                       LocalTabGroupID group_id) {

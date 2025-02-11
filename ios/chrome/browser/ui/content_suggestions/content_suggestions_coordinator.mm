@@ -290,7 +290,7 @@ using segmentation_platform::TipIdentifier;
   DCHECK(self.browser);
   DCHECK(self.NTPActionsDelegate);
   if (self.started) {
-    // Prevent this coordinator from being started twice in a row
+    // Prevent this coordinator from being started twice in a row.
     return;
   }
   _started = YES;
@@ -350,6 +350,9 @@ using segmentation_platform::TipIdentifier;
 
   self.contentSuggestionsMediator = [[ContentSuggestionsMediator alloc] init];
 
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
+
   NSMutableArray* moduleMediators = [NSMutableArray array];
 
   _mostVisitedTilesMediator = [[MostVisitedTilesMediator alloc]
@@ -357,8 +360,8 @@ using segmentation_platform::TipIdentifier;
                   prefService:prefs
              largeIconService:largeIconService
                largeIconCache:cache
-       URLLoadingBrowserAgent:UrlLoadingBrowserAgent::FromBrowser(
-                                  self.browser)];
+       URLLoadingBrowserAgent:UrlLoadingBrowserAgent::FromBrowser(self.browser)
+        accountManagerService:accountManagerService];
   _mostVisitedTilesMediator.contentSuggestionsDelegate = self.delegate;
   _mostVisitedTilesMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;

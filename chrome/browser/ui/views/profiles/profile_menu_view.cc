@@ -689,6 +689,8 @@ void ProfileMenuView::BuildGuestIdentity() {
   if (base::FeatureList::IsEnabled(switches::kEnableImprovedGuestProfileMenu)) {
     IdentitySectionParams params;
     params.title = menu_title_;
+    params.profile_image_padding =
+        std::nearbyint(kIdentityInfoImageSize * 0.25f);
     params.profile_image = profiles::GetGuestAvatar();
     SetProfileIdentityWithCallToAction(std::move(params));
   } else {

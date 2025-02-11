@@ -224,6 +224,12 @@ export class SeaPenRouterElement extends WithSeaPenStore {
     return showSeaPenIntroDialog && showSeaPenFreeformIntroDialog;
   }
 
+  private getBottomContainerClass_(relativePath: string|null) {
+    return isSeaPenTextInputEnabled() && relativePath !== SeaPenPaths.FREEFORM ?
+        'add-extra-spacing' :
+        '';
+  }
+
   private onBottomContainerClicked_(): void {
     // close the chip option selection if it is open (or selected chip state is
     // set).

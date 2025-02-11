@@ -5,8 +5,8 @@
 import type {ColorOption, DuplexOption, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
 import {Destination, DestinationOrigin} from 'chrome://print/print_preview.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {IPP_PRINT_QUALITY, ManagedPrintOptionsDuplexType, ManagedPrintOptionsQualityType/*, Size*/} from 'chrome://print/print_preview.js';
+import {assertEquals, assertFalse, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {IPP_PRINT_QUALITY, ManagedPrintOptionsDuplexType, ManagedPrintOptionsQualityType} from 'chrome://print/print_preview.js';
 import type {DestinationOptionalParams, ManagedPrintOptions} from 'chrome://print/print_preview.js';
 
 import {
@@ -20,6 +20,9 @@ suite('ManagedPrintOptionsTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     model = document.createElement('print-preview-model');
     document.body.appendChild(model);
+
+    loadTimeData.overrideValues(
+        {isUseManagedPrintJobOptionsInPrintPreviewEnabled: true});
   });
 
   function initializeModel() {
@@ -68,8 +71,6 @@ suite('ManagedPrintOptionsTest', () => {
   });
 
   test('SupportedDefaultValues', () => {
-    loadTimeData.overrideValues(
-        {isUseManagedPrintJobOptionsInPrintPreviewEnabled: true});
     const managedPrintOptions: ManagedPrintOptions = {
       mediaSize: {defaultValue: {width: 101600, height: 152400}},
       mediaType: {defaultValue: 'photographic'},
@@ -108,8 +109,6 @@ suite('ManagedPrintOptionsTest', () => {
   });
 
   test('UnsupportedDefaultValues', () => {
-    loadTimeData.overrideValues(
-        {isUseManagedPrintJobOptionsInPrintPreviewEnabled: true});
     const managedPrintOptions: ManagedPrintOptions = {
       mediaSize: {defaultValue: {width: 1, height: 1}},
       mediaType: {defaultValue: 'abacaba'},
@@ -156,8 +155,6 @@ suite('ManagedPrintOptionsTest', () => {
   });
 
   test('AllowedValuesApplied', () => {
-    loadTimeData.overrideValues(
-        {isUseManagedPrintJobOptionsInPrintPreviewEnabled: true});
     const managedPrintOptions: ManagedPrintOptions = {
       mediaSize: {
         // {width: 123, height: 321} is not supported by this printer.
@@ -200,6 +197,7 @@ suite('ManagedPrintOptionsTest', () => {
 
     testDestination1.capabilities =
         getCddTemplateWithAdvancedSettings(5, 'TestDestination1').capabilities;
+    testDestination1.applyAllowedManagedPrintOptions();
 
     // Allowed values are the intersection of values supported by printer and of
     // allowed values set via managed print options.
@@ -217,8 +215,6 @@ suite('ManagedPrintOptionsTest', () => {
   });
 
   test('AllowedValuesIgnored', () => {
-    loadTimeData.overrideValues(
-        {isUseManagedPrintJobOptionsInPrintPreviewEnabled: true});
     const managedPrintOptions: ManagedPrintOptions = {
       mediaSize: {
         allowedValues: [{width: 123, height: 321}],
@@ -257,6 +253,7 @@ suite('ManagedPrintOptionsTest', () => {
       ] as ColorOption[],
     };
     testDestination1.capabilities = capabilities;
+    testDestination1.applyAllowedManagedPrintOptions();
     // All the allowed values in 'managedPrintOptions' are unsupported by the
     // printer. Thus they are ignored.
 
@@ -272,5 +269,53 @@ suite('ManagedPrintOptionsTest', () => {
       return o.id === IPP_PRINT_QUALITY;
     });
     assertEquals(2, printQualityCapabilities!.select_cap!.option!.length);
+  });
+
+  test('DestinationPolicyAllowsSingleSettingValue', () => {
+    const managedPrintOptions: ManagedPrintOptions = {
+      mediaSize: {
+        allowedValues: [{width: 215900, height: 279400}],
+      },
+      mediaType: {allowedValues: ['photographic']},
+      duplex: {
+        allowedValues: [ManagedPrintOptionsDuplexType.SHORT_EDGE],
+      },
+      color: {allowedValues: [false]},
+      dpi: {allowedValues: [{horizontal: 100, vertical: 100}]},
+    };
+    const params: DestinationOptionalParams = {
+      managedPrintOptions: managedPrintOptions,
+    };
+    const testDestination1 = new Destination(
+        /*id_=*/ 'TestDestination1',
+        /*origin_=*/ DestinationOrigin.LOCAL,
+        /*displayName_=*/ 'TestDestination1',
+        /*params_=*/ params);
+    testDestination1.capabilities =
+        getCddTemplate('TestDestination1').capabilities;
+    const capabilities = testDestination1.capabilities!.printer;
+    // Verify that the destination actually supports at least two values for
+    // each of the tested setting. Otherwise the setting will be hidden in the
+    // print preview and `setByDestinationPolicy` will be set to false.
+    assertGE(capabilities!.media_size!.option.length, 2);
+    assertGE(capabilities!.media_type!.option.length, 2);
+    assertGE(capabilities!.duplex!.option.length, 2);
+    assertGE(capabilities!.color!.option.length, 2);
+    assertGE(capabilities!.dpi!.option.length, 2);
+
+    testDestination1.applyAllowedManagedPrintOptions();
+    initializeModel();
+
+    model.destination = testDestination1;
+    model.applyDestinationSpecificPolicies();
+
+    // Each setting that has only one allowed value according to the destination
+    // policy should have `setByDestinationPolicy` property set to true.
+    assertTrue(model.getSetting('mediaSize').setByDestinationPolicy);
+    assertTrue(model.getSetting('mediaType').setByDestinationPolicy);
+    assertTrue(model.getSetting('duplex').setByDestinationPolicy);
+    assertTrue(model.getSetting('duplexShortEdge').setByDestinationPolicy);
+    assertTrue(model.getSetting('color').setByDestinationPolicy);
+    assertTrue(model.getSetting('dpi').setByDestinationPolicy);
   });
 });

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
+
 #include <stdint.h>
 
 #include <utility>
@@ -22,7 +24,8 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
-#include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_encoded_video_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
@@ -69,6 +72,11 @@ class MockEmitLogMessageCb {
     return base::BindRepeating(base::BindLambdaForTesting(
         [this](const std::string& message) { EmitLogMessage(message); }));
   }
+};
+
+class MockEventListener : public NativeEventListener {
+ public:
+  MOCK_METHOD(void, Invoke, (ExecutionContext*, Event*));
 };
 
 class MediaStreamVideoTrackTest
@@ -430,12 +438,63 @@ TEST_F(MediaStreamVideoTrackTest, DeliverFramesAndGetSettings) {
   native_track->GetSettings(settings);
   EXPECT_EQ(600, settings.width);
   EXPECT_EQ(400, settings.height);
+  EXPECT_EQ(std::nullopt, settings.physical_frame_size);
 
   auto frame2 = media::VideoFrame::CreateBlackFrame(gfx::Size(200, 300));
+
+  media::VideoFrameMetadata metadata = frame2->metadata();
+  metadata.source_size = gfx::Size(600, 400);
+  frame2->set_metadata(metadata);
   DeliverVideoFrameAndWaitForRenderer(std::move(frame2), &sink);
   native_track->GetSettings(settings);
   EXPECT_EQ(200, settings.width);
   EXPECT_EQ(300, settings.height);
+  ASSERT_NE(settings.physical_frame_size, std::nullopt);
+  EXPECT_EQ(600, settings.physical_frame_size->width());
+  EXPECT_EQ(400, settings.physical_frame_size->height());
+
+  sink.DisconnectFromTrack();
+}
+
+TEST_F(MediaStreamVideoTrackTest,
+       ChangingFrameMetadataTriggersConfigurationChangeEvent) {
+  V8TestingScope v8_scope;
+  InitializeSource();
+  MockMediaStreamVideoSink sink;
+  WebMediaStreamTrack track = CreateTrack();
+  sink.ConnectToTrack(track);
+  MediaStreamVideoTrack* const native_track =
+      MediaStreamVideoTrack::From(track);
+  Persistent<MediaStreamComponent> media_stream_component = *track;
+  MediaStreamTrackPlatform::Settings settings;
+  MediaStreamTrackImpl* mst = MakeGarbageCollected<MediaStreamTrackImpl>(
+      v8_scope.GetExecutionContext(), media_stream_component);
+  testing::StrictMock<MockEventListener>* event_listener =
+      MakeGarbageCollected<testing::StrictMock<MockEventListener>>();
+  mst->addEventListener(event_type_names::kConfigurationchange, event_listener);
+
+  EXPECT_CALL(*event_listener, Invoke(_, _)).Times(2);
+
+  // Changing device_scale_factor triggers an event.
+  auto frame1 = media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
+  media::VideoFrameMetadata metadata = frame1->metadata();
+  metadata.device_scale_factor = 2.0f;
+  frame1->set_metadata(metadata);
+  DeliverVideoFrameAndWaitForRenderer(std::move(frame1), &sink);
+  native_track->GetSettings(settings);
+  EXPECT_EQ(std::nullopt, settings.physical_frame_size);
+  EXPECT_EQ(2.0f, settings.device_scale_factor);
+
+  // Changing metadata source_size triggers an event.
+  auto frame2 = media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
+  metadata.source_size = gfx::Size(600, 400);
+  frame2->set_metadata(metadata);
+  DeliverVideoFrameAndWaitForRenderer(std::move(frame2), &sink);
+  native_track->GetSettings(settings);
+  ASSERT_NE(std::nullopt, settings.physical_frame_size);
+  EXPECT_EQ(600, settings.physical_frame_size->width());
+  EXPECT_EQ(400, settings.physical_frame_size->height());
+  EXPECT_EQ(2.0f, settings.device_scale_factor);
 
   sink.DisconnectFromTrack();
 }

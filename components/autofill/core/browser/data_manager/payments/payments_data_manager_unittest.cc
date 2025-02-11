@@ -118,7 +118,8 @@ class PaymentsDataManagerHelper : public PaymentsDataManagerTestBase {
  protected:
   PaymentsDataManagerHelper() = default;
 
-  void ResetPaymentsDataManager(bool use_sync_transport_mode = false) {
+  void ResetPaymentsDataManager(bool use_sync_transport_mode = false,
+                                std::string app_locale = "en-US") {
     payments_data_manager_.reset();
     MakePrimaryAccountAvailable(use_sync_transport_mode, identity_test_env_,
                                 sync_service_);
@@ -126,7 +127,7 @@ class PaymentsDataManagerHelper : public PaymentsDataManagerTestBase {
         profile_database_service_, account_database_service_,
         /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr,
         prefs_.get(), &sync_service_, identity_test_env_.identity_manager(),
-        GeoIpCountryCode("US"), "en-US");
+        GeoIpCountryCode("US"), app_locale);
     payments_data_manager_->Refresh();
     WaitForOnPaymentsDataChanged();
   }
@@ -3705,8 +3706,8 @@ TEST_F(PaymentsDataManagerTest,
 }
 
 // Tests that Buy-now-pay-later issuer getters does not return any issuers if
-// `IsAutofillBnplEnabled()` returns `false`.
-TEST_F(PaymentsDataManagerTest, BnplIssuerGetters_AutofillBnplDisabled) {
+// `IsAutofillBnplPrefEnabled()` returns `false`.
+TEST_F(PaymentsDataManagerTest, BnplIssuerGetters_AutofillBnplPrefDisabled) {
   test_api(payments_data_manager())
       .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
   test_api(payments_data_manager())
@@ -3721,6 +3722,67 @@ TEST_F(PaymentsDataManagerTest, BnplIssuerGetters_AutofillBnplDisabled) {
   EXPECT_TRUE(payments_data_manager().GetBnplIssuers().empty());
   EXPECT_TRUE(payments_data_manager().GetUnlinkedBnplIssuers().empty());
   EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
+}
+
+// Tests that Buy-now-pay-later issuer getters does not return any issuers if
+// `kAutofillEnableBuyNowPayLaterSyncing` feature is disabled.
+TEST_F(PaymentsDataManagerTest, BnplIssuerGetters_AutofillBnplFeatureDisabled) {
+  test_api(payments_data_manager())
+      .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+  test_api(payments_data_manager())
+      .AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
+
+  ASSERT_EQ(2U, payments_data_manager().GetBnplIssuers().size());
+  ASSERT_EQ(1U, payments_data_manager().GetUnlinkedBnplIssuers().size());
+  ASSERT_EQ(1U, payments_data_manager().GetLinkedBnplIssuers().size());
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableBuyNowPayLaterSyncing);
+
+  EXPECT_TRUE(payments_data_manager().GetBnplIssuers().empty());
+  EXPECT_TRUE(payments_data_manager().GetUnlinkedBnplIssuers().empty());
+  EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
+}
+
+// Tests that Buy-now-pay-later issuer getters does not return any issuers if
+// `app_locale` is not "en-US".
+TEST_F(PaymentsDataManagerTest,
+       BnplIssuerGetters_AutofillBnplLocaleNotSupported) {
+  test_api(payments_data_manager())
+      .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+  test_api(payments_data_manager())
+      .AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
+
+  ASSERT_EQ(2U, payments_data_manager().GetBnplIssuers().size());
+  ASSERT_EQ(1U, payments_data_manager().GetUnlinkedBnplIssuers().size());
+  ASSERT_EQ(1U, payments_data_manager().GetLinkedBnplIssuers().size());
+
+  ResetPaymentsDataManager(false, "en-CA");
+
+  test_api(payments_data_manager())
+      .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+  test_api(payments_data_manager())
+      .AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
+
+  EXPECT_TRUE(payments_data_manager().GetBnplIssuers().empty());
+  EXPECT_TRUE(payments_data_manager().GetUnlinkedBnplIssuers().empty());
+  EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
+}
+
+// Tests that `SetAutofillHasSeenBnpl()` sets the pref to `true` regardless of
+// its current value.
+TEST_F(PaymentsDataManagerTest, SetAutofillHasSeenBnpl) {
+  // The pref should always start disabled.
+  ASSERT_FALSE(payments_data_manager().IsAutofillHasSeenBnplPrefEnabled());
+
+  // Calling `SetAutofillHasSeenBnpl()` permanently enables the pref.
+  payments_data_manager().SetAutofillHasSeenBnpl();
+  ASSERT_TRUE(payments_data_manager().IsAutofillHasSeenBnplPrefEnabled());
+
+  // The pref remains enabled after subsequent calls.
+  payments_data_manager().SetAutofillHasSeenBnpl();
+  ASSERT_TRUE(payments_data_manager().IsAutofillHasSeenBnplPrefEnabled());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)

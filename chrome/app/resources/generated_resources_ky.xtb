@@ -1373,6 +1373,7 @@
 <translation id="1936157145127842922">Куржунда көрсөтүү</translation>
 <translation id="1936931585862840749">Канча көчүрмө басылып чыга турганын сан менен көрсөтүңүз (1–<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> түзмөгү менен контейнердин <ph name="ARCHITECTURE_CONTAINER" /> түрүн импорттоого болбойт. Ал контейнерди башка түзмөктө калыбына келтирүүгө аракет кылып көрүңүз же болбосо, контейнердеги файлдарды Files колдонмосунда көрө аласыз.</translation>
+<translation id="1938116692670653897">Учурдагы түс темасы</translation>
 <translation id="1938351510777341717">Тышкы буйрук</translation>
 <translation id="1940221956626514677">Куралдар тилкесин тууралоо</translation>
 <translation id="1940546824932169984">Байланышкан түзмөктөр</translation>
@@ -2142,6 +2143,10 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2462332841984057083">Steam туураланып жатат. Орнотулганча күтө туруңуз.</translation>
 <translation id="2462724976360937186">Тастыктама борборунун ачкыч далдаштыргычы</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> принтери кошулду</translation>
+<translation id="2464075479326723132">Cунушталган файлдар Microsoft SharePoint жана OneDrive'да жасаган акыркы аракеттериңизге оңой өтүүгө жардам берет.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Картанын менюсунан параметрлерди тескесеңиз болот же көбүрөөк параметрлерди көрүү үчүн Chrome'ду ыңгайлаштыруу бөлүмүнө өтүңүз.</translation>
 <translation id="2464079411014186876">Балмуздак</translation>
 <translation id="2467755475704469005">Бир да түзмөк табылган жок. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" /> жана дагы <ph name="NUM_OTHER_MEMBERS" /> колдонуучу бар өтмөктөр тобуна кошулуңуз</translation>
@@ -4002,6 +4007,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3787434344076711519">Которуу күтүлүүдө</translation>
 <translation id="3788301286821743879">Киоск колдонмосу ишке киргизилген жок.</translation>
 <translation id="3788401245189148511">Мындай болмок:</translation>
+<translation id="3789432704615470433">SharePoint жана OneDrive файлдары</translation>
 <translation id="3789841737615482174">Орнотуу</translation>
 <translation id="3790417903123637354">Бир жерден ката кетти. Бир аздан кийин кайталап көрүңүз</translation>
 <translation id="379082410132524484">Карточкаңыздын мөөнөтү бүткөн</translation>
@@ -5635,7 +5641,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4946998421534856407">жүргүзгүч + өйдө жебе</translation>
 <translation id="4947376546135294974">Сиз кирип турган сайттагы маалымат</translation>
 <translation id="4950100687509657457">Профиль түзүү</translation>
-<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{файл}other{# файл}}</translation>
 <translation id="495170559598752135">Аракеттер</translation>
 <translation id="4951966678293618079">Бул сайттагы сырсөздөр эч качан сакталбасын</translation>
@@ -6191,6 +6196,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5360150013186312835">Куралдар тилкесинен көрсөтүү</translation>
 <translation id="5362741141255528695">Жеке ачкыч файлын тандоо.</translation>
 <translation id="536278396489099088">ChromeOS тутумунун абалы жана отчёттор</translation>
+<translation id="5362916924854054326">SharePoint жана OneDrive файлдары көрсөтүлбөсүн</translation>
 <translation id="5363109466694494651">Жууп салуу жана кайтуу</translation>
 <translation id="5365881113273618889">Тандалган папкада купуя файлдар бар. "<ph name="APP_NAME" />" колдонмосуна бул папканы тоскоолдуксуз ачып, ичиндегилерин окуу мүмкүнчүлүгүн бергиңиз келеби?</translation>
 <translation id="536638840841140142">Жок</translation>
@@ -7991,7 +7997,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6679947539429331601">12 саатка жашыруу</translation>
 <translation id="6680442031740878064">Бош орун: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Баалоо</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Placeholder String]</translation>
 <translation id="6683022854667115063">Гарнитура</translation>
 <translation id="6683087162435654533">Бардык өтмөктөрдү калыбына келтирүү</translation>
 <translation id="6683433919380522900">Уруксат абалы: <ph name="PERMISSION_STATE" /></translation>
@@ -9209,7 +9214,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7561196759112975576">Ар дайым</translation>
 <translation id="7561759921596375678">Үнүн күйгүзүү</translation>
 <translation id="7561982940498449837">Менюну жабуу</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">Серепчи терезесин ачуу</translation>
 <translation id="7564847347806291057">Процессти бүтүрүү</translation>
 <translation id="756503097602602175">Кирип турган Google аккаунттарын <ph name="LINK_BEGIN" />Параметрлерден<ph name="LINK_END" /> башкара аласыз. Вебсайттарга жана колдонмолорго берилген уруксаттар бардык аккаунттарга карата колдонулушу мүмкүн. Эгер сайттар менен колдонмолордун аккаунтуңуздагы маалыматты колдонушун каалабасаңыз, <ph name="DEVICE_TYPE" /> түзмөгүңүзгө конок режиминде же <ph name="LINK_2_BEGIN" />жашыруун терезеден<ph name="LINK_2_END" /> кирсеңиз болот.</translation>
@@ -10770,6 +10774,10 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="865936634714975126">Бетти жүктөө түрлөрүн тандоо үчүн URL'де сурамдын параметрин кошуңуз. Мисалы: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> байланыш</translation>
 <translation id="8659609431223166673">Терезе ылдый жылдырылды</translation>
+<translation id="8660288500924118793">Outlook Жылнаамада кийинки иш-чарага оңой өтүү үчүн жылнаамаңызды көрүп турасыз.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Картанын менюсунан параметрлерди тескесеңиз болот же көбүрөөк параметрлерди көрүү үчүн Chrome'ду ыңгайлаштыруу бөлүмүнө өтүңүз.</translation>
 <translation id="8661290697478713397">Шилтемени жашыр&amp;уун терезеде ачуу</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> түзмөгүнө кириңиз</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> тармагына кошулуу</translation>

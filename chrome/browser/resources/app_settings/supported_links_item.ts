@@ -249,7 +249,7 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
     this.showOverlappingAppsDialog_ = false;
 
     const overlapDialog = castExists(
-        this.shadowRoot!
+        this.shadowRoot
             .querySelector<SupportedLinksOverlappingAppsDialogElement>(
                 '#overlapDialog'));
     if (overlapDialog.wasConfirmed()) {
@@ -258,8 +258,8 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
       focusWithoutInk(this.$.preferredRadioButton);
     } else {
       // Reset the radio button.
-      this.shadowRoot!.querySelector<CrRadioGroupElement>(
-                          '#radioGroup')!.selected =
+      this.shadowRoot.querySelector<CrRadioGroupElement>(
+                         '#radioGroup')!.selected =
           this.getCurrentPreferredApp_();
       // Return keyboard focus to the browser radio button.
       focusWithoutInk(this.$.browserRadioButton);

@@ -665,6 +665,7 @@ class WPTAdapter:
             self._optimize(runner_options)
 
     def _optimize(self, runner_options: argparse.Namespace):
+        logger.info('Cleaning up redundant baselines...')
         blink_tool_path = self.finder.path_from_blink_tools('blink_tool.py')
         command = [
             blink_tool_path,

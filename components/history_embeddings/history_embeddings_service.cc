@@ -34,7 +34,6 @@
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
-#include "components/passage_embeddings/scheduling_embedder.h"
 #include "url/gurl.h"
 
 namespace history_embeddings {
@@ -235,10 +234,7 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
       history_service_(history_service),
       page_content_annotations_service_(page_content_annotations_service),
       optimization_guide_decider_(optimization_guide_decider),
-      embedder_(std::make_unique<passage_embeddings::SchedulingEmbedder>(
-          std::move(embedder),
-          GetFeatureParameters().scheduled_embeddings_max,
-          GetFeatureParameters().use_performance_scenario)),
+      embedder_(std::move(embedder)),
       answerer_(std::move(answerer)),
       intent_classifier_(std::move(intent_classifier)),
       query_id_weak_ptr_factory_(&query_id_),
@@ -269,7 +265,7 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
 
   // OnEmbedderReady callback needs to be set after the storage_ construction,
   // since the callback could be invoked immediately.
-  embedder_->SetOnEmbedderReady(
+  embedder_->SetOnEmbedderReadyCallback(
       base::BindOnce(&HistoryEmbeddingsService::OnEmbedderMetadataReady,
                      weak_ptr_factory_.GetWeakPtr()));
 }

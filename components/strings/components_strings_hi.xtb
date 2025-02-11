@@ -206,7 +206,6 @@
 <translation id="1337692097987160377">इस टैब को शेयर करें</translation>
 <translation id="1339601241726513588">नामांकन डोमेन:</translation>
 <translation id="1340482604681802745">पिकअप पता</translation>
-<translation id="134204716678666126">फ़ीडबैक बटन पर जाने के लिए, लेफ़्ट और राइट बटन का इस्तेमाल करें.</translation>
 <translation id="1343356790768851700">यह साइट, आपकी पसंद के विषयों का पता लगाती है और फिर दूसरी साइटों पर विज्ञापन के सुझाव देती है</translation>
 <translation id="1346748346194534595">दाएं</translation>
 <translation id="1348779747280417563">नाम की पुष्टि करें</translation>
@@ -1062,7 +1061,6 @@
 <translation id="2902312830803030883">और क्रियाएं</translation>
 <translation id="2903493209154104877">पते</translation>
 <translation id="290376772003165898">क्या पेज <ph name="LANGUAGE" /> भाषा में नहीं है?</translation>
-<translation id="2904165004205947971">अपनी जानकारी मैनेज करें</translation>
 <translation id="2905107382358353958">नई पेमेंट सेटिंग के बारे में सूचना</translation>
 <translation id="2909946352844186028">नेटवर्क में बदलाव का पता चला.</translation>
 <translation id="2911255567212929079">मशीन लर्निंग और आर्टिफ़िशियल इंटेलिजेंस</translation>
@@ -1568,7 +1566,6 @@
 <translation id="3727309136762649052">नेमस्पेस</translation>
 <translation id="3727850735097852673">macOS Keychain के साथ Google Password Manager का इस्तेमाल करने के लिए, Chrome को फिर से लॉन्च करें और Keychain को ऐक्सेस करने की अनुमति दें. फिर से लॉन्च करने पर, आपके टैब दोबारा खुल जाएंगे.</translation>
 <translation id="3728173127485570463">Chrome ब्राउज़र में पासवर्ड ऑटोमैटिक भरने के लिए, अब फ़िंगरप्रिंट की ज़रूरत नहीं होगी</translation>
-<translation id="3735143108516366187">सुझावों को बेहतर बनाने की सुविधा को मैनेज करने के लिए, Enter दबाएं</translation>
 <translation id="3736739313435669994">आपने साइटों को तीसरे पक्ष की कुकी का इस्तेमाल करने से रोका है, ताकि ब्राउज़ करते समय आपको ट्रैक न किया जा सके. <ph name="LINK" /> के लिए सेटिंग पर जाएं.</translation>
 <translation id="3738166223076830879">आपका एडमिन आपके ब्राउज़र को मैनेज करता है.</translation>
 <translation id="3738428049780661523"><ph name="DATE" /> को बनाया गया</translation>
@@ -1667,7 +1664,6 @@
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3909899182024383590"><ph name="WEBSITE" /> से सेव की गई जानकारी और पेज, Google को भेजा जाता है. समीक्षा करने वाले लोग यह जानकारी देख सकते हैं, ताकि इस सुविधा को बेहतर बनाया जा सके.</translation>
 <translation id="3910231615117880630">एम्बेड किए गए कॉन्टेंट के बारे में ज़्यादा जानें</translation>
-<translation id="3915878244842478983">Chrome को आपकी जानकारी पाने में समस्या हुई</translation>
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />अपना डेटा कैसे मैनेज करें:<ph name="END_BOLD" /> Chrome उन साइटों को सूची से अपने-आप मिटा देता है जिन्हें आपने 30 दिन पहले विज़िट किया था. किसी साइट को फिर से विज़िट करने पर, उसे सूची में दोबारा शामिल किया जा सकता है. आप जब चाहें, Chrome की सेटिंग में जाकर, किसी साइट को विज्ञापनों का सुझाव देने से रोका जा सकता है. साथ ही, 'साइट की ओर से सुझाए गए विज्ञापन' सेटिंग को बंद किया जा सकता है.</translation>
 <translation id="3921869355029467742">अपना सुरक्षा कोड डालें</translation>
 <translation id="3927538228901078312">तुलना करने वाली कोई टेबल नहीं है</translation>
@@ -2867,7 +2863,6 @@
 <translation id="6058977677006700226">क्या आप अपने कार्ड का इस्तेमाल सभी डिवाइस पर करना चाहते हैं?</translation>
 <translation id="6059925163896151826">USB डिवाइस</translation>
 <translation id="6060009363608157444">अमान्य DnsOverHttps मोड.</translation>
-<translation id="6060132878120844000">और 1 अन्य फ़ील्ड</translation>
 <translation id="6061154937977953833">कुश्ती</translation>
 <translation id="6062937464449575061">कीमत ट्रैक न करें</translation>
 <translation id="6063415549109819824">होम फ़ाइनेंसिंग</translation>
@@ -2933,7 +2928,6 @@
 <translation id="6180316780098470077">बार-बार कोशिश किए जाने के बीच का समय</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome, तीसरे पक्ष की कुकी को अपने-आप सीमित कर देता है</translation>
-<translation id="6188479691141473408">और <ph name="N_FIELDS" /> अन्य फ़ील्ड</translation>
 <translation id="6190518157737269631">अपने कीबोर्ड पर Esc जैसे कुछ बटनों के इनपुट को बदलने की अनुमति दें</translation>
 <translation id="6194209731893739467">ट्रैक किए गए अपने सभी प्रॉडक्ट यहां देखें</translation>
 <translation id="6195163219142236913">तीसरे पक्ष की कुकी सीमित हैं</translation>
@@ -3162,7 +3156,6 @@
 <translation id="6569060085658103619">एक एक्सटेंशन पेज देखा जा रहा है</translation>
 <translation id="6572867903637058088">क्या यह जानकारी काम की थी?</translation>
 <translation id="6573200754375280815">दाईं ओर ड्युएल पंच</translation>
-<translation id="6574762126505704998">भरें</translation>
 <translation id="6575408526598156416">खाते में सेव करें</translation>
 <translation id="6577792494180292262">वेंचर कैपिटल</translation>
 <translation id="6578434528542148658">अमान्य एक्सटेंशन आईडी.</translation>
@@ -3980,7 +3973,6 @@
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome को सिस्टम के डिफ़ॉल्ट ब्राउज़र के रूप में सेट करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="8027077570865220386">ट्रे 15</translation>
 <translation id="8027585818882015174">'Chrome की सुरक्षा जांच करें' बटन, Chrome की सेटिंग में जाकर सुरक्षा जांच करने के लिए इसे चालू करें</translation>
-<translation id="8028138772801251745">एआई (AI) की मदद से, ऑटोमैटिक भरने की सुविधा</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms में जल्दी से नया फ़ॉर्म बनाने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
 <translation id="8028892419725165118">कैज़ुअल गेम</translation>
 <translation id="8028960012888758725">जॉब के बाद ट्रिम करें</translation>

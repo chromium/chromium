@@ -2123,4 +2123,25 @@ TEST_P(BackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
   task_environment_.RunUntilIdle();
 }
 
+class BackingStoreTestForCleanupScheduler : public BackingStoreTest {
+ public:
+  BackingStoreTestForCleanupScheduler() {
+    scoped_feature_list_.InitAndEnableFeature(kIdbInSessionDbCleanup);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(BackingStoreTestForCleanupScheduler,
+       SchedulerInitializedIfTombstoneThresholdExceeded) {
+  backing_store_->OnTransactionComplete(false);
+  EXPECT_FALSE(backing_store_->GetLevelDBCleanupSchedulerForTesting()
+                   .GetRunningStateForTesting()
+                   .has_value());
+  backing_store_->OnTransactionComplete(true);
+  EXPECT_TRUE(backing_store_->GetLevelDBCleanupSchedulerForTesting()
+                  .GetRunningStateForTesting()
+                  .has_value());
+}
 }  // namespace content::indexed_db

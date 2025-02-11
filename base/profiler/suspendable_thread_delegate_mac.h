@@ -56,6 +56,9 @@ class BASE_EXPORT SuspendableThreadDelegateMac
       RegisterContext* thread_context) override;
 
  private:
+  // Thread ID of thread being profiled.
+  const base::PlatformThreadId thread_id_;
+
   // Weak reference: Mach port for thread being profiled.
   const mach_port_t thread_port_;
 

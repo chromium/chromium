@@ -5,7 +5,6 @@
 import '/strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {NativeLayerCrosImpl} from '../native_layer_cros.js';
 
@@ -125,6 +124,38 @@ export interface DestinationOptionalParams {
 }
 
 /**
+ * For each setting the corresponding property of this interface is set to true
+ * if all the following holds:
+ *   - Allowed managed print options are present for this setting.
+ *   - There's a non-empty intersection between values supported by printer and
+ *     allowed values in managed print options.
+ *   - There's at least a single value that the printer supports, but the policy
+ *     for this printer disallows.
+ * Otherwise the property equals to false.
+ */
+export interface AllowedManagedPrintOptionsApplied {
+  mediaSize: boolean;
+  mediaType: boolean;
+  duplex: boolean;
+  color: boolean;
+  dpi: boolean;
+  quality: boolean;
+  printAsImage: boolean;
+}
+
+function createDefaultAllowedManagedPrintOptionsApplied() {
+  return {
+    mediaSize: false,
+    mediaType: false,
+    duplex: false,
+    color: false,
+    dpi: false,
+    quality: false,
+    printAsImage: false,
+  };
+}
+
+/**
  * List of capability types considered color.
  */
 const COLOR_TYPES: string[] = ['STANDARD_COLOR', 'CUSTOM_COLOR'];
@@ -233,9 +264,10 @@ export class Destination {
   private managedPrintOptions_: ManagedPrintOptions|null = null;
 
   /**
-   * True if the managed print options applied restrictions on any setting.
+   * For each setting tracks whether the set of allowed values was set by the
+   * destination specific policy.
    */
-  private allowedManagedPrintOptionsApplied_: boolean = false;
+  allowedManagedPrintOptionsApplied: AllowedManagedPrintOptionsApplied;
 
   private type_: PrinterType;
 
@@ -261,6 +293,8 @@ export class Destination {
         'Provisional USB destination only supported with extension origin.');
 
     this.managedPrintOptions_ = (params && params.managedPrintOptions) || null;
+    this.allowedManagedPrintOptionsApplied =
+        createDefaultAllowedManagedPrintOptionsApplied();
   }
 
   private computeType_(id: string, origin: DestinationOrigin): PrinterType {
@@ -328,11 +362,6 @@ export class Destination {
   set capabilities(capabilities: Cdd|null) {
     if (capabilities) {
       this.capabilities_ = capabilities;
-      if (loadTimeData.getBoolean(
-              'isUseManagedPrintJobOptionsInPrintPreviewEnabled') &&
-          this.managedPrintOptions_) {
-        this.applyAllowedManagedPrintOptions();
-      }
     }
   }
 
@@ -456,16 +485,34 @@ export class Destination {
     return this.managedPrintOptions_;
   }
 
-  get allowedManagedPrintOptionsApplied(): boolean {
-    return this.allowedManagedPrintOptionsApplied_;
+  /**
+   * True if the managed print options applied restrictions on any setting.
+   */
+  allowedManagedPrintOptionsAppliedForAnySetting(): boolean {
+    return this.allowedManagedPrintOptionsApplied.mediaSize ||
+        this.allowedManagedPrintOptionsApplied.mediaType ||
+        this.allowedManagedPrintOptionsApplied.duplex ||
+        this.allowedManagedPrintOptionsApplied.color ||
+        this.allowedManagedPrintOptionsApplied.dpi ||
+        this.allowedManagedPrintOptionsApplied.quality ||
+        this.allowedManagedPrintOptionsApplied.printAsImage;
   }
 
-  private applyAllowedManagedPrintOptions() {
-    this.allowedManagedPrintOptionsApplied_ = false;
-    assert(this.capabilities_);
+  /**
+   * Merges capabilities with the managed print options.
+   */
+  applyAllowedManagedPrintOptions() {
+    // Reset all the properties of `allowedManagedPrintOptionsApplied` to false.
+    this.allowedManagedPrintOptionsApplied =
+        createDefaultAllowedManagedPrintOptionsApplied();
 
+    if (!this.managedPrintOptions_) {
+      return;
+    }
+
+    assert(this.capabilities_);
     if (this.capabilities_.printer.media_size &&
-        this.managedPrintOptions_?.mediaSize?.allowedValues &&
+        this.managedPrintOptions_.mediaSize?.allowedValues &&
         this.managedPrintOptions_.mediaSize.allowedValues.length > 0) {
       const allowedMediaSizeValues =
           this.managedPrintOptions_.mediaSize.allowedValues;
@@ -479,14 +526,16 @@ export class Destination {
                 });
               });
 
-      if (allowedSupportedValues.length > 0) {
+      if (allowedSupportedValues.length > 0 &&
+          allowedSupportedValues.length <
+              this.capabilities_.printer.media_size.option.length) {
         this.capabilities_.printer.media_size.option = allowedSupportedValues;
-        this.allowedManagedPrintOptionsApplied_ = true;
+        this.allowedManagedPrintOptionsApplied.mediaSize = true;
       }
     }
 
     if (this.capabilities_.printer.media_type &&
-        this.managedPrintOptions_?.mediaType?.allowedValues &&
+        this.managedPrintOptions_.mediaType?.allowedValues &&
         this.managedPrintOptions_.mediaType.allowedValues.length > 0) {
       const allowedMediaTypeValues =
           this.managedPrintOptions_.mediaType.allowedValues;
@@ -499,14 +548,16 @@ export class Destination {
                 });
               });
 
-      if (allowedSupportedValues.length > 0) {
+      if (allowedSupportedValues.length > 0 &&
+          allowedSupportedValues.length <
+              this.capabilities_.printer.media_type.option.length) {
         this.capabilities_.printer.media_type.option = allowedSupportedValues;
-        this.allowedManagedPrintOptionsApplied_ = true;
+        this.allowedManagedPrintOptionsApplied.mediaType = true;
       }
     }
 
     if (this.capabilities_.printer.duplex &&
-        this.managedPrintOptions_?.duplex?.allowedValues &&
+        this.managedPrintOptions_.duplex?.allowedValues &&
         this.managedPrintOptions_.duplex.allowedValues.length > 0) {
       const allowedDuplexValues =
           this.managedPrintOptions_.duplex.allowedValues;
@@ -519,16 +570,18 @@ export class Destination {
             });
           });
 
-      if (allowedSupportedValues.length > 0) {
+      if (allowedSupportedValues.length > 0 &&
+          allowedSupportedValues.length <
+              this.capabilities_.printer.duplex.option.length) {
         this.capabilities_.printer.duplex.option = allowedSupportedValues;
-        this.allowedManagedPrintOptionsApplied_ = true;
+        this.allowedManagedPrintOptionsApplied.duplex = true;
       }
     }
 
     // Applying restrictions on the color setting only makes sense if the
     // printer supports printing both in black&white and in color.
     if (this.hasColorCapability &&
-        this.managedPrintOptions_?.color?.allowedValues &&
+        this.managedPrintOptions_.color?.allowedValues &&
         this.managedPrintOptions_.color.allowedValues.length > 0) {
       const allowedColorValues = this.managedPrintOptions_.color.allowedValues;
 
@@ -541,14 +594,16 @@ export class Destination {
             });
           });
 
-      if (allowedSupportedValues.length > 0) {
+      if (allowedSupportedValues.length > 0 &&
+          allowedSupportedValues.length <
+              this.capabilities_.printer.color!.option.length) {
         this.capabilities_.printer.color!.option = allowedSupportedValues!;
-        this.allowedManagedPrintOptionsApplied_ = true;
+        this.allowedManagedPrintOptionsApplied.color = true;
       }
     }
 
     if (this.capabilities_.printer.dpi &&
-        this.managedPrintOptions_?.dpi?.allowedValues &&
+        this.managedPrintOptions_.dpi?.allowedValues &&
         this.managedPrintOptions_.dpi.allowedValues.length > 0) {
       const allowedDpiValues = this.managedPrintOptions_.dpi.allowedValues;
 
@@ -561,14 +616,16 @@ export class Destination {
             });
           });
 
-      if (allowedSupportedValues.length > 0) {
+      if (allowedSupportedValues.length > 0 &&
+          allowedSupportedValues.length <
+              this.capabilities_.printer.dpi.option.length) {
         this.capabilities_.printer.dpi.option = allowedSupportedValues!;
-        this.allowedManagedPrintOptionsApplied_ = true;
+        this.allowedManagedPrintOptionsApplied.dpi = true;
       }
     }
 
     if (this.capabilities_.printer.vendor_capability &&
-        this.managedPrintOptions_?.quality?.allowedValues &&
+        this.managedPrintOptions_.quality?.allowedValues &&
         this.managedPrintOptions_.quality.allowedValues.length > 0) {
       const allowedQualityValues =
           this.managedPrintOptions_.quality.allowedValues;
@@ -586,9 +643,11 @@ export class Destination {
                         managedPrintOptionsQualityToIpp(allowedValue);
                   });
                 });
-        if (allowedSupportedValues.length > 0) {
+        if (allowedSupportedValues.length > 0 &&
+            allowedSupportedValues.length <
+                printQualityCapability.select_cap.option.length) {
           printQualityCapability.select_cap.option = allowedSupportedValues;
-          this.allowedManagedPrintOptionsApplied_ = true;
+          this.allowedManagedPrintOptionsApplied.quality = true;
         }
       }
     }

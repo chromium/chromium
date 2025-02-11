@@ -1038,17 +1038,15 @@ const base::FeatureParam<base::TimeDelta>
 // fetch fonts from the Browser's FontDataService. It is currently scoped to
 // just Windows. See crbug.com/335680565.
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kFontDataService,
-             "FontDataService",
+BASE_FEATURE(kFontDataServiceAllWebContents,
+             "FontDataServiceAllWebContents",
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<FontDataServiceTypefaceType>::Option
     font_data_service_typeface[] = {
         {FontDataServiceTypefaceType::kDwrite, "DWrite"},
-        {FontDataServiceTypefaceType::kInternal, "Internal"},
-        {FontDataServiceTypefaceType::kControlWithoutSpareRenderer,
-         "ControlWithoutSpareRenderer"}};
+        {FontDataServiceTypefaceType::kInternal, "Internal"}};
 const base::FeatureParam<FontDataServiceTypefaceType>
-    kFontDataServiceTypefaceType{&kFontDataService, "typeface",
+    kFontDataServiceTypefaceType{&kFontDataServiceAllWebContents, "typeface",
                                  FontDataServiceTypefaceType::kDwrite,
                                  &font_data_service_typeface};
 
