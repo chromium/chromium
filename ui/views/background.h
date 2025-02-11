@@ -14,6 +14,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/themed_vector_icon.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/views_export.h"
@@ -126,6 +127,16 @@ VIEWS_EXPORT std::unique_ptr<Background> CreateBackgroundFromPainter(
 // Creates a background from the specified ThemedVectorIcon.
 VIEWS_EXPORT std::unique_ptr<Background> CreateThemedVectorIconBackground(
     const ui::ThemedVectorIcon& icon);
+
+// Creates a SolidBackground or ThemedSolidBackground based on `color` type.
+VIEWS_EXPORT std::unique_ptr<Background> CreateSolidOrThemedBackground(
+    ui::ColorVariant color);
+
+// Creates a SolidBackground or ThemedSolidBackground with `radii` based on
+// `color` type.
+VIEWS_EXPORT std::unique_ptr<Background>
+CreateSolidOrThemedRoundedRectBackground(ui::ColorVariant color,
+                                         const gfx::RoundedCornersF& radii);
 
 }  // namespace views
 

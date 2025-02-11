@@ -4,6 +4,8 @@
 
 #include "ash/style/pill_button.h"
 
+#include <optional>
+
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/blurred_background_shield.h"
@@ -13,7 +15,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
@@ -63,19 +68,12 @@ int GetButtonHeight(PillButton::Type type) {
                                      : kPillButtonHeight;
 }
 
-// Checks if the color variant is assigned a color/color ID.
-bool IsAssignedColorVariant(PillButton::ColorVariant color_variant) {
-  // The color variant is assigned as long as it is not equal to
-  // `gfx::kPlaceholderColor`.
-  return !(absl::holds_alternative<SkColor>(color_variant) &&
-           absl::get<SkColor>(color_variant) == gfx::kPlaceholderColor);
-}
-
 // Updates the target color variant with given color variant if they are not
 // equal.
-bool MaybeUpdateColorVariant(PillButton::ColorVariant& target_color_variant,
-                             PillButton::ColorVariant color_variant) {
-  if (target_color_variant == color_variant) {
+bool MaybeUpdateColorVariant(
+    std::optional<ui::ColorVariant>& target_color_variant,
+    ui::ColorVariant color_variant) {
+  if (target_color_variant && target_color_variant == color_variant) {
     return false;
   }
 
@@ -226,11 +224,11 @@ void PillButton::UpdateBackgroundColor() {
   }
 
   // Resolve the expected background color.
-  ColorVariant background_color;
+  ui::ColorVariant background_color;
   if (!GetEnabled()) {
     background_color = cros_tokens::kCrosSysDisabledContainer;
-  } else if (IsAssignedColorVariant(background_color_)) {
-    background_color = background_color_;
+  } else if (background_color_) {
+    background_color = background_color_.value();
   } else {
     auto default_color_id = GetDefaultBackgroundColorId(type_);
     DCHECK(default_color_id);
@@ -258,22 +256,11 @@ void PillButton::UpdateBackgroundColor() {
 
   // Create the background with expected color or update the colors of blurred
   // background shield.
-  if (absl::holds_alternative<SkColor>(background_color)) {
-    SkColor color_value = absl::get<SkColor>(background_color);
-    if (enable_background_blur_) {
-      blurred_background_->SetColor(color_value);
-    } else {
-      SetBackground(
-          views::CreateRoundedRectBackground(color_value, corner_radius));
-    }
+  if (enable_background_blur_) {
+    blurred_background_->SetColor(background_color);
   } else {
-    ui::ColorId color_id = absl::get<ui::ColorId>(background_color);
-    if (enable_background_blur_) {
-      blurred_background_->SetColorId(color_id);
-    } else {
-      SetBackground(
-          views::CreateThemedRoundedRectBackground(color_id, corner_radius));
-    }
+    SetBackground(views::CreateSolidOrThemedRoundedRectBackground(
+        background_color, gfx::RoundedCornersF(corner_radius)));
   }
 }
 
@@ -412,11 +399,11 @@ void PillButton::UpdateTextColor() {
   SetTextColorId(views::Button::STATE_DISABLED, cros_tokens::kCrosSysDisabled);
 
   // If custom text color is set, use it to set text color.
-  if (IsAssignedColorVariant(text_color_)) {
-    if (absl::holds_alternative<SkColor>(text_color_)) {
-      SetEnabledTextColors(absl::get<SkColor>(text_color_));
+  if (text_color_) {
+    if (auto color = text_color_->GetSkColor()) {
+      SetEnabledTextColors(*color);
     } else {
-      SetEnabledTextColorIds(absl::get<ui::ColorId>(text_color_));
+      SetEnabledTextColorIds(*text_color_->GetColorId());
     }
   } else {
     // Otherwise, use default color ID to set text color.
@@ -439,16 +426,14 @@ void PillButton::UpdateIconColor() {
                     *icon_, cros_tokens::kCrosSysDisabled, kIconSize));
 
   // If custom icon color is set, use it to set icon color.
-  if (IsAssignedColorVariant(icon_color_)) {
-    if (absl::holds_alternative<SkColor>(icon_color_)) {
+  if (icon_color_) {
+    if (auto color = icon_color_->GetSkColor()) {
+      SetImageModel(views::Button::STATE_NORMAL,
+                    ui::ImageModel::FromVectorIcon(*icon_, *color, kIconSize));
+    } else {
       SetImageModel(views::Button::STATE_NORMAL,
                     ui::ImageModel::FromVectorIcon(
-                        *icon_, absl::get<SkColor>(icon_color_), kIconSize));
-    } else {
-      SetImageModel(
-          views::Button::STATE_NORMAL,
-          ui::ImageModel::FromVectorIcon(
-              *icon_, absl::get<ui::ColorId>(icon_color_), kIconSize));
+                        *icon_, *icon_color_->GetColorId(), kIconSize));
     }
   } else {
     // Otherwise, use default color ID to set icon color.

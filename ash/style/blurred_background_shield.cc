@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/style/color_provider.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/view.h"
 
@@ -13,7 +14,7 @@ namespace ash {
 
 BlurredBackgroundShield::BlurredBackgroundShield(
     views::View* host,
-    absl::variant<SkColor, ui::ColorId> color,
+    ui::ColorVariant color,
     float blur_sigma,
     const gfx::RoundedCornersF& rounded_corners,
     bool add_layer_to_region)
@@ -50,23 +51,12 @@ BlurredBackgroundShield::~BlurredBackgroundShield() {
   }
 }
 
-void BlurredBackgroundShield::SetColor(SkColor color) {
-  if (absl::holds_alternative<SkColor>(color_) &&
-      absl::get<SkColor>(color_) == color) {
+void BlurredBackgroundShield::SetColor(ui::ColorVariant color) {
+  if (color_ == color) {
     return;
   }
 
   color_ = color;
-  UpdateBackgroundColor();
-}
-
-void BlurredBackgroundShield::SetColorId(ui::ColorId color_id) {
-  if (absl::holds_alternative<ui::ColorId>(color_) &&
-      absl::get<ui::ColorId>(color_) == color_id) {
-    return;
-  }
-
-  color_ = color_id;
   UpdateBackgroundColor();
 }
 
@@ -111,12 +101,9 @@ void BlurredBackgroundShield::StackLayerBelowHost() {
 
 void BlurredBackgroundShield::UpdateBackgroundColor() {
   auto* color_provider = host_->GetColorProvider();
-  const SkColor background_color =
-      absl::holds_alternative<SkColor>(color_)
-          ? absl::get<SkColor>(color_)
-          : (color_provider
-                 ? color_provider->GetColor(absl::get<ui::ColorId>(color_))
-                 : gfx::kPlaceholderColor);
+  const SkColor background_color = color_provider
+                                       ? color_.ConvertToSkColor(color_provider)
+                                       : gfx::kPlaceholderColor;
   // Only enable the background blur if the color is translucent.
   background_layer_.SetColor(background_color);
   if (SkColorGetA(background_color) != SK_AlphaOPAQUE && blur_sigma_) {

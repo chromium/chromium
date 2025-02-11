@@ -40,6 +40,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_variant.h"
 
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/grit/theme_resources.h"
@@ -320,7 +321,7 @@ bool CanAllBeEditedByUser(
 
 gfx::ImageSkia GetBookmarkFolderImageFromVectorIcon(
     BookmarkFolderIconType icon_type,
-    absl::variant<ui::ColorId, SkColor> color,
+    ui::ColorVariant color,
     const ui::ColorProvider* color_provider) {
   const gfx::VectorIcon* id;
   gfx::ImageSkia folder;
@@ -329,17 +330,16 @@ gfx::ImageSkia GetBookmarkFolderImageFromVectorIcon(
   } else {
     id = &vector_icons::kFolderManagedRefreshIcon;
   }
+
   const ui::ThemedVectorIcon icon =
-      absl::holds_alternative<SkColor>(color)
-          ? ui::ThemedVectorIcon(id, absl::get<SkColor>(color))
-          : ui::ThemedVectorIcon(id, absl::get<ui::ColorId>(color));
+      color.GetSkColor() ? ui::ThemedVectorIcon(id, *color.GetSkColor())
+                         : ui::ThemedVectorIcon(id, *color.GetColorId());
   folder = icon.GetImageSkia(color_provider);
   return folder;
 }
 
-ui::ImageModel GetBookmarkFolderIcon(
-    BookmarkFolderIconType icon_type,
-    absl::variant<ui::ColorId, SkColor> color) {
+ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
+                                     ui::ColorVariant color) {
   int default_id = IDR_FOLDER_CLOSED;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // This block must be #ifdefed because only these platforms actually have this
@@ -349,7 +349,7 @@ ui::ImageModel GetBookmarkFolderIcon(
   }
 #endif
   const auto generator = [](int default_id, BookmarkFolderIconType icon_type,
-                            absl::variant<ui::ColorId, SkColor> color,
+                            ui::ColorVariant color,
                             const ui::ColorProvider* color_provider) {
     gfx::ImageSkia folder;
     folder =

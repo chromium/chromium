@@ -12,6 +12,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/native_widget_types.h"
 
 class GURL;
@@ -106,13 +107,14 @@ enum class BookmarkFolderIconType {
   kNormal,
   kManaged,
 };
+
 ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
-                                     absl::variant<ui::ColorId, SkColor> color);
+                                     ui::ColorVariant color);
 
 // returns the vector image used for bookmarks folder.
 gfx::ImageSkia GetBookmarkFolderImageFromVectorIcon(
     BookmarkFolderIconType icon_type,
-    absl::variant<ui::ColorId, SkColor> color,
+    ui::ColorVariant color,
     ui::ColorProvider* color_provider);
 #endif
 
