@@ -660,9 +660,8 @@ class CORE_EXPORT Animation : public EventTarget,
         Animation*,
         std::optional<int> replaced_cc_animation_id);
 
-    explicit CompositorAnimationHolder(
-        Animation*,
-        std::optional<int> replaced_cc_animation_id);
+    CompositorAnimationHolder(Animation*,
+                              std::optional<int> replaced_cc_animation_id);
 
     void Detach();
 
