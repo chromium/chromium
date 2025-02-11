@@ -1862,6 +1862,23 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Viz.FrameIntervalDecider.ActualIntervalDefault" units="ms"
+    expires_after="M143">
+  <owner>boliu@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Record the actual frame rate when FrameIntervalDecider decides system should
+    use its default behavior. Useful as reference histogram for
+    ActualIntervalForXXhz histograms, to see the effect of FrameIntervalDecider
+    deciding on a particular frame rate. Note however it's not a perfect
+    reference since the conditions leading to use system default is not
+    independent from conditions leading a particular frame rate being selected.
+    Recorded every viz frame, sub-sampled with probability 0.001. Note this
+    requires FrameIntervalDecider to be enabled as well as using an
+    ExternalBeginFrameSource.
+  </summary>
+</histogram>
+
 <histogram name="Viz.FrameIntervalDecider.ActualIntervalFor{DecidedHz}hz"
     units="ms" expires_after="M143">
   <owner>boliu@chromium.org</owner>

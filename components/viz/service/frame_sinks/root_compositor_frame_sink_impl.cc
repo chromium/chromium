@@ -763,11 +763,16 @@ void RootCompositorFrameSinkImpl::DisplayWillDrawAndSwap(
 
   if (external_begin_frame_source_ &&
       external_begin_frame_source_->last_begin_frame_args().IsValid() &&
-      decided_display_interval_.is_positive() &&
       base::ShouldRecordSubsampledMetric(0.001)) {
     const BeginFrameArgs& begin_frame_args =
         external_begin_frame_source_->last_begin_frame_args();
     constexpr base::TimeDelta kEpsilonTimeDelta = base::Milliseconds(0.5);
+    if (decided_display_interval_.is_zero()) {
+      base::UmaHistogramCustomTimes(
+          "Viz.FrameIntervalDecider.ActualIntervalDefault",
+          begin_frame_args.interval, base::Milliseconds(0),
+          base::Milliseconds(500), 50);
+    }
     if ((decided_display_interval_ - base::Hertz(30)).magnitude() <
         kEpsilonTimeDelta) {
       base::UmaHistogramCustomTimes(
