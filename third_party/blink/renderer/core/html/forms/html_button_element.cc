@@ -149,18 +149,30 @@ Element* HTMLButtonElement::commandForElement() {
       html_names::kCommandforAttr);
 }
 
-AtomicString HTMLButtonElement::command() const {
-  CHECK(RuntimeEnabledFeatures::HTMLCommandAttributesEnabled());
-  const AtomicString& attribute_value =
-      FastGetAttribute(html_names::kCommandAttr);
-  if (attribute_value && !attribute_value.empty()) {
-    return attribute_value;
-  }
-  return g_empty_atom;
+void HTMLButtonElement::setCommand(const AtomicString& type) {
+  setAttribute(html_names::kCommandAttr, type);
 }
 
-CommandEventType HTMLButtonElement::GetCommandEventType() const {
-  auto action = command();
+AtomicString HTMLButtonElement::command() const {
+  CHECK(RuntimeEnabledFeatures::HTMLCommandAttributesEnabled());
+  const AtomicString& action = FastGetAttribute(html_names::kCommandAttr);
+  CommandEventType type = GetCommandEventType(action);
+  switch (type) {
+    case CommandEventType::kNone:
+      return g_empty_atom;
+    case CommandEventType::kCustom:
+      return action;
+    default: {
+      const AtomicString& lower_action = action.LowerASCII();
+      DCHECK_EQ(GetCommandEventType(lower_action), type);
+      return lower_action;
+    }
+  }
+  NOTREACHED();
+}
+
+CommandEventType HTMLButtonElement::GetCommandEventType(
+    const AtomicString& action) const {
   DCHECK(!action.IsNull());
 
   if (action.empty()) {
@@ -304,7 +316,8 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
             "popovertarget is ignored on elements with commandfor.");
       }
 
-      auto action = GetCommandEventType();
+      auto action =
+          GetCommandEventType(FastGetAttribute(html_names::kCommandAttr));
       bool is_valid_builtin =
           command_target->IsValidBuiltinCommand(*this, action);
       bool should_dispatch =
