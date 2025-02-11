@@ -155,11 +155,6 @@ public class ToolbarPositionControllerTest {
                 }
 
                 @Override
-                public int getTopControlsCurrentHeight() {
-                    return getTopControlsHeight();
-                }
-
-                @Override
                 public int getTopControlOffset() {
                     return mRendererTopControlsOffset;
                 }

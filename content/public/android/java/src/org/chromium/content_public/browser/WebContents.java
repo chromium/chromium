@@ -612,11 +612,11 @@ public interface WebContents extends Parcelable {
     void setLongPressLinkSelectText(boolean enabled);
 
     /**
-     * Notify that the constraints of the browser controls have changed. This means that the the
-     * browser controls went from being forced fully visible/hidden to not being forced (or
-     * vice-versa).
+     * Update the OffsetTagDefinitions. This could be because the controls' visibility constraints
+     * have changed, which requires adding/removing the OffsetTags, or because the
+     * OffsetTagConstraints have changed due to a change in the controls' scrollable height.
      */
-    void notifyControlsConstraintsChanged(BrowserControlsOffsetTagDefinitions offsetTagDefinitions);
+    void updateOffsetTagDefinitions(BrowserControlsOffsetTagDefinitions offsetTagDefinitions);
 
     void disconnectFileSelectListenerIfAny();
 

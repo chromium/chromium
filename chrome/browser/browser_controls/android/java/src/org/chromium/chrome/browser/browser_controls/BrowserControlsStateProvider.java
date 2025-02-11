@@ -123,13 +123,6 @@ public interface BrowserControlsStateProvider {
     int getTopControlsMinHeight();
 
     /**
-     * @return The current height of the top controls in the current animation. Similar to
-     * {@link #getTopControlsMinHeightOffset()}, this will return a value between the old height and
-     * new height. Returns the same value as {@link #getTopControlsHeight()} if not in an animation.
-     */
-    int getTopControlsCurrentHeight();
-
-    /**
      * @return The offset of the controls from the top of the screen.
      */
     int getTopControlOffset();

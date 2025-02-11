@@ -1239,11 +1239,11 @@ public class WebContentsImpl
     }
 
     @Override
-    public void notifyControlsConstraintsChanged(
+    public void updateOffsetTagDefinitions(
             BrowserControlsOffsetTagDefinitions offsetTagDefinitions) {
         if (mNativeWebContentsAndroid == 0) return;
         WebContentsImplJni.get()
-                .notifyControlsConstraintsChanged(mNativeWebContentsAndroid, offsetTagDefinitions);
+                .updateOffsetTagDefinitions(mNativeWebContentsAndroid, offsetTagDefinitions);
     }
 
     @Override
@@ -1477,7 +1477,7 @@ public class WebContentsImpl
 
         void setLongPressLinkSelectText(long nativeWebContentsAndroid, boolean enabled);
 
-        void notifyControlsConstraintsChanged(
+        void updateOffsetTagDefinitions(
                 long nativeWebContentsAndroid,
                 BrowserControlsOffsetTagDefinitions offsetTagDefinitions);
 
