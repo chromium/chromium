@@ -53,12 +53,6 @@ src:*atlcoll.h
 # until upstream adds an annotation, crbug.com/367439556
 fun:*__allocate_unique_temporary_buffer*
 
-# Suppress CFI check for newly added cast in __libcpp_allocate and
-# __add_alignment_assumption until upstream adds an annotation or other fix
-# (crbug.com/392652315).
-fun:*__libcpp_allocate*
-fun:*__add_alignment_assumption*
-
 # https://github.com/grpc/grpc/issues/19375
 src:*third_party/grpc/src/src/core/lib/gprpp/inlined_vector.h
 
