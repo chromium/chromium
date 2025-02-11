@@ -1967,10 +1967,8 @@ void LensOverlayQueryController::OnInteractionEndpointFetcherCreated(
 }
 
 bool LensOverlayQueryController::ShouldSendContextualSearchQuery() {
-  // Can send the query if the page content request has finished, or the partial
-  // page content is substantial enough to provide good results.
-  return !page_content_request_in_progress_ ||
-         IsPartialPageContentSubstantial();
+  // Can send the query if the page content request has finished.
+  return !page_content_request_in_progress_;
 }
 
 bool LensOverlayQueryController::IsPartialPageContentSubstantial() {
