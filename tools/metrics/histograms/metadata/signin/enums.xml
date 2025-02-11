@@ -645,6 +645,7 @@ chromium-metrics-reviews@google.com.
   <int value="71" label="CCT account mismatch notification"/>
   <int value="72" label="Drive file picker iOS"/>
   <int value="73" label="Share group collaboration authentification"/>
+  <int value="74" label="Glic launch button"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

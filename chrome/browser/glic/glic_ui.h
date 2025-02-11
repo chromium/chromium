@@ -40,7 +40,8 @@ class GlicUI : public ui::MojoWebUIController,
 
  private:
   void CreatePageHandler(
-      mojo::PendingReceiver<glic::mojom::PageHandler> receiver) override;
+      mojo::PendingReceiver<glic::mojom::PageHandler> receiver,
+      mojo::PendingRemote<glic::mojom::Page> page) override;
 
   void CreateFrePageHandler(
       mojo::PendingReceiver<glic::mojom::FrePageHandler> receiver) override;

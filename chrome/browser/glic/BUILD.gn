@@ -27,7 +27,6 @@ source_set("glic") {
     "glic_ui.h",
     "glic_view.h",
     "glic_web_client_access.h",
-    "glic_window_controller.h",
     "glic_window_resize_animation.h",
     "guest_util.h",
     "scoped_glic_button_indicator.h",
@@ -54,6 +53,8 @@ source_set("glic") {
 
 source_set("impl") {
   sources = [
+    "auth_controller.cc",
+    "auth_controller.h",
     "border_view.cc",
     "fre_util.cc",
     "fre_util.h",
@@ -83,6 +84,7 @@ source_set("impl") {
     "glic_ui.cc",
     "glic_view.cc",
     "glic_window_controller.cc",
+    "glic_window_controller.h",
     "glic_window_resize_animation.cc",
     "guest_util.cc",
     "scoped_glic_button_indicator.cc",
@@ -142,10 +144,15 @@ mojom("mojo_bindings") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "glic_test_environment.cc",
+    "glic_test_environment.h",
     "interactive_glic_test.cc",
     "interactive_glic_test.h",
   ]
-  deps = [ ":glic" ]
+  deps = [
+    ":glic",
+    ":impl",
+  ]
   public_deps = [ "//chrome/test:test_support" ]
 }
 
@@ -180,6 +187,8 @@ source_set("browser_tests") {
   ]
   deps = [
     ":glic",
+    ":impl",
+    ":test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
@@ -208,6 +217,7 @@ source_set("interactive_ui_tests") {
   ]
   deps = [
     ":glic",
+    ":impl",
     ":test_support",
     "//chrome/browser",
     "//chrome/browser/ui",

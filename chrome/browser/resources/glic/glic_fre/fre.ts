@@ -6,9 +6,11 @@ import '/strings.m.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
-import {BrowserProxyImpl} from '../browser_proxy.js';
+import {FrePageHandlerRemote, PageHandlerFactory} from '../glic.mojom-webui.js';
 
-const browserProxy = BrowserProxyImpl.getInstance();
+const freHandler = new FrePageHandlerRemote();
+PageHandlerFactory.getRemote().createFrePageHandler(
+    (freHandler as FrePageHandlerRemote).$.bindNewPipeAndPassReceiver());
 
 const webview =
     document.getElementById('fre-guest-frame') as chrome.webviewTag.WebView;
@@ -28,15 +30,15 @@ function onLoadCommit(e: any) {
   // glic/intro...#continue, “No thanks” button navigates to
   // glic/intro...#noThanks
   if (urlHash === '#continue') {
-    browserProxy.freHandler.acceptFre();
+    freHandler.acceptFre();
   } else if (urlHash === '#noThanks') {
-    browserProxy.freHandler.dismissFre();
+    freHandler.dismissFre();
   }
 }
 
 function onNewWindow(e: any) {
   e.preventDefault();
-  browserProxy.freHandler.validateAndOpenLinkInNewTab({
+  freHandler.validateAndOpenLinkInNewTab({
     url: e.targetUrl,
   });
   e.stopPropagation();
@@ -55,7 +57,7 @@ function getWebviewSrc() {
 
 // Blocking on cookie syncing here introduces latency, we should consider ways
 // to avoid it.
-browserProxy.freHandler.syncWebviewCookies().then(() => {
+freHandler.syncWebviewCookies().then(() => {
   // Load the web client only after cookie sync is complete.
   webview.src = getWebviewSrc();
 });

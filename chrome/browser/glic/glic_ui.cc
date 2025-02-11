@@ -121,9 +121,10 @@ void GlicUI::BindInterface(
 }
 
 void GlicUI::CreatePageHandler(
-    mojo::PendingReceiver<glic::mojom::PageHandler> receiver) {
-  page_handler_ = std::make_unique<GlicPageHandler>(web_ui()->GetWebContents(),
-                                                    std::move(receiver));
+    mojo::PendingReceiver<glic::mojom::PageHandler> receiver,
+    mojo::PendingRemote<glic::mojom::Page> page) {
+  page_handler_ = std::make_unique<GlicPageHandler>(
+      web_ui()->GetWebContents(), std::move(receiver), std::move(page));
 }
 
 void GlicUI::CreateFrePageHandler(

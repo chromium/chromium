@@ -573,6 +573,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromAddressBubble"));
       break;
+    case AccessPoint::kGlicLaunchButton:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromGlicLaunchButton"));
+      break;
   }
 }
 
@@ -747,6 +751,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kCctAccountMismatchNotification:
     case AccessPoint::kDriveFilePickerIos:
     case AccessPoint::kCollaborationTabGroup:
+    case AccessPoint::kGlicLaunchButton:
       NOTREACHED() << "Signin_Impression_From* user actions are not recorded "
                       "for access point "
                    << static_cast<int>(access_point);

@@ -6,6 +6,7 @@
 
 #include "base/memory/memory_pressure_monitor.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -21,7 +22,9 @@ class MockGlicKeyedService : public GlicKeyedService {
   MockGlicKeyedService(content::BrowserContext* browser_context,
                        signin::IdentityManager* identity_manager,
                        GlicProfileManager* profile_manager)
-      : GlicKeyedService(browser_context, identity_manager, profile_manager) {}
+      : GlicKeyedService(Profile::FromBrowserContext(browser_context),
+                         identity_manager,
+                         profile_manager) {}
   MOCK_METHOD(void, ClosePanel, (), (override));
 };
 

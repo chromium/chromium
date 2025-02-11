@@ -12,10 +12,17 @@ import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
+// Functions provided by the WebUI page.
+interface Page {
+  // Called before the page is shown.
+  IntentToShow();
+};
+
 // Factory for PageHandler used in chrome://glic.
 interface PageHandlerFactory {
   // Creates the PageHandler for chrome://glic.
-  CreatePageHandler(pending_receiver<PageHandler> receiver);
+  CreatePageHandler(pending_receiver<PageHandler> receiver,
+      pending_remote<Page> page);
   // Creates the handler for chrome://glic/glic_fre.
   CreateFrePageHandler(pending_receiver<FrePageHandler> receiver);
 };
@@ -53,9 +60,10 @@ interface PageHandler {
   // Creates a WebClientHandler, for use by a single web client instance.
   CreateWebClient(pending_receiver<WebClientHandler> web_client_receiver);
 
-  // Sync Google account sign-in cookies to the webview, so that it can sign-in
-  // automatically.
-  SyncWebviewCookies() => (bool success);
+  // Prepare the webview for loading the client. Sync Google account sign-in
+  // cookies to the webview, if necessary, so that it can sign-in automatically.
+  // If this returns false, the web client cannot be created due to an error.
+  PrepareForClient() => (bool success);
 
   // Called whenever the webview mainframe commits.
   WebviewCommitted(url.mojom.Url url);
