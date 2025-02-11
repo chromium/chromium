@@ -286,11 +286,8 @@ class HeightTransitionHandler {
                         }));
     }
 
-    void setForceUpdateHeight(boolean forceUpdateHeight) {
-        mForceUpdateHeight = forceUpdateHeight;
-    }
-
-    void onTabStripSizeChanged(int width, int topPadding, boolean isInDesktopWindow) {
+    void onTabStripSizeChanged(
+            int width, int topPadding, boolean isInDesktopWindow, boolean forceUpdateHeight) {
         if (width == mTabStripWidth && topPadding == mTopPadding) return;
         mTabStripWidth = width;
         mTopPadding = topPadding;
@@ -299,6 +296,7 @@ class HeightTransitionHandler {
         // to update the strip top padding and it is expected of the fade transition to
         // control the strip visibility by updating the scrim in this case when applicable.
         mApplyScrimOverlay = !isInDesktopWindow;
+        mForceUpdateHeight = forceUpdateHeight;
 
         if (isInDesktopWindow) {
             // In a desktop window, do not block the height transition when transition token is in
