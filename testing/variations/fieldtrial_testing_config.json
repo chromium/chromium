@@ -241,6 +241,24 @@
             ]
         }
     ],
+    "AiSettingsPageEnterpriseDisabledUi": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AiSettingsPageEnterpriseDisabledUi"
+                    ]
+                }
+            ]
+        }
+    ],
     "AiSettingsPageRefresh": [
         {
             "platforms": [

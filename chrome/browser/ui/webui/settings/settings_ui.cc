@@ -595,6 +595,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
          use_is_setting_visible &&
              // TODO(crbug.com/391131625): Check if feature is explicitly
              // enabled.
+             PasswordChangeServiceFactory::GetForProfile(profile) &&
              PasswordChangeServiceFactory::GetForProfile(profile)
                  ->IsPasswordChangeAvailable()},
     };
