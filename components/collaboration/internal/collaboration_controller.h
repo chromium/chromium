@@ -278,6 +278,7 @@ class CollaborationController {
   std::unique_ptr<ControllerState> current_state_;
 
   Flow flow_;
+  bool is_deleting_{false};
   const raw_ptr<CollaborationService> collaboration_service_;
   const raw_ptr<data_sharing::DataSharingService> data_sharing_service_;
   const raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;

@@ -760,8 +760,16 @@ void CollaborationController::PromoteCurrentSession() {
 }
 
 void CollaborationController::Exit() {
+  if (is_deleting_) {
+    // Exit can be triggered by multiple code paths, the delegate itself, or
+    // from the service. It is safe to ignore multiple requets since we are just
+    // waiting for finish_and_delete_ to run in the next post task.
+    return;
+  }
+
   current_state_->OnExit();
   delegate_->OnFlowFinished();
+  is_deleting_ = true;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(finish_and_delete_)));
 }
