@@ -2354,7 +2354,6 @@ enum class ToolbarKind {
                                 ? base::SysUTF8ToNSString(config_ref.iph_text)
                                 : base::SysUTF8ToNSString(config_ref.iph_title)
                       title:base::SysUTF8ToNSString(config_ref.iph_title)
-                      image:nil
              arrowDirection:isBottomOmnibox ? BubbleArrowDirectionDown
                                             : BubbleArrowDirectionUp
                   alignment:BubbleAlignmentTopOrLeading

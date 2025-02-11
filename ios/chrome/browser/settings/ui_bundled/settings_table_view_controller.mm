@@ -1744,7 +1744,6 @@ struct EnhancedSafeBrowsingActivePromoData
   _bubblePresenter = [[BubbleViewControllerPresenter alloc]
            initWithText:l10n_util::GetNSString(IDS_IOS_SETTING_IPH_SIGNIN)
                   title:nil
-                  image:nil
          arrowDirection:BubbleArrowDirectionUp
               alignment:BubbleAlignmentCenter
              bubbleType:BubbleViewTypeDefault

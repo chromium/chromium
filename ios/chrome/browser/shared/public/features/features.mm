@@ -1052,14 +1052,6 @@ bool IsHomeMemoryImprovementsEnabled() {
   return base::FeatureList::IsEnabled(kHomeMemoryImprovements);
 }
 
-BASE_FEATURE(kRichBubbleWithoutImage,
-             "RichBubbleWithoutImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsRichBubbleWithoutImageEnabled() {
-  return base::FeatureList::IsEnabled(kRichBubbleWithoutImage);
-}
-
 BASE_FEATURE(kIdentityConfirmationSnackbar,
              "IdentityConfirmationSnackbar",
              base::FEATURE_DISABLED_BY_DEFAULT);

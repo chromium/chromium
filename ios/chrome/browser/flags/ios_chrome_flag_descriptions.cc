@@ -1067,11 +1067,6 @@ const char kRemoveExcessNTPsExperimentDescription[] =
     "When enabled, extra tabs with the New Tab Page open and no navigation "
     "history will be removed.";
 
-const char kRichBubbleWithoutImageName[] = "Remove image from rich IPH bubble";
-const char kRichBubbleWithoutImageDescription[] =
-    "When enabled, the rich bubble IPH type will not feature an image, instead "
-    "will only have a title and body text.";
-
 const char kSafeBrowsingAsyncRealTimeCheckName[] =
     "Safe Browsing Async Real Time Check";
 const char kSafeBrowsingAsyncRealTimeCheckDescription[] =

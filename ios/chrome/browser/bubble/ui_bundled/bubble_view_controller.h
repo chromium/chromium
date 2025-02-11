@@ -17,12 +17,11 @@ typedef NS_ENUM(NSInteger, BubbleViewType);
 // interest.
 @interface BubbleViewController : UIViewController
 
-// Initializes the bubble with the given text, titleString, image, arrow
-// direction, alignment, type of bubble view and bubble view's delegate (handles
-// bubble view's buttons taps).
+// Initializes the bubble with the given text, titleString, arrow direction,
+// alignment, type of bubble view and bubble view's delegate (handles bubble
+// view's buttons taps).
 - (instancetype)initWithText:(NSString*)text
                        title:(NSString*)titleString
-                       image:(UIImage*)image
               arrowDirection:(BubbleArrowDirection)direction
                    alignment:(BubbleAlignment)alignment
               bubbleViewType:(BubbleViewType)type

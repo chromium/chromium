@@ -13,8 +13,6 @@ extern NSString* const kBubbleViewCloseButtonIdentifier;
 extern NSString* const kBubbleViewTitleLabelIdentifier;
 // Accessibility identifier for the label.
 extern NSString* const kBubbleViewLabelIdentifier;
-// Accessibility identifier for the image view.
-extern NSString* const kBubbleViewImageViewIdentifier;
 // Accessibility identifier for the snooze button.
 extern NSString* const kBubbleViewSnoozeButtonIdentifier;
 // Accessibility identifier for the arrow view.
@@ -65,9 +63,9 @@ typedef NS_ENUM(NSInteger, BubbleViewType) {
   BubbleViewTypeDefault,
   // Bubble view with text and close button.
   BubbleViewTypeWithClose,
-  // Bubble view with title, text and image.
+  // Bubble view with title and text.
   BubbleViewTypeRich,
-  // Bubble view with title, text, image and snooze button.
+  // Bubble view with title, text and snooze button.
   BubbleViewTypeRichWithSnooze,
 };
 

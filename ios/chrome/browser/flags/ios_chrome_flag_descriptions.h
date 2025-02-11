@@ -947,10 +947,6 @@ extern const char kRefactorToolbarUIDescription[];
 extern const char kRemoveExcessNTPsExperimentName[];
 extern const char kRemoveExcessNTPsExperimentDescription[];
 
-// Title and description for the flag to remove the image from rich IPH bubble.
-extern const char kRichBubbleWithoutImageName[];
-extern const char kRichBubbleWithoutImageDescription[];
-
 // Title and description for the flag to enable async real time checks.
 extern const char kSafeBrowsingAsyncRealTimeCheckName[];
 extern const char kSafeBrowsingAsyncRealTimeCheckDescription[];

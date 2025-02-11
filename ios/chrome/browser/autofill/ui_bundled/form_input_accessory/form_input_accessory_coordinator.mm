@@ -914,7 +914,6 @@ bool CanReloadInputViews() {
       [[BubbleViewControllerPresenter alloc]
                initWithText:text
                       title:nil
-                      image:nil
              arrowDirection:BubbleArrowDirectionDown
                   alignment:BubbleAlignmentTopOrLeading
                  bubbleType:BubbleViewTypeWithClose

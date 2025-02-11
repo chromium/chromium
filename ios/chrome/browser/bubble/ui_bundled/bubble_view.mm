@@ -73,14 +73,6 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
 // Margin between title and label.
 const CGFloat kTitleBottomMargin = 3.0f;
 
-// Margin between the imageView its leading and trailing sides.
-const CGFloat kImageViewLeadingMargin = 16.0f;
-const CGFloat kImageViewTrailingMargin = 12.0f;
-// Height and Width of imageView.
-const CGFloat kImageViewSize = 60.0f;
-// Corner radius of imageView.
-const CGFloat kImageViewCornerRadius = 13.0f;
-
 // The top and bottom margin of the title in snooze button.
 const CGFloat kSnoozeButtonTitleVerticalMargin = 16.0f;
 const CGFloat kSnoozeButtonMinimumSize = 48.0f;
@@ -251,17 +243,6 @@ UILabel* BubbleTitleLabelWithText(NSString* text,
   return label;
 }
 
-// Returns a image view used for the BubbleViews's imageView.
-UIImageView* BubbleImageViewWithImage(UIImage* image) {
-  UIImageView* imageView = [[UIImageView alloc] initWithImage:image];
-  [imageView.layer setCornerRadius:kImageViewCornerRadius];
-  [imageView.layer setMasksToBounds:YES];
-  [imageView setContentMode:UIViewContentModeCenter];
-  [imageView setAccessibilityIdentifier:kBubbleViewImageViewIdentifier];
-  imageView.translatesAutoresizingMaskIntoConstraints = NO;
-  return imageView;
-}
-
 }  // namespace
 
 @interface BubbleView ()
@@ -277,8 +258,6 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
 @property(nonatomic, strong, readonly) UIButton* closeButton;
 // Optional snooze button displayed on the bubble.
 @property(nonatomic, strong, readonly) UIButton* snoozeButton;
-// Optional image displayed at the leading edge of the bubble.
-@property(nonatomic, strong, readonly) UIImageView* imageView;
 // Triangular shape, the backing layer for the arrow.
 @property(nonatomic, weak) CAShapeLayer* arrowLayer;
 @property(nonatomic, assign, readonly) BubbleAlignment alignment;
@@ -307,7 +286,6 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
                    alignment:(BubbleAlignment)alignment
             showsCloseButton:(BOOL)shouldShowCloseButton
                        title:(NSString*)titleString
-                       image:(UIImage*)image
            showsSnoozeButton:(BOOL)shouldShowSnoozeButton
                textAlignment:(NSTextAlignment)textAlignment
                     delegate:(id<BubbleViewDelegate>)delegate {
@@ -337,11 +315,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
           setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]];
       [self addSubview:_titleLabel];
     }
-    // Add image view if present.
-    if (image) {
-      _imageView = BubbleImageViewWithImage(image);
-      [self addSubview:_imageView];
-    }
+
     // Add close button if present.
     _showsCloseButton = shouldShowCloseButton;
     if (_showsCloseButton) {
@@ -394,7 +368,6 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
                   alignment:alignment
            showsCloseButton:NO
                       title:nil
-                      image:nil
           showsSnoozeButton:NO
               textAlignment:NSTextAlignmentCenter
                    delegate:nil];
@@ -502,10 +475,6 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   // Add constraints for title label.
   if (self.titleLabel) {
     [constraints addObjectsFromArray:[self titleLabelConstraints]];
-  }
-  // Add constraints for image view.
-  if (self.imageView) {
-    [constraints addObjectsFromArray:[self imageViewConstraints]];
   }
   // Add constraints for snooze button.
   if (self.showsSnoozeButton) {
@@ -626,28 +595,6 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
     [titleLabel.trailingAnchor constraintEqualToAnchor:label.trailingAnchor],
     [label.topAnchor constraintEqualToAnchor:titleLabel.bottomAnchor
                                     constant:kTitleBottomMargin],
-  ];
-  return constraints;
-}
-
-// Returns the constraint for the image view.
-- (NSArray<NSLayoutConstraint*>*)imageViewConstraints {
-  UIView* imageView = self.imageView;
-  UIView* background = self.background;
-  NSArray<NSLayoutConstraint*>* constraints = @[
-    [imageView.widthAnchor constraintEqualToConstant:kImageViewSize],
-    [imageView.heightAnchor constraintEqualToConstant:kImageViewSize],
-    [imageView.topAnchor
-        constraintGreaterThanOrEqualToAnchor:background.topAnchor
-                                    constant:kBubbleVerticalPadding],
-    [background.bottomAnchor
-        constraintGreaterThanOrEqualToAnchor:imageView.bottomAnchor
-                                    constant:kBubbleVerticalPadding],
-    [imageView.centerYAnchor constraintEqualToAnchor:background.centerYAnchor],
-    [imageView.leadingAnchor constraintEqualToAnchor:background.leadingAnchor
-                                            constant:kImageViewLeadingMargin],
-    [self.label.leadingAnchor constraintEqualToAnchor:imageView.trailingAnchor
-                                             constant:kImageViewTrailingMargin],
   ];
   return constraints;
 }
@@ -896,9 +843,6 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   if (self.showsCloseButton) {
     textHorizontalInset += MAX(kCloseButtonSize, kBubbleHorizontalPadding) +
                            kBubbleHorizontalPadding;
-  } else if (self.imageView) {
-    textHorizontalInset += kImageViewLeadingMargin + kImageViewSize +
-                           kImageViewTrailingMargin + kBubbleHorizontalPadding;
   } else if (!self.titleLabel) {
     textHorizontalInset += kBubbleHorizontalPadding * 2;
   }
@@ -919,12 +863,8 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   } else {
     textContentHeight += kBubbleVerticalPadding;
   }
-  // Height of image including all margins.
-  CGFloat imageContentHeight =
-      self.imageView ? 2 * kBubbleVerticalPadding + kImageViewSize : 0.0f;
   // Calculates the height needed to display the bubble.
-  CGFloat bubbleHeight =
-      MAX(imageContentHeight, textContentHeight) + kBubbleVerticalMargin * 2;
+  CGFloat bubbleHeight = textContentHeight + kBubbleVerticalMargin * 2;
   if (IsArrowDirectionVertical(self.direction)) {
     bubbleHeight += GetArrowSize(self.direction).height;
   } else {

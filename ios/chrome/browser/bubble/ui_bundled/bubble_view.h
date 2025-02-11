@@ -26,14 +26,13 @@ typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 @interface BubbleView : UIView
 
 // Initialize with the given text, direction that the bubble should point,
-// alignment of the bubble and optionals close button, title, image, snooze
-// button, text alignment (for title, text and snooze button) and delegate.
+// alignment of the bubble and optionals close button, title, snooze button,
+// text alignment (for title, text and snooze button) and delegate.
 - (instancetype)initWithText:(NSString*)text
               arrowDirection:(BubbleArrowDirection)direction
                    alignment:(BubbleAlignment)alignment
             showsCloseButton:(BOOL)shouldShowCloseButton
                        title:(NSString*)titleString
-                       image:(UIImage*)image
            showsSnoozeButton:(BOOL)shouldShowSnoozeButton
                textAlignment:(NSTextAlignment)textAlignment
                     delegate:(id<BubbleViewDelegate>)delegate

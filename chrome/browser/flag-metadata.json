@@ -7548,11 +7548,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "rich-bubble-without-image",
-    "owners": [ "nicolasmacbeth@google.com", "bling-mony-pod@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "right-edge-goes-forward-gesture-nav",
     "owners": [ "eleanorlee@google.com", "lazzzis@google.com", "twellington@chromium.org" ],
     "expiry_milestone": 150
