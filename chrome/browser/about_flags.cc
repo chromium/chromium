@@ -4329,6 +4329,7 @@ const FeatureEntry::FeatureVariation kTabSwitcherColorBlendAnimateVariations[] =
 const char kAccountStoragePrefsThemesAndSearchEnginesFeatures[] =
     "EnablePreferencesAccountStorage,"
     "SeparateLocalAndAccountSearchEngines,"
+    "MoveThemePrefsToSpecifics,"
     "SeparateLocalAndAccountThemes,"
     "ThemesBatchUpload";
 
