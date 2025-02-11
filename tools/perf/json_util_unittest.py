@@ -84,6 +84,33 @@ class JsonUtilTest(unittest.TestCase):
         expected,
     )
 
+  def test_calculate_stats(self):
+    with self.subTest(name='normal_values'):
+      self.assertEqual(
+        json_util.calculate_stats([1, 2, 3]),
+        (2.0, 1.0, 3, 3, 1, 6),
+      )
+    with self.subTest(name='mixed_with_None'):
+      self.assertEqual(
+        json_util.calculate_stats([1, None, 3, None]),
+        (2.0, 1.4142135623730951, 2, 3, 1, 4),
+      )
+    with self.subTest(name='mixed_with_zero'):
+      self.assertEqual(
+        json_util.calculate_stats([1, 0, 3, 0]),
+        (1.0, 1.4142135623730951, 4, 3, 0, 4),
+      )
+    with self.subTest(name='mixed_with_None_and_zero'):
+      self.assertEqual(
+        json_util.calculate_stats([1, None, 3, 0]),
+        (1.3333333333333333, 1.5275252316519468, 3, 3, 0, 4),
+      )
+    with self.subTest(name='empty_list'):
+      self.assertEqual(
+        json_util.calculate_stats([]),
+        (0.0, 0.0, 0, 0, 0, 0),
+      )
+
   def test_process(self):
     result2_json = [
         {
