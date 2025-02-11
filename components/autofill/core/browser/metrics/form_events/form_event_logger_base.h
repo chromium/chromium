@@ -37,7 +37,7 @@ class FormEventLoggerBase {
 
   void OnDidInteractWithAutofillableForm(const FormStructure& form);
 
-  void OnDidPollSuggestions(const FormFieldData& field);
+  void OnDidPollSuggestions(FieldGlobalId field_id);
 
   void OnDidParseForm(const FormStructure& form);
 
@@ -220,10 +220,8 @@ class FormEventLoggerBase {
   AblationGroup conditional_ablation_group_ = AblationGroup::kDefault;
   std::optional<base::TimeDelta> time_from_interaction_to_submission_;
 
-  // The last field that was polled for suggestions.
-  // TODO(crbug.com/40100455): Make this a `FieldGlobalId` when
-  // kAutofillUseFewerFormAndFieldComparison is removed.
-  FormFieldData last_polled_field_;
+  // The ID of the last field that was polled for suggestions.
+  FieldGlobalId last_polled_field_id_;
 
   // Used to count consecutive modifications on the same field as one change.
   FieldGlobalId last_field_global_id_modified_by_user_;

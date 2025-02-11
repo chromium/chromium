@@ -925,12 +925,8 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
 
 void BrowserAutofillManager::UpdatePendingForm(const FormData& form) {
   // Process the current pending form if different than supplied |form|.
-  if (pending_form_data_ &&
-      (base::FeatureList::IsEnabled(
-           features::kAutofillUseFewerFormAndFieldComparison)
-           ? CalculateFormSignature(*pending_form_data_) !=
-                 CalculateFormSignature(form)
-           : !pending_form_data_->SameFormAs(form))) {
+  if (pending_form_data_ && CalculateFormSignature(*pending_form_data_) !=
+                                CalculateFormSignature(form)) {
     ProcessPendingFormForUpload();
   }
   // A new pending form is assigned.
@@ -2628,7 +2624,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     return {};
   }
 #endif
-  metrics_->address_form_event_logger.OnDidPollSuggestions(trigger_field);
+  metrics_->address_form_event_logger.OnDidPollSuggestions(
+      trigger_field.global_id());
 
   // If the user triggers suggestions on an autofilled field, field-by-field
   // filling suggestions should be shown so that the user could easily correct
@@ -2678,7 +2675,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
     autofill_metrics::SuggestionRankingContext& ranking_context) {
   metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
       metrics_->signin_state_for_metrics);
-  metrics_->credit_card_form_event_logger.OnDidPollSuggestions(trigger_field);
+  metrics_->credit_card_form_event_logger.OnDidPollSuggestions(
+      trigger_field.global_id());
 
   std::u16string card_number_field_value = u"";
   bool is_card_number_autofilled = false;
