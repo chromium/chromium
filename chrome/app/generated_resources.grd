@@ -9501,6 +9501,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TOOLTIP_NEW_TAB" desc="The tooltip for the new tab button">
         New tab
       </message>
+      <message name="IDS_TOOLTIP_TAB_SCROLL_LEADING" desc="The tooltip for the leading scroll button">
+        Scroll to first tab
+      </message>
+      <message name="IDS_TOOLTIP_TAB_SCROLL_TRAILING" desc="The tooltip for the trailing scroll button">
+        Scroll to last tab
+      </message>
       <message name="IDS_TOOLTIP_MIC_SEARCH" desc="The tooltip for search-by-voice button">
         Search by voice
       </message>
