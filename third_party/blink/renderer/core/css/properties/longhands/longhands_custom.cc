@@ -3009,7 +3009,7 @@ const CSSValue* CornerBottomLeftShape::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ParseCornerShape(stream, context);
+  return css_parsing_utils::ConsumeCornerShape(stream, context);
 }
 const CSSValue* CornerBottomLeftShape::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
@@ -3022,7 +3022,7 @@ const CSSValue* CornerBottomRightShape::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ParseCornerShape(stream, context);
+  return css_parsing_utils::ConsumeCornerShape(stream, context);
 }
 const CSSValue* CornerBottomRightShape::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
@@ -3036,31 +3036,31 @@ const CSSValue* CornerEndStartShape::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ParseCornerShape(stream, context);
+  return css_parsing_utils::ConsumeCornerShape(stream, context);
 }
 const CSSValue* CornerEndEndShape::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ParseCornerShape(stream, context);
+  return css_parsing_utils::ConsumeCornerShape(stream, context);
 }
 const CSSValue* CornerStartEndShape::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ParseCornerShape(stream, context);
+  return css_parsing_utils::ConsumeCornerShape(stream, context);
 }
 const CSSValue* CornerStartStartShape::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ParseCornerShape(stream, context);
+  return css_parsing_utils::ConsumeCornerShape(stream, context);
 }
 const CSSValue* CornerTopLeftShape::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ParseCornerShape(stream, context);
+  return css_parsing_utils::ConsumeCornerShape(stream, context);
 }
 const CSSValue* CornerTopLeftShape::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
@@ -3073,7 +3073,7 @@ const CSSValue* CornerTopRightShape::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ParseCornerShape(stream, context);
+  return css_parsing_utils::ConsumeCornerShape(stream, context);
 }
 const CSSValue* CornerTopRightShape::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,

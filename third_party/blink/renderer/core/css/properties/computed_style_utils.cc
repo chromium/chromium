@@ -2845,6 +2845,32 @@ CSSValue* ComputedStyleUtils::ValueForCornerShape(
                                       CSSPrimitiveValue::UnitType::kNumber));
 }
 
+CSSValueList* ComputedStyleUtils::ValueForCornerShapeShorthand(
+    const ComputedStyle& style) {
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+
+  bool show_bottom_left =
+      style.CornerTopRightShape() != style.CornerBottomLeftShape();
+  bool show_bottom_right =
+      show_bottom_left ||
+      (style.CornerBottomRightShape() != style.CornerTopLeftShape());
+  bool show_top_right = show_bottom_right || (style.CornerTopRightShape() !=
+                                              style.CornerTopLeftShape());
+
+  list->Append(*ValueForCornerShape(style.CornerTopLeftShape()));
+  if (show_top_right) {
+    list->Append(*ValueForCornerShape(style.CornerTopRightShape()));
+  }
+  if (show_bottom_right) {
+    list->Append(*ValueForCornerShape(style.CornerBottomRightShape()));
+  }
+  if (show_bottom_left) {
+    list->Append(*ValueForCornerShape(style.CornerBottomLeftShape()));
+  }
+
+  return list;
+}
+
 CSSFunctionValue* ComputedStyleUtils::ValueForTransform(
     const gfx::Transform& matrix,
     float zoom,

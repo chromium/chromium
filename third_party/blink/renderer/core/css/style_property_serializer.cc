@@ -685,6 +685,8 @@ String StylePropertySerializer::SerializeShorthand(
     }
     case CSSPropertyID::kBorderRadius:
       return BorderRadiusValue();
+    case CSSPropertyID::kCornerShape:
+      return CornerShapeValue();
     case CSSPropertyID::kScrollPadding:
       return Get4Values(scrollPaddingShorthand());
     case CSSPropertyID::kScrollPaddingBlock:
@@ -2373,6 +2375,37 @@ String StylePropertySerializer::BorderRadiusValue() const {
     builder.Append(" / ");
     builder.Append(serialize(top_left.Second(), top_right.Second(),
                              bottom_right.Second(), bottom_left.Second()));
+  }
+
+  return builder.ReleaseString();
+}
+
+String StylePropertySerializer::CornerShapeValue() const {
+  const CSSValue& top_left =
+      *property_set_.GetPropertyCSSValue(GetCSSPropertyCornerTopLeftShape());
+  const CSSValue& top_right =
+      *property_set_.GetPropertyCSSValue(GetCSSPropertyCornerTopRightShape());
+  const CSSValue& bottom_right = *property_set_.GetPropertyCSSValue(
+      GetCSSPropertyCornerBottomRightShape());
+  const CSSValue& bottom_left =
+      *property_set_.GetPropertyCSSValue(GetCSSPropertyCornerBottomLeftShape());
+  StringBuilder builder;
+  builder.Append(top_left.CssText());
+  bool show_bottom_left = top_right != bottom_left;
+  bool show_bottom_right = (top_left != bottom_right) || show_bottom_left;
+  bool show_top_right = (top_left != top_right) || show_bottom_right;
+  if (show_top_right) {
+    builder.Append(" ");
+    builder.Append(top_right.CssText());
+  }
+  if (show_bottom_right) {
+    builder.Append(" ");
+    builder.Append(bottom_right.CssText());
+  }
+
+  if (show_bottom_left) {
+    builder.Append(" ");
+    builder.Append(bottom_left.CssText());
   }
 
   return builder.ReleaseString();

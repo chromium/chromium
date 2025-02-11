@@ -5088,9 +5088,9 @@ CSSValue* ParseBorderRadiusCorner(CSSParserTokenStream& stream,
                                             CSSValuePair::kDropIdenticalValues);
 }
 
-const CSSValue* ParseCornerShape(CSSParserTokenStream& stream,
-                                 const CSSParserContext& context) {
-  if (const auto* ident =
+CSSValue* ConsumeCornerShape(CSSParserTokenStream& stream,
+                             const CSSParserContext& context) {
+  if (auto* ident =
           ConsumeIdent<CSSValueID::kBevel, CSSValueID::kNotch,
                        CSSValueID::kRound, CSSValueID::kScoop,
                        CSSValueID::kSquircle, CSSValueID::kStraight>(stream)) {
@@ -5116,11 +5116,8 @@ const CSSValue* ParseCornerShape(CSSParserTokenStream& stream,
   if (!param) {
     return nullptr;
   }
-
-  if (!stream.AtEnd()) {
-    return nullptr;
-  }
   guard.Release();
+  stream.ConsumeWhitespace();
   return MakeGarbageCollected<cssvalue::CSSSuperellipseValue>(*param);
 }
 
@@ -7530,6 +7527,23 @@ bool ConsumeRadii(std::array<CSSValue*, 4>& horizontal_radii,
   }
   Complete4Sides(horizontal_radii);
   Complete4Sides(vertical_radii);
+  return true;
+}
+
+bool ConsumeCornerShapes(std::array<CSSValue*, 4>& shapes,
+                         CSSParserTokenStream& stream,
+                         const CSSParserContext& context) {
+  for (unsigned value_count = 0; value_count < 4; ++value_count) {
+    shapes[value_count] = ConsumeCornerShape(stream, context);
+    if (!shapes[value_count]) {
+      if (!value_count) {
+        return false;
+      }
+      break;
+    }
+  }
+
+  Complete4Sides(shapes);
   return true;
 }
 
