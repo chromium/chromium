@@ -10,9 +10,6 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
-[EnableIfNot=is_android]
-import "ui/base/cursor/mojom/cursor_type.mojom";
-
 // This is a mojom representation of the corresponding AnnotatedPageContent
 // proto.
 // See components/optimization_guide/proto/features/common_quality_data.proto
@@ -104,10 +101,6 @@ struct AIPageContentInteractionInfo {
   // a clickable control (e.g. form control elements) or has activation
   // behavior. It also checks for whether the node has a click handler.
   bool is_clickable;
-
-  // The cursor type for the content node.
-  [EnableIfNot=is_android]
-  ui.mojom.CursorType cursor_type;
 };
 
 enum AIPageContentTextSize {

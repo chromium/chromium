@@ -97,6 +97,26 @@ void ConvertGeometry(const blink::mojom::AIPageContentGeometry& mojom_geometry,
       mojom_geometry.is_fixed_or_sticky_position);
 }
 
+void ConvertInteractionInfo(
+    const blink::mojom::AIPageContentInteractionInfo& mojom_interaction_info,
+    optimization_guide::proto::InteractionInfo* proto_interaction_info) {
+  proto_interaction_info->set_scrolls_overflow_x(
+      mojom_interaction_info.scrolls_overflow_x);
+  proto_interaction_info->set_scrolls_overflow_y(
+      mojom_interaction_info.scrolls_overflow_y);
+  proto_interaction_info->set_is_selectable(
+      mojom_interaction_info.is_selectable);
+  proto_interaction_info->set_is_editable(mojom_interaction_info.is_editable);
+  proto_interaction_info->set_can_resize_horizontal(
+      mojom_interaction_info.can_resize_horizontal);
+  proto_interaction_info->set_can_resize_vertical(
+      mojom_interaction_info.can_resize_vertical);
+  proto_interaction_info->set_is_focusable(mojom_interaction_info.is_focusable);
+  proto_interaction_info->set_is_focused(mojom_interaction_info.is_focused);
+  proto_interaction_info->set_is_draggable(mojom_interaction_info.is_draggable);
+  proto_interaction_info->set_is_clickable(mojom_interaction_info.is_clickable);
+}
+
 optimization_guide::proto::TextSize ConvertTextSize(
     blink::mojom::AIPageContentTextSize text_size) {
   switch (text_size) {
@@ -317,6 +337,11 @@ bool ConvertAttributes(
   if (mojom_attributes.geometry) {
     ConvertGeometry(*mojom_attributes.geometry,
                     proto_attributes->mutable_geometry());
+  }
+
+  if (mojom_attributes.interaction_info) {
+    ConvertInteractionInfo(*mojom_attributes.interaction_info,
+                           proto_attributes->mutable_interaction_info());
   }
 
   if (mojom_attributes.text_info) {
