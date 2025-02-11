@@ -196,13 +196,10 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 
 #pragma mark - Tests
 
+// TODO(crbug.com/394490489): Test is flaky.
 // Tests showing up a bottom sheet to confirm a plus address. Once, the plus
 // address is confirmed checks if it is filled in the file.
-- (void)testConfirmPlusAddressUsingBottomSheet {
-  // TODO(crbug.com/394490489): Test fails on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
-  }
+- (void)DISABLED_testConfirmPlusAddressUsingBottomSheet {
   [self openCreatePlusAddressBottomSheet];
 
   id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
