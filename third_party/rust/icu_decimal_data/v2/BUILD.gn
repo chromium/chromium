@@ -14,7 +14,13 @@ cargo_crate("lib") {
   crate_type = "rlib"
   crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_decimal_data-2.0.0-beta1/src/lib.rs"
   sources = [ "//third_party/rust/chromium_crates_io/vendor/icu_decimal_data-2.0.0-beta1/src/lib.rs" ]
-  inputs = []
+  inputs = [
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal_data-2.0.0-beta1/src/../data/decimal_digits_v1_marker.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal_data-2.0.0-beta1/src/../data/decimal_digits_v1_marker.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal_data-2.0.0-beta1/src/../data/decimal_symbols_v2_marker.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal_data-2.0.0-beta1/src/../data/decimal_symbols_v2_marker.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal_data-2.0.0-beta1/src/../data/mod.rs",
+  ]
 
   build_native_rust_unit_tests = false
   edition = "2021"

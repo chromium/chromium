@@ -14,7 +14,15 @@ cargo_crate("lib") {
   crate_type = "rlib"
   crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_list_data-2.0.0-beta1/src/lib.rs"
   sources = [ "//third_party/rust/chromium_crates_io/vendor/icu_list_data-2.0.0-beta1/src/lib.rs" ]
-  inputs = []
+  inputs = [
+    "//third_party/rust/chromium_crates_io/vendor/icu_list_data-2.0.0-beta1/src/../data/and_list_v2_marker.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_list_data-2.0.0-beta1/src/../data/and_list_v2_marker.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_list_data-2.0.0-beta1/src/../data/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_list_data-2.0.0-beta1/src/../data/or_list_v2_marker.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_list_data-2.0.0-beta1/src/../data/or_list_v2_marker.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_list_data-2.0.0-beta1/src/../data/unit_list_v2_marker.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_list_data-2.0.0-beta1/src/../data/unit_list_v2_marker.rs.data",
+  ]
 
   build_native_rust_unit_tests = false
   edition = "2021"

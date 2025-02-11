@@ -50,11 +50,6 @@ cargo_crate("lib") {
   proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
   build_deps = [ "//third_party/rust/autocfg/v1:buildrs_support" ]
   features = [ "i128" ]
-  build_root =
-      "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/build.rs"
-  build_sources = [
-    "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/build.rs",
-  ]
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates
   ]

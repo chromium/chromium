@@ -490,7 +490,8 @@ fn collect_crate_file(files: &mut CrateFiles, mode: CollectCrateFiles, filepath:
         // md: Markdown files are commonly include!()'d into source code as docs.
         // h: cxxbridge_cmd include!()'s its .h file into it.
         // json: json files are include!()'d into source code in the wycheproof crate
-        Some("md") | Some("h") | Some("json") => match mode {
+        // data: .rs.data files used by ICU4X
+        Some("md") | Some("h") | Some("json") | Some("data") => match mode {
             Internal | ExternalSourcesAndInputs | ExternalInputsOnly => {
                 files.inputs.push(filepath.to_owned())
             }

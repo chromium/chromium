@@ -161,6 +161,58 @@ extra_input_roots = ['../README.md']
 [crate.itertools]
 group = 'test'
 
+[crate.icu_calendar_data]
+extra_input_roots = ['../data']
+extra_src_roots = ['../data']
+
+[crate.icu_casemap_data]
+extra_input_roots = ['../data']
+extra_src_roots = ['../data']
+
+[crate.icu_collator_data]
+extra_input_roots = ['../data']
+extra_src_roots = ['../data']
+
+[crate.icu_datetime_data]
+extra_input_roots = ['../data']
+extra_src_roots = ['../data']
+
+[crate.icu_decimal_data]
+extra_input_roots = ['../data']
+extra_src_roots = ['../data']
+
+[crate.icu_experimental_data]
+extra_input_roots = ['../data']
+extra_src_roots = ['../data']
+
+[crate.icu_list_data]
+extra_input_roots = ['../data']
+extra_src_roots = ['../data']
+
+[crate.icu_locale_data]
+extra_input_roots = ['../data']
+extra_src_roots = ['../data']
+
+[crate.icu_normalizer_data]
+extra_input_roots = ['../data']
+extra_src_roots = ['../data']
+
+[crate.icu_plurals_data]
+extra_input_roots = ['../data']
+extra_src_roots = ['../data']
+
+[crate.icu_properties_data]
+extra_input_roots = ['../data']
+extra_src_roots = ['../data']
+
+[crate.icu_segmenter_data]
+extra_input_roots = ['../data']
+extra_src_roots = ['../data']
+
+[crate.icu_timezone_data]
+extra_input_roots = ['../data']
+extra_src_roots = ['../data']
+
 [crate.libc]
 ban_features = [
     # `extra_traits` feature is banned because of
@@ -172,6 +224,10 @@ ban_features = [
 license_files= ["LICENSE.txt"]
 
 [crate.log]
+
+[crate.num-traits]
+# Configures the has_total_cmp feature, not necessary
+remove_build_rs = true
 
 [crate.nom]
 remove_deps = ['minimal-lexical']
