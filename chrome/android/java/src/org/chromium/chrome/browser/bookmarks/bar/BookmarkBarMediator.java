@@ -235,9 +235,7 @@ class BookmarkBarMediator
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
                 (profileAfterLoading, modelAfterLoading) -> {
                     BookmarkUtils.showBookmarkManager(
-                            mActivity,
-                            modelAfterLoading.getRootFolderId(),
-                            profileAfterLoading.isOffTheRecord());
+                            mActivity, modelAfterLoading.getRootFolderId(), profileAfterLoading);
                 });
     }
 
@@ -247,7 +245,7 @@ class BookmarkBarMediator
         final Profile profile = mProfileSupplier.get();
 
         if (item.isFolder()) {
-            BookmarkUtils.showBookmarkManager(mActivity, item.getId(), profile.isOffTheRecord());
+            BookmarkUtils.showBookmarkManager(mActivity, item.getId(), profile);
             return;
         }
 
@@ -274,7 +272,7 @@ class BookmarkBarMediator
                             mActivity,
                             Optional.ofNullable(modelAfterLoading.getAccountDesktopFolderId())
                                     .orElseGet(modelAfterLoading::getDesktopFolderId),
-                            profileAfterLoading.isOffTheRecord());
+                            profileAfterLoading);
                 });
     }
 

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.read_later;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -37,11 +38,11 @@ public final class ReadingListUtils {
     /**
      * Opens the Reading list folder in the bookmark manager.
      *
-     * @param isIncognito Whether the bookmark manager should open in incognito mode.
+     * @param profile The profile associated with the bookmark manager.
      */
-    public static void showReadingList(boolean isIncognito) {
+    public static void showReadingList(Profile profile) {
         BookmarkUtils.showBookmarkManager(
-                null, new BookmarkId(0, BookmarkType.READING_LIST), /* isIncognito= */ isIncognito);
+                null, new BookmarkId(0, BookmarkType.READING_LIST), profile);
     }
 
     /** For cases where we don't want to mock the entire bookmarks save flow infra. */

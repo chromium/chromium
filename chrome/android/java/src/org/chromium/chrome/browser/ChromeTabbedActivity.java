@@ -2977,7 +2977,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                             () -> {
                                 BookmarkUtils.showBookmarkManager(
                                         ChromeTabbedActivity.this,
-                                        getCurrentTabModel().isIncognito());
+                                        getCurrentTabModel().getProfile());
                             });
             if (currentTabIsNtp) {
                 NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_BOOKMARKS_MANAGER);
