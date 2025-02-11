@@ -377,9 +377,13 @@ BASE_FEATURE(kAndroidHubSearch,
 // (https://crbug.com/374852568).
 BASE_FEATURE(kPostDelayedTaskFocusTab, "PostDelayedTaskFocusTab", ENABLED);
 
+// Controls various Omnibox Diagnostics features.
+BASE_FEATURE(kDiagnostics, "OmniboxDiagnostics", DISABLED);
+
 namespace android {
 static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
   static const base::Feature* const kFeaturesExposedToJava[] = {
+      &kDiagnostics,
       &kOmniboxAnswerActions,
       &kAnimateSuggestionsListAppearance,
       &kOmniboxTouchDownTriggerForPrefetch,

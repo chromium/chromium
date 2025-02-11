@@ -9969,6 +9969,7 @@ from previous Chrome versions.
   <int value="-1639211162" label="CodeBasedRBD:enabled"/>
   <int value="-1639050182" label="NavigationPredictorRendererWarmup:enabled"/>
   <int value="-1638815914" label="enable-experimental-productivity-features"/>
+  <int value="-1638676747" label="OmniboxDiagnostics:enabled"/>
   <int value="-1638399923"
       label="PrivacySandboxProactiveTopicsBlocking:disabled"/>
   <int value="-1638327396" label="CCTEphemeralMediaViewerExperiment:enabled"/>
@@ -18761,6 +18762,7 @@ from previous Chrome versions.
   <int value="1814310862" label="WebKioskEnableLacros:enabled"/>
   <int value="1814671708" label="disable-password-manager-reauthentication"/>
   <int value="1814854881" label="NearbySharingSelfShareUI:disabled"/>
+  <int value="1814924118" label="OmniboxDiagnostics:disabled"/>
   <int value="1815186008" label="SearchResumptionModuleAndroid:enabled"/>
   <int value="1815687487" label="TabSwitcherColorBlendAnimate:disabled"/>
   <int value="1815734544" label="ChromeRefresh2023TopChromeFont:enabled"/>

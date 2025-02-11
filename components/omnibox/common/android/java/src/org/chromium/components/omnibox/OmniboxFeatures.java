@@ -180,6 +180,12 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sAndroidHubSearchEnterPerformsSearch =
             newBooleanParam(sAndroidHubSearch, "enable_press_enter_to_search", false);
 
+    // Omnibox Diagnostics
+    private static final CachedFlag sDiagnostics =
+            newFlag(OmniboxFeatureList.DIAGNOSTICS, FeatureState.DISABLED);
+    public static final BooleanCachedFeatureParam sDiagInputConnection =
+            newBooleanParam(sDiagnostics, "omnibox_diag_input_connection", false);
+
     /** See {@link #setShouldRetainOmniboxOnFocusForTesting(boolean)}. */
     private static @Nullable Boolean sShouldRetainOmniboxOnFocusForTesting;
 

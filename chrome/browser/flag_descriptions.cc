@@ -2541,6 +2541,12 @@ const char kOmniboxCalcProviderName[] = "Omnibox calc provider";
 const char kOmniboxCalcProviderDescription[] =
     "When enabled, suggests recent calculator results in the omnibox.";
 
+const char kOmniboxDiagnosticsName[] = "Omnibox Diagnostics (restart twice)";
+const char kOmniboxDiagnosticsDescription[] =
+    "Allows controlling various diagnostic facilities of the Omnibox component."
+    " Use sparingly, as this may produce significant amount of log output. "
+    " Restart twice when changing this option.";
+
 const char kOmniboxDomainSuggestionsName[] = "Omnibox Domain Suggestions";
 const char kOmniboxDomainSuggestionsDescription[] =
     "If enabled, history URL suggestions from hosts visited often bypass the "

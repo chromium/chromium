@@ -6357,6 +6357,12 @@
     "expiry_milestone": 125
   },
   {
+    "name": "omnibox-diagnostics",
+    "owners": ["ender@google.com", "chrome-mobile-search@google.com"],
+    // Provides a way to turn on various diagnostic facilities in the Omnibox component.
+    "expiry_milestone": 300
+  },
+  {
     "name": "omnibox-domain-suggestions",
     "owners": ["manukh@chromium.org", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 120
