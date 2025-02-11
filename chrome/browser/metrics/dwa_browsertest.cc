@@ -6,8 +6,8 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
+#include "chrome/browser/metrics/testing/metrics_consent_override.h"
 #include "chrome/browser/metrics/testing/sync_metrics_test_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #endif
@@ -35,7 +36,6 @@ namespace metrics::dwa {
 #if !BUILDFLAG(IS_ANDROID)
 typedef Browser* PlatformBrowser;
 #else
-class TestTabModel;
 typedef std::unique_ptr<TestTabModel> PlatformBrowser;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -47,90 +47,6 @@ bool IsDwaAllowedForAllProfiles() {
   return g_browser_process->GetMetricsServicesManager()
       ->IsDwaAllowedForAllProfiles();
 }
-
-// TODO(crbug.com/394933307): Refactor common code in UKM and DWA browsertests.
-#if BUILDFLAG(IS_ANDROID)
-// ActivityType that doesn't restore tabs on cold start.
-// Any type other than kTabbed is fine.
-const auto TEST_ACTIVITY_TYPE = chrome::android::ActivityType::kCustomTab;
-
-// TestTabModel provides a means of creating a tab associated with a given
-// profile. The new tab can then be added to Android's TabModelList.
-class TestTabModel : public TabModel {
- public:
-  explicit TestTabModel(Profile* profile)
-      : TabModel(profile, TEST_ACTIVITY_TYPE),
-        web_contents_(content::WebContents::Create(
-            content::WebContents::CreateParams(GetProfile()))) {}
-
-  ~TestTabModel() override = default;
-
-  // TabModel:
-  int GetTabCount() const override { return 0; }
-  int GetActiveIndex() const override { return 0; }
-  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override {
-    return nullptr;
-  }
-  content::WebContents* GetActiveWebContents() const override {
-    return web_contents_.get();
-  }
-  content::WebContents* GetWebContentsAt(int index) const override {
-    return nullptr;
-  }
-  TabAndroid* GetTabAt(int index) const override { return nullptr; }
-  void SetActiveIndex(int index) override {}
-  void ForceCloseAllTabs() override {}
-  void CloseTabAt(int index) override {}
-  void CreateTab(TabAndroid* parent,
-                 content::WebContents* web_contents,
-                 bool select) override {}
-  void HandlePopupNavigation(TabAndroid* parent,
-                             NavigateParams* params) override {}
-  content::WebContents* CreateNewTabForDevTools(const GURL& url) override {
-    return nullptr;
-  }
-  bool IsSessionRestoreInProgress() const override { return false; }
-  bool IsActiveModel() const override { return false; }
-  void AddObserver(TabModelObserver* observer) override {}
-  void RemoveObserver(TabModelObserver* observer) override {}
-  int GetTabCountNavigatedInTimeWindow(
-      const base::Time& begin_time,
-      const base::Time& end_time) const override {
-    return 0;
-  }
-  void CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
-                                      const base::Time& end_time) override {}
-
- private:
-  // The WebContents associated with this tab's profile.
-  std::unique_ptr<content::WebContents> web_contents_;
-};
-#endif  // BUILDFLAG(IS_ANDROID)
-
-// A helper object for overriding metrics enabled state.
-class MetricsConsentOverride {
- public:
-  explicit MetricsConsentOverride(bool initial_state) : state_(initial_state) {
-    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
-        &state_);
-    Update(initial_state);
-  }
-
-  ~MetricsConsentOverride() {
-    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
-        /*value=*/nullptr);
-  }
-
-  void Update(bool state) {
-    state_ = state;
-    // Trigger rechecking of metrics state.
-    g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(
-        /*may_upload=*/true);
-  }
-
- private:
-  bool state_;
-};
 
 // Test fixture that provides access to some DWA internals.
 class DwaBrowserTest : public SyncTest {
@@ -277,6 +193,10 @@ class DwaBrowserTest : public SyncTest {
 #else
     std::unique_ptr<TestTabModel> tab_model =
         std::make_unique<TestTabModel>(profile);
+    tab_model->SetWebContentsList(
+        {content::WebContents::Create(
+             content::WebContents::CreateParams(profile))
+             .release()});
     TabModelList::AddTabModel(tab_model.get());
     EXPECT_TRUE(content::NavigateToURL(tab_model->GetActiveWebContents(),
                                        GURL("about:blank")));
@@ -312,7 +232,7 @@ class DwaBrowserTest : public SyncTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DwaBrowserTest, DwaServiceCheck) {
-  MetricsConsentOverride metrics_consent(true);
+  test::MetricsConsentOverride metrics_consent(true);
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   EnableSyncForProfile(profile);
 
@@ -344,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, DwaServiceCheck) {
 // Make sure that DWA is disabled and purged while an incognito window is open.
 IN_PROC_BROWSER_TEST_F(DwaBrowserTest, RegularBrowserPlusIncognitoCheck) {
   dwa::DwaRecorder* dwa_recorder = metrics::dwa::DwaRecorder::Get();
-  MetricsConsentOverride metrics_consent(true);
+  test::MetricsConsentOverride metrics_consent(true);
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   EnableSyncForProfile(profile);
 
@@ -399,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, RegularBrowserPlusIncognitoCheck) {
 // Make sure opening a regular browser after Incognito doesn't enable DWA.
 IN_PROC_BROWSER_TEST_F(DwaBrowserTest, IncognitoPlusRegularBrowserCheck) {
   dwa::DwaRecorder* dwa_recorder = metrics::dwa::DwaRecorder::Get();
-  MetricsConsentOverride metrics_consent(true);
+  test::MetricsConsentOverride metrics_consent(true);
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   EnableSyncForProfile(profile);
 
@@ -421,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, IncognitoPlusRegularBrowserCheck) {
 // This test ensures that disabling MSBB UKM consent disables and purges DWA.
 // Additionally ensures that DWA is disabled until all UKM consents are enabled.
 IN_PROC_BROWSER_TEST_F(DwaBrowserTest, UkmConsentChangeCheck_Msbb) {
-  MetricsConsentOverride metrics_consent(true);
+  test::MetricsConsentOverride metrics_consent(true);
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   EnableSyncForProfile(profile);
 
@@ -450,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, UkmConsentChangeCheck_Msbb) {
 // DWA. Additionally ensures that DWA is disabled until all UKM consents are
 // enabled.
 IN_PROC_BROWSER_TEST_F(DwaBrowserTest, UkmConsentChangeCheck_Extensions) {
-  MetricsConsentOverride metrics_consent(true);
+  test::MetricsConsentOverride metrics_consent(true);
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   EnableSyncForProfile(profile);
 
@@ -478,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, UkmConsentChangeCheck_Extensions) {
 // DWA is disabled until all UKM consents are enabled.
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(DwaBrowserTest, UkmConsentChangeCheck_Apps) {
-  MetricsConsentOverride metrics_consent(true);
+  test::MetricsConsentOverride metrics_consent(true);
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   EnableSyncForProfile(profile);
 
@@ -506,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, UkmConsentChangeCheck_Apps) {
 // consents are enabled.
 IN_PROC_BROWSER_TEST_F(DwaBrowserTest,
                        UkmConsentChangeCheck_MsbbAndExtensions) {
-  MetricsConsentOverride metrics_consent(true);
+  test::MetricsConsentOverride metrics_consent(true);
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   EnableSyncForProfile(profile);
 
@@ -540,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest,
 // ensures that DWA is disabled until all UKM consents are enabled.
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(DwaBrowserTest, UkmConsentChangeCheck_MsbbAndApps) {
-  MetricsConsentOverride metrics_consent(true);
+  test::MetricsConsentOverride metrics_consent(true);
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   EnableSyncForProfile(profile);
 
@@ -573,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, UkmConsentChangeCheck_MsbbAndApps) {
 // consents are enabled.
 IN_PROC_BROWSER_TEST_F(DwaBrowserTest,
                        UkmConsentChangeCheck_ExtensionsAndApps) {
-  MetricsConsentOverride metrics_consent(true);
+  test::MetricsConsentOverride metrics_consent(true);
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   EnableSyncForProfile(profile);
 
@@ -606,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest,
 // UKM consents are enabled.
 IN_PROC_BROWSER_TEST_F(DwaBrowserTest,
                        UkmConsentChangeCheck_MsbbAndExtensionsAndApps) {
-  MetricsConsentOverride metrics_consent(true);
+  test::MetricsConsentOverride metrics_consent(true);
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   EnableSyncForProfile(profile);
 
