@@ -74,6 +74,10 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   static constexpr int kDefaultPageSize = 4096;
 
   DatabaseOptions();
+  DatabaseOptions(const DatabaseOptions&);
+  DatabaseOptions(DatabaseOptions&&);
+  DatabaseOptions& operator=(const DatabaseOptions&);
+  DatabaseOptions& operator=(DatabaseOptions&&);
   ~DatabaseOptions();
 
   // If true, the database can only be opened by one process at a time.
@@ -139,6 +143,19 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // More details at https://www.sqlite.org/wal.html
   DatabaseOptions& set_wal_mode(bool wal_mode) {
     wal_mode_ = wal_mode;
+    return *this;
+  }
+
+  // If true, enables preloading the database before opening it.
+  //
+  // Hints the file system that the database will be accessed soon.
+  //
+  // This method should be called on databases that are on the critical path to
+  // Chrome startup. Informing the filesystem about our expected access pattern
+  // early on reduces the likelihood that we'll be blocked on disk I/O. This has
+  // a high impact on startup time.
+  DatabaseOptions& set_preload(bool preload) {
+    preload_ = preload;
     return *this;
   }
 
@@ -245,6 +262,7 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   bool flush_to_media_ = false;
   int page_size_ = kDefaultPageSize;
   int cache_size_ = 0;
+  bool preload_ = false;
   bool mmap_alt_status_discouraged_ = false;
   bool enable_views_discouraged_ = false;
   const char* vfs_name_discouraged_ = nullptr;
@@ -828,6 +846,9 @@ class COMPONENT_EXPORT(SQL) Database {
   // `file_name` is the SQLite magic memory path :memory:, the database will be
   // opened in-memory.
   bool OpenInternal(const std::string& file_name);
+
+  // Requests the operating system to preload the pages on disk into memory.
+  void PreloadInternal(const base::FilePath& path);
 
   // Configures the underlying sqlite3* object via sqlite3_db_config().
   //

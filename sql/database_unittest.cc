@@ -2532,6 +2532,14 @@ TEST_P(SQLDatabaseTest, OpenWithRecoveryHandlesCorruption) {
   }
 }
 
+TEST_P(SQLDatabaseTest, OpenWithPreload) {
+  db_->Close();
+
+  DatabaseOptions options = GetDBOptions().set_preload(true);
+  db_ = std::make_unique<Database>(options, test::kTestTag);
+  ASSERT_TRUE(db_->Open(db_path_));
+}
+
 TEST_P(SQLDatabaseTest, ExecuteFailsAfterCorruptSizeInHeader) {
   ASSERT_TRUE(
       db_->Execute("CREATE TABLE rows(i INTEGER PRIMARY KEY NOT NULL)"));

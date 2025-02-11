@@ -96,7 +96,8 @@ bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
   db_ = std::make_unique<sql::Database>(
       sql::DatabaseOptions()
           .set_exclusive_locking(false)
-          .set_exclusive_database_file_lock(enable_exclusive_access_),
+          .set_exclusive_database_file_lock(enable_exclusive_access_)
+          .set_preload(true),
       histogram_tag_);
 
   // base::Unretained is safe because |this| owns (and therefore outlives) the
@@ -105,34 +106,11 @@ bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
       &SQLitePersistentStoreBackendBase::DatabaseErrorCallback,
       base::Unretained(this)));
 
-  bool has_been_preloaded = false;
-  // It is not possible to preload a database opened with exclusive access,
-  // because the file cannot be opened again to preload it. In this case,
-  // preload before opening the database.
-  if (enable_exclusive_access_) {
-    has_been_preloaded = true;
-
-    // Can only attempt to preload before Open if the file exists.
-    if (base::PathExists(path_)) {
-      // See comments in Database::Preload for explanation of these values.
-      constexpr int kPreReadSize = 128 * 1024 * 1024;  // 128 MB
-      // TODO(crbug.com/40904059): Consider moving preload behind a database
-      // option.
-      base::PreReadFile(path_, /*is_executable=*/false, /*sequential=*/false,
-                        kPreReadSize);
-    }
-  }
-
   if (!db_->Open(path_)) {
     DLOG(ERROR) << "Unable to open " << histogram_tag_.value << " DB.";
     RecordOpenDBProblem();
     Reset();
     return false;
-  }
-
-  // Only attempt a preload if the database hasn't already been preloaded above.
-  if (!has_been_preloaded) {
-    db_->Preload();
   }
 
   if (!MigrateDatabaseSchema() || !CreateDatabaseSchema()) {
