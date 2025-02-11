@@ -147,7 +147,10 @@
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/enterprise/util/affiliation.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -445,6 +448,8 @@ WizardController::WizardController(WizardContext* wizard_context)
     // TODO(crbug.com/40138102): Remove this logic after WebUI split is done,
     // as screens should work with late binding/early unbinding in that case.
     oobe_ui_observation_.Observe(GetOobeUI());
+
+    MaybeEnablePreConsentMetrics();
   }
 }
 
@@ -1312,6 +1317,15 @@ void WizardController::ShowOsTrialScreen() {
 }
 
 void WizardController::ShowConsolidatedConsentScreen() {
+  // Disable PreConsent metrics if the user is affiliated or managed.
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  CHECK(profile);
+  if (enterprise_util::IsBrowserManaged(profile)) {
+    if (metrics::CrOSPreConsentMetricsManager::Get()) {
+      metrics::CrOSPreConsentMetricsManager::Get()->Disable();
+    }
+  }
+
   SetCurrentScreen(GetScreen(ConsolidatedConsentScreenView::kScreenId));
 }
 
@@ -2917,6 +2931,13 @@ void WizardController::OnOobeFlowFinished() {
   GetLocalState()->ClearPref(prefs::kOobeMetricsReportedAsEnabled);
   GetLocalState()->ClearPref(prefs::kOobeStatsReportingControllerReportedReset);
 
+  // Check if pre-consent metrics is still enabled.
+  if (metrics::CrOSPreConsentMetricsManager::Get()) {
+    LOG(ERROR) << "OOBE flow is finished and Pre-consent metrics is still "
+      << "enabled. Disabling pre-consent metrics.";
+    metrics::CrOSPreConsentMetricsManager::Get()->Disable();
+  }
+
   // Launch browser and delete login host controller.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -3629,6 +3650,27 @@ void WizardController::MaybeAbortQuickStartFlow(
     quick_start::QuickStartController::AbortFlowReason reason) {
   if (wizard_context_->quick_start_setup_ongoing) {
     quickstart_controller_->AbortFlow(reason);
+  }
+}
+
+void WizardController::MaybeEnablePreConsentMetrics() {
+  // Enable pre-consent metrics if this device is in oobe and is the first
+  // user.
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  CHECK(profile);
+  if (enterprise_util::IsBrowserManaged(profile)) {
+    VLOG(1) << "Device enrolled. Do not enable pre consent metrics.";
+    return;
+  }
+
+  if (!wizard_context_->is_add_person_flow &&
+      metrics::CrOSPreConsentMetricsManager::Get()) {
+    // Update stats reporter that the current metrics consent is enabled. This
+    // will make sure that any changes in the future are properly propagated
+    // when using the API.
+    StatsReportingController::Get()->SetEnabled(
+        ProfileManager::GetActiveUserProfile(), true);
+    metrics::CrOSPreConsentMetricsManager::Get()->Enable();
   }
 }
 

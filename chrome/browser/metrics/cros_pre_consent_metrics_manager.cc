@@ -17,8 +17,11 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/login/startup_utils.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service_client.h"
@@ -63,9 +66,7 @@ CrOSPreConsentMetricsManager::MaybeCreate() {
 
   // Handle when a ChromeOS device upgrades to the version this functionality
   // was added that has completed OOBE.
-  if (ash::StartupUtils::IsOobeCompleted() &&
-      ash::DeviceSettingsService::Get()->GetOwnershipStatus() ==
-          ash::DeviceSettingsService::OwnershipStatus::kOwnershipTaken) {
+  if (ash::StartupUtils::IsDeviceRegistered()) {
     base::ThreadPool::PostTask(
         FROM_HERE, base::MayBlock(),
         base::BindOnce(&WritePreConsentCompleteFile,
@@ -99,6 +100,13 @@ void CrOSPreConsentMetricsManager::Enable() {
   // disabled do not update the permissions as it should not be changed.
   g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(
       is_enabled_);
+
+  // Register CrOSPreConsentMetricsManager as the observer for policy change to
+  // get notified when device is enrolled.
+  cloud_policy_store_observation_.Observe(g_browser_process->platform_part()
+                                              ->browser_policy_connector_ash()
+                                              ->GetDeviceCloudPolicyManager()
+                                              ->device_store());
 }
 
 void CrOSPreConsentMetricsManager::Disable() {
@@ -143,6 +151,16 @@ CrOSPreConsentMetricsManager::CrOSPreConsentMetricsManager()
           base::ThreadPool::CreateSequencedTaskRunner(base::MayBlock())) {
   CHECK(g_instance == nullptr) << "CrOSPreConsentMetricsManager already exists";
   g_instance = this;
+}
+
+void CrOSPreConsentMetricsManager::OnStoreError(
+    policy::CloudPolicyStore* store) {}
+
+void CrOSPreConsentMetricsManager::OnStoreLoaded(
+    policy::CloudPolicyStore* store) {
+  cloud_policy_store_observation_.Reset();
+
+  Disable();
 }
 
 }  // namespace metrics
