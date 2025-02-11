@@ -55,6 +55,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
 
     profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
     SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
+    profile_state_.profile = profile_.get();
 
     scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state_
                                                     profile:profile_.get()];
