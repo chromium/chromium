@@ -32,6 +32,9 @@ class FakeCookieStore : public net::CookieStore {
       SetCookiesCallback callback,
       std::optional<net::CookieAccessResult> cookie_access_result =
           std::nullopt) override;
+  void SetUnsafeCanonicalCookieForTestAsync(
+      std::unique_ptr<net::CanonicalCookie> cookie,
+      SetCookiesCallback callback) override;
   void GetCookieListWithOptionsAsync(
       const GURL& url,
       const net::CookieOptions& options,

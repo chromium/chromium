@@ -267,6 +267,12 @@ void CookieStoreIOS::SetCanonicalCookieAsync(
   }
 }
 
+void CookieStoreIOS::SetUnsafeCanonicalCookieForTestAsync(
+    std::unique_ptr<CanonicalCookie> cookie,
+    SetCookiesCallback callback) {
+  NOTIMPLEMENTED() << "Implement this if necessary.";
+}
+
 void CookieStoreIOS::GetCookieListWithOptionsAsync(
     const GURL& url,
     const net::CookieOptions& options,

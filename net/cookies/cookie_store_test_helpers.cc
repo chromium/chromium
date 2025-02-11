@@ -115,6 +115,22 @@ void DelayedCookieMonster::SetCanonicalCookieAsync(
       base::Milliseconds(kDelayedTime));
 }
 
+void DelayedCookieMonster::SetUnsafeCanonicalCookieForTestAsync(
+    std::unique_ptr<CanonicalCookie> cookie,
+    SetCookiesCallback callback) {
+  did_run_ = false;
+  cookie_monster_->SetUnsafeCanonicalCookieForTestAsync(
+      std::move(cookie),
+      base::BindOnce(&DelayedCookieMonster::SetCookiesInternalCallback,
+                     base::Unretained(this)));
+  DCHECK_EQ(did_run_, true);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&DelayedCookieMonster::InvokeSetCookiesCallback,
+                     base::Unretained(this), std::move(callback)),
+      base::Milliseconds(kDelayedTime));
+}
+
 void DelayedCookieMonster::GetCookieListWithOptionsAsync(
     const GURL& url,
     const CookieOptions& options,
