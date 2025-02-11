@@ -1779,25 +1779,25 @@ const FeatureEntry::FeatureVariation kTabstripDeclutterVariations[] = {
 
 #if !BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam kTabstripComboButtonNoBackground[] = {
-    {"has_background", "false"}};
+const FeatureEntry::FeatureParam kTabstripComboButtonBackground[] = {
+    {"has_background", "true"}};
 
 const FeatureEntry::FeatureParam kTabstripComboButtonReverseButtonOrder[] = {
     {"reverse_button_order", "true"}};
 
 const FeatureEntry::FeatureParam
-    kTabstripComboButtonReverseButtonOrderNoBackground[] = {
-        {"has_background", "false"},
+    kTabstripComboButtonReverseButtonOrderBackground[] = {
+        {"has_background", "true"},
         {"reverse_button_order", "true"}};
 
 const FeatureEntry::FeatureVariation kTabstripComboButtonVariations[] = {
-    {" - without background", kTabstripComboButtonNoBackground,
-     std::size(kTabstripComboButtonNoBackground)},
+    {" - with background", kTabstripComboButtonBackground,
+     std::size(kTabstripComboButtonBackground)},
     {" - reverse button order", kTabstripComboButtonReverseButtonOrder,
      std::size(kTabstripComboButtonReverseButtonOrder)},
-    {" - reverse button order & without background",
-     kTabstripComboButtonReverseButtonOrderNoBackground,
-     std::size(kTabstripComboButtonReverseButtonOrderNoBackground)},
+    {" - reverse button order & with background",
+     kTabstripComboButtonReverseButtonOrderBackground,
+     std::size(kTabstripComboButtonReverseButtonOrderBackground)},
 };
 
 #endif

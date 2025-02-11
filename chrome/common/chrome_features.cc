@@ -357,7 +357,7 @@ bool IsTabstripComboButtonEnabled() {
 }
 
 const base::FeatureParam<bool> kTabstripComboButtonHasBackground{
-    &kTabstripComboButton, "has_background", true};
+    &kTabstripComboButton, "has_background", false};
 
 const base::FeatureParam<bool> kTabstripComboButtonHasReverseButtonOrder{
     &kTabstripComboButton, "reverse_button_order", false};
