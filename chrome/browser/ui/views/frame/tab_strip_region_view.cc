@@ -268,11 +268,22 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
 }
 
 TabStripRegionView::~TabStripRegionView() {
-  // TabStripActionContainer has a pointer to TabStripController , which is
-  // also destroyed by this class.
-  // This enusres that the action container is destroyed first.
+  // These objects have pointers to TabStripController, which is also destoroyed
+  // by this class. Remove child views that hold raw_ptr to TabStripController.
   if (tab_strip_action_container_) {
     RemoveChildViewT(std::exchange(tab_strip_action_container_, nullptr));
+  }
+  if (new_tab_button_) {
+    RemoveChildViewT(std::exchange(new_tab_button_, nullptr));
+  }
+  if (tab_strip_combo_button_) {
+    RemoveChildViewT(std::exchange(tab_strip_combo_button_, nullptr));
+  }
+  if (tab_search_container_) {
+    RemoveChildViewT(std::exchange(tab_search_container_, nullptr));
+  }
+  if (product_specifications_button_) {
+    RemoveChildViewT(std::exchange(product_specifications_button_, nullptr));
   }
 }
 

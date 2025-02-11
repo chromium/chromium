@@ -189,13 +189,10 @@ class TabStripActionContainer : public views::View,
   raw_ptr<tabs::TabDeclutterController> tab_declutter_controller_ = nullptr;
   raw_ptr<tabs::GlicNudgeController> glic_nudge_controller_ = nullptr;
 
-  raw_ptr<glic::GlicButton, DanglingUntriaged> glic_button_ = nullptr;
+  raw_ptr<glic::GlicButton> glic_button_ = nullptr;
 
   raw_ptr<const Browser> browser_;
 
-  // The TabStripController is removed as part of the TabStripRegionView's
-  // destructor before this class gets cleanup up. This pointer is valid except
-  // during destruction.
   const raw_ptr<TabStripController> tab_strip_controller_ = nullptr;
 
   // Timer for hiding tab_strip_nudge_button_ after show.

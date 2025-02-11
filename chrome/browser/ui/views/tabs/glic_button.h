@@ -44,9 +44,7 @@ class GlicButton : public TabStripControlButton {
 
  private:
   // Tab strip that contains this button.
-  // TODO(crbug.com/382768227): Remove DanglingUntriaged.
-  raw_ptr<TabStripController, AcrossTasksDanglingUntriaged>
-      tab_strip_controller_;
+  raw_ptr<TabStripController> tab_strip_controller_;
 
 #if BUILDFLAG(ENABLE_GLIC)
   // Used to observe glic panel state to update button icon.
