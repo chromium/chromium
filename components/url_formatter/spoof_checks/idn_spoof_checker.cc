@@ -648,23 +648,6 @@ std::u16string IDNSpoofChecker::MaybeRemoveDiacritics(
              : hostname;
 }
 
-IDNA2008DeviationCharacter IDNSpoofChecker::GetDeviationCharacter(
-    std::u16string_view hostname) const {
-  if (hostname.find(u"\u00df") != std::u16string_view::npos) {
-    return IDNA2008DeviationCharacter::kEszett;
-  }
-  if (hostname.find(u"\u03c2") != std::u16string_view::npos) {
-    return IDNA2008DeviationCharacter::kGreekFinalSigma;
-  }
-  if (hostname.find(u"\u200d") != std::u16string_view::npos) {
-    return IDNA2008DeviationCharacter::kZeroWidthJoiner;
-  }
-  if (hostname.find(u"\u200c") != std::u16string_view::npos) {
-    return IDNA2008DeviationCharacter::kZeroWidthNonJoiner;
-  }
-  return IDNA2008DeviationCharacter::kNone;
-}
-
 void IDNSpoofChecker::SetAllowedUnicodeSet(UErrorCode* status) {
   if (U_FAILURE(*status)) {
     return;

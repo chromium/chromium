@@ -862,8 +862,4 @@ std::u16string MaybeRemoveDiacritics(const std::u16string& host) {
   return g_idn_spoof_checker.Get().MaybeRemoveDiacritics(host);
 }
 
-IDNA2008DeviationCharacter GetDeviationCharacter(std::u16string_view hostname) {
-  return g_idn_spoof_checker.Get().GetDeviationCharacter(hostname);
-}
-
 }  // namespace url_formatter
