@@ -73,14 +73,21 @@ class COMPONENT_EXPORT(UI_BASE) Command {
   // if not. |should_parse_media_keys| specifies whether media keys are to be
   // considered for parsing. |error_callback| is called when there is an issue
   // with parsing |accelerator| and the reason why parsing failed is passed in.
-  // Note: If the parsing rules here are changed, make sure to update the
-  // corresponding shortcut_input.ts validation, which validates the user input
-  // for the CrShortcutInput WebUI component.
-  static ui::Accelerator ParseImpl(
-      std::string_view accelerator,
-      std::string_view platform_key,
-      bool should_parse_media_keys,
-      AcceleratorParseErrorCallback error_callback);
+  // |allow_ctrl_alt| parses the accelerator even if the accelerator contains
+  // the control and alt (command and option) key combination. Usually this is
+  // not preferred because that key combination produces a special key in
+  // certain languages. However, this restriction may be loosened if the user
+  // is aware and explicitly binds this key combination. See article for more
+  // information:
+  // https://devblogs.microsoft.com/oldnewthing/20040329-00/?p=40003
+  // Note: If the parsing rules here are changed, make sure to
+  // update the corresponding shortcut_input.ts validation, which validates the
+  // user input for the CrShortcutInput WebUI component.
+  static ui::Accelerator ParseImpl(std::string_view accelerator,
+                                   std::string_view platform_key,
+                                   bool should_parse_media_keys,
+                                   AcceleratorParseErrorCallback error_callback,
+                                   bool allow_ctrl_alt = false);
 
  private:
   std::string command_name_;

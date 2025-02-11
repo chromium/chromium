@@ -14,25 +14,57 @@
 #include "base/strings/string_util.h"
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/command_constants.h"
 #include "ui/base/accelerators/media_keys_listener.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
 namespace ui {
 
 namespace {
+
+// Maximum number of tokens a shortcut can have if it allows the
+// Ctrl+Alt shortcut combination.
 #if BUILDFLAG(IS_CHROMEOS)
 // ChromeOS supports an additional modifier 'Search', which can result in longer
 // sequences.
-static const int kMaxTokenSize = 4;
+static const int kMaxTokenSize = 5;
 #else
-static const int kMaxTokenSize = 3;
+static const int kMaxTokenSize = 4;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-bool DoesRequireModifier(std::string_view accelerator) {
-  return accelerator != ui::kKeyMediaNextTrack &&
-         accelerator != ui::kKeyMediaPlayPause &&
-         accelerator != ui::kKeyMediaPrevTrack &&
-         accelerator != ui::kKeyMediaStop;
+bool DoesRequireModifier(ui::Accelerator accelerator) {
+  const KeyboardCode key_code = accelerator.key_code();
+  return key_code != ui::VKEY_MEDIA_NEXT_TRACK &&
+         key_code != ui::VKEY_MEDIA_PLAY_PAUSE &&
+         key_code != ui::VKEY_MEDIA_PREV_TRACK &&
+         key_code != ui::VKEY_MEDIA_STOP;
+}
+
+bool HasAnyModifierKeys(ui::Accelerator accelerator) {
+  return ui::Accelerator::MaskOutKeyEventFlags(accelerator.modifiers()) != 0;
+}
+
+bool HasValidModifierCombination(ui::Accelerator accelerator,
+                                 bool allow_ctrl_alt) {
+  // Must have a modifier
+  if (DoesRequireModifier(accelerator) && !HasAnyModifierKeys(accelerator)) {
+    return false;
+  }
+
+  // Usually Ctrl+Alt/Cmd+Option key combinations are not supported. See this
+  // article: https://devblogs.microsoft.com/oldnewthing/20040329-00/?p=40003
+  if (!allow_ctrl_alt && accelerator.IsAltDown() &&
+      (accelerator.IsCtrlDown() || accelerator.IsCmdDown())) {
+    return false;
+  }
+
+  if (accelerator.IsShiftDown()) {
+    return accelerator.IsCtrlDown() || accelerator.IsAltDown() ||
+           accelerator.IsCmdDown();
+  }
+
+  return true;
 }
 }  // namespace
 
@@ -68,21 +100,26 @@ std::string Command::CommandPlatform() {
 ui::Accelerator Command::StringToAccelerator(std::string_view accelerator) {
   std::u16string error;
   ui::Accelerator parsed =
-      ParseImpl(accelerator, CommandPlatform(), false, base::DoNothing());
+      ParseImpl(accelerator, CommandPlatform(), false, base::DoNothing(),
+                /*allow_ctrl_alt=*/true);
   return parsed;
 }
 
 // static
 std::string Command::AcceleratorToString(const ui::Accelerator& accelerator) {
+  if (!HasValidModifierCombination(accelerator, true)) {
+    return "";
+  }
+
   std::string shortcut;
 
-  // Ctrl and Alt are mutually exclusive.
   if (accelerator.IsCtrlDown()) {
     shortcut += ui::kKeyCtrl;
-  } else if (accelerator.IsAltDown()) {
-    shortcut += ui::kKeyAlt;
+    shortcut += ui::kKeySeparator;
   }
-  if (!shortcut.empty()) {
+
+  if (accelerator.IsAltDown()) {
+    shortcut += ui::kKeyAlt;
     shortcut += ui::kKeySeparator;
   }
 
@@ -170,11 +207,11 @@ std::string Command::AcceleratorToString(const ui::Accelerator& accelerator) {
   return shortcut;
 }
 
-ui::Accelerator Command::ParseImpl(
-    std::string_view accelerator,
-    std::string_view platform_key,
-    bool should_parse_media_keys,
-    AcceleratorParseErrorCallback error_callback) {
+ui::Accelerator Command::ParseImpl(std::string_view accelerator,
+                                   std::string_view platform_key,
+                                   bool should_parse_media_keys,
+                                   AcceleratorParseErrorCallback error_callback,
+                                   bool allow_ctrl_alt) {
   if (platform_key != ui::kKeybindingPlatformWin &&
       platform_key != ui::kKeybindingPlatformMac &&
       platform_key != ui::kKeybindingPlatformChromeOs &&
@@ -185,11 +222,13 @@ ui::Accelerator Command::ParseImpl(
     return ui::Accelerator();
   }
 
+  // The max token size is reduced by one if the Ctrl+Alt shortcut combination
+  // is not allowed.
+  const size_t max_token_size =
+      allow_ctrl_alt ? kMaxTokenSize : kMaxTokenSize - 1;
   std::vector<std::string> tokens = base::SplitString(
       accelerator, "+", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (tokens.size() == 0 ||
-      (tokens.size() == 1 && DoesRequireModifier(accelerator)) ||
-      tokens.size() > kMaxTokenSize) {
+  if (tokens.empty() || tokens.size() > max_token_size) {
     std::move(error_callback).Run(ui::AcceleratorParseError::kMalformedInput);
     return ui::Accelerator();
   }
@@ -300,31 +339,21 @@ ui::Accelerator Command::ParseImpl(
     }
   }
 
-  bool command = (modifiers & ui::EF_COMMAND_DOWN) != 0;
-  bool ctrl = (modifiers & ui::EF_CONTROL_DOWN) != 0;
-  bool alt = (modifiers & ui::EF_ALT_DOWN) != 0;
-  bool shift = (modifiers & ui::EF_SHIFT_DOWN) != 0;
-
-  // We support Ctrl+foo, Alt+foo, Ctrl+Shift+foo, Alt+Shift+foo, but not
-  // Ctrl+Alt+foo and not Shift+foo either. For a more detailed reason why we
-  // don't support Ctrl+Alt+foo see this article:
-  // http://blogs.msdn.com/b/oldnewthing/archive/2004/03/29/101121.aspx.
-  // On Mac Command can also be used in combination with Shift or on its own,
-  // as a modifier.
-  if (key == ui::VKEY_UNKNOWN || (ctrl && alt) || (command && alt) ||
-      (shift && !ctrl && !alt && !command)) {
+  const ui::Accelerator parsed_accelerator(key, modifiers);
+  if (key == ui::VKEY_UNKNOWN ||
+      !HasValidModifierCombination(parsed_accelerator, allow_ctrl_alt)) {
     std::move(error_callback).Run(ui::AcceleratorParseError::kMalformedInput);
     return ui::Accelerator();
   }
 
   if (ui::MediaKeysListener::IsMediaKeycode(key) &&
-      (shift || ctrl || alt || command)) {
+      HasAnyModifierKeys(parsed_accelerator)) {
     std::move(error_callback)
         .Run(ui::AcceleratorParseError::kMediaKeyWithModifier);
     return ui::Accelerator();
   }
 
-  return ui::Accelerator(key, modifiers);
+  return parsed_accelerator;
 }
 
 }  // namespace ui
