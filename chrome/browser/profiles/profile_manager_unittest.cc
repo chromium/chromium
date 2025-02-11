@@ -411,9 +411,8 @@ TEST_F(ProfileManagerTest, GetProfile) {
 TEST_F(ProfileManagerTest, DefaultProfileDir) {
   base::FilePath expected_default =
       base::FilePath().AppendASCII(chrome::kInitialProfile);
-  EXPECT_EQ(
-      expected_default.value(),
-      g_browser_process->profile_manager()->GetInitialProfileDir().value());
+  EXPECT_EQ(expected_default.value(),
+            ProfileManager::GetInitialProfileDir().value());
 }
 
 MATCHER(SameNotNull, "The same non-NULL value for all calls.") {
@@ -428,9 +427,8 @@ MATCHER(SameNotNull, "The same non-NULL value for all calls.") {
 TEST_F(ProfileManagerTest, LoggedInProfileDir) {
   base::FilePath expected_default =
       base::FilePath().AppendASCII(chrome::kInitialProfile);
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
   EXPECT_EQ(expected_default.value(),
-            profile_manager->GetInitialProfileDir().value());
+            ProfileManager::GetInitialProfileDir().value());
 
   constexpr char kTestUserName[] = "test-user@example.com";
   constexpr GaiaId::Literal kTestUserGaiaId("0123456789");
@@ -447,9 +445,9 @@ TEST_F(ProfileManagerTest, LoggedInProfileDir) {
   base::FilePath expected_logged_in(
       ash::ProfileHelper::GetUserProfileDir(active_user->username_hash()));
   EXPECT_EQ(expected_logged_in.value(),
-            profile_manager->GetInitialProfileDir().value());
+            ProfileManager::GetInitialProfileDir().value());
   VLOG(1) << temp_dir_.GetPath()
-                 .Append(profile_manager->GetInitialProfileDir())
+                 .Append(ProfileManager::GetInitialProfileDir())
                  .value();
 }
 

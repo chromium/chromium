@@ -195,7 +195,7 @@ class ProfileManager : public Profile::Delegate {
 
   // Returns the directory where the first created profile is stored,
   // relative to the user data directory currently in use.
-  base::FilePath GetInitialProfileDir();
+  static base::FilePath GetInitialProfileDir();
 
   // Get the path of the last used profile, or if that's undefined, the default
   // profile.
@@ -502,9 +502,6 @@ class ProfileManager : public Profile::Delegate {
   // Apply settings for profiles created by the system rather than users: The
   // (desktop) Guest User profile and (desktop) System Profile.
   void SetNonPersonalProfilePrefs(Profile* profile);
-
-  // Determines if profile should be OTR.
-  bool ShouldGoOffTheRecord(Profile* profile);
 
   void SaveActiveProfiles();
 
