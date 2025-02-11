@@ -68,6 +68,12 @@ class TabGroupChangeNotifierImpl : public TabGroupChangeNotifier {
                               const tab_groups::SavedTabGroup& after,
                               tab_groups::TriggerSource source);
 
+  // Invoked after the OnTabGroupUpdated event is posted. This is to ensure that
+  // the tab model UI had a chance to apply the incoming sync update so that
+  // TabGroupSyncService has the most updated state (e.g. local tab IDs).
+  void OnTabGroupUpdatedAfterPosted(const base::Uuid& sync_tab_group_id,
+                                    tab_groups::TriggerSource source);
+
   // Looks for the selected tab within our last known shared tab groups and
   // returns it if found, else returns std::nullopt.
   std::optional<tab_groups::SavedTabGroupTab> GetSelectedSharedTabForPublishing(
