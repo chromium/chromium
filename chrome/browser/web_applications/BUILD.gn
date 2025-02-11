@@ -1108,6 +1108,7 @@ source_set("web_applications_browser_tests") {
     sources += [
       "commands/install_app_from_verified_manifest_command_browsertest.cc",
       "isolated_web_apps/isolated_web_app_managed_configuration_api_browsertest.cc",
+      "isolated_web_apps/policy/isolated_web_app_cache_browsertest.cc",
       "isolated_web_apps/policy/isolated_web_app_policy_manager_ash_browsertest.cc",
       "web_app_run_on_os_login_manager_browsertest.cc",
     ]
@@ -1167,6 +1168,7 @@ source_set("web_applications_browser_tests") {
     deps += [
       "//ash/constants",
       "//chrome/browser/ash/app_list",
+      "//chrome/browser/ash/app_mode/test:test_support",
       "//chrome/browser/ash/file_manager:test_support",
       "//chrome/browser/ash/login:test_support",
       "//chrome/browser/ash/policy/core",

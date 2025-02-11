@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/types/expected.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -24,12 +25,26 @@ bool IsIwaBundleCacheEnabled();
 // even for the same IWA.
 class IwaCacheClient {
  public:
+  enum class CopyBundleToCacheError {
+    kFailedToCreateDir = 0,
+    kFailedToCopyFile = 1,
+  };
+
+  struct CopyBundleToCacheSuccess {
+    base::FilePath cached_bundle_path;
+  };
+
+  struct CachedBundleData {
+    base::FilePath path;
+    base::Version version;
+  };
+
   IwaCacheClient();
   IwaCacheClient(const IwaCacheClient&) = delete;
   IwaCacheClient& operator=(const IwaCacheClient&) = delete;
   ~IwaCacheClient() = default;
 
-  // Calls `callback` with the path of the cached bundle.
+  // Calls `callback` with the path of the cached bundle and it's version.
   // If the IWA is not cached, returns `std::nullopt`.
   // `version` may be empty, which means the function returns the bundle path
   // with the newest cached version.
@@ -38,7 +53,21 @@ class IwaCacheClient {
   void GetCacheFilePath(
       const web_package::SignedWebBundleId& web_bundle_id,
       const std::optional<base::Version>& version,
-      base::OnceCallback<void(std::optional<base::FilePath>)> callback);
+      base::OnceCallback<void(std::optional<CachedBundleData>)> callback);
+
+  // Copies bundle file to the cache, so next time the installation can be done
+  // from the cache.
+  void CopyBundleToCache(
+      const base::FilePath& copy_from_bundle_path,
+      const web_package::SignedWebBundleId& web_bundle_id,
+      const base::Version& version,
+      base::OnceCallback<void(
+          base::expected<CopyBundleToCacheSuccess, CopyBundleToCacheError>)>
+          callback);
+
+  // TODO(crbug.com/388729035): handle IWA updates.
+  // TODO(crbug.com/388728794, crbug.com/388729037): clear cache for uninstalled
+  // IWAs.
 
   void SetCacheDirForTesting(const base::FilePath& cache_dir);
 

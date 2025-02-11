@@ -7,12 +7,15 @@
 #include <memory>
 #include <optional>
 
+#include "ash/constants/ash_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
@@ -32,7 +35,15 @@ namespace web_app {
 namespace {
 
 using base::test::TestFuture;
+using Bundle = IwaCacheClient::CachedBundleData;
+using CopyBundleToCacheSuccess = IwaCacheClient::CopyBundleToCacheSuccess;
+using CopyBundleToCacheError = IwaCacheClient::CopyBundleToCacheError;
+using base::test::ErrorIs;
+using base::test::ValueIs;
+using testing::Field;
+using web_package::SignedWebBundleId;
 
+const SignedWebBundleId kBundleId = test::GetDefaultEd25519WebBundleId();
 const base::Version kVersion1 = base::Version("0.0.1");
 const base::Version kVersion2 = base::Version("0.0.2");
 const base::Version kVersion3 = base::Version("0.0.3");
@@ -69,35 +80,22 @@ class IwaCacheClientTest : public ::testing::TestWithParam<SessionType> {
         NOTREACHED();
     }
 
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    ASSERT_TRUE(base::DirectoryExists(CacheDirPath()));
+    ASSERT_TRUE(cache_root_dir_.CreateUniqueTempDir());
+    cache_root_dir_override_ = std::make_unique<base::ScopedPathOverride>(
+        ash::DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE, cache_root_dir_.GetPath());
 
+    // `IwaCacheClient` should be created after kiosk or MGS setup.
     cache_client_ = std::make_unique<IwaCacheClient>();
-    cache_client_->SetCacheDirForTesting(CacheDirPath());
   }
 
   IwaCacheClient* cache_client() { return cache_client_.get(); }
 
-  const web_package::SignedWebBundleId& web_bundle_id() {
-    return web_bundle_id_;
-  }
+  const base::FilePath& CacheDirPath() { return cache_root_dir_.GetPath(); }
 
-  const base::FilePath& CacheDirPath() { return temp_dir_.GetPath(); }
-
-  base::FilePath CreateBundleFile(
-      const web_package::SignedWebBundleId& bundle_id,
-      const base::Version& version) {
-    base::FilePath bundle_directory_path = CacheDirPath();
-    if (GetSessionType() == kMgs) {
-      bundle_directory_path =
-          bundle_directory_path.AppendASCII(IwaCacheClient::kMgsDirName);
-    } else if (GetSessionType() == kKiosk) {
-      bundle_directory_path =
-          bundle_directory_path.AppendASCII(IwaCacheClient::kKioskDirName);
-    }
-    bundle_directory_path = bundle_directory_path.AppendASCII(bundle_id.id())
-                                .AppendASCII(version.GetString());
-
+  base::FilePath CreateBundleInCacheDir(const SignedWebBundleId& bundle_id,
+                                        const base::Version& version) {
+    base::FilePath bundle_directory_path =
+        GetBundleDirWithVersion(bundle_id, version);
     EXPECT_TRUE(base::CreateDirectory(bundle_directory_path));
 
     base::FilePath temp_file;
@@ -109,115 +107,251 @@ class IwaCacheClientTest : public ::testing::TestWithParam<SessionType> {
     return bundle_path;
   }
 
+  base::FilePath GetBundleDirWithVersion(const SignedWebBundleId& bundle_id,
+                                         const base::Version& version) {
+    base::FilePath bundle_directory_path = CacheDirPath();
+    switch (GetSessionType()) {
+      case SessionType::kMgs:
+        bundle_directory_path =
+            bundle_directory_path.AppendASCII(IwaCacheClient::kMgsDirName);
+        break;
+      case SessionType::kKiosk:
+        bundle_directory_path =
+            bundle_directory_path.AppendASCII(IwaCacheClient::kKioskDirName);
+        break;
+      case kUser:
+        NOTREACHED() << "Caching is not supported in user session";
+    }
+    return bundle_directory_path.AppendASCII(bundle_id.id())
+        .AppendASCII(version.GetString());
+  }
+
+  base::FilePath GetFullBundlePath(const SignedWebBundleId& bundle_id,
+                                   const base::Version& version) {
+    return GetBundleDirWithVersion(bundle_id, version)
+        .AppendASCII(kMainSwbnFileName);
+  }
+
+  base::FilePath CreateFileInDir(base::ScopedTempDir& dir) {
+    EXPECT_TRUE(dir.CreateUniqueTempDir());
+    base::FilePath temp_file;
+    EXPECT_TRUE(base::CreateTemporaryFileInDir(dir.GetPath(), &temp_file));
+    return temp_file;
+  }
+
+  void ResetCacheDir() {
+    cache_root_dir_override_.reset();
+    cache_client()->SetCacheDirForTesting(
+        base::PathService::CheckedGet(ash::DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE));
+  }
+
  private:
   SessionType GetSessionType() { return GetParam(); }
 
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kIsolatedWebAppBundleCache};
-
   ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   user_manager::ScopedUserManager user_manager_;
+  base::ScopedTempDir cache_root_dir_;
+  std::unique_ptr<base::ScopedPathOverride> cache_root_dir_override_;
+  std::unique_ptr<IwaCacheClient> cache_client_;
 
   // This is set only for MGS session.
   std::unique_ptr<profiles::testing::ScopedTestManagedGuestSession>
       test_managed_guest_session_;
-
-  web_package::SignedWebBundleId web_bundle_id_ =
-      test::GetDefaultEd25519WebBundleId();
-  base::ScopedTempDir temp_dir_;
-
-  std::unique_ptr<IwaCacheClient> cache_client_;
 };
 
-TEST_P(IwaCacheClientTest, NoCachedPath) {
-  TestFuture<std::optional<base::FilePath>> file_path_future;
-  cache_client()->GetCacheFilePath(web_bundle_id(),
+TEST_P(IwaCacheClientTest, NoCachedPathToFetch) {
+  TestFuture<std::optional<Bundle>> bundle_future;
+  cache_client()->GetCacheFilePath(kBundleId,
                                    /*version=*/std::nullopt,
-                                   file_path_future.GetCallback());
+                                   bundle_future.GetCallback());
 
-  ASSERT_FALSE(file_path_future.Get());
+  EXPECT_FALSE(bundle_future.Get());
 }
 
-TEST_P(IwaCacheClientTest, HasCachedPathWithRequiredVersion) {
-  base::FilePath bundle_path = CreateBundleFile(web_bundle_id(), kVersion1);
+TEST_P(IwaCacheClientTest, GetCachedPathWithRequiredVersion) {
+  base::FilePath bundle_path = CreateBundleInCacheDir(kBundleId, kVersion1);
 
-  TestFuture<std::optional<base::FilePath>> file_path_future;
-  cache_client()->GetCacheFilePath(web_bundle_id(), kVersion1,
-                                   file_path_future.GetCallback());
+  TestFuture<std::optional<Bundle>> bundle_future;
+  cache_client()->GetCacheFilePath(kBundleId, kVersion1,
+                                   bundle_future.GetCallback());
 
-  EXPECT_EQ(file_path_future.Get(), bundle_path);
+  EXPECT_EQ(bundle_future.Get()->path, bundle_path);
+  EXPECT_EQ(bundle_future.Get()->version, kVersion1);
 }
 
 TEST_P(IwaCacheClientTest, NoCachedPathWhenVersionNotCached) {
-  base::FilePath bundle_path = CreateBundleFile(web_bundle_id(), kVersion1);
+  base::FilePath bundle_path = CreateBundleInCacheDir(kBundleId, kVersion1);
 
-  TestFuture<std::optional<base::FilePath>> file_path_future;
-  cache_client()->GetCacheFilePath(web_bundle_id(), kVersion2,
-                                   file_path_future.GetCallback());
+  TestFuture<std::optional<Bundle>> bundle_future;
+  cache_client()->GetCacheFilePath(kBundleId, kVersion2,
+                                   bundle_future.GetCallback());
 
-  ASSERT_FALSE(file_path_future.Get());
+  EXPECT_FALSE(bundle_future.Get());
 }
 
-TEST_P(IwaCacheClientTest, HasCachedPathNoVersionProvided) {
-  base::FilePath bundle_path = CreateBundleFile(web_bundle_id(), kVersion1);
+TEST_P(IwaCacheClientTest, GetCachedPathNoVersionProvided) {
+  base::FilePath bundle_path = CreateBundleInCacheDir(kBundleId, kVersion1);
 
-  TestFuture<std::optional<base::FilePath>> file_path_future;
-  cache_client()->GetCacheFilePath(web_bundle_id(), /*version=*/std::nullopt,
-                                   file_path_future.GetCallback());
+  TestFuture<std::optional<Bundle>> bundle_future;
+  cache_client()->GetCacheFilePath(kBundleId, /*version=*/std::nullopt,
+                                   bundle_future.GetCallback());
 
-  EXPECT_EQ(file_path_future.Get(), bundle_path);
+  EXPECT_EQ(bundle_future.Get()->path, bundle_path);
+  EXPECT_EQ(bundle_future.Get()->version, kVersion1);
 }
 
 TEST_P(IwaCacheClientTest, GetNewestVersionWhenVersionNotProvided) {
-  base::FilePath bundle_path_v1 = CreateBundleFile(web_bundle_id(), kVersion1);
-  base::FilePath bundle_path_v3 = CreateBundleFile(web_bundle_id(), kVersion3);
-  base::FilePath bundle_path_v2 = CreateBundleFile(web_bundle_id(), kVersion2);
-  base::FilePath bundle_path_v4 = CreateBundleFile(web_bundle_id(), kVersion4);
+  base::FilePath bundle_path_v1 = CreateBundleInCacheDir(kBundleId, kVersion1);
+  base::FilePath bundle_path_v3 = CreateBundleInCacheDir(kBundleId, kVersion3);
+  base::FilePath bundle_path_v2 = CreateBundleInCacheDir(kBundleId, kVersion2);
+  base::FilePath bundle_path_v4 = CreateBundleInCacheDir(kBundleId, kVersion4);
 
-  TestFuture<std::optional<base::FilePath>> file_path_future;
-  cache_client()->GetCacheFilePath(web_bundle_id(), /*version=*/std::nullopt,
-                                   file_path_future.GetCallback());
+  TestFuture<std::optional<Bundle>> bundle_future;
+  cache_client()->GetCacheFilePath(kBundleId, /*version=*/std::nullopt,
+                                   bundle_future.GetCallback());
 
-  EXPECT_EQ(file_path_future.Get(), bundle_path_v4);
+  EXPECT_EQ(bundle_future.Get()->path, bundle_path_v4);
+  EXPECT_EQ(bundle_future.Get()->version, kVersion4);
 }
 
-TEST_P(IwaCacheClientTest, ReturnCorrectVersion) {
-  base::FilePath bundle_path_v2 = CreateBundleFile(web_bundle_id(), kVersion2);
-  base::FilePath bundle_path_v1 = CreateBundleFile(web_bundle_id(), kVersion1);
-  base::FilePath bundle_path_v3 = CreateBundleFile(web_bundle_id(), kVersion3);
+TEST_P(IwaCacheClientTest, GetCorrectVersion) {
+  base::FilePath bundle_path_v2 = CreateBundleInCacheDir(kBundleId, kVersion2);
+  base::FilePath bundle_path_v1 = CreateBundleInCacheDir(kBundleId, kVersion1);
+  base::FilePath bundle_path_v3 = CreateBundleInCacheDir(kBundleId, kVersion3);
 
-  TestFuture<std::optional<base::FilePath>> file_path_future;
-  cache_client()->GetCacheFilePath(web_bundle_id(), kVersion1,
-                                   file_path_future.GetCallback());
+  TestFuture<std::optional<Bundle>> bundle_future;
+  cache_client()->GetCacheFilePath(kBundleId, kVersion1,
+                                   bundle_future.GetCallback());
 
-  EXPECT_EQ(file_path_future.Get(), bundle_path_v1);
+  EXPECT_EQ(bundle_future.Get()->path, bundle_path_v1);
+  EXPECT_EQ(bundle_future.Get()->version, kVersion1);
 }
 
-TEST_P(IwaCacheClientTest, ReturnCorrectBundle) {
-  web_package::SignedWebBundleId web_bundle_id2 =
-      test::GetDefaultEcdsaP256WebBundleId();
+TEST_P(IwaCacheClientTest, GetCorrectBundle) {
+  SignedWebBundleId web_bundle_id2 = test::GetDefaultEcdsaP256WebBundleId();
 
-  base::FilePath bundle_path1 = CreateBundleFile(web_bundle_id(), kVersion1);
-  base::FilePath bundle_path2 = CreateBundleFile(web_bundle_id2, kVersion1);
+  base::FilePath bundle_path1 = CreateBundleInCacheDir(kBundleId, kVersion1);
+  base::FilePath bundle_path2 =
+      CreateBundleInCacheDir(web_bundle_id2, kVersion1);
 
-  TestFuture<std::optional<base::FilePath>> file_path_future;
+  TestFuture<std::optional<Bundle>> bundle_future;
   cache_client()->GetCacheFilePath(web_bundle_id2, kVersion1,
-                                   file_path_future.GetCallback());
+                                   bundle_future.GetCallback());
 
-  EXPECT_EQ(file_path_future.Get(), bundle_path2);
+  EXPECT_EQ(bundle_future.Get()->path, bundle_path2);
+  EXPECT_EQ(bundle_future.Get()->version, kVersion1);
 }
 
 TEST_P(IwaCacheClientTest, IncorrectVersionParsed) {
   base::FilePath bundle_path1 =
-      CreateBundleFile(web_bundle_id(), base::Version("aaaaa"));
+      CreateBundleInCacheDir(kBundleId, base::Version("aaaaa"));
 
-  TestFuture<std::optional<base::FilePath>> file_path_future;
-  cache_client()->GetCacheFilePath(web_bundle_id(), /*version=*/std::nullopt,
-                                   file_path_future.GetCallback());
+  TestFuture<std::optional<Bundle>> bundle_future;
+  cache_client()->GetCacheFilePath(kBundleId, /*version=*/std::nullopt,
+                                   bundle_future.GetCallback());
 
-  EXPECT_EQ(file_path_future.Get(), std::nullopt);
+  EXPECT_FALSE(bundle_future.Get());
+}
+
+TEST_P(IwaCacheClientTest, CopyBundleToCache) {
+  base::ScopedTempDir original_file_dir;
+  base::FilePath original_file = CreateFileInDir(original_file_dir);
+
+  TestFuture<base::expected<CopyBundleToCacheSuccess, CopyBundleToCacheError>>
+      copy_future;
+  cache_client()->CopyBundleToCache(original_file, kBundleId, kVersion1,
+                                    copy_future.GetCallback());
+
+  EXPECT_THAT(copy_future.Get(),
+              ValueIs(Field(&CopyBundleToCacheSuccess::cached_bundle_path,
+                            GetFullBundlePath(kBundleId, kVersion1))));
+}
+
+TEST_P(IwaCacheClientTest, FailedToCreateDirForFileCopying) {
+  // Reset the cache directory back to the production value, since tests cannot
+  // create subdirectories there.
+  ResetCacheDir();
+
+  base::ScopedTempDir original_file_dir;
+  base::FilePath original_file = CreateFileInDir(original_file_dir);
+
+  TestFuture<base::expected<CopyBundleToCacheSuccess, CopyBundleToCacheError>>
+      copy_future;
+  cache_client()->CopyBundleToCache(original_file, kBundleId, kVersion1,
+                                    copy_future.GetCallback());
+
+  EXPECT_THAT(copy_future.Get(),
+              ErrorIs(CopyBundleToCacheError::kFailedToCreateDir));
+}
+
+TEST_P(IwaCacheClientTest, FailedToCopyFile) {
+  TestFuture<base::expected<CopyBundleToCacheSuccess, CopyBundleToCacheError>>
+      copy_future;
+  cache_client()->CopyBundleToCache(base::FilePath("/do/not/exist/file"),
+                                    kBundleId, kVersion1,
+                                    copy_future.GetCallback());
+
+  EXPECT_THAT(copy_future.Get(),
+              ErrorIs(CopyBundleToCacheError::kFailedToCopyFile));
+}
+
+TEST_P(IwaCacheClientTest, CopyAndGet) {
+  base::ScopedTempDir original_file_dir;
+  base::FilePath original_file = CreateFileInDir(original_file_dir);
+  TestFuture<base::expected<CopyBundleToCacheSuccess, CopyBundleToCacheError>>
+      copy_future;
+
+  cache_client()->CopyBundleToCache(original_file, kBundleId, kVersion1,
+                                    copy_future.GetCallback());
+  EXPECT_TRUE(copy_future.Get().has_value());
+
+  TestFuture<std::optional<Bundle>> get_future;
+  cache_client()->GetCacheFilePath(kBundleId, kVersion1,
+                                   get_future.GetCallback());
+
+  EXPECT_EQ(get_future.Get()->path, GetFullBundlePath(kBundleId, kVersion1));
+  EXPECT_EQ(get_future.Get()->version, kVersion1);
+}
+
+TEST_P(IwaCacheClientTest, CopyBundleToCacheReplacesExistingFile) {
+  base::ScopedTempDir original_file_dir;
+  base::FilePath original_file = CreateFileInDir(original_file_dir);
+
+  base::FilePath existing_bundle = CreateBundleInCacheDir(kBundleId, kVersion1);
+
+  TestFuture<base::expected<CopyBundleToCacheSuccess, CopyBundleToCacheError>>
+      copy_future;
+  cache_client()->CopyBundleToCache(original_file, kBundleId, kVersion1,
+                                    copy_future.GetCallback());
+
+  EXPECT_THAT(copy_future.Get(),
+              ValueIs(Field(&CopyBundleToCacheSuccess::cached_bundle_path,
+                            GetFullBundlePath(kBundleId, kVersion1))));
+}
+
+TEST_P(IwaCacheClientTest, CopyAnotherBundleVersion) {
+  base::ScopedTempDir original_file_dir;
+  base::FilePath original_file = CreateFileInDir(original_file_dir);
+
+  base::FilePath existing_bundle_path =
+      CreateBundleInCacheDir(kBundleId, kVersion1);
+
+  TestFuture<base::expected<CopyBundleToCacheSuccess, CopyBundleToCacheError>>
+      copy_future;
+  cache_client()->CopyBundleToCache(original_file, kBundleId, kVersion2,
+                                    copy_future.GetCallback());
+
+  EXPECT_THAT(copy_future.Get(),
+              ValueIs(Field(&CopyBundleToCacheSuccess::cached_bundle_path,
+                            GetFullBundlePath(kBundleId, kVersion2))));
+
+  // Check that both versions are cached.
+  base::PathExists(existing_bundle_path);
+  base::PathExists(GetFullBundlePath(kBundleId, kVersion2));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -270,7 +404,6 @@ class IwaCacheClientDeathTest
   // This is set only for MGS session.
   std::unique_ptr<profiles::testing::ScopedTestManagedGuestSession>
       test_managed_guest_session_;
-
 };
 
 TEST_P(IwaCacheClientDeathTest, CreateClient) {
