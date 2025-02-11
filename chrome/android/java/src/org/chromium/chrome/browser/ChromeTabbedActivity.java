@@ -113,6 +113,7 @@ import org.chromium.chrome.browser.educational_tip.EducationalTipModuleBuilder;
 import org.chromium.chrome.browser.educational_tip.EducationalTipModuleUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
+import org.chromium.chrome.browser.feedback.OmniboxFeedbackSource;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -614,8 +615,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
         if (getClass().equals(ChromeTabbedActivity.class)
                 && Intent.ACTION_MAIN.equals(intent.getAction())) {
             if (OmniboxFeatures.shouldJumpStartOmniboxEngage()) {
+                OmniboxFeedbackSource.addFeedbackData(
+                        OmniboxFeedbackSource.Psd.JSO_STATE, "engaged");
                 return LaunchIntentDispatcher.dispatchToSearchActivity(
                         mJumpStartSearchClient, this, intent);
+            } else if (OmniboxFeatures.isJumpStartOmniboxEnabled()) {
+                OmniboxFeedbackSource.addFeedbackData(
+                        OmniboxFeedbackSource.Psd.JSO_STATE, "active");
             }
             // Call dispatchToTabbedActivity() for MAIN intents to activate proper multi-window
             // TabbedActivity (i.e. if CTA2 is currently running and Chrome is started, CTA2
