@@ -476,6 +476,18 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
                   std::size(path_copy));
     base::debug::Alias(path_copy);
 #endif  // BUILDFLAG(IS_WIN)
+
+    // Collect diagnostic info for https://crbug.com/394631579 .
+#if BUILDFLAG(IS_MAC)
+    SCOPED_CRASH_KEY_STRING32("LoadLocaleResources", "pref_locale",
+                              pref_locale);
+    SCOPED_CRASH_KEY_STRING32("LoadLocaleResources", "app_locale", app_locale);
+    SCOPED_CRASH_KEY_STRING1024("LoadLocaleResources", "override_filepath",
+                                GetOverriddenPakPath().AsUTF8Unsafe());
+    SCOPED_CRASH_KEY_STRING1024("LoadLocaleResources", "locale_filepath",
+                                locale_file_path.AsUTF8Unsafe());
+#endif  // BUILDFLAG(IS_MAC)
+
     NOTREACHED();
   }
 
