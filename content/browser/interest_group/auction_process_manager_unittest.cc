@@ -430,8 +430,6 @@ class AuctionProcessManagerTest
         break;
       case ProcessMode::kInRendererSharedProcess:
         disabled_features.emplace_back(
-            features::kProcessSharingWithStrictSiteInstances);
-        disabled_features.emplace_back(
             features::kOriginKeyedProcessesByDefault);
         scoped_command_line_.GetProcessCommandLine()->RemoveSwitch(
             switches::kSitePerProcess);

@@ -605,15 +605,6 @@ TEST_F(SiteInstanceTest,
 TEST_F(SiteInstanceTest, DefaultSiteInstanceProperties) {
   TestBrowserContext browser_context;
 
-  // Make sure feature list command-line options are set in a way that forces
-  // default SiteInstance creation on all platforms.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /* enable */ {},
-      /* disable */ {features::kProcessSharingWithStrictSiteInstances});
-  EXPECT_FALSE(base::FeatureList::IsEnabled(
-      features::kProcessSharingWithStrictSiteInstances));
-
   base::test::ScopedCommandLine scoped_command_line;
   // Disable site isolation so we can get default SiteInstances on all
   // platforms.

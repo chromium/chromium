@@ -13057,13 +13057,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // last committed entry.)  Not crashing means that the test is successful.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        LoadOriginalRequestURLRace) {
-  // TODO(lukasza): https://crbug.com/1159466: Get tests working for all
-  // process model modes.
-  if (AreStrictSiteInstancesEnabled() ||
-      CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
-    return;
-  }
-
   GURL original_url(embedded_test_server()->GetURL(
       "/navigation_controller/simple_page_1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), original_url));

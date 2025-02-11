@@ -38,7 +38,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAndroidOpenPdfInline,
     &features::kFedCm,
     &features::kHidePastePopupOnGSB,
-    &features::kProcessSharingWithStrictSiteInstances,
     &features::kReduceGpuPriorityOnBackground,
     &features::kContinueGestureOnLosingFocus,
     &features::kSmartZoom,

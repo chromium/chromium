@@ -3660,12 +3660,12 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
   EXPECT_EQ(GURL("http://isolated.foo.com/"),
             child->current_frame_host()->GetSiteInstance()->GetSiteURL());
 
-  // Navigate the child frame cross-site, but to a non-isolated origin. When
-  // strict SiteInstaces are not enabled, this should bring the subframe back
-  // into the main frame's SiteInstance. If strict SiteInstances are enabled,
-  // we expect the SiteInstances to be different because a SiteInstance is not
-  // allowed to contain multiple sites in that mode. In all cases though we
-  // expect the navigation to end up in the same process.
+  // Navigate the child frame cross-site, but to a non-isolated origin. Without
+  // full site isolation, this should bring the subframe back into the main
+  // frame's SiteInstance. With full site isolation or another mode where a
+  // SiteInstance is not allowed to contain multiple sites, we expect the
+  // SiteInstances to be different. In all cases though we expect the
+  // navigation to end up in the same process.
   GURL bar_url(embedded_test_server()->GetURL("bar.com", "/title1.html"));
   EXPECT_FALSE(IsIsolatedOrigin(bar_url));
   NavigateIframeToURL(web_contents(), "test_iframe", bar_url);
@@ -3762,67 +3762,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, SubframeReusesExistingProcess) {
   EXPECT_NE(third_shell_instance,
             child->current_frame_host()->GetSiteInstance());
   EXPECT_NE(third_shell_instance->GetProcess(), isolated_process);
-}
-
-// Check that when a cross-site, non-isolated-origin iframe opens a popup,
-// navigates it to an isolated origin, and then the popup navigates back to its
-// opener iframe's site, the popup and the opener iframe end up in the same
-// process and can script each other.  See https://crbug.com/796912.
-IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
-                       PopupNavigatesToIsolatedOriginAndBack) {
-  // Start on a page with same-site iframe.
-  GURL foo_url(
-      embedded_test_server()->GetURL("www.foo.com", "/page_with_iframe.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), foo_url));
-  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  FrameTreeNode* child = root->child_at(0);
-
-  // Navigate iframe cross-site, but not to an isolated origin.  This should
-  // stay in the main frame's SiteInstance, unless we're in a strict
-  // SiteInstance mode (including --site-per-process). (Note that the bug for
-  // which this test is written is exclusive to --isolate-origins and does not
-  // happen with --site-per-process.)
-  GURL bar_url(embedded_test_server()->GetURL("bar.com", "/title1.html"));
-  NavigateIframeToURL(web_contents(), "test_iframe", bar_url);
-  if (AreStrictSiteInstancesEnabled()) {
-    EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
-              child->current_frame_host()->GetSiteInstance());
-  } else {
-    EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
-              child->current_frame_host()->GetSiteInstance());
-  }
-
-  // Open a blank popup from the iframe.
-  ShellAddedObserver new_shell_observer;
-  EXPECT_TRUE(ExecJs(child, "window.w = window.open();"));
-  Shell* new_shell = new_shell_observer.GetShell();
-
-  // Have the opener iframe navigate the popup to an isolated origin.
-  GURL isolated_url(
-      embedded_test_server()->GetURL("isolated.foo.com", "/title1.html"));
-  {
-    TestNavigationManager manager(new_shell->web_contents(), isolated_url);
-    EXPECT_TRUE(ExecJs(
-        child, "window.w.location.href = '" + isolated_url.spec() + "';"));
-    ASSERT_TRUE(manager.WaitForNavigationFinished());
-  }
-
-  // Simulate the isolated origin in the popup navigating back to bar.com.
-  GURL bar_url2(embedded_test_server()->GetURL("bar.com", "/title2.html"));
-  {
-    TestNavigationManager manager(new_shell->web_contents(), bar_url2);
-    EXPECT_TRUE(
-        ExecJs(new_shell, "location.href = '" + bar_url2.spec() + "';"));
-    ASSERT_TRUE(manager.WaitForNavigationFinished());
-  }
-
-  // Check that the popup ended up in the same SiteInstance as its same-site
-  // opener iframe.
-  EXPECT_EQ(new_shell->web_contents()->GetPrimaryMainFrame()->GetSiteInstance(),
-            child->current_frame_host()->GetSiteInstance());
-
-  // Check that the opener iframe can script the popup.
-  EXPECT_EQ(bar_url2.spec(), EvalJs(child, "window.w.location.href;"));
 }
 
 // Check that when a non-isolated-origin page opens a popup, navigates it
@@ -6194,40 +6133,18 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(first_instance->GetProcess()->GetProcessLock().allows_any_site());
 }
 
+// TODO(crbug.com/390571607, yangsharon): Enable these tests once default
+// SiteInstanceGroups has been implemented.
 class IsolatedOriginTestWithStrictSiteInstances : public IsolatedOriginTest {
- public:
-  IsolatedOriginTestWithStrictSiteInstances() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kProcessSharingWithStrictSiteInstances);
-  }
-  ~IsolatedOriginTestWithStrictSiteInstances() override = default;
-
-  IsolatedOriginTestWithStrictSiteInstances(
-      const IsolatedOriginTestWithStrictSiteInstances&) = delete;
-  IsolatedOriginTestWithStrictSiteInstances& operator=(
-      const IsolatedOriginTestWithStrictSiteInstances&) = delete;
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolatedOriginTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kDisableSiteIsolation);
-
-    if (AreAllSitesIsolatedForTesting()) {
-      LOG(WARNING) << "This test should be run without strict site isolation. "
-                   << "It does nothing when --site-per-process is specified.";
-    }
+    command_line->RemoveSwitch(switches::kSitePerProcess);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
-                       NonIsolatedFramesCanShareDefaultProcess) {
-  // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting()) {
-    return;
-  }
-
+                       DISABLED_NonIsolatedFramesCanShareDefaultProcess) {
   GURL top_url(
       embedded_test_server()->GetURL("/frame_tree/page_with_two_frames.html"));
   ASSERT_FALSE(IsIsolatedOrigin(url::Origin::Create(top_url)));
@@ -6286,12 +6203,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
 // grandchild should be in the same process even though they have different
 // SiteInstances.
 IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
-                       IsolatedChildWithNonIsolatedGrandchild) {
-  // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting()) {
-    return;
-  }
-
+                       DISABLED_IsolatedChildWithNonIsolatedGrandchild) {
   GURL top_url(
       embedded_test_server()->GetURL("www.foo.com", "/page_with_iframe.html"));
   ASSERT_FALSE(IsIsolatedOrigin(url::Origin::Create(top_url)));
@@ -6349,13 +6261,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
 
 // Navigate a frame into and out of an isolated origin. This should not
 // confuse BrowsingInstance into holding onto a stale default_process_.
-IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
-                       SubframeNavigatesOutofIsolationThenToIsolation) {
-  // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting()) {
-    return;
-  }
-
+IN_PROC_BROWSER_TEST_F(
+    IsolatedOriginTestWithStrictSiteInstances,
+    DISABLED_SubframeNavigatesOutofIsolationThenToIsolation) {
   GURL isolated_url(embedded_test_server()->GetURL("isolated.foo.com",
                                                    "/page_with_iframe.html"));
   ASSERT_TRUE(IsIsolatedOrigin(url::Origin::Create(isolated_url)));
@@ -6404,12 +6312,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
 // they have different SiteInstances with kProcessSharingWithStrictSiteInstances
 // enabled.
 IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
-                       NonIsolatedPopup) {
-  // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting()) {
-    return;
-  }
-
+                       DISABLED_NonIsolatedPopup) {
   GURL foo_url(
       embedded_test_server()->GetURL("www.foo.com", "/page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
@@ -6449,6 +6352,67 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
       DepictFrameTree(*static_cast<WebContentsImpl*>(new_shell->web_contents())
                            ->GetPrimaryFrameTree()
                            .root()));
+}
+
+// Check that when a cross-site, non-isolated-origin iframe opens a popup,
+// navigates it to an isolated origin, and then the popup navigates back to its
+// opener iframe's site, the popup and the opener iframe end up in the same
+// process and can script each other.  See https://crbug.com/796912.
+IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
+                       PopupNavigatesToIsolatedOriginAndBack) {
+  // Start on a page with same-site iframe.
+  GURL foo_url(
+      embedded_test_server()->GetURL("www.foo.com", "/page_with_iframe.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), foo_url));
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* child = root->child_at(0);
+
+  // Navigate iframe cross-site, but not to an isolated origin.  This should
+  // stay in the main frame's SiteInstance, unless we're in a strict
+  // SiteInstance mode (including --site-per-process). (Note that the bug for
+  // which this test is written is exclusive to --isolate-origins and does not
+  // happen with --site-per-process.)
+  GURL bar_url(embedded_test_server()->GetURL("bar.com", "/title1.html"));
+  NavigateIframeToURL(web_contents(), "test_iframe", bar_url);
+  if (AreStrictSiteInstancesEnabled()) {
+    EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
+              child->current_frame_host()->GetSiteInstance());
+  } else {
+    EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
+              child->current_frame_host()->GetSiteInstance());
+  }
+
+  // Open a blank popup from the iframe.
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(ExecJs(child, "window.w = window.open();"));
+  Shell* new_shell = new_shell_observer.GetShell();
+
+  // Have the opener iframe navigate the popup to an isolated origin.
+  GURL isolated_url(
+      embedded_test_server()->GetURL("isolated.foo.com", "/title1.html"));
+  {
+    TestNavigationManager manager(new_shell->web_contents(), isolated_url);
+    EXPECT_TRUE(ExecJs(
+        child, "window.w.location.href = '" + isolated_url.spec() + "';"));
+    ASSERT_TRUE(manager.WaitForNavigationFinished());
+  }
+
+  // Simulate the isolated origin in the popup navigating back to bar.com.
+  GURL bar_url2(embedded_test_server()->GetURL("bar.com", "/title2.html"));
+  {
+    TestNavigationManager manager(new_shell->web_contents(), bar_url2);
+    EXPECT_TRUE(
+        ExecJs(new_shell, "location.href = '" + bar_url2.spec() + "';"));
+    ASSERT_TRUE(manager.WaitForNavigationFinished());
+  }
+
+  // Check that the popup ended up in the same SiteInstance as its same-site
+  // opener iframe.
+  EXPECT_EQ(new_shell->web_contents()->GetPrimaryMainFrame()->GetSiteInstance(),
+            child->current_frame_host()->GetSiteInstance());
+
+  // Check that the opener iframe can script the popup.
+  EXPECT_EQ(bar_url2.spec(), EvalJs(child, "window.w.location.href;"));
 }
 
 class WildcardOriginIsolationTest : public IsolatedOriginTestBase {

@@ -4152,8 +4152,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns true if this frame requires a proxy to talk to its parent.
   // Note: Using a proxy to talk to a parent does not imply that the parent
   // is in a different process.
-  // (e.g. kProcessSharingWithStrictSiteInstances mode uses proxies for frames
-  //  that are in the same process.)
   bool RequiresProxyToParent();
 
   // Increases by one `commit_navigation_sent_counter_`.

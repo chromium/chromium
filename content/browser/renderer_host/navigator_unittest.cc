@@ -489,9 +489,9 @@ TEST_F(NavigatorTest, BeginNavigation) {
   EXPECT_FALSE(GetSpeculativeRenderFrameHost(root_node));
 
   // Subframe navigations should never create a speculative RenderFrameHost,
-  // unless site-per-process or ProcessSharingWithStrictSiteInstances is
-  // enabled. In that case, as the subframe navigation is to a different site
-  // and is still ongoing, it should have one.
+  // unless site-per-process or another mode where a SiteInstance cannot contain
+  // multiple sites is enabled. In that case, as the subframe navigation is to a
+  // different site and is still ongoing, it should have one.
   bool expect_site_instance_change = AreStrictSiteInstancesEnabled();
   if (expect_site_instance_change) {
     EXPECT_TRUE(GetSpeculativeRenderFrameHost(subframe_node));

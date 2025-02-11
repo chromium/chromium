@@ -2175,8 +2175,6 @@ source_set("browser") {
     "site_info.h",
     "site_instance_group.cc",
     "site_instance_group.h",
-    "site_instance_group_manager.cc",
-    "site_instance_group_manager.h",
     "site_instance_impl.cc",
     "site_instance_impl.h",
     "sms/sms_fetcher_impl.cc",

@@ -400,11 +400,6 @@ const IsolationContext& SiteInstanceImpl::GetIsolationContext() {
   return browsing_instance_->isolation_context();
 }
 
-RenderProcessHost* SiteInstanceImpl::GetSiteInstanceGroupProcessIfAvailable() {
-  return browsing_instance_->site_instance_group_manager()
-      .GetExistingGroupProcess(this);
-}
-
 bool SiteInstanceImpl::IsDefaultSiteInstance() const {
   return default_site_instance_state_ != nullptr;
 }
@@ -551,11 +546,6 @@ void SiteInstanceImpl::SetProcessInternal(RenderProcessHost* process) {
   if (has_site_) {
     GetContentClient()->browser()->SiteInstanceGotProcessAndSite(this);
   }
-
-  // Notify SiteInstanceGroupManager that the process was set on this
-  // SiteInstance. This must be called after LockProcessIfNeeded() because
-  // the SiteInstanceGroupManager does suitability checks that use the lock.
-  browsing_instance_->site_instance_group_manager().OnProcessSet(this);
 }
 
 bool SiteInstanceImpl::CanAssociateWithSpareProcess() {
@@ -687,12 +677,6 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
           site_instance_group_->process(), this);
     }
   }
-
-  // Notify SiteInstanceGroupManager that the SiteInfo was set on this
-  // SiteInstance. This must be called after LockProcessIfNeeded() because
-  // the SiteInstanceGroupManager does suitability checks that use the lock.
-  browsing_instance_->site_instance_group_manager().OnSiteInfoSet(this,
-                                                                  has_group());
 }
 
 void SiteInstanceImpl::ConvertToDefaultOrSetSite(const UrlInfo& url_info) {
@@ -1428,15 +1412,6 @@ bool SiteInstanceImpl::CanBePlacedInDefaultSiteInstance(
   if (url.SchemeIs(url::kFileScheme))
     return false;
 
-  // Don't use the default SiteInstance when
-  // kProcessSharingWithStrictSiteInstances is enabled because we want each
-  // site to have its own SiteInstance object and logic elsewhere ensures
-  // that those SiteInstances share a process.
-  if (base::FeatureList::IsEnabled(
-          features::kProcessSharingWithStrictSiteInstances)) {
-    return false;
-  }
-
   // Don't use the default SiteInstance when SiteInstance doesn't assign a
   // site URL for |url|, since in that case the SiteInstance should remain
   // unused, and a subsequent navigation should always be able to reuse it,
@@ -1678,11 +1653,6 @@ RenderProcessHost* SiteInstanceImpl::GetDefaultProcessForBrowsingInstance() {
           browsing_instance_->default_site_instance()) {
     return default_instance->HasProcess() ? default_instance->GetProcess()
                                           : nullptr;
-  }
-  if (browsing_instance_->site_instance_group_manager().default_process()) {
-    DCHECK(base::FeatureList::IsEnabled(
-        features::kProcessSharingWithStrictSiteInstances));
-    return browsing_instance_->site_instance_group_manager().default_process();
   }
   return nullptr;
 }

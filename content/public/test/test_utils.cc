@@ -208,17 +208,12 @@ bool IsOriginAgentClusterEnabledForOrigin(SiteInstance* site_instance,
 }
 
 bool AreStrictSiteInstancesEnabled() {
-  return AreAllSitesIsolatedForTesting() ||
-         ShouldUseDefaultSiteInstanceGroup() ||
-         base::FeatureList::IsEnabled(
-             features::kProcessSharingWithStrictSiteInstances);
+  return AreAllSitesIsolatedForTesting() || ShouldUseDefaultSiteInstanceGroup();
 }
 
 bool IsIsolatedOriginRequiredToGuaranteeDedicatedProcess() {
   return !AreAllSitesIsolatedForTesting() ||
-         ShouldUseDefaultSiteInstanceGroup() ||
-         base::FeatureList::IsEnabled(
-             features::kProcessSharingWithStrictSiteInstances);
+         ShouldUseDefaultSiteInstanceGroup();
 }
 
 void IsolateAllSitesForTesting(base::CommandLine* command_line) {

@@ -9327,8 +9327,6 @@ from previous Chrome versions.
   <int value="-1902142840" label="CalendarModelDebugMode:enabled"/>
   <int value="-1899715534" label="GamepadPollingInterval:enabled"/>
   <int value="-1899652563" label="ReportFeedUserActions:enabled"/>
-  <int value="-1899409297"
-      label="ProcessSharingWithStrictSiteInstances:disabled"/>
   <int value="-1899342084" label="ArcGhostWindow:enabled"/>
   <int value="-1898963163"
       label="OmniboxKeywordSpaceTriggeringSetting:disabled"/>
@@ -19599,8 +19597,6 @@ from previous Chrome versions.
   <int value="2135540885" label="PrintPreviewCrosApp:disabled"/>
   <int value="2135687747" label="DelayMediaSinkDiscovery:disabled"/>
   <int value="2135800674" label="ConchExpandTranscriptionLanguage:disabled"/>
-  <int value="2137113620"
-      label="ProcessSharingWithStrictSiteInstances:enabled"/>
   <int value="2137294324" label="zero-copy-video-capture"/>
   <int value="2137347307" label="enable-drive-apps-in-app-list"/>
   <int value="2137440054" label="SyncSessionOnVisibilityChanged:enabled"/>
