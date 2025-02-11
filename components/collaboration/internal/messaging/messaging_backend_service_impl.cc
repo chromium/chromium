@@ -804,9 +804,15 @@ void MessagingBackendServiceImpl::OnTabUpdated(
     return;
   }
 
+  bool is_active_tab =
+      last_selected_tab_ &&
+      last_selected_tab_->saved_tab_guid() == updated_tab.saved_tab_guid();
+  DirtyType dirty_type =
+      is_active_tab ? DirtyType::kChip : DirtyType::kDotAndChip;
+
   collaboration_pb::Message message =
       CreateTabMessage(*collaboration_group_id, updated_tab,
-                       collaboration_pb::TAB_UPDATED, DirtyType::kDotAndChip);
+                       collaboration_pb::TAB_UPDATED, dirty_type);
   PersistentMessage persistent_message =
       CreatePersistentMessage(message, std::nullopt, updated_tab, std::nullopt);
 
@@ -820,18 +826,22 @@ void MessagingBackendServiceImpl::OnTabUpdated(
         persistent_message, {PersistentNotificationType::CHIP,
                              PersistentNotificationType::DIRTY_TAB});
   } else {
+    std::vector<PersistentNotificationType> persistent_notification_types(
+        {PersistentNotificationType::CHIP});
+    if (!is_active_tab) {
+      persistent_notification_types.emplace_back(
+          PersistentNotificationType::DIRTY_TAB);
+    }
     // For remote updates, show the message on UI.
     store_->AddMessage(message);
-    NotifyDisplayPersistentMessagesForTypes(
-        persistent_message, {PersistentNotificationType::CHIP,
-                             PersistentNotificationType::DIRTY_TAB});
+    NotifyDisplayPersistentMessagesForTypes(persistent_message,
+                                            persistent_notification_types);
   }
 
   DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
                                            updated_tab.saved_group_guid());
 
-  if (source == tab_groups::TriggerSource::REMOTE && last_selected_tab_ &&
-      last_selected_tab_->saved_tab_guid() == updated_tab.saved_tab_guid() &&
+  if (source == tab_groups::TriggerSource::REMOTE && is_active_tab &&
       instant_message_delegate_) {
     InstantMessage instant_message_base;
     instant_message_base.attribution = CreateMessageAttributionForTabUpdates(
