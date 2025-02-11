@@ -196,7 +196,7 @@ std::vector<TipsNotificationType> TipsNotificationsTypesOrder(
     };
   }
   int order_num = GetFieldTrialParamByFeatureAsInt(
-      kIOSTipsNotifications, kIOSTipsNotificationsOrderParam, 1);
+      kIOSTipsNotifications, kIOSTipsNotificationsOrderParam, 3);
   switch (order_num) {
     case 1:
       // The default order.
