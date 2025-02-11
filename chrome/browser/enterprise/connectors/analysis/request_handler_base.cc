@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/connectors/analysis/request_handler_base.h"
+
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "components/enterprise/connectors/core/reporting_utils.h"
+#include "components/safe_browsing/core/common/features.h"
 
 namespace enterprise_connectors {
 
@@ -83,6 +86,13 @@ void RequestHandlerBase::PrepareRequest(
 
   request->set_blocking(analysis_settings_->block_until_verdict !=
                         BlockUntilVerdict::kNoBlock);
+
+  if (base::FeatureList::IsEnabled(safe_browsing::kLocalIpAddressInEvents)) {
+    for (const auto& ip_address :
+         enterprise_connectors::GetLocalIpAddresses()) {
+      request->add_local_ips(ip_address.GetString());
+    }
+  }
 }
 
 safe_browsing::BinaryUploadService*
