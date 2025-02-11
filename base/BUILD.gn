@@ -4562,14 +4562,16 @@ if (is_android) {
     deps = [
       ":callback_java",
       ":log_java",
-      ":metrics_jni_java",
       ":time_utils_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
-    public_deps = [ ":metrics_ScopedSysTraceEvent_java" ]
+    public_deps = [
+      ":metrics_ScopedSysTraceEvent_java",
+      ":metrics_jni_java",
+    ]
   }
 
   generate_jni("jank_tracker_jni") {
@@ -4826,13 +4828,13 @@ if (is_android) {
   android_library("command_line_java") {
     sources = [ "android/java/src/org/chromium/base/CommandLine.java" ]
     deps = [
-      ":command_line_jni_java",
       ":log_java",
       ":resetters_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
+    public_deps = [ ":command_line_jni_java" ]
   }
 
   generate_jni("content_uri_utils_jni") {
@@ -5118,7 +5120,6 @@ if (is_android) {
     testonly = true
 
     deps = [
-      ":base_cached_flags_java",
       ":base_java",
       "//testing/android/instrumentation:test_runner_java",
       "//third_party/accessibility_test_framework:accessibility_core_java",
@@ -5138,6 +5139,7 @@ if (is_android) {
     ]
 
     public_deps = [
+      ":base_cached_flags_java",
       ":base_java_url_utils_for_test",
       ":tasks_java",
     ]
