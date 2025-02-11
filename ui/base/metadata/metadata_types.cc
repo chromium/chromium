@@ -69,9 +69,16 @@ void MetaDataProvider::TriggerChangedCallback(PropertyKey property) {
 
 ClassMetaData::ClassMetaData() = default;
 
-ClassMetaData::ClassMetaData(std::string file, int line) : line_(line) {
-  base::TrimString(file, "./\\", &file_);
+static std::string_view TrimFilename(std::string_view file) {
+  size_t first = file.find_first_not_of("./\\");
+  if (first == std::string_view::npos) {
+    first = 0;
+  }
+  return file.substr(first, file.size() - first);
 }
+
+ClassMetaData::ClassMetaData(std::string_view file, int line)
+    : file_(TrimFilename(file)), line_(line) {}
 
 ClassMetaData::~ClassMetaData() = default;
 
