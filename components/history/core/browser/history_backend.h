@@ -303,8 +303,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // Querying ------------------------------------------------------------------
 
   QueryURLResult QueryURL(const GURL& url, bool want_visits);
-  std::vector<QueryURLResult> QueryURLs(const std::vector<GURL>& urls,
-                                        bool want_visits);
   QueryResults QueryHistory(const std::u16string& text_query,
                             const QueryOptions& options);
 
