@@ -298,7 +298,7 @@ void AutofillAiManager::OnFormSeen(const autofill::FormStructure& form) {
   entity_manager->LoadEntityInstances(base::BindOnce(
       [](base::WeakPtr<AutofillAiManager> self, autofill::FormGlobalId form_id,
          std::vector<autofill::EntityInstance> entities) {
-        if (entities.empty()) {
+        if (!self || entities.empty()) {
           return;
         }
         // TODO(crbug.com/389629573): We should check whether any of `entities`
@@ -415,7 +415,7 @@ void AutofillAiManager::GetSuggestions(autofill::FormGlobalId form_global_id,
          autofill::FieldGlobalId field_global_id, bool is_manual_fallback,
          GetSuggestionsCallback callback,
          std::vector<autofill::EntityInstance> entities) {
-        if (entities.empty()) {
+        if (!self || entities.empty()) {
           std::move(callback).Run({});
           return;
         }
