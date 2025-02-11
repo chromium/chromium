@@ -827,6 +827,12 @@ export class DestinationStore extends EventTarget {
   private updateDestination_(destination: Destination) {
     assert(destination.constructor !== Array, 'Single printer expected');
     assert(destination.capabilities);
+    // Merge print destination capabilities with the managed print options for
+    // that destination if they exist.
+    if (loadTimeData.getBoolean(
+            'isUseManagedPrintJobOptionsInPrintPreviewEnabled')) {
+      destination.applyAllowedManagedPrintOptions();
+    }
     destination.capabilities = localizeCapabilities(destination.capabilities);
     if (destination.type !== PrinterType.LOCAL_PRINTER) {
       destination.capabilities = sortMediaSizes(destination.capabilities);

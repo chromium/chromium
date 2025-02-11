@@ -12,7 +12,7 @@ import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 
 import {NativeLayerStub} from './native_layer_stub.js';
-import {getCddTemplate} from './print_preview_test_utils.js';
+import {getCddTemplate, toggleMoreSettings} from './print_preview_test_utils.js';
 
 
 suite('PrintPreviewSidebarTest', function() {
@@ -46,14 +46,13 @@ suite('PrintPreviewSidebarTest', function() {
     return nativeLayer.whenCalled('getPrinterCapabilities');
   });
 
+  function camelToKebab(s: string): string {
+    return s.replace(/([A-Z])/g, '-$1').toLowerCase();
+  }
+
   test(
-      'SettingsSectionsVisibilityChange', function() {
-        const moreSettingsElement =
-            sidebar.shadowRoot!.querySelector('print-preview-more-settings')!;
-        moreSettingsElement.$.label.click();
-        function camelToKebab(s: string): string {
-          return s.replace(/([A-Z])/g, '-$1').toLowerCase();
-        }
+      'SettingAvailabilityChangesSettingVisibility', function() {
+        toggleMoreSettings(sidebar);
 
         ['copies', 'layout', 'color', 'mediaSize', 'margins', 'dpi', 'scaling',
          'duplex', 'otherOptions']
@@ -68,6 +67,26 @@ suite('PrintPreviewSidebarTest', function() {
               });
             });
       });
+
+  test('ManagedPrintOptionsAppliedChangesSettingVisibility', function() {
+    toggleMoreSettings(sidebar);
+
+    ['color', 'mediaSize', 'mediaType', 'dpi', 'duplex'].forEach(setting => {
+      const element = sidebar.shadowRoot!.querySelector<HTMLElement>(
+          `print-preview-${camelToKebab(setting)}-settings`)!;
+      // Disable setting availability, otherwise this setting will never be
+      // hidden.
+      sidebar.set(`settings.${setting}.available`, false);
+      // Show, hide and reset.
+      [true, false, true].forEach(value => {
+        sidebar.set(
+            `destination.allowedManagedPrintOptionsApplied.${setting}`, value);
+        // Element expected to be visible when managed print options are
+        // applied.
+        assertEquals(!value, element.hidden);
+      });
+    });
+  });
 
   // Tests that number of sheets is correctly calculated if duplex setting is
   // enabled.

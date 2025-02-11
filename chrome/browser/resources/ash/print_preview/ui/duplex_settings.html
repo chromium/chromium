@@ -16,7 +16,7 @@
         var(--md-select-side-padding);
   }
 </style>
-<print-preview-settings-section hidden$="[[!settings.duplex.available]]">
+<print-preview-settings-section>
   <div slot="title">
     <label id="label">$i18n{optionTwoSided}</label>
   </div>
@@ -32,7 +32,9 @@
   </div>
 </print-preview-settings-section>
 <cr-collapse opened="[[getOpenCollapse_(
-    settings.duplex.*, settings.duplexShortEdge.available)]]">
+    settings.duplex.*,
+    settings.duplexShortEdge.available,
+    allowedValuesApplied)]]">
   <print-preview-settings-section>
     <div slot="title"></div>
     <div slot="controls">

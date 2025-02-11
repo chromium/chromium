@@ -1712,15 +1712,13 @@ export class PrintPreviewModelElement extends PolymerElement {
     }
   }
 
-  // <if expr="is_chromeos">
   /**
-   * Applies default per-printer job options to a given printer.
+   * Applies per-printer job options to a given printer.
    *
-   * These values override default values from all other sources (e.g. printer
-   * defaults, OU/group-wide policy defaults) except for the values selected by
-   * user.
+   * The default values override all the other option values sources (including
+   * values specified by the user).
    */
-  private applyDestinationManagedJobOptionsDefaults() {
+  private applyDestinationManagedJobOptionsDefaults_() {
     const managedPrintOptions = this.destination.managedPrintOptions;
     if (!managedPrintOptions) {
       return;
@@ -1822,7 +1820,54 @@ export class PrintPreviewModelElement extends PolymerElement {
           /*noSticky=*/ true);
     }
   }
-  // </if>
+
+  /**
+   * Updates `setByDestinationPolicy` property for all the settings.
+   *
+   * Only settings that are supported by the per-printer job options policy are
+   * present here, for other settings this property is not used anyway.
+   */
+  private updateSetByDestinationPolicyProperties_() {
+    const allowedManagedPrintOptionsApplied =
+        this.destination.allowedManagedPrintOptionsApplied;
+    const capabilities = this.destination.capabilities;
+
+    this.set(
+        'settings.mediaSize.setByDestinationPolicy',
+        allowedManagedPrintOptionsApplied?.mediaSize &&
+            capabilities?.printer.media_size?.option.length === 1);
+
+    this.set(
+        'settings.mediaType.setByDestinationPolicy',
+        allowedManagedPrintOptionsApplied?.mediaType &&
+            capabilities?.printer.media_type?.option.length === 1);
+
+    if (allowedManagedPrintOptionsApplied?.duplex &&
+        capabilities?.printer.duplex?.option.length === 1) {
+      this.set('settings.duplex.setByDestinationPolicy', true);
+      this.set('settings.duplexShortEdge.setByDestinationPolicy', true);
+    } else if (
+        allowedManagedPrintOptionsApplied?.duplex &&
+        !this.destination.supportsDuplex(DuplexType.NO_DUPLEX)) {
+      // This means that all the allowed duplex values are two-sided, but there
+      // are multiple duplex modes allowed by the policy.
+      this.set('settings.duplex.setByDestinationPolicy', true);
+      this.set('settings.duplexShortEdge.setByDestinationPolicy', false);
+    } else {
+      this.set('settings.duplex.setByDestinationPolicy', false);
+      this.set('settings.duplexShortEdge.setByDestinationPolicy', false);
+    }
+
+    this.set(
+        'settings.color.setByDestinationPolicy',
+        allowedManagedPrintOptionsApplied?.color &&
+            capabilities?.printer.color?.option.length === 1);
+
+    this.set(
+        'settings.dpi.setByDestinationPolicy',
+        allowedManagedPrintOptionsApplied?.dpi &&
+            capabilities?.printer.dpi?.option.length === 1);
+  }
 
   /**
    * Restricts settings and applies defaults as defined by policy applicable to
@@ -1844,8 +1889,8 @@ export class PrintPreviewModelElement extends PolymerElement {
     // <if expr="is_chromeos">
     if (loadTimeData.getBoolean(
             'isUseManagedPrintJobOptionsInPrintPreviewEnabled')) {
-      this.applyDestinationManagedJobOptionsDefaults();
-      // TODO(crbug.com/391793346): Update `setByDestinationPolicy` values here.
+      this.applyDestinationManagedJobOptionsDefaults_();
+      this.updateSetByDestinationPolicyProperties_();
     }
     // </if>
 
@@ -1867,7 +1912,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     // <if expr="is_chromeos">
     if (this.destination) {
       this.settingsManaged = this.settingsManaged ||
-          this.destination.allowedManagedPrintOptionsApplied;
+          this.destination.allowedManagedPrintOptionsAppliedForAnySetting();
     }
     // </if>
   }

@@ -16,7 +16,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 import {NativeLayerStub} from './native_layer_stub.js';
-import {getCddTemplateWithAdvancedSettings, getDefaultInitialSettings} from './print_preview_test_utils.js';
+import {getCddTemplateWithAdvancedSettings, getDefaultInitialSettings, toggleMoreSettings} from './print_preview_test_utils.js';
 import {TestPluginProxy} from './test_plugin_proxy.js';
 
 suite('KeyEventTest', function() {
@@ -100,10 +100,8 @@ suite('KeyEventTest', function() {
   // Tests that the enter key does not trigger a call to print if the event
   // comes from a button.
   test('EnterOnButtonDoesNotPrint', async () => {
-    const moreSettingsElement =
-        page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
-            .querySelector('print-preview-more-settings')!;
-    moreSettingsElement.$.label.click();
+    toggleMoreSettings(
+        page.shadowRoot!.querySelector('print-preview-sidebar')!);
     const button =
         page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
             .querySelector('print-preview-advanced-options-settings')!
@@ -119,10 +117,8 @@ suite('KeyEventTest', function() {
   // comes from a checkbox.
   test(
       'EnterOnCheckboxDoesNotPrint', function() {
-        const moreSettingsElement =
-            page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
-                .querySelector('print-preview-more-settings')!;
-        moreSettingsElement.$.label.click();
+        toggleMoreSettings(
+            page.shadowRoot!.querySelector('print-preview-sidebar')!);
         const whenKeyEventFired = eventToPromise('keydown', page);
         keyEventOn(
             page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
