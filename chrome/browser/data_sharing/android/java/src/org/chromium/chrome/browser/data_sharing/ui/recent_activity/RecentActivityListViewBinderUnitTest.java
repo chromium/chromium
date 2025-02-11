@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.data_sharing.ui.recent_activity;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -72,7 +73,7 @@ public class RecentActivityListViewBinderUnitTest {
     }
 
     @Test
-    public void testDescription() {
+    public void testDescriptionWithTimestamp() {
         DescriptionAndTimestamp descriptionAndTimestamp = new DescriptionAndTimestamp();
         descriptionAndTimestamp.description = "description 1";
         descriptionAndTimestamp.timestamp = "8h ago";
@@ -88,6 +89,23 @@ public class RecentActivityListViewBinderUnitTest {
 
         mPostedTask.getValue().run();
         verify(mDescriptionView, times(1)).setText(eq(combinedString));
+    }
+
+    @Test
+    public void testTimestampWithEmptyDescription() {
+        DescriptionAndTimestamp descriptionAndTimestamp = new DescriptionAndTimestamp();
+        descriptionAndTimestamp.description = "";
+        descriptionAndTimestamp.timestamp = "8h ago";
+        descriptionAndTimestamp.separator = ".";
+        descriptionAndTimestamp.descriptionFullTextResId = 5;
+        mPropertyModel.set(
+                RecentActivityListProperties.DESCRIPTION_AND_TIMESTAMP_TEXT,
+                descriptionAndTimestamp);
+        verify(mDescriptionView).post(mPostedTask.capture());
+
+        mPostedTask.getValue().run();
+        verify(mContext, never()).getString(anyInt(), any(), any(), any());
+        verify(mDescriptionView, times(1)).setText(eq(descriptionAndTimestamp.timestamp));
     }
 
     @Test
