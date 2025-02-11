@@ -68,6 +68,8 @@ class CONTENT_EXPORT LevelDbTombstoneSweeper
     : public BackingStorePreCloseTaskQueue::PreCloseTask {
  public:
   // The |database| must outlive this instance.
+  explicit LevelDbTombstoneSweeper(leveldb::DB* database);
+
   LevelDbTombstoneSweeper(int round_iterations,
                           int max_iterations,
                           leveldb::DB* database);
@@ -140,6 +142,9 @@ class CONTENT_EXPORT LevelDbTombstoneSweeper
                     int* round_iterations);
 
   int num_iterations_ = 0;
+
+  // Sum of tombstones across rounds.
+  long tombstones_found_ = 0;
   const int max_round_iterations_;
   const int max_iterations_;
 

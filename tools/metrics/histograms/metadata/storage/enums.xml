@@ -310,6 +310,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:InterestGroupStorageVacuumResult) -->
 
+<!-- LINT.IfChange(LevelDBCleanupSchedulerPhase) -->
+
+<enum name="LevelDBCleanupSchedulerPhase">
+  <int value="0" label="Run scheduled"/>
+  <int value="1" label="Tombstone sweeper"/>
+  <int value="2" label="Database compaction"/>
+  <int value="3" label="Logging and cleanup"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/indexed_db/instance/leveldb_cleanup_scheduler.h:Phase) -->
+
 <enum name="RequestStorageResult">
   <int value="0" label="Approved due to existing storage access"/>
   <int value="1" label="Approved with new grant"/>
