@@ -22,6 +22,7 @@ export function getHtml(this: ReadingListAppElement) {
     <cr-lazy-list id="readingListList" class="sp-scroller"
         .items="${this.getAllItems_()}"
         .itemSize="${this.itemSize_}"
+        .minViewportHeight="${this.minViewportHeight_}"
         .scrollTarget="${this.scrollTarget_}"
         ?hidden="${!this.shouldShowList_()}"
         @keydown="${this.onItemKeyDown_}"
@@ -47,7 +48,7 @@ export function getHtml(this: ReadingListAppElement) {
     </cr-lazy-list>
   </div>
 
-  <sp-footer ?pinned="${!this.isReadingListEmpty_()}">
+  <sp-footer id="footer" ?pinned="${!this.isReadingListEmpty_()}">
     <cr-button id="currentPageActionButton" class="floating-button"
         aria-label="${this.getCurrentPageActionButtonText_()}"
         @click="${this.onCurrentPageActionButtonClick_}"
