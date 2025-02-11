@@ -147,7 +147,7 @@ class GlicKeyedService : public KeyedService {
   bool IsActiveWebContents(content::WebContents* contents);
 
   void TryPreload();
-  void ReloadWebview();
+  void Reload();
 
   GlicProfileManager* GetProfileManagerForTesting() { return profile_manager_; }
 

@@ -254,8 +254,8 @@ void GlicKeyedService::TryPreload() {
   window_controller_->Preload();
 }
 
-void GlicKeyedService::ReloadWebview() {
-  window_controller_->ReloadWebview();
+void GlicKeyedService::Reload() {
+  window_controller().Reload();
 }
 
 base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {
@@ -269,7 +269,11 @@ void GlicKeyedService::SyncWebviewCookiesForFre(
 }
 
 bool GlicKeyedService::IsActiveWebContents(content::WebContents* contents) {
-  return contents && contents == window_controller().GetWebContents();
+  if (!contents) {
+    return false;
+  }
+  return contents == window_controller().GetWebContents() ||
+         contents == window_controller().GetFreWebContents();
 }
 
 }  // namespace glic

@@ -95,4 +95,11 @@ void GlicFreController::DismissFre() {
   }
 }
 
+content::WebContents* GlicFreController::GetWebContents() {
+  if (!fre_view_) {
+    return nullptr;
+  }
+  return fre_view_->web_contents();
+}
+
 }  // namespace glic
