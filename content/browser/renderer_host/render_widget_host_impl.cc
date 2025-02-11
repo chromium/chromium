@@ -470,7 +470,8 @@ RenderWidgetHostImpl::~RenderWidgetHostImpl() {
   CHECK(!self_owned_);
   render_frame_metadata_provider_.RemoveObserver(this);
 
-  if (was_ever_shown_ && is_topmost_frame_widget_with_view_) {
+  if (was_ever_shown_ && is_topmost_frame_widget_with_view_ &&
+      compositor_metric_recorder_) {
     // Log UMA related to possible suppression of input events until the
     // renderer has pushed content to viz (https://crbug.com/40057499).
     base::UmaHistogramBoolean("Renderer.ContentProduction.SignalReceived",
@@ -489,13 +490,11 @@ RenderWidgetHostImpl::~RenderWidgetHostImpl() {
       base::TimeDelta lifespan_from_commit;
       base::TimeDelta lifespan_from_unhide = now - first_shown_time_;
 
-      if (compositor_metric_recorder_) {
-        base::TimeTicks commit_nav_time =
-            compositor_metric_recorder_->CommitNavigationTime();
-        if (commit_nav_time != base::TimeTicks()) {
-          commit_to_unhide_delay = first_shown_time_ - commit_nav_time;
-          lifespan_from_commit = now - commit_nav_time;
-        }
+      base::TimeTicks commit_nav_time =
+          compositor_metric_recorder_->CommitNavigationTime();
+      if (commit_nav_time != base::TimeTicks()) {
+        commit_to_unhide_delay = first_shown_time_ - commit_nav_time;
+        lifespan_from_commit = now - commit_nav_time;
       }
 
       base::UmaHistogramTimes("Renderer.ContentProduction.CommitToUnhideDelay",
