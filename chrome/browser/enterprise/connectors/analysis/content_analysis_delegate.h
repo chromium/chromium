@@ -373,13 +373,6 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   // TODO(crbug.com/40839522): Move to PageRequestHandler.
   void PreparePageRequest();
 
-  // Adds required fields to `request` before sending it to the binary upload
-  // service.
-  // TODO(crbug.com/40839522): Remove once TextRequestHandler and
-  // PageRequestHandler are created.
-  void PrepareRequest(AnalysisConnector connector,
-                      safe_browsing::BinaryUploadService::Request* request);
-
   // Fills the arrays in `result_` with the given boolean status.
   void FillAllResultsWith(bool status);
 
