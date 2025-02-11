@@ -455,8 +455,8 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       </message>
 
       <!-- Address bar settings -->
-      <message name="IDS_ADDRESS_BAR_SETTINGS" desc="Title for Address Bar settings. [CHAR_LIMIT=32]">
-        Address bar
+      <message name="IDS_ADDRESS_BAR_SETTINGS" desc="Title for Address Bar settings. The NEW label is displayed until the user clicks on this menu item at least twice. [CHAR_LIMIT=32]">
+        Address bar  <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
       </message>
 
       <message name="IDS_ADDRESS_BAR_SETTINGS_CURRENTLY_ON_TOP" desc="Description for Address Bar Settings image when the address bar is top-anchored.">
