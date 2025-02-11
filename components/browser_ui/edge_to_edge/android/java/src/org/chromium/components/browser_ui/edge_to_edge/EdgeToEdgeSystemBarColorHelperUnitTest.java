@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.edge_to_edge;
 
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -111,11 +112,15 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         verify(mWindow).setNavigationBarColor(Color.RED);
         verify(mDelegateColorHelper, times(0)).setNavigationBarColor(anyInt());
         verify(mWindow).setNavigationBarContrastEnforced(true);
+        verify(mDecorView).setSystemUiVisibility(anyInt());
+        clearInvocations(mDecorView);
+
         mEdgeToEdgeColorHelper.setStatusBarColor(Color.RED);
         verify(mDelegateColorHelper, times(0)).setStatusBarColor(anyInt());
         verify(mWindow).setStatusBarContrastEnforced(true);
+        verify(mDecorView).setSystemUiVisibility(anyInt());
 
-        clearInvocations(mWindow);
+        clearInvocations(mWindow, mDecorView);
         doReturn(Color.RED).when(mWindow).getNavigationBarColor();
         doReturn(Color.RED).when(mWindow).getStatusBarColor();
 
@@ -127,6 +132,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         verify(mWindow).setStatusBarColor(Color.TRANSPARENT);
         verify(mWindow).setNavigationBarContrastEnforced(false);
         verify(mWindow).setStatusBarContrastEnforced(false);
+        verify(mDecorView, atLeastOnce()).setSystemUiVisibility(anyInt());
     }
 
     @Test
@@ -138,19 +144,24 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         verify(mDelegateColorHelper).setNavigationBarColor(Color.RED);
         verify(mWindow, times(0)).setNavigationBarColor(Color.TRANSPARENT);
         verify(mWindow).setNavigationBarContrastEnforced(false);
+        verify(mDecorView).setSystemUiVisibility(anyInt());
+        clearInvocations(mDecorView);
+
         mEdgeToEdgeColorHelper.setStatusBarColor(Color.RED);
         verify(mDelegateColorHelper).setStatusBarColor(Color.RED);
         verify(mWindow, times(0)).setStatusBarColor(Color.TRANSPARENT);
         verify(mWindow).setStatusBarContrastEnforced(false);
+        verify(mDecorView).setSystemUiVisibility(anyInt());
 
         // Color will switch automatically when leaving edge to edge mode.
-        clearInvocations(mDelegateColorHelper);
+        clearInvocations(mDelegateColorHelper, mDecorView);
         mShouldContentFitsWindowInsetsSupplier.set(true);
         verify(mWindow).setNavigationBarColor(Color.RED);
         verify(mWindow).setStatusBarColor(Color.RED);
         verify(mDelegateColorHelper, times(0)).setNavigationBarColor(anyInt());
         verify(mWindow).setNavigationBarContrastEnforced(true);
         verify(mWindow).setStatusBarContrastEnforced(true);
+        verify(mDecorView, atLeastOnce()).setSystemUiVisibility(anyInt());
     }
 
     // A test case for #canSetStatusBarColor, and should be remove when all the method override
@@ -165,6 +176,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         mEdgeToEdgeColorHelper.setStatusBarColor(Color.RED);
         verify(mDelegateColorHelper, times(0)).setStatusBarColor(anyInt());
         verify(mWindow).setStatusBarColor(Color.RED);
+        verify(mDecorView).setSystemUiVisibility(anyInt());
     }
 
     @Test
@@ -181,6 +193,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         // Status bar should not be colored when canColorStatusBarColor is false.
         verify(mWindow, never()).setStatusBarColor(anyInt());
         verify(mDelegateColorHelper, never()).setStatusBarColor(anyInt());
+        verify(mDecorView, never()).setSystemUiVisibility(anyInt());
     }
 
     private void initEdgeToEdgeColorHelper() {
@@ -191,5 +204,6 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
                         mDelegateHelperSupplier,
                         /* canColorStatusBarColor= */ true);
         mWindowHelper = mEdgeToEdgeColorHelper.getWindowHelperForTesting();
+        clearInvocations(mDecorView);
     }
 }
