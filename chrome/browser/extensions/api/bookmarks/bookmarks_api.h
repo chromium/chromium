@@ -31,7 +31,7 @@ namespace bookmarks {
 class BookmarkNode;
 class BookmarkModel;
 class ManagedBookmarkService;
-}
+}  // namespace bookmarks
 
 namespace content {
 class BrowserContext;
@@ -108,9 +108,7 @@ class BookmarksAPI : public BrowserContextKeyedAPI,
   raw_ptr<content::BrowserContext> browser_context_;
 
   // BrowserContextKeyedAPI implementation.
-  static const char* service_name() {
-    return "BookmarksAPI";
-  }
+  static const char* service_name() { return "BookmarksAPI"; }
   static const bool kServiceIsNULLWhileTesting = true;
 
   // Created lazily upon OnListenerAdded.
