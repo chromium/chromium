@@ -2341,6 +2341,29 @@ TEST_P(HttpProxyConnectJobTest, ProxyPoolTimeoutWithExperimentDefaultParams) {
   EXPECT_LT(rtt_estimate, GetNestedConnectionTimeout());
 }
 
+TEST_P(HttpProxyConnectJobTest,
+       OnDestinationDnsAliasesResolved_ShouldNotBeInvoked) {
+  std::set<std::string> aliases = {"proxy.example.com", kHttpProxyHost};
+  std::set<std::string> aliases_set(aliases.begin(), aliases.end());
+
+  session_deps_.host_resolver->set_synchronous_mode(true);
+  session_deps_.host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
+      kHttpProxyHost, "2.2.2.2", std::move(aliases));
+
+  Initialize(base::span<MockRead>(), base::span<MockWrite>(),
+             base::span<MockRead>(), base::span<MockWrite>(), SYNCHRONOUS);
+
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> connect_job =
+      CreateConnectJobForHttpRequest(&test_delegate);
+
+  test_delegate.StartJobExpectingResult(connect_job.get(), OK,
+                                        /*expect_sync_result=*/true);
+
+  EXPECT_FALSE(test_delegate.on_dns_aliases_resolved_called());
+  EXPECT_TRUE(test_delegate.dns_aliases().empty());
+}
+
 // A Mock QuicSessionPool which can intercept calls to RequestSession.
 class MockQuicSessionPool : public QuicSessionPool {
  public:

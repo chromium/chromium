@@ -5,6 +5,7 @@
 #include "net/socket/websocket_transport_client_socket_pool.h"
 
 #include <algorithm>
+#include <set>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -494,6 +495,14 @@ void WebSocketTransportClientSocketPool::ConnectJobDelegate::OnNeedsProxyAuth(
     ConnectJob* job) {
   // This class isn't used for proxies.
   NOTREACHED();
+}
+
+Error WebSocketTransportClientSocketPool::ConnectJobDelegate::
+    OnDestinationDnsAliasesResolved(const std::set<std::string>& aliases,
+                                    ConnectJob* job) {
+  // TODO(crbug.com/383134117): Implement logic for cancelling requests if cname
+  // cloaking is detected.
+  return OK;
 }
 
 int WebSocketTransportClientSocketPool::ConnectJobDelegate::Connect(

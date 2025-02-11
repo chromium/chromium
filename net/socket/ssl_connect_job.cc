@@ -6,6 +6,7 @@
 
 #include <cstdlib>
 #include <memory>
+#include <set>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -158,6 +159,16 @@ void SSLConnectJob::OnNeedsProxyAuth(
   // anything once credentials are provided.
   NotifyDelegateOfProxyAuth(response, auth_controller,
                             std::move(restart_with_auth_callback));
+}
+
+Error SSLConnectJob::OnDestinationDnsAliasesResolved(
+    const std::set<std::string>& aliases,
+    ConnectJob* job) {
+  // Resolved DNS aliases should only be handled for direct connections.
+  if (params_->GetConnectionType() != SSLSocketParams::DIRECT) {
+    return OK;
+  }
+  return HandleDnsAliasesResolved(aliases);
 }
 
 ConnectionAttempts SSLConnectJob::GetConnectionAttempts() const {

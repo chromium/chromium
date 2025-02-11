@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <set>
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
@@ -108,6 +109,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingClientSocket
   FRIEND_TEST_ALL_PREFIXES(ProxyResolvingClientSocketTest, ReadWriteErrors);
   FRIEND_TEST_ALL_PREFIXES(ProxyResolvingClientSocketTest,
                            ResetSocketAfterTunnelAuth);
+  FRIEND_TEST_ALL_PREFIXES(ProxyResolvingClientSocketTest,
+                           OnDestinationDnsAliasesResolved_AlwaysReturnsOK);
 
   void OnIOComplete(int result);
 
@@ -123,6 +126,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingClientSocket
                         net::HttpAuthController* auth_controller,
                         base::OnceClosure restart_with_auth_callback,
                         net::ConnectJob* job) override;
+  net::Error OnDestinationDnsAliasesResolved(
+      const std::set<std::string>& aliases,
+      net::ConnectJob* job) override;
 
   int ReconsiderProxyAfterError(int error);
 

@@ -5,6 +5,7 @@
 #include "net/socket/transport_client_socket_pool.h"
 
 #include <algorithm>
+#include <set>
 #include <string_view>
 #include <utility>
 
@@ -814,7 +815,7 @@ void TransportClientSocketPool::OnSSLConfigChanged(
     SSLClientContext::SSLConfigChangeType change_type) {
   const char* message = nullptr;
   // When the SSL config or cert verifier config changes, flush all idle
-  // sockets so they won't get re-used, and allow any active sockets to finish,
+  // sockets so they won't get reused, and allow any active sockets to finish,
   // but don't put them back in the socket pool.
   switch (change_type) {
     case SSLClientContext::SSLConfigChangeType::kSSLConfigChanged:
@@ -1407,6 +1408,15 @@ void TransportClientSocketPool::OnNeedsProxyAuth(
                                      std::move(restart_with_auth_callback));
 }
 
+Error TransportClientSocketPool::OnDestinationDnsAliasesResolved(
+    Group* group,
+    const std::set<std::string>& aliases,
+    ConnectJob* job) {
+  // TODO(crbug.com/383134117): Implement logic for cancelling requests if cname
+  // cloaking is detected.
+  return OK;
+}
+
 void TransportClientSocketPool::InvokeUserCallbackLater(
     ClientSocketHandle* handle,
     CompletionOnceCallback callback,
@@ -1501,6 +1511,13 @@ void TransportClientSocketPool::Group::OnNeedsProxyAuth(
   client_socket_pool_->OnNeedsProxyAuth(this, response, auth_controller,
                                         std::move(restart_with_auth_callback),
                                         job);
+}
+
+Error TransportClientSocketPool::Group::OnDestinationDnsAliasesResolved(
+    const std::set<std::string>& aliases,
+    ConnectJob* job) {
+  return client_socket_pool_->OnDestinationDnsAliasesResolved(this, aliases,
+                                                              job);
 }
 
 void TransportClientSocketPool::Group::StartBackupJobTimer(

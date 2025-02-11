@@ -344,6 +344,8 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
                           HttpAuthController* auth_controller,
                           base::OnceClosure restart_with_auth_callback,
                           ConnectJob* job) override;
+    Error OnDestinationDnsAliasesResolved(const std::set<std::string>& aliases,
+                                          ConnectJob* job) override;
 
     bool IsEmpty() const {
       return active_socket_count_ == 0 && idle_sockets_.empty() &&
@@ -741,6 +743,9 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
                         HttpAuthController* auth_controller,
                         base::OnceClosure restart_with_auth_callback,
                         ConnectJob* job);
+  Error OnDestinationDnsAliasesResolved(Group* group,
+                                        const std::set<std::string>& aliases,
+                                        ConnectJob* job);
 
   // Invokes the user callback for |handle|.  By the time this task has run,
   // it's possible that the request has been cancelled, so |handle| may not
