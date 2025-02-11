@@ -47,7 +47,7 @@ class CollaborationControllerDelegate {
               l10n_util::GetStringUTF8(IDS_COLLABORATION_LINK_FAILED_BODY);
           break;
         case Type::kGenericError:
-        default:
+        case Type::kUnknown:
           error_header = l10n_util::GetStringUTF8(
               IDS_COLLABORATION_SOMETHING_WENT_WRONG_HEADER);
           error_body = l10n_util::GetStringUTF8(

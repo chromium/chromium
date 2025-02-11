@@ -147,7 +147,7 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
       const data_sharing::DataSharingService::GroupDataOrFailureOutcome&)>
       group_data_callback;
   EXPECT_CALL(*collaboration_service_, GetCurrentUserRoleForGroup(group_id))
-      .WillOnce(Return(data_sharing::MemberRole::kUnknown));
+      .WillRepeatedly(Return(data_sharing::MemberRole::kUnknown));
   EXPECT_CALL(*data_sharing_service_, ReadNewGroup(token, IsNotNullCallback()))
       .WillOnce(MoveArg<1>(&group_data_callback));
 
@@ -185,7 +185,7 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
       tab_groups::CollaborationId(std::string(kGroupId)));
   std::vector<SavedTabGroup> all_tab_groups;
   EXPECT_CALL(*tab_group_sync_service_, GetAllGroups())
-      .WillOnce(Return(all_tab_groups));
+      .WillRepeatedly(Return(all_tab_groups));
 
   tab_groups::TabGroupSyncService::Observer* sync_observer;
   data_sharing::DataSharingService::Observer* data_sharing_observer;
