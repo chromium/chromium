@@ -122,3 +122,17 @@ void BookmarkModelBridge::BookmarkAllUserNodesRemoved(
     const base::Location& location) {
   [observer_ bookmarkModelRemovedAllNodes];
 }
+
+void BookmarkModelBridge::ExtensiveBookmarkChangesBeginning() {
+  SEL selector = @selector(extensiveBookmarkChangesBeginning);
+  if ([observer_ respondsToSelector:selector]) {
+    [observer_ extensiveBookmarkChangesBeginning];
+  }
+}
+
+void BookmarkModelBridge::ExtensiveBookmarkChangesEnded() {
+  SEL selector = @selector(extensiveBookmarkChangesEnded);
+  if ([observer_ respondsToSelector:selector]) {
+    [observer_ extensiveBookmarkChangesEnded];
+  }
+}

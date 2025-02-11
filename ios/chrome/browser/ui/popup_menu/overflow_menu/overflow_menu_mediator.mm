@@ -1637,12 +1637,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   [self updateModel];
 }
 
-- (void)webState:(web::WebState*)webState
-    didChangeLoadingProgress:(double)progress {
-  DCHECK_EQ(_webState, webState);
-  [self updateModel];
-}
-
 - (void)webStateDidChangeBackForwardState:(web::WebState*)webState {
   DCHECK_EQ(_webState, webState);
   [self updateModel];
@@ -1682,6 +1676,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // If an added or removed bookmark is the same as the current url, update the
 // toolbar so the star highlight is kept in sync.
 - (void)didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
+  if (self.bookmarkModel->IsDoingExtensiveChanges()) {
+    return;
+  }
   [self updateModel];
 }
 
@@ -1697,6 +1694,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 }
 
 - (void)didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
+  if (self.bookmarkModel->IsDoingExtensiveChanges()) {
+    return;
+  }
   [self updateModel];
 }
 - (void)didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
@@ -1706,6 +1706,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 }
 - (void)didDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder {
+  [self updateModel];
+}
+
+- (void)extensiveBookmarkChangesEnded {
   [self updateModel];
 }
 
