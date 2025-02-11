@@ -2147,6 +2147,10 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2462332841984057083">Steam туураланып жатат. Орнотулганча күтө туруңуз.</translation>
 <translation id="2462724976360937186">Тастыктама борборунун ачкыч далдаштыргычы</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> принтери кошулду</translation>
+<translation id="2464075479326723132">Cунушталган файлдар Microsoft SharePoint жана OneDrive'да жасаган акыркы аракеттериңизге оңой өтүүгө жардам берет.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Картанын менюсунан параметрлерди тескесеңиз болот же көбүрөөк параметрлерди көрүү үчүн Chrome'ду ыңгайлаштыруу бөлүмүнө өтүңүз.</translation>
 <translation id="2464079411014186876">Балмуздак</translation>
 <translation id="2467755475704469005">Бир да түзмөк табылган жок. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" /> жана дагы <ph name="NUM_OTHER_MEMBERS" /> колдонуучу бар өтмөктөр тобуна кошулуңуз</translation>
@@ -4009,6 +4013,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3787434344076711519">Которуу күтүлүүдө</translation>
 <translation id="3788301286821743879">Киоск колдонмосу ишке киргизилген жок.</translation>
 <translation id="3788401245189148511">Мындай болмок:</translation>
+<translation id="3789432704615470433">SharePoint жана OneDrive файлдары</translation>
 <translation id="3789841737615482174">Орнотуу</translation>
 <translation id="3790417903123637354">Бир жерден ката кетти. Бир аздан кийин кайталап көрүңүз</translation>
 <translation id="379082410132524484">Карточкаңыздын мөөнөтү бүткөн</translation>
@@ -6199,6 +6204,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5360150013186312835">Куралдар тилкесинен көрсөтүү</translation>
 <translation id="5362741141255528695">Жеке ачкыч файлын тандоо.</translation>
 <translation id="536278396489099088">ChromeOS тутумунун абалы жана отчёттор</translation>
+<translation id="5362916924854054326">SharePoint жана OneDrive файлдары көрсөтүлбөсүн</translation>
 <translation id="5363109466694494651">Жууп салуу жана кайтуу</translation>
 <translation id="5365881113273618889">Тандалган папкада купуя файлдар бар. "<ph name="APP_NAME" />" колдонмосуна бул папканы тоскоолдуксуз ачып, ичиндегилерин окуу мүмкүнчүлүгүн бергиңиз келеби?</translation>
 <translation id="536638840841140142">Жок</translation>
@@ -10781,6 +10787,10 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="865936634714975126">Бетти жүктөө түрлөрүн тандоо үчүн URL'де сурамдын параметрин кошуңуз. Мисалы: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> байланыш</translation>
 <translation id="8659609431223166673">Терезе ылдый жылдырылды</translation>
+<translation id="8660288500924118793">Outlook Жылнаамада кийинки иш-чарага оңой өтүү үчүн жылнаамаңызды көрүп турасыз.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Картанын менюсунан параметрлерди тескесеңиз болот же көбүрөөк параметрлерди көрүү үчүн Chrome'ду ыңгайлаштыруу бөлүмүнө өтүңүз.</translation>
 <translation id="8661290697478713397">Шилтемени жашыр&amp;уун терезеде ачуу</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> түзмөгүнө кириңиз</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> тармагына кошулуу</translation>

@@ -30,6 +30,7 @@
 <translation id="2118649612461486615">Дүкен туралы ақпарат</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Жабылған қойындылар мен топтарды "Соңғы қойындылар" және "Қойындылар топтары" бөлімдерінен қайта ашуға болады. Инкогнито қойындыңыз қолжетімді болмайды.}other{Жабылған қойындылар мен топтарды "Соңғы қойындылар" және "Қойындылар топтары" бөлімдерінен қайта ашуға болады. # инкогнито қойындыңыз қолжетімді болмайды.}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> сайтындағы қазіргі бағасы – <ph name="CURRENT_PRICE" />.</translation>
+<translation id="2242907120821295124"><ph name="TAB_GROUP_NAME" /> қойындылар тобы енді қолжетімді емес.</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Қойындыны топтан шығару}other{Қойындыларды топтан шығару}}</translation>
 <translation id="2271452184061378400">Қойындылар топтары осы жерде сақталады.</translation>
 <translation id="2277224997687551299">Топтың атауын өзгерту</translation>
@@ -87,6 +88,7 @@
 <translation id="4783638485675352219">Бұл құрылғыдағы ашық қойындылардың атаулары мен URL мекенжайларын операциялық жүйемен бөлісу</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> пікір)}other{(<ph name="REVIEWS_COUNT_MANY" /> пікір)}}</translation>
 <translation id="4850886885716139402">Көрініс</translation>
+<translation id="4861611890274104875">Картаны жабады.</translation>
 <translation id="4861953997778766866">Ортақ қойындылар топтарына барлығы өзгеріс енгізе алады.</translation>
 <translation id="4870911314065352661">Барлық қойынды жабылсын ба?</translation>
 <translation id="4871719318659334896">Топты жабу</translation>

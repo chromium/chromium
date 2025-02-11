@@ -2148,6 +2148,10 @@
 <translation id="2462332841984057083">Steam को पहले से ही सेट अप किया जा रहा है. सेटअप पूरा होने का इंतज़ार करें.</translation>
 <translation id="2462724976360937186">प्रमाणन प्राधिकरण कुंजी आईडी</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> जोड़ा गया</translation>
+<translation id="2464075479326723132">आपको फ़ाइलों के सुझाव दिखाए जा रहे हैं, ताकि आप उन फ़ाइलों को आसानी से ढूंढ सकें जिन्हें आपने हाल ही में Microsoft SharePoint और OneDrive पर इस्तेमाल किया था.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        इससे जुड़ी सेटिंग को, कार्ड मेन्यू में जाकर मैनेज किया जा सकता है. इसके अलावा, 'Chrome को पसंद के मुताबिक बनाएं' सेक्शन में मौजूद ज़्यादा विकल्प देखे जा सकते हैं.</translation>
 <translation id="2464079411014186876">आइस्क्रीम</translation>
 <translation id="2467755475704469005">किसी भी डिवाइस का पता नहीं चला <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" /> और <ph name="NUM_OTHER_MEMBERS" /> अन्य लोगों के साथ टैब ग्रुप में शामिल हों</translation>
@@ -4010,6 +4014,7 @@
 <translation id="3787434344076711519">अनुवाद होना बाकी है</translation>
 <translation id="3788301286821743879">कीऑस्क ऐप्लिकेशन को लॉन्च नहीं किया जा सका.</translation>
 <translation id="3788401245189148511">यह निम्न कर सकता है:</translation>
+<translation id="3789432704615470433">SharePoint और OneDrive वाली फ़ाइलें</translation>
 <translation id="3789841737615482174">इंस्‍टॉल करें</translation>
 <translation id="3790417903123637354">कोई गड़बड़ी हुई. बाद में कोशिश करें</translation>
 <translation id="379082410132524484">आपके कार्ड की समय-सीमा खत्म हो गई है</translation>
@@ -6197,6 +6202,7 @@
 <translation id="5360150013186312835">टूलबार में दिखाएं</translation>
 <translation id="5362741141255528695">निजी कुंजी फ़ाइल को चुनें.</translation>
 <translation id="536278396489099088">ChromeOS के सिस्टम की स्थिति और रिपोर्ट</translation>
+<translation id="5362916924854054326">SharePoint और OneDrive वाली फ़ाइलें न दिखाएं</translation>
 <translation id="5363109466694494651">पावरवॉश करें और वापस लाएं</translation>
 <translation id="5365881113273618889">आपने जो फ़ोल्डर चुना है उसमें संवेदनशील फ़ाइलें हैं. क्या आप वाकई "<ph name="APP_NAME" />" को इस फ़ोल्डर में लिखने का ऐक्सेस हमेशा के लिए देना चाहते हैं?</translation>
 <translation id="536638840841140142">कोई नहीं</translation>
@@ -10781,6 +10787,10 @@
 <translation id="865936634714975126">पेज लोड पर टाइप चुनने के लिए, यूआरएल में क्वेरी पैरामीटर जोड़ें. जैसे: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> के लिए संपर्कों की सूची</translation>
 <translation id="8659609431223166673">विंडो को नीचे की ओर ले जाया गया</translation>
+<translation id="8660288500924118793">आपको आपका कैलेंडर दिखाया जा रहा है. इससे आपको Outlook Calendar में आसानी से अपने अगले इवेंट पर जाने में मदद मिलेगी.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       इससे जुड़ी सेटिंग को, कार्ड मेन्यू में जाकर मैनेज किया जा सकता है. इसके अलावा, 'Chrome को पसंद के मुताबिक बनाएं' सेक्शन में मौजूद ज़्यादा विकल्प देखे जा सकते हैं.</translation>
 <translation id="8661290697478713397">लिंक को गुप्त&amp; विंडो में खोलें</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> में साइन इन करें</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्क में शामिल हों</translation>

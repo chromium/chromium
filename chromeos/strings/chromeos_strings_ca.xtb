@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Resumeix</translation>
 <translation id="123124571410524056">Possible portal</translation>
 <translation id="1232610416724362657">una cascada</translation>
+<translation id="1238163879850290856">Restableix per evitar que altres persones accedeixin a les dades. Utilitza només mètodes d'introducció en què confiïs.</translation>
 <translation id="1238612778414822719">Latència d'HTTPS</translation>
 <translation id="1252766349417594414">Palanca de control</translation>
 <translation id="1270369111467284986">Possible portal captiu</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">Maj dreta</translation>
 <translation id="4654549501020883054">Canvia cada dia</translation>
 <translation id="4655868084888499342">S'ha definit la imatge com a fons de pantalla</translation>
+<translation id="4660989616054030633">La IA generativa pot cometre errors, també sobre persones, així que comprova'n les respostes</translation>
 <translation id="4661249927038176904">surrealista</translation>
 <translation id="4661392828086261436">Aquesta actualització la proporciona el fabricant del dispositiu i Google no l'ha verificat</translation>
 <translation id="4664651912255946953">pell</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">Amaga el resum</translation>
 <translation id="6075872808778243331">(Android) Latència d'HTTP</translation>
 <translation id="6078323886959318429">Afegeix una drecera</translation>
+<translation id="6079693086494835199">Restableix per assegurar-te que la pàgina d'inici predeterminada no és un lloc web de pesca de credencials. Utilitza només llocs web en què confiïs.</translation>
 <translation id="6091080061796993741">groc</translation>
 <translation id="6104112872696127344">L'escaneig s'ha cancel·lat</translation>
 <translation id="6106186594183574873">Per acabar, introdueix la contrasenya antiga</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">granat i rosa</translation>
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Restableix per impedir que altres persones utilitzin el micròfon o la càmera. Concedeix permisos només als llocs web en què confiïs.</translation>
 <translation id="6188737759358894319">Creat el dia <ph name="DATE" /></translation>
 <translation id="6189418609903030344">La capacitat de la bateria es redueix amb l'ús</translation>
 <translation id="6189987971574353264">Reprodueix</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">atenuació del teclat</translation>
 <translation id="6302401976930124515">La prova <ph name="TEST_NAME" /> s'ha cancel·lat</translation>
 <translation id="631063167932043783">Aplicació Explora</translation>
+<translation id="6314333689576767865">El Chromebook s'ha restablert als valors predeterminats segurs. Pots fer canvis en qualsevol moment a Configuració.</translation>
 <translation id="6318437367327684789">sempre</translation>
 <translation id="6319207335391420837">Actualitza el microprogramari que hi ha a <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Activa l'estalvi de pantalla</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">S'han enviat els suggeriments</translation>
 <translation id="6866732840889595464">margarida</translation>
 <translation id="6871256179359663621">porpra clar</translation>
+<translation id="6887967050249348172">S'han desactivat les extensions per evitar canvis en la configuració. Activa només les extensions en què confiïs.</translation>
 <translation id="6889786074662672253">Mentre es reinicia, no desconnectis el dispositiu extern ni apaguis l'ordinador. Pots minimitzar aquesta finestra. Aquest procés pot tardar uns quants minuts i és possible que, durant aquest temps, el dispositiu extern no funcioni.</translation>
 <translation id="6899460405678814458">Mostra el resum</translation>
 <translation id="6900701049656042631">Aquest àlbum no té cap foto. Per afegir-ne, ves a <ph name="LINK" />.</translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">La drecera s'ha restaurat</translation>
 <translation id="725133483556299729">Selecciona una adreça electrònica</translation>
 <translation id="7255187042098209569">rosa i lila</translation>
+<translation id="7267918995585557751">Restableix per assegurar-te que la pàgina d'arrencada predeterminada no és un lloc web de pesca de credencials. Utilitza només llocs web en què confiïs.</translation>
 <translation id="7271000785316964275">classicista</translation>
 <translation id="7271040990581020067">L'escàner s'està utilitzant en aquests moments. Torna-ho a provar més tard.</translation>
 <translation id="7271932918253517778">La drecera amb tecles de la fila superior ha d'incloure la tecla de <ph name="META_KEY" />.</translation>
@@ -1486,6 +1493,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7903695460270716054">Tria obres d'art i imatges seleccionades</translation>
 <translation id="7912005977894000746">Torna a la pàgina principal</translation>
 <translation id="7915220255123750251">Gestiona la configuració de l'APN de la xarxa. Els APN defineixen una connexió entre una xarxa mòbil i Internet.</translation>
+<translation id="7915759923880480519">Restableix per protegir les dades que s'envien a través de les teves xarxes. Utilitza només les xarxes en què confiïs.</translation>
 <translation id="7936303884198020182">No s'han trobat servidors de noms</translation>
 <translation id="7942349550061667556">Vermell</translation>
 <translation id="7943235353293548836">Interval de keepalive persistent</translation>
@@ -1711,6 +1719,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="89945434909472341">un poble</translation>
 <translation id="8997710128084572139">El dispositiu té un <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
 <translation id="8998289560386111590">No disponible al teu dispositiu</translation>
+<translation id="9000871120886759611">Restableix per assegurar-te que pots accedir a la informació en l'idioma que prefereixis. Comprova que només s'utilitzin els idiomes que prefereixes.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Freqüència</translation>
 <translation id="901834265349196618">correu electrònic</translation>

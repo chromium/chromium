@@ -2135,6 +2135,10 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2462332841984057083">Ya se está configurando Steam. Espera a que se complete la configuración.</translation>
 <translation id="2462724976360937186">ID de clave de la entidad emisora de certificados</translation>
 <translation id="2462752602710430187">Se ha añadido la impresora <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Estás viendo sugerencias de archivos para ayudarte a retomar fácilmente tu actividad más reciente en Microsoft SharePoint y OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Puedes gestionar la configuración en el menú de la tarjeta o ver más opciones en Personalizar Chrome.</translation>
 <translation id="2464079411014186876">Helado</translation>
 <translation id="2467755475704469005">Ningún dispositivo detectado. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Unirte al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /> y <ph name="NUM_OTHER_MEMBERS" /> personas más</translation>
@@ -3997,6 +4001,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3787434344076711519">Esperando traducción</translation>
 <translation id="3788301286821743879">No se ha podido iniciar la aplicación de kiosco.</translation>
 <translation id="3788401245189148511">Podría:</translation>
+<translation id="3789432704615470433">Archivos de SharePoint y OneDrive</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3790417903123637354">Se ha producido un error. Vuelve a intentarlo más tarde.</translation>
 <translation id="379082410132524484">Tu tarjeta ha caducado</translation>
@@ -6184,6 +6189,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5360150013186312835">Mostrar en la barra de herramientas</translation>
 <translation id="5362741141255528695">Selecciona un archivo de clave privada.</translation>
 <translation id="536278396489099088">Estado del sistema e informes de ChromeOS</translation>
+<translation id="5362916924854054326">No mostrar archivos de SharePoint y OneDrive</translation>
 <translation id="5363109466694494651">Powerwash y cambio a versión anterior</translation>
 <translation id="5365881113273618889">La carpeta que has seleccionado contiene archivos confidenciales. ¿Seguro que quieres conceder a "<ph name="APP_NAME" />" acceso de escritura permanente a esta carpeta?</translation>
 <translation id="536638840841140142">Ninguno</translation>
@@ -10768,6 +10774,10 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="865936634714975126">Añade un parámetro de consulta a la URL para seleccionar tipos al cargar la página. Ejemplo: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Contactos de <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Ventana movida hacia abajo</translation>
+<translation id="8660288500924118793">Se te está mostrando tu calendario para ayudarte a ir fácilmente al siguiente evento del calendario de Outlook.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Puedes gestionar la configuración en el menú de la tarjeta o ver más opciones en Personalizar Chrome.</translation>
 <translation id="8661290697478713397">Abrir enlace en una ventana de incó&amp;gnito</translation>
 <translation id="8662474268934425487">Iniciar sesión en <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Unirse a la red <ph name="TYPE" /></translation>

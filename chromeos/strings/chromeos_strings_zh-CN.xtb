@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">总结</translation>
 <translation id="123124571410524056">疑似存在门户</translation>
 <translation id="1232610416724362657">瀑布</translation>
+<translation id="1238163879850290856">重置可防止他人访问数据。请仅使用您信任的输入法。</translation>
 <translation id="1238612778414822719">HTTPS 延迟</translation>
 <translation id="1252766349417594414">操纵杆</translation>
 <translation id="1270369111467284986">疑似存在强制门户</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">右 Shift</translation>
 <translation id="4654549501020883054">每日更换一次</translation>
 <translation id="4655868084888499342">已将图片设为壁纸</translation>
+<translation id="4660989616054030633">生成式 AI 的回答（包括与人有关的信息）未必正确无误，请务必核查</translation>
 <translation id="4661249927038176904">超现实</translation>
 <translation id="4661392828086261436">此更新由设备制造商提供，并且未经 Google 验证。</translation>
 <translation id="4664651912255946953">毛皮</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">隐藏摘要</translation>
 <translation id="6075872808778243331">(Android) HTTP 延迟时间</translation>
 <translation id="6078323886959318429">添加快捷方式</translation>
+<translation id="6079693086494835199">重置可确保默认主页不是钓鱼式攻击网站。请仅使用您信任的网站。</translation>
 <translation id="6091080061796993741">黄色</translation>
 <translation id="6104112872696127344">已取消扫描</translation>
 <translation id="6106186594183574873">要完成更改，请输入您的旧密码</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">栗色和粉色</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">重置可阻止他人使用您的麦克风或摄像头。请仅向您信任的网站授予权限。</translation>
 <translation id="6188737759358894319">创建日期：<ph name="DATE" /></translation>
 <translation id="6189418609903030344">电池容量会随使用时长的增加而减少</translation>
 <translation id="6189987971574353264">播放</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">将键盘调暗</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />测试已被取消</translation>
 <translation id="631063167932043783">“探索”应用</translation>
+<translation id="6314333689576767865">Chromebook 已重置为安全的默认设置。您随时可以在“设置”中进行更改。</translation>
 <translation id="6318437367327684789">不限时</translation>
 <translation id="6319207335391420837">更新“<ph name="DEVICE_NAME" />”上的固件</translation>
 <translation id="6321407676395378991">开启屏保功能</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">已提交反馈</translation>
 <translation id="6866732840889595464">雏菊</translation>
 <translation id="6871256179359663621">浅紫色</translation>
+<translation id="6887967050249348172">已停用扩展程序，以防止更改设置。请只启用您信任的扩展程序。</translation>
 <translation id="6889786074662672253">重启期间，请不要拔掉此外部设备的电源插头或关闭您的计算机。您可以最小化此窗口。这可能需要几分钟时间，在此期间，您的外部设备可能无法正常使用。</translation>
 <translation id="6899460405678814458">显示摘要</translation>
 <translation id="6900701049656042631">此相册内尚无任何照片。若要添加照片，请前往 <ph name="LINK" /></translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">快捷键已恢复</translation>
 <translation id="725133483556299729">选择电子邮件地址</translation>
 <translation id="7255187042098209569">粉色和紫色</translation>
+<translation id="7267918995585557751">重置可确保默认启动页不是钓鱼式攻击网站。请仅使用您信任的网站。</translation>
 <translation id="7271000785316964275">古典主义</translation>
 <translation id="7271040990581020067">扫描仪正在使用中。请稍后再试。</translation>
 <translation id="7271932918253517778">使用顶行按键的快捷键必须包含<ph name="META_KEY" />键。</translation>
@@ -1486,6 +1493,7 @@
 <translation id="7903695460270716054">选择精选艺术作品和图片</translation>
 <translation id="7912005977894000746">返回主页面</translation>
 <translation id="7915220255123750251">管理网络 APN 设置。APN 会在移动网络和互联网之间建立连接。</translation>
+<translation id="7915759923880480519">重置可保护通过您的网络发送的数据。请仅使用您信任的网络。</translation>
 <translation id="7936303884198020182">找不到任何域名服务器</translation>
 <translation id="7942349550061667556">红色</translation>
 <translation id="7943235353293548836">持久 keepalive 的时间间隔</translation>
@@ -1711,6 +1719,7 @@
 <translation id="89945434909472341">村庄</translation>
 <translation id="8997710128084572139">设备电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="8998289560386111590">在您的设备上不可用</translation>
+<translation id="9000871120886759611">重置可确保您能够以首选语言访问信息。请确保仅使用首选语言。</translation>
 <translation id="9003499805101629690">披萨</translation>
 <translation id="9003704114456258138">频率</translation>
 <translation id="901834265349196618">电子邮件</translation>

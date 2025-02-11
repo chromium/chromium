@@ -2150,6 +2150,10 @@
 <translation id="2462332841984057083">Додаток Steam уже налаштовується. Зачекайте, доки цей процес завершиться.</translation>
 <translation id="2462724976360937186">Ідентифікатор ключа центру сертифікації</translation>
 <translation id="2462752602710430187">Додано принтер <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Тут відображаються пропозиції файлів, які допоможуть вам легко повернутися до останніх дій у Microsoft SharePoint і OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Ви можете керувати налаштуваннями в меню картки або переглянути інші опції в розділі "Налаштувати Chrome".</translation>
 <translation id="2464079411014186876">Морозиво</translation>
 <translation id="2467755475704469005">Пристроїв не виявлено. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще стільки користувачів: <ph name="NUM_OTHER_MEMBERS" /></translation>
@@ -4012,6 +4016,7 @@
 <translation id="3787434344076711519">Очікує на переклад</translation>
 <translation id="3788301286821743879">Не вдалося запустити додаток-термінал.</translation>
 <translation id="3788401245189148511">Зможе:</translation>
+<translation id="3789432704615470433">Файли SharePoint і OneDrive</translation>
 <translation id="3789841737615482174">Установити</translation>
 <translation id="3790417903123637354">Сталася помилка. Спробуйте пізніше</translation>
 <translation id="379082410132524484">Ваша картка недійсна</translation>
@@ -6200,6 +6205,7 @@
 <translation id="5360150013186312835">Показати на панелі інструментів</translation>
 <translation id="5362741141255528695">Виберіть файл секретного ключа.</translation>
 <translation id="536278396489099088">Стан системи ChromeOS і звіти</translation>
+<translation id="5362916924854054326">Не показувати файли SharePoint і OneDrive</translation>
 <translation id="5363109466694494651">Виконати Powerwash і повернутися до попередньої версії</translation>
 <translation id="5365881113273618889">Вибрана папка містить файли з конфіденційною інформацією. Надати додатку <ph name="APP_NAME" /> постійний дозвіл на редагування цієї папки?</translation>
 <translation id="536638840841140142">Немає</translation>
@@ -10786,6 +10792,10 @@
 <translation id="865936634714975126">Додайте параметр запиту в URL-адресу, щоб вибрати типи під час завантаження сторінки. Приклад: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Контакти, які використовує функція <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Вікно переміщено вниз</translation>
+<translation id="8660288500924118793">Вікно календаря допоможе вам легко перейти до наступної події в Календарі Outlook.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Ви можете керувати налаштуваннями в меню картки або переглянути інші опції в розділі "Налаштувати Chrome".</translation>
 <translation id="8661290697478713397">Відкрити посилання в аноні&amp;мному вікні</translation>
 <translation id="8662474268934425487">Увійти на сайті <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Під’єднатися до мережі <ph name="TYPE" /></translation>

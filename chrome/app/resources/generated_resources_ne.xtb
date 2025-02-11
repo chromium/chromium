@@ -2131,6 +2131,10 @@
 <translation id="2462332841984057083">Steam पहिल्यै देखि सेटअप गरिँदै छ। सेटअप गर्ने कार्य पूरा हुन्जेल पर्खनुहोस्।</translation>
 <translation id="2462724976360937186">प्रमाणीकरण प्राधिकरण कुञ्जी आइडी</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> थपियो</translation>
+<translation id="2464075479326723132">तपाईं आफूले हालसालै Microsoft SharePoint र OneDrive मा गरेका क्रियाकलापमा सजिलैसँग फर्कन सक्नुहोस् भन्नाका लागि तपाईंलाई सिफारिस गरिएका फाइलहरू देखाइँदै छ।
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        तपाईं कार्ड मेनुमा गई सेटिङ मिलाउन वा "Chrome कस्टमाइज गर्नुहोस्" मा गई थप विकल्पहरू हेर्न सक्नुहुन्छ।</translation>
 <translation id="2464079411014186876">आइसक्रिम</translation>
 <translation id="2467755475704469005">कुनै डिभाइस भेट्टिएन। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" /> र अन्य <ph name="NUM_OTHER_MEMBERS" /> जना सामेल हुनुभएको ट्याब समूहमा सामेल हुनुहोस्</translation>
@@ -3992,6 +3996,7 @@
 <translation id="3787434344076711519">अनुवाद गर्न बाँकी छ</translation>
 <translation id="3788301286821743879">kiosk एप सुरु गर्न सकिएन।</translation>
 <translation id="3788401245189148511">यसले सक्छ:</translation>
+<translation id="3789432704615470433">SharePoint र OneDrive मा भएका फाइलहरू</translation>
 <translation id="3789841737615482174">स्थापना गर्नुहोस्</translation>
 <translation id="3790417903123637354">कुनै समस्या आयो। पछि फेरि प्रयास गर्नुहोस्</translation>
 <translation id="379082410132524484">तपाईंको कार्डको म्याद सकियो</translation>
@@ -6181,6 +6186,7 @@
 <translation id="5360150013186312835">उपकरणपट्टीमा देखाउनुहोस्</translation>
 <translation id="5362741141255528695">निजी मुख्य फाइल चयन गर्नुहोस्।</translation>
 <translation id="536278396489099088">ChromeOS सिस्टमको स्थिति र रिपोर्टहरू</translation>
+<translation id="5362916924854054326">SharePoint र OneDrive मा भएका फाइलहरू नदेखाउनुहोस्</translation>
 <translation id="5363109466694494651">पावरवास र फिर्ता गर्नुहोस्</translation>
 <translation id="5365881113273618889">तपाईंले चयन गर्नुभएको फोल्डरमा संवेदनशील फाइलहरू समावेश छन्। तपाईं "<ph name="APP_NAME" />" लाई स्थायी रूपमा यो फोल्डरमा लेख्न सक्ने पहुँच प्रदान गर्ने कुरामा निश्चित हुनुहुन्छ?</translation>
 <translation id="536638840841140142">कुनै पनि होइन</translation>
@@ -10762,6 +10768,10 @@
 <translation id="865936634714975126">पेज लोडमा डिभाइसका प्रकारहरू चयन गर्न URL मा क्वेरी प्यारामिटर हाल्नुहोस्। उदाहरणका लागि: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> मा भएको कन्ट्याक्ट व्यवस्थापन गर्ने सेटिङ</translation>
 <translation id="8659609431223166673">विन्डो सारेर तलतिर लगियो</translation>
+<translation id="8660288500924118793">तपाईं Outlook पात्रोमा सेट गरिएको आफ्नो आगामी कार्यक्रममा सजिलैसँग जान सक्नुहोस् भन्नाका लागि तपाईंलाई तपाईंको पात्रो देखाइँदै छ।
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        तपाईं कार्ड मेनुमा गई सेटिङ मिलाउन वा "Chrome कस्टमाइज गर्नुहोस्" मा गई थप विकल्पहरू हेर्न सक्नुहुन्छ।</translation>
 <translation id="8661290697478713397">लिङ्कलाई इन्क&amp;ग्निटो सन्झ्यालमा खोल्नुहोस्</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्कमा सामेल हुनुहोस्</translation>

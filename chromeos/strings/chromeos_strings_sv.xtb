@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Sammanfatta</translation>
 <translation id="123124571410524056">Misstänkt portal</translation>
 <translation id="1232610416724362657">ett vattenfall</translation>
+<translation id="1238163879850290856">Återställ för att förhindra att andra får åtkomst till data. Använd bara inmatningsmetoder som du litar på.</translation>
 <translation id="1238612778414822719">HTTPS-fördröjning</translation>
 <translation id="1252766349417594414">Styrspak</translation>
 <translation id="1270369111467284986">Misstänkt infångstportal</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">Höger skifttangent</translation>
 <translation id="4654549501020883054">Ändra dagligen</translation>
 <translation id="4655868084888499342">Bilden har angetts som bakgrund</translation>
+<translation id="4660989616054030633">Generativ AI kan göra misstag, inklusive om personer, så dubbelkolla svaren</translation>
 <translation id="4661249927038176904">Surrealistisk</translation>
 <translation id="4661392828086261436">Den här uppdateringen tillhandahålls av enhetstillverkaren och har inte verifierats av Google</translation>
 <translation id="4664651912255946953">päls</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">Dölj sammanfattning</translation>
 <translation id="6075872808778243331">(Android) HTTP-latens</translation>
 <translation id="6078323886959318429">Lägg till genväg</translation>
+<translation id="6079693086494835199">Återställ för att kontrollera att standardstartsidan inte är en nätfiskewebbplats. Använd bara webbplatser som du litar på.</translation>
 <translation id="6091080061796993741">gul</translation>
 <translation id="6104112872696127344">Skanningen har avbrutits</translation>
 <translation id="6106186594183574873">Slutför genom att ange det gamla lösenordet</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">rödbrunt och rosa</translation>
 <translation id="6165508094623778733">Läs mer</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Återställ för att förhindra att andra använder din mikrofon eller kamera. Bevilja endast behörigheter till webbplatser som du litar på.</translation>
 <translation id="6188737759358894319">Skapades den <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Batterikapaciteten avtar genom användning</translation>
 <translation id="6189987971574353264">Spela upp</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">tona ned tangentbordet</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />-testet har avbrutits</translation>
 <translation id="631063167932043783">Appen Utforska</translation>
+<translation id="6314333689576767865">Din Chromebook har återställts till säkra standardinställningar. Du kan ändra detta när du vill i inställningarna.</translation>
 <translation id="6318437367327684789">för alltid</translation>
 <translation id="6319207335391420837">Uppdatera firmware på <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Slå på skärmsläckare</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">Feedback skickad</translation>
 <translation id="6866732840889595464">prästkrage</translation>
 <translation id="6871256179359663621">ljuslila</translation>
+<translation id="6887967050249348172">Tillägg har inaktiverats för att förhindra att inställningar ändras. Aktivera endast tillägg som du litar på.</translation>
 <translation id="6889786074662672253">Koppla inte från den externa enheten och stäng inte av datorn medan enheten startas om. Du kan minimera fönstret. Detta kan ta en stund och den externa enheten kanske inte fungerar under tiden.</translation>
 <translation id="6899460405678814458">Visa sammanfattning</translation>
 <translation id="6900701049656042631">Det här albumet innehåller inga foton. Du kan lägga till foton via <ph name="LINK" /></translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">Genvägen har återställts</translation>
 <translation id="725133483556299729">Välj e-postadress</translation>
 <translation id="7255187042098209569">rosa och lila</translation>
+<translation id="7267918995585557751">Återställ för att kontrollera att standardstartfliken inte är en nätfiskewebbplats. Använd bara webbplatser som du litar på.</translation>
 <translation id="7271000785316964275">klassicism</translation>
 <translation id="7271040990581020067">Skannern används för närvarande. Försök igen senare.</translation>
 <translation id="7271932918253517778">Kortkommandon med tangenterna på översta raden måste innehålla <ph name="META_KEY" />tangenten.</translation>
@@ -1486,6 +1493,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="7903695460270716054">Välj handplockade konstverk och bilder</translation>
 <translation id="7912005977894000746">Tillbaka till huvudsidan</translation>
 <translation id="7915220255123750251">Hantera APN-inställningar för nätverket. APN upprättar en anslutning mellan ett mobilnätverk och internet.</translation>
+<translation id="7915759923880480519">Återställ för att skydda data som skickas via dina nätverk. Använd endast nätverk du litar på.</translation>
 <translation id="7936303884198020182">Inga namnservrar hittades</translation>
 <translation id="7942349550061667556">Röd</translation>
 <translation id="7943235353293548836">Beständigt keepalive-intervall</translation>
@@ -1711,6 +1719,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="89945434909472341">en by</translation>
 <translation id="8997710128084572139">Enhetens batterinivå är <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="8998289560386111590">Inte tillgängligt på din enhet</translation>
+<translation id="9000871120886759611">Återställ för att säkerställa att du får information på önskat språk. Kontrollera att endast önskade språk används.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Frekvens</translation>
 <translation id="901834265349196618">e-post</translation>

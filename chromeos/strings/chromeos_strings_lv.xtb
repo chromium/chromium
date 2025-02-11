@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Apkopot</translation>
 <translation id="123124571410524056">Aizdomas par portālu</translation>
 <translation id="1232610416724362657">ūdenskritums</translation>
+<translation id="1238163879850290856">Atiestatiet, lai citi nevarētu piekļūt datiem. Izmantojiet tikai tās ievades metodes, kurām uzticaties.</translation>
 <translation id="1238612778414822719">HTTPS latentums</translation>
 <translation id="1252766349417594414">Kursorsvira</translation>
 <translation id="1270369111467284986">Aizdomas par caurlaides lapu</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">Labais pārslēgšanas taustiņš</translation>
 <translation id="4654549501020883054">Mainīt katru dienu</translation>
 <translation id="4655868084888499342">Attēls ir iestatīts kā fona tapete</translation>
+<translation id="4660989616054030633">Ģeneratīvais MI var pieļaut kļūdas, tostarp par personām, tāpēc pārbaudiet atbildes.</translation>
 <translation id="4661249927038176904">Sirreāls</translation>
 <translation id="4661392828086261436">Šo atjauninājumu nodrošina ierīces ražotājs, un uzņēmums Google to nav verificējis.</translation>
 <translation id="4664651912255946953">kažokāda</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">Paslēpt kopsavilkumu</translation>
 <translation id="6075872808778243331">(Android) HTTP latentums</translation>
 <translation id="6078323886959318429">Pievienot saīsni</translation>
+<translation id="6079693086494835199">Atiestatiet, lai nodrošinātu, ka noklusējuma sākumlapa nav pikšķerēšanas vietne. Izmantojiet tikai tās vietnes, kurām uzticaties.</translation>
 <translation id="6091080061796993741">dzeltena</translation>
 <translation id="6104112872696127344">Skenēšana ir atcelta</translation>
 <translation id="6106186594183574873">Lai pabeigtu, ievadiet savu iepriekšējo paroli</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">sarkanbrūna un rozā</translation>
 <translation id="6165508094623778733">Uzzināt vairāk</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Atiestatiet, lai neļautu citiem izmantot jūsu mikrofonu vai kameru. Piešķiriet atļaujas tikai tām vietnēm, kurām uzticaties.</translation>
 <translation id="6188737759358894319">Izveides datums: <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Lietošanas gaitā akumulatora kapacitāte samazinās</translation>
 <translation id="6189987971574353264">Atskaņot</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">tastatūras aptumšošana</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: pārbaude ir atcelta.</translation>
 <translation id="631063167932043783">Lietotne Izpēte</translation>
+<translation id="6314333689576767865">Jūsu Chromebook datorā tika atiestatītas drošas noklusējuma vērtības. Iestatījumos varat jebkurā brīdī veikt izmaiņas.</translation>
 <translation id="6318437367327684789">bezgalīgi</translation>
 <translation id="6319207335391420837">Ierīces “<ph name="DEVICE_NAME" />” aparātprogrammatūras atjaunināšana</translation>
 <translation id="6321407676395378991">Ieslēgt ekrānsaudzētāju</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">Atsauksme ir iesniegta</translation>
 <translation id="6866732840889595464">margrietiņa</translation>
 <translation id="6871256179359663621">gaiši violetā</translation>
+<translation id="6887967050249348172">Paplašinājumi ir atspējoti, lai novērstu iestatījumu izmaiņas. Ieslēdziet tikai tos paplašinājumus, kuriem uzticaties.</translation>
 <translation id="6889786074662672253">Kamēr notiek restartēšana, neatvienojiet šo ārējo ierīci un neizslēdziet datoru. Varat minimizēt šo logu. Restartēšana var ilgt dažas minūtes, un jūsu ārējā ierīce šajā laikā var nedarboties.</translation>
 <translation id="6899460405678814458">Rādīt kopsavilkumu</translation>
 <translation id="6900701049656042631">Šajā albumā nav fotoattēlu. Lai pievienotu fotoattēlus, pārejiet uz vietni <ph name="LINK" />.</translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">Īsinājumtaustiņš ir atjaunots</translation>
 <translation id="725133483556299729">Atlasiet e-pasta adresi</translation>
 <translation id="7255187042098209569">rozā un violeta</translation>
+<translation id="7267918995585557751">Atiestatiet, lai nodrošinātu, ka noklusējuma sākumlapa nav pikšķerēšanas vietne. Izmantojiet tikai tās vietnes, kurām uzticaties.</translation>
 <translation id="7271000785316964275">klasicisms</translation>
 <translation id="7271040990581020067">Skeneris pašlaik tiek izmantots. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="7271932918253517778">Īsinājumtaustiņiem, kuros tiek izmantots kāds no augšējās rindas taustiņiem, ir jāietver arī <ph name="META_KEY" /> taustiņš.</translation>
@@ -1486,6 +1493,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="7903695460270716054">Izvēlēties atlasītos mākslas darbus un attēlus</translation>
 <translation id="7912005977894000746">Atgriezties galvenajā lapā</translation>
 <translation id="7915220255123750251">Pārvaldiet tīkla APN iestatījumus. APN izveido savienojumu starp mobilo tīklu un internetu.</translation>
+<translation id="7915759923880480519">Atiestatiet, lai aizsargātu datus, kas tiek sūtīti, izmantojot jūsu tīklus. Izmantojiet tikai tos tīklus, kuriem uzticaties.</translation>
 <translation id="7936303884198020182">Netika atrasts neviens nosaukumu serveris</translation>
 <translation id="7942349550061667556">Sarkana</translation>
 <translation id="7943235353293548836">Pastāvīgs saites darbības pārbaudes ziņojuma intervāls</translation>
@@ -1711,6 +1719,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="89945434909472341">ciems</translation>
 <translation id="8997710128084572139">Ierīces akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="8998289560386111590">Nav pieejams jūsu ierīcē</translation>
+<translation id="9000871120886759611">Atiestatiet, lai nodrošinātu piekļuvi informācijai jūsu vēlamajā valodā. Pārbaudiet, vai tiek izmantotas tikai vēlamās valodas.</translation>
 <translation id="9003499805101629690">pica</translation>
 <translation id="9003704114456258138">Frekvence</translation>
 <translation id="901834265349196618">e-pasts</translation>

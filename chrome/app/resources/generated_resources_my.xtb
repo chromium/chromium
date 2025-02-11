@@ -2145,6 +2145,10 @@
 <translation id="2462332841984057083">Steam ကို လက်ရှိ ထည့်သွင်းလျက်ရှိသည်။ စနစ်ထည့်သွင်းပြီးသည်အထိ စောင့်ပါ။</translation>
 <translation id="2462724976360937186">လက်မှတ်ထုတ်ပေးမှု အာဏာပိုင် သော့ ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> ကို ထည့်ပြီးပြီ</translation>
+<translation id="2464075479326723132">Microsoft SharePoint နှင့် OneDrive တို့တွင် မကြာသေးမီက သင့်လုပ်ဆောင်ချက်ကို အလွယ်တကူ ပြန်ရယူနိုင်ရန်အတွက် အကြံပြုထားသောဖိုင်များကို မြင်နေရခြင်းဖြစ်သည်။
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        ကတ်မီနူးမှတစ်ဆင့် ဆက်တင်များကို စီမံနိုင်သည် (သို့) ‘Chrome ကို စိတ်ကြိုက်လုပ်ခြင်း’ တွင် နောက်ထပ်ရွေးစရာများ ကြည့်နိုင်သည်။</translation>
 <translation id="2464079411014186876">ရေခဲမုန့်</translation>
 <translation id="2467755475704469005">စက်မရှိပါ။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" />၊ အခြား <ph name="NUM_OTHER_MEMBERS" /> ဦးတို့နှင့်အတူ ‘တဘ်အုပ်စု’ တွင် ပါဝင်ခြင်း</translation>
@@ -4008,6 +4012,7 @@
 <translation id="3787434344076711519">ဘာသာပြန်ရန် စောင့်နေသည်</translation>
 <translation id="3788301286821743879">Koisk အပလီကေးရှင်း စတင်၍ မရပါ။</translation>
 <translation id="3788401245189148511">ဖြစ်နိုင်ခဲ့သည်မှာ:</translation>
+<translation id="3789432704615470433">SharePoint နှင့် OneDrive ဖိုင်များ</translation>
 <translation id="3789841737615482174">တပ်ဆင်ရန်</translation>
 <translation id="3790417903123637354">တစ်ခုခု မှားသွားသည်။ နောက်မှ ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="379082410132524484">သင်၏ကတ်သည် သက်တမ်းကုန်ဆုံးသွားပါပြီ</translation>
@@ -6197,6 +6202,7 @@
 <translation id="5360150013186312835">ကိရိယာဘားတွင် ပြရန်</translation>
 <translation id="5362741141255528695">ကိုယ်ပိုင် သော့ ဖိုင် ရွေးရန်</translation>
 <translation id="536278396489099088">ChromeOS စနစ်အခြေအနေနှင့် အစီရင်ခံစာများ</translation>
+<translation id="5362916924854054326">SharePoint နှင့် OneDrive ဖိုင်များကို မပြပါနှင့်</translation>
 <translation id="5363109466694494651">Powerwash နှင့် ယခင်အခြေအနေပြန်သွားရန်</translation>
 <translation id="5365881113273618889">သင်ရွေးထားသည့် ဖိုင်တွဲတွင် အရေးကြီးဖိုင်များ ပါဝင်သည်။ "<ph name="APP_NAME" />" အား ဤဖိုင်တွဲသို့ အမြဲဝင်ပြင်ခွင့် ပေးလိုသည်မှာ သေချာသလား။</translation>
 <translation id="536638840841140142">မရှိ</translation>
@@ -10777,6 +10783,10 @@
 <translation id="865936634714975126">စာမျက်နှာဖွင့်ခြင်းဆိုင်ရာ အမျိုးအစားများ ရွေးချယ်ရန် URL တွင် မေးမြန်းမှုကန့်သတ်ချက်ဘောင် ထည့်ပါ။ ဥပမာ- chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">အဆက်အသွယ် <ph name="FEATURE_NAME" /> ခု</translation>
 <translation id="8659609431223166673">ဝင်းဒိုးကို အောက်သို့ ရွှေ့လိုက်သည်</translation>
+<translation id="8660288500924118793">Outlook Calendar တွင် သင်၏နောက်အစီအစဉ်သို့ အလွယ်တကူ ရွှေ့ပေးနိုင်ရန်အတွက် သင့်ပြက္ခဒိန်ကို မြင်နေရခြင်းဖြစ်သည်။
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        ကတ်မီနူးမှတစ်ဆင့် ဆက်တင်များကို စီမံနိုင်သည် (သို့) ‘Chrome ကို စိတ်ကြိုက်လုပ်ခြင်း’ တွင် နောက်ထပ်ရွေးစရာများ ကြည့်နိုင်သည်။</translation>
 <translation id="8661290697478713397">ရုပ်&amp;ဖျက် ဝင်ဒိုး ထဲမှာ လင့်ကို ဖွင့်ရန်</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> ကွန်ရက်သို့ ချိတ်ခြင်း</translation>

@@ -2132,6 +2132,10 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2462332841984057083">Steam po konfigurohet tashmë. Prit që të përfundojë konfigurimi.</translation>
 <translation id="2462724976360937186">ID-ja e çelësit të Autoritetit të Certifikimit</translation>
 <translation id="2462752602710430187">U shtua <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Po shikon skedarët e sugjeruar për të të ndihmuar të kthehesh me lehtësi në aktivitetet e tua të fundit në Microsoft SharePoint dhe OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Mund t'i menaxhosh cilësimet nga menyja e kartave ose të shikosh opsione të tjera te "Personalizo Chrome".</translation>
 <translation id="2464079411014186876">Akullore</translation>
 <translation id="2467755475704469005">Nuk u zbulua asnjë pajisje. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Bashkohu në grupin e skedave me <ph name="OWNER_FIRST_NAME" /> dhe <ph name="NUM_OTHER_MEMBERS" /> të tjerë</translation>
@@ -3992,6 +3996,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3787434344076711519">Në pritje për përkthimin</translation>
 <translation id="3788301286821743879">Aplikacioni "kioskë" nuk mund të hapej.</translation>
 <translation id="3788401245189148511">Mund që:</translation>
+<translation id="3789432704615470433">Skedarët e SharePoint dhe OneDrive</translation>
 <translation id="3789841737615482174">Instalo</translation>
 <translation id="3790417903123637354">Ndodhi një gabim. Provo përsëri më vonë</translation>
 <translation id="379082410132524484">Karta jote ka skaduar</translation>
@@ -6180,6 +6185,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5360150013186312835">Shfaq në Shiritin e veglave</translation>
 <translation id="5362741141255528695">Përzgjidh skedarin e çelësit privat.</translation>
 <translation id="536278396489099088">Gjendja e sistemit dhe raportet e ChromeOS</translation>
+<translation id="5362916924854054326">Mos i shfaq skedarët e SharePoint dhe OneDrive</translation>
 <translation id="5363109466694494651">Powerwash dhe Rikthimi</translation>
 <translation id="5365881113273618889">Dosja që zgjodhe përmban skedarë delikatë. Je i sigurt që dëshiron t'i japësh "<ph name="APP_NAME" />" qasje të përhershme shkrimi në këtë dosje?</translation>
 <translation id="536638840841140142">Asnjë</translation>
@@ -10761,6 +10767,10 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="865936634714975126">Shto një parametër të kërkesës në URL për të zgjedhur llojet pas ngarkimit të faqes. Shembull: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Kontaktet e "<ph name="FEATURE_NAME" />"</translation>
 <translation id="8659609431223166673">Dritarja u zhvendos poshtë</translation>
+<translation id="8660288500924118793">Po shikon kalendarin tënd për të të ndihmuar të navigosh me lehtësi te ngjarja jote e radhës në Outlook Calendar.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Mund t'i menaxhosh cilësimet nga menyja e kartave ose të shikosh opsione të tjera te "Personalizo Chrome".</translation>
 <translation id="8661290697478713397">Hape lidhjen në një dritare të fshe&amp;htë</translation>
 <translation id="8662474268934425487">Identifikohu në <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Bashkohu në rrjetin <ph name="TYPE" /></translation>

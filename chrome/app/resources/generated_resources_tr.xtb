@@ -2132,6 +2132,10 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2462332841984057083">Steam zaten kuruluyor. Kurulumun tamamlanmasını bekleyin.</translation>
 <translation id="2462724976360937186">Sertifika Yetkilisi Anahtar Kimliği</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> eklendi</translation>
+<translation id="2464075479326723132">Microsoft SharePoint ve OneDrive'daki en son etkinliğinize kolayca geri dönmenizi sağlayacak önerilen dosyaları görüyorsunuz.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Ayarları kart menüsünden yönetebilir veya Chrome'u Özelleştir bölümünden daha fazla seçeneğe erişebilirsiniz.</translation>
 <translation id="2464079411014186876">Dondurma</translation>
 <translation id="2467755475704469005">Hiç cihaz algılanmadı. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" /> ve diğer <ph name="NUM_OTHER_MEMBERS" /> kullanıcının bulunduğu sekme grubuna katılın</translation>
@@ -3992,6 +3996,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3787434344076711519">Çeviri bekleniyor</translation>
 <translation id="3788301286821743879">Kiosk uygulaması başlatılamadı.</translation>
 <translation id="3788401245189148511">Şunları yapabilecek:</translation>
+<translation id="3789432704615470433">SharePoint ve OneDrive dosyaları</translation>
 <translation id="3789841737615482174">Yükle</translation>
 <translation id="3790417903123637354">Bir sorun oldu. Daha sonra tekrar deneyin</translation>
 <translation id="379082410132524484">Kartınızın süresi doldu</translation>
@@ -6181,6 +6186,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5360150013186312835">Araç Çubuğunda Göster</translation>
 <translation id="5362741141255528695">Özel anahtar dosyası seçin.</translation>
 <translation id="536278396489099088">ChromeOS Sistem Durumu ve Raporları</translation>
+<translation id="5362916924854054326">SharePoint ve OneDrive dosyalarını gösterme</translation>
 <translation id="5363109466694494651">Powerwash Uygula ve Geri Al</translation>
 <translation id="5365881113273618889">Seçtiğiniz klasör hassas dosyalar içeriyor. "<ph name="APP_NAME" />" uygulamasına bu klasör için kalıcı yazma erişimi vermek istediğinizden emin misiniz?</translation>
 <translation id="536638840841140142">Yok</translation>
@@ -10765,6 +10771,10 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="865936634714975126">Sayfa yüklenirken türleri seçmek için URL'ye bir sorgu parametresi ekleyin. Örnek: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> kişi</translation>
 <translation id="8659609431223166673">Pencere aşağı taşındı</translation>
+<translation id="8660288500924118793">Takviminiz, Outlook Takvim'de bir sonraki etkinliğinize kolayca gitmenize yardımcı olmak için gösteriliyor.
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        Ayarları kart menüsünden yönetebilir veya Chrome'u Özelleştir bölümünden daha fazla seçeneğe erişebilirsiniz.</translation>
 <translation id="8661290697478713397">Bağlantıyı Giz&amp;li Pencerede Aç</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> ile oturum aç</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> ağına katılın</translation>

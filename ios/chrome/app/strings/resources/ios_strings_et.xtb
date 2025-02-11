@@ -23,7 +23,7 @@
 <translation id="1066060668811609597">Sünkroonimise haldamine</translation>
 <translation id="1076421457278169141">Kood on skannitud</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} vaheleht}other{{count} vahelehte}}</translation>
-<translation id="1082554859195167538">Toote arvustused teile</translation>
+<translation id="1082554859195167538">Tootearvustused teile</translation>
 <translation id="1084365883616172403">Facebooki postitus on valmis.</translation>
 <translation id="1085677983426914530">Faili <ph name="FILENAME" /> ei saanud avada</translation>
 <translation id="1086468407802688066">Kontot <ph name="USER_EMAIL" /> haldab <ph name="HOSTED_DOMAIN" />, mis saab teatud teavet vaadata. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
@@ -1795,7 +1795,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8717864919010420084">Kopeeri link</translation>
 <translation id="8722229818691036192">Selles seadmes olevad kontod</translation>
 <translation id="8722649775263832315">Google Lensiga otsimiseks puudutage sisu või tõstke see esile</translation>
-<translation id="8723088494871522141">Peida valik „Toote arvustused teile”</translation>
+<translation id="8723088494871522141">Peida valik „Tootearvustused teile”</translation>
 <translation id="8725066075913043281">Proovi uuesti</translation>
 <translation id="8728922029615312208">Sulge kõik</translation>
 <translation id="8730621377337864115">Valmis</translation>

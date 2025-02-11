@@ -2144,6 +2144,10 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2462332841984057083">Programu ya Steam inawekewa mipangilio. Subiri ikamilishe kusanikinisha.</translation>
 <translation id="2462724976360937186">Kitambulisho cha Kitufe cha Mamlaka ya Uthibitishaji</translation>
 <translation id="2462752602710430187">Imeongeza <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Unaona faili unazopendekezewa ili kukusaidia kurejea kwa urahisi kwenye shughuli zako za hivi majuzi zaidi katika Microsoft SharePoint na OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Unaweza kudhibiti mipangilio kwenye menyu ya kadi au uangalie chaguo zaidi katika kipengele cha Weka Mipangilio ya Chrome Upendavyo.</translation>
 <translation id="2464079411014186876">Aiskrimu</translation>
 <translation id="2467755475704469005">Hakuna kifaa kilichotambuliwa. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Jiunge na Kikundi cha Vichupo kilicho na <ph name="OWNER_FIRST_NAME" /> na Wengine <ph name="NUM_OTHER_MEMBERS" /></translation>
@@ -4006,6 +4010,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3787434344076711519">Inasubiri kukamilisha tafsiri</translation>
 <translation id="3788301286821743879">Imeshindwa kufungua programu inayotumia skrini nzima</translation>
 <translation id="3788401245189148511">Ingeweza:</translation>
+<translation id="3789432704615470433">Faili za SharePoint na OneDrive</translation>
 <translation id="3789841737615482174">Sakinisha</translation>
 <translation id="3790417903123637354">Hitilafu fulani imetokea. Jaribu tena baadaye</translation>
 <translation id="379082410132524484">Muda wa matumizi wa kadi yako umekwisha</translation>
@@ -6194,6 +6199,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5360150013186312835">Onyesha katika Upau wa Vidhibiti</translation>
 <translation id="5362741141255528695">Chagua faili ya ufunguo binafsi.</translation>
 <translation id="536278396489099088">Hali na Ripoti za Mfumo wa ChromeOS</translation>
+<translation id="5362916924854054326">Usionyeshe faili za SharePoint na OneDrive</translation>
 <translation id="5363109466694494651">Powerwash na Urejeshe nakala ya awali</translation>
 <translation id="5365881113273618889">Folda uliyochagua ina faili nyeti. Je, una uhakika, ungependa kuipa "<ph name="APP_NAME" />" idhini ya kuandika kwenye folda hii?</translation>
 <translation id="536638840841140142">Hamna</translation>
@@ -10779,6 +10785,10 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="865936634714975126">Weka kigezo cha hoja kwenye URL ili uchague aina kwenye upakiaji wa ukurasa. Mfano: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Anwani za <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Dirisha limesogezwa chini</translation>
+<translation id="8660288500924118793">Unaona kalenda yako ili kukusaidia uende kwa urahisi kwenye tukio lako linalofuata katika Outlook Calendar.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Unaweza kudhibiti mipangilio kwenye menyu ya kadi au uangalie chaguo zaidi katika kipengele cha Weka Mipangilio ya Chrome Upendavyo.</translation>
 <translation id="8661290697478713397">Fungua Kiungo katika Dirisha &amp;Fiche</translation>
 <translation id="8662474268934425487">Ingia katika akaunti ya <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Jiunge na mtandao wa <ph name="TYPE" /></translation>

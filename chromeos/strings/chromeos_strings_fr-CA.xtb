@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Résumer</translation>
 <translation id="123124571410524056">Un portail semble activé</translation>
 <translation id="1232610416724362657">chute d'eau</translation>
+<translation id="1238163879850290856">Effectuez une réinitialisation pour empêcher d'autres personnes d'accéder aux données. Utilisez uniquement des méthodes d'entrée auxquelles vous faites confiance.</translation>
 <translation id="1238612778414822719">Latence HTTPS</translation>
 <translation id="1252766349417594414">Manche</translation>
 <translation id="1270369111467284986">Un portail captif semble être présent</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">Majuscule droite</translation>
 <translation id="4654549501020883054">Changer tous les jours</translation>
 <translation id="4655868084888499342">Image définie comme fond d'écran</translation>
+<translation id="4660989616054030633">L'IA générative peut se tromper, même à propos de personnes. Veuillez donc vérifier ses réponses.</translation>
 <translation id="4661249927038176904">Surréaliste</translation>
 <translation id="4661392828086261436">Cette mise à jour est fournie par le fabricant de l'appareil et n'a pas été vérifiée par Google</translation>
 <translation id="4664651912255946953">fourrure</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">Masquer le résumé</translation>
 <translation id="6075872808778243331">Latence HTTP (Android)</translation>
 <translation id="6078323886959318429">Ajouter un raccourci</translation>
+<translation id="6079693086494835199">Effectuez une réinitialisation pour vous assurer que la page d'accueil par défaut n'est pas un site d'hameçonnage. Utilisez uniquement des sites Web auxquels vous faites confiance.</translation>
 <translation id="6091080061796993741">jaune</translation>
 <translation id="6104112872696127344">La numérisation a été annulée</translation>
 <translation id="6106186594183574873">Pour terminer cette opération, entrez votre ancien mot de passe</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">bordeaux et rose</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Effectuez une réinitialisation pour empêcher d'autres personnes d'utiliser votre microphone ou votre caméra. Accordez des autorisations uniquement aux sites auxquels vous faites confiance.</translation>
 <translation id="6188737759358894319">Créé le <ph name="DATE" /></translation>
 <translation id="6189418609903030344">La capacité des piles décline avec l'usage</translation>
 <translation id="6189987971574353264">Lire</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">assombrissement du clavier</translation>
 <translation id="6302401976930124515">Le test <ph name="TEST_NAME" /> a été annulé</translation>
 <translation id="631063167932043783">Application Explorer</translation>
+<translation id="6314333689576767865">Votre Chromebook a été réinitialisé à des paramètres sécuritaires par défaut. Vous pouvez modifier cela en tout temps dans le menu Paramètres.</translation>
 <translation id="6318437367327684789">indéfiniment</translation>
 <translation id="6319207335391420837">Mettre à jour le micrologiciel de <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Activer l'écran de veille</translation>
@@ -1250,6 +1255,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="6862416241246624313">Commentaires envoyés</translation>
 <translation id="6866732840889595464">marguerite</translation>
 <translation id="6871256179359663621">mauve clair</translation>
+<translation id="6887967050249348172">Extensions désactivées pour empêcher la modification des paramètres. Activez uniquement les extensions auxquelles vous faites confiance.</translation>
 <translation id="6889786074662672253">Pendant le redémarrage, ne débranchez pas cet appareil externe et n'éteignez pas votre ordinateur. Vous pouvez réduire cette fenêtre. Cela peut prendre quelques minutes, et votre appareil externe peut ne pas fonctionner pendant ce temps.</translation>
 <translation id="6899460405678814458">Afficher le résumé</translation>
 <translation id="6900701049656042631">Cet album ne contient aucune photo. Pour ajouter des photos, accédez au site <ph name="LINK" /></translation>
@@ -1340,6 +1346,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="7233782086689993269">Raccourci restauré</translation>
 <translation id="725133483556299729">Sélectionner un courriel</translation>
 <translation id="7255187042098209569">rose et violet</translation>
+<translation id="7267918995585557751">Effectuez une réinitialisation pour vous assurer que la page de démarrage par défaut n'est pas un site d'hameçonnage. Utilisez uniquement des sites Web auxquels vous faites confiance.</translation>
 <translation id="7271000785316964275">classicisme</translation>
 <translation id="7271040990581020067">Le numériseur est en cours d'utilisation. Réessayez plus tard.</translation>
 <translation id="7271932918253517778">Un raccourci comprenant les touches de la rangée supérieure doit inclure la touche de <ph name="META_KEY" />.</translation>
@@ -1486,6 +1493,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7903695460270716054">Choisir parmi une sélection d'illustrations et d'images</translation>
 <translation id="7912005977894000746">Retour à la page principale</translation>
 <translation id="7915220255123750251">Gérez les paramètres de NPA du réseau. Les NPA établissent une connexion entre un réseau cellulaire et Internet.</translation>
+<translation id="7915759923880480519">Effectuez une réinitialisation pour protéger les données transmises par l'intermédiaire de vos réseaux. Utilisez uniquement des réseaux auxquels vous faites confiance.</translation>
 <translation id="7936303884198020182">Aucun serveur de nom n'a été trouvé</translation>
 <translation id="7942349550061667556">Rouge</translation>
 <translation id="7943235353293548836">Intervalle de connexion persistante</translation>
@@ -1711,6 +1719,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="89945434909472341">village</translation>
 <translation id="8997710128084572139">Le niveau de la pile de l'appareil est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="8998289560386111590">Non accessible sur votre appareil</translation>
+<translation id="9000871120886759611">Effectuez une réinitialisation pour vous assurer de pouvoir accéder aux informations dans votre langue préférée. Vérifiez que seules les langues préférées sont utilisées.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Fréquence</translation>
 <translation id="901834265349196618">courriel</translation>

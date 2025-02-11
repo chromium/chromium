@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Shrnout</translation>
 <translation id="123124571410524056">Podezření na portál</translation>
 <translation id="1232610416724362657">vodopád</translation>
+<translation id="1238163879850290856">Pokud ostatním chcete zabránit v přístupu k datům, resetujte nastavení. Používejte jen metody zadávání, kterým důvěřujete.</translation>
 <translation id="1238612778414822719">Latence HTTPS</translation>
 <translation id="1252766349417594414">Joystick</translation>
 <translation id="1270369111467284986">Podezření na captive portál</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">Pravý Shift</translation>
 <translation id="4654549501020883054">Měnit denně</translation>
 <translation id="4655868084888499342">Obrázek nastaven jako tapeta</translation>
+<translation id="4660989616054030633">Generativní umělá inteligence může dělat chyby, a to i v případě lidí, proto si odpovědi kontrolujte</translation>
 <translation id="4661249927038176904">Fantaskní</translation>
 <translation id="4661392828086261436">Tuto aktualizaci poskytuje výrobce zařízení a nebyla ověřena společností Google</translation>
 <translation id="4664651912255946953">kožešina</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">Skrýt souhrn</translation>
 <translation id="6075872808778243331">(Android) Latence požadavků HTTP</translation>
 <translation id="6078323886959318429">Přidat zástupce</translation>
+<translation id="6079693086494835199">Resetujte domovskou stránku, abyste měli jistotu, že se nejedná o phishingový web. Používejte jen weby, kterým důvěřujete.</translation>
 <translation id="6091080061796993741">žlutá</translation>
 <translation id="6104112872696127344">Skenování bylo zrušeno</translation>
 <translation id="6106186594183574873">Chcete-li akci dokončit, zadejte své staré heslo</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">kaštanová a růžová</translation>
 <translation id="6165508094623778733">Další informace</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Resetujte nastavení, aby ostatní neměli přístup k vašemu mikrofonu a kameře. Oprávnění udělujte jen webům, kterým důvěřujete.</translation>
 <translation id="6188737759358894319">Vytvořeno <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Kapacita baterie se používáním snižuje</translation>
 <translation id="6189987971574353264">Přehrát</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">stmívání klávesnice</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> byl zrušen</translation>
 <translation id="631063167932043783">Prozkoumat aplikaci</translation>
+<translation id="6314333689576767865">Chromebook byl resetován na bezpečná výchozí nastavení. Změny můžete provést kdykoli v Nastavení.</translation>
 <translation id="6318437367327684789">navždy</translation>
 <translation id="6319207335391420837">Aktualizace firmwaru v zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Zapnout spořič obrazovky</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">Zpětná vazba byla odeslána</translation>
 <translation id="6866732840889595464">sedmikráska</translation>
 <translation id="6871256179359663621">světle fialová</translation>
+<translation id="6887967050249348172">Aby se zabránilo změnám nastavení, jsou rozšíření zakázána. Zapněte jen rozšíření, kterým důvěřujete.</translation>
 <translation id="6889786074662672253">Během restartování neodpojujte externí zařízení ani nevypínejte počítač. Toto okno můžete minimalizovat. Aktualizace může trvat několik minut a externí zařízení po tuto dobu nemusí fungovat.</translation>
 <translation id="6899460405678814458">Zobrazit souhrn</translation>
 <translation id="6900701049656042631">Toto album neobsahuje žádné fotografie. Fotky můžete přidat na adrese <ph name="LINK" />.</translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">Zkratka byla obnovena</translation>
 <translation id="725133483556299729">Vyberte e-mail</translation>
 <translation id="7255187042098209569">růžová a fialová</translation>
+<translation id="7267918995585557751">Resetujte výchozí počáteční stránku, abyste měli jistotu, že se nejedná o phishingový web. Používejte jen weby, kterým důvěřujete.</translation>
 <translation id="7271000785316964275">klasicismus</translation>
 <translation id="7271040990581020067">Skener je aktuálně používán. Zkuste to znovu později.</translation>
 <translation id="7271932918253517778">Zkratka s klávesami z horní řady musí zahrnovat klávesu <ph name="META_KEY" />.</translation>
@@ -1486,6 +1493,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="7903695460270716054">Vybrat vybraná umělecká díla a obrázky</translation>
 <translation id="7912005977894000746">Zpět na hlavní stránku</translation>
 <translation id="7915220255123750251">Spravovat nastavení názvů přístupových bodů sítě. Názvy přístupových bodů umožňují navázat spojení mezi mobilní sítí a internetem.</translation>
+<translation id="7915759923880480519">Resetujte nastavení, abyste ochránili data odesílaná prostřednictvím sítí. Používejte jen sítě, kterým důvěřujete.</translation>
 <translation id="7936303884198020182">Nebyly nalezeny žádné názvové servery</translation>
 <translation id="7942349550061667556">Červená</translation>
 <translation id="7943235353293548836">Trvalý interval keepalive</translation>
@@ -1711,6 +1719,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="89945434909472341">vesnice</translation>
 <translation id="8997710128084572139">Stav baterie zařízení je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="8998289560386111590">Na vašem zařízení není k dispozici</translation>
+<translation id="9000871120886759611">Pokud chcete mít přístup k informacím ve svém preferovaném jazyce, resetujte nastavení. Zajistěte, aby se používaly jen preferované jazyky.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Frekvence</translation>
 <translation id="901834265349196618">e-mail</translation>

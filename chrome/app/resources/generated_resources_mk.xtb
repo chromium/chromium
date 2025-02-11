@@ -2148,6 +2148,10 @@
 <translation id="2462332841984057083">Steam веќе се поставува. Почекајте да заврши поставувањето.</translation>
 <translation id="2462724976360937186">ИД на клуч на орган за сертифицирање</translation>
 <translation id="2462752602710430187">Додаден е <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Гледате предложени датотеки за да ви помогнат лесно да се вратите на вашата најнеодамнешна активност во Microsoft SharePoint и OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Може да управувате со поставките од менито со картички или да видите повеќе опции во „Приспособете го Chrome“.</translation>
 <translation id="2464079411014186876">Сладолед</translation>
 <translation id="2467755475704469005">Не е откриен уред. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Придружете се во групата картички со <ph name="OWNER_FIRST_NAME" /> и уште <ph name="NUM_OTHER_MEMBERS" /></translation>
@@ -4010,6 +4014,7 @@
 <translation id="3787434344076711519">Се чека превод</translation>
 <translation id="3788301286821743879">Апликацијата Kiosk не може да се стартува.</translation>
 <translation id="3788401245189148511">Може да:</translation>
+<translation id="3789432704615470433">Датотеки на SharePoint и OneDrive</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
 <translation id="3790417903123637354">Нешто тргна наопаку. Обидете се повторно подоцна</translation>
 <translation id="379082410132524484">Картичката ви е истечена</translation>
@@ -6200,6 +6205,7 @@
 <translation id="5360150013186312835">Прикажи во алатник</translation>
 <translation id="5362741141255528695">Избери датотека со приватен клуч.</translation>
 <translation id="536278396489099088">Состојба на системот и извештаи на ChromeOS</translation>
+<translation id="5362916924854054326">Не прикажувај ги датотеките на SharePoint и OneDrive</translation>
 <translation id="5363109466694494651">Фабрички ресетирај и врати</translation>
 <translation id="5365881113273618889">Папката што ја избравте содржи чувствителни датотеки. Дали сигурно сакате да ѝ доделите на <ph name="APP_NAME" /> постојан пристап за пишување во оваа папка?</translation>
 <translation id="536638840841140142">Нема</translation>
@@ -10787,6 +10793,10 @@
 <translation id="865936634714975126">Додајте параметар на барање во URL-адресата за да ги изберете типовите вчитувања на страницата. Пример: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Контакти за <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Прозорецот е преместен надолу</translation>
+<translation id="8660288500924118793">Го гледате вашиот календар за да ви помогне полесно да стигнете до вашиот следен настан во Outlook Calendar.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Може да управувате со поставките од менито со картички или да видите повеќе опции во „Приспособете го Chrome“.</translation>
 <translation id="8661290697478713397">Отвори ја врската во инко&amp;гнито прозорец</translation>
 <translation id="8662474268934425487">Најавете се на <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Придружување на мрежа <ph name="TYPE" /></translation>

@@ -2146,6 +2146,10 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2462332841984057083">A Steam beállítása már folyamatban van. Várja meg a beállítás befejeződését.</translation>
 <translation id="2462724976360937186">Tanúsítványkibocsátó kulcsazonosítója</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> hozzáadva</translation>
+<translation id="2464075479326723132">Itt jelennek meg a javasolt fájlok, amelyek segítségével könnyen térhet vissza legutóbbi tevékenységeihez a Microsoft SharePoint és a OneDrive szolgáltatásban.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        A beállításokat a kártyamenüben kezelheti, illetve megtekinthet további lehetőségeket A Chrome személyre szabása szakaszban.</translation>
 <translation id="2464079411014186876">Jégkrém</translation>
 <translation id="2467755475704469005">Nem található eszköz. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="2467933879189426525">Csatlakozás <ph name="OWNER_FIRST_NAME" /> további <ph name="NUM_OTHER_MEMBERS" /> főt tartalmazó lapcsoportjához</translation>
@@ -4008,6 +4012,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3787434344076711519">Várakozás a fordításra…</translation>
 <translation id="3788301286821743879">A kioszkalkalmazást nem lehetett elindítani.</translation>
 <translation id="3788401245189148511">A következőkre lehet képes:</translation>
+<translation id="3789432704615470433">SharePoint- és OneDrive-fájlok</translation>
 <translation id="3789841737615482174">Telepítés</translation>
 <translation id="3790417903123637354">Hiba történt. Próbálja újra később</translation>
 <translation id="379082410132524484">A kártya lejárt</translation>
@@ -6197,6 +6202,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5360150013186312835">Megjelenítés az eszköztáron</translation>
 <translation id="5362741141255528695">Válasszon ki privátkulcs-fájlt.</translation>
 <translation id="536278396489099088">A ChromeOS rendszerállapota és jelentései</translation>
+<translation id="5362916924854054326">Ne jelenjenek meg a SharePoint- és OneDrive-fájlok</translation>
 <translation id="5363109466694494651">Powerwash művelet és visszaállítás</translation>
 <translation id="5365881113273618889">A kiválasztott mappa bizalmas fájlokat tartalmaz. Biztosan állandó írási hozzáférést szeretne adni a(z) „<ph name="APP_NAME" />” alkalmazásnak a mappához?</translation>
 <translation id="536638840841140142">Nincs</translation>
@@ -10781,6 +10787,10 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="865936634714975126">Adjon meg lekérdezési paramétert az URL-címben az oldalbetöltési típusok kiválasztásához. Példa: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" />-névjegyek</translation>
 <translation id="8659609431223166673">Ablak lefelé mozgatva</translation>
+<translation id="8660288500924118793">Azért van szem előtt a naptára, hogy könnyedén el tudjon navigálni a következő eseményéhez az Outlook-naptárban.
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        A beállításokat a kártyamenüben kezelheti, illetve megtekinthet további lehetőségeket A Chrome személyre szabása szakaszban.</translation>
 <translation id="8661290697478713397">Link megnyitása inko&amp;gnitóablakban</translation>
 <translation id="8662474268934425487">Bejelentkezés ide: <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Csatlakozás <ph name="TYPE" />-hálózatra</translation>

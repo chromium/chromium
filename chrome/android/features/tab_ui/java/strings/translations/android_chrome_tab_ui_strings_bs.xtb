@@ -30,6 +30,7 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica "<ph name="TITLE
 <translation id="2118649612461486615">Informacije o trgovini</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zatvorene kartice i grupe možete ponovo otvoriti iz odjeljaka Nedavne kartice i Grupe kartica. Anonimna kartica neće biti dostupna.}one{Zatvorene kartice i grupe možete ponovo otvoriti iz odjeljaka Nedavne kartice i Grupe kartica. # anonimna kartica neće biti dostupna.}few{Zatvorene kartice i grupe možete ponovo otvoriti iz odjeljaka Nedavne kartice i Grupe kartica. # anonimne kartice neće biti dostupne.}other{Zatvorene kartice i grupe možete ponovo otvoriti iz odjeljaka Nedavne kartice i Grupe kartica. # anonimnih kartica neće biti dostupno.}}</translation>
 <translation id="2162620598375156287">Sada je <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2242907120821295124">Grupa kartica <ph name="TAB_GROUP_NAME" /> više nije dostupna</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Razgrupiši karticu}one{Razgrupiši kartice}few{Razgrupiši kartice}other{Razgrupiši kartice}}</translation>
 <translation id="2271452184061378400">Grupe kartica se pohranjuju ovdje</translation>
 <translation id="2277224997687551299">Uredi naziv grupe</translation>
@@ -87,6 +88,7 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica "<ph name="TITLE
 <translation id="4783638485675352219">Dijelite titlove i URL-ove otvorenih kartica s ovog uređaja s operativnim sistemom</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenzija)}one{(<ph name="REVIEWS_COUNT_MANY" /> recenzija)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenzije)}other{(<ph name="REVIEWS_COUNT_MANY" /> recenzija)}}</translation>
 <translation id="4850886885716139402">Prikaz</translation>
+<translation id="4861611890274104875">Odbacite karticu.</translation>
 <translation id="4861953997778766866">Svako može unositi promjene u vezi s dijeljenim grupama kartica</translation>
 <translation id="4870911314065352661">Zatvoriti sve kartice?</translation>
 <translation id="4871719318659334896">Zatvori grupu</translation>

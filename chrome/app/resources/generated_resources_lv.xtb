@@ -2136,6 +2136,10 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2462332841984057083">Lietotne Steam jau tiek iestatīta. Uzgaidiet, līdz iestatīšana ir pabeigta.</translation>
 <translation id="2462724976360937186">Sertifikāta izdevējiestādes atslēgas ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> pievienots</translation>
+<translation id="2464075479326723132">Jums tiek rādīti ieteiktie faili, lai jūs varētu ērti atgriezties pie savām pēdējām darbībām pakalpojumos Microsoft SharePoint un OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Varat pārvaldīt iestatījumus, izmantojot kartītes izvēlni, vai skatīt citas opcijas sadaļā “Chrome pielāgošana”.</translation>
 <translation id="2464079411014186876">Saldējums</translation>
 <translation id="2467755475704469005">Netika atrasta neviena ierīce. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="2467933879189426525">Pievienošanās ciļņu grupai, ko izmanto <ph name="OWNER_FIRST_NAME" /> un <ph name="NUM_OTHER_MEMBERS" /> citi dalībnieki</translation>
@@ -3996,6 +4000,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3787434344076711519">Tiek gaidīts tulkojums</translation>
 <translation id="3788301286821743879">Diemžēl kioska lietojumprogrammu nevarēja palaist.</translation>
 <translation id="3788401245189148511">Varētu:</translation>
+<translation id="3789432704615470433">SharePoint un OneDrive faili</translation>
 <translation id="3789841737615482174">Instalēt</translation>
 <translation id="3790417903123637354">Radās kļūda. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="379082410132524484">Kartes derīguma termiņš ir beidzies</translation>
@@ -6185,6 +6190,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5360150013186312835">Rādīšana rīkjoslā</translation>
 <translation id="5362741141255528695">Atlasiet privātās atslēgas failu.</translation>
 <translation id="536278396489099088">ChromeOS sistēmas statuss un pārskati</translation>
+<translation id="5362916924854054326">Nerādīt SharePoint un OneDrive failus</translation>
 <translation id="5363109466694494651">Powerwash un atjaunošana</translation>
 <translation id="5365881113273618889">Atlasītajā mapē ir iekļauti sensitīvi faili. Vai tiešām vēlaties piešķirt lietotnei <ph name="APP_NAME" /> pastāvīgu rakstīšanas piekļuvi šai mapei?</translation>
 <translation id="536638840841140142">Nav</translation>
@@ -10769,6 +10775,10 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="865936634714975126">Pievienojiet vietrādim URL vaicājuma parametru, lai, ielādējot lapu, atlasītu veidus. Piemērs: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Kontaktpersonas funkcijā <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Logs ir pārvietots uz leju</translation>
+<translation id="8660288500924118793">Kalendārs tiek rādīts, lai jūs varētu ērti pāriet uz nākamo pasākumu Outlook kalendārā.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Varat pārvaldīt iestatījumus, izmantojot kartītes izvēlni, vai skatīt citas opcijas sadaļā “Chrome pielāgošana”.</translation>
 <translation id="8661290697478713397">Atvērt saiti inko&amp;gnito režīma logā</translation>
 <translation id="8662474268934425487">Pierakstīšanās vietnē <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Pievienošanās <ph name="TYPE" /> tīklam</translation>

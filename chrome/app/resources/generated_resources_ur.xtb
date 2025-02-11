@@ -2136,6 +2136,10 @@
 <translation id="2462332841984057083">‏Steam کو پہلے سے ہی سیٹ اپ کیا جا رہا ہے۔ سیٹ اپ مکمل ہونے کا انتظار کریں۔</translation>
 <translation id="2462724976360937186">‏سرٹیفکیشن اتھارٹی کلید URL</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> کو شامل کر دیا گیا</translation>
+<translation id="2464075479326723132">‏‫SharePoint اور OneDrive میں اپنی حالیہ ترین سرگرمی پر آسانی سے واپس جانے میں آپ کی مدد کرنے کیلئے، آپ تجویز کردہ فائلز دیکھ رہے ہیں۔
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        آپ کارڈ مینو سے ترتیبات کا نظم کر سکتے یا 'Chrome کو حسب ضرورت بنائیں' میں مزید اختیارات دیکھ سکتے ہیں۔</translation>
 <translation id="2464079411014186876">آئس کریم</translation>
 <translation id="2467755475704469005">کسی آلے کا پتہ نہیں چلا۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">‫<ph name="OWNER_FIRST_NAME" /> اور <ph name="NUM_OTHER_MEMBERS" /> دیگر کے ساتھ ٹیب گروپ میں شامل ہوں</translation>
@@ -3996,6 +4000,7 @@
 <translation id="3787434344076711519">ترجمہ کا منتظر</translation>
 <translation id="3788301286821743879">کیوسک ایپلیکیشن شروع نہیں کی جا سکی۔</translation>
 <translation id="3788401245189148511">اس کی وجہ سے ہو سکتا ہے:</translation>
+<translation id="3789432704615470433">‏‫SharePoint اور OneDrive فائلز</translation>
 <translation id="3789841737615482174">انسٹال کریں</translation>
 <translation id="3790417903123637354">کچھ غلط ہو گیا۔ بعد میں دوبارہ کوشش کریں</translation>
 <translation id="379082410132524484">آپ کے کارڈ کی معیاد ختم ہو گئی ہے</translation>
@@ -6184,6 +6189,7 @@
 <translation id="5360150013186312835">ٹول بار میں دکھائیں</translation>
 <translation id="5362741141255528695">نجی کلید والی فائل منتخب کریں۔</translation>
 <translation id="536278396489099088">‏ChromeOS سسٹم کی حالت اور رپورٹس</translation>
+<translation id="5362916924854054326">‏‫SharePoint اور OneDrive فائلز نہ دکھائیں</translation>
 <translation id="5363109466694494651">پاور واش کریں اور لوٹیں</translation>
 <translation id="5365881113273618889">آپ کے منتخب کردہ فولڈر میں حساس فائلز شامل ہیں۔ کیا آپ واقعی "<ph name="APP_NAME" />" کو اس فولڈر میں لکھنے کی مستقل رسائی دینا چاہتے ہیں؟</translation>
 <translation id="536638840841140142">کوئی نہیں</translation>
@@ -10765,6 +10771,10 @@
 <translation id="865936634714975126">‏صفحہ کی لوڈنگ پر اقسام منتخب کرنے کے لیے URL میں استفسار پیرامیٹر شامل کریں۔ مثال: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> رابطے</translation>
 <translation id="8659609431223166673">ونڈو نیچے کی طرف چلی گئی</translation>
+<translation id="8660288500924118793">‏‫Outlook کیلنڈر میں اپنے اگلے ایونٹ پر آسانی سے نیویگیٹ کرنے میں آپ کی مدد کرنے کیلئے، آپ اپنا کیلنڈر دیکھ رہے ہیں۔
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        آپ کارڈ مینو سے ترتیبات کا نظم کر سکتے یا 'Chrome کو حسب ضرورت بنائیں' میں مزید اختیارات دیکھ سکتے ہیں۔</translation>
 <translation id="8661290697478713397">لنک پوشید&amp;گی ونڈو میں کھولیں</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> میں سائن ان کریں</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> نیٹ ورک میں شامل ہوں</translation>

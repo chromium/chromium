@@ -2136,6 +2136,10 @@
 <translation id="2462332841984057083">Steam-ն արդեն կարգավորվում է։ Սպասեք, մինչև կարգավորումն ավարտվի։</translation>
 <translation id="2462724976360937186">Հավաստագրման կենտրոնի բանալու ID</translation>
 <translation id="2462752602710430187">Ավելացվեց <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Առաջարկվող ֆայլերը կօգնեն ձեզ հեշտությամբ վերադառնալ ձեր վերջին գործողություններին Microsoft SharePoint-ում և OneDrive-ում։
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Դուք կարող եք կառավարել կարգավորումները քարտի ընտրացանկից կամ դիտել լրացուցիչ ընտրանքները «Կարգավորել Chrome-ը» բաժնում։</translation>
 <translation id="2464079411014186876">Պաղպաղակ</translation>
 <translation id="2467755475704469005">Սարքեր չեն հայտնաբերվել։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Միացեք ներդիրների խմբին, որում <ph name="OWNER_FIRST_NAME" />-ն է ու ևս <ph name="NUM_OTHER_MEMBERS" /> օգտատեր</translation>
@@ -3994,6 +3998,7 @@
 <translation id="3787434344076711519">Թարգմանությունն ընթացքի մեջ է</translation>
 <translation id="3788301286821743879">Չհաջողվեց գործարկել կրպակ-հավելվածը։</translation>
 <translation id="3788401245189148511">Կարող է՝</translation>
+<translation id="3789432704615470433">SharePoint և OneDrive ֆայլեր</translation>
 <translation id="3789841737615482174">Տեղադրել</translation>
 <translation id="3790417903123637354">Սխալ առաջացավ: Փորձեք ավելի ուշ։</translation>
 <translation id="379082410132524484">Քարտի գործողության ժամկետը սպառվել է</translation>
@@ -6183,6 +6188,7 @@
 <translation id="5360150013186312835">Ցույց տալ գործիքագոտիում</translation>
 <translation id="5362741141255528695">Ընտրեք մասնավոր բանալու ֆայլը:</translation>
 <translation id="536278396489099088">ChromeOS համակարգի վիճակը և հաշվետվությունները</translation>
+<translation id="5362916924854054326">Ցույց չտալ SharePoint և OneDrive ֆայլերը</translation>
 <translation id="5363109466694494651">Powerwash և վերադարձ</translation>
 <translation id="5365881113273618889">Ձեր ընտրած պանակը պարունակում է վտանգավոր ֆայլեր: Ուզո՞ւմ եք <ph name="APP_NAME" /> հավելվածին այս պանակ մշտական մուտքի իրավունք տալ:</translation>
 <translation id="536638840841140142">Առանց լուսանցքի</translation>
@@ -10763,6 +10769,10 @@
 <translation id="865936634714975126">Էջի բեռնման տեսակներն ընտրելու համար URL-ում ավելացրեք հարցման պարամետր։ Օրինակ՝ chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Կոնտակտները, որոնք օգտագործում են «<ph name="FEATURE_NAME" />» գործառույթը</translation>
 <translation id="8659609431223166673">Պատուհանը տեղափոխվեց ներքև</translation>
+<translation id="8660288500924118793">Օրացույցի պատուհանը կօգնի ձեզ հեշտությամբ անցնել ձեր հաջորդ միջոցառմանը Outlook Calendar-ում։
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Դուք կարող եք կառավարել կարգավորումները քարտի ընտրացանկից կամ դիտել լրացուցիչ ընտրանքները «Կարգավորել Chrome-ը» բաժնում։</translation>
 <translation id="8661290697478713397">Բացել հղումը ինկոգ&amp;նիտո պատուհանով</translation>
 <translation id="8662474268934425487">Մուտք գործեք <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Նոր <ph name="TYPE" /> ցանց</translation>

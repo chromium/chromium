@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Summarise</translation>
 <translation id="123124571410524056">Portal suspected</translation>
 <translation id="1232610416724362657">waterfall</translation>
+<translation id="1238163879850290856">Reset to prevent others from accessing data. Only use input methods that you trust.</translation>
 <translation id="1238612778414822719">HTTPS latency</translation>
 <translation id="1252766349417594414">Joystick</translation>
 <translation id="1270369111467284986">Captive portal suspected</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">Right shift</translation>
 <translation id="4654549501020883054">Change daily</translation>
 <translation id="4655868084888499342">Image set as wallpaper</translation>
+<translation id="4660989616054030633">Generative AI can make mistakes, including about people, so double-check it</translation>
 <translation id="4661249927038176904">Surreal</translation>
 <translation id="4661392828086261436">This update is provided by the device manufacturer and has not been verified by Google</translation>
 <translation id="4664651912255946953">fur</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">Hide summary</translation>
 <translation id="6075872808778243331">(Android) HTTP Latency</translation>
 <translation id="6078323886959318429">Add shortcut</translation>
+<translation id="6079693086494835199">Reset to make sure that the default homepage is not a phishing site. Only use websites that you trust.</translation>
 <translation id="6091080061796993741">yellow</translation>
 <translation id="6104112872696127344">Scanning has been cancelled</translation>
 <translation id="6106186594183574873">To finish, enter your old password</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">maroon and pink</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Reset to stop others from using your microphone or camera. Only grant permissions to sites that you trust.</translation>
 <translation id="6188737759358894319">Created on <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Battery capacity declines with usage</translation>
 <translation id="6189987971574353264">Play</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">keyboard dimming</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> test has been cancelled</translation>
 <translation id="631063167932043783">Explore app</translation>
+<translation id="6314333689576767865">Your Chromebook was reset to safe defaults. You can make changes at any time in settings.</translation>
 <translation id="6318437367327684789">forever</translation>
 <translation id="6319207335391420837">Update firmware on <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Turn on screensaver</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">Feedback submitted</translation>
 <translation id="6866732840889595464">daisy</translation>
 <translation id="6871256179359663621">light purple</translation>
+<translation id="6887967050249348172">Extensions disabled to prevent changes to settings. Only turn on extensions that you trust.</translation>
 <translation id="6889786074662672253">While restarting, do not unplug this external device or shut down your computer. You can minimise this window. This may take a few minutes and your external device may not work during this time.</translation>
 <translation id="6899460405678814458">Show summary</translation>
 <translation id="6900701049656042631">This album doesn't have any photos. To add photos, go to <ph name="LINK" /></translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">Shortcut restored</translation>
 <translation id="725133483556299729">Select email</translation>
 <translation id="7255187042098209569">pink and purple</translation>
+<translation id="7267918995585557751">Reset to make sure that the default startup page is not a phishing website. Only use websites that you trust.</translation>
 <translation id="7271000785316964275">classicist</translation>
 <translation id="7271040990581020067">Scanner is currently in use. Try again later.</translation>
 <translation id="7271932918253517778">Shortcuts with top row keys need to include the <ph name="META_KEY" /> key.</translation>
@@ -1486,6 +1493,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="7903695460270716054">Choose curated artwork and images</translation>
 <translation id="7912005977894000746">Back to main page</translation>
 <translation id="7915220255123750251">Manage network APN settings. APNs establish a connection between a mobile network and the Internet.</translation>
+<translation id="7915759923880480519">Reset to protect data sent through your networks. Only use networks that you trust.</translation>
 <translation id="7936303884198020182">No name servers found</translation>
 <translation id="7942349550061667556">Red</translation>
 <translation id="7943235353293548836">Persistent keepalive interval</translation>
@@ -1570,7 +1578,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> or <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Print jobs</translation>
 <translation id="8349758651405877930">instruments</translation>
-<translation id="8349826889576450703">launcher</translation>
+<translation id="8349826889576450703">Launcher</translation>
 <translation id="8351482263741655895">Multiply the <ph name="CATEGORY_TEXT" /> value by <ph name="CONVERSION_RATE" /></translation>
 <translation id="8351855506390808906">Keymapping touch point</translation>
 <translation id="8352772353338965963">Add an account to multiple sign-in. All signed-in accounts can be accessed without a password, so this feature should only be used with trusted accounts.</translation>
@@ -1711,6 +1719,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="89945434909472341">village</translation>
 <translation id="8997710128084572139">Device has <ph name="BATTERY_PERCENTAGE" />% battery.</translation>
 <translation id="8998289560386111590">Not available on your device</translation>
+<translation id="9000871120886759611">Reset to make sure that you can access information in your preferred language. Check that only preferred languages are used.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Frequency:</translation>
 <translation id="901834265349196618">email</translation>

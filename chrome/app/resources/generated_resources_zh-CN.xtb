@@ -2127,6 +2127,10 @@
 <translation id="2462332841984057083">已经在设置 Steam 了。请等待设置完成。</translation>
 <translation id="2462724976360937186">证书授权中心密钥 ID</translation>
 <translation id="2462752602710430187">已添加<ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">这里显示的是推荐的文件，方便您轻松继续最近在 Microsoft SharePoint 和 OneDrive 中进行的活动。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        您可从卡片菜单中管理设置，或者在“自定义 Chrome”部分中查看更多选项。</translation>
 <translation id="2464079411014186876">冰淇淋</translation>
 <translation id="2467755475704469005">未检测到任何设备。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUM_OTHER_MEMBERS" /> 人所在的标签页分组</translation>
@@ -3986,6 +3990,7 @@
 <translation id="3787434344076711519">正在等待翻译</translation>
 <translation id="3788301286821743879">无法启动该自助服务终端应用。</translation>
 <translation id="3788401245189148511">该扩展程序想要：</translation>
+<translation id="3789432704615470433">SharePoint 和 OneDrive 文件</translation>
 <translation id="3789841737615482174">安装</translation>
 <translation id="3790417903123637354">出了点问题。请稍后重试</translation>
 <translation id="379082410132524484">您的卡已过期</translation>
@@ -6173,6 +6178,7 @@
 <translation id="5360150013186312835">在工具栏中显示</translation>
 <translation id="5362741141255528695">选择私有密钥文件。</translation>
 <translation id="536278396489099088">ChromeOS 系统状态和报告</translation>
+<translation id="5362916924854054326">不显示 SharePoint 和 OneDrive 文件</translation>
 <translation id="5363109466694494651">执行 Powerwash 操作并还原</translation>
 <translation id="5365881113273618889">您所选的文件夹中包含敏感文件。确定要向“<ph name="APP_NAME" />”授予对此文件夹的永久写入权限吗？</translation>
 <translation id="536638840841140142">无</translation>
@@ -10754,6 +10760,10 @@
 <translation id="865936634714975126">在网址中添加查询参数，以便选择网页加载类型。示例：chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">“<ph name="FEATURE_NAME" />”功能联系人</translation>
 <translation id="8659609431223166673">窗口已向下移动</translation>
+<translation id="8660288500924118793">您可通过卡片中的日历轻松找到 Outlook 日历中的下一个活动。
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       您可在卡片菜单中管理设置，或在“自定义 Chrome”部分查看更多选项。</translation>
 <translation id="8661290697478713397">在隐身窗口中打开链接(&amp;G)</translation>
 <translation id="8662474268934425487">登录 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">加入<ph name="TYPE" />网络</translation>

@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Zusammenfassen</translation>
 <translation id="123124571410524056">Verdacht auf Portal</translation>
 <translation id="1232610416724362657">Wasserfall</translation>
+<translation id="1238163879850290856">Setze die Einstellung zurück, um zu verhindern, dass andere auf Daten zugreifen können. Verwende nur Eingabemethoden, denen du vertraust.</translation>
 <translation id="1238612778414822719">HTTPS-Latenz</translation>
 <translation id="1252766349417594414">Joystick</translation>
 <translation id="1270369111467284986">Verdacht auf Captive Portal</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">Umschalttaste rechts</translation>
 <translation id="4654549501020883054">Täglich ändern</translation>
 <translation id="4655868084888499342">Bild als Hintergrund festgelegt</translation>
+<translation id="4660989616054030633">Generative KI kann Fehler machen, auch bei Informationen über Personen – überprüfe daher die Antworten</translation>
 <translation id="4661249927038176904">Surreal</translation>
 <translation id="4661392828086261436">Dieses Update wird vom Hersteller des Geräts bereitgestellt und wurde nicht von Google überprüft</translation>
 <translation id="4664651912255946953">Fell</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">Zusammenfassung ausblenden</translation>
 <translation id="6075872808778243331">(Android) HTTP-Latenz</translation>
 <translation id="6078323886959318429">Verknüpfung</translation>
+<translation id="6079693086494835199">Setze die Einstellungen zurück, um sicherzustellen, dass die standardmäßige Startseite keine Phishing-Website ist. Verwende nur Websites, denen du vertraust.</translation>
 <translation id="6091080061796993741">gelben</translation>
 <translation id="6104112872696127344">Scannen wurde abgebrochen</translation>
 <translation id="6106186594183574873">Gib zum Schluss dein altes Passwort ein</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">Kastanienbraun und Rosa</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Setze die Einstellungen zurück, um zu verhindern, dass andere dein Mikrofon oder deine Kamera verwenden. Gewähre Berechtigungen nur Websites, denen du vertraust.</translation>
 <translation id="6188737759358894319">Erstellt am <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Die Akkukapazität sinkt mit fortschreitender Nutzung</translation>
 <translation id="6189987971574353264">Wiedergeben</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">Dimmen der Tastatur</translation>
 <translation id="6302401976930124515">Test „<ph name="TEST_NAME" />“ wurde abgebrochen</translation>
 <translation id="631063167932043783">Entdecken</translation>
+<translation id="6314333689576767865">Dein Chromebook wurde auf die sicheren Standardeinstellungen zurückgesetzt. Du kannst dies jederzeit in den Einstellungen ändern.</translation>
 <translation id="6318437367327684789">dauerhaft</translation>
 <translation id="6319207335391420837">Firmware von <ph name="DEVICE_NAME" /> aktualisieren</translation>
 <translation id="6321407676395378991">Bildschirmschoner aktivieren</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">Feedback gesendet</translation>
 <translation id="6866732840889595464">Gänseblümchen</translation>
 <translation id="6871256179359663621">hellviolett</translation>
+<translation id="6887967050249348172">Erweiterungen sind deaktiviert, um Änderungen an den Einstellungen zu verhindern. Aktiviere nur Erweiterungen, denen du vertraust.</translation>
 <translation id="6889786074662672253">Während des Neustarts darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Du kannst das Fenster aber minimieren. Der Vorgang kann einige Minuten dauern. Unter Umständen funktioniert dein externes Gerät während dieser Zeit nicht.</translation>
 <translation id="6899460405678814458">Zusammenfassung einblenden</translation>
 <translation id="6900701049656042631">Dieses Album enthält keine Fotos. Du kannst Fotos unter <ph name="LINK" /> hinzufügen.</translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">Tastenkombination wiederhergestellt</translation>
 <translation id="725133483556299729">E-Mail-Adresse auswählen</translation>
 <translation id="7255187042098209569">rosa und lila</translation>
+<translation id="7267918995585557751">Setze die Einstellungen zurück, um sicherzustellen, dass die standardmäßige „Beim Start“-Seite keine Phishing-Website ist. Verwende nur Websites, denen du vertraust.</translation>
 <translation id="7271000785316964275">Klassizismus</translation>
 <translation id="7271040990581020067">Der Scanner wird derzeit verwendet. Versuche es später noch einmal.</translation>
 <translation id="7271932918253517778">Bei Tastenkombinationen mit Tasten aus der obersten Reihe muss die <ph name="META_KEY" />-Taste enthalten sein.</translation>
@@ -1486,6 +1493,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7903695460270716054">Ausgewählte Kunstwerke und Bilder auswählen</translation>
 <translation id="7912005977894000746">Zurück zur Hauptseite</translation>
 <translation id="7915220255123750251">Hier kannst du die APN-Netzwerkeinstellungen verwalten. APNs stellen eine Verbindung zwischen einem Mobilfunknetz und dem Internet her.</translation>
+<translation id="7915759923880480519">Setze die Einstellung zurück, um Daten zu schützen, die über deine Netzwerke gesendet werden. Verwende nur Netzwerke, denen du vertraust.</translation>
 <translation id="7936303884198020182">Es wurden keine Nameserver gefunden</translation>
 <translation id="7942349550061667556">Rot</translation>
 <translation id="7943235353293548836">Persistentes Keepalive-Intervall</translation>
@@ -1711,6 +1719,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="89945434909472341">Dorf</translation>
 <translation id="8997710128084572139">Der Akkustand des Geräts liegt bei <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="8998289560386111590">Auf deinem Gerät nicht verfügbar</translation>
+<translation id="9000871120886759611">Setze die Einstellungen zurück, damit du Informationen in deiner bevorzugten Sprache abrufen kannst. Achte darauf, dass nur bevorzugte Sprachen verwendet werden.</translation>
 <translation id="9003499805101629690">Pizza</translation>
 <translation id="9003704114456258138">Frequenz</translation>
 <translation id="901834265349196618">E-Mail</translation>

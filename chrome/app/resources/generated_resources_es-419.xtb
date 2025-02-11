@@ -2131,6 +2131,10 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2462332841984057083">Ya se está configurando Steam. Espera a que se complete la configuración.</translation>
 <translation id="2462724976360937186">ID de clave de la Entidad de certificación</translation>
 <translation id="2462752602710430187">Se agregó <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Estás viendo archivos sugeridos para que puedas regresar a la actividad más reciente en Microsoft SharePoint y OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Puedes administrar la configuración desde el menú de la tarjeta o ver más opciones en la sección Personalizar Chrome.</translation>
 <translation id="2464079411014186876">Helado</translation>
 <translation id="2467755475704469005">No se detectó ningún dispositivo. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Únete al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /> y <ph name="NUM_OTHER_MEMBERS" /> personas más</translation>
@@ -3993,6 +3997,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3787434344076711519">Esperando la traducción</translation>
 <translation id="3788301286821743879">No se pudo iniciar la app del kiosco.</translation>
 <translation id="3788401245189148511">Podría:</translation>
+<translation id="3789432704615470433">Archivos de SharePoint y OneDrive</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3790417903123637354">Se produjo un error; vuelve a intentarlo más tarde</translation>
 <translation id="379082410132524484">La tarjeta está vencida</translation>
@@ -6183,6 +6188,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5360150013186312835">Mostrar en la barra de herramientas</translation>
 <translation id="5362741141255528695">Seleccionar archivo de clave privada.</translation>
 <translation id="536278396489099088">Informes y estado del sistema de ChromeOS</translation>
+<translation id="5362916924854054326">No mostrar archivos de SharePoint y OneDrive</translation>
 <translation id="5363109466694494651">Utilizar la función Powerwash y revertir</translation>
 <translation id="5365881113273618889">La carpeta seleccionada contiene archivos confidenciales. ¿Confirmas que deseas otorgar a "<ph name="APP_NAME" />" acceso de escritura permanente a esta carpeta?</translation>
 <translation id="536638840841140142">Ninguno</translation>
@@ -10767,6 +10773,10 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="865936634714975126">Agrega un parámetro de consulta en la URL para seleccionar tipos en la carga de la página. Ejemplo: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Contactos de <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">La ventana se movió hacia abajo</translation>
+<translation id="8660288500924118793">Estás viendo tu calendario para que puedas navegar fácilmente a tu próximo evento en el calendario de Outlook.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Puedes administrar la configuración desde el menú de la tarjeta o ver más opciones en la sección Personalizar Chrome.</translation>
 <translation id="8661290697478713397">Abrir vínculo en una ventana de incó&amp;gnito</translation>
 <translation id="8662474268934425487">Accede a <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Unirse a la red <ph name="TYPE" /></translation>

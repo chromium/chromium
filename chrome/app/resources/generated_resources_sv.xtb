@@ -2147,6 +2147,10 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2462332841984057083">Steam konfigureras redan. Vänta på att konfigureringen slutförs.</translation>
 <translation id="2462724976360937186">Nyckel-ID för certifikatutfärdare</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> har lagts till</translation>
+<translation id="2464075479326723132">Förslag på filer visas så att du enkelt ska kan fortsätta där du slutade i Microsoft SharePoint och OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Du kan hantera inställningarna i kortmenyn. Det finns även fler alternativ i Anpassa Chrome.</translation>
 <translation id="2464079411014186876">Glass</translation>
 <translation id="2467755475704469005">Ingen enhet upptäcktes. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Gå med i flikgruppen med <ph name="OWNER_FIRST_NAME" /> och <ph name="NUM_OTHER_MEMBERS" /> till</translation>
@@ -4009,6 +4013,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3787434344076711519">Väntar på översättning</translation>
 <translation id="3788301286821743879">Det gick inte att starta kioskappen.</translation>
 <translation id="3788401245189148511">Appen eller tillägget skulle kunna:</translation>
+<translation id="3789432704615470433">SharePoint- och OneDrive-filer</translation>
 <translation id="3789841737615482174">Installera</translation>
 <translation id="3790417903123637354">Något gick fel. Försök igen senare</translation>
 <translation id="379082410132524484">Kortets giltighetstid har löpt ut</translation>
@@ -6199,6 +6204,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5360150013186312835">Visa i verktygsfältet</translation>
 <translation id="5362741141255528695">Välj privat nyckelfil.</translation>
 <translation id="536278396489099088">Systemstatus och rapporter för ChromeOS</translation>
+<translation id="5362916924854054326">Visa inte SharePoint- och OneDrive-filer</translation>
 <translation id="5363109466694494651">Använd Powerwash och återställ</translation>
 <translation id="5365881113273618889">Mappen som du valde innehåller känsliga filer. Vill du bevilja <ph name="APP_NAME" /> permanent skrivåtkomst till den här mappen?</translation>
 <translation id="536638840841140142">Inga</translation>
@@ -10783,6 +10789,10 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="865936634714975126">Lägg till en frågeparameter i webbadressen för att välja typer vid sidhämtningen. Exempel: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Kontakter för <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Fönstret har flyttats nedåt</translation>
+<translation id="8660288500924118793">Din kalender visas så att du enkelt kan navigera till din nästa händelse i kalendern i Outlook.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Du kan hantera inställningarna i kortmenyn eller hitta fler alternativ i Anpassa Chrome.</translation>
 <translation id="8661290697478713397">Öppna länk i inko&amp;gnitofönster</translation>
 <translation id="8662474268934425487">Logga in på <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Anslut till <ph name="TYPE" />-nätverket</translation>

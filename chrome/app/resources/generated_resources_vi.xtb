@@ -2147,6 +2147,10 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2462332841984057083">Steam đang được thiết lập. Vui lòng chờ quá trình thiết lập hoàn tất.</translation>
 <translation id="2462724976360937186">ID khóa của tổ chức phát hành chứng chỉ</translation>
 <translation id="2462752602710430187">Đã thêm <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Bạn đang xem các tệp được đề xuất giúp bạn dễ dàng quay lại hoạt động gần đây nhất trong Microsoft SharePoint và OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Bạn có thể quản lý chế độ cài đặt qua trình đơn thẻ hoặc xem tuỳ chọn khác trong phần Tuỳ chỉnh Chrome.</translation>
 <translation id="2464079411014186876">Kem</translation>
 <translation id="2467755475704469005">Không phát hiện thấy thiết bị nào. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Tham gia nhóm thẻ cùng với <ph name="OWNER_FIRST_NAME" /> và <ph name="NUM_OTHER_MEMBERS" /> người khác</translation>
@@ -4009,6 +4013,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3787434344076711519">Đang chờ bản dịch</translation>
 <translation id="3788301286821743879">Không chạy được ứng dụng kiosk.</translation>
 <translation id="3788401245189148511">Tiện ích/ứng dụng này có thể:</translation>
+<translation id="3789432704615470433">Tệp SharePoint và OneDrive</translation>
 <translation id="3789841737615482174">Cài đặt</translation>
 <translation id="3790417903123637354">Đã xảy ra lỗi. Hãy thử lại sau</translation>
 <translation id="379082410132524484">Thẻ của bạn đã hết hạn</translation>
@@ -6199,6 +6204,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5360150013186312835">Hiển thị trên thanh công cụ</translation>
 <translation id="5362741141255528695">Chọn tệp khóa cá nhân.</translation>
 <translation id="536278396489099088">Báo cáo và trạng thái hệ thống của ChromeOS</translation>
+<translation id="5362916924854054326">Không hiển thị tệp SharePoint và OneDrive</translation>
 <translation id="5363109466694494651">Powerwash và hoàn nguyên</translation>
 <translation id="5365881113273618889">Thư mục bạn đã chọn chứa các tệp nhạy cảm. Bạn có chắc chắn muốn cấp cho "<ph name="APP_NAME" />" quyền ghi vào thư mục này vĩnh viễn không?</translation>
 <translation id="536638840841140142">Không</translation>
@@ -10785,6 +10791,10 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="865936634714975126">Thêm tham số truy vấn trong URL để chọn loại khi tải trang. Ví dụ: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Người liên hệ trong <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Đã di chuyển cửa sổ xuống dưới</translation>
+<translation id="8660288500924118793">Bạn đang xem lịch giúp bạn dễ dàng chuyển đến sự kiện tiếp theo trong Lịch Outlook.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Bạn có thể quản lý chế độ cài đặt qua trình đơn thẻ hoặc xem tuỳ chọn khác trong phần Tuỳ chỉnh Chrome.</translation>
 <translation id="8661290697478713397">Mở đường liên kết tron&amp;g cửa sổ ẩn danh</translation>
 <translation id="8662474268934425487">Đăng nhập vào <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Kết nối mạng <ph name="TYPE" /></translation>

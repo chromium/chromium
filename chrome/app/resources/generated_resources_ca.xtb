@@ -2134,6 +2134,10 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2462332841984057083">Ja s'està configurant Steam. Espera que finalitzi la configuració.</translation>
 <translation id="2462724976360937186">Identificador de clau d'entitat emissora de certificats</translation>
 <translation id="2462752602710430187">S'ha afegit <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Veus fitxers suggerits perquè puguis tornar fàcilment a la teva activitat més recent a Microsoft SharePoint i OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Pots gestionar la configuració des del menú de la targeta o veure més opcions a Personalitza Chrome.</translation>
 <translation id="2464079411014186876">Gelat</translation>
 <translation id="2467755475704469005">No s'ha detectat cap dispositiu. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Uneix-te al grup de pestanyes amb <ph name="OWNER_FIRST_NAME" /> i <ph name="NUM_OTHER_MEMBERS" /> persones més</translation>
@@ -3994,6 +3998,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3787434344076711519">S'està esperant la traducció</translation>
 <translation id="3788301286821743879">No s'ha pogut iniciar l'aplicació de quiosc.</translation>
 <translation id="3788401245189148511">Podria:</translation>
+<translation id="3789432704615470433">Fitxers de SharePoint i OneDrive</translation>
 <translation id="3789841737615482174">Instal·la</translation>
 <translation id="3790417903123637354">S'ha produït un error. Torna-ho a provar més tard.</translation>
 <translation id="379082410132524484">La targeta ha caducat</translation>
@@ -6182,6 +6187,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5360150013186312835">Mostra a la barra d'eines</translation>
 <translation id="5362741141255528695">Seleccioneu el fitxer de clau privada.</translation>
 <translation id="536278396489099088">Estat i informes del sistema de ChromeOS</translation>
+<translation id="5362916924854054326">No mostris els fitxers de SharePoint i OneDrive</translation>
 <translation id="5363109466694494651">Fes un Powerwash i canvia a la versió anterior</translation>
 <translation id="5365881113273618889">La carpeta que has seleccionat conté fitxers confidencials. Confirmes que vols concedir a "<ph name="APP_NAME" />" accés d'escriptura permanent en aquesta carpeta?</translation>
 <translation id="536638840841140142">Cap</translation>
@@ -10765,6 +10771,10 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="865936634714975126">Afegeix un paràmetre de consulta a l'URL per seleccionar els tipus en carregar la pàgina. Exemple: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Contactes de <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">La finestra s'ha mogut cap avall</translation>
+<translation id="8660288500924118793">Veus el calendari perquè puguis navegar fàcilment fins al teu proper esdeveniment al calendari d'Outlook.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Pots gestionar la configuració des del menú de la targeta o veure més opcions a Personalitza Chrome.</translation>
 <translation id="8661290697478713397">Obre l'enllaç en una finestra d'incò&amp;gnit</translation>
 <translation id="8662474268934425487">Inicia la sessió a <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Connecta't a una xarxa <ph name="TYPE" /></translation>

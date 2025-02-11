@@ -2148,6 +2148,10 @@
 <translation id="2462332841984057083">Steam আগে থেকেই সেট-আপ করা হচ্ছে। সেট-আপ সম্পূর্ণ হওয়ার জন্য অপেক্ষা করুন।</translation>
 <translation id="2462724976360937186">শংসাপত্র কর্তৃত্ব কী ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> যোগ করা হয়েছে</translation>
+<translation id="2464075479326723132">Microsoft SharePoint ও OneDrive-এ আপনার সবচেয়ে সাম্প্রতিক কার্যকলাপ সহজেই ফিরে পেতে আপনাকে সাজেস্ট করা ফাইল দেখানো হচ্ছে।
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        আপনি কার্ড মেনু থেকে সেটিংস ম্যানেজ করতে বা 'Chrome কাস্টমাইজ করুন' থেকে আরও বিকল্প দেখতে পারবেন।</translation>
 <translation id="2464079411014186876">আইস ক্রিম</translation>
 <translation id="2467755475704469005">কোনও ডিভাইস শনাক্ত করা যায়নি। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" /> এবং অন্য <ph name="NUM_OTHER_MEMBERS" /> জনের সাথে ট্যাব গ্রুপে যোগ দিন</translation>
@@ -4010,6 +4014,7 @@
 <translation id="3787434344076711519">অনুবাদের জন্য অপেক্ষা করা হচ্ছে</translation>
 <translation id="3788301286821743879">Kiosk অ্যাপ লঞ্চ করা যায়নি।</translation>
 <translation id="3788401245189148511">এটা হতে পারে:</translation>
+<translation id="3789432704615470433">SharePoint ও OneDrive ফাইল</translation>
 <translation id="3789841737615482174">ইনস্টল করুন</translation>
 <translation id="3790417903123637354">কোনও সমস্যা হয়েছে। পরে আবার চেষ্টা করুন</translation>
 <translation id="379082410132524484">আপনার কার্ডের মেয়াদ শেষ হয়ে গেছে</translation>
@@ -6200,6 +6205,7 @@
 <translation id="5360150013186312835">টুলবারের মধ্যে দেখুন</translation>
 <translation id="5362741141255528695">ব্যক্তিগত কী ফাইল নির্বাচন করুন৷</translation>
 <translation id="536278396489099088">ChromeOS সিস্টেম স্টেট ও রিপোর্ট</translation>
+<translation id="5362916924854054326">SharePoint ও OneDrive ফাইল দেখবেন না</translation>
 <translation id="5363109466694494651">পাওয়ারওয়াশ এবং প্রত্যাবর্তন করুন</translation>
 <translation id="5365881113273618889">আপনি যে ফোল্ডার বেছে নিয়েছেন সেটিতে সংবেদনশীল ফাইল আছে। আপনি কি "<ph name="APP_NAME" />"-কে স্থায়ীভাবে লেখার অ্যাক্সেস দেওয়ার ব্যাপারে নিশ্চিত?</translation>
 <translation id="536638840841140142">কোনওটিই নয়</translation>
@@ -10786,6 +10792,10 @@
 <translation id="865936634714975126">পৃষ্ঠা লোড করার সময় ধরন বেছে নিতে URL-এ কোয়েরি প্যারামিটার যোগ করুন। উদাহরণ: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> সংক্রান্ত পরিচিতি</translation>
 <translation id="8659609431223166673">উইন্ডো নিচের দিকে সরানো হয়েছে</translation>
+<translation id="8660288500924118793">আপনি নিজের ক্যালেন্ডার দেখছেন যাতে সহজেই নেভিগেট করে Outlook Calendar-এ পরবর্তী ইভেন্টে যেতে পারেন।
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        আপনি কার্ড মেনু থেকে সেটিংস ম্যানেজ করতে বা 'Chrome কাস্টমাইজ করুন' থেকে আরও বিকল্প দেখতে পারবেন।</translation>
 <translation id="8661290697478713397">লিঙ্কটি ছদ্মবেশী উইন্ডোতে খুলুন</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />-এ সাইন-ইন করুন</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> নেটওয়ার্কে সংযুক্ত হন</translation>

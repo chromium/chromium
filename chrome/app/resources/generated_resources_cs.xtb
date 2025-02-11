@@ -2136,6 +2136,10 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2462332841984057083">Steam se již nastavuje. Počkejte na dokončení nastavení.</translation>
 <translation id="2462724976360937186">ID klíče certifikační autority</translation>
 <translation id="2462752602710430187">Byla přidána tiskárna <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Zobrazují se navrhované soubory, abyste se mohli snadno vrátit k poslední aktivitě ve službách Microsoft SharePoint a OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Nastavení můžete spravovat v nabídce karty a další možnosti najdete v sekci Přizpůsobit Chrome.</translation>
 <translation id="2464079411014186876">Zmrzlina</translation>
 <translation id="2467755475704469005">Nebylo zjištěno žádné zařízení. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Přidat se ke skupině karet s uživatelem <ph name="OWNER_FIRST_NAME" /> a <ph name="NUM_OTHER_MEMBERS" /> dalšími</translation>
@@ -3996,6 +4000,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3787434344076711519">Čekání na překlad</translation>
 <translation id="3788301286821743879">Aplikaci pro režim veřejného terminálu se nepodařilo spustit.</translation>
 <translation id="3788401245189148511">Mohlo by:</translation>
+<translation id="3789432704615470433">Soubory SharePoint a OneDrive</translation>
 <translation id="3789841737615482174">Instalovat</translation>
 <translation id="3790417903123637354">Něco se pokazilo. Zkuste to znovu později</translation>
 <translation id="379082410132524484">Platnost vaší karty vypršela.</translation>
@@ -6183,6 +6188,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5360150013186312835">Zobrazit na liště</translation>
 <translation id="5362741141255528695">Vyberte soubor soukromého klíče.</translation>
 <translation id="536278396489099088">Stav a hlášení systému ChromeOS</translation>
+<translation id="5362916924854054326">Nezobrazovat soubory SharePoint a OneDrive</translation>
 <translation id="5363109466694494651">Obnovit pomocí funkce Powerwash a vrátit předchozí verzi</translation>
 <translation id="5365881113273618889">Vybraná složka obsahuje citlivé soubory. Opravdu chcete aplikaci <ph name="APP_NAME" /> udělit trvalý přístup k zápisu do této složky?</translation>
 <translation id="536638840841140142">Žádné</translation>
@@ -10767,6 +10773,10 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="865936634714975126">Pomocí parametru dotazu v adrese URL vyberte typy při načtení stránky. Příklad: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Kontakty funkce <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Okno se posunulo dolů</translation>
+<translation id="8660288500924118793">Zobrazuje se kalendář, abyste mohli snadno přejít na další událost v Kalendáři Outlook.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Nastavení můžete spravovat v nabídce karty a další možnosti najdete v sekci Přizpůsobit Chrome.</translation>
 <translation id="8661290697478713397">Otevřít odkaz v &amp;anonymním okně</translation>
 <translation id="8662474268934425487">Přihlášení na web <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Připojení k síti <ph name="TYPE" /></translation>

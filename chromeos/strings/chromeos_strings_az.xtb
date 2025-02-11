@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Xülasələyin</translation>
 <translation id="123124571410524056">Portal şübhəsi var</translation>
 <translation id="1232610416724362657">şəlalə</translation>
+<translation id="1238163879850290856">Digərlərinin dataya daxil olmasının qarşısını almaq üçün sıfırlayın. Yalnız etibar etdiyiniz daxiletmə metodlarından istifadə edin.</translation>
 <translation id="1238612778414822719">HTTPS Gecikməsi</translation>
 <translation id="1252766349417594414">Coystik</translation>
 <translation id="1270369111467284986">Avtorizasiya portalı şübhəsi var</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">Sağ shift</translation>
 <translation id="4654549501020883054">Gündəlik dəyişdirin</translation>
 <translation id="4655868084888499342">Şəkil divar kağızı kimi təyin edildi</translation>
+<translation id="4660989616054030633">Yaradan Sİ insanlar da daxil olmaqla bəzi məsələlər haqqında səhvlər edə bilər, buna görə də özünüz də yoxlayın</translation>
 <translation id="4661249927038176904">Sürreal</translation>
 <translation id="4661392828086261436">Bu güncəllənmə cihaz istehsalçısı tərəfindən təmin edilib və Google tərəfindən doğrulanmayıb</translation>
 <translation id="4664651912255946953">xəz</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">Xülasəni gizlədin</translation>
 <translation id="6075872808778243331">(Android) HTTP Gecikməsi</translation>
 <translation id="6078323886959318429">Qısayol əlavə edin</translation>
+<translation id="6079693086494835199">Defolt əsas səhifənin fişinq saytı olmadığına əmin olmaq üçün sıfırlayın. Yalnız etibar etdiyiniz veb-saytlardan istifadə edin.</translation>
 <translation id="6091080061796993741">sarı</translation>
 <translation id="6104112872696127344">Skanlama ləğv edilib</translation>
 <translation id="6106186594183574873">Tamamlamaq üçün köhnə parolu yazın</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">qəhvəyi-qırmızı və çəhrayı</translation>
 <translation id="6165508094623778733">Ətraflı öyrənin</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Başqalarının mikrofon və ya kameranızdan istifadəsinin qarşısını almaq üçün sıfırlayın. Yalnız etibar etdiyiniz saytlara icazələr verin.</translation>
 <translation id="6188737759358894319">Yaradılıb: <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Batareya istifadə edildikcə tutumu azalır</translation>
 <translation id="6189987971574353264">Oxudun</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">klaviaturanın qaraldılması</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> testi ləğv edilib</translation>
 <translation id="631063167932043783">Tətbiqi araşdırın</translation>
+<translation id="6314333689576767865">Chromebook təhlükəsiz defoltlara sıfırlandı. İstənilən vaxt Ayarlarda dəyişiklik edə bilərsiniz.</translation>
 <translation id="6318437367327684789">həmişə</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> cihazında proqramı güncəlləyin</translation>
 <translation id="6321407676395378991">Ekran qoruyucusunu aktiv edin</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">Rəy göndərildi</translation>
 <translation id="6866732840889595464">çobanyastığı</translation>
 <translation id="6871256179359663621">açıq-bənövşəyi</translation>
+<translation id="6887967050249348172">Ayarlara edilən dəyişikliklərin qarşısını almaq üçün artırmalar deaktiv edildi. Yalnız etibar etdiyiniz artırmaları yandırın.</translation>
 <translation id="6889786074662672253">Yenidən başlatma zamanı bu xarici cihazı ayırmayın və ya kompüterinizi söndürməyin. Bu pəncərəni kiçildə bilərsiniz. Bu, bir neçə dəqiqə çəkə bilər və xarici cihazınız bu müddət ərzində işləməyə bilər.</translation>
 <translation id="6899460405678814458">Xülasəni göstərin</translation>
 <translation id="6900701049656042631">Albomda foto yoxdur. Foto əlavə etmək üçün <ph name="LINK" /> ünvanına keçin</translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">Qısayol bərpa edildi</translation>
 <translation id="725133483556299729">E-poçt seçin</translation>
 <translation id="7255187042098209569">çəhrayı və bənövşəyi</translation>
+<translation id="7267918995585557751">Defolt başlanğıc səhifəsinin fişinq veb-saytı olmadığına əmin olmaq üçün sıfırlayın. Yalnız etibar etdiyiniz veb-saytlardan istifadə edin.</translation>
 <translation id="7271000785316964275">klassisist</translation>
 <translation id="7271040990581020067">Skaner hazırda istifadə olunur. Sonra cəhd edin.</translation>
 <translation id="7271932918253517778">Üst sıra düymələri olan qısayolda <ph name="META_KEY" /> düyməsi olmalıdır.</translation>
@@ -1486,6 +1493,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="7903695460270716054">Hazır illüstrasiya və şəkillər seçin</translation>
 <translation id="7912005977894000746">Əsas səhifəyə qayıdın</translation>
 <translation id="7915220255123750251">Şəbəkə APN ayarlarını idarə edin. APN-lər mobil şəbəkə ilə internet arasında əlaqə yaradır.</translation>
+<translation id="7915759923880480519">Şəbəkələriniz vasitəsilə göndərilən datanı qorumaq üçün sıfırlayın. Yalnız etibar etdiyiniz saytlardan istifadə edin.</translation>
 <translation id="7936303884198020182">Ad serveri tapılmadı</translation>
 <translation id="7942349550061667556">Qırmızı</translation>
 <translation id="7943235353293548836">Davamlı aktivlik mesajı intervalı</translation>
@@ -1711,6 +1719,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="89945434909472341">kənd</translation>
 <translation id="8997710128084572139">Cihazın batareya səviyyəsi: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="8998289560386111590">Cihazınızda əlçatan deyil</translation>
+<translation id="9000871120886759611">Məlumatlara istədiyiniz dildə daxil olmaq üçün sıfırlayın. Yalnız üstünlük verilən dillərdən istifadə edildiyini yoxlayın.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Tezlik</translation>
 <translation id="901834265349196618">e-poçt</translation>
