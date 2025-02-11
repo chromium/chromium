@@ -653,6 +653,10 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
         kColorTaskManagerTableBackground};
     mixer[kColorTaskManagerTableBackgroundAlternate] = {
         kColorTaskManagerTableBackground};
+#if BUILDFLAG(IS_MAC)
+    // Only macOS has alternating row colors by default.
+    mixer[kColorTaskManagerTableBackgroundAlternate] = {ui::kColorSysSurface1};
+#endif
     mixer[kColorTaskManagerTableBackgroundSelectedFocused] = {
         ui::kColorSysTonalContainer};
     mixer[kColorTaskManagerTableBackgroundSelectedUnfocused] = {

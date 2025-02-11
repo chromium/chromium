@@ -51,7 +51,6 @@
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view_utils.h"
 
@@ -566,6 +565,19 @@ void TableView::SetSortOnPaint(bool sort_on_paint) {
   OnPropertyChanged(&sort_on_paint_, kPropertyEffectsNone);
 }
 
+void TableView::SetAlternatingRowColorsEnabled(
+    base::PassKey<task_manager::TaskManagerView> passkey,
+    bool enabled) {
+  CHECK(!hovering_enabled_ || !enabled)
+      << "To ensure cross-platform compatibility, mouse hovering and "
+         "alternate row color can not both be enabled.";
+
+  if (alternating_row_colors_ != enabled) {
+    alternating_row_colors_ = enabled;
+    SchedulePaint();
+  }
+}
+
 ax::mojom::SortDirection TableView::GetFirstSortDescriptorDirection() const {
   DCHECK(!sort_descriptors().empty());
   if (sort_descriptors()[0].ascending) {
@@ -575,6 +587,10 @@ ax::mojom::SortDirection TableView::GetFirstSortDescriptorDirection() const {
 }
 
 void TableView::SetMouseHoveringEnabled(bool enabled) {
+  CHECK(!alternating_row_colors_ || !enabled)
+      << "To ensure cross-platform compatibility, mouse hovering and "
+         "alternate row color can not both be enabled.";
+
   if (hovering_enabled_ != enabled) {
     hovering_enabled_ = enabled;
     SchedulePaint();
@@ -1213,7 +1229,8 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
       canvas->FillRect(GetRowBounds(i), selected_bg_color);
     } else if (hovering_enabled_ && is_hovered) {
       canvas->FillRect(GetRowBounds(i), hovered_bg_color);
-    } else if (alternate_bg_color != default_bg_color && (i % 2)) {
+    } else if (alternating_row_colors_ &&
+               alternate_bg_color != default_bg_color && (i % 2)) {
       canvas->FillRect(GetRowBounds(i), alternate_bg_color);
     }
     for (size_t j = region.min_column; j < region.max_column; ++j) {
