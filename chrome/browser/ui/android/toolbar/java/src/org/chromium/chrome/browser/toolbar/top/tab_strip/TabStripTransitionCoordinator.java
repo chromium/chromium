@@ -339,6 +339,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
                     isInDesktopWindow,
                     mForceUpdateHeight,
                     mForceFadeInStrip,
+                    mDesktopWindowingModeChanged,
                     mHeightTransitionHandler,
                     mFadeTransitionHandler);
         } else {
@@ -351,6 +352,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
                                             isInDesktopWindow,
                                             mForceUpdateHeight,
                                             mForceFadeInStrip,
+                                            mDesktopWindowingModeChanged,
                                             mHeightTransitionHandler,
                                             mFadeTransitionHandler));
             mHandler.postDelayed(mLayoutTransitionTask, TRANSITION_DELAY_MS);
@@ -363,6 +365,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
             boolean isInDesktopWindow,
             boolean forceUpdateHeight,
             boolean forceFadeInStrip,
+            boolean desktopWindowingModeChanged,
             HeightTransitionHandler heightTransitionHandler,
             FadeTransitionHandler fadeTransitionHandler) {
         boolean runHeightTransition = !isInDesktopWindow || forceUpdateHeight;
@@ -374,7 +377,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
         }
 
         if (runFadeTransition) {
-            fadeTransitionHandler.onTabStripSizeChanged(width, forceFadeInStrip);
+            fadeTransitionHandler.onTabStripSizeChanged(
+                    width, forceFadeInStrip, desktopWindowingModeChanged);
         }
     }
 
