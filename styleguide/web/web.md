@@ -302,21 +302,25 @@ JavaScript, but it is expected that all code should migrate to TS eventually.
 
 ### Style
 
-See the [Google TypeScript Style
-Guide](https://google.github.io/styleguide/tsguide.html) as well as
-[ECMAScript Features in Chromium](es.md).
+The Chromium styleguide is combination of 3 components:
+
+  1. The [Google TypeScript Style Guide](
+     https://google.github.io/styleguide/tsguide.html) which is used as the
+     starting point.
+  2. [ECMAScript Features in Chromium](es.md), which specifies which ES features
+     should or shouldn't be used in Chromium.
+  3. Additional guidelines applied on top of #1, which are listed below.
+
+
+Additional guidelines:
 
 * Use `$('element-id')` instead of `document.getElementById`. This function can
   be imported from util.m.js.
 
-* Use single-quotes instead of double-quotes for all strings.
-    * `clang-format` now handles this automatically.
+* Use single-quotes instead of double-quotes for all strings. `clang-format` now
+  handles this automatically.
 
-* Use ES5 getters and setters
-    * Use `@type` (instead of `@return` or `@param`) for JSDoc annotations on
-      getters/setters
-
-* Prefer `event.preventDefault()` to `return false` from event handlers
+* Prefer `event.preventDefault()` to `return false` from event handlers.
 
 * Prefer `this.addEventListener('foo-changed', this.onFooChanged_.bind(this));`
   instead of always using an arrow function wrapper, when it makes the code less
@@ -336,6 +340,56 @@ if (!enterKey) {
 * Don't use `?.` as a way to silence TypeScript "object is possibly null"
   errors. Instead use `assert()` statements. Only use the optional chaining
   feature when the code needs to handle null/undefined gracefully.
+
+* Don't use `async` if the body of the function does not use `await`. If the
+  function indeed needs to return a Promise:
+
+```js
+// Don't do this.
+async function hello(): Promise<string> {
+  return 'Hello';
+}
+
+// Do this instead.
+function hello(): Promise<string> {
+  return Promise.resolve('Hello');
+}
+```
+
+* Don't use the non-null `!` operator unnecessarily, for example when TypeScript
+  already knows that a variable can't be null. For example:
+
+```js
+// Don't do this. querySelectorAll never returns null.
+let items = document.body.querySelectorAll('div')!;
+
+// Do this instead.
+let items = document.body.querySelectorAll('div');
+```
+
+### ESLint checks
+
+A big part of the styleguide is automatically enforced via ESLint checks. There
+are two types of ESLint checks:
+
+1. **Checks applied at presubmit time**.
+   These can be triggered locally with `git cl presubmit --files='path/to/folder/*.ts'`
+   and run as part of `git cl upload`.
+
+2. **Checks applied at build time**. These are type-aware checks, which are more
+   sophisticated than the presubmit checks at #1 and must be run as part of the
+   build as they require a tsconfig file to work. See [this list](
+   https://typescript-eslint.io/rules/?=typeInformation) of all possible such
+   checks (not all of these are used in Chromium). Build-time ESLint checks can
+   be triggered locally by building the `chrome` or `browser_tests` binaries, or
+   by explicitly triggering the `:lint` target for cases where `build_webui()`
+   or `build_webui_tests()` is used. For example by running:
+   <br><br>
+   `autoninja -C out/chromium/ chrome/browser/resources/settings:lint`
+   <br><br>
+   See [`build_webui()` docs](
+   https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui/webui_build_configuration.md#build_webui)
+   for more details.
 
 
 ### Closure compiler (legacy ChromeOS Ash code only)
@@ -384,6 +438,9 @@ if (!enterKey) {
     * `Promise`
     * `Set`
 
+* Use ES5 getters and setters
+    * Use `@type` (instead of `@return` or `@param`) for JSDoc annotations on
+      getters/setters
 
 ## Polymer
 
