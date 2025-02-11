@@ -27,6 +27,10 @@ class WasmTtsEngineComponentInstallerPolicy : public ComponentInstallerPolicy {
   WasmTtsEngineComponentInstallerPolicy& operator=(
       const WasmTtsEngineComponentInstallerPolicy&) = delete;
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  static std::string GetId();
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
  private:
   // The following methods override ComponentInstallerPolicy.
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
