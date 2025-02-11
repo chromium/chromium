@@ -596,7 +596,7 @@ void DeepScanningRequest::PopulateRequest(FileAnalysisRequest* request,
   if (base::FeatureList::IsEnabled(safe_browsing::kLocalIpAddressInEvents)) {
     for (const auto& ip_address :
          enterprise_connectors::GetLocalIpAddresses()) {
-      request->add_local_ips(ip_address);
+      request->add_local_ips(ip_address.GetString());
     }
   }
 

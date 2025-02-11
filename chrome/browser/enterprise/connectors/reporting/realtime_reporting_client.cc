@@ -12,9 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/escape.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -107,26 +105,22 @@ bool RealtimeReportingClient::ShouldInitRealtimeReportingClient() {
 
 void RealtimeReportingClient::SetBrowserCloudPolicyClientForTesting(
     policy::CloudPolicyClient* client) {
-  if (client == nullptr && browser_client_) {
+  if (client == nullptr && browser_client_)
     browser_client_->RemoveObserver(this);
-  }
 
   browser_client_ = client;
-  if (browser_client_) {
+  if (browser_client_)
     browser_client_->AddObserver(this);
-  }
 }
 
 void RealtimeReportingClient::SetProfileCloudPolicyClientForTesting(
     policy::CloudPolicyClient* client) {
-  if (client == nullptr && profile_client_) {
+  if (client == nullptr && profile_client_)
     profile_client_->RemoveObserver(this);
-  }
 
   profile_client_ = client;
-  if (profile_client_) {
+  if (profile_client_)
     profile_client_->AddObserver(this);
-  }
 }
 
 void RealtimeReportingClient::SetIdentityManagerForTesting(
@@ -173,9 +167,8 @@ void RealtimeReportingClient::ReportRealtimeEvent(
     const std::string& name,
     const ReportingSettings& settings,
     base::Value::Dict event) {
-  ReportEventWithTimestampDeprecated(name, settings, std::move(event),
-                                     base::Time::Now(),
-                                     /*include_profile_user_name=*/true);
+  ReportEventWithTimestamp(name, settings, std::move(event), base::Time::Now(),
+                           /*include_profile_user_name=*/true);
 }
 
 void RealtimeReportingClient::ReportPastEvent(const std::string& name,
@@ -184,8 +177,8 @@ void RealtimeReportingClient::ReportPastEvent(const std::string& name,
                                               const base::Time& time) {
   // Do not include profile information for past events because for crash events
   // we do not necessarily know which profile caused the crash .
-  ReportEventWithTimestampDeprecated(name, settings, std::move(event), time,
-                                     /*include_profile_user_name=*/false);
+  ReportEventWithTimestamp(name, settings, std::move(event), time,
+                           /*include_profile_user_name=*/false);
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -284,34 +277,6 @@ std::string RealtimeReportingClient::GetBrowserClientId() {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void RealtimeReportingClient::MaybeCollectDeviceSignalsAndReportEvent(
-    ::chrome::cros::reporting::proto::Event event,
-    policy::CloudPolicyClient* client,
-    const ReportingSettings& settings) {
-  Profile* profile = Profile::FromBrowserContext(context_);
-  device_signals::SignalsAggregator* signals_aggregator =
-      enterprise_signals::SignalsAggregatorFactory::GetForProfile(profile);
-  if (signals_aggregator) {
-    device_signals::SignalsAggregationRequest request;
-    request.signal_names.emplace(device_signals::SignalName::kAgent);
-    signals_aggregator->GetSignals(
-        request,
-        base::BindOnce(&RealtimeReportingClient::PopulateSignalsAndReportEvent,
-                       AsWeakPtrImpl(), std::move(event), client, settings));
-  } else {
-    UploadSecurityEvent(std::move(event), client, settings);
-  }
-}
-
-void RealtimeReportingClient::PopulateSignalsAndReportEvent(
-    ::chrome::cros::reporting::proto::Event event,
-    policy::CloudPolicyClient* client,
-    ReportingSettings settings,
-    device_signals::SignalsAggregationResponse response) {
-  // TODO: AddCrowdstrikeSignalsToEvent(event, response);
-  UploadSecurityEvent(std::move(event), client, settings);
-}
-
-void RealtimeReportingClient::MaybeCollectDeviceSignalsAndReportEventDeprecated(
     base::Value::Dict event,
     policy::CloudPolicyClient* client,
     std::string name,
@@ -325,17 +290,15 @@ void RealtimeReportingClient::MaybeCollectDeviceSignalsAndReportEventDeprecated(
     request.signal_names.emplace(device_signals::SignalName::kAgent);
     signals_aggregator->GetSignals(
         request,
-        base::BindOnce(
-            &RealtimeReportingClient::PopulateSignalsAndReportEventDeprecated,
-            AsWeakPtrImpl(), std::move(event), client, name, settings, context_,
-            time));
+        base::BindOnce(&RealtimeReportingClient::PopulateSignalsAndReportEvent,
+                       AsWeakPtrImpl(), std::move(event), client, name,
+                       settings, context_, time));
   } else {
-    UploadSecurityEventReportDeprecated(std::move(event), client, name,
-                                        settings, time);
+    UploadSecurityEventReport(std::move(event), client, name, settings, time);
   }
 }
 
-void RealtimeReportingClient::PopulateSignalsAndReportEventDeprecated(
+void RealtimeReportingClient::PopulateSignalsAndReportEvent(
     base::Value::Dict event,
     policy::CloudPolicyClient* client,
     std::string name,
@@ -344,8 +307,7 @@ void RealtimeReportingClient::PopulateSignalsAndReportEventDeprecated(
     base::Time time,
     device_signals::SignalsAggregationResponse response) {
   AddCrowdstrikeSignalsToEvent(event, response);
-  UploadSecurityEventReportDeprecated(std::move(event), client, name, settings,
-                                      time);
+  UploadSecurityEventReport(std::move(event), client, name, settings, time);
 }
 #endif
 
@@ -353,7 +315,7 @@ bool RealtimeReportingClient::ShouldIncludeDeviceInfo(bool per_profile) {
   return IncludeDeviceInfo(Profile::FromBrowserContext(context_), per_profile);
 }
 
-void RealtimeReportingClient::UploadCallbackDeprecated(
+void RealtimeReportingClient::UploadCallback(
     base::Value::Dict event_wrapper,
     bool per_profile,
     policy::CloudPolicyClient* client,
@@ -385,38 +347,8 @@ void RealtimeReportingClient::UploadCallbackDeprecated(
   }
 }
 
-void RealtimeReportingClient::UploadCallback(
-    ::chrome::cros::reporting::proto::UploadEventsRequest request,
-    bool per_profile,
-    policy::CloudPolicyClient* client,
-    EnterpriseReportingEventType eventType,
-    policy::CloudPolicyClient::Result upload_result) {
-  base::Value::Dict event_wrapper = base::Value::Dict();
-  event_wrapper.Set("uploaded_successfully", upload_result.IsSuccess());
-  event_wrapper.Set("upload_request",
-                    base::EscapeNonASCII(request.SerializeAsString()));
-  event_wrapper.Set("event_type", static_cast<int>(eventType));
-
-  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
-      std::move(event_wrapper));
-
-  if (upload_result.IsSuccess()) {
-    base::UmaHistogramEnumeration("Enterprise.ReportingEventUploadSuccess",
-                                  eventType);
-  } else {
-    base::UmaHistogramEnumeration("Enterprise.ReportingEventUploadFailure",
-                                  eventType);
-  }
-}
-
 base::Value::Dict RealtimeReportingClient::GetContext() {
   return reporting::GetContext(Profile::FromBrowserContext(context_));
-}
-
-::chrome::cros::reporting::proto::UploadEventsRequest
-RealtimeReportingClient::CreateUploadEventsRequest() {
-  return reporting::CreateUploadEventsRequest(
-      Profile::FromBrowserContext(context_));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

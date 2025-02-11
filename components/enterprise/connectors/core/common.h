@@ -18,7 +18,6 @@
 #include "base/supports_user_data.h"
 #include "build/blink_buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
@@ -38,9 +37,6 @@ using TriggeredRule = ContentAnalysisResponse::Result::TriggeredRule;
 
 // Pair to specify the source and destination.
 using SourceDestinationStringPair = std::pair<std::string, std::string>;
-
-// Alias to reduce verbosity when using Event::EventCase.
-using EventCase = ::chrome::cros::reporting::proto::Event::EventCase;
 
 // Keys used to read a connector's policy values.
 inline constexpr char kKeyServiceProvider[] = "service_provider";
@@ -126,33 +122,6 @@ inline constexpr auto kEventNameToUmaEnumMap =
          EnterpriseReportingEventType::kExtensionInstallEvent},
         {kBrowserCrashEvent, EnterpriseReportingEventType::kBrowserCrashEvent},
         {kExtensionTelemetryEvent,
-         EnterpriseReportingEventType::kExtensionTelemetryEvent},
-    });
-
-inline constexpr auto kEventCaseToUmaEnumMap =
-    base::MakeFixedFlatMap<EventCase, EnterpriseReportingEventType>({
-        {EventCase::kPasswordReuseEvent,
-         EnterpriseReportingEventType::kPasswordReuseEvent},
-        {EventCase::kPasswordChangedEvent,
-         EnterpriseReportingEventType::kPasswordChangedEvent},
-        {EventCase::kDangerousDownloadEvent,
-         EnterpriseReportingEventType::kDangerousDownloadEvent},
-        {EventCase::kInterstitialEvent,
-         EnterpriseReportingEventType::kInterstitialEvent},
-        {EventCase::kSensitiveDataEvent,
-         EnterpriseReportingEventType::kSensitiveDataEvent},
-        {EventCase::kUnscannedFileEvent,
-         EnterpriseReportingEventType::kUnscannedFileEvent},
-        {EventCase::kLoginEvent, EnterpriseReportingEventType::kLoginEvent},
-        {EventCase::kPasswordBreachEvent,
-         EnterpriseReportingEventType::kPasswordBreachEvent},
-        {EventCase::kUrlFilteringInterstitialEvent,
-         EnterpriseReportingEventType::kUrlFilteringInterstitialEvent},
-        {EventCase::kBrowserExtensionInstallEvent,
-         EnterpriseReportingEventType::kExtensionInstallEvent},
-        {EventCase::kBrowserCrashEvent,
-         EnterpriseReportingEventType::kBrowserCrashEvent},
-        {EventCase::kExtensionTelemetryEvent,
          EnterpriseReportingEventType::kExtensionTelemetryEvent},
     });
 
@@ -316,8 +285,6 @@ DataRegion ChromeDataRegionSettingToEnum(int chrome_data_region_setting);
 
 EnterpriseReportingEventType GetUmaEnumFromEventName(
     std::string_view eventName);
-
-EnterpriseReportingEventType GetUmaEnumFromEventCase(EventCase eventCase);
 
 //  The resulting action that chrome performed in response to a scan request.
 //  This maps to the event result in the real-time reporting.
