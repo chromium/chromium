@@ -956,7 +956,7 @@ BASE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch,
 
 BASE_FEATURE(kIOSTipsNotifications,
              "IOSTipsNotifications",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kIOSTipsNotificationsUnknownTriggerTimeParam[] =
     "unknown_trigger_time";
