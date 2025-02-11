@@ -1371,6 +1371,7 @@
 <translation id="1936157145127842922">ဖိုလ်ဒါ ထဲမှာ ပြရန်</translation>
 <translation id="1936931585862840749">မိတ္တူမည်မျှ ပုံနှိပ်ထုတ်ယူလိုကြောင်း ဖော်ပြရန် နံပါတ်ကို အသုံးပြုပါ (၁ မှ <ph name="MAX_COPIES" />)။</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> ဖြစ်သော ဤစက်ပစ္စည်းဖြင့်<ph name="ARCHITECTURE_CONTAINER" /> ကွန်တိန်နာ ဖွဲ့စည်းပုံ အမျိုးအစားကို ထည့်သွင်း၍ မရပါ။ ဤကွန်တိန်နာကို အခြားစက်ပစ္စည်းတစ်ခုတွင် ပြန်ယူကြည့်နိုင်သည် သို့မဟုတ် Files အက်ပ်တွင် ဖွင့်ခြင်းဖြင့် ဤကွန်တိန်နာ ကွန်ပျူတာစနစ်မိတ္တူအတွင်းရှိ ဖိုင်များကို ဝင်သုံးနိုင်သည်။</translation>
+<translation id="1938116692670653897">လက်ရှိ အရောင်အပြင်အဆင်</translation>
 <translation id="1938351510777341717">ပြင်ပကွန်မန်း</translation>
 <translation id="1940221956626514677">ကိရိယာဘား စိတ်ကြိုက်လုပ်ရန်</translation>
 <translation id="1940546824932169984">ချိတ်ဆက်ထားသော စက်ပစ္စည်းများ</translation>
@@ -2140,6 +2141,10 @@
 <translation id="2462332841984057083">Steam ကို လက်ရှိ ထည့်သွင်းလျက်ရှိသည်။ စနစ်ထည့်သွင်းပြီးသည်အထိ စောင့်ပါ။</translation>
 <translation id="2462724976360937186">လက်မှတ်ထုတ်ပေးမှု အာဏာပိုင် သော့ ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> ကို ထည့်ပြီးပြီ</translation>
+<translation id="2464075479326723132">Microsoft SharePoint နှင့် OneDrive တို့တွင် မကြာသေးမီက သင့်လုပ်ဆောင်ချက်ကို အလွယ်တကူ ပြန်ရယူနိုင်ရန်အတွက် အကြံပြုထားသောဖိုင်များကို မြင်နေရခြင်းဖြစ်သည်။
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        ကတ်မီနူးမှတစ်ဆင့် ဆက်တင်များကို စီမံနိုင်သည် (သို့) ‘Chrome ကို စိတ်ကြိုက်လုပ်ခြင်း’ တွင် နောက်ထပ်ရွေးစရာများ ကြည့်နိုင်သည်။</translation>
 <translation id="2464079411014186876">ရေခဲမုန့်</translation>
 <translation id="2467755475704469005">စက်မရှိပါ။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" />၊ အခြား <ph name="NUM_OTHER_MEMBERS" /> ဦးတို့နှင့်အတူ ‘တဘ်အုပ်စု’ တွင် ပါဝင်ခြင်း</translation>
@@ -4001,6 +4006,7 @@
 <translation id="3787434344076711519">ဘာသာပြန်ရန် စောင့်နေသည်</translation>
 <translation id="3788301286821743879">Koisk အပလီကေးရှင်း စတင်၍ မရပါ။</translation>
 <translation id="3788401245189148511">ဖြစ်နိုင်ခဲ့သည်မှာ:</translation>
+<translation id="3789432704615470433">SharePoint နှင့် OneDrive ဖိုင်များ</translation>
 <translation id="3789841737615482174">တပ်ဆင်ရန်</translation>
 <translation id="3790417903123637354">တစ်ခုခု မှားသွားသည်။ နောက်မှ ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="379082410132524484">သင်၏ကတ်သည် သက်တမ်းကုန်ဆုံးသွားပါပြီ</translation>
@@ -5633,7 +5639,6 @@
 <translation id="4946998421534856407">Launcher + အပေါ်ညွှန်မြား</translation>
 <translation id="4947376546135294974">သင်ဝင်ကြည့်နေသော ဝဘ်ဆိုက်မှဒေတာ</translation>
 <translation id="4950100687509657457">ပရိုဖိုင် ပြုလုပ်ရန်</translation>
-<translation id="4950360215042327246">[နေရာအစားထိုး အက္ခရာတွဲ]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ဖိုင်တစ်ဖိုင်}other{ဖိုင် # ဖိုင်}}</translation>
 <translation id="495170559598752135">လုပ်ဆောင်ချက်များ</translation>
 <translation id="4951966678293618079">ဤဝဘ်ဆိုက်အတွက် စကားဝှက်များ ဘယ်တော့မှ မသိမ်းပါနှင့်</translation>
@@ -6189,6 +6194,7 @@
 <translation id="5360150013186312835">ကိရိယာဘားတွင် ပြရန်</translation>
 <translation id="5362741141255528695">ကိုယ်ပိုင် သော့ ဖိုင် ရွေးရန်</translation>
 <translation id="536278396489099088">ChromeOS စနစ်အခြေအနေနှင့် အစီရင်ခံစာများ</translation>
+<translation id="5362916924854054326">SharePoint နှင့် OneDrive ဖိုင်များကို မပြပါနှင့်</translation>
 <translation id="5363109466694494651">Powerwash နှင့် ယခင်အခြေအနေပြန်သွားရန်</translation>
 <translation id="5365881113273618889">သင်ရွေးထားသည့် ဖိုင်တွဲတွင် အရေးကြီးဖိုင်များ ပါဝင်သည်။ "<ph name="APP_NAME" />" အား ဤဖိုင်တွဲသို့ အမြဲဝင်ပြင်ခွင့် ပေးလိုသည်မှာ သေချာသလား။</translation>
 <translation id="536638840841140142">မရှိ</translation>
@@ -7987,7 +7993,6 @@
 <translation id="6679947539429331601">၁၂ နာရီကြာ ဖျောက်ရန်</translation>
 <translation id="6680442031740878064">ရနိုင်သည့် နေရာလွတ်− <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">အဆင့်သတ်မှတ်ရန်</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [နေရာအစားထိုး အက္ခရာတွဲ]</translation>
 <translation id="6683022854667115063">နားကြပ်</translation>
 <translation id="6683087162435654533">တဘ်အားလုံး ပြန်&amp;ယူရန်</translation>
 <translation id="6683433919380522900">ခွင့်ပြုချက်မှာ <ph name="PERMISSION_STATE" /> ဖြစ်သည်</translation>
@@ -9205,7 +9210,6 @@
 <translation id="7561196759112975576">အမြဲတမ်း</translation>
 <translation id="7561759921596375678">အသံဖွင့်ရန်</translation>
 <translation id="7561982940498449837">မီနူးကို ပိတ်ရန်</translation>
-<translation id="7563970324931922582">[နေရာအစားထိုး စာသား]</translation>
 <translation id="756445078718366910">ဘရောင်ဇာဝင်းဒိုး ဖွင့်</translation>
 <translation id="7564847347806291057">လုပ်ငန်းစဉ် အဆုံးသတ်ရန်</translation>
 <translation id="756503097602602175">လက်မှတ်ထိုးဝင်ထားသော Google Accounts များကို <ph name="LINK_BEGIN" />ဆက်တင်များ<ph name="LINK_END" /> မှ စီမံနိုင်သည်။ ဝဘ်ဆိုက်များနှင့် အက်ပ်များကို ပေးထားသော ခွင့်ပြုချက်များက အကောင့်အားလုံးတွင် အကျုံးဝင်နိုင်သည်။ သင့်အကောင့်အချက်အလက်ကို ဝဘ်ဆိုက်များနှင့် အက်ပ်များက ဝင်မကြည့်စေလိုလျှင် <ph name="DEVICE_TYPE" /> တွင် ဧည့်သည်အဖြစ် လက်မှတ်ထိုးဝင်နိုင်သည် (သို့) <ph name="LINK_2_BEGIN" />ရုပ်ဖျက် ဝင်ဒိုး<ph name="LINK_2_END" /> တွင် ဝဘ်ကို ကြည့်ရှုနိုင်သည်။</translation>
@@ -10766,6 +10770,10 @@
 <translation id="865936634714975126">စာမျက်နှာဖွင့်ခြင်းဆိုင်ရာ အမျိုးအစားများ ရွေးချယ်ရန် URL တွင် မေးမြန်းမှုကန့်သတ်ချက်ဘောင် ထည့်ပါ။ ဥပမာ- chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">အဆက်အသွယ် <ph name="FEATURE_NAME" /> ခု</translation>
 <translation id="8659609431223166673">ဝင်းဒိုးကို အောက်သို့ ရွှေ့လိုက်သည်</translation>
+<translation id="8660288500924118793">Outlook Calendar တွင် သင်၏နောက်အစီအစဉ်သို့ အလွယ်တကူ ရွှေ့ပေးနိုင်ရန်အတွက် သင့်ပြက္ခဒိန်ကို မြင်နေရခြင်းဖြစ်သည်။
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        ကတ်မီနူးမှတစ်ဆင့် ဆက်တင်များကို စီမံနိုင်သည် (သို့) ‘Chrome ကို စိတ်ကြိုက်လုပ်ခြင်း’ တွင် နောက်ထပ်ရွေးစရာများ ကြည့်နိုင်သည်။</translation>
 <translation id="8661290697478713397">ရုပ်&amp;ဖျက် ဝင်ဒိုး ထဲမှာ လင့်ကို ဖွင့်ရန်</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> ကွန်ရက်သို့ ချိတ်ခြင်း</translation>

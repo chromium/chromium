@@ -1257,30 +1257,6 @@ false로 설정되면 사용자 식별을 위해 사용할 수 있는 정보가 
       이 기업 정책은 기본적으로 사용 중지되어 있습니다.</translation>
 <translation id="1947848925128084608">로그인 화면에서 고대비를 사용 중지하고 사용자가 일시적으로 사용 설정할 수 있도록 허용</translation>
 <translation id="1949584741547056205">빠른 답변</translation>
-<translation id="1951288262199783797">이 정책을 사용 설정하면 파일 형식 확장자 기반 다운로드 경고에서 제외될 도메인 목록에 상응하는 파일 형식 확장자 사전을 만들 수 있습니다. 이렇게 하면 기업 관리자가 목록에 있는 도메인과 연결된 파일에 대해 파일 형식 확장자 기반 다운로드 경고를 차단할 수 있습니다. 예를 들어 'jnlp' 확장자가 'website1.com'과 연결된 경우 사용자가 'website1.com'에서 'jnlp' 파일을 다운로드할 때는 경고가 표시되지 않지만 'website2.com'에서 'jnlp' 파일을 다운로드하면 다운로드 경고가 표시됩니다.
-
-      이 정책에 의해 식별된 도메인에 지정된 파일 형식 확장자를 갖는 파일이라고 할지라도 혼합 콘텐츠 다운로드 경고 및 세이프 브라우징 경고 등 파일 형식 확장자에 기반하지 않는 보안 경고는 계속 표시됩니다.
-
-      이 정책을 사용 중지하거나 구성하지 않으면 확장자 기반 다운로드 경고를 트리거하는 형식의 파일을 다운로드할 때 경고가 사용자에게 표시됩니다.
-
-      이 정책을 사용 설정하는 경우:
-
-      * https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns에 따라 URL 패턴 형식이 지정되어야 합니다.
-      * 파일 형식 확장자는 소문자 ASCII로 입력되어야 합니다. 파일 형식 확장자를 나열할 때 선행 구분자가 포함되어서는 안 됩니다. '.jnlp' 대신 'jnlp'로 표시하세요.
-
-      예:
-
-      다음의 예시 값을 사용하면 *.example.com 도메인에서 swf, exe, jnlp 확장자에 관한 파일 형식 확장자 기반 다운로드 경고가 표시되지 않습니다. 다른 도메인에서는 exe 및 jnlp 파일에 관한 파일 형식 확장자 기반 다운로드 경고가 표시되지만, swf 파일의 경우 표시되지 않습니다.
-
-      [
-        { "file_extension": "jnlp", "domains": ["example.com"] },
-        { "file_extension": "exe", "domains": ["example.com"] },
-        { "file_extension": "swf", "domains": ["*"] }
-      ]
-
-      앞선 예시에서는 모든 도메인에서 'swf' 파일에 대한 파일 형식 확장자 기반 다운로드 경고가 표시되지 않습니다. 그러나 모든 도메인에서 위험한 파일 형식 확장자에 관한 경고를 차단하는 것은 보안 우려가 있으므로 권장되지 않습니다. 단지 이러한 경우도 가능하다는 것을 보여주기 위해 포함된 예시입니다.
-
-      이 정책이 <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />와 함께 사용되며 DownloadRestrictions가 위험한 파일 형식을 차단하도록 설정되면 DownloadRestrictions에 의해 결정되는 다운로드 차단이 우선순위를 갖습니다. 예를 들어 이 정책이 'website1.com'에서의 'exe' 확장자 다운로드가 가능하도록 설정했으나 DownloadRestrictions가 악성 다운로드 및 위험한 파일 형식을 차단하도록 설정되면 모든 도메인에서의 'exe' 확장자 다운로드가 차단됩니다. DownloadRestrictions가 위험한 파일 형식을 차단하도록 설정되지 않았다면 이 정책에 지정된 파일 형식이 지정된 도메인에서 파일 형식 확장자 기반 다운로드 경고에서 제외됩니다. DownloadRestrictions에 관해 자세히 알아보기(https://chromeenterprise.google/policies/?policy=DownloadRestrictions)</translation>
 <translation id="1954612656043024615">공유 클립보드 기능 사용 설정</translation>
 <translation id="1955063069502242812">배터리 잔량 낮음 알림음 켜기</translation>
 <translation id="1955806069704957172">데스크 커넥터 API의 설정을 제어합니다.</translation>

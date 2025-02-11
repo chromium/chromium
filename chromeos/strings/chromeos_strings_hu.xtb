@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Összegzés</translation>
 <translation id="123124571410524056">Portál valószínűsíthető</translation>
 <translation id="1232610416724362657">vízesés</translation>
+<translation id="1238163879850290856">A visszaállítással megakadályozhatja, hogy mások hozzáférjenek az adatokhoz. Csak megbízható beviteli módszereket használjon.</translation>
 <translation id="1238612778414822719">Várakozási idő HTTPS esetén</translation>
 <translation id="1252766349417594414">Joystick</translation>
 <translation id="1270369111467284986">Gyaníthatóan hitelesítési portál</translation>
@@ -767,6 +768,7 @@
 <translation id="4650608062294027130">Jobb oldali Shift</translation>
 <translation id="4654549501020883054">Minden nap más</translation>
 <translation id="4655868084888499342">Kép beállítva háttérképként</translation>
+<translation id="4660989616054030633">A generatív AI hibázhat (többek között személyekkel kapcsolatban is), ezért ellenőrizze a válaszait.</translation>
 <translation id="4661249927038176904">Szürreális</translation>
 <translation id="4661392828086261436">Ezt a frissítést az eszköz gyártója biztosítja, és a Google nem ellenőrizte</translation>
 <translation id="4664651912255946953">bunda</translation>
@@ -1066,6 +1068,7 @@
 <translation id="6074752328838739425">Összegzés elrejtése</translation>
 <translation id="6075872808778243331">(Android) HTTP várakozási idő</translation>
 <translation id="6078323886959318429">Parancsikon hozzáadása</translation>
+<translation id="6079693086494835199">A visszaállítással gondoskodhat arról, hogy az alapértelmezett kezdőlap ne legyen adathalászwebhely. Csak megbízható webhelyeket használjon.</translation>
 <translation id="6091080061796993741">sárga</translation>
 <translation id="6104112872696127344">Beolvasás megszakítva</translation>
 <translation id="6106186594183574873">A befejezéshez adja meg régi jelszavát</translation>
@@ -1089,6 +1092,7 @@
 <translation id="6156030503438652198">gesztenyebarna és rózsaszín</translation>
 <translation id="6165508094623778733">További információ</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">A visszaállítással megakadályozhatja, hogy mások használják az Ön mikrofonját vagy kameráját. Csak megbízható webhelyek számára adjon engedélyt.</translation>
 <translation id="6188737759358894319">Létrehozás dátuma: <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Az akkumulátor kapacitása egyre csökken a folyamatos használat során</translation>
 <translation id="6189987971574353264">Lejátszás</translation>
@@ -1115,6 +1119,7 @@
 <translation id="629550705077076970">billentyűzet elsötétítése</translation>
 <translation id="6302401976930124515">Teszt (<ph name="TEST_NAME" />) megszakítva</translation>
 <translation id="631063167932043783">Felfedezés alkalmazás</translation>
+<translation id="6314333689576767865">A Chromebook vissza lett állítva a biztonságos alapértelmezett beállításokra. Ez bármikor módosítható a Beállításokban.</translation>
 <translation id="6318437367327684789">a végtelenségig</translation>
 <translation id="6319207335391420837">Firmware telepítése a következőre: <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Képernyővédő bekapcsolása</translation>
@@ -1251,6 +1256,7 @@
 <translation id="6862416241246624313">Visszajelzés elküldve</translation>
 <translation id="6866732840889595464">százszorszép</translation>
 <translation id="6871256179359663621">világoslila</translation>
+<translation id="6887967050249348172">A beállítások módosításának megakadályozása érdekében a bővítmények le vannak tiltva. Csak a megbízható bővítményeket kapcsolja be.</translation>
 <translation id="6889786074662672253">Az újraindítás közben ne húzza ki a külső eszközt, és ne kapcsolja ki számítógépét. Ezt az ablakot kis méretre állíthatja. A folyamat eltarthat néhány percig, és előfordulhat, hogy közben nem működik a külső eszköz.</translation>
 <translation id="6899460405678814458">Összegzés megjelenítése</translation>
 <translation id="6900701049656042631">Ebben az albumban nincsenek fotók. Fotók hozzáadásához lépjen ide: <ph name="LINK" />.</translation>
@@ -1341,6 +1347,7 @@
 <translation id="7233782086689993269">Parancsikon visszaállítva</translation>
 <translation id="725133483556299729">Válassza ki a kívánt e-mail-címet</translation>
 <translation id="7255187042098209569">rózsaszín és lila</translation>
+<translation id="7267918995585557751">A visszaállítással gondoskodhat arról, hogy az alapértelmezett kezdőoldal ne legyen adathalászwebhely. Csak megbízható webhelyeket használjon.</translation>
 <translation id="7271000785316964275">klasszicista</translation>
 <translation id="7271040990581020067">A szkenner jelenleg használatban van. Próbálja újra később.</translation>
 <translation id="7271932918253517778">A felső sor billentyűit tartalmazó billentyűparancsban benne kell lennie a(z) <ph name="META_KEY" /> gombnak.</translation>
@@ -1486,6 +1493,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="7903695460270716054">Válogatott grafikák és képek kiválasztása</translation>
 <translation id="7912005977894000746">Vissza a főoldalra</translation>
 <translation id="7915220255123750251">Kezelheti a hálózati APN-beállításokat. Az APN-ek kapcsolatot létesítenek a mobilhálózat és az internet között.</translation>
+<translation id="7915759923880480519">A visszaállítással gondoskodhat a hálózatokon keresztül küldött adatok védelméről. Csak megbízható hálózatokat használjon.</translation>
 <translation id="7936303884198020182">Nem találhatók névszerverek</translation>
 <translation id="7942349550061667556">Piros</translation>
 <translation id="7943235353293548836">Folyamatos keepalive-időintervallum</translation>
@@ -1710,6 +1718,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="89945434909472341">falu</translation>
 <translation id="8997710128084572139">Az eszköz akkumulátorszintje: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="8998289560386111590">Nem áll rendelkezésre az eszközén</translation>
+<translation id="9000871120886759611">A visszaállítással biztosíthatja, hogy a kívánt nyelven férhessen hozzá az információkhoz. Ellenőrizze, hogy csak az előnyben részesített nyelvek vannak-e használatban.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Frekvencia</translation>
 <translation id="901834265349196618">e-mail</translation>

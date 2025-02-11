@@ -1245,30 +1245,6 @@ Ist die Richtlinie deaktiviert, schließt <ph name="PRODUCT_NAME" /> den Tab nac
       Diese Richtlinie ist standardmäßig deaktiviert.</translation>
 <translation id="1947848925128084608">Hohen Kontrast auf dem Anmeldebildschirm deaktivieren und dem Nutzer erlauben, ihn vorübergehend zu aktivieren</translation>
 <translation id="1949584741547056205">Schnellinfo</translation>
-<translation id="1951288262199783797">Du kannst diese Richtlinie aktivieren, um ein Wörterbuch der Dateierweiterungen mit einer entsprechenden Liste der Domains zu erstellen, für die keine erweiterungsbasierten Downloadwarnungen angezeigt werden sollen. Unternehmensadministratoren haben so die Möglichkeit, erweiterungsbasierte Downloadwarnungen für Dateien zu blockieren, die einer Domain in der Liste zugewiesen sind. Ist die Erweiterung „jnlp“ beispielsweise website1.com zugewiesen, sehen Nutzer keine Warnung, wenn sie „jnlp“-Dateien von website1.com herunterladen. Es wird aber eine angezeigt, wenn sie „jnlp“-Dateien von website2.com herunterladen.
-
-      Für Dateien mit Dateierweiterungen, die nach dieser Richtlinie für Domains festgelegt wurden, werden weiter Sicherheitswarnungen angezeigt, die nicht auf Dateierweiterungen beruhen. Das können z. B. Warnungen beim Herunterladen von gemischten Inhalten und Safe Browsing-Warnungen sein.
-
-      Wenn du diese Richtlinie deaktivierst oder nicht konfigurierst, werden für Dateitypen, bei denen erweiterungsbasierte Downloadwarnungen ausgelöst werden, Warnungen für den Nutzer angezeigt.
-
-      Wenn du diese Richtlinie aktivierst:
-
-      * muss das URL-Muster entsprechend https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns formatiert und
-      * die Dateierweiterung in Kleinbuchstaben (ASCII) angegeben werden. Das vorangestellte Trennzeichen muss beim Angeben der Dateierweiterung ausgelassen werden. Gib also z. B. „jnlp“ und nicht „.jnlp“ an.
-
-      Beispiel:
-
-      Durch den folgenden Beispielwert würden erweiterungsbasierte Warnungen beim Herunterladen von „swf“-, „exe“- und „jnlp“-Dateien von *.beispiel.de-Domains blockiert. Nutzer sehen aber entsprechende Warnungen, wenn sie versuchen, „exe“- und „jnlp“-Dateien von einer anderen Domain herunterzuladen. Auf „swf“-Dateien trifft das nicht zu.
-
-      [
-        { "file_extension": "jnlp", "domains": ["beispiel.de"] },
-        { "file_extension": "exe", "domains": ["beispiel.de"] },
-        { "file_extension": "swf", "domains": ["*"] }
-      ]
-
-      Wichtig: Im Beispiel oben werden erweiterungsbasierte Warnungen für „.swf“-Dateien domainübergreifend blockiert. Im Fall von gefährlichen Dateierweiterungen ist es aus Sicherheitsgründen jedoch nicht empfehlenswert, die entsprechenden Warnungen für alle Domains zu blockieren. Das Beispiel soll nur zeigen, dass dies im Grunde möglich ist.
-
-      Wenn diese Richtlinie zusammen mit „<ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />“ aktiviert ist und gefährliche Dateitypen über „DownloadRestrictions“ blockiert werden, haben die Einstellungen von „DownloadRestrictions“ Priorität. Angenommen, Downloads von „exe“-Dateien von website1.com werden über diese Richtlinie zugelassen, „DownloadRestrictions“ ist aber so konfiguriert, dass schädliche Downloads und gefährliche Dateitypen blockiert werden. In diesem Fall werden Downloads von „exe“-Dateien für alle Domains blockiert. Werden gefährliche Dateitypen nicht über „DownloadRestrictions“ blockiert, werden keine erweiterungsbasierten Warnungen beim Herunterladen der in dieser Richtlinie festgelegten Dateitypen von den angegebenen Domains ausgegeben. Weitere Informationen zu „DownloadRestrictions“ findest du unter https://chromeenterprise.google/policies/?policy=DownloadRestrictions.</translation>
 <translation id="1954612656043024615">Die Funktion „Geteilte Zwischenablage“ aktivieren</translation>
 <translation id="1955063069502242812">Ton bei niedrigem Akkustand aktivieren</translation>
 <translation id="1955806069704957172">Legt die Einstellungen für die Desk Connector API fest.</translation>

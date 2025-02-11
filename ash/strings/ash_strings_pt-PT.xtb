@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
+<translation id="1000127192436081677">Ative/desative a Partilha rápida. A Partilha rápida está <ph name="QUICK_SHARE_STATE" /></translation>
 <translation id="1012876632442809908">Dispositivo USB-C (porta frontal)</translation>
 <translation id="1013923882670373915">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" necessita de autorização para sincronizar. Introduza este código PIN nesse dispositivo: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">Isto permite que a app <ph name="APP_NAME" /> e todas as apps e Websites com a autorização de acesso à localização e o ChromeOS usem a localização de redes móveis e Wi-Fi.</translation>
@@ -154,6 +155,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1469148162491666137">Isto permite o acesso para a app <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e para todas as apps e Websites com as autorizações da câmara e do microfone. Pode ter de atualizar a página Web ou reiniciar a app.</translation>
 <translation id="147310119694673958">Bateria do telemóvel a <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">Ative/desative a zona Wi-Fi. A zona Wi-Fi está ativada, 1 dispositivo ligado.</translation>
+<translation id="1479685784053141667">Criar contacto</translation>
 <translation id="1479909375538722835">Menu de acessibilidade flutuante</translation>
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -246,7 +248,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1786487376942610288">Alternar entre o tamanho máximo ou atual da janela de ecrã no ecrã</translation>
 <translation id="1787955149152357925">Desativado</translation>
 <translation id="1796561540704213354">Websites, incluindo páginas que visitou e páginas abertas</translation>
-<translation id="179842970735685253">Termos de Utilização da Google</translation>
 <translation id="1805407494113167797">Não foi possível tocar os sons do Modo sem distrações</translation>
 <translation id="181103072419391116">Intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, gerida pelo administrador</translation>
 <translation id="1815039896005206046">A opção Não gosto envia feedback a indicar que não gosta deste grupo sugerido</translation>
@@ -465,6 +466,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2598725286293895280">Apps não suportadas no espaço de trabalho</translation>
 <translation id="2607678425161541573">É necessário iniciar sessão online</translation>
 <translation id="2612072250312279703">monitor de atividade</translation>
+<translation id="261210853165551493">Copiar com formatação</translation>
 <translation id="2612614436418177118">Mover um ícone da app na grelha de apps</translation>
 <translation id="2619052155095999743">Inserir</translation>
 <translation id="2619326010008283367">Passo <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> da visita guiada. Pode encontrar as definições do dispositivo no Launcher. Experimente personalizar o <ph name="PRODUCT_NAME" /> nas Definições, como alterar a imagem de fundo ou definir uma proteção de ecrã.</translation>
@@ -557,6 +559,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="2932487126591186298">10 minutos adicionados. Falta(m) <ph name="REMAINING_TIME" />.</translation>
 <translation id="2935225303485967257">Gerir perfis</translation>
 <translation id="2941112035454246133">Baixa</translation>
+<translation id="2941232201846070406">Verifique a ligação à Internet e tente novamente</translation>
 <translation id="2942350706960889382">Lupa ancorada</translation>
 <translation id="2942516765047364088">Posição da prateleira</translation>
 <translation id="2946119680249604491">Adicionar ligação</translation>
@@ -972,6 +975,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4275663329226226506">Multimédia</translation>
 <translation id="4279490309300973883">Espelhamento</translation>
 <translation id="4280601795273309128">As atualizações de segurança terminaram. Atualize o dispositivo.</translation>
+<translation id="4281739221820540368">Criar documentos do Google Docs</translation>
 <translation id="4283888303416325161">Introduzir palavra-passe para uma maior segurança</translation>
 <translation id="4285498937028063278">Soltar</translation>
 <translation id="428715201724021596">A estabelecer ligação ao perfil. Esta ação pode demorar alguns minutos.</translation>
@@ -1044,6 +1048,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4513044611477939680">Partilha rápida</translation>
 <translation id="4513946894732546136">Comentários</translation>
 <translation id="4518404433291145981">Para desbloquear o Chromebook, desbloqueie primeiro o seu telemóvel</translation>
+<translation id="4525887279712865285">Mostre as definições da Partilha rápida</translation>
 <translation id="4527045527269911712">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" necessita de autorização para sincronizar.</translation>
 <translation id="4531536770443562276">Apenas ecrã inteiro disponível</translation>
 <translation id="4533343294786968049">A prolongar a autonomia da bateria. A bateria vai ficar totalmente carregada à(s) <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -1242,7 +1247,6 @@ Também pode usar o atalho de teclado. Primeiro, realce o texto e, em seguida, p
 <translation id="5121628974188116412">Ir para a parte inferior da página</translation>
 <translation id="5122517996953421795">Pré-visualização de <ph name="DESK_NAME" />. Espaço de trabalho inativo.</translation>
 <translation id="5136175204352732067">Teclado diferente ligado</translation>
-<translation id="5140105873789567560">Tem de ter, pelo menos, 18 anos para usar as funcionalidades Ajuda-me a escrever e Ajuda-me a ler.</translation>
 <translation id="5144005092084035179">Mudar de entrada de áudio?</translation>
 <translation id="5147567197700016471">Desbloqueado</translation>
 <translation id="5150070631291639005">Definições de privacidade</translation>
@@ -1397,7 +1401,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Não foi possível validar a sua palavra-passe. Tente novamente.</translation>
 <translation id="5632485077360054581">Mostrar-me como</translation>
-<translation id="5633826232582408011">Quando ativa as funcionalidades Ajuda-me a escrever e Ajuda-me a ler, o texto introduzido, o conteúdo do documento e o URL da página Web são enviados para os servidores de IA da Google para gerar sugestões de escrita, gerar resumos, responder a perguntas e melhorar o produto, sujeito aos <ph name="LINK_TO_SERVICE_TERMS" />. Não inclua informações pessoais nem confidenciais.</translation>
 <translation id="5648021990716966815">Entrada para microfone</translation>
 <translation id="5652575806481723716">A app <ph name="FOCUSED_APP_NAME" /> solicita a sua atenção.</translation>
 <translation id="5662075790140998213">Espaço de trabalho 10</translation>
@@ -1601,6 +1604,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6274202259872570803">Gravação de ecrã</translation>
 <translation id="6276708887952587684">Ver código-fonte da página</translation>
 <translation id="6284232397434400372">Resolução alterada</translation>
+<translation id="6285871695023807425">Adicionar ao Calendário</translation>
 <translation id="6288235558961782912">É possível adicionar <ph name="USER_EMAIL_ADDRESS" /> novamente mais tarde com a autorização dos pais.</translation>
 <translation id="6291221004442998378">Não está a carregar.</translation>
 <translation id="6298183524022479114">Personalize este dispositivo na app</translation>
@@ -1697,6 +1701,7 @@ Nova instalação</translation>
 <translation id="6612889377159412215">subtarefa</translation>
 <translation id="6613765291890844037">Armazenamento de <ph name="STORAGE_IN_USE_SIZE" /> em utilização | Total de <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">O ecrã de privacidade está ligado</translation>
+<translation id="6618277154885124991">Criar folhas de cálculo do Google Sheets</translation>
 <translation id="6622679827379792051">Configurar visualização das apps do telemóvel</translation>
 <translation id="662279009180869175">Use as setas para a esquerda e para a direita para redimensionar o ecrã dividido</translation>
 <translation id="6624493541160101248">Espaço de trabalho atual: <ph name="DESK_NAME" />. Espaço de trabalho <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
@@ -2024,7 +2029,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7749443890790263709">Atingiu o número máximo de espaços de trabalho.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Mostrar tudo</translation>
-<translation id="7759183637555564029">Pode desativar as funcionalidades Ajuda-me a escrever e Ajuda-me a ler em qualquer altura nas Definições. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Selecionar para ativar voz</translation>
 <translation id="7769299611924763557">O seu GIF vai estar pronto em breve</translation>
 <translation id="7773536009433685931">Ativar Wi-Fi em alternativa</translation>
@@ -2034,7 +2038,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="7787212146956232129">Estão definidos dispositivos de entrada e saída. Aceda às Definições para fazer alterações.</translation>
 <translation id="7792590255364786396">Visível</translation>
-<translation id="7793389284006812057">A IA generativa é experimental, está em desenvolvimento inicial e tem atualmente disponibilidade limitada.</translation>
 <translation id="7796735576426975947">Nova notificação oculta</translation>
 <translation id="7798302898096527229">Prima Pesquisar ou Shift para cancelar.</translation>
 <translation id="780301667611848630">Não, obrigado</translation>
@@ -2254,6 +2257,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="851660987304951246">Use Ajuda-me a ler para resumir rapidamente o conteúdo ou fazer perguntas</translation>
 <translation id="8517041960877371778">O <ph name="DEVICE_TYPE" /> pode não carregar enquanto estiver ligado.</translation>
 <translation id="8535393432370007982">Anular ordenação por cor</translation>
+<translation id="8539803091108018926">Texto copiado para a área de transferência</translation>
 <translation id="8541078764854166027">Enquad. câmara</translation>
 <translation id="8542053257095774575">Nenhum espaço de trabalho ou modelo guardado</translation>
 <translation id="8546059259582788728">Ordenação anulada com êxito</translation>

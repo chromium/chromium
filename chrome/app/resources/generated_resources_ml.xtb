@@ -1360,6 +1360,7 @@
 <translation id="1936157145127842922">ഫോള്‍ഡറില്‍ കാണിക്കുക</translation>
 <translation id="1936931585862840749">എത്ര പകർപ്പുകൾ പ്രിന്റ് ചെയ്യണമെന്ന് സൂചിപ്പിക്കാൻ ഒരു നമ്പര്‍ ഉപയോഗിക്കുക (1 മുതൽ <ph name="MAX_COPIES" /> വരെ).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> ആയ ഈ ഉപകരണം ഉപയോഗിച്ച് കണ്ടെയ്‌നർ ആർക്കി‌ടെക്‌ചർ തരമായ <ph name="ARCHITECTURE_CONTAINER" /> ഇമ്പോർട്ട് ചെയ്യാനാവില്ല. നിങ്ങൾക്ക് ഈ കണ്ടെയ്‌നർ മറ്റൊരു ഉപകരണത്തിലേക്ക് പുനഃസ്ഥാപിക്കാൻ ശ്രമിക്കാം അല്ലെങ്കിൽ Files ആപ്പിൽ തുറന്ന് ഈ കണ്ടെയ്‌നർ ചിത്രത്തിനുള്ളിലെ ഫയലുകൾ ആക്‌സസ് ചെയ്യാം.</translation>
+<translation id="1938116692670653897">നിലവിലെ കളർ തീം</translation>
 <translation id="1938351510777341717">എക്‌സ്‌റ്റേണൽ കമാൻഡ്</translation>
 <translation id="1940221956626514677">ടൂൾബാർ ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="1940546824932169984">കണക്‌റ്റ് ചെയ്ത ഉപകരണം</translation>
@@ -2126,6 +2127,10 @@
 <translation id="2462332841984057083">Steam ഇതിനകം സജ്ജീകരിച്ച് കൊണ്ടിരിക്കുകയാണ്. സജ്ജീകരണം പൂർത്തിയാകുന്നതുവരെ കാത്തിരിക്കുക.</translation>
 <translation id="2462724976360937186">സർട്ടിഫിക്കേഷൻ അതോറിറ്റി കീ ഐഡി</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> ചേർത്തു</translation>
+<translation id="2464075479326723132">Microsoft SharePoint-ലും OneDrive-ലും നിങ്ങൾ നടത്തിയ ഏറ്റവും സമീപകാലത്തെ ആക്റ്റിവിറ്റിയിലേക്ക് എളുപ്പത്തിൽ മടങ്ങിയെത്താൻ സഹായിക്കുന്നതിന്, നിർദ്ദേശിച്ച ഫയലുകളാണ് നിങ്ങൾ കാണുന്നത്.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        നിങ്ങൾക്ക് കാർഡ് മെനുവിൽ നിന്ന്, ക്രമീകരണം മാനേജ് ചെയ്യാം അല്ലെങ്കിൽ 'Chrome ഇഷ്ടാനുസൃതമാക്കുക' എന്നതിൽ കൂടുതൽ ഓപ്ഷനുകൾ കാണാം.</translation>
 <translation id="2464079411014186876">ഐസ്‌ക്രീം</translation>
 <translation id="2467755475704469005">ഉപകരണമൊന്നും കണ്ടെത്തിയില്ല. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" /> എന്നയാൾക്കും മറ്റ് <ph name="NUM_OTHER_MEMBERS" /> പേർക്കുമൊപ്പം ടാബ് ഗ്രൂപ്പിൽ ചേരുക</translation>
@@ -3986,6 +3991,7 @@
 <translation id="3787434344076711519">വിവർത്തനത്തിനായി കാത്തിരിക്കുന്നു</translation>
 <translation id="3788301286821743879">കിയോസ്‌ക് ആപ്പ് ലോഞ്ച് ചെയ്യാനായില്ല.</translation>
 <translation id="3788401245189148511">ഇത് ആക്‌സ്സുചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നത്:</translation>
+<translation id="3789432704615470433">SharePoint-ഉം OneDrive ഫയലുകളും</translation>
 <translation id="3789841737615482174">ഇന്‍സ്റ്റാൾ ചെയ്യുക</translation>
 <translation id="3790417903123637354">എന്തോ കുഴപ്പം സംഭവിച്ചു. പിന്നീട് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="379082410132524484">നിങ്ങളുടെ കാർഡ്‌ കാലഹരണപ്പെട്ടു</translation>
@@ -5618,7 +5624,6 @@
 <translation id="4946998421534856407">ലോഞ്ചർ + മുകളിലേക്കുള്ള അമ്പടയാളം</translation>
 <translation id="4947376546135294974">നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റിൽ നിന്നുള്ള ഡാറ്റ</translation>
 <translation id="4950100687509657457">പ്രൊഫൈൽ സൃഷ്‌ടിക്കുക</translation>
-<translation id="4950360215042327246">[പ്ലെയ്‌സ്‌ഹോൾഡർ സ്ട്രിംഗ്]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ഒരു ഫയൽ}other{# ഫയലുകൾ}}</translation>
 <translation id="495170559598752135">പ്രവര്‍ത്തനങ്ങള്‍</translation>
 <translation id="4951966678293618079">ഈ സൈറ്റിനായി പാസ്‌വേഡുകൾ ഒരിക്കലും സംരക്ഷിക്കരുത്</translation>
@@ -6174,6 +6179,7 @@
 <translation id="5360150013186312835">ടൂൾബാറിൽ കാണിക്കുക</translation>
 <translation id="5362741141255528695">സ്വകാര്യ കീ ഫയല്‍‌ തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="536278396489099088">ChromeOS സിസ്റ്റം നിലയും റിപ്പോർട്ടുകളും</translation>
+<translation id="5362916924854054326">SharePoint-ഉം OneDrive ഫയലുകളും കാണിക്കരുത്</translation>
 <translation id="5363109466694494651">പവർവാഷുചെയ്‌‌‌ത് പഴയപടിയാക്കുക</translation>
 <translation id="5365881113273618889">നിങ്ങൾ തിരഞ്ഞെടുത്ത ഫോൾഡറിൽ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ട ഫയലുകൾ അടങ്ങിയിരിക്കുന്നു. ഈ ഫോൾഡറിലേക്ക് "<ph name="APP_NAME" />" എന്നതിന് റൈറ്റ് ചെയ്യാനുള്ള ശാശ്വതമായ ആക്‌സസ് അനുവദിക്കണമെന്ന് ഉറപ്പാണോ?</translation>
 <translation id="536638840841140142">ഒന്നുമില്ല</translation>
@@ -7974,7 +7980,6 @@
 <translation id="6679947539429331601">12 മണിക്കൂർ മറയ്‌ക്കുക</translation>
 <translation id="6680442031740878064">ലഭ്യമായ ഇടം: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">റേറ്റ് ചെയ്യുക</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [പ്ലെയ്‌സ്‌ഹോൾഡർ സ്ട്രിംഗ്]</translation>
 <translation id="6683022854667115063">ഹെഡ്ഫോണുകൾ</translation>
 <translation id="6683087162435654533">എല്ലാ ടാബുകളും പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="6683433919380522900"><ph name="PERMISSION_STATE" /> എന്നതാണ് അനുമതി</translation>
@@ -9192,7 +9197,6 @@
 <translation id="7561196759112975576">എല്ലായ്പ്പോഴും</translation>
 <translation id="7561759921596375678">ശബ്ദം ഓണാക്കുക</translation>
 <translation id="7561982940498449837">മെനു അടയ്ക്കുക</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">ബ്രൗസര്‍‌ വിന്‍‌ഡോ തുറക്കുക</translation>
 <translation id="7564847347806291057">പ്രക്രിയയുടെ അവസാനം</translation>
 <translation id="756503097602602175">സൈൻ ഇൻ ചെയ്‌ത Google അക്കൗണ്ടുകൾ നിങ്ങൾക്ക് <ph name="LINK_BEGIN" />ക്രമീകരണത്തിലൂടെ<ph name="LINK_END" /> മാനേജ് ചെയ്യാനാകും. വെബ്‌സൈറ്റുകൾക്കും ആപ്പുകൾക്കും നിങ്ങൾ നൽകിയ അനുമതികൾ എല്ലാ അക്കൗണ്ടുകൾക്കും ബാധകമായേക്കാം. സൈറ്റുകളോ ആപ്പുകളോ നിങ്ങളുടെ അക്കൗണ്ട് വിവരങ്ങൾ ആക്‌സസ് ചെയ്യണമെന്നില്ലെങ്കിൽ, നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ അതിഥിയായി സൈൻ ചെയ്യാം അല്ലെങ്കിൽ <ph name="LINK_2_BEGIN" />അദൃശ്യ വിൻഡോയിൽ<ph name="LINK_2_END" /> വെബ് ബ്രൗസ് ചെയ്യാം.</translation>
@@ -10754,6 +10758,10 @@
 <translation id="865936634714975126">പേജ് ലോഡിലെ തരങ്ങൾ തിരഞ്ഞെടുക്കാൻ URL-ൽ ഒരു ചോദ്യ പാരം ചേർക്കുക. ഉദാഹരണം: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> കോൺടാക്റ്റുകൾ</translation>
 <translation id="8659609431223166673">വിൻഡോ താഴേക്ക് നീക്കി</translation>
+<translation id="8660288500924118793">Outlook കലണ്ടറിലെ നിങ്ങളുടെ അടുത്ത ഇവന്റിലേക്ക് എളുപ്പത്തിൽ നാവിഗേറ്റ് ചെയ്യാൻ സഹായിക്കുന്നതിന് നിങ്ങളുടെ കലണ്ടർ നിങ്ങൾ കാണുന്നു.
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        നിങ്ങൾക്ക് കാർഡ് മെനുവിൽ നിന്ന്, ക്രമീകരണം മാനേജ് ചെയ്യാം അല്ലെങ്കിൽ 'Chrome ഇഷ്ടാനുസൃതമാക്കുക' എന്നതിൽ കൂടുതൽ ഓപ്ഷനുകൾ കാണാം.</translation>
 <translation id="8661290697478713397">അദൃശ്യ വിൻഡോയിൽ ലിങ്ക് തുറക്കുക</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> എന്നതിൽ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> നെറ്റ്‌വർക്കിൽ ചേരുക</translation>

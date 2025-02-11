@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Som op</translation>
 <translation id="123124571410524056">Portaal vermoed</translation>
 <translation id="1232610416724362657">waterval</translation>
+<translation id="1238163879850290856">Stel terug om te verhoed dat ander mense toegang tot die data kry. Gebruik slegs invoermetodes wat jy vertrou.</translation>
 <translation id="1238612778414822719">HTTPS-traaagheid</translation>
 <translation id="1252766349417594414">Speelstok</translation>
 <translation id="1270369111467284986">Kontroleringsportaal vermoed</translation>
@@ -767,6 +768,7 @@
 <translation id="4650608062294027130">Regter-shift-sleutel</translation>
 <translation id="4654549501020883054">Verander daagliks</translation>
 <translation id="4655868084888499342">Prent is as muurpapier gestel</translation>
+<translation id="4660989616054030633">Generatiewe KI kan foute maak, insluitend oor mense, so jy moet dit dubbelkontroleer</translation>
 <translation id="4661249927038176904">Surrealisties</translation>
 <translation id="4661392828086261436">Hierdie opdatering word deur die toestelvervaardiger verskaf en is nie deur Google geverifieer nie</translation>
 <translation id="4664651912255946953">pels</translation>
@@ -1066,6 +1068,7 @@
 <translation id="6074752328838739425">Versteek opsomming</translation>
 <translation id="6075872808778243331">(Android) HTTP-traagheid</translation>
 <translation id="6078323886959318429">Voeg kortpad by</translation>
+<translation id="6079693086494835199">Stel terug om seker te maak dat die verstek tuisblad nie ’n uitvissingwerf is nie. Gebruik slegs webwerwe wat jy vertrou.</translation>
 <translation id="6091080061796993741">geel</translation>
 <translation id="6104112872696127344">Skandering is gekanselleer.</translation>
 <translation id="6106186594183574873">Voer jou ou wagwoord in om dit te voltooi</translation>
@@ -1089,6 +1092,7 @@
 <translation id="6156030503438652198">maroen en pienk</translation>
 <translation id="6165508094623778733">Kom meer te wete</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Stel terug om te verhoed dat ander mense jou mikrofoon of kamera gebruik. Gee slegs toestemmings vir werwe wat jy vertrou.</translation>
 <translation id="6188737759358894319">Geskep op <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Batterykapasiteit neem af met gebruik</translation>
 <translation id="6189987971574353264">Speel</translation>
@@ -1115,6 +1119,7 @@
 <translation id="629550705077076970">sleutelbord verdowwing</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />-toets is gekanselleer</translation>
 <translation id="631063167932043783">Verken program</translation>
+<translation id="6314333689576767865">Jou Chromebook is teruggestel na veilige verstekke. Jy kan enige tyd veranderinge in Instellings aanbring.</translation>
 <translation id="6318437367327684789">vir altyd</translation>
 <translation id="6319207335391420837">Dateer fermware op <ph name="DEVICE_NAME" /> op</translation>
 <translation id="6321407676395378991">Skakel sluimerskerm aan</translation>
@@ -1251,6 +1256,7 @@
 <translation id="6862416241246624313">Terugvoer is ingedien</translation>
 <translation id="6866732840889595464">madeliefie</translation>
 <translation id="6871256179359663621">ligpers</translation>
+<translation id="6887967050249348172">Uitbreidings is gedeaktiveer om veranderinge aan instellings te verhoed. Skakel slegs uitbreidings aan wat jy vertrou.</translation>
 <translation id="6889786074662672253">Moenie hierdie eksterne toestel uitprop of jou rekenaar afskakel terwyl dit herbegin het. Jy kan hierdie venster klein maak. Dit kan 'n paar minute neem, en jou eksterne toestel sal dalk nie in hierdie tyd werk nie.</translation>
 <translation id="6899460405678814458">Wys opsomming</translation>
 <translation id="6900701049656042631">Hierdie album het nie enige foto’s nie. Gaan na <ph name="LINK" /> om foto’s by te voeg</translation>
@@ -1341,6 +1347,7 @@
 <translation id="7233782086689993269">Kortpad is herstel</translation>
 <translation id="725133483556299729">Kies e-posadres</translation>
 <translation id="7255187042098209569">pienk en pers</translation>
+<translation id="7267918995585557751">Stel terug om seker te maak dat die verstek afskopbladsy nie ’n uitvissingwebwerf is nie. Gebruik slegs webwerwe wat jy vertrou.</translation>
 <translation id="7271000785316964275">klassisis</translation>
 <translation id="7271040990581020067">Skandeerder word tans gebruik Probeer later weer.</translation>
 <translation id="7271932918253517778">Kortpad met sleutels in die boonste ry moet die <ph name="META_KEY" />-sleutel insluit.</translation>
@@ -1486,6 +1493,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="7903695460270716054">Kies saamgestelde kunswerke en prente</translation>
 <translation id="7912005977894000746">Terug na hoofbladsy</translation>
 <translation id="7915220255123750251">Bestuur netwerk-APN-instellings. APN’e vestig ’n verbinding tussen ’n selnetwerk en die internet.</translation>
+<translation id="7915759923880480519">Stel terug om data wat deur jou netwerke gestuur word, te beskerm. Gebruik slegs netwerke wat jy vertrou.</translation>
 <translation id="7936303884198020182">Geen naambedieners gekry nie</translation>
 <translation id="7942349550061667556">Rooi</translation>
 <translation id="7943235353293548836">Aanhoudende Hou Aktief-interval</translation>
@@ -1710,6 +1718,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="89945434909472341">dorpie</translation>
 <translation id="8997710128084572139">Toestel het <ph name="BATTERY_PERCENTAGE" />% batterykrag.</translation>
 <translation id="8998289560386111590">Nie op jou toestel beskikbaar nie</translation>
+<translation id="9000871120886759611">Stel terug om seker te maak dat jy toegang tot inligting in jou voorkeurtaal kan kry. Maak seker dat slegs voorkeurtale gebruik word.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Frekwensie</translation>
 <translation id="901834265349196618">e-pos</translation>

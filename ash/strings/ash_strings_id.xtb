@@ -246,7 +246,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1786487376942610288">Beralih antara ukuran jendela picture-in-picture maksimum atau saat ini</translation>
 <translation id="1787955149152357925">Nonaktif</translation>
 <translation id="1796561540704213354">Situs, termasuk halaman yang telah Anda kunjungi dan halaman yang dibuka</translation>
-<translation id="179842970735685253">Persyaratan Layanan Google</translation>
 <translation id="1805407494113167797">Tidak dapat memutar suara Fokus</translation>
 <translation id="181103072419391116">Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />, Dikelola oleh Administrator Anda</translation>
 <translation id="1815039896005206046">Memberi tanda Tidak suka akan mengirimkan masukan bahwa Anda tidak menyukai saran grup ini</translation>
@@ -1242,7 +1241,6 @@ Anda juga dapat menggunakan pintasan keyboard. Pertama, tandai teks, lalu tekan 
 <translation id="5121628974188116412">Membuka bagian bawah halaman</translation>
 <translation id="5122517996953421795">Pratinjau <ph name="DESK_NAME" />. Desktop virtual tidak aktif.</translation>
 <translation id="5136175204352732067">Keyboard yang berbeda terhubung</translation>
-<translation id="5140105873789567560">Anda harus berusia minimal 18 tahun untuk menggunakan fitur Bantu tulis dan Bantu baca.</translation>
 <translation id="5144005092084035179">Ganti input audio?</translation>
 <translation id="5147567197700016471">Kunci dibuka</translation>
 <translation id="5150070631291639005">Setelan privasi</translation>
@@ -1397,7 +1395,6 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Sandi Anda tidak dapat diverifikasi. Coba lagi.</translation>
 <translation id="5632485077360054581">Lihat caranya</translation>
-<translation id="5633826232582408011">Saat Anda mengaktifkan fitur Bantu tulis dan Bantu baca, teks input, konten dokumen, dan URL halaman dikirim ke server AI Google untuk membuat saran penulisan, membuat ringkasan, menjawab pertanyaan, dan meningkatkan kualitas produk, yang tunduk pada <ph name="LINK_TO_SERVICE_TERMS" />. Jangan menyertakan informasi apa pun yang bersifat pribadi, sensitif, atau rahasia.</translation>
 <translation id="5648021990716966815">Colokan mikrofon</translation>
 <translation id="5652575806481723716">Anda perlu memeriksa <ph name="FOCUSED_APP_NAME" />.</translation>
 <translation id="5662075790140998213">Desktop 10</translation>
@@ -2024,7 +2021,6 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="7749443890790263709">Jumlah halaman kerja maksimum tercapai.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Tampilkan semua</translation>
-<translation id="7759183637555564029">Anda dapat menonaktifkan fitur Bantu tulis dan Bantu baca kapan saja di Setelan. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Klik untuk diucapkan</translation>
 <translation id="7769299611924763557">GIF Anda akan segera siap</translation>
 <translation id="7773536009433685931">Aktifkan Wi-Fi</translation>
@@ -2034,7 +2030,6 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="7781829728241885113">Kemarin</translation>
 <translation id="7787212146956232129">Perangkat input dan output disetel. Buka Setelan untuk mengubah.</translation>
 <translation id="7792590255364786396">Dapat dilihat</translation>
-<translation id="7793389284006812057">AI generatif bersifat eksperimental, masih dalam pengembangan awal, dan saat ini memiliki ketersediaan terbatas.</translation>
 <translation id="7796735576426975947">Notifikasi baru disembunyikan</translation>
 <translation id="7798302898096527229">Tekan Search atau Shift untuk membatalkan.</translation>
 <translation id="780301667611848630">Lain kali</translation>

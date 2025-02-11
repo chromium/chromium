@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Sniženje na otvorenim karticama}one{Sniženja na otvorenim karticama}few{Sniženja na otvorenim karticama}other{Sniženja na otvorenim karticama}}</translation>
 <translation id="5186036860380548585">Opcija je dostupna u vrhu ekrana</translation>
 <translation id="5197729504361054390">Kontakti koje izaberete će se deliti sa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5198930230016462977">Prilagodite zatvorenu donju tabelu stranice nove kartice</translation>
 <translation id="5216942107514965959">Poslednji posećen danas</translation>
 <translation id="5225463052809312700">Uključi kameru</translation>
 <translation id="5234764350956374838">Odbaci</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Praćenje ruku</translation>
 <translation id="5771720122942595109">Dozvola <ph name="PERMISSION_1" /> je blokirana</translation>
 <translation id="5804241973901381774">Dozvole</translation>
+<translation id="5822675474983796325">Prilagodite donju tabelu stranice nove kartice otvorenu na celom ekranu</translation>
 <translation id="5844448279347999754">Kada je uključeno, sajtovi mogu da traže da vide tekst i slike sačuvane u privremenoj memoriji. Kada je isključeno, sajtovi ne mogu da vide tekst ili slike sačuvane u privremenoj memoriji.</translation>
 <translation id="5853982612236235577">Kada je uključeno, sajtovi mogu da traže da šalju obaveštenja. Kada je isključeno, sajtovi ne mogu da šalju obaveštenja.</translation>
 <translation id="5860033963881614850">Isključeno</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Prošireno</translation>
 <translation id="7219254577985949841">Želite da izbrišete podatke sajta?</translation>
 <translation id="723171743924126238">Izaberite slike</translation>
+<translation id="7243246278722455312">Prilagodite donju tabelu stranice nove kartice</translation>
 <translation id="7243308994586599757">Opcije su dostupne u dnu ekrana</translation>
 <translation id="7250468141469952378">Izabrali ste <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Odobrene su dozvole <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>

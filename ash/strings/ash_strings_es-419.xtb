@@ -246,7 +246,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1786487376942610288">Cambiar entre el tamaño máximo o actual de la ventana de pantalla en pantalla</translation>
 <translation id="1787955149152357925">No</translation>
 <translation id="1796561540704213354">Sitios web que incluyen las páginas que visitaste y las páginas abiertas</translation>
-<translation id="179842970735685253">Condiciones del Servicio de Google</translation>
 <translation id="1805407494113167797">No se pudo reproducir los sonidos de Concentración</translation>
 <translation id="181103072419391116">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, administrada por tu administrador</translation>
 <translation id="1815039896005206046">La opción No me gusta enviará comentarios que indican que no te gusta este grupo sugerido</translation>
@@ -1243,7 +1242,6 @@ También puedes usar la combinación de teclas. Primero, destaca el texto y, lue
 <translation id="5121628974188116412">Ir a la parte inferior de la página</translation>
 <translation id="5122517996953421795">Vista previa de <ph name="DESK_NAME" />. Escritorio inactivo.</translation>
 <translation id="5136175204352732067">Se conectó otro teclado</translation>
-<translation id="5140105873789567560">Debes tener al menos 18 años para usar Ayúdame a escribir y Help me read.</translation>
 <translation id="5144005092084035179">¿Quieres cambiar la entrada de audio?</translation>
 <translation id="5147567197700016471">Desactivado</translation>
 <translation id="5150070631291639005">Configuración de privacidad</translation>
@@ -1398,7 +1396,6 @@ No hay dispositivos conectados.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">No se pudo verificar tu contraseña. Vuelve a intentarlo.</translation>
 <translation id="5632485077360054581">Cómo hacerlo</translation>
-<translation id="5633826232582408011">Cuando activas Ayúdame a escribir y Ayúdame a leer, el texto de entrada, el contenido del documento y la URL de la página web se envían a los servidores de la IA de Google para generar sugerencias de escritura, hacer resúmenes, responder preguntas y mejorar el producto, sujeto a las <ph name="LINK_TO_SERVICE_TERMS" />. No incluyas información personal, sensible ni confidencial.</translation>
 <translation id="5648021990716966815">Conector para micrófono</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> requiere tu atención.</translation>
 <translation id="5662075790140998213">Escritorio 10</translation>
@@ -2025,7 +2022,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7749443890790263709">Se alcanzó la cantidad máxima de escritorios.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Mostrar todo</translation>
-<translation id="7759183637555564029">Puedes desactivar Ayúdame a escribir y Help me read en cualquier momento en Configuración. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Seleccionar para pronunciar</translation>
 <translation id="7769299611924763557">Tu GIF estará listo en breve</translation>
 <translation id="7773536009433685931">Activar el Wi-Fi</translation>
@@ -2035,7 +2031,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7781829728241885113">Ayer</translation>
 <translation id="7787212146956232129">Se establecieron los dispositivos de entrada y salida. Ve a Configuración para cambiarlos.</translation>
 <translation id="7792590255364786396">Visible</translation>
-<translation id="7793389284006812057">La IA generativa es experimental, está en desarrollo temprano y actualmente tiene disponibilidad limitada.</translation>
 <translation id="7796735576426975947">Se ocultó una nueva notificación</translation>
 <translation id="7798302898096527229">Presiona mayúscula o la tecla de búsqueda para cancelarlo.</translation>
 <translation id="780301667611848630">No, gracias</translation>

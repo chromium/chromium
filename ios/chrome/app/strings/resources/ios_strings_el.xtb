@@ -20,7 +20,6 @@
 <translation id="1054745118061919935">Αν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_LINK" />Όρους Παροχής Υπηρεσιών<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Δεν έχει αποθηκευθεί ποτέ</translation>
 <translation id="1062138828266376352">Το PIN δεν άλλαξε. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά</translation>
-<translation id="1066060668811609597">Διαχείριση συγχρονισμού</translation>
 <translation id="1076421457278169141">Ο κώδικας σαρώθηκε</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} καρτέλα}other{{count} καρτέλες}}</translation>
 <translation id="1082554859195167538">Κριτικές προϊόντων για εσάς</translation>
@@ -1152,7 +1151,6 @@
 <translation id="605721222689873409">ΕΕ</translation>
 <translation id="6059103953801602038">Οι ιστότοποι που ακολουθείτε αποθηκεύονται στον Λογαριασμό σας Google. Μπορείτε να τους διαχειριστείτε στις ρυθμίσεις του Discover.</translation>
 <translation id="6059830886158432458">Ελέγξτε τις ειδήσεις και τη δραστηριότητά σας εδώ</translation>
-<translation id="6064824697233747382">Ο οργανισμός σας απαιτεί να απενεργοποιήσετε τον συγχρονισμό.</translation>
 <translation id="6066301408025741299">Πατήστε για ακύρωση.</translation>
 <translation id="6074656473835429958">Λήψη ειδοποιήσεων</translation>
 <translation id="607620096698446287">Δεν ήταν δυνατή η μεταφόρτωση του αρχείου <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>

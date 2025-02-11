@@ -5627,7 +5627,6 @@
 <translation id="4946998421534856407">Клавіша панэлі запуску + стрэлка ўверх</translation>
 <translation id="4947376546135294974">Даныя з сайта, на якім вы знаходзіцеся</translation>
 <translation id="4950100687509657457">Стварыць профіль</translation>
-<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{файл}one{# файл}few{# файлы}many{# файлаў}other{# файла}}</translation>
 <translation id="495170559598752135">Дзеянні</translation>
 <translation id="4951966678293618079">Не захоўваць паролі для гэтага сайта</translation>
@@ -7989,7 +7988,6 @@
 <translation id="6679947539429331601">Схаваць на 12 гадзін</translation>
 <translation id="6680442031740878064">Даступна: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Хуткасць</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [Placeholder String]</translation>
 <translation id="6683022854667115063">Навушнікі</translation>
 <translation id="6683087162435654533">Аднавіць усе ўкладкі</translation>
 <translation id="6683433919380522900">Стан дазволу: <ph name="PERMISSION_STATE" /></translation>
@@ -9207,7 +9205,6 @@
 <translation id="7561196759112975576">Заўсёды</translation>
 <translation id="7561759921596375678">Уключыць гук</translation>
 <translation id="7561982940498449837">Закрыць меню</translation>
-<translation id="7563970324931922582">[тэкст запаўняльніка]</translation>
 <translation id="756445078718366910">Адкрыць акно браўзера</translation>
 <translation id="7564847347806291057">Завяршыць працэс</translation>
 <translation id="756503097602602175">У раздзеле <ph name="LINK_BEGIN" />Налады<ph name="LINK_END" /> можна кіраваць Уліковымі запісамі Google, у якія вы ўвайшлі. Дазволы для вэб-сайтаў і праграм могуць дзейнічаць для ўсіх гэтых уліковых запісаў. Калі вы не хочаце даваць сайтам або праграмам доступ да інфармацыі пра ўліковы запіс, вы можаце ўвайсці на прыладу <ph name="DEVICE_TYPE" /> як госць або праглядаць вэб-старонкі ў <ph name="LINK_2_BEGIN" />акне ў рэжыме інкогніта<ph name="LINK_2_END" />.</translation>

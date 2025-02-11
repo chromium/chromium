@@ -246,7 +246,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1786487376942610288">Alternar entre o tamanho máximo e o atual da janela picture-in-picture</translation>
 <translation id="1787955149152357925">Desativado</translation>
 <translation id="1796561540704213354">Sites que incluem páginas visitadas e páginas abertas</translation>
-<translation id="179842970735685253">Termos de Serviço do Google</translation>
 <translation id="1805407494113167797">Não foi possível tocar os sons de foco</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> de intensidade de sinal , gerenciada pelo seu administrador</translation>
 <translation id="1815039896005206046">O botão "Não gostei" envia feedback informando que você não gostou do grupo sugerido</translation>
@@ -1242,7 +1241,6 @@ Também é possível usar o atalho do teclado. Primeiro, destaque o texto e depo
 <translation id="5121628974188116412">Ir para a parte inferior da página</translation>
 <translation id="5122517996953421795">Prévia do <ph name="DESK_NAME" />. Espaço de trabalho inativo.</translation>
 <translation id="5136175204352732067">Teclado diferente conectado</translation>
-<translation id="5140105873789567560">Você precisa ter pelo menos 18 anos para usar os recursos "Quero ajuda para escrever" e "Quero ajuda para ler".</translation>
 <translation id="5144005092084035179">Trocar a entrada de áudio?</translation>
 <translation id="5147567197700016471">Desbloqueado</translation>
 <translation id="5150070631291639005">Config. de privacidade</translation>
@@ -1397,7 +1395,6 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Não foi possível verificar sua senha. Tente de novo.</translation>
 <translation id="5632485077360054581">Me ajude a fazer isso</translation>
-<translation id="5633826232582408011">Quando você ativa os recursos "Quero ajuda para escrever" e "Quero ajuda para ler", o texto de entrada, o conteúdo do documento e o URL da página da Web são enviados aos servidores da IA do Google para gerar sugestões de escrita e resumos, responder a perguntas e melhorar o produto, de acordo com os <ph name="LINK_TO_SERVICE_TERMS" />. Não inclua informações pessoais, sensíveis ou confidenciais.</translation>
 <translation id="5648021990716966815">Entrada para microfone</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> precisa de atenção.</translation>
 <translation id="5662075790140998213">Espaço de trabalho 10</translation>
@@ -2024,7 +2021,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7749443890790263709">O número máximo de áreas de trabalho foi atingido.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Exibir todos</translation>
-<translation id="7759183637555564029">Você pode desativar os recursos "Quero ajuda para escrever" e "Quero ajuda para ler" nas Configurações quando quiser. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Selecionar para ouvir</translation>
 <translation id="7769299611924763557">Seu GIF estará pronto em breve</translation>
 <translation id="7773536009433685931">Ativar o Wi-Fi</translation>
@@ -2034,7 +2030,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="7787212146956232129">Os dispositivos de entrada e saída foram definidos. Acesse as Configurações para editar.</translation>
 <translation id="7792590255364786396">Visível</translation>
-<translation id="7793389284006812057">A IA generativa é experimental e está em desenvolvimento inicial. No momento, ela tem disponibilidade limitada.</translation>
 <translation id="7796735576426975947">Nova notificação oculta</translation>
 <translation id="7798302898096527229">Pressione Pesquisar ou Shift para cancelar.</translation>
 <translation id="780301667611848630">Agora não</translation>

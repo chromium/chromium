@@ -70,6 +70,7 @@ A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor e
 <translation id="2459183986985456602">A legutóbbi lap megnyitása a Chromiumban.</translation>
 <translation id="2476409803017965813">A kiválasztott értesítéseket bármikor módosíthatja a Chromium beállításaiban.</translation>
 <translation id="2478931088402984578">Válassza ki a <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> böngészőt.</translation>
+<translation id="2485774047568879945">Állítsa be a Chromiumot alapértelmezett böngészőként, hogy könnyedén megoszthassa és megnyithassa a linkeket</translation>
 <translation id="2512597191798760956">Tartsa nyomva a Chromium ikont, majd kattintson a „Főképernyő szerkesztése” lehetőségre.</translation>
 <translation id="2517624234762908348">Chromium-adatok szinkronizálása</translation>
 <translation id="2592940277904433508">A Chromium használatának folytatása</translation>
@@ -167,6 +168,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="5088872414922783602">Gyorsabb hozzáférés a Chromiumhoz a kezdőképernyő Dockjáról.</translation>
 <translation id="5124429847818367226">Mostantól mindig a Chromiumot használhatja, amikor böngészik, illetve üzenetekben, dokumentumokban és más alkalmazásokban lévő linkekre kattint.</translation>
 <translation id="5131565040785979529">Szervezete (<ph name="DOMAIN" />) kezeli azt a fiókot, amelybe be van jelentkezve, és a Chromium használatának módját is.</translation>
+<translation id="5134464247000681876">A Gmail, a Térkép, a YouTube és más alkalmazások linkjeinek megnyitása a Chromiumban</translation>
 <translation id="5224391634244552924">Nincsenek mentett jelszavak. A Chromium képes a jelszavak ellenőrzésére, ha Ön elmenti őket.</translation>
 <translation id="5259423875997548710">Képi elemek keresése a Chromiumban.</translation>
 <translation id="5308226104666789935">A Chromium nem tud frissítéseket keresni</translation>
@@ -260,6 +262,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="7674213385180944843">Nyissa meg a Beállítások &gt; Adatvédelem &gt; Kamera &gt; Chromium elemet, és kapcsolja be a kamerát.</translation>
 <translation id="7733418656985455268">Chromium-tipp: Kereshet a Lens segítségével</translation>
 <translation id="7747820849741499258">Keresés a Chromiumban</translation>
+<translation id="7753923083404296545">Megnyitva a Chromium inkognitó módjában</translation>
 <translation id="7762622637388462191">Zárolhatja az inkognitó lapokat, amikor kilép a Chromiumból, vagy másik alkalmazásra vált.</translation>
 <translation id="7763454117143368771">A Chromiumot alapértelmezett böngészőként beállítva biztosíthatja a veszélyes webhelyekkel szembeni védelmét, és gondoskodhat jelszavai biztonságáról is.</translation>
 <translation id="7784950022329154821">Inkognitó lapok zárolása a Chromium bezárásakor</translation>

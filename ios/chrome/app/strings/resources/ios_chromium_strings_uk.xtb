@@ -70,6 +70,7 @@
 <translation id="2459183986985456602">Відкриває останню вкладку в Chromium.</translation>
 <translation id="2476409803017965813">Ви можете будь-коли змінити свій вибір у налаштуваннях Chromium.</translation>
 <translation id="2478931088402984578">Виберіть <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2485774047568879945">Зробіть Chromium вебпереглядачем за умовчанням, щоб легко надсилати й відкривати посилання</translation>
 <translation id="2512597191798760956">Утримуйте значок Chromium і натисніть "Редагувати головний екран"</translation>
 <translation id="2517624234762908348">Синхронізуйте дані Chromium</translation>
 <translation id="2592940277904433508">Продовжити використовувати Chromium</translation>
@@ -167,6 +168,7 @@
 <translation id="5088872414922783602">Відкривайте Chromium швидше з панелі Dock головного екрана.</translation>
 <translation id="5124429847818367226">Тепер ви можете переглядати й відкривати в Chromium посилання з повідомлень, документів і інших додатків.</translation>
 <translation id="5131565040785979529">Ваша організація (<ph name="DOMAIN" />) керує обліковим записом, у який ви ввійшли, і тим, як використовується Chromium.</translation>
+<translation id="5134464247000681876">Відкривайте посилання з Gmail, Карт, YouTube і інших додатків у Chromium</translation>
 <translation id="5224391634244552924">Немає збережених паролів. Chromium зможе перевірити ваші паролі, коли ви їх збережете.</translation>
 <translation id="5259423875997548710">Візуальний пошук у Chromium.</translation>
 <translation id="5308226104666789935">Chromium не може перевірити наявність оновлень</translation>
@@ -260,6 +262,7 @@
 <translation id="7674213385180944843">Відкрийте меню "Параметри" &gt; "Приватність" &gt; "Камера" &gt; "Chromium" і ввімкніть камеру.</translation>
 <translation id="7733418656985455268">Порада щодо Chromium: шукайте за допомогою Об’єктива</translation>
 <translation id="7747820849741499258">Шукати в Chromium</translation>
+<translation id="7753923083404296545">Відкрито в анонімному режимі Chromium</translation>
 <translation id="7762622637388462191">Блокуйте анонімні вкладки, коли закриваєте Chromium або переходите в інший додаток.</translation>
 <translation id="7763454117143368771">Зробіть Chromium веб-переглядачем за умовчанням, щоб захиститися від шкідливих сайтів і подбати про безпеку своїх паролів</translation>
 <translation id="7784950022329154821">Блокувати анонімні вкладки після закриття Chromium</translation>

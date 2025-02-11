@@ -70,6 +70,7 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="2459183986985456602">Open my latest tab in Chromium.</translation>
 <translation id="2476409803017965813">You can update your selections at any time in Chromium settings.</translation>
 <translation id="2478931088402984578">Select <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2485774047568879945">Set Chromium as your default browser to easily share and open links</translation>
 <translation id="2512597191798760956">Press and hold the Chromium icon and click 'Edit home screen'</translation>
 <translation id="2517624234762908348">Sync your Chromium data</translation>
 <translation id="2592940277904433508">Continue using Chromium</translation>
@@ -167,6 +168,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your
 <translation id="5088872414922783602">Access Chromium faster from your Home Screen Dock.</translation>
 <translation id="5124429847818367226">You can now use Chromium any time that you browse or tap links in messages, documents and other apps.</translation>
 <translation id="5131565040785979529">Your organisation, <ph name="DOMAIN" />, manages the account you're signed in to and how Chromium is used.</translation>
+<translation id="5134464247000681876">Open links from Gmail, Maps, YouTube and other apps in Chromium</translation>
 <translation id="5224391634244552924">No saved passwords. Chromium can check your passwords when you save them.</translation>
 <translation id="5259423875997548710">Search visuals in Chromium.</translation>
 <translation id="5308226104666789935">Chromium can't check for updates</translation>
@@ -260,6 +262,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7674213385180944843">Open Settings &gt; Privacy &gt; Camera &gt; Chromium and turn on the camera.</translation>
 <translation id="7733418656985455268">Chromium tip: Search with Lens</translation>
 <translation id="7747820849741499258">Search in Chromium</translation>
+<translation id="7753923083404296545">Opened in Chromium Incognito</translation>
 <translation id="7762622637388462191">Lock your Incognito tabs when you leave Chromium or switch to a different app.</translation>
 <translation id="7763454117143368771">Use Chromium as your default browser to stay protected from dangerous sites and keep your passwords safe</translation>
 <translation id="7784950022329154821">Lock Incognito tabs when you close Chromium</translation>

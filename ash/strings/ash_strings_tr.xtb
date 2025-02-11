@@ -246,7 +246,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1786487376942610288">Pencere içinde pencerenin maksimum veya mevcut boyutu arasında geçiş yapın</translation>
 <translation id="1787955149152357925">Kapalı</translation>
 <translation id="1796561540704213354">Ziyaret ettiğiniz ve açık sayfaların da dahil olduğu web siteleri</translation>
-<translation id="179842970735685253">Google'ın Hizmet Şartları</translation>
 <translation id="1805407494113167797">Odaklanma sesleri çalınamadı</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor</translation>
 <translation id="1815039896005206046">Beğenmeme düğmesini tıkladığınızda bu önerilen grubun hoşunuza gitmediğine dair geri bildirim gönderilir</translation>
@@ -1242,7 +1241,6 @@ Klavye kısayolunu da kullanabilirsiniz. Önce metni vurgulayın, ardından <ph 
 <translation id="5121628974188116412">Sayfanın sonuna gider</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> önizlemesi. Masa etkin değil.</translation>
 <translation id="5136175204352732067">Farklı klavye bağlandı</translation>
-<translation id="5140105873789567560">"Yazmama yardım et" ve "Okumama yardım et" özelliklerini kullanmak için en az 18 yaşında olmanız gerekir.</translation>
 <translation id="5144005092084035179">Ses girişi değiştirilsin mi?</translation>
 <translation id="5147567197700016471">Kilitli değil</translation>
 <translation id="5150070631291639005">Gizlilik ayarları</translation>
@@ -1397,7 +1395,6 @@ Bağlı cihaz yok.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Kimliğiniz doğrulanamadı. Tekrar deneyin.</translation>
 <translation id="5632485077360054581">Nasıl yapıldığını göster</translation>
-<translation id="5633826232582408011">"Yazmama yardım et" ve "Okumama yardım et" özelliklerini etkinleştirdiğinizde metin girişi, belge içeriği ve web sayfası URL'si, <ph name="LINK_TO_SERVICE_TERMS" /> uyarınca yazma önerileri oluşturmak, özet oluşturmak, soruları yanıtlamak ve ürünü iyileştirmek için Google Yapay Zeka sunucularına gönderilir. Kişisel, hassas veya gizli bilgiler eklemeyin.</translation>
 <translation id="5648021990716966815">Mikrofon jakı</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />, ilgilenmenizi gerektiriyor.</translation>
 <translation id="5662075790140998213">Masa 10</translation>
@@ -2024,7 +2021,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7749443890790263709">Maksimum masa sayısına ulaşıldı.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Tümünü göster</translation>
-<translation id="7759183637555564029">"Yazmama yardım et" ve "Okumama yardım et" özelliklerini dilediğiniz zaman Ayarlar'dan devre dışı bırakabilirsiniz. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Seç ve Dinle</translation>
 <translation id="7769299611924763557">GIF'iniz kısa süre içinde hazır olacak</translation>
 <translation id="7773536009433685931">Bunun yerine kablosuz bağlantıyı açın</translation>
@@ -2034,7 +2030,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7781829728241885113">Dün</translation>
 <translation id="7787212146956232129">Giriş ve çıkış cihazları ayarlandı. Değiştirmek için Ayarlar'a gidin.</translation>
 <translation id="7792590255364786396">Görünür</translation>
-<translation id="7793389284006812057">Üretken yapay zeka, geliştirme sürecinin ilk aşamasındaki deneysel bir çalışma olup şu anda kullanılabilirliği sınırlıdır.</translation>
 <translation id="7796735576426975947">Yeni bildirim gösterilmiyor</translation>
 <translation id="7798302898096527229">İptal etmek için Ara veya Üst Karakter tuşuna basın.</translation>
 <translation id="780301667611848630">Hayır, teşekkürler</translation>

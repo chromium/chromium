@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
+<translation id="1000127192436081677">Quick Share ট’গল কৰক। Quick Share হৈছে <ph name="QUICK_SHARE_STATE" /></translation>
 <translation id="1012876632442809908">USB-C ডিভাইচ (সন্মুখৰ প’র্ট)</translation>
 <translation id="1013923882670373915">ব্লুটুথ ডিভাইচ "<ph name="DEVICE_NAME" />"এ পেয়াৰ কৰিবলৈ অনুমতি বিচাৰে। অনুগ্ৰহ কৰি সেই ডিভাইচত এই পিন ক'ডটো দিয়ক: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">এইটোৱে <ph name="APP_NAME" /> আৰু অৱস্থানৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইট আৰু ChromeOSক ৱাই-ফাই আৰু ম’বাইল নেটৱৰ্কৰ অৱস্থান ব্যৱহাৰ কৰাৰ অনুমতি দিয়ে।</translation>
@@ -154,6 +155,7 @@
 <translation id="1469148162491666137">এইটোৱে <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> তথা কেমেৰা আৰু মাইক্ৰ’ফ’নৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে এক্সেছৰ অনুমতি দিয়ে। আপুনি ৱেবপৃষ্ঠাখন ৰিফ্ৰেশ্ব কৰিব লাগিব পাৰে বা এপ্‌টো পুনৰাৰম্ভ কৰিব লাগিব পাৰে।</translation>
 <translation id="147310119694673958">ফ’নৰ বেটাৰী <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">হ’টস্প’ট ট’গল কৰক। হ’টস্প’ট অন হৈ আছে, ১ টা ডিভাইচ সংযুক্ত হৈ আছে।</translation>
+<translation id="1479685784053141667">সম্পৰ্ক সৃষ্টি কৰক</translation>
 <translation id="1479909375538722835">সাধ্য সুবিধাৰ উপঙি থকা মেনু</translation>
 <translation id="1483493594462132177">পঠিয়াওক</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -246,7 +248,6 @@
 <translation id="1786487376942610288">picture-in-picture ৱিণ্ডৰ সর্বাধিক বা বর্তমানৰ আকাৰৰ মাজত সালসলনি কৰক</translation>
 <translation id="1787955149152357925">অফ আছে</translation>
 <translation id="1796561540704213354">আপুনি চোৱা আৰু খোলা পৃষ্ঠাসমূহকে ধৰি ৱেবছাইটসমূহ</translation>
-<translation id="179842970735685253">Googleৰ সেৱাৰ চৰ্তাৱলী</translation>
 <translation id="1805407494113167797">Focus ধ্বনি প্লে’ কৰিব পৰা নগ’ল</translation>
 <translation id="181103072419391116">ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="1815039896005206046">থাম্বছ ডাউন চিহ্নটোৱে আপুনি ই পৰামৰ্শিত গোটটো পচন্দ নাই কৰা বুলি দাখিল কৰিব</translation>
@@ -465,6 +466,7 @@
 <translation id="2598725286293895280">ডেস্কত সমৰ্থন নকৰা এপ্‌ আছে</translation>
 <translation id="2607678425161541573">অনলাইন ছাইন ইনৰ আৱশ্যক</translation>
 <translation id="2612072250312279703">কাৰ্যকলাপ পৰ্যবেক্ষক</translation>
+<translation id="261210853165551493">ফৰ্মেটিঙৰ জৰিয়তে প্ৰতিলিপি কৰক</translation>
 <translation id="2612614436418177118">এপৰ গ্ৰিডৰ ভিতৰত এটা এপৰ চিহ্ন স্থানান্তৰ কৰক</translation>
 <translation id="2619052155095999743">ভৰাওক</translation>
 <translation id="2619326010008283367">আভাসৰ <ph name="TOTAL_STEPS" /> টাৰ ভিতৰত <ph name="STEP" /> নম্বৰৰ পদক্ষেপ। আপুনি লঞ্চাৰত আপোনাৰ ডিভাইচৰ ছেটিং বিচাৰি পাব পাৰে। ছেটিঙত আপোনাৰ <ph name="PRODUCT_NAME" /> কাষ্টমাইজ কৰি চাওক, যেনে- আপোনাৰ ৱালপেপাৰ সলনি কৰা বা এটা স্ক্ৰীন ছেভাৰ ছেট কৰা।</translation>
@@ -557,6 +559,7 @@
 <translation id="2932487126591186298">১০ মিনিট যোগ দিয়া হৈছে। <ph name="REMAINING_TIME" /> বাকী আছে।</translation>
 <translation id="2935225303485967257">প্ৰ’ফাইল পৰিচালনা কৰক</translation>
 <translation id="2941112035454246133">কম</translation>
+<translation id="2941232201846070406">আপোনাৰ ইণ্টাৰনেট পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক</translation>
 <translation id="2942350706960889382">ড'ক কৰা বিৱৰ্ধক</translation>
 <translation id="2942516765047364088">শ্বেল্ফৰ স্থান</translation>
 <translation id="2946119680249604491">সংযোগ যোগ কৰক</translation>
@@ -972,6 +975,7 @@
 <translation id="4275663329226226506">মিডিয়া</translation>
 <translation id="4279490309300973883">প্ৰতিবিম্বকৰণ</translation>
 <translation id="4280601795273309128">সুৰক্ষা সম্পৰ্কীয় আপডে’ট সমাপ্ত হৈছে। আপোনাৰ ডিভাইচটো আপগ্ৰে’ড কৰক।</translation>
+<translation id="4281739221820540368">Google Docs সৃষ্টি কৰক</translation>
 <translation id="4283888303416325161">অধিক সুৰক্ষাৰ বাবে পাছৱর্ড দিয়ক</translation>
 <translation id="4285498937028063278">আনপিন কৰক</translation>
 <translation id="428715201724021596">প্ৰ’ফাইলৰ সৈতে সংযোগ কৰি থকা হৈছে। এই কামত কেইমিনিটমান সময় লাগিব পাৰে।</translation>
@@ -1044,6 +1048,7 @@
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">মতামত</translation>
 <translation id="4518404433291145981">আপোনাৰ Chromebook আনলক কৰিবলৈ, প্ৰথমে আপোনাৰ ফ’নটো আনলক কৰক</translation>
+<translation id="4525887279712865285">Quick Share ছেটিং দেখুৱাওক</translation>
 <translation id="4527045527269911712">ব্লুটুথ ডিভাইচ "<ph name="DEVICE_NAME" />"এ পেয়াৰ কৰিবলৈ অনুমতি বিচাৰে।</translation>
 <translation id="4531536770443562276">কেৱল সম্পূৰ্ণ স্ক্ৰীন উপলব্ধ</translation>
 <translation id="4533343294786968049">আপোনাৰ বেটাৰীৰ জীৱনকাল বৃদ্ধি কৰি থকা হৈছে। <ph name="FULLY_CHARGE_TIME" />ৰ ভিতৰত বেটাৰীটো সম্পূৰ্ণকৈ চাৰ্জ হ’ব।</translation>
@@ -1242,7 +1247,6 @@
 <translation id="5121628974188116412">পৃষ্ঠাটোৰ একেবাৰে তললৈ যাওক</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" />ৰ পূৰ্বদৰ্শন। নিষ্ক্ৰিয় ডেস্ক।</translation>
 <translation id="5136175204352732067">বিভিন্ন কীব’র্ড সংযোগ কৰা হৈছে</translation>
-<translation id="5140105873789567560">হেল্প মী ৰাইট আৰু হেল্প মী ৰীড ব্যৱহাৰ কৰিবলৈ আপোনাৰ বয়স অতি কমেও ১৮ বছৰ হ’বই লাগিব।</translation>
 <translation id="5144005092084035179">অডিঅ’ ইনপুট সলনি কৰিবনে?</translation>
 <translation id="5147567197700016471">আনলক কৰা হ’ল</translation>
 <translation id="5150070631291639005">গোপনীয়তাৰ ছেটিংসমূহ</translation>
@@ -1397,7 +1401,6 @@
 <translation id="5625955975703555628">এলটিই+</translation>
 <translation id="5627392655516693966">আপোনাৰ পাছৱৰ্ডটো সত্যাপন কৰিব পৰা নগ‘ল। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="5632485077360054581">কেনেকৈ কৰে মোক দেখুৱাওক</translation>
-<translation id="5633826232582408011">আপুনি হেল্প মী ৰাইট আৰু হেল্প মী ৰীড অন কৰিলে ইনপুট কৰা পাঠ, নথিত থকা সমলখিনি আৰু ৱেব পৃষ্ঠাৰ URLসমূহ <ph name="LINK_TO_SERVICE_TERMS" /> অনুসৰি লিখাৰ পৰামৰ্শ সৃষ্টি কৰিবলৈ, সাৰাংশ প্ৰস্তুত কৰিবলৈ, প্ৰশ্নৰ উত্তৰ দিবলৈ আৰু প্ৰ’ডাক্টটো উন্নত কৰিবলৈ Google AI ছাৰ্ভাৰলৈ পঠিওৱা হয়। যিকোনো ধৰণৰ ব্যক্তিগত, সংবেদনশীল বা গোপন তথ্য অন্তৰ্ভুক্ত নকৰিব।</translation>
 <translation id="5648021990716966815">মাইকৰ জেক</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />এ আপোনাৰ মনোযোগ বিচাৰি অনুৰোধ কৰিছে।</translation>
 <translation id="5662075790140998213">ডেস্ক ১০</translation>
@@ -1601,6 +1604,7 @@
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276708887952587684">পৃষ্ঠাৰ উৎস চাওক</translation>
 <translation id="6284232397434400372">ৰিজ'লিউশ্বন সলনি হ'ল</translation>
+<translation id="6285871695023807425">Calendarত যোগ দিয়ক</translation>
 <translation id="6288235558961782912">এগৰাকী অভিভাৱকৰ অনুমতি লৈ <ph name="USER_EMAIL_ADDRESS" /> পাছত পুনৰ যোগ কৰিব পৰা যায়।</translation>
 <translation id="6291221004442998378">চাৰ্জ হৈ থকা নাই</translation>
 <translation id="6298183524022479114">এপত এই ডিভাইচটো কাষ্টমাইজ কৰক</translation>
@@ -1697,6 +1701,7 @@
 <translation id="6612889377159412215">সহায়ক কাৰ্য</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> ষ্ট’ৰেজ ব্যৱহাৰ হৈ আছে | মুঠ <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">গোপনীয়তাৰ স্ক্ৰীনখন অন আছে</translation>
+<translation id="6618277154885124991">Google Sheets সৃষ্টি কৰক</translation>
 <translation id="6622679827379792051">আপোনাৰ ফ’নৰ এপ্‌সমূহ চোৱাৰ সুবিধা ছেট আপ কৰক</translation>
 <translation id="662279009180869175">বিভাজিত স্ক্ৰীনৰ আকাৰ সলনি কৰিবলৈ লেফ্ট আৰু ৰাইট এৰ’ কী দুটা ব্যৱহাৰ কৰক</translation>
 <translation id="6624493541160101248">বৰ্তমানৰ ডেস্ক: <ph name="DESK_NAME" />। <ph name="DESK_COUNT" />ৰ ভিতৰত <ph name="DESK_INDEX" /> তম ডেস্ক।</translation>
@@ -2024,7 +2029,6 @@
 <translation id="7749443890790263709">ডেস্কৰ সৰ্বাধিক সংখ্যাত উপনীত হৈছে।</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">সকলো দেখুৱাওক</translation>
-<translation id="7759183637555564029">আপুনি ছেটিঙলৈ লৈ যিকোনো সময়তে হেল্প মী ৰাইট আৰু হেল্প মী ৰীড অফ কৰিব পাৰে। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">কথা ক’বলৈ বাছনি কৰক</translation>
 <translation id="7769299611924763557">আপোনাৰ GIF সোনকালেই সাজু হ’ব</translation>
 <translation id="7773536009433685931">তাৰ পৰিৱৰ্তে ৱাইফাই অন কৰক</translation>
@@ -2034,7 +2038,6 @@
 <translation id="7781829728241885113">কালি</translation>
 <translation id="7787212146956232129">ইনপুট আৰু আউটপুট ডিভাইচসমূহ ছেট কৰা আছে। সলনি কৰিবলৈ ছেটিঙলৈ যাওক।</translation>
 <translation id="7792590255364786396">দৃশ্যমান</translation>
-<translation id="7793389284006812057">জেনেৰেটিভ AI সম্পৰীক্ষামূলক, যিটো বিকাশৰ প্ৰাৰম্ভিক স্থিতিত আছে আৰু বৰ্তমান ইয়াৰ উপলব্ধতা সীমিত।</translation>
 <translation id="7796735576426975947">নতুন জাননী লুকুওৱা হৈছে</translation>
 <translation id="7798302898096527229">বাতিল কৰিবলৈ Search বা Shift টিপক।</translation>
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
@@ -2254,6 +2257,7 @@
 <translation id="851660987304951246">দ্ৰুতভাৱে সমলৰ সাৰাংশ পাবলৈ বা প্ৰশ্ন সুধিবলৈ হেল্প মী ৰীড সুবিধাটো ব্যৱহাৰ কৰক</translation>
 <translation id="8517041960877371778">আপোনাৰ <ph name="DEVICE_TYPE" /> অন কৰি থোৱা অৱস্থাত চার্জ নহ'ব পাৰে।</translation>
 <translation id="8535393432370007982">ৰং অনুসৰি সজোৱাটো আনডু কৰক</translation>
+<translation id="8539803091108018926">ক্লিপব’ৰ্ডলৈ পাঠ প্ৰতিলিপি কৰা হ’ল</translation>
 <translation id="8541078764854166027">কেমেৰা ফ্ৰে’মিং</translation>
 <translation id="8542053257095774575">ছেভ কৰি থোৱা কোনো ডেস্ক অথবা টেম্পলে’ট নাই</translation>
 <translation id="8546059259582788728">সজোৱাটো আনডু কৰা হ'ল</translation>

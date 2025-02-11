@@ -70,6 +70,7 @@ Pirms izrakstāties, uzgaidiet dažas minūtes. Ja izrakstīsieties tūlīt, ši
 <translation id="2459183986985456602">Atvērt manu pēdējo cilni pārlūkā Chromium.</translation>
 <translation id="2476409803017965813">Jebkurā brīdi pārlūka Chromium iestatījumos varat atjaunināt atlasi.</translation>
 <translation id="2478931088402984578">Atlasiet <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
+<translation id="2485774047568879945">Iestatiet Chromium kā noklusējuma pārlūku, lai ērti kopīgotu un atvērtu saites.</translation>
 <translation id="2512597191798760956">Nospiediet un turiet Chromium ikonu un noklikšķiniet uz vienuma “Rediģēt sākuma ekrānu”</translation>
 <translation id="2517624234762908348">Sinhronizēt jūsu Chromium datus</translation>
 <translation id="2592940277904433508">Turpināt lietot Chromium</translation>
@@ -167,6 +168,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chromium datus
 <translation id="5088872414922783602">Ātrāk piekļūstiet pārlūkam Chromium no sākuma ekrāna lietotņu sadaļas.</translation>
 <translation id="5124429847818367226">Tagad varat izmantot Chromium ikreiz, kad pārlūkojat saturu vai pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
 <translation id="5131565040785979529">Jūsu organizācija (<ph name="DOMAIN" />) pārvalda kontu, kurā esat pierakstījies, un to, kā tiek izmantots pārlūks Chromium.</translation>
+<translation id="5134464247000681876">Atveriet saites no Gmail, Maps, YouTube un citām lietotnēm pārlūkā Chromium.</translation>
 <translation id="5224391634244552924">Nav saglabātu paroļu. Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
 <translation id="5259423875997548710">Sāciet vizuālo meklēšanu pārlūkā Chromium.</translation>
 <translation id="5308226104666789935">Pārlūkā Chromium nevar pārbaudīt atjauninājumu pieejamību.</translation>
@@ -260,6 +262,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="7674213385180944843">Atveriet sadaļu Iestatījumi &gt; Konfidencialitāte &gt; Kamera &gt; Chromium un ieslēdziet kameru.</translation>
 <translation id="7733418656985455268">Chromium padoms: meklējiet, izmantojot Lens</translation>
 <translation id="7747820849741499258">Meklēt pārlūkā Chromium</translation>
+<translation id="7753923083404296545">Atvērta Chromium inkognito režīmā</translation>
 <translation id="7762622637388462191">Bloķējiet savas inkognito cilnes, izejot no pārlūka Chromium vai pārslēdzoties uz citu lietotni.</translation>
 <translation id="7763454117143368771">Parūpējieties par aizsardzību no bīstamām vietnēm un savu paroļu drošību, izmantojot pārlūku Chromium kā savu noklusējuma pārlūku</translation>
 <translation id="7784950022329154821">Bloķēt inkognito cilnes, kad pārlūks Chromium tiek aizvērts</translation>

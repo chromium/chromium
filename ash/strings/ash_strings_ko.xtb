@@ -246,7 +246,6 @@
 <translation id="1786487376942610288">PIP 모드 창의 최대 크기 또는 현재 크기 간에 전환</translation>
 <translation id="1787955149152357925">꺼짐</translation>
 <translation id="1796561540704213354">방문한 페이지 및 열린 페이지를 포함한 웹사이트</translation>
-<translation id="179842970735685253">Google 서비스 약관</translation>
 <translation id="1805407494113167797">집중 모드 사운드를 재생할 수 없음</translation>
 <translation id="181103072419391116">신호 강도 <ph name="SIGNAL_STRENGTH" />, 관리자가 관리함</translation>
 <translation id="1815039896005206046">싫어요를 누르면 이 추천 그룹이 마음에 들지 않는다는 의견이 제출됩니다.</translation>
@@ -1242,7 +1241,6 @@
 <translation id="5121628974188116412">페이지 맨 아래로 이동</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> 미리보기입니다. 비활성 데스크입니다.</translation>
 <translation id="5136175204352732067">다른 키보드 연결됨</translation>
-<translation id="5140105873789567560">글쓰기 도우미 기능 및 읽기 도우미 기능을 사용하려면 18세 이상이어야 합니다.</translation>
 <translation id="5144005092084035179">오디오 입력을 전환할까요?</translation>
 <translation id="5147567197700016471">잠금 해제됨</translation>
 <translation id="5150070631291639005">개인 정보 보호 설정</translation>
@@ -1397,7 +1395,6 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">비밀번호를 확인할 수 없습니다. 다시 시도하세요.</translation>
 <translation id="5632485077360054581">방법 보기</translation>
-<translation id="5633826232582408011">글쓰기 도우미 기능과 읽기 도우미 기능을 사용 설정하면 <ph name="LINK_TO_SERVICE_TERMS" />에 따라 작성 제안 및 요약을 생성하고, 질문에 답변하고, 제품을 개선하기 위해 입력 텍스트, 문서 콘텐츠, 웹페이지 URL이 Google AI 서버로 전송됩니다. 개인 정보, 민감한 정보 또는 기밀 정보는 포함하지 마세요.</translation>
 <translation id="5648021990716966815">마이크 잭</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> 알림이 있습니다.</translation>
 <translation id="5662075790140998213">데스크 10</translation>
@@ -2024,7 +2021,6 @@
 <translation id="7749443890790263709">최대 데스크 개수에 도달했습니다.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">모두 표시</translation>
-<translation id="7759183637555564029">언제든지 설정에서 글쓰기 도우미 기능 및 읽기 도우미 기능을 사용 중지할 수 있습니다. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">텍스트 읽어주기</translation>
 <translation id="7769299611924763557">곧 GIF가 준비됩니다</translation>
 <translation id="7773536009433685931">대신 Wi-Fi 사용 설정하기</translation>
@@ -2034,7 +2030,6 @@
 <translation id="7781829728241885113">어제</translation>
 <translation id="7787212146956232129">입력 및 출력 장치가 설정되었습니다. 설정으로 이동하여 해당 설정을 변경하세요.</translation>
 <translation id="7792590255364786396">표시</translation>
-<translation id="7793389284006812057">생성형 AI는 초기 개발 단계에 있는 실험적인 기술로, 현재 제한적으로만 이용할 수 있습니다.</translation>
 <translation id="7796735576426975947">새로운 알림 숨겨짐</translation>
 <translation id="7798302898096527229">취소하려면 검색 또는 Shift 키를 누르세요.</translation>
 <translation id="780301667611848630">사용 안함</translation>

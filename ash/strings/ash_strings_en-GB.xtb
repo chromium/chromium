@@ -246,7 +246,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1786487376942610288">Switch between the maximum or current size of the picture-in-picture window</translation>
 <translation id="1787955149152357925">Off</translation>
 <translation id="1796561540704213354">Websites including pages you've visited and open pages</translation>
-<translation id="179842970735685253">Google's Terms of Service</translation>
 <translation id="1805407494113167797">Couldn't play Focus sounds</translation>
 <translation id="181103072419391116">Signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
 <translation id="1815039896005206046">Thumbs down would submit the feedback that you dislike this suggested group</translation>
@@ -1242,7 +1241,6 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
 <translation id="5121628974188116412">Go to bottom of page</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> preview. Inactive desk.</translation>
 <translation id="5136175204352732067">Different keyboard connected</translation>
-<translation id="5140105873789567560">You must be at least 18 years old to use Help me write and Help me read.</translation>
 <translation id="5144005092084035179">Switch audio input?</translation>
 <translation id="5147567197700016471">Unlocked</translation>
 <translation id="5150070631291639005">Privacy settings</translation>
@@ -1397,7 +1395,6 @@ No devices connected.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Your password couldn't be verified. Try again.</translation>
 <translation id="5632485077360054581">Show me how</translation>
-<translation id="5633826232582408011">When you turn on Help me write and Help me read, the input text, document content and web page URL are sent to Google AI servers to generate writing suggestions, generate summaries, answer questions and improve the product, subject to <ph name="LINK_TO_SERVICE_TERMS" />. Don't include anything personal, sensitive or confidential.</translation>
 <translation id="5648021990716966815">Mic jack</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> requests your attention.</translation>
 <translation id="5662075790140998213">Desk 10</translation>
@@ -2024,7 +2021,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7749443890790263709">Maximum number of desks reached.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Show all</translation>
-<translation id="7759183637555564029">You can turn off Help me write and Help me read at any time in Settings. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7769299611924763557">Your GIF will be ready shortly</translation>
 <translation id="7773536009433685931">Turn on Wi-Fi instead</translation>
@@ -2034,7 +2030,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7781829728241885113">Yesterday</translation>
 <translation id="7787212146956232129">Input and output devices are set. Go to Settings to change.</translation>
 <translation id="7792590255364786396">Visible</translation>
-<translation id="7793389284006812057">Generative AI is experimental, in early development and currently has limited availability.</translation>
 <translation id="7796735576426975947">New notification hidden</translation>
 <translation id="7798302898096527229">Press Search or Shift to cancel.</translation>
 <translation id="780301667611848630">No, thanks</translation>
@@ -2203,7 +2198,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Bad output</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> window selected</translation>
-<translation id="8349826889576450703">launcher</translation>
+<translation id="8349826889576450703">Launcher</translation>
 <translation id="8349964124165471584">Open link in new window</translation>
 <translation id="8351131234907093545">Create note</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> in use.</translation>

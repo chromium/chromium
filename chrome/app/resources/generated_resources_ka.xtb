@@ -1364,6 +1364,7 @@
 <translation id="1936157145127842922">საქაღალდეში ჩვენება</translation>
 <translation id="1936931585862840749">ამოსაბეჭდი ეგზემპლარების რაოდენობის მისათითებლად გამოიყენეთ რიცხვი (1-დან <ph name="MAX_COPIES" />-მდე).</translation>
 <translation id="1937774647013465102">კონტეინერის <ph name="ARCHITECTURE_CONTAINER" /> არქიტექტურის ტიპის იმპორტირება ვერ მოხერხდება ამ მოწყობილობით, რომელიც არის <ph name="ARCHITECTURE_DEVICE" />. შეგიძლიათ ცადოთ ამ კონტეინერის აღდგენა სხვა მოწყობილობის მეშვეობით ან იქონიოთ წვდომა კონტეინერის იმიჯში შემავალ ფაილებზე Files აპის საშუალებით.</translation>
+<translation id="1938116692670653897">მიმდინარე ფერთა სქემა</translation>
 <translation id="1938351510777341717">გარე ბრძანება</translation>
 <translation id="1940221956626514677">ხელსაწყოთა ზოლის მორგება</translation>
 <translation id="1940546824932169984">დაკავშირებული მოწყობილობები</translation>
@@ -2130,6 +2131,10 @@
 <translation id="2462332841984057083">Steam უკვე ყენდება. დაელოდეთ დაყენების დასრულებას.</translation>
 <translation id="2462724976360937186">სერტიფიკაციის ცენტრის გასაღების ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> დამატებულია</translation>
+<translation id="2464075479326723132">თქვენ ხედავთ შემოთავაზებულ ფაილებს, რომლებიც დაგეხმარებათ, რომ მარტივად დაუბრუნდეთ თქვენს ბოლო აქტივობას Microsoft SharePoint-სა და OneDrive-ში.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        სურვილისამებრ, შეგიძლიათ მართოთ პარამეტრები ბარათის მენიუდან, ან გაეცნოთ მეტ ვარიანტს „Chrome-ის მორგების“ სექციიდან.</translation>
 <translation id="2464079411014186876">ნაყინი</translation>
 <translation id="2467755475704469005">მოწყობილობა აღმოჩენილი არ არის. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">შეუერთდით ჩანართების ჯგუფს, რომელშიც არის <ph name="OWNER_FIRST_NAME" /> და <ph name="NUM_OTHER_MEMBERS" /> სხვა</translation>
@@ -3990,6 +3995,7 @@
 <translation id="3787434344076711519">ველოდებით თარგმნის დასრულებას</translation>
 <translation id="3788301286821743879">სამწუხაროდ, კიოსკის აპლიკაციის გაშვება ვერ მოხერხდა.</translation>
 <translation id="3788401245189148511">შესაძლებლობები:</translation>
+<translation id="3789432704615470433">SharePoint და OneDrive ფაილები</translation>
 <translation id="3789841737615482174">ინსტალაცია</translation>
 <translation id="3790417903123637354">წარმოიქმნა შეფერხება. ცადეთ მოგვიანებით</translation>
 <translation id="379082410132524484">თქვენი ბარათი ვადაგასულია</translation>
@@ -5623,7 +5629,6 @@
 <translation id="4946998421534856407">launcher + ზემოთ მიმართული ისარი</translation>
 <translation id="4947376546135294974">მონაცემები თქვენ მიერ მონახულებული საიტიდან</translation>
 <translation id="4950100687509657457">პროფილის შექმნა</translation>
-<translation id="4950360215042327246">[ჩანაცვლების ველის ფრაზა]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ფაილი}other{# ფაილი}}</translation>
 <translation id="495170559598752135">ქმედებები</translation>
 <translation id="4951966678293618079">არასოდეს შეინახოს პაროლები ამ საიტისთვის</translation>
@@ -6179,6 +6184,7 @@
 <translation id="5360150013186312835">ხელსაწყოთა ზოლში ჩვენება</translation>
 <translation id="5362741141255528695">აირჩიეთ პირადი გასაღების ფაილი.</translation>
 <translation id="536278396489099088">ChromeOS სისტემის მდგომარეობა და ანგარიშები</translation>
+<translation id="5362916924854054326">არ მაჩვენო SharePoint და OneDrive ფაილები</translation>
 <translation id="5363109466694494651">Powerwash-ის განხორციელება და წინა ვერსიის დაბრუნება</translation>
 <translation id="5365881113273618889">თქვენ მიერ არჩეული საქაღალდე შეიცავს კონფიდენციალურ ფაილებს. ნამდვილად გსურთ, მიანიჭოთ „<ph name="APP_NAME" />“-ს ამ საქაღალდეში ჩაწერის მუდმივი ნებართვა?</translation>
 <translation id="536638840841140142">არცერთი</translation>
@@ -7981,7 +7987,6 @@
 <translation id="6679947539429331601">12 საათით დამალვა</translation>
 <translation id="6680442031740878064">ხელმისაწვდომია: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">სიხშირე</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> — [ჩანაცვლების ველის ფრაზა]</translation>
 <translation id="6683022854667115063">ყურსასმენები</translation>
 <translation id="6683087162435654533">ყველა ჩანართის &amp;აღდგენა</translation>
 <translation id="6683433919380522900">ნებართვად განსაზღვრულია „<ph name="PERMISSION_STATE" />“</translation>
@@ -9199,7 +9204,6 @@
 <translation id="7561196759112975576">ყოველთვის</translation>
 <translation id="7561759921596375678">ხმის ჩართვა</translation>
 <translation id="7561982940498449837">მენიუს დახურვა</translation>
-<translation id="7563970324931922582">[ჩანაცვლების ველის ტექსტი]</translation>
 <translation id="756445078718366910">გახსენით ბრაუზერის ფანჯარა</translation>
 <translation id="7564847347806291057">პროცესის დასასრული</translation>
 <translation id="756503097602602175">სისტემაში შესული Google ანგარიშების მართვა შეგიძლიათ <ph name="LINK_BEGIN" />პარამეტრებიდან<ph name="LINK_END" />. ვებსაიტებისა და აპებისთვის მინიჭებული ნებართვები, შესაძლოა, ყველა ანგარიშზე ვრცელდებოდეს. თუ არ გსურთ, რომ საიტებსა თუ აპებს წვდომა ჰქონდეს თქვენი ანგარიშის ინფორმაციაზე, <ph name="DEVICE_TYPE" />-ში შესვლა შეგიძლიათ სტუმრის სტატუსით, ან ვები <ph name="LINK_2_BEGIN" />ინკოგნიტო რეჟიმში<ph name="LINK_2_END" /> დაათვალიეროთ.</translation>
@@ -10761,6 +10765,10 @@
 <translation id="865936634714975126">დაამატეთ მოთხოვნის პარამეტრები URL-ში, რომ აირჩიოთ ტიპები გვერდის ჩატვირთვაში. მაგალითად: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">კონტაქტები ფუნქციიდან „<ph name="FEATURE_NAME" />“</translation>
 <translation id="8659609431223166673">ფანჯარამ გადაინაცვლა ქვემოთ</translation>
+<translation id="8660288500924118793">თქვენს კალენდარს იმიტომ ხედავთ, რომ მარტივად გადახვიდეთ მომავალ მოვლენაზე Outlook Calendar-ში.
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        სურვილისამებრ, შეგიძლიათ მართოთ პარამეტრები ბარათის მენიუდან, ან გაეცნოთ მეტ ვარიანტს „Chrome-ის მორგების“ სექციიდან.</translation>
 <translation id="8661290697478713397">ბმულის გახსნა ინკო&amp;გნიტო ფანჯარაში</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />-ში შესვლა</translation>
 <translation id="8662671328352114214">„<ph name="TYPE" />“ ქსელში გაწევრიანება</translation>

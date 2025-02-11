@@ -220,6 +220,7 @@
 <translation id="114721135501989771">Паметне Google функције</translation>
 <translation id="1147322039136785890">Сада је на реду <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Да бисте затражили приступ, обратите се администратору овог уређаја.</translation>
+<translation id="1148464196693569530">Дозволи корисничке скрипте</translation>
 <translation id="1148624853678088576">Спремни сте!</translation>
 <translation id="1148669835763563782">Добијате најновије ажурирање софтвера ради побољшане безбедности и најновијих функција Chromebook-а. Ово ажурирање обухвата побољшани доживљај подешавања и помаже вам да неометано започнете коришћење Chromebook-а.</translation>
 <translation id="1149401351239820326">Месец истека</translation>
@@ -5626,7 +5627,6 @@
 <translation id="4946998421534856407">тастер покретача + стрелица нагоре</translation>
 <translation id="4947376546135294974">Подаци са сајта који посећујете</translation>
 <translation id="4950100687509657457">Прављење профила</translation>
-<translation id="4950360215042327246">[стринг чувара места]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{фајл}one{# фајл}few{# фајла}other{# фајлова}}</translation>
 <translation id="495170559598752135">Радње</translation>
 <translation id="4951966678293618079">Никада не чувај лозинке за овај сајт</translation>
@@ -6766,6 +6766,7 @@
 <translation id="5794414402486823030">Увек отварај помоћу системског приказивача</translation>
 <translation id="5794700615121138172">Дељени Linux директоријуми</translation>
 <translation id="5794786537412027208">Изађи из свих Chrome апликација</translation>
+<translation id="5795422263272161110">Прикажи упоредо</translation>
 <translation id="5796485699458186843">Нова картица без архивирања</translation>
 <translation id="5796956053441619942">URL са удаљеног уређаја није подржан</translation>
 <translation id="5797934230382081317">Сазнајте како да започнете са &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android-ом&lt;/a&gt; и &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS-ом&lt;/a&gt;</translation>
@@ -7294,6 +7295,7 @@
 <translation id="6170498031581934115">Омогућавање ADB отклањања грешака није успело. Идите у Подешавања и пробајте поново.</translation>
 <translation id="6170675927290506430">Иди у подешавања обавештења</translation>
 <translation id="6171779718418683144">Питај при свакој посети</translation>
+<translation id="6172020488605056255">Кликните десним тастером да бисте користили Помоћ при читању</translation>
 <translation id="617213288191670920">Није додат ниједан језик</translation>
 <translation id="6173623053897475761">Поново унесите PIN</translation>
 <translation id="6174909075810107548">Користите „5“ да бисте притиснули дугме миша</translation>
@@ -7986,7 +7988,6 @@
 <translation id="6679947539429331601">Сакриј на 12 сати</translation>
 <translation id="6680442031740878064">Доступно: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Оцените</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [стринг чувара места]</translation>
 <translation id="6683022854667115063">Слушалице</translation>
 <translation id="6683087162435654533">Врати све картице</translation>
 <translation id="6683433919380522900">Дозвола је <ph name="PERMISSION_STATE" /></translation>
@@ -8324,6 +8325,7 @@
 <translation id="6910190732484284349">Избришите приступни кључ за корисничко име: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Избрисано</translation>
 <translation id="6910274140210351823">Тамно</translation>
+<translation id="691102290537033604">Додатак ће моћи да покреће кôд који Google није прегледао. То може да буде небезбедно и треба да омогућите ово само ако знате шта радите.</translation>
 <translation id="6911734910326569517">Меморијски простор у употреби</translation>
 <translation id="6912007319859991306">PIN SIM-а за мобилну мрежу</translation>
 <translation id="6912380255120084882">Пробајте са другим уређајем</translation>
@@ -9205,7 +9207,6 @@
 <translation id="7561196759112975576">Увек</translation>
 <translation id="7561759921596375678">Укључите звук</translation>
 <translation id="7561982940498449837">Затвори мени</translation>
-<translation id="7563970324931922582">[текст чувара места]</translation>
 <translation id="756445078718366910">Отвори прозор прегледача</translation>
 <translation id="7564847347806291057">Заврши процес</translation>
 <translation id="756503097602602175">Можете да управљате Google налозима на које сте пријављени у <ph name="LINK_BEGIN" />Подешавањима<ph name="LINK_END" />. Дозволе које сте дали веб-сајтовима и апликацијама могу да важе за све налоге. Ако не желите да сајтови или апликације приступају информацијама о налогу, можете да се пријавите на <ph name="DEVICE_TYPE" /> као гост или да прегледате веб у <ph name="LINK_2_BEGIN" />прозору без архивирања<ph name="LINK_2_END" />.</translation>
@@ -9836,6 +9837,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> глас <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Аутоматски пренесите WiFi са Android телефона</translation>
 <translation id="7991296728590311172">Подешавања приступа помоћу прекидача</translation>
+<translation id="7992080146463834191">Резимирајте садржај, поједноставите сложен језик или постављајте питања.</translation>
 <translation id="7992203134935383159">Синтеза говора</translation>
 <translation id="799570308305997052">Веб-приказ</translation>
 <translation id="7997826902155442747">Приоритет процеса</translation>
@@ -11095,6 +11097,7 @@
 <translation id="8874448314264883207">Додатак <ph name="EXTENSION_NAME" /> је искључен</translation>
 <translation id="8874647982044395866">Органско</translation>
 <translation id="8874790741333031443">Пробајте привремено да дозволите колачиће треће стране, што значи слабију заштиту прегледања, али већу вероватноћу да ће функције сајта радити на очекивани начин.</translation>
+<translation id="8875221558267407626">Резимирајте садржај, поједноставите сложен језик или постављајте питања</translation>
 <translation id="8875520811099717934">Надоградња Linux-а</translation>
 <translation id="8875736897340638404">Изаберите видљивост</translation>
 <translation id="8876307312329369159">Ово подешавање не можете да промените у сесији демонстрације.</translation>
@@ -11148,6 +11151,7 @@
 <translation id="8915916167043355778">Затворите све</translation>
 <translation id="8916476537757519021">Подоквир Без архивирања: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Да, омогући</translation>
+<translation id="8917980324687233736">Прикажи упоредо</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> корисника <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Апликација  се инсталира…</translation>
 <translation id="891931289445130855">Избриши податке и дозволе</translation>

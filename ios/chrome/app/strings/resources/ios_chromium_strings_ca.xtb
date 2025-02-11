@@ -70,6 +70,7 @@ Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sess
 <translation id="2459183986985456602">Obre la meva darrera pestanya a Chromium.</translation>
 <translation id="2476409803017965813">Pots actualitzar les teves seleccions en qualsevol moment a la configuració de Chromium.</translation>
 <translation id="2478931088402984578">Selecciona <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2485774047568879945">Estableix Chromium com a navegador predeterminat per compartir i obrir enllaços fàcilment</translation>
 <translation id="2512597191798760956">Mantén premuda la icona de Chromium i fes clic a Edita la pantalla d'inici</translation>
 <translation id="2517624234762908348">Sincronitza les dades de Chromium</translation>
 <translation id="2592940277904433508">Continua utilitzant Chromium</translation>
@@ -167,6 +168,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="5088872414922783602">Accedeix a Chromium més de pressa des del Dock de la pantalla d'inici.</translation>
 <translation id="5124429847818367226">Ara pots utilitzar Chromium cada vegada que naveguis o toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="5131565040785979529">La teva organització, <ph name="DOMAIN" />, gestiona el compte en què tens la sessió iniciada i com s'utilitza Chromium.</translation>
+<translation id="5134464247000681876">Obre enllaços de Gmail, Maps, YouTube i altres aplicacions a Chromium</translation>
 <translation id="5224391634244552924">No hi ha cap contrasenya desada. Chromium pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="5259423875997548710">Cerca elements visuals a Chromium.</translation>
 <translation id="5308226104666789935">Chromium no pot cercar actualitzacions</translation>
@@ -260,6 +262,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="7674213385180944843">Obre Configuració &gt; Privacitat &gt; Càmera &gt; Chromium i activa la càmera.</translation>
 <translation id="7733418656985455268">Consell de Chromium: cerca amb Lens</translation>
 <translation id="7747820849741499258">Cerca a Chromium</translation>
+<translation id="7753923083404296545">S'ha obert en mode d'incògnit a Chromium</translation>
 <translation id="7762622637388462191">Bloqueja les pestanyes d'incògnit quan surtis de Chromium o quan canviïs d'aplicació.</translation>
 <translation id="7763454117143368771">Utilitza Chromium com a navegador predeterminat per protegir-te de llocs web perillosos i mantenir les teves contrasenyes segures</translation>
 <translation id="7784950022329154821">Bloqueja les pestanyes d'incògnit després de tancar Chromium</translation>

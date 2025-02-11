@@ -5639,7 +5639,6 @@
 <translation id="4946998421534856407">లాంచర్ + పై వైపు బాణం</translation>
 <translation id="4947376546135294974">మీరు బ్రౌజ్ చేస్తున్న సైట్ నుండి డేటా</translation>
 <translation id="4950100687509657457">ప్రొఫైల్‌ను క్రియేట్ చేయండి</translation>
-<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ఫైల్}other{# ఫైళ్లు}}</translation>
 <translation id="495170559598752135">చర్యలు</translation>
 <translation id="4951966678293618079">ఈ సైట్‌కు పాస్‌వర్డ్‌లను ఎన్నడూ సేవ్ చేయవద్దు</translation>
@@ -7995,7 +7994,6 @@
 <translation id="6679947539429331601">12 గంటల పాటు దాచండి</translation>
 <translation id="6680442031740878064">అందుబాటులో ఉంది: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">రేట్</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Placeholder String]</translation>
 <translation id="6683022854667115063">హెడ్‌ఫోన్స్</translation>
 <translation id="6683087162435654533">అన్ని ట్యాబ్‌లను రీస్టోర్ చేయండి</translation>
 <translation id="6683433919380522900"><ph name="PERMISSION_STATE" /> అనుమతి</translation>
@@ -9214,7 +9212,6 @@
 <translation id="7561196759112975576">ఎల్లప్పుడూ</translation>
 <translation id="7561759921596375678">వాల్యూమ్‌ను ఆన్ చేయండి</translation>
 <translation id="7561982940498449837">మెనూను మూసివేయండి</translation>
-<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">బ్రౌజర్ విండోను తెరువు</translation>
 <translation id="7564847347806291057">ప్రాసెస్‌ని ముగించు</translation>
 <translation id="756503097602602175">మీరు <ph name="LINK_BEGIN" />సెట్టింగ్‌ల<ph name="LINK_END" /> నుండి సైన్ ఇన్ చేయబడి ఉన్న Google ఖాతాలను మేనేజ్ చేయవచ్చు. మీరు వెబ్‌సైట్‌లు, యాప్‌లకు ఇచ్చిన అనుమతులు మిగతా అన్ని ఖాతాలకు వర్తించవచ్చు. మీరు సైట్‌లు లేదా యాప్‌లు మీ ఖాతా సమాచారాన్ని యాక్సెస్ చేయకూడదనుకుంటే మీరు గెస్ట్‌గా <ph name="DEVICE_TYPE" />కు సైన్ ఇన్ చేయవచ్చు లేదా <ph name="LINK_2_BEGIN" />అజ్ఞాత విండో<ph name="LINK_2_END" />లో వెబ్‌ను బ్రౌజ్ చేయవచ్చు.</translation>

@@ -246,7 +246,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1786487376942610288">Basculer entre la taille maximale et la taille actuelle de la fenêtre d'incrustation d'image</translation>
 <translation id="1787955149152357925">Désactivé</translation>
 <translation id="1796561540704213354">Sites Web comprenant les pages que vous avez visitées et les pages ouvertes</translation>
-<translation id="179842970735685253">Conditions d'utilisation de Google</translation>
 <translation id="1805407494113167797">Impossible de faire jouer les sons Sans distractions</translation>
 <translation id="181103072419391116">Force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="1815039896005206046">La mention Je n'aime pas indique que vous n'aimez pas le groupe suggéré.</translation>
@@ -1241,7 +1240,6 @@ Vous pouvez également utiliser le raccourci-clavier. Tout d'abord, mettez le te
 <translation id="5121628974188116412">Aller à la fin de la page</translation>
 <translation id="5122517996953421795">Aperçu du bureau <ph name="DESK_NAME" />. Bureau inactif.</translation>
 <translation id="5136175204352732067">Autre clavier branché</translation>
-<translation id="5140105873789567560">Vous devez avoir au moins 18 ans pour utiliser l'Aide à la rédaction et l'Aide à la lecture.</translation>
 <translation id="5144005092084035179">Changer l'entrée audio?</translation>
 <translation id="5147567197700016471">Déverrouillé</translation>
 <translation id="5150070631291639005">Paramètres de confidentialité</translation>
@@ -1396,7 +1394,6 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Votre mot de passe n'a pas pu être vérifié. Réessayez.</translation>
 <translation id="5632485077360054581">Afficher la marche à suivre</translation>
-<translation id="5633826232582408011">Lorsque vous activez l'Aide à la rédaction et l'Aide à la lecture, le texte saisi, le contenu du document et l'URL de la page Web sont envoyés aux serveurs de l'IA de Google pour générer des suggestions de rédaction, générer des résumés, répondre aux questions et améliorer le produit, sous réserve des <ph name="LINK_TO_SERVICE_TERMS" />. N'incluez aucun élément personnel ni aucun élément confidentiel.</translation>
 <translation id="5648021990716966815">Prise du microphone</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> demande votre attention.</translation>
 <translation id="5662075790140998213">Bureau 10</translation>
@@ -2023,7 +2020,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7749443890790263709">Le nombre maximal de bureaux a été atteint.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Tout afficher</translation>
-<translation id="7759183637555564029">Vous pouvez désactiver l'Aide à la rédaction et l'Aide à la lecture à tout moment dans Paramètres. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Sélectionner pour énoncer</translation>
 <translation id="7769299611924763557">Votre GIF sera bientôt prêt</translation>
 <translation id="7773536009433685931">Activez plutôt le Wi-Fi</translation>
@@ -2033,7 +2029,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7781829728241885113">Hier</translation>
 <translation id="7787212146956232129">Les périphériques d'entrée et de sortie sont définis. Accédez aux paramètres pour effectuer des modifications.</translation>
 <translation id="7792590255364786396">Visible</translation>
-<translation id="7793389284006812057">L'IA générative est expérimentale et en début de développement, et sa disponibilité est actuellement limitée.</translation>
 <translation id="7796735576426975947">Nouvelle notification masquée</translation>
 <translation id="7798302898096527229">Appuyez sur Recherche ou Majuscule pour le désactiver.</translation>
 <translation id="780301667611848630">Non merci</translation>

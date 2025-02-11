@@ -220,6 +220,7 @@
 <translation id="114721135501989771">Chrome ನಲ್ಲಿ Google ಸ್ಮಾರ್ಟ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="1147322039136785890">ಇದೀಗ <ph name="SUPERVISED_USER_NAME" /> ಅವರ ಸರದಿ</translation>
 <translation id="1147991416141538220">ಪ್ರವೇಶಕ್ಕಾಗಿ ಕೇಳಲು, ಈ ಸಾಧನದ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
+<translation id="1148464196693569530">ಬಳಕೆದಾರರ ಸ್ಕ್ರಿಪ್ಟ್‌ಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="1148624853678088576">ನೀವು ಎಲ್ಲ ರೀತಿಯಲ್ಲಿಯೂ ಸಿದ್ಧರಾಗಿರುವಿರಿ!</translation>
 <translation id="1148669835763563782">ವರ್ಧಿತ ಭದ್ರತೆ ಹಾಗೂ ಹೊಸ Chromebook ಫೀಚರ್‌ಗಳಿಗಾಗಿ ನೀವು ಇತ್ತೀಚಿನ ಸಾಫ್ಟ್‌ವೇರ್ ಅಪ್‌ಡೇಟ್‌ ಅನ್ನು ಪಡೆಯುತ್ತಿದ್ದೀರಿ. ನಿಮ್ಮ Chromebook ನಲ್ಲಿ ಸುಲಭವಾಗಿ ಪ್ರಾರಂಭಿಸುವ ಸಲುವಾಗಿ ನಿಮಗೆ ಸಹಾಯ ಮಾಡಲು ಈ ಅಪ್‌ಡೇಟ್‌ ಸುಧಾರಿತ ಸೆಟಪ್ ಅನುಭವವನ್ನು ಒಳಗೊಂಡಿದೆ.</translation>
 <translation id="1149401351239820326">ಮುಕ್ತಾಯದ ತಿಂಗಳು</translation>
@@ -5633,7 +5634,6 @@
 <translation id="4946998421534856407">ಲಾಂಚರ್ + ಅಪ್ ಆ್ಯರೋ</translation>
 <translation id="4947376546135294974">ನೀವು ಭೇಟಿ ನೀಡುತ್ತಿರುವ ಸೈಟ್‌ನಿಂದ ಡೇಟಾ</translation>
 <translation id="4950100687509657457">ಪ್ರೊಫೈಲ್ ರಚಿಸಿ</translation>
-<translation id="4950360215042327246">[ಪ್ಲೇಸ್‌ಹೋಲ್ಡರ್‌ ಸ್ಟ್ರಿಂಗ್]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ಒಂದು ಫೈಲ್}one{# ಫೈಲ್‌ಗಳು}other{# ಫೈಲ್‌ಗಳು}}</translation>
 <translation id="495170559598752135">ಕ್ರಿಯೆಗಳು</translation>
 <translation id="4951966678293618079">ಈ ಸೈಟ್‌ಗಾಗಿ ಎಂದಿಗೂ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಬೇಡಿ</translation>
@@ -6774,6 +6774,7 @@
 <translation id="5794414402486823030">ಯಾವಾಗಲೂ ಸಿಸ್ಟಂ ವೀಕ್ಷಕದ ಜೊತೆಗೆ ತೆರೆಯಿರಿ</translation>
 <translation id="5794700615121138172">Linux ಹಂಚಿಕೊಂಡ ಫೋಲ್ಡರ್‌ಗಳು</translation>
 <translation id="5794786537412027208">ಎಲ್ಲ Chrome ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ತ್ಯಜಿಸಿ</translation>
+<translation id="5795422263272161110">ಅಕ್ಕಪಕ್ಕದಲ್ಲಿ ತೋರಿಸಿ</translation>
 <translation id="5796485699458186843">ಹೊಸ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
 <translation id="5796956053441619942">ರಿಮೋಟ್ ಸಾಧನದ URL ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; ಮತ್ತು &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; ಅನ್ನು ಪ್ರಾರಂಭಿಸುವುದು ಹೇಗೆ ಎಂದು ತಿಳಿಯಿರಿ</translation>
@@ -7302,6 +7303,7 @@
 <translation id="6170498031581934115">ADB ಡೀಬಗ್ ಮಾಡುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ, ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6170675927290506430">ನೋಟಿಫಿಕೇಶನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="6171779718418683144">ಪ್ರತಿ ಬಾರಿ ಭೇಟಿ ನೀಡಿದಾಗ ಕೇಳಿ</translation>
+<translation id="6172020488605056255">'ಓದಲು ಸಹಾಯ ಮಾಡಿ' ಅನ್ನು ಬಳಸಲು ಬಲ-ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="617213288191670920">ಯಾವುದೇ ಭಾಷೆಗಳನ್ನು ಸೇರಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="6173623053897475761">ನಿಮ್ಮ ಪಿನ್‌ ಅನ್ನು ಪುನಃ ಟೈಪ್‌ ಮಾಡಿ</translation>
 <translation id="6174909075810107548">ಮೌಸ್ ಬಟನ್ ಒತ್ತಲು "5" ಕೀಯನ್ನು ಬಳಸಿ</translation>
@@ -7992,7 +7994,6 @@
 <translation id="6679947539429331601">12 ಗಂಟೆಗಳ ಕಾಲ ಮರೆಮಾಡಿ</translation>
 <translation id="6680442031740878064">ಲಭ್ಯವಿದೆ: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">ದರ</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [ಪ್ಲೇಸ್‌ಹೋಲ್ಡರ್‌ ಸ್ಟ್ರಿಂಗ್]</translation>
 <translation id="6683022854667115063">ಹೆಡ್‌ಫೋನ್‌ಗಳು</translation>
 <translation id="6683087162435654533">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="6683433919380522900">ಅನುಮತಿ <ph name="PERMISSION_STATE" /> ನಲ್ಲಿದೆ</translation>
@@ -8330,6 +8331,7 @@
 <translation id="6910190732484284349">ಈ ಬಳಕೆದಾರರ ಹೆಸರಿಗಾಗಿ ಪಾಸ್‌ಕೀಯನ್ನು ಅಳಿಸಿ: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="6910274140210351823">ಡಾರ್ಕ್</translation>
+<translation id="691102290537033604">Google ನಿಂದ ಪರಿಶೀಲಿಸದ ಕೋಡ್ ಅನ್ನು ರನ್ ಮಾಡಲು ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ. ಇದು ಸುರಕ್ಷಿತವಾಗಿಲ್ಲದಿರಬಹುದು ಮತ್ತು ನೀವು ಏನು ಮಾಡುತ್ತಿದ್ದೀರಿ ಎಂದು ನಿಮಗೆ ಖಚಿತವಾಗಿದ್ದರೆ ಮಾತ್ರ ಇದನ್ನು ಆನ್ ಮಾಡಬೇಕು.</translation>
 <translation id="6911734910326569517">ಮೆಮೊರಿ ಬಳಕೆಯ ಪ್ರಮಾಣ</translation>
 <translation id="6912007319859991306">ಸೆಲ್ಯುಲರ್ SIM ಪಿನ್</translation>
 <translation id="6912380255120084882">ಬೇರೆ ಸಾಧನವನ್ನು ಬಳಸಿ ನೋಡಿ</translation>
@@ -9211,7 +9213,6 @@
 <translation id="7561196759112975576">ಯಾವಾಗಲೂ</translation>
 <translation id="7561759921596375678">ವಾಲ್ಯೂಮ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="7561982940498449837">ಮೆನು ಮುಚ್ಚಿರಿ</translation>
-<translation id="7563970324931922582">[ಪ್ಲೇಸ್‌ಹೋಲ್ಡರ್‌ ಪಠ್ಯ]</translation>
 <translation id="756445078718366910">ಬ್ರೌಸರ್ ವಿಂಡೋವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7564847347806291057">ಪ್ರಕ್ರಿಯೆ ಕೊನೆಗೊಳಿಸಿ</translation>
 <translation id="756503097602602175">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದ ಎಲ್ಲಾ Google ಖಾತೆಗಳನ್ನು <ph name="LINK_BEGIN" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಂದ<ph name="LINK_END" /> ನಿರ್ವಹಿಸಬಹುದು. ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಿಗೆ ನೀವು ನೀಡಿದ ಅನುಮತಿಗಳು ಎಲ್ಲಾ ಖಾತೆಗಳಿಗೆ ಅನ್ವಯಿಸಬಹುದು. ಸೈಟ್‌ಗಳು ಅಥವಾ ಆ್ಯಪ್‌ಗಳು ನಿಮ್ಮ ಖಾತೆಯ ಮಾಹಿತಿಯನ್ನು ಪ್ರವೇಶಿಸಲು ನೀವು ಬಯಸದಿದ್ದಲ್ಲಿ, ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ನೀವು ಅತಿಥಿಯಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು ಅಥವಾ <ph name="LINK_2_BEGIN" />ಅಜ್ಞಾತ ವಿಂಡೋ<ph name="LINK_2_END" />ದಲ್ಲಿ ವೆಬ್ ಅನ್ನು ಬ್ರೌಸ್ ಮಾಡಬಹುದು.</translation>
@@ -9841,6 +9842,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> ಧ್ವನಿ <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">ನಿಮ್ಮ Android ಫೋನ್‌ನಿಂದ Wi-Fi ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ವರ್ಗಾಯಿಸಿ</translation>
 <translation id="7991296728590311172">ಪ್ರವೇಶದ ವಿಧಾನವನ್ನು ಬದಲಿಸುವ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="7992080146463834191">ಕಂಟೆಂಟ್‌ ಅನ್ನು ಸಾರಾಂಶಗೊಳಿಸಿ, ಸಂಕೀರ್ಣ ಭಾಷೆಯನ್ನು ಸರಳಗೊಳಿಸಿ ಅಥವಾ ಪ್ರಶ್ನೆಗಳನ್ನು ಕೇಳಿ.</translation>
 <translation id="7992203134935383159">ಧ್ವನಿ ಸಂಶ್ಲೇಷಣೆ</translation>
 <translation id="799570308305997052">ವೆಬ್ ವೀಕ್ಷಣೆ</translation>
 <translation id="7997826902155442747">ಪ್ರಕ್ರಿಯೆಯ ಆದ್ಯತೆ</translation>
@@ -11096,6 +11098,7 @@
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" ಅನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8874647982044395866">ಆರ್ಗ್ಯಾನಿಕ್</translation>
 <translation id="8874790741333031443">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ತಾತ್ಕಾಲಿಕವಾಗಿ ಅನುಮತಿಸಲು ಪ್ರಯತ್ನಿಸಿ, ಅಂದರೆ ಬ್ರೌಸಿಂಗ್ ಕಡಿಮೆ ಸಂರಕ್ಷಿತವಾಗಿದೆ, ಆದರೆ ಸೈಟ್‌ನ ಫೀಚರ್‌ಗಳು ಉತ್ತಮವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತವೆ.</translation>
+<translation id="8875221558267407626">ಕಂಟೆಂಟ್‌ ಅನ್ನು ಸಾರಾಂಶಗೊಳಿಸಿ, ಸಂಕೀರ್ಣ ಭಾಷೆಯನ್ನು ಸರಳಗೊಳಿಸಿ ಅಥವಾ ಪ್ರಶ್ನೆಗಳನ್ನು ಕೇಳಿ</translation>
 <translation id="8875520811099717934">Linux ಅಪ್‌ಗ್ರೇಡ್</translation>
 <translation id="8875736897340638404">ನಿಮ್ಮ ಗೋಚರತೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8876307312329369159">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಡೆಮೊ ಸೆಷನ್‌ನಲ್ಲಿ ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
@@ -11149,6 +11152,7 @@
 <translation id="8915916167043355778">ಎಲ್ಲವನ್ನೂ ಮುಚ್ಚಿರಿ</translation>
 <translation id="8916476537757519021">ಅದೃಶ್ಯ ಉಪಫ್ರೇಮ್: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">ಹೌದು, ನಾನು ಒಪ್ಪಿಕೊಳ್ಳುತ್ತೇನೆ</translation>
+<translation id="8917980324687233736">ಅಕ್ಕಪಕ್ಕದಲ್ಲಿ ತೋರಿಸಿ</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />ನ <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">ಆ್ಯಪ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="891931289445130855">ಡೇಟಾ ಮತ್ತು ಅನುಮತಿಗಳನ್ನು ಅಳಿಸಿ</translation>

@@ -206,7 +206,6 @@
 <translation id="1337692097987160377">Споделяне на този раздел</translation>
 <translation id="1339601241726513588">Домейн за записване:</translation>
 <translation id="1340482604681802745">Адрес за вземане</translation>
-<translation id="134204716678666126">Използвайте клавишите със стрелка за наляво и надясно, за да се придвижите до бутоните за отзиви.</translation>
 <translation id="1343356790768851700">Този сайт определя какво харесвате и след това предлага реклами на други сайтове</translation>
 <translation id="1346748346194534595">Надясно</translation>
 <translation id="1348779747280417563">Потвърждаване на името</translation>
@@ -1061,7 +1060,6 @@
 <translation id="2902312830803030883">Още действия</translation>
 <translation id="2903493209154104877">Адреси</translation>
 <translation id="290376772003165898">Страницата не е на <ph name="LANGUAGE" />?</translation>
-<translation id="2904165004205947971">Управлявайте информацията си</translation>
 <translation id="2905107382358353958">Сигнал за нова настройка за плащане</translation>
 <translation id="2909946352844186028">Установена бе промяна в мрежата.</translation>
 <translation id="2911255567212929079">Машинно обучение и изкуствен интелект</translation>
@@ -1568,7 +1566,6 @@
 <translation id="3727309136762649052">Пространство от имена</translation>
 <translation id="3727850735097852673">За да използвате Google Мениджър на пароли с Keychain на macOS, стартирайте Chrome отново и разрешете достъпа до Keychain. След повторното стартиране разделите ви ще се отворят отново.</translation>
 <translation id="3728173127485570463">Браузърът Chrome вече няма да изисква отпечатък при автоматично попълване на пароли</translation>
-<translation id="3735143108516366187">Натиснете Enter, за да управлявате подобренията на предвижданията</translation>
 <translation id="3736739313435669994">Блокирали сте сайтовете така, че да не използват „бисквитки“ на трети страни, за да ви проследяват, докато сърфирате. Отворете настройките, за да <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Браузърът се управлява от администратора ви.</translation>
 <translation id="3738428049780661523">Създадено: <ph name="DATE" /></translation>
@@ -1667,7 +1664,6 @@
 <translation id="3909695131102177774"><ph name="LABEL" /> – <ph name="ERROR" /></translation>
 <translation id="3909899182024383590">Запазената информация и страницата от <ph name="WEBSITE" /> се изпращат до Google и може да бъдат видени от проверяващи лица с цел подобряване на тази функция.</translation>
 <translation id="3910231615117880630">Научете повече за вграденото съдържание</translation>
-<translation id="3915878244842478983">При извличането на информацията ви от Chrome възникна проблем</translation>
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Как можете да управлявате данните си<ph name="END_BOLD" />: Chrome автоматично изтрива сайтовете, посетени преди повече от 30 дни. Ако отново посетите даден сайт, той може пак да се покаже в списъка. Също така имате възможност да блокирате даден сайт, така че да не предлага реклами, и да изключите този тип реклами по всяко време от настройките на Chrome.</translation>
 <translation id="3921869355029467742">Въведете кода си за сигурност</translation>
 <translation id="3927538228901078312">Няма таблици за сравнение</translation>
@@ -2867,7 +2863,6 @@
 <translation id="6058977677006700226">Искате ли да използвате картите си на всичките си устройства?</translation>
 <translation id="6059925163896151826">USB устройства</translation>
 <translation id="6060009363608157444">Невалиден режим за DnsOverHttps.</translation>
-<translation id="6060132878120844000">и още 1 поле</translation>
 <translation id="6061154937977953833">Борба</translation>
 <translation id="6062937464449575061">Спиране на проследяването на цената</translation>
 <translation id="6063415549109819824">Жилищно финансиране</translation>
@@ -2933,7 +2928,6 @@
 <translation id="6180316780098470077">Интервал за повторен опит</translation>
 <translation id="6182972682129119950">A4 x 5</translation>
 <translation id="6184868291074982484">Chrome автоматично ограничава „бисквитките“ на трети страни</translation>
-<translation id="6188479691141473408">и още <ph name="N_FIELDS" /> полета</translation>
 <translation id="6190518157737269631">Замяна на някои клавиши на клавиатурата ви, като например Esc</translation>
 <translation id="6194209731893739467">Тук ще се показват всички проследявани от вас продукти</translation>
 <translation id="6195163219142236913">„Бисквитките“ на трети страни са ограничени</translation>
@@ -3162,7 +3156,6 @@
 <translation id="6569060085658103619">Преглеждате страница на разширение</translation>
 <translation id="6572867903637058088">Това полезно ли е?</translation>
 <translation id="6573200754375280815">Двойно перфориране отдясно</translation>
-<translation id="6574762126505704998">Запълване</translation>
 <translation id="6575408526598156416">Запазване в профила</translation>
 <translation id="6577792494180292262">Рисков капитал</translation>
 <translation id="6578434528542148658">Невалиден идентификатор на разширението.</translation>
@@ -3980,7 +3973,6 @@
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да зададете Chrome като браузър по подразбиране за системата</translation>
 <translation id="8027077570865220386">Тава 15</translation>
 <translation id="8027585818882015174">Бутон за стартиране на проверка на безопасността в Chrome. Активирайте, за да стартирате такава проверка от настройките на браузъра</translation>
-<translation id="8028138772801251745">Автоматично попълване с AI</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да създадете бързо формуляр в Google Формуляри</translation>
 <translation id="8028892419725165118">Казуални игри</translation>
 <translation id="8028960012888758725">Отрязване след отпечатване</translation>

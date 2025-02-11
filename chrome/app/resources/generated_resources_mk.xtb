@@ -1374,6 +1374,7 @@
 <translation id="1936157145127842922">Покажи во папка</translation>
 <translation id="1936931585862840749">Употребете број за да назначите колку примероци да се испечатат (од 1 до <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Не може да се увезе тип архитектура на контејнер <ph name="ARCHITECTURE_CONTAINER" /> со уред којшто е <ph name="ARCHITECTURE_DEVICE" />. Може да се обидете да го вратите овој контејнер во различен уред или може да пристапите до датотеките во оваа слика на контејнер, така што ќе ја отворите апликацијата Files.</translation>
+<translation id="1938116692670653897">Тековна тема во боја</translation>
 <translation id="1938351510777341717">Надворешна наредба</translation>
 <translation id="1940221956626514677">Приспособете го алатникот</translation>
 <translation id="1940546824932169984">Поврзани уреди</translation>
@@ -2143,6 +2144,10 @@
 <translation id="2462332841984057083">Steam веќе се поставува. Почекајте да заврши поставувањето.</translation>
 <translation id="2462724976360937186">ИД на клуч на орган за сертифицирање</translation>
 <translation id="2462752602710430187">Додаден е <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Гледате предложени датотеки за да ви помогнат лесно да се вратите на вашата најнеодамнешна активност во Microsoft SharePoint и OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Може да управувате со поставките од менито со картички или да видите повеќе опции во „Приспособете го Chrome“.</translation>
 <translation id="2464079411014186876">Сладолед</translation>
 <translation id="2467755475704469005">Не е откриен уред. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Придружете се во групата картички со <ph name="OWNER_FIRST_NAME" /> и уште <ph name="NUM_OTHER_MEMBERS" /></translation>
@@ -4003,6 +4008,7 @@
 <translation id="3787434344076711519">Се чека превод</translation>
 <translation id="3788301286821743879">Апликацијата Kiosk не може да се стартува.</translation>
 <translation id="3788401245189148511">Може да:</translation>
+<translation id="3789432704615470433">Датотеки на SharePoint и OneDrive</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
 <translation id="3790417903123637354">Нешто тргна наопаку. Обидете се повторно подоцна</translation>
 <translation id="379082410132524484">Картичката ви е истечена</translation>
@@ -5636,7 +5642,6 @@
 <translation id="4946998421534856407">стартер + стрелка нагоре</translation>
 <translation id="4947376546135294974">Податоци од сајтот што го посетувате</translation>
 <translation id="4950100687509657457">Создајте профил</translation>
-<translation id="4950360215042327246">[Низа за резервирано место]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{датотека}one{# датотека}other{# датотеки}}</translation>
 <translation id="495170559598752135">Дејства</translation>
 <translation id="4951966678293618079">Никогаш не зачувувај лозинки за сајтов</translation>
@@ -6192,6 +6197,7 @@
 <translation id="5360150013186312835">Прикажи во алатник</translation>
 <translation id="5362741141255528695">Избери датотека со приватен клуч.</translation>
 <translation id="536278396489099088">Состојба на системот и извештаи на ChromeOS</translation>
+<translation id="5362916924854054326">Не прикажувај ги датотеките на SharePoint и OneDrive</translation>
 <translation id="5363109466694494651">Фабрички ресетирај и врати</translation>
 <translation id="5365881113273618889">Папката што ја избравте содржи чувствителни датотеки. Дали сигурно сакате да ѝ доделите на <ph name="APP_NAME" /> постојан пристап за пишување во оваа папка?</translation>
 <translation id="536638840841140142">Нема</translation>
@@ -7994,7 +8000,6 @@
 <translation id="6679947539429331601">Криј 12 часа</translation>
 <translation id="6680442031740878064">Слободен простор: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Брзина</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Низа за резервирано место]</translation>
 <translation id="6683022854667115063">Слушалки</translation>
 <translation id="6683087162435654533">&amp;Врати ги сите картички</translation>
 <translation id="6683433919380522900">Дозвола: <ph name="PERMISSION_STATE" /></translation>
@@ -9212,7 +9217,6 @@
 <translation id="7561196759112975576">Секогаш</translation>
 <translation id="7561759921596375678">Вклучи звук</translation>
 <translation id="7561982940498449837">Затвори го менито</translation>
-<translation id="7563970324931922582">[текст на резервирано место]</translation>
 <translation id="756445078718366910">Отвори прозорец на прелистувач</translation>
 <translation id="7564847347806291057">Заврши процес</translation>
 <translation id="756503097602602175">Може да управувате со најавените сметки на Google од <ph name="LINK_BEGIN" />Поставки<ph name="LINK_END" />. Дозволите што сте им ги одобриле на веб-сајтовите и апликациите можеби ќе важат за сите сметки. Ако не сакате сајтовите или апликациите да пристапуваат до податоците за сметката, може да се најавите на вашиот <ph name="DEVICE_TYPE" /> како гостин или да прелистувате на интернет во <ph name="LINK_2_BEGIN" />прозорец „Инкогнито“<ph name="LINK_2_END" />.</translation>
@@ -10776,6 +10780,10 @@
 <translation id="865936634714975126">Додајте параметар на барање во URL-адресата за да ги изберете типовите вчитувања на страницата. Пример: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Контакти за <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Прозорецот е преместен надолу</translation>
+<translation id="8660288500924118793">Го гледате вашиот календар за да ви помогне полесно да стигнете до вашиот следен настан во Outlook Calendar.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Може да управувате со поставките од менито со картички или да видите повеќе опции во „Приспособете го Chrome“.</translation>
 <translation id="8661290697478713397">Отвори ја врската во инко&amp;гнито прозорец</translation>
 <translation id="8662474268934425487">Најавете се на <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Придружување на мрежа <ph name="TYPE" /></translation>

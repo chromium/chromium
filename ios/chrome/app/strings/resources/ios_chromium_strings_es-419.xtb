@@ -70,6 +70,7 @@ Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</t
 <translation id="2459183986985456602">Abre mi pestaña más reciente en Chromium.</translation>
 <translation id="2476409803017965813">Puedes actualizar tus selecciones en cualquier momento en la configuración de Chromium.</translation>
 <translation id="2478931088402984578">Selecciona <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
+<translation id="2485774047568879945">Establece Chromium como tu navegador predeterminado para compartir y abrir vínculos fácilmente</translation>
 <translation id="2512597191798760956">Mantén presionado el ícono de Chromium y haz clic en "Edita la pantalla de inicio"</translation>
 <translation id="2517624234762908348">Sincronizar tus datos de Chromium</translation>
 <translation id="2592940277904433508">Seguir usando Chromium</translation>
@@ -167,6 +168,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="5088872414922783602">Accede a Chromium más rápido desde el Dock de la pantalla principal.</translation>
 <translation id="5124429847818367226">Ahora puedes usar Chromium cada vez que navegas o presionas vínculos que aparecen en mensajes, documentos y otras apps.</translation>
 <translation id="5131565040785979529">Tu organización, <ph name="DOMAIN" />, administra la cuenta con la que accediste y la forma en que se usa Chromium.</translation>
+<translation id="5134464247000681876">Abre vínculos de Gmail, Maps, YouTube y otras apps en Chromium</translation>
 <translation id="5224391634244552924">No hay contraseñas guardadas. Chromium puede revisar las contraseñas cuando las guardas.</translation>
 <translation id="5259423875997548710">Busca elementos visuales en Chromium.</translation>
 <translation id="5308226104666789935">Chromium no puede buscar actualizaciones.</translation>
@@ -260,6 +262,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="7674213385180944843">Abre Configuración &gt; Privacidad &gt; Cámara &gt; Chromium y activa la cámara.</translation>
 <translation id="7733418656985455268">Sugerencia de Chromium: Busca con Lens</translation>
 <translation id="7747820849741499258">Buscar en Chromium</translation>
+<translation id="7753923083404296545">Se abrió en Chromium en Incógnito</translation>
 <translation id="7762622637388462191">Bloquea tus pestañas de incógnito cuando abandonas Chromium o cambias de app.</translation>
 <translation id="7763454117143368771">Usa Chromium como tu navegador predeterminado para protegerte de sitios peligrosos y mantener tus contraseñas seguras</translation>
 <translation id="7784950022329154821">Bloquear las pestañas de incógnito cuando cierras Chrome</translation>

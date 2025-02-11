@@ -78,6 +78,7 @@
 <translation id="2094648590148273905">Условия использования Chrome OS Flex</translation>
 <translation id="2094919256425865063">Завершить работу Chrome?</translation>
 <translation id="2106831557840787829">Chrome OS Flex, как и <ph name="BEGIN_LINK_LINUX_OSS" />среда разработки Linux<ph name="END_LINK_LINUX_OSS" />, работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="2108778574543343055">Отключить фоновый режим для приложений в Chrome</translation>
 <translation id="2120620239521071941">С устройства будут удалены объекты (<ph name="ITEMS_COUNT" />). Чтобы восстановить данные позже, войдите в Chrome как <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Перезапустить для обновления &amp;Chrome</translation>
 <translation id="2123055963409958220">Отправьте отчет о <ph name="BEGIN_LINK" />текущих настройках Chrome<ph name="END_LINK" />, чтобы помочь нам улучшить браузер</translation>
@@ -139,6 +140,7 @@
 <translation id="2797864378188255696">Когда вы будете использовать аккаунт <ph name="USER_EMAIL" /> для входа в сервисы Google, такие как Gmail или YouTube, вы сможете автоматически входить с ним в Chrome.</translation>
 <translation id="2799162042226656283">Настройки Chrome</translation>
 <translation id="2799223571221894425">Перезапустить</translation>
+<translation id="2818684386420968393">Отключить фоновый режим для приложений в Chrome</translation>
 <translation id="2825024317344269723">Опасный сайт. Браузер Chrome отозвал разрешение на показ уведомлений.</translation>
 <translation id="2841525013647267359">Язык оригинала</translation>
 <translation id="2846251086934905009">Произошла ошибка. Не удалось завершить установку. Она была прервана.</translation>

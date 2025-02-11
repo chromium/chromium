@@ -246,7 +246,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1786487376942610288">Alterner entre la taille maximale et la taille actuelle de la fenêtre Picture-in-picture</translation>
 <translation id="1787955149152357925">Désactivé</translation>
 <translation id="1796561540704213354">Sites Web, y compris les pages que vous avez consultées et celles que vous avez ouvertes</translation>
-<translation id="179842970735685253">Conditions d'utilisation de Google</translation>
 <translation id="1805407494113167797">Impossible de lire les sons pour se concentrer</translation>
 <translation id="181103072419391116">Force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="1815039896005206046">Je n'aime pas indique que ce groupe suggéré ne vous convient pas</translation>
@@ -1242,7 +1241,6 @@ Vous pouvez aussi utiliser le raccourci clavier. Mettez d'abord le texte en surb
 <translation id="5121628974188116412">Accéder au bas de la page</translation>
 <translation id="5122517996953421795">Aperçu du <ph name="DESK_NAME" />. Bureau inactif.</translation>
 <translation id="5136175204352732067">Clavier différent branché</translation>
-<translation id="5140105873789567560">Vous devez avoir au moins 18 ans pour utiliser M'aider à écrire et M'aider à lire.</translation>
 <translation id="5144005092084035179">Changer d'entrée audio ?</translation>
 <translation id="5147567197700016471">Déverrouillé</translation>
 <translation id="5150070631291639005">Paramètres de confidentialité</translation>
@@ -1397,7 +1395,6 @@ Aucun appareil connecté.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Impossible de valider votre mot de passe. Réessayez.</translation>
 <translation id="5632485077360054581">Démonstration</translation>
-<translation id="5633826232582408011">Lorsque vous activez M'aider à écrire et M'aider à lire, le texte saisi, le contenu du document et l'URL de la page Web sont envoyés aux serveurs d'IA de Google pour générer des suggestions de texte et des résumés, répondre aux questions et améliorer le produit, conformément aux <ph name="LINK_TO_SERVICE_TERMS" />. N'incluez aucun élément personnel, sensible ou confidentiel.</translation>
 <translation id="5648021990716966815">Connecteur micro</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> requiert votre attention.</translation>
 <translation id="5662075790140998213">Bureau 10</translation>
@@ -2025,7 +2022,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7749443890790263709">Vous avez atteint le nombre maximal de bureaux.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Tout afficher</translation>
-<translation id="7759183637555564029">Vous pouvez désactiver M'aider à écrire et M'aider à lire à tout moment dans les paramètres. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Sélectionner pour écouter</translation>
 <translation id="7769299611924763557">Votre GIF sera bientôt prêt</translation>
 <translation id="7773536009433685931">Activer le Wi-Fi à la place</translation>
@@ -2035,7 +2031,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7781829728241885113">Hier</translation>
 <translation id="7787212146956232129">Les périphériques d'entrée et de sortie sont définis. Pour les modifier, accédez aux paramètres.</translation>
 <translation id="7792590255364786396">Visible</translation>
-<translation id="7793389284006812057">L'IA générative est expérimentale, elle n'en est encore qu'à ses débuts, et sa disponibilité est actuellement limitée.</translation>
 <translation id="7796735576426975947">Nouvelle notification masquée</translation>
 <translation id="7798302898096527229">Appuyez sur Rechercher ou Maj pour annuler.</translation>
 <translation id="780301667611848630">Non, merci</translation>
