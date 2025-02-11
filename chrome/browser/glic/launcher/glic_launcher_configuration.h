@@ -24,9 +24,6 @@ class GlicLauncherConfiguration {
     virtual void OnGlobalHotkeyChanged(ui::Accelerator hotkey) {}
   };
 
-  static constexpr char kHotkeyKeyCode[] = "keycode";
-  static constexpr char kHotkeyModifiers[] = "modifiers";
-
   explicit GlicLauncherConfiguration(Observer* manager);
   ~GlicLauncherConfiguration();
 

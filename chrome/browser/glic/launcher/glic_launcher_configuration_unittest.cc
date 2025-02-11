@@ -13,6 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/command.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -73,16 +74,10 @@ TEST_F(GlicLauncherConfigurationTest, GetGlobalHotkey_Default) {
 }
 
 TEST_F(GlicLauncherConfigurationTest, GetGlobalHotkey_Invalid) {
-  auto hotkey_dictionary =
-      base::Value::Dict()
-          .Set(GlicLauncherConfiguration::kHotkeyKeyCode, ui::VKEY_G)
-          .Set(GlicLauncherConfiguration::kHotkeyModifiers, ui::EF_NONE);
-  local_state()->SetDict(prefs::kGlicLauncherGlobalHotkey,
-                         std::move(hotkey_dictionary));
-
-  const ui::Accelerator accelerator =
-      GlicLauncherConfiguration::GetGlobalHotkey();
-  EXPECT_EQ(accelerator, ui::Accelerator());
+  const ui::Accelerator invalid_hotkey(ui::VKEY_G, ui::EF_NONE);
+  local_state()->SetString(prefs::kGlicLauncherHotkey,
+                           ui::Command::AcceleratorToString(invalid_hotkey));
+  EXPECT_EQ(GlicLauncherConfiguration::GetGlobalHotkey(), ui::Accelerator());
 }
 
 TEST_F(GlicLauncherConfigurationTest, Observer) {
@@ -92,12 +87,9 @@ TEST_F(GlicLauncherConfigurationTest, Observer) {
   local_state()->SetBoolean(prefs::kGlicLauncherEnabled, true);
 
   EXPECT_CALL(observer, OnGlobalHotkeyChanged(testing::_)).Times(1);
-  auto hotkey_dictionary =
-      base::Value::Dict()
-          .Set(GlicLauncherConfiguration::kHotkeyKeyCode, ui::VKEY_K)
-          .Set(GlicLauncherConfiguration::kHotkeyModifiers, ui::EF_ALT_DOWN);
-  local_state()->SetDict(prefs::kGlicLauncherGlobalHotkey,
-                         std::move(hotkey_dictionary));
+  const ui::Accelerator hotkey(ui::VKEY_K, ui::EF_ALT_DOWN);
+  local_state()->SetString(prefs::kGlicLauncherHotkey,
+                           ui::Command::AcceleratorToString(hotkey));
 }
 
 }  // namespace glic
