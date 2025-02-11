@@ -102,9 +102,17 @@ void DisplayWebView::OnFrameSinkDidFinishFrame(
 
     // TODO(vasilyt): We don't need full aggregation here as we don't need
     // aggregated frame.
+    int64_t display_trace_id = base::trace_event::GetNextGlobalTraceId();
+    // Note: Unlike in viz::Display::DrawAndSwap, there's no need to push
+    // display_trace_id to pending_swap_ack_trace_ids_ and
+    // pending_presented_trace_ids_ because we're not drawing the whole frame,
+    // so viz::Display::DidReceiveSwapBuffersAck and
+    // viz::Display::DidReceivePresentationFeedback won't be called (and
+    // therefore won't consume pending_swap_ack_trace_ids_ and
+    // pending_presented_trace_ids_ respectively).
     aggregator_->Aggregate(current_surface_id_, base::TimeTicks::Now(),
                            gfx::OVERLAY_TRANSFORM_NONE, gfx::Rect(),
-                           ++swapped_trace_id_);
+                           display_trace_id);
     auto* resolved_data = aggregator_->GetLatestFrameData(surface_id);
     if (resolved_data) {
       if (!overlay_processor_webview_->ProcessForFrameSinkId(frame_sink_id,
