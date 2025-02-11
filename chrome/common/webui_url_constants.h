@@ -286,8 +286,6 @@ inline constexpr char
         "privacy-policy";
 inline constexpr char kChromeUIUntrustedThemeURL[] =
     "chrome-untrusted://theme/";
-inline constexpr char kChromeUIUntrustedWebUITestURL[] =
-    "chrome-untrusted://webui-test/";
 inline constexpr char kChromeUIUsbInternalsHost[] = "usb-internals";
 inline constexpr char kChromeUIUserActionsHost[] = "user-actions";
 inline constexpr char kChromeUIUserEducationInternalsHost[] =
@@ -299,7 +297,6 @@ inline constexpr char kChromeUIVersionURL[] = "chrome://version/";
 inline constexpr char16_t kChromeUIVersionURL16[] = u"chrome://version/";
 inline constexpr char kChromeUIWebRtcLogsHost[] = "webrtc-logs";
 inline constexpr char kChromeUIWebuiGalleryHost[] = "webui-gallery";
-inline constexpr char kChromeUIWebUITestHost[] = "webui-test";
 
 #if BUILDFLAG(IS_ANDROID)
 inline constexpr char kChromeUIJavaCrashURL[] = "chrome://java-crash/";
@@ -353,9 +350,12 @@ inline constexpr char kChromeUIUntrustedReadAnythingSidePanelHost[] =
     "read-anything-side-panel.top-chrome";
 inline constexpr char kChromeUIUntrustedReadAnythingSidePanelURL[] =
     "chrome-untrusted://read-anything-side-panel.top-chrome/";
+inline constexpr char kChromeUIUntrustedWebUITestURL[] =
+    "chrome-untrusted://webui-test/";
 inline constexpr char kChromeUIWebAppInternalsHost[] = "web-app-internals";
 inline constexpr char kChromeUIWebUIJsErrorHost[] = "webuijserror";
 inline constexpr char kChromeUIWebUIJsErrorURL[] = "chrome://webuijserror/";
+inline constexpr char kChromeUIWebUITestHost[] = "webui-test";
 inline constexpr char kCookiesSubPagePath[] = "/cookies";
 inline constexpr char kTrackingProtectionSubPagePath[] = "/trackingProtection";
 #endif  // BUILDFLAG(IS_ANDROID)

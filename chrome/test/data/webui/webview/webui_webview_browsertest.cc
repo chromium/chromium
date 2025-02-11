@@ -11,7 +11,6 @@
 #include "build/chromeos_buildflags.h"
 #include "build/config/coverage/buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/browser.h"
@@ -74,9 +73,8 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  Profile* GetProfileForSetup() override {
-    return Profile::FromBrowserContext(
-        GetWebContentsForTesting()->GetBrowserContext());
+  content::WebContents* GetWebContentsForSetup() override {
+    return GetWebContentsForTesting();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

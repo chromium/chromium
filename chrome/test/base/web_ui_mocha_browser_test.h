@@ -7,23 +7,15 @@
 
 #include <string>
 
-#include "build/build_config.h"
-#include "chrome/test/base/platform_browser_test.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/test/scoped_feature_list.h"
-#else
 #include "chrome/test/base/devtools_agent_coverage_observer.h"
-#endif
-
-class Profile;
+#include "chrome/test/base/in_process_browser_test.h"
 
 namespace content {
 class WebContents;
 }  // namespace content
 
 // Inherit from this class to run WebUI tests that are using Mocha.
-class WebUIMochaBrowserTest : public PlatformBrowserTest {
+class WebUIMochaBrowserTest : public InProcessBrowserTest {
  public:
   WebUIMochaBrowserTest(const WebUIMochaBrowserTest&) = delete;
   WebUIMochaBrowserTest& operator=(const WebUIMochaBrowserTest&) = delete;
@@ -69,14 +61,11 @@ class WebUIMochaBrowserTest : public PlatformBrowserTest {
   // involve the WebContents, before the Mocha test runs.
   virtual void OnWebContentsAvailable(content::WebContents* web_contents);
 
-  // Gets the Profile instance to set the chrome://webui-test data on.
-  // Defaults to chrome_test_utils::GetProfile(this);
-  virtual Profile* GetProfileForSetup();
+  // Gets the WebContents instance to set up the chrome://webui-test data
+  // source for. Defaults to chrome_test_utils::GetActiveWebContents(this);
+  virtual content::WebContents* GetWebContentsForSetup();
 
-  // PlatformBrowserTest overrides.
-#if BUILDFLAG(IS_ANDROID)
-  void SetUp() override;
-#endif
+  // InProcessBrowserTest overrides.
   void SetUpOnMainThread() override;
 
   void set_test_loader_host(const std::string& host);
@@ -103,12 +92,8 @@ class WebUIMochaBrowserTest : public PlatformBrowserTest {
   // Note: It is also used by RunTest even when |skip_test_loader| is true.
   std::string test_loader_scheme_;
 
-#if BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList scoped_feature_list_;
-#else
   // Handles collection of code coverage.
   std::unique_ptr<DevToolsAgentCoverageObserver> coverage_handler_;
-#endif
 };
 
 // Inherit from this class to explicitly focus the web contents before running
