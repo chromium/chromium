@@ -8,7 +8,7 @@ import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chro
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, createSpeechSynthesisVoice, emitEvent, setSimpleAxTreeWithText, waitForPlayFromSelection} from './common.js';
+import {createApp, createSpeechSynthesisVoice, emitEvent, playFromSelectionWithMockTimer, setSimpleAxTreeWithText} from './common.js';
 
 suite('WordHighlighting', () => {
   let app: AppElement;
@@ -188,9 +188,7 @@ suite('WordHighlighting', () => {
     selection.addRange(range);
     await microtasksFinished();
 
-    // Play from selection.
-    app.playSpeech();
-    await waitForPlayFromSelection();
+    playFromSelectionWithMockTimer(app);
 
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');

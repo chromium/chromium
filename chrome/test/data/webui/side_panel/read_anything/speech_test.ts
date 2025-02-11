@@ -4,15 +4,14 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {PauseActionSource, ToolbarEvent, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {PauseActionSource, playFromSelectionTimeout, ToolbarEvent, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, createSpeechSynthesisVoice, emitEvent, setSimpleAxTreeWithText, waitForPlayFromSelection} from './common.js';
+import {createApp, createSpeechSynthesisVoice, emitEvent, setSimpleAxTreeWithText} from './common.js';
 import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 
-// TODO: b/323960128 - Add tests for word boundaries here or in a
-// separate file.
 suite('Speech', () => {
   let app: AppElement;
   let speechSynthesis: FakeSpeechSynthesis;
@@ -89,8 +88,6 @@ suite('Speech', () => {
 
     app.enabledLangs = ['en'];
     app.getSpeechSynthesisVoice();
-
-    return microtasksFinished();
   });
 
   suite('on play', () => {
@@ -147,9 +144,12 @@ suite('Speech', () => {
   });
 
   suite('with text selected', () => {
-    async function selectAndPlay(
+    let mockTimer: MockTimer;
+
+    function selectAndPlay(
         baseTree: any, anchorId: number, anchorOffset: number, focusId: number,
-        focusOffset: number, isBackward: boolean = false): Promise<void> {
+        focusOffset: number, isBackward: boolean = false): void {
+      mockTimer.install();
       const selectedTree = Object.assign(
           {
             selection: {
@@ -164,11 +164,19 @@ suite('Speech', () => {
       chrome.readingMode.setContentForTesting(selectedTree, leafIds);
       app.updateSelection();
       app.playSpeech();
-      return waitForPlayFromSelection();
+      mockTimer.tick(playFromSelectionTimeout);
+      mockTimer.uninstall();
     }
 
-    test('first play starts from selected node', async () => {
-      await selectAndPlay(axTree, 5, 0, 5, 7);
+    setup(() => {
+      mockTimer = new MockTimer();
+      const selectedVoice =
+          createSpeechSynthesisVoice({lang: 'en-US', name: 'Google Kristi'});
+      return emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
+    });
+
+    test('first play starts from selected node', () => {
+      selectAndPlay(axTree, 5, 0, 5, 7);
 
       const utteranceTexts = getSpokenTexts();
       assertEquals(totalSentences - paragraph1.length, utteranceTexts.length);
@@ -176,15 +184,15 @@ suite('Speech', () => {
           paragraph2.every(sentence => utteranceTexts.includes(sentence)));
     });
 
-    test('selection is cleared after play', async () => {
-      await selectAndPlay(axTree, 5, 0, 5, 10);
+    test('selection is cleared after play', () => {
+      selectAndPlay(axTree, 5, 0, 5, 10);
       assertEquals('None', app.getSelection().type);
     });
 
     test(
         'when selection starts in middle of node, play from beginning of node',
-        async () => {
-          await selectAndPlay(axTree, 5, 10, 5, 20);
+        () => {
+          selectAndPlay(axTree, 5, 10, 5, 20);
 
           const utteranceTexts = getSpokenTexts();
           assertEquals(
@@ -193,8 +201,8 @@ suite('Speech', () => {
               paragraph2.every(sentence => utteranceTexts.includes(sentence)));
         });
 
-    test('when selection crosses nodes, play from earlier node', async () => {
-      await selectAndPlay(axTree, 3, 10, 5, 10);
+    test('when selection crosses nodes, play from earlier node', () => {
+      selectAndPlay(axTree, 3, 10, 5, 10);
 
       const utteranceTexts = getSpokenTexts();
       assertEquals(totalSentences, utteranceTexts.length);
@@ -204,8 +212,8 @@ suite('Speech', () => {
           paragraph2.every(sentence => utteranceTexts.includes(sentence)));
     });
 
-    test('when selection is backward, play from earlier node', async () => {
-      await selectAndPlay(axTree, 5, 10, 3, 10, /*isBackward=*/ true);
+    test('when selection is backward, play from earlier node', () => {
+      selectAndPlay(axTree, 5, 10, 3, 10, /*isBackward=*/ true);
 
       const utteranceTexts = getSpokenTexts();
       assertEquals(totalSentences, utteranceTexts.length);
@@ -216,12 +224,11 @@ suite('Speech', () => {
     });
 
     test(
-        'after speech started, cancels speech and plays from selection',
-        async () => {
+        'after speech started, cancels speech and plays from selection', () => {
           app.speechPlayingState.isSpeechTreeInitialized = true;
           app.speechPlayingState.hasSpeechBeenTriggered = true;
 
-          await selectAndPlay(axTree, 5, 0, 5, 10);
+          selectAndPlay(axTree, 5, 0, 5, 10);
 
           assertTrue(speechSynthesis.canceled);
           const utteranceTexts = getSpokenTexts();
@@ -231,7 +238,7 @@ suite('Speech', () => {
               paragraph2.every(sentence => utteranceTexts.includes(sentence)));
         });
 
-    test('play from selection when node split across sentences', async () => {
+    test('play from selection when node split across sentences', () => {
       const fragment1 = ' This is a sentence';
       const fragment2 = ' that ends in the next node. ';
       const fragment3 =
@@ -270,7 +277,7 @@ suite('Speech', () => {
           },
         ],
       };
-      await selectAndPlay(
+      selectAndPlay(
           splitNodeTree, 5, fragment2.length + 1, 5,
           fragment2.length + fragment3.length);
 
