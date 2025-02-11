@@ -128,16 +128,15 @@ TEST(ReportingUtilsTest, GetBrowserCrashEvent) {
 }
 
 TEST(ReportingUtilsTest, TestEventLocalIp) {
-  base::Value::List local_ips = GetLocalIpAddresses();
+  std::vector<std::string> local_ips = GetLocalIpAddresses();
   // TODO(crbug.com//394602691): Remove Android build exclusion once IP address
   // support becomes a requirement for Android devices.
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(local_ips.empty());
 #endif
   for (const auto& ip_address : local_ips) {
-    std::string_view str_view(ip_address.GetString());
     std::optional<net::IPAddress> local_ip =
-        net::IPAddress::FromIPLiteral(str_view);
+        net::IPAddress::FromIPLiteral(ip_address);
     EXPECT_TRUE(local_ip->IsValid());
     EXPECT_FALSE(local_ip->IsZero());
   }

@@ -42,6 +42,8 @@ source_set("core") {
     "//components/enterprise",
     "//components/enterprise/buildflags",
     "//components/enterprise/common/proto:browser_events_proto",
+    "//components/enterprise/common/proto:chrome_reporting_entity",
+    "//components/enterprise/common/proto:upload_request_response",
     "//components/enterprise/device_trust",
     "//components/keyed_service/core",
     "//components/policy/core/browser",
