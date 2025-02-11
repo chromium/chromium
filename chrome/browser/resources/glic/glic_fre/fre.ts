@@ -55,9 +55,4 @@ function getWebviewSrc() {
   return loadTimeData.getString('glicFreURL') + hotkeyQueryParamString;
 }
 
-// Blocking on cookie syncing here introduces latency, we should consider ways
-// to avoid it.
-freHandler.syncWebviewCookies().then(() => {
-  // Load the web client only after cookie sync is complete.
-  webview.src = getWebviewSrc();
-});
+webview.src = getWebviewSrc();

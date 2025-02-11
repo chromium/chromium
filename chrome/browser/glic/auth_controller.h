@@ -28,7 +28,9 @@ class AuthController : public signin::IdentityManager::Observer {
     kSyncFailed = 2,
   };
 
-  AuthController(Profile* profile, signin::IdentityManager* identity_manager);
+  AuthController(Profile* profile,
+                 signin::IdentityManager* identity_manager,
+                 bool use_for_fre);
   ~AuthController() override;
 
   // Called before the glic web client is loaded. Tries to sync cookies to the

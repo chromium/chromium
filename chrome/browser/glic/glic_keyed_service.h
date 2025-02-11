@@ -12,7 +12,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/glic.mojom.h"
-#include "chrome/browser/glic/glic_cookie_synchronizer.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_page_handler.h"
 #include "chrome/browser/glic/glic_profile_configuration.h"
@@ -136,9 +135,6 @@ class GlicKeyedService : public KeyedService {
 
   AuthController& GetAuthController() { return *auth_controller_; }
 
-  void SyncWebviewCookiesForFre(
-      glic::mojom::FrePageHandler::SyncWebviewCookiesCallback callback);
-
   void WebClientCreated();
 
   base::CallbackListSubscription AddWebClientCreatedCallback(
@@ -170,11 +166,6 @@ class GlicKeyedService : public KeyedService {
   std::unique_ptr<GlicWindowController> window_controller_;
   GlicFocusedTabManager focused_tab_manager_;
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
-  // The glic FRE uses a different webview from the main glic WebUI. This also
-  // requires sign-in and synchronizing cookies to the webview. Use separate
-  // instances of `GlicCookieSynchronizer` to handle the two different webviews
-  // as they require different storage partitions.
-  GlicCookieSynchronizer fre_cookie_synchronizer_;
   std::unique_ptr<GlicMetrics> metrics_;
   std::unique_ptr<AuthController> auth_controller_;
   // Unowned

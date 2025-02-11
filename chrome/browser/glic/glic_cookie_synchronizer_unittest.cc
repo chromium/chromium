@@ -75,7 +75,9 @@ class GlicCookieSynchronizerWithTestPartition : public GlicCookieSynchronizer {
       content::BrowserContext* context,
       signin::IdentityManager* identity_manager,
       content::TestStoragePartition* test_storage_partition)
-      : GlicCookieSynchronizer(context, identity_manager),
+      : GlicCookieSynchronizer(context,
+                               identity_manager,
+                               /*use_for_fre=*/false),
         test_storage_partition_(test_storage_partition) {}
 
   content::TestStoragePartition* GetStoragePartition() override {
