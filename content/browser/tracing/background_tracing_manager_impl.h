@@ -237,7 +237,8 @@ class BackgroundTracingManagerImpl
 
   // Named triggers
   bool DoEmitNamedTrigger(const std::string& trigger_name,
-                          std::optional<int32_t>) override;
+                          std::optional<int32_t>,
+                          uint64_t) override;
 
   void OnScenarioAborted();
   static void AddPendingAgent(
