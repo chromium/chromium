@@ -8069,11 +8069,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "skip-undecryptable-passwords",
-    "owners": [ "derinel@google.com", "mamir@chromium.org" ],
-    "expiry_milestone": 131
-  },
-  {
     "name": "smart-suggestion-for-large-downloads",
     "owners": [ "shaktisahu@chromium.org" ],
     "expiry_milestone": 100

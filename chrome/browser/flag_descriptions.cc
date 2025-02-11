@@ -7666,13 +7666,6 @@ const char kWebBluetoothConfirmPairingSupportDescription[] =
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-const char kSkipUndecryptablePasswordsName[] =
-    "Skip undecryptable passwords to use the available decryptable "
-    "passwords.";
-const char kSkipUndecryptablePasswordsDescription[] =
-    "Makes the decryptable passwords available in the password manager when "
-    "there are undecryptable ones.";
-
 #if BUILDFLAG(ENABLE_PRINTING)
 const char kCupsIppPrintingBackendName[] = "CUPS IPP Printing Backend";
 const char kCupsIppPrintingBackendDescription[] =
