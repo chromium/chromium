@@ -29,7 +29,7 @@
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/blob_utils.h"
-#include "media/capture/video/gpu_memory_buffer_utils.h"
+#include "media/capture/video/mappable_shared_image_utils.h"
 #include "media/capture/video/video_capture_gpu_channel_host.h"
 #include "media/capture/video_capture_types.h"
 #include "media/parsers/jpeg_parser.h"
