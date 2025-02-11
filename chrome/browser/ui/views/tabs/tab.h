@@ -292,6 +292,10 @@ class Tab : public gfx::AnimationDelegate,
   // the view bounds.
   bool mouse_hovered_ = false;
 
+  // Whether the shift key was pressed at the start of the click. Used on mouse
+  // up.
+  bool shift_pressed_on_mouse_down_ = false;
+
   std::unique_ptr<TabCloseButtonObserver> tab_close_button_observer_;
 
   // Freezing vote held while the tab is collapsed.
