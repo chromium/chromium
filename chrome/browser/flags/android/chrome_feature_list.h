@@ -55,6 +55,7 @@ BASE_DECLARE_FEATURE(kCCTAuthTab);
 BASE_DECLARE_FEATURE(kCCTAuthTabDisableAllExternalIntents);
 BASE_DECLARE_FEATURE(kCCTAuthTabEnableHttpsRedirects);
 BASE_DECLARE_FEATURE(kCCTBeforeUnload);
+BASE_DECLARE_FEATURE(kCCTBlockTouchesDuringEnterAnimation);
 BASE_DECLARE_FEATURE(kCCTClientDataHeader);
 BASE_DECLARE_FEATURE(kCCTEarlyNav);
 BASE_DECLARE_FEATURE(kCCTEphemeralMediaViewerExperiment);
