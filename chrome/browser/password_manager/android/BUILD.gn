@@ -22,6 +22,8 @@ source_set("backend_public") {
   sources = [
     "login_db_deprecation_runner_factory.cc",
     "login_db_deprecation_runner_factory.h",
+    "password_manager_settings_service_android_impl.cc",
+    "password_manager_settings_service_android_impl.h",
     "password_manager_settings_service_android_migration_impl.cc",
     "password_manager_settings_service_android_migration_impl.h",
   ]
@@ -579,6 +581,7 @@ source_set("unit_tests") {
     "password_manager_android_util_unittest.cc",
     "password_manager_error_message_delegate_unittest.cc",
     "password_manager_eviction_util_unittest.cc",
+    "password_manager_settings_service_android_impl_unittest.cc",
     "password_manager_settings_service_android_migration_impl_unittest.cc",
     "password_manager_ui_util_android_unittest.cc",
     "password_settings_updater_android_bridge_helper_impl_unittest.cc",
