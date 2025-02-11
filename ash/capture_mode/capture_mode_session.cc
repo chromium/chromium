@@ -210,6 +210,9 @@ constexpr float kRegionDefaultRatio = 0.24f;
 // The spacing between the feedback button and the work area.
 constexpr int kFeedbackButtonSpacing = 10;
 
+// The radius of the painted capture region when in sunfish mode.
+constexpr int kSunfishModeCaptureRegionRadiusDp = 16;
+
 // The animation duration for fading in Scanner action buttons.
 constexpr base::TimeDelta kScannerActionButtonFadeInDuration =
     base::Milliseconds(100);
@@ -2101,6 +2104,11 @@ void CaptureModeSession::RefreshStackingOrder() {
 }
 
 void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
+  if (active_behavior_->ShouldPaintSunfishCaptureRegion()) {
+    PaintSunfishCaptureRegion(canvas);
+    return;
+  }
+
   gfx::Rect region;
   bool adjustable_region = false;
 
@@ -2217,6 +2225,38 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
   draw_circle(region.left_center());
 
   maybe_draw_focus_ring(focused_fine_tune_position);
+}
+
+void CaptureModeSession::PaintSunfishCaptureRegion(gfx::Canvas* canvas) {
+  gfx::Rect region = controller_->user_capture_region();
+  if (region.IsEmpty()) {
+    return;
+  }
+
+  gfx::ScopedCanvas scoped_canvas(canvas);
+  const float dsf = canvas->UndoDeviceScaleFactor();
+  region = gfx::ScaleToEnclosingRect(region, dsf);
+
+  const auto* color_provider = GetColorProviderSource()->GetColorProvider();
+
+  if (capture_region_overlay_controller_ &&
+      active_behavior_->CanPaintRegionOverlay()) {
+    // Draw a glow effect around the capture region if needed. Note that this
+    // needs to be drawn before the region mask and region border are drawn,
+    // since the glow should not cover those parts of the UI.
+    capture_region_overlay_controller_->PaintCurrentGlowState(*canvas, region,
+                                                              color_provider);
+  }
+
+  // Clear the area over the capture region.
+  cc::PaintFlags region_mask_flags;
+  region_mask_flags.setStyle(cc::PaintFlags::kFill_Style);
+  region_mask_flags.setAntiAlias(true);
+  region_mask_flags.setBlendMode(SkBlendMode::kClear);
+  canvas->DrawRoundRect(region, kSunfishModeCaptureRegionRadiusDp,
+                        region_mask_flags);
+
+  // TODO(crbug.com/395483324): Implement new Sunfish mode region selection UI.
 }
 
 void CaptureModeSession::MaybePaintCaptureRegionOverlay(

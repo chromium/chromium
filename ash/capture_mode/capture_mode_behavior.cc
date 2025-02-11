@@ -384,6 +384,7 @@ class SunfishBehavior : public CaptureModeBehavior {
   bool ShouldShowCaptureButtonAfterRegionSelected() const override {
     return false;
   }
+  bool ShouldPaintSunfishCaptureRegion() const override { return true; }
   bool CanShowActionButtons() const override { return true; }
   bool ShouldEndSessionOnSearchResultClicked() const override { return true; }
   const std::u16string GetCaptureLabelRegionText() const override {
@@ -572,6 +573,10 @@ bool CaptureModeBehavior::CanShowSmartActionsButton() const {
 }
 
 bool CaptureModeBehavior::CanShowActionButtons() const {
+  return false;
+}
+
+bool CaptureModeBehavior::ShouldPaintSunfishCaptureRegion() const {
   return false;
 }
 
