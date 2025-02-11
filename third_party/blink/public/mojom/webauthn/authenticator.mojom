@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "components/payments/mojom/payment_request_data.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -480,24 +481,24 @@ enum ResidentKeyRequirement {
 
 // https://w3c.github.io/webauthn/#enumdef-authenticatorattachment.
 enum AuthenticatorAttachment {
-    NO_PREFERENCE,
-    PLATFORM,
-    CROSS_PLATFORM,
+  NO_PREFERENCE,
+  PLATFORM,
+  CROSS_PLATFORM,
 };
 
 enum ProtectionPolicy {
-    // UNSPECIFIED means that no value was given at the Javascript level.
-    UNSPECIFIED,
-    NONE,
-    UV_OR_CRED_ID_REQUIRED,
-    UV_REQUIRED,
+  // UNSPECIFIED means that no value was given at the Javascript level.
+  UNSPECIFIED,
+  NONE,
+  UV_OR_CRED_ID_REQUIRED,
+  UV_REQUIRED,
 };
 
 // https://w3c.github.io/webauthn#enumdef-largeblobsupport
 enum LargeBlobSupport {
-    NOT_REQUESTED,
-    REQUIRED,
-    PREFERRED,
+  NOT_REQUESTED,
+  REQUIRED,
+  PREFERRED,
 };
 
 // See https://w3c.github.io/webauthn/#dictdef-authenticatorselectioncriteria.
@@ -668,6 +669,22 @@ struct WebAuthnClientCapability {
   bool supported;
 };
 
+// Describes a response for a publicKey credential request.
+// `credential` will be set if and only if status == SUCCESS.
+// `WebAuthnDOMExceptionDetails` will be set if and only if status ==
+// ERROR_WITH_DOM_EXCEPTION_DETAILS.
+struct GetAssertionResponse {
+  AuthenticatorStatus status;
+  GetAssertionAuthenticatorResponse? credential;
+  WebAuthnDOMExceptionDetails? dom_exception_details;
+};
+
+// `GetCredentialResponse` is the response for a `GetCredential` request.
+union GetCredentialResponse {
+  GetAssertionResponse get_assertion_response;
+  CredentialInfo password_response;
+};
+
 // Interface to direct authenticators to create or use a public key credential.
 interface Authenticator {
   // Gets the credential info for a new public key credential created by an
@@ -680,15 +697,13 @@ interface Authenticator {
           MakeCredentialAuthenticatorResponse? credential,
           WebAuthnDOMExceptionDetails? dom_exception_details);
 
-  // Uses an existing credential to produce an assertion for the given
-  // `PublicKeyCredentialRequestOptions`.
-  // `GetAssertionResponse` will be set if and only if status == SUCCESS.
-  // `WebAuthnDOMExceptionDetails` will be set if and only if
-  // status == ERROR_WITH_DOM_EXCEPTION_DETAILS.
-  GetAssertion(PublicKeyCredentialRequestOptions options)
-      => (AuthenticatorStatus status,
-          GetAssertionAuthenticatorResponse? credential,
-          WebAuthnDOMExceptionDetails? dom_exception_details);
+  // Uses an existing credential to produce a response for the given
+  // `PublicKeyCredentialRequestOptions`. If the
+  // `requested_credential_type_flags` has the password bit set, the response
+  // can be a `CredentialInfo` or `GetAssertionResponse`. Otherwise it will be
+  // always `GetAssertionResponse`.
+  GetCredential(PublicKeyCredentialRequestOptions options)
+      => (GetCredentialResponse response);
 
   // Returns true if the user platform provides an authenticator. Relying
   // Parties use this method to determine whether they can create a new

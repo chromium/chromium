@@ -138,7 +138,8 @@ enum class AttestationErasureOption {
 
 using MakeCredentialCallback =
     blink::mojom::Authenticator::MakeCredentialCallback;
-using GetAssertionCallback = blink::mojom::Authenticator::GetAssertionCallback;
+using GetCredentialCallback =
+    blink::mojom::Authenticator::GetCredentialCallback;
 using ReportCallback = blink::mojom::Authenticator::ReportCallback;
 using UIPresentation = AuthenticatorRequestClientDelegate::UIPresentation;
 
@@ -709,6 +710,24 @@ void DeleteVirtualAuthenticatorCreds(
   }
 }
 
+auto GetCallbackForAssertion(GetCredentialCallback callback) {
+  return base::BindOnce(
+      [](blink::mojom::Authenticator::GetCredentialCallback callback,
+         blink::mojom::AuthenticatorStatus status,
+         blink::mojom::GetAssertionAuthenticatorResponsePtr credential,
+         blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
+        blink::mojom::GetAssertionResponsePtr assertion_response =
+            blink::mojom::GetAssertionResponse::New(
+                status, std::move(credential),
+                std::move(dom_exception_details));
+        blink::mojom::GetCredentialResponsePtr response =
+            blink::mojom::GetCredentialResponse::NewGetAssertionResponse(
+                std::move(assertion_response));
+        std::move(callback).Run(std::move(response));
+      },
+      std::move(callback));
+}
+
 }  // namespace
 
 // RequestState contains all state that is specific to a single WebAuthn call.
@@ -732,7 +751,7 @@ struct AuthenticatorCommonImpl::RequestState {
       discovery_factory_testing_override = nullptr;
   absl::variant<absl::monostate,
                 MakeCredentialCallback,
-                GetAssertionCallback,
+                GetCredentialCallback,
                 ReportCallback>
       response_callback;
   std::string client_data_json;
@@ -869,6 +888,7 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
           weak_factory_.GetWeakPtr(),
           /*allow_skipping_pin_touch=*/false) /* start_over_callback */,
       base::DoNothing() /* account_preselected_callback */,
+      base::DoNothing() /*password_selected_callback */,
       base::BindRepeating(
           &device::FidoRequestHandlerBase::StartAuthenticatorRequest,
           req_state_->request_handler->GetWeakPtr()) /* request_callback */,
@@ -940,6 +960,9 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
       base::BindRepeating(
           &device::GetAssertionRequestHandler::PreselectAccount,
           request_handler->GetWeakPtr()) /* account_preselected_callback */,
+      base::BindRepeating(
+          &AuthenticatorCommonImpl::HandlePasswordResponse,
+          weak_factory_.GetWeakPtr()) /*password_selected_callback */,
       base::BindRepeating(
           &device::GetAssertionRequestHandler::StartAuthenticatorRequest,
           request_handler->GetWeakPtr()) /* request_callback */,
@@ -1333,11 +1356,11 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterIsUvpaaOverrideCheck(
   StartMakeCredentialRequest(/*allow_skipping_pin_touch=*/true);
 }
 
-void AuthenticatorCommonImpl::GetAssertion(
+void AuthenticatorCommonImpl::GetCredential(
     url::Origin caller_origin,
     blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
     blink::mojom::PaymentOptionsPtr payment_options,
-    GetAssertionCallback callback) {
+    GetCredentialCallback callback) {
   if (options->mediation == blink::mojom::Mediation::CONDITIONAL) {
     base::RecordAction(
         base::UserMetricsAction("WebAuthn.GetAssertion.Conditional.Start"));
@@ -1345,12 +1368,13 @@ void AuthenticatorCommonImpl::GetAssertion(
     base::RecordAction(base::UserMetricsAction("WebAuthn.GetAssertion.Start"));
   }
   callback = base::BindOnce(
-      &AuthenticatorCommonImpl::GetMetricsWrappedGetAssertionCallback,
+      &AuthenticatorCommonImpl::GetMetricsWrappedGetCredentialCallback,
       weak_factory_.GetWeakPtr(), std::move(callback));
 
   if (req_state_) {
-    std::move(callback).Run(blink::mojom::AuthenticatorStatus::PENDING_REQUEST,
-                            nullptr, nullptr);
+    GetCallbackForAssertion(std::move(callback))
+        .Run(blink::mojom::AuthenticatorStatus::PENDING_REQUEST, nullptr,
+             nullptr);
     return;
   }
 
@@ -1998,11 +2022,15 @@ void AuthenticatorCommonImpl::GetMetricsWrappedMakeCredentialCallback(
            std::move(dom_exception_details));
 }
 
-void AuthenticatorCommonImpl::GetMetricsWrappedGetAssertionCallback(
-    blink::mojom::Authenticator::GetAssertionCallback callback,
-    blink::mojom::AuthenticatorStatus status,
-    blink::mojom::GetAssertionAuthenticatorResponsePtr authenticator_response,
-    blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
+void AuthenticatorCommonImpl::GetMetricsWrappedGetCredentialCallback(
+    blink::mojom::Authenticator::GetCredentialCallback callback,
+    blink::mojom::GetCredentialResponsePtr response) {
+  if (response.is_null() || response->is_password_response()) {
+    // TODO(crbug.com/392549444): add metrics for passwords.
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+  const auto status = response->get_get_assertion_response()->status;
   if (req_state_ &&
       req_state_->request_result == CredentialRequestResult::kTimeout) {
     base::RecordAction(
@@ -2021,8 +2049,7 @@ void AuthenticatorCommonImpl::GetMetricsWrappedGetAssertionCallback(
     base::RecordAction(
         base::UserMetricsAction("WebAuthn.GetAssertion.Failure"));
   }
-  std::move(callback).Run(status, std::move(authenticator_response),
-                          std::move(dom_exception_details));
+  std::move(callback).Run(std::move(response));
 }
 
 void AuthenticatorCommonImpl::Cancel() {
@@ -2459,7 +2486,7 @@ void AuthenticatorCommonImpl::OnTimeout() {
   }
 
   req_state_->request_result = CredentialRequestResult::kTimeout;
-  if (absl::holds_alternative<GetAssertionCallback>(
+  if (absl::holds_alternative<GetCredentialCallback>(
           req_state_->response_callback)) {
     req_state_->request_outcome = GetAssertionOutcome::kUiTimeout;
   } else {
@@ -2494,18 +2521,20 @@ void AuthenticatorCommonImpl::CancelWithStatus(
           req_state_->response_callback) &&
       absl::get<MakeCredentialCallback>(req_state_->response_callback)) {
     CompleteMakeCredentialRequest(status);
-  } else if (absl::holds_alternative<GetAssertionCallback>(
-                 req_state_->response_callback) &&
-             absl::get<GetAssertionCallback>(req_state_->response_callback)) {
+    return;
+  }
+  if (absl::holds_alternative<GetCredentialCallback>(
+          req_state_->response_callback) &&
+      absl::get<GetCredentialCallback>(req_state_->response_callback)) {
     CompleteGetAssertionRequest(status);
   }
 }
 
 void AuthenticatorCommonImpl::OnCancelFromUI() {
   if (!req_state_->request_result &&
-      absl::holds_alternative<GetAssertionCallback>(
+      absl::holds_alternative<GetCredentialCallback>(
           req_state_->response_callback) &&
-      absl::get<GetAssertionCallback>(req_state_->response_callback)) {
+      absl::get<GetCredentialCallback>(req_state_->response_callback)) {
     // The user cancelled before the request finished.
     req_state_->request_result = CredentialRequestResult::kUserCancelled;
     req_state_->request_outcome = GetAssertionOutcome::kUserCancellation;
@@ -2810,11 +2839,11 @@ void AuthenticatorCommonImpl::CompleteGetAssertionRequest(
     blink::mojom::AuthenticatorStatus status,
     blink::mojom::GetAssertionAuthenticatorResponsePtr response,
     blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
-  DCHECK(absl::holds_alternative<GetAssertionCallback>(
-             req_state_->response_callback) &&
-         absl::get<GetAssertionCallback>(req_state_->response_callback));
-  auto get_assertion_response_callback =
-      std::move(absl::get<GetAssertionCallback>(req_state_->response_callback));
+  CHECK(absl::holds_alternative<GetCredentialCallback>(
+            req_state_->response_callback) &&
+        absl::get<GetCredentialCallback>(req_state_->response_callback));
+  auto get_credential_response_callback = std::move(
+      absl::get<GetCredentialCallback>(req_state_->response_callback));
 
   if (req_state_->request_result) {
     UMA_HISTOGRAM_ENUMERATION("WebAuthentication.GetAssertion.Result",
@@ -2837,8 +2866,24 @@ void AuthenticatorCommonImpl::CompleteGetAssertionRequest(
         ->WebAuthnAssertionRequestSucceeded();
   }
 
-  std::move(get_assertion_response_callback)
+  GetCallbackForAssertion(std::move(get_credential_response_callback))
       .Run(status, std::move(response), std::move(dom_exception_details));
+  Cleanup();
+}
+
+void AuthenticatorCommonImpl::HandlePasswordResponse(
+    password_manager::CredentialInfo credential) {
+  CHECK(absl::holds_alternative<GetCredentialCallback>(
+            req_state_->response_callback) &&
+        absl::get<GetCredentialCallback>(req_state_->response_callback));
+  // TODO(crbug.com/393055190): Define the required metrics and emit them.
+  static_cast<RenderFrameHostImpl*>(GetRenderFrameHost())
+      ->WebAuthnAssertionRequestSucceeded();
+  auto credential_response =
+      blink::mojom::GetCredentialResponse::NewPasswordResponse(
+          std::move(credential));
+  std::move(absl::get<GetCredentialCallback>(req_state_->response_callback))
+      .Run(std::move(credential_response));
   Cleanup();
 }
 
@@ -2971,7 +3016,7 @@ void AuthenticatorCommonImpl::OnGetAssertionProxyResponse(
     return;
   }
   DCHECK_EQ(*req_state_->pending_proxied_request_id, request_id);
-  DCHECK(absl::holds_alternative<GetAssertionCallback>(
+  DCHECK(absl::holds_alternative<GetCredentialCallback>(
       req_state_->response_callback));
   req_state_->pending_proxied_request_id.reset();
   if (error) {

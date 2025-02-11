@@ -97,7 +97,7 @@ namespace {
 
 using blink::mojom::Authenticator;
 using blink::mojom::AuthenticatorStatus;
-using blink::mojom::GetAssertionAuthenticatorResponsePtr;
+using blink::mojom::GetCredentialResponsePtr;
 using blink::mojom::MakeCredentialAuthenticatorResponsePtr;
 using blink::mojom::WebAuthnDOMExceptionDetailsPtr;
 
@@ -106,10 +106,7 @@ using TestCreateFuture =
                            MakeCredentialAuthenticatorResponsePtr,
                            WebAuthnDOMExceptionDetailsPtr>;
 
-using TestGetFuture =
-    base::test::TestFuture<AuthenticatorStatus,
-                           GetAssertionAuthenticatorResponsePtr,
-                           WebAuthnDOMExceptionDetailsPtr>;
+using TestGetFuture = base::test::TestFuture<GetCredentialResponsePtr>;
 
 constexpr char kOkMessage[] = "OK";
 
@@ -810,8 +807,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
           [&](device::VirtualFidoDevice* device) { return false; });
 
   TestGetFuture get_future;
-  authenticator()->GetAssertion(BuildBasicGetOptions(),
-                                get_future.GetCallback());
+  authenticator()->GetCredential(BuildBasicGetOptions(),
+                                 get_future.GetCallback());
   ASSERT_FALSE(get_future.IsReady());
   EXPECT_TRUE(
       NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title2.html")));
@@ -822,10 +819,10 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
   ConnectToAuthenticator();
   InjectVirtualFidoDeviceFactory();
   TestGetFuture get_future2;
-  authenticator()->GetAssertion(BuildBasicGetOptions(),
-                                get_future2.GetCallback());
+  authenticator()->GetCredential(BuildBasicGetOptions(),
+                                 get_future2.GetCallback());
   EXPECT_TRUE(get_future2.Wait());
-  EXPECT_EQ(std::get<0>(get_future2.Get()),
+  EXPECT_EQ(get_future2.Get()->get_get_assertion_response()->status,
             AuthenticatorStatus::NOT_ALLOWED_ERROR);
 }
 
@@ -909,11 +906,14 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
 
   TestGetFuture future_1;
   TestGetFuture future_2;
-  authenticator()->GetAssertion(BuildBasicGetOptions(), future_1.GetCallback());
-  authenticator()->GetAssertion(BuildBasicGetOptions(), future_2.GetCallback());
+  authenticator()->GetCredential(BuildBasicGetOptions(),
+                                 future_1.GetCallback());
+  authenticator()->GetCredential(BuildBasicGetOptions(),
+                                 future_2.GetCallback());
   EXPECT_TRUE(future_2.Wait());
 
-  EXPECT_EQ(AuthenticatorStatus::PENDING_REQUEST, std::get<0>(future_2.Get()));
+  EXPECT_EQ(AuthenticatorStatus::PENDING_REQUEST,
+            future_2.Get()->get_get_assertion_response()->status);
   EXPECT_FALSE(future_1.IsReady());
 }
 
@@ -1966,10 +1966,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest, TestGetAssertion) {
         get_assertion_request_params->relying_party_id));
 
     TestGetFuture get_future;
-    authenticator()->GetAssertion(std::move(get_assertion_request_params),
-                                  get_future.GetCallback());
+    authenticator()->GetCredential(std::move(get_assertion_request_params),
+                                   get_future.GetCallback());
     EXPECT_TRUE(get_future.Wait());
-    EXPECT_EQ(AuthenticatorStatus::SUCCESS, std::get<0>(get_future.Get()));
+    EXPECT_EQ(AuthenticatorStatus::SUCCESS,
+              get_future.Get()->get_get_assertion_response()->status);
   }
 }
 
@@ -1981,11 +1982,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest,
     auto get_assertion_request_params = BuildBasicGetOptions();
 
     TestGetFuture get_future;
-    authenticator()->GetAssertion(std::move(get_assertion_request_params),
-                                  get_future.GetCallback());
+    authenticator()->GetCredential(std::move(get_assertion_request_params),
+                                   get_future.GetCallback());
     EXPECT_TRUE(get_future.Wait());
     EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR,
-              std::get<0>(get_future.Get()));
+              get_future.Get()->get_get_assertion_response()->status);
   }
 }
 
@@ -2037,10 +2038,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest,
       get_assertion_request_params->relying_party_id));
 
   TestGetFuture get_future;
-  authenticator()->GetAssertion(std::move(get_assertion_request_params),
-                                get_future.GetCallback());
+  authenticator()->GetCredential(std::move(get_assertion_request_params),
+                                 get_future.GetCallback());
   EXPECT_TRUE(get_future.Wait());
-  EXPECT_EQ(AuthenticatorStatus::SUCCESS, std::get<0>(get_future.Get()));
+  EXPECT_EQ(AuthenticatorStatus::SUCCESS,
+            get_future.Get()->get_get_assertion_response()->status);
 
   EXPECT_THAT(logger->log(), testing::ElementsAre("www.acme.com"));
 }
@@ -2057,11 +2059,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest,
       get_assertion_request_params = BuildBasicGetOptions();
 
   TestGetFuture get_future;
-  authenticator()->GetAssertion(std::move(get_assertion_request_params),
-                                get_future.GetCallback());
+  authenticator()->GetCredential(std::move(get_assertion_request_params),
+                                 get_future.GetCallback());
   EXPECT_TRUE(get_future.Wait());
   EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR,
-            std::get<0>(get_future.Get()));
+            get_future.Get()->get_get_assertion_response()->status);
 
   EXPECT_TRUE(logger->log().empty());
 }

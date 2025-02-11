@@ -124,19 +124,27 @@ public class InternalAuthenticator {
      */
     @CalledByNative
     public void getAssertion(ByteBuffer optionsByteBuffer) {
-        mAuthenticator.getAssertion(
+        mAuthenticator.getCredential(
                 PublicKeyCredentialRequestOptions.deserialize(optionsByteBuffer),
-                (status, response, domExceptionDetails) -> {
+                (getCredentialResponse) -> {
                     // DOMExceptions can only be passed through the webAuthenticationProxy
                     // extensions API, which doesn't exist on Android.
-                    assert status != AuthenticatorStatus.ERROR_WITH_DOM_EXCEPTION_DETAILS
-                            && domExceptionDetails == null;
+                    assert getCredentialResponse.getGetAssertionResponse().status
+                                    != AuthenticatorStatus.ERROR_WITH_DOM_EXCEPTION_DETAILS
+                            && getCredentialResponse.getGetAssertionResponse().domExceptionDetails
+                                    == null;
                     if (mNativeInternalAuthenticatorAndroid != 0) {
                         InternalAuthenticatorJni.get()
                                 .invokeGetAssertionResponse(
                                         mNativeInternalAuthenticatorAndroid,
-                                        status,
-                                        response == null ? null : response.serialize());
+                                        getCredentialResponse.getGetAssertionResponse().status,
+                                        getCredentialResponse.getGetAssertionResponse().credential
+                                                        == null
+                                                ? null
+                                                : getCredentialResponse
+                                                        .getGetAssertionResponse()
+                                                        .credential
+                                                        .serialize());
                     }
                 });
     }

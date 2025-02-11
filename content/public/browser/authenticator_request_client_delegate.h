@@ -25,6 +25,7 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_descriptor.h"
+#include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom.h"
 #include "url/gurl.h"
 
 namespace device {
@@ -49,6 +50,8 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
  public:
   using AccountPreselectedCallback =
       base::RepeatingCallback<void(device::DiscoverableCredentialMetadata)>;
+  using PasswordSelectedCallback =
+      base::RepeatingCallback<void(password_manager::CredentialInfo)>;
 
   // Failure reasons that might be of interest to the user, so the embedder may
   // decide to inform the user.
@@ -161,6 +164,7 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
       base::OnceClosure immediate_not_found_callback,
       base::RepeatingClosure start_over_callback,
       AccountPreselectedCallback account_preselected_callback,
+      PasswordSelectedCallback password_selected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
       base::RepeatingClosure bluetooth_adapter_power_on_callback,
       base::RepeatingCallback<

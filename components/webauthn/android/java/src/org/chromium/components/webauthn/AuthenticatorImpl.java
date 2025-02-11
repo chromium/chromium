@@ -21,6 +21,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.Authenticator;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
+import org.chromium.blink.mojom.GetAssertionResponse;
+import org.chromium.blink.mojom.GetCredentialResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PaymentOptions;
@@ -63,7 +65,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     private PaymentOptions mPayment;
 
     private MakeCredential_Response mMakeCredentialCallback;
-    private GetAssertion_Response mGetAssertionCallback;
+    private GetCredential_Response mGetCredentialCallback;
     private Fido2CredentialRequest mPendingFido2CredentialRequest;
     private Set<Fido2CredentialRequest> mUnclosedFido2CredentialRequests = new HashSet<>();
 
@@ -192,18 +194,20 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     }
 
     @Override
-    public void getAssertion(
-            PublicKeyCredentialRequestOptions options, GetAssertion_Response callback) {
+    public void getCredential(
+            PublicKeyCredentialRequestOptions options, GetCredential_Response callback) {
         if (mIsOperationPending) {
-            callback.call(AuthenticatorStatus.PENDING_REQUEST, null, null);
+            callback.call(
+                    getCredentialResponseForAssertion(AuthenticatorStatus.PENDING_REQUEST, null));
             return;
         }
         if (options.mediation == Mediation.IMMEDIATE) {
-            callback.call(AuthenticatorStatus.NOT_IMPLEMENTED, null, null);
+            callback.call(
+                    getCredentialResponseForAssertion(AuthenticatorStatus.NOT_IMPLEMENTED, null));
             return;
         }
 
-        mGetAssertionCallback = callback;
+        mGetCredentialCallback = callback;
         mIsOperationPending = true;
         mIsPaymentRequest = mPayment != null;
         mIsConditionalRequest = options.mediation == Mediation.CONDITIONAL;
@@ -363,7 +367,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         // no way to cancel a request that has already triggered gmscore UI. Get requests can be
         // cancelled if they are pending conditional UI requests, or if they are discoverable
         // credential requests with the account selector being shown to the user.
-        if (!mIsOperationPending || mGetAssertionCallback == null) {
+        if (!mIsOperationPending || mGetCredentialCallback == null) {
             return;
         }
 
@@ -385,8 +389,8 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         // In case mojo pipe is closed due to the page begin destroyed while waiting for response.
         if (!mIsOperationPending) return;
 
-        assert mGetAssertionCallback != null;
-        mGetAssertionCallback.call(status, response, null);
+        assert mGetCredentialCallback != null;
+        mGetCredentialCallback.call(getCredentialResponseForAssertion(status, response));
         cleanupRequest();
     }
 
@@ -394,13 +398,13 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         // In case mojo pipe is closed due to the page begin destroyed while waiting for response.
         if (!mIsOperationPending) return;
 
-        assert ((mMakeCredentialCallback != null && mGetAssertionCallback == null)
-                || (mMakeCredentialCallback == null && mGetAssertionCallback != null));
+        assert ((mMakeCredentialCallback != null && mGetCredentialCallback == null)
+                || (mMakeCredentialCallback == null && mGetCredentialCallback != null));
         assert status != AuthenticatorStatus.ERROR_WITH_DOM_EXCEPTION_DETAILS;
         if (mMakeCredentialCallback != null) {
             mMakeCredentialCallback.call(status, null, null);
-        } else if (mGetAssertionCallback != null) {
-            mGetAssertionCallback.call(status, null, null);
+        } else if (mGetCredentialCallback != null) {
+            mGetCredentialCallback.call(getCredentialResponseForAssertion(status, null));
         }
         if (mPendingFido2CredentialRequest != null) mPendingFido2CredentialRequest.destroyBridge();
         cleanupRequest();
@@ -414,7 +418,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         }
         String event;
         String resultMetricName;
-        if (mGetAssertionCallback != null) {
+        if (mGetCredentialCallback != null) {
             event = "WebAuthn.SignCompletion";
             resultMetricName = "SignCompletionResult";
         } else if (mMakeCredentialCallback != null) {
@@ -439,7 +443,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     private void cleanupRequest() {
         mIsOperationPending = false;
         mMakeCredentialCallback = null;
-        mGetAssertionCallback = null;
+        mGetCredentialCallback = null;
         mPendingFido2CredentialRequest = null;
     }
 
@@ -503,5 +507,15 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                 mCallback.onResult(new Pair(resultCode, data));
             }
         }
+    }
+
+    private GetCredentialResponse getCredentialResponseForAssertion(
+            int status, GetAssertionAuthenticatorResponse response) {
+        GetCredentialResponse finalResponse = new GetCredentialResponse();
+        GetAssertionResponse assertionResponse = new GetAssertionResponse();
+        assertionResponse.credential = response;
+        assertionResponse.status = status;
+        finalResponse.setGetAssertionResponse(assertionResponse);
+        return finalResponse;
     }
 }

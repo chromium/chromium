@@ -123,11 +123,11 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       url::Origin caller_origin,
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
       blink::mojom::Authenticator::MakeCredentialCallback callback) override;
-  void GetAssertion(
+  void GetCredential(
       url::Origin caller_origin,
       blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
       blink::mojom::PaymentOptionsPtr payment,
-      blink::mojom::Authenticator::GetAssertionCallback callback) override;
+      blink::mojom::Authenticator::GetCredentialCallback callback) override;
   void IsUserVerifyingPlatformAuthenticatorAvailable(
       url::Origin caller_origin,
       blink::mojom::Authenticator::
@@ -234,11 +234,9 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
           authenticator_response,
       blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details);
 
-  void GetMetricsWrappedGetAssertionCallback(
-      blink::mojom::Authenticator::GetAssertionCallback callback,
-      blink::mojom::AuthenticatorStatus status,
-      blink::mojom::GetAssertionAuthenticatorResponsePtr authenticator_response,
-      blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details);
+  void GetMetricsWrappedGetCredentialCallback(
+      blink::mojom::Authenticator::GetCredentialCallback callback,
+      blink::mojom::GetCredentialResponsePtr response);
 
   // Replaces the current |request_handler_| with a
   // |MakeCredentialRequestHandler|, effectively restarting the request.
@@ -331,6 +329,8 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       blink::mojom::GetAssertionAuthenticatorResponsePtr response = nullptr,
       blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details =
           nullptr);
+
+  void HandlePasswordResponse(password_manager::CredentialInfo credential);
 
   AuthenticatorRequestClientDelegate::RequestSource RequestSource() const;
   BrowserContext* GetBrowserContext() const;

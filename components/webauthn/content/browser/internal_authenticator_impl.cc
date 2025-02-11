@@ -54,9 +54,21 @@ void InternalAuthenticatorImpl::MakeCredential(
 
 void InternalAuthenticatorImpl::GetAssertion(
     blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
-    blink::mojom::Authenticator::GetAssertionCallback callback) {
-  authenticator_common_->GetAssertion(effective_origin_, std::move(options),
-                                      std::move(payment_), std::move(callback));
+    GetAssertionCallback callback) {
+  authenticator_common_->GetCredential(
+      effective_origin_, std::move(options), std::move(payment_),
+      base::BindOnce(
+          [](GetAssertionCallback get_assertion_callback,
+             blink::mojom::GetCredentialResponsePtr response) {
+            if (response.is_null() || !response->is_get_assertion_response()) {
+              return;
+            }
+            auto assertion = std::move(response->get_get_assertion_response());
+            std::move(get_assertion_callback)
+                .Run(assertion->status, std::move(assertion->credential),
+                     std::move(assertion->dom_exception_details));
+          },
+          std::move(callback)));
 }
 
 void InternalAuthenticatorImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
