@@ -422,6 +422,11 @@ class BuildConfigGenerator extends DefaultTask {
             String depDir = BuildConfigGenerator.computeDepDir(dependency)
             String absoluteDepDir = "${normalisedRepoPath}/${depDir}"
 
+            if (!dependency.artifact) {
+                logger.debug("${dependency.id} has no artifact, skipping.")
+                return
+            }
+
             dependencyDirectories.add(depDir)
 
             if (new File("${absoluteDepDir}/${dependency.fileName}").exists()) {
@@ -944,6 +949,10 @@ class BuildConfigGenerator extends DefaultTask {
 
         depGraph.dependencies.values().sort(dependencyComparator).each { dependency ->
             if (excludeDependency(dependency) || computeJavaGroupForwardingTargets(dependency)) {
+                return
+            }
+            if (!dependency.artifact) {
+                logger.debug("Skipping ${dependency.id} because it has no artifact")
                 return
             }
             String depPath = "${LIBS_DIRECTORY}/${dependency.directoryName}"
