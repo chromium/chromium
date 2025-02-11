@@ -68,14 +68,10 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
       base::OnceCallback<void(int /* event_id */,
                               mojom::blink::ServiceWorkerEventStatus)>;
 
-  using BeforeStartEventCallback = base::RepeatingClosure;
-
-  ServiceWorkerEventQueue(BeforeStartEventCallback before_start_event_callback,
-                          base::RepeatingClosure idle_callback,
+  ServiceWorkerEventQueue(base::RepeatingClosure idle_callback,
                           scoped_refptr<base::SequencedTaskRunner> task_runner);
   // For testing.
-  ServiceWorkerEventQueue(BeforeStartEventCallback before_start_event_callback,
-                          base::RepeatingClosure idle_callback,
+  ServiceWorkerEventQueue(base::RepeatingClosure idle_callback,
                           scoped_refptr<base::SequencedTaskRunner> task_runner,
                           const base::TickClock* tick_clock);
   ~ServiceWorkerEventQueue();
@@ -222,9 +218,6 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
   // For long standing event timeouts. This is used to look up an EventInfo
   // by event id.
   HashMap<int /* event_id */, std::unique_ptr<EventInfo>> all_events_;
-
-  // Callback which is run just before starting an event.
-  BeforeStartEventCallback before_start_event_callback_;
 
   // For idle timeouts. When there's no inflight event, this is scheduled to run
   // in |idle_delay_|.
