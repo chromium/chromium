@@ -17,9 +17,16 @@
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_ios.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "third_party/omnibox_proto/groups.pb.h"
 
 using base::UserMetricsAction;
+
+@interface OmniboxAutocompleteController () <BooleanObserver>
+
+@end
 
 @implementation OmniboxAutocompleteController {
   /// Controller of the omnibox.
@@ -28,6 +35,11 @@ using base::UserMetricsAction;
   raw_ptr<AutocompleteController> _autocompleteController;
   /// Controller of the omnibox view.
   raw_ptr<OmniboxViewIOS> _omniboxViewIOS;
+
+  /// Pref tracking if the bottom omnibox is enabled.
+  PrefBackedBoolean* _bottomOmniboxEnabled;
+  /// Preferred omnibox position, logged in omnibox logs.
+  metrics::OmniboxEventProto::OmniboxPosition _preferredOmniboxPosition;
 }
 
 - (instancetype)initWithOmniboxController:(OmniboxController*)omniboxController
@@ -37,14 +49,40 @@ using base::UserMetricsAction;
     _omniboxController = omniboxController;
     _autocompleteController = omniboxController->autocomplete_controller();
     _omniboxViewIOS = omniboxViewIOS;
+
+    _preferredOmniboxPosition = metrics::OmniboxEventProto::UNKNOWN_POSITION;
+    _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
+        initWithPrefService:GetApplicationContext()->GetLocalState()
+                   prefName:prefs::kBottomOmnibox];
+    [_bottomOmniboxEnabled setObserver:self];
+    // Initialize to the correct value.
+    [self booleanDidChange:_bottomOmniboxEnabled];
   }
   return self;
 }
 
 - (void)disconnect {
+  [_bottomOmniboxEnabled stop];
+  [_bottomOmniboxEnabled setObserver:nil];
+  _bottomOmniboxEnabled = nil;
   _autocompleteController = nullptr;
   _omniboxController = nullptr;
   _omniboxViewIOS = nullptr;
+}
+
+#pragma mark - Boolean Observer
+
+- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
+  if (observableBoolean == _bottomOmniboxEnabled) {
+    _preferredOmniboxPosition =
+        _bottomOmniboxEnabled.value
+            ? metrics::OmniboxEventProto::BOTTOM_POSITION
+            : metrics::OmniboxEventProto::TOP_POSITION;
+    if (_autocompleteController) {
+      _autocompleteController->SetSteadyStateOmniboxPosition(
+          _preferredOmniboxPosition);
+    }
+  }
 }
 
 #pragma mark - OmniboxEditModel event

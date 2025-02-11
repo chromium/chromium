@@ -13,7 +13,11 @@
 #import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/browser/omnibox_controller.h"
 #import "components/omnibox/browser/test_omnibox_client.h"
+#import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
+#import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -44,10 +48,17 @@ class MockAutocompleteController : public AutocompleteController {
     results.AppendMatches(matches);
   }
 
+  void SetSteadyStateOmniboxPosition(
+      metrics::OmniboxEventProto::OmniboxPosition position) override {
+    omnibox_position = position;
+  }
+
   MOCK_METHOD(void,
               GroupSuggestionsBySearchVsURL,
               (size_t begin, size_t end),
               (override));
+
+  metrics::OmniboxEventProto::OmniboxPosition omnibox_position;
 };
 
 }  // namespace
@@ -55,6 +66,10 @@ class MockAutocompleteController : public AutocompleteController {
 class OmniboxAutocompleteControllerTest : public PlatformTest {
  public:
   OmniboxAutocompleteControllerTest() {
+    local_state_ = std::make_unique<TestingPrefServiceSimple>();
+    RegisterLocalStatePrefs(local_state_->registry());
+    TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.get());
+
     auto omnibox_client = std::make_unique<TestOmniboxClient>();
     omnibox_controller_ = std::make_unique<OmniboxController>(
         /*view=*/nullptr, std::move(omnibox_client));
@@ -77,6 +92,8 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
     autocomplete_controller_ = nullptr;
     omnibox_controller_ = nullptr;
     popup_ = nil;
+    TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
+    local_state_.reset();
   }
 
   ACMatches SampleMatches() const {
@@ -89,6 +106,8 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
  protected:
   // Message loop for the main test thread.
   base::test::TaskEnvironment environment_;
+  // Application pref service.
+  std::unique_ptr<TestingPrefServiceSimple> local_state_;
 
   OmniboxAutocompleteController* controller_;
   raw_ptr<MockAutocompleteController> autocomplete_controller_;
@@ -171,4 +190,15 @@ TEST_F(OmniboxAutocompleteControllerTest, RequestResultPartVisible) {
   [controller_ requestResultsWithVisibleSuggestionCount:visible_count];
 
   EXPECT_OCMOCK_VERIFY(popup_);
+}
+
+// Tests that omnibox position update is forwarded to autocompleteController.
+TEST_F(OmniboxAutocompleteControllerTest, OmniboxPositionUpdates) {
+  local_state_->SetBoolean(prefs::kBottomOmnibox, true);
+  EXPECT_EQ(autocomplete_controller_->omnibox_position,
+            metrics::OmniboxEventProto::BOTTOM_POSITION);
+
+  local_state_->SetBoolean(prefs::kBottomOmnibox, false);
+  EXPECT_EQ(autocomplete_controller_->omnibox_position,
+            metrics::OmniboxEventProto::TOP_POSITION);
 }

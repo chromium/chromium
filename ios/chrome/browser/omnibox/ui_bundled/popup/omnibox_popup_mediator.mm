@@ -47,9 +47,6 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_swift.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/remote_suggestions_service_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/suggest_action.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -68,8 +65,7 @@ const CGFloat kOmniboxIconSize = 16;
 const NSUInteger kMaxSuggestTileTypePosition = 15;
 }  // namespace
 
-@interface OmniboxPopupMediator () <BooleanObserver,
-                                    PedalSectionExtractorDelegate>
+@interface OmniboxPopupMediator () <PedalSectionExtractorDelegate>
 
 // FET reference.
 @property(nonatomic, assign) feature_engagement::Tracker* tracker;
@@ -106,10 +102,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   std::unique_ptr<RemoteSuggestionsServiceObserverBridge>
       _remoteSuggestionsServiceObserverBridge;
 
-  /// Preferred omnibox position, logged in omnibox logs.
-  metrics::OmniboxEventProto::OmniboxPosition _preferredOmniboxPosition;
-  /// Pref tracking if bottom omnibox is enabled.
-  PrefBackedBoolean* _bottomOmniboxEnabled;
   /// Holds cached images keyed by their URL. The cache is purged when the popup
   /// is closed.
   NSCache<NSString*, UIImage*>* _cachedImages;
@@ -138,23 +130,11 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     _remoteSuggestionsService = remoteSuggestionsService;
     _tracker = tracker;
     _cachedImages = [[NSCache alloc] init];
-    // This is logged only when `IsBottomOmniboxAvailable`.
-    _preferredOmniboxPosition = metrics::OmniboxEventProto::UNKNOWN_POSITION;
-
-    _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
-        initWithPrefService:GetApplicationContext()->GetLocalState()
-                   prefName:prefs::kBottomOmnibox];
-    [_bottomOmniboxEnabled setObserver:self];
-    // Initialize to the correct value.
-    [self booleanDidChange:_bottomOmniboxEnabled];
   }
   return self;
 }
 
 - (void)disconnect {
-  [_bottomOmniboxEnabled stop];
-  [_bottomOmniboxEnabled setObserver:nil];
-  _bottomOmniboxEnabled = nil;
   if (_remoteSuggestionsServiceObserverBridge) {
     self.remoteSuggestionsService->RemoveObserver(
         _remoteSuggestionsServiceObserverBridge.get());
@@ -418,21 +398,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
       base::UmaHistogramExactLinear("Omnibox.SuggestTiles.SelectedTileType",
                                     tileType, SuggestTileType::kCount);
       return;
-    }
-  }
-}
-
-#pragma mark - Boolean Observer
-
-- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
-  if (observableBoolean == _bottomOmniboxEnabled) {
-    _preferredOmniboxPosition =
-        _bottomOmniboxEnabled.value
-            ? metrics::OmniboxEventProto::BOTTOM_POSITION
-            : metrics::OmniboxEventProto::TOP_POSITION;
-    if (self.autocompleteController) {
-      self.autocompleteController->SetSteadyStateOmniboxPosition(
-          _preferredOmniboxPosition);
     }
   }
 }

@@ -309,7 +309,7 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   // Sets the position of the omnibox when it's in steady state (unfocused).
   // Only used on iOS for logging purposes.
-  void SetSteadyStateOmniboxPosition(
+  virtual void SetSteadyStateOmniboxPosition(
       metrics::OmniboxEventProto::OmniboxPosition position);
 
  private:
