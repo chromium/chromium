@@ -4515,6 +4515,7 @@ ci.builder(
             "chrome_public_test_apk": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.chrome_public_test_apk.filter",
+                    "--emulator-debug-tags=all",
                 ],
                 swarming = targets.swarming(
                     shards = 50,
@@ -4660,6 +4661,7 @@ ci.thin_tester(
             "chrome_public_test_apk": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_tablet.chrome_public_test_apk.filter",
+                    "--emulator-debug-tags=all",
                 ],
             ),
             "chrome_public_unit_test_apk": targets.mixin(
@@ -4746,6 +4748,7 @@ ci.thin_tester(
             "chrome_public_test_apk": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_tablet_landscape.chrome_public_test_apk.filter",
+                    "--emulator-debug-tags=all",
                 ],
             ),
         },
