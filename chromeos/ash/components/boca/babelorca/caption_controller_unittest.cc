@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/values.h"
-#include "chromeos/ash/components/boca/babelorca/babel_orca_caption_bubble_settings.h"
+#include "chromeos/ash/components/boca/babelorca/caption_bubble_settings_impl.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_caption_controller_delegate.h"
 #include "components/live_caption/caption_bubble_context.h"
 #include "components/live_caption/caption_bubble_controller.h"

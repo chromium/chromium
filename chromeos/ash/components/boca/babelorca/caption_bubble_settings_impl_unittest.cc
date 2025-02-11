@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/boca/babelorca/consumer_caption_bubble_settings.h"
+#include "chromeos/ash/components/boca/babelorca/caption_bubble_settings_impl.h"
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -29,7 +29,7 @@ class MockObserver : public ::captions::CaptionBubbleSettings::Observer {
   MOCK_METHOD(void, OnLiveTranslateTargetLanguageChanged, (), (override));
 };
 
-class ConsumerCaptionBubbleSettingsTest : public testing::Test {
+class CaptionBubbleSettingsImplTest : public testing::Test {
  protected:
   void SetUp() override {
     pref_service_.registry()->RegisterBooleanPref(prefs::kCaptionBubbleExpanded,
@@ -43,26 +43,26 @@ class ConsumerCaptionBubbleSettingsTest : public testing::Test {
   base::WeakPtrFactory<MockObserver> observer_weak_ptr_factory_{&observer_};
 };
 
-TEST_F(ConsumerCaptionBubbleSettingsTest, SetLiveCaptionBubbleExpanded) {
-  ConsumerCaptionBubbleSettings caption_bubble_settings(&pref_service_,
-                                                        kEnglishLanguage);
+TEST_F(CaptionBubbleSettingsImplTest, SetLiveCaptionBubbleExpanded) {
+  CaptionBubbleSettingsImpl caption_bubble_settings(&pref_service_,
+                                                    kEnglishLanguage);
   caption_bubble_settings.SetLiveCaptionBubbleExpanded(true);
 
   EXPECT_TRUE(pref_service_.GetBoolean(prefs::kCaptionBubbleExpanded));
 }
 
-TEST_F(ConsumerCaptionBubbleSettingsTest, SetLiveTranslateTargetLanguageCode) {
-  ConsumerCaptionBubbleSettings caption_bubble_settings(&pref_service_,
-                                                        kEnglishLanguage);
+TEST_F(CaptionBubbleSettingsImplTest, SetLiveTranslateTargetLanguageCode) {
+  CaptionBubbleSettingsImpl caption_bubble_settings(&pref_service_,
+                                                    kEnglishLanguage);
   caption_bubble_settings.SetLiveTranslateTargetLanguageCode(kArabicLanguage);
 
   EXPECT_THAT(pref_service_.GetString(prefs::kTranslateTargetLanguageCode),
               testing::StrEq(kArabicLanguage));
 }
 
-TEST_F(ConsumerCaptionBubbleSettingsTest, SetLiveTranslateEnabled) {
-  ConsumerCaptionBubbleSettings caption_bubble_settings(&pref_service_,
-                                                        kEnglishLanguage);
+TEST_F(CaptionBubbleSettingsImplTest, SetLiveTranslateEnabled) {
+  CaptionBubbleSettingsImpl caption_bubble_settings(&pref_service_,
+                                                    kEnglishLanguage);
   caption_bubble_settings.SetObserver(observer_weak_ptr_factory_.GetWeakPtr());
 
   EXPECT_FALSE(caption_bubble_settings.GetLiveTranslateEnabled());
@@ -79,25 +79,25 @@ TEST_F(ConsumerCaptionBubbleSettingsTest, SetLiveTranslateEnabled) {
   caption_bubble_settings.SetLiveTranslateEnabled(true);
 }
 
-TEST_F(ConsumerCaptionBubbleSettingsTest, GetLiveCaptionBubbleExpanded) {
-  ConsumerCaptionBubbleSettings caption_bubble_settings(&pref_service_,
-                                                        kEnglishLanguage);
+TEST_F(CaptionBubbleSettingsImplTest, GetLiveCaptionBubbleExpanded) {
+  CaptionBubbleSettingsImpl caption_bubble_settings(&pref_service_,
+                                                    kEnglishLanguage);
   pref_service_.SetUserPref(prefs::kCaptionBubbleExpanded, base::Value(true));
 
   EXPECT_TRUE(caption_bubble_settings.GetLiveCaptionBubbleExpanded());
 }
 
-TEST_F(ConsumerCaptionBubbleSettingsTest, GetLiveCaptionLanguageCode) {
-  ConsumerCaptionBubbleSettings caption_bubble_settings(&pref_service_,
-                                                        kEnglishLanguage);
+TEST_F(CaptionBubbleSettingsImplTest, GetLiveCaptionLanguageCode) {
+  CaptionBubbleSettingsImpl caption_bubble_settings(&pref_service_,
+                                                    kEnglishLanguage);
 
   EXPECT_THAT(caption_bubble_settings.GetLiveCaptionLanguageCode(),
               testing::StrEq(kEnglishLanguage));
 }
 
-TEST_F(ConsumerCaptionBubbleSettingsTest, GetLiveTranslateTargetLanguageCode) {
-  ConsumerCaptionBubbleSettings caption_bubble_settings(&pref_service_,
-                                                        kEnglishLanguage);
+TEST_F(CaptionBubbleSettingsImplTest, GetLiveTranslateTargetLanguageCode) {
+  CaptionBubbleSettingsImpl caption_bubble_settings(&pref_service_,
+                                                    kEnglishLanguage);
   caption_bubble_settings.SetObserver(observer_weak_ptr_factory_.GetWeakPtr());
 
   EXPECT_THAT(caption_bubble_settings.GetLiveTranslateTargetLanguageCode(),
@@ -110,9 +110,9 @@ TEST_F(ConsumerCaptionBubbleSettingsTest, GetLiveTranslateTargetLanguageCode) {
               testing::StrEq(kArabicLanguage));
 }
 
-TEST_F(ConsumerCaptionBubbleSettingsTest, RemoveObservation) {
-  ConsumerCaptionBubbleSettings caption_bubble_settings(&pref_service_,
-                                                        kEnglishLanguage);
+TEST_F(CaptionBubbleSettingsImplTest, RemoveObservation) {
+  CaptionBubbleSettingsImpl caption_bubble_settings(&pref_service_,
+                                                    kEnglishLanguage);
   caption_bubble_settings.SetObserver(observer_weak_ptr_factory_.GetWeakPtr());
   caption_bubble_settings.RemoveObserver();
 

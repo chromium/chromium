@@ -16,8 +16,8 @@
 #include "chromeos/ash/components/boca/babelorca/babel_orca_consumer.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_controller.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_producer.h"
+#include "chromeos/ash/components/boca/babelorca/caption_bubble_settings_impl.h"
 #include "chromeos/ash/components/boca/babelorca/caption_controller.h"
-#include "chromeos/ash/components/boca/babelorca/consumer_caption_bubble_settings.h"
 #include "chromeos/ash/components/boca/babelorca/live_caption_controller_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/live_caption_controller_wrapper_impl.h"
 #include "chromeos/ash/components/boca/babelorca/oauth_token_fetcher.h"
@@ -76,7 +76,7 @@ std::unique_ptr<BabelOrcaManager> BabelOrcaManager::CreateAsConsumer(
     const std::string& application_locale) {
   auto caption_controller = std::make_unique<babelorca::CaptionController>(
       std::move(caption_bubble_context), pref_service, application_locale,
-      std::make_unique<babelorca::ConsumerCaptionBubbleSettings>(
+      std::make_unique<babelorca::CaptionBubbleSettingsImpl>(
           pref_service,
           /*caption_language_code=*/application_locale));
   ControllerFactory controller_factory =

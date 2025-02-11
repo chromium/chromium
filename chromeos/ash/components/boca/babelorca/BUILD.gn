@@ -6,7 +6,6 @@ assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos/ash")
 
 static_library("babelorca") {
   sources = [
-    "babel_orca_caption_bubble_settings.h",
     "babel_orca_caption_translator.cc",
     "babel_orca_caption_translator.h",
     "babel_orca_consumer.cc",
@@ -20,10 +19,10 @@ static_library("babelorca") {
     "babel_orca_translation_dispatcher.h",
     "babel_orca_translation_dispatcher_impl.cc",
     "babel_orca_translation_dispatcher_impl.h",
+    "caption_bubble_settings_impl.cc",
+    "caption_bubble_settings_impl.h",
     "caption_controller.cc",
     "caption_controller.h",
-    "consumer_caption_bubble_settings.cc",
-    "consumer_caption_bubble_settings.h",
     "live_caption_controller_wrapper.h",
     "live_caption_controller_wrapper_impl.cc",
     "live_caption_controller_wrapper_impl.h",
@@ -139,8 +138,8 @@ source_set("unit_tests") {
     "babel_orca_consumer_unittest.cc",
     "babel_orca_manager_unittest.cc",
     "babel_orca_producer_unittest.cc",
+    "caption_bubble_settings_impl_unittest.cc",
     "caption_controller_unittest.cc",
-    "consumer_caption_bubble_settings_unittest.cc",
     "oauth_token_fetcher_unittest.cc",
     "soda_installer_unittest.cc",
     "speech_recognition_event_handler_unittest.cc",

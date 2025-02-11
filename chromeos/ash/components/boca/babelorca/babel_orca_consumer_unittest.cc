@@ -14,8 +14,8 @@
 #include "base/test/bind.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/boca/babelorca/caption_bubble_settings_impl.h"
 #include "chromeos/ash/components/boca/babelorca/caption_controller.h"
-#include "chromeos/ash/components/boca/babelorca/consumer_caption_bubble_settings.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_caption_controller_delegate.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_request_data_provider.h"
@@ -96,9 +96,8 @@ class BabelOrcaConsumerTest : public testing::Test {
     auto caption_controller_delegate =
         std::make_unique<FakeCaptionControllerDelegate>();
     caption_controller_delegate_ = caption_controller_delegate.get();
-    auto caption_bubble_settings =
-        std::make_unique<ConsumerCaptionBubbleSettings>(&pref_service_,
-                                                        kApplicationLocale);
+    auto caption_bubble_settings = std::make_unique<CaptionBubbleSettingsImpl>(
+        &pref_service_, kApplicationLocale);
     caption_bubble_settings_ = caption_bubble_settings.get();
     auto caption_controller = std::make_unique<CaptionController>(
         /*caption_bubble_context=*/
@@ -161,7 +160,7 @@ class BabelOrcaConsumerTest : public testing::Test {
   TachyonStreamingClient::OnMessageCallback on_message_cb_;
   std::unique_ptr<BabelOrcaConsumer> consumer_;
   base::test::RepeatingTestFuture<void> streaming_client_waiter_;
-  raw_ptr<ConsumerCaptionBubbleSettings> caption_bubble_settings_;
+  raw_ptr<CaptionBubbleSettingsImpl> caption_bubble_settings_;
   raw_ptr<FakeCaptionControllerDelegate> caption_controller_delegate_;
   base::WeakPtr<FakeBabelOrcaTranslationDispatcher>
       fake_translation_dispatcher_;

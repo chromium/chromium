@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_CONSUMER_CAPTION_BUBBLE_SETTINGS_H_
-#define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_CONSUMER_CAPTION_BUBBLE_SETTINGS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_CAPTION_BUBBLE_SETTINGS_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_CAPTION_BUBBLE_SETTINGS_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/ash/components/boca/babelorca/babel_orca_caption_bubble_settings.h"
 #include "components/live_caption/caption_bubble_settings.h"
 
 class PrefChangeRegistrar;
@@ -19,18 +18,18 @@ class PrefService;
 
 namespace ash::babelorca {
 
-class ConsumerCaptionBubbleSettings : public BabelOrcaCaptionBubbleSettings {
+class CaptionBubbleSettingsImpl : public ::captions::CaptionBubbleSettings {
  public:
-  ConsumerCaptionBubbleSettings(PrefService* profile_prefs,
-                                std::string_view caption_language_code);
+  CaptionBubbleSettingsImpl(PrefService* profile_prefs,
+                            std::string_view caption_language_code);
 
-  ConsumerCaptionBubbleSettings(const ConsumerCaptionBubbleSettings&) = delete;
-  ConsumerCaptionBubbleSettings& operator=(
-      const ConsumerCaptionBubbleSettings&) = delete;
+  CaptionBubbleSettingsImpl(const CaptionBubbleSettingsImpl&) = delete;
+  CaptionBubbleSettingsImpl& operator=(const CaptionBubbleSettingsImpl&) =
+      delete;
 
-  ~ConsumerCaptionBubbleSettings() override;
+  ~CaptionBubbleSettingsImpl() override;
 
-  // BabelOrcaCaptionBubbleSettings:
+  // ::captions::CaptionBubbleSettings:
   void SetObserver(base::WeakPtr<::captions::CaptionBubbleSettings::Observer>
                        observer) override;
   void RemoveObserver() override;
@@ -43,7 +42,8 @@ class ConsumerCaptionBubbleSettings : public BabelOrcaCaptionBubbleSettings {
   void SetLiveCaptionBubbleExpanded(bool expanded) override;
   void SetLiveTranslateTargetLanguageCode(
       std::string_view language_code) override;
-  void SetLiveTranslateEnabled(bool enabled) override;
+
+  void SetLiveTranslateEnabled(bool enabled);
 
  private:
   const raw_ptr<PrefService> profile_prefs_;
@@ -55,4 +55,4 @@ class ConsumerCaptionBubbleSettings : public BabelOrcaCaptionBubbleSettings {
 
 }  // namespace ash::babelorca
 
-#endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_CONSUMER_CAPTION_BUBBLE_SETTINGS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_CAPTION_BUBBLE_SETTINGS_IMPL_H_
