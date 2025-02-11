@@ -254,7 +254,7 @@ enum RiskLevel {
 // This field is considered Enriched/Proprietary, it should only be
 // available to SecOps, and removed for Workspace BIP/SIT, GCP Cloud Pubsub
 // or 3P SIEMs.
-// Next ID: 6
+// Next ID: 7
 message RiskInfo {
   enum ThreatType {
     THREAT_TYPE_UNSPECIFIED = 0;
@@ -280,7 +280,7 @@ message RiskInfo {
   }
   repeated RiskSubCategory risk_sub_categories = 3;
 
-  // e.g., Safe Browsing blocklist, or ML models
+  // Reasons like Safe Browsing blocklist, ML models vs. heuristic rules.
   repeated string risk_reasons = 4;
 
   // RiskIndicators (e.g, contains_macros)
@@ -298,6 +298,17 @@ message RiskInfo {
     }
   }
   repeated RiskIndicator risk_indicators = 5;
+
+  // Risk source, to differentiate risk info from pipelines like Bineval
+  // Reputation  server, SUMS, LLAMA, etc.
+  enum RiskSource {
+    RISK_SOURCE_UNSPECIFIED = 0;
+    FILE_REPUTATION = 1;        // Bineval Reputation Server or SB blocklist.
+    FILE_CONTENT_SCANNING = 2;  // GAVS or SUMS.
+    URL_REPUTATION = 3;         // Llama / WebRisk Evaluate API or SB blocklist.
+    URL_CONTENT_SCANNING = 4;   // Ictis scanning pipeline.
+  }
+  RiskSource risk_source = 6;
 }
 
 // Next ID: 9
