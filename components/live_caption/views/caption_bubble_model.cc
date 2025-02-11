@@ -129,6 +129,16 @@ void CaptionBubbleModel::Close() {
   ClearText();
 }
 
+std::string CaptionBubbleModel::GetFullText() const {
+  // Ensure that there is a space between the final and partial texts.
+  if (!final_text_.empty() && !partial_text_.empty() &&
+      !std::isspace(final_text_.back()) && !std::isspace(partial_text_[0])) {
+    return final_text_ + " " + partial_text_;
+  }
+
+  return final_text_ + partial_text_;
+}
+
 void CaptionBubbleModel::OnError(
     CaptionBubbleErrorType error_type,
     OnErrorClickedCallback error_clicked_callback,
@@ -150,7 +160,7 @@ void CaptionBubbleModel::ClearText() {
 }
 
 void CaptionBubbleModel::CommitPartialText() {
-  final_text_ += partial_text_;
+  final_text_ = GetFullText();
   partial_text_.clear();
   if (!observer_)
     return;

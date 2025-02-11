@@ -1531,4 +1531,19 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       SpaceBetweenFinalAndPartial) {
+  OnFinalTranscription(
+      "Sea otters hold hands while they sleep so they don't drift apart.");
+  EXPECT_EQ("Sea otters hold hands while they sleep so they don't drift apart.",
+            GetLabelText());
+  OnPartialTranscription(
+      "Red pandas use their bushy tails for balance and as a cozy blanket in "
+      "cold weather.");
+  EXPECT_EQ(
+      "Sea otters hold hands while they sleep so they don't drift apart. Red "
+      "pandas use their bushy tails for balance and as a cozy blanket in cold "
+      "weather.",
+      GetLabelText());
+}
 }  // namespace captions

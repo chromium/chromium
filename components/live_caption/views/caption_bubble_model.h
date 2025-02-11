@@ -101,7 +101,7 @@ class CaptionBubbleModel {
   bool IsClosed() const { return is_closed_; }
   bool HasError() const { return has_error_; }
   CaptionBubbleErrorType ErrorType() const { return error_type_; }
-  std::string GetFullText() const { return final_text_ + partial_text_; }
+  std::string GetFullText() const;
   CaptionBubbleContext* GetContext() { return context_; }
   std::u16string GetDownloadProgressText() const {
     return download_progress_text_;

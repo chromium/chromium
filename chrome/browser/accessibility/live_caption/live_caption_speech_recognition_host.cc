@@ -296,16 +296,6 @@ void LiveCaptionSpeechRecognitionHost::OnTranslationCallback(
       translation_cache_.InsertIntoCache(original_transcription, result.value(),
                                          source_language, target_language);
     }
-  } else {
-    // Append a space after final results when translating from an ideographic
-    // to non-ideographic locale. The Speech On-Device API (SODA) automatically
-    // prepends a space to recognition events after a final event, but only for
-    // non-ideographic locales.
-    // TODO(crbug.com/40261536): Consider moving this to the
-    // LiveTranslateController.
-    if (is_final) {
-      formatted_result += " ";
-    }
   }
 
   auto text = base::StrCat({cached_translation, formatted_result});
