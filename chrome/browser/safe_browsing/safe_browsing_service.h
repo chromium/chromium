@@ -302,6 +302,11 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
   FRIEND_TEST_ALL_PREFIXES(
       SafeBrowsingServiceTest,
       TestMinAllowedTimeForReferrerChains_MultipleProfiles);
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingServiceTest,
+                           EnhancedProtectionPrefChange_SingleProfile);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingServiceTest,
+      EnhancedProtectionPrefChange_SupportsMultipleProfiles);
 
   void SetDatabaseManagerForTest(SafeBrowsingDatabaseManager* database_manager);
 
@@ -424,8 +429,8 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
 
   // Manages the logic for handling preference changes, including displaying
   // specific UI elements in response to certain preference changes.
-  std::unique_ptr<SafeBrowsingPrefChangeHandler>
-      safe_browsing_pref_change_handler_;
+  std::map<Profile*, std::unique_ptr<SafeBrowsingPrefChangeHandler>>
+      pref_change_handlers_map_;
 };
 
 // TODO(crbug.com/41437292): Remove this once dependencies are using the

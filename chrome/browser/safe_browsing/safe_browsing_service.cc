@@ -223,9 +223,6 @@ void SafeBrowsingServiceImpl::Initialize() {
 
   ui_manager_ = CreateUIManager();
 
-  safe_browsing_pref_change_handler_ =
-      std::make_unique<SafeBrowsingPrefChangeHandler>();
-
   services_delegate_->Initialize();
 
   // Needs to happen after |ui_manager_| is created.
@@ -258,6 +255,7 @@ void SafeBrowsingServiceImpl::ShutDown() {
   prefs_map_.clear();
   user_population_prefs_.clear();
   min_allowed_time_for_referrer_chains_.clear();
+  pref_change_handlers_map_.clear();
 
   Stop(true);
 
@@ -520,6 +518,10 @@ void SafeBrowsingServiceImpl::OnProfileAdded(Profile* profile) {
         prefs::kSafeBrowsingScoutReportingEnabledWhenDeprecated, false);
   }
 
+  // Create pref change handler for each profile.
+  pref_change_handlers_map_[profile] =
+      std::make_unique<SafeBrowsingPrefChangeHandler>();
+
   SafeBrowsingMetricsCollectorFactory::GetForProfile(profile)->StartLogging();
 
   CreateServicesForProfile(profile);
@@ -542,6 +544,7 @@ void SafeBrowsingServiceImpl::OnProfileWillBeDestroyed(Profile* profile) {
   PrefService* pref_service = profile->GetPrefs();
   DCHECK(pref_service);
   prefs_map_.erase(pref_service);
+  pref_change_handlers_map_.erase(profile);
   user_population_prefs_.erase(pref_service);
   min_allowed_time_for_referrer_chains_.erase(profile);
 }
@@ -560,8 +563,11 @@ base::CallbackListSubscription SafeBrowsingServiceImpl::RegisterStateCallback(
 void SafeBrowsingServiceImpl::EnhancedProtectionPrefChange(Profile* profile) {
   RefreshState();
   UpdateMinAllowedTimeForReferrerChains(profile);
-  safe_browsing_pref_change_handler_
-      ->MaybeShowEnhancedProtectionSettingChangeNotification(profile);
+  // Get the handler for this profile.
+  auto it = pref_change_handlers_map_.find(profile);
+  if (it != pref_change_handlers_map_.end()) {
+    it->second->MaybeShowEnhancedProtectionSettingChangeNotification(profile);
+  }
 }
 
 void SafeBrowsingServiceImpl::UpdateMinAllowedTimeForReferrerChains(

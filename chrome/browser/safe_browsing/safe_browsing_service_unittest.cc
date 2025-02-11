@@ -46,6 +46,15 @@ namespace {
 const char kTestDownloadUrl[] = "https://example.com";
 }
 
+// Mock SafeBrowsingPrefChangeHandler.
+class MockSafeBrowsingPrefChangeHandler : public SafeBrowsingPrefChangeHandler {
+ public:
+  MOCK_METHOD(void,
+              MaybeShowEnhancedProtectionSettingChangeNotification,
+              (Profile * profile),
+              (override));
+};
+
 class SafeBrowsingServiceTest : public testing::Test {
  public:
   SafeBrowsingServiceTest() {
@@ -528,6 +537,56 @@ TEST_F(SafeBrowsingServiceTest,
   EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(
                 second_profile.get()),
             base::Time::Max());
+}
+
+TEST_F(SafeBrowsingServiceTest, EnhancedProtectionPrefChange_SingleProfile) {
+  // 1. Create a single profile (using the fixture's profile).
+  Profile* profile1 = profile();
+
+  // 2. Create a mock SafeBrowsingPrefChangeHandler.
+  auto mock_handler1 = std::make_unique<
+      ::testing::NiceMock<MockSafeBrowsingPrefChangeHandler>>();
+
+  // 3. Set the expectation: The mock should be called once with the profile.
+  EXPECT_CALL(*mock_handler1,
+              MaybeShowEnhancedProtectionSettingChangeNotification(profile1));
+
+  // 4. Add the mock handler to the map.
+  sb_service_->pref_change_handlers_map_[profile1] = std::move(mock_handler1);
+
+  // 5. Call the method under test.
+  sb_service_->EnhancedProtectionPrefChange(profile1);
+}
+
+TEST_F(SafeBrowsingServiceTest,
+       EnhancedProtectionPrefChange_SupportsMultipleProfiles) {
+  // 1. Create multiple profiles.
+  Profile* profile1 = profile();
+  auto profile2 = std::make_unique<TestingProfile>();
+  Profile* profile2_ptr = profile2.get();  // Store the pointer before moving
+
+  // 2. Create mock SafeBrowsingPrefChangeHandlers for each profile.
+  auto mock_handler1 = std::make_unique<
+      ::testing::NiceMock<MockSafeBrowsingPrefChangeHandler>>();
+  auto mock_handler2 = std::make_unique<
+      ::testing::NiceMock<MockSafeBrowsingPrefChangeHandler>>();
+
+  // 3. Set expectations: Each mock should be called once with its corresponding
+  // profile.
+  EXPECT_CALL(*mock_handler1.get(),
+              MaybeShowEnhancedProtectionSettingChangeNotification(profile1));
+  EXPECT_CALL(
+      *mock_handler2.get(),
+      MaybeShowEnhancedProtectionSettingChangeNotification(profile2_ptr));
+
+  // 4. Add the mock handlers to the map, associating them with their profiles.
+  sb_service_->pref_change_handlers_map_[profile1] = std::move(mock_handler1);
+  sb_service_->pref_change_handlers_map_[profile2_ptr] =
+      std::move(mock_handler2);
+
+  // 5. Call the method under test for each profile.
+  sb_service_->EnhancedProtectionPrefChange(profile1);
+  sb_service_->EnhancedProtectionPrefChange(profile2_ptr);
 }
 
 class SafeBrowsingServiceAntiPhishingTelemetryTest
