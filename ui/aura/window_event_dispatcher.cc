@@ -68,6 +68,9 @@ bool IsEventCandidateForHold(const ui::Event& event) {
   if (event.type() == ui::EventType::kMouseExited) {
     return false;
   }
+  if (event.IsMouseWheelEvent() || event.IsScrollEvent()) {
+    return false;
+  }
   if (event.IsMouseEvent() && (event.flags() & ui::EF_IS_SYNTHESIZED))
     return true;
   return false;
@@ -952,8 +955,9 @@ DispatchDetails WindowEventDispatcher::PreDispatchMouseEvent(
 
   if (IsEventCandidateForHold(*event) && !dispatching_held_event_) {
     if (move_hold_count_) {
-      held_move_event_ =
-          std::make_unique<ui::MouseEvent>(*event, target, window());
+      held_move_event_ = base::WrapUnique<ui::MouseEvent>(
+          event->Clone().release()->AsMouseEvent());
+      held_move_event_->ConvertLocationToTarget(target, window());
       event->SetHandled();
       return DispatchDetails();
     } else {
@@ -1059,8 +1063,9 @@ DispatchDetails WindowEventDispatcher::PreDispatchTouchEvent(
     ui::TouchEvent* event) {
   if (event->type() == ui::EventType::kTouchMoved && move_hold_count_ &&
       !dispatching_held_event_) {
-    held_move_event_ =
-        std::make_unique<ui::TouchEvent>(*event, target, window());
+    held_move_event_ = base::WrapUnique<ui::TouchEvent>(
+        event->Clone().release()->AsTouchEvent());
+    held_move_event_->ConvertLocationToTarget(target, window());
     event->SetHandled();
     return DispatchDetails();
   }
