@@ -39,9 +39,6 @@ class CredentialLeakDialogView : public views::DialogDelegateView {
   void AddedToWidget() override;
   std::u16string GetWindowTitle() const override;
 
-  // TODO(b:394420459): Remove once ImageView uses ui::ColorVariant.
-  SkColor GetBackgroundColor() const;
-
   // A weak pointer to the controller.
   raw_ptr<CredentialLeakDialogController> controller_ = nullptr;
   const raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>

@@ -816,8 +816,9 @@ BubbleDialogModelHost::ThemeChangedObserver::ThemeChangedObserver(
 }
 BubbleDialogModelHost::ThemeChangedObserver::~ThemeChangedObserver() = default;
 
-void BubbleDialogModelHost::ThemeChangedObserver::OnViewThemeChanged(View*) {
-  parent_->UpdateWindowIcon();
+void BubbleDialogModelHost::ThemeChangedObserver::OnViewThemeChanged(
+    View* view) {
+  parent_->UpdateWindowIcon(view->GetColorProvider());
 }
 
 BubbleDialogModelHost::BubbleDialogModelHost(
@@ -1134,13 +1135,16 @@ void BubbleDialogModelHost::OnDialogButtonChanged() {
   UpdateDialogButtons();
 }
 
-void BubbleDialogModelHost::UpdateWindowIcon() {
+void BubbleDialogModelHost::UpdateWindowIcon(
+    const ui::ColorProvider* color_provider) {
   if (!ShouldShowWindowIcon()) {
     return;
   }
   const ui::ImageModel dark_mode_icon =
       model_->dark_mode_icon(DialogModelHost::GetPassKey());
-  if (!dark_mode_icon.IsEmpty() && color_utils::IsDark(GetBackgroundColor())) {
+  if (!dark_mode_icon.IsEmpty() &&
+      color_utils::IsDark(
+          GetBackgroundColor().ConvertToSkColor(color_provider))) {
     SetIcon(dark_mode_icon);
     return;
   }
