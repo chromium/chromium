@@ -242,6 +242,7 @@ source_set("interactive_ui_tests") {
     "//chrome/common",
     "//chrome/test:test_support",
     "//content/test:test_support",
+    "//ui/display:test_support",
   ]
   data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]
 }
