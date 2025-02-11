@@ -190,13 +190,13 @@ otherwise be non-null, you can either:
 
 ## NullAway Shortcomings
 
-It does not understand when local variables contain non-null information.
+Does not work: `boolean isNull = thing == null; if (!isNull) { ... }`
 * Feature request: https://github.com/uber/NullAway/issues/98
 
 It does not infer nullness of inferred generics.
 * Feature request: https://github.com/uber/NullAway/issues/1075
 
-Validation of `@Contract` within methods that use it is broken.
+Validation of (but not use of) `@Contract` is buggy.
 * Bug: https://github.com/uber/NullAway/issues/1104
 
 ## FAQ
@@ -210,7 +210,7 @@ A: Chromium already uses Error Prone, so NullAway was easy to integrate.
 A: NullAway treats these two the same. In Chromium, `@SuppressWarnings` is used
 when a warning is unavoidable (appeasing NullAway would make the code worse),
 and `@NullUnmarked` is used when a method has not yet been updated to support
-`@Nullable` annotations (its a remnant of our [automated adding of
+`@Nullable` annotations (it's a remnant of our [automated adding of
 annotations]).
 
 [automated adding of annotations]: https://docs.google.com/document/d/1KNKs7jI8uoBLfBq4HCuGTYPLuTOMgUEuKrzyCUFjEk8/edit?tab=t.0#heading=h.1y1pwesy8vhq
