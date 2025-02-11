@@ -56,7 +56,9 @@ enum class GetChangePasswordUrlMetric {
   // Used when a url was used, which corresponds to a site from within same
   // FacetGroup.
   kGroupUrlOverrideUsed = 3,
-  kMaxValue = kGroupUrlOverrideUsed,
+  // Used when change password info was available for the main domain only.
+  kMainDomainUsed = 4,
+  kMaxValue = kMainDomainUsed,
 };
 
 class AffiliationServiceImpl : public AffiliationService,
@@ -65,6 +67,7 @@ class AffiliationServiceImpl : public AffiliationService,
   struct ChangePasswordUrlMatch {
     GURL change_password_url;
     bool group_url_override;
+    bool main_domain_override;
   };
 
   explicit AffiliationServiceImpl(
