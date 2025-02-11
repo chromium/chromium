@@ -160,9 +160,15 @@ RecentActivityBubbleDialogView::RecentActivityBubbleDialogView(
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
-  // Activity log should never be empty. This bubble dialog is triggered
-  // by an entrypoint that only exists if a message was delivered.
-  CHECK(!activity_log.empty());
+  if (activity_log.empty()) {
+    // Empty state
+    AddChildView(std::make_unique<views::Label>(
+                     l10n_util::GetStringUTF16(
+                         IDS_DATA_SHARING_RECENT_ACTIVITY_NO_UPDATES),
+                     views::style::TextContext::CONTEXT_TABLE_ROW))
+        ->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+    return;
+  }
   const auto num_rows =
       std::min(static_cast<int>(activity_log.size()), kMaxNumberRows);
   for (int i = 0; i < num_rows; i++) {

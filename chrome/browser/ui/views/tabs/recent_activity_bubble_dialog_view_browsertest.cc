@@ -194,7 +194,9 @@ class RecentActivityBubbleDialogViewBrowserTest : public DialogBrowserTest {
  public:
   void ShowUi(const std::string& name) override {
     std::vector<ActivityLogItem> activity_log;
-    if (name == "WithOneItem") {
+    if (name == "Empty") {
+      activity_log = {};
+    } else if (name == "WithOneItem") {
       activity_log = CreateMockActivityLog(1);
     } else if (name == "WithFullList") {
       activity_log = CreateMockActivityLog(5);
@@ -224,7 +226,11 @@ class RecentActivityBubbleDialogViewBrowserTest : public DialogBrowserTest {
     std::string test_name =
         testing::UnitTest::GetInstance()->current_test_info()->name();
 
-    if (test_name == "InvokeUi_WithOneItem") {
+    if (test_name == "InvokeUi_Empty") {
+      // Single child is the label view.
+      EXPECT_EQ(1u, children.size());
+    } else if (test_name == "InvokeUi_WithOneItem") {
+      // Single child is the one row.
       EXPECT_EQ(1u, children.size());
     } else {
       // All other tests expect a complete list of 5 items.
@@ -244,6 +250,11 @@ class RecentActivityBubbleDialogViewBrowserTest : public DialogBrowserTest {
   views::UniqueWidgetPtr anchor_widget_;
   std::unique_ptr<RecentActivityBubbleCoordinator> bubble_coordinator_;
 };
+
+IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewBrowserTest,
+                       InvokeUi_Empty) {
+  ShowAndVerifyUi();
+}
 
 IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewBrowserTest,
                        InvokeUi_WithOneItem) {
