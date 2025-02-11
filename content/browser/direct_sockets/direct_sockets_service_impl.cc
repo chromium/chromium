@@ -12,6 +12,9 @@
 #include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_version.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/worker_host/shared_worker_host.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -116,6 +119,14 @@ bool ValidateRequest(const Context& context,
                 CHECK_DEREF(shared_worker->GetProcessHost())
                     .GetBrowserContext(),
                 shared_worker->instance().url(), {address, port, protocol});
+          },
+          [&](base::WeakPtr<ServiceWorkerVersion> service_worker) {
+            if (!service_worker || !service_worker->context()) {
+              return false;
+            }
+            return delegate->ValidateRequestForServiceWorker(
+                service_worker->context()->wrapper()->browser_context(),
+                service_worker->key().origin(), {address, port, protocol});
           }},
       context);
 }
@@ -179,6 +190,16 @@ void RequestPrivateNetworkAccess(const Context& context,
                          CHECK_DEREF(shared_worker->GetProcessHost())
                              .GetBrowserContext(),
                          shared_worker->instance().url()));
+          },
+          [&](base::WeakPtr<ServiceWorkerVersion> service_worker) {
+            // TODO(crbug.com/392843918): Figure out the appropriate checks
+            // wrt permissions.
+            std::move(callback).Run(
+                /*access_allowed=*/service_worker &&
+                service_worker->context() &&
+                delegate->IsPrivateNetworkAccessAllowedForServiceWorker(
+                    service_worker->context()->wrapper()->browser_context(),
+                    service_worker->key().origin()));
           }},
       context);
 }
@@ -264,6 +285,12 @@ class DocumentHelper
  private:
   const std::unique_ptr<DirectSocketsServiceImpl> service_;
 };
+
+bool ServiceWorkerRunsInIsolatedContext(ServiceWorkerVersion& service_worker) {
+  auto* rph =
+      RenderProcessHost::FromID(service_worker.embedded_worker()->process_id());
+  return rph ? IsIsolatedContext(rph) : false;
+}
 
 }  // namespace
 
@@ -426,6 +453,36 @@ void DirectSocketsServiceImpl::CreateForSharedWorker(
   mojo::MakeSelfOwnedReceiver(
       base::WrapUnique(new DirectSocketsServiceImpl(shared_worker.AsWeakPtr())),
       std::move(receiver));
+}
+
+// static
+void DirectSocketsServiceImpl::CreateForServiceWorker(
+    ServiceWorkerVersion& service_worker,
+    mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!base::FeatureList::IsEnabled(blink::features::kDirectSockets)) {
+    mojo::ReportBadMessage(
+        "features::kDirectSockets is disabled by command line parameters or a "
+        "Finch experiment.");
+    return;
+  }
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kDirectSocketsInServiceWorkers)) {
+    mojo::ReportBadMessage(
+        "features::kDirectSocketsInServiceWorkers is disabled by command line "
+        "parameters or a Finch experiment.");
+    return;
+  }
+  if (!ServiceWorkerRunsInIsolatedContext(service_worker)) {
+    mojo::ReportBadMessage(
+        "ServiceWorker is not sufficiently isolated to use Direct Sockets.");
+    return;
+  }
+  // TODO(crbug.com/392843918): Figure out the appropriate checks wrt
+  // permissions.
+  mojo::MakeSelfOwnedReceiver(base::WrapUnique(new DirectSocketsServiceImpl(
+                                  service_worker.GetWeakPtr())),
+                              std::move(receiver));
 }
 
 void DirectSocketsServiceImpl::OpenTCPSocket(
@@ -621,6 +678,16 @@ network::mojom::NetworkContext* DirectSocketsServiceImpl::GetNetworkContext()
                                        .GetStoragePartition()
                                        ->GetNetworkContext()
                                  : nullptr;
+          },
+          [](base::WeakPtr<ServiceWorkerVersion> service_worker)
+              -> network::mojom::NetworkContext* {
+            if (!service_worker || !service_worker->context()) {
+              return nullptr;
+            }
+            return service_worker->context()
+                ->wrapper()
+                ->storage_partition()
+                ->GetNetworkContext();
           }},
       context_);
 }

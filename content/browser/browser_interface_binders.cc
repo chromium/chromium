@@ -1703,6 +1703,13 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
   map->Add<blink::mojom::ReportingServiceProxy>(base::BindRepeating(
       &CreateReportingServiceProxyForServiceWorker, base::Unretained(host)));
 #if !BUILDFLAG(IS_ANDROID)
+  map->Add<blink::mojom::DirectSocketsService>(base::BindRepeating(
+      [](ServiceWorkerHost* host,
+         mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver) {
+        DirectSocketsServiceImpl::CreateForServiceWorker(*host->version(),
+                                                         std::move(receiver));
+      },
+      base::Unretained(host)));
   map->Add<blink::mojom::HidService>(base::BindRepeating(
       &ServiceWorkerHost::BindHidService, base::Unretained(host)));
 #endif

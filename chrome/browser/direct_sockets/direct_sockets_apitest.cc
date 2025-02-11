@@ -671,11 +671,72 @@ class IsolatedWebAppSharedWorkerApiTest
       blink::features::kDirectSocketsInSharedWorkers};
 };
 
+class IsolatedWebAppServiceWorkerApiTest
+    : public web_app::IsolatedWebAppBrowserTestHarness {
+ public:
+  static constexpr std::string_view kServiceWorkerScriptTemplate = R"(
+    addEventListener('message', async (e) => {
+      try {
+        await %s;
+        e.source.postMessage(null);
+      } catch (err) {
+        e.source.postMessage({ 'error': err });
+      }
+    });
+  )";
+
+  static constexpr std::string_view kServiceWorkerConnect = R"(
+    new Promise(async (resolve, reject) => {
+      const policy = trustedTypes.createPolicy("default", {
+        createScriptURL: (url) => url,
+      });
+      await navigator.serviceWorker.register(
+        policy.createScriptURL('/service_worker.js')
+      );
+      navigator.serviceWorker.addEventListener('message', e => {
+        if (e.data) {
+          reject(e.data.error);
+        } else {
+          resolve();
+        }
+      });
+      const reg = await navigator.serviceWorker.ready;
+      reg.active.postMessage(null);
+    });
+  )";
+
+  content::RenderFrameHost* InstallAndOpenIsolatedWebAppWithServiceWorkerScript(
+      std::string_view service_worker_script,
+      bool with_pna = false) {
+    using PermissionsPolicyFeature = network::mojom::PermissionsPolicyFeature;
+
+    auto manifest_builder =
+        web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+            PermissionsPolicyFeature::kDirectSockets);
+    if (with_pna) {
+      manifest_builder.AddPermissionsPolicyWildcard(
+          PermissionsPolicyFeature::kDirectSocketsPrivate);
+    }
+    auto app = web_app::IsolatedWebAppBuilder(std::move(manifest_builder))
+                   .AddJs("/service_worker.js", service_worker_script)
+                   .BuildBundle();
+    web_app::IsolatedWebAppUrlInfo url_info = app->Install(profile()).value();
+    return OpenApp(url_info.app_id());
+  }
+
+ private:
+  base::test::ScopedFeatureList features_{
+      blink::features::kDirectSocketsInServiceWorkers};
+};
+
 using ChromeDirectSocketsTcpIsolatedWebAppTest =
     ChromeDirectSocketsTcpTest<IsolatedWebAppApiTest>;
 
 using ChromeDirectSocketsTcpIsolatedWebAppSharedWorkerTest =
     ChromeDirectSocketsTcpTest<IsolatedWebAppSharedWorkerApiTest>;
+
+using ChromeDirectSocketsTcpIsolatedWebAppServiceWorkerTest =
+    ChromeDirectSocketsTcpTest<IsolatedWebAppServiceWorkerApiTest>;
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest, TcpReadWrite) {
   content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
@@ -697,6 +758,20 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppSharedWorkerTest,
       InstallAndOpenIsolatedWebAppWithSharedWorkerScript(shared_worker_script);
 
   ASSERT_THAT(EvalJs(app_frame, kSharedWorkerConnect), IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppServiceWorkerTest,
+                       TcpReadWrite) {
+  const std::string service_worker_script =
+      base::StringPrintf(kServiceWorkerScriptTemplate,
+                         content::JsReplace(kTcpReadWriteScript, kHostname,
+                                            test_server()->port()));
+
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebAppWithServiceWorkerScript(
+          service_worker_script);
+
+  ASSERT_THAT(EvalJs(app_frame, kServiceWorkerConnect), IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest,
@@ -742,6 +817,9 @@ using ChromeDirectSocketsUdpIsolatedWebAppTest =
 using ChromeDirectSocketsUdpIsolatedWebAppSharedWorkerTest =
     ChromeDirectSocketsUdpTest<IsolatedWebAppSharedWorkerApiTest>;
 
+using ChromeDirectSocketsUdpIsolatedWebAppServiceWorkerTest =
+    ChromeDirectSocketsUdpTest<IsolatedWebAppServiceWorkerApiTest>;
+
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest, UdpReadWrite) {
   content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
 
@@ -762,6 +840,20 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppSharedWorkerTest,
       InstallAndOpenIsolatedWebAppWithSharedWorkerScript(shared_worker_script);
 
   ASSERT_THAT(EvalJs(app_frame, kSharedWorkerConnect), IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppServiceWorkerTest,
+                       UdpReadWrite) {
+  const std::string service_worker_script =
+      base::StringPrintf(kServiceWorkerScriptTemplate,
+                         content::JsReplace(kUdpConnectedReadWriteScript,
+                                            kHostname, test_server()->port()));
+
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebAppWithServiceWorkerScript(
+          service_worker_script);
+
+  ASSERT_THAT(EvalJs(app_frame, kServiceWorkerConnect), IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
@@ -824,6 +916,20 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppSharedWorkerTest,
       InstallAndOpenIsolatedWebAppWithSharedWorkerScript(shared_worker_script);
 
   ASSERT_THAT(EvalJs(app_frame, kSharedWorkerConnect), IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppServiceWorkerTest,
+                       UdpServerReadWrite) {
+  const std::string service_worker_script =
+      base::StringPrintf(kServiceWorkerScriptTemplate,
+                         content::JsReplace(kUdpBoundReadWriteScript, kHostname,
+                                            test_server()->port()));
+
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebAppWithServiceWorkerScript(
+          service_worker_script);
+
+  ASSERT_THAT(EvalJs(app_frame, kServiceWorkerConnect), IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
@@ -891,6 +997,8 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
 using ChromeDirectSocketsTcpServerIsolatedWebAppTest = IsolatedWebAppApiTest;
 using ChromeDirectSocketsTcpServerIsolatedWebAppSharedWorkerTest =
     IsolatedWebAppSharedWorkerApiTest;
+using ChromeDirectSocketsTcpServerIsolatedWebAppServiceWorkerTest =
+    IsolatedWebAppServiceWorkerApiTest;
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerIsolatedWebAppTest,
                        TcpServerExchangePacketWithTcpSocket) {
@@ -909,6 +1017,19 @@ IN_PROC_BROWSER_TEST_F(
       InstallAndOpenIsolatedWebAppWithSharedWorkerScript(shared_worker_script);
 
   ASSERT_THAT(EvalJs(app_frame, kSharedWorkerConnect), IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeDirectSocketsTcpServerIsolatedWebAppServiceWorkerTest,
+    TcpServerExchangePacketWithTcpSocket) {
+  const std::string service_worker_script = base::StringPrintf(
+      kServiceWorkerScriptTemplate, kTcpServerExchangePacketWithTcpScript);
+
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebAppWithServiceWorkerScript(
+          service_worker_script);
+
+  ASSERT_THAT(EvalJs(app_frame, kServiceWorkerConnect), IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerIsolatedWebAppTest,

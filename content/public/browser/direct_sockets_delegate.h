@@ -9,8 +9,10 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "content/common/content_export.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -37,6 +39,9 @@ class CONTENT_EXPORT DirectSocketsDelegate {
   virtual bool ValidateRequestForSharedWorker(BrowserContext* browser_context,
                                               const GURL& shared_worker_url,
                                               const RequestDetails&) = 0;
+  virtual bool ValidateRequestForServiceWorker(BrowserContext* browser_context,
+                                               const url::Origin& origin,
+                                               const RequestDetails&) = 0;
 
   // Allows embedders to introduce additional rules for private network access.
   virtual void RequestPrivateNetworkAccess(
@@ -45,6 +50,9 @@ class CONTENT_EXPORT DirectSocketsDelegate {
   virtual bool IsPrivateNetworkAccessAllowedForSharedWorker(
       BrowserContext* browser_context,
       const GURL& shared_worker_url) = 0;
+  virtual bool IsPrivateNetworkAccessAllowedForServiceWorker(
+      BrowserContext* browser_context,
+      const url::Origin& origin) = 0;
 };
 
 }  // namespace content
