@@ -157,6 +157,19 @@ void FontDataServiceImpl::GetAllFamilyNames(
   std::move(callback).Run(std::move(result));
 }
 
+void FontDataServiceImpl::LegacyMakeTypeface(
+    const std::optional<std::string>& family_name,
+    mojom::TypefaceStylePtr style,
+    LegacyMakeTypefaceCallback callback) {
+  SkFontStyle sk_font_style(style->weight, style->width,
+                            ConvertToFontStyle(style->slant));
+
+  sk_sp<SkTypeface> typeface = font_manager_->legacyMakeTypeface(
+      family_name ? family_name->c_str() : nullptr, sk_font_style);
+
+  std::move(callback).Run(CreateMatchFamilyNameResult(typeface));
+}
+
 size_t FontDataServiceImpl::GetOrCreateAssetIndex(
     std::unique_ptr<SkStreamAsset> asset) {
   TRACE_EVENT("fonts", "FontDataServiceImpl::GetOrCreateAssetIndex");

@@ -164,6 +164,17 @@ TEST_F(FontDataServiceImplUnitTest, GetAllFamilyNames) {
   }
 }
 
+TEST_F(FontDataServiceImplUnitTest, LegacyMakeTypefaceNullFamilyName) {
+  mojom::MatchFamilyNameResultPtr out_result;
+
+  // LegacyMakeTypeface should return the default font if `family_name` is null.
+  font_service_->LegacyMakeTypeface(
+      std::nullopt, CreateTypefaceStyle(400, 5, mojom::TypefaceSlant::kRoman),
+      &out_result);
+  EXPECT_TRUE(out_result->typeface_data->is_font_file());
+  EXPECT_TRUE(out_result->typeface_data->get_font_file().IsValid());
+}
+
 }  // namespace
 
 }  // namespace font_data_service

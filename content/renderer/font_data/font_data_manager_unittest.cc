@@ -117,6 +117,19 @@ class TestFontServiceApp : public font_data_service::mojom::FontDataService {
     std::move(callback).Run(std::move(names));
   }
 
+  void LegacyMakeTypeface(const std::optional<std::string>& family_name,
+                          font_data_service::mojom::TypefaceStylePtr style,
+                          LegacyMakeTypefaceCallback callback) override {
+    // This isn't usually implemented in terms of MatchFamilyName, but this
+    // mock's MatchFamilyName always returns a typeface so it's fine to do this
+    // in this case. The important bit is that `LegacyMakeTypeface` return a
+    // font when passed a `null` font family name, which is the default font in
+    // real code.
+    ++legacy_make_typeface_call_count_;
+    MatchFamilyName(family_name ? *family_name : "", std::move(style),
+                    std::move(callback));
+  }
+
   size_t match_family_call_count() const { return match_family_call_count_; }
   size_t match_family_character_call_count() const {
     return match_family_character_call_count_;
@@ -128,6 +141,9 @@ class TestFontServiceApp : public font_data_service::mojom::FontDataService {
   int32_t last_match_family_character_call_character() const {
     return last_match_family_character_call_character_;
   }
+  size_t legacy_make_typeface_call_count() const {
+    return legacy_make_typeface_call_count_;
+  }
   void set_use_memory_fallback(bool fallback) {
     use_memory_fallback_ = fallback;
   }
@@ -138,6 +154,7 @@ class TestFontServiceApp : public font_data_service::mojom::FontDataService {
   size_t match_family_character_call_count_ = 0;
   std::vector<std::string> last_match_family_character_call_bcp47s_;
   int32_t last_match_family_character_call_character_;
+  size_t legacy_make_typeface_call_count_ = 0;
   base::MappedReadOnlyRegion memory_map_region_;
   bool use_memory_fallback_ = false;
 };
@@ -225,6 +242,17 @@ TEST_F(FontDataManagerUnitTest, MatchFamilyStyle) {
   result->getFamilyName(&result_family_name);
   EXPECT_STREQ(result_family_name.c_str(), family_name.data());
   EXPECT_EQ(test_font_data_service_app_.match_family_call_count(), 3u);
+}
+
+TEST_F(FontDataManagerUnitTest, LegacyMakeTypefaceNullFamilyName) {
+  SkFontStyle style(400, 5, SkFontStyle::kUpright_Slant);
+
+  sk_sp<SkTypeface> result =
+      skia_font_manager_->legacyMakeTypeface(nullptr, style);
+  SkString result_family_name;
+  result->getFamilyName(&result_family_name);
+  EXPECT_GT(result_family_name.size(), 0UL);
+  EXPECT_EQ(test_font_data_service_app_.legacy_make_typeface_call_count(), 1u);
 }
 
 TEST_F(FontDataManagerUnitTest, MatchFamilyStyleWithMemoryRegion) {
