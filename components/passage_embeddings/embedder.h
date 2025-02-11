@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/observer_list_types.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 
 namespace passage_embeddings {
@@ -53,12 +54,12 @@ class Embedding {
 };
 
 // Base class that hides implementation details for how text is embedded.
-class Embedder {
+class Embedder : public base::CheckedObserver {
  public:
   using TaskId = uint64_t;
   static constexpr TaskId kInvalidTaskId = 0;
 
-  virtual ~Embedder() = default;
+  ~Embedder() override = default;
 
   // Computes embeddings for each entry in `passages`. Will invoke callback on
   // done. If successful, it is guaranteed that the number of passages in
@@ -85,7 +86,10 @@ class Embedder {
   // The callback is invoked immediately if the embedder is ready beforehand.
   using OnEmbedderReadyCallback =
       base::OnceCallback<void(EmbedderMetadata metadata)>;
-  virtual void SetOnEmbedderReady(OnEmbedderReadyCallback callback) = 0;
+  virtual void SetOnEmbedderReadyCallback(OnEmbedderReadyCallback callback) = 0;
+
+  // This is notified when model metadata is updated.
+  virtual void SetEmbedderMetadata(EmbedderMetadata metadata) = 0;
 
  protected:
   Embedder() = default;

@@ -25,7 +25,9 @@ class MockEmbedder : public Embedder {
 
   bool TryCancel(TaskId task_id) override;
 
-  void SetOnEmbedderReady(OnEmbedderReadyCallback callback) override;
+  void SetOnEmbedderReadyCallback(OnEmbedderReadyCallback callback) override;
+
+  void SetEmbedderMetadata(EmbedderMetadata metadata) override;
 
  protected:
   std::vector<Embedding> ComputeEmbeddingsForPassages(

@@ -5,6 +5,7 @@
 #include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/passage_embeddings/chrome_passage_embeddings_service_controller.h"
@@ -48,15 +49,19 @@ PassageEmbedderModelObserverFactory::~PassageEmbedderModelObserverFactory() =
 std::unique_ptr<KeyedService>
 PassageEmbedderModelObserverFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-
-  if (!base::FeatureList::IsEnabled(kPassageEmbedder)) {
+  if (!base::FeatureList::IsEnabled(kPassageEmbedder) &&
+      !history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
     return nullptr;
   }
-
+  Profile* profile = Profile::FromBrowserContext(context);
+  // When the history embeddings feature is on, observe launched target even
+  // when in the experiment group, as we never want to use both models at once.
+  // Observe launched target by default, as the user could opt in at any time.
   return std::make_unique<PassageEmbedderModelObserver>(
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
-      ChromePassageEmbeddingsServiceController::Get());
+      ChromePassageEmbeddingsServiceController::Get(),
+      /*experimental=*/base::FeatureList::IsEnabled(kPassageEmbedder) &&
+          !history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile));
 }
 
 }  // namespace passage_embeddings

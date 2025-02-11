@@ -50,8 +50,7 @@ class SchedulingEmbedderTest : public testing::Test {
   std::unique_ptr<SchedulingEmbedder> MakeEmbedder() {
     auto embedder = std::make_unique<SchedulingEmbedder>(
         std::make_unique<MockEmbedderWithDelay>(), 1u, false);
-    embedder->SetOnEmbedderReady(
-        base::BindOnce([](EmbedderMetadata metadata) {}));
+    embedder->SetEmbedderMetadata(EmbedderMetadata{1, 768});
     return embedder;
   }
 

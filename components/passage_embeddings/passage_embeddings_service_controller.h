@@ -6,11 +6,13 @@
 
 #include <vector>
 
+#include "base/observer_list.h"
 #include "base/types/optional_ref.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/proto/passage_embeddings_model_metadata.pb.h"
 #include "components/passage_embeddings/embedder.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/scheduling_embedder.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
 
@@ -28,17 +30,6 @@ class PassageEmbeddingsServiceController {
   bool MaybeUpdateModelInfo(
       base::optional_ref<const optimization_guide::ModelInfo> model_info);
 
-  // Starts the service and calls `callback` with the embeddings. It is
-  // guaranteed that the result will have the same number of elements as
-  // `passages` when all embeddings executions succeed. Otherwise, will return
-  // an empty vector.
-  using GetEmbeddingsCallback = base::OnceCallback<void(
-      std::vector<mojom::PassageEmbeddingsResultPtr> results,
-      ComputeEmbeddingsStatus status)>;
-  void GetEmbeddings(std::vector<std::string> passages,
-                     PassagePriority priority,
-                     GetEmbeddingsCallback callback);
-
   // Returns true if this service controller is ready for embeddings generation.
   bool EmbedderReady();
 
@@ -53,6 +44,24 @@ class PassageEmbeddingsServiceController {
   std::unique_ptr<Embedder> MakeEmbedder();
 
  protected:
+  // Embedders are the way to access the `GetEmbeddings` API. Protecting it from
+  // general use avoids bare access calls that would interrupt scheduled tasks.
+  friend class MlEmbedder;
+
+  // Starts the service and calls `callback` with the embeddings. It is
+  // guaranteed that the result will have the same number of elements as
+  // `passages` when all embeddings executions succeed. Otherwise, will return
+  // an empty vector.
+  using GetEmbeddingsCallback = base::OnceCallback<void(
+      std::vector<mojom::PassageEmbeddingsResultPtr> results,
+      ComputeEmbeddingsStatus status)>;
+  void GetEmbeddings(std::vector<std::string> passages,
+                     PassagePriority priority,
+                     GetEmbeddingsCallback callback);
+
+  // Called by destructing embedders that were dispensed with observation.
+  void RemoveObserver(Embedder* embedder);
+
   // Launches the passage embeddings service and binds `cpu_logger_` to the
   // service process. Does nothing if the service is already launched.
   virtual void MaybeLaunchService() = 0;
@@ -100,6 +109,14 @@ class PassageEmbeddingsServiceController {
 
   // Pending requests to generate embeddings.
   std::vector<RequestId> pending_requests_;
+
+  // Notifies embedders that model metadata updated.
+  base::ObserverList<Embedder> observer_list_;
+
+  // This holds the main scheduler that receives requests from multiple separate
+  // client embedders, prioritizes all the jobs, and ultimately submits batches
+  // of work via `GetEmbeddings` when the time is right.
+  std::unique_ptr<SchedulingEmbedder> scheduling_embedder_;
 
   // Used to generate weak pointers to self.
   base::WeakPtrFactory<PassageEmbeddingsServiceController> weak_ptr_factory_{

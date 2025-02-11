@@ -132,7 +132,7 @@ SchedulingEmbedder::TaskId SchedulingEmbedder::ComputePassagesEmbeddings(
 }
 
 void SchedulingEmbedder::SubmitWorkToEmbedder() {
-  if (!embedder_ready_) {
+  if (!embedder_metadata_.IsValid()) {
     // Underlying embedder not ready yet. Wait for it.
     VLOG(5) << "SubmitWorkToEmbedder: embedder not ready";
     return;
@@ -212,10 +212,9 @@ bool SchedulingEmbedder::IsPerformanceScenarioReady() {
 #endif
 }
 
-void SchedulingEmbedder::SetOnEmbedderReady(OnEmbedderReadyCallback callback) {
-  embedder_->SetOnEmbedderReady(
-      base::BindOnce(&SchedulingEmbedder::OnEmbedderReady,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+void SchedulingEmbedder::SetOnEmbedderReadyCallback(
+    OnEmbedderReadyCallback callback) {
+  embedder_->SetOnEmbedderReadyCallback(std::move(callback));
 }
 
 bool SchedulingEmbedder::TryCancel(TaskId task_id) {
@@ -239,6 +238,14 @@ bool SchedulingEmbedder::TryCancel(TaskId task_id) {
   return false;
 }
 
+void SchedulingEmbedder::SetEmbedderMetadata(EmbedderMetadata metadata) {
+  VLOG(4) << "SchedulingEmbedder received metadata with version: "
+          << metadata.model_version;
+  embedder_metadata_ = metadata;
+  embedder_->SetEmbedderMetadata(metadata);
+  SubmitWorkToEmbedder();
+}
+
 #if BUILDFLAG(USE_BLINK)
 void SchedulingEmbedder::OnLoadingScenarioChanged(
     ScenarioScope scope,
@@ -257,13 +264,6 @@ void SchedulingEmbedder::OnInputScenarioChanged(ScenarioScope scope,
   SubmitWorkToEmbedder();
 }
 #endif
-
-void SchedulingEmbedder::OnEmbedderReady(OnEmbedderReadyCallback callback,
-                                         EmbedderMetadata metadata) {
-  embedder_ready_ = metadata.model_version != 0;
-  std::move(callback).Run(metadata);
-  SubmitWorkToEmbedder();
-}
 
 void SchedulingEmbedder::OnEmbeddingsComputed(std::vector<std::string> passages,
                                               std::vector<Embedding> embeddings,
@@ -320,6 +320,44 @@ void SchedulingEmbedder::OnEmbeddingsComputed(std::vector<std::string> passages,
   // immediately/synchronously, depending on the embedder.
   work_submitted_ = false;
   SubmitWorkToEmbedder();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+SchedulingClientEmbedder::SchedulingClientEmbedder(
+    SchedulingEmbedder* scheduling_embedder,
+    base::OnceCallback<void(Embedder*)> detach)
+    : scheduling_embedder_(scheduling_embedder), detach_(std::move(detach)) {}
+
+SchedulingClientEmbedder::~SchedulingClientEmbedder() {
+  std::move(detach_).Run(this);
+}
+
+Embedder::TaskId SchedulingClientEmbedder::ComputePassagesEmbeddings(
+    passage_embeddings::PassagePriority priority,
+    std::vector<std::string> passages,
+    ComputePassagesEmbeddingsCallback callback) {
+  return scheduling_embedder_->ComputePassagesEmbeddings(
+      priority, std::move(passages), std::move(callback));
+}
+
+bool SchedulingClientEmbedder::TryCancel(TaskId task_id) {
+  return scheduling_embedder_->TryCancel(task_id);
+}
+
+void SchedulingClientEmbedder::SetOnEmbedderReadyCallback(
+    OnEmbedderReadyCallback callback) {
+  if (scheduling_embedder_->GetEmbedderMetadata().IsValid()) {
+    std::move(callback).Run(scheduling_embedder_->GetEmbedderMetadata());
+  } else {
+    on_embedder_ready_ = std::move(callback);
+  }
+}
+
+void SchedulingClientEmbedder::SetEmbedderMetadata(EmbedderMetadata metadata) {
+  if (on_embedder_ready_) {
+    std::move(on_embedder_ready_).Run(metadata);
+  }
 }
 
 }  // namespace passage_embeddings
