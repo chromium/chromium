@@ -815,7 +815,6 @@
       name: "ForcesStackingContext",
       field_template: "primitive",
       type_name: "bool",
-      field_group: "*",
       default_value: "false",
     },
     // Plugins require accelerated compositing for reasons external to blink.
