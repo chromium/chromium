@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -37,6 +38,9 @@ class CredentialLeakDialogView : public views::DialogDelegateView {
   // views::DialogDelegateView:
   void AddedToWidget() override;
   std::u16string GetWindowTitle() const override;
+
+  // TODO(b:394420459): Remove once ImageView uses ui::ColorVariant.
+  SkColor GetBackgroundColor() const;
 
   // A weak pointer to the controller.
   raw_ptr<CredentialLeakDialogController> controller_ = nullptr;

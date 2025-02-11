@@ -161,8 +161,8 @@ void CredentialLeakDialogView::AddedToWidget() {
   auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
       *bundle.GetImageSkiaNamed(IDR_PASSWORD_CHECK),
       *bundle.GetImageSkiaNamed(IDR_PASSWORD_CHECK_DARK),
-      base::BindRepeating(&views::BubbleFrameView::GetBackgroundColor,
-                          base::Unretained(GetBubbleFrameView())));
+      base::BindRepeating(&CredentialLeakDialogView::GetBackgroundColor,
+                          base::Unretained(this)));
 
   gfx::Size preferred_size = image_view->GetPreferredSize();
   if (!preferred_size.IsEmpty()) {
@@ -202,6 +202,11 @@ void CredentialLeakDialogView::InitWindow() {
   description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   AddChildView(std::move(description_label));
   SetExtraView(CreateInfoIcon());
+}
+
+SkColor CredentialLeakDialogView::GetBackgroundColor() const {
+  return GetBubbleFrameView()->background_color().ConvertToSkColor(
+      GetColorProvider());
 }
 
 BEGIN_METADATA(CredentialLeakDialogView)
