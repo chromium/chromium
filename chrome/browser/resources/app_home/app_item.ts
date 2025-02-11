@@ -88,9 +88,8 @@ export class AppItemElement extends CrLitElement {
   }
 
   private isValidPosition(position: any) {
-    const rect =
-        this.shadowRoot!.getElementById(
-                            'objectContainer')!.getBoundingClientRect();
+    const rect = this.shadowRoot.getElementById(
+                                    'objectContainer')!.getBoundingClientRect();
     if (!rect) {
       return false;
     }
@@ -107,9 +106,8 @@ export class AppItemElement extends CrLitElement {
       // Events other than a MouseEvent do not have locations specified, so
       // automatically default to the middle of the icon for the context menu to
       // show up.
-      const rect =
-          this.shadowRoot!.getElementById(
-                              'iconContainer')!.getBoundingClientRect();
+      const rect = this.shadowRoot.getElementById(
+                                      'iconContainer')!.getBoundingClientRect();
       if (rect) {
         return {
           top: rect.top + (rect.height / 2),

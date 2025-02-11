@@ -80,7 +80,7 @@ export class WindowModeItemElement extends CrLitElement {
   }
 
   private onClick_() {
-    this.shadowRoot!.querySelector<ToggleRowElement>('#toggle-row')!.click();
+    this.shadowRoot.querySelector<ToggleRowElement>('#toggle-row')!.click();
   }
 
   private toggleWindowMode_() {

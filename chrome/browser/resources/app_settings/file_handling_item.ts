@@ -120,12 +120,12 @@ export class FileHandlingItemElement extends FileHandlingItemBase {
   }
 
   protected onCloseButtonClicked_() {
-    this.shadowRoot!.querySelector<CrDialogElement>('#dialog')!.close();
+    this.shadowRoot.querySelector<CrDialogElement>('#dialog')!.close();
   }
 
   protected onDialogClose_(): void {
     this.showOverflowDialog = false;
-    const toFocus = this.shadowRoot!.querySelector<HTMLElement>('#type-list');
+    const toFocus = this.shadowRoot.querySelector<HTMLElement>('#type-list');
     assert(toFocus);
     focusWithoutInk(toFocus);
   }
@@ -140,8 +140,8 @@ export class FileHandlingItemElement extends FileHandlingItemBase {
   private onChanged_() {
     assert(this.app);
     const enabled =
-        this.shadowRoot!.querySelector<ToggleRowElement>(
-                            '#toggle-row')!.isChecked();
+        this.shadowRoot.querySelector<ToggleRowElement>(
+                           '#toggle-row')!.isChecked();
 
     BrowserProxy.getInstance().handler.setFileHandlingEnabled(
         this.app.id,
