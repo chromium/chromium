@@ -246,23 +246,28 @@ class ReusingTextShaper final {
     HeapVector<Member<const ShapeResult>> shape_results;
     if (!reusable_items_)
       return shape_results;
-    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-    for (auto item = std::lower_bound(
-             reusable_items_->begin(), reusable_items_->end(), start_offset,
-             [](const InlineItem& item, unsigned offset) {
-               return item.EndOffset() <= offset;
-             });
-         item != reusable_items_->end(); UNSAFE_TODO(++item)) {
-      if (end_offset <= item->StartOffset())
+    const auto start_item_iter = std::lower_bound(
+        reusable_items_->begin(), reusable_items_->end(), start_offset,
+        [](const InlineItem& item, unsigned offset) {
+          return item.EndOffset() <= offset;
+        });
+    const wtf_size_t start_item_index =
+        std::distance(reusable_items_->begin(), start_item_iter);
+    for (const InlineItem& item :
+         base::span{*reusable_items_}.subspan(start_item_index)) {
+      if (end_offset <= item.StartOffset()) {
         break;
-      if (item->EndOffset() < start_offset)
+      }
+      if (item.EndOffset() < start_offset) {
         continue;
+      }
       // This is trying to reuse `ShapeResult` only by the string match. Check
       // if it's reusable for the given style. crbug.com/40879986
-      const ShapeResult* const shape_result = item->TextShapeResult();
-      if (!shape_result || item->Direction() != direction)
+      const ShapeResult* const shape_result = item.TextShapeResult();
+      if (!shape_result || item.Direction() != direction) {
         continue;
-      if (*item->Style()->GetFont() != font) {
+      }
+      if (*item.Style()->GetFont() != font) {
         continue;
       }
       if (shape_result->IsAppliedSpacing())
