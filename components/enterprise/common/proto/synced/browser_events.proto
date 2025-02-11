@@ -43,7 +43,7 @@ enum ContentTransferMethod {
 
 message CrowdstrikeAgent {
   // Ensure field names are snake_case to be consistent with serialization in
-  // //j/c/g/chrome/cros/boq/common/connectors/events/JsonEventData.java
+  // //j/c/g/chrome/cros/boq/common/connectors/proto/reporting_event_data.proto
   string agent_id = 1 [json_name = "agent_id"];
 
   string customer_id = 2 [
