@@ -35,11 +35,11 @@
 #include "components/sync/model/data_type_store_service.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/tab_group_sync/android/tab_group_sync_delegate_android.h"
+#else
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_delegate_desktop.h"
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace tab_groups {
 
@@ -101,18 +101,20 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
       std::move(collaboration_finder), synthetic_field_trial_helper_.get());
 
   std::unique_ptr<TabGroupSyncDelegate> delegate;
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+#if BUILDFLAG(IS_ANDROID)
+  if (IsTabGroupSyncDelegateAndroidEnabled()) {
+    delegate = std::make_unique<TabGroupSyncDelegateAndroid>(service.get());
+  } else {
+    delegate = std::make_unique<EmptyTabGroupSyncDelegate>();
+  }
+#else
+  if (IsTabGroupSyncServiceDesktopMigrationEnabled()) {
     delegate =
         std::make_unique<TabGroupSyncDelegateDesktop>(service.get(), profile);
   } else {
     delegate = std::make_unique<EmptyTabGroupSyncDelegate>();
   }
-#else
-  delegate = std::make_unique<EmptyTabGroupSyncDelegate>();
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   service->SetTabGroupSyncDelegate(std::move(delegate));
   return std::move(service);
