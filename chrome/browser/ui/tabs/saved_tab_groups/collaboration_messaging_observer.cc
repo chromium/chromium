@@ -170,7 +170,7 @@ void CollaborationMessagingObserver::DispatchMessage(
     case PersistentNotificationType::CHIP:
       HandleChip(message, display);
       break;
-    case PersistentNotificationType::DIRTY_TAB_GROUP_REMOVED:
+    case PersistentNotificationType::TOMBSTONED:
     case PersistentNotificationType::UNDEFINED:
       // These notifications have no associated UI on Desktop.
       // Ignore gracefully.

@@ -17,7 +17,7 @@ namespace {
 // Whether the persistent message is about a shared tab group that is no longer
 // available to the current user.
 bool IsAboutUnavailableTabGroup(PersistentMessage message) {
-  if (message.type != PersistentNotificationType::DIRTY_TAB_GROUP_REMOVED) {
+  if (message.type != PersistentNotificationType::TOMBSTONED) {
     return false;
   }
   return message.collaboration_event == CollaborationEvent::TAB_GROUP_REMOVED;

@@ -453,8 +453,7 @@ NSString* CreationText(base::Time creation_date) {
     std::vector<collaboration::messaging::PersistentMessage> messages;
     if (_messagingService && _messagingService->IsInitialized()) {
       messages = _messagingService->GetMessages(
-          collaboration::messaging::PersistentNotificationType::
-              DIRTY_TAB_GROUP_REMOVED);
+          collaboration::messaging::PersistentNotificationType::TOMBSTONED);
     }
     NSArray<TabGroupsPanelItem*>* tabGroupItems =
         CreateTabGroupItems(_tabGroupSyncService->GetAllGroups());
