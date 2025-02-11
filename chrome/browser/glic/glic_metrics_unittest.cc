@@ -95,6 +95,38 @@ TEST_F(GlicMetricsTest, BasicVisible) {
   EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponse"), 1);
 }
 
+TEST_F(GlicMetricsTest, SegmentationOsButtonAttachedText) {
+  controller_->showing_ = true;
+  controller_->attached_ = true;
+
+  metrics_->OnGlicWindowOpen(/*attached=*/true, InvocationSource::kOsButton);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_->OnResponseStarted();
+  metrics_->OnResponseStopped();
+  metrics_->OnGlicWindowClose();
+
+  histogram_tester_.ExpectTotalCount("Glic.Response.Segmentation", 1);
+  histogram_tester_.ExpectBucketCount("Glic.Response.Segmentation",
+                                      /*kOsButtonAttachedText=*/1,
+                                      /*expected_count=*/1);
+}
+
+TEST_F(GlicMetricsTest, SegmentationChroMenuDetachedAudio) {
+  controller_->showing_ = true;
+  controller_->attached_ = false;
+
+  metrics_->OnGlicWindowOpen(/*attached=*/false, InvocationSource::kChroMenu);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
+  metrics_->OnResponseStarted();
+  metrics_->OnResponseStopped();
+  metrics_->OnGlicWindowClose();
+
+  histogram_tester_.ExpectTotalCount("Glic.Response.Segmentation", 1);
+  histogram_tester_.ExpectBucketCount("Glic.Response.Segmentation",
+                                      /*kChroMenuDetachedAudio=*/32,
+                                      /*expected_count=*/1);
+}
+
 TEST_F(GlicMetricsTest, ImpressionBeforeFre) {
   profile_.GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, false);
 

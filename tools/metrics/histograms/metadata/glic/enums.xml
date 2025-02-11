@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Button in top-chrome"/>
   <int value="4" label="First run experience"/>
   <int value="5" label="From the profile picker"/>
-  <int value="6" label="From page actions"/>
+  <int value="6" label="From tab strip nudge"/>
   <int value="7" label="From 3-dot menu"/>
 </enum>
 
@@ -61,6 +61,46 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.cc:Error) -->
+
+<!-- LINT.IfChange(GlicResponseSegmentation) -->
+
+<enum name="GlicResponseSegmentation">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Button in the OS, attached, text mode."/>
+  <int value="2" label="Button in the OS, attached, audio mode."/>
+  <int value="3" label="Button in the OS, detached, text mode."/>
+  <int value="4" label="Button in the OS, detached, audio mode."/>
+  <int value="5" label="Menu from button in the OS, attached, text mode."/>
+  <int value="6" label="Menu from button in the OS, attached, audio mode."/>
+  <int value="7" label="Menu from button in the OS, detached, text mode."/>
+  <int value="8" label="Menu from button in the OS, detached, audio mode."/>
+  <int value="9" label="OS hotkey, attached, text mode."/>
+  <int value="10" label="OS hotkey, attached, audio mode."/>
+  <int value="11" label="OS hotkey, detached, text mode."/>
+  <int value="12" label="OS hotkey, detached, audio mode."/>
+  <int value="13" label="Button in top-chrome, attached, text mode."/>
+  <int value="14" label="Button in top-chrome, attached, audio mode."/>
+  <int value="15" label="Button in top-chrome, detached, text mode."/>
+  <int value="16" label="Button in top-chrome, detached, audio mode."/>
+  <int value="17" label="First run experience, attached, text mode."/>
+  <int value="18" label="First run experience, attached, audio mode."/>
+  <int value="19" label="First run experience, detached, text mode."/>
+  <int value="20" label="First run experience, detached, audio mode."/>
+  <int value="21" label="Profile picker, attached, text mode."/>
+  <int value="22" label="Profile picker, attached, audio mode."/>
+  <int value="23" label="Profile picker, detached, text mode."/>
+  <int value="24" label="Profile picker, detached, audio mode."/>
+  <int value="25" label="Nudge, attached, text mode."/>
+  <int value="26" label="Nudge, attached, audio mode."/>
+  <int value="27" label="Nudge, detached, text mode."/>
+  <int value="28" label="Nudge, detached, audio mode."/>
+  <int value="29" label="3-dot menu, attached, text mode."/>
+  <int value="30" label="3-dot menu, attached, audio mode."/>
+  <int value="31" label="3-dot menu, detached, text mode."/>
+  <int value="32" label="3-dot menu, detached, audio mode."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.cc:ResponseSegmentation) -->
 
 <enum name="GlicWebClientMode">
   <int value="0" label="Text"/>
