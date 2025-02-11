@@ -1974,12 +1974,17 @@ public class TabGridDialogMediatorUnitTest {
         for (int i = 0; i < navigated; i++) {
             messageList.add(makePersistentMessage(CollaborationEvent.TAB_UPDATED));
         }
-        for (int i = 0; i < removed; i++) {
-            messageList.add(makePersistentMessage(CollaborationEvent.TAB_REMOVED));
-        }
         when(mMessagingBackendService.getMessagesForGroup(
                         any(), eq(Optional.of(PersistentNotificationType.DIRTY_TAB))))
                 .thenReturn(messageList);
+
+        List<PersistentMessage> tombstonedMessageList = new ArrayList<>();
+        for (int i = 0; i < removed; i++) {
+            tombstonedMessageList.add(makePersistentMessage(CollaborationEvent.TAB_REMOVED));
+        }
+        when(mMessagingBackendService.getMessages(
+                        eq(Optional.of(PersistentNotificationType.TOMBSTONED))))
+                .thenReturn(tombstonedMessageList);
     }
 
     private void verifyClearDirtyMessagesForGroup() {
