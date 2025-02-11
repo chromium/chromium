@@ -891,14 +891,18 @@ class WPTResultsProcessor:
         actual_text = result.format_baseline()
         artifacts.CreateArtifact('actual_text', actual_subpath,
                                  actual_text.encode())
-        if self.reset_results and self._iteration == 0 and result.actual not in {
-                ResultType.Crash,
-                ResultType.Timeout,
-        }:
+        if self.reset_results and self._iteration == 0:
             source = self.fs.join(self.artifacts_dir, actual_subpath)
-            dest = self.fs.join(self.port.baseline_version_dir(),
-                                expected_subpath)
-            self.fs.maybe_make_directory(self.fs.dirname(dest))
+            if self.port.flag_specific_config_name():
+                output_dir = self.fs.join(
+                    self.port.baseline_flag_specific_dir(),
+                    self.fs.dirname(expected_subpath))
+            else:
+                output_dir = self.fs.dirname(
+                    self.port.expected_filename(
+                        result.name, '.txt', fallback_base_for_virtual=False))
+            dest = self.fs.join(output_dir, self.fs.basename(expected_subpath))
+            self.fs.maybe_make_directory(output_dir)
             self.fs.copyfile(source, dest)
 
         expected_text = self.port.expected_text(result.name)
