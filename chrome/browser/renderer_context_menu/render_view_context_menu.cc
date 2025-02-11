@@ -1959,6 +1959,12 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
   if (browser && browser->app_name() ==
                      web_app::GenerateApplicationNameFromAppId(*link_app_id)) {
     if (provider->registrar_unsafe().IsTabbedWindowModeEnabled(*link_app_id)) {
+      if (browser->app_controller()->IsUrlInHomeTabScope(params_.link_url)) {
+        // Clicking on a link captured in the home tab will always focus and/or
+        // navigate that tab, and not a new tab. Thus this right-click menu
+        // entry should not be included in that case.
+        return;
+      }
       open_in_app_string_id = IDS_CONTENT_CONTEXT_OPENLINKWEBAPP_NEWTAB;
     } else {
       open_in_app_string_id = IDS_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP_SAMEAPP;
