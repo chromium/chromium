@@ -13603,7 +13603,6 @@ from previous Chrome versions.
   <int value="-205975637" label="WebUIDarkMode:enabled"/>
   <int value="-205401012" label="webrtc-hw-encoding:disabled"/>
   <int value="-204978485" label="WallpaperFullScreenPreview:enabled"/>
-  <int value="-204371461" label="WebAssemblyMemory64:enabled"/>
   <int value="-204355195" label="secondary-ui-md"/>
   <int value="-203968600" label="SyncSupportSecondaryAccount:disabled"/>
   <int value="-203058505" label="QueryTilesSegmentation:disabled"/>
@@ -18089,7 +18088,6 @@ from previous Chrome versions.
   <int value="1558757619"
       label="AccessibilitySelectToSpeakPageMigration:enabled"/>
   <int value="1559034872" label="AutofillPrefilledFields:enabled"/>
-  <int value="1559515245" label="WebAssemblyMemory64:disabled"/>
   <int value="1559812394" label="ToolbarPinning:enabled"/>
   <int value="1560188739" label="reader-mode-heuristics"/>
   <int value="1561281771" label="PriceTrackingIconColors:enabled"/>
