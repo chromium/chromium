@@ -109,6 +109,11 @@ LIGHTWEIGHT_TESTERS = [
     'mac-laptop_low_end-perf',
 ]
 
+UPLOAD_SKIA_JSON_TESTERS = [
+    'win-11-perf',  # One of the lightweight testers.
+    'win-11_laptop_low_end-perf',  # one of the non-lightweight testers.
+]
+
 # This is an opt-in list for builders which uses dynamic sharding.
 DYNAMIC_SHARDING_TESTERS = ['linux-perf-calibration']
 
@@ -1718,6 +1723,10 @@ def generate_performance_test(tester_config, test, builder_name):
   }
   if builder_name in LIGHTWEIGHT_TESTERS:
     result['merge']['args'] = ['--lightweight', '--skip-perf']
+  if builder_name in UPLOAD_SKIA_JSON_TESTERS:
+    if 'args' not in result['merge']:
+      result['merge']['args'] = []
+    result['merge']['args'].append('--upload-skia-json')
 
   result['swarming'] = {
       # Always say this is true regardless of whether the tester
