@@ -382,8 +382,16 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                 additionalHeight += layer.updateOffsetTag(offsetTagsInfo);
             }
 
+            int totalHeight = mTotalHeight;
+            if (totalHeight == INVALID_HEIGHT) {
+                // TODO(crbug.com/395937483): Investigate if this causes any other bugs.
+                Log.w(TAG, "Using mTotalHeight before initialization");
+
+                totalHeight = 0;
+            }
+
             offsetTagsInfo.mBottomControlsConstraints =
-                    new OffsetTagConstraints(0, 0, 0, mTotalHeight + additionalHeight);
+                    new OffsetTagConstraints(0, 0, 0, totalHeight + additionalHeight);
         }
     }
 
