@@ -87,6 +87,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     // is possible to distinguish which it is since HTTP response codes are
     // positive and net errors are negative.
     int response_code;
+    bool cors_error = false;
   };
 
   enum class LogoutResponse {
@@ -224,7 +225,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   using DownloadCallback =
       base::OnceCallback<void(std::unique_ptr<std::string> response_body,
                               int response_code,
-                              const std::string& mime_type)>;
+                              const std::string& mime_type,
+                              bool cors_error)>;
   using FetchWellKnownCallback =
       base::OnceCallback<void(FetchStatus, const WellKnown&)>;
   using FetchConfigCallback = base::OnceCallback<
@@ -347,7 +349,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   void OnDownloadedImage(ImageCallback callback,
                          std::unique_ptr<std::string> response_body,
                          int response_code,
-                         const std::string& mime_type);
+                         const std::string& mime_type,
+                         bool cors_error);
 
   void OnDecodedImage(ImageCallback callback, const SkBitmap& decoded_bitmap);
 

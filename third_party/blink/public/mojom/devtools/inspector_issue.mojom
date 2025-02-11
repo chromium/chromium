@@ -255,6 +255,7 @@ enum FederatedAuthRequestResult {
   kTypeNotMatching,
   kError,
   kUiDismissedNoEmbargo,
+  kCorsError,
 };
 
 struct FederatedAuthRequestIssueDetails {

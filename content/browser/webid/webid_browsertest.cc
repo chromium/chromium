@@ -1710,6 +1710,36 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, IdentityCredentialError) {
             ExtractJsError(EvalJs(shell(), GetBasicRequestString())));
 }
 
+// Verify that an CORSError is returned.
+IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, CorsError) {
+  IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
+
+  // Points the id assertion endpoint to a servlet.
+  config_details.id_assertion_endpoint_url = "/error/id_assertion_endpoint.php";
+
+  // Add a servlet to serve a response for the id assertion endpoint.
+  config_details.servlets["/error/id_assertion_endpoint.php"] =
+      base::BindRepeating(
+          [](const HttpRequest& request) -> std::unique_ptr<HttpResponse> {
+            auto response = std::make_unique<BasicHttpResponse>();
+            response->set_code(net::HTTP_FORBIDDEN);
+            response->set_content_type("text/json");
+            return response;
+          });
+
+  idp_server()->SetConfigResponseDetails(config_details);
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  std::string expected_error =
+      "IdentityCredentialError: Error retrieving a token.";
+  EXPECT_EQ(expected_error,
+            ExtractJsError(EvalJs(shell(), GetBasicRequestString())));
+  ASSERT_TRUE(console_observer.Wait());
+  std::string expected_message =
+      "Server did not send the correct CORS headers.";
+  EXPECT_EQ(expected_message, console_observer.GetMessageAt(1u));
+}
+
 // Verify that auto re-authn can be triggered if the Rp is on the
 // approved_clients list and the IdP has third party cookies access.
 IN_PROC_BROWSER_TEST_F(WebIdBrowserTest,

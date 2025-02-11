@@ -396,6 +396,9 @@ FederatedAuthRequestResultToProtocol(
     case FederatedAuthRequestResult::kUiDismissedNoEmbargo: {
       return FederatedAuthRequestIssueReasonEnum::UiDismissedNoEmbargo;
     }
+    case FederatedAuthRequestResult::kCorsError: {
+      return FederatedAuthRequestIssueReasonEnum::CorsError;
+    }
     case FederatedAuthRequestResult::kSuccess: {
       NOTREACHED();
     }

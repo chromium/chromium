@@ -30,6 +30,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
@@ -447,13 +448,14 @@ void OnDownloadedJson(
     IdpNetworkRequestManager::ParseJsonCallback parse_json_callback,
     std::unique_ptr<std::string> response_body,
     int response_code,
-    const std::string& mime_type) {
+    const std::string& mime_type,
+    bool cors_error = false) {
   ParseStatus parse_status =
       GetResponseError(response_body.get(), response_code, mime_type);
 
   if (parse_status != ParseStatus::kSuccess) {
     std::move(parse_json_callback)
-        .Run({parse_status, response_code},
+        .Run({parse_status, response_code, cors_error},
              data_decoder::DataDecoder::ValueOrError());
     return;
   }
@@ -916,7 +918,8 @@ void OnTokenRequestParsed(
 void OnLogoutCompleted(IdpNetworkRequestManager::LogoutCallback callback,
                        std::unique_ptr<std::string> response_body,
                        int response_code,
-                       const std::string& mime_type) {
+                       const std::string& mime_type,
+                       bool cors_error) {
   std::move(callback).Run();
 }
 
@@ -943,7 +946,6 @@ void OnDisconnectResponseParsed(
 }
 
 }  // namespace
-
 IdpNetworkRequestManager::Endpoints::Endpoints() = default;
 IdpNetworkRequestManager::Endpoints::~Endpoints() = default;
 IdpNetworkRequestManager::Endpoints::Endpoints(const Endpoints& other) =
@@ -1266,9 +1268,17 @@ void IdpNetworkRequestManager::OnDownloadedUrl(
     response_info->headers->GetMimeType(&mime_type);
   }
 
+  // Check for CORS error
+  std::optional<network::URLLoaderCompletionStatus> status =
+      url_loader->CompletionStatus();
+  bool cors_error = false;
+  if (status && status.value().cors_error_status.has_value()) {
+    cors_error = true;
+  }
+
   url_loader.reset();
   std::move(callback).Run(std::move(response_body), response_code,
-                          std::move(mime_type));
+                          std::move(mime_type), cors_error);
 }
 
 void IdpNetworkRequestManager::FetchClientMetadata(
@@ -1296,7 +1306,8 @@ void IdpNetworkRequestManager::OnDownloadedImage(
     ImageCallback callback,
     std::unique_ptr<std::string> response_body,
     int response_code,
-    const std::string& mime_type) {
+    const std::string& mime_type,
+    bool cors_error) {
   if (!response_body || response_code != net::HTTP_OK) {
     std::move(callback).Run(gfx::Image());
     return;
