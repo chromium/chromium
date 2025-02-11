@@ -8,6 +8,8 @@ assert(is_chromeos)
 
 static_library("wallpaper_handlers") {
   sources = [
+    "google_photos_wallpaper_handlers.cc",
+    "google_photos_wallpaper_handlers.h",
     "sea_pen_fetcher.cc",
     "sea_pen_fetcher.h",
     "sea_pen_utils.cc",
@@ -39,6 +41,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "mock_google_photos_wallpaper_handlers.cc",
+    "mock_google_photos_wallpaper_handlers.h",
     "mock_sea_pen_fetcher.cc",
     "mock_sea_pen_fetcher.h",
     "mock_wallpaper_handlers.cc",
@@ -61,9 +65,9 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "google_photos_wallpaper_handlers_unittest.cc",
     "sea_pen_fetcher_unittest.cc",
     "sea_pen_utils_unittest.cc",
-    "wallpaper_handlers_unittest.cc",
   ]
 
   deps = [
