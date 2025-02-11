@@ -43,13 +43,20 @@ def pollServer():
     return False
 
 
+def shouldSkip():
+  if os.environ.get('ALLOW_EXTERNAL_BUILD_SERVER', None):
+    return False
+  return pollServer()
+
+
 def callServer(args, check=True):
   return subprocess.run([str(server_utils.SERVER_SCRIPT.absolute())] + args,
                         cwd=pathlib.Path(__file__).parent,
                         stdout=subprocess.PIPE,
                         stderr=subprocess.STDOUT,
                         check=check,
-                        text=True)
+                        text=True,
+                        timeout=3)
 
 
 @contextlib.contextmanager
@@ -81,10 +88,7 @@ class ServerStartedTest(unittest.TestCase):
     self._build_id = None
 
   def setUp(self):
-    if pollServer():
-      # TODO(mheikal): Support overriding the standard named pipe for
-      # communicating with the server so that we can run an instance just for
-      # this test even if a real one is running.
+    if shouldSkip():
       self.skipTest("Cannot run test when server already running.")
     self._process = subprocess.Popen(
         [server_utils.SERVER_SCRIPT.absolute(), '--exit-on-idle', '--quiet'],
@@ -268,6 +272,10 @@ class ServerStartedTest(unittest.TestCase):
 
 
 class ServerNotStartedTest(unittest.TestCase):
+
+  def setUp(self):
+    if pollServer():
+      self.skipTest("Cannot run test when server already running.")
 
   def testWaitForBuildServerCall(self):
     proc_result = callServer(['--wait-for-build', 'invalid-build-id'])
