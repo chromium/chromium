@@ -29,7 +29,7 @@ interface PageHandlerFactory {
 
 // It is used in the Glic.PanelWebUiState.FinishState histogram.
 // This must match enums.xml.
-// LINT.IfChange
+// LINT.IfChange(WebUiState)
 enum WebUiState {
   // Glic app controller not started.
   kUninitialized,
@@ -52,8 +52,11 @@ enum WebUiState {
   kUnavailable,
   // Web view is displayed.
   kReady,
+  // Glic is unresponsive. Currently this will show the same UI as kError.
+  // TODO(crbug.com/394162784): create an unresponsive UI.
+  kUnresponsive,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebUiState)
 
 // Page handler for the glic WebUI.
 interface PageHandler {

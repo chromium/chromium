@@ -54,6 +54,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Connection offline panel is displayed"/>
   <int value="7" label="Glic is not available for profile"/>
   <int value="8" label="Web view is displayed"/>
+  <int value="9" label="The panel is unresponsive"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic.mojom:WebUiState) -->
