@@ -35,6 +35,89 @@ enum class EntryPointImpression {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicEntryPointImpression)
 
+// LINT.IfChange(ResponseSegmentation)
+enum class ResponseSegmentation {
+  kUnknown = 0,
+  kOsButtonAttachedText = 1,
+  kOsButtonAttachedAudio = 2,
+  kOsButtonDetachedText = 3,
+  kOsButtonDetachedAudio = 4,
+  kOsButtonMenuAttachedText = 5,
+  kOsButtonMenuAttachedAudio = 6,
+  kOsButtonMenuDetachedText = 7,
+  kOsButtonMenuDetachedAudio = 8,
+  kOsHotkeyAttachedText = 9,
+  kOsHotkeyAttachedAudio = 10,
+  kOsHotkeyDetachedText = 11,
+  kOsHotkeyDetachedAudio = 12,
+  kButtonTopChromeAttachedText = 13,
+  kButtonTopChromeAttachedAudio = 14,
+  kButtonTopChromeDetachedText = 15,
+  kButtonTopChromeDetachedAudio = 16,
+  kFreAttachedText = 17,
+  kFreAttachedAudio = 18,
+  kFreDetachedText = 19,
+  kFreDetachedAudio = 20,
+  kProfilePickerAttachedText = 21,
+  kProfilePickerAttachedAudio = 22,
+  kProfilePickerDetachedText = 23,
+  kProfilePickerDetachedAudio = 24,
+  kNudgeAttachedText = 25,
+  kNudgeAttachedAudio = 26,
+  kNudgeDetachedText = 27,
+  kNudgeDetachedAudio = 28,
+  kChroMenuAttachedText = 29,
+  kChroMenuAttachedAudio = 30,
+  kChroMenuDetachedText = 31,
+  kChroMenuDetachedAudio = 32,
+  kMaxValue = kChroMenuDetachedAudio,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseSegmentation)
+
+ResponseSegmentation GetResponseSegmentation(bool attached,
+                                             mojom::WebClientMode mode,
+                                             InvocationSource source) {
+  if (mode == mojom::WebClientMode::kUnknown) {
+    return ResponseSegmentation::kUnknown;
+  }
+  // Entries start at 1 since 0 is kUnknown.
+  int entry = 1;
+  // Text mode is 0 mod 2, audio mode is 1 mod 2.
+  if (mode == mojom::WebClientMode::kAudio) {
+    entry += 1;
+  }
+  // Attached entries are 0,1 mod 4, detached entries are 2,3 mod 4.
+  if (!attached) {
+    entry += 2;
+  }
+  switch (source) {
+    case InvocationSource::kOsButton:
+      break;
+    case InvocationSource::kOsButtonMenu:
+      entry += 4;
+      break;
+    case InvocationSource::kOsHotkey:
+      entry += 8;
+      break;
+    case InvocationSource::kTopChromeButton:
+      entry += 12;
+      break;
+    case InvocationSource::kFre:
+      entry += 16;
+      break;
+    case InvocationSource::kProfilePicker:
+      entry += 20;
+      break;
+    case InvocationSource::kNudge:
+      entry += 24;
+      break;
+    case InvocationSource::kChroMenu:
+      entry += 28;
+      break;
+  }
+  return static_cast<ResponseSegmentation>(entry);
+}
+
 }  // namespace
 
 GlicMetrics::GlicMetrics(Profile* profile) : profile_(profile) {
@@ -90,12 +173,15 @@ void GlicMetrics::OnResponseStarted() {
   base::RecordAction(base::UserMetricsAction("GlicResponse"));
   ++session_responses_;
 
-  // More details metrics.
+  // More detailed metrics.
   bool attached = controller_->IsAttached();
   base::UmaHistogramBoolean("Glic.Response.Attached", attached);
   base::UmaHistogramEnumeration("Glic.Response.InvocationSource",
                                 invocation_source_);
   base::UmaHistogramEnumeration("Glic.Response.InputMode", input_mode_);
+  base::UmaHistogramEnumeration(
+      "Glic.Response.Segmentation",
+      GetResponseSegmentation(attached, input_mode_, invocation_source_));
 }
 
 void GlicMetrics::OnResponseStopped() {

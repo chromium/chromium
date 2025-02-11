@@ -666,8 +666,8 @@ enable_source_maps: Defaults to "false". Incompatible with |optimize=true|.
                     Setting it to "true" turns on source map generation for a
                     few underlying targets. See ts_library()'s
                     |enable_source_maps| for more details.
-enable_type_aware_eslint_checks: Defaults to "false". Setting it to "true" turns
-                                 on additional type-aware ESLint checks. See
+enable_type_aware_eslint_checks: Defaults to "true". Turns on additional
+                                 type-aware ESLint checks. See
                                  eslint_ts() for more details.
 ```
 

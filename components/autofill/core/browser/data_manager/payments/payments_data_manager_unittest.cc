@@ -264,6 +264,10 @@ class MockAutofillImageFetcher : public AutofillImageFetcherBase {
        base::OnceCallback<void(
            const std::vector<std::unique_ptr<CreditCardArtImage>>&)> callback),
       (override));
+  MOCK_METHOD(void,
+              FetchPixAccountImages,
+              (base::span<const GURL> card_art_urls),
+              (override));
 };
 class PaymentsDataManagerTest : public PaymentsDataManagerHelper,
                                 public testing::Test {
@@ -2055,7 +2059,7 @@ TEST_F(PaymentsDataManagerTest,
   ASSERT_TRUE(GetServerDataTable()->SetMaskedBankAccounts(
       {bank_account1, bank_account2}));
 
-  EXPECT_CALL(mock_image_fetcher, FetchImagesForURLs);
+  EXPECT_CALL(mock_image_fetcher, FetchPixAccountImages);
 
   // We need to call `Refresh()` to ensure that the BankAccounts are loaded
   // again from the WebDatabase which triggers the call to fetch icons from

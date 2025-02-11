@@ -18,6 +18,10 @@
 #include "remoting/host/heartbeat_service_client.h"
 #include "remoting/proto/empty.pb.h"
 
+namespace net {
+class ClientCertStore;
+}  // namespace net
+
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -31,7 +35,8 @@ class CorpHeartbeatServiceClient : public HeartbeatServiceClient {
       const std::string& directory_id,
       const std::string& refresh_token,
       const std::string& service_account_email,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<net::ClientCertStore> client_cert_store);
 
   CorpHeartbeatServiceClient(const CorpHeartbeatServiceClient&) = delete;
   CorpHeartbeatServiceClient& operator=(const CorpHeartbeatServiceClient&) =

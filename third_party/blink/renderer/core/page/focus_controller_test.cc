@@ -470,10 +470,16 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
       after_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
 
   Element* after_first_child = after_scroller->firstElementChild();
+  Element* after_second_child =
+      after_scroller->firstElementChild()->nextElementSibling();
   Element* after_last_child = after_scroller->lastElementChild();
 
+  auto* after_scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
+      after_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter));
   Element* after_first_scroll_marker =
       after_first_child->GetPseudoElement(kPseudoIdScrollMarker);
+  Element* after_second_scroll_marker =
+      after_second_child->GetPseudoElement(kPseudoIdScrollMarker);
 
   std::array<Element*, 18> order = {pre_input,
                                     before_first_scroll_marker,
@@ -506,14 +512,36 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
   before_second_scroll_marker->Focus();
   GetFocusController().SetActive(true);
   GetFocusController().SetFocused(true);
-  before_scroll_marker_group->SetSelected(
-      *To<ScrollMarkerPseudoElement>(before_second_scroll_marker));
+  before_scroll_marker_group->ActivateScrollMarker(
+      To<ScrollMarkerPseudoElement>(before_second_scroll_marker));
   const auto* style = before_second_scroll_marker->GetComputedStyle();
   EXPECT_TRUE(before_second_scroll_marker->IsFocused());
   EXPECT_EQ(0.5, style->Opacity());
   EXPECT_EQ(before_block_start_button,
             FindFocusableElementAfter(*before_second_scroll_marker,
                                       mojom::blink::FocusType::kForward));
+  // https://drafts.csswg.org/css-overflow-5/#scroll-target-focus
+  // When a scroll marker is activated, the next tabindex-ordered focus
+  // navigation will focus the scroll target if it is focusable, otherwise, it
+  // will find the next focusable element from the scroll target as though it
+  // were focused.
+  EXPECT_EQ(GetDocument().SequentialFocusNavigationStartingPoint(
+                mojom::blink::FocusType::kForward),
+            before_second_child);
+  GetFocusController().AdvanceFocus(mojom::blink::FocusType::kForward,
+                                    /*source_capabilities=*/nullptr);
+  EXPECT_TRUE(before_second_child->IsFocused());
+
+  after_scroll_marker_group->ActivateScrollMarker(
+      To<ScrollMarkerPseudoElement>(after_second_scroll_marker));
+  // Should go to the last child of after scroller, as it is the first focusable
+  // after second child of after scroller.
+  EXPECT_EQ(GetDocument().SequentialFocusNavigationStartingPoint(
+                mojom::blink::FocusType::kForward),
+            after_second_child);
+  GetFocusController().AdvanceFocus(mojom::blink::FocusType::kForward,
+                                    /*source_capabilities=*/nullptr);
+  EXPECT_TRUE(after_last_child->IsFocused());
 }
 
 TEST_F(FocusControllerTest, CarouselWithOnlyButtonsFocusOrder) {

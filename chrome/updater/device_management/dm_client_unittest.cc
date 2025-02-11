@@ -28,6 +28,7 @@
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
 #include "chrome/updater/test/unit_test_util.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/update_client/network.h"
 #include "net/base/url_util.h"
@@ -374,6 +375,7 @@ class DMPolicyFetchClientTest : public DMClientTest {
  public:
   void PostRequest() {
     DMClient::FetchPolicy(
+        policy::PolicyFetchReason::kTest,
         std::make_unique<TestConfigurator>(test_server_.GetURL("/dm_api")),
         callback_handler_->GetStorage(),
         base::BindOnce(&DMPolicyFetchRequestCallbackHandler::OnRequestComplete,

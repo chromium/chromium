@@ -37,6 +37,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/posix_util.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
+#include "components/policy/core/common/policy_types.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -260,11 +261,12 @@ void UpdateServiceProxyImpl::GetVersion(
 }
 
 void UpdateServiceProxyImpl::FetchPolicies(
+    policy::PolicyFetchReason reason,
     base::OnceCallback<void(base::expected<int, RpcError>)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureConnecting();
-  remote_->FetchPolicies(ToMojoCallback(std::move(callback)));
+  remote_->FetchPolicies(reason, ToMojoCallback(std::move(callback)));
 }
 
 void UpdateServiceProxyImpl::RegisterApp(

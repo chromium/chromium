@@ -9,8 +9,8 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_version.h"
-#include "components/enterprise/client_certificates/core/certificate_store.h"
 #include "components/enterprise/client_certificates/core/ec_private_key_factory.h"
+#include "components/enterprise/client_certificates/core/leveldb_certificate_store.h"
 #include "components/enterprise/client_certificates/core/private_key_factory.h"
 #include "components/enterprise/client_certificates/core/unexportable_private_key_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -75,7 +75,7 @@ CertificateStoreFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  return CertificateStore::Create(
+  return LevelDbCertificateStore::Create(
       profile->GetPath(),
       profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider(),
       CreatePrivateKeyFactory());

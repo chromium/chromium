@@ -28,6 +28,42 @@
 
 namespace glic {
 
+#if BUILDFLAG(ENABLE_GLIC)
+class GlicButton::GlicPanelStateObserver
+    : public GlicWindowController::StateObserver {
+ public:
+  GlicPanelStateObserver(glic::GlicButton* glic_button,
+                         glic::GlicWindowController* glic_window_controller)
+      : glic_button_(glic_button),
+        glic_window_controller_(glic_window_controller) {
+    glic_window_controller_->AddStateObserver(this);
+    PanelStateChanged(glic_window_controller_->GetPanelState());
+  }
+
+  void PanelStateChanged(const mojom::PanelState& panel_state) override {
+    UpdateIconToState(panel_state);
+  }
+
+  ~GlicPanelStateObserver() override {
+    glic_window_controller_->RemoveStateObserver(this);
+  }
+
+ private:
+  void UpdateIconToState(const mojom::PanelState& panel_state) {
+    if (panel_state.kind == mojom::PanelState_Kind::kHidden) {
+      glic_button_->SetVectorIcon(
+          GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON));
+    } else {
+      glic_button_->SetVectorIcon(GlicVectorIconManager::GetVectorIcon(
+          IDR_GLIC_ATTACH_BUTTON_VECTOR_ICON));
+    }
+  }
+
+  raw_ptr<glic::GlicButton> glic_button_;
+  raw_ptr<glic::GlicWindowController> glic_window_controller_;
+};
+#endif
+
 GlicButton::GlicButton(TabStripController* tab_strip_controller)
     : TabStripControlButton(
           tab_strip_controller,
@@ -56,9 +92,13 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller)
   UpdateColors();
 
 #if BUILDFLAG(ENABLE_GLIC)
-  glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-      tab_strip_controller_->GetProfile())
-      ->TryPreload();
+  GlicKeyedService* glic_keyed_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+          tab_strip_controller_->GetProfile());
+  glic_keyed_service->TryPreload();
+
+  glic_panel_state_observer_ = std::make_unique<GlicPanelStateObserver>(
+      this, &glic_keyed_service->window_controller());
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 

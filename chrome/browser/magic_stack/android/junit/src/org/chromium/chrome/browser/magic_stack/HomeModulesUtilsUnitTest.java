@@ -8,7 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.browser.magic_stack.HomeModulesMediator.INVALID_FRESHNESS_SCORE;
+import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.INVALID_FRESHNESS_SCORE;
+import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.INVALID_IMPRESSION_COUNT_BEFORE_INTERACTION;
 
 import android.os.SystemClock;
 
@@ -36,7 +37,7 @@ public class HomeModulesUtilsUnitTest {
     @SmallTest
     public void testIncreaseFreshnessCount() {
         @ModuleType int moduleType = ModuleType.PRICE_CHANGE;
-        verifyKeysDoNotExistInSharedPreference(moduleType);
+        verifyFreshnessKeysDoNotExistInSharedPreference(moduleType);
 
         int count = 5;
         HomeModulesUtils.increaseFreshnessCount(moduleType, count);
@@ -51,7 +52,7 @@ public class HomeModulesUtilsUnitTest {
     @SmallTest
     public void testResetFreshnessCountAsFresh() {
         @ModuleType int moduleType = ModuleType.PRICE_CHANGE;
-        verifyKeysDoNotExistInSharedPreference(moduleType);
+        verifyFreshnessKeysDoNotExistInSharedPreference(moduleType);
 
         HomeModulesUtils.resetFreshnessCountAsFresh(moduleType);
         verifyCountAndTimestamp(moduleType, /* expectedCount= */ 0);
@@ -69,7 +70,7 @@ public class HomeModulesUtilsUnitTest {
     public void testFreshnessScoreTimeStamp() {
         @ModuleType int moduleType = ModuleType.PRICE_CHANGE;
 
-        verifyKeysDoNotExistInSharedPreference(moduleType);
+        verifyFreshnessKeysDoNotExistInSharedPreference(moduleType);
 
         long timeStamp = SystemClock.elapsedRealtime() - 10;
         HomeModulesUtils.setFreshnessScoreTimeStamp(moduleType, timeStamp);
@@ -81,7 +82,7 @@ public class HomeModulesUtilsUnitTest {
     public void testGetFreshnessScore() {
         @ModuleType int moduleType = ModuleType.PRICE_CHANGE;
 
-        verifyKeysDoNotExistInSharedPreference(moduleType);
+        verifyFreshnessKeysDoNotExistInSharedPreference(moduleType);
 
         // Verifies INVALID_FRESHNESS_SCORE is returned when the timestamp isn't saved.
         assertEquals(
@@ -137,7 +138,38 @@ public class HomeModulesUtilsUnitTest {
                 0.01);
     }
 
-    private void verifyKeysDoNotExistInSharedPreference(@ModuleType int moduleType) {
+    @Test
+    @SmallTest
+    public void testIncreaseAndGetImpressionCountBeforeInteraction() {
+        @ModuleType int moduleType = ModuleType.TAB_GROUP_PROMO;
+        verifyImpressionCountBeforeInteractionKeysDoNotExistInSharedPreference(moduleType);
+
+        HomeModulesUtils.increaseImpressionCountBeforeInteraction(moduleType);
+        assertEquals(1, HomeModulesUtils.getImpressionCountBeforeInteraction(moduleType));
+
+        HomeModulesUtils.increaseImpressionCountBeforeInteraction(moduleType);
+        assertEquals(2, HomeModulesUtils.getImpressionCountBeforeInteraction(moduleType));
+    }
+
+    private void verifyImpressionCountBeforeInteractionKeysDoNotExistInSharedPreference(
+            @ModuleType int moduleType) {
+        String moduleImpressionCountBeforeInteractionPreferenceKey =
+                ChromePreferenceKeys.HOME_MODULES_IMPRESSION_COUNT_BEFORE_INTERACTION.createKey(
+                        String.valueOf(moduleType));
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+
+        // Verifies that the impression count before interaction key doesn't exist.
+        assertFalse(
+                sharedPreferencesManager.contains(
+                        moduleImpressionCountBeforeInteractionPreferenceKey));
+        assertEquals(
+                INVALID_IMPRESSION_COUNT_BEFORE_INTERACTION,
+                sharedPreferencesManager.readInt(
+                        moduleImpressionCountBeforeInteractionPreferenceKey,
+                        INVALID_IMPRESSION_COUNT_BEFORE_INTERACTION));
+    }
+
+    private void verifyFreshnessKeysDoNotExistInSharedPreference(@ModuleType int moduleType) {
         String moduleFreshnessCountPreferenceKey =
                 ChromePreferenceKeys.HOME_MODULES_FRESHNESS_COUNT.createKey(
                         String.valueOf(moduleType));
@@ -149,10 +181,9 @@ public class HomeModulesUtilsUnitTest {
         // Verifies that both freshness count key and the timestamp key don't exist.
         assertFalse(sharedPreferencesManager.contains(moduleFreshnessCountPreferenceKey));
         assertEquals(
-                HomeModulesMediator.INVALID_FRESHNESS_SCORE,
+                INVALID_FRESHNESS_SCORE,
                 sharedPreferencesManager.readInt(
-                        moduleFreshnessCountPreferenceKey,
-                        HomeModulesMediator.INVALID_FRESHNESS_SCORE));
+                        moduleFreshnessCountPreferenceKey, INVALID_FRESHNESS_SCORE));
         assertFalse(sharedPreferencesManager.contains(moduleFreshnessTimestampPreferenceKey));
     }
 

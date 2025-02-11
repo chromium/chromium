@@ -4,5 +4,8 @@ mojom("mojom") {
     "updater_service.mojom",
     "updater_service_internal.mojom",
   ]
-  deps = [ "//mojo/public/mojom/base/" ]
+  deps = [
+    "//chrome/enterprise_companion/mojom:policy_fetch_reason_mojom",
+    "//mojo/public/mojom/base/",
+  ]
 }

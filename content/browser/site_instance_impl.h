@@ -191,6 +191,19 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) override;
   int EstimateOriginAgentClusterOverheadForMetrics() override;
 
+  // Returns the current RenderProcessHost being used to render pages for this
+  // SiteInstance. If there is no RenderProcessHost (because either none has
+  // yet been created or there was one but it was cleanly destroyed (e.g. when
+  // it is not actively being used)), this method will create a new
+  // RenderProcessHost (and a new ID).  Note that renderer process crashes leave
+  // the current RenderProcessHost (and ID) in place.
+  //
+  // For sites that require process-per-site mode (e.g., NTP), this will
+  // ensure only one RenderProcessHost for the site exists within the
+  // BrowserContext.
+  RenderProcessHost* GetOrCreateProcess(
+      const ProcessAllocationContext& context);
+
   // Return true if the StoragePartition should be preserved across future
   // navigations in the frames belonging to this SiteInstance. For <webview>
   // tags, this always returns true.

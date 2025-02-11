@@ -54,7 +54,6 @@ if (enable_vr) {
     sources = [
       "create_anchor_request.cc",
       "create_anchor_request.h",
-      "vr_device.h",
       "vr_device_base.cc",
       "vr_device_base.h",
       "vr_gl_util.cc",

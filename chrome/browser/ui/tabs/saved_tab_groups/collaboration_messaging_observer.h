@@ -60,7 +60,8 @@ class CollaborationMessagingObserver
 
   // Opens the manage sharing dialog for the group in the currently showing
   // instant message. Called from the action button of the toast.
-  void ManageSharingForCurrentInstantMessage();
+  void ManageSharingForCurrentInstantMessage(
+      BrowserWindowInterface* current_browser_window_interface);
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(CollaborationMessagingObserverBrowserTest,
@@ -73,6 +74,8 @@ class CollaborationMessagingObserver
                            InstantMessageReopensTab);
   FRIEND_TEST_ALL_PREFIXES(CollaborationMessagingObserverBrowserTest,
                            InstantMessageManagesSharing);
+  FRIEND_TEST_ALL_PREFIXES(CollaborationMessagingObserverBrowserTest,
+                           InstantMessageManagesSharingWithClosedGroup);
   FRIEND_TEST_ALL_PREFIXES(CollaborationMessagingObserverBrowserTest,
                            InstantMessageForTabGroupRemoved);
 

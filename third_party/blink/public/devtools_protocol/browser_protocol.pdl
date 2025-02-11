@@ -950,6 +950,7 @@ experimental domain Audits
       RelyingPartyOriginIsOpaque
       TypeNotMatching
       UiDismissedNoEmbargo
+      CorsError
 
   type FederatedAuthUserInfoRequestIssueDetails extends object
     properties

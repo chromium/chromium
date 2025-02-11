@@ -135,6 +135,8 @@ TagParsingResult GetTagArgs();
 
 std::optional<tagging::AppArgs> GetAppArgs(const std::string& app_id);
 
+std::string GetTagLanguage();
+
 std::string GetDecodedInstallDataFromAppArgs(const std::string& app_id);
 
 std::string GetInstallDataIndexFromAppArgs(const std::string& app_id);

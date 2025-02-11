@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.app.bookmarks;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.TextUtils;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -32,17 +31,14 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
  * BookmarkPage}).
  */
 public class BookmarkActivity extends SnackbarActivity {
-    private BookmarkManagerCoordinator mBookmarkManagerCoordinator;
     public static final int EDIT_BOOKMARK_REQUEST_CODE = 14;
     public static final String INTENT_VISIT_BOOKMARK_ID = "BookmarkEditActivity.VisitBookmarkId";
 
+    private @Nullable BookmarkManagerCoordinator mBookmarkManagerCoordinator;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        boolean isIncognito =
-                IntentUtils.safeGetBooleanExtra(
-                        getIntent(), IntentHandler.EXTRA_INCOGNITO_MODE, false);
-        Profile profile = ProfileProvider.getOrCreateProfile(getProfileProvider(), isIncognito);
+    protected void onProfileAvailable(Profile profile) {
+        super.onProfileAvailable(profile);
         mBookmarkManagerCoordinator =
                 new BookmarkManagerCoordinator(
                         this,
@@ -67,7 +63,9 @@ public class BookmarkActivity extends SnackbarActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mBookmarkManagerCoordinator.onDestroyed();
+        if (mBookmarkManagerCoordinator != null) {
+            mBookmarkManagerCoordinator.onDestroyed();
+        }
     }
 
     @Override

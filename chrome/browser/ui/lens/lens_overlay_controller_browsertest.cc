@@ -7029,6 +7029,73 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
       /*expected_bucket_count=*/1);
 }
 
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
+                       RecordSearchboxFocusHistograms) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to a webpage, and invoke then close the overlay.
+  WaitForPaint();
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Focus the searchbox.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->OnFocusChangedForTesting(/*focused=*/true);
+
+  // Verify histogram was recorded.
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Html."
+      "TimeFromInvocationToFirstFocus",
+      /*expected_count=*/1);
+
+  // Focusing the searchbox again should not record another histogram.
+  fake_controller->OnFocusChangedForTesting(/*focused=*/true);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Html."
+      "TimeFromInvocationToFirstFocus",
+      /*expected_count=*/1);
+
+  // Make a searchbox query to open the live page and side panel.
+  controller->IssueSearchBoxRequestForTesting(
+      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      /*additional_query_params=*/{});
+
+  // Verify transitions to live page.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kLivePageAndResults; }));
+
+  // Change page to new URL.
+  WaitForPaint(kDocumentWithImage);
+
+  // Focus the searchbox again and verify histogram was recorded.
+  fake_controller->OnFocusChangedForTesting(/*focused=*/true);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Html."
+      "TimeFromNavigationToFirstFocus",
+      /*expected_count=*/1);
+
+  // Focusing the searchbox again should not record another histogram.
+  fake_controller->OnFocusChangedForTesting(/*focused=*/true);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Html."
+      "TimeFromNavigationToFirstFocus",
+      /*expected_count=*/1);
+
+  // Navigate to a new page and verify histogram was recorded.
+  WaitForPaint(kImageFile);
+  fake_controller->OnFocusChangedForTesting(/*focused=*/true);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Html."
+      "TimeFromNavigationToFirstFocus",
+      /*expected_count=*/2);
+}
+
 class LensOverlayControllerContextualFeaturesDisabledTest
     : public LensOverlayControllerBrowserTest {
  protected:

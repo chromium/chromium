@@ -64,6 +64,8 @@ source_set("impl") {
     "auth_controller.cc",
     "auth_controller.h",
     "border_view.cc",
+    "browser_conditions.cc",
+    "browser_conditions.h",
     "fre_util.cc",
     "fre_util.h",
     "glic_cookie_synchronizer.cc",

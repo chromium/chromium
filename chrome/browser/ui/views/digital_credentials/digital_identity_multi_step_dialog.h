@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/color/color_variant.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/layout/box_layout_view.h"
 
@@ -96,7 +97,7 @@ class DigitalIdentityMultiStepDialog {
       const std::u16string& body_text,
       std::unique_ptr<views::View> custom_body_field);
 
-  SkColor GetBackgroundColor();
+  ui::ColorVariant GetBackgroundColor();
 
  private:
   // The wrapped views::BubbleDialogDelegate.

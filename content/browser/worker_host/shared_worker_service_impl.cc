@@ -347,7 +347,8 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
         site_instance->IsFixedStoragePartition());
   }
 
-  RenderProcessHost* worker_process_host = site_instance->GetOrCreateProcess();
+  RenderProcessHost* worker_process_host = site_instance->GetOrCreateProcess(
+      ProcessAllocationContext{ProcessAllocationSource::kSharedWorker});
   DCHECK(worker_process_host);
   DCHECK(worker_process_host->InSameStoragePartition(partition));
 

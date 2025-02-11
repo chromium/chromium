@@ -1788,6 +1788,35 @@ TEST_F(SunfishTest, PanelBounds) {
             target_bounds);
 }
 
+// Tests that the default action button bounds are right aligned below the
+// capture region.
+TEST_F(SunfishTest, ActionButtonsRightAlignedBelowCaptureRegionByDefault) {
+  // Start default capture mode.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+
+  // Select a region, which should show the search button.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 50),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForCaptureModeWidgetsVisible();
+
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  CaptureModeSessionTestApi session_test_api(session);
+  const views::Widget* action_container_widget =
+      session_test_api.GetActionContainerWidget();
+  ASSERT_TRUE(action_container_widget);
+  gfx::Rect action_container_bounds =
+      action_container_widget->GetWindowBoundsInScreen();
+  EXPECT_FALSE(action_container_bounds.IsEmpty());
+  // Action buttons should be right aligned with the capture region.
+  EXPECT_EQ(action_container_bounds.right(),
+            controller->user_capture_region().right());
+  // Action buttons should be below the capture region.
+  EXPECT_GT(action_container_bounds.y(),
+            controller->user_capture_region().bottom());
+}
+
 // Tests that the sunfish launcher nudge appears and closes properly in
 // clamshell mode, and that the prefs are updated properly.
 TEST_F(SunfishTest, ClamshellLauncherNudge) {
@@ -3520,6 +3549,92 @@ TEST_F(
       ScannerFeatureUserState::
           kScreenCaptureModeInitialScreenCaptureSentToScannerServer,
       1);
+}
+
+// Tests that the copy text and smart actions buttons are correctly shown and
+// hidden when the user selects or adjusts a capture region with their keyboard.
+TEST_F(ScannerTest, ActionButtonsUpdatedWhenRegionAdjustedWithKeyboard) {
+  // Start default capture mode.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillRepeatedly(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  // Hit space to select a default region.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_SPACE, event_generator);
+  detect_text_future.Take().Run("detected text");
+
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  // Action buttons should be shown since there was detected text.
+  EXPECT_THAT(
+      session_test_api.GetActionButtons(),
+      ElementsAre(ActionButtonIdIs(ActionButtonViewID::kSmartActionsButton),
+                  ActionButtonIdIs(ActionButtonViewID::kCopyTextButton)));
+
+  // Hit tab until the whole region is focused, then shift the region using an
+  // arrow key.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/6);
+  SendKey(ui::VKEY_RIGHT, event_generator);
+  detect_text_future.Take().Run("");
+
+  // No action buttons should be shown since there was no detected text.
+  EXPECT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+
+  // Shift the region again.
+  SendKey(ui::VKEY_RIGHT, event_generator);
+  detect_text_future.Take().Run("detected text again");
+
+  // Action buttons should be shown again since there was detected text.
+  EXPECT_THAT(
+      session_test_api.GetActionButtons(),
+      ElementsAre(ActionButtonIdIs(ActionButtonViewID::kSmartActionsButton),
+                  ActionButtonIdIs(ActionButtonViewID::kCopyTextButton)));
+}
+
+// Tests that Scanner actions are updated when the user selects or adjusts a
+// capture region with their keyboard in Sunfish mode.
+TEST_F(ScannerTest,
+       ActionButtonsUpdatedWhenRegionAdjustedWithKeyboardInSunfishMode) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_actions_future;
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillRepeatedly(WithArg<1>(InvokeFuture(fetch_actions_future)));
+
+  // Hit space to select a default region.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_SPACE, event_generator);
+  // Simulate two fetched actions.
+  auto output1 = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& objects1 = *output1->add_objects();
+  objects1.add_actions()->mutable_new_event()->set_title("Event 1");
+  objects1.add_actions()->mutable_new_event()->set_title("Event 2");
+  fetch_actions_future.Take().Run(std::move(output1), manta::MantaStatus());
+
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  EXPECT_THAT(session_test_api.GetActionButtons(), SizeIs(2));
+
+  // Hit tab to focus the whole region, then shift the region using an arrow
+  // key.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  SendKey(ui::VKEY_RIGHT, event_generator);
+  // Simulate one fetched action.
+  auto output2 = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& objects2 = *output2->add_objects();
+  objects2.add_actions()->mutable_new_event()->set_title("Event 3");
+  fetch_actions_future.Take().Run(std::move(output2), manta::MantaStatus());
+
+  EXPECT_THAT(session_test_api.GetActionButtons(), SizeIs(1));
 }
 
 // Tests that the capture label is hidden while capturing an image to send to

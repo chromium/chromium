@@ -23,6 +23,10 @@ class FilePath;
 class Version;
 }  // namespace base
 
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
+
 namespace mojo {
 class IsolatedConnection;
 class PlatformChannelEndpoint;
@@ -60,6 +64,7 @@ class UpdateServiceProxyImpl
       base::OnceCallback<void(base::expected<base::Version, RpcError>)>
           callback);
   void FetchPolicies(
+      policy::PolicyFetchReason reason,
       base::OnceCallback<void(base::expected<int, RpcError>)> callback);
   void RegisterApp(
       const RegistrationRequest& request,

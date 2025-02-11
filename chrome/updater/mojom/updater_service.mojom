@@ -5,6 +5,7 @@
 module updater.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
+import "chrome/enterprise_companion/mojom/policy_fetch_reason.mojom";
 
 // Struct containing the information required to register an application with
 // the updater. Passed from client to server during RegisterApp and Install.
@@ -139,7 +140,7 @@ import "mojo/public/mojom/base/file_path.mojom";
 
 // The UpdateService is the cross-platform core of the updater.
 // All functions and callbacks must be called on the same sequence.
-// Next version: 4
+// Next version: 5
 [Stable] interface UpdateService {
   // Defines the behavior of the update stack for over-installs.
   // Typically, same versions updates are not allowed, in which case, the update
@@ -254,7 +255,9 @@ import "mojo/public/mojom/base/file_path.mojom";
   GetVersion@0() => (string version);
 
   // Fetches policies from device management.
-  FetchPolicies@1() => (int32 result);
+  FetchPolicies@1(
+      [MinVersion=4] enterprise_companion.mojom.PolicyFetchReason reason)
+      => (int32 result);
 
   // Registers given request to the updater.
   RegisterApp@2(RegistrationRequest request) => (int32 result);

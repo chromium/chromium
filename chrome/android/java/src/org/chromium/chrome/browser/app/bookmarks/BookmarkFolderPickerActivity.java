@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.app.bookmarks;
 
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -51,10 +50,8 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
     private BookmarkFolderPickerCoordinator mCoordinator;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Profile profile = getProfileProvider().getOriginalProfile();
+    protected void onProfileAvailable(Profile profile) {
+        super.onProfileAvailable(profile);
         mBookmarkModel = BookmarkModel.getForProfile(profile);
 
         List<String> bookmarkIdsAsStrings =

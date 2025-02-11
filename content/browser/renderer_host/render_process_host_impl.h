@@ -47,6 +47,7 @@
 #include "content/common/renderer_host.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/process_allocation_context.h"
 #include "content/public/browser/render_process_host.h"
 #include "media/mojo/mojom/interface_factory.mojom-forward.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom-forward.h"
@@ -539,7 +540,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // - process creation when an existing process couldn't be found: see
   //   CreateRenderProcessHost.
   static RenderProcessHost* GetProcessHostForSiteInstance(
-      SiteInstanceImpl* site_instance);
+      SiteInstanceImpl* site_instance,
+      const ProcessAllocationContext& allocation_context);
 
   // Should be called when `site_instance` is used in a navigation.
   //

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/client_certificates/core/certificate_store.h"
+#include "components/enterprise/client_certificates/core/leveldb_certificate_store.h"
 
 #include <map>
 #include <memory>
@@ -82,12 +82,12 @@ using testing::_;
 using testing::Return;
 using testing::StrictMock;
 
-class CertificateStoreTest : public testing::Test {
+class LevelDbCertificateStoreTest : public testing::Test {
  protected:
   using ProtoMap =
       std::map<std::string, client_certificates_pb::ClientIdentity>;
 
-  CertificateStoreTest() {
+  LevelDbCertificateStoreTest() {
     auto db = std::make_unique<
         leveldb_proto::test::FakeDB<client_certificates_pb::ClientIdentity>>(
         &database_entries_);
@@ -97,8 +97,8 @@ class CertificateStoreTest : public testing::Test {
         std::make_unique<StrictMock<MockPrivateKeyFactory>>();
     mock_key_factory_ = mock_key_factory.get();
 
-    store_ = CertificateStore::CreateForTesting(std::move(db),
-                                                std::move(mock_key_factory));
+    store_ = LevelDbCertificateStore::CreateForTesting(
+        std::move(db), std::move(mock_key_factory));
   }
 
   void AddDatabaseEntry(const std::string& key,
@@ -130,7 +130,7 @@ class CertificateStoreTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  std::unique_ptr<CertificateStore> store_;
+  std::unique_ptr<LevelDbCertificateStore> store_;
 
   ProtoMap database_entries_;
   raw_ptr<leveldb_proto::test::FakeDB<client_certificates_pb::ClientIdentity>>
@@ -144,7 +144,7 @@ class CertificateStoreTest : public testing::Test {
 // - There is no preexisting valid identity with the same name,
 // - Private key creation succeeds,
 // - Private key serialization succeeds.
-TEST_F(CertificateStoreTest, CreatePrivateKey_Success) {
+TEST_F(LevelDbCertificateStoreTest, CreatePrivateKey_Success) {
   client_certificates_pb::PrivateKey proto_key = CreateFakeProtoKey();
 
   auto mocked_private_key = base::MakeRefCounted<StrictMock<MockPrivateKey>>();
@@ -168,7 +168,7 @@ TEST_F(CertificateStoreTest, CreatePrivateKey_Success) {
 }
 
 // Tests that no key is returned when given an invalid identity name.
-TEST_F(CertificateStoreTest, CreatePrivateKey_InvalidIdentityNameFail) {
+TEST_F(LevelDbCertificateStoreTest, CreatePrivateKey_InvalidIdentityNameFail) {
   base::test::TestFuture<StoreErrorOr<scoped_refptr<PrivateKey>>> test_future;
   store_->CreatePrivateKey("", test_future.GetCallback());
 
@@ -179,7 +179,7 @@ TEST_F(CertificateStoreTest, CreatePrivateKey_InvalidIdentityNameFail) {
 }
 
 // Tests that no key is returned when failing to initialize the database.
-TEST_F(CertificateStoreTest, CreatePrivateKey_DatabaseInitFail) {
+TEST_F(LevelDbCertificateStoreTest, CreatePrivateKey_DatabaseInitFail) {
   base::test::TestFuture<StoreErrorOr<scoped_refptr<PrivateKey>>> test_future;
   store_->CreatePrivateKey(kTestIdentityName, test_future.GetCallback());
 
@@ -191,7 +191,7 @@ TEST_F(CertificateStoreTest, CreatePrivateKey_DatabaseInitFail) {
 
 // Tests that no key is returned when failing to verify that the database
 // doesn't already have an identity with the same name.
-TEST_F(CertificateStoreTest, CreatePrivateKey_GetIdentityFail) {
+TEST_F(LevelDbCertificateStoreTest, CreatePrivateKey_GetIdentityFail) {
   base::test::TestFuture<StoreErrorOr<scoped_refptr<PrivateKey>>> test_future;
   store_->CreatePrivateKey(kTestIdentityName, test_future.GetCallback());
 
@@ -204,7 +204,7 @@ TEST_F(CertificateStoreTest, CreatePrivateKey_GetIdentityFail) {
 
 // Tests that no key is returned and the database is not modified when
 // the create key call fails.
-TEST_F(CertificateStoreTest, CreatePrivateKey_CreateKeyFail) {
+TEST_F(LevelDbCertificateStoreTest, CreatePrivateKey_CreateKeyFail) {
   EXPECT_CALL(*mock_key_factory_, CreatePrivateKey(_))
       .WillOnce(RunOnceCallback<0>(nullptr));
 
@@ -221,7 +221,7 @@ TEST_F(CertificateStoreTest, CreatePrivateKey_CreateKeyFail) {
 // Tests that no key is returned and the database is not modified when
 // attempting to create a private key using an identity name that is already
 // used.
-TEST_F(CertificateStoreTest, CreatePrivateKey_ConflictFail) {
+TEST_F(LevelDbCertificateStoreTest, CreatePrivateKey_ConflictFail) {
   client_certificates_pb::PrivateKey proto_key = CreateFakeProtoKey();
   client_certificates_pb::ClientIdentity proto_identity;
   *proto_identity.mutable_private_key() = proto_key;
@@ -238,7 +238,7 @@ TEST_F(CertificateStoreTest, CreatePrivateKey_ConflictFail) {
 }
 
 // Tests that no key is returned when failing to update the database.
-TEST_F(CertificateStoreTest, CreatePrivateKey_UpdateFail) {
+TEST_F(LevelDbCertificateStoreTest, CreatePrivateKey_UpdateFail) {
   client_certificates_pb::PrivateKey proto_key = CreateFakeProtoKey();
 
   auto mocked_private_key = base::MakeRefCounted<StrictMock<MockPrivateKey>>();
@@ -262,7 +262,7 @@ TEST_F(CertificateStoreTest, CreatePrivateKey_UpdateFail) {
 
 // Tests that a certificate can be saved to the database when a private key
 // already exists in the database.
-TEST_F(CertificateStoreTest, CommitCertificate_SuccessWithPrivateKey) {
+TEST_F(LevelDbCertificateStoreTest, CommitCertificate_SuccessWithPrivateKey) {
   client_certificates_pb::PrivateKey proto_key = CreateFakeProtoKey();
   client_certificates_pb::ClientIdentity proto_identity;
   *proto_identity.mutable_private_key() = proto_key;
@@ -286,7 +286,8 @@ TEST_F(CertificateStoreTest, CommitCertificate_SuccessWithPrivateKey) {
 
 // Tests that a certificate can be saved to the database even when a private key
 // does not already exist in the database.
-TEST_F(CertificateStoreTest, CommitCertificate_SuccessWithoutPrivateKey) {
+TEST_F(LevelDbCertificateStoreTest,
+       CommitCertificate_SuccessWithoutPrivateKey) {
   auto test_cert = LoadTestCert();
 
   base::test::TestFuture<std::optional<StoreError>> test_future;
@@ -306,7 +307,7 @@ TEST_F(CertificateStoreTest, CommitCertificate_SuccessWithoutPrivateKey) {
 
 // Tests that a certificate won't be saved to the database when the identity
 // name is invalid.
-TEST_F(CertificateStoreTest, CommitCertificate_InvalidIdentityNameFail) {
+TEST_F(LevelDbCertificateStoreTest, CommitCertificate_InvalidIdentityNameFail) {
   auto test_cert = LoadTestCert();
 
   base::test::TestFuture<std::optional<StoreError>> test_future;
@@ -320,7 +321,7 @@ TEST_F(CertificateStoreTest, CommitCertificate_InvalidIdentityNameFail) {
 
 // Tests that a certificate won't be saved to the database when the database
 // initialization failed.
-TEST_F(CertificateStoreTest, CommitCertificate_DatabaseInitFail) {
+TEST_F(LevelDbCertificateStoreTest, CommitCertificate_DatabaseInitFail) {
   auto test_cert = LoadTestCert();
 
   base::test::TestFuture<std::optional<StoreError>> test_future;
@@ -335,7 +336,7 @@ TEST_F(CertificateStoreTest, CommitCertificate_DatabaseInitFail) {
 
 // Tests that a certificate won't be saved to the database when failing to "get"
 // from the database.
-TEST_F(CertificateStoreTest, CommitCertificate_GetIdentityFail) {
+TEST_F(LevelDbCertificateStoreTest, CommitCertificate_GetIdentityFail) {
   auto test_cert = LoadTestCert();
 
   base::test::TestFuture<std::optional<StoreError>> test_future;
@@ -351,7 +352,7 @@ TEST_F(CertificateStoreTest, CommitCertificate_GetIdentityFail) {
 
 // Tests that a certificate won't be saved to the database when the given
 // certificate instance is invalid (nullptr).
-TEST_F(CertificateStoreTest, CommitCertificate_InvalidCertificateFail) {
+TEST_F(LevelDbCertificateStoreTest, CommitCertificate_InvalidCertificateFail) {
   base::test::TestFuture<std::optional<StoreError>> test_future;
   store_->CommitCertificate(kTestIdentityName, /*certificate=*/nullptr,
                             test_future.GetCallback());
@@ -365,7 +366,7 @@ TEST_F(CertificateStoreTest, CommitCertificate_InvalidCertificateFail) {
 
 // Tests that a certificate won't be saved to the database when failing to
 // "update" the database.
-TEST_F(CertificateStoreTest, CommitCertificate_UpdateFail) {
+TEST_F(LevelDbCertificateStoreTest, CommitCertificate_UpdateFail) {
   auto test_cert = LoadTestCert();
 
   base::test::TestFuture<std::optional<StoreError>> test_future;
@@ -384,7 +385,7 @@ TEST_F(CertificateStoreTest, CommitCertificate_UpdateFail) {
 
 // Tests that an existing private key is moved and a certificate can be saved
 // to the database.
-TEST_F(CertificateStoreTest, CommitIdentity_SuccessWithPrivateKey) {
+TEST_F(LevelDbCertificateStoreTest, CommitIdentity_SuccessWithPrivateKey) {
   client_certificates_pb::PrivateKey proto_key = CreateFakeProtoKey();
   client_certificates_pb::ClientIdentity proto_identity;
   *proto_identity.mutable_private_key() = proto_key;
@@ -409,7 +410,7 @@ TEST_F(CertificateStoreTest, CommitIdentity_SuccessWithPrivateKey) {
 
 // Tests that a certificate cannot be saved to the database when the temporary
 // identity does not already exist in the database.
-TEST_F(CertificateStoreTest, CommitIdentity_FailWithoutIdentity) {
+TEST_F(LevelDbCertificateStoreTest, CommitIdentity_FailWithoutIdentity) {
   auto test_cert = LoadTestCert();
 
   base::test::TestFuture<std::optional<StoreError>> test_future;
@@ -427,7 +428,8 @@ TEST_F(CertificateStoreTest, CommitIdentity_FailWithoutIdentity) {
 
 // Tests that a certificate won't be saved to the database when the temporary
 // identity name is invalid.
-TEST_F(CertificateStoreTest, CommitIdentity_InvalidTemporaryIdentityNameFail) {
+TEST_F(LevelDbCertificateStoreTest,
+       CommitIdentity_InvalidTemporaryIdentityNameFail) {
   auto test_cert = LoadTestCert();
 
   base::test::TestFuture<std::optional<StoreError>> test_future;
@@ -443,7 +445,7 @@ TEST_F(CertificateStoreTest, CommitIdentity_InvalidTemporaryIdentityNameFail) {
 
 // Tests that a certificate won't be saved to the database when the database
 // initialization failed.
-TEST_F(CertificateStoreTest, CommitIdentity_DatabaseInitFail) {
+TEST_F(LevelDbCertificateStoreTest, CommitIdentity_DatabaseInitFail) {
   auto test_cert = LoadTestCert();
 
   base::test::TestFuture<std::optional<StoreError>> test_future;
@@ -459,7 +461,7 @@ TEST_F(CertificateStoreTest, CommitIdentity_DatabaseInitFail) {
 
 // Tests that a certificate won't be saved to the database when failing to "get"
 // from the database.
-TEST_F(CertificateStoreTest, CommitIdentity_GetIdentityFail) {
+TEST_F(LevelDbCertificateStoreTest, CommitIdentity_GetIdentityFail) {
   auto test_cert = LoadTestCert();
 
   base::test::TestFuture<std::optional<StoreError>> test_future;
@@ -476,7 +478,7 @@ TEST_F(CertificateStoreTest, CommitIdentity_GetIdentityFail) {
 
 // Tests that a certificate won't be saved to the database when the given
 // certificate instance is invalid (nullptr).
-TEST_F(CertificateStoreTest, CommitIdentity_InvalidCertificateFail) {
+TEST_F(LevelDbCertificateStoreTest, CommitIdentity_InvalidCertificateFail) {
   base::test::TestFuture<std::optional<StoreError>> test_future;
   store_->CommitIdentity(kOtherTestIdentityName, kTestIdentityName,
                          /*certificate=*/nullptr, test_future.GetCallback());
@@ -491,7 +493,7 @@ TEST_F(CertificateStoreTest, CommitIdentity_InvalidCertificateFail) {
 
 // Tests that a certificate won't be saved to the database when the given
 // certificate instance is invalid (nullptr).
-TEST_F(CertificateStoreTest, CommitIdentity_InvalidFinalNameFail) {
+TEST_F(LevelDbCertificateStoreTest, CommitIdentity_InvalidFinalNameFail) {
   auto test_cert = LoadTestCert();
 
   base::test::TestFuture<std::optional<StoreError>> test_future;
@@ -508,7 +510,7 @@ TEST_F(CertificateStoreTest, CommitIdentity_InvalidFinalNameFail) {
 
 // Tests that a certificate won't be saved to the database when failing to
 // "update" the database.
-TEST_F(CertificateStoreTest, CommitIdentity_UpdateFail) {
+TEST_F(LevelDbCertificateStoreTest, CommitIdentity_UpdateFail) {
   client_certificates_pb::PrivateKey proto_key = CreateFakeProtoKey();
   client_certificates_pb::ClientIdentity proto_identity;
   *proto_identity.mutable_private_key() = proto_key;
@@ -532,7 +534,7 @@ TEST_F(CertificateStoreTest, CommitIdentity_UpdateFail) {
 
 // Tests that an identity stored in the database with a private key and
 // certificate can be properly loaded into memory and returned.
-TEST_F(CertificateStoreTest, GetIdentity_FullIdentitySuccess) {
+TEST_F(LevelDbCertificateStoreTest, GetIdentity_FullIdentitySuccess) {
   client_certificates_pb::PrivateKey proto_key = CreateFakeProtoKey();
 
   auto mocked_private_key = base::MakeRefCounted<StrictMock<MockPrivateKey>>();
@@ -563,7 +565,7 @@ TEST_F(CertificateStoreTest, GetIdentity_FullIdentitySuccess) {
 
 // Tests that an identity stored in the database with only a private key can be
 // properly loaded into memory and returned.
-TEST_F(CertificateStoreTest, GetIdentity_OnlyPrivateKeySuccess) {
+TEST_F(LevelDbCertificateStoreTest, GetIdentity_OnlyPrivateKeySuccess) {
   client_certificates_pb::PrivateKey proto_key = CreateFakeProtoKey();
 
   auto mocked_private_key = base::MakeRefCounted<StrictMock<MockPrivateKey>>();
@@ -591,7 +593,7 @@ TEST_F(CertificateStoreTest, GetIdentity_OnlyPrivateKeySuccess) {
 
 // Tests that an identity stored in the database with only a certificate can be
 // properly loaded into memory and returned.
-TEST_F(CertificateStoreTest, GetIdentity_OnlyCertificateSuccess) {
+TEST_F(LevelDbCertificateStoreTest, GetIdentity_OnlyCertificateSuccess) {
   auto test_cert = LoadTestCert();
 
   client_certificates_pb::ClientIdentity proto_identity;
@@ -615,7 +617,7 @@ TEST_F(CertificateStoreTest, GetIdentity_OnlyCertificateSuccess) {
 
 // Tests that an identity stored in the database with no private key nor
 // certificate can be properly loaded into memory and returned.
-TEST_F(CertificateStoreTest, GetIdentity_EmptySuccess) {
+TEST_F(LevelDbCertificateStoreTest, GetIdentity_EmptySuccess) {
   client_certificates_pb::ClientIdentity proto_identity;
   AddDatabaseEntry(kTestIdentityName, proto_identity);
 
@@ -636,7 +638,7 @@ TEST_F(CertificateStoreTest, GetIdentity_EmptySuccess) {
 
 // Tests that attempting to retrieve an identity using an unknown identity name
 // does not return an actual identity.
-TEST_F(CertificateStoreTest, GetIdentity_NotFoundSuccess) {
+TEST_F(LevelDbCertificateStoreTest, GetIdentity_NotFoundSuccess) {
   base::test::TestFuture<StoreErrorOr<std::optional<ClientIdentity>>>
       test_future;
   store_->GetIdentity(kTestIdentityName, test_future.GetCallback());
@@ -651,7 +653,7 @@ TEST_F(CertificateStoreTest, GetIdentity_NotFoundSuccess) {
 
 // Tests that attempting to retrieve an identity using an invalid identity name
 // does not return an actual identity.
-TEST_F(CertificateStoreTest, GetIdentity_InvalidIdentityNameFail) {
+TEST_F(LevelDbCertificateStoreTest, GetIdentity_InvalidIdentityNameFail) {
   base::test::TestFuture<StoreErrorOr<std::optional<ClientIdentity>>>
       test_future;
   store_->GetIdentity("", test_future.GetCallback());
@@ -663,7 +665,7 @@ TEST_F(CertificateStoreTest, GetIdentity_InvalidIdentityNameFail) {
 
 // Tests that attempting to retrieve an identity when the database failed to
 // initialize does not return an actual identity.
-TEST_F(CertificateStoreTest, GetIdentity_DatabaseInitFail) {
+TEST_F(LevelDbCertificateStoreTest, GetIdentity_DatabaseInitFail) {
   client_certificates_pb::ClientIdentity proto_identity;
   AddDatabaseEntry(kTestIdentityName, proto_identity);
 
@@ -678,7 +680,7 @@ TEST_F(CertificateStoreTest, GetIdentity_DatabaseInitFail) {
 
 // Tests that attempting to retrieve an identity when the database failed the
 // "get" request does not return an actual identity.
-TEST_F(CertificateStoreTest, GetIdentity_GetIdentityFail) {
+TEST_F(LevelDbCertificateStoreTest, GetIdentity_GetIdentityFail) {
   client_certificates_pb::ClientIdentity proto_identity;
   AddDatabaseEntry(kTestIdentityName, proto_identity);
 
@@ -694,7 +696,7 @@ TEST_F(CertificateStoreTest, GetIdentity_GetIdentityFail) {
 
 // Tests that attempting to retrieve an identity when failing to load a private
 // key into memory does not return an actual identity.
-TEST_F(CertificateStoreTest, GetIdentity_LoadPrivateKeyFail) {
+TEST_F(LevelDbCertificateStoreTest, GetIdentity_LoadPrivateKeyFail) {
   client_certificates_pb::PrivateKey proto_key = CreateFakeProtoKey();
 
   EXPECT_CALL(*mock_key_factory_, LoadPrivateKey(EqualsProto(proto_key), _))

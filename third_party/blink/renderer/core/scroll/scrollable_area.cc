@@ -66,7 +66,6 @@
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
-#include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
@@ -248,8 +247,6 @@ ScrollResult ScrollableArea::UserScroll(ui::ScrollGranularity granularity,
   }
 
   CancelProgrammaticScrollAnimation();
-  if (SmoothScrollSequencer* sequencer = GetSmoothScrollSequencer())
-    sequencer->AbortAnimations();
 
   ScrollResult result =
       GetScrollAnimator().UserScroll(granularity, scrollable_axis_delta,
@@ -294,11 +291,7 @@ bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
       },
       WrapWeakPersistent(this)));
   bool filter_scroll = false;
-  if (SmoothScrollSequencer* sequencer = GetSmoothScrollSequencer()) {
-    DCHECK(!RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled());
-    filter_scroll = sequencer->FilterNewScrollOrAbortCurrent(scroll_type);
-  } else if (active_smooth_scroll_type_.has_value()) {
-    DCHECK(RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled());
+  if (active_smooth_scroll_type_.has_value()) {
     filter_scroll = ShouldFilterIncomingScroll(scroll_type);
   }
 
@@ -369,27 +362,18 @@ bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
       break;
     case mojom::blink::ScrollType::kProgrammatic:
       if (ProgrammaticScrollHelper(clamped_offset, behavior,
-                                   /* is_sequenced_scroll */ false,
                                    animation_adjustment,
                                    std::move(run_scroll_complete_callbacks))) {
-        if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled() &&
-            behavior == mojom::blink::ScrollBehavior::kSmooth) {
+        if (behavior == mojom::blink::ScrollBehavior::kSmooth) {
           active_smooth_scroll_type_ = scroll_type;
         }
         return true;
       }
       return false;
-    case mojom::blink::ScrollType::kSequenced:
-      return ProgrammaticScrollHelper(clamped_offset, behavior,
-                                      /* is_sequenced_scroll */ true,
-                                      animation_adjustment,
-                                      std::move(run_scroll_complete_callbacks));
     case mojom::blink::ScrollType::kUser:
-      if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled() &&
-          behavior == mojom::blink::ScrollBehavior::kSmooth) {
+      if (behavior == mojom::blink::ScrollBehavior::kSmooth) {
         if (ProgrammaticScrollHelper(
-                clamped_offset, behavior,
-                /* is_sequenced_scroll */ false, animation_adjustment,
+                clamped_offset, behavior, animation_adjustment,
                 std::move(run_scroll_complete_callbacks))) {
           active_smooth_scroll_type_ = scroll_type;
           return true;
@@ -567,7 +551,6 @@ void ScrollableArea::ScrollBy(const ScrollOffset& delta,
 bool ScrollableArea::ProgrammaticScrollHelper(
     const ScrollOffset& offset,
     mojom::blink::ScrollBehavior scroll_behavior,
-    bool is_sequenced_scroll,
     gfx::Vector2d animation_adjustment,
     ScrollCallback on_finish) {
   bool should_use_animation =
@@ -607,11 +590,10 @@ bool ScrollableArea::ProgrammaticScrollHelper(
   }
 
   if (should_use_animation) {
-    GetProgrammaticScrollAnimator().AnimateToOffset(offset, is_sequenced_scroll,
+    GetProgrammaticScrollAnimator().AnimateToOffset(offset,
                                                     std::move(callback));
   } else {
-    GetProgrammaticScrollAnimator().ScrollToOffsetWithoutAnimation(
-        offset, is_sequenced_scroll);
+    GetProgrammaticScrollAnimator().ScrollToOffsetWithoutAnimation(offset);
 
     // If the programmatic scroll was NOT animated, we should adjust (but not
     // cancel) a user scroll animation already in progress (crbug.com/1264266).
@@ -628,8 +610,6 @@ void ScrollableArea::UserScrollHelper(
     const ScrollOffset& offset,
     mojom::blink::ScrollBehavior scroll_behavior) {
   CancelProgrammaticScrollAnimation();
-  if (SmoothScrollSequencer* sequencer = GetSmoothScrollSequencer())
-    sequencer->AbortAnimations();
 
   float x = UserInputScrollable(kHorizontalScrollbar)
                 ? offset.x()

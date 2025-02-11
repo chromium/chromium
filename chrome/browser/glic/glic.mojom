@@ -148,6 +148,8 @@ struct WebClientInitialState {
   bool location_permission_enabled;
   bool tab_context_permission_enabled;
   mojo_base.mojom.Version chrome_version;
+  // Whether the glic panel can currently be attached to a browser window.
+  bool can_attach;
 };
 
 // Options for getting tab context.
@@ -346,6 +348,9 @@ interface WebClient {
 
   // Informs the client that the state of the glic panel has changed.
   NotifyPanelStateChange(PanelState panel_state);
+
+  // Informs the client that whether the panel can be attached right now.
+  NotifyPanelCanAttachChange(bool can_attach);
 
   // The Microphone permission has changed either by action within the web
   // client or by user action in the glic settings.

@@ -113,7 +113,6 @@ class CORE_EXPORT RootFrameViewport final
       ScrollbarOrientation orientation) override;
   bool ScrollAnimatorEnabled() const override;
   ChromeClient* GetChromeClient() const override;
-  SmoothScrollSequencer* GetSmoothScrollSequencer() const override;
   void ServiceScrollAnimations(double) override;
   void UpdateCompositorScrollAnimations() override;
   void CancelProgrammaticScrollAnimation() override;

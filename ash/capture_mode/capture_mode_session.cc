@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -210,6 +211,17 @@ constexpr int kFeedbackButtonSpacing = 10;
 // The animation duration for fading in Scanner action buttons.
 constexpr base::TimeDelta kScannerActionButtonFadeInDuration =
     base::Milliseconds(100);
+
+// The preferred alignment of a widget positioned near the capture region.
+enum class CaptureRegionWidgetAlignment {
+  // At the center of the capture region.
+  kCenter,
+  // Right-aligned with the capture region (i.e. the right edges of the widget
+  // and capture region align). We prefer to right-align the widget below the
+  // capture region if possible, otherwise will try to right-align above the
+  // capture region.
+  kRight,
+};
 
 // Mouse cursor warping is disabled when the capture source is a custom region.
 // Sets the mouse warp status to |enable| and return the original value.
@@ -440,10 +452,12 @@ gfx::Rect GetHitTestRectForFineTunePosition(
 // Calculates the bounds for a widget of `preferred_size` so that it appears
 // along one of the edges of `capture_bounds`, or slightly above
 // `capture_bar_bounds` if there is not a good edge.
-gfx::Rect CalculateRegionEdgeBounds(const gfx::Size& preferred_size,
-                                    const gfx::Rect& capture_bar_root_bounds,
-                                    const gfx::Rect& capture_region_root_bounds,
-                                    aura::Window* root) {
+gfx::Rect CalculateRegionEdgeBounds(
+    const gfx::Size& preferred_size,
+    const gfx::Rect& capture_bar_root_bounds,
+    const gfx::Rect& capture_region_root_bounds,
+    aura::Window* root,
+    CaptureRegionWidgetAlignment preferred_alignment) {
   // The capture button may be placed along the edge of a capture region if it
   // cannot be placed in the middle. This enum represents the possible edges.
   enum class Direction { kBottom, kTop, kLeft, kRight };
@@ -454,21 +468,29 @@ gfx::Rect CalculateRegionEdgeBounds(const gfx::Size& preferred_size,
   const std::vector<Direction> directions = {
       Direction::kBottom, Direction::kTop, Direction::kLeft, Direction::kRight};
 
-  // For each direction, start off with the label in the center of
-  // |capture_bounds| (matching centerpoints). We will shift the label to
-  // slightly outside |capture_bounds| for each direction.
-  gfx::Rect centered_widget_bounds(preferred_size);
-  centered_widget_bounds.set_x(capture_region_root_bounds.CenterPoint().x() -
-                               preferred_size.width() / 2);
-  centered_widget_bounds.set_y(capture_region_root_bounds.CenterPoint().y() -
-                               preferred_size.height() / 2);
+  // Start off with the bounds at the preferred horizontal position but centered
+  // vertically. We will shift the bounds to slightly outside `capture_bounds`
+  // for each direction if needed.
+  gfx::Rect initial_bounds(preferred_size);
+  switch (preferred_alignment) {
+    case CaptureRegionWidgetAlignment::kCenter:
+      initial_bounds.set_x(capture_region_root_bounds.CenterPoint().x() -
+                           preferred_size.width() / 2);
+      break;
+    case CaptureRegionWidgetAlignment::kRight:
+      initial_bounds.set_x(capture_region_root_bounds.right() -
+                           preferred_size.width());
+      break;
+  }
+  initial_bounds.set_y(capture_region_root_bounds.CenterPoint().y() -
+                       preferred_size.height() / 2);
   const int spacing = CaptureModeSession::kCaptureButtonDistanceFromRegionDp;
 
   // Try the directions in the preferred order. We will early out if one of
   // them is viable.
   gfx::Rect widget_bounds;
   for (Direction direction : directions) {
-    widget_bounds = centered_widget_bounds;
+    widget_bounds = initial_bounds;
 
     switch (direction) {
       case Direction::kBottom:
@@ -1406,7 +1428,7 @@ ActionButtonView* CaptureModeSession::AddActionButton(
   // Another process may try to add an action button before the container is
   // created, or while it is invalid. In these cases, we don't want to do
   // anything.
-  if (!action_container_widget_ || !action_container_widget_->IsVisible()) {
+  if (!action_container_widget_) {
     return nullptr;
   }
 
@@ -1467,7 +1489,12 @@ void CaptureModeSession::OnScannerActionsFetched(
   CHECK(capture_region_overlay_controller_);
   capture_region_overlay_controller_->PauseGlowAnimation();
 
-  CHECK(action_container_widget_);
+  // Create the action container widget if needed.
+  UpdateActionContainerWidget();
+  if (!action_container_widget_) {
+    return;
+  }
+
   if (!actions_response.has_value()) {
     action_container_view_->ShowErrorView(
         actions_response.error(),
@@ -2693,13 +2720,13 @@ void CaptureModeSession::UpdateCaptureRegion(
   layer()->SchedulePaint(damage_region);
 
   controller_->SetUserCaptureRegion(new_capture_region, by_user);
+  InvalidateImageSearch();
+  ClearActionContainer();
   UpdateDimensionsLabelWidget(is_resizing);
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
-  UpdateActionContainerWidget();
-  if (ShowDefaultActionButtonsOrPerformSearch()) {
-    return;
-  }
-  InvalidateImageSearch();
+  // The following may end the session and delete `this`, but we can ignore the
+  // result since it's the last line of this method.
+  std::ignore = ShowDefaultActionButtonsOrPerformSearch();
 }
 
 void CaptureModeSession::UpdateDimensionsLabelWidget(bool is_resizing) {
@@ -2966,7 +2993,8 @@ gfx::Rect CaptureModeSession::CalculateCaptureLabelWidgetBounds() {
     }
 
     return CalculateRegionEdgeBounds(preferred_size, capture_bar_bounds,
-                                     capture_bounds, root);
+                                     capture_bounds, root,
+                                     CaptureRegionWidgetAlignment::kCenter);
   };
 
   gfx::Rect bounds(current_root_->bounds());
@@ -3264,7 +3292,7 @@ void CaptureModeSession::UpdateActionContainerWidget() {
     if (action_container_widget_ && action_container_widget_->IsVisible()) {
       // It is inefficient to destroy and recreate the widget if a drag is in
       // progress.
-      ClearActionContainer();
+      action_container_view_->ClearContainer();
       action_container_widget_->Hide();
     }
     return;
@@ -3278,6 +3306,11 @@ void CaptureModeSession::UpdateActionContainerWidget() {
 
     action_container_view_ = action_container_widget_->SetContentsView(
         std::make_unique<ActionButtonContainerView>());
+  }
+
+  if (action_container_view_->GetPreferredSize().IsEmpty()) {
+    action_container_widget_->Hide();
+    return;
   }
 
   action_container_widget_->Show();
@@ -3297,7 +3330,8 @@ gfx::Rect CaptureModeSession::CalculateActionContainerWidgetBounds() const {
 
   const gfx::Rect capture_region = controller_->user_capture_region();
   gfx::Rect bounds = CalculateRegionEdgeBounds(
-      preferred_size, capture_bar_bounds, capture_region, current_root_);
+      preferred_size, capture_bar_bounds, capture_region, current_root_,
+      CaptureRegionWidgetAlignment::kRight);
 
   // User capture bounds are in root window coordinates so convert them here.
   wm::ConvertRectToScreen(current_root_, &bounds);
@@ -3308,6 +3342,7 @@ void CaptureModeSession::ClearActionContainer() {
   if (action_container_widget_) {
     CHECK(action_container_view_);
     action_container_view_->ClearContainer();
+    UpdateActionContainerWidget();
   }
 }
 

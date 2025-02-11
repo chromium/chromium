@@ -115,7 +115,11 @@ void RemoteSupportHostAsh::StartSession(
 
   mojo::PendingReceiver<mojom::SupportHostObserver> pending_receiver =
       it2me_native_message_host_ash_->Start(
-          browser_interop_->CreateChromotingHostContext(),
+          // We don't have access to the BrowserContext in this class. Passing
+          // nullptr is fine as long as no URL requests require providing a
+          // certificate.
+          browser_interop_->CreateChromotingHostContext(
+              /* browser_context= */ nullptr),
           browser_interop_->CreatePolicyWatcher());
 
   mojom::StartSupportSessionResponsePtr response =

@@ -51,7 +51,7 @@ class AuthenticationFlowInProfileTest : public PlatformTest {
     managed_identity_ = [FakeSystemIdentity fakeManagedIdentity];
     fake_system_identity_manager->AddIdentity(managed_identity_);
     performer_mock_ = OCMStrictClassMock([AuthenticationFlowPerformer class]);
-    OCMStub([(id)performer_mock_ alloc]).andReturn(performer_mock_);
+    OCMExpect([(id)performer_mock_ alloc]).andReturn(performer_mock_);
   }
 
   void TearDown() override {

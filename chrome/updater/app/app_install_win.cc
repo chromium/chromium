@@ -533,8 +533,7 @@ void AppInstallControllerImpl::InstallApp(
           &UpdateService::Install, update_service_, request,
           GetDecodedInstallDataFromAppArgs(app_id_),
           GetInstallDataIndexFromAppArgs(app_id_),
-          UpdateService::Priority::kForeground,
-          tag_args ? tag_args->language : "",
+          UpdateService::Priority::kForeground, GetTagLanguage(),
           base::BindRepeating(&AppInstallControllerImpl::StateChange, this),
           base::BindOnce(&AppInstallControllerImpl::InstallComplete, this)));
 }
@@ -638,7 +637,6 @@ void AppInstallControllerImpl::DoInstallAppOffline(
     VLOG(1) << "Failed to serialize install settings.";
   }
 
-  std::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
   RegistrationRequest request;
   request.app_id = app_id_;
   request.version = base::Version(kNullVersion);
@@ -647,6 +645,7 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   if (app_args) {
     request.ap = app_args->ap;
   }
+  std::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
   if (tag_args) {
     request.brand_code = tag_args->brand_code;
     request.install_id = tag_args->installation_id;
@@ -682,18 +681,18 @@ void AppInstallControllerImpl::DoInstallAppOffline(
                                    self));
               },
               base::WrapRefCounted(this), installer_path, install_args,
-              install_data, install_settings,
-              tag_args ? tag_args->language : "")));
+              install_data, install_settings, GetTagLanguage())));
 }
 
 void AppInstallControllerImpl::HandleOsNotSupported() {
+  const std::wstring lang = base::UTF8ToWide(GetTagLanguage());
   UpdateService::UpdateState update_state;
   update_state.app_id = app_id_;
   update_state.state = UpdateService::UpdateState::State::kUpdateError;
   update_state.error_category = UpdateService::ErrorCategory::kInstall;
-  observer_completion_info_ = HandleInstallResult(update_state);
-  observer_completion_info_->completion_text =
-      base::WideToUTF16(GetLocalizedString(IDS_UPDATER_OS_NOT_SUPPORTED_BASE));
+  observer_completion_info_ = HandleInstallResult(update_state, lang);
+  observer_completion_info_->completion_text = base::WideToUTF16(
+      GetLocalizedString(IDS_UPDATER_OS_NOT_SUPPORTED_BASE, lang));
   InstallComplete(UpdateService::Result::kInstallFailed);
 }
 
@@ -720,7 +719,8 @@ void AppInstallControllerImpl::InstallComplete(UpdateService::Result result) {
           return UpdateService::ErrorCategory::kService;
       }
     }();
-    observer_completion_info_ = HandleInstallResult(update_state);
+    observer_completion_info_ =
+        HandleInstallResult(update_state, base::UTF8ToWide(GetTagLanguage()));
   }
   update_service_ = nullptr;
   CHECK(observer_completion_info_.has_value());
@@ -740,7 +740,8 @@ void AppInstallControllerImpl::Exit(int exit_code) {
   UpdateService::UpdateState update_state;
   update_state.state = UpdateService::UpdateState::State::kNotStarted;
   update_state.error_code = exit_code;
-  install_progress_observer_ipc_->OnComplete(HandleInstallResult(update_state));
+  install_progress_observer_ipc_->OnComplete(
+      HandleInstallResult(update_state, base::UTF8ToWide(GetTagLanguage())));
 }
 void AppInstallControllerImpl::StateChange(
     const UpdateService::UpdateState& update_state) {
@@ -786,7 +787,8 @@ void AppInstallControllerImpl::StateChange(
     case UpdateService::UpdateState::State::kUpdated:
     case UpdateService::UpdateState::State::kNoUpdate:
     case UpdateService::UpdateState::State::kUpdateError:
-      observer_completion_info_ = HandleInstallResult(update_state);
+      observer_completion_info_ =
+          HandleInstallResult(update_state, base::UTF8ToWide(GetTagLanguage()));
       break;
 
     case UpdateService::UpdateState::State::kUnknown:
@@ -956,24 +958,26 @@ void AppInstallControllerImpl::DoCancel() {
       base::BindOnce(&UpdateService::CancelInstalls, update_service_, app_id_));
 }
 
-std::wstring GetTextForStartupError(int error_code) {
+std::wstring GetTextForStartupError(int error_code, const std::wstring& lang) {
   switch (error_code) {
     case kErrorWrongUser:
       return GetLocalizedString(
           ::IsUserAnAdmin() ? IDS_WRONG_USER_DEELEVATION_REQUIRED_ERROR_BASE
-                            : IDS_WRONG_USER_ELEVATION_REQUIRED_ERROR_BASE);
+                            : IDS_WRONG_USER_ELEVATION_REQUIRED_ERROR_BASE,
+          lang);
     case kErrorFailedToLockSetupMutex:
-      return GetLocalizedString(IDS_UNABLE_TO_GET_SETUP_LOCK_BASE);
+      return GetLocalizedString(IDS_UNABLE_TO_GET_SETUP_LOCK_BASE, lang);
     default:
       return GetLocalizedStringF(IDS_GENERIC_STARTUP_ERROR_BASE,
-                                 GetTextForSystemError(error_code));
+                                 GetTextForSystemError(error_code), lang);
   }
 }
 
 }  // namespace
 
 [[nodiscard]] ObserverCompletionInfo HandleInstallResult(
-    const UpdateService::UpdateState& update_state) {
+    const UpdateService::UpdateState& update_state,
+    const std::wstring& lang) {
   CompletionCodes completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
   std::wstring completion_text;
   switch (update_state.state) {
@@ -981,22 +985,23 @@ std::wstring GetTextForStartupError(int error_code) {
       VLOG(1) << "Update success.";
       completion_code = CompletionCodes::COMPLETION_CODE_SUCCESS;
       completion_text =
-          GetLocalizedString(IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE);
+          GetLocalizedString(IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE, lang);
       break;
     case UpdateService::UpdateState::State::kNoUpdate:
       VLOG(1) << "No updates.";
       completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
-      completion_text = GetLocalizedString(IDS_NO_UPDATE_RESPONSE_BASE);
+      completion_text = GetLocalizedString(IDS_NO_UPDATE_RESPONSE_BASE, lang);
       break;
     case UpdateService::UpdateState::State::kUpdateError:
       VLOG(1) << "Updater error: " << update_state.error_code << ".";
       completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
-      completion_text = GetLocalizedString(IDS_INSTALL_UPDATER_FAILED_BASE);
+      completion_text =
+          GetLocalizedString(IDS_INSTALL_UPDATER_FAILED_BASE, lang);
       break;
     case UpdateService::UpdateState::State::kNotStarted:
       VLOG(1) << "Updater error: " << update_state.error_code << ".";
       completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
-      completion_text = GetTextForStartupError(update_state.error_code);
+      completion_text = GetTextForStartupError(update_state.error_code, lang);
       break;
     default:
       NOTREACHED();

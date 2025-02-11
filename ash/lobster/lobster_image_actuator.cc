@@ -33,6 +33,19 @@ constexpr char kLobsterToastId[] = "lobster_toast";
 
 }  // namespace
 
+void CopyToClipboard(const std::string& image_bytes) {
+  GURL image_data_url(base::StrCat(
+      {"data:image/jpeg;base64,", base::Base64Encode(image_bytes)}));
+
+  // Overwrite the clipboard data with the image data url.
+  auto clipboard = std::make_unique<ui::ScopedClipboardWriter>(
+      ui::ClipboardBuffer::kCopyPaste);
+
+  clipboard->WriteHTML(base::UTF8ToUTF16(base::StrCat(
+                           {"<img src=\"", image_data_url.spec(), "\">"})),
+                       /*source_url=*/"");
+}
+
 bool InsertImageOrCopyToClipboard(ui::TextInputClient* input_client,
                                   const std::string& image_bytes) {
   GURL image_data_url(base::StrCat(
@@ -53,13 +66,7 @@ bool InsertImageOrCopyToClipboard(ui::TextInputClient* input_client,
     return true;
   }
 
-  // Overwrite the clipboard data with the image data url.
-  auto clipboard = std::make_unique<ui::ScopedClipboardWriter>(
-      ui::ClipboardBuffer::kCopyPaste);
-
-  clipboard->WriteHTML(base::UTF8ToUTF16(base::StrCat(
-                           {"<img src=\"", image_data_url.spec(), "\">"})),
-                       /*source_url=*/"");
+  CopyToClipboard(image_bytes);
 
   // Display a toast message.
   ToastManager::Get()->Show(ToastData(

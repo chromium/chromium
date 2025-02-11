@@ -518,6 +518,7 @@ template("ios_app_bundle") {
                                "testonly",
                                "transparent",
                                "visibility",
+                               "xcasset_compiler_flags",
                                "xcode_extra_attributes",
                              ])
 

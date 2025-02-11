@@ -108,7 +108,8 @@ class ContinueButton : public views::MdTextButton {
       return;
     }
 
-    const SkColor dialog_background_color = bubble_view_->GetBackgroundColor();
+    const SkColor dialog_background_color =
+        bubble_view_->GetBackgroundColor().ConvertToSkColor(GetColorProvider());
     if (color_utils::GetContrastRatio(dialog_background_color,
                                       *brand_background_color_) <
         color_utils::kMinimumVisibleContrastRatio) {

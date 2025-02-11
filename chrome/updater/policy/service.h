@@ -22,6 +22,10 @@
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/manager.h"
 
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
+
 namespace updater {
 
 class PolicyFetcher;
@@ -126,7 +130,8 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // While a call to FetchPolicies is outstanding (i.e. has not invoked the
   // callback), concurrent calls to FetchPolicies will reuse the results of the
   // outstanding request.
-  void FetchPolicies(base::OnceCallback<void(int)> callback);
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     base::OnceCallback<void(int)> callback);
 
   std::string source() const;
 
@@ -184,7 +189,8 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   using AppPolicyQueryFunction =
       std::optional<T> (PolicyManagerInterface::*)(const std::string&) const;
 
-  void DoFetchPolicies(base::OnceCallback<void(int)> callback,
+  void DoFetchPolicies(policy::PolicyFetchReason reason,
+                       base::OnceCallback<void(int)> callback,
                        bool has_enrollment_token);
 
   // Called when `FetchPolicies` has completed. If `dm_policy_manager` is valid,

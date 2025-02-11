@@ -59,7 +59,10 @@ source_set("common") {
   }
 
   if (is_chromeos) {
-    sources += [ "it2me_confirmation_dialog_chromeos.cc" ]
+    sources += [
+      "it2me_confirmation_dialog_chromeos.cc",
+      "it2me_confirmation_dialog_chromeos.h",
+    ]
   }
 
   if (is_mac) {

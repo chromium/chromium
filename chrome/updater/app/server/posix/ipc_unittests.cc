@@ -31,6 +31,7 @@
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
+#include "components/policy/core/common/policy_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -169,7 +170,8 @@ class UpdaterIPCTestCase : public testing::Test {
                 (override));
     MOCK_METHOD(void,
                 FetchPolicies,
-                (base::OnceCallback<void(int)> callback),
+                (policy::PolicyFetchReason reason,
+                 base::OnceCallback<void(int)> callback),
                 (override));
     MOCK_METHOD(void,
                 RegisterApp,
@@ -271,7 +273,8 @@ TEST_F(UpdaterIPCTestCase, AllRpcsComplete) {
       });
 
   EXPECT_CALL(*mock_service, FetchPolicies)
-      .WillOnce([](base::OnceCallback<void(int)> callback) {
+      .WillOnce([](policy::PolicyFetchReason reason,
+                   base::OnceCallback<void(int)> callback) {
         std::move(callback).Run(42);
       });
 
@@ -401,7 +404,8 @@ MULTIPROCESS_TEST_MAIN(UpdateServiceClient) {
   }
   {
     base::RunLoop run_loop;
-    client_proxy->FetchPolicies(base::BindOnce([](int result) {
+    client_proxy->FetchPolicies(policy::PolicyFetchReason::kUnspecified,
+                                base::BindOnce([](int result) {
                                   EXPECT_EQ(result, 42);
                                 }).Then(run_loop.QuitClosure()));
     run_loop.Run();

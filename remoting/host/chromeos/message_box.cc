@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -195,6 +196,10 @@ void MessageBox::ShowInParentContainer(gfx::NativeView parent) {
 
 void MessageBox::ChangeParentContainer(gfx::NativeView parent) {
   core_->ChangeParentContainer(parent);
+}
+
+views::DialogDelegate& MessageBox::GetDialogDelegate() {
+  return CHECK_DEREF(core_->AsDialogDelegate());
 }
 
 MessageBox::~MessageBox() {

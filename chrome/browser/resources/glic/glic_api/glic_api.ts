@@ -191,7 +191,11 @@ export declare interface GlicBrowserHost {
   /** Requests the closing of the panel containing the web client. */
   closePanel?(): Promise<void>;
 
-  /** Requests that the web client's panel be attached to a browser window. */
+  /**
+   * Requests that the web client's panel be attached to a browser window.
+   * If attachment fails, the panel's state will not be updated. getPanelState
+   * can be used to monitor whether attachment is successful.
+   */
   attachPanel?(): void;
 
   /**
@@ -209,6 +213,15 @@ export declare interface GlicBrowserHost {
 
   /** Returns the state of the panel. */
   getPanelState?(): ObservableValue<PanelState>;
+
+  /**
+   * Whether the panel can be attached. This is true if there is a browser
+   * window suitable for attachment. This state is only meaningful when the
+   * panel is in the detached state, and should be not be considered otherwise
+   * (i.e. it will not necessarily become false when the panel becomes
+   * attached). When this is false, calls to attachPanel() are likely to fail.
+   */
+  canAttachPanel?(): ObservableValue<boolean>;
 
   /**
    * @todo Replace with the separate notifications about tab change and tab

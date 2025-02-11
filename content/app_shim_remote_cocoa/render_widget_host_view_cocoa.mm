@@ -2631,17 +2631,20 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
 
 - (id)validRequestorForSendType:(NSString*)sendType
                      returnType:(NSString*)returnType {
+  UTType* sendUTType = ui::UTTypeForServicesType(sendType);
+  UTType* returnUTType = ui::UTTypeForServicesType(returnType);
   id requestor = nil;
-  BOOL sendTypeIsString = [sendType isEqualToString:NSPasteboardTypeString];
-  BOOL returnTypeIsString = [returnType isEqualToString:NSPasteboardTypeString];
+  BOOL sendTypeIsPlainText = [sendUTType isEqual:UTTypeUTF8PlainText];
+  BOOL returnTypeIsPlainText = [returnUTType isEqual:UTTypeUTF8PlainText];
   BOOL hasText = !_textSelectionRange.is_empty();
   BOOL takesText = _textInputType != ui::TEXT_INPUT_TYPE_NONE;
 
-  if (sendTypeIsString && hasText && !returnType) {
+  if (sendTypeIsPlainText && hasText && !returnUTType) {
     requestor = self;
-  } else if (!sendType && returnTypeIsString && takesText) {
+  } else if (!sendUTType && returnTypeIsPlainText && takesText) {
     requestor = self;
-  } else if (sendTypeIsString && returnTypeIsString && hasText && takesText) {
+  } else if (sendTypeIsPlainText && returnTypeIsPlainText && hasText &&
+             takesText) {
     requestor = self;
   } else {
     requestor =
@@ -2743,25 +2746,11 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
 @implementation RenderWidgetHostViewCocoa (NSServicesRequests)
 
 - (BOOL)writeSelectionToPasteboard:(NSPasteboard*)pboard types:(NSArray*)types {
-  // /!\ Compatibility hack!
-  //
-  // The NSServicesMenuRequestor protocol does not pass in the correct
-  // NSPasteboardType constants in the `types` array, verified through macOS 13
-  // (FB11838671). To keep the code below clean, if an obsolete type is passed
-  // in, rewrite the array.
-  //
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  if ([types containsObject:NSStringPboardType] &&
-      ![types containsObject:NSPasteboardTypeString]) {
-    types = [types arrayByAddingObject:NSPasteboardTypeString];
-  }
-#pragma clang diagnostic pop
-  // /!\ End compatibility hack.
+  NSSet<UTType*>* typeSet = ui::UTTypesForServicesTypeArray(types);
 
   bool wasAbleToWriteAtLeastOneType = false;
 
-  if ([types containsObject:NSPasteboardTypeString] &&
+  if ([typeSet containsObject:UTTypeUTF8PlainText] &&
       !_textSelectionRange.is_empty()) {
     NSString* text = base::SysUTF16ToNSString([self selectedText]);
     wasAbleToWriteAtLeastOneType |= [pboard writeObjects:@[ text ]];

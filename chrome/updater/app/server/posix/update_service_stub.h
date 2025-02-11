@@ -16,6 +16,10 @@
 #include "chrome/updater/update_service_internal.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
 
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
+
 namespace updater {
 
 // Receives RPC calls from the client and delegates them to an UpdateService.
@@ -36,7 +40,8 @@ class UpdateServiceStub : public mojom::UpdateService {
 
   // updater::mojom::UpdateService
   void GetVersion(GetVersionCallback callback) override;
-  void FetchPolicies(FetchPoliciesCallback callback) override;
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     FetchPoliciesCallback callback) override;
   void RegisterApp(mojom::RegistrationRequestPtr request,
                    RegisterAppCallback callback) override;
   void GetAppStates(GetAppStatesCallback callback) override;

@@ -158,7 +158,13 @@ public class BookmarkTestRule implements TestRule {
 
     private void showBookmarkManagerInternal(ChromeActivity chromeActivity) {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> BookmarkUtils.showBookmarkManager(chromeActivity, /* isIncognito= */ false));
+                () ->
+                        BookmarkUtils.showBookmarkManager(
+                                chromeActivity,
+                                chromeActivity
+                                        .getProfileProviderSupplier()
+                                        .get()
+                                        .getOriginalProfile()));
     }
 
     /**

@@ -188,7 +188,6 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
 
   // ScrollableArea implementation
   ChromeClient* GetChromeClient() const override;
-  SmoothScrollSequencer* GetSmoothScrollSequencer() const override;
   bool SetScrollOffset(const ScrollOffset&,
                        mojom::blink::ScrollType,
                        mojom::blink::ScrollBehavior,

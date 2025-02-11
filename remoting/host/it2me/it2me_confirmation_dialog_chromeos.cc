@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/it2me/it2me_confirmation_dialog.h"
+#include "remoting/host/it2me/it2me_confirmation_dialog_chromeos.h"
 
 #include <memory>
 #include <string>
@@ -15,6 +15,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -26,12 +27,14 @@
 #include "remoting/base/string_resources.h"
 #include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromeos/message_box.h"
+#include "remoting/host/it2me/it2me_confirmation_dialog.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace remoting {
 
@@ -97,48 +100,6 @@ gfx::NativeView GetParentContainer() {
 
 }  // namespace
 
-class It2MeConfirmationDialogChromeOS : public It2MeConfirmationDialog {
- public:
-  explicit It2MeConfirmationDialogChromeOS(DialogStyle style);
-
-  It2MeConfirmationDialogChromeOS(const It2MeConfirmationDialogChromeOS&) =
-      delete;
-  It2MeConfirmationDialogChromeOS& operator=(
-      const It2MeConfirmationDialogChromeOS&) = delete;
-
-  ~It2MeConfirmationDialogChromeOS() override;
-
-  // It2MeConfirmationDialog implementation.
-  void Show(const std::string& remote_user_email,
-            ResultCallback callback) override;
-
- private:
-  class Core;
-
-  void ShowConfirmationNotification(const std::string& remote_user_email);
-  void OnConfirmationNotificationResult(std::optional<int> button_index);
-
-  void OnConfirmationDialogResult(Result result);
-
-  const gfx::VectorIcon& GetIcon() const {
-    switch (style_) {
-      case DialogStyle::kConsumer:
-        return gfx::VectorIcon::EmptyIcon();
-      case DialogStyle::kEnterprise:
-        return chromeos::kEnterpriseIcon;
-    }
-  }
-
-  const ui::ImageModel GetDialogIcon() const {
-    return ui::ImageModel::FromVectorIcon(GetIcon());
-  }
-
-  std::unique_ptr<Core> core_;
-
-  ResultCallback callback_;
-  DialogStyle style_;
-};
-
 class It2MeConfirmationDialogChromeOS::Core : public ash::SessionObserver {
  public:
   explicit Core(const std::u16string& title_label,
@@ -150,6 +111,8 @@ class It2MeConfirmationDialogChromeOS::Core : public ash::SessionObserver {
   ~Core() override;
 
   void ShowConfirmationDialog();
+
+  views::DialogDelegate& GetDialogDelegate();
 
  private:
   void OnConfirmationDialogResult(MessageBox::Result result);
@@ -195,6 +158,11 @@ void It2MeConfirmationDialogChromeOS::Core::OnConfirmationDialogResult(
 void It2MeConfirmationDialogChromeOS::Core::OnSessionStateChanged(
     session_manager::SessionState state) {
   message_box_->ChangeParentContainer(GetParentContainer());
+}
+
+views::DialogDelegate&
+It2MeConfirmationDialogChromeOS::Core::GetDialogDelegate() {
+  return message_box_->GetDialogDelegate();
 }
 
 It2MeConfirmationDialogChromeOS::It2MeConfirmationDialogChromeOS(
@@ -284,6 +252,25 @@ void It2MeConfirmationDialogChromeOS::OnConfirmationDialogResult(
     Result result) {
   core_.reset();
   std::move(callback_).Run(result);
+}
+
+const gfx::VectorIcon& It2MeConfirmationDialogChromeOS::GetIcon() const {
+  switch (style_) {
+    case DialogStyle::kConsumer:
+      return gfx::VectorIcon::EmptyIcon();
+    case DialogStyle::kEnterprise:
+      return chromeos::kEnterpriseIcon;
+  }
+}
+
+const ui::ImageModel It2MeConfirmationDialogChromeOS::GetDialogIcon() const {
+  return ui::ImageModel::FromVectorIcon(GetIcon());
+}
+
+views::DialogDelegate&
+It2MeConfirmationDialogChromeOS::GetDialogDelegateForTest() {
+  CHECK_IS_TEST();
+  return core_->GetDialogDelegate();
 }
 
 std::unique_ptr<It2MeConfirmationDialog>

@@ -78,6 +78,7 @@ static_library("autotest_private") {
     "//components/user_manager",
     "//components/variations",
     "//components/viz/host",
+    "//components/webui/chrome_urls",
     "//content/public/browser",
     "//extensions/browser",
     "//extensions/common",

@@ -116,7 +116,6 @@
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
-#include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
@@ -231,10 +230,6 @@ void PaintLayerScrollableArea::DisposeImpl() {
 
   ClearScrollableArea();
 
-  if (SmoothScrollSequencer* sequencer = GetSmoothScrollSequencer()) {
-    sequencer->DidDisposeScrollableArea(*this);
-  }
-
   RunScrollCompleteCallbacks(ScrollableArea::ScrollCompletionMode::kFinished);
 
   layer_ = nullptr;
@@ -284,14 +279,6 @@ ChromeClient* PaintLayerScrollableArea::GetChromeClient() const {
   if (Page* page = GetLayoutBox()->GetFrame()->GetPage())
     return &page->GetChromeClient();
   return nullptr;
-}
-
-SmoothScrollSequencer* PaintLayerScrollableArea::GetSmoothScrollSequencer()
-    const {
-  if (HasBeenDisposed())
-    return nullptr;
-
-  return GetLayoutBox()->GetFrame()->GetSmoothScrollSequencer();
 }
 
 bool PaintLayerScrollableArea::IsActive() const {
@@ -2462,16 +2449,8 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
   if (params->is_for_scroll_sequence) {
     mojom::blink::ScrollBehavior behavior = DetermineScrollBehavior(
         params->behavior, GetLayoutBox()->StyleRef().GetScrollBehavior());
-    if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
-      SetScrollOffset(new_scroll_offset, params->type, behavior,
-                      ScrollCallback(), true);
-    } else {
-      CHECK(GetSmoothScrollSequencer());
-      DCHECK(params->type == mojom::blink::ScrollType::kProgrammatic ||
-             params->type == mojom::blink::ScrollType::kUser);
-      GetSmoothScrollSequencer()->QueueAnimation(this, new_scroll_offset,
-                                                 behavior);
-    }
+    SetScrollOffset(new_scroll_offset, params->type, behavior, ScrollCallback(),
+                    true);
   } else {
     SetScrollOffset(new_scroll_offset, params->type,
                     mojom::blink::ScrollBehavior::kInstant, ScrollCallback(),

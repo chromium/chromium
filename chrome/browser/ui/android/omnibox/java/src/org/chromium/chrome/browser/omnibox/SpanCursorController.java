@@ -29,7 +29,7 @@ import java.util.Locale;
  */
 class SpanCursorController {
     private static final String TAG = "SpanCursorController";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = OmniboxFeatures.sDiagInputConnection.getValue();
 
     private final @NonNull AutocompleteEditTextModelBase.Delegate mDelegate;
     private final @NonNull BackgroundColorSpan mAutocompleteBgColorSpan;

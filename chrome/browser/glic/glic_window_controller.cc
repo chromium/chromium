@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/browser_conditions.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_fre_controller.h"
@@ -678,15 +679,11 @@ void GlicWindowController::Attach() {
     return;
   }
 
-  // TODO (crbug.com/388917542) Determine which browser to attach to. Currently
-  // attaches to the last focused glic-compatible browser.
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (!IsBrowserGlicCompatible(browser)) {
-      continue;
-    }
-    AttachToBrowser(*browser);
+  Browser* browser = glic::FindBrowserForAttachment(profile_);
+  if (!browser) {
     return;
   }
+  AttachToBrowser(*browser);
 }
 
 void GlicWindowController::Detach() {
@@ -1028,7 +1025,7 @@ Browser* GlicWindowController::FindBrowserForAttachment() {
   // Loops through all browsers in activation order with the latest accessed
   // browser first.
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (!IsBrowserGlicCompatible(browser)) {
+    if (!IsBrowserGlicCompatible(profile_, browser)) {
       continue;
     }
 
@@ -1127,20 +1124,6 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
   holder_widget_->SetVisibleOnAllWorkspaces(true);
   GetGlicWidget()->SetVisibleOnAllWorkspaces(true);
 #endif
-}
-
-bool GlicWindowController::IsBrowserGlicCompatible(Browser* browser) {
-  // A browser is not compatible if it:
-  // - is not a TYPE_NORMAL browser
-  // - is from a glic-disabled profile
-  // - is not visible
-  // - uses a different Profile from glic
-  if (!GlicEnabling::IsEnabledForProfile(browser->profile()) ||
-      !browser->is_type_normal() || !browser->window()->IsVisible() ||
-      browser->profile() != profile_) {
-    return false;
-  }
-  return true;
 }
 
 void GlicWindowController::AddStateObserver(StateObserver* observer) {

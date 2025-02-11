@@ -116,8 +116,11 @@ enum class OpeningSource {
   kConnectOnGroupShare = 8,
   // The group was connected as a part of un-sharing a group.
   kConnectOnGroupUnShare = 9,
+  // Desktop only. The group was open from user clicking on the action button of
+  // the toast message.
+  kOpenedFromToastAction = 10,
 
-  kMaxValue = kConnectOnGroupUnShare,
+  kMaxValue = kOpenedFromToastAction,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:GroupOpeningSource)
 

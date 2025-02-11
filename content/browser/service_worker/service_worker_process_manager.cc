@@ -141,7 +141,9 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
           can_use_existing_process, is_guest, is_fenced);
 
   // Get the process from the SiteInstance.
-  RenderProcessHost* rph = site_instance->GetOrCreateProcess();
+  RenderProcessHost* rph =
+      site_instance->GetOrCreateProcess(ProcessAllocationContext{
+          ProcessAllocationSource::kServiceWorkerProcessManager});
   DCHECK(!storage_partition_ ||
          rph->InSameStoragePartition(storage_partition_));
 

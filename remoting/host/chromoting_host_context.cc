@@ -4,14 +4,19 @@
 
 #include "remoting/host/chromoting_host_context.h"
 
+#include <memory>
+
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "net/ssl/client_cert_store.h"
 #include "remoting/base/auto_thread.h"
+#include "remoting/base/certificate_helpers.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
@@ -23,6 +28,9 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS)
 class ChromotingHostContextChromeOs : public ChromotingHostContext {
  public:
+  using CreateClientCertStoreCallback =
+      ChromotingHostContext::CreateClientCertStoreCallback;
+
   ChromotingHostContextChromeOs(
       scoped_refptr<AutoThreadTaskRunner> ui_task_runner,
       scoped_refptr<AutoThreadTaskRunner> audio_task_runner,
@@ -31,7 +39,8 @@ class ChromotingHostContextChromeOs : public ChromotingHostContext {
       scoped_refptr<AutoThreadTaskRunner> network_task_runner,
       scoped_refptr<AutoThreadTaskRunner> video_capture_task_runner,
       scoped_refptr<AutoThreadTaskRunner> video_encode_task_runner,
-      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      CreateClientCertStoreCallback create_client_cert_store);
 
   ChromotingHostContextChromeOs(const ChromotingHostContextChromeOs&) = delete;
   ChromotingHostContextChromeOs& operator=(
@@ -41,9 +50,12 @@ class ChromotingHostContextChromeOs : public ChromotingHostContext {
 
   // remoting::ChromotingHostContext implementation.
   std::unique_ptr<ChromotingHostContext> Copy() override;
+  std::unique_ptr<net::ClientCertStore> CreateClientCertStore() const override;
   scoped_refptr<net::URLRequestContextGetter> url_request_context_getter()
       const override;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory() override;
+  CreateClientCertStoreCallback create_client_cert_store_callback()
+      const override;
 
  private:
   // |ui_shared_url_loader_factory_| is a SharedUrlLoaderFactory which is bound
@@ -60,6 +72,8 @@ class ChromotingHostContextChromeOs : public ChromotingHostContext {
   // bound to the network_task_runner sequence.
   scoped_refptr<network::SharedURLLoaderFactory>
       network_shared_url_loader_factory_;
+
+  CreateClientCertStoreCallback create_client_cert_store_;
 };
 
 ChromotingHostContextChromeOs::ChromotingHostContextChromeOs(
@@ -70,7 +84,8 @@ ChromotingHostContextChromeOs::ChromotingHostContextChromeOs(
     scoped_refptr<AutoThreadTaskRunner> network_task_runner,
     scoped_refptr<AutoThreadTaskRunner> video_capture_task_runner,
     scoped_refptr<AutoThreadTaskRunner> video_encode_task_runner,
-    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    CreateClientCertStoreCallback create_client_cert_store)
     : ChromotingHostContext(ui_task_runner,
                             audio_task_runner,
                             file_task_runner,
@@ -79,7 +94,8 @@ ChromotingHostContextChromeOs::ChromotingHostContextChromeOs(
                             video_capture_task_runner,
                             video_encode_task_runner),
       ui_shared_url_loader_factory_(shared_url_loader_factory),
-      pending_factory_(ui_shared_url_loader_factory_->Clone()) {}
+      pending_factory_(ui_shared_url_loader_factory_->Clone()),
+      create_client_cert_store_(create_client_cert_store) {}
 
 ChromotingHostContextChromeOs::~ChromotingHostContextChromeOs() {
   // |ui_shared_url_loader_factory_| should always be valid however
@@ -97,7 +113,14 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContextChromeOs::Copy() {
   return std::make_unique<ChromotingHostContextChromeOs>(
       ui_task_runner(), audio_task_runner(), file_task_runner(),
       input_task_runner(), network_task_runner(), video_capture_task_runner(),
-      video_encode_task_runner(), ui_shared_url_loader_factory_);
+      video_encode_task_runner(), ui_shared_url_loader_factory_,
+      create_client_cert_store_);
+}
+
+std::unique_ptr<net::ClientCertStore>
+ChromotingHostContextChromeOs::CreateClientCertStore() const {
+  DCHECK(network_task_runner()->BelongsToCurrentThread());
+  return create_client_cert_store_.Run();
 }
 
 scoped_refptr<net::URLRequestContextGetter>
@@ -114,6 +137,12 @@ ChromotingHostContextChromeOs::url_loader_factory() {
   }
   return network_shared_url_loader_factory_;
 }
+
+ChromotingHostContext::CreateClientCertStoreCallback
+ChromotingHostContextChromeOs::create_client_cert_store_callback() const {
+  return create_client_cert_store_;
+}
+
 #else  // !BUILDFLAG(IS_CHROMEOS)
 void DisallowBlockingOperations() {
   base::DisallowBlocking();
@@ -141,9 +170,12 @@ class ChromotingHostContextDesktop : public ChromotingHostContext {
 
   // remoting::ChromotingHostContext implementation.
   std::unique_ptr<ChromotingHostContext> Copy() override;
+  std::unique_ptr<net::ClientCertStore> CreateClientCertStore() const override;
   scoped_refptr<net::URLRequestContextGetter> url_request_context_getter()
       const override;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory() override;
+  CreateClientCertStoreCallback create_client_cert_store_callback()
+      const override;
 
  private:
   // Serves URLRequestContexts that use the network and UI task runners.
@@ -186,6 +218,12 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContextDesktop::Copy() {
       video_encode_task_runner(), url_request_context_getter_);
 }
 
+std::unique_ptr<net::ClientCertStore>
+ChromotingHostContextDesktop::CreateClientCertStore() const {
+  DCHECK(network_task_runner()->BelongsToCurrentThread());
+  return CreateClientCertStoreInstance();
+}
+
 scoped_refptr<net::URLRequestContextGetter>
 ChromotingHostContextDesktop::url_request_context_getter() const {
   return url_request_context_getter_;
@@ -200,6 +238,11 @@ ChromotingHostContextDesktop::url_loader_factory() {
             url_request_context_getter_, /* is_trusted= */ true);
   }
   return url_loader_factory_owner_->GetURLLoaderFactory();
+}
+
+ChromotingHostContext::CreateClientCertStoreCallback
+ChromotingHostContextDesktop::create_client_cert_store_callback() const {
+  return base::BindRepeating(&CreateClientCertStoreInstance);
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -318,7 +361,8 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContext::CreateForChromeOS(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
-    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    CreateClientCertStoreCallback create_client_cert_store) {
   // AutoThreadTaskRunner is a TaskRunner with the special property that it will
   // continue to process tasks until no references remain. We usually provide a
   // QuitClosure which is run when the AutoThreadTaskRunner instance is
@@ -346,7 +390,7 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContext::CreateForChromeOS(
       io_auto_task_runner,  // network_task_runner
       ui_auto_task_runner,  // video_capture_task_runner
       AutoThread::Create("ChromotingEncodeThread", file_auto_task_runner),
-      shared_url_loader_factory);
+      shared_url_loader_factory, create_client_cert_store);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -356,7 +400,8 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContext::CreateForTesting(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
 #if BUILDFLAG(IS_CHROMEOS)
   return ChromotingHostContext::CreateForChromeOS(
-      ui_task_runner, ui_task_runner, ui_task_runner, url_loader_factory);
+      ui_task_runner, ui_task_runner, ui_task_runner, url_loader_factory,
+      base::BindRepeating(&CreateClientCertStoreInstance));
 #else
   return ChromotingHostContext::Create(ui_task_runner);
 #endif

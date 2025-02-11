@@ -553,6 +553,22 @@ void CookieMonster::SetCanonicalCookieAsync(
       domain);
 }
 
+void CookieMonster::SetUnsafeCanonicalCookieForTestAsync(
+    std::unique_ptr<CanonicalCookie> cookie,
+    SetCookiesCallback callback) {
+  CHECK(cookie->IsCanonical());
+
+  std::string domain = cookie->Domain();
+  DoCookieCallbackForHostOrDomain(
+      base::BindOnce(
+          // base::Unretained is safe as DoCookieCallbackForHostOrDomain stores
+          // the callback on |*this|, so the callback will not outlive
+          // the object.
+          &CookieMonster::SetUnsafeCanonicalCookieForTest,
+          base::Unretained(this), std::move(cookie), std::move(callback)),
+      domain);
+}
+
 void CookieMonster::GetCookieListWithOptionsAsync(
     const GURL& url,
     const CookieOptions& options,
@@ -1517,8 +1533,13 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
       status->AddExclusionReason(
           CookieInclusionStatus::ExclusionReason::EXCLUDE_OVERWRITE_SECURE);
     }
-
-    if (cookie_being_set.IsEquivalent(*cur_existing_cookie)) {
+    // If cookie's domain is in legacy mode, check to make sure we are not
+    // setting an aliasing cookie.
+    if (cookie_being_set.IsEquivalent(*cur_existing_cookie) ||
+        (GetScopeSemanticsForCookieDomain(cookie_being_set.Domain()) ==
+             CookieScopeSemantics::LEGACY &&
+         cookie_being_set.LegacyUniqueKey() ==
+             cur_existing_cookie->LegacyUniqueKey())) {
       // We should never have more than one equivalent cookie, since they should
       // overwrite each other.
       CHECK(!found_equivalent_cookie)
@@ -1708,6 +1729,7 @@ void CookieMonster::SetCanonicalCookie(
       cookie_access_delegate() &&
       cookie_access_delegate()->ShouldTreatUrlAsTrustworthy(source_url);
 
+  CheckAndActivateLegacyScopeBehavior(cc->Domain());
   CookieAccessResult access_result = cc->IsSetPermittedInContext(
       source_url, options,
       CookieAccessParams(GetAccessSemanticsForCookie(*cc),
@@ -1875,6 +1897,32 @@ void CookieMonster::SetAllCookies(CookieList list,
   // https://codereview.chromium.org/2882063002/#msg64), which would
   // solve the return value problem.
   MaybeRunCookieCallback(std::move(callback), CookieAccessResult());
+}
+
+void CookieMonster::SetUnsafeCanonicalCookieForTest(
+    std::unique_ptr<CanonicalCookie> cc,
+    SetCookiesCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  CookieAccessResult access_result;
+  const std::string key(GetKey(cc->Domain()));
+
+  base::Time creation_date = cc->CreationDate();
+  if (creation_date.is_null()) {
+    creation_date = Time::Now();
+    cc->SetCreationDate(creation_date);
+  }
+
+  std::optional<CookiePartitionKey> cookie_partition_key = cc->PartitionKey();
+  CHECK_EQ(cc->IsPartitioned(), cookie_partition_key.has_value());
+
+  // Set cookie based on if its partitioned or not.
+  if (cookie_partition_key.has_value()) {
+    InternalInsertPartitionedCookie(key, std::move(cc), true, access_result);
+  } else {
+    InternalInsertCookie(key, std::move(cc), true, access_result);
+  }
+  MaybeRunCookieCallback(std::move(callback), access_result);
 }
 
 void CookieMonster::InternalUpdateCookieAccessTime(CanonicalCookie* cc,

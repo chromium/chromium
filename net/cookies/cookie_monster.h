@@ -214,6 +214,9 @@ class NET_EXPORT CookieMonster : public CookieStore {
       SetCookiesCallback callback,
       std::optional<CookieAccessResult> cookie_access_result =
           std::nullopt) override;
+  void SetUnsafeCanonicalCookieForTestAsync(
+      std::unique_ptr<CanonicalCookie> cookie,
+      SetCookiesCallback callback) override;
   void GetCookieListWithOptionsAsync(const GURL& url,
                                      const CookieOptions& options,
                                      const CookiePartitionKeyCollection& s,
@@ -437,6 +440,13 @@ class NET_EXPORT CookieMonster : public CookieStore {
       const CookieOptions& options,
       SetCookiesCallback callback,
       std::optional<CookieAccessResult> cookie_access_result = std::nullopt);
+
+  // Sets a canonical cookie, this function should be used for testing only.
+  // It does not perform the normal checks and deletions SetCanonicalCookie
+  // does. This function is dangerous, only use it if SetCanonicalCookie doesn't
+  // fit your test requirements.
+  void SetUnsafeCanonicalCookieForTest(std::unique_ptr<CanonicalCookie> cc,
+                                       SetCookiesCallback callback);
 
   void GetAllCookies(GetAllCookiesCallback callback);
 

@@ -8,6 +8,7 @@
 
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -26,6 +27,7 @@
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/button/button_controller.h"
@@ -80,12 +82,13 @@ PersistentMessage CreateMessage(std::string given_name,
   return message;
 }
 
-InstantMessage CreateInstantMessage(std::string given_name,
-                                    CollaborationEvent event,
-                                    std::string tab_url,
-                                    std::string tab_title,
-                                    tab_groups::LocalTabGroupID tab_group_id,
-                                    std::string group_name) {
+InstantMessage CreateInstantMessage(
+    std::string given_name,
+    CollaborationEvent event,
+    std::string tab_url,
+    std::string tab_title,
+    std::optional<tab_groups::LocalTabGroupID> tab_group_id,
+    std::string group_name) {
   GroupMember member;
   member.given_name = given_name;
 
@@ -404,6 +407,56 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
       ->action_button_for_testing()
       ->button_controller()
       ->NotifyClick();
+
+  auto bubble = DataSharingBubbleController::GetOrCreateForBrowser(browser())
+                    ->BubbleViewForTesting();
+  EXPECT_NE(bubble, nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
+                       InstantMessageManagesSharingWithClosedGroup) {
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Observer is initialized
+  EXPECT_NE(observer(), nullptr);
+
+  // Create a new group, get the sync tab group id, close it.
+  AddTab(browser());
+  auto group_id = browser()->tab_strip_model()->AddToNewGroup({0});
+  tab_groups::TabGroupSyncService* tab_group_service =
+      TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
+  auto sync_tab_group_id = tab_group_service->GetGroup(group_id)->saved_guid();
+  browser()->tab_strip_model()->CloseAllTabsInGroup(group_id);
+
+  // Create an instant message with sync tab group id.
+  base::MockCallback<SuccessCallback> cb;
+  std::string test_url = chrome::kChromeUISettingsURL;
+  auto message = CreateInstantMessage(
+      "User", CollaborationEvent::COLLABORATION_MEMBER_ADDED, test_url,
+      "Chrome Settings", std::nullopt, "Vacation");
+  message.attribution.tab_group_metadata->sync_tab_group_id = sync_tab_group_id;
+
+  EXPECT_CALL(cb, Run(true));
+  observer()->DisplayInstantaneousMessage(message, cb.Get());
+
+  auto* toast_controller =
+      browser()->browser_window_features()->toast_controller();
+  EXPECT_TRUE(toast_controller->IsShowingToast());
+
+  // Ensure tab group is closed.
+  EXPECT_FALSE(tab_group_service->GetGroup(sync_tab_group_id)
+                   ->local_group_id()
+                   .has_value());
+
+  toast_controller->GetToastViewForTesting()
+      ->action_button_for_testing()
+      ->button_controller()
+      ->NotifyClick();
+
+  // Ensure tab group is open.
+  EXPECT_TRUE(tab_group_service->GetGroup(sync_tab_group_id)
+                  ->local_group_id()
+                  .has_value());
 
   auto bubble = DataSharingBubbleController::GetOrCreateForBrowser(browser())
                     ->BubbleViewForTesting();

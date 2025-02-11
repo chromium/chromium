@@ -19,6 +19,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/canvas.h"
@@ -724,15 +725,17 @@ void LabelButton::ResetLabelEnabledColor() {
   if (GetState() == STATE_DISABLED) {
     return;
   }
-  const absl::variant<SkColor, ui::ColorId>& color =
-      button_state_colors_[GetState()];
-  if (absl::holds_alternative<SkColor>(color) &&
-      label_->GetEnabledColor() != absl::get<SkColor>(color)) {
-    label_->SetEnabledColor(absl::get<SkColor>(color));
-  } else if (absl::holds_alternative<ui::ColorId>(color)) {
-    // Omitting the check that the new color id differs from the existing color
-    // id, because the setter already does that check.
-    label_->SetEnabledColorId(absl::get<ui::ColorId>(color));
+
+  const auto& color_variant = button_state_colors_[GetState()];
+  if (color_variant) {
+    if (auto color = color_variant->GetSkColor();
+        color != label_->GetEnabledColor()) {
+      // label_->SetEnabledColor(*color);
+    } else if (auto color_id = color_variant->GetColorId()) {
+      // Omitting the check that the new color id differs from the existing
+      // color id, because the setter already does that check.
+      label_->SetEnabledColorId(*color_id);
+    }
   }
 }
 

@@ -13,6 +13,7 @@
 #include "base/types/pass_key.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
 
@@ -142,7 +143,7 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
 
   void UpdateDialogButtons();
 
-  void UpdateWindowIcon();
+  void UpdateWindowIcon(const ui::ColorProvider* color_provider);
   void UpdateSpacingAndMargins();
 
   bool IsModalDialog() const;

@@ -1380,14 +1380,16 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 // Currently we only support reading and writing plain strings.
 - (id)validRequestorForSendType:(NSString*)sendType
                      returnType:(NSString*)returnType {
-  BOOL canWrite = [sendType isEqualToString:NSPasteboardTypeString] &&
+  UTType* sendUTType = ui::UTTypeForServicesType(sendType);
+  UTType* returnUTType = ui::UTTypeForServicesType(returnType);
+  BOOL canWrite = [sendUTType isEqual:UTTypeUTF8PlainText] &&
                   [self selectedRange].length > 0;
-  BOOL canRead = [returnType isEqualToString:NSPasteboardTypeString];
-  // Valid if (sendType, returnType) is either (string, nil), (nil, string),
-  // or (string, string).
+  BOOL canRead = [returnUTType isEqual:UTTypeUTF8PlainText];
+  // Valid if (sendUTType, returnUTType) is either (text, nil), (nil, text),
+  // or (text, text).
   BOOL valid =
-      [self hasTextInputClient] && ((canWrite && (canRead || !returnType)) ||
-                                    (canRead && (canWrite || !sendType)));
+      [self hasTextInputClient] && ((canWrite && (canRead || !returnUTType)) ||
+                                    (canRead && (canWrite || !sendUTType)));
   return valid
              ? self
              : [super validRequestorForSendType:sendType returnType:returnType];
@@ -1396,25 +1398,11 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 // NSServicesMenuRequestor protocol
 
 - (BOOL)writeSelectionToPasteboard:(NSPasteboard*)pboard types:(NSArray*)types {
-  // /!\ Compatibility hack!
-  //
-  // The NSServicesMenuRequestor protocol does not pass in the correct
-  // NSPasteboardType constants in the `types` array, verified through macOS 13
-  // (FB11838671). To keep the code below clean, if an obsolete type is passed
-  // in, rewrite the array.
-  //
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  if ([types containsObject:NSStringPboardType] &&
-      ![types containsObject:NSPasteboardTypeString]) {
-    types = [types arrayByAddingObject:NSPasteboardTypeString];
-  }
-#pragma clang diagnostic pop
-  // /!\ End compatibility hack.
+  NSSet<UTType*>* typeSet = ui::UTTypesForServicesTypeArray(types);
 
   bool wasAbleToWriteAtLeastOneType = false;
 
-  if ([types containsObject:NSPasteboardTypeString]) {
+  if ([typeSet containsObject:UTTypeUTF8PlainText]) {
     bool result = false;
     std::u16string selection_text;
     if (_bridge)

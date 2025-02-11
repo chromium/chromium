@@ -15,6 +15,7 @@ found in the LICENSE file.
   </outputs>
   <release seq="1">
     <includes>
+      <include name="IDR_GLIC_ATTACH_BUTTON_VECTOR_ICON" file="glic_attach_button.icon" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_BORDER_SHADER" file="border.sksl" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_BUTTON_VECTOR_ICON" file="glic_button.icon" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_LOGO" file="logo.svg" type="BINDATA" compress="brotli" />
@@ -24,6 +25,12 @@ found in the LICENSE file.
       <include name="IDR_GLIC_PROFILE_BANNER_BOTTOM_LEFT" file="glic_profile_banner_bottom_left.svg" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_PROFILE_BANNER_TOP_RIGHT" file="glic_profile_banner_top_right.svg" type="BINDATA" compress="brotli" />
     </includes>
+
+    <!-- NOTE: file is currently marked as untranslatable in
+      translation_expectations.pyl, so changing the translateable attribute on
+      the following messages will have no effect until that .pyl file is
+      updated.
+    -->
 
     <messages>
       <message name="IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_ACCESSING" desc="[Placeholder Description]" translateable="false">
@@ -86,16 +93,13 @@ found in the LICENSE file.
         Customize the keyboard shortcut here
       </message>
       <message name="IDS_GLIC_OFFLINE_NOTICE_HEADER" translateable="false" desc="This is the headline on the glic offline notice informing the user that there is no network connection.">
-        Your connection is interrupted
-      </message>
-      <message name="IDS_GLIC_OFFLINE_NOTICE" translateable="false" desc="This is the description of the issue on the glic offline notice.">
-        Glic isn't available right now.
+        You're offline
       </message>
       <message name="IDS_GLIC_OFFLINE_NOTICE_ACTION" translateable="false" desc="This is the suggested user action for the glic offline notice.">
-        Check your internet connection and try again.
+        Check your internet connection and try to use glic again
       </message>
       <message name="IDS_GLIC_OFFLINE_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for the glic offline notice.">
-        Retry connection
+        Try again
       </message>
       <message name="IDS_GLIC_ERROR_NOTICE_HEADER" translateable="false" desc="This is the headline on the glic error notice.">
         Something went wrong

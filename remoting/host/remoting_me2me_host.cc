@@ -884,8 +884,9 @@ void HostProcess::CreateAuthenticatorFactory() {
              (is_corp_host_ && !allow_pin_auth_.value_or(false))) {
     auth_config->AddSessionAuthzAuth(
         base::MakeRefCounted<CorpSessionAuthzServiceClientFactory>(
-            context_->url_loader_factory(), service_account_email_,
-            oauth_refresh_token_));
+            context_->url_loader_factory(),
+            context_->create_client_cert_store_callback(),
+            service_account_email_, oauth_refresh_token_));
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     if (!cert_watcher_) {
@@ -1829,8 +1830,9 @@ void HostProcess::StartHost() {
     desktop_environment_options_.set_enable_user_interface(
         enable_user_interface_);
     corp_host_status_logger_ = CorpHostStatusLogger::CreateForRemoteAccess(
-        context_->url_loader_factory(), &local_session_policies_provider_,
-        service_account_email_, oauth_refresh_token_);
+        context_->url_loader_factory(), context_->CreateClientCertStore(),
+        &local_session_policies_provider_, service_account_email_,
+        oauth_refresh_token_);
     corp_host_status_logger_->StartObserving(*session_manager);
   }
 

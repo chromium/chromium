@@ -339,6 +339,7 @@ void ConfigureRevenPolicies(base::Value::Dict* arc_policy) {
       "com.netskope.netskopeclient",
       "com.zimperium.zips",
       "com.fortinet.forticlient_vpn",
+      "com.fortinet.forticlient_fa",
       "com.forcepoint.sslvpn"};
 
   FilterApps(arc_policy, allowed_packages);

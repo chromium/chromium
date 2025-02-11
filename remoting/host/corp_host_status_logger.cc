@@ -28,12 +28,13 @@ namespace remoting {
 std::unique_ptr<CorpHostStatusLogger>
 CorpHostStatusLogger::CreateForRemoteAccess(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<net::ClientCertStore> client_cert_store,
     const LocalSessionPoliciesProvider* local_session_policies_provider,
     const std::string& service_account_email,
     const std::string& refresh_token) {
   return std::make_unique<CorpHostStatusLogger>(
       std::make_unique<CorpLoggingServiceClient>(
-          url_loader_factory,
+          url_loader_factory, std::move(client_cert_store),
           CreateCorpTokenGetter(url_loader_factory, service_account_email,
                                 refresh_token),
           internal::GetRemoteAccessLoggingPath()),
@@ -44,11 +45,12 @@ CorpHostStatusLogger::CreateForRemoteAccess(
 std::unique_ptr<CorpHostStatusLogger>
 CorpHostStatusLogger::CreateForRemoteSupport(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<net::ClientCertStore> client_cert_store,
     const LocalSessionPoliciesProvider* local_session_policies_provider,
     base::WeakPtr<OAuthTokenGetter> oauth_token_getter) {
   return std::make_unique<CorpHostStatusLogger>(
       std::make_unique<CorpLoggingServiceClient>(
-          url_loader_factory,
+          url_loader_factory, std::move(client_cert_store),
           std::make_unique<OAuthTokenGetterProxy>(oauth_token_getter),
           internal::GetRemoteSupportLoggingPath()),
       local_session_policies_provider);

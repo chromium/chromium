@@ -751,7 +751,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_TRUE(full_image_response_future.Wait());
 
   auto region = lens::mojom::CenterRotatedBox::New();
-  region->box = gfx::RectF(30, 40, 50, 60);
+  region->box = gfx::RectF(25, 50, 30, 60);
   region->coordinate_type =
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
   query_controller.SendRegionSearch(std::move(region), lens::REGION_SEARCH,
@@ -805,19 +805,19 @@ TEST_F(LensOverlayQueryControllerTest,
                 .region()
                 .region()
                 .center_x(),
-            30);
+            25);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
                 .selection_metadata()
                 .region()
                 .region()
                 .center_y(),
-            40);
+            50);
   ASSERT_EQ(
       sent_interaction_request.image_crop().zoomed_crop().crop().center_x(),
-      30);
+      0.25);
   ASSERT_EQ(
       sent_interaction_request.image_crop().zoomed_crop().crop().center_y(),
-      40);
+      0.50);
   ASSERT_FALSE(sent_interaction_request.interaction_request_metadata()
                    .has_query_metadata());
   ASSERT_TRUE(has_start_time);
@@ -951,7 +951,7 @@ TEST_F(LensOverlayQueryControllerTest,
   SkBitmap region_bitmap = CreateNonEmptyBitmap(100, 100);
   region_bitmap.setAlphaType(kOpaque_SkAlphaType);
   auto region = lens::mojom::CenterRotatedBox::New();
-  region->box = gfx::RectF(50, 50, 100, 100);
+  region->box = gfx::RectF(125, 125, 100, 100);
   region->coordinate_type =
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
   query_controller.SendRegionSearch(
@@ -1008,25 +1008,19 @@ TEST_F(LensOverlayQueryControllerTest,
                 .region()
                 .region()
                 .center_x(),
-            50);
+            125);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
                 .selection_metadata()
                 .region()
                 .region()
                 .center_y(),
-            50);
+            125);
   ASSERT_EQ(
       sent_interaction_request.image_crop().zoomed_crop().crop().center_x(),
-      50);
+      0.125);
   ASSERT_EQ(
       sent_interaction_request.image_crop().zoomed_crop().crop().center_y(),
-      50);
-  ASSERT_EQ(
-      sent_interaction_request.image_crop().zoomed_crop().crop().center_y(),
-      50);
-  ASSERT_EQ(
-      sent_interaction_request.image_crop().zoomed_crop().crop().center_y(),
-      50);
+      0.125);
   ASSERT_EQ(GetExpectedJpegBytesForBitmap(region_bitmap),
             sent_interaction_request.image_crop().image().image_content());
   ASSERT_FALSE(sent_interaction_request.interaction_request_metadata()
@@ -1081,7 +1075,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_TRUE(full_image_response_future.Wait());
 
   auto region = lens::mojom::CenterRotatedBox::New();
-  region->box = gfx::RectF(30, 40, 50, 60);
+  region->box = gfx::RectF(25, 50, 30, 60);
   region->coordinate_type =
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
   query_controller.SendMultimodalRequest(
@@ -1137,19 +1131,19 @@ TEST_F(LensOverlayQueryControllerTest,
                 .region()
                 .region()
                 .center_x(),
-            30);
+            25);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
                 .selection_metadata()
                 .region()
                 .region()
                 .center_y(),
-            40);
+            50);
   ASSERT_EQ(
       sent_interaction_request.image_crop().zoomed_crop().crop().center_x(),
-      30);
+      0.25);
   ASSERT_EQ(
       sent_interaction_request.image_crop().zoomed_crop().crop().center_y(),
-      40);
+      0.50);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
                 .query_metadata()
                 .text_query()

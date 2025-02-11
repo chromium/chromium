@@ -192,9 +192,7 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   Shadow shadow() const { return shadow_; }
 
   // Get or set the color for the bubble and arrow body.
-  // Note: `color()` will not return updated color, until `OnViewThemeChanged()`
-  // is called.
-  SkColor color() const { return resolved_color_; }
+  ui::ColorVariant color() const { return color_; }
   void SetColor(ui::ColorVariant color);
 
   // Sets a desired pixel distance between the arrow tip and the outside edge of
@@ -327,7 +325,6 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   std::optional<bool> draw_border_stroke_;
   Shadow shadow_;
   std::optional<int> md_shadow_elevation_;
-  SkColor resolved_color_ = gfx::kPlaceholderColor;
   ui::ColorVariant color_{ui::kColorDialogBackground};
   bool avoid_shadow_overlap_ = false;
   std::optional<gfx::Insets> insets_;

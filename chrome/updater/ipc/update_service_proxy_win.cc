@@ -35,6 +35,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
+#include "components/policy/core/common/policy_types.h"
 
 namespace updater {
 namespace {
@@ -1057,9 +1058,12 @@ void UpdateServiceProxyImpl::GetVersion(
 }
 
 void UpdateServiceProxyImpl::FetchPolicies(
+    policy::PolicyFetchReason /*reason*/,
     base::OnceCallback<void(base::expected<int, RpcError>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
+  // TODO(crbug.com/391394116): Add a new COM interface that accepts the
+  // `reason` during policy fetch.
   impl_->FetchPolicies(base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 

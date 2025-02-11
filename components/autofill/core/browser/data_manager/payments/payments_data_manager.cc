@@ -2137,10 +2137,8 @@ void PaymentsDataManager::OnMaskedBankAccountsRefreshed() {
     }
     updated_urls.emplace_back(display_icon_url);
   }
-  if (!updated_urls.empty()) {
-    FetchImagesForURLs(
-        updated_urls,
-        base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSquare));
+  if (!updated_urls.empty() && image_fetcher_) {
+    image_fetcher_->FetchPixAccountImages(updated_urls);
   }
 }
 

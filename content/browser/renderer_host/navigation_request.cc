@@ -1906,7 +1906,9 @@ NavigationRequest::NavigationRequest(
     // TODO(crbug.com/388998723): Avoid unintentionally creating a process for
     // source_site_instance_ if it doesn't have one.
     GetContentClient()->browser()->OverrideNavigationParams(
-        source_site_instance_->GetOrCreateProcess()
+        source_site_instance_
+            ->GetOrCreateProcess(ProcessAllocationContext{
+                ProcessAllocationSource::kOverrideNavigationParams})
             ->GetProcessLock()
             .site_url(),
         &transition, &is_renderer_initiated, &referrer,
@@ -2881,7 +2883,10 @@ void NavigationRequest::
 
   if (auto result =
           frame_tree_node_->render_manager()->GetFrameHostForNavigation(
-              this, &browsing_context_group_swap_);
+              this, &browsing_context_group_swap_,
+              ProcessAllocationContext::CreateForNavigationRequest(
+                  ProcessAllocationNavigationStage::kNoURLLoader,
+                  navigation_id_));
       result.has_value()) {
     render_frame_host_ = result.value()->GetSafeRef();
   } else {
@@ -3422,7 +3427,10 @@ void NavigationRequest::OnRequestRedirected(
   // creation while keeping the security check.
   if (!commit_params_->is_browser_initiated && GetSourceSiteInstance() &&
       !ChildProcessSecurityPolicyImpl::GetInstance()->CanRequestURL(
-          GetSourceSiteInstance()->GetOrCreateProcess()->GetDeprecatedID(),
+          GetSourceSiteInstance()
+              ->GetOrCreateProcess(ProcessAllocationContext{
+                  ProcessAllocationSource::kCanRequestURL})
+              ->GetDeprecatedID(),
           redirect_info.new_url)) {
     DVLOG(1) << "Denied unauthorized redirect for "
              << redirect_info.new_url.possibly_invalid_spec();
@@ -4616,7 +4624,11 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
   } else if (response_should_be_rendered_) {
     if (auto result =
             frame_tree_node_->render_manager()->GetFrameHostForNavigation(
-                this, &browsing_context_group_swap_, &rfh_selected_reason);
+                this, &browsing_context_group_swap_,
+                ProcessAllocationContext::CreateForNavigationRequest(
+                    ProcessAllocationNavigationStage::kAfterResponse,
+                    navigation_id_),
+                &rfh_selected_reason);
         result.has_value()) {
       render_frame_host_ = result.value()->GetSafeRef();
     } else {
@@ -4902,7 +4914,10 @@ NavigationRequest::CreateNavigationEarlyHintsManagerParams(
   // Navigation.MainFrame.TimeToReadyToCommit2 histogram tracks the performance
   // impacts.
   auto result = frame_tree_node_->render_manager()->GetFrameHostForNavigation(
-      this, &browsing_context_group_swap_);
+      this, &browsing_context_group_swap_,
+      ProcessAllocationContext::CreateForNavigationRequest(
+          ProcessAllocationNavigationStage::kHandlingEarlyHints,
+          navigation_id_));
 
   // Early hints is an optimization; if it is not possible to get a suitable
   // RenderFrameHost for any reason, just bail out.
@@ -5091,7 +5106,10 @@ void NavigationRequest::SelectFrameHostForOnRequestFailedInternal(
   RenderFrameHostImpl* render_frame_host = nullptr;
   if (auto result =
           frame_tree_node_->render_manager()->GetFrameHostForNavigation(
-              this, &browsing_context_group_swap_);
+              this, &browsing_context_group_swap_,
+              ProcessAllocationContext::CreateForNavigationRequest(
+                  ProcessAllocationNavigationStage::kAfterFailure,
+                  navigation_id_));
       result.has_value()) {
     render_frame_host = result.value();
   } else {
@@ -5444,7 +5462,7 @@ void NavigationRequest::OnStartChecksComplete(
       return;
     }
     auto create_speculative_rfh_task = base::BindOnce(
-        [](base::WeakPtr<NavigationRequest> request) {
+        [](base::WeakPtr<NavigationRequest> request, int64_t navigation_id) {
           if (!request || request->state_ >= WILL_PROCESS_RESPONSE ||
               request->HasRenderFrameHost()) {
             return;
@@ -5452,12 +5470,16 @@ void NavigationRequest::OnStartChecksComplete(
           auto rfh_creation_result =
               request->frame_tree_node_->render_manager()
                   ->GetFrameHostForNavigation(
-                      request.get(), &request->browsing_context_group_swap_);
+                      request.get(), &request->browsing_context_group_swap_,
+                      ProcessAllocationContext::CreateForNavigationRequest(
+                          ProcessAllocationNavigationStage::
+                              kAfterNetworkRequest,
+                          navigation_id));
           if (rfh_creation_result.has_value()) {
             request->SetExpectedProcessIfAssociated();
           }
         },
-        weak_factory_.GetWeakPtr());
+        weak_factory_.GetWeakPtr(), navigation_id_);
     int delay_ms = features::kCreateSpeculativeRFHDelayMs.Get();
     if (delay_ms > 0) {
       GetUIThreadTaskRunner()->PostDelayedTask(

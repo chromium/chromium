@@ -41,6 +41,7 @@
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/updater_scope.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/policy/core/common/policy_types.h"
 
 namespace updater {
 
@@ -147,14 +148,16 @@ PolicyService::PolicyService(
 
 PolicyService::~PolicyService() = default;
 
-void PolicyService::FetchPolicies(base::OnceCallback<void(int)> callback) {
+void PolicyService::FetchPolicies(policy::PolicyFetchReason reason,
+                                  base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   IsCloudManaged(base::BindOnce(&PolicyService::DoFetchPolicies,
-                                base::WrapRefCounted(this),
+                                base::WrapRefCounted(this), reason,
                                 std::move(callback)));
 }
 
-void PolicyService::DoFetchPolicies(base::OnceCallback<void(int)> callback,
+void PolicyService::DoFetchPolicies(policy::PolicyFetchReason reason,
+                                    base::OnceCallback<void(int)> callback,
                                     bool is_cbcm_managed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static crash_reporter::CrashKeyString<6> crash_key_cbcm("cbcm");
@@ -192,7 +195,7 @@ void PolicyService::DoFetchPolicies(base::OnceCallback<void(int)> callback,
         fetcher);
   }
   fetcher->FetchPolicies(
-      base::BindOnce(&PolicyService::FetchPoliciesDone, this, fetcher));
+      reason, base::BindOnce(&PolicyService::FetchPoliciesDone, this, fetcher));
 }
 
 void PolicyService::FetchPoliciesDone(

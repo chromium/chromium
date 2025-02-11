@@ -45,6 +45,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import androidx.test.espresso.Espresso;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -134,6 +135,7 @@ import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.test.util.DeviceRestriction;
+import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -355,7 +357,7 @@ public class BookmarkTest {
                     BookmarkUtils.showBookmarkManager(
                             mActivityTestRule.getActivity(),
                             mBookmarkModel.getMobileFolderId(),
-                            /* isIncognito= */ false);
+                            mActivityTestRule.getProfile(false));
                 });
 
         BookmarkTestUtil.waitForBookmarkActivity();
@@ -1721,6 +1723,9 @@ public class BookmarkTest {
                                     InstrumentationRegistry.getInstrumentation(),
                                     mActivityTestRule.getActivity(),
                                     R.id.all_bookmarks_menu_id));
+            ViewUtils.waitForView(
+                    (ViewGroup) mBookmarkActivity.getWindow().getDecorView().getRootView(),
+                    ViewMatchers.withId(R.id.selectable_list));
             mItemsContainer = mBookmarkActivity.findViewById(R.id.selectable_list_recycler_view);
             mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
             mBookmarkManagerCoordinator = mBookmarkActivity.getManagerForTesting();

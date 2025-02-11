@@ -790,7 +790,7 @@ gfx::Rect BubbleDialogDelegate::GetAnchorRect() const {
   return anchor_rect_.value();
 }
 
-SkColor BubbleDialogDelegate::GetBackgroundColor() {
+ui::ColorVariant BubbleDialogDelegate::GetBackgroundColor() {
   UpdateColorsFromTheme();
   return color();
 }

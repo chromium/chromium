@@ -7,7 +7,8 @@
 
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 
-// Headers for the generated code from permissions_policy_features.cc.tmpl.
+// Headers for the generated code from
+// permissions_policy_features_generated.cc.tmpl.
 namespace blink {
 
 PermissionsPolicyFeatureList GetBasePermissionsPolicyFeatureList();

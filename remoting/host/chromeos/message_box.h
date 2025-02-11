@@ -19,6 +19,10 @@ namespace gfx {
 class ImageSkia;
 }  // namespace gfx
 
+namespace views {
+class DialogDelegate;
+}  // namespace views
+
 namespace remoting {
 
 // Overview:
@@ -56,6 +60,8 @@ class MessageBox {
   void ShowInParentContainer(gfx::NativeView parent);
 
   void ChangeParentContainer(gfx::NativeView parent);
+
+  views::DialogDelegate& GetDialogDelegate();
 
  private:
   class Core;

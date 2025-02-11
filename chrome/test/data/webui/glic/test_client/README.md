@@ -1,7 +1,7 @@
 # Glic test client
 
 This is a test page that facilitates testing the API between the host and the
-web client.
+web client. It can be used for manual and automated testing.
 
 
 ## Instructions

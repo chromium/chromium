@@ -659,7 +659,8 @@ void RenderFrameHostManager::InitRoot(
       /*frame_routing_id=*/MSG_ROUTING_NONE,
       mojo::PendingAssociatedRemote<mojom::Frame>(), blink::LocalFrameToken(),
       blink::DocumentToken(), devtools_frame_token, renderer_initiated_creation,
-      browsing_context_state));
+      browsing_context_state,
+      ProcessAllocationContext{ProcessAllocationSource::kRFHInitRoot}));
 
   // Creating a main RenderFrameHost also creates a new Page, so notify the
   // delegate about this.
@@ -706,7 +707,9 @@ void RenderFrameHostManager::InitChild(
       CreateFrameCase::kInitChild, site_instance, frame_routing_id,
       std::move(frame_remote), frame_token, document_token,
       devtools_frame_token,
-      /*renderer_initiated_creation=*/false, browsing_context_state));
+      /*renderer_initiated_creation=*/false, browsing_context_state,
+      ProcessAllocationContext{
+          ProcessAllocationSource::kNoProcessCreationExpected}));
 }
 
 RenderWidgetHostViewBase* RenderFrameHostManager::GetRenderWidgetHostView()
@@ -1453,7 +1456,12 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
     base::ElapsedTimer timer;
     BrowsingContextGroupSwap ignored_bcg_swap_info =
         BrowsingContextGroupSwap::CreateDefault();
-    auto result = GetFrameHostForNavigation(request, &ignored_bcg_swap_info);
+    auto result = GetFrameHostForNavigation(
+        request, &ignored_bcg_swap_info,
+        ProcessAllocationContext{
+            ProcessAllocationSource::kNavigationRequest,
+            NavigationProcessAllocationContext{
+                ProcessAllocationNavigationStage::kBeforeNetworkRequest}});
     if (result.has_value()) {
       DCHECK(result.value());
     } else if (result.error() ==
@@ -1606,6 +1614,7 @@ base::expected<RenderFrameHostImpl*, GetFrameHostForNavigationFailed>
 RenderFrameHostManager::GetFrameHostForNavigation(
     NavigationRequest* request,
     BrowsingContextGroupSwap* browsing_context_group_swap,
+    const ProcessAllocationContext& process_allocation_context,
     std::string* reason) {
   // GetFrameHostForNavigation will be called more than once during a navigation
   // (currently twice, on request and when it's about to commit in the
@@ -1913,7 +1922,7 @@ RenderFrameHostManager::GetFrameHostForNavigation(
       DiscardSpeculativeRFH(request->GetTypeForNavigationDiscardReason());
       bool success = CreateSpeculativeRenderFrameHost(
           current_site_instance, dest_site_instance.get(),
-          recovering_without_early_commit);
+          recovering_without_early_commit, process_allocation_context);
       DCHECK(success);
 
       if (should_keep_target_process_alive) {
@@ -4015,14 +4024,17 @@ RenderFrameHostManager::CreateRenderFrameHost(
     const blink::DocumentToken& document_token,
     base::UnguessableToken devtools_frame_token,
     bool renderer_initiated_creation,
-    scoped_refptr<BrowsingContextState> browsing_context_state) {
+    scoped_refptr<BrowsingContextState> browsing_context_state,
+    const ProcessAllocationContext& process_allocation_context) {
   FrameTree& frame_tree = frame_tree_node_->frame_tree();
 
   // Only the kInitChild case passes in a frame routing id.
   DCHECK_EQ(create_frame_case != CreateFrameCase::kInitChild,
             frame_routing_id == MSG_ROUTING_NONE);
   if (frame_routing_id == MSG_ROUTING_NONE) {
-    frame_routing_id = site_instance->GetOrCreateProcess()->GetNextRoutingID();
+    frame_routing_id =
+        site_instance->GetOrCreateProcess(process_allocation_context)
+            ->GetNextRoutingID();
   }
 
   // Check to see if a speculative RenderViewHost is needed. It is needed for
@@ -4121,7 +4133,8 @@ RenderFrameHostManager::CreateRenderFrameHost(
 bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
     SiteInstanceImpl* old_instance,
     SiteInstanceImpl* new_instance,
-    bool recovering_without_early_commit) {
+    bool recovering_without_early_commit,
+    const ProcessAllocationContext& process_allocation_context) {
   TRACE_EVENT("navigation",
               "RenderFrameHostManager::CreateSpeculativeRenderFrameHost",
               ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_,
@@ -4148,7 +4161,7 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
   // another host that already initialized it) or may not (we have our own
   // process or the existing process crashed) have been initialized. Calling
   // Init() multiple times will be ignored, so this is safe.
-  if (!new_instance->GetOrCreateProcess()->Init()) {
+  if (!new_instance->GetOrCreateProcess(process_allocation_context)->Init()) {
     return false;
   }
 
@@ -4271,14 +4284,20 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
       .GetBackForwardCache()
       .EvictFramesInRelatedSiteInstances(instance);
 
+  // Since CreateSpeculativeRenderFrameHost should have already called
+  // GetOrCreateProcess(), a process allocation is not expected in
+  // CreateRenderFrameHost().
+  CHECK(instance->HasProcess());
   std::unique_ptr<RenderFrameHostImpl> new_render_frame_host =
-      CreateRenderFrameHost(CreateFrameCase::kCreateSpeculative, instance,
-                            /*frame_routing_id=*/MSG_ROUTING_NONE,
-                            mojo::PendingAssociatedRemote<mojom::Frame>(),
-                            blink::LocalFrameToken(), blink::DocumentToken(),
-                            render_frame_host_->devtools_frame_token(),
-                            /*renderer_initiated_creation=*/false,
-                            browsing_context_state);
+      CreateRenderFrameHost(
+          CreateFrameCase::kCreateSpeculative, instance,
+          /*frame_routing_id=*/MSG_ROUTING_NONE,
+          mojo::PendingAssociatedRemote<mojom::Frame>(),
+          blink::LocalFrameToken(), blink::DocumentToken(),
+          render_frame_host_->devtools_frame_token(),
+          /*renderer_initiated_creation=*/false, browsing_context_state,
+          ProcessAllocationContext{
+              ProcessAllocationSource::kNoProcessCreationExpected});
   DCHECK_EQ(new_render_frame_host->GetSiteInstance(), instance);
 
   // Prevent the process from exiting while we're trying to navigate in it.
@@ -5746,11 +5765,15 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
 
   // We need a new RenderFrameHost in its parent's SiteInstance to be able to
   // safely use the WebContentsImpl attach API.
+  // The parent SiteInstance should be already bound to a process so a process
+  // allocation is not expected.
   DCHECK(!speculative_render_frame_host_);
   if (!CreateSpeculativeRenderFrameHost(
           current_frame_host()->GetSiteInstance(),
           current_frame_host()->GetParent()->GetSiteInstance(),
-          /*recovering_without_early_commit=*/false)) {
+          /*recovering_without_early_commit=*/false,
+          ProcessAllocationContext{
+              ProcessAllocationSource::kNoProcessCreationExpected})) {
     NotifyPrepareForInnerDelegateAttachComplete(false /* success */);
     return;
   }

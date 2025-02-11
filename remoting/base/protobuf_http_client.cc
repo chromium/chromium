@@ -30,10 +30,12 @@ namespace remoting {
 ProtobufHttpClient::ProtobufHttpClient(
     const std::string& server_endpoint,
     OAuthTokenGetter* token_getter,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<net::ClientCertStore> client_cert_store)
     : server_endpoint_(server_endpoint),
       token_getter_(token_getter),
-      url_loader_factory_(url_loader_factory) {}
+      url_loader_factory_(url_loader_factory),
+      client_cert_store_(std::move(client_cert_store)) {}
 
 ProtobufHttpClient::~ProtobufHttpClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -121,7 +123,10 @@ void ProtobufHttpClient::DoExecuteRequest(
       resource_request->trusted_params.emplace();
     }
 
-    service_observer_.emplace();
+    if (!service_observer_.has_value()) {
+      CHECK(client_cert_store_);
+      service_observer_.emplace(std::move(client_cert_store_));
+    }
     resource_request->trusted_params->url_loader_network_observer =
         service_observer_->Bind();
   }

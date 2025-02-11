@@ -157,7 +157,7 @@ bool AllowCrossRendererResourceLoadHelper(bool is_guest,
   if (is_guest) {
 #if BUILDFLAG(ENABLE_PDF)
     // Allow the PDF Viewer extension to load in guests.
-    if (chrome_pdf::features::IsOopifPdfEnabled() &&
+    if (chrome_pdf::features::IsOopifPdfEnabled() && extension &&
         extension->id() == extension_misc::kPdfExtensionId) {
       *allowed = true;
       return true;

@@ -17,6 +17,10 @@
 #include "chrome/updater/policy/service.h"
 #include "url/gurl.h"
 
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
+
 namespace updater {
 
 class PersistedData;
@@ -25,6 +29,7 @@ class PersistedData;
 class PolicyFetcher : public base::RefCountedThreadSafe<PolicyFetcher> {
  public:
   virtual void FetchPolicies(
+      policy::PolicyFetchReason reason,
       base::OnceCallback<void(int, scoped_refptr<PolicyManagerInterface>)>
           callback) = 0;
 
@@ -45,12 +50,14 @@ class FallbackPolicyFetcher : public PolicyFetcher {
 
   // Overrides of `PolicyFetcher`.
   void FetchPolicies(
+      policy::PolicyFetchReason reason,
       base::OnceCallback<void(int, scoped_refptr<PolicyManagerInterface>)>
           callback) override;
 
  private:
   ~FallbackPolicyFetcher() override;
-  void PolicyFetched(int result,
+  void PolicyFetched(policy::PolicyFetchReason reason,
+                     int result,
                      scoped_refptr<PolicyManagerInterface> policy_manager);
 
   SEQUENCE_CHECKER(sequence_checker_);

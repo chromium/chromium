@@ -139,8 +139,8 @@ class FakeBrowserInterop : public BrowserInterop {
   FakeBrowserInterop& operator=(const FakeBrowserInterop&) = delete;
 
   // `BrowserInterop` implementation:
-  std::unique_ptr<ChromotingHostContext> CreateChromotingHostContext()
-      override {
+  std::unique_ptr<ChromotingHostContext> CreateChromotingHostContext(
+      content::BrowserContext*) override {
     return ChromotingHostContext::CreateForTesting(
         auto_thread_task_runner_, url_loader_factory_.GetSafeWeakWrapper());
   }

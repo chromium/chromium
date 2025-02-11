@@ -23,6 +23,7 @@
 #include "ui/base/metadata/metadata_utils.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/color/color_variant.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/metadata/view_factory.h"
@@ -271,7 +272,8 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // be a good fit for the UI you are building.
 
   // Ensures the bubble's background color is up-to-date, then returns it.
-  SkColor GetBackgroundColor();
+  // TODO(b:261653838): Remove this method once the migration is completed.
+  ui::ColorVariant GetBackgroundColor();
 
   // Direct access to the background color. Only use the getter when you know
   // you don't need to worry about the color being out-of-date due to a recent

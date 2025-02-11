@@ -53,8 +53,7 @@ enum ScrollDirectionPhysical {
 inline bool IsExplicitScrollType(mojom::blink::ScrollType scroll_type) {
   return scroll_type == mojom::blink::ScrollType::kUser ||
          scroll_type == mojom::blink::ScrollType::kProgrammatic ||
-         scroll_type == mojom::blink::ScrollType::kCompositor ||
-         scroll_type == mojom::blink::ScrollType::kSequenced;
+         scroll_type == mojom::blink::ScrollType::kCompositor;
 }
 
 // Convert logical scroll direction to physical. Physical scroll directions are

@@ -58,6 +58,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/protocol_definition.h"
@@ -697,6 +698,7 @@ void UpdateServiceImplImpl::MaybeInstallEnterpriseCompanionAppOTA(
 }
 
 void UpdateServiceImplImpl::FetchPolicies(
+    policy::PolicyFetchReason reason,
     base::OnceCallback<void(int)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -713,9 +715,10 @@ void UpdateServiceImplImpl::FetchPolicies(
           &UpdateServiceImplImpl::MaybeInstallEnterpriseCompanionAppOTA,
           base::WrapRefCounted(this),
           base::BindOnce(&PolicyService::FetchPolicies,
-                         config_->GetPolicyService(), std::move(callback))));
+                         config_->GetPolicyService(), reason,
+                         std::move(callback))));
     } else {
-      config_->GetPolicyService()->FetchPolicies(std::move(callback));
+      config_->GetPolicyService()->FetchPolicies(reason, std::move(callback));
     }
   }
 }
@@ -817,11 +820,13 @@ void UpdateServiceImplImpl::RunPeriodicTasks(base::OnceClosure callback) {
   new_tasks.push_back(base::BindOnce(
       [](scoped_refptr<UpdateServiceImplImpl> update_service_impl,
          base::OnceClosure callback) {
-        update_service_impl->FetchPolicies(base::BindOnce(
-            [](base::OnceClosure callback, int /* ignore_result */) {
-              std::move(callback).Run();
-            },
-            std::move(callback)));
+        update_service_impl->FetchPolicies(
+            policy::PolicyFetchReason::kScheduled,
+            base::BindOnce(
+                [](base::OnceClosure callback, int /* ignore_result */) {
+                  std::move(callback).Run();
+                },
+                std::move(callback)));
       },
       base::WrapRefCounted(this)));
   new_tasks.push_back(
@@ -944,6 +949,7 @@ void UpdateServiceImplImpl::CheckForUpdate(
   base::MakeRefCounted<HandleInconsistentAppsTask>(config_, GetUpdaterScope())
       ->Run(base::BindOnce(
           &UpdateServiceImplImpl::FetchPolicies, this,
+          policy::PolicyFetchReason::kUserRequest,
           base::BindOnce(
               &FetchPoliciesDone,
               base::BindOnce(&UpdateServiceImplImpl::CheckForUpdateImpl, this,
@@ -1003,6 +1009,7 @@ void UpdateServiceImplImpl::Update(
   base::MakeRefCounted<HandleInconsistentAppsTask>(config_, GetUpdaterScope())
       ->Run(base::BindOnce(
           &UpdateServiceImplImpl::FetchPolicies, this,
+          policy::PolicyFetchReason::kScheduled,
           base::BindOnce(&FetchPoliciesDone,
                          base::BindOnce(&UpdateServiceImplImpl::UpdateImpl,
                                         this, app_id, install_data_index,
@@ -1102,6 +1109,7 @@ void UpdateServiceImplImpl::Install(
   base::MakeRefCounted<HandleInconsistentAppsTask>(config_, GetUpdaterScope())
       ->Run(base::BindOnce(
           &UpdateServiceImplImpl::FetchPolicies, this,
+          policy::PolicyFetchReason::kUserRequest,
           base::BindOnce(&FetchPoliciesDone,
                          base::BindOnce(&UpdateServiceImplImpl::InstallImpl,
                                         this, registration, client_install_data,
@@ -1145,10 +1153,11 @@ void UpdateServiceImplImpl::InstallImpl(
     // registration is removed later if the app install encounters an error.
     config_->GetUpdaterPersistedData()->RegisterApp(registration);
   } else {
-    // Update ap.
+    // Update ap and iid.
     RegistrationRequest request;
     request.app_id = registration.app_id;
     request.ap = registration.ap;
+    request.install_id = registration.install_id;
     config_->GetUpdaterPersistedData()->RegisterApp(request);
   }
 
@@ -1201,6 +1210,7 @@ void UpdateServiceImplImpl::RunInstaller(
   base::MakeRefCounted<HandleInconsistentAppsTask>(config_, GetUpdaterScope())
       ->Run(base::BindOnce(
           &UpdateServiceImplImpl::FetchPolicies, this,
+          policy::PolicyFetchReason::kUserRequest,
           base::BindOnce(
               &FetchPoliciesDone,
               base::BindOnce(&UpdateServiceImplImpl::RunInstallerImpl, this,

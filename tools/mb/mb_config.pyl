@@ -429,11 +429,11 @@
     ],
 
     'official_android_arm32_pgo': [
-      'official', 'reclient', 'android', 'arm', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1', 'stable_version_code',
+      'official', 'reclient', 'android', 'android_external', 'arm', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1', 'stable_version_code',
     ],
 
     'official_android_arm64_pgo': [
-      'official', 'reclient', 'android', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1', 'stable_version_code',
+      'official', 'reclient', 'android', 'android_external', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1', 'stable_version_code',
     ],
 
     'official_celab_release_bot': [

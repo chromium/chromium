@@ -298,6 +298,7 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kRelyingPartyOriginIsOpaque:
     case FederatedAuthRequestResult::kTypeNotMatching:
     case FederatedAuthRequestResult::kUiDismissedNoEmbargo:
+    case FederatedAuthRequestResult::kCorsError:
     case FederatedAuthRequestResult::kError: {
       return RequestTokenStatus::kError;
     }
@@ -327,7 +328,8 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
     case FederatedAuthRequestResult::kIdTokenInvalidResponse:
     case FederatedAuthRequestResult::kIdTokenIdpErrorResponse:
     case FederatedAuthRequestResult::kIdTokenCrossSiteIdpErrorResponse:
-    case FederatedAuthRequestResult::kIdTokenInvalidContentType: {
+    case FederatedAuthRequestResult::kIdTokenInvalidContentType:
+    case FederatedAuthRequestResult::kCorsError: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::
           kTokenEndpointInvalidResponse;
     }
@@ -2749,9 +2751,15 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
     }
     case IdpNetworkRequestManager::ParseStatus::kNoResponseError: {
       MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
-      CompleteRequestWithError(FederatedAuthRequestResult::kIdTokenNoResponse,
-                               TokenStatus::kIdTokenNoResponse,
-                               should_delay_callback);
+      if (status.cors_error) {
+        CompleteRequestWithError(FederatedAuthRequestResult::kCorsError,
+                                 TokenStatus::kIdTokenNoResponse,
+                                 should_delay_callback);
+      } else {
+        CompleteRequestWithError(FederatedAuthRequestResult::kIdTokenNoResponse,
+                                 TokenStatus::kIdTokenNoResponse,
+                                 should_delay_callback);
+      }
       return;
     }
     case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError: {

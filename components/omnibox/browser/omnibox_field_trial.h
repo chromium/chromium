@@ -756,6 +756,16 @@ constexpr base::FeatureParam<bool> kAndroidHubSearchEnableHistoryProvider{
     &omnibox::kAndroidHubSearch, "enable_history_provider", false};
 #endif
 
+// <- Android Hub Search
+// ---------------------------------------------------------
+// Diagnostics -->
+#if BUILDFLAG(IS_ANDROID)
+inline constexpr base::FeatureParam<bool> kAndroidDiagInputConnection{
+    &omnibox::kDiagnostics, "omnibox_diag_input_connection", false};
+#endif
+
+// <- Diagnostics
+
 // New params should be inserted above this comment. They should be ordered
 // consistently with `omnibox_features.h`. They should be formatted as:
 // - Short comment categorizing the relevant features & params.

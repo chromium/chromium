@@ -770,13 +770,13 @@ template("single_apple_toolchain") {
           _env_vars += " DEVELOPER_DIR=${toolchain_args.sdk_developer_dir}"
         }
 
-        command =
-            "$_env_vars $python_path $_tool " +
-            "-p '${toolchain_args.current_os}' " +
-            "-e '${invoker.target_environment}' " +
-            "-t '${invoker.deployment_target}' " +
-            "-T '{{bundle_product_type}}' " +
-            "-P '{{bundle_partial_info_plist}}' " + "-o {{output}} {{inputs}}"
+        command = "$_env_vars $python_path $_tool " +
+                  "-p '${toolchain_args.current_os}' " +
+                  "-e '${invoker.target_environment}' " +
+                  "-t '${invoker.deployment_target}' " +
+                  "-T '{{bundle_product_type}}' " +
+                  "-P '{{bundle_partial_info_plist}}' " +
+                  " {{xcasset_compiler_flags}} " + "-o {{output}} {{inputs}}"
 
         description = "COMPILE_XCASSETS {{output}}"
         pool = "//build/toolchain/apple:bundle_pool($default_toolchain)"

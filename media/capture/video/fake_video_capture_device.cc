@@ -28,7 +28,7 @@
 #include "media/audio/fake_audio_input_stream.h"
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/image_capture_types.h"
-#include "media/capture/video/gpu_memory_buffer_utils.h"
+#include "media/capture/video/mappable_shared_image_utils.h"
 #include "skia/ext/font_utils.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkBitmap.h"

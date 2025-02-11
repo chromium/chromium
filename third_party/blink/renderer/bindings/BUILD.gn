@@ -163,7 +163,10 @@ template("generate_bindings") {
     web_idl_database_outputs = get_target_outputs(":web_idl_database")
     web_idl_database = web_idl_database_outputs[0]
 
-    inputs = [ web_idl_database ]
+    inputs = [
+      web_idl_database,
+      "union_name_map.conf",
+    ]
     outputs = invoker.outputs
 
     args = [

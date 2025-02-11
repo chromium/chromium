@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentManager;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.signin.SyncConsentDelegate;
 import org.chromium.chrome.browser.ui.signin.SyncConsentFragmentBase;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -36,8 +37,8 @@ public class SyncConsentActivity extends SynchronousInitializationActivity
     private WindowAndroid mWindowAndroid;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreateInternal(Bundle savedInstanceState) {
+        super.onCreateInternal(savedInstanceState);
         setContentView(R.layout.signin_activity);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -107,6 +108,9 @@ public class SyncConsentActivity extends SynchronousInitializationActivity
     @NonNull
     @Override
     public Profile getProfile() {
-        return getProfileProvider().getOriginalProfile();
+        // TODO(crbug.com/40254448): Use getProfileSupplier().get() once a solution has been
+        // identified for handling fragment based activities that might be restoring previously
+        // loaded fragments in onCreate.
+        return ProfileManager.getLastUsedRegularProfile();
     }
 }

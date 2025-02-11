@@ -35,6 +35,11 @@ void UnscopedExtensionProvider::Start(const AutocompleteInput& input,
   Stop(/*clear_cached_results=*/!minimal_changes,
        /*due_to_user_inactivity=*/false);
 
+  // Unscoped mode input should not be redirected to an extension in incognito.
+  if (client_->IsOffTheRecord()) {
+    return;
+  }
+
   // Extension suggestions are not allowed in keyword mode.
   if (input.InKeywordMode()) {
     return;
@@ -89,7 +94,6 @@ void UnscopedExtensionProvider::DeleteMatch(const AutocompleteMatch& match) {
   const TemplateURL* const template_url =
       GetTemplateURLService()->GetTemplateURLForKeyword(match.keyword);
 
-  // TODO(393578172):check if the extension is enabled.
   if ((template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) &&
       delegate_) {
     delegate_->DeleteSuggestion(template_url, suggestion_text);

@@ -1466,6 +1466,9 @@ extern const char kOmniboxCalcProviderDescription[];
 extern const char kOmniboxConsumesImeInsetsName[];
 extern const char kOmniboxConsumesImeInsetsDescription[];
 
+extern const char kOmniboxDiagnosticsName[];
+extern const char kOmniboxDiagnosticsDescription[];
+
 extern const char kOmniboxDomainSuggestionsName[];
 extern const char kOmniboxDomainSuggestionsDescription[];
 

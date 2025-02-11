@@ -89,6 +89,10 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     this.host.getPanelState().assignAndSignal(payload.panelState);
   }
 
+  glicWebClientCanAttachStateChanged(payload: {canAttach: boolean}): void {
+    this.host.canAttachPanelValue.assignAndSignal(payload.canAttach);
+  }
+
   glicWebClientNotifyMicrophonePermissionStateChanged(payload: {
     enabled: boolean,
   }) {
@@ -124,6 +128,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private webClientMessageHandler: WebClientMessageHandler;
   private chromeVersion?: ChromeVersion;
   private panelState = ObservableValueImpl.withNoValue<PanelState>();
+  canAttachPanelValue = ObservableValueImpl.withNoValue<boolean>();
   private focusedTabState =
       ObservableValueImpl.withNoValue<TabData|undefined>();
   private permissionStateMicrophone =
@@ -166,6 +171,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         state.locationPermissionEnabled);
     this.permissionStateTabContext.assignAndSignal(
         state.tabContextPermissionEnabled);
+    this.canAttachPanelValue.assignAndSignal(state.canAttach);
     this.chromeVersion = state.chromeVersion;
   }
 
@@ -256,6 +262,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   getPanelState(): ObservableValueImpl<PanelState> {
     return this.panelState;
+  }
+
+  canAttachPanel(): ObservableValue<boolean> {
+    return this.canAttachPanelValue;
   }
 
   getFocusedTabState(): ObservableValueImpl<TabData|undefined> {

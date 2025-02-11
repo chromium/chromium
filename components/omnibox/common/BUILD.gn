@@ -51,6 +51,7 @@ if (is_android) {
     deps = [
       "$google_play_services_package:google_play_services_location_java",
       "//base:base_java",
+      "//chrome/browser/feedback/android:java",
       "//components/cached_flags:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",

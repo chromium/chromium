@@ -378,7 +378,7 @@ TEST_P(AccountMenuCoordinatorNonManagedTest, testPassphrase) {
       [SyncEncryptionPassphraseTableViewController alloc];
   id classMock =
       OCMClassMock([SyncEncryptionPassphraseTableViewController class]);
-  OCMStub([classMock alloc]).andReturn(passphraseViewController);
+  OCMExpect([classMock alloc]).andReturn(passphraseViewController);
   [coordinator_ openPassphraseDialogWithModalPresentation:YES];
   assertOpenAndInterrupt();
 }

@@ -23,6 +23,7 @@
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/unscoped_extension_provider.h"
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
+#include "extensions/browser/extension_util.h"
 
 namespace {
 // Max number of unscoped extension suggestions to send per extension.
@@ -62,9 +63,12 @@ void UnscopedExtensionProviderDelegateImpl::Start(
   CHECK(extension_suggest_matches_.empty());
   CHECK(extension_id_to_group_id_map_.empty());
 
-  provider_->set_done(false);
-
   for (const std::string& extension_id : unscoped_mode_extension_ids) {
+    if (!IsEnabledExtension(extension_id)) {
+      continue;
+    }
+
+    provider_->set_done(false);
     extensions::ExtensionOmniboxEventRouter::OnInputChanged(
         profile_, extension_id, base::UTF16ToUTF8(input.text()),
         current_request_id_);
@@ -82,6 +86,10 @@ void UnscopedExtensionProviderDelegateImpl::Stop(bool clear_cached_results) {
 void UnscopedExtensionProviderDelegateImpl::DeleteSuggestion(
     const TemplateURL* template_url,
     const std::u16string& suggestion_text) {
+  if (!IsEnabledExtension(template_url->GetExtensionId())) {
+    return;
+  }
+
   extensions::ExtensionOmniboxEventRouter::OnDeleteSuggestion(
       profile_, template_url->GetExtensionId(),
       base::UTF16ToUTF8(suggestion_text));
@@ -224,10 +232,23 @@ void UnscopedExtensionProviderDelegateImpl::OnActionExecuted(
     const std::string& extension_id,
     const std::string& action_name,
     const std::string& contents) {
+  if (!IsEnabledExtension(extension_id)) {
+    return;
+  }
+
   extensions::ExtensionOmniboxEventRouter::OnActionExecuted(
       profile_.get(), extension_id, action_name, contents);
   // Action has been executed, clear the current list of suggestions and ensure
   // any suggestions that may be incoming later with a stale request ID are
   // discarded.
   Stop(/*clear_cached_results=*/true);
+}
+
+bool UnscopedExtensionProviderDelegateImpl::IsEnabledExtension(
+    const std::string& extension_id) {
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(profile_)
+          ->enabled_extensions()
+          .GetByID(extension_id);
+  return extension;
 }

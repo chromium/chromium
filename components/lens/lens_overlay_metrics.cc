@@ -385,6 +385,32 @@ void RecordLensResponseTime(base::TimeDelta response_time) {
   base::UmaHistogramTimes("Lens.Overlay.LensResponseTime", response_time);
 }
 
+void RecordContextualSearchboxTimeToFirstFocus(
+    base::TimeDelta time_to_focus,
+    lens::MimeType page_content_type) {
+  const auto sliced_time_to_interaction_histogram_name =
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType." +
+      MimeTypeToMetricString(page_content_type) +
+      ".TimeFromInvocationToFirstFocus";
+  base::UmaHistogramCustomTimes(sliced_time_to_interaction_histogram_name,
+                                time_to_focus,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(5), /*buckets=*/50);
+}
+
+void RecordContextualSearchboxTimeToFocusAfterNavigation(
+    base::TimeDelta time_to_focus,
+    lens::MimeType page_content_type) {
+  const auto sliced_time_to_interaction_histogram_name =
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType." +
+      MimeTypeToMetricString(page_content_type) +
+      ".TimeFromNavigationToFirstFocus";
+  base::UmaHistogramCustomTimes(sliced_time_to_interaction_histogram_name,
+                                time_to_focus,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(10), /*buckets=*/50);
+}
+
 void RecordContextualSearchboxTimeToInteractionAfterNavigation(
     base::TimeDelta time_to_interaction,
     lens::MimeType page_content_type) {

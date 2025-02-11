@@ -161,7 +161,7 @@ void CredentialLeakDialogView::AddedToWidget() {
   auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
       *bundle.GetImageSkiaNamed(IDR_PASSWORD_CHECK),
       *bundle.GetImageSkiaNamed(IDR_PASSWORD_CHECK_DARK),
-      base::BindRepeating(&views::BubbleFrameView::GetBackgroundColor,
+      base::BindRepeating(&views::BubbleFrameView::background_color,
                           base::Unretained(GetBubbleFrameView())));
 
   gfx::Size preferred_size = image_view->GetPreferredSize();

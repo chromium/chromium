@@ -17,10 +17,11 @@ import android.view.inputmethod.InputContentInfo;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.components.omnibox.OmniboxFeatures;
 
 class AutocompleteInputConnection extends InputConnectionWrapper {
     private static final String TAG = "AutocompleteInput";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = OmniboxFeatures.sDiagInputConnection.getValue();
 
     /** Interface defining the delegate for handling input-related actions. */
     public interface InputDelegate {
@@ -455,5 +456,11 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
         boolean retVal = super.clearMetaKeyStates(states);
         onEndImeCommand();
         return retVal;
+    }
+
+    @Override
+    public void closeConnection() {
+        if (DEBUG) Log.i(TAG, "closeConnection");
+        super.closeConnection();
     }
 }

@@ -563,6 +563,13 @@ public final class ChromePreferenceKeys {
             new KeyPrefix("Chrome.HomeModules.FreshnessScoreTimeStamp.*");
 
     /**
+     * The number at the end should be consistent with {@link
+     * org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType}
+     */
+    public static final KeyPrefix HOME_MODULES_IMPRESSION_COUNT_BEFORE_INTERACTION =
+            new KeyPrefix("Chrome.HomeModules.ImpressionCountBeforeInteraction.*");
+
+    /**
      * Save the timestamp of the last time that we record metrics on whether user enables the price
      * tracking annotations.
      */
@@ -963,6 +970,7 @@ public final class ChromePreferenceKeys {
                 DEVICE_LOCK_SHOW_ALERT_IF_REMOVED,
                 DOWNLOAD_INTERSTITIAL_DOWNLOAD_PENDING_REMOVAL,
                 DSE_NEW_TAB_URL,
+                HOME_MODULES_IMPRESSION_COUNT_BEFORE_INTERACTION.pattern(),
                 EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 FIRST_RUN_SKIPPED_BY_POLICY,
                 FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,

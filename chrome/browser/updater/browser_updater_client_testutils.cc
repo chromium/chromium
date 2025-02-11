@@ -14,6 +14,10 @@
 #include "base/version.h"
 #include "chrome/updater/update_service.h"
 
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
+
 namespace updater {
 
 namespace {
@@ -29,7 +33,8 @@ class FakeUpdateService : public UpdateService {
       base::OnceCallback<void(const base::Version&)> callback) override {
     std::move(callback).Run(base::Version("1.2.3.4"));
   }
-  void FetchPolicies(base::OnceCallback<void(int)> callback) override {
+  void FetchPolicies(policy::PolicyFetchReason,
+                     base::OnceCallback<void(int)> callback) override {
     std::move(callback).Run(0);
   }
   void RegisterApp(const RegistrationRequest& request,

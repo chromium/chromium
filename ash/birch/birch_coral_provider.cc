@@ -335,6 +335,17 @@ BirchCoralProvider* BirchCoralProvider::Get() {
 
 const coral::mojom::GroupPtr& BirchCoralProvider::GetGroupById(
     const base::Token& group_id) const {
+  // Add crash keys here to track the crash of crbug.com/395130742.
+  SCOPED_CRASH_KEY_BOOL("395130742", "response_", !!response_);
+  if (response_) {
+    SCOPED_CRASH_KEY_NUMBER("395130742", "group num",
+                            response_->groups().size());
+    if (!response_->groups().empty()) {
+      SCOPED_CRASH_KEY_BOOL("395130742", "first group",
+                            !!(*response_->groups().begin()));
+    }
+  }
+
   std::vector<coral::mojom::GroupPtr>& groups = response_->groups();
   auto iter = std::find_if(
       groups.begin(), groups.end(),
@@ -859,7 +870,13 @@ void BirchCoralProvider::RemoveEntity(std::string_view entity_identifier) {
 }
 
 void BirchCoralProvider::Reset() {
-  response_.reset();
+  // Clear the groups in observers before resetting the `response_`.
+  if (response_) {
+    for (const auto& group : response_->groups()) {
+      observers_.Notify(&Observer::OnCoralGroupRemoved, group->id);
+    }
+    response_.reset();
+  }
   in_session_source_desk_ = nullptr;
   windows_observation_.RemoveAllObservations();
 }

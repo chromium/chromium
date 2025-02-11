@@ -210,6 +210,7 @@
 #include "components/variations/pref_names.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -549,6 +550,11 @@ std::string SetAllowedPref(Profile* profile,
   if (pref_name == variations::prefs::kVariationsCompressedSeed ||
       pref_name == variations::prefs::kVariationsSeedSignature) {
     DCHECK(value.is_string());
+    g_browser_process->local_state()->Set(pref_name, value);
+    return std::string();
+  }
+  if (pref_name == chrome_urls::kInternalOnlyUisEnabled) {
+    DCHECK(value.is_bool());
     g_browser_process->local_state()->Set(pref_name, value);
     return std::string();
   }

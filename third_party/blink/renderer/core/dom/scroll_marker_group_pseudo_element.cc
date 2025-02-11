@@ -147,6 +147,13 @@ void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
                                               mojom::blink::FocusType::kNone,
                                               /*capabilities=*/nullptr));
   SetSelected(*scroll_marker);
+  // - per https://drafts.csswg.org/css-overflow-5/#scroll-target-focus
+  // we want to start our search from scroll target of ::scroll-marker,
+  // which is ultimate originating element for regular scroll marker
+  // and TODO(378698659): the first element in ::column's view for column
+  // scroll marker, but it's not clear yet what how to implement that.
+  GetDocument().SetSequentialFocusNavigationStartingPoint(
+      scroll_marker->UltimateOriginatingElement());
 }
 
 bool ScrollMarkerGroupPseudoElement::SetSelected(
