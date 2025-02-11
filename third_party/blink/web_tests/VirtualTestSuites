@@ -1059,6 +1059,16 @@
     "owners": ["shuuran@chromium.org", "dylancutler@google.com"]
   },
   {
+    "prefix": "sandbox-allow-same-site-none-cookies-3PC-blocked",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/cookies/samesite/sandbox-allow-same-site-none-cookies-value.tentative.https.html"
+    ],
+    "args": ["--enable-features=AllowSameSiteNoneCookiesInSandbox,ForceThirdPartyCookieBlockingEnabled"],
+    "expires": "Dec 1, 2025",
+    "owners": ["anushamuley@chromium.org", "dylancutler@google.com"]
+  },
+  {
     "prefix": "third-party-storage-partitioning",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
