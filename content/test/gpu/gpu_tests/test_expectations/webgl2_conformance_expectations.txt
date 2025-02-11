@@ -482,13 +482,6 @@ crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] deqp/fun
 crbug.com/891953 [ mac ] WebglExtension_OVR_multiview2 [ Failure ]
 crbug.com/891953 [ android ] WebglExtension_OVR_multiview2 [ Failure ]
 
-# Platform-independent failures due to a WebGL roll.
-crbug.com/371971708 conformance/context/context-lost.html [ Failure ]
-crbug.com/371971708 conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
-crbug.com/371971708 conformance/offscreencanvas/context-lost-restored.html [ Failure ]
-crbug.com/371971708 conformance/offscreencanvas/context-lost-worker.html [ Failure ]
-crbug.com/371971708 conformance/offscreencanvas/context-lost.html [ Failure ]
-crbug.com/371971708 conformance2/state/gl-enum-tests.html [ Failure ]
 
 # ========================
 # Conformance expectations

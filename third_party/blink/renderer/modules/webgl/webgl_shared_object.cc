@@ -31,23 +31,35 @@
 namespace blink {
 
 WebGLSharedObject::WebGLSharedObject(WebGLRenderingContextBase* context)
-    : WebGLObject(context), context_group_(context->ContextGroup()) {}
+    : WebGLObject(context), context_group_(nullptr) {
+  if (context) {
+    context_group_ = context->ContextGroup();
+  }
+}
 
 bool WebGLSharedObject::Validate(const WebGLContextGroup* context_group,
                                  const WebGLRenderingContextBase*) const {
   // The contexts and context groups no longer maintain references to all
   // the objects they ever created, so there's no way to invalidate them
   // eagerly during context loss. The invalidation is discovered lazily.
-  return context_group == context_group_ &&
-         CachedNumberOfContextLosses() ==
-             context_group->NumberOfContextLosses();
+  return (context_group == context_group_ && context_group != nullptr &&
+          CachedNumberOfContextLosses() ==
+              context_group->NumberOfContextLosses());
 }
 
 uint32_t WebGLSharedObject::CurrentNumberOfContextLosses() const {
+  if (!context_group_) {
+    return 0;
+  }
+
   return context_group_->NumberOfContextLosses();
 }
 
 gpu::gles2::GLES2Interface* WebGLSharedObject::GetAGLInterface() const {
+  if (!context_group_) {
+    return nullptr;
+  }
+
   return context_group_->GetAGLInterface();
 }
 

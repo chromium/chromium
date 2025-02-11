@@ -7860,8 +7860,6 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Mac14-arm64 ] fast/mediacapturefromelement/CanvasCaptureMediaStream-webgl-events.html [ Timeout ]
 [ Mac14-arm64 ] fast/webgl/canvas-to-data-url.html [ Timeout ]
 [ Mac14-arm64 ] fast/webgl/context-destroyed-crash.html [ Timeout ]
-[ Mac14-arm64 ] fast/webgl/offscreenCanvas-context-lost-restored-worker.html [ Timeout ]
-[ Mac14-arm64 ] fast/webgl/offscreenCanvas-context-lost-worker.html [ Timeout ]
 [ Mac14-arm64 ] fast/webgl/offscreenCanvas-image-rendering.html [ Timeout ]
 crbug.com/374090995 [ Mac14-arm64 ] fast/webgl/offscreenCanvas-transferToImageBitmap-invalid-mailbox.html [ Failure Timeout ]
 [ Mac14-arm64 ] fast/webgl/texImage-imageBitmap-from-blob-resize.html [ Skip Timeout ]
@@ -8018,8 +8016,6 @@ crbug.com/626703 [ Mac ] external/wpt/pointerevents/pointerevent_after_target_ap
 # Mac15/arm64 - Timeout on webgl
 crbug.com/356931190 [ Mac15-arm64 ] fast/webgl/canvas-to-data-url.html [ Timeout ]
 crbug.com/356931190 [ Mac15-arm64 ] fast/webgl/context-destroyed-crash.html [ Timeout ]
-crbug.com/356931190 [ Mac15-arm64 ] fast/webgl/offscreenCanvas-context-lost-restored-worker.html [ Timeout ]
-crbug.com/356931190 [ Mac15-arm64 ] fast/webgl/offscreenCanvas-context-lost-worker.html [ Timeout ]
 crbug.com/356931190 [ Mac15-arm64 ] fast/webgl/offscreenCanvas-image-rendering.html [ Timeout ]
 crbug.com/356931190 [ Mac15-arm64 ] fast/webgl/offscreenCanvas-transferToImageBitmap-invalid-mailbox.html [ Timeout ]
 crbug.com/356931190 [ Mac15-arm64 ] fast/webgl/texImage-imageBitmap-from-blob-resize.html [ Skip Timeout ]

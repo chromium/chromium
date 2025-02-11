@@ -32,7 +32,9 @@ namespace blink {
 
 WebGLShader::WebGLShader(WebGLRenderingContextBase* ctx, GLenum type)
     : WebGLSharedPlatform3DObject(ctx), type_(type), source_("") {
-  SetObject(ctx->ContextGL()->CreateShader(type));
+  if (!ctx->isContextLost()) {
+    SetObject(ctx->ContextGL()->CreateShader(type));
+  }
 }
 
 WebGLShader::~WebGLShader() = default;

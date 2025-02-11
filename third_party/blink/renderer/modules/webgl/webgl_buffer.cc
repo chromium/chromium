@@ -32,9 +32,11 @@ namespace blink {
 
 WebGLBuffer::WebGLBuffer(WebGLRenderingContextBase* ctx)
     : WebGLSharedPlatform3DObject(ctx), initial_target_(0), size_(0) {
-  GLuint buffer;
-  ctx->ContextGL()->GenBuffers(1, &buffer);
-  SetObject(buffer);
+  if (!ctx->isContextLost()) {
+    GLuint buffer;
+    ctx->ContextGL()->GenBuffers(1, &buffer);
+    SetObject(buffer);
+  }
 }
 
 WebGLBuffer::~WebGLBuffer() = default;

@@ -435,15 +435,6 @@ crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
 # New validation was not implemented on the validating command decoder.
 crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test.html [ Failure ]
 
-# Platform-independent failures due to a WebGL roll.
-crbug.com/371971708 conformance/context/context-lost-restored.html [ Failure ]
-crbug.com/371971708 conformance/context/context-lost.html [ Failure ]
-crbug.com/371971708 conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
-crbug.com/371971708 conformance/offscreencanvas/context-lost-restored.html [ Failure ]
-crbug.com/371971708 conformance/offscreencanvas/context-lost-worker.html [ Failure ]
-crbug.com/371971708 conformance/offscreencanvas/context-lost.html [ Failure ]
-crbug.com/371971708 conformance/state/gl-enum-tests.html [ Failure ]
-
 
 ####################
 # Fuchsia failures #
@@ -510,6 +501,9 @@ crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/textures
 
 ## win-swangle-chromium-x86
 crbug.com/365680832 [ angle-swiftshader graphite-enabled oop-c passthrough renderer-skia-gl win ] conformance/extensions/oes-texture-float-linear.html [ Failure ]
+
+## Win / Intel / D3D9
+crbug.com/395934162 [ win intel angle-d3d9 passthrough ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ RetryOnFailure ]
 
 ####################
 # Mac failures     #
@@ -606,10 +600,8 @@ crbug.com/1286830 [ android android-pixel-6 arm ] WebglExtension_EXT_shader_text
 crbug.com/1286830 [ android android-pixel-6 arm ] WebglExtension_WEBGL_draw_buffers [ Failure ]
 crbug.com/1286924 [ android android-pixel-6 arm passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
 crbug.com/1287249 [ android android-pixel-6 no-passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
-# TODO(crbug.com/371971708): Re-add the context-lost expectations after the
-# expectations associated with crbug.com/371971708 are removed.
-# crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
-# crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/offscreencanvas/context-lost-restored.html [ Failure ]
+crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
+crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/offscreencanvas/context-lost-restored.html [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_EXT_color_buffer_half_float [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_OES_texture_float [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_OES_texture_half_float [ Failure ]

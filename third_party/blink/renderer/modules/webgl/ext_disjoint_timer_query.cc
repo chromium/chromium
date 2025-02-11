@@ -27,8 +27,8 @@ const char* EXTDisjointTimerQuery::ExtensionName() {
 
 WebGLTimerQueryEXT* EXTDisjointTimerQuery::createQueryEXT() {
   WebGLExtensionScopedContext scoped(this);
-  if (scoped.IsLost())
-    return nullptr;
+
+  // Object creation must be infallible even if the context is lost.
 
   return MakeGarbageCollected<WebGLTimerQueryEXT>(scoped.Context());
 }
