@@ -63,6 +63,7 @@
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 #include "pdf/pdf_ink_ids.h"
+#include "pdf/pdf_ink_metrics_handler.h"
 #include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
 #endif
 
@@ -80,6 +81,10 @@ struct WebPrintParams;
 }  // namespace blink
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace ink {
 class Stroke;
 }  // namespace ink
@@ -395,9 +400,11 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // `ApplyStroke()`. Virtual to support testing.
   virtual void DiscardStroke(int page_index, InkStrokeId id);
 
-  // Returns whether any of the pages contains a "V2" path created by Ink.
-  // Virtual to support testing.
-  virtual bool ContainsV2InkPath() const;
+  // Returns whether any of the pages contains a "V2" path created by Ink or
+  // unknown if unable to find any "V2" paths within `timeout`. Virtual to
+  // support testing.
+  virtual PDFLoadedWithV2InkAnnotations ContainsV2InkPath(
+      const base::TimeDelta& timeout) const;
 
   // Loads "V2" Ink paths from a page in the PDF identified by `page_index`. The
   // `page_index` must be in bounds.

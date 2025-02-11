@@ -146,13 +146,14 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="PDF.LoadedWithV2InkAnnotations" enum="Boolean"
-    expires_after="2025-12-01">
+<histogram name="PDF.LoadedWithV2InkAnnotations2"
+    enum="PDFLoadedWithV2InkAnnotations" expires_after="2025-12-01">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
     Tracks the number of PDF documents loaded with existing V2 ink annotations
-    in the PDF viewer.
+    in the PDF viewer. Records &quot;Unknown&quot; if there is a timeout failure
+    when scanning the PDF for existing V2 ink annotations.
   </summary>
 </histogram>
 

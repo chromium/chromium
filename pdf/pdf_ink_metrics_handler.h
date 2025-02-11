@@ -99,13 +99,26 @@ enum class StrokeMetricPenColor {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/pdf/enums.xml:PDFInk2StrokePenColor)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(PDFLoadedWithV2InkAnnotations)
+enum class PDFLoadedWithV2InkAnnotations {
+  kUnknown = 0,
+  kTrue = 1,
+  kFalse = 2,
+  kMaxValue = kFalse,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/pdf/enums.xml:PDFLoadedWithV2InkAnnotations)
+
 void ReportDrawStroke(PdfInkBrush::Type type,
                       const ink::Brush& brush,
                       ink::StrokeInput::ToolType tool_type);
 
 void ReportEraseStroke(float size, ink::StrokeInput::ToolType tool_type);
 
-void RecordPdfLoadedWithV2InkAnnotations(bool has_annotations);
+void RecordPdfLoadedWithV2InkAnnotations(
+    PDFLoadedWithV2InkAnnotations loaded_with_annotations);
 
 }  // namespace chrome_pdf
 

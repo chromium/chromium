@@ -2467,7 +2467,10 @@ void PdfViewWebPlugin::RecordDocumentMetrics() {
   // `metrics_handler_` is only initialized when not in Print Preview, so the
   // V2 ink annotations load metric will not count Print Preview loads.
   if (ink_module_) {
-    RecordPdfLoadedWithV2InkAnnotations(engine_->ContainsV2InkPath());
+    // Use a timeout limit of 100ms, which will capture over 90 percent of PDFs
+    // without increasing the PDF load time a significant amount.
+    RecordPdfLoadedWithV2InkAnnotations(
+        engine_->ContainsV2InkPath(base::Milliseconds(100)));
   }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 }

@@ -59,6 +59,7 @@
 
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/pdf_ink_constants.h"
+#include "pdf/pdf_ink_metrics_handler.h"
 #include "pdf/pdfium/pdfium_test_helpers.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
@@ -2116,12 +2117,23 @@ TEST_P(PDFiumEngineInkTest, ContainsV2InkPath) {
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
   ASSERT_EQ(1, engine->GetNumberOfPages());
-  EXPECT_FALSE(engine->ContainsV2InkPath());
+  constexpr base::TimeDelta kContainsV2InkPathTimeout =
+      base::Milliseconds(5000);
+  EXPECT_EQ(engine->ContainsV2InkPath(kContainsV2InkPathTimeout),
+            PDFLoadedWithV2InkAnnotations::kFalse);
 
   engine = InitializeEngine(&client, FILE_PATH_LITERAL("ink_v2.pdf"));
   ASSERT_TRUE(engine);
   ASSERT_EQ(1, engine->GetNumberOfPages());
-  EXPECT_TRUE(engine->ContainsV2InkPath());
+  EXPECT_EQ(engine->ContainsV2InkPath(kContainsV2InkPathTimeout),
+            PDFLoadedWithV2InkAnnotations::kTrue);
+
+  // Test timeout.
+  engine = InitializeEngine(&client, FILE_PATH_LITERAL("ink_v2.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+  EXPECT_EQ(engine->ContainsV2InkPath(base::Milliseconds(0)),
+            PDFLoadedWithV2InkAnnotations::kUnknown);
 }
 
 TEST_P(PDFiumEngineInkTest, LoadV2InkPathsForPage) {
