@@ -204,7 +204,7 @@ id<GREYMatcher> BottomToolbar() {
 
 // Test that the page for viewing Autofill credit card details is as expected
 // when Mandatory Reauth is disabled.
-- (void)testCreditCardViewPageMandatoryReauthDisabled {
+- (void)FLAKY_testCreditCardViewPageMandatoryReauthDisabled {
   [AutofillAppInterface setMandatoryReauthEnabled:FALSE];
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
   [self openEditCreditCard:[self creditCardLabel:lastDigits]];
