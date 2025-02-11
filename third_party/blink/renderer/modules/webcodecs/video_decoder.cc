@@ -159,6 +159,15 @@ VideoDecoderConfig* CopyConfig(const VideoDecoderConfig& config) {
   if (config.hasOptimizeForLatency())
     copy->setOptimizeForLatency(config.optimizeForLatency());
 
+  if (RuntimeEnabledFeatures::WebCodecsOrientationEnabled()) {
+    if (config.hasFlip()) {
+      copy->setFlip(config.flip());
+    }
+    if (config.hasRotation()) {
+      copy->setRotation(config.rotation());
+    }
+  }
+
   return copy;
 }
 
@@ -531,11 +540,17 @@ VideoDecoder::MakeMediaVideoDecoderConfigInternal(
     encryption_scheme = scheme.value();
   }
 
+  auto transformation = media::kNoTransformation;
+  if (RuntimeEnabledFeatures::WebCodecsOrientationEnabled()) {
+    transformation =
+        media::VideoTransformation(config.rotation(), config.flip());
+  }
+
   media::VideoDecoderConfig media_config;
   media_config.Initialize(video_type.codec, video_type.profile,
                           media::VideoDecoderConfig::AlphaMode::kIsOpaque,
-                          media_color_space, media::kNoTransformation,
-                          coded_size, visible_rect, natural_size, extra_data,
+                          media_color_space, transformation, coded_size,
+                          visible_rect, natural_size, extra_data,
                           encryption_scheme);
   media_config.set_aspect_ratio(aspect_ratio);
   if (!media_config.IsValidConfig()) {
@@ -566,10 +581,9 @@ std::optional<media::VideoDecoderConfig> VideoDecoder::MakeMediaConfig(
     const ConfigType& config,
     String* js_error_message) {
   DCHECK(js_error_message);
-  std::optional<media::VideoDecoderConfig> media_config =
-      MakeMediaVideoDecoderConfigInternal(
-          config, decoder_specific_data_ /* out */, js_error_message /* out */);
-  current_codec_ =
+  auto media_config = MakeMediaVideoDecoderConfigInternal(
+      config, decoder_specific_data_ /* out */, js_error_message /* out */);
+  pending_codec_ =
       media_config ? media_config->codec() : media::VideoCodec::kUnknown;
   return media_config;
 }
@@ -608,15 +622,15 @@ VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
 
   bool is_key_frame = chunk.type() == V8EncodedVideoChunkType::Enum::kKey;
   if (verify_key_frame) {
-    if (current_codec_ == media::VideoCodec::kVP9 ||
-        current_codec_ == media::VideoCodec::kVP8) {
-      ParseVpxKeyFrame(*decoder_buffer, current_codec_, &is_key_frame);
-    } else if (current_codec_ == media::VideoCodec::kAV1 &&
+    if (pending_codec_ == media::VideoCodec::kVP9 ||
+        pending_codec_ == media::VideoCodec::kVP8) {
+      ParseVpxKeyFrame(*decoder_buffer, pending_codec_, &is_key_frame);
+    } else if (pending_codec_ == media::VideoCodec::kAV1 &&
                decoder_specific_data_.av1_buffer_pool) {
       ParseAv1KeyFrame(*decoder_buffer,
                        decoder_specific_data_.av1_buffer_pool.get(),
                        &is_key_frame);
-    } else if (current_codec_ == media::VideoCodec::kH264) {
+    } else if (pending_codec_ == media::VideoCodec::kH264) {
       ParseH264KeyFrame(*decoder_buffer, &is_key_frame);
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -631,7 +645,7 @@ VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
             "in the VideoDecoderConfig.");
       }
 #endif
-    } else if (current_codec_ == media::VideoCodec::kHEVC) {
+    } else if (pending_codec_ == media::VideoCodec::kHEVC) {
       ParseH265KeyFrame(*decoder_buffer, &is_key_frame);
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -663,6 +677,10 @@ VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
 media::DecoderStatus::Or<VideoDecoder::OutputType*> VideoDecoder::MakeOutput(
     scoped_refptr<MediaOutputType> output,
     ExecutionContext* context) {
+  if (output) {
+    output->metadata().transformation = active_transform_;
+  }
+
   const auto it = chunk_metadata_.find(output->timestamp());
   if (it != chunk_metadata_.end()) {
     const auto duration = it->second.duration;
@@ -680,6 +698,12 @@ media::DecoderStatus::Or<VideoDecoder::OutputType*> VideoDecoder::MakeOutput(
     chunk_metadata_.erase(chunk_metadata_.begin(), it + 1);
   }
   return MakeGarbageCollected<OutputType>(std::move(output), context);
+}
+
+void VideoDecoder::OnActiveConfigChanged(const MediaConfigType& config) {
+  DCHECK(RuntimeEnabledFeatures::WebCodecsOrientationEnabled() ||
+         config.video_transformation() == media::kNoTransformation);
+  active_transform_ = config.video_transformation();
 }
 
 const AtomicString& VideoDecoder::InterfaceName() const {

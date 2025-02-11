@@ -126,6 +126,9 @@ template <typename Traits>
 void DecoderTemplate<Traits>::SetHardwarePreference(HardwarePreference) {}
 
 template <typename Traits>
+void DecoderTemplate<Traits>::OnActiveConfigChanged(const MediaConfigType&) {}
+
+template <typename Traits>
 void DecoderTemplate<Traits>::configure(const ConfigType* config,
                                         ExceptionState& exception_state) {
   DVLOG(1) << __func__;
@@ -674,6 +677,7 @@ void DecoderTemplate<Traits>::OnInitializeDone(media::DecoderStatus status) {
 
     low_delay_ = pending_request_->low_delay.value();
     active_config_ = std::move(pending_request_->media_config);
+    OnActiveConfigChanged(*active_config_);
   }
 
   pending_request_.Release()->EndTracing();

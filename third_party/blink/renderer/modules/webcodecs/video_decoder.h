@@ -120,6 +120,7 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
   media::DecoderStatus::Or<OutputType*> MakeOutput(
       scoped_refptr<MediaOutputType>,
       ExecutionContext*) override;
+  void OnActiveConfigChanged(const MediaConfigType& config) override;
 
  private:
   struct DecoderSpecificData {
@@ -144,7 +145,11 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
 
   DecoderSpecificData decoder_specific_data_;
 
-  media::VideoCodec current_codec_ = media::VideoCodec::kUnknown;
+  // Note: This may not be the active codec, it is just intended to be the last
+  // codec that was passed to a configure() call.
+  media::VideoCodec pending_codec_ = media::VideoCodec::kUnknown;
+
+  media::VideoTransformation active_transform_ = media::kNoTransformation;
 
   // Per-chunk metadata to be applied to outputs, linked by timestamp.
   struct ChunkMetadata {
