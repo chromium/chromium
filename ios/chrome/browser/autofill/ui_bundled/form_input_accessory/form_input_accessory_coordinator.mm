@@ -448,13 +448,6 @@ bool CanReloadInputViews() {
       kAutofillSuggestionHighlightDelay);
 }
 
-- (void)startManualFillForDataType:(manual_fill::ManualFillDataType)dataType {
-  // Currently only payment methods form input accessory may start manual fill
-  // directly.
-  CHECK_EQ(dataType, manual_fill::ManualFillDataType::kPaymentMethod);
-  [self startManualFillForDataType:dataType invokedOnObfuscatedField:NO];
-}
-
 #pragma mark - FormInputAccessoryViewControllerDelegate
 
 - (void)formInputAccessoryViewController:

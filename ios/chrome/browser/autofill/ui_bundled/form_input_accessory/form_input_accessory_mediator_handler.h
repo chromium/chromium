@@ -27,9 +27,6 @@ enum class SuggestionFeatureForIPH;
 - (void)notifyAutofillSuggestionWithIPHSelectedFor:
     (SuggestionFeatureForIPH)featureForIPH;
 
-// Invoked if manual fill for the `dataType` should be started immediately.
-- (void)startManualFillForDataType:(manual_fill::ManualFillDataType)dataType;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_FORM_INPUT_ACCESSORY_FORM_INPUT_ACCESSORY_MEDIATOR_HANDLER_H_
