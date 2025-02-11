@@ -456,10 +456,12 @@ template("build_webui") {
       in_folder = preprocess_dir
       in_files = filter_exclude(ts_files, [ "*.js" ])
       tsconfig = "$target_gen_dir/tsconfig_build_ts.json"
-      deps = [
-        ":build_ts",
-        ":preprocess_ts_files",
-      ]
+      deps = [ ":build_ts" ]
+      if (enable_source_maps) {
+        deps += [ ":create_source_maps" ]
+      } else {
+        deps += [ ":preprocess_ts_files" ]
+      }
     }
   }
 
