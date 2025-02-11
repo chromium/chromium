@@ -1553,9 +1553,9 @@ void PasswordAutofillAgent::SetPasswordFillData(
     MaybeTriggerSuggestionsOnFocusedElement(username_element, password_element);
     return;
   }
-
   FillUserNameAndPassword(username_element, password_element, form_data,
-                          logger.get());
+                          logger.get(),
+                          form_data.notify_browser_of_successful_filling);
 }
 
 void PasswordAutofillAgent::SetLoggingState(bool active) {
@@ -1879,7 +1879,8 @@ bool PasswordAutofillAgent::FillUserNameAndPassword(
     WebInputElement username_element,
     WebInputElement password_element,
     const PasswordFormFillData& fill_data,
-    RendererSavePasswordProgressLogger* logger) {
+    RendererSavePasswordProgressLogger* logger,
+    bool notify_browser_of_successful_filling) {
   LogMessage(logger, Logger::STRING_FILL_USERNAME_AND_PASSWORD_METHOD);
 
   bool is_single_username_fill = !password_element;
@@ -1998,6 +1999,13 @@ bool PasswordAutofillAgent::FillUserNameAndPassword(
     AutofillField(password, password_element);
     if (logger)
       logger->LogElementName(Logger::STRING_PASSWORD_FILLED, password_element);
+  }
+
+  if (notify_browser_of_successful_filling) {
+    TrackAutofilledElement(main_element);
+    // TODO(crbug.com/395080478): Rename InformBrowserAboutUserInput.
+    InformBrowserAboutUserInput(main_element.GetOwningFormForAutofill(),
+                                main_element, /*form_cache=*/{});
   }
 
   LogFirstFillingResult(fill_data, FillingResult::kSuccess);

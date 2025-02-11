@@ -634,6 +634,11 @@ struct StructTraits<autofill::mojom::PasswordFormFillDataDataView,
     return r.suggestion_banned_fields;
   }
 
+  static bool notify_browser_of_successful_filling(
+      const autofill::PasswordFormFillData& r) {
+    return r.notify_browser_of_successful_filling;
+  }
+
   static bool Read(autofill::mojom::PasswordFormFillDataDataView data,
                    autofill::PasswordFormFillData* out);
 };
