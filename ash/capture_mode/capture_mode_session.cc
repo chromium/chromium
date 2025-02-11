@@ -213,6 +213,10 @@ constexpr int kFeedbackButtonSpacing = 10;
 // The radius of the painted capture region when in sunfish mode.
 constexpr int kSunfishModeCaptureRegionRadiusDp = 16;
 
+// The width of the border around the capture region when selecting or adjusting
+// a region in sunfish mode.
+constexpr int kSunfishModeCaptureRegionBorderWidthDp = 6;
+
 // The animation duration for fading in Scanner action buttons.
 constexpr base::TimeDelta kScannerActionButtonFadeInDuration =
     base::Milliseconds(100);
@@ -2256,7 +2260,24 @@ void CaptureModeSession::PaintSunfishCaptureRegion(gfx::Canvas* canvas) {
   canvas->DrawRoundRect(region, kSunfishModeCaptureRegionRadiusDp,
                         region_mask_flags);
 
-  // TODO(crbug.com/395483324): Implement new Sunfish mode region selection UI.
+  // Draw the region border if the user is currently selecting a capture region.
+  // Note that this doesn't include fine tune phases where the user adjusts the
+  // capture region.
+  if (is_selecting_region_) {
+    cc::PaintFlags border_flags;
+    border_flags.setShader(gfx::CreateGradientShader(
+        region.origin(), region.top_right(),
+        color_provider->GetColor(cros_tokens::kCrosSysMuted),
+        color_provider->GetColor(cros_tokens::kCrosSysComplement)));
+    border_flags.setStyle(cc::PaintFlags::kStroke_Style);
+    border_flags.setStrokeWidth(kSunfishModeCaptureRegionBorderWidthDp);
+    border_flags.setAntiAlias(true);
+    border_flags.setLooper(gfx::CreateShadowDrawLooper({kRegionOutlineShadow}));
+    canvas->DrawRoundRect(region, kSunfishModeCaptureRegionRadiusDp,
+                          border_flags);
+  }
+
+  // TODO(crbug.com/395483324): Paint capture region drag handles.
 }
 
 void CaptureModeSession::MaybePaintCaptureRegionOverlay(
