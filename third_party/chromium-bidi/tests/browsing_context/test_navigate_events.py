@@ -16,7 +16,7 @@
 import pytest
 from syrupy.filters import props
 from test_helpers import (execute_command, goto_url, send_JSON_command,
-                          subscribe, wait_for_event)
+                          subscribe)
 
 SNAPSHOT_EXCLUDE = props("timestamp", "timings", "headers", "stacktrace",
                          "response", "initiator", "realm")
@@ -25,16 +25,21 @@ KEYS_TO_STABILIZE = [
 ]
 
 
-async def set_beforeunload_handler(websocket, context_id):
+async def set_beforeunload_handler(websocket, context_id, show_popup=False):
     await execute_command(
         websocket, {
             "method": "script.callFunction",
             "params": {
                 "functionDeclaration": """
-                    (channel) => {
+                    (channel, show_popup) => {
                         window.addEventListener('beforeunload', () => {
                             channel("beforeunload");
-                        },false)
+                            if(show_popup) {
+                                event.returnValue = "Are you sure you want to leave?";
+                                event.preventDefault();
+                            }
+                        },false);
+                        document.body.click();
                     }
                 """,
                 "arguments": [{
@@ -42,12 +47,16 @@ async def set_beforeunload_handler(websocket, context_id):
                     "value": {
                         "channel": "beforeunload_channel",
                         "ownership": "none",
-                    },
+                    }
+                }, {
+                    "type": "boolean",
+                    "value": show_popup
                 }],
                 "target": {
                     "context": context_id,
                 },
-                "awaitPromise": False
+                "awaitPromise": False,
+                "userActivation": True
             }
         })
 
@@ -220,8 +229,7 @@ async def test_navigate_dataUrl_checkEvents(websocket, context_id, url_base,
 @pytest.mark.asyncio
 async def test_navigate_hang_navigate_again_checkEvents(
         websocket, context_id, url_base, url_hang_forever,
-        url_example_another_origin, read_messages, snapshot,
-        assert_no_more_messages):
+        url_example_another_origin, read_messages, snapshot):
     # Use `url_example_another_origin`, as `url_example` will hang because of
     # `url_hang_forever`.
     await goto_url(websocket, context_id, url_base)
@@ -229,6 +237,9 @@ async def test_navigate_hang_navigate_again_checkEvents(
     await subscribe(
         websocket,
         ["browsingContext", "script.message", "network.beforeRequestSent"])
+
+    messages_log = []
+    known_values = {}
 
     await send_JSON_command(
         websocket, {
@@ -240,7 +251,10 @@ async def test_navigate_hang_navigate_again_checkEvents(
             }
         })
 
-    await wait_for_event(websocket, "browsingContext.navigationStarted")
+    messages_log += await read_messages(3,
+                                        keys_to_stabilize=KEYS_TO_STABILIZE,
+                                        known_values=known_values,
+                                        sort=False)
 
     await send_JSON_command(
         websocket, {
@@ -252,10 +266,52 @@ async def test_navigate_hang_navigate_again_checkEvents(
             }
         })
 
-    messages = await read_messages(10,
+    messages_log += await read_messages(9,
+                                        keys_to_stabilize=KEYS_TO_STABILIZE,
+                                        known_values=known_values,
+                                        check_no_other_messages=True,
+                                        sort=False)
+
+    assert messages_log == snapshot(exclude=SNAPSHOT_EXCLUDE)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('capabilities', [{
+    'unhandledPromptBehavior': {
+        'beforeUnload': 'dismiss'
+    }
+}],
+                         indirect=True)
+async def test_navigate_beforeunload_cancel(websocket, context_id, url_base,
+                                            url_hang_forever,
+                                            url_example_another_origin,
+                                            read_messages, snapshot):
+    # Use `url_example_another_origin`, as `url_example` will hang because of
+    # `url_hang_forever`.
+    await goto_url(websocket, context_id, url_base)
+    await set_beforeunload_handler(websocket, context_id, True)
+    await subscribe(
+        websocket,
+        ["browsingContext", "script.message", "network.beforeRequestSent"])
+
+    known_values = {}
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_hang_forever,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    messages = await read_messages(6,
                                    keys_to_stabilize=KEYS_TO_STABILIZE,
+                                   known_values=known_values,
                                    check_no_other_messages=True,
                                    sort=False)
+
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 

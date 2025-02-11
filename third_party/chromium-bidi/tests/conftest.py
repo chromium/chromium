@@ -334,6 +334,7 @@ def read_messages(websocket, read_all_messages):
                                                     bool] = lambda _: True,
                             keys_to_stabilize: list[str] = [],
                             check_no_other_messages: bool = False,
+                            known_values: dict[str, str] | None = None,
                             sort=True):
         messages = []
         for _ in range(message_count):
@@ -352,7 +353,7 @@ def read_messages(websocket, read_all_messages):
             messages.sort(key=lambda x: x["method"] if "method" in x else str(
                 x["id"]) if "id" in x else "")
         # Stabilize some values through the messages.
-        stabilize_key_values(messages, keys_to_stabilize)
+        stabilize_key_values(messages, keys_to_stabilize, known_values)
 
         if len(messages) > message_count:
             # "Assert equals" to produce a readable overview of all received
