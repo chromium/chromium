@@ -257,8 +257,11 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
   tester.set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
-  // (2.433-2)/0.5=0.866, 1-(1-(1-0.866)**2)=0.018
-  EXPECT_NEAR(border->emphasis_for_testing(), 0.018, kFloatComparisonTolerance);
+  // (2.433-2)/1.0=0.433
+  EXPECT_NEAR(
+      border->emphasis_for_testing(),
+      1.f - gfx::Tween::CalculateValue(gfx::Tween::Type::EASE_IN_OUT_2, 0.433),
+      kFloatComparisonTolerance);
 
   border->CancelAnimation();
   EXPECT_FALSE(border->compositor_for_testing());
@@ -331,8 +334,11 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
   tester.set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
-  // (2.234-2)/0.5=0.468, 1-(1-(1-0.468)**2)=0.283
-  EXPECT_NEAR(border->emphasis_for_testing(), 0.283, kFloatComparisonTolerance);
+  // (2.234-2)/1.0=0.234
+  EXPECT_NEAR(
+      border->emphasis_for_testing(),
+      1.f - gfx::Tween::CalculateValue(gfx::Tween::Type::EASE_IN_OUT_2, 0.234),
+      kFloatComparisonTolerance);
 
   border->CancelAnimation();
   EXPECT_FALSE(border->compositor_for_testing());
@@ -582,15 +588,15 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, EnsureTimeWraps) {
   StartBorderAnimation(browser());
   tester.WaitForAnimationStart();
   tester.set_creation_time(timestamp);
-  int milliseconds = border->GetMillisecondsSinceCreationForTesting();
+  float seconds = border->GetSecondsSinceCreationForTesting();
 
   timestamp += base::Days(0.5);
   tester.set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
-  int milliseconds_half_day = border->GetMillisecondsSinceCreationForTesting();
+  float seconds_half_day = border->GetSecondsSinceCreationForTesting();
 
   // Should not have wrapped.
-  EXPECT_LT(milliseconds, milliseconds_half_day);
+  EXPECT_LT(seconds, seconds_half_day);
 
   timestamp += base::Days(0.5);
   tester.set_next_time_tick(timestamp);
@@ -598,8 +604,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, EnsureTimeWraps) {
 
   // Now that more than a day has passed, we should have wrapped (and so the
   // ms since creation should be lower than at the half-day mark).
-  EXPECT_GT(milliseconds_half_day,
-            border->GetMillisecondsSinceCreationForTesting());
+  EXPECT_GT(seconds_half_day, border->GetSecondsSinceCreationForTesting());
 }
 
 namespace {

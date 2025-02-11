@@ -35,10 +35,12 @@ constexpr static base::TimeDelta kOpacityRampUpDuration =
 // The amount of time for the opacity to go from 1 to 0.
 constexpr static base::TimeDelta kOpacityRampDownDuration =
     base::Milliseconds(200);
-// The amount of time for the border empasis to go from 0 the max, and from max
-// back to 0 (symmetical).
-constexpr static base::TimeDelta kEmphasisRampDuration =
+// The amount of time for the border empasis to go from 0 the max.
+constexpr static base::TimeDelta kEmphasisRampUpDuration =
     base::Milliseconds(500);
+// The amount of time for the border empasis to go from max to 0.
+constexpr static base::TimeDelta kEmphasisRampDownDuration =
+    base::Milliseconds(1000);
 // The amount of time for the border to stay emphasized.
 constexpr static base::TimeDelta kEmphasisDuration = base::Milliseconds(1500);
 // Time since creation will roll over after this time to prevent growing
@@ -250,6 +252,7 @@ void BorderView::OnPaint(gfx::Canvas* canvas) {
   }
 #endif
   std::vector<cc::PaintShader::FloatUniform> float_uniforms = {
+      {.name = SkString("u_time"), .value = GetSecondsSinceCreation()},
       {.name = SkString("u_emphasis"), .value = SkScalar(emphasis_)},
       {.name = SkString("u_corner_radius"), .value = SkScalar(corner_radius)}};
   std::vector<cc::PaintShader::Float2Uniform> float2_uniforms = {
@@ -257,7 +260,6 @@ void BorderView::OnPaint(gfx::Canvas* canvas) {
        .value = SkV2{static_cast<float>(bounds().width()),
                      static_cast<float>(bounds().height())}}};
   std::vector<cc::PaintShader::IntUniform> int_uniforms = {
-      {.name = SkString("u_time"), .value = GetMillisecondsSinceCreation()},
       {.name = SkString("u_dark"),
        .value = UseDarkMode(theme_service_) ? 1 : 0}};
 
@@ -389,8 +391,8 @@ void BorderView::CancelAnimation() {
   SetVisible(false);
 }
 
-int BorderView::GetMillisecondsSinceCreationForTesting() const {
-  return GetMillisecondsSinceCreation();
+float BorderView::GetSecondsSinceCreationForTesting() const {
+  return GetSecondsSinceCreation();
 }
 
 float BorderView::GetEmphasis(base::TimeDelta delta) const {
@@ -398,14 +400,14 @@ float BorderView::GetEmphasis(base::TimeDelta delta) const {
     return 0.f;
   }
   static constexpr base::TimeDelta kRampUpAndSteady =
-      kEmphasisRampDuration + kEmphasisDuration;
+      kEmphasisRampUpDuration + kEmphasisDuration;
   if (delta < kRampUpAndSteady) {
-    auto target = static_cast<float>(delta / kEmphasisRampDuration);
+    auto target = static_cast<float>(delta / kEmphasisRampUpDuration);
     return ClampAndInterpolate(gfx::Tween::Type::EASE_OUT, target, 0, 1);
   }
-  auto target =
-      static_cast<float>((delta - kRampUpAndSteady) / kEmphasisRampDuration);
-  return ClampAndInterpolate(gfx::Tween::Type::EASE_OUT, target, 1, 0);
+  auto target = static_cast<float>((delta - kRampUpAndSteady) /
+                                   kEmphasisRampDownDuration);
+  return ClampAndInterpolate(gfx::Tween::Type::EASE_IN_OUT_2, target, 1, 0);
 }
 
 void BorderView::ResetEmphasisAndReplay() {
@@ -463,13 +465,13 @@ void BorderView::StartRampingDown() {
   }
 }
 
-int BorderView::GetMillisecondsSinceCreation() const {
+float BorderView::GetSecondsSinceCreation() const {
   if (last_animation_step_time_.is_null()) {
     return 0;
   }
-  auto time_since_creation = last_animation_step_time_ - GetCreationTime();
-  return static_cast<int>(time_since_creation.InMilliseconds() %
-                          kMaxTime.InMilliseconds());
+  auto time_since_creation =
+      (last_animation_step_time_ - GetCreationTime()) % kMaxTime;
+  return time_since_creation.InSecondsF();
 }
 
 base::TimeTicks BorderView::GetCreationTime() const {
