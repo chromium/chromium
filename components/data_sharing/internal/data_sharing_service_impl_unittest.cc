@@ -276,6 +276,11 @@ TEST_P(DataSharingServiceImplTest, ShouldLeaveGroup) {
   EXPECT_TRUE(group->members().empty());
 }
 
+TEST_P(DataSharingServiceImplTest, ShouldNotifyOnSyncBridgeUpdateTypeChanged) {
+  data_sharing_service_->OnSyncBridgeUpdateTypeChanged(
+      SyncBridgeUpdateType::kDisableSync);
+}
+
 TEST_P(DataSharingServiceImplTest, ParseAndInterceptDataSharingURL) {
   GURL url = GURL(data_sharing::features::kDataSharingURL.Get() +
                   "?g=" + kGroupId + "&t=" + kTokenBlob);

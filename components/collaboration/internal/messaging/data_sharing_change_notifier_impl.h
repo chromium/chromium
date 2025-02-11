@@ -40,6 +40,8 @@ class DataSharingChangeNotifierImpl : public DataSharingChangeNotifier {
   void OnGroupMemberRemoved(const data_sharing::GroupId& group_id,
                             const GaiaId& member_gaia_id,
                             const base::Time& event_time) override;
+  void OnSyncBridgeUpdateTypeChanged(
+      data_sharing::SyncBridgeUpdateType sync_bridge_update_type) override;
 
  private:
   // Informs observers that this has been initialized. This is in a separate
@@ -87,6 +89,13 @@ class DataSharingChangeNotifierImpl : public DataSharingChangeNotifier {
 
   // The DataSharingService that is the source of the updates.
   raw_ptr<data_sharing::DataSharingService> data_sharing_service_;
+
+  // Whether the collaboration sync bridge is undergoing initial merge or
+  // disable sync (which mostly happens during sign-in / sign-out). During this
+  // period, the incoming sync changes should be ignored which would otherwise
+  // create an avalanche of false notifications.
+  data_sharing::SyncBridgeUpdateType sync_bridge_update_type_ =
+      data_sharing::SyncBridgeUpdateType::kDefaultState;
 
   base::WeakPtrFactory<DataSharingChangeNotifierImpl> weak_ptr_factory_{this};
 };

@@ -35,6 +35,7 @@ using testing::Eq;
 using testing::InvokeWithoutArgs;
 using testing::IsEmpty;
 using testing::IsNull;
+using testing::Sequence;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
@@ -96,6 +97,7 @@ class MockObserver : public CollaborationGroupSyncBridge::Observer {
                const std::vector<GroupId>&),
               (override));
   MOCK_METHOD(void, OnCollaborationGroupSyncDataLoaded, (), (override));
+  MOCK_METHOD(void, OnSyncBridgeUpdateTypeChanged, (SyncBridgeUpdateType));
 };
 
 class CollaborationGroupSyncBridgeTest : public testing::Test {
@@ -192,6 +194,14 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldMergeFullSyncData) {
   syncer::EntityChangeList entity_changes;
   entity_changes.push_back(EntityChangeAddFromSpecifics(specifics1));
   entity_changes.push_back(EntityChangeAddFromSpecifics(specifics2));
+
+  Sequence s;
+  EXPECT_CALL(observer(), OnSyncBridgeUpdateTypeChanged(
+                              Eq(SyncBridgeUpdateType::kInitialMerge)))
+      .InSequence(s);
+  EXPECT_CALL(observer(), OnSyncBridgeUpdateTypeChanged(
+                              Eq(SyncBridgeUpdateType::kDefaultState)))
+      .InSequence(s);
 
   // Mimics initial sync with two entities described above.
   bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
@@ -344,11 +354,19 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldApplyDisableSyncChanges) {
   bridge().MergeFullSyncData(std::move(metadata_changes),
                              std::move(intitial_entity_changes));
 
+  testing::Mock::VerifyAndClearExpectations(&observer());
   EXPECT_CALL(
       observer(),
       OnGroupsUpdated(/*added_group_ids*/ IsEmpty(),
                       /*updated_group_ids*/ IsEmpty(),
                       /*deleted_group_ids*/ UnorderedElementsAre(id1, id2)));
+  Sequence s;
+  EXPECT_CALL(observer(), OnSyncBridgeUpdateTypeChanged(
+                              Eq(SyncBridgeUpdateType::kDisableSync)))
+      .InSequence(s);
+  EXPECT_CALL(observer(), OnSyncBridgeUpdateTypeChanged(
+                              Eq(SyncBridgeUpdateType::kDefaultState)))
+      .InSequence(s);
 
   // Should clear all data and metadata, `delete_metadata_change_list` is not
   // relevant for this implementation, so nullptr is okay.
