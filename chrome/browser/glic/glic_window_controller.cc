@@ -339,12 +339,6 @@ void GlicWindowController::WebUiStateChanged(mojom::WebUiState new_state) {
     webui_state_ = new_state;
     webui_state_observers_.Notify(&WebUiStateObserver::WebUiStateChanged,
                                   webui_state_);
-
-    // Record the panel's display finish state.
-    if (IsDisplayFinishState(new_state)) {
-      base::UmaHistogramEnumeration("Glic.PanelWebUiState.FinishState",
-                                    new_state);
-    }
   }
 }
 
@@ -774,6 +768,9 @@ void GlicWindowController::CloseFinish(bool reopen_detached) {
     return;
   }
 
+  base::UmaHistogramEnumeration("Glic.PanelWebUiState.FinishState2",
+                                webui_state_);
+
   state_ = State::kClosed;
   attached_browser_ = nullptr;
   attached_browser_widget_observation_.Reset();
@@ -1097,22 +1094,6 @@ void GlicWindowController::Shutdown() {
 void GlicWindowController::ResetPresentationTimingState() {
   show_start_time_ = base::TimeTicks();
   starting_mode_ = mojom::WebClientMode::kUnknown;
-}
-
-bool GlicWindowController::IsDisplayFinishState(mojom::WebUiState state) {
-  switch (state) {
-    case mojom::WebUiState::kUninitialized:
-    case mojom::WebUiState::kBeginLoad:
-    case mojom::WebUiState::kShowLoading:
-    case mojom::WebUiState::kHoldLoading:
-    case mojom::WebUiState::kFinishLoading:
-      return false;
-    case mojom::WebUiState::kError:
-    case mojom::WebUiState::kOffline:
-    case mojom::WebUiState::kUnavailable:
-    case mojom::WebUiState::kReady:
-      return true;
-  }
 }
 
 }  // namespace glic
