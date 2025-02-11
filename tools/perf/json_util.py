@@ -1,0 +1,366 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+"""Utils to convert json from result2 to skia."""
+
+import collections
+import dataclasses
+import datetime
+import re
+import statistics
+from typing import Any, Dict, List, Mapping, Optional, Set, Tuple
+
+import json_constants
+
+
+# TODO(crbug.com/318738818): Replace the hardcoded bucket names with the
+# correct ones.
+def gcs_buckets_from_builder_name(_: str) -> List[str]:
+  """Returns the GCS buckets to upload the json to."""
+  # Hardcoded for a/b testing to achieve data parity.
+  return ["chrome-perf-experiment-non-public"]
+
+
+def calculate_stats(values):
+  """Calculates the mean, std dev, count, max, min, and sum of a list of values.
+
+  Args:
+    values: A list of values.
+  Returns:
+    A tuple of the mean, std dev, count, max, min, and sum of the values.
+  """
+  n = len(values)
+  if n == 0:
+    return 0, 0, 0, 0, 0, 0
+
+  average = sum(values) / n
+  # If there is only one value, the standard deviation is 0.
+  std_dev = statistics.stdev(values) if len(values) > 1 else 0.0
+  return average, std_dev, n, max(values), min(values), sum(values)
+
+
+def extract_subtest_from_stories_tags(stories: List[str],
+                                      tags: List[str]) -> Tuple[str, str]:
+  """Extracts two specific values from a given stories and storyTags."""
+  tags_to_use = [t.split(":") for t in tags if ":" in t]
+  if not tags_to_use and stories:
+    return stories[0], ""
+  subtest_1 = "_".join(v for _, v in sorted(tags_to_use))
+  array = [t.split(":") for t in stories if ":" in t]
+  stories_parts = [item for sub in array for item in sub]
+  subtest_2 = "_".join(stories_parts)
+  return subtest_1, subtest_2
+
+
+@dataclasses.dataclass
+class PerfBuilderDetails:
+  """Details of build_properties on a perf builder/tester."""
+
+  bot: str
+  builder_page: str
+  git_hash: str
+  chromium_commit_position: str
+  master: str
+  v8_git_hash: str
+  webrtc_git_hash: str
+
+
+def get_gcs_prefix_path(
+    build_properties: Dict[str, Any],
+    builder_details: PerfBuilderDetails,
+    benchmark_name: str,
+    given_datetime: Optional[datetime.datetime],
+    filename: Optional[str]) -> str:
+  """Returns the gcs prefix path.
+
+  Args:
+    build_properties: The build properties.
+    builder_details: The perf builder details.
+    benchmark_name: The benchmark name.
+    given_datetime: A datetime for deterministic testing.
+    filename: The filename of the json file appends to the path.
+  returns:
+    The gcs prefix path.
+  """
+  now = given_datetime or datetime.datetime.now()  # Get the {yyyy/mm/dd}
+  year = now.year
+  month = now.month
+  day = now.day
+  candidates = [
+      # ingest/yyyy/mm/dd/master/buildername/buildnumber/benchmarkname/filename
+      "ingest",
+      "{:04d}".format(year),
+      "{:02d}".format(month),
+      "{:02d}".format(day),
+      builder_details.master,
+      build_properties["buildername"],
+      str(build_properties["buildnumber"]),
+      benchmark_name,
+  ]
+  if filename:
+    candidates.append(filename)
+
+  gcs_prefix_path = r"/".join(candidates)
+  return gcs_prefix_path
+
+
+def perf_builder_details_from_build_properties(
+    properties: Dict[str, Any],
+    configuration_name: str,
+    machine_group: str) -> PerfBuilderDetails:
+  """Returns a PerfBuilderDetails from a given environment."""
+  match = re.search(r"@\{#(\d+)\}", properties["got_revision_cp"])
+  if match:
+    revision = match.group(1)  # Return the captured group (the hash)
+  else:
+    revision = ""
+  # TODO(crbug.com/318738818): Replace the url template with a more generic one
+  # that works for chromium and chrome builders.
+  result_url = "https://ci.chromium.org/ui/p/chrome/builders/ci/{}/{}".format(
+      properties["buildername"], properties["buildnumber"])
+  return PerfBuilderDetails(
+      bot=configuration_name,
+      builder_page=result_url,
+      git_hash="CP:{}".format(revision) if revision else "",
+      chromium_commit_position=properties["got_revision_cp"],
+      master=machine_group,
+      v8_git_hash=properties["got_v8_revision"],
+      webrtc_git_hash=properties["got_webrtc_revision"],
+  )
+
+
+def links_from_builder_details(
+    builder_details: PerfBuilderDetails,
+    bot_ids: Set[str],
+    os_versions: Set[str],
+) -> Dict[str, str]:
+  """Returns a dictionary of links from builder details."""
+  links = collections.defaultdict(str)
+  links[json_constants.BUILD_PAGE] = (builder_details.builder_page
+                                      if builder_details else "")
+  links[json_constants.OS_VERSION] = ""
+  links[json_constants.BOT_IDS] = ""
+  links[json_constants.CHROMIUM_COMMIT_POSITION] = (
+      builder_details.chromium_commit_position if builder_details else "")
+  links[json_constants.V8_GIT_HASH] = (builder_details.v8_git_hash
+                                       if builder_details else "")
+  links[json_constants.WEBRTC_GIT_HASH] = (builder_details.webrtc_git_hash
+                                           if builder_details else "")
+  links[json_constants.BOT_IDS] = ", ".join(
+      str(bot_id) for bot_id in sorted(bot_ids))
+  links[json_constants.OS_VERSION] = ", ".join(
+      str(os_version) for os_version in sorted(os_versions))
+  return links
+
+
+def key_from_builder_details(builder_details: PerfBuilderDetails,
+                             benchmark_key: Optional[str]) -> Dict[str, str]:
+  """Returns a dictionary of key from builder details."""
+  key = collections.defaultdict(str)
+  key[json_constants.MASTER] = builder_details.master if builder_details else ""
+  key[json_constants.BOT] = builder_details.bot if builder_details else ""
+  key[json_constants.BENCHMARK] = ""
+  key[json_constants.BENCHMARK] = benchmark_key if benchmark_key else ""
+  return key
+
+
+class JsonUtil:
+  """Tools to convert result2 json to skia json."""
+
+  def __init__(self, generate_synthetic_measurements: bool = False):
+    self.generate_synthetic_measurements = generate_synthetic_measurements
+    self._result2_jsons: List[Dict[str, Any]] = []
+
+  def add(self, result2_json: List[Dict[str, str]]):
+    """Adds a result2 json to the util."""
+    self._result2_jsons.extend(result2_json)
+
+  def _merge(
+      self,
+      builder_details: PerfBuilderDetails,
+  ) -> Tuple[
+      Mapping[List[Any], List[Any]],
+      Mapping[str, str],
+      Mapping[str, str],
+  ]:
+    """Merges the results."""
+    benchmark_key = None
+    bot_ids = set()
+    os_versions = set()
+    merged_results = collections.defaultdict(list)
+    guid_to_values = collections.defaultdict(str)
+    for item in self._result2_jsons:
+      if (item.get("type") == json_constants.GENERIC_SET
+          and json_constants.GUID in item and json_constants.VALUES in item):
+        guid_to_values[item[json_constants.GUID]] = item[json_constants.VALUES]
+      if json_constants.DIAGNOSTICS in item:
+        test_name = item[json_constants.NAME]
+        improvement_direction = json_constants.UNIT_TO_DIRECTION.get(
+            item[json_constants.UNIT], "up")
+        if not isinstance(item[json_constants.DIAGNOSTICS], dict):
+          raise ValueError("The diagnostics should be a dict, but it is %s" %
+                           type(item[json_constants.DIAGNOSTICS]))
+        stories = []
+        story_tags = []
+        for diagnostic_type, guid in item[json_constants.DIAGNOSTICS].items():
+          # diagnostics_map[guid] = diagnostic_type
+          if diagnostic_type == json_constants.BOT_ID:
+            if guid in guid_to_values:
+              bot_ids.update(guid_to_values[guid])
+          elif diagnostic_type == json_constants.OS_DETAILED_VERSIONS:
+            if guid in guid_to_values:
+              os_versions.update(guid_to_values[guid])
+          elif diagnostic_type == json_constants.BENCHMARKS:
+            benchmark_key = str(guid_to_values[guid][0])
+          elif diagnostic_type == json_constants.STORIES:
+            stories.extend(guid_to_values[guid])
+          elif diagnostic_type == json_constants.STORY_TAGS:
+            story_tags.extend(guid_to_values[guid])
+        subtest_1, subtest_2 = extract_subtest_from_stories_tags(
+            stories, story_tags)
+
+        try:
+          if json_constants.SAMPLE_VALUES in item:
+            if subtest_1 or subtest_2:
+              merged_results[(
+                  test_name,
+                  item[json_constants.UNIT],
+                  improvement_direction,
+                  subtest_1,
+                  subtest_2,
+              )].extend(item["sampleValues"])
+            else:
+              merged_results[(test_name, item[json_constants.UNIT],
+                              improvement_direction)].extend(
+                                  item["sampleValues"])
+          elif json_constants.SUMMARY_OPTIONS in item:
+            if (json_constants.COUNT in item[json_constants.SUMMARY_OPTIONS]
+                and item[json_constants.SUMMARY_OPTIONS][json_constants.COUNT]
+                == "false"):
+              continue
+          else:
+            # Some benchmarks don"t have sample values nor summary options.
+            # For instance, "render_accessibility_locations".
+            continue
+        except KeyError as exc:
+          raise ValueError(
+              "The sampleValues should be in the item, but it is not there. %s"
+              % item) from exc
+
+    links = links_from_builder_details(builder_details, bot_ids, os_versions)
+    key = key_from_builder_details(builder_details, benchmark_key)
+    return merged_results, links, key
+
+  def process(self, builder_details: PerfBuilderDetails) -> Dict[str, Any]:
+    """Processes the result2 jsons and returns a skia json.
+
+    Args:
+      builder_details: The perf builder details.
+    Returns:
+      The skia json data.
+    """
+    output = {
+        json_constants.VERSION: 1,
+        json_constants.GIT_HASH: (builder_details.git_hash if builder_details
+                                  else ""),
+        json_constants.KEY: collections.defaultdict(str),
+        json_constants.RESULTS: [],
+    }
+
+    # diagnostics_map = {}
+    merged_results, links, key = self._merge(builder_details)
+
+    output[json_constants.KEY] = key
+    output[json_constants.LINKS] = links
+    measurements = self.measurements_from_results(merged_results)
+
+    output[json_constants.RESULTS] = measurements
+
+    return output
+
+  def measurements_from_results(
+      self,
+      data: Mapping[List[Any], List[Any]],
+  ) -> List[Dict[str, Any]]:
+    """Calculates the measurements for each test."""
+    results = []
+    if not data:
+      return results
+    for key, values in data.items():
+      if len(key) == 3:
+        test_name, unit, improvement_direction = key
+        subtest_1, subtest_2 = None, None
+      else:
+        test_name, unit, improvement_direction, subtest_1, subtest_2 = key
+      avg, std_err, count, max_val, min_val, sum_val = calculate_stats(values)
+      measurements = [
+          {
+              json_constants.VALUE: json_constants.VALUE,
+              json_constants.MEASUREMENT: avg,
+          },
+          {
+              json_constants.VALUE: json_constants.STD_DEV,
+              json_constants.MEASUREMENT: std_err,
+          },
+          {
+              json_constants.VALUE: json_constants.COUNT,
+              json_constants.MEASUREMENT: float(count),
+          },
+          {
+              json_constants.VALUE: json_constants.MAX,
+              json_constants.MEASUREMENT: max_val,
+          },
+          {
+              json_constants.VALUE: "min",
+              json_constants.MEASUREMENT: min_val
+          },
+          {
+              json_constants.VALUE: "sum",
+              json_constants.MEASUREMENT: sum_val
+          },
+      ]
+      result = {
+          json_constants.MEASUREMENTS: {
+              json_constants.STAT: measurements
+          },
+          json_constants.KEY: {
+              json_constants.IMPROVEMENT_DIRECTION: improvement_direction,
+              json_constants.UNIT: unit,
+              json_constants.TEST: test_name,
+          },
+      }
+      if subtest_1:
+        result[json_constants.KEY][json_constants.SUBTEST_1] = subtest_1
+      if subtest_2:
+        result[json_constants.KEY][json_constants.SUBTEST_2] = subtest_2
+      results.append(result)
+      # Generate a synthetic measurement that ends with "_avg"
+      if self.generate_synthetic_measurements:
+        synthetic_measurements = [
+            {
+                json_constants.VALUE: json_constants.VALUE,
+                json_constants.MEASUREMENT: avg,
+            },
+            {
+                json_constants.VALUE: json_constants.STD_DEV,
+                json_constants.MEASUREMENT: std_err,
+            },
+        ]
+        synthetic_result = {
+            json_constants.MEASUREMENTS: {
+                json_constants.STAT: synthetic_measurements
+            },
+            json_constants.KEY: {
+                json_constants.IMPROVEMENT_DIRECTION: improvement_direction,
+                json_constants.UNIT: unit,
+                json_constants.TEST: test_name + "_avg",
+            },
+        }
+        if subtest_1:
+          synthetic_result[json_constants.KEY][json_constants.SUBTEST_1] = (
+              subtest_1)
+        if subtest_2:
+          synthetic_result[json_constants.KEY][json_constants.SUBTEST_2] = (
+              subtest_2)
+        results.append(synthetic_result)
+    return results
