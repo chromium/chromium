@@ -2277,7 +2277,76 @@ void CaptureModeSession::PaintSunfishCaptureRegion(gfx::Canvas* canvas) {
                           border_flags);
   }
 
-  // TODO(crbug.com/395483324): Paint capture region drag handles.
+  // If the user is currently selecting or adjusting the capture region, there
+  // is no need to paint drag handles so we can early return.
+  if (is_selecting_region_ || fine_tune_position_ != FineTunePosition::kNone) {
+    return;
+  }
+
+  // Draw circular drag handles at the center of each edge of the capture
+  // region.
+  cc::PaintFlags circle_flags;
+  circle_flags.setColor(capture_mode::kRegionBorderColor);
+  circle_flags.setStyle(cc::PaintFlags::kFill_Style);
+  circle_flags.setAntiAlias(true);
+  circle_flags.setLooper(gfx::CreateShadowDrawLooper(
+      {kRegionAffordanceCircleShadow1, kRegionAffordanceCircleShadow2}));
+  auto draw_circle = [&canvas, &circle_flags,
+                      &dsf](const gfx::Point& location) {
+    canvas->DrawCircle(location, dsf * kAffordanceCircleRadiusDp, circle_flags);
+  };
+
+  draw_circle(region.top_center());
+  draw_circle(region.right_center());
+  draw_circle(region.bottom_center());
+  draw_circle(region.left_center());
+
+  // Draw drag handles at each corner of the capture region. Each handle is a
+  // quarter arc with rounded ends.
+  cc::PaintFlags corner_arc_flags;
+  corner_arc_flags.setColor(capture_mode::kRegionBorderColor);
+  corner_arc_flags.setStyle(cc::PaintFlags::kStroke_Style);
+  corner_arc_flags.setAntiAlias(true);
+  corner_arc_flags.setLooper(gfx::CreateShadowDrawLooper(
+      {kRegionAffordanceCircleShadow1, kRegionAffordanceCircleShadow2}));
+  corner_arc_flags.setStrokeWidth(kSunfishModeCaptureRegionBorderWidthDp);
+  // Make the ends of each arc rounded.
+  corner_arc_flags.setStrokeCap(cc::PaintFlags::Cap::kRound_Cap);
+  const float arc_diameter = dsf * 2 * kSunfishModeCaptureRegionRadiusDp;
+  // Draws a 90 degree arc from the circle with diameter `arc_diameter`,
+  // leftmost coordinate `circle_left`, and topmost coordinate `circle_top`.
+  // `start_angle` indicates the starting angle of the arc in degrees, measured
+  // clockwise from the positive x-axis. The arc is drawn clockwise from the
+  // specified `start_angle`.
+  auto draw_corner_arc = [&canvas, &corner_arc_flags, &arc_diameter](
+                             int circle_left, int circle_top,
+                             SkScalar start_angle) {
+    SkPath corner_arc;
+    corner_arc.arcTo(/*oval=*/SkRect::MakeXYWH(circle_left, circle_top,
+                                               arc_diameter, arc_diameter),
+                     /*startAngle=*/start_angle,
+                     /*sweepAngle=*/90, /*forceMoveTo=*/false);
+    canvas->DrawPath(corner_arc, corner_arc_flags);
+  };
+
+  // Top left handle.
+  draw_corner_arc(/*circle_left=*/region.x(), /*circle_top=*/region.y(),
+                  /*start_angle=*/180);
+  // Top right handle.
+  draw_corner_arc(/*circle_left=*/region.right() - arc_diameter,
+                  /*circle_top=*/region.y(),
+                  /*start_angle=*/270);
+  // Bottom right handle.
+  draw_corner_arc(
+      /*circle_left=*/region.right() - arc_diameter,
+      /*circle_top=*/region.bottom() - arc_diameter,
+      /*start_angle=*/0);
+  // Bottom left handle.
+  draw_corner_arc(/*circle_left=*/region.x(),
+                  /*circle_top=*/region.bottom() - arc_diameter,
+                  /*start_angle=*/90);
+
+  // TODO(crbug.com/395483324): Paint focus rings.
 }
 
 void CaptureModeSession::MaybePaintCaptureRegionOverlay(
