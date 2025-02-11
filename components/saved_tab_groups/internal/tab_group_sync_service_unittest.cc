@@ -117,6 +117,7 @@ class MockTabGroupSyncServiceObserver : public TabGroupSyncService::Observer {
               OnTabGroupLocalIdChanged,
               (const base::Uuid&, const std::optional<LocalTabGroupID>&));
   MOCK_METHOD(void, OnTabGroupsReordered, (TriggerSource));
+  MOCK_METHOD(void, OnSyncBridgeUpdateTypeChanged, (SyncBridgeUpdateType));
 };
 
 class MockTabGroupSyncCoordinator : public TabGroupSyncCoordinator {
@@ -1610,6 +1611,41 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromLocalSource) {
                                             Eq(TriggerSource::LOCAL)))
       .Times(1);
   model_->RemovedLocally(group_1_.local_group_id().value());
+}
+
+TEST_F(TabGroupSyncServiceTest, OnSyncBridgeUpdateTypeChanged) {
+  EXPECT_CALL(*observer_, OnSyncBridgeUpdateTypeChanged).Times(0);
+  model_->OnSyncBridgeUpdateTypeChanged(SyncBridgeUpdateType::kDisableSync);
+  testing::Mock::VerifyAndClearExpectations(observer_.get());
+
+  // Verify that the observers are posted instead of directly notifying.
+  EXPECT_CALL(*observer_, OnSyncBridgeUpdateTypeChanged(
+                              Eq(SyncBridgeUpdateType::kDisableSync)))
+      .Times(1);
+  WaitForPostedTasks();
+}
+
+TEST_F(TabGroupSyncServiceTest, TasksArePostedInTheSameSequenceAsOriginated) {
+  Sequence s;
+  EXPECT_CALL(*observer_, OnSyncBridgeUpdateTypeChanged(
+                              Eq(SyncBridgeUpdateType::kInitialMerge)))
+      .InSequence(s);
+  EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4_.saved_guid()),
+                                          Eq(TriggerSource::REMOTE)))
+      .InSequence(s);
+  EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
+                                                group_1_.saved_guid()),
+                                            Eq(TriggerSource::REMOTE)))
+      .InSequence(s);
+  EXPECT_CALL(*observer_, OnSyncBridgeUpdateTypeChanged(
+                              Eq(SyncBridgeUpdateType::kDisableSync)))
+      .InSequence(s);
+
+  model_->OnSyncBridgeUpdateTypeChanged(SyncBridgeUpdateType::kInitialMerge);
+  model_->AddedFromSync(group_4_);
+  model_->RemovedFromSync(group_1_.saved_guid());
+  model_->OnSyncBridgeUpdateTypeChanged(SyncBridgeUpdateType::kDisableSync);
+  WaitForPostedTasks();
 }
 
 TEST_F(TabGroupSyncServiceTest, GetURLRestrictionFailed) {

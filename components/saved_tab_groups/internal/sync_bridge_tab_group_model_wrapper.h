@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/sync/base/data_type.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -100,6 +101,12 @@ class SyncBridgeTabGroupModelWrapper {
   // Initializes with the data loaded from the disk.
   void Initialize(std::vector<SavedTabGroup> groups,
                   std::vector<SavedTabGroupTab> tabs);
+
+  // Called to notify of the sync bridge state changes, e.g. whether initial
+  // merge or disable sync are in progress. Invoked only for shared tab group
+  // bridge.
+  void OnSyncBridgeUpdateTypeChanged(
+      SyncBridgeUpdateType sync_bridge_update_type);
 
  private:
   // Returns whether the current wrapper is used for the shared tab group data.

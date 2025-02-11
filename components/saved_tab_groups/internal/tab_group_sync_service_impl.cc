@@ -1302,6 +1302,25 @@ void TabGroupSyncServiceImpl::NotifyServiceInitialized() {
       kDelayBeforeMetricsLogged);
 }
 
+void TabGroupSyncServiceImpl::OnSyncBridgeUpdateTypeChanged(
+    SyncBridgeUpdateType sync_bridge_update_type) {
+  // Post this event as all other sync generated events (add/update/deletion
+  // etc) are posted from this class. It's essential for the observer to receive
+  // them in the same sequence as they are originated.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &TabGroupSyncServiceImpl::NotifyOnSyncBridgeUpdateTypeChanged,
+          weak_ptr_factory_.GetWeakPtr(), sync_bridge_update_type));
+}
+
+void TabGroupSyncServiceImpl::NotifyOnSyncBridgeUpdateTypeChanged(
+    SyncBridgeUpdateType sync_bridge_update_type) {
+  for (auto& observer : observers_) {
+    observer.OnSyncBridgeUpdateTypeChanged(sync_bridge_update_type);
+  }
+}
+
 void TabGroupSyncServiceImpl::OnCollaborationAvailable(
     const std::string& collaboration_id) {
   // If there was a shared tab group waiting for the corresponding people group,

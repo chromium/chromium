@@ -140,6 +140,12 @@ void SyncBridgeTabGroupModelWrapper::Initialize(
   std::move(on_load_callback_).Run(std::move(groups), std::move(tabs));
 }
 
+void SyncBridgeTabGroupModelWrapper::OnSyncBridgeUpdateTypeChanged(
+    SyncBridgeUpdateType sync_bridge_update_type) {
+  CHECK(IsSharedTabGroupData());
+  model_->OnSyncBridgeUpdateTypeChanged(sync_bridge_update_type);
+}
+
 bool SyncBridgeTabGroupModelWrapper::IsSharedTabGroupData() const {
   return sync_data_type_ == syncer::SHARED_TAB_GROUP_DATA;
 }

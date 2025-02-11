@@ -252,6 +252,45 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupsAddedAndRemoved) {
                                     tab_groups::TriggerSource::REMOTE);
 }
 
+TEST_F(TabGroupChangeNotifierImplTest,
+       TestTabGroupsAddedAndRemoved_IgnoredWhenInitialMergeNotCompleted) {
+  InitializeNotifier(
+      /*startup_tab_groups=*/std::vector<tab_groups::SavedTabGroup>(),
+      /*init_tab_groups=*/std::vector<tab_groups::SavedTabGroup>());
+
+  // Sign-in and start initial merge. Incoming sync updates should be ignored.
+  tgss_observer_->OnSyncBridgeUpdateTypeChanged(
+      tab_groups::SyncBridgeUpdateType::kInitialMerge);
+  // Add a tab group to the service.
+  tab_groups::SavedTabGroup tab_group_1 = CreateTestSharedTabGroup();
+  EXPECT_CALL(*notifier_observer_, OnTabGroupAdded).Times(0);
+  tgss_observer_->OnTabGroupAdded(tab_group_1,
+                                  tab_groups::TriggerSource::REMOTE);
+  testing::Mock::VerifyAndClearExpectations(tgss_observer_);
+
+  // Complete initial merge.
+  tgss_observer_->OnSyncBridgeUpdateTypeChanged(
+      tab_groups::SyncBridgeUpdateType::kDefaultState);
+
+  // Add another test group and ensure the observer is informed.
+  tab_groups::SavedTabGroup tab_group_2 = CreateTestSharedTabGroup();
+  EXPECT_CALL(*notifier_observer_,
+              OnTabGroupAdded(TabGroupGuidEq(tab_group_2),
+                              Eq(tab_groups::TriggerSource::REMOTE)));
+  tgss_observer_->OnTabGroupAdded(tab_group_2,
+                                  tab_groups::TriggerSource::REMOTE);
+  testing::Mock::VerifyAndClearExpectations(tgss_observer_);
+
+  // Sign-out and start disabling sync. Incoming sync updates should be ignored.
+  // Remove the first group and ensure the observer is not informed.
+  tgss_observer_->OnSyncBridgeUpdateTypeChanged(
+      tab_groups::SyncBridgeUpdateType::kDisableSync);
+
+  EXPECT_CALL(*notifier_observer_, OnTabGroupRemoved).Times(0);
+  tgss_observer_->OnTabGroupRemoved(tab_group_1.saved_guid(),
+                                    tab_groups::TriggerSource::REMOTE);
+}
+
 TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupsAvailableOnStartup) {
   tab_groups::SavedTabGroup tab_group_1 = CreateTestSharedTabGroup();
   tab_groups::SavedTabGroup tab_group_2 = CreateTestSharedTabGroup();
