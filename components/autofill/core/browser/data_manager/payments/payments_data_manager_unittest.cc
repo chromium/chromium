@@ -3769,6 +3769,21 @@ TEST_F(PaymentsDataManagerTest,
   EXPECT_TRUE(payments_data_manager().GetUnlinkedBnplIssuers().empty());
   EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
 }
+
+// Tests that `SetAutofillHasSeenBnpl()` sets the pref to `true` regardless of
+// its current value.
+TEST_F(PaymentsDataManagerTest, SetAutofillHasSeenBnpl) {
+  // The pref should always start disabled.
+  ASSERT_FALSE(payments_data_manager().IsAutofillHasSeenBnplPrefEnabled());
+
+  // Calling `SetAutofillHasSeenBnpl()` permanently enables the pref.
+  payments_data_manager().SetAutofillHasSeenBnpl();
+  ASSERT_TRUE(payments_data_manager().IsAutofillHasSeenBnplPrefEnabled());
+
+  // The pref remains enabled after subsequent calls.
+  payments_data_manager().SetAutofillHasSeenBnpl();
+  ASSERT_TRUE(payments_data_manager().IsAutofillHasSeenBnplPrefEnabled());
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
