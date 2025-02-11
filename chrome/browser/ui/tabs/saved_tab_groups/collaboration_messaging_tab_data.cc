@@ -12,6 +12,7 @@
 #include "components/collaboration/public/messaging/message.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
+#include "components/signin/public/base/avatar_icon_util.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_util.h"
@@ -29,10 +30,9 @@ int GetPageActionImageSize() {
   return GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE);
 }
 
-gfx::Image ResizeForHoverCard(const gfx::Image& image) {
-  auto image_size = GetHoverCardImageSize();
-  auto size = gfx::Size(image_size, image_size);
-  return gfx::ResizedImage(image, size);
+ui::ImageModel GetResizedImage(const gfx::Image& image, int image_size) {
+  return ui::ImageModel::FromImage(
+      gfx::ResizedImage(image, gfx::Size(image_size, image_size)));
 }
 
 }  // namespace
@@ -114,12 +114,10 @@ void CollaborationMessagingTabData::FetchAvatar(PersistentMessage message) {
     return CommitMessage(message, gfx::Image());
   }
 
-  // Perform the request using disk caching. The page action icon size
-  // is used to request the larger of the 2 images needed. The sizes are
-  // similar enough that the larger image is resized to accommodate the
-  // smaller hover card image.
+  // Request the avatar image using the standard size. This will be
+  // resized to accommodate the UI surfaces that use it.
   data_sharing_service->GetAvatarImageForURL(
-      avatar_url, GetPageActionImageSize(),
+      avatar_url, signin::kAccountInfoImageSize,
       base::BindOnce(&CollaborationMessagingTabData::CommitMessage,
                      base::Unretained(this), message),
       image_fetcher_service->GetImageFetcher(
@@ -156,8 +154,9 @@ void CollaborationMessagingTabData::CommitMessage(
     page_action_avatar_ = ui::ImageModel();
     hover_card_avatar_ = ui::ImageModel();
   } else {
-    page_action_avatar_ = ui::ImageModel::FromImage(avatar);
-    hover_card_avatar_ = ui::ImageModel::FromImage(ResizeForHoverCard(avatar));
+    auto image_model = ui::ImageModel::FromImage(avatar);
+    page_action_avatar_ = GetResizedImage(avatar, GetPageActionImageSize());
+    hover_card_avatar_ = GetResizedImage(avatar, GetHoverCardImageSize());
   }
 
   // Message has been committed.
