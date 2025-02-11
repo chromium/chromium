@@ -408,7 +408,12 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kTabResumption: {
       TabResumptionItem* tabResumptionItem =
           static_cast<TabResumptionItem*>(config);
-      if (tabResumptionItem.shopCardData) {
+      // Arm 4 of ShopCard is an alternative to Tab Resumption,
+      // triggered by Tab Resumption where the user is given the
+      // option to price track a URL for a price trackable URL.
+      if (tabResumptionItem.shopCardData &&
+          tabResumptionItem.shopCardData.shopCardItemType ==
+              ShopCardItemType::kPriceTrackableProductOnTab) {
         return l10n_util::GetNSString(
             IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_TITLE);
       }

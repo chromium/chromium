@@ -7,13 +7,16 @@
 #import "base/apple/foundation_util.h"
 #import "base/command_line.h"
 #import "base/memory/raw_ptr.h"
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/commerce/core/commerce_constants.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/commerce_types.h"
 #import "components/commerce/core/shopping_service.h"
 #import "components/page_image_service/features.h"
 #import "components/page_image_service/image_service.h"
 #import "components/page_image_service/mojom/page_image_service.mojom.h"
+#import "components/payments/core/currency_formatter.h"
 #import "components/sessions/core/session_id.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/user_selectable_type.h"
@@ -32,6 +35,7 @@
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/page_image/model/page_image_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_util.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -166,6 +170,49 @@ NSString* GetOverridenReason(
             url_aggregate.GetLastVisitTime()));
   }
   return nil;
+}
+
+PriceDrop GetPriceDrop(payments::CurrencyFormatter* formatter,
+                       long current_price_micros,
+                       long previous_price_micros) {
+  float current_price = static_cast<float>(current_price_micros) /
+                        static_cast<float>(commerce::kToMicroCurrency);
+  float previous_price = static_cast<float>(previous_price_micros) /
+                         static_cast<float>(commerce::kToMicroCurrency);
+  PriceDrop price_drop;
+  price_drop.current_price = base::SysUTF16ToNSString(
+      formatter->Format(base::NumberToString(current_price)));
+  price_drop.previous_price = base::SysUTF16ToNSString(
+      formatter->Format(base::NumberToString(previous_price)));
+  return price_drop;
+}
+
+void ConfigureTabResumptionItemForShopCard(
+    const std::optional<const commerce::ProductInfo>& product_info,
+    TabResumptionItem* item) {
+  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm3 &&
+      product_info.has_value() &&
+      product_info->previous_amount_micros.has_value()) {
+    item.shopCardData = [[ShopCardData alloc] init];
+    item.shopCardData.shopCardItemType = ShopCardItemType::kPriceDropOnTab;
+
+    std::unique_ptr<payments::CurrencyFormatter> formatter =
+        std::make_unique<payments::CurrencyFormatter>(
+            product_info->currency_code, product_info->country_code);
+    formatter->SetMaxFractionalDigits(2);
+    item.shopCardData.priceDrop =
+        GetPriceDrop(formatter.get(), product_info->amount_micros,
+                     product_info->previous_amount_micros.value());
+  }
+
+  // A URL is price trackable if it has a cluster ID.
+  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm4 &&
+      product_info.has_value() &&
+      product_info->product_cluster_id.has_value()) {
+    item.shopCardData = [[ShopCardData alloc] init];
+    item.shopCardData.shopCardItemType =
+        ShopCardItemType::kPriceTrackableProductOnTab;
+  }
 }
 
 }  // namespace
@@ -892,7 +939,8 @@ NSString* GetOverridenReason(
     }
   }
 
-  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) {
+  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm3 ||
+      commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) {
     __weak __typeof(self) weakSelf = self;
     // TODO(crbug.com/394947595) this currently returns no product info for
     // any shopping URL on startup, likely because OptimizationGuide hasn't
@@ -904,13 +952,8 @@ NSString* GetOverridenReason(
         base::BindOnce(
             ^(const GURL& url,
               const std::optional<const commerce::ProductInfo>& product_info) {
-              // A URL is price trackable if it has a cluster ID.
-              if (product_info.has_value() &&
-                  product_info->product_cluster_id.has_value()) {
-                item.shopCardData = [[ShopCardData alloc] init];
-                item.shopCardData.shopCardItemType =
-                    ShopCardItemType::kPriceTrackableProductOnTab;
-              }
+              ConfigureTabResumptionItemForShopCard(product_info, item);
+
               // Fetch the favicon.
               [weakSelf fetchImageForItem:item];
             }));

@@ -10,9 +10,11 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/price_notifications/ui_bundled/cells/price_notifications_price_chip_view.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
@@ -92,6 +94,10 @@ void SetFallbackImageToImageView(UIImageView* image_view,
   UIView* _reasonLabelContainer;
   NSLayoutConstraint* _leadingLabelConstraint;
   NSLayoutConstraint* _trailingLabelConstraint;
+
+  // Displays the price drop chip if a price drop exists for
+  // the tab resumption url.
+  PriceNotificationsPriceChipView* _priceNotificationsChip;
 }
 
 - (instancetype)initWithItem:(TabResumptionItem*)item {
@@ -173,6 +179,18 @@ void SetFallbackImageToImageView(UIImageView* image_view,
           registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                        withAction:@selector(updateCornerRadius)];
     }
+  }
+  if (_item.shopCardData &&
+      _item.shopCardData.shopCardItemType ==
+          ShopCardItemType::kPriceDropOnTab &&
+      _item.shopCardData.priceDrop.has_value()) {
+    _priceNotificationsChip = [[PriceNotificationsPriceChipView alloc] init];
+    _priceNotificationsChip.translatesAutoresizingMaskIntoConstraints = NO;
+    _priceNotificationsChip.isAccessibilityElement = YES;
+    [_priceNotificationsChip
+         setPriceDrop:_item.shopCardData.priceDrop->current_price
+        previousPrice:_item.shopCardData.priceDrop->previous_price];
+    [labelStackView addArrangedSubview:_priceNotificationsChip];
   }
 
   self.accessibilityLabel = [accessibilityLabel componentsJoinedByString:@","];
