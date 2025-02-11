@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import './description_section.js';
 import './product_selector.js';
 import './buying_options_section.js';
+import './empty_section.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -288,8 +289,8 @@ export class TableElement extends CrLitElement {
       content is ProductDescription {
     if (content) {
       const description = content as ProductDescription;
-      return description.attributes && description.summary &&
-          (description.attributes.length > 0 || description.summary.length > 0);
+      return Array.isArray(description.attributes) &&
+          Array.isArray(description.summary);
     }
     return false;
   }
@@ -298,9 +299,9 @@ export class TableElement extends CrLitElement {
       content is BuyingOptions {
     if (content) {
       const buyingOptions = content as BuyingOptions;
-      return (buyingOptions.price !== undefined &&
-              buyingOptions.jackpotUrl !== undefined &&
-              buyingOptions.price.length > 0) as boolean;
+      return typeof buyingOptions.price === 'string' &&
+          typeof buyingOptions.jackpotUrl === 'string' &&
+          buyingOptions.price.length > 0;
     }
     return false;
   }

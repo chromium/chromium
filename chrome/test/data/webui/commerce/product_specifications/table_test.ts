@@ -627,6 +627,45 @@ suite('ProductSpecificationsTableTest', () => {
     assertFalse(isVisible((details[1]!)));
   });
 
+  test(
+      'empty section displayed for null content if other columns are populated',
+      async () => {
+        tableElement.columns = [
+          {
+            selectedItem: {
+              title: 'title',
+              url: 'https://example.com',
+              imageUrl: 'https://example.com/image',
+            },
+            productDetails: [{
+              title: 'foo',
+              content: {
+                attributes: [{label: '', value: 'foo1'}],
+                summary: [{
+                  text: 'bar',
+                  urls: [],
+                }],
+              },
+            }],
+          },
+          {
+            selectedItem: {
+              title: 'title2',
+              url: 'https://example.com/2',
+              imageUrl: 'https://example.com/2/image',
+            },
+            productDetails: [{
+              title: 'foo',
+              content: null,
+            }],
+          },
+        ];
+        await microtasksFinished();
+        const emptySections =
+            tableElement.shadowRoot!.querySelectorAll('empty-section');
+        assertEquals(1, emptySections.length);
+      });
+
   suite('Buying options', () => {
     setup(async () => {
       tableElement.columns = [

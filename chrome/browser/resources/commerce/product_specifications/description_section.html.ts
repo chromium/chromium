@@ -7,6 +7,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {DescriptionSectionElement} from './description_section.js';
 
 export function getHtml(this: DescriptionSectionElement) {
+  // clang-format off
   return html`
   <div id="attributes">
     ${
@@ -21,15 +22,18 @@ export function getHtml(this: DescriptionSectionElement) {
     `)}
   </div>
   <div id="summary">
-    ${this.description.summary.map((summaryItem, summaryIndex) => html`
-      <span class="summary-text">${summaryItem.text}</span>
-      ${summaryItem.urls.map((urlInfo, urlIndex) => html`
+    ${!this.summaryIsEmpty_(this.description.summary) ?
+      this.description.summary.map((summaryItem, summaryIndex) => html`
+        <span class="summary-text">${summaryItem.text}</span>
+        ${summaryItem.urls.map((urlInfo, urlIndex) => html`
         <description-citation .urlInfo=${urlInfo}
             index="${this.computeCitationIndex_(summaryIndex, urlIndex)}"
             citation-count="${this.citationCount}"
             product-name="${this.productName}">
-        </description-citation>
-      `)}
-    `)}
+        </description-citation>`)}`)
+    : html`
+      <empty-section></empty-section>
+    `}
   </div>`;
+  // clang-format on
 }

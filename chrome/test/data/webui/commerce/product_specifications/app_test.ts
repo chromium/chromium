@@ -621,7 +621,7 @@ suite('AppTest', () => {
               imageUrl: productInfo1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', content: {price: '', jackpotUrl: ''}},
+              {title: 'price', content: null},
               {title: 'summary', content: {attributes: [], summary: []}},
               {
                 title: detailTitle,
@@ -745,7 +745,7 @@ suite('AppTest', () => {
               imageUrl: productInfo1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', content: {price: '', jackpotUrl: ''}},
+              {title: 'price', content: null},
               {title: 'summary', content: {attributes: [], summary: []}},
               {
                 title: detailTitle,
@@ -763,7 +763,7 @@ suite('AppTest', () => {
               imageUrl: productInfo2.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', content: {price: '', jackpotUrl: ''}},
+              {title: 'price', content: null},
               {title: 'summary', content: {attributes: [], summary: []}},
               {
                 title: detailTitle,
@@ -956,7 +956,7 @@ suite('AppTest', () => {
               imageUrl: productInfo2.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', content: {price: '', jackpotUrl: ''}},
+              {title: 'price', content: null},
               {title: 'summary', content: {attributes: [], summary: []}},
               {
                 title: rowTitle,
@@ -974,7 +974,7 @@ suite('AppTest', () => {
               imageUrl: productInfo1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', content: {price: '', jackpotUrl: ''}},
+              {title: 'price', content: null},
               {title: 'summary', content: {attributes: [], summary: []}},
               {
                 title: rowTitle,

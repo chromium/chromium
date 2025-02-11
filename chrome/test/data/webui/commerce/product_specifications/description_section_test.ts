@@ -7,7 +7,7 @@ import 'chrome://compare/description_section.js';
 import type {DescriptionSectionElement, ProductDescription} from 'chrome://compare/description_section.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('DescriptionSectionTest', () => {
   let descriptionSectionElement: DescriptionSectionElement;
@@ -70,7 +70,7 @@ suite('DescriptionSectionTest', () => {
     loadTimeData.overrideValues({
       citationA11yLabel: 'Citation $1 of $2, $3, $4',
     });
-    await flushTasks();
+    await microtasksFinished();
   });
 
   test('summaries render correctly', async () => {
@@ -119,5 +119,30 @@ suite('DescriptionSectionTest', () => {
       assertTrue(attrElement.textContent!.trim().includes(
           description.attributes[attrIndex]!.value));
     });
+  });
+
+  test('empty section shown for empty summary', async () => {
+    descriptionSectionElement.description = {
+      attributes: description.attributes,
+      summary: [],
+    };
+    await microtasksFinished();
+
+    const emptySection = $$(descriptionSectionElement, 'empty-section');
+    assertTrue(!!emptySection);
+  });
+
+  test('empty section shown for N/A summary texts', async () => {
+    descriptionSectionElement.description = {
+      attributes: description.attributes,
+      summary: [{
+        text: 'N/A',
+        urls: [],
+      }],
+    };
+    await microtasksFinished();
+
+    const emptySection = $$(descriptionSectionElement, 'empty-section');
+    assertTrue(!!emptySection);
   });
 });
