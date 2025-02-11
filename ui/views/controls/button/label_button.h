@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
@@ -290,8 +291,7 @@ class VIEWS_EXPORT LabelButton : public Button,
   // The image models and colors for each button state.
   std::array<std::optional<ui::ImageModel>, STATE_COUNT>
       button_state_image_models_;
-  std::array<absl::variant<SkColor, ui::ColorId>, STATE_COUNT>
-      button_state_colors_;
+  std::array<std::optional<ui::ColorVariant>, STATE_COUNT> button_state_colors_;
 
   // Used to track whether SetTextColor() has been invoked.
   std::array<bool, STATE_COUNT> explicitly_set_colors_ = {};
