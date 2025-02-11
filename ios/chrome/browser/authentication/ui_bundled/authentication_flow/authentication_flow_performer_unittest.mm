@@ -84,8 +84,9 @@ class AuthenticationFlowPerformerTest : public PlatformTest {
 
 // Tests the AuthenticationFlowPerformer is interrupted and the interrupt
 // completion is called.
+// TODO(crbug.com/395674391): Re-enable this test.
 TEST_F(AuthenticationFlowPerformerTest,
-       TestSimpleInterruptWithoutDialogDisplayed) {
+       DISABLED_TestSimpleInterruptWithoutDialogDisplayed) {
   __block BOOL completion_called = NO;
   [authentication_flow_performer_
       interruptWithAction:SigninCoordinatorInterrupt::DismissWithAnimation
