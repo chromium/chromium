@@ -40,6 +40,16 @@ chromium-metrics-reviews@google.com.
   <variant name="VirtualKeyboard"/>
 </variants>
 
+<variants name="ReportDelay">
+  <variant name=""
+      summary="This is logged once 45 seconds after startup. Note: Prefer the
+               .EveryReport variant when querying for unique users, as it is
+               logged more frequently."/>
+  <variant name=".EveryReport"
+      summary="This variant is sent with every metrics report, and preferred
+               for computing uniques."/>
+</variants>
+
 <variants name="SodaLanguageCode">
   <variant name="de-DE" summary="German language code"/>
   <variant name="en-US" summary="English language code"/>
@@ -1115,6 +1125,20 @@ chromium-metrics-reviews@google.com.
     and may stop when the user ends their session by turning off the machine, or
     when they disconnect or turn off the Braille display.
   </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSpokenFeedback{ReportDelay}"
+    enum="BooleanEnabled" expires_after="never">
+<!-- expires-never: usage drives a11y prioritization in browser and content. -->
+
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks whether the Chrome OS Spoken Feedback feature is on.
+
+    {ReportDelay}
+  </summary>
+  <token key="ReportDelay" variants="ReportDelay"/>
 </histogram>
 
 <histogram name="Accessibility.CrosStatusArea.{FeatureName}"
@@ -3257,49 +3281,47 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.{ScreenReader}{AccessibilityEveryReport}"
-    enum="BooleanEnabled" expires_after="never">
+<histogram name="Accessibility.WinZoomText{ReportDelay}" enum="BooleanEnabled"
+    expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
 
   <owner>aleventhal@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    This is logged once, 45 seconds after startup.
+    Tracks whether the third-party ZoomText screen magnifier is running on
+    Windows.
 
-    Tracks whether {ScreenReader}.
+    {ReportDelay}
+  </summary>
+  <token key="ReportDelay" variants="ReportDelay"/>
+</histogram>
 
-    {AccessibilityEveryReport}
+<histogram name="Accessibility.{ScreenReader}{ReportDelay}"
+    enum="BooleanEnabled" expires_after="never">
+<!-- expires-never: usage drives a11y prioritization in browser and content. -->
+
+  <owner>aleventhal@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks whether a screen reader is enabled on {ScreenReader}.
+
+    {ReportDelay}
   </summary>
   <token key="ScreenReader">
-    <variant name="Android.ScreenReader"
-        summary="a screen reader is enabled on Android (e.g. Talkback)"/>
-    <variant name="CrosSpokenFeedback"
-        summary="the Chrome OS Spoken Feedback feature is on"/>
-    <variant name="Mac.ScreenReader"
-        summary="a screen reader is enabled on Mac (e.g. VoiceOver)"/>
-    <variant name="WinJAWS"
-        summary="the third-party JAWS screen reader is running"/>
-    <variant name="WinNVDA"
-        summary="the third-party NVDA screen reader is running"/>
+    <variant name="Android.ScreenReader" summary="Android (e.g. Talkback)"/>
+    <variant name="Mac.ScreenReader" summary="MacOS (e.g. VoiceOver)"/>
+    <variant name="WinJAWS" summary="Windows, specifically JAWS."/>
+    <variant name="WinNVDA" summary="Windows, specifically NVDA"/>
     <variant name="WinScreenReader2"
-        summary="the accessibility mode flag shows that a screen reader is
-                 running. In this case, Chrome has detected accessibility
+        summary="Windows. This is tracking the presence of the kScreenReader
+                 mode flag. In this case, Chrome has detected accessibility
                  calls that would normally only occur from a screen reader.
                  See also the more specific metrics such as
-                 Accessibility.WinJAWS/WinNVDA/"/>
-    <variant name="WinSupernova"
-        summary="the third-party Supernova screen reader is running"/>
-    <variant name="WinZoomText"
-        summary="the third-party ZoomText screen magnifier is running"/>
+                 Accessibility.WinJAWS/WinNVDA, or Accessibility.ModeFlag"/>
+    <variant name="WinSupernova" summary="Windows, specifically Supernova."/>
   </token>
-  <token key="AccessibilityEveryReport">
-    <variant name=""
-        summary="Note: Prefer the .EveryReport variant when querying for
-                 unique users, as it is logged more frequently."/>
-    <variant name=".EveryReport"
-        summary="This variant is sent with every metrics report, and
-                 preferred for computing uniques."/>
-  </token>
+  <token key="ReportDelay" variants="ReportDelay"/>
 </histogram>
 
 <histogram name="DomDistiller.ReaderMode.EntryPoint"
