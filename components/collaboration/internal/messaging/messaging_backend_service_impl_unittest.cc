@@ -508,25 +508,35 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogAcceptsMaxLength) {
       collaboration_group_id,
       collaboration_pb::EventType::COLLABORATION_MEMBER_ADDED, DirtyType::kNone,
       now + base::Seconds(4));
+  message1.set_affected_user_gaia_id("gaia_1");
   messages.emplace_back(message1);
   collaboration_pb::Message message2 = CreateStoredMessage(
       collaboration_group_id,
       collaboration_pb::EventType::COLLABORATION_MEMBER_REMOVED,
       DirtyType::kNone, now + base::Seconds(3));
+  message2.set_affected_user_gaia_id("gaia_1");
   messages.emplace_back(message2);
   collaboration_pb::Message message3 = CreateStoredMessage(
       collaboration_group_id, collaboration_pb::EventType::TAB_ADDED,
       DirtyType::kNone, now + base::Seconds(2));
+  message3.set_triggering_user_gaia_id("gaia_1");
   messages.emplace_back(message3);
   // COLLABORATION_ADDED should never be returned.
   collaboration_pb::Message message4 = CreateStoredMessage(
       collaboration_group_id, collaboration_pb::EventType::COLLABORATION_ADDED,
       DirtyType::kNone, now + base::Seconds(1));
+  message4.set_triggering_user_gaia_id("gaia_1");
   messages.emplace_back(message4);
 
   EXPECT_CALL(*unowned_messaging_backend_store_,
               GetRecentMessagesForGroup(Eq(collaboration_group_id)))
       .WillRepeatedly(Return(messages));
+  EXPECT_CALL(*mock_data_sharing_service_,
+              GetPossiblyRemovedGroupMember(Eq(collaboration_group_id),
+                                            Eq(GaiaId("gaia_1"))))
+      .WillRepeatedly(
+          Return(CreatePartialMember(GaiaId("gaia_1"), "gaia1@gmail.com",
+                                     "Display Name", "Given Name 1")));
 
   ActivityLogQueryParams params;
   params.collaboration_id = collaboration_group_id;
@@ -584,13 +594,15 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogCollaborationEvents) {
   EXPECT_CALL(*mock_data_sharing_service_,
               GetPossiblyRemovedGroupMember(Eq(collaboration_group_id),
                                             Eq(GaiaId("gaia_1"))))
-      .WillRepeatedly(Return(std::nullopt));
+      .WillRepeatedly(
+          Return(CreatePartialMember(GaiaId("gaia_1"), "gaia1@gmail.com",
+                                     "Display Name 1", "Given Name 1")));
   EXPECT_CALL(*mock_data_sharing_service_,
               GetPossiblyRemovedGroupMember(Eq(collaboration_group_id),
                                             Eq(GaiaId("gaia_2"))))
       .WillRepeatedly(
           Return(CreatePartialMember(GaiaId("gaia_2"), "gaia2@gmail.com",
-                                     "Display Name", "Given Name 2")));
+                                     "Display Name 2", "Given Name 2")));
 
   ActivityLogQueryParams params;
   params.collaboration_id = collaboration_group_id;
@@ -601,12 +613,8 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogCollaborationEvents) {
   EXPECT_EQ(CollaborationEvent::COLLABORATION_MEMBER_REMOVED,
             activity_log[1].collaboration_event);
 
-  // Use name from DB and no email. This is not intended to happen, because we
-  // should always have the member data, but this tests that we still work
-  // without it.
-  EXPECT_EQ(u"gaia_1 name joined the group", activity_log[0].title_text);
-  EXPECT_EQ(u"", activity_log[0].description_text);
-  // Use name and email from DataSharingService.
+  EXPECT_EQ(u"Given Name 1 joined the group", activity_log[0].title_text);
+  EXPECT_EQ(u"gaia1@gmail.com", activity_log[0].description_text);
   EXPECT_EQ(u"Given Name 2 left the group", activity_log[1].title_text);
   EXPECT_EQ(u"gaia2@gmail.com", activity_log[1].description_text);
   // We should also fill in the MessageAttribution.
