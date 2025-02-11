@@ -5082,6 +5082,11 @@ const char kNtpDummyModulesDescription[] =
     "enabled.";
 #endif
 
+const char kNtpFooterName[] = "NTP Footer";
+const char kNtpFooterDescription[] =
+    "Adds footer to New Tab Page that encapsulates customize buttons and "
+    "background/theme attributions.";
+
 const char kNtpMicrosoftAuthenticationModuleName[] =
     "NTP Microsoft Authentication Module";
 const char kNtpMicrosoftAuthenticationModuleDescription[] =

@@ -12285,6 +12285,7 @@ from previous Chrome versions.
       label="NtpMostRelevantTabResumptionModuleLocal:enabled"/>
   <int value="-729456213" label="BluetoothBtsnoopInternals:enabled"/>
   <int value="-729269661" label="PPAPISharedImagesSwapChain:enabled"/>
+  <int value="-728878937" label="NtpFooter:disabled"/>
   <int value="-728461030" label="AutofillPruneSuggestions:disabled"/>
   <int value="-728187009" label="NtpRealboxSuggestionAnswers:enabled"/>
   <int value="-727860269" label="WebAuthenticationBle:disabled"/>
@@ -17592,6 +17593,7 @@ from previous Chrome versions.
   <int value="1369663360"
       label="MayLaunchUrlUsesSeparateStoragePartition:enabled"/>
   <int value="1369705872" label="EnableSearchAggregatorPolicy:enabled"/>
+  <int value="1370104897" label="NtpFooter:enabled"/>
   <int value="1370797930" label="ShowBluetoothDeviceBattery:enabled"/>
   <int value="1370921804" label="ToolbarPhoneCleanup:enabled"/>
   <int value="1371092708" label="disable-desktop-capture-picker-old-ui"/>

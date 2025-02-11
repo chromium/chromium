@@ -6142,6 +6142,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "ntp-footer",
+    "owners": [ "pauladedeji@chromium.org", "tiborg@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "ntp-microsoft-authentication-module",
     "owners": [ "pauladedeji@google.com", "rtatum@google.com", "tiborg@chromium.org" ],
     "expiry_milestone": 150

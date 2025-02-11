@@ -6875,6 +6875,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ntp_features::kNtpDummyModules)},
 #endif
 
+    {"ntp-footer", flag_descriptions::kNtpFooterName,
+     flag_descriptions::kNtpFooterDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpFooter)},
+
     {"ntp-middle-slot-promo-dismissal",
      flag_descriptions::kNtpMiddleSlotPromoDismissalName,
      flag_descriptions::kNtpMiddleSlotPromoDismissalDescription, kOsDesktop,

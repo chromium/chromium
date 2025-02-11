@@ -2972,6 +2972,9 @@ extern const char kNtpDummyModulesName[];
 extern const char kNtpDummyModulesDescription[];
 #endif
 
+extern const char kNtpFooterName[];
+extern const char kNtpFooterDescription[];
+
 extern const char kNtpMicrosoftAuthenticationModuleName[];
 extern const char kNtpMicrosoftAuthenticationModuleDescription[];
 
