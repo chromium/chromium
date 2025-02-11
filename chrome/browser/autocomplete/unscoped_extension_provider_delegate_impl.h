@@ -66,6 +66,9 @@ class UnscopedExtensionProviderDelegateImpl
       int relevance,
       const std::string& extension_id);
 
+  // Returns true if an extension is enabled.
+  bool IsEnabledExtension(const std::string& extension_id);
+
   // Clears the current list of cached matches and suggestion group information.
   void ClearSuggestions();
 
