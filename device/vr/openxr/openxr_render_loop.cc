@@ -352,8 +352,6 @@ void OpenXrRenderLoop::StartRuntimeFinish(
   // able to safely ignore ones that our implementation doesn't care about.
   transport_options->wait_for_transfer_notification = true;
 
-  LogViewerType(VrViewerType::OPENXR_UNKNOWN);
-
   auto submit_frame_sink = device::mojom::XRPresentationConnection::New();
   submit_frame_sink->provider =
       presentation_receiver_.BindNewPipeAndPassRemote();
