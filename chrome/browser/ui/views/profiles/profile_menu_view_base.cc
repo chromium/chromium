@@ -319,11 +319,7 @@ class AvatarImageView : public views::ImageView {
       CHECK_EQ(border_size_, 0);
     } else {
       if (border_size_ > 0) {
-        // Once `switches::IsImprovedSettingsUIOnDesktopEnabled()` is launched
-        // this code is be obsolete. It is only used by Guest and incognito
-        // profiles, which have outdated designs.
-        // TODO(crbug.com/385125246): Redesign incognito and guest menu, and
-        // cleanup code.
+        // Total image size is `image_size_ + 2 * border_size_`.
         ui::ImageModel sized_avatar_image_without_border =
             GetCircularSizedImage(avatar_image_, image_size_);
         sized_avatar_image = gfx::CanvasImageSource::CreatePadded(
@@ -792,11 +788,11 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
 
   // Avatar.
   identity_info_container_->AddChildView(
-      views::Builder<views::View>(std::make_unique<AvatarImageView>(
-                                      params.profile_image, ui::ImageModel(),
-                                      this, kIdentityInfoImageSize,
-                                      /*border_size=*/0,
-                                      params.has_dotted_ring))
+      views::Builder<views::View>(
+          std::make_unique<AvatarImageView>(
+              params.profile_image, ui::ImageModel(), this,
+              kIdentityInfoImageSize - 2 * params.profile_image_padding,
+              params.profile_image_padding, params.has_dotted_ring))
           .SetProperty(views::kMarginsKey,
                        gfx::Insets().set_top(kAvatarTopMargin))
           .Build());

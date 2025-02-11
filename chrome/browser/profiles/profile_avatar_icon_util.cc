@@ -446,12 +446,15 @@ constexpr size_t kPlaceholderAvatarIndex = 0;
 #endif
 
 ui::ImageModel GetGuestAvatar(int size) {
-  return ui::ImageModel::FromVectorIcon(
-      kUserAccountAvatarRefreshIcon,
-      switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-          ? ui::kColorMenuIcon
-          : ui::kColorAvatarIconGuest,
-      size);
+  int color_id = ui::kColorMenuIcon;
+  const gfx::VectorIcon* vector_icon = &kUserAccountAvatarRefreshIcon;
+  if (base::FeatureList::IsEnabled(switches::kEnableImprovedGuestProfileMenu)) {
+    // Guest profiles generally use the default theme, no need to go through the
+    // `ThemeService`.
+    color_id = ui::kColorSysPrimary;
+    vector_icon = &kAccountBoxIcon;
+  }
+  return ui::ImageModel::FromVectorIcon(*vector_icon, color_id, size);
 }
 
 gfx::Image GetSizedAvatarIcon(const gfx::Image& image,

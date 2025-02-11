@@ -10,13 +10,13 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
@@ -26,13 +26,6 @@
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/style/typography.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "chrome/browser/browser_process.h"
-#include "chrome/common/chrome_features.h"
-#endif
 
 IncognitoMenuView::IncognitoMenuView(views::Button* anchor_button,
                                      Browser* browser)
@@ -57,8 +50,14 @@ void IncognitoMenuView::BuildMenu() {
         incognito_window_count);
     IdentitySectionParams params;
     params.title = l10n_util::GetStringUTF16(IDS_INCOGNITO_PROFILE_MENU_TITLE);
+
+    // Padded icon.
+    params.profile_image_padding =
+        std::nearbyint(kIdentityInfoImageSize * 0.25f);
     params.profile_image = ui::ImageModel::FromVectorIcon(
-        kIncognitoProfileIcon, ui::kColorAvatarIconIncognito);
+        kIncognitoRefreshMenuIcon,
+        kColorAvatarButtonHighlightIncognitoForeground,
+        kIdentityInfoImageSize - 2 * params.profile_image_padding);
     SetProfileIdentityWithCallToAction(std::move(params));
     AddBottomMargin();
   } else {
