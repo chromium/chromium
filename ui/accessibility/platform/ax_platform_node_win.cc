@@ -4644,7 +4644,7 @@ AXPlatformNodeWin::get_selections(IA2TextSelection** selections,
 
   COM_OBJECT_VALIDATE_2_ARGS(selections, nSelections);
 
-  AXSelection unignored_selection = GetDelegate()->GetHypertextSelection();
+  AXSelection unignored_selection = GetDelegate()->GetUnignoredSelection();
 
   AXNodeID anchor_id = unignored_selection.anchor_object_id;
   if (unignored_selection.anchor_offset == ax::mojom::kNoSelectionOffset) {
@@ -5885,9 +5885,6 @@ STDMETHODIMP AXPlatformNodeWin::InternalQueryInterface(
       reinterpret_cast<AXPlatformNodeWin*>(this_ptr);
   DCHECK(accessible);
 
-  // Note: Each inherited interface requires a hidden v-table pointer. It's
-  // therefore advantageous to not have objects that inherit from interfaces
-  // they'll never use.
   if (riid == IID_IAccessibleTable || riid == IID_IAccessibleTable2) {
     if (!IsTableLike(accessible->GetRole()))
       return E_NOINTERFACE;
@@ -5896,10 +5893,6 @@ STDMETHODIMP AXPlatformNodeWin::InternalQueryInterface(
       return E_NOINTERFACE;
   } else if (riid == IID_IAccessibleText || riid == IID_IAccessibleHypertext) {
     if (IsImageOrVideo(accessible->GetRole())) {
-      return E_NOINTERFACE;
-    }
-    // Text leaf nodes don't support these interfaces, their containers do.
-    if (ui::IsText(accessible->GetRole())) {
       return E_NOINTERFACE;
     }
   } else if (riid == IID_IAccessibleValue) {
