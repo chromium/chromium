@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -261,7 +262,8 @@ TEST_F(BnplManagerTest,
        AddBnplSuggestion_SuggestionShownFirstThenAmountExtractionReturned) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForAffirm,
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLaterForAffirm,
                             features::kAutofillEnableBuyNowPayLaterForZip},
       /*disabled_features=*/{});
 
@@ -287,7 +289,8 @@ TEST_F(BnplManagerTest,
        AddBnplSuggestion_AmountExtractionReturnedFirstThenSuggestionShown) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForAffirm,
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLaterForAffirm,
                             features::kAutofillEnableBuyNowPayLaterForZip},
       /*disabled_features=*/{});
 
@@ -312,7 +315,8 @@ TEST_F(BnplManagerTest,
 TEST_F(BnplManagerTest, AddBnplSuggestion_AmountNotSupported) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForAffirm,
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLaterForAffirm,
                             features::kAutofillEnableBuyNowPayLaterForZip},
       /*disabled_features=*/{});
 
@@ -333,12 +337,63 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_AmountNotSupported) {
 }
 
 // Tests that update suggestions callback will not be called if the BNPL
-// features are disabled.
-TEST_F(BnplManagerTest, AddBnplSuggestion_FeatureDisabled) {
+// issuer feature flags are disabled.
+TEST_F(BnplManagerTest, AddBnplSuggestion_BnplIssuerFeaturesDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing},
+      /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterForAffirm,
+                             features::kAutofillEnableBuyNowPayLaterForZip});
+
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
+  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kManageCreditCard)};
+  base::MockCallback<UpdateSuggestionsCallback> callback;
+  EXPECT_CALL(callback, Run).Times(0);
+
+  bnpl_manager_->NotifyOfSuggestionGeneration(
+      AutofillSuggestionTriggerSource::kUnspecified);
+  bnpl_manager_->OnAmountExtractionReturned("$1,234.56");
+  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+}
+
+// Tests that update suggestions callback will not be called if the BNPL
+// feature flag `kAutofillEnableBuyNowPayLaterSyncing` is disabled.
+TEST_F(BnplManagerTest, AddBnplSuggestion_BnplSyncFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForAffirm,
+                            features::kAutofillEnableBuyNowPayLaterForZip},
+      /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing});
+
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
+  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kManageCreditCard)};
+  base::MockCallback<UpdateSuggestionsCallback> callback;
+  EXPECT_CALL(callback, Run).Times(0);
+
+  bnpl_manager_->NotifyOfSuggestionGeneration(
+      AutofillSuggestionTriggerSource::kUnspecified);
+  bnpl_manager_->OnAmountExtractionReturned("$1,234.56");
+  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+}
+
+// Tests that update suggestions callback will not be called if all BNPL
+// feature flags are disabled.
+TEST_F(BnplManagerTest, AddBnplSuggestion_BnplAllFeaturesDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterForAffirm,
+      /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
+                             features::kAutofillEnableBuyNowPayLaterForAffirm,
                              features::kAutofillEnableBuyNowPayLaterForZip});
 
   // Add one linked issuer and one unlinked issuer to payments data manager.
@@ -364,7 +419,8 @@ TEST_F(BnplManagerTest,
        AddBnplSuggestion_AffirmDisabledZipEnabled_AmountSupportedByAffirm) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForZip},
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLaterForZip},
       /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterForAffirm});
 
   // Add one linked issuer and one unlinked issuer to payments data manager.
@@ -390,7 +446,8 @@ TEST_F(BnplManagerTest,
        AddBnplSuggestion_AffirmEnabledZipDisabled_AmountSupportedByAffirm) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForAffirm},
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLaterForAffirm},
       /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterForZip});
 
   // Add one linked issuer and one unlinked issuer to payments data manager.
@@ -415,7 +472,8 @@ TEST_F(BnplManagerTest,
        AddBnplSuggestion_ZipDisabledAffirmEnabled_AmountSupportedByZip) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForAffirm},
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLaterForAffirm},
       /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterForZip});
 
   // Add one linked issuer and one unlinked issuer to payments data manager.
@@ -440,7 +498,8 @@ TEST_F(BnplManagerTest,
        AddBnplSuggestion_ZipEnabledAffirmDisabled_AmountSupportedByZip) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForZip},
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLaterForZip},
       /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterForAffirm});
 
   // Add one linked issuer and one unlinked issuer to payments data manager.
@@ -457,6 +516,94 @@ TEST_F(BnplManagerTest,
       AutofillSuggestionTriggerSource::kUnspecified);
   bnpl_manager_->OnAmountExtractionReturned("$1,234.56");
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+}
+
+// Tests that BNPL settings toggle should not be shown if all BNPL
+// feature flags are disabled.
+TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplAllFeaturesDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLaterForAffirm,
+                            features::kAutofillEnableBuyNowPayLaterForZip},
+      /*disabled_features=*/{});
+
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
+  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+
+  EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettingsToggle());
+
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
+                             features::kAutofillEnableBuyNowPayLaterForAffirm,
+                             features::kAutofillEnableBuyNowPayLaterForZip});
+
+  EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettingsToggle());
+}
+
+// Tests that BNPL settings toggle should not be shown if BNPL feature
+// flag `kAutofillEnableBuyNowPayLaterSyncing` is disabled.
+TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplSyncFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLaterForAffirm,
+                            features::kAutofillEnableBuyNowPayLaterForZip},
+      /*disabled_features=*/{});
+
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
+  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+
+  EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettingsToggle());
+
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForAffirm,
+                            features::kAutofillEnableBuyNowPayLaterForZip},
+      /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing});
+
+  EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettingsToggle());
+}
+
+// Tests that BNPL settings toggle should not be shown if BNPL
+// issuer feature flags are disabled.
+TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplIssuerFeaturesDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLaterForAffirm,
+                            features::kAutofillEnableBuyNowPayLaterForZip},
+      /*disabled_features=*/{});
+
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
+  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+
+  EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettingsToggle());
+
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing},
+      /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterForAffirm,
+                             features::kAutofillEnableBuyNowPayLaterForZip});
+
+  EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettingsToggle());
+}
+
+// Tests that BNPL settings toggle should not be shown if there are no synced
+// BNPL issuers.
+TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_NoSyncedIssuers) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLaterForAffirm,
+                            features::kAutofillEnableBuyNowPayLaterForZip},
+      /*disabled_features=*/{});
+  EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettingsToggle());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)

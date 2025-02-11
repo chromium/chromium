@@ -82,6 +82,13 @@ class BnplManager {
   // that the manager can update suggestions for buy-now-pay-later.
   void OnAmountExtractionReturned(const std::string& extracted_amount);
 
+  // Returns the supported country codes for BNPL.
+  static std::set<std::string> GetBnplSupportedCountries();
+
+  // Returns if there is at least one synced BNPL issuer and if the BNPL
+  // feature is enabled. Does not check for user's locale.
+  bool ShouldShowBnplSettingsToggle() const;
+
  private:
   friend class BnplManagerTestApi;
   friend class BnplManagerTest;

@@ -668,6 +668,8 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   bool AreEwalletAccountsSupported() const;
 
   // Whether buy-now-pay-later issuers are supported for the platform OS.
+  // Checks if the user's locale is supported for BNPL, and if the BNPL feature
+  // is enabled.
   bool AreBnplIssuersSupported() const;
 
   // Whether generic payment instruments are supported.

@@ -1020,6 +1020,12 @@
   <message name="IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL" desc="One line label shows the minimum qualifying amount for the Buy Now Pay Later option in the autofill credit card popup. If the option is selected, a pop up will be shown to allow users choose a Buy Now Pay Later issuer.">
     Available for purchases over <ph name="RANGE_MINIMUM">$1<ex>$35</ex></ph>
   </message>
+  <message name="IDS_AUTOFILL_BNPL_SETTINGS_LABEL" desc="Label for the Buy Now Pay Later preference in the payments settings page. When enabled, users can checkout with external BNPL issuers using a pay-over-time payment option.">
+    Pay over time
+  </message>
+  <message name="IDS_AUTOFILL_BNPL_SETTINGS_SUBLABEL" desc="Sublabel for the Buy Now Pay Later preference in the payments settings page, including a hyperlink to learn more about pay over time. When enabled, users can checkout with external BNPL issuers using a pay-over-time payment option.">
+    Show <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN">&lt;a href="$1"&gt;</ph>pay over time<ph name="PAY_OVER_TIME_HELP_LINK_END">&lt;/a&gt;</ph> options at checkout
+  </message>
 
   <!-- Credit card benefits-related strings -->
   <message name="IDS_AUTOFILL_CREDIT_CARD_BENEFIT_TEXT_FOR_SUGGESTIONS" desc="benefit text string shown in suggestion dropdown indicating that the credit card has an applicable benefit for this purchase with `terms apply` appended.">

@@ -1305,9 +1305,24 @@ TEST_F(PaymentsSuggestionGeneratorTest, IsCreditCardFooterSuggestion) {
 // BNPL is currently only available for desktop platforms.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/395029766): Add unittests to cover the scenarios when the
+// BNPL pref is off and when the BNPL feature flag is off.
+class PaymentsSuggestionGeneratorBnplTest
+    : public PaymentsSuggestionGeneratorTest {
+ public:
+  void SetUp() override {
+    PaymentsSuggestionGeneratorTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillEnableBuyNowPayLaterSyncing);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Ensures that the pay over time option is generated with expected content
 // and inserted as the last entry before the footer suggestions.
-TEST_F(PaymentsSuggestionGeneratorTest, MaybeUpdateSuggestionsWithBnpl) {
+TEST_F(PaymentsSuggestionGeneratorBnplTest, MaybeUpdateSuggestionsWithBnpl) {
   // Add a server card with vcn enrolled.
   payments_data().AddServerCreditCard(
       test::GetMaskedServerCardEnrolledIntoVirtualCardNumber());
@@ -1388,7 +1403,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, MaybeUpdateSuggestionsWithBnpl) {
 
 // Ensures that `GetBnplPriceLowerBound()` returns the minimum lower price
 // bound among all given issuers.
-TEST_F(PaymentsSuggestionGeneratorTest,
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
        GetBnplPriceLowerBound_ReturnLowerAmount) {
   std::vector<BnplIssuer> bnpl_issuers = {
       BnplIssuer(
@@ -1412,7 +1427,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
 // Ensures that `GetBnplPriceLowerBound()` returns the minimum lower price
 // bound in USD among all given issuers.
-TEST_F(PaymentsSuggestionGeneratorTest,
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
        GetBnplPriceLowerBound_ReturnLowerAmountInUsd) {
   std::vector<BnplIssuer> bnpl_issuers = {
       BnplIssuer(
@@ -1434,7 +1449,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
 // Ensures that `GetBnplPriceLowerBound()` returns the minimum lower price bound
 // that is in whole currency unit in integer format.
-TEST_F(PaymentsSuggestionGeneratorTest,
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
        GetBnplPriceLowerBound_AmountInInteger) {
   std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
       /*instrument_id=*/5678, /*issuer_id=*/"dummy2",
@@ -1448,7 +1463,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 #if defined(GTEST_HAS_DEATH_TEST)
 // Ensures that the CHECK in `GetBnplPriceLowerBound()` catches the case when
 // no BNPL issuer has eligible price range in USD.
-TEST_F(PaymentsSuggestionGeneratorTest,
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
        GetBnplPriceLowerBound_NoMatchingPriceRange) {
   std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
       /*instrument_id=*/5678, /*issuer_id=*/"dummy2",
@@ -1462,7 +1477,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
 // Ensures that `GetBnplPriceLowerBound` returns the minimum lower price bound
 // that has more than 2 decimal points with proper rounding.
-TEST_F(PaymentsSuggestionGeneratorTest,
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
        GetBnplPriceLowerBound_AmountWithMoreThanTwoDecimal) {
   std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
       /*instrument_id=*/5678, /*issuer_id=*/"dummy",
@@ -1475,7 +1490,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
 // Ensures that `GetBnplPriceLowerBound` returns the minimum lower price bound
 // that has single digit cents value with 0 after the decimal point.
-TEST_F(PaymentsSuggestionGeneratorTest,
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
        GetBnplPriceLowerBound_AmountWithSingleDigitCents) {
   std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
       /*instrument_id=*/5678, /*issuer_id=*/"dummy2",
@@ -1488,7 +1503,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
 // Ensures that `GetBnplPriceLowerBound` returns the rounded up minimum lower
 // price bound if the amount has cents value higher than 99.
-TEST_F(PaymentsSuggestionGeneratorTest,
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
        GetBnplPriceLowerBound_AmountWithMoreThanNintyNineCents) {
   std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
       /*instrument_id=*/5678, /*issuer_id=*/"dummy",
@@ -1501,7 +1516,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
 // Ensures that the pay over time option is not added if the suggestion list
 // is empty.
-TEST_F(PaymentsSuggestionGeneratorTest,
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
        MaybeUpdateSuggestionsWithBnpl_EmptySuggestionList) {
   payments_data().AddBnplIssuer(test::GetTestLinkedBnplIssuer());
 
@@ -1512,7 +1527,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
 // Ensures that the pay over time option is not added if the suggestion list
 // already contains a BNPL suggestion.
-TEST_F(PaymentsSuggestionGeneratorTest,
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
        MaybeUpdateSuggestionsWithBnpl_SuggestionListWithBnplInserted) {
   payments_data().AddServerCreditCard(test::GetMaskedServerCard2());
   payments_data().AddBnplIssuer(test::GetTestLinkedBnplIssuer());

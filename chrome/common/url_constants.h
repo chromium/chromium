@@ -430,6 +430,12 @@ inline constexpr char kAddressesAndPaymentMethodsLearnMoreURL[] =
     "https://support.google.com/chrome?p=settings_autofill";
 #endif
 
+// The URL for the "Pay over time" support page.
+// TODO(crbug.com/395027230): Change URL once official support page is
+// finalized.
+inline constexpr char16_t kPayOverTimeLearnMoreUrl[] =
+    u"https://support.google.com/googlepay/answer/14336825";
+
 // Help URL for Autofill AI.
 inline constexpr char16_t kAutofillAiLearnMoreURL[] =
     u"https://support.google.com/chrome?p=autofill_ai";
