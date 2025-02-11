@@ -5,6 +5,7 @@
 // developerPrivate API.
 // This is a private API exposing developing and debugging functionalities for
 // apps and extensions.
+[implemented_in = "chrome/browser/extensions/api/developer_private/developer_private_functions.h"]
 namespace developerPrivate {
 
   // DEPRECATED: Prefer ExtensionType.

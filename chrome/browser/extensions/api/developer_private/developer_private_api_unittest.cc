@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
-
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -25,6 +23,7 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/account_extension_tracker.h"
+#include "chrome/browser/extensions/api/developer_private/developer_private_functions.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
@@ -168,15 +167,17 @@ bool WasUserSiteSettingsChangedEventDispatched(
       api::developer_private::OnUserSiteSettingsChanged::kEventName;
   const auto& event_map = observer.events();
   auto iter = event_map.find(kEventName);
-  if (iter == event_map.end())
+  if (iter == event_map.end()) {
     return false;
+  }
 
   const Event& event = *iter->second;
   CHECK_GE(1u, event.event_args.size());
   auto site_settings =
       api::developer_private::UserSiteSettings::FromValue(event.event_args[0]);
-  if (!site_settings)
+  if (!site_settings) {
     return false;
+  }
 
   *settings = std::move(*site_settings);
   return true;
@@ -584,8 +585,9 @@ testing::AssertionResult DeveloperPrivateApiUnitTest::TestPackExtensionFunction(
     int expected_flags) {
   auto function =
       base::MakeRefCounted<api::DeveloperPrivatePackDirectoryFunction>();
-  if (!RunFunction(function, args))
+  if (!RunFunction(function, args)) {
     return testing::AssertionFailure() << "Could not run function.";
+  }
 
   // Extract the result. We don't have to test this here, since it's verified as
   // part of the general extension api system.
@@ -604,8 +606,9 @@ testing::AssertionResult DeveloperPrivateApiUnitTest::TestPackExtensionFunction(
   }
 
   if (response->override_flags != expected_flags) {
-    return testing::AssertionFailure() << "Expected flags: " <<
-        expected_flags << ", found flags: " << response->override_flags;
+    return testing::AssertionFailure()
+           << "Expected flags: " << expected_flags
+           << ", found flags: " << response->override_flags;
   }
 
   return testing::AssertionSuccess();
@@ -951,8 +954,8 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpacked) {
   // Function should fail and no new extensions are installed.
   EXPECT_EQ(manifest_errors::kManifestUnreadable, function->GetError());
   EXPECT_EQ(0u, base::STLSetDifference<ExtensionIdSet>(
-                    registry()->enabled_extensions().GetIDs(),
-                    current_ids).size());
+                    registry()->enabled_extensions().GetIDs(), current_ids)
+                    .size());
 }
 
 TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpackedLoadError) {
@@ -1260,8 +1263,7 @@ TEST_F(DeveloperPrivateApiUnitTest, ReloadBadExtensionToLoadUnpackedRetry) {
     };
 
     UnloadedRegistryObserver unload_observer(path, registry());
-    auto function =
-        base::MakeRefCounted<api::DeveloperPrivateReloadFunction>();
+    auto function = base::MakeRefCounted<api::DeveloperPrivateReloadFunction>();
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     api_test_utils::RunFunction(function.get(), reload_args, profile());
     // Note: no need to validate a saw_load()-type method because the presence
@@ -1657,7 +1659,7 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedFailsWithBlocklistingPolicy) {
   EXPECT_TRUE(extension_management->BlocklistedByDefault());
   EXPECT_FALSE(extension_management->HasAllowlistedExtension());
 
-  auto info = DeveloperPrivateAPI::CreateProfileInfo(profile());
+  auto info = DeveloperPrivateEventRouter::CreateProfileInfo(profile());
   EXPECT_FALSE(info->can_load_unpacked);
 
   auto function =
@@ -1689,7 +1691,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
       ExtensionManagementFactory::GetForBrowserContext(browser_context())
           ->HasAllowlistedExtension());
 
-  auto info = DeveloperPrivateAPI::CreateProfileInfo(profile());
+  auto info = DeveloperPrivateEventRouter::CreateProfileInfo(profile());
 
   EXPECT_TRUE(info->can_load_unpacked);
 }
