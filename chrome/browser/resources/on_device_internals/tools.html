@@ -53,11 +53,17 @@
     margin-inline-end: 8px;
   }
 
-  .image-buttons {
+  .multimodal-buttons {
     margin-bottom: 10px;
+    display: flex;
+    gap: 8px;
   }
 
   #imageInput {
+    display: none;
+  }
+
+  #audioInput {
     display: none;
   }
 
@@ -142,6 +148,9 @@
   <cr-checkbox slot="suffix" checked="{{enableImageInput_}}">
     Enable images
   </cr-checkbox>
+  <cr-checkbox slot="suffix" checked="{{enableAudioInput_}}">
+    Enable audio
+  </cr-checkbox>
 </div>
 <div class="model-text">
   [[getModelText_(modelPath_, loadModelDuration_, loadedPerformanceHint_)]]
@@ -178,24 +187,44 @@
     placeholder="Place control tokens {$SYSTEM, $MODEL, $USER, $END} on their own lines, in between lines of text."
     value="{{text_}}">
 </cr-textarea>
-<div class="image-buttons" hidden$="[[!imagesEnabled_(model_, baseModel_)]]">
-  <div class="image-error">[[imageError_]]</div>
-  <div hidden$="[[imageFile_]]">
-    <cr-button class="floating-button"
-        disabled="[[!canUploadFile_(currentResponse_, model_, imageFile_)]]"
-        on-click="onAddImageClick_">
-      <cr-icon icon="cr:add" slot="prefix-icon"></cr-icon>
-      Add image
+<div class="multimodal-buttons" >
+  <div class="image-buttons" hidden$="[[!imagesEnabled_(model_, baseModel_)]]">
+    <div class="image-error">[[imageError_]]</div>
+    <div hidden$="[[imageFile_]]">
+      <cr-button class="floating-button"
+          disabled="[[!canUploadFile_(currentResponse_, model_, imageFile_)]]"
+          on-click="onAddImageClick_">
+        <cr-icon icon="cr:add" slot="prefix-icon"></cr-icon>
+        Add image
+      </cr-button>
+      <input id="imageInput" type="file">
+    </div>
+    <cr-button class="floating-button" hidden$="[[!imageFile_]]"
+        on-click="onRemoteImageClick_">
+      <cr-icon icon="cr:delete" slot="prefix-icon"></cr-icon>
+      [[imageFile_.name]]
     </cr-button>
-    <input id="imageInput" type="file">
   </div>
-  <cr-button class="floating-button" hidden$="[[!imageFile_]]"
-      on-click="onRemoteImageClick_">
-    <cr-icon icon="cr:delete" slot="prefix-icon"></cr-icon>
-    [[imageFile_.name]]
-  </cr-button>
-</div>
+  <div class="audio-buttons" hidden$="[[!audioEnabled_(model_, baseModel_)]]">
+    <div class="audio-error">[[audioError_]]</div>
+    <div hidden$="[[audioFile_]]">
+      <cr-button class="floating-button"
+          disabled="[[!canUploadFile_(currentResponse_, model_, audioFile_)]]"
+          on-click="onAddAudioClick_">
+        <cr-icon icon="cr:add" slot="prefix-icon"></cr-icon>
+        Add audio
+      </cr-button>
+      <input id="audioInput" type="file">
+    </div>
+    <cr-button class="floating-button" hidden$="[[!audioFile_]]"
+        on-click="onRemoteAudioClick_">
+      <cr-icon icon="cr:delete" slot="prefix-icon"></cr-icon>
+      [[audioFile_.name]]
+    </cr-button>
+    </div>
+  </div>
 <div>
+
   <cr-button class="action-button"
       disabled="[[!canExecute_(currentResponse_, model_, text_)]]"
       on-click="onExecuteClick_">

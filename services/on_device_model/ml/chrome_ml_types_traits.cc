@@ -4,6 +4,8 @@
 
 #include "services/on_device_model/ml/chrome_ml_types_traits.h"
 
+#include <algorithm>
+
 namespace mojo {
 
 // static
@@ -56,6 +58,9 @@ UnionTraits<on_device_model::mojom::InputPieceDataView, ml::InputPiece>::GetTag(
   if (std::holds_alternative<SkBitmap>(input_piece)) {
     return on_device_model::mojom::InputPieceDataView::Tag::kBitmap;
   }
+  if (std::holds_alternative<ml::AudioBuffer>(input_piece)) {
+    return on_device_model::mojom::InputPieceDataView::Tag::kAudio;
+  }
   if (std::holds_alternative<bool>(input_piece)) {
     return on_device_model::mojom::InputPieceDataView::Tag::kUnknownType;
   }
@@ -88,6 +93,14 @@ bool UnionTraits<on_device_model::mojom::InputPieceDataView, ml::InputPiece>::
         return false;
       }
       *out = std::move(bitmap);
+      return true;
+    }
+    case on_device_model::mojom::InputPieceDataView::Tag::kAudio: {
+      ml::AudioBuffer audio;
+      if (!in.ReadAudio(&audio)) {
+        return false;
+      }
+      *out = std::move(audio);
       return true;
     }
     case on_device_model::mojom::InputPieceDataView::Tag::kUnknownType: {
@@ -154,6 +167,20 @@ bool EnumTraits<on_device_model::mojom::ModelPerformanceHint,
       return true;
   }
   return false;
+}
+
+bool StructTraits<on_device_model::mojom::AudioDataDataView, ml::AudioBuffer>::Read(
+    on_device_model::mojom::AudioDataDataView in,
+    ml::AudioBuffer* out) {
+  out->sample_rate_hz = in.sample_rate();
+  out->num_channels = in.channel_count();
+  out->num_frames = in.frame_count();
+  mojo::ArrayDataView<float> data_view;
+  in.GetDataDataView(&data_view);
+  out->data.reserve(data_view.size());
+  std::copy_n(data_view.data(), data_view.size(),
+              std::back_inserter(out->data));
+  return true;
 }
 
 }  // namespace mojo

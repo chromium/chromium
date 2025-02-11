@@ -105,7 +105,11 @@ struct LoadAdaptationParams {
   uint32 max_tokens = 0;
 
   // Whether this model will handle InputPieces containing images.
-  [MinVersion=1] bool enable_image_input = false;
+  [MinVersion=1]
+  bool enable_image_input = false;
+  // Whether this model will handle InputPieces containing audio.
+  [MinVersion=2]
+  bool enable_audio_input = false;
 };
 
 // The set of tokens that can be added as part of an input.
@@ -137,7 +141,12 @@ union InputPiece {
   skia.mojom.BitmapMappedFromTrustedProcess bitmap;
 
   // Used to handle version skew.
-  [Default] bool unknown_type;
+  [Default]
+  bool unknown_type;
+
+  // Audio provided as input.
+  [MinVersion=1]
+  AudioData audio;
 };
 
 [Stable]
@@ -273,4 +282,19 @@ enum LoadModelResult {
   kSuccess,
   kGpuBlocked,
   [Default] kFailedToLoadLibrary,
+};
+
+[Stable]
+struct AudioData {
+  // Number of channels.
+  int32 channel_count;
+
+  // Sample rate of the buffer.
+  int32 sample_rate;
+
+  // Number of frames in the buffer.
+  int32 frame_count;
+
+  // Channel data.
+  array<float> data;
 };
