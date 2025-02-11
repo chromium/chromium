@@ -54,7 +54,6 @@ class FontDataServiceImpl : public mojom::FontDataService {
   }
 
   // FontDataService:
-
   // Provides font data from a cache that is populated on-demand. Font data will
   // match based on the `family_name` and `style` inputs. If there is no such
   // match, the font data will be null.

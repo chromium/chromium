@@ -401,17 +401,6 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
         refuse_reason.value());
   }
 
-  // Do not use spare renderer if running an experiment to run FontDataManager.
-  // FontDataManager needs to be initialized during renderer creation.
-  // This is temporary and will be removed after the experiment has concluded;
-  // see crbug.com/335680565.
-  bool use_font_data_manager = false;
-#if BUILDFLAG(IS_WIN)
-  use_font_data_manager =
-      GetContentClient()->browser()->ShouldUseFontDataManager(
-          site_instance->GetSiteURL());
-#endif
-
   // We shouldn't use the spare if:
   // 1. The SiteInstance has already got an associated process.  This is
   //    important to avoid taking and then immediately discarding the spare
@@ -474,8 +463,7 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
       browser_context == next_spare_rph->GetBrowserContext() &&
       next_spare_rph->InSameStoragePartition(site_storage) &&
       !site_instance->IsGuest() && embedder_allows_spare_usage &&
-      site_instance_allows_spare_usage && !hosts_pdf_content &&
-      !use_font_data_manager) {
+      site_instance_allows_spare_usage && !hosts_pdf_content) {
     CHECK(next_spare_rph->HostHasNotBeenUsed());
 
     // If the spare process ends up getting killed, the spare manager should

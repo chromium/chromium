@@ -1416,18 +1416,6 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
       flags |= RenderProcessFlags::kV8OptimizationsDisabled;
     }
   }
-#if BUILDFLAG(IS_WIN)
-  // kControlWithoutSpareRenderer is a control bucket w/o spare renderer for the
-  // FontDataService experiment i.e. Both SpareRenderer and FontDataManager are
-  // not used.
-  if (site_instance &&
-      GetContentClient()->browser()->ShouldUseFontDataManager(
-          site_instance->GetSiteURL()) &&
-      features::kFontDataServiceTypefaceType.Get() !=
-          features::FontDataServiceTypefaceType::kControlWithoutSpareRenderer) {
-    flags |= RenderProcessFlags::kFontDataManager;
-  }
-#endif
 
   if (site_instance &&
       GetContentClient()->browser()->DisallowV8FeatureFlagOverridesForSite(
@@ -3309,10 +3297,6 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
   command_line->AppendSwitchASCII(
       switches::kDeviceScaleFactor,
       base::NumberToString(display::win::GetDPIScale()));
-
-  if (!!(flags_ & RenderProcessFlags::kFontDataManager)) {
-    command_line->AppendSwitch(switches::kUseFontDataManager);
-  }
 #endif
 
   AppendCompositorCommandLineFlags(command_line);

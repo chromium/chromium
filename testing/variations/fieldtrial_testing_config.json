@@ -10135,7 +10135,7 @@
             ]
         }
     ],
-    "FontDataService": [
+    "FontDataServiceAllWebContents": [
         {
             "platforms": [
                 "windows"
@@ -10147,7 +10147,7 @@
                         "typeface": "DWrite"
                     },
                     "enable_features": [
-                        "FontDataService"
+                        "FontDataServiceAllWebContents"
                     ]
                 },
                 {
@@ -10156,7 +10156,7 @@
                         "typeface": "Internal"
                     },
                     "enable_features": [
-                        "FontDataService"
+                        "FontDataServiceAllWebContents"
                     ]
                 }
             ]

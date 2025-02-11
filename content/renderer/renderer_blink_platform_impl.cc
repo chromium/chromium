@@ -212,8 +212,12 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
 #endif
 
 #if BUILDFLAG(IS_WIN)
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kUseFontDataManager)) {
+    // Create a FontDataManager if it's enabled, and if we're not in a
+    // single-process environment. In single process, the SkFontMgr is already
+    // installed by browser process code at this point.
+    if (base::FeatureList::IsEnabled(
+            features::kFontDataServiceAllWebContents) &&
+        sandboxEnabled()) {
       sk_sp<font_data_service::FontDataManager> font_data_manager =
           sk_make_sp<font_data_service::FontDataManager>();
 
