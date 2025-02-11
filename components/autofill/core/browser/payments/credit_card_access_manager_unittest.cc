@@ -2283,7 +2283,7 @@ TEST_F(
   CreditCardOtpAuthenticator::OtpAuthenticationResponse otp_response;
   otp_response.result =
       CreditCardOtpAuthenticator::OtpAuthenticationResponse::Result::kSuccess;
-  CreditCard card = test::GetCreditCard();
+  CreditCard card = test::GetVirtualCard();
   otp_response.card = &card;
   otp_response.cvc = u"123";
   credit_card_access_manager().OnOtpAuthenticationComplete(otp_response);
