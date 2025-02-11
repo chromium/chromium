@@ -43,7 +43,7 @@ import java.util.Set;
  * https://web.dev/articles/android-payment-apps-developers-guide
  */
 public class AndroidPaymentApp extends PaymentApp
-        implements IsReadyToPayServiceHelper.ResultHandler {
+        implements IsReadyToPayServiceHelper.ResultHandler, WindowAndroid.IntentCallback {
     private final Handler mHandler;
     private final Launcher mLauncher;
     private final DialogController mDialogController;
@@ -77,29 +77,19 @@ public class AndroidPaymentApp extends PaymentApp
          * @param errorCallback The callback invoked when invoking the payment app fails.
          * @param intentCallback The callback invoked when the payment app responds to the intent.
          */
-        default void launchPaymentApp(
+        void launchPaymentApp(
                 Intent intent,
                 Callback<String> errorCallback,
-                Callback<IntentResult> intentCallback) {}
-    }
-
-    /** The result of invoking an Android app. */
-    public static class IntentResult {
-        /** Activity result, either Activity.RESULT_OK or Activity.RESULT_CANCELED. */
-        public int resultCode;
-
-        /** The data returned from the payment app. */
-        public Intent data;
+                WindowAndroid.IntentCallback intentCallback);
     }
 
     /**
      * The default implementation of payment app launcher that uses WindowAndroid for invoking
      * Android apps.
      */
-    public static class LauncherImpl implements Launcher, WindowAndroid.IntentCallback {
+    public static class LauncherImpl implements Launcher {
         private final WebContents mWebContents;
         @Nullable private final Integer mErrorId;
-        private Callback<IntentResult> mIntentCallback;
 
         /**
          * @param webContents The web contents whose WindowAndroid should be used for invoking
@@ -117,9 +107,7 @@ public class AndroidPaymentApp extends PaymentApp
         public void launchPaymentApp(
                 Intent intent,
                 Callback<String> errorCallback,
-                Callback<IntentResult> intentCallback) {
-            assert mIntentCallback == null;
-
+                WindowAndroid.IntentCallback intentCallback) {
             if (mWebContents.isDestroyed()) {
                 errorCallback.onResult(ErrorStrings.PAYMENT_APP_LAUNCH_FAIL);
                 return;
@@ -131,26 +119,14 @@ public class AndroidPaymentApp extends PaymentApp
                 return;
             }
 
-            mIntentCallback = intentCallback;
             try {
-                if (!window.showIntent(intent, /* callback= */ this, mErrorId)) {
+                if (!window.showIntent(intent, intentCallback, mErrorId)) {
                     errorCallback.onResult(ErrorStrings.PAYMENT_APP_LAUNCH_FAIL);
                 }
             } catch (SecurityException e) {
                 // Payment app does not have android:exported="true" on the PAY activity.
                 errorCallback.onResult(ErrorStrings.PAYMENT_APP_PRIVATE_ACTIVITY);
             }
-        }
-
-        // WindowAndroid.IntentCallback implementation.
-        @Override
-        public void onIntentCompleted(int resultCode, Intent data) {
-            assert mIntentCallback != null;
-            IntentResult intentResult = new IntentResult();
-            intentResult.resultCode = resultCode;
-            intentResult.data = data;
-            mIntentCallback.onResult(intentResult);
-            mIntentCallback = null;
         }
     }
 
@@ -465,7 +441,7 @@ public class AndroidPaymentApp extends PaymentApp
                         mRemoveDeprecatedFields);
 
         mLauncher.launchPaymentApp(
-                payIntent, this::notifyErrorInvokingPaymentApp, this::onIntentCompleted);
+                payIntent, this::notifyErrorInvokingPaymentApp, /* intentCallback= */ this);
 
         if (!TextUtils.isEmpty(mPaymentDetailsUpdateServiceName)) {
             mPaymentDetailsUpdateConnection =
@@ -489,16 +465,17 @@ public class AndroidPaymentApp extends PaymentApp
                 });
     }
 
-    @VisibleForTesting
-    /* package */ void onIntentCompleted(IntentResult intentResult) {
+    // WindowAndroid.IntentCallback:
+    @Override
+    public void onIntentCompleted(int resultCode, Intent data) {
         assert mInstrumentDetailsCallback != null;
         ThreadUtils.assertOnUiThread();
         if (mPaymentDetailsUpdateConnection != null) {
             mPaymentDetailsUpdateConnection.terminateConnection();
         }
         WebPaymentIntentHelper.parsePaymentResponse(
-                intentResult.resultCode,
-                intentResult.data,
+                resultCode,
+                data,
                 mPaymentOptions,
                 this::notifyErrorInvokingPaymentApp,
                 this::onPaymentSuccess);

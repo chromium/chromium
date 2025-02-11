@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Tests for the native Android payment app finder. */
+/** Tests for the Android intent-based payment app. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class AndroidPaymentAppUnitTest {
@@ -193,14 +193,12 @@ public class AndroidPaymentAppUnitTest {
                         mInvokePaymentAppFinished = true;
                     }
                 });
-        AndroidPaymentApp.IntentResult intentResult = new AndroidPaymentApp.IntentResult();
-        intentResult.resultCode = resultCode;
-        intentResult.data = new Intent();
+        Intent data = new Intent();
         Bundle extras = new Bundle();
         extras.putString("methodName", "https://company.com/pay");
         extras.putString("details", "{}");
-        intentResult.data.putExtras(extras);
-        app.onIntentCompleted(intentResult);
+        data.putExtras(extras);
+        app.onIntentCompleted(resultCode, data);
 
         CriteriaHelper.pollUiThreadNested(() -> mInvokePaymentAppFinished);
     }
