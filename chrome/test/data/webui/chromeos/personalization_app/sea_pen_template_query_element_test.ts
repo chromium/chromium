@@ -587,4 +587,44 @@ suite('SeaPenTemplateQueryElementTest', function() {
                 '#freeformInfo'),
             'freeform navigation info displays');
       });
+
+  test('hides Freeform navigation info if thumbnails are loading', async () => {
+    loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
+    seaPenTemplateQueryElement = initElement(
+        SeaPenTemplateQueryElement,
+        {templateId: SeaPenTemplateId.kFlower.toString()});
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    assertTrue(
+        isVisible(
+            seaPenTemplateQueryElement.shadowRoot!.querySelector<HTMLElement>(
+                '#freeformInfo')),
+        'freeform navigation info displays');
+
+    // Simulate loading start.
+    personalizationStore.data.wallpaper.seaPen = {
+        ...personalizationStore.data.wallpaper.seaPen};
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = true;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    assertFalse(
+        isVisible(
+            seaPenTemplateQueryElement.shadowRoot!.querySelector<HTMLElement>(
+                '#freeformInfo')),
+        'freeform navigation info no longer displays');
+
+    // Simulate loading end.
+    personalizationStore.data.wallpaper.seaPen = {
+        ...personalizationStore.data.wallpaper.seaPen};
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    assertTrue(
+        isVisible(
+            seaPenTemplateQueryElement.shadowRoot!.querySelector<HTMLElement>(
+                '#freeformInfo')),
+        'freeform navigation info displays');
+  });
 });
