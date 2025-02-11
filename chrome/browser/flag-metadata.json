@@ -8214,10 +8214,10 @@
   {
     "name": "supervised-profile-youtube-reauth",
     "owners": [
-      "ljjlee@google.com",
+      "tju@google.com",
       "chrome-kids-eng@google.com"
     ],
-    "expiry_milestone": 133
+    "expiry_milestone": 134
   },
   {
     "name": "supervised-user-local-web-approvals",
