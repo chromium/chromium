@@ -27,6 +27,8 @@ enum ChromeInsetsMetric {
   INSETS_RECENT_ACTIVITY_ROW_MARGIN,
   // Margins for the contents inside in the Task Manager.
   INSETS_TASK_MANAGER,
+  // Padding used in the page info footer button.
+  INSETS_PAGE_INFO_FOOTER_BUTTON,
 };
 
 enum ChromeDistanceMetric {
