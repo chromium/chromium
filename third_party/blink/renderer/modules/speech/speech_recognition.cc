@@ -32,7 +32,6 @@
 
 #include <algorithm>
 
-#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
@@ -60,6 +59,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -336,23 +336,21 @@ void SpeechRecognition::StartInternal(ExceptionState* exception_state) {
   }
   final_results_.clear();
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kMediaStreamTrackWebSpeech) &&
+  auto task_runner =
+      GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
+  if (RuntimeEnabledFeatures::MediaStreamTrackWebSpeechEnabled() &&
       stream_track_) {
     SpeechRecognitionMediaStreamAudioSink* sink =
         MakeGarbageCollected<SpeechRecognitionMediaStreamAudioSink>(
             GetExecutionContext(),
             WTF::BindOnce(&SpeechRecognition::StartController,
                           WrapPersistent(this),
-                          session_.BindNewPipeAndPassReceiver(
-                              GetExecutionContext()->GetTaskRunner(
-                                  TaskType::kMiscPlatformAPI))));
+                          session_.BindNewPipeAndPassReceiver(task_runner)));
     WebMediaStreamAudioSink::AddToAudioTrack(
         sink, WebMediaStreamTrack(stream_track_->Component()));
     stream_track_->RegisterSink(sink);
   } else {
-    StartController(session_.BindNewPipeAndPassReceiver(
-        GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+    StartController(session_.BindNewPipeAndPassReceiver(task_runner));
   }
 
   started_ = true;

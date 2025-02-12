@@ -52,7 +52,7 @@ enum SpeechRecognitionMode {
     attribute boolean continuous;
     attribute boolean interimResults;
     attribute unsigned long maxAlternatives;
-    [RuntimeEnabled=MediaStreamTrackWebSpeech] attribute SpeechRecognitionMode mode;
+    [RuntimeEnabled=OnDeviceWebSpeechAvailable] attribute SpeechRecognitionMode mode;
     [RuntimeEnabled=WebSpeechRecognitionContext] attribute SpeechRecognitionContext context;
 
     // methods to drive the speech interaction

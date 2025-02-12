@@ -2836,6 +2836,7 @@
     },
     {
       name: "MediaStreamTrackWebSpeech",
+      status: "experimental",
     },
     {
       name: "MessagePortCloseEvent",
