@@ -626,6 +626,8 @@ crbug.com/40241621 [ android android-sm-a137f no-passthrough ] conformance/glsl/
 crbug.com/40241621 [ android android-sm-a137f no-passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/40241621 [ android android-sm-a137f no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/40241621 [ android android-sm-a137f no-passthrough ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
+crbug.com/396176034 [ android android-sm-a137f no-passthrough ] conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
+crbug.com/396176034 [ android android-sm-a137f no-passthrough ] conformance/offscreencanvas/context-lost-restored.html [ Failure ]
 
 crbug.com/1372149 [ android android-sm-a236b no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/40241618 [ android android-sm-s911u1 no-passthrough ] conformance/rendering/blending.html [ Failure ]
