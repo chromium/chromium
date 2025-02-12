@@ -26,6 +26,13 @@ class IIRFilterHandler final : public AudioBasicProcessorHandler {
 
   void Process(uint32_t frames_to_process) override;
 
+  // Get the magnitude and phase response of the filter at the given
+  // set of frequencies (in Hz). The phase response is in radians.
+  void GetFrequencyResponse(int n_frequencies,
+                            const float* frequency_hz,
+                            float* mag_response,
+                            float* phase_response);
+
  private:
   IIRFilterHandler(AudioNode&,
                    float sample_rate,

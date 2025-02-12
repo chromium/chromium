@@ -72,6 +72,15 @@ void IIRFilterHandler::Process(uint32_t frames_to_process) {
   }
 }
 
+void IIRFilterHandler::GetFrequencyResponse(int n_frequencies,
+                                            const float* frequency_hz,
+                                            float* mag_response,
+                                            float* phase_response) {
+  static_cast<IIRProcessor*>(Processor())
+      ->GetFrequencyResponse(n_frequencies, frequency_hz, mag_response,
+                             phase_response);
+}
+
 void IIRFilterHandler::NotifyBadState() const {
   DCHECK(IsMainThread());
   if (!Context() || !Context()->GetExecutionContext()) {
