@@ -58,6 +58,13 @@ void UndoStep::Unapply() {
 
   EventQueueScope scope;
 
+  DispatchEditableContentChangedEvents(StartingRootEditableElement(),
+                                       EndingRootEditableElement());
+  DispatchInputEventEditableContentChanged(
+      StartingRootEditableElement(), EndingRootEditableElement(),
+      InputEvent::InputType::kHistoryUndo, g_null_atom,
+      InputEvent::EventIsComposing::kNotComposing);
+
   const SelectionInDOMTree& new_selection =
       CorrectedSelectionAfterCommand(StartingSelection(), document_);
   ChangeSelectionAfterCommand(frame, new_selection,
@@ -66,14 +73,6 @@ void UndoStep::Unapply() {
                                   .SetShouldClearTypingStyle(true)
                                   .SetIsDirectional(SelectionIsDirectional())
                                   .Build());
-
-  DispatchEditableContentChangedEvents(StartingRootEditableElement(),
-                                       EndingRootEditableElement());
-
-  DispatchInputEventEditableContentChanged(
-      StartingRootEditableElement(), EndingRootEditableElement(),
-      InputEvent::InputType::kHistoryUndo, g_null_atom,
-      InputEvent::EventIsComposing::kNotComposing);
   // `new_selection` may not be valid here, e.g. "focus" event handler modifies
   // DOM tree. See http://crbug.com/1378068
   Editor& editor = frame->GetEditor();
@@ -104,6 +103,13 @@ void UndoStep::Reapply() {
 
   EventQueueScope scope;
 
+  DispatchEditableContentChangedEvents(StartingRootEditableElement(),
+                                       EndingRootEditableElement());
+  DispatchInputEventEditableContentChanged(
+      StartingRootEditableElement(), EndingRootEditableElement(),
+      InputEvent::InputType::kHistoryRedo, g_null_atom,
+      InputEvent::EventIsComposing::kNotComposing);
+
   const SelectionInDOMTree& new_selection =
       CorrectedSelectionAfterCommand(EndingSelection(), document_);
   ChangeSelectionAfterCommand(frame, new_selection,
@@ -112,14 +118,6 @@ void UndoStep::Reapply() {
                                   .SetShouldClearTypingStyle(true)
                                   .SetIsDirectional(SelectionIsDirectional())
                                   .Build());
-
-  DispatchEditableContentChangedEvents(StartingRootEditableElement(),
-                                       EndingRootEditableElement());
-
-  DispatchInputEventEditableContentChanged(
-      StartingRootEditableElement(), EndingRootEditableElement(),
-      InputEvent::InputType::kHistoryRedo, g_null_atom,
-      InputEvent::EventIsComposing::kNotComposing);
   // `new_selection` may not be valid here, e.g. "focus" event handler modifies
   // DOM tree. See http://crbug.com/1378068
   Editor& editor = frame->GetEditor();
