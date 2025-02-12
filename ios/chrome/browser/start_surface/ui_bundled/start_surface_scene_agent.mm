@@ -98,6 +98,13 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 
 #pragma mark - SceneStateObserver
 
+- (void)sceneStateDidEnableUI:(SceneState*)sceneState {
+  if (self.waitingForProfileStateAfterSceneStateReady) {
+    self.waitingForProfileStateAfterSceneStateReady = NO;
+    [self showStartSurfaceIfNecessary];
+  }
+}
+
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
   // Tear down objects tied to the scene state before it is deleted.
   [self.sceneState.profileState removeObserver:self];
@@ -137,6 +144,12 @@ bool IsEmptyNTP(const web::WebState* web_state) {
     return;
   }
 
+  if (!self.sceneState.UIEnabled) {
+    self.waitingForProfileStateAfterSceneStateReady = YES;
+    return;
+  }
+
+  CHECK(self.sceneState.browserProviderInterface);
   Browser* browser =
       self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
 
