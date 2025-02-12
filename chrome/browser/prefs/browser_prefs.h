@@ -31,6 +31,8 @@ void RegisterLocalState(PrefRegistrySimple* registry);
 
 void RegisterScreenshotPrefs(PrefRegistrySimple* registry);
 
+void RegisterGeminiSettingsPrefs(user_prefs::PrefRegistrySyncable* registry);
+
 // Register all prefs that will be used via a PrefService attached to a user
 // Profile using the locale of |g_browser_process|.
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

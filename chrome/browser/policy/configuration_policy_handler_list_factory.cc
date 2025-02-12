@@ -437,6 +437,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSharedWorkerBlobURLFixEnabled,
     prefs::kSharedWorkerBlobURLFixEnabled,
     base::Value::Type::BOOLEAN},
+  { key::kGeminiSettings,
+    prefs::kGeminiSettings,
+    base::Value::Type::INTEGER },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAccessibilityPerformanceFilteringAllowed,

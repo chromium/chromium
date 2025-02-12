@@ -2196,6 +2196,7 @@ chromium-metrics-reviews@google.com.
   <int value="1332" label="WebAuthenticationRemoteDesktopAllowedOrigins"/>
   <int value="1333" label="ServiceWorkerToControlSrcdocIframeEnabled"/>
   <int value="1334" label="ProvisionManagedClientCertificateForBrowser"/>
+  <int value="1335" label="GeminiSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

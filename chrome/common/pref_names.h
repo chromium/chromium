@@ -1326,6 +1326,10 @@ inline constexpr char kShowHomeButton[] = "browser.show_home_button";
 // toolbar.
 inline constexpr char kShowForwardButton[] = "browser.show_forward_button";
 
+// A boolean pref set to true if Gemini integration be enabled. This is managed
+// by enterprise policy.
+inline constexpr char kGeminiSettings[] = "browser.gemini_settings";
+
 // Comma separated list of domain names (e.g. "google.com,school.edu").
 // When this pref is set, the user will be able to access Google Apps
 // only using an account that belongs to one of the domains from this pref.

@@ -1940,6 +1940,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   PushMessagingAppIdentifier::RegisterProfilePrefs(registry);
   QuietNotificationPermissionUiState::RegisterProfilePrefs(registry);
   RegisterBrowserUserPrefs(registry);
+  RegisterGeminiSettingsPrefs(registry);
   RegisterPrefersDefaultScrollbarStylesPrefs(registry);
   RegisterSafetyHubProfilePrefs(registry);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2326,6 +2327,10 @@ void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 void RegisterScreenshotPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kDisableScreenshots, false);
+}
+
+void RegisterGeminiSettingsPrefs(user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterIntegerPref(prefs::kGeminiSettings, 0);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
