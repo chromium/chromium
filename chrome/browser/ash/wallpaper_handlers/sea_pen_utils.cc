@@ -111,7 +111,7 @@ manta::proto::Request CreateMantaRequest(
   }
   if (query->is_text_query() && ash::features::IsSeaPenPromptRewriteEnabled()) {
     manta::proto::InputData& rewrite_input_data = *request.add_input_data();
-    rewrite_input_data.set_tag("use_prompt_rewrite");
+    rewrite_input_data.set_tag("use_query_rewrite");
     rewrite_input_data.set_text("true");
   }
   return request;
