@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/performance_manager_tab_helper.h"
 
+#include <memory>
 #include <type_traits>
 #include <utility>
 
@@ -13,8 +14,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/not_fatal_until.h"
 #include "base/observer_list.h"
+#include "base/supports_user_data.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
+#include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
@@ -134,7 +137,17 @@ PerformanceManagerTabHelper::~PerformanceManagerTabHelper() {
   DCHECK(frames_.empty());
 }
 
-void PerformanceManagerTabHelper::TearDown() {
+void PerformanceManagerTabHelper::TearDownAndSelfDelete() {
+  // Remove the tab helper from the WCUD immediately. After TearDown the tab
+  // helper is in an inconsistent state. This will prevent other
+  // WCO::WebContentsDestroyed handlers from trying to access the tab helper in
+  // this inconsistent state. Doing this before BatchDeleteNodes also prevents
+  // accessors in the PerformanceManager class from finding the tab helper in an
+  // inconsistent state if called from PageNodeObserver::OnPageNodeRemoved. The
+  // tab helper will be deleted when `self` goes out of scope.
+  std::unique_ptr<base::SupportsUserData::Data> self =
+      web_contents()->TakeUserData(UserDataKey());
+
   // Ship our page and frame nodes to the PerformanceManagerImpl for
   // incineration.
   std::vector<std::unique_ptr<NodeBase>> nodes;
@@ -142,8 +155,9 @@ void PerformanceManagerTabHelper::TearDown() {
     std::unique_ptr<FrameNodeImpl> frame_node = std::move(kv.second);
 
     // Notify observers.
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OnBeforeFrameNodeRemoved(this, frame_node.get());
+    }
 
     // Ensure the node will be deleted on the graph sequence.
     nodes.push_back(std::move(frame_node));
@@ -216,19 +230,20 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
 
   auto* site_instance = render_frame_host->GetSiteInstance();
 
-  // Create the frame node, and provide a callback that will run in the graph to
-  // initialize it.
+  // Create and initialize the frame node. This doesn't call `CreateFrameNode`
+  // because that automatically calls GraphImpl::AddNewNode(), which notifies
+  // observers, before the node is added to `frames_`.
   // TODO(crbug.com/40182881): Actually look up the appropriate page to wire
   // this frame up to!
-  std::unique_ptr<FrameNodeImpl> frame =
-      PerformanceManagerImpl::CreateFrameNode(
-          process_node, page_node_.get(), parent_frame_node,
-          outer_document_for_inner_frame_root,
-          render_frame_host->GetRoutingID(),
-          blink::LocalFrameToken(render_frame_host->GetFrameToken()),
-          site_instance->GetBrowsingInstanceId(),
-          site_instance->GetSiteInstanceGroupId(),
-          render_frame_host->IsActive());
+  auto frame_node = std::make_unique<FrameNodeImpl>(
+      process_node, page_node_.get(), parent_frame_node,
+      outer_document_for_inner_frame_root, render_frame_host->GetRoutingID(),
+      blink::LocalFrameToken(render_frame_host->GetFrameToken()),
+      site_instance->GetBrowsingInstanceId(),
+      site_instance->GetSiteInstanceGroupId(), render_frame_host->IsActive());
+  FrameNodeImpl* frame = frame_node.get();
+  frames_[render_frame_host] = std::move(frame_node);
+  PerformanceManagerImpl::GetGraphImpl()->AddNewNode(frame);
 
   GURL url = render_frame_host->GetLastCommittedURL();
   if (!url.is_empty()) {
@@ -237,8 +252,6 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
                                  /*same_document=*/false,
                                  /*is_served_from_back_forward_cache=*/false);
   }
-
-  frames_[render_frame_host] = std::move(frame);
 }
 
 void PerformanceManagerTabHelper::RenderFrameDeleted(
@@ -570,14 +583,8 @@ void PerformanceManagerTabHelper::InnerWebContentsAttached(
 }
 
 void PerformanceManagerTabHelper::WebContentsDestroyed() {
-  // Remember the contents, as TearDown clears observer.
-  auto* contents = web_contents();
-  TearDown();
-  // Immediately remove ourselves from the WCUD. After TearDown the tab helper
-  // is in an inconsistent state. This will prevent other
-  // WCO::WebContentsDestroyed handlers from trying to access the tab helper in
-  // this inconsistent state.
-  contents->RemoveUserData(UserDataKey());
+  TearDownAndSelfDelete();
+  // `this` is now invalid.
 }
 
 void PerformanceManagerTabHelper::DidUpdateFaviconURL(
