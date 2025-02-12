@@ -101,7 +101,7 @@ LensOverlayEntryPointController::~LensOverlayEntryPointController() {
   }
 }
 
-bool LensOverlayEntryPointController::IsEnabled() {
+bool LensOverlayEntryPointController::IsEnabled() const {
   // This class is initialized if and only if it is observing.
   if (!fullscreen_observation_.IsObserving()) {
     return false;
@@ -245,13 +245,13 @@ void LensOverlayEntryPointController::OnFullscreenStateChanged() {
   // Chrome. On Mac and ChromeOS, it is possible to hover over the top of the
   // screen to get the top bar back, but since does top bar does not stay
   // open, we need to disable those entry points.
-  UpdateEntryPointsState(/*hide_if_needed=*/false);
+  UpdateEntryPointsState(/*hide_toolbar_entrypoint=*/false);
 }
 
 void LensOverlayEntryPointController::OnTemplateURLServiceChanged() {
   // Possibly add/remove the entrypoints based on the new users default search
   // engine.
-  UpdateEntryPointsState(/*hide_if_needed=*/true);
+  UpdateEntryPointsState(/*hide_toolbar_entrypoint=*/true);
 }
 
 void LensOverlayEntryPointController::OnTemplateURLServiceShuttingDown() {
@@ -289,34 +289,9 @@ void LensOverlayEntryPointController::UpdatePageActionState() {
   const actions::ActionId page_action_id =
       kActionSidePanelShowLensOverlayResults;
 
-  if (!IsEnabled()) {
+  if (!ShouldShowPageAction(active_tab)) {
     page_action_controller->Hide(page_action_id);
-    return;
-  }
-
-  if (!browser_window_interface_->GetProfile()->GetPrefs()->GetBoolean(
-          omnibox::kShowGoogleLensShortcut)) {
-    page_action_controller->Hide(page_action_id);
-    return;
-  }
-
-  if (!features::IsOmniboxEntryPointEnabled()) {
-    page_action_controller->Hide(page_action_id);
-    return;
-  }
-
-  if (!features::IsOmniboxEntrypointAlwaysVisible() &&
-      !location_bar_->Contains(
-          location_bar_->GetFocusManager()->GetFocusedView())) {
-    page_action_controller->Hide(page_action_id);
-    return;
-  }
-
-  // The overlay is unavailable on the NTP as it is unlikely to be useful to
-  // users on the page. It would also appear immediately when a new tab or
-  // window is created due to focus immediatey jumping into the location bar.
-  if (active_tab && IsNewTabPage(active_tab->GetContents())) {
-    page_action_controller->Hide(page_action_id);
+    page_action_controller->HideSuggestionChip(page_action_id);
     return;
   }
 
@@ -325,9 +300,8 @@ void LensOverlayEntryPointController::UpdatePageActionState() {
       page_action_id,
       l10n_util::GetStringUTF16(IDS_CONTENT_LENS_OVERLAY_ENTRYPOINT_LABEL));
 
-  // TODO(crbug.com/376283383): We should always use the chip state once that's
-  // implemented.
   page_action_controller->Show(page_action_id);
+  page_action_controller->ShowSuggestionChip(page_action_id);
 }
 
 bool LensOverlayEntryPointController::IsOverlayActive() {
@@ -338,4 +312,36 @@ bool LensOverlayEntryPointController::IsOverlayActive() {
   auto* controller = active_tab->GetTabFeatures()->lens_overlay_controller();
   return controller && controller->IsOverlayActive();
 }
+
+bool LensOverlayEntryPointController::ShouldShowPageAction(
+    tabs::TabInterface* active_tab) const {
+  if (!IsEnabled()) {
+    return false;
+  }
+
+  if (!browser_window_interface_->GetProfile()->GetPrefs()->GetBoolean(
+          omnibox::kShowGoogleLensShortcut)) {
+    return false;
+  }
+
+  if (!features::IsOmniboxEntryPointEnabled()) {
+    return false;
+  }
+
+  if (!features::IsOmniboxEntrypointAlwaysVisible() &&
+      !location_bar_->Contains(
+          location_bar_->GetFocusManager()->GetFocusedView())) {
+    return false;
+  }
+
+  // The overlay is unavailable on the NTP as it is unlikely to be useful to
+  // users on the page. It would also appear immediately when a new tab or
+  // window is created due to focus immediatey jumping into the location bar.
+  if (IsNewTabPage(active_tab->GetContents())) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace lens
