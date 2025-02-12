@@ -26,6 +26,7 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.ContentViewStatics;
 import org.chromium.net.ProxyChangeListener;
@@ -68,6 +69,7 @@ public class ContentViewMiscTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/396034010")
     public void testEnableDisablePlatformNotifications() {
         Looper.prepare();
         // Set up mock contexts to use with the listener
