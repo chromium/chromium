@@ -2865,6 +2865,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-educational-tip-default-browser-promo-card",
+    "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-educational-tip-module",
     "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@chromium.org" ],
     "expiry_milestone": 140

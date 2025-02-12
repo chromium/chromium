@@ -4370,6 +4370,12 @@ const char kCSSSafeAreaMaxInsetName[] = "CSSSafeAreaMaxInset";
 const char kCSSSafeAreaMaxInsetDescription[] =
     "Enables CSS engine support for the env(safe-area-max-inset-*) variables.";
 
+const char kEducationalTipDefaultBrowserPromoCardName[] =
+    "Educational Tip Default Browser Promo Card";
+const char kEducationalTipDefaultBrowserPromoCardDescription[] =
+    "Show the default browser promo card of the educational tip module on "
+    "magic stack in clank";
+
 const char kEducationalTipModuleName[] = "Educational Tip Module";
 const char kEducationalTipModuleDescription[] =
     "Show educational tip module on magic stack in clank";

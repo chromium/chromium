@@ -261,6 +261,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kEdgeToEdgeEverywhere,
     &kEdgeToEdgeSafeAreaConstraint,
     &kEdgeToEdgeWebOptIn,
+    &kEducationalTipDefaultBrowserPromoCard,
     &kEmptyTabListAnimationKillSwitch,
     &kEnableXAxisActivityTransition,
     &kExperimentsForAgsa,
@@ -813,6 +814,10 @@ BASE_FEATURE(kEdgeToEdgeSafeAreaConstraint,
 BASE_FEATURE(kEdgeToEdgeWebOptIn,
              "EdgeToEdgeWebOptIn",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEducationalTipDefaultBrowserPromoCard,
+             "EducationalTipDefaultBrowserPromoCard",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEmptyTabListAnimationKillSwitch,
              "EmptyTabListAnimationKillSwitch",
