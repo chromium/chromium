@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_bubble_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_opt_in_iph_controller.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
@@ -154,6 +155,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       std::make_unique<lens::LensRegionSearchController>();
 
   tab_strip_model_ = browser->GetTabStripModel();
+
+  memory_saver_bubble_controller_ =
+      std::make_unique<memory_saver::MemorySaverBubbleController>(browser);
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {

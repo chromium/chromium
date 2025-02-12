@@ -56,6 +56,10 @@ namespace media_router {
 class CastBrowserController;
 }  // namespace media_router
 
+namespace memory_saver {
+class MemorySaverBubbleController;
+}  // namespace memory_saver
+
 namespace tab_groups {
 class SessionServiceTabGroupSyncObserver;
 class MostRecentUpdateStore;
@@ -176,6 +180,10 @@ class BrowserWindowFeatures {
     return most_recent_update_store_.get();
   }
 
+  memory_saver::MemorySaverBubbleController* memory_saver_bubble_controller() {
+    return memory_saver_bubble_controller_.get();
+  }
+
  protected:
   BrowserWindowFeatures();
 
@@ -236,6 +244,9 @@ class BrowserWindowFeatures {
 #endif
 
   std::unique_ptr<tab_groups::MostRecentUpdateStore> most_recent_update_store_;
+
+  std::unique_ptr<memory_saver::MemorySaverBubbleController>
+      memory_saver_bubble_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_
