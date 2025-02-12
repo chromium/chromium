@@ -50,8 +50,6 @@ inline constexpr char kSearchEngineChoiceRepromptWildcardHistogram[] =
     "Search.ChoiceReprompt.Wildcard";
 inline constexpr char kSearchEngineChoiceRepromptSpecificCountryHistogram[] =
     "Search.ChoiceReprompt.SpecificCountry";
-inline constexpr char kSearchEngineChoiceUnexpectedIdHistogram[] =
-    "Search.ChoiceDebug.UnexpectedSearchEngineId";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

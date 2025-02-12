@@ -248,21 +248,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ChoiceDebug.UnexpectedSearchEngineId" units="id"
-    expires_after="2025-02-11">
-  <owner>dgn@chromium.org</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
-  <summary>
-    Records the id of an unexpected search engine that causes the choice screen
-    to be suppressed. We would normally only expect the choice screen to include
-    options that are in a country-specific list, or at least part of the set of
-    currently available prepopulated search engines.
-
-    This histogram might be recorded at each navigation, in a sparse histogram,
-    until the choice screen ends up being shown.
-  </summary>
-</histogram>
-
 <histogram name="Search.ChoiceDebug.UnknownCountryIdStored"
     enum="UnknownCountryIdStored" expires_after="2025-11-18">
   <owner>cschlosser@chromium.org</owner>

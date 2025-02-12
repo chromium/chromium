@@ -207,11 +207,6 @@ void RecordChoiceScreenPositions(
   }
 }
 
-void RecordUnexpectedSearchProvider(const TemplateURLData& data) {
-  base::UmaHistogramSparse(kSearchEngineChoiceUnexpectedIdHistogram,
-                           data.prepopulate_id);
-}
-
 void WipeSearchEngineChoicePrefs(PrefService& profile_prefs,
                                  WipeSearchEngineChoiceReason reason) {
   base::UmaHistogramEnumeration(kSearchEngineChoiceWipeReasonHistogram, reason);
