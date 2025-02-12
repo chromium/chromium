@@ -119,7 +119,7 @@ void CollaborationMessagingTabData::FetchAvatar(PersistentMessage message) {
   data_sharing_service->GetAvatarImageForURL(
       avatar_url, signin::kAccountInfoImageSize,
       base::BindOnce(&CollaborationMessagingTabData::CommitMessage,
-                     base::Unretained(this), message),
+                     GetWeakPtr(), message),
       image_fetcher_service->GetImageFetcher(
           image_fetcher::ImageFetcherConfig::kDiskCacheOnly));
 }
