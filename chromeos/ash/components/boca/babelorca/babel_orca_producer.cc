@@ -16,7 +16,7 @@
 #include "chromeos/ash/components/boca/babelorca/babel_orca_caption_translator.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_controller.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_speech_recognizer.h"
-#include "chromeos/ash/components/boca/babelorca/live_caption_controller_wrapper.h"
+#include "chromeos/ash/components/boca/babelorca/caption_controller.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client_impl.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_client_impl.h"
@@ -24,7 +24,6 @@
 #include "chromeos/ash/components/boca/babelorca/token_manager.h"
 #include "chromeos/ash/components/boca/babelorca/transcript_sender_impl.h"
 #include "chromeos/ash/components/boca/babelorca/transcript_sender_rate_limiter.h"
-#include "components/live_caption/pref_names.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -35,34 +34,34 @@ namespace ash::babelorca {
 std::unique_ptr<BabelOrcaController> BabelOrcaProducer::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<BabelOrcaSpeechRecognizer> speech_recognizer,
-    std::unique_ptr<LiveCaptionControllerWrapper> caption_controller_wrapper,
+    std::unique_ptr<CaptionController> caption_controller,
     std::unique_ptr<BabelOrcaCaptionTranslator> translator,
-    PrefService* pref_service,
     TokenManager* oauth_token_manager,
     TachyonRequestDataProvider* request_data_provider) {
   return std::make_unique<BabelOrcaProducer>(
       url_loader_factory, std::move(speech_recognizer),
-      std::move(caption_controller_wrapper),
+      std::move(caption_controller),
       std::make_unique<TachyonAuthedClientImpl>(
           std::make_unique<babelorca::TachyonClientImpl>(url_loader_factory),
           oauth_token_manager),
-      request_data_provider, std::move(translator), pref_service);
+      request_data_provider, std::move(translator));
 }
 
 BabelOrcaProducer::BabelOrcaProducer(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<BabelOrcaSpeechRecognizer> speech_recognizer,
-    std::unique_ptr<LiveCaptionControllerWrapper> caption_controller_wrapper,
+    std::unique_ptr<CaptionController> caption_controller,
     std::unique_ptr<TachyonAuthedClient> authed_client,
     TachyonRequestDataProvider* request_data_provider,
-    std::unique_ptr<BabelOrcaCaptionTranslator> translator,
-    PrefService* pref_service)
+    std::unique_ptr<BabelOrcaCaptionTranslator> translator)
     : speech_recognizer_(std::move(speech_recognizer)),
-      caption_controller_wrapper_(std::move(caption_controller_wrapper)),
+      caption_controller_(std::move(caption_controller)),
       translator_(std::move(translator)),
-      pref_service_(pref_service),
       authed_client_(std::move(authed_client)),
-      request_data_provider_(request_data_provider) {}
+      request_data_provider_(request_data_provider) {
+  // Translation is always enabled for producer.
+  caption_controller_->SetLiveTranslateEnabled(true);
+}
 
 BabelOrcaProducer::~BabelOrcaProducer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -120,16 +119,17 @@ void BabelOrcaProducer::OnLocalCaptionConfigUpdated(
     bool local_captions_enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   local_captions_enabled_ = local_captions_enabled;
-  caption_controller_wrapper_->ToggleLiveCaptionForBabelOrca(
-      local_captions_enabled_);
   if (!session_captions_enabled_ && !local_captions_enabled_) {
     StopRecognition();
     return;
   }
   if (!local_captions_enabled_) {
     // Close the bubble.
-    caption_controller_wrapper_->OnAudioStreamEnd();
+    caption_controller_->StopLiveCaption();
     return;
+  } else {
+    // Ensure bubble creation.
+    caption_controller_->StartLiveCaption();
   }
   // If session captions enabled and sender is initialized, this means that
   // recognition already started and observation is set.
@@ -188,7 +188,7 @@ void BabelOrcaProducer::OnTranscriptionResult(
       base::BindOnce(&BabelOrcaProducer::DispatchToBubble,
                      weak_ptr_factory_.GetWeakPtr()),
       source_language,
-      pref_service_->GetString(prefs::kLiveTranslateTargetLanguageCode));
+      caption_controller_->GetLiveTranslateTargetLanguageCode());
 
   // `session_captions_enabled_` can be enabled but `rate_limited_sender_` is
   // not initialized because signin is not complete.
@@ -201,7 +201,7 @@ void BabelOrcaProducer::OnTranscriptionResult(
 void BabelOrcaProducer::OnLanguageIdentificationEvent(
     const media::mojom::LanguageIdentificationEventPtr& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  caption_controller_wrapper_->OnLanguageIdentificationEvent(event);
+  caption_controller_->OnLanguageIdentificationEvent(event);
 }
 
 void BabelOrcaProducer::OnSendFailed() {
@@ -218,7 +218,7 @@ void BabelOrcaProducer::OnSendFailed() {
 void BabelOrcaProducer::StopRecognition() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   speech_recognizer_->Stop();
-  caption_controller_wrapper_->OnAudioStreamEnd();
+  caption_controller_->StopLiveCaption();
   // This should be a no-op if not currently observing.
   speech_recognizer_->RemoveSpeechRecognitionObservation();
   rate_limited_sender_.reset();
@@ -227,20 +227,10 @@ void BabelOrcaProducer::StopRecognition() {
 void BabelOrcaProducer::DispatchToBubble(
     const media::SpeechRecognitionResult& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   if (!local_captions_enabled_) {
     return;
   }
-
-  bool dispatch_success =
-      caption_controller_wrapper_->DispatchTranscription(result);
-  if (!dispatch_success) {
-    // Restart captions in case the bubble was closed.
-    caption_controller_wrapper_->RestartCaptions();
-    dispatch_success =
-        caption_controller_wrapper_->DispatchTranscription(result);
-  }
-
+  bool dispatch_success = caption_controller_->DispatchTranscription(result);
   // TODO(crbug.com/373692250): add dispatch attempts error limit and report
   // failure.
   VLOG_IF(1, !dispatch_success)

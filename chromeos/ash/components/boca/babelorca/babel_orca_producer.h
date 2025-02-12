@@ -16,7 +16,6 @@
 #include "chromeos/ash/components/boca/babelorca/babel_orca_caption_translator.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_controller.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client_impl.h"
-#include "components/prefs/pref_service.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 
 namespace media {
@@ -30,7 +29,7 @@ class SharedURLLoaderFactory;
 namespace ash::babelorca {
 
 class BabelOrcaSpeechRecognizer;
-class LiveCaptionControllerWrapper;
+class CaptionController;
 class TachyonRequestDataProvider;
 class TokenManager;
 class TranscriptSenderRateLimiter;
@@ -41,20 +40,18 @@ class BabelOrcaProducer : public BabelOrcaController {
   static std::unique_ptr<BabelOrcaController> Create(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<BabelOrcaSpeechRecognizer> speech_recognizer,
-      std::unique_ptr<LiveCaptionControllerWrapper> caption_controller_wrapper,
+      std::unique_ptr<CaptionController> caption_controller,
       std::unique_ptr<BabelOrcaCaptionTranslator> translator,
-      PrefService* pref_service,
       TokenManager* oauth_token_manager,
       TachyonRequestDataProvider* request_data_provider);
 
   BabelOrcaProducer(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<BabelOrcaSpeechRecognizer> speech_recognizer,
-      std::unique_ptr<LiveCaptionControllerWrapper> caption_controller_wrapper,
+      std::unique_ptr<CaptionController> caption_controller,
       std::unique_ptr<babelorca::TachyonAuthedClient> authed_client,
       TachyonRequestDataProvider* request_data_provider,
-      std::unique_ptr<BabelOrcaCaptionTranslator> translator,
-      PrefService* pref_service);
+      std::unique_ptr<BabelOrcaCaptionTranslator> translator);
 
   ~BabelOrcaProducer() override;
 
@@ -87,11 +84,10 @@ class BabelOrcaProducer : public BabelOrcaController {
 
   const std::unique_ptr<BabelOrcaSpeechRecognizer> speech_recognizer_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  const std::unique_ptr<LiveCaptionControllerWrapper>
-      caption_controller_wrapper_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const std::unique_ptr<CaptionController> caption_controller_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   const std::unique_ptr<BabelOrcaCaptionTranslator> translator_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  const raw_ptr<PrefService> pref_service_;
 
   std::unique_ptr<babelorca::TachyonAuthedClient> authed_client_;
   const raw_ptr<TachyonRequestDataProvider> request_data_provider_;

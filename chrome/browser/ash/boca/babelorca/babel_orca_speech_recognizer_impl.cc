@@ -7,11 +7,9 @@
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_speech_recognizer.h"
 #include "chromeos/ash/components/boca/babelorca/speech_recognition_event_handler.h"
-#include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/pref_names.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
@@ -52,14 +50,10 @@ void BabelOrcaSpeechRecognizerImpl::Start() {
   soda_installer_.GetAvailabilityOrInstall(base::BindOnce(
       &SystemLiveCaptionService::SpeechRecognitionAvailabilityChanged,
       service_ptr_factory_.GetWeakPtr()));
-  ::captions::LiveCaptionControllerFactory::GetForProfile(primary_profile_)
-      ->ToggleLiveCaptionForBabelOrca(true);
 }
 
 void BabelOrcaSpeechRecognizerImpl::Stop() {
   SpeechRecognitionAvailabilityChanged(false);
-  ::captions::LiveCaptionControllerFactory::GetForProfile(primary_profile_)
-      ->ToggleLiveCaptionForBabelOrca(false);
 }
 
 void BabelOrcaSpeechRecognizerImpl::ObserveSpeechRecognition(

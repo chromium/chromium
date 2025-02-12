@@ -49,7 +49,7 @@ class FakeCaptionControllerDelegate : public CaptionController::Delegate {
 
   ui::NativeThemeObserver* GetCaptionStyleObserver();
 
-  size_t GetOnAudioStreamEndCount();
+  size_t GetOnLanguageIdentificationEventCount();
 
   const std::vector<std::optional<ui::CaptionStyle>>&
   GetUpdateCaptionStyleUpdates();
@@ -60,7 +60,7 @@ class FakeCaptionControllerDelegate : public CaptionController::Delegate {
 
   void SetOnTranscriptionSuccess(bool success);
 
-  void OnAudioStreamEnd();
+  void OnLanguageIdentificationEvent();
 
   void AddStyleUpdate(std::optional<ui::CaptionStyle> style);
 
@@ -72,7 +72,7 @@ class FakeCaptionControllerDelegate : public CaptionController::Delegate {
   bool caption_bubble_alive_ = false;
   bool on_transcritption_success_ = true;
   size_t create_bubble_controller_count_ = 0;
-  size_t audio_stream_end_count_ = 0;
+  size_t language_identification_event_count_ = 0;
   std::vector<std::optional<ui::CaptionStyle>> caption_style_updates_;
   std::vector<media::SpeechRecognitionResult> transcriptions_;
   raw_ptr<ui::NativeThemeObserver> style_observer_;

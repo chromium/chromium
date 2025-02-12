@@ -25,7 +25,6 @@ class GaiaId;
 
 namespace ash::babelorca {
 class BabelOrcaController;
-class LiveCaptionControllerWrapper;
 }  // namespace ash::babelorca
 
 namespace boca {
@@ -34,7 +33,6 @@ class UserIdentity;
 
 namespace captions {
 class CaptionBubbleContext;
-class LiveCaptionController;
 }  // namespace captions
 
 namespace network {
@@ -66,11 +64,11 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
   static std::unique_ptr<BabelOrcaManager> CreateAsProducer(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      ::captions::LiveCaptionController* live_caption_controller,
       std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context,
       std::unique_ptr<babelorca::BabelOrcaSpeechRecognizer> speech_recognizer,
       std::unique_ptr<babelorca::BabelOrcaCaptionTranslator> translator,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      const std::string& application_locale);
 
   static std::unique_ptr<BabelOrcaManager> CreateAsConsumer(
       signin::IdentityManager* identity_manager,
@@ -117,8 +115,6 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
   babelorca::TokenManagerImpl token_manager_;
   babelorca::TachyonAuthedClientImpl authed_client_;
   babelorca::TachyonRegistrar registrar_;
-  std::unique_ptr<babelorca::LiveCaptionControllerWrapper>
-      caption_controller_wrapper_;
 
   std::optional<std::string> session_id_;
   std::optional<std::string> group_id_;
