@@ -11,29 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/account_manager_core/account_manager_facade.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-namespace base {
-class FilePath;
-}
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-namespace signin {
-class ConsistencyCookieManager;
-}
-
-class AccountProfileMapper;
-class SigninHelperLacros;
-class SigninClient;
-struct CoreAccountId;
-#endif
 
 class PrefService;
 class SigninClient;
@@ -67,16 +47,6 @@ class SigninManager : public KeyedService,
 
   SigninManager(const SigninManager&) = delete;
   SigninManager& operator=(const SigninManager&) = delete;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void StartLacrosSigninFlow(
-      const base::FilePath& profile_path,
-      AccountProfileMapper* account_profile_mapper,
-      signin::ConsistencyCookieManager* consistency_cookie_manager,
-      account_manager::AccountManagerFacade::AccountAdditionSource source,
-      base::OnceCallback<void(const CoreAccountId&)> on_completion_callback =
-          base::DoNothing());
-#endif
 
   // Returns a scoped handle that prevents `SigninManager` from changing the
   // unconsented primary account.
@@ -112,10 +82,8 @@ class SigninManager : public KeyedService,
   void Shutdown() override;
 
   // signin::IdentityManager::Observer implementation.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnEndBatchOfRefreshTokenStateChanges() override;
   void OnRefreshTokensLoaded() override;
   void OnAccountsInCookieUpdated(
@@ -131,12 +99,6 @@ class SigninManager : public KeyedService,
 
   void OnAccountSelectionInProgressHandleDestroyed();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnSigninHelperLacrosComplete(
-      base::OnceCallback<void(const CoreAccountId&)> on_completion_callback,
-      const CoreAccountId& account_id);
-#endif
-
   const raw_ref<PrefService> prefs_;
   const raw_ref<SigninClient> signin_client_;
   const raw_ref<signin::IdentityManager> identity_manager_;
@@ -151,10 +113,6 @@ class SigninManager : public KeyedService,
   // currently manipulating the unconsented primary account.
   // We should not reset the UPA while it's not `0`.
   int live_account_selection_handles_count_ = 0;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<SigninHelperLacros> signin_helper_lacros_;
-#endif
 
   base::WeakPtrFactory<SigninManager> weak_ptr_factory_{this};
 };

@@ -14,7 +14,6 @@
 #include "base/strings/string_util.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
@@ -570,7 +569,7 @@ void FixAccountConsistencyRequestHeader(
     AccountConsistencyMethod account_consistency,
     const GaiaId& gaia_id,
     signin::Tribool is_child_account,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     bool is_secondary_account_addition_allowed,
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -593,7 +592,7 @@ void FixAccountConsistencyRequestHeader(
     profile_mode_mask |= PROFILE_MODE_INCOGNITO_DISABLED;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!is_secondary_account_addition_allowed) {
     account_consistency = AccountConsistencyMethod::kMirror;
     // Can't add new accounts.

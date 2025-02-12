@@ -7,7 +7,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -25,7 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #endif
 
@@ -80,7 +79,7 @@ class RemoveLocalAccountTest : public MixinBasedInProcessBrowserTest {
 
     embedded_test_server_.StartAcceptingConnections();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // `ChromeSigninClient` uses `ash::DelayNetworkCall()` which requires
     // simulating being online.
     network_portal_detector_.SimulateDefaultNetworkState(
@@ -91,7 +90,7 @@ class RemoveLocalAccountTest : public MixinBasedInProcessBrowserTest {
   FakeGaia fake_gaia_;
   net::EmbeddedTestServer embedded_test_server_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 #endif
 };

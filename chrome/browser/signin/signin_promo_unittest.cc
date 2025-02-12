@@ -5,7 +5,6 @@
 #include "chrome/browser/signin/signin_promo.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
@@ -38,7 +37,7 @@
 
 namespace signin {
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST(SigninPromoTest, TestPromoURL) {
   GURL::Replacements replace_query;
   replace_query.SetQueryStr("access_point=0&reason=0&auto_close=1");
@@ -65,7 +64,7 @@ TEST(SigninPromoTest, TestReauthURL) {
                                     signin_metrics::Reason::kFetchLstOnly,
                                     "example@domain.com"));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST(SigninPromoTest, SigninURLForDice) {
   EXPECT_EQ(
@@ -153,7 +152,7 @@ TEST_F(ShowSyncPromoTest, ShouldShowSyncPromoSyncDisabled) {
 // Verifies that ShouldShowSyncPromo returns true if all conditions to
 // show the promo are met.
 TEST_F(ShowSyncPromoTest, ShouldShowSyncPromoSyncEnabled) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // No sync promo on Ash.
   EXPECT_FALSE(ShouldShowSyncPromo(*profile()));
 #else
@@ -162,7 +161,7 @@ TEST_F(ShowSyncPromoTest, ShouldShowSyncPromoSyncEnabled) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ShowSyncPromoTest, ShowPromoWithSignedInAccount) {
   MakePrimaryAccountAvailable(identity_manager(), "test@email.com",
                               ConsentLevel::kSignin);
@@ -174,7 +173,7 @@ TEST_F(ShowSyncPromoTest, DoNotShowPromoWithSyncingAccount) {
                               ConsentLevel::kSync);
   EXPECT_FALSE(ShouldShowSyncPromo(*profile()));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class ShowSigninPromoTestExplicitBrowserSignin : public ShowPromoTest {

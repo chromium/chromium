@@ -7,7 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/e2e_tests/account_capabilities_observer.h"
@@ -45,9 +45,9 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/webview/webview.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/sync/sync_ui_util.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace signin::test {
 namespace {
@@ -144,10 +144,10 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignOut) {
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account.account_id));
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(GetAvatarSyncErrorType(browser()->profile()),
             AvatarSyncErrorType::kSyncPaused);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
