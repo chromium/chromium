@@ -16,10 +16,10 @@ import fetch_common
 _REPO_URL = 'https://dl.google.com/dl/android/maven2'
 SPEC = fetch_common.Spec(repo_url=_REPO_URL,
                          group_name='com/google/android/gms',
-                         module_name='play-services-base',
+                         module_name='play-services-tflite-java',
                          file_ext='aar',
                          patch_version='cr1',
-                         version_override='18.5.0',
+                         version_override='16.4.0',
                          version_filter=None)
 
 if __name__ == '__main__':
