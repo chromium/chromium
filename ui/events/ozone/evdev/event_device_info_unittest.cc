@@ -4,7 +4,6 @@
 
 #include "ui/events/ozone/evdev/event_device_info.h"
 
-#include "base/command_line.h"
 #include "base/format_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -14,10 +13,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ozone/evdev/event_device_test_util.h"
 #include "ui/events/ozone/evdev/event_device_util.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"  // nogncheck
-#endif
 
 namespace ui {
 
@@ -584,17 +579,5 @@ TEST(EventDeviceInfoTest, RexHeatmapTouchScreen) {
   EXPECT_FALSE(devinfo.HasStylusSwitch());
   EXPECT_TRUE(devinfo.SupportsHeatmap());
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST(EventDeviceInfoTest, RevenAdvantechInternalUsbTouchscreen) {
-  EventDeviceInfo devinfo;
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kRevenBranding);
-  EXPECT_TRUE(
-      CapabilitiesToDeviceInfo(kAdvantechUsbInternalTouchscreen, &devinfo));
-
-  EXPECT_EQ(ui::InputDeviceType::INPUT_DEVICE_INTERNAL, devinfo.device_type());
-}
-#endif
 
 }  // namespace ui

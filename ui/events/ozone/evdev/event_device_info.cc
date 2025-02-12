@@ -26,10 +26,6 @@
 #include "ui/events/ozone/evdev/keyboard_mouse_combo_device_metrics.h"
 #include "ui/events/ozone/features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"  // nogncheck
-#endif
-
 #if !defined(EVIOCGMTSLOTS)
 #define EVIOCGMTSLOTS(len) _IOC(_IOC_READ, 'E', 0x0a, len)
 #endif
@@ -970,32 +966,10 @@ bool EventDeviceInfo::SupportsRumble() const {
 
 // static
 ui::InputDeviceType EventDeviceInfo::GetInputDeviceTypeFromId(input_id id) {
-  switch (id.bustype) {
-    case BUS_I2C:
-    case BUS_I8042:
-      return ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
-    case BUS_USB:
-      return IsInternalUSB(id) ? ui::InputDeviceType::INPUT_DEVICE_INTERNAL
-                               : ui::InputDeviceType::INPUT_DEVICE_USB;
-    case BUS_BLUETOOTH:
-      return ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH;
-    default:
-      return ui::InputDeviceType::INPUT_DEVICE_UNKNOWN;
-  }
-}
-
-// static
-bool EventDeviceInfo::IsInternalUSB(input_id id) {
-  struct VidPid {
+  static constexpr struct {
     uint16_t vid;
     uint16_t pid;
-  };
-
-  if (id.bustype != BUS_USB) {
-    return false;
-  }
-
-  std::vector<VidPid> usb_internal_ids = {
+  } kUSBInternalDevices[] = {
       {0x18d1, 0x502b},  // Google, Hammer PID (soraka)
       {0x18d1, 0x5030},  // Google, Whiskers PID (nocturne)
       {0x18d1, 0x503c},  // Google, Masterball PID (krane) // nocheck
@@ -1012,26 +986,32 @@ bool EventDeviceInfo::IsInternalUSB(input_id id) {
       {0x1fd2, 0x8103},  // LG, Internal TouchScreen PID
   };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::switches::IsRevenBranding()) {
-    usb_internal_ids.insert(
-        usb_internal_ids.end(),
-        {
-            // ILI Technology Corp., Touchscreen PID (HP Engage One Pro AIO)
-            {0x222a, 0x016f},
-            // D-Wav Scientific Co., Ltd, eGalaxTouch PID (Advantech UTC-520F)
-            {0x0eef, 0xc000},
-        });
-  }
-#endif
-
-  for (VidPid internal_id : usb_internal_ids) {
-    if (id.vendor == internal_id.vid && id.product == internal_id.pid) {
-      return true;
+  if (id.bustype == BUS_USB) {
+    for (size_t i = 0; i < std::size(kUSBInternalDevices); ++i) {
+      if (id.vendor == kUSBInternalDevices[i].vid &&
+          id.product == kUSBInternalDevices[i].pid) {
+        return InputDeviceType::INPUT_DEVICE_INTERNAL;
+      }
     }
   }
 
-  return false;
+  switch (id.bustype) {
+    case BUS_I2C:
+    case BUS_I8042:
+      return ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
+    case BUS_USB:
+      return ui::InputDeviceType::INPUT_DEVICE_USB;
+    case BUS_BLUETOOTH:
+      return ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH;
+    default:
+      return ui::InputDeviceType::INPUT_DEVICE_UNKNOWN;
+  }
+}
+
+// static
+bool EventDeviceInfo::IsInternalUSB(input_id id) {
+  return (id.bustype == BUS_USB && GetInputDeviceTypeFromId(id) ==
+                                       InputDeviceType::INPUT_DEVICE_INTERNAL);
 }
 
 EventDeviceInfo::LegacyAbsoluteDeviceType
