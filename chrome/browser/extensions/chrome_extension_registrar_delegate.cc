@@ -279,7 +279,7 @@ void ChromeExtensionRegistrarDelegate::ShowExtensionDisabledError(
 }
 
 void ChromeExtensionRegistrarDelegate::FinishDelayedInstallationsIfAny() {
-  extension_service_->MaybeFinishDelayedInstallations();
+  delayed_install_manager_->MaybeFinishDelayedInstallations();
 }
 
 bool ChromeExtensionRegistrarDelegate::CanAddExtension(

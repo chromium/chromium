@@ -390,9 +390,6 @@ class ExtensionService : public ExtensionServiceInterface,
                          static_cast<int>(kInstallFlagNone));
   }
 
-  // Checks for delayed installation for all pending installs.
-  void MaybeFinishDelayedInstallations();
-
   // ExtensionHost of background page calls this method right after its renderer
   // main frame has been created.
   void DidCreateMainFrameForBackgroundPage(ExtensionHost* host);
@@ -458,9 +455,9 @@ class ExtensionService : public ExtensionServiceInterface,
     return unpacked_install_directory_;
   }
 
-  // TODO(crbug.com/395695804): Make this return a DelayedInstallManager* and
-  // make that class provide the ExtensionSet.
-  const ExtensionSet* delayed_installs() const;
+  DelayedInstallManager* delayed_install_manager() {
+    return &delayed_install_manager_;
+  }
 
   Profile* profile() { return profile_; }
 
