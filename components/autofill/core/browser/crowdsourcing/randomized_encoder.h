@@ -47,6 +47,7 @@ class RandomizedEncoder {
   static constexpr char kFieldPlaceholder[] = "field-placeholder";
   static constexpr char kFieldInitialValueHash[] = "field-initial-hash-value";
   static constexpr char kFieldAutocomplete[] = "field-autocomplete";
+  static constexpr char kFieldPattern[] = "field-pattern";
 
   // Copy of components/unified_consent/pref_names.cc
   // We could not use the constant from components/unified_constants because of
