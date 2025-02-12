@@ -691,12 +691,12 @@
                     "name": "Enabled",
                     "params": {
                         "android_tab_declutter_archive_enabled": "true",
-                        "android_tab_declutter_archive_time_delta_hours": "168",
-                        "android_tab_declutter_auto_delete_enabled": "false"
+                        "android_tab_declutter_archive_time_delta_hours": "504",
+                        "android_tab_declutter_auto_delete_enabled": "false",
+                        "android_tab_declutter_max_simultaneous_archives": "250"
                     },
                     "enable_features": [
                         "AndroidTabDeclutter",
-                        "AndroidTabDeclutterArchiveDuplicateTabs",
                         "IPH_AndroidTabDeclutter"
                     ]
                 }
