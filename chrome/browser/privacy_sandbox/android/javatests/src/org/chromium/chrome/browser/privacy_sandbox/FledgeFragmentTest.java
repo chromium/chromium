@@ -648,12 +648,27 @@ public final class FledgeFragmentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
     public void testFooterTopicsLink() throws IOException {
         setFledgePrefEnabled(true);
         startFledgeSettings();
         // Open a Topics settings activity.
         onView(withText(containsString("ad topics"))).perform(clickOnClickableSpan(0));
         onViewWaiting(withText(R.string.settings_topics_page_toggle_sub_label_v2))
+                .check(matches(isDisplayed()));
+        // Close the additional activity by navigating back.
+        pressBack();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
+    public void testFooterTopicsLinkAdTopicsContentParity() throws IOException {
+        setFledgePrefEnabled(true);
+        startFledgeSettings();
+        // Open a Topics settings activity.
+        onView(withText(containsString("ad topics"))).perform(clickOnClickableSpan(0));
+        onViewWaiting(withText(R.string.settings_ad_topics_page_toggle_sub_label))
                 .check(matches(isDisplayed()));
         // Close the additional activity by navigating back.
         pressBack();

@@ -178,11 +178,24 @@ public final class PrivacySandboxSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
     public void testNavigateToTopicsPage() {
         startPrivacySandboxSettingsV4();
         onView(withText(R.string.ad_privacy_page_topics_link_row_label)).perform(click());
 
         onViewWaiting(withText(R.string.settings_topics_page_toggle_sub_label_v2));
+        assertThat(
+                mUserActionTester.getActions(), hasItems("Settings.PrivacySandbox.Topics.Opened"));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
+    public void testNavigateToTopicsPageAdTopicsContentParity() {
+        startPrivacySandboxSettingsV4();
+        onView(withText(R.string.ad_privacy_page_topics_link_row_label)).perform(click());
+
+        onViewWaiting(withText(R.string.settings_ad_topics_page_toggle_sub_label));
         assertThat(
                 mUserActionTester.getActions(), hasItems("Settings.PrivacySandbox.Topics.Opened"));
     }
