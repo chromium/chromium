@@ -1427,8 +1427,14 @@ void MediaFoundationVideoEncodeAccelerator::SetSWRateControl() {
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   if (codec_ == VideoCodec::kHEVC) {
-    // H264 SW BRC supports up to two temporal layers.
+    // H265 SW BRC supports up to two temporal layers.
     if (num_temporal_layers_ > 2) {
+      return;
+    }
+
+    if (vendor_ == DriverVendor::kQualcomm) {
+      // Qualcomm H265 HMFT does not work with SW BRC.
+      // More info: https://crbug.com/390581539
       return;
     }
 
