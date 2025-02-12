@@ -2245,6 +2245,13 @@ component("base") {
     ]
   }
 
+  # tvOS.
+  if (is_tvos) {
+    sources -= [ "process/process_mac.cc" ]
+
+    sources += [ "process/process_tvos.cc" ]
+  }
+
   # Linux.
   if (is_linux || is_chromeos) {
     # TODO(brettw) this will need to be parameterized at some point.
