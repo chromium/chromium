@@ -4062,13 +4062,9 @@ const FeatureEntry::FeatureVariation kTranslationAPIVariations[] = {
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kClayBlockingWithFakeBackend[] = {
     {"use_fake_backend", "true"}};
-const FeatureEntry::FeatureParam kClayBlockingVerbose[] = {
-    {"enable_verbose_logging", "true"}};
 const FeatureEntry::FeatureVariation kClayBlockingVariations[] = {
     {"(with fake backend)", kClayBlockingWithFakeBackend,
-     std::size(kClayBlockingWithFakeBackend), nullptr},
-    {"(verbose)", kClayBlockingVerbose, std::size(kClayBlockingVerbose),
-     nullptr}};
+     std::size(kClayBlockingWithFakeBackend), nullptr}};
 
 const FeatureEntry::FeatureParam kSensitiveContentUsePwmHeuristics[] = {
     {"sensitive_content_use_pwm_heuristics", "true"}};
