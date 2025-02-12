@@ -474,6 +474,11 @@ class CORE_EXPORT StyleCascade {
   KleeneValue EvalIfStyleFeature(const MediaQueryFeatureExpNode&,
                                  CascadeResolver&,
                                  const CSSParserContext& context);
+  bool EvalIfKeyword(const CSSValue& value,
+                     CSSVariableData* query_value,
+                     const CustomProperty& property);
+  bool EvalIfInitial(CSSVariableData* value, const CustomProperty& property);
+  bool EvalIfInherit(CSSVariableData* value, const CustomProperty& property);
 
   // NOTE: The FunctionContext object must be the _caller's_ function context,
   // not the one the function itself sets up. This is because it is used to

@@ -1975,6 +1975,55 @@ bool StyleCascade::ResolveAutoBaseInto(
                            /* stop_type */ kCommaToken, out);
 }
 
+bool StyleCascade::EvalIfInitial(CSSVariableData* value,
+                                 const CustomProperty& property) {
+  if (!property.IsRegistered()) {
+    return !value;
+  }
+  const StyleInitialData* initial_data = state_.StyleBuilder().InitialData();
+  DCHECK(initial_data);
+  CSSVariableData* initial_variable_data =
+      initial_data->GetVariableData(property.GetPropertyNameAtomicString());
+  return value->EqualsIgnoringAttrTainting(*initial_variable_data);
+}
+
+bool StyleCascade::EvalIfInherit(CSSVariableData* value,
+                                 const CustomProperty& property) {
+  if (!state_.ParentStyle()) {
+    return EvalIfInitial(value, property);
+  }
+
+  bool is_inherited_property = property.IsInherited();
+
+  CSSVariableData* parent_data = state_.ParentStyle()->GetVariableData(
+      property.GetPropertyNameAtomicString(), is_inherited_property);
+
+  return value->EqualsIgnoringAttrTainting(*parent_data);
+}
+
+bool StyleCascade::EvalIfKeyword(const CSSValue& keyword_value,
+                                 CSSVariableData* value,
+                                 const CustomProperty& property) {
+  if (keyword_value.IsInitialValue()) {
+    return EvalIfInitial(value, property);
+  }
+
+  if (keyword_value.IsInheritedValue()) {
+    return EvalIfInherit(value, property);
+  }
+
+  if (keyword_value.IsUnsetValue()) {
+    if (state_.IsInheritedForUnset(property)) {
+      return EvalIfInherit(value, property);
+    } else {
+      return EvalIfInitial(value, property);
+    }
+  }
+
+  // revert and revert-layer keywords
+  return false;
+}
+
 KleeneValue StyleCascade::EvalIfStyleFeature(
     const MediaQueryFeatureExpNode& feature,
     CascadeResolver& resolver,
@@ -1997,23 +2046,19 @@ KleeneValue StyleCascade::EvalIfStyleFeature(
   LookupAndApply(property, resolver);
   CSSVariableData* computed = GetVariableData(property);
 
-  if (!computed) {
-    return KleeneValue::kFalse;
-  }
-
   if (!bounds.right.value.IsValid()) {
-    return KleeneValue::kTrue;
+    return computed ? KleeneValue::kTrue : KleeneValue::kFalse;
   }
 
   const CSSValue& query_specified = bounds.right.value.GetCSSValue();
 
-  if (query_specified.IsRevertValue() || query_specified.IsRevertLayerValue()) {
-    return KleeneValue::kFalse;
+  if (query_specified.IsCSSWideKeyword()) {
+    return EvalIfKeyword(query_specified, computed, property)
+               ? KleeneValue::kTrue
+               : KleeneValue::kFalse;
   }
 
-  if (query_specified.IsCSSWideKeyword()) {
-    // TODO(crbug.com/346977961): Resolve initial, inherit and unset keywords in
-    // query specified value.
+  if (!computed) {
     return KleeneValue::kFalse;
   }
 
