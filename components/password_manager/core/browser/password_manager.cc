@@ -1432,6 +1432,9 @@ void PasswordManager::OnLoginSuccessful() {
   if (DidLoginWithChangedPassword(submitted_manager)) {
     base::UmaHistogramBoolean(kLogInWithPasswordChangeSubmissionHistogram,
                               true);
+    ukm::builders::PasswordManager_ChangeSubmission(client_->GetUkmSourceId())
+        .SetLogInWithPasswordChangeSubmission(true)
+        .Record(ukm::UkmRecorder::Get());
   }
 
   bool able_to_save_passwords =
@@ -1530,6 +1533,9 @@ void PasswordManager::OnLoginFailed(BrowserSavePasswordProgressLogger* logger) {
   if (DidLoginWithChangedPassword(submitted_manager)) {
     base::UmaHistogramBoolean(kLogInWithPasswordChangeSubmissionHistogram,
                               false);
+    ukm::builders::PasswordManager_ChangeSubmission(client_->GetUkmSourceId())
+        .SetLogInWithPasswordChangeSubmission(false)
+        .Record(ukm::UkmRecorder::Get());
   }
 
   ResetSubmittedManager();

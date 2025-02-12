@@ -1761,6 +1761,7 @@ TEST_P(PasswordManagerTest,
 
 TEST_P(PasswordManagerTest,
        MetricsReportedLogInFailedWithPasswordChangeSubmission) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   base::HistogramTester histogram_tester;
   PasswordForm form(MakeSimpleForm());
   form.type = PasswordForm::Type::kChangeSubmission;
@@ -1777,9 +1778,19 @@ TEST_P(PasswordManagerTest,
   manager()->OnPasswordFormsParsed(&driver_, {observed_form});
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.LogInWithPasswordChangeSubmission", false, 1);
+
+  ukm::TestUkmRecorder::ExpectEntryMetric(
+      GetMetricEntry(
+          test_ukm_recorder,
+          ukm::builders::PasswordManager_ChangeSubmission::kEntryName),
+      ukm::builders::PasswordManager_ChangeSubmission::
+          kLogInWithPasswordChangeSubmissionName,
+      0);
 }
 
 TEST_P(PasswordManagerTest, MetricsReportedLogInWithPasswordChangeSubmission) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
   base::HistogramTester histogram_tester;
   PasswordForm form(MakeSimpleForm());
   form.type = PasswordForm::Type::kChangeSubmission;
@@ -1798,6 +1809,14 @@ TEST_P(PasswordManagerTest, MetricsReportedLogInWithPasswordChangeSubmission) {
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.LogInWithPasswordChangeSubmission", true, 1);
+
+  ukm::TestUkmRecorder::ExpectEntryMetric(
+      GetMetricEntry(
+          test_ukm_recorder,
+          ukm::builders::PasswordManager_ChangeSubmission::kEntryName),
+      ukm::builders::PasswordManager_ChangeSubmission::
+          kLogInWithPasswordChangeSubmissionName,
+      1);
 }
 
 #if BUILDFLAG(IS_ANDROID)
