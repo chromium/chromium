@@ -6883,6 +6883,31 @@ TEST_F(HttpStreamPoolAttemptManagerTest, DestroyPoolDuringStreamRequest) {
   FastForwardUntilNoTasksRemain();
 }
 
+// Regression test for crbug.com/395027296.
+// Ensure that canceling attempts after scheduling an attempt completion doesn't
+// access destroyed attempts.
+TEST_F(HttpStreamPoolAttemptManagerTest, AttemptSyncCompleteCancelAttempt) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  SequencedSocketData data;
+  data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory()->AddSocketDataProvider(&data);
+
+  StreamRequester requester;
+  requester.set_destination("http://a.test");
+  requester.RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  // Close all connections to cancel in-flight attempts.
+  http_network_session()->CloseAllConnections(ERR_ABORTED, "For testing");
+  FastForwardUntilNoTasksRemain();
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_ABORTED)));
+}
+
 // Regression test for crbug.com/384965448
 // Ensure that QUIC attempts are canceled when network change happens.
 TEST_F(HttpStreamPoolAttemptManagerTest, NetworkChangeCancelJobs) {
