@@ -8,13 +8,6 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "build/chromeos_buildflags.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/memory/weak_ptr.h"
-#include "base/one_shot_event.h"
-#include "chromeos/crosapi/mojom/web_app_service.mojom.h"
-#endif
 
 namespace content {
 class RenderFrameHost;
@@ -39,19 +32,7 @@ class TwaPackageHelper {
   void GetTwaPackageName(GetTwaPackageNameCallback callback) const;
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnGetAssociatedAndroidPackage(
-      crosapi::mojom::WebAppAndroidPackagePtr package);
-
-  void GetCachedTwaPackageName(GetTwaPackageNameCallback callback) const;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   std::string twa_package_name_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::OneShotEvent on_twa_package_name_ready_;
-  base::WeakPtrFactory<TwaPackageHelper> weak_ptr_factory_{this};
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 }  // namespace payments
