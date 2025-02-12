@@ -87,8 +87,9 @@ static GoogleServiceAuthError CreateAuthError(
   if (body)
     response_body = std::move(*body);
 
-  std::optional<base::Value> value = base::JSONReader::Read(response_body);
-  if (!value || !value->is_dict()) {
+  std::optional<base::Value::Dict> value =
+      base::JSONReader::ReadDict(response_body);
+  if (!value) {
     int http_response_code = -1;
     if (head && head->headers)
       http_response_code = head->headers->response_code();
@@ -98,7 +99,7 @@ static GoogleServiceAuthError CreateAuthError(
                            "HTTP Status of the response is: %d",
                            http_response_code));
   }
-  const base::Value::Dict* error = value->GetDict().FindDict(kError);
+  const base::Value::Dict* error = value->FindDict(kError);
   if (!error) {
     return GoogleServiceAuthError::FromUnexpectedServiceResponse(
         "Not able to find a detailed error in a service response.");
@@ -325,17 +326,16 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
     response_body = std::move(*body);
   }
 
-  std::optional<base::Value> value = base::JSONReader::Read(response_body);
-  if (!value || !value->is_dict()) {
+  std::optional<base::Value::Dict> dict =
+      base::JSONReader::ReadDict(response_body);
+  if (!dict) {
     RecordApiCallResult(OAuth2MintTokenApiCallResult::kParseJsonFailure);
     ReportFailure(GoogleServiceAuthError::FromUnexpectedServiceResponse(
         "Not able to parse a JSON object from a service response."));
     return;
   }
 
-  base::Value::Dict& dict = value->GetDict();
-
-  std::string* issue_advice_value = dict.FindString(kIssueAdviceKey);
+  std::string* issue_advice_value = dict->FindString(kIssueAdviceKey);
   if (!issue_advice_value) {
     RecordApiCallResult(
         OAuth2MintTokenApiCallResult::kIssueAdviceKeyNotFoundFailure);
@@ -346,7 +346,7 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
 
   if (*issue_advice_value == kIssueAdviceValueRemoteConsent) {
     RemoteConsentResolutionData resolution_data;
-    if (ParseRemoteConsentResponse(dict, &resolution_data)) {
+    if (ParseRemoteConsentResponse(*dict, &resolution_data)) {
       RecordApiCallResult(OAuth2MintTokenApiCallResult::kRemoteConsentSuccess);
       ReportRemoteConsentSuccess(resolution_data);
     } else {
@@ -359,7 +359,7 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
     return;
   }
 
-  if (std::optional<MintTokenResult> result = ParseMintTokenResponse(dict);
+  if (std::optional<MintTokenResult> result = ParseMintTokenResponse(*dict);
       result.has_value()) {
     RecordApiCallResult(OAuth2MintTokenApiCallResult::kMintTokenSuccess);
     ReportSuccess(result.value());

@@ -370,11 +370,11 @@ bool OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenSuccessResponse(
     const std::string& response_body,
     OAuth2AccessTokenConsumer::TokenResponse* token_response) {
   CHECK(token_response);
-  auto value = base::JSONReader::Read(response_body);
-  if (!value.has_value() || !value->is_dict())
+  auto dict = base::JSONReader::ReadDict(response_body);
+  if (!dict) {
     return false;
+  }
 
-  const base::Value::Dict* dict = value->GetIfDict();
   // Refresh and id token are optional and don't cause an error if missing.
   const std::string* refresh_token = dict->FindString(krefreshTokenKey);
   if (refresh_token)
@@ -408,11 +408,11 @@ bool OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenFailureResponse(
   CHECK(error);
   CHECK(error_subtype);
   CHECK(error_description);
-  auto value = base::JSONReader::Read(response_body);
-  if (!value.has_value() || !value->is_dict())
+  auto dict = base::JSONReader::ReadDict(response_body);
+  if (!dict) {
     return false;
+  }
 
-  const base::Value::Dict* dict = value->GetIfDict();
   const std::string* error_value = dict->FindString(kErrorKey);
   if (!error_value)
     return false;
