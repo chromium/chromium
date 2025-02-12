@@ -4,9 +4,14 @@
 
 package org.chromium.components.browser_ui.edge_to_edge;
 
+import static android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
+
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -15,11 +20,14 @@ import static org.mockito.Mockito.verify;
 import android.graphics.Color;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowInsetsController;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -38,6 +46,8 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
 
     @Mock private Window mWindow;
     @Mock private View mDecorView;
+    @Mock private WindowInsetsController mWindowInsetsController;
+    @Captor private ArgumentCaptor<Integer> mStatusBarAppearanceCaptor;
     @Mock private SystemBarColorHelper mDelegateColorHelper;
 
     private EdgeToEdgeSystemBarColorHelper mEdgeToEdgeColorHelper;
@@ -50,6 +60,11 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
     @Before
     public void setup() {
         doReturn(mDecorView).when(mWindow).getDecorView();
+        doReturn(mWindowInsetsController).when(mDecorView).getWindowInsetsController();
+        doNothing()
+                .when(mWindowInsetsController)
+                .setSystemBarsAppearance(
+                        mStatusBarAppearanceCaptor.capture(), eq(APPEARANCE_LIGHT_STATUS_BARS));
         doReturn(true).when(mDelegateColorHelper).canSetStatusBarColor();
     }
 
@@ -105,6 +120,16 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
     }
 
     @Test
+    public void setStatusBarColor_VerifyStatusBarAppearance() {
+        initEdgeToEdgeColorHelper();
+
+        mEdgeToEdgeColorHelper.setStatusBarColor(Color.WHITE);
+        verifyStatusBarAppearance(/* isLight= */ true);
+        mEdgeToEdgeColorHelper.setStatusBarColor(Color.BLACK);
+        verifyStatusBarAppearance(/* isLight= */ false);
+    }
+
+    @Test
     public void switchIntoEdgeToEdge() {
         mDelegateHelperSupplier.set(mDelegateColorHelper);
         initEdgeToEdgeColorHelper();
@@ -118,7 +143,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         mEdgeToEdgeColorHelper.setStatusBarColor(Color.RED);
         verify(mDelegateColorHelper, times(0)).setStatusBarColor(anyInt());
         verify(mWindow).setStatusBarContrastEnforced(true);
-        verify(mDecorView).setSystemUiVisibility(anyInt());
+        verifyStatusBarAppearance(/* isLight= */ false);
 
         clearInvocations(mWindow, mDecorView);
         doReturn(Color.RED).when(mWindow).getNavigationBarColor();
@@ -132,6 +157,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         verify(mWindow).setStatusBarColor(Color.TRANSPARENT);
         verify(mWindow).setNavigationBarContrastEnforced(false);
         verify(mWindow).setStatusBarContrastEnforced(false);
+        verifyStatusBarAppearance(/* isLight= */ false);
         verify(mDecorView, atLeastOnce()).setSystemUiVisibility(anyInt());
     }
 
@@ -151,7 +177,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         verify(mDelegateColorHelper).setStatusBarColor(Color.RED);
         verify(mWindow, times(0)).setStatusBarColor(Color.TRANSPARENT);
         verify(mWindow).setStatusBarContrastEnforced(false);
-        verify(mDecorView).setSystemUiVisibility(anyInt());
+        verifyStatusBarAppearance(/* isLight= */ false);
 
         // Color will switch automatically when leaving edge to edge mode.
         clearInvocations(mDelegateColorHelper, mDecorView);
@@ -161,6 +187,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         verify(mDelegateColorHelper, times(0)).setNavigationBarColor(anyInt());
         verify(mWindow).setNavigationBarContrastEnforced(true);
         verify(mWindow).setStatusBarContrastEnforced(true);
+        verifyStatusBarAppearance(/* isLight= */ false);
         verify(mDecorView, atLeastOnce()).setSystemUiVisibility(anyInt());
     }
 
@@ -176,7 +203,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         mEdgeToEdgeColorHelper.setStatusBarColor(Color.RED);
         verify(mDelegateColorHelper, times(0)).setStatusBarColor(anyInt());
         verify(mWindow).setStatusBarColor(Color.RED);
-        verify(mDecorView).setSystemUiVisibility(anyInt());
+        verifyStatusBarAppearance(/* isLight= */ false);
     }
 
     @Test
@@ -193,6 +220,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         // Status bar should not be colored when canColorStatusBarColor is false.
         verify(mWindow, never()).setStatusBarColor(anyInt());
         verify(mDelegateColorHelper, never()).setStatusBarColor(anyInt());
+        verify(mWindowInsetsController, never()).setSystemBarsAppearance(anyInt(), anyInt());
         verify(mDecorView, never()).setSystemUiVisibility(anyInt());
     }
 
@@ -205,5 +233,19 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
                         /* canColorStatusBarColor= */ true);
         mWindowHelper = mEdgeToEdgeColorHelper.getWindowHelperForTesting();
         clearInvocations(mDecorView);
+    }
+
+    private void verifyStatusBarAppearance(boolean isLight) {
+        if (isLight) {
+            assertEquals(
+                    "The status bar should have a light appearance.",
+                    APPEARANCE_LIGHT_STATUS_BARS,
+                    (int) mStatusBarAppearanceCaptor.getValue());
+        } else {
+            assertEquals(
+                    "The status bar should not have a light appearance.",
+                    0,
+                    (int) mStatusBarAppearanceCaptor.getValue());
+        }
     }
 }
