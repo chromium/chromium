@@ -134,6 +134,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -1370,7 +1371,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
             @Override
             public void openTabGroupWithTabId(int tabId) {
-                mTabSwitcherSupplier.get().requestOpenTabGroupDialog(tabId);
+                // TODO(crbug.com/395847973): calling navigateToTabSwitcher is a stopgap until
+                // DataSharingTabManager#initiateJoinFlow() properly waits on
+                // ChromeTabbedActivity#doRunnableOnTabSwitcher() to finish before proceeding.
+                TabSwitcherUtils.navigateToTabSwitcher(
+                        mLayoutManager,
+                        /* animate= */ false,
+                        () -> {
+                            mTabSwitcherSupplier.get().requestOpenTabGroupDialog(tabId);
+                        });
             }
 
             @Override
