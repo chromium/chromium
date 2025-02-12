@@ -34,10 +34,6 @@ struct NetworkTrafficAnnotationTag;
 
 namespace remoting {
 
-namespace apis::v1 {
-class ProvisionGceInstanceResponse;
-}  // namespace apis::v1
-
 class ProtobufHttpStatus;
 
 // A service client that communicates with the directory service.
@@ -51,9 +47,6 @@ class CloudServiceClient {
       const ProtobufHttpStatus&,
       std::unique_ptr<::google::internal::remoting::cloud::v1alpha::
                           GenerateIceConfigResponse>)>;
-  using LegacyProvisionGceInstanceCallback = base::OnceCallback<void(
-      const ProtobufHttpStatus&,
-      std::unique_ptr<apis::v1::ProvisionGceInstanceResponse>)>;
   using ProvisionGceInstanceCallback = base::OnceCallback<void(
       const ProtobufHttpStatus&,
       std::unique_ptr<
@@ -74,10 +67,6 @@ class CloudServiceClient {
       std::unique_ptr<::google::internal::remoting::cloud::v1alpha::
                           VerifySessionTokenResponse>)>;
 
-  // TODO: joedow - Remove the single param c'tor when we no longer support the
-  // legacy provisioning path.
-  explicit CloudServiceClient(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   // Used for creating a service client to call the Remoting Cloud API using
   // the |api_key| provided.
   CloudServiceClient(
@@ -93,14 +82,6 @@ class CloudServiceClient {
 
   CloudServiceClient(const CloudServiceClient&) = delete;
   CloudServiceClient& operator=(const CloudServiceClient&) = delete;
-
-  // TODO: joedow - Remove the legacy codepath once the new flow is working.
-  void LegacyProvisionGceInstance(
-      const std::string& owner_email,
-      const std::string& display_name,
-      const std::string& public_key,
-      const std::optional<std::string>& existing_directory_id,
-      LegacyProvisionGceInstanceCallback callback);
 
   void ProvisionGceInstance(
       const std::string& owner_email,
