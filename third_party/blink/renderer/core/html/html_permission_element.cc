@@ -99,6 +99,9 @@ constexpr int kMaxHorizontalPaddingToFontSizeRatio = 5;
 constexpr int kMinMargin = 4;
 constexpr float kIntersectionThreshold = 1.0f;
 
+constexpr float kDefaultSmallFontSize = 13;     // Default 'small' font size.
+constexpr float kDefaultXxxLargeFontSize = 48;  // Default 'xxxlarge' font size.
+
 PermissionDescriptorPtr CreatePermissionDescriptor(PermissionName name) {
   auto descriptor = PermissionDescriptor::New();
   descriptor->name = name;
@@ -1469,13 +1472,17 @@ bool HTMLPermissionElement::IsStyleValid() {
       GetComputedStyle()->EffectiveZoom() /
       GetDocument().GetFrame()->LocalFrameRoot().LayoutZoomFactor();
 
+  bool is_font_monospace =
+      GetComputedStyle()->GetFontDescription().IsMonospace();
+
   // The min size is what `font-size:small` looks like when rendered in the
   // document element of the local root frame, without any intervening CSS
   // zoom factors applied.
   float min_font_size_dip = FontSizeFunctions::FontSizeForKeyword(
       &GetDocument(), FontSizeFunctions::KeywordSize(CSSValueID::kSmall),
-      GetComputedStyle()->GetFontDescription().IsMonospace());
-  if (font_size_dip < min_font_size_dip / css_zoom_factor) {
+      is_font_monospace);
+  if (font_size_dip <
+      std::min(min_font_size_dip, kDefaultSmallFontSize) / css_zoom_factor) {
     AddConsoleWarning(
         String::Format("Font size of the permission element '%s' is too small",
                        GetType().Utf8().c_str()));
@@ -1489,8 +1496,9 @@ bool HTMLPermissionElement::IsStyleValid() {
   // zoom factors applied.
   float max_font_size_dip = FontSizeFunctions::FontSizeForKeyword(
       &GetDocument(), FontSizeFunctions::KeywordSize(CSSValueID::kXxxLarge),
-      GetComputedStyle()->GetFontDescription().IsMonospace());
-  if (font_size_dip > max_font_size_dip / css_zoom_factor) {
+      is_font_monospace);
+  if (font_size_dip >
+      std::max(max_font_size_dip, kDefaultXxxLargeFontSize) / css_zoom_factor) {
     AddConsoleWarning(
         String::Format("Font size of the permission element '%s' is too large",
                        GetType().Utf8().c_str()));

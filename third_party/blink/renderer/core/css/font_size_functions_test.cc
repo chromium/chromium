@@ -87,4 +87,36 @@ TEST_F(FontSizeFunctionsTest,
   }
 }
 
+TEST_F(FontSizeFunctionsTest, TestFontSizeForKeyword) {
+  GetDocument().GetSettings()->SetDefaultFontSize(14);
+  GetDocument().GetSettings()->SetDefaultFixedFontSize(11);
+
+  struct {
+    bool quirks_mode;
+    bool monospace;
+    unsigned keyword;
+    float expected_font_size;
+  } test_cases[] = {
+      // Font sizes in no-quirks mode using the user settings.
+      {false, false, FontSizeFunctions::KeywordSize(CSSValueID::kMedium), 14},
+      {false, true, FontSizeFunctions::KeywordSize(CSSValueID::kSmall), 10},
+      {false, false, FontSizeFunctions::KeywordSize(CSSValueID::kLarge), 17},
+
+      // Font sizes in quirks mode using the user settings.
+      {true, false, FontSizeFunctions::KeywordSize(CSSValueID::kMedium), 14},
+      {true, true, FontSizeFunctions::KeywordSize(CSSValueID::kSmall), 9},
+      {true, false, FontSizeFunctions::KeywordSize(CSSValueID::kLarge), 17},
+
+  };
+
+  for (const auto& test : test_cases) {
+    GetDocument().SetCompatibilityMode(
+        test.quirks_mode ? Document::CompatibilityMode::kQuirksMode
+                         : Document::CompatibilityMode::kNoQuirksMode);
+    EXPECT_EQ(test.expected_font_size,
+              FontSizeFunctions::FontSizeForKeyword(
+                  &GetDocument(), test.keyword, test.monospace));
+  }
+}
+
 }  // namespace blink
