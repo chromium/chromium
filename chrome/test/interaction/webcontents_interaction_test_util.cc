@@ -124,6 +124,11 @@ WebContentsInteractionTestUtil::StateChange ValidateAndInferStateChange(
       CHECK(has_where && has_function)
           << "Expected where and function to be non-empty - " << configuration;
   }
+  if (!configuration.check_callback.is_null()) {
+    CHECK(has_function)
+        << "Cannot specify check callback without test function - "
+        << configuration;
+  }
   return configuration;
 }
 
@@ -174,7 +179,7 @@ std::string GetStateChangeQuery(
       }
       const std::string on_found = "(" + configuration.test_function + ")(el)";
       return GetExistsQuery(
-          /* on_not_found = */ "false", on_found.c_str());
+          /* on_not_found = */ "null", on_found.c_str());
   }
 }
 
@@ -554,13 +559,24 @@ class WebContentsInteractionTestUtil::Poller {
     // At this point, weak_ptr might be invalid since we could have been deleted
     // while we were waiting for Evaluate[At]() to complete.
     if (weak_ptr) {
-      if (IsTruthy(result)) {
+      if (CheckResult(result)) {
         owner_->OnPollEvent(this, state_change_.event);
       } else if (state_change_.timeout.has_value() &&
                  elapsed_.Elapsed() > state_change_.timeout.value()) {
         owner_->OnPollEvent(this, state_change_.timeout_event);
       }
     }
+  }
+
+  // Determines if the result of calling the method passes the check.
+  //
+  // If no explicit check is specified, `value` will be evaluated for
+  // truthiness.
+  bool CheckResult(const base::Value& value) {
+    if (state_change_.check_callback.is_null()) {
+      return IsTruthy(value);
+    }
+    return state_change_.check_callback.Run(value);
   }
 
   const base::ElapsedTimer elapsed_;
