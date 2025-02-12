@@ -77,13 +77,15 @@ void CredentialLeakPromptImpl::ShowCredentialLeakPrompt() {
   auto* tab_interface = tabs::TabInterface::GetFromContents(
       credential_leak_dialog_view_->web_contents());
   CHECK(tab_interface);
-  credential_leak_dialog_view_->InitWindow();
-  dialog_ = tab_interface->GetTabFeatures()
-                ->tab_dialog_manager()
-                ->CreateShowDialogAndBlockTabInteraction(
-                    credential_leak_dialog_view_.release());
-  dialog_->MakeCloseSynchronous(base::BindOnce(
-      &CredentialLeakPromptImpl::CloseWidget, base::Unretained(this)));
+  if (tab_interface->CanShowModalUI()) {
+    credential_leak_dialog_view_->InitWindow();
+    dialog_ = tab_interface->GetTabFeatures()
+                  ->tab_dialog_manager()
+                  ->CreateShowDialogAndBlockTabInteraction(
+                      credential_leak_dialog_view_.release());
+    dialog_->MakeCloseSynchronous(base::BindOnce(
+        &CredentialLeakPromptImpl::CloseWidget, base::Unretained(this)));
+  }
 }
 
 views::Widget* CredentialLeakPromptImpl::GetWidgetForTesting() {

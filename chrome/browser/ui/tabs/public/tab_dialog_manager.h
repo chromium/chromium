@@ -86,6 +86,7 @@ class TabDialogManager : public content::WebContentsObserver {
       scoped_ignore_input_events_;
 
   std::unique_ptr<TabDialogWidgetObserver> tab_dialog_widget_observer_;
+  std::unique_ptr<ScopedTabModalUI> showing_modal_ui_;
 };
 
 }  // namespace tabs

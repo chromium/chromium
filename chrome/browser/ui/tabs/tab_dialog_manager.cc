@@ -159,6 +159,7 @@ void TabDialogManager::ShowDialogAndBlockTabInteraction(views::Widget* widget) {
       tab_interface_->GetContents()->IgnoreInputEvents(std::nullopt);
   tab_dialog_widget_observer_ =
       std::make_unique<TabDialogWidgetObserver>(this, widget_.get());
+  showing_modal_ui_ = tab_interface_->ShowModalUI();
   if (tab_interface_->IsActivated()) {
     widget_->Show();
   }
@@ -181,6 +182,8 @@ void TabDialogManager::CloseDialog() {
 
 void TabDialogManager::WidgetDestroyed(views::Widget* widget) {
   CHECK_EQ(widget, widget_.get());
+  widget_ = nullptr;
+  showing_modal_ui_.reset();
   tab_dialog_widget_observer_.reset();
   scoped_ignore_input_events_.reset();
 }
