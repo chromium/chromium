@@ -151,6 +151,7 @@ source_set("eg2_tests") {
     ":constants",
     "//base",
     "//components/autofill/core/browser:test_support",
+    "//components/autofill/ios/common",
     "//components/strings",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
