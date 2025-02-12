@@ -350,8 +350,10 @@ class GlicWindowController : public views::WidgetObserver {
   // List of callbacks to be notified when window activation has changed.
   base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;
 
+#if !BUILDFLAG(IS_MAC)
   // Empty holder widget to reparent to when detached.
   std::unique_ptr<views::Widget> holder_widget_;
+#endif
 
   const raw_ptr<Profile> profile_;
   // Keep profile alive as long as the glic web contents. This object should be

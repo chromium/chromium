@@ -27,10 +27,14 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/display/test/virtual_display_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/native_widget_types.h"
@@ -360,5 +364,112 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerWithMemoryPressureUiTest, Preload) {
   RunTestSequence(PressButton(kGlicButtonElementId),
                   InAnyContext(WaitForShow(kGlicViewElementId)));
 }
+
+// These tests for dragging across multiple displays is for mac-only.
+// On Windows11, this test times out in calling WaitForDisplaySizes() when
+// setting up the virtual displays.
+#if BUILDFLAG(IS_MAC)
+class GlicWindowControllerMultipleDisplaysUiTest
+    : public GlicWindowControllerUiTest {
+ public:
+  GlicWindowControllerMultipleDisplaysUiTest() = default;
+  GlicWindowControllerMultipleDisplaysUiTest(
+      const GlicWindowControllerMultipleDisplaysUiTest&) = delete;
+  GlicWindowControllerMultipleDisplaysUiTest& operator=(
+      const GlicWindowControllerMultipleDisplaysUiTest&) = delete;
+  ~GlicWindowControllerMultipleDisplaysUiTest() override = default;
+
+  // Create virtual displays as needed, ensuring 2 displays are available for
+  // testing multi-screen functionality.
+  bool SetUpVirtualDisplays() {
+    if (display::Screen::GetScreen()->GetNumDisplays() > 1) {
+      return true;
+    }
+    if ((virtual_display_util_ = display::test::VirtualDisplayUtil::TryCreate(
+             display::Screen::GetScreen()))) {
+      virtual_display_util_->AddDisplay(
+          display::test::VirtualDisplayUtil::k1024x768);
+      return true;
+    }
+    return false;
+  }
+
+  auto CheckDisplaysSetUp(bool is_set_up) {
+    return CheckResult([this]() { return SetPrimaryAndSecondaryDisplay(); },
+                       is_set_up, "CheckDisplaysSetUp");
+  }
+
+  auto CheckWidgetMovedToSecondaryDisplay(bool expect_moved) {
+    return CheckResult(
+        [this]() {
+          return secondary_display_.id() ==
+                 window_controller().GetGlicWidget()->GetNearestDisplay()->id();
+        },
+        expect_moved, "CheckWidgetMovedToSecondaryDisplay");
+  }
+
+  bool SetPrimaryAndSecondaryDisplay() {
+    display::Display primary_display =
+        display::Screen::GetScreen()->GetPrimaryDisplay();
+    secondary_display_ =
+        ui_test_utils::GetSecondaryDisplay(display::Screen::GetScreen());
+    return primary_display.id() && secondary_display_.id();
+  }
+
+  auto MoveWidgetToSecondDisplay() {
+    return Do([this]() {
+      const gfx::Point target(secondary_display_.bounds().CenterPoint());
+      // Replace with dragging simulation once supported.
+      window_controller().GetGlicWidget()->SetBounds(
+          gfx::Rect(target, window_controller()
+                                .GetGlicWidget()
+                                ->GetWindowBoundsInScreen()
+                                .size()));
+    });
+  }
+
+  auto DetachGlicWindow() {
+    return Do([this]() { window_controller().Detach(); });
+  }
+
+  void TearDownOnMainThread() override {
+    GlicWindowControllerUiTest::TearDownOnMainThread();
+    virtual_display_util_.reset();
+  }
+
+ private:
+  std::unique_ptr<display::test::VirtualDisplayUtil> virtual_display_util_;
+  display::Display secondary_display_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerMultipleDisplaysUiTest,
+                       MoveDetachedGlicWindowToSecondDisplay) {
+  if (!SetUpVirtualDisplays()) {
+    return;
+  }
+
+  RunTestSequence(CheckDisplaysSetUp(true),
+                  OpenGlicWindow(GlicWindowMode::kDetached),
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kDetached),
+                  InAnyContext(Steps(MoveWidgetToSecondDisplay(),
+                                     CheckWidgetMovedToSecondaryDisplay(true))),
+                  CloseGlicWindow(), CheckControllerHasWidget(false));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerMultipleDisplaysUiTest,
+                       DetachAttachedGlicWindowAndMoveToSecondDisplay) {
+  if (!SetUpVirtualDisplays()) {
+    return;
+  }
+
+  RunTestSequence(
+      CheckDisplaysSetUp(true), OpenGlicWindow(GlicWindowMode::kAttached),
+      CheckControllerHasWidget(true),
+      CheckControllerWidgetMode(GlicWindowMode::kAttached),
+      InAnyContext(Steps(DetachGlicWindow(), MoveWidgetToSecondDisplay(),
+                         CheckWidgetMovedToSecondaryDisplay(true))));
+}
+#endif
 
 }  // namespace glic
