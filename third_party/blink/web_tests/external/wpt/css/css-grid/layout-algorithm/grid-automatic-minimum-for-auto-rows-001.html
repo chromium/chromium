@@ -230,7 +230,7 @@
 function testGridRowsValues(id, computedRowValue)
 {
   assert_equals(window.getComputedStyle(document.getElementById(id))
-      .getPropertyValue('grid-template-rows')", computedRowValue);
+      .getPropertyValue('grid-template-rows'), computedRowValue);
 }
 
 setup({ explicit_done: true });
