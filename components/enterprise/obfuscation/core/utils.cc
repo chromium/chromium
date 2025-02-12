@@ -10,7 +10,7 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_file.h"
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/numerics/byte_conversions.h"
 #include "crypto/aead.h"
@@ -224,11 +224,15 @@ base::expected<void, Error> DeobfuscateFileInPlace(
   }
 
   // Create and open a temporary file for deobfuscation.
-  base::ScopedTempFile temp_file;
-  if (!temp_file.Create()) {
+  base::FilePath temp_path;
+  if (!base::CreateTemporaryFileInDir(file_path.DirName(), &temp_path)) {
     return base::unexpected(Error::kFileOperationError);
   }
-  base::File deobfuscated_file(temp_file.path(),
+  // Ensure cleanup of temporary file on all error exits.
+  base::ScopedClosureRunner temp_file_cleanup(
+      base::BindOnce(base::IgnoreResult(&base::DeleteFile), temp_path));
+
+  base::File deobfuscated_file(temp_path,
                                base::File::FLAG_OPEN | base::File::FLAG_APPEND);
 
   // Get header data
@@ -301,12 +305,14 @@ base::expected<void, Error> DeobfuscateFileInPlace(
   deobfuscated_file.Close();
 
   // If deobfuscation is successful, replace the original file.
-  if (!base::ReplaceFile(temp_file.path(), file_path, /*error=*/nullptr)) {
-    // For cross-device errors, fallback to move for copy/delete instead.
-    if (!base::Move(temp_file.path(), file_path)) {
+  if (!base::ReplaceFile(temp_path, file_path, /*error=*/nullptr)) {
+    // For cross-device errors, fallback to move for copy+delete instead.
+    if (!base::Move(temp_path, file_path)) {
       return base::unexpected(Error::kFileOperationError);
     }
   }
+
+  std::ignore = temp_file_cleanup.Release();
   return base::ok();
 }
 
