@@ -450,6 +450,10 @@ bool DownloadTestBase::DidShowFileChooser() {
   return file_activity_observer_->TestAndResetDidShowFileChooser();
 }
 
+void DownloadTestBase::SetAllowOpenDownload(bool allow) {
+  file_activity_observer_->SetAllowOpenDownload(allow);
+}
+
 bool DownloadTestBase::VerifyFile(const base::FilePath& path,
                                   const std::string& value,
                                   const int64_t file_size) {

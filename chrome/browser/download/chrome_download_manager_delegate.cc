@@ -1136,17 +1136,8 @@ void ChromeDownloadManagerDelegate::OpenDownload(DownloadItem* download) {
     return;
   }
 
-  content::WebContents* web_contents =
-      content::DownloadItemUtils::GetWebContents(download);
-  Browser* browser =
-      web_contents ? chrome::FindBrowserWithTab(web_contents) : nullptr;
-  std::unique_ptr<chrome::ScopedTabbedBrowserDisplayer> browser_displayer;
-  if (!browser ||
-      !browser->CanSupportWindowFeature(Browser::FEATURE_TABSTRIP)) {
-    browser_displayer =
-        std::make_unique<chrome::ScopedTabbedBrowserDisplayer>(profile_);
-    browser = browser_displayer->browser();
-  }
+  Browser* browser = chrome::ScopedTabbedBrowserDisplayer(profile_).browser();
+  CHECK(browser && browser->CanSupportWindowFeature(Browser::FEATURE_TABSTRIP));
   content::OpenURLParams params(
       net::FilePathToFileURL(download->GetTargetFilePath()),
       content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,

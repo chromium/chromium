@@ -2855,6 +2855,61 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
             download_waiter->NumDownloadsSeenInState(DownloadItem::COMPLETE));
 }
 
+// Tests that opening a download in the browser always opens it in the most
+// recent browser window for that profile. This test is in the PDF download test
+// suite because this behavior requires that the file type is both downloadable
+// and openable by the browser, and PDFs fit the bill.
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)) && \
+    BUILDFLAG(ENABLE_PDF)
+IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
+                       OpenDownloadInMostRecentBrowser) {
+  https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
+  ASSERT_TRUE(https_test_server()->Start());
+  EnableFileChooser(true);
+  SetAllowOpenDownload(true);
+
+  Browser* download_browser = browser();
+  content::WebContents* web_contents =
+      download_browser->tab_strip_model()->GetActiveWebContents();
+
+  // Navigate to a PDF.
+  GURL url = https_test_server()->GetURL("a.test", "/pdf/test.pdf");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(download_browser, url));
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+  // Force the downloaded PDF to open in the browser.
+  GetDownloadPrefs(browser())->SetShouldOpenPdfInSystemReader(false);
+  // Download the PDF.
+  TestSaveMainFramePdfFromTargetFrameContextMenu(
+      web_contents->GetPrimaryMainFrame(), url);
+
+  // Open a newer browser window that the download should be opened in.
+  Browser* latest_tabbed_browser =
+      ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(
+          browser()->profile());
+  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
+
+  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  DownloadManagerForBrowser(download_browser)->GetAllDownloads(&download_items);
+  ASSERT_EQ(download_items.size(), 1u);
+  download::DownloadItem* item = download_items[0];
+  ASSERT_TRUE(item->CanOpenDownload());
+
+  // Open the download.
+  ui_test_utils::AllBrowserTabAddedWaiter waiter;
+  item->OpenDownload();
+  content::WebContents* new_tab = waiter.Wait();
+  EXPECT_TRUE(new_tab->GetVisibleURL().SchemeIsFile());
+
+  // The download was opened in the most recently active browser, not the
+  // original browser it was downloaded in.
+  EXPECT_EQ(download_browser->tab_strip_model()->GetIndexOfWebContents(new_tab),
+            TabStripModel::kNoTab);
+  EXPECT_NE(
+      latest_tabbed_browser->tab_strip_model()->GetIndexOfWebContents(new_tab),
+      TabStripModel::kNoTab);
+}
+#endif
+
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
 INSTANTIATE_TEST_SUITE_P(

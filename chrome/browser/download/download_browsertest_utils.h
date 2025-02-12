@@ -224,6 +224,9 @@ class DownloadTestBase : public InProcessBrowserTest {
   void EnableFileChooser(bool enable);
   bool DidShowFileChooser();
 
+  // Allows the ChromeDownloadManagerDelegate to open downloads.
+  void SetAllowOpenDownload(bool allow);
+
   // Checks that |path| is has |file_size| bytes, and matches the |value|
   // string.
   bool VerifyFile(const base::FilePath& path,
