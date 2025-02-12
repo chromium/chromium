@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.COLUMNS;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.CPU;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.GPU_MEMORY;
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.ICON;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.IS_KILLABLE;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.IS_SELECTED;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.MEMORY_FOOTPRINT;
@@ -216,6 +217,7 @@ class TaskManagerMediator {
         return new ListItem(
                 RowType.TASK,
                 new PropertyModel.Builder(keys)
+                        .withTransformingKey(ICON, mBridge::getIcon)
                         .with(TASK_ID, taskId)
                         .with(IS_SELECTED, false)
                         .with(IS_KILLABLE, mBridge.isTaskKillable(taskId))
@@ -225,6 +227,8 @@ class TaskManagerMediator {
     // TODO(crbug.com/380165957): Confirm pid and task name never change and stop
     // refreshing them.
     private void updateTaskModel(ListItem task, long taskId) {
+        task.model.set(ICON, taskId);
+
         for (PropertyKey columnKey : ALL_COLUMN_KEYS) {
             if (columnKey == TASK_NAME) {
                 task.model.set(TASK_NAME, mBridge.getTitle(taskId));

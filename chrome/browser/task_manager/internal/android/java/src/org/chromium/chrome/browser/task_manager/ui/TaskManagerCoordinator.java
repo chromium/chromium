@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.browser.task_manager.ui;
 
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -13,17 +17,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnCreateContextMenuListener;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.SortDescriptor;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -142,7 +147,7 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
         Set<PropertyKey> selectedKeys = Set.of(model.get(TaskManagerProperties.COLUMNS));
 
         for (PropertyKey columnKey : TaskManagerProperties.ALL_COLUMN_KEYS) {
-            TextView textView = view.findViewById(getTaskItemViewId(columnKey));
+            AppCompatTextView textView = view.findViewById(getTaskItemViewId(columnKey));
             if (!selectedKeys.contains(columnKey)) {
                 textView.setVisibility(View.GONE);
                 continue;
@@ -174,11 +179,35 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
             }
             return;
         }
+        if (key == TaskManagerProperties.ICON) {
+            TextViewWithCompoundDrawables imageView = view.findViewById(R.id.task_name);
+
+            @Nullable Bitmap icon = model.get(TaskManagerProperties.ICON);
+            if (icon == null) {
+                imageView.setCompoundDrawablesRelative(
+                        new ColorDrawable(Color.TRANSPARENT), null, null, null);
+            } else {
+                int faviconSize =
+                        (int)
+                                view.getContext()
+                                        .getResources()
+                                        .getDimension(R.dimen.default_favicon_size);
+                Bitmap favicon = Bitmap.createScaledBitmap(icon, faviconSize, faviconSize, true);
+
+                imageView.setCompoundDrawablesRelative(
+                        new BitmapDrawable(view.getContext().getResources(), favicon),
+                        null,
+                        null,
+                        null);
+            }
+            return;
+        }
+
         if (!List.of(TaskManagerProperties.ALL_COLUMN_KEYS).contains(key)) {
             return;
         }
 
-        TextView textView = view.findViewById(getTaskItemViewId(key));
+        AppCompatTextView textView = view.findViewById(getTaskItemViewId(key));
 
         if (key == TaskManagerProperties.TASK_NAME) {
             textView.setText(model.get(TaskManagerProperties.TASK_NAME));

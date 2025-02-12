@@ -28,8 +28,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
@@ -118,11 +118,11 @@ public class TaskManagerCoordinatorTest {
 
         View taskView = mRecyclerView.findViewHolderForAdapterPosition(0).itemView;
 
-        TextView taskName = taskView.findViewById(R.id.task_name);
-        TextView memoryFootprint = taskView.findViewById(R.id.memory_footprint);
-        TextView cpu = taskView.findViewById(R.id.cpu);
-        TextView networkUsage = taskView.findViewById(R.id.network_usage);
-        TextView processId = taskView.findViewById(R.id.process_id);
+        AppCompatTextView taskName = taskView.findViewById(R.id.task_name);
+        AppCompatTextView memoryFootprint = taskView.findViewById(R.id.memory_footprint);
+        AppCompatTextView cpu = taskView.findViewById(R.id.cpu);
+        AppCompatTextView networkUsage = taskView.findViewById(R.id.network_usage);
+        AppCompatTextView processId = taskView.findViewById(R.id.process_id);
 
         assertEquals("foo", taskName.getText().toString());
         assertEquals("1,000K", memoryFootprint.getText().toString());
@@ -173,7 +173,7 @@ public class TaskManagerCoordinatorTest {
     @Test
     @SmallTest
     public void testSortIndicator() {
-        TextView taskNameHeader = mHeaderView.findViewById(R.id.task_name);
+        AppCompatTextView taskNameHeader = mHeaderView.findViewById(R.id.task_name);
         String defaultText = taskNameHeader.getText().toString();
 
         assertNotEquals("", defaultText);

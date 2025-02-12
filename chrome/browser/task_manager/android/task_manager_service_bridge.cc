@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <jni.h>
+
 #include "base/android/jni_string.h"
 #include "chrome/browser/task_manager/android/task_manager_observer_android.h"
 #include "chrome/browser/task_manager/internal/android/jni/TaskManagerServiceBridge_jni.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "third_party/jni_zero/jni_zero.h"
+#include "ui/gfx/android/java_bitmap.h"
 
 namespace task_manager {
 
@@ -65,6 +68,16 @@ JNI_TaskManagerServiceBridge_GetGpuMemoryUsage(JNIEnv* env, TaskId task_id) {
   jlong bytes = TaskManagerInterface::GetTaskManager()->GetGpuMemoryUsage(
       task_id, &has_duplicates);
   return Java_GpuMemoryUsage_Constructor(env, bytes, has_duplicates);
+}
+
+static jni_zero::ScopedJavaLocalRef<jobject>
+JNI_TaskManagerServiceBridge_GetIcon(JNIEnv* env, TaskId task_id) {
+  const gfx::ImageSkia& icon =
+      TaskManagerInterface::GetTaskManager()->GetIcon(task_id);
+  if (icon.isNull()) {
+    return nullptr;
+  }
+  return gfx::ConvertToJavaBitmap(*icon.bitmap());
 }
 
 static jboolean JNI_TaskManagerServiceBridge_IsTaskKillable(JNIEnv* env,
