@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_client_impl.h"
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_observer.h"
@@ -51,19 +52,16 @@ class MODULES_EXPORT PressureObserverManager final
   void Trace(Visitor*) const override;
 
  private:
-  void EnsureConnection();
+  void EnsureConnection(scoped_refptr<base::SingleThreadTaskRunner>);
 
   // Called when `pressure_manager_` is disconnected.
   void OnConnectionError();
-
-  // Called to reset `pressure_manager_` when all PressureClientImpl are reset.
-  void ResetPressureManagerIfNeeded();
 
   // Called to reset for all PressureSources.
   void Reset();
 
   void DidAddClient(V8PressureSource::Enum,
-                    device::mojom::blink::PressureManagerAddClientResultPtr);
+                    device::mojom::blink::PressureManagerAddClientResult);
 
   // Connection to the browser side implementation.
   HeapMojoRemote<mojom::blink::WebPressureManager> pressure_manager_;

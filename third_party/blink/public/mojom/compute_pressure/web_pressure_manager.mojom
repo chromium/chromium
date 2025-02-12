@@ -12,6 +12,7 @@ import "services/device/public/mojom/pressure_update.mojom";
 // that the device.mojom version does.
 interface WebPressureManager {
   // See PressureManager.AddClient()'s documentation for more details.
-  AddClient(device.mojom.PressureSource source) =>
+  AddClient(device.mojom.PressureSource source,
+            pending_associated_remote<device.mojom.PressureClient> client) =>
       (device.mojom.PressureManagerAddClientResult result);
 };

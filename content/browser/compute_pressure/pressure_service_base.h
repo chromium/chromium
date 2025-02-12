@@ -16,6 +16,7 @@
 #include "content/browser/compute_pressure/pressure_client_impl.h"
 #include "content/browser/compute_pressure/web_contents_pressure_manager_proxy.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
@@ -47,8 +48,10 @@ class CONTENT_EXPORT PressureServiceBase
   virtual bool CanCallAddClient() const;
 
   // blink::mojom::WebPressureManager implementation.
-  void AddClient(device::mojom::PressureSource source,
-                 AddClientCallback callback) override;
+  void AddClient(
+      device::mojom::PressureSource source,
+      mojo::PendingAssociatedRemote<device::mojom::PressureClient> client,
+      AddClientCallback callback) override;
 
   // WebContentsPressureManagerProxy::Observer implementation.
   void DidAddVirtualPressureSource(device::mojom::PressureSource) override;
@@ -79,8 +82,11 @@ class CONTENT_EXPORT PressureServiceBase
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  // boolean parameter when true allows creation of the object if not found.
+  WebContentsPressureManagerProxy* GetWebContentsPressureManagerProxy(
+      bool allow_creation = false) const;
+
  private:
-  WebContentsPressureManagerProxy* GetWebContentsPressureManagerProxy() const;
   virtual RenderFrameHost* GetRenderFrameHost() const;
 
   void AddMessageToConsole(const std::string&) const;
@@ -90,12 +96,9 @@ class CONTENT_EXPORT PressureServiceBase
   void DidAddClient(device::mojom::PressureSource source,
                     const std::optional<base::UnguessableToken>&,
                     AddClientCallback client_callback,
-                    device::mojom::PressureManagerAddClientResultPtr);
+                    device::mojom::PressureManagerAddClientResult);
 
   // Services side.
-  // Callback from |manager_receiver_| is passed to |manager_remote_| and the
-  // Receiver should be destroyed first so that the callback is invalidated
-  // before being discarded.
   mojo::Remote<device::mojom::PressureManager> manager_remote_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

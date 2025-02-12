@@ -21,6 +21,8 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/system_cpu/pressure_test_support.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "services/device/compute_pressure/cpu_probe_manager.h"
@@ -76,8 +78,8 @@ class FakePressureClient : public mojom::PressureClient {
     run_loop.Run();
   }
 
-  void Bind(mojo::PendingReceiver<mojom::PressureClient> pending_receiver) {
-    client_.Bind(std::move(pending_receiver));
+  mojo::PendingAssociatedRemote<mojom::PressureClient> get_remote() {
+    return client_.BindNewEndpointAndPassRemote();
   }
 
   bool is_bound() const { return client_.is_bound(); }
@@ -89,7 +91,7 @@ class FakePressureClient : public mojom::PressureClient {
   // Used to implement WaitForUpdate().
   base::OnceClosure update_callback_;
 
-  mojo::Receiver<mojom::PressureClient> client_;
+  mojo::AssociatedReceiver<mojom::PressureClient> client_;
 };
 
 }  // namespace
@@ -118,27 +120,21 @@ class PressureManagerImplTest : public DeviceServiceTestBase {
     manager_impl_->Bind(manager_.BindNewPipeAndPassReceiver());
   }
 
-  base::expected<void, mojom::PressureManagerAddClientError> AddPressureClient(
+  mojom::PressureManagerAddClientResult AddPressureClient(
       FakePressureClient* client,
       mojom::PressureSource source) {
     return AddPressureClient(client, /*token=*/std::nullopt, source);
   }
 
-  base::expected<void, mojom::PressureManagerAddClientError> AddPressureClient(
+  mojom::PressureManagerAddClientResult AddPressureClient(
       FakePressureClient* client,
       const std::optional<base::UnguessableToken>& token,
       mojom::PressureSource source) {
-    base::test::TestFuture<mojom::PressureManagerAddClientResultPtr> future;
-    manager_->AddClient(source, token, future.GetCallback());
+    base::test::TestFuture<mojom::PressureManagerAddClientResult> future;
+    manager_->AddClient(source, token, client->get_remote(),
+                        future.GetCallback());
 
-    auto result = future.Take();
-    if (result->is_pressure_client()) {
-      client->Bind(std::move(result->get_pressure_client()));
-    }
-
-    return result->is_error()
-               ? base::unexpected(result->get_error())
-               : base::expected<void, mojom::PressureManagerAddClientError>();
+    return future.Take();
   }
 
   bool AddVirtualPressureSource(
@@ -175,8 +171,8 @@ class PressureManagerImplTest : public DeviceServiceTestBase {
 
 TEST_F(PressureManagerImplTest, OneClient) {
   FakePressureClient client;
-  ASSERT_TRUE(
-      AddPressureClient(&client, mojom::PressureSource::kCpu).has_value());
+  ASSERT_EQ(AddPressureClient(&client, mojom::PressureSource::kCpu),
+            mojom::PressureManagerAddClientResult::kOk);
 
   client.WaitForUpdate();
   ASSERT_EQ(client.updates().size(), 1u);
@@ -187,14 +183,14 @@ TEST_F(PressureManagerImplTest, OneClient) {
 
 TEST_F(PressureManagerImplTest, ThreeClients) {
   FakePressureClient client1;
-  ASSERT_TRUE(
-      AddPressureClient(&client1, mojom::PressureSource::kCpu).has_value());
+  ASSERT_EQ(AddPressureClient(&client1, mojom::PressureSource::kCpu),
+            mojom::PressureManagerAddClientResult::kOk);
   FakePressureClient client2;
-  ASSERT_TRUE(
-      AddPressureClient(&client2, mojom::PressureSource::kCpu).has_value());
+  ASSERT_EQ(AddPressureClient(&client2, mojom::PressureSource::kCpu),
+            mojom::PressureManagerAddClientResult::kOk);
   FakePressureClient client3;
-  ASSERT_TRUE(
-      AddPressureClient(&client3, mojom::PressureSource::kCpu).has_value());
+  ASSERT_EQ(AddPressureClient(&client3, mojom::PressureSource::kCpu),
+            mojom::PressureManagerAddClientResult::kOk);
 
   // In SetUp() CpuSample = 0.63, which is translated to PressureState::kFair.
   FakePressureClient::WaitForUpdates({&client1, &client2, &client3});
@@ -214,9 +210,7 @@ TEST_F(PressureManagerImplTest, AddClientNoProbe) {
 
   FakePressureClient client;
   auto result = AddPressureClient(&client, mojom::PressureSource::kCpu);
-  ASSERT_FALSE(result.has_value());
-  ASSERT_EQ(result.error(),
-            mojom::PressureManagerAddClientError::kNotSupported);
+  ASSERT_EQ(result, mojom::PressureManagerAddClientResult::kNotSupported);
 }
 
 TEST_F(PressureManagerImplTest, AddClientInvalidToken) {
@@ -227,9 +221,7 @@ TEST_F(PressureManagerImplTest, AddClientInvalidToken) {
     FakePressureClient client;
     auto result =
         AddPressureClient(&client, token1, mojom::PressureSource::kCpu);
-    ASSERT_FALSE(result.has_value());
-    ASSERT_EQ(result.error(),
-              mojom::PressureManagerAddClientError::kNotSupported);
+    ASSERT_EQ(result, mojom::PressureManagerAddClientResult::kNotSupported);
   }
 
   {
@@ -242,9 +234,7 @@ TEST_F(PressureManagerImplTest, AddClientInvalidToken) {
     FakePressureClient client;
     auto result =
         AddPressureClient(&client, token1, mojom::PressureSource::kCpu);
-    ASSERT_FALSE(result.has_value());
-    ASSERT_EQ(result.error(),
-              mojom::PressureManagerAddClientError::kNotSupported);
+    ASSERT_EQ(result, mojom::PressureManagerAddClientResult::kNotSupported);
   }
 }
 
@@ -279,14 +269,14 @@ TEST_F(PressureManagerImplTest, OneClientOneVirtual) {
 
   const base::UnguessableToken token = base::UnguessableToken::Create();
 
-  ASSERT_TRUE(
-      AddPressureClient(&client, mojom::PressureSource::kCpu).has_value());
+  ASSERT_EQ(AddPressureClient(&client, mojom::PressureSource::kCpu),
+            mojom::PressureManagerAddClientResult::kOk);
 
   ASSERT_TRUE(AddVirtualPressureSource(token, mojom::PressureSource::kCpu));
 
-  ASSERT_TRUE(
-      AddPressureClient(&virtual_client, token, mojom::PressureSource::kCpu)
-          .has_value());
+  ASSERT_EQ(
+      AddPressureClient(&virtual_client, token, mojom::PressureSource::kCpu),
+      mojom::PressureManagerAddClientResult::kOk);
 
   EXPECT_TRUE(UpdateVirtualPressureSource(token, mojom::PressureSource::kCpu,
                                           mojom::PressureState::kCritical));
@@ -315,8 +305,8 @@ TEST_F(PressureManagerImplTest, UpdateVirtualClientWithNoVirtualClient) {
 
   const base::UnguessableToken token = base::UnguessableToken::Create();
 
-  ASSERT_TRUE(
-      AddPressureClient(&client, mojom::PressureSource::kCpu).has_value());
+  ASSERT_EQ(AddPressureClient(&client, mojom::PressureSource::kCpu),
+            mojom::PressureManagerAddClientResult::kOk);
 
   client.SetNextUpdateCallback(base::BindOnce(
       []() { FAIL() << "The update callback should not have been called"; }));
@@ -333,9 +323,9 @@ TEST_F(PressureManagerImplTest, OneVirtualClient) {
 
   ASSERT_TRUE(AddVirtualPressureSource(token, mojom::PressureSource::kCpu));
 
-  ASSERT_TRUE(
-      AddPressureClient(&virtual_client, token, mojom::PressureSource::kCpu)
-          .has_value());
+  ASSERT_EQ(
+      AddPressureClient(&virtual_client, token, mojom::PressureSource::kCpu),
+      mojom::PressureManagerAddClientResult::kOk);
 
   // Test that all PressureState values are reported correctly.
   for (size_t i = 0; i < static_cast<size_t>(mojom::PressureState::kMaxValue);
@@ -369,9 +359,9 @@ TEST_F(PressureManagerImplTest, ContinuousUpdateReports) {
 
   ASSERT_TRUE(AddVirtualPressureSource(token, mojom::PressureSource::kCpu));
 
-  ASSERT_TRUE(
-      AddPressureClient(&virtual_client, token, mojom::PressureSource::kCpu)
-          .has_value());
+  ASSERT_EQ(
+      AddPressureClient(&virtual_client, token, mojom::PressureSource::kCpu),
+      mojom::PressureManagerAddClientResult::kOk);
 
   const mojom::PressureState state = mojom::PressureState::kSerious;
 
@@ -395,9 +385,9 @@ TEST_F(PressureManagerImplTest, SameStateUpdatesAreNotDropped) {
 
   ASSERT_TRUE(AddVirtualPressureSource(token, mojom::PressureSource::kCpu));
 
-  ASSERT_TRUE(
-      AddPressureClient(&virtual_client, token, mojom::PressureSource::kCpu)
-          .has_value());
+  ASSERT_EQ(
+      AddPressureClient(&virtual_client, token, mojom::PressureSource::kCpu),
+      mojom::PressureManagerAddClientResult::kOk);
 
   const mojom::PressureState state = mojom::PressureState::kSerious;
 
@@ -428,9 +418,7 @@ TEST_F(PressureManagerImplTest, VirtualPressureSourceNotAvailable) {
 
   FakePressureClient client;
   auto result = AddPressureClient(&client, token, mojom::PressureSource::kCpu);
-  ASSERT_FALSE(result.has_value());
-  ASSERT_EQ(result.error(),
-            mojom::PressureManagerAddClientError::kNotSupported);
+  ASSERT_EQ(result, mojom::PressureManagerAddClientResult::kNotSupported);
 }
 
 }  // namespace device

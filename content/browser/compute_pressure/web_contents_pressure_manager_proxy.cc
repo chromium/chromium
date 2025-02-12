@@ -81,7 +81,6 @@ void WebContentsPressureManagerProxy::EnsureDeviceServiceConnection() {
   if (pressure_manager_) {
     return;
   }
-
   GetDeviceService().BindPressureManager(
       pressure_manager_.BindNewPipeAndPassReceiver());
   pressure_manager_.reset_on_disconnect();
