@@ -210,6 +210,44 @@ TEST_P(InterceptNavigationThrottleTest, AsyncRequestDefersWhenRequested) {
             simulator->GetLastThrottleCheckResult().action());
 }
 
+TEST_P(InterceptNavigationThrottleTest, AsyncRequestDefersTwice) {
+  if (!GetParam()) {
+    GTEST_SKIP();
+  }
+  EXPECT_CALL(*mock_callback_receiver_,
+              ShouldIgnoreNavigation(NavigationHandleUrlIsTest(), Eq(true), _))
+      .Times(1);
+  EXPECT_CALL(
+      *mock_callback_receiver_,
+      ShouldIgnoreNavigation(NavigationHandleUrlIsTest(), Eq(false), _));
+  EXPECT_CALL(request_finish_closure_, Run()).Times(1);
+
+  auto throttle_inserter = CreateThrottleInserter();
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateRendererInitiated(GURL(kTestUrl),
+                                                            main_rfh());
+  simulator->Start();
+  EXPECT_EQ(NavigationThrottle::PROCEED,
+            simulator->GetLastThrottleCheckResult().action());
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&, this] {
+        EXPECT_TRUE(simulator->IsDeferred());
+        OnCheckComplete(false);
+        EXPECT_TRUE(simulator->IsDeferred());
+        OnCheckComplete(false);
+      }));
+  simulator->Redirect(GURL(kTestUrl));
+  EXPECT_FALSE(simulator->IsDeferred());
+  EXPECT_EQ(NavigationThrottle::PROCEED,
+            simulator->GetLastThrottleCheckResult().action());
+
+  simulator->Commit();
+
+  EXPECT_EQ(NavigationThrottle::PROCEED,
+            simulator->GetLastThrottleCheckResult().action());
+}
+
 TEST_P(InterceptNavigationThrottleTest, RequestDefersWhenClientNotReady) {
   if (GetParam()) {
     GTEST_SKIP();
