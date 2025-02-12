@@ -59,6 +59,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_features.h"
+#include "components/data_sharing/public/features.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
@@ -897,7 +898,8 @@ void MaybeRegisterChromeFeaturePromos(
             feature_engagement::kIPHTabGroupsSharedTabChangedFeature,
             kTopContainerElementId, IDS_DATA_SHARING_USER_ED_FIRST_TAB_CHANGE,
             IDS_LEARN_MORE,
-            CreateNavigationAction(GURL(chrome::kCollaborationLearnMoreURL)))
+            CreateNavigationAction(GURL(
+                data_sharing::features::kLearnMoreSharedTabGroupPageURL.Get())))
             .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
             .SetAnchorElementFilter(base::BindRepeating(
                 [](const ui::ElementTracker::ElementList& elements)
