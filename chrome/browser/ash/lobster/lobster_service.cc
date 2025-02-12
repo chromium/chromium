@@ -8,11 +8,13 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
 #include "chrome/browser/ash/lobster/lobster_image_fetcher.h"
 #include "chrome/browser/ash/lobster/lobster_image_provider_from_memory.h"
@@ -20,6 +22,7 @@
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "components/manta/snapper_provider.h"
@@ -39,7 +42,28 @@ LobsterService::LobsterService(
               image_provider_.get(),
               &candidate_id_generator_))),
       resizer_(std::make_unique<LobsterCandidateResizer>(image_fetcher_.get())),
-      system_state_provider_(profile) {}
+      system_state_provider_(profile) {
+  if (profile != nullptr) {
+    PrefService* pref_service = profile->GetPrefs();
+    pref_change_registrar_.Init(pref_service);
+    pref_change_registrar_.Add(
+        ash::prefs::kLobsterEnabled,
+        base::BindRepeating(
+            [](PrefService* pref_service) {
+              if (pref_service->GetBoolean(ash::prefs::kLobsterEnabled) &&
+                  chromeos::editor_menu::GetConsentStatusFromInteger(
+                      pref_service->GetInteger(
+                          ash::prefs::kOrcaConsentStatus)) ==
+                      chromeos::editor_menu::EditorConsentStatus::kDeclined) {
+                pref_service->SetInteger(
+                    ash::prefs::kOrcaConsentStatus,
+                    base::to_underlying(
+                        chromeos::editor_menu::EditorConsentStatus::kUnset));
+              }
+            },
+            pref_service));
+  }
+}
 
 LobsterService::~LobsterService() = default;
 
