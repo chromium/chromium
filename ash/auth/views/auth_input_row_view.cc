@@ -329,7 +329,7 @@ void AuthInputRowView::OnTextfieldFocus() {
   }
 }
 
-void AuthInputRowView::OnContentsChanged(const std::u16string& new_contents) {
+void AuthInputRowView::OnContentsChanged(std::u16string_view new_contents) {
   bool enable_buttons = !textfield_->GetReadOnly() && !new_contents.empty();
   if (new_contents.empty() && textfield_->IsTextVisible()) {
     ToggleTextDisplayingState();

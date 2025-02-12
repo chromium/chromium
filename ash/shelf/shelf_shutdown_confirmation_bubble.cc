@@ -158,7 +158,7 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
       ShelfShutdownConfirmationBubble::BubbleAction::kOpened);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
-  GetViewAccessibility().SetName(title_->GetText());
+  GetViewAccessibility().SetName(std::u16string(title_->GetText()));
 
   title_text_changed_subscription_ = title_->AddTextChangedCallback(
       base::BindRepeating(&ShelfShutdownConfirmationBubble::OnTitleTextChanged,
@@ -195,7 +195,7 @@ void ShelfShutdownConfirmationBubble::OnThemeChanged() {
 
 std::u16string ShelfShutdownConfirmationBubble::GetAccessibleWindowTitle()
     const {
-  return title_->GetText();
+  return std::u16string(title_->GetText());
 }
 
 void ShelfShutdownConfirmationBubble::OnCancelled() {

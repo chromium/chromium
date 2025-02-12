@@ -5,6 +5,7 @@
 #include "components/exo/surface.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "ash/display/output_protection_delegate.h"
@@ -2057,7 +2058,7 @@ void Surface::OnDeskChanged(int state) {
     observer.OnDeskChanged(this, state);
 }
 
-void Surface::OnTooltipShown(const std::u16string& text,
+void Surface::OnTooltipShown(std::u16string_view text,
                              const gfx::Rect& bounds) {
   for (SurfaceObserver& observer : observers_)
     observer.OnTooltipShown(this, text, bounds);

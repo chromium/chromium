@@ -89,7 +89,7 @@ class MessageCenterImpl : public MessageCenter,
                                  int button_index) override;
   void ClickOnNotificationButtonWithReply(const std::string& id,
                                           int button_index,
-                                          const std::u16string& reply) override;
+                                          std::u16string_view reply) override;
   void ClickOnSettingsButton(const std::string& id) override;
   void ClickOnSnoozeButton(const std::string& id) override;
   void DisableNotification(const std::string& id) override;

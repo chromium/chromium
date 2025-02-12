@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/notifications/request_system_proxy_credentials_view.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -100,11 +101,11 @@ const std::string& RequestSystemProxyCredentialsView::GetProxyServer() const {
   return proxy_server_;
 }
 
-std::u16string RequestSystemProxyCredentialsView::GetUsername() const {
+std::u16string_view RequestSystemProxyCredentialsView::GetUsername() const {
   return username_textfield_->GetText();
 }
 
-std::u16string RequestSystemProxyCredentialsView::GetPassword() const {
+std::u16string_view RequestSystemProxyCredentialsView::GetPassword() const {
   return password_textfield_->GetText();
 }
 
@@ -197,8 +198,8 @@ void RequestSystemProxyCredentialsView::Init() {
 
 BEGIN_METADATA(RequestSystemProxyCredentialsView)
 ADD_READONLY_PROPERTY_METADATA(std::string, ProxyServer)
-ADD_READONLY_PROPERTY_METADATA(std::u16string, Username)
-ADD_READONLY_PROPERTY_METADATA(std::u16string, Password)
+ADD_READONLY_PROPERTY_METADATA(std::u16string_view, Username)
+ADD_READONLY_PROPERTY_METADATA(std::u16string_view, Password)
 END_METADATA
 
 }  // namespace ash

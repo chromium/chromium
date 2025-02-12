@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -344,11 +345,11 @@ void Textfield::SetTextInputFlags(int flags) {
   OnPropertyChanged(&text_input_flags_, kPropertyEffectsNone);
 }
 
-const std::u16string& Textfield::GetText() const {
+std::u16string_view Textfield::GetText() const {
   return model_->text();
 }
 
-void Textfield::SetText(const std::u16string& new_text) {
+void Textfield::SetText(std::u16string_view new_text) {
   SetTextWithoutCaretBoundsChangeNotification(new_text, new_text.length());
   // The above call already notified for the text change; fire notifications
   // etc. for the cursor changes as well.
@@ -356,7 +357,7 @@ void Textfield::SetText(const std::u16string& new_text) {
 }
 
 void Textfield::SetTextWithoutCaretBoundsChangeNotification(
-    const std::u16string& text,
+    std::u16string_view text,
     size_t cursor_position) {
   model_->SetText(text, cursor_position);
   UpdateAfterChange(TextChangeType::kInternal, false, false);
@@ -385,7 +386,7 @@ void Textfield::InsertOrReplaceText(const std::u16string& new_text) {
   UpdateAfterChange(TextChangeType::kUserTriggered, true);
 }
 
-std::u16string Textfield::GetSelectedText() const {
+std::u16string_view Textfield::GetSelectedText() const {
   return model_->GetSelectedText();
 }
 
@@ -510,16 +511,16 @@ void Textfield::SetMinimumWidthInChars(int minimum_width) {
   minimum_width_in_chars_ = minimum_width;
 }
 
-const std::u16string& Textfield::GetPlaceholderText() const {
+std::u16string_view Textfield::GetPlaceholderText() const {
   return placeholder_text_;
 }
 
-void Textfield::SetPlaceholderText(const std::u16string& text) {
+void Textfield::SetPlaceholderText(std::u16string_view text) {
   if (placeholder_text_ == text) {
     return;
   }
 
-  placeholder_text_ = text;
+  placeholder_text_ = std::u16string(text);
   GetViewAccessibility().SetPlaceholder(base::UTF16ToUTF8(text));
   OnPropertyChanged(&placeholder_text_, kPropertyEffectsPaint);
 }
@@ -1270,7 +1271,7 @@ void Textfield::ShowContextMenuForViewImpl(
 void Textfield::WriteDragDataForView(View* sender,
                                      const gfx::Point& press_pt,
                                      OSExchangeData* data) {
-  const std::u16string& selected_text(GetSelectedText());
+  const std::u16string_view selected_text = GetSelectedText();
   data->SetString(selected_text);
   Label label(selected_text, {GetFontList()});
   label.SetBackgroundColor(GetBackgroundColor());
@@ -2784,7 +2785,7 @@ void Textfield::UpdateAfterChange(
     std::optional<bool> notify_caret_bounds_changed) {
   if (text_change_type != TextChangeType::kNone) {
     if ((text_change_type == TextChangeType::kUserTriggered) && controller_) {
-      controller_->ContentsChanged(this, GetText());
+      controller_->ContentsChanged(this, std::u16string(GetText()));
     }
     UpdateAccessibleValue();
   }
@@ -3358,7 +3359,7 @@ void Textfield::UpdateAccessibleDefaultActionVerb() {
 
 BEGIN_METADATA(Textfield)
 ADD_PROPERTY_METADATA(bool, ReadOnly)
-ADD_PROPERTY_METADATA(std::u16string, Text)
+ADD_PROPERTY_METADATA(std::u16string_view, Text)
 ADD_PROPERTY_METADATA(ui::TextInputType, TextInputType)
 ADD_PROPERTY_METADATA(int, TextInputFlags)
 ADD_PROPERTY_METADATA(SkColor, TextColor, ui::metadata::SkColorConverter)
@@ -3371,7 +3372,7 @@ ADD_PROPERTY_METADATA(SkColor,
                       SelectionBackgroundColor,
                       ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(bool, CursorEnabled)
-ADD_PROPERTY_METADATA(std::u16string, PlaceholderText)
+ADD_PROPERTY_METADATA(std::u16string_view, PlaceholderText)
 ADD_PROPERTY_METADATA(bool, Invalid)
 ADD_PROPERTY_METADATA(gfx::HorizontalAlignment, HorizontalAlignment)
 ADD_PROPERTY_METADATA(gfx::Range, SelectedRange)

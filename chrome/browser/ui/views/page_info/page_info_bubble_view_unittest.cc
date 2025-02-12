@@ -221,7 +221,7 @@ class PageInfoBubbleViewTestApi {
     return GetPermissionToggleRowAt(index)->state_label_;
   }
 
-  std::u16string GetCookiesSubpageTitle() {
+  std::u16string_view GetCookiesSubpageTitle() {
     navigation_handler()->OpenCookiesPage();
     auto* title_label = bubble_delegate_->GetViewByID(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_SUBPAGE_TITLE);
@@ -256,7 +256,7 @@ class PageInfoBubbleViewTestApi {
     return static_cast<RichHoverButton*>(button)->GetTitleText();
   }
 
-  std::u16string GetSecuritySummaryText() {
+  std::u16string_view GetSecuritySummaryText() {
     EXPECT_TRUE(security_summary_label());
     return static_cast<views::StyledLabel*>(security_summary_label())
         ->GetText();
@@ -268,7 +268,7 @@ class PageInfoBubbleViewTestApi {
     return static_cast<RichHoverButton*>(button)->GetTitleText();
   }
 
-  std::u16string GetPermissionLabelTextAt(int index) {
+  std::u16string_view GetPermissionLabelTextAt(int index) {
     return GetPermissionToggleRowAt(index)->row_view_->GetTitleForTesting();
   }
 

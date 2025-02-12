@@ -103,8 +103,9 @@ bool SaveCardOfferBubbleViews::Accept() {
 
   if (controller()) {
     controller()->OnSaveButton(
-        {cardholder_name_textfield_ ? cardholder_name_textfield_->GetText()
-                                    : std::u16string(),
+        {cardholder_name_textfield_
+             ? std::u16string(cardholder_name_textfield_->GetText())
+             : std::u16string(),
          month_input_dropdown_
              ? month_input_dropdown_->GetModel()->GetItemAt(
                    month_input_dropdown_->GetSelectedIndex().value())

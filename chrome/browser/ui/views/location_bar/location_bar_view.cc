@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/adapters.h"
@@ -519,28 +520,28 @@ gfx::Point LocationBarView::GetOmniboxViewOrigin() const {
   return origin;
 }
 
-void LocationBarView::SetImePrefixAutocompletion(const std::u16string& text) {
+void LocationBarView::SetImePrefixAutocompletion(std::u16string_view text) {
   DCHECK(OmniboxPrefixRichAutocompletionEnabled() || text.empty());
   if (OmniboxPrefixRichAutocompletionEnabled()) {
     SetOmniboxAdjacentText(ime_prefix_autocomplete_view_, text);
   }
 }
 
-std::u16string LocationBarView::GetImePrefixAutocompletion() const {
+std::u16string_view LocationBarView::GetImePrefixAutocompletion() const {
   return OmniboxPrefixRichAutocompletionEnabled()
              ? ime_prefix_autocomplete_view_->GetText()
-             : u"";
+             : std::u16string_view();
 }
 
-void LocationBarView::SetImeInlineAutocompletion(const std::u16string& text) {
+void LocationBarView::SetImeInlineAutocompletion(std::u16string_view text) {
   SetOmniboxAdjacentText(ime_inline_autocomplete_view_, text);
 }
 
-std::u16string LocationBarView::GetImeInlineAutocompletion() const {
+std::u16string_view LocationBarView::GetImeInlineAutocompletion() const {
   return ime_inline_autocomplete_view_->GetText();
 }
 
-void LocationBarView::SetOmniboxAdditionalText(const std::u16string& text) {
+void LocationBarView::SetOmniboxAdditionalText(std::u16string_view text) {
   DCHECK(OmniboxFieldTrial::IsRichAutocompletionEnabled() || text.empty());
   if (!OmniboxFieldTrial::RichAutocompletionShowAdditionalText()) {
     return;
@@ -553,21 +554,22 @@ void LocationBarView::SetOmniboxAdditionalText(const std::u16string& text) {
                 .Get()
             ? IDS_OMNIBOX_ADDITIONAL_TEXT_PARENTHESIS_TEMPLATE
             : IDS_OMNIBOX_ADDITIONAL_TEXT_DASH_TEMPLATE;
-    adjusted_text = text;
+    adjusted_text = std::u16string(text);
     base::i18n::AdjustStringForLocaleDirection(&adjusted_text);
-    adjusted_text = l10n_util::GetStringFUTF16(message_id, u"", adjusted_text);
+    adjusted_text =
+        l10n_util::GetStringFUTF16(message_id, std::u16string(), adjusted_text);
   }
   SetOmniboxAdjacentText(omnibox_additional_text_view_, adjusted_text);
 }
 
-std::u16string LocationBarView::GetOmniboxAdditionalText() const {
+std::u16string_view LocationBarView::GetOmniboxAdditionalText() const {
   return OmniboxFieldTrial::RichAutocompletionShowAdditionalText()
              ? omnibox_additional_text_view_->GetText()
-             : u"";
+             : std::u16string_view();
 }
 
 void LocationBarView::SetOmniboxAdjacentText(views::Label* label,
-                                             const std::u16string& text) {
+                                             std::u16string_view text) {
   if (text == label->GetText()) {
     return;
   }
@@ -1823,9 +1825,9 @@ void LocationBarView::OnAppShimChanged(const webapps::AppId& app_id) {
 BEGIN_METADATA(LocationBarView)
 ADD_READONLY_PROPERTY_METADATA(int, BorderRadius)
 ADD_READONLY_PROPERTY_METADATA(gfx::Point, OmniboxViewOrigin)
-ADD_PROPERTY_METADATA(std::u16string, ImePrefixAutocompletion)
-ADD_PROPERTY_METADATA(std::u16string, ImeInlineAutocompletion)
-ADD_PROPERTY_METADATA(std::u16string, OmniboxAdditionalText)
+ADD_PROPERTY_METADATA(std::u16string_view, ImePrefixAutocompletion)
+ADD_PROPERTY_METADATA(std::u16string_view, ImeInlineAutocompletion)
+ADD_PROPERTY_METADATA(std::u16string_view, OmniboxAdditionalText)
 ADD_READONLY_PROPERTY_METADATA(int, MinimumLeadingWidth)
 ADD_READONLY_PROPERTY_METADATA(int, MinimumTrailingWidth)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, LocalBoundsWithoutEndcaps)

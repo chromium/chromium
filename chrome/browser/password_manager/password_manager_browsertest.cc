@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -231,7 +232,7 @@ class MockHttpAuthObserver : public password_manager::HttpAuthObserver {
  public:
   MOCK_METHOD(void,
               OnAutofillDataAvailable,
-              (const std::u16string& username, const std::u16string& password),
+              (std::u16string_view username, std::u16string_view password),
               (override));
 
   MOCK_METHOD(void, OnLoginModelDestroying, (), (override));

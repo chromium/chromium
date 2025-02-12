@@ -78,7 +78,7 @@ class TestAuraSurface : public AuraSurface {
   MOCK_METHOD(void,
               OnTooltipShown,
               (Surface * surface,
-               const std::u16string& text,
+               std::u16string_view text,
                const gfx::Rect& bounds),
               (override));
   MOCK_METHOD(void, OnTooltipHidden, (Surface * surface), (override));
@@ -537,7 +537,7 @@ class MockSurfaceObserver : public SurfaceObserver {
   MOCK_METHOD(void,
               OnTooltipShown,
               (Surface * surface,
-               const std::u16string& text,
+               std::u16string_view text,
                const gfx::Rect& bounds),
               (override));
   MOCK_METHOD(void, OnTooltipHidden, (Surface * surface), (override));
@@ -567,7 +567,7 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipFromCursor) {
   auto* generator = GetEventGenerator();
   generator->MoveMouseTo(mouse_position);
 
-  const char* text = "my tooltip";
+  static constexpr char16_t kText[] = u"my tooltip";
   gfx::Rect expected_tooltip_position =
       gfx::Rect(mouse_position, gfx::Size(77, kTooltipExpectedHeight));
   views::corewm::TooltipAura::AdjustToCursor(&expected_tooltip_position);
@@ -575,9 +575,9 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipFromCursor) {
                                     surface->window()->GetToplevelWindow(),
                                     &expected_tooltip_position);
 
-  EXPECT_CALL(observer, OnTooltipShown(surface, base::UTF8ToUTF16(text),
+  EXPECT_CALL(observer, OnTooltipShown(surface, std::u16string_view(kText),
                                        expected_tooltip_position));
-  aura_surface->ShowTooltip(text, gfx::Point(),
+  aura_surface->ShowTooltip(kText, gfx::Point(),
                             ZAURA_SURFACE_TOOLTIP_TRIGGER_CURSOR,
                             base::TimeDelta(), base::TimeDelta());
 
@@ -600,7 +600,7 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipFromKeyboard) {
   MockSurfaceObserver observer;
   surface->AddSurfaceObserver(&observer);
 
-  const char* text = "my tooltip";
+  static constexpr char16_t kText[] = u"my tooltip";
   gfx::Point anchor_point = surface->window()->bounds().bottom_center();
   gfx::Size expected_tooltip_size = gfx::Size(77, kTooltipExpectedHeight);
   // Calculate expected tooltip position. For keyboard tooltip, it should be
@@ -617,9 +617,9 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipFromKeyboard) {
                                     surface->window()->GetToplevelWindow(),
                                     &expected_tooltip_position);
 
-  EXPECT_CALL(observer, OnTooltipShown(surface, base::UTF8ToUTF16(text),
+  EXPECT_CALL(observer, OnTooltipShown(surface, std::u16string_view(kText),
                                        expected_tooltip_position));
-  aura_surface->ShowTooltip(text, anchor_point,
+  aura_surface->ShowTooltip(kText, anchor_point,
                             ZAURA_SURFACE_TOOLTIP_TRIGGER_KEYBOARD,
                             base::TimeDelta(), base::TimeDelta());
 
@@ -650,7 +650,7 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipOnMenuFromCursor) {
   auto* generator = GetEventGenerator();
   generator->MoveMouseTo(mouse_position);
 
-  const char* text = "my tooltip";
+  static constexpr char16_t kText[] = u"my tooltip";
   // Size of the tooltip depends on the text to show.
   gfx::Rect expected_tooltip_position =
       gfx::Rect(mouse_position, gfx::Size(77, kTooltipExpectedHeight));
@@ -659,9 +659,9 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipOnMenuFromCursor) {
                                     surface->window()->GetToplevelWindow(),
                                     &expected_tooltip_position);
 
-  EXPECT_CALL(observer, OnTooltipShown(surface, base::UTF8ToUTF16(text),
+  EXPECT_CALL(observer, OnTooltipShown(surface, std::u16string_view(kText),
                                        expected_tooltip_position));
-  aura_surface->ShowTooltip(text, gfx::Point(),
+  aura_surface->ShowTooltip(kText, gfx::Point(),
                             ZAURA_SURFACE_TOOLTIP_TRIGGER_CURSOR,
                             base::TimeDelta(), base::TimeDelta());
 
@@ -684,7 +684,7 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipOnMenuFromKeyboard) {
   MockSurfaceObserver observer;
   surface->AddSurfaceObserver(&observer);
 
-  const char* text = "my tooltip";
+  static constexpr char16_t kText[] = u"my tooltip";
   gfx::Point anchor_point = surface->window()->bounds().bottom_center();
   gfx::Size expected_tooltip_size = gfx::Size(77, kTooltipExpectedHeight);
   // Calculate expected tooltip position. For keyboard tooltip, it should be
@@ -701,9 +701,9 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipOnMenuFromKeyboard) {
                                     surface->window()->GetToplevelWindow(),
                                     &expected_tooltip_position);
 
-  EXPECT_CALL(observer, OnTooltipShown(surface, base::UTF8ToUTF16(text),
+  EXPECT_CALL(observer, OnTooltipShown(surface, std::u16string_view(kText),
                                        expected_tooltip_position));
-  aura_surface->ShowTooltip(text, anchor_point,
+  aura_surface->ShowTooltip(kText, anchor_point,
                             ZAURA_SURFACE_TOOLTIP_TRIGGER_KEYBOARD,
                             base::TimeDelta(), base::TimeDelta());
 

@@ -148,7 +148,7 @@ TEST_F(ActiveSessionAuthViewUnitTest, CloseButtonWithDisabledInputTest) {
 
 // Verify password submit observer.
 TEST_F(ActiveSessionAuthViewUnitTest, PasswordSubmitTest) {
-  const std::u16string kPassword(u"password");
+  static constexpr std::u16string_view kPassword(u"password");
   EXPECT_CALL(*mock_observer_, OnPasswordSubmit(kPassword)).Times(1);
 
   container_view_->GetFocusManager()->SetFocusedView(
@@ -167,7 +167,7 @@ TEST_F(ActiveSessionAuthViewUnitTest, PasswordSubmitTest) {
 
 // Verify the password input is no op with disabled input area.
 TEST_F(ActiveSessionAuthViewUnitTest, PasswordSubmitWithDisabledInputTest) {
-  const std::u16string kPassword(u"password");
+  static constexpr std::u16string_view kPassword(u"password");
   EXPECT_CALL(*mock_observer_, OnPasswordSubmit(kPassword)).Times(0);
 
   container_view_->GetFocusManager()->SetFocusedView(
@@ -194,7 +194,7 @@ TEST_F(ActiveSessionAuthViewUnitTest, PinSubmitTest) {
   container_view_->GetFocusManager()->SetFocusedView(
       test_api_pin_input_->GetTextfield());
 
-  const std::u16string kPin(u"6893112");
+  static constexpr std::u16string_view kPin(u"6893112");
   EXPECT_CALL(*mock_observer_, OnPinSubmit(kPin)).Times(1);
 
   for (const char16_t c : kPin) {

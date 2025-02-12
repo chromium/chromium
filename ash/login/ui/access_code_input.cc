@@ -5,6 +5,7 @@
 #include "ash/login/ui/access_code_input.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/system_textfield.h"
@@ -88,8 +89,8 @@ void FlexCodeInput::InsertDigit(int value) {
   DCHECK_LE(0, value);
   DCHECK_GE(9, value);
   if (code_field_->GetEnabled()) {
-    code_field_->SetText(code_field_->GetText() +
-                         base::NumberToString16(value));
+    code_field_->SetText(
+        base::StrCat({code_field_->GetText(), base::NumberToString16(value)}));
     on_input_change_.Run(true);
   }
 }
@@ -108,7 +109,7 @@ void FlexCodeInput::Backspace() {
 }
 
 std::optional<std::string> FlexCodeInput::GetCode() const {
-  std::u16string code = code_field_->GetText();
+  std::u16string_view code = code_field_->GetText();
   if (!code.length()) {
     return std::nullopt;
   }
@@ -601,7 +602,7 @@ AccessibleInputField* FixedLengthCodeInput::ActiveField() const {
   return input_fields_[active_input_index_];
 }
 
-const std::u16string& FixedLengthCodeInput::ActiveInput() const {
+std::u16string_view FixedLengthCodeInput::ActiveInput() const {
   return ActiveField()->GetText();
 }
 

@@ -9,6 +9,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
@@ -144,7 +145,7 @@ class AutocompleteInput {
     kPrefix,  // `text_` starts with '@'.
     kExact,   // `text_` is exactly '@'.
   };
-  static FeaturedKeywordMode GetFeaturedKeywordMode(const std::u16string& text);
+  static FeaturedKeywordMode GetFeaturedKeywordMode(std::u16string_view text);
 
   // If the input is in the keyword mode for a starter pack engine, returns the
   // starter pack's `TemplateURL` or nullptr. E.g. for "@Gemini text", Gemini

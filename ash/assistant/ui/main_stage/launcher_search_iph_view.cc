@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/assistant/ui/main_stage/chip_view.h"
@@ -239,7 +240,7 @@ void LauncherSearchIphView::NotifyAssistantButtonPressedEvent() {
   }
 }
 
-std::u16string LauncherSearchIphView::GetTitleText() const {
+std::u16string_view LauncherSearchIphView::GetTitleText() const {
   return title_label_->GetText();
 }
 

@@ -1652,7 +1652,7 @@ void ShellSurfaceBase::OnWindowActivated(ActivationReason reason,
 // wm::TooltipObserver overrides:
 
 void ShellSurfaceBase::OnTooltipShown(aura::Window* target,
-                                      const std::u16string& text,
+                                      std::u16string_view text,
                                       const gfx::Rect& bounds) {
   if (root_surface()) {
     root_surface()->OnTooltipShown(text, bounds);

@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -129,7 +130,7 @@ void MediaViewControllerBase::OnDeviceListChanged(size_t device_count) {
   device_selector_combobox_->SetVisible(allow_device_selection_);
   AnnounceDynamicChangeIfNeeded(l10n_util::GetStringFUTF16(
       IDS_MEDIA_PREVIEW_ANNOUNCE_SELECTED_DEVICE_CHANGE,
-      device_name_label_->GetText()));
+      std::u16string(device_name_label_->GetText())));
   OnComboboxSelection(/*due_to_user_action=*/false);
   base_view_->RefreshSize();
 }
@@ -161,7 +162,7 @@ void MediaViewControllerBase::UpdateDeviceNameLabel() {
 }
 
 void MediaViewControllerBase::AnnounceDynamicChangeIfNeeded(
-    std::u16string announcement) {
+    std::u16string_view announcement) {
   if (!has_device_list_changed_before_) {
     has_device_list_changed_before_ = true;
     return;

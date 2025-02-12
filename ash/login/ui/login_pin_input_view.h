@@ -5,6 +5,8 @@
 #ifndef ASH_LOGIN_UI_LOGIN_PIN_INPUT_VIEW_H_
 #define ASH_LOGIN_UI_LOGIN_PIN_INPUT_VIEW_H_
 
+#include <string_view>
+
 #include "ash/ash_export.h"
 #include "ash/login/ui/access_code_input.h"
 #include "ash/login/ui/non_accessible_view.h"
@@ -38,7 +40,7 @@ class ASH_EXPORT LoginPinInputView : public views::View,
   METADATA_HEADER(LoginPinInputView, views::View)
 
  public:
-  using OnPinSubmit = base::RepeatingCallback<void(const std::u16string& pin)>;
+  using OnPinSubmit = base::RepeatingCallback<void(std::u16string_view pin)>;
   using OnPinChanged = base::RepeatingCallback<void(bool is_empty)>;
 
   static const int kDefaultLength;
@@ -99,7 +101,7 @@ class ASH_EXPORT LoginPinInputView : public views::View,
 
  private:
   // The code input will call this when all digits are in.
-  void SubmitPin(const std::u16string& pin);
+  void SubmitPin(std::u16string_view pin);
 
   // Called by the inner view whenever the fields change.
   void OnChanged(bool is_empty);

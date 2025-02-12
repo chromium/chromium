@@ -523,7 +523,7 @@ TEST_F(DLCBubbleViewTest, OneError) {
   EXPECT_TRUE(error_container_view);
   EXPECT_TRUE(dlc_error_label);
 
-  const std::u16string label_contents = dlc_error_label->GetText();
+  const std::u16string label_contents(dlc_error_label->GetText());
   // Try to add a second error for `test_feature_name`, there should be no
   // change.
   bubble_view_ptr->OnDLCDownloadStateInError(/*add_warning_view=*/true,
@@ -556,13 +556,13 @@ TEST_F(DLCBubbleViewTest, TwoPlusErrors) {
   EXPECT_TRUE(error_container_view);
   EXPECT_TRUE(dlc_error_label);
 
-  const std::u16string one_error_label = dlc_error_label->GetText();
+  const std::u16string one_error_label(dlc_error_label->GetText());
 
   // Add a second error for `test_feature_name_2`.
   std::u16string test_feature_name_2 = u"test_feature_name_2";
   bubble_view_ptr->OnDLCDownloadStateInError(/*add_warning_view=*/true,
                                              test_feature_name_2);
-  const std::u16string two_error_label = dlc_error_label->GetText();
+  const std::u16string two_error_label(dlc_error_label->GetText());
 
   EXPECT_NE(one_error_label, two_error_label);
 

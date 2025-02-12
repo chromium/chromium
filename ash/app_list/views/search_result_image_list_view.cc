@@ -100,7 +100,7 @@ SearchResultImageListView::SearchResultImageListView(
   GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
   GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
       IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_ACCESSIBLE_NAME,
-      title_label_->GetText()));
+      std::u16string(title_label_->GetText())));
 
   image_view_container_ =
       AddChildView(std::make_unique<views::FlexLayoutView>());

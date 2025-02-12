@@ -61,7 +61,7 @@ QuickInsertBadgeView::QuickInsertBadgeView() {
 
 QuickInsertBadgeView::~QuickInsertBadgeView() = default;
 
-const std::u16string& QuickInsertBadgeView::GetText() const {
+std::u16string_view QuickInsertBadgeView::GetText() const {
   return label_->GetText();
 }
 

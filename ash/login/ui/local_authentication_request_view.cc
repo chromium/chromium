@@ -5,6 +5,7 @@
 #include "ash/login/ui/local_authentication_request_view.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -383,7 +384,7 @@ LocalAuthenticationRequestView::GetLocalAuthenticationRequestViewSize() const {
 
 void LocalAuthenticationRequestView::OnAuthSubmit(
     bool authenticated_by_pin,
-    const std::u16string& password) {
+    std::u16string_view password) {
   CHECK(!authenticated_by_pin);
   SetInputEnabled(false);
 
@@ -432,7 +433,8 @@ void LocalAuthenticationRequestView::UpdateAccessibleName() {
     GetViewAccessibility().SetName(
         std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   } else {
-    GetViewAccessibility().SetName(description_label_->GetText());
+    GetViewAccessibility().SetName(
+        std::u16string(description_label_->GetText()));
   }
 }
 

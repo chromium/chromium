@@ -584,7 +584,8 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
             [](ui::DialogModelTextfield* model_field,
                base::PassKey<DialogModelFieldHost> pass_key,
                Textfield* textfield) {
-              model_field->OnTextChanged(pass_key, textfield->GetText());
+              model_field->OnTextChanged(pass_key,
+                                         std::u16string(textfield->GetText()));
             },
             model_field, GetPassKey(), textfield.get())));
 

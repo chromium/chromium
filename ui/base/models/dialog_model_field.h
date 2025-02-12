@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/callback_list.h"
 #include "base/component_export.h"
@@ -491,7 +492,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelTextfield : public DialogModelField {
 
   const std::u16string& label() const { return label_; }
   const std::u16string& accessible_name() const { return accessible_name_; }
-  void OnTextChanged(base::PassKey<DialogModelFieldHost>, std::u16string text);
+  void OnTextChanged(base::PassKey<DialogModelFieldHost>,
+                     std::u16string_view text);
 
  private:
   friend class DialogModel;
@@ -538,7 +540,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelPasswordField
     return incorrect_password_text_;
   }
 
-  void OnTextChanged(base::PassKey<DialogModelFieldHost>, std::u16string text);
+  void OnTextChanged(base::PassKey<DialogModelFieldHost>,
+                     std::u16string_view text);
   base::CallbackListSubscription AddOnInvalidateCallback(
       base::PassKey<DialogModelFieldHost>,
       base::RepeatingClosure closure);

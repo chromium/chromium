@@ -1582,12 +1582,12 @@ TEST_F(GameDashboardContextTest, MainMenuClockView) {
 
   const auto* horizontal_time_label =
       clock_view->GetHorizontalTimeLabelForTesting();
-  const auto current_time = horizontal_time_label->GetText();
+  const std::u16string current_time(horizontal_time_label->GetText());
   // Verify that the "AM/PM" text is visible.
   ASSERT_NE(current_time.ends_with(u"AM"), current_time.ends_with(u"PM"));
   // Ensure that the clock increments as the time changes.
   AdvanceClock(base::Hours(12));
-  const auto next_time = horizontal_time_label->GetText();
+  const std::u16string_view next_time = horizontal_time_label->GetText();
   const std::u16string next_am_pm =
       current_time.ends_with(u"AM") ? u"PM" : u"AM";
   ASSERT_NE(current_time, next_time);

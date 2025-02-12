@@ -55,11 +55,6 @@ bool OmniboxPopupViewIOS::IsOpen() const {
   return omnibox_autocomplete_controller_.omniboxPopupController.hasSuggestions;
 }
 
-std::u16string OmniboxPopupViewIOS::GetAccessibleButtonTextForResult(
-    size_t line) const {
-  return u"";
-}
-
 #pragma mark - OmniboxPopupProvider
 
 bool OmniboxPopupViewIOS::IsPopupOpen() {

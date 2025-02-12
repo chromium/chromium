@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
@@ -310,7 +311,7 @@ class OmniboxEditModel {
   // for starter pack '@' keywords. Returns true if keyword mode was
   // entered; returns false if feature is disabled or special input
   // conditions were not detected, in which case this is a no-op.
-  bool MaybeAccelerateKeywordSelection(const std::u16string& input_text,
+  bool MaybeAccelerateKeywordSelection(std::u16string_view input_text,
                                        char16_t ch);
 
   // Called when any relevant data changes.  This rolls together several

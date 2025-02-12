@@ -4,6 +4,7 @@
 
 #include "ash/app_list/views/app_list_search_view.h"
 
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -190,7 +191,7 @@ class AppListSearchViewTest : public AshTestBase {
         .value();
   }
 
-  std::u16string GetListLabel(
+  std::u16string_view GetListLabel(
       SearchResultContainerView* result_container_view) {
     return static_cast<SearchResultListView*>(result_container_view)
         ->title_label_for_test()

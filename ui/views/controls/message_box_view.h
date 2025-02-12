@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -56,7 +57,7 @@ class VIEWS_EXPORT MessageBoxView : public BoxLayoutView {
 
   // Returns user entered data in the prompt field, returns an empty string if
   // no visible prompt field.
-  std::u16string GetInputText();
+  std::u16string_view GetInputText();
 
   // Returns true if this message box has a visible checkbox, false otherwise.
   bool HasVisibleCheckBox() const;

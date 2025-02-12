@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/api/tasks/tasks_types.h"
@@ -123,7 +124,7 @@ class TaskViewTextField : public SystemTextfield,
 
  public:
   using OnFinishedEditingCallback =
-      base::RepeatingCallback<void(const std::u16string& title)>;
+      base::RepeatingCallback<void(std::u16string_view title)>;
 
   explicit TaskViewTextField(OnFinishedEditingCallback on_finished_editing)
       : SystemTextfield(Type::kMedium),
@@ -294,11 +295,12 @@ class GlanceablesTaskView::TaskTitleButton : public views::LabelButton {
                                        : gfx::Font::FontStyle::NORMAL));
   }
 
-  void SetText(const std::u16string& text) override {
+  void SetText(std::u16string_view text) override {
     views::LabelButton::SetText(text);
     GetViewAccessibility().SetName(
-        text, text.empty() ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
-                           : ax::mojom::NameFrom::kAttribute);
+        std::u16string(text),
+        text.empty() ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
+                     : ax::mojom::NameFrom::kAttribute);
   }
 };
 
@@ -700,9 +702,9 @@ void GlanceablesTaskView::TaskTitleButtonPressed() {
   UpdateTaskTitleViewForState(TaskTitleViewState::kEdit);
 }
 
-void GlanceablesTaskView::OnFinishedEditing(const std::u16string& title) {
+void GlanceablesTaskView::OnFinishedEditing(std::u16string_view title) {
   if (!title.empty()) {
-    task_title_ = title;
+    task_title_ = std::u16string(title);
   }
 
   if (task_title_textfield_ && task_title_textfield_->HasFocus()) {

@@ -12,6 +12,7 @@
 #include <numeric>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -177,11 +178,10 @@ gfx::ImageSkia* GetImageSkiaNamed(int id) {
   return ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(id);
 }
 
-const std::u16string& GetFolderButtonAccessibleName(
-    const std::u16string& folder_title) {
-  static const std::u16string& fallback_name =
-      l10n_util::GetStringUTF16(IDS_UNNAMED_BOOKMARK_FOLDER);
-  return folder_title.empty() ? fallback_name : folder_title;
+std::u16string GetFolderButtonAccessibleName(std::u16string_view folder_title) {
+  return folder_title.empty()
+             ? l10n_util::GetStringUTF16(IDS_UNNAMED_BOOKMARK_FOLDER)
+             : std::u16string(folder_title);
 }
 
 // ShortcutButton -------------------------------------------------------------
@@ -210,7 +210,7 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
 
  public:
   explicit BookmarkFolderButton(PressedCallback callback,
-                                const std::u16string& title = std::u16string())
+                                std::u16string_view title = {})
       : BookmarkMenuButtonBase(std::move(callback), title) {
     show_animation_ = std::make_unique<gfx::SlideAnimation>(this);
     if (!animations_enabled) {
@@ -261,12 +261,12 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
     UpdateCachedTooltipText();
   }
 
-  const std::u16string GetAccessibleText() const {
+  std::u16string GetAccessibleText() const {
     // If the folder is unnamed, set the name to a default string for unnamed
     // folders; otherwise set the name to the user-supplied folder name.
     return GetText().empty()
                ? l10n_util::GetStringUTF16(IDS_UNNAMED_BOOKMARK_FOLDER)
-               : GetText();
+               : std::u16string(GetText());
   }
 
  private:
@@ -613,12 +613,12 @@ std::u16string BookmarkBarView::CreateToolTipForURLAndTitle(
     int max_width,
     const gfx::FontList& tt_fonts,
     const GURL& url,
-    const std::u16string& title) {
+    std::u16string_view title) {
   std::u16string result;
 
   // First the title.
   if (!title.empty()) {
-    std::u16string localized_title = title;
+    std::u16string localized_title(title);
     base::i18n::AdjustStringForLocaleDirection(&localized_title);
     result.append(
         gfx::ElideText(localized_title, tt_fonts, max_width, gfx::ELIDE_TAIL));
@@ -1696,7 +1696,7 @@ BookmarkBarView::CreateAppsPageShortcutButton() {
 void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
                                       views::LabelButton* button) {
   button->SetText(node->GetTitle());
-  button->GetViewAccessibility().SetName(node->GetTitle());
+  button->GetViewAccessibility().SetName(std::u16string(node->GetTitle()));
   button->SetID(VIEW_ID_BOOKMARK_BAR_ELEMENT);
   // We don't always have a color provider (ui tests, for example).
   SkColor text_color = gfx::kPlaceholderColor;

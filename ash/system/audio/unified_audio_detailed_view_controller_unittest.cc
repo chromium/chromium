@@ -4,6 +4,8 @@
 
 #include "ash/system/audio/unified_audio_detailed_view_controller.h"
 
+#include <string_view>
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -969,7 +971,7 @@ class UnifiedAudioDetailedViewControllerSodaTest
     live_caption_view()->SetSubText(text);
   }
 
-  std::u16string GetLiveCaptionViewSubtitleText() {
+  std::u16string_view GetLiveCaptionViewSubtitleText() {
     return live_caption_view()->sub_text_label()->GetText();
   }
 

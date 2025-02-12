@@ -302,7 +302,7 @@ class ToolbarButton : public views::LabelButton,
   // views::LabelButton:
   // This is private to avoid a foot-shooter. Callers should use SetHighlight()
   // instead which sets an optional color as well.
-  void SetText(const std::u16string& text) override;
+  void SetText(std::u16string_view text) override;
 
   // Sets the in product help promo. Called after the kHasInProductHelpPromoKey
   // property changes. When this button has an in product help promo, the button

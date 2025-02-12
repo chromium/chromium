@@ -4,6 +4,8 @@
 
 #include "components/omnibox/browser/omnibox_popup_view.h"
 
+#include <string_view>
+
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "components/omnibox/browser/omnibox_controller.h"
@@ -29,6 +31,11 @@ OmniboxController* OmniboxPopupView::controller() {
 
 const OmniboxController* OmniboxPopupView::controller() const {
   return controller_;
+}
+
+std::u16string_view OmniboxPopupView::GetAccessibleButtonTextForResult(
+    size_t line) const {
+  return {};
 }
 
 base::CallbackListSubscription OmniboxPopupView::AddOpenListener(

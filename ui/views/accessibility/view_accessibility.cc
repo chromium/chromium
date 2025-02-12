@@ -466,18 +466,17 @@ void ViewAccessibility::SetName(std::u16string name,
   NotifyEvent(ax::mojom::Event::kTextChanged, true);
 }
 
-void ViewAccessibility::SetName(const std::string& name,
+void ViewAccessibility::SetName(std::string_view name,
                                 ax::mojom::NameFrom name_from) {
-  std::u16string string_name = base::UTF8ToUTF16(name);
-  SetName(string_name, name_from);
+  SetName(base::UTF8ToUTF16(name), name_from);
 }
 
-void ViewAccessibility::SetName(const std::string& name) {
+void ViewAccessibility::SetName(std::string_view name) {
   SetName(name, GetCachedNameFrom());
 }
 
-void ViewAccessibility::SetName(const std::u16string& name) {
-  SetName(name, GetCachedNameFrom());
+void ViewAccessibility::SetName(std::u16string name) {
+  SetName(std::move(name), GetCachedNameFrom());
 }
 
 void ViewAccessibility::SetName(View& naming_view) {
@@ -485,7 +484,7 @@ void ViewAccessibility::SetName(View& naming_view) {
 
   std::u16string name = naming_view.GetViewAccessibility().GetCachedName();
   DCHECK(!name.empty());
-  SetName(name, ax::mojom::NameFrom::kRelatedElement);
+  SetName(std::move(name), ax::mojom::NameFrom::kRelatedElement);
 
   data_.AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
                             {naming_view.GetViewAccessibility().GetUniqueId()});
@@ -1084,7 +1083,7 @@ void ViewAccessibility::SetValue(const std::string& value) {
   }
 }
 
-void ViewAccessibility::SetValue(const std::u16string& value) {
+void ViewAccessibility::SetValue(std::u16string_view value) {
   SetValue(base::UTF16ToUTF8(value));
 }
 
@@ -1303,29 +1302,29 @@ gfx::NativeViewAccessible ViewAccessibility::GetNativeObject() const {
   return nullptr;
 }
 
-void ViewAccessibility::AnnounceAlert(const std::u16string& text) {
+void ViewAccessibility::AnnounceAlert(std::u16string_view text) {
   CHECK(view_);
   if (auto* const widget = view_->GetWidget()) {
     if (auto* const root_view =
             static_cast<internal::RootView*>(widget->GetRootView())) {
-      root_view->AnnounceTextAs(text,
+      root_view->AnnounceTextAs(std::u16string(text),
                                 ui::AXPlatformNode::AnnouncementType::kAlert);
     }
   }
 }
 
-void ViewAccessibility::AnnouncePolitely(const std::u16string& text) {
+void ViewAccessibility::AnnouncePolitely(std::u16string_view text) {
   CHECK(view_);
   if (auto* const widget = view_->GetWidget()) {
     if (auto* const root_view =
             static_cast<internal::RootView*>(widget->GetRootView())) {
-      root_view->AnnounceTextAs(text,
+      root_view->AnnounceTextAs(std::u16string(text),
                                 ui::AXPlatformNode::AnnouncementType::kPolite);
     }
   }
 }
 
-void ViewAccessibility::AnnounceText(const std::u16string& text) {
+void ViewAccessibility::AnnounceText(std::u16string_view text) {
   AnnounceAlert(text);
 }
 

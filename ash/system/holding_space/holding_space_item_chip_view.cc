@@ -624,14 +624,12 @@ void HoldingSpaceItemChipView::UpdateLabels() {
                         HoldingSpaceViewDelegate::SelectionUi::kMultiSelect;
 
   // Primary.
-  const std::u16string last_primary_text = primary_label_->GetText();
   primary_label_->SetText(item()->GetText());
   primary_label_->SetEnabledColorId(selected() && multiselect
                                         ? kColorAshMultiSelectTextColor
                                         : kColorAshTextColorPrimary);
 
   // Secondary.
-  const std::u16string last_secondary_text = secondary_label_->GetText();
   secondary_label_->SetText(
       item()->secondary_text().value_or(std::u16string()));
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/auth/views/auth_textfield.h"
 #include "ash/auth/views/test_support/mock_auth_textfield_observer.h"
@@ -13,6 +14,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/tick_clock.h"
@@ -27,7 +29,7 @@ namespace ash {
 
 namespace {
 
-constexpr std::u16string kPassword = u"password";
+constexpr std::u16string_view kPassword = u"password";
 
 }  // namespace
 
@@ -59,7 +61,7 @@ class AuthTextfieldWithTimerUnitTest : public AshTestBase {
     auth_textfield_ = widget_->SetContentsView(
         std::make_unique<AuthTextfield>(AuthTextfield::AuthType::kPassword));
     mock_observer_ = std::make_unique<MockAuthTextfieldObserver>();
-    auth_textfield_->SetText(kPassword);
+    auth_textfield_->SetText(std::u16string(kPassword));
     auth_textfield_->AddObserver(mock_observer_.get());
     auth_textfield_timer_ =
         std::make_unique<AuthTextfieldTimer>(auth_textfield_);
@@ -110,16 +112,18 @@ TEST_F(AuthTextfieldWithTimerUnitTest, ClearPasswordTest) {
   SetTextfieldToFocus();
   CHECK(!auth_textfield_->IsTextVisible());
   // Make a user interaction.
-  const std::u16string modifiedString = kPassword + u"s";
-  EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedString)).Times(1);
+  const std::u16string modified_string = base::StrCat({kPassword, u"s"});
+  EXPECT_CALL(*mock_observer_,
+              OnContentsChanged(std::u16string_view(modified_string)))
+      .Times(1);
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->PressAndReleaseKey(ui::VKEY_S);
 
   // After 30 sec without user interaction the textfield should be cleared.
-  const std::u16string emptyStr;
-  EXPECT_CALL(*mock_observer_, OnContentsChanged(emptyStr)).Times(1);
+  constexpr std::u16string_view kEmptyStr;
+  EXPECT_CALL(*mock_observer_, OnContentsChanged(kEmptyStr)).Times(1);
   task_environment()->FastForwardBy(base::Seconds(30));
-  CHECK_EQ(auth_textfield_->GetText(), emptyStr);
+  CHECK_EQ(auth_textfield_->GetText(), kEmptyStr);
 }
 
 }  // namespace ash

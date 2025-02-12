@@ -5,6 +5,7 @@
 #include "ui/base/x/x11_os_exchange_data_provider.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -131,7 +132,7 @@ bool XOSExchangeDataProvider::IsFromPrivileged() const {
   return format_map_.find(x11::GetAtom(kFromPrivileged)) != format_map_.end();
 }
 
-void XOSExchangeDataProvider::SetString(const std::u16string& text_data) {
+void XOSExchangeDataProvider::SetString(std::u16string_view text_data) {
   if (HasString()) {
     return;
   }
@@ -147,7 +148,7 @@ void XOSExchangeDataProvider::SetString(const std::u16string& text_data) {
 }
 
 void XOSExchangeDataProvider::SetURL(const GURL& url,
-                                     const std::u16string& title) {
+                                     std::u16string_view title) {
   // TODO(dcheng): The original GTK code tries very hard to avoid writing out an
   // empty title. Is this necessary?
   if (url.is_valid()) {

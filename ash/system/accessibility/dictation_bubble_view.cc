@@ -233,7 +233,7 @@ void DictationBubbleView::OnBeforeBubbleWidgetInit(
   params->name = "DictationBubbleView";
 }
 
-std::u16string DictationBubbleView::GetTextForTesting() {
+std::u16string_view DictationBubbleView::GetTextForTesting() {
   return top_row_view_->label_->GetText();
 }
 
@@ -264,8 +264,9 @@ std::vector<std::u16string> DictationBubbleView::GetVisibleHintsForTesting() {
   std::vector<std::u16string> hints;
   for (size_t i = 0; i < hint_view_->labels_.size(); ++i) {
     views::Label* label = hint_view_->labels_[i];
-    if (label->GetVisible())
-      hints.push_back(label->GetText());
+    if (label->GetVisible()) {
+      hints.emplace_back(label->GetText());
+    }
   }
   return hints;
 }

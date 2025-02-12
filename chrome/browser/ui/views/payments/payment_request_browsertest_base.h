@@ -9,6 +9,7 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -243,7 +244,7 @@ class PaymentRequestBrowserTestBase
   bool IsViewVisible(DialogViewID view_id, views::View* dialog_view) const;
 
   // Getting/setting the |value| in the textfield of a given |type|.
-  std::u16string GetEditorTextfieldValue(autofill::FieldType type);
+  std::u16string_view GetEditorTextfieldValue(autofill::FieldType type);
   void SetEditorTextfieldValue(const std::u16string& value,
                                autofill::FieldType type);
   // Getting/setting the |value| in the combobox of a given |type|.
@@ -260,7 +261,7 @@ class PaymentRequestBrowserTestBase
 
   bool IsPayButtonEnabled();
 
-  std::u16string GetPrimaryButtonLabel() const;
+  std::u16string_view GetPrimaryButtonLabel() const;
 
   // Sets proper animation delegates and waits for animation to finish.
   void WaitForAnimation();
@@ -275,12 +276,12 @@ class PaymentRequestBrowserTestBase
 
   // Returns the text of the Label or StyledLabel with the specific |view_id|
   // that is a child of the Payment Request dialog view.
-  const std::u16string& GetLabelText(DialogViewID view_id);
-  const std::u16string& GetLabelText(DialogViewID view_id,
-                                     views::View* dialog_view);
-  const std::u16string& GetStyledLabelText(DialogViewID view_id);
+  std::u16string_view GetLabelText(DialogViewID view_id);
+  std::u16string_view GetLabelText(DialogViewID view_id,
+                                   views::View* dialog_view);
+  std::u16string_view GetStyledLabelText(DialogViewID view_id);
   // Returns the error label text associated with a given field |type|.
-  const std::u16string& GetErrorLabelForType(autofill::FieldType type);
+  std::u16string_view GetErrorLabelForType(autofill::FieldType type);
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 

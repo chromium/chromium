@@ -5,6 +5,7 @@
 #include "ash/assistant/ui/main_stage/chip_view.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
@@ -190,7 +191,7 @@ void ChipView::SetText(const std::u16string& text) {
   GetViewAccessibility().SetName(text);
 }
 
-const std::u16string& ChipView::GetText() const {
+std::u16string_view ChipView::GetText() const {
   return text_view_->GetText();
 }
 

@@ -6,6 +6,7 @@
 #define ASH_STYLE_ERROR_MESSAGE_TOAST_H_
 
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
@@ -53,7 +54,7 @@ class ASH_EXPORT ErrorMessageToast : public views::FlexLayoutView {
   void UpdateBoundsToContainer(const gfx::Rect& container_bounds,
                                const gfx::Insets& padding = gfx::Insets());
 
-  std::u16string GetMessageForTest() const;
+  std::u16string_view GetMessageForTest() const;
   views::LabelButton* GetButtonForTest() const { return action_button_; }
 
  private:

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_ADDRESS_EDITOR_CONTROLLER_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -84,7 +85,7 @@ class AddressEditorController {
   [[nodiscard]] base::CallbackListSubscription AddIsValidChangedCallback(
       OnIsValidChangeCallbackList::CallbackType callback);
 
-  bool IsValid(const EditorField& field, const std::u16string& value);
+  bool IsValid(const EditorField& field, std::u16string_view value);
 
  private:
   // Returns whether unsupported countries should be filtered out, which is

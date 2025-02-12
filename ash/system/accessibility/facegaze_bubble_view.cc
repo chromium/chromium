@@ -5,6 +5,7 @@
 #include "ash/system/accessibility/facegaze_bubble_view.h"
 
 #include <memory>
+#include <string_view>
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -140,7 +141,7 @@ void FaceGazeBubbleView::UpdateColor(bool is_warning) {
   label_->SetEnabledColor(GetColorProvider()->GetColor(foreground_color));
 }
 
-const std::u16string& FaceGazeBubbleView::GetTextForTesting() const {
+std::u16string_view FaceGazeBubbleView::GetTextForTesting() const {
   return label_->GetText();
 }
 

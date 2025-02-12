@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/page_info/star_rating_view.h"
 
 #include <cmath>
+#include <string_view>
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -59,7 +60,7 @@ ui::VectorIconModel StarRatingView::GetVectorIconModelForIndexForTesting(
   return star_views_[index]->GetImageModel().GetVectorIcon();
 }
 
-std::u16string StarRatingView::GetTextForTesting() const {
+std::u16string_view StarRatingView::GetTextForTesting() const {
   return rating_label_->GetText();
 }
 

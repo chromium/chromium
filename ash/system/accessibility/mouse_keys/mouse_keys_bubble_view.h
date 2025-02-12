@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -40,7 +41,7 @@ class ASH_EXPORT MouseKeysBubbleView : public views::BubbleDialogDelegateView {
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                 views::Widget* widget) const override;
 
-  std::u16string GetTextForTesting() const;
+  std::u16string_view GetTextForTesting() const;
   views::ImageView* GetMouseButtonChangeIconForTesting() const;
   views::ImageView* GetMouseDragIconForTesting() const;
 

@@ -67,7 +67,7 @@ class FindBar {
       const gfx::Range& selected_range) = 0;
 
   // Gets the search string currently visible in the find box.
-  virtual std::u16string GetFindText() const = 0;
+  virtual std::u16string_view GetFindText() const = 0;
 
   // Gets the selection.
   virtual gfx::Range GetSelectedRange() const = 0;
@@ -118,10 +118,10 @@ class FindBarTesting {
                                     bool* fully_visible) const = 0;
 
   // Gets the search string currently selected in the Find box.
-  virtual std::u16string GetFindSelectedText() const = 0;
+  virtual std::u16string_view GetFindSelectedText() const = 0;
 
   // Gets the match count text (ie. 1 of 3) visible in the Find box.
-  virtual std::u16string GetMatchCountText() const = 0;
+  virtual std::u16string_view GetMatchCountText() const = 0;
 
   // Gets the pixel width of the FindBar contents.
   virtual int GetContentsWidth() const = 0;

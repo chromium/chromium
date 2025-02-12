@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_TOAST_SYSTEM_TOAST_VIEW_H_
 #define ASH_SYSTEM_TOAST_SYSTEM_TOAST_VIEW_H_
 
+#include <string_view>
+
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -52,8 +54,8 @@ class ASH_EXPORT SystemToastView : public views::FlexLayoutView {
   views::Button* button() { return button_; }
 
   // Updates the toast label text.
-  void SetText(const std::u16string& text);
-  const std::u16string& GetText() const;
+  void SetText(std::u16string_view text);
+  std::u16string_view GetText() const;
 
  private:
   // views::View:

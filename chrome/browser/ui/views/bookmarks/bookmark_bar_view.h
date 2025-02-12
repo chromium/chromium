@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback_forward.h"
@@ -171,7 +172,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
       int max_tooltip_width,
       const gfx::FontList& font_list,
       const GURL& url,
-      const std::u16string& title);
+      std::u16string_view title);
 
   // views::View:
   gfx::Size CalculatePreferredSize(

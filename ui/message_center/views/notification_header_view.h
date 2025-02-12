@@ -103,7 +103,7 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
     return timestamp_view_;
   }
 
-  const std::u16string& app_name_for_testing() const;
+  std::u16string_view app_name_for_testing() const;
 
   gfx::ImageSkia app_icon_for_testing() const;
 

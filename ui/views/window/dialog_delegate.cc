@@ -452,11 +452,11 @@ void DialogDelegate::SetButtonEnabled(ui::mojom::DialogButton dialog_button,
 }
 
 void DialogDelegate::SetButtonLabel(ui::mojom::DialogButton button,
-                                    std::u16string label) {
+                                    std::u16string_view label) {
   if (params_.button_labels[static_cast<size_t>(button)] == label) {
     return;
   }
-  params_.button_labels[static_cast<size_t>(button)] = label;
+  params_.button_labels[static_cast<size_t>(button)] = std::u16string(label);
   DialogModelChanged();
 }
 

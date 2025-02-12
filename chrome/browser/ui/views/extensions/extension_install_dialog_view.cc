@@ -313,7 +313,7 @@ class ExtensionInstallDialogView::ExtensionJustificationView
   ~ExtensionJustificationView() override = default;
 
   // Get the text currently present in the justification text field.
-  std::u16string GetJustificationText() {
+  std::u16string_view GetJustificationText() {
     DCHECK(justification_field_);
     return justification_field_->GetText();
   }

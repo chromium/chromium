@@ -6,7 +6,7 @@
 #define UI_GFX_BIDI_LINE_ITERATOR_H_
 
 #include <memory>
-#include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/i18n/rtl.h"
@@ -31,7 +31,7 @@ class COMPONENT_EXPORT(GFX) BiDiLineIterator {
 
   // Initializes the bidirectional iterator with the specified text.  Returns
   // whether initialization succeeded.
-  bool Open(const std::u16string& text, base::i18n::TextDirection direction);
+  bool Open(std::u16string_view text, base::i18n::TextDirection direction);
 
   // Returns the number of visual runs in the text, or zero on error.
   int CountRuns() const;

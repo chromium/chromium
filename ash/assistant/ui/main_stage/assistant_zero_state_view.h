@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantZeroStateView
       std::optional<AssistantExitPoint> exit_point) override;
 
   // LauncherSearchIphView::Delegate:
-  void RunLauncherSearchQuery(const std::u16string& query) override;
+  void RunLauncherSearchQuery(std::u16string_view query) override;
   void OpenAssistantPage() override;
 
  private:

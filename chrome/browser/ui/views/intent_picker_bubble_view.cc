@@ -224,7 +224,7 @@ class IntentPickerAppGridButton : public views::Button {
   // Updates the accessible name of the bubble in the ViewsAX cache.
   void UpdateAccessibleName() {
     CHECK(name_label_);
-    GetViewAccessibility().SetName(name_label_->GetText());
+    GetViewAccessibility().SetName(std::u16string(name_label_->GetText()));
   }
 
   bool selected_ = false;

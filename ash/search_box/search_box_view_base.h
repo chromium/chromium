@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/search_box/search_box_constants.h"
@@ -124,7 +125,7 @@ class SearchBoxViewBase : public views::View,
   // `query` the new search box query.
   // `initiated_by_user` whether the query changes was a result of the user
   // typing.
-  virtual void HandleQueryChange(const std::u16string& query,
+  virtual void HandleQueryChange(std::u16string_view query,
                                  bool initiated_by_user) = 0;
 
   // Explicitly triggers the search while keeping the same query.

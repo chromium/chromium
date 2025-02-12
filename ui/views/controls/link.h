@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -78,7 +79,7 @@ class VIEWS_EXPORT Link : public Label {
   void OnFocus() override;
   void OnBlur() override;
   void SetFontList(const gfx::FontList& font_list) override;
-  void SetText(const std::u16string& text) override;
+  void SetText(std::u16string_view text) override;
   void OnThemeChanged() override;
   void SetEnabledColor(SkColor color) override;
   bool IsSelectionSupported() const override;

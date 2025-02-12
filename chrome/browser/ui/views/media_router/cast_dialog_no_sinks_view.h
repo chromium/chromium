@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_CAST_DIALOG_NO_SINKS_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_CAST_DIALOG_NO_SINKS_VIEW_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -39,7 +41,7 @@ class CastDialogNoSinksView : public views::View {
 
   const base::OneShotTimer& timer_for_testing() const { return timer_; }
   const views::View* icon_for_testing() const { return icon_; }
-  const std::u16string& label_text_for_testing() const {
+  std::u16string_view label_text_for_testing() const {
     return label_->GetText();
   }
   const std::u16string& permission_rejected_label_text_for_testing() const {

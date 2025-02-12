@@ -4,6 +4,8 @@
 
 #include "ash/system/accessibility/facegaze_bubble_controller.h"
 
+#include <string_view>
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/facegaze_bubble_view.h"
@@ -50,9 +52,7 @@ class FaceGazeBubbleControllerTest : public AshTestBase {
 
   bool IsVisible() { return GetController()->widget_->IsVisible(); }
 
-  const std::u16string& GetBubbleText() {
-    return GetView()->GetTextForTesting();
-  }
+  std::u16string_view GetBubbleText() { return GetView()->GetTextForTesting(); }
 
   bool IsShowTimerRunning() { return GetController()->show_timer_.IsRunning(); }
 

@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/strings/grit/ash_strings.h"
@@ -70,7 +71,7 @@ class BluetoothDeviceListControllerTest : public AshTestBase {
     return device_properties;
   }
 
-  const std::u16string& GetSubHeaderText(const TriView* sub_header) {
+  std::u16string_view GetSubHeaderText(const TriView* sub_header) {
     EXPECT_TRUE(sub_header);
     EXPECT_EQ(1u, sub_header->children().at(1)->children().size());
     return static_cast<views::Label*>(

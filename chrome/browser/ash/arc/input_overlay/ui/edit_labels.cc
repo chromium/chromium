@@ -136,7 +136,8 @@ std::u16string EditLabels::CalculateActionName() {
 std::u16string EditLabels::CalculateKeyListForA11yLabel() const {
   std::vector<std::u16string> keys;
   for (EditLabel* label : labels_) {
-    keys.push_back(GetDisplayTextAccessibleName(label->GetText()));
+    keys.push_back(
+        GetDisplayTextAccessibleName(std::u16string(label->GetText())));
   }
 
   return base::JoinString(keys, u", ");

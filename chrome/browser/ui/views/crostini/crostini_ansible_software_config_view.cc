@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/crostini/crostini_ansible_software_config_view.h"
 
+#include <string_view>
+
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -70,12 +72,12 @@ std::u16string CrostiniAnsibleSoftwareConfigView::GetSubtextLabel() const {
   }
 }
 
-std::u16string
+std::u16string_view
 CrostiniAnsibleSoftwareConfigView::GetSubtextLabelStringForTesting() {
   return subtext_label_->GetText();
 }
 
-std::u16string
+std::u16string_view
 CrostiniAnsibleSoftwareConfigView::GetProgressLabelStringForTesting() {
   return progress_label_->GetText();
 }

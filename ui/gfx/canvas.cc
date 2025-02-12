@@ -11,6 +11,7 @@
 
 #include <cmath>
 #include <limits>
+#include <string_view>
 
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
@@ -69,7 +70,7 @@ void Canvas::RecreateBackingCanvas(const Size& size,
 }
 
 // static
-void Canvas::SizeStringInt(const std::u16string& text,
+void Canvas::SizeStringInt(std::u16string_view text,
                            const FontList& font_list,
                            int* width,
                            int* height,
@@ -84,7 +85,7 @@ void Canvas::SizeStringInt(const std::u16string& text,
 }
 
 // static
-int Canvas::GetStringWidth(const std::u16string& text,
+int Canvas::GetStringWidth(std::u16string_view text,
                            const FontList& font_list) {
   int width = 0, height = 0;
   SizeStringInt(text, font_list, &width, &height, 0, NO_ELLIPSIS);
@@ -92,7 +93,7 @@ int Canvas::GetStringWidth(const std::u16string& text,
 }
 
 // static
-float Canvas::GetStringWidthF(const std::u16string& text,
+float Canvas::GetStringWidthF(std::u16string_view text,
                               const FontList& font_list) {
   float width = 0, height = 0;
   SizeStringFloat(text, font_list, &width, &height, 0, NO_ELLIPSIS);
@@ -406,7 +407,7 @@ void Canvas::DrawSkottie(scoped_refptr<cc::SkottieWrapper> skottie,
                        std::move(images), color_map, std::move(text_map));
 }
 
-void Canvas::DrawStringRect(const std::u16string& text,
+void Canvas::DrawStringRect(std::u16string_view text,
                             const FontList& font_list,
                             SkColor color,
                             const Rect& display_rect) {

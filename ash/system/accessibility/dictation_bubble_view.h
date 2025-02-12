@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -48,7 +49,7 @@ class ASH_EXPORT DictationBubbleView : public views::BubbleDialogDelegateView {
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                 views::Widget* widget) const override;
 
-  std::u16string GetTextForTesting();
+  std::u16string_view GetTextForTesting();
   bool IsStandbyViewVisibleForTesting();
   bool IsMacroSucceededImageVisibleForTesting();
   bool IsMacroFailedImageVisibleForTesting();

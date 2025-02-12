@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -161,15 +162,15 @@ class LocationBarView
   // Shows |text| as an inline autocompletion.  This is useful for IMEs, where
   // we can't show the autocompletion inside the actual OmniboxView.  See
   // comments on |ime_inline_autocomplete_view_|.
-  void SetImePrefixAutocompletion(const std::u16string& text);
-  std::u16string GetImePrefixAutocompletion() const;
-  void SetImeInlineAutocompletion(const std::u16string& text);
-  std::u16string GetImeInlineAutocompletion() const;
+  void SetImePrefixAutocompletion(std::u16string_view text);
+  std::u16string_view GetImePrefixAutocompletion() const;
+  void SetImeInlineAutocompletion(std::u16string_view text);
+  std::u16string_view GetImeInlineAutocompletion() const;
 
   // Sets the additional omnibox text. E.g. the title corresponding to the URL
   // displayed in the OmniboxView.
-  void SetOmniboxAdditionalText(const std::u16string& text);
-  std::u16string GetOmniboxAdditionalText() const;
+  void SetOmniboxAdditionalText(std::u16string_view text);
+  std::u16string_view GetOmniboxAdditionalText() const;
 
   // Select all of the text. Needed when the user tabs through controls
   // in the toolbar in full keyboard accessibility mode.
@@ -352,7 +353,7 @@ class LocationBarView
   // Helper to set the texts of labels adjacent to the omnibox:
   // `ime_prefix_autocomplete_view_`, `ime_inline_autocomplete_view_`, and
   // `omnibox_additional_text_view_`.
-  void SetOmniboxAdjacentText(views::Label* label, const std::u16string& text);
+  void SetOmniboxAdjacentText(views::Label* label, std::u16string_view text);
 
   // LocationBar:
   void FocusSearch() override;

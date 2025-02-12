@@ -7,6 +7,7 @@
 
 #include <list>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -463,7 +464,7 @@ class Surface final : public ui::PropertyHandler {
   void ThrottleFrameRate(bool on);
 
   // Informs tooltip is shown.
-  void OnTooltipShown(const std::u16string& text, const gfx::Rect& bounds);
+  void OnTooltipShown(std::u16string_view text, const gfx::Rect& bounds);
 
   // Informs tooltip is hidden.
   void OnTooltipHidden();

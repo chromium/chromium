@@ -1223,11 +1223,12 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, TabGroupHeaderTooltipText) {
                                    ->title();
 
   EXPECT_EQ(group_title, group_header->GetTitleTextForTesting());
-  EXPECT_EQ(group_header->GetRenderedTooltipText(gfx::Point()),
-            l10n_util::GetStringFUTF16(IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP,
-                                       group_header->GetTitleTextForTesting(),
-                                       tab_strip()->GetGroupContentString(
-                                           group_header->group().value())));
+  EXPECT_EQ(
+      group_header->GetRenderedTooltipText(gfx::Point()),
+      l10n_util::GetStringFUTF16(
+          IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP,
+          std::u16string(group_header->GetTitleTextForTesting()),
+          tab_strip()->GetGroupContentString(group_header->group().value())));
 
   tab_strip_model()->group_model()->GetTabGroup(group)->SetVisualData(
       tab_groups::TabGroupVisualData(std::u16string(),
@@ -1261,11 +1262,12 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
   EXPECT_EQ(group_title, group_header->GetTitleTextForTesting());
 
-  EXPECT_EQ(group_header->GetRenderedTooltipText(gfx::Point()),
-            l10n_util::GetStringFUTF16(IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP,
-                                       group_header->GetTitleTextForTesting(),
-                                       tab_strip()->GetGroupContentString(
-                                           group_header->group().value())));
+  EXPECT_EQ(
+      group_header->GetRenderedTooltipText(gfx::Point()),
+      l10n_util::GetStringFUTF16(
+          IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP,
+          std::u16string(group_header->GetTitleTextForTesting()),
+          tab_strip()->GetGroupContentString(group_header->group().value())));
 
   ui::AXNodeData data;
 

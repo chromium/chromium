@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -243,9 +244,9 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // * kValue: Name from a value attribute (e.g. button).
   // * kPopoverAttribute: Name from a tooltip-style popover.
   void SetName(std::u16string name, ax::mojom::NameFrom name_from);
-  void SetName(const std::string& name, ax::mojom::NameFrom name_from);
-  void SetName(const std::u16string& name);
-  void SetName(const std::string& name);
+  void SetName(std::string_view name, ax::mojom::NameFrom name_from);
+  void SetName(std::u16string name);
+  void SetName(std::string_view name);
 
   // Sets the accessible name of this view to that of `naming_view`. Often
   // `naming_view` is a `views::Label`, but any view with an accessible name
@@ -429,7 +430,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // In case of ProgressBar, if progressBarIndicator value is negative,
   // then kValue attribute should not be set.
   void SetValue(const std::string& value);
-  void SetValue(const std::u16string& value);
+  void SetValue(std::u16string_view value);
   void RemoveValue();
   std::u16string GetValue() const;
 
@@ -499,9 +500,9 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // AnnounceText() is a deprecated alias for AnnounceAlert().
   // TODO(crbug.com/40287811) - Migrate all callers of AnnounceText() to
   // one of the other two methods.
-  virtual void AnnounceAlert(const std::u16string& text);
-  virtual void AnnouncePolitely(const std::u16string& text);
-  virtual void AnnounceText(const std::u16string& text);
+  virtual void AnnounceAlert(std::u16string_view text);
+  virtual void AnnouncePolitely(std::u16string_view text);
+  virtual void AnnounceText(std::u16string_view text);
 
   virtual ui::AXPlatformNodeId GetUniqueId() const;
 

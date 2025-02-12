@@ -5,6 +5,7 @@
 #include "chrome/browser/task_manager/task_manager_tester.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -205,7 +206,7 @@ std::vector<std::u16string> TaskManagerTester::GetWebContentsTaskTitles() {
 }
 
 bool TaskManagerTester::UpdateModel(const DisplayCategory display_category,
-                                    const std::u16string& search_term) {
+                                    std::u16string_view search_term) {
   return model_->UpdateModel(display_category, search_term);
 }
 

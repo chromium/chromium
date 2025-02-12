@@ -663,9 +663,9 @@ void TabGroupEditorBubbleView::UpdateGroup() {
     close_or_delete_button->SetText(GetTextForCloseButton());
   }
 
-  tab_groups::TabGroupVisualData new_data(title_field_->GetText(),
-                                          updated_color,
-                                          current_visual_data->is_collapsed());
+  tab_groups::TabGroupVisualData new_data(
+      std::u16string(title_field_->GetText()), updated_color,
+      current_visual_data->is_collapsed());
   tab_group->SetVisualData(new_data, tab_group->IsCustomized());
 }
 

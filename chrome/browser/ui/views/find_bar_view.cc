@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/find_bar_view.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -323,7 +324,7 @@ void FindBarView::SetFindTextAndSelectedRange(
   last_searched_text_ = find_text;
 }
 
-std::u16string FindBarView::GetFindText() const {
+std::u16string_view FindBarView::GetFindText() const {
   return find_text_->GetText();
 }
 
@@ -331,11 +332,11 @@ gfx::Range FindBarView::GetSelectedRange() const {
   return find_text_->GetSelectedRange();
 }
 
-std::u16string FindBarView::GetFindSelectedText() const {
+std::u16string_view FindBarView::GetFindSelectedText() const {
   return find_text_->GetSelectedText();
 }
 
-std::u16string FindBarView::GetMatchCountText() const {
+std::u16string_view FindBarView::GetMatchCountText() const {
   return match_count_text_->GetText();
 }
 
@@ -450,7 +451,7 @@ bool FindBarView::HandleKeyEvent(views::Textfield* sender,
   if (key_event.key_code() == ui::VKEY_RETURN &&
       key_event.type() == ui::EventType::kKeyPressed) {
     // Pressing Return/Enter starts the search (unless text box is empty).
-    std::u16string find_string = find_text_->GetText();
+    std::u16string find_string(find_text_->GetText());
     if (!find_string.empty()) {
       FindBarController* controller = find_bar_host_->GetFindBarController();
       find_in_page::FindTabHelper* find_tab_helper =
@@ -482,7 +483,7 @@ void FindBarView::OnAfterPaste() {
   last_searched_text_.clear();
 }
 
-void FindBarView::Find(const std::u16string& search_text) {
+void FindBarView::Find(std::u16string_view search_text) {
   DCHECK(find_bar_host_);
   FindBarController* controller = find_bar_host_->GetFindBarController();
   DCHECK(controller);
@@ -497,14 +498,14 @@ void FindBarView::Find(const std::u16string& search_text) {
   find_in_page::FindTabHelper* find_tab_helper =
       find_in_page::FindTabHelper::FromWebContents(web_contents);
 
-  last_searched_text_ = search_text;
+  last_searched_text_ = std::u16string(search_text);
 
   controller->OnUserChangedFindText(search_text);
 
   // Initiate a search (even though old searches might be in progress).
-  find_tab_helper->StartFinding(search_text, true /* forward_direction */,
-                                false /* case_sensitive */,
-                                true /* find_match */);
+  find_tab_helper->StartFinding(
+      last_searched_text_, true /* forward_direction */,
+      false /* case_sensitive */, true /* find_match */);
 }
 
 void FindBarView::FindNext(bool reverse) {
@@ -515,7 +516,7 @@ void FindBarView::FindNext(bool reverse) {
     find_in_page::FindTabHelper* find_tab_helper =
         find_in_page::FindTabHelper::FromWebContents(
             find_bar_host_->GetFindBarController()->web_contents());
-    find_tab_helper->StartFinding(find_text_->GetText(),
+    find_tab_helper->StartFinding(std::u16string(find_text_->GetText()),
                                   !reverse, /* forward_direction */
                                   false,    /* case_sensitive */
                                   true /* find_match */);

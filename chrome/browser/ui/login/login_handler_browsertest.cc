@@ -141,8 +141,8 @@ class LoginHandlerFake : public LoginHandler {
   ~LoginHandlerFake() override;
 
   void NotifyAuthNeeded() override;
-  void NotifyAuthSupplied(const std::u16string& username,
-                          const std::u16string& password) override;
+  void NotifyAuthSupplied(std::u16string_view username,
+                          std::u16string_view password) override;
   void NotifyAuthCancelled() override;
   bool BuildViewImpl(const std::u16string& authority,
                      const std::u16string& explanation,
@@ -239,8 +239,8 @@ void LoginHandlerFake::NotifyAuthNeeded() {
   prompt_shown_ = true;
   LoginHandler::NotifyAuthNeeded();
 }
-void LoginHandlerFake::NotifyAuthSupplied(const std::u16string& username,
-                                          const std::u16string& password) {
+void LoginHandlerFake::NotifyAuthSupplied(std::u16string_view username,
+                                          std::u16string_view password) {
   browser_client_->auth_supplied_count++;
   prompt_responded_ = true;
   LoginHandler::NotifyAuthSupplied(username, password);

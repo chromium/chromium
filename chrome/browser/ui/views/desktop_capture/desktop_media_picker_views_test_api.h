@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_TEST_API_H_
 
 #include <optional>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
@@ -43,7 +44,7 @@ class DesktopMediaPickerViewsTestApi {
   void PressKeyOnSourceAtIndex(size_t index, const ui::KeyEvent& event);
   void SelectTabForSourceType(DesktopMediaList::Type source_type);
   bool HasAudioShareControl() const;
-  std::u16string GetAudioLabelText() const;
+  std::u16string_view GetAudioLabelText() const;
   void SetAudioSharingApprovedByUser(bool allow);
   bool IsAudioSharingApprovedByUser() const;
   views::MdTextButton* GetReselectButton();

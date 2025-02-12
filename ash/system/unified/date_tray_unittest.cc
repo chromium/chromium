@@ -5,6 +5,7 @@
 #include "ash/system/unified/date_tray.h"
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "ash/api/tasks/fake_tasks_client.h"
@@ -243,7 +244,7 @@ class DateTrayTest
 
   void LeftClickOnOpenBubble() { LeftClickOn(GetBubbleView()); }
 
-  std::u16string GetTimeViewText() {
+  std::u16string_view GetTimeViewText() {
     return GetTimeTrayItemView()
         ->time_view()
         ->GetHorizontalDateLabelForTesting()

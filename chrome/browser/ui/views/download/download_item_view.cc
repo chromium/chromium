@@ -23,6 +23,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -1351,8 +1352,9 @@ void DownloadItemView::UpdateAccessibleName() {
 std::u16string DownloadItemView::CalculateAccessibleName() const {
   return has_warning_label(mode_)
              ? warning_label_->GetText()
-             : (status_label_->GetText() + u' ' +
-                model_->GetFileNameToReportUser().LossyDisplayName());
+             : base::StrCat(
+                   {status_label_->GetText(), u" ",
+                    model_->GetFileNameToReportUser().LossyDisplayName()});
 }
 
 std::array<raw_ptr<views::MdTextButton>, DownloadItemView::kButtonsCount>

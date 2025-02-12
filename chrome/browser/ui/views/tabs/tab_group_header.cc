@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -297,7 +298,7 @@ void TabGroupHeader::UpdateTooltipText() {
 
   if (!title_->GetText().empty()) {
     SetTooltipText(l10n_util::GetStringFUTF16(
-        IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP, title_->GetText(),
+        IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP, std::u16string(title_->GetText()),
         tab_slot_controller_->GetGroupContentString(group().value())));
   } else {
     SetTooltipText(l10n_util::GetStringFUTF16(
@@ -443,7 +444,7 @@ void TabGroupHeader::UpdateAccessibleName() {
     return;
   }
 
-  std::u16string title = tab_slot_controller_->GetGroupTitle(group().value());
+  std::u16string title(tab_slot_controller_->GetGroupTitle(group().value()));
   std::u16string contents =
       tab_slot_controller_->GetGroupContentString(group().value());
   std::u16string collapsed_state = std::u16string();
@@ -556,7 +557,7 @@ void TabGroupHeader::UpdateAttentionIndicatorView() {
   }
 }
 
-std::u16string TabGroupHeader::GetTitleTextForTesting() const {
+std::u16string_view TabGroupHeader::GetTitleTextForTesting() const {
   CHECK(title_);
   return title_->GetText();
 }

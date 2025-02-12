@@ -5,6 +5,7 @@
 #include "ash/public/cpp/system_tray_test_api.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -144,9 +145,10 @@ std::u16string SystemTrayTestApi::GetShutdownButtonTooltip() {
                      : std::u16string();
 }
 
-std::u16string SystemTrayTestApi::GetBubbleViewText(int view_id) {
+std::u16string_view SystemTrayTestApi::GetBubbleViewText(int view_id) {
   views::View* view = GetMainBubbleView()->GetViewByID(view_id);
-  return view ? static_cast<views::Label*>(view)->GetText() : std::u16string();
+  return view ? static_cast<views::Label*>(view)->GetText()
+              : std::u16string_view();
 }
 
 bool SystemTrayTestApi::Is24HourClock() {

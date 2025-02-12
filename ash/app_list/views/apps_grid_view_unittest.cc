@@ -6656,7 +6656,7 @@ TEST_P(AppsGridViewTabletTest, ChangeFolderNameShouldUpdateShadows) {
       app_list_folder_view()->folder_header_view()->GetFolderNameViewForTest();
   folder_header->RequestFocus();
   ASSERT_TRUE(folder_header->HasFocus());
-  const std::u16string folder_name = folder_header->GetText();
+  const std::u16string folder_name(folder_header->GetText());
 
   GetEventGenerator()->PressAndReleaseKey(ui::VKEY_A);
   // Force app list to Update Layout to catch potential crashes.

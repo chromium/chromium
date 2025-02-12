@@ -5,6 +5,8 @@
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 
 #include <memory>
+#include <string>
+#include <string_view>
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -28,30 +30,30 @@ void AppListA11yAnnouncer::AnnounceAppListShown() {
 }
 
 void AppListA11yAnnouncer::AnnounceItemNotificationBadge(
-    const std::u16string& selected_view_title) {
+    std::u16string_view selected_view_title) {
   Announce(l10n_util::GetStringFUTF16(IDS_APP_LIST_APP_FOCUS_NOTIFICATION_BADGE,
-                                      selected_view_title));
+                                      std::u16string(selected_view_title)));
 }
 
 void AppListA11yAnnouncer::AnnounceFolderDrop(
-    const std::u16string& moving_view_title,
-    const std::u16string& target_view_title,
+    std::u16string_view moving_view_title,
+    std::u16string_view target_view_title,
     bool target_is_folder) {
   Announce(l10n_util::GetStringFUTF16(
       target_is_folder ? IDS_APP_LIST_APP_DRAG_MOVE_TO_FOLDER_ACCESSIBILE_NAME
                        : IDS_APP_LIST_APP_DRAG_CREATE_FOLDER_ACCESSIBILE_NAME,
-      moving_view_title, target_view_title));
+      std::u16string(moving_view_title), std::u16string(target_view_title)));
 }
 
 void AppListA11yAnnouncer::AnnounceKeyboardFoldering(
-    const std::u16string& moving_view_title,
-    const std::u16string& target_view_title,
+    std::u16string_view moving_view_title,
+    std::u16string_view target_view_title,
     bool target_is_folder) {
   Announce(l10n_util::GetStringFUTF16(
       target_is_folder
           ? IDS_APP_LIST_APP_KEYBOARD_MOVE_TO_FOLDER_ACCESSIBILE_NAME
           : IDS_APP_LIST_APP_KEYBOARD_CREATE_FOLDER_ACCESSIBILE_NAME,
-      moving_view_title, target_view_title));
+      std::u16string(moving_view_title), std::u16string(target_view_title)));
 }
 
 void AppListA11yAnnouncer::AnnounceAppsGridReorder(int target_page,
@@ -76,7 +78,7 @@ void AppListA11yAnnouncer::AnnounceFolderClosed() {
       IDS_APP_LIST_FOLDER_CLOSE_FOLDER_ACCESSIBILE_NAME));
 }
 
-void AppListA11yAnnouncer::Announce(const std::u16string& announcement) {
+void AppListA11yAnnouncer::Announce(std::u16string_view announcement) {
   if (!announcement_view_)
     return;
 

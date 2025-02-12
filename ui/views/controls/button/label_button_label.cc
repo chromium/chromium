@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -16,7 +17,7 @@
 
 namespace views::internal {
 
-LabelButtonLabel::LabelButtonLabel(const std::u16string& text, int text_context)
+LabelButtonLabel::LabelButtonLabel(std::u16string_view text, int text_context)
     : Label(text, text_context, style::STYLE_PRIMARY) {}
 
 LabelButtonLabel::~LabelButtonLabel() = default;

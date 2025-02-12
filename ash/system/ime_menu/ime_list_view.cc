@@ -122,7 +122,7 @@ class ImeListItemView : public views::Button {
           kHollowCheckCircleIcon, button_color_id, kMenuIconSize));
       tri_view->AddView(TriView::Container::END, checked_image);
     }
-    GetViewAccessibility().SetName(label_view->GetText());
+    GetViewAccessibility().SetName(std::u16string(label_view->GetText()));
     GetViewAccessibility().SetRole(ax::mojom::Role::kCheckBox);
     GetViewAccessibility().SetCheckedState(
         selected ? ax::mojom::CheckedState::kTrue

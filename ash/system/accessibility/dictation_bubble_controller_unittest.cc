@@ -4,6 +4,8 @@
 
 #include "ash/system/accessibility/dictation_bubble_controller.h"
 
+#include <string_view>
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
@@ -65,7 +67,7 @@ class DictationBubbleControllerTest : public AshTestBase {
 
   bool IsBubbleVisible() { return GetController()->widget_->IsVisible(); }
 
-  std::u16string GetBubbleText() { return GetView()->GetTextForTesting(); }
+  std::u16string_view GetBubbleText() { return GetView()->GetTextForTesting(); }
 
   bool IsStandbyViewVisible() {
     return GetView()->IsStandbyViewVisibleForTesting();

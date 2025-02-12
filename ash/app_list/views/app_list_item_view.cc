@@ -2316,7 +2316,7 @@ void AppListItemView::UpdateTooltipText() {
   // truncation in making the tooltip. We do not want the label itself to have a
   // tooltip, so we only temporarily enable it to get the tooltip text from the
   // label, then disable it again.
-  std::u16string tooltip = title_->GetComputedTooltip();
+  std::u16string tooltip(title_->GetComputedTooltip());
   if (new_install_dot_ && new_install_dot_->GetVisible() && !is_folder_) {
     // Tooltip becomes two lines: "App Name" + "New install".
     tooltip = l10n_util::GetStringFUTF16(IDS_APP_LIST_NEW_INSTALL, tooltip);

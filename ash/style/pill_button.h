@@ -185,7 +185,7 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   gfx::Insets GetInsets() const override;
   void UpdateBackgroundColor() override;
   views::PropertyEffects UpdateStyleToIndicateDefaultStatus() override;
-  void SetText(const std::u16string& text) override;
+  void SetText(std::u16string_view text) override;
   void OnSetTooltipText(const std::u16string& tooltip_text) override;
 
   // Sets the button's background color, text's color or icon's color. Note, do

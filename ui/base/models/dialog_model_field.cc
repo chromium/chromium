@@ -305,11 +305,11 @@ DialogModelTextfield::DialogModelTextfield(
 DialogModelTextfield::~DialogModelTextfield() = default;
 
 void DialogModelTextfield::OnTextChanged(base::PassKey<DialogModelFieldHost>,
-                                         std::u16string text) {
+                                         std::u16string_view text) {
   if (text == text_) {
     return;
   }
-  text_ = std::move(text);
+  text_ = std::u16string(text);
   NotifyOnFieldChanged();
 }
 
@@ -332,11 +332,11 @@ void DialogModelPasswordField::Invalidate() {
 
 void DialogModelPasswordField::OnTextChanged(
     base::PassKey<DialogModelFieldHost>,
-    std::u16string text) {
+    std::u16string_view text) {
   if (text == text_) {
     return;
   }
-  text_ = std::move(text);
+  text_ = std::u16string(text);
   NotifyOnFieldChanged();
 }
 

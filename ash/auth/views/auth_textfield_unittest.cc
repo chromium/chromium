@@ -12,6 +12,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -26,8 +27,8 @@ namespace ash {
 
 namespace {
 
-constexpr std::u16string kPassword = u"password";
-constexpr std::u16string kPIN = u"123456";
+constexpr std::u16string_view kPassword = u"password";
+constexpr std::u16string_view kPin = u"123456";
 
 }  // namespace
 
@@ -87,8 +88,10 @@ TEST_F(PasswordTextfieldUnitTest, OnFocusObserverTest) {
 TEST_F(PasswordTextfieldUnitTest, OnContentsChangedTest) {
   auth_textfield_->SetText(kPassword);
   SetTextfieldToFocus();
-  const std::u16string modifiedString = kPassword + u"s";
-  EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedString)).Times(1);
+  const std::u16string modified_string = base::StrCat({kPassword, u"s"});
+  EXPECT_CALL(*mock_observer_,
+              OnContentsChanged(std::u16string_view(modified_string)))
+      .Times(1);
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->PressAndReleaseKey(ui::VKEY_S);
 }
@@ -143,7 +146,7 @@ class PinTextfieldUnitTest : public AshTestBase {
     mock_observer_ = std::make_unique<MockAuthTextfieldObserver>();
     auth_textfield_ = widget_->SetContentsView(
         std::make_unique<AuthTextfield>(AuthTextfield::AuthType::kPin));
-    auth_textfield_->SetText(kPIN);
+    auth_textfield_->SetText(kPin);
     auth_textfield_->AddObserver(mock_observer_.get());
   }
 
@@ -163,8 +166,10 @@ class PinTextfieldUnitTest : public AshTestBase {
 // Testing PIN textfield OnContentsChanged Observer.
 TEST_F(PinTextfieldUnitTest, OnContentsChangedTest) {
   SetTextfieldToFocus();
-  const std::u16string modifiedPIN = kPIN + u"5";
-  EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedPIN)).Times(1);
+  const std::u16string modified_pin = base::StrCat({kPin, u"5"});
+  EXPECT_CALL(*mock_observer_,
+              OnContentsChanged(std::u16string_view(modified_pin)))
+      .Times(1);
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->PressAndReleaseKey(ui::VKEY_5);
 }
@@ -172,34 +177,36 @@ TEST_F(PinTextfieldUnitTest, OnContentsChangedTest) {
 // Testing PIN textfield OnContentsChanged Observer with letter.
 TEST_F(PinTextfieldUnitTest, OnContentsChangedWithLetterTest) {
   SetTextfieldToFocus();
-  EXPECT_CALL(*mock_observer_, OnContentsChanged(kPIN)).Times(0);
+  EXPECT_CALL(*mock_observer_, OnContentsChanged(kPin)).Times(0);
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->PressAndReleaseKey(ui::VKEY_E);
-  CHECK_EQ(auth_textfield_->GetText(), kPIN);
+  CHECK_EQ(auth_textfield_->GetText(), kPin);
 }
 
 // Testing PIN textfield InsertDigit function.
 TEST_F(PinTextfieldUnitTest, InsertDigitTest) {
-  const std::u16string modifiedPIN = kPIN + u"5";
-  EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedPIN)).Times(1);
+  const std::u16string modified_pin = base::StrCat({kPin, u"5"});
+  EXPECT_CALL(*mock_observer_,
+              OnContentsChanged(std::u16string_view(modified_pin)))
+      .Times(1);
   auth_textfield_->InsertDigit(5);
 }
 
 // Testing PIN textfield backspace press.
 TEST_F(PinTextfieldUnitTest, BackspacePressTest) {
-  std::u16string modifiedPIN = kPIN;
-  modifiedPIN.pop_back();
+  static constexpr std::u16string_view kModifiedPin =
+      kPin.substr(0, kPin.size() - 1);
   SetTextfieldToFocus();
-  EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedPIN)).Times(1);
+  EXPECT_CALL(*mock_observer_, OnContentsChanged(kModifiedPin)).Times(1);
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->PressAndReleaseKey(ui::VKEY_BACK);
 }
 
 // Testing PIN textfield Backspace function.
 TEST_F(PinTextfieldUnitTest, BackspaceTest) {
-  std::u16string modifiedPIN = kPIN;
-  modifiedPIN.pop_back();
-  EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedPIN)).Times(1);
+  static constexpr std::u16string_view kModifiedPin =
+      kPin.substr(0, kPin.size() - 1);
+  EXPECT_CALL(*mock_observer_, OnContentsChanged(kModifiedPin)).Times(1);
   auth_textfield_->Backspace();
 }
 

@@ -207,7 +207,7 @@ void TreeView::StartEditing(TreeModelNode* node) {
   // TODO(crbug.com/40853810): Investigate whether accessible name should stay
   // in sync during editing.
   editor_->GetViewAccessibility().SetName(
-      selected_node_->model_node()->GetAccessibleTitle());
+      std::u16string(selected_node_->model_node()->GetAccessibleTitle()));
   LayoutEditor();
   editor_->SetVisible(true);
   SchedulePaintForNode(selected_node_);
@@ -251,9 +251,9 @@ void TreeView::CommitEdit() {
 
   DCHECK(selected_node_);
   const bool editor_has_focus = editor_->HasFocus();
-  model_->SetTitle(GetSelectedNode(), editor_->GetText());
+  model_->SetTitle(GetSelectedNode(), std::u16string(editor_->GetText()));
   editor_->GetViewAccessibility().SetName(
-      GetSelectedNode()->GetAccessibleTitle());
+      std::u16string(GetSelectedNode()->GetAccessibleTitle()));
   selected_node_->UpdateAccessibleName();
   CancelEdit();
   if (editor_has_focus) {
@@ -736,7 +736,7 @@ void TreeView::SetSelectedRow(std::optional<size_t> row) {
 }
 
 std::u16string TreeView::GetTextForRow(size_t row) {
-  return GetNodeForRow(static_cast<int>(row))->GetTitle();
+  return std::u16string(GetNodeForRow(static_cast<int>(row))->GetTitle());
 }
 
 gfx::Point TreeView::GetKeyboardContextMenuLocation() {

@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "chrome/browser/ui/views/event_utils.h"
@@ -99,7 +100,7 @@ class SavedTabGroupButton : public views::MenuButton,
   void SetTextProperties(const SavedTabGroup& group);
   void UpdateButtonLayout();
   void UpdateAccessibleName();
-  void SetText(const std::u16string& text) override;
+  void SetText(std::u16string_view text) override;
   int GetAndIncrementLatestCommandId();
 
   raw_ptr<Browser> browser_;

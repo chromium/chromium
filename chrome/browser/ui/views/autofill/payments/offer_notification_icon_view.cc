@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_icon_view.h"
 
+#include <string_view>
+
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller.h"
@@ -159,8 +161,7 @@ const gfx::VectorIcon& OfferNotificationIconView::GetVectorIcon() const {
   return kLocalOfferFlippedRefreshIcon;
 }
 
-const std::u16string& OfferNotificationIconView::GetIconLabelForTesting()
-    const {
+std::u16string_view OfferNotificationIconView::GetIconLabelForTesting() const {
   return label()->GetText();
 }
 

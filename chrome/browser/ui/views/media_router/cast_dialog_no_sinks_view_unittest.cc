@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/media_router/cast_dialog_no_sinks_view.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -41,7 +42,7 @@ class CastDialogNoSinksViewTest : public ChromeViewsTestBase {
   const views::View* get_icon() const {
     return no_sinks_view_->icon_for_testing();
   }
-  const std::u16string& get_label_text() const {
+  std::u16string_view get_label_text() const {
     return no_sinks_view_->label_text_for_testing();
   }
 

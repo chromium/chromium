@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_content_pane_view.h"
 
+#include <memory>
+#include <string_view>
+
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
@@ -53,9 +56,9 @@ void DesktopMediaContentPaneView::SetAudioSharingApprovedByUser(bool is_on) {
   share_audio_view_->SetAudioSharingApprovedByUser(is_on);
 }
 
-std::u16string DesktopMediaContentPaneView::GetAudioLabelText() const {
+std::u16string_view DesktopMediaContentPaneView::GetAudioLabelText() const {
   return share_audio_view_ ? share_audio_view_->GetAudioLabelText()
-                           : std::u16string();
+                           : std::u16string_view();
 }
 
 BEGIN_METADATA(DesktopMediaContentPaneView)

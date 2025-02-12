@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_CONTROLLER_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/scoped_observation.h"
 #include "components/find_in_page/find_result_observer.h"
@@ -67,7 +68,7 @@ class FindBarController : public content::WebContentsObserver,
   void SetText(std::u16string text);
 
   // Called when the find text is updated in response to a user action.
-  void OnUserChangedFindText(std::u16string text);
+  void OnUserChangedFindText(std::u16string_view text);
 
   FindBar* find_bar() const { return find_bar_.get(); }
 

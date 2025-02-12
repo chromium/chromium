@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -147,7 +148,7 @@ AddressEditorController::AddIsValidChangedCallback(
 }
 
 bool AddressEditorController::IsValid(const EditorField& field,
-                                      const std::u16string& value) {
+                                      std::u16string_view value) {
   if (is_validatable_ && field.is_required &&
       base::CollapseWhitespace(value, true).empty()) {
     return false;

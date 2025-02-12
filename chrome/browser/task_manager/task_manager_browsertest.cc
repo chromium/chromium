@@ -2254,7 +2254,7 @@ class TaskManagerDesktopRefreshBrowserTest : public TaskManagerBrowserTest {
   ~TaskManagerDesktopRefreshBrowserTest() override = default;
 
   void UpdateModel(const DisplayCategory display_category,
-                   const std::u16string& search_term) {
+                   std::u16string_view search_term) {
     model()->UpdateModel(display_category, search_term);
   }
 

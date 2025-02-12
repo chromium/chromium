@@ -107,7 +107,7 @@ void AnimatedAuthFactorsLabelWrapper::SetLabelTextAndAccessibleName(
 
   previous_label_id_ = label_id;
   previous_accessible_name_id_ = accessible_name_id;
-  std::u16string previous_text = current_label_->GetText();
+  std::u16string previous_text(current_label_->GetText());
 
   current_label_->SetText(l10n_util::GetStringUTF16(label_id));
   current_label_->GetViewAccessibility().SetName(

@@ -499,7 +499,7 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, ClickChip) {
   auto* chip = static_cast<ash::ChipView*>(search_box_view()->GetViewByID(
       ash::LauncherSearchIphView::ViewId::kChipStart));
   ASSERT_TRUE(chip);
-  auto text = chip->GetText();
+  std::u16string text(chip->GetText());
   Click(chip);
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(kNotifyUsedEventUserActionName));
@@ -695,7 +695,7 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestAssistantZeroState,
   auto* chip = static_cast<ash::ChipView*>(launcher_search_iph->GetViewByID(
       ash::LauncherSearchIphView::ViewId::kChipStart));
   ASSERT_TRUE(chip);
-  auto text = chip->GetText();
+  std::u16string text(chip->GetText());
   Click(chip);
 
   histogram_tester()->ExpectTotalCount(

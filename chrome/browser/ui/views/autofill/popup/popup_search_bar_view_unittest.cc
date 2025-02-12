@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
@@ -32,7 +33,7 @@ class MockDelegate : public PopupSearchBarView::Delegate {
   ~MockDelegate() override = default;
   MOCK_METHOD(void,
               SearchBarOnInputChanged,
-              (const std::u16string& text),
+              (std::u16string_view text),
               (override));
   MOCK_METHOD(void, SearchBarOnFocusLost, (), (override));
   MOCK_METHOD(bool,

@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/mahi/media_app/mahi_media_app_content_manager_impl.h"
 
+#include <string>
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
@@ -73,7 +76,7 @@ void MahiMediaAppContentManagerImpl::GetContent(
 void MahiMediaAppContentManagerImpl::OnMahiContextMenuClicked(
     int64_t display_id,
     chromeos::mahi::ButtonType button_type,
-    const std::u16string& question,
+    std::u16string_view question,
     const gfx::Rect& mahi_menu_bounds) {
   auto it = client_id_to_client_.find(active_client_id_);
   if (it == client_id_to_client_.end()) {
@@ -94,7 +97,7 @@ void MahiMediaAppContentManagerImpl::OnMahiContextMenuClicked(
           /*action_type=*/MatchButtonTypeToActionType(button_type),
           /*question=*/std::nullopt, mahi_menu_bounds);
   if (button_type == chromeos::mahi::ButtonType::kQA) {
-    context_menu_request->question = question;
+    context_menu_request->question = std::u16string(question);
   }
 
   auto* manager = chromeos::MahiManager::Get();

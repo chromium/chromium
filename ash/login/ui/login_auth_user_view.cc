@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -495,13 +496,13 @@ void LoginAuthUserView::TestApi::ShowDialog() {
   view_->ShowRemoveAccountDialog();
 }
 
-const std::u16string&
-LoginAuthUserView::TestApi::GetDisabledAuthMessageContent() const {
+std::u16string_view LoginAuthUserView::TestApi::GetDisabledAuthMessageContent()
+    const {
   return DisabledAuthMessageView::TestApi(view_->disabled_auth_message_)
       .GetDisabledAuthMessageContent();
 }
 
-const std::u16string& LoginAuthUserView::TestApi::GetPinStatusMessageContent()
+std::u16string_view LoginAuthUserView::TestApi::GetPinStatusMessageContent()
     const {
   return PinStatusMessageView::TestApi(view_->pin_status_message_view_)
       .GetPinStatusMessageContent();
@@ -1116,7 +1117,7 @@ void LoginAuthUserView::OnGestureEvent(ui::GestureEvent* event) {
   RequestFocus();
 }
 
-void LoginAuthUserView::OnAuthSubmit(const std::u16string& password) {
+void LoginAuthUserView::OnAuthSubmit(std::u16string_view password) {
   AuthEventsRecorder::Get()->OnAuthSubmit();
   LOG(WARNING) << "crbug.com/1339004 : AuthSubmit "
                << password_view_->IsReadOnly() << " / "

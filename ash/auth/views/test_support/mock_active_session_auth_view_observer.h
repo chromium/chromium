@@ -6,7 +6,7 @@
 #define ASH_AUTH_VIEWS_TEST_SUPPORT_MOCK_ACTIVE_SESSION_AUTH_VIEW_OBSERVER_H_
 
 #include <cstdint>
-#include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/auth/views/active_session_auth_view.h"
@@ -20,8 +20,8 @@ class ASH_EXPORT MockActiveSessionAuthViewObserver
   MockActiveSessionAuthViewObserver();
   ~MockActiveSessionAuthViewObserver() override;
 
-  MOCK_METHOD(void, OnPasswordSubmit, (const std::u16string&), (override));
-  MOCK_METHOD(void, OnPinSubmit, (const std::u16string&), (override));
+  MOCK_METHOD(void, OnPasswordSubmit, (std::u16string_view), (override));
+  MOCK_METHOD(void, OnPinSubmit, (std::u16string_view), (override));
   MOCK_METHOD(void, OnClose, (), (override));
 };
 

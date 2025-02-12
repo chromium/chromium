@@ -7,6 +7,7 @@
 #include <memory>
 #include <numeric>
 #include <optional>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -100,8 +101,3 @@ void OmniboxPopupViewWebUI::OnDragCanceled() {}
 
 void OmniboxPopupViewWebUI::GetPopupAccessibleNodeData(
     ui::AXNodeData* node_data) const {}
-
-std::u16string OmniboxPopupViewWebUI::GetAccessibleButtonTextForResult(
-    size_t line) const {
-  return u"";
-}

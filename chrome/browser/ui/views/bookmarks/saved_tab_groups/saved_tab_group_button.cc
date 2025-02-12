@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -200,8 +201,8 @@ std::u16string SavedTabGroupButton::GetAccessibleNameForButton() const {
           ? l10n_util::GetStringFUTF16(
                 IDS_GROUP_AX_LABEL_UNNAMED_SAVED_GROUP_FORMAT, opened_state)
           : l10n_util::GetStringFUTF16(
-                IDS_GROUP_AX_LABEL_NAMED_SAVED_GROUP_FORMAT, GetText(),
-                opened_state);
+                IDS_GROUP_AX_LABEL_NAMED_SAVED_GROUP_FORMAT,
+                std::u16string(GetText()), opened_state);
   return saved_group_acessible_name;
 }
 
@@ -213,7 +214,7 @@ void SavedTabGroupButton::UpdateAccessibleName() {
   GetViewAccessibility().SetName(GetAccessibleNameForButton());
 }
 
-void SavedTabGroupButton::SetText(const std::u16string& text) {
+void SavedTabGroupButton::SetText(std::u16string_view text) {
   LabelButton::SetText(text);
   UpdateAccessibleName();
   UpdateCachedTooltipText();

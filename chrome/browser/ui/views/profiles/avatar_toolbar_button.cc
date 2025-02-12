@@ -221,7 +221,7 @@ void AvatarToolbarButton::UpdateAccessibilityLabel() {
   // accessibility label: the tooltip or no text if the button content has no
   // text initially. All the values needs to be overridden every time in order
   // clear the previous state effect.
-  std::u16string button_content = GetText();
+  std::u16string button_content(GetText());
   if (accessibility_label.has_value()) {
     if (button_content.empty()) {
       name = accessibility_label.value();

@@ -6,7 +6,7 @@
 #define UI_VIEWS_CONTROLS_BUTTON_LABEL_BUTTON_LABEL_H_
 
 #include <optional>
-#include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -24,7 +24,7 @@ class VIEWS_EXPORT LabelButtonLabel : public Label {
   METADATA_HEADER(LabelButtonLabel, Label)
 
  public:
-  LabelButtonLabel(const std::u16string& text, int text_context);
+  LabelButtonLabel(std::u16string_view text, int text_context);
   LabelButtonLabel(const LabelButtonLabel&) = delete;
   LabelButtonLabel& operator=(const LabelButtonLabel&) = delete;
   ~LabelButtonLabel() override;

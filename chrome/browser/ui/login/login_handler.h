@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -64,7 +65,7 @@ class LoginHandler : public content::LoginDelegate {
 
   // Resend the request with authentication credentials.
   // This function can be called from either thread.
-  void SetAuth(const std::u16string& username, const std::u16string& password);
+  void SetAuth(std::u16string_view username, std::u16string_view password);
 
   // Display the error page without asking for credentials again. Setting
   // `notify_others` to `true` will close all other login handlers as well.
@@ -97,8 +98,8 @@ class LoginHandler : public content::LoginDelegate {
   virtual void NotifyAuthNeeded();
 
   // Notify observers that authentication is supplied.
-  virtual void NotifyAuthSupplied(const std::u16string& username,
-                                  const std::u16string& password);
+  virtual void NotifyAuthSupplied(std::u16string_view username,
+                                  std::u16string_view password);
 
   // Notify observers that authentication is cancelled.
   virtual void NotifyAuthCancelled();
@@ -112,8 +113,8 @@ class LoginHandler : public content::LoginDelegate {
   // to dismiss itself if it was waiting for the same authentication.
   void OtherHandlerFinished(bool supplied,
                             LoginHandler* other_handler,
-                            const std::u16string& username,
-                            const std::u16string& password);
+                            std::u16string_view username,
+                            std::u16string_view password);
 
   // Returns the PasswordManagerClient from the web content.
   password_manager::PasswordManagerClient*

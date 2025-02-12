@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -465,8 +466,9 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
       IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_BUTTON_TOOLTIP_CLICKED_VIRTUAL_CARD);
   for (auto& pair : GetBubbleViews()->fields_to_buttons_map_) {
     EXPECT_EQ(normal_button_tooltip, pair.second->GetTooltipText());
-    EXPECT_EQ(pair.second->GetText() + u" " + normal_button_tooltip,
-              pair.second->GetViewAccessibility().GetCachedName());
+    EXPECT_EQ(
+        base::StrCat({pair.second->GetText(), u" ", normal_button_tooltip}),
+        pair.second->GetViewAccessibility().GetCachedName());
   }
 
   auto& card_number_button =

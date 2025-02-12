@@ -5,6 +5,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -80,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_F, false,
                                               false, false, false));
 
-  std::u16string find_bar_string =
+  std::u16string_view find_bar_string =
       find_bar_controller->find_bar()->GetFindText();
 
   ASSERT_EQ(u"asdf", find_bar_string);
@@ -116,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_T, false,
                                               false, false, false));
 
-  std::u16string find_bar_string =
+  std::u16string_view find_bar_string =
       find_bar_controller->find_bar()->GetFindText();
 
   ASSERT_EQ(u"secret", find_bar_string);

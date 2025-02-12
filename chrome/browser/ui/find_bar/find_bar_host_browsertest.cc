@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -106,22 +107,23 @@ class FindInPageControllerTest : public InProcessBrowserTest {
     return GetFindBarWindowInfoForBrowser(browser(), position, fully_visible);
   }
 
-  std::u16string GetFindBarTextForBrowser(Browser* browser) {
+  std::u16string_view GetFindBarTextForBrowser(Browser* browser) {
     FindBar* find_bar = browser->GetFindBarController()->find_bar();
     return find_bar->GetFindText();
   }
 
-  std::u16string GetFindBarText() {
+  std::u16string_view GetFindBarText() {
     return GetFindBarTextForBrowser(browser());
   }
 
-  std::u16string GetFindBarMatchCountTextForBrowser(Browser* browser) {
-    const FindBarTesting* find_bar =
-        browser->GetFindBarController()->find_bar()->GetFindBarTesting();
-    return find_bar->GetMatchCountText();
+  std::u16string_view GetFindBarMatchCountTextForBrowser(Browser* browser) {
+    return browser->GetFindBarController()
+        ->find_bar()
+        ->GetFindBarTesting()
+        ->GetMatchCountText();
   }
 
-  std::u16string GetMatchCountText() {
+  std::u16string_view GetMatchCountText() {
     return GetFindBarMatchCountTextForBrowser(browser());
   }
 

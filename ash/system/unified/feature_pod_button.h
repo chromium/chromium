@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_UNIFIED_FEATURE_POD_BUTTON_H_
 #define ASH_SYSTEM_UNIFIED_FEATURE_POD_BUTTON_H_
 
+#include <string_view>
+
 #include "ash/ash_export.h"
 #include "ash/style/icon_button.h"
 #include "base/functional/bind.h"
@@ -47,13 +49,13 @@ class ASH_EXPORT FeaturePodLabelButton : public views::Button {
   ~FeaturePodLabelButton() override;
 
   // Set the text of label shown below the icon. See FeaturePodButton::SetLabel.
-  void SetLabel(const std::u16string& label);
-  const std::u16string& GetLabelText() const;
+  void SetLabel(std::u16string_view label);
+  std::u16string_view GetLabelText() const;
 
   // Set the text of sub-label shown below the label.
   // See FeaturePodButton::SetSubLabel.
-  void SetSubLabel(const std::u16string& sub_label);
-  const std::u16string& GetSubLabelText() const;
+  void SetSubLabel(std::u16string_view sub_label);
+  std::u16string_view GetSubLabelText() const;
 
   // Show arrow to indicate that the feature has a detailed view.
   // See FeaturePodButton::ShowDetailedViewArrow.

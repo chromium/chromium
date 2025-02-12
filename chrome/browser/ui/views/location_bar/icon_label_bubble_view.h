@@ -7,7 +7,7 @@
 
 #include <memory>
 #include <optional>
-#include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -115,9 +115,8 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // expanded to show the label.
   virtual void SetUseTonalColorsWhenExpanded(bool use_tonal_colors);
 
-  void SetLabel(const std::u16string& label);
-  void SetLabel(const std::u16string& label,
-                const std::u16string& accessible_name);
+  void SetLabel(std::u16string_view label);
+  void SetLabel(std::u16string_view label, std::u16string_view accessible_name);
   void SetFontList(const gfx::FontList& font_list);
 
   gfx::RoundedCornersF GetCornerRadii() const;

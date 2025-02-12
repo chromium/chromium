@@ -5,7 +5,10 @@
 #ifndef UI_VIEWS_STYLE_PLATFORM_STYLE_H_
 #define UI_VIEWS_STYLE_PLATFORM_STYLE_H_
 
+#include <stddef.h>
+
 #include <memory>
+#include <string_view>
 
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
@@ -109,7 +112,7 @@ class VIEWS_EXPORT PlatformStyle {
   // This is to support deleting entire graphemes instead of individual
   // characters when necessary on Mac, and code points made from surrogate
   // pairs on other platforms.
-  static gfx::Range RangeToDeleteBackwards(const std::u16string& text,
+  static gfx::Range RangeToDeleteBackwards(std::u16string_view text,
                                            size_t cursor_position);
 };
 

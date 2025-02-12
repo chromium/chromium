@@ -8,6 +8,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -557,7 +558,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
 
   // Gets a textual view of the page's contents, and passes it to the callback
   // provided.
-  using SpeechCallback = base::OnceCallback<void(const std::u16string&)>;
+  using SpeechCallback = base::OnceCallback<void(std::u16string_view)>;
   void GetPageTextForSpeech(SpeechCallback callback);
 
   // Calls RenderWidgetHostNSView::SetTooltipText and call the observer's

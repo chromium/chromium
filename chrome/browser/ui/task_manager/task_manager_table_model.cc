@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -1143,13 +1144,13 @@ void TaskManagerTableModel::UpdateMatchedProcessSetById(TaskId task_id) {
 }
 
 bool TaskManagerTableModel::UpdateModel(const DisplayCategory display_category,
-                                        const std::u16string& search_term) {
+                                        std::u16string_view search_term) {
   if (search_terms_ == search_term && display_category_ == display_category) {
     // Early return if no real change happens.
     return false;
   }
 
-  search_terms_ = search_term;
+  search_terms_ = std::u16string(search_term);
   display_category_ = display_category;
 
   // Precalculate matched processes for search terms.

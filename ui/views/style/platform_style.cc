@@ -5,6 +5,13 @@
 #include "ui/views/style/platform_style.h"
 
 #include "build/build_config.h"
+
+#if !BUILDFLAG(IS_MAC)
+#include <stddef.h>
+
+#include <memory>
+#include <string_view>
+
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/utf16_indexing.h"
@@ -18,6 +25,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
+#endif
 #endif
 
 namespace views {
@@ -38,7 +46,7 @@ std::unique_ptr<ScrollBar> PlatformStyle::CreateScrollBar(
 void PlatformStyle::OnTextfieldEditFailed() {}
 
 // static
-gfx::Range PlatformStyle::RangeToDeleteBackwards(const std::u16string& text,
+gfx::Range PlatformStyle::RangeToDeleteBackwards(std::u16string_view text,
                                                  size_t cursor_position) {
   // Delete one code point, which may be two UTF-16 words.
   size_t previous_grapheme_index =

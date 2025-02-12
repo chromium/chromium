@@ -43,7 +43,7 @@ class ViewsTextServicesContextMenuMac
   bool SupportsCommand(int command_id) const override;
 
   // TextServicesContextMenu::Delegate:
-  std::u16string GetSelectedText() const override;
+  std::u16string_view GetSelectedText() const override;
   bool IsTextDirectionEnabled(
       base::i18n::TextDirection direction) const override;
   bool IsTextDirectionChecked(
@@ -62,12 +62,12 @@ ViewsTextServicesContextMenuMac::ViewsTextServicesContextMenuMac(
     Textfield* client)
     : ViewsTextServicesContextMenuBase(menu, client) {
   // Insert the "Look up" item in the first position.
-  const std::u16string text = GetSelectedText();
+  const std::u16string_view text = GetSelectedText();
   if (!text.empty()) {
     menu->InsertSeparatorAt(0, ui::NORMAL_SEPARATOR);
-    menu->InsertItemAt(
-        0, IDS_CONTENT_CONTEXT_LOOK_UP,
-        l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_LOOK_UP, text));
+    menu->InsertItemAt(0, IDS_CONTENT_CONTEXT_LOOK_UP,
+                       l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_LOOK_UP,
+                                                  std::u16string(text)));
 
     text_services_menu_.AppendToContextMenu(menu);
   }
@@ -106,9 +106,9 @@ bool ViewsTextServicesContextMenuMac::SupportsCommand(int command_id) const {
          ViewsTextServicesContextMenuBase::SupportsCommand(command_id);
 }
 
-std::u16string ViewsTextServicesContextMenuMac::GetSelectedText() const {
+std::u16string_view ViewsTextServicesContextMenuMac::GetSelectedText() const {
   return (client()->GetTextInputType() == ui::TEXT_INPUT_TYPE_PASSWORD)
-             ? std::u16string()
+             ? std::u16string_view()
              : client()->GetSelectedText();
 }
 

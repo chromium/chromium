@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
@@ -167,7 +168,7 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
     EXPECT_EQ(entry.value(), id);
   }
 
-  const std::u16string& GetTitleText() {
+  std::u16string_view GetTitleText() {
     return coordinator()->panel_title_->GetText();
   }
 

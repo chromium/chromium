@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "build/build_config.h"
@@ -58,7 +59,7 @@ void ElideTextAndAdjustRange(const FontList& font_list,
 
 // Updates |render_text| from the specified parameters.
 void UpdateRenderText(const Rect& rect,
-                      const std::u16string& text,
+                      std::u16string_view text,
                       const FontList& font_list,
                       int flags,
                       SkColor color,
@@ -102,7 +103,7 @@ void UpdateRenderText(const Rect& rect,
 }  // namespace
 
 // static
-void Canvas::SizeStringFloat(const std::u16string& text,
+void Canvas::SizeStringFloat(std::u16string_view text,
                              const FontList& font_list,
                              float* width,
                              float* height,
@@ -146,7 +147,7 @@ void Canvas::SizeStringFloat(const std::u16string& text,
 
     Rect rect(base::saturated_cast<int>(*width),
               base::saturated_cast<int>(*height));
-    std::u16string adjusted_text = text;
+    std::u16string adjusted_text(text);
     StripAcceleratorChars(flags, &adjusted_text);
     UpdateRenderText(rect, adjusted_text, font_list, flags, 0,
                      render_text.get());
@@ -169,7 +170,7 @@ void Canvas::AdjustClipRectForTextBounds(const Rect& text_bounds) {
   ClipRect(clip_rect);
 }
 
-void Canvas::DrawStringRectWithFlags(const std::u16string& text,
+void Canvas::DrawStringRectWithFlags(std::u16string_view text,
                                      const FontList& font_list,
                                      SkColor color,
                                      const Rect& text_bounds,
@@ -214,7 +215,7 @@ void Canvas::DrawStringRectWithFlags(const std::u16string& text,
       rect += Vector2d(0, line_height);
     }
   } else {
-    std::u16string adjusted_text = text;
+    std::u16string adjusted_text(text);
     Range range = StripAcceleratorChars(flags, &adjusted_text);
     bool elide_text = ((flags & NO_ELLIPSIS) == 0);
 

@@ -188,7 +188,7 @@ void Link::SetFontList(const gfx::FontList& font_list) {
   RecalculateFont();
 }
 
-void Link::SetText(const std::u16string& text) {
+void Link::SetText(std::u16string_view text) {
   Label::SetText(text);
   // Prevent invisible links from being announced by screen reader.
   GetViewAccessibility().SetIsIgnored(text.empty());

@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -75,8 +76,7 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kSyncPassphraseOkButtonFieldId);
 
 void ShowSyncPassphraseDialog(
     Browser& browser,
-    base::RepeatingCallback<bool(const std::u16string&)>
-        decrypt_data_callback) {
+    base::RepeatingCallback<bool(std::u16string_view)> decrypt_data_callback) {
   ui::DialogModel::Builder dialog_builder;
 
   // Link for the footnote.
@@ -135,7 +135,7 @@ void ShowSyncPassphraseDialog(
 }
 
 bool SyncPassphraseDialogDecryptData(syncer::SyncService* sync_service,
-                                     const std::u16string& passphrase) {
+                                     std::u16string_view passphrase) {
   if (!sync_service || !sync_service->IsEngineInitialized()) {
     // Even though this is a failure, return true so that the dialog closes and
     // the user does not need to try again.

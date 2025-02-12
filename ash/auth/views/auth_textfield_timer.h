@@ -5,7 +5,7 @@
 #ifndef ASH_AUTH_VIEWS_AUTH_TEXTFIELD_TIMER_H_
 #define ASH_AUTH_VIEWS_AUTH_TEXTFIELD_TIMER_H_
 
-#include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/auth/views/auth_textfield.h"
@@ -16,7 +16,7 @@ namespace ash {
 
 class ASH_EXPORT AuthTextfieldTimer : public AuthTextfield::Observer {
  public:
-  void OnContentsChanged(const std::u16string& new_contents) override;
+  void OnContentsChanged(std::u16string_view new_contents) override;
   void OnTextVisibleChanged(bool visible) override;
 
   explicit AuthTextfieldTimer(AuthTextfield* auth_textfield);

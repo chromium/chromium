@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -110,8 +111,9 @@ void AddressEditorView::SetTextInputFieldValueForTesting(
   text_field->SetText(value);
 }
 
-std::u16string AddressEditorView::GetValidationErrorForTesting() const {
-  return validation_error_ ? validation_error_->GetText() : u"";
+std::u16string_view AddressEditorView::GetValidationErrorForTesting() const {
+  return validation_error_ ? validation_error_->GetText()
+                           : std::u16string_view();
 }
 
 void AddressEditorView::CreateEditorView() {
@@ -277,7 +279,8 @@ void AddressEditorView::SaveFieldsToProfile() {
   }
 
   for (const auto& field : text_fields_) {
-    controller_->SetProfileInfo(field.second.type, field.first->GetText());
+    controller_->SetProfileInfo(field.second.type,
+                                std::u16string(field.first->GetText()));
   }
 }
 

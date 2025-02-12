@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
 
+#include <string_view>
+
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -109,9 +111,9 @@ class CookieControlsIconViewUnitTest
 
   bool Visible() { return view_->ShouldBeVisible(); }
 
-  const std::u16string& LabelText() { return view_->label()->GetText(); }
+  std::u16string_view LabelText() const { return view_->label()->GetText(); }
 
-  std::u16string TooltipText() {
+  std::u16string_view TooltipText() const {
     return view_->IconLabelBubbleView::GetTooltipText();
   }
 

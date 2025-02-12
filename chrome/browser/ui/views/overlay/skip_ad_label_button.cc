@@ -29,8 +29,9 @@ SkipAdLabelButton::SkipAdLabelButton(PressedCallback callback)
   SetSize(gfx::Size(kSkipAdButtonWidth, kSkipAdButtonHeight));
 
   // Accessibility.
-  GetViewAccessibility().SetName(label()->GetText());
-  SetTooltipText(label()->GetText());
+  std::u16string label_text(label()->GetText());
+  GetViewAccessibility().SetName(label_text);
+  SetTooltipText(label_text);
   SetInstallFocusRingOnFocus(true);
 }
 

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -154,8 +155,8 @@ class StatusBubbleViews::StatusView : public views::View {
   // views::View:
   gfx::Insets GetInsets() const override;
 
-  const std::u16string& GetText() const;
-  void SetText(const std::u16string& text);
+  std::u16string_view GetText() const;
+  void SetText(std::u16string_view text);
 
   BubbleState GetState() const { return state_; }
 
@@ -164,7 +165,7 @@ class StatusBubbleViews::StatusView : public views::View {
 
   // If |text| is empty, hides the bubble; otherwise, sets the bubble text to
   // |text| and shows the bubble.
-  void AnimateForText(const std::u16string& text);
+  void AnimateForText(std::u16string_view text);
 
   // Show the bubble instantly.
   void ShowInstantly();
@@ -261,11 +262,11 @@ gfx::Insets StatusView::GetInsets() const {
                          kShadowThickness + kTextHorizPadding);
 }
 
-const std::u16string& StatusView::GetText() const {
+std::u16string_view StatusView::GetText() const {
   return text_->GetText();
 }
 
-void StatusView::SetText(const std::u16string& text) {
+void StatusView::SetText(std::u16string_view text) {
   if (text == GetText()) {
     return;
   }
@@ -274,7 +275,7 @@ void StatusView::SetText(const std::u16string& text) {
   OnPropertyChanged(&text_, views::kPropertyEffectsNone);
 }
 
-void StatusView::AnimateForText(const std::u16string& text) {
+void StatusView::AnimateForText(std::u16string_view text) {
   if (text.empty()) {
     StartHiding();
   } else {
@@ -573,7 +574,7 @@ DEFINE_ENUM_CONVERTERS(StatusView::BubbleStyle,
                         u"kStandardRight"})
 
 BEGIN_METADATA(StatusView)
-ADD_PROPERTY_METADATA(std::u16string, Text)
+ADD_PROPERTY_METADATA(std::u16string_view, Text)
 ADD_READONLY_PROPERTY_METADATA(StatusView::BubbleState, State)
 ADD_PROPERTY_METADATA(StatusView::BubbleStyle, Style)
 END_METADATA

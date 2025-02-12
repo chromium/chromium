@@ -360,7 +360,7 @@ class CaptionBubbleLabel : public views::Label {
     PreferredSizeChanged();
   }
 
-  void SetText(const std::u16string& text) override {
+  void SetText(std::u16string_view text) override {
     views::Label::SetText(text);
 
     auto& ax_lines = GetViewAccessibility().virtual_children();
@@ -375,11 +375,11 @@ class CaptionBubbleLabel : public views::Label {
     size_t start = 0;
     for (size_t i = 0; i < num_lines - 1; ++i) {
       size_t end = GetTextIndexOfLine(i + 1);
-      std::u16string substring = text.substr(start, end - start);
+      std::u16string_view substring = text.substr(start, end - start);
       UpdateAXLine(substring, i, gfx::Range(start, end));
       start = end;
     }
-    std::u16string substring = text.substr(start, text.size() - start);
+    std::u16string_view substring = text.substr(start, text.size() - start);
     if (!substring.empty()) {
       UpdateAXLine(substring, num_lines - 1, gfx::Range(start, text.size()));
     }
@@ -406,7 +406,7 @@ class CaptionBubbleLabel : public views::Label {
 #endif
 
  private:
-  void UpdateAXLine(const std::u16string& line_text,
+  void UpdateAXLine(std::u16string_view line_text,
                     const size_t line_index,
                     const gfx::Range& text_range) {
     auto& ax_lines = GetViewAccessibility().virtual_children();
@@ -425,7 +425,7 @@ class CaptionBubbleLabel : public views::Label {
     ui::AXNodeData& ax_node_data = ax_lines[line_index]->GetCustomData();
     if (base::UTF8ToUTF16(ax_node_data.GetStringAttribute(
             ax::mojom::StringAttribute::kName)) != line_text) {
-      ax_node_data.SetNameChecked(line_text);
+      ax_node_data.SetNameChecked(std::u16string(line_text));
       std::vector<gfx::Rect> bounds = GetSubstringBounds(text_range);
       ax_node_data.relative_bounds.bounds = gfx::RectF(bounds[0]);
       ax_lines[line_index]->NotifyAccessibilityEventDeprecated(
@@ -973,7 +973,7 @@ void CaptionBubble::OnLiveTranslateTargetLanguageChanged() {
 }
 
 std::u16string CaptionBubble::GetAccessibleWindowTitle() const {
-  return title_->GetText();
+  return std::u16string(title_->GetText());
 }
 
 void CaptionBubble::OnThemeChanged() {
@@ -1780,7 +1780,7 @@ void CaptionBubble::OnTitleTextChanged() {
 }
 
 void CaptionBubble::UpdateAccessibleName() {
-  GetViewAccessibility().SetName(title_->GetText());
+  GetViewAccessibility().SetName(std::u16string(title_->GetText()));
 }
 
 void CaptionBubble::ShowTranslateOptionsMenu() {

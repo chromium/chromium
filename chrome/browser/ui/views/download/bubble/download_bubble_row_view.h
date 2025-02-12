@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_ROW_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_ROW_VIEW_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -95,7 +97,7 @@ class DownloadBubbleRowView : public views::View,
   // Returns the transparent button that is activated when the row is clicked.
   views::Button* transparent_button() { return transparent_button_; }
 
-  const std::u16string& GetSecondaryLabelTextForTesting();
+  std::u16string_view GetSecondaryLabelTextForTesting();
 
   DownloadUIModel* model() { return info_->model(); }
   const DownloadBubbleRowViewInfo& info() const { return *info_; }

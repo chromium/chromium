@@ -5,6 +5,7 @@
 #include "ash/login/ui/login_password_view.h"
 
 #include <memory>
+#include <string_view>
 
 #include "ash/login/ui/login_arrow_navigation_delegate.h"
 #include "ash/login/ui/login_test_base.h"
@@ -58,8 +59,8 @@ class LoginPasswordViewTest : public LoginTestBase {
     SetWidget(CreateWidgetWithContent(view_));
   }
 
-  void OnPasswordSubmit(const std::u16string& password) {
-    password_ = password;
+  void OnPasswordSubmit(std::u16string_view password) {
+    password_ = std::u16string_view(password);
   }
   void OnPasswordTextChanged(bool is_empty) {
     is_password_field_empty_ = is_empty;

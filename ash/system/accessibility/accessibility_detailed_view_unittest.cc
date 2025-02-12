@@ -1459,7 +1459,7 @@ class AccessibilityDetailedViewSodaTest
     }
   }
 
-  std::u16string GetFeatureViewSubtitleText() {
+  std::u16string_view GetFeatureViewSubtitleText() {
     switch (GetParam()) {
       case SodaFeature::kDictation:
         return detailed_menu()->dictation_view_->sub_text_label()->GetText();

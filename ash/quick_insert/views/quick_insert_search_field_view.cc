@@ -176,14 +176,15 @@ void QuickInsertSearchFieldView::OnDidChangeFocus(View* focused_before,
   ScheduleNotifyInitialActiveDescendantForA11y();
 }
 
-const std::u16string& QuickInsertSearchFieldView::GetPlaceholderText() const {
+std::u16string_view QuickInsertSearchFieldView::GetPlaceholderText() const {
   return textfield_->GetPlaceholderText();
 }
 
 void QuickInsertSearchFieldView::SetPlaceholderText(
-    const std::u16string& new_placeholder_text) {
+    std::u16string_view new_placeholder_text) {
   textfield_->SetPlaceholderText(new_placeholder_text);
-  textfield_->GetViewAccessibility().SetName(new_placeholder_text);
+  textfield_->GetViewAccessibility().SetName(
+      std::u16string(new_placeholder_text));
 }
 
 void QuickInsertSearchFieldView::SetTextfieldActiveDescendant(

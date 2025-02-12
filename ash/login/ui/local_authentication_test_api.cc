@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/auth/views/active_session_auth_view.h"
@@ -111,7 +112,7 @@ void LocalAuthenticationWithPinTestApi::SetPinStatus(
   controller_->contents_view_->SetPinStatus(std::move(pin_status));
 }
 
-const std::u16string& LocalAuthenticationWithPinTestApi::GetPinStatusMessage()
+std::u16string_view LocalAuthenticationWithPinTestApi::GetPinStatusMessage()
     const {
   return controller_->contents_view_->GetPinStatusMessage();
 }

@@ -1448,8 +1448,7 @@ TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
   auto* const button = bubble->GetNonDefaultButtonForTesting(0);
   ASSERT_TRUE(button);
 
-  const std::u16string& text = button->GetText();
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NOT_NOW), text);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NOT_NOW), button->GetText());
 
   views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
   views::test::InteractionTestUtilSimulatorViews::PressButton(

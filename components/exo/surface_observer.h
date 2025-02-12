@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 
 namespace gfx {
 class Rect;
@@ -55,7 +56,7 @@ class SurfaceObserver {
   // Called when tooltip is shown.
   // `bounds` is relative to `surface`.
   virtual void OnTooltipShown(Surface* surface,
-                              const std::u16string& text,
+                              std::u16string_view text,
                               const gfx::Rect& bounds) {}
 
   // Called when tooltip is hidden.

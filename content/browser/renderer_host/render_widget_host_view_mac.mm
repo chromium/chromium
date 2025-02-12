@@ -9,6 +9,7 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -944,7 +945,7 @@ void AddTextNodesToVector(const ui::AXNode* node,
   }
 }
 
-using SpeechCallback = base::OnceCallback<void(const std::u16string&)>;
+using SpeechCallback = base::OnceCallback<void(std::u16string_view)>;
 void CombineTextNodesAndMakeCallback(SpeechCallback callback,
                                      ui::AXTreeUpdate& update) {
   std::vector<std::u16string> text_node_contents;

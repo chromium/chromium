@@ -5,6 +5,7 @@
 #include "ash/ambient/ui/media_string_view.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
@@ -37,7 +38,7 @@ class MediaStringViewTest : public AmbientAshTestBase {
     AmbientAshTestBase::TearDown();
   }
 
-  const std::u16string& GetText() {
+  std::u16string_view GetText() {
     return GetMediaStringViewTextLabel()->GetText();
   }
 };

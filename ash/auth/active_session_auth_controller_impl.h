@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/auth/active_session_auth_metrics_recorder.h"
@@ -63,7 +64,7 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
 
     void SetPinStatus(std::unique_ptr<cryptohome::PinStatus> pin_status);
 
-    const std::u16string& GetPinStatusMessage() const;
+    std::u16string_view GetPinStatusMessage() const;
 
     void Close();
 
@@ -88,8 +89,8 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   void OnViewPreferredSizeChanged(views::View* observed_view) override;
 
   // ActiveSessionAuthView::Observer:
-  void OnPasswordSubmit(const std::u16string& password) override;
-  void OnPinSubmit(const std::u16string& pin) override;
+  void OnPasswordSubmit(std::u16string_view password) override;
+  void OnPinSubmit(std::u16string_view pin) override;
   void OnClose() override;
 
   // UserDataAuthClient::AuthFactorStatusUpdateObserver:

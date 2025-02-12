@@ -270,8 +270,8 @@ views::PropertyEffects PillButton::UpdateStyleToIndicateDefaultStatus() {
   return views::kPropertyEffectsNone;
 }
 
-void PillButton::SetText(const std::u16string& text) {
-  std::u16string old_label_text = GetText();
+void PillButton::SetText(std::u16string_view text) {
+  std::u16string old_label_text(GetText());
   views::LabelButton::SetText(text);
 
   // This custom logic is necessary when the cached value for the tooltip is the
@@ -280,7 +280,7 @@ void PillButton::SetText(const std::u16string& text) {
   // because the cache contains a value that did not originate from the parent
   // `LabelButton`.
   if (use_label_as_default_tooltip_ && old_label_text == GetTooltipText()) {
-    SetTooltipText(GetText());
+    SetTooltipText(std::u16string(GetText()));
   }
 }
 
@@ -452,7 +452,7 @@ int PillButton::GetHorizontalSpacingWithIcon() const {
 void PillButton::UpdateTooltipText() {
   const auto& tooltip = GetTooltipText();
   if (use_label_as_default_tooltip_ && tooltip.empty()) {
-    SetTooltipText(GetText());
+    SetTooltipText(std::u16string(GetText()));
   } else {
     // Only use the old value if we were using Label's Text as tooltip before.
     if (tooltip == GetText()) {

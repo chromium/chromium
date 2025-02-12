@@ -932,15 +932,13 @@ TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesAcceptsNextChar) {
 
   // After typing L, the highlighted text will be replaced by L.
   KeyPress(ui::VKEY_L);
-  std::u16string selected_text = view()->search_box()->GetSelectedText();
   EXPECT_EQ(view()->search_box()->GetText(), u"hel");
-  EXPECT_EQ(u"", selected_text);
+  EXPECT_EQ(view()->search_box()->GetSelectedText(), u"");
 
   // After handling autocomplete, the highlighted text will show again.
   ProcessAutocomplete();
-  selected_text = view()->search_box()->GetSelectedText();
   EXPECT_EQ(view()->search_box()->GetText(), u"hello world!");
-  EXPECT_EQ(u"lo world!", selected_text);
+  EXPECT_EQ(view()->search_box()->GetSelectedText(), u"lo world!");
 
   EXPECT_EQ("Websites", view()->GetSearchBoxGhostTextForTest());
 }
@@ -1035,9 +1033,8 @@ TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesNotHandledForIME) {
 
   ProcessAutocomplete();
 
-  std::u16string selected_text = view()->search_box()->GetSelectedText();
   EXPECT_EQ(view()->search_box()->GetText(), u"hello world!");
-  EXPECT_EQ(u"llo world!", selected_text);
+  EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo world!");
   view()->search_box()->SetText(std::u16string());
 
   // Simulate IME composition text. The autocomplete should not be handled.
@@ -1047,9 +1044,8 @@ TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesNotHandledForIME) {
   view()->set_highlight_range_for_test(gfx::Range(2, 2));
   ProcessAutocomplete();
 
-  selected_text = view()->search_box()->GetSelectedText();
   EXPECT_EQ(view()->search_box()->GetText(), u"he");
-  EXPECT_EQ(u"", selected_text);
+  EXPECT_EQ(view()->search_box()->GetSelectedText(), u"");
 
   EXPECT_EQ("", view()->GetSearchBoxGhostTextForTest());
 }
@@ -1312,8 +1308,9 @@ TEST_F(SearchBoxViewAutocompleteTest, AccessibleValue) {
   ui::AXNodeData data;
   view()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(view()->search_box()->GetText(), u"hello list");
-  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE,
-                                       view()->search_box()->GetText()),
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE,
+                std::u16string(view()->search_box()->GetText())),
             data.GetString16Attribute(ax::mojom::StringAttribute::kValue));
 
   EXPECT_EQ("Websites", view()->GetSearchBoxGhostTextForTest());
@@ -1323,8 +1320,9 @@ TEST_F(SearchBoxViewAutocompleteTest, AccessibleValue) {
   ui::AXNodeData data2;
   view()->GetViewAccessibility().GetAccessibleNodeData(&data2);
   EXPECT_EQ(view()->search_box()->GetText(), u"hello list2");
-  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE,
-                                       view()->search_box()->GetText()),
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE,
+                std::u16string(view()->search_box()->GetText())),
             data2.GetString16Attribute(ax::mojom::StringAttribute::kValue));
 }
 

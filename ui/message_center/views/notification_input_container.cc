@@ -4,6 +4,8 @@
 
 #include "ui/message_center/views/notification_input_container.h"
 
+#include <string>
+
 #include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -47,7 +49,7 @@ NotificationInputContainer::NotificationInputContainer(
           [](NotificationInputContainer* container) {
             container->delegate_->OnNotificationInputSubmit(
                 container->textfield_->GetProperty(kTextfieldIndexKey),
-                container->textfield_->GetText());
+                std::u16string(container->textfield_->GetText()));
           },
           base::Unretained(this)))) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
@@ -175,7 +177,8 @@ bool NotificationInputContainer::HandleKeyEvent(views::Textfield* sender,
   if (event.type() == ui::EventType::kKeyPressed &&
       event.key_code() == ui::VKEY_RETURN) {
     delegate_->OnNotificationInputSubmit(
-        textfield_->GetProperty(kTextfieldIndexKey), textfield_->GetText());
+        textfield_->GetProperty(kTextfieldIndexKey),
+        std::u16string(textfield_->GetText()));
     textfield_->SetText(std::u16string());
     return true;
   }

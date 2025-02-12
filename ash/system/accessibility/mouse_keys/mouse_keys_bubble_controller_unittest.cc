@@ -4,6 +4,8 @@
 
 #include "ash/system/accessibility/mouse_keys/mouse_keys_bubble_controller.h"
 
+#include <string_view>
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/shell.h"
@@ -46,7 +48,7 @@ class MouseKeysBubbleControllerTest : public AshTestBase {
     return GetController()->mouse_keys_bubble_view_;
   }
 
-  const std::u16string GetBubbleText() const {
+  std::u16string_view GetBubbleText() const {
     return GetView()->GetTextForTesting();
   }
 

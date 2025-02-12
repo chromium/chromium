@@ -148,11 +148,11 @@ void TabbedPaneTab::SetSelected(bool selected) {
 #endif
 }
 
-const std::u16string& TabbedPaneTab::GetTitleText() const {
+std::u16string_view TabbedPaneTab::GetTitleText() const {
   return title_->GetText();
 }
 
-void TabbedPaneTab::SetTitleText(const std::u16string& text) {
+void TabbedPaneTab::SetTitleText(std::u16string_view text) {
   title_->SetText(text);
   UpdatePreferredTitleWidth();
   PreferredSizeChanged();
@@ -391,7 +391,7 @@ void TabbedPaneTab::UpdateAccessibleName() {
     GetViewAccessibility().SetName(
         std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   } else {
-    GetViewAccessibility().SetName(title_->GetText(),
+    GetViewAccessibility().SetName(std::u16string(title_->GetText()),
                                    ax::mojom::NameFrom::kContents);
   }
   tab_strip_->UpdateAccessibleName();
@@ -716,7 +716,8 @@ void TabbedPaneTabStrip::UpdateAccessibleName() {
   // ourselves.
   const TabbedPaneTab* const selected_tab = GetSelectedTab();
   if (selected_tab) {
-    GetViewAccessibility().SetName(selected_tab->GetTitleText());
+    GetViewAccessibility().SetName(
+        std::u16string(selected_tab->GetTitleText()));
   } else {
     GetViewAccessibility().RemoveName();
   }
@@ -975,7 +976,8 @@ views::View* TabbedPane::GetTabContentsForTesting(size_t index) {
 
 void TabbedPane::UpdateAccessibleName() {
   if (const TabbedPaneTab* const selected_tab = GetSelectedTab()) {
-    GetViewAccessibility().SetName(selected_tab->GetTitleText());
+    GetViewAccessibility().SetName(
+        std::u16string(selected_tab->GetTitleText()));
   } else {
     GetViewAccessibility().RemoveName();
   }

@@ -466,7 +466,7 @@ void LoginPasswordView::Reset() {
   textfield_->ClearEditHistory();
   // |ContentsChanged| won't be called by |Textfield| if the text is changed
   // by |Textfield::SetText()|.
-  ContentsChanged(textfield_, textfield_->GetText());
+  ContentsChanged(textfield_, std::u16string(textfield_->GetText()));
 }
 
 void LoginPasswordView::InsertNumber(int value) {

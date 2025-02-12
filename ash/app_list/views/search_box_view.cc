@@ -668,7 +668,7 @@ void SearchBoxView::UpdateKeyboardVisibility() {
   keyboard_controller->HideKeyboardByUser();
 }
 
-void SearchBoxView::HandleQueryChange(const std::u16string& query,
+void SearchBoxView::HandleQueryChange(std::u16string_view query,
                                       bool initiated_by_user) {
   // Randomly select a new placeholder text when we get an empty new query.
   if (query.empty()) {
@@ -715,7 +715,7 @@ void SearchBoxView::HandleQueryChange(const std::u16string& query,
   const bool query_empty_changed =
       trimmed_query.empty() != IsTrimmedQueryEmpty(current_query_);
 
-  current_query_ = query;
+  current_query_ = std::u16string(query);
 
   if (query_changed_callback_) {
     query_changed_callback_.Run();
@@ -734,8 +734,9 @@ void SearchBoxView::HandleQueryChange(const std::u16string& query,
   // Don't reinitiate zero state search if the previous query was already empty
   // (to avoid issuing zero state search twice in a row while clearing up search
   // - see http://crbug.com/979594).
-  if (initiated_by_user || !trimmed_query.empty() || query_empty_changed)
-    view_delegate_->StartSearch(query);
+  if (initiated_by_user || !trimmed_query.empty() || query_empty_changed) {
+    view_delegate_->StartSearch(current_query_);
+  }
 }
 
 void SearchBoxView::SetQueryChangedCallback(QueryChangedCallback callback) {
@@ -872,7 +873,7 @@ void SearchBoxView::AddedToWidget() {
   }
 }
 
-void SearchBoxView::RunLauncherSearchQuery(const std::u16string& query) {
+void SearchBoxView::RunLauncherSearchQuery(std::u16string_view query) {
   UpdateQuery(query);
 }
 
@@ -882,7 +883,7 @@ void SearchBoxView::OpenAssistantPage() {
       assistant::AssistantEntryPoint::kLauncherSearchIphChip);
 }
 
-void SearchBoxView::OnLauncherSearchChipPressed(const std::u16string& query) {
+void SearchBoxView::OnLauncherSearchChipPressed(std::u16string_view query) {
   view_delegate_->EndAssistant(
       assistant::AssistantExitPoint::kLauncherSearchIphChip);
   UpdateQuery(query);
@@ -1111,8 +1112,8 @@ void SearchBoxView::ProcessAutocomplete(
   }
 
   // Current non-autocompleted text.
-  const std::u16string& user_typed_text =
-      search_box()->GetText().substr(0, highlight_range_.start());
+  std::u16string user_typed_text(
+      search_box()->GetText().substr(0, highlight_range_.start()));
   if (last_key_pressed_ == ui::VKEY_BACK ||
       last_key_pressed_ == ui::VKEY_DELETE || IsArrowKey(last_key_pressed_) ||
       !first_visible_result ||
@@ -1404,7 +1405,7 @@ void SearchBoxView::SetAutocompleteText(
   // Clear existing autocomplete text and reset the highlight range.
   ClearAutocompleteText();
 
-  const std::u16string& current_text = search_box()->GetText();
+  std::u16string_view current_text = search_box()->GetText();
   // Currrent text is a prefix of autocomplete text.
   DCHECK(base::StartsWith(autocomplete_text, current_text,
                           base::CompareCase::INSENSITIVE_ASCII));
@@ -1460,12 +1461,12 @@ SearchBoxView::PlaceholderTextType SearchBoxView::SelectPlaceholderText()
   return kDefaultPlaceholders[rand() % std::size(kDefaultPlaceholders)];
 }
 
-void SearchBoxView::UpdateQuery(const std::u16string& new_query) {
+void SearchBoxView::UpdateQuery(std::u16string_view new_query) {
   SetText(new_query);
-  ContentsChanged(search_box(), new_query);
+  ContentsChanged(search_box(), std::u16string(new_query));
 }
 
-void SearchBoxView::SetText(const std::u16string& text) {
+void SearchBoxView::SetText(std::u16string_view text) {
   search_box()->SetText(text);
   UpdateAccessibleValue();
 }
@@ -1914,8 +1915,9 @@ void SearchBoxView::UpdateAccessibleValue() {
     GetViewAccessibility().RemoveValue();
     return;
   }
-  GetViewAccessibility().SetValue(l10n_util::GetStringFUTF16(
-      IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE, search_box()->GetText()));
+  GetViewAccessibility().SetValue(
+      l10n_util::GetStringFUTF16(IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE,
+                                 std::u16string(search_box()->GetText())));
 }
 
 BEGIN_METADATA(SearchBoxView)

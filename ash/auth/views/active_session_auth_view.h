@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/auth/views/auth_container_view.h"
@@ -46,8 +47,8 @@ class ASH_EXPORT ActiveSessionAuthView : public views::View,
   // request)
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnPasswordSubmit(const std::u16string& password) {}
-    virtual void OnPinSubmit(const std::u16string& pin) {}
+    virtual void OnPasswordSubmit(std::u16string_view password) {}
+    virtual void OnPinSubmit(std::u16string_view pin) {}
     virtual void OnClose() {}
   };
 
@@ -86,8 +87,8 @@ class ASH_EXPORT ActiveSessionAuthView : public views::View,
   void RequestFocus() override;
 
   // AuthContainerView::Observer:
-  void OnPasswordSubmit(const std::u16string& password) override;
-  void OnPinSubmit(const std::u16string& pin) override;
+  void OnPasswordSubmit(std::u16string_view password) override;
+  void OnPinSubmit(std::u16string_view pin) override;
   void OnEscape() override;
   void OnContentsChanged() override;
 
@@ -102,7 +103,7 @@ class ASH_EXPORT ActiveSessionAuthView : public views::View,
   void SetHasPin(bool has_pin);
   bool HasPin() const;
   void SetPinStatus(std::unique_ptr<cryptohome::PinStatus> pin_status);
-  const std::u16string& GetPinStatusMessage() const;
+  std::u16string_view GetPinStatusMessage() const;
 
   // Enables or disables the input area of the view. The header area (e.g.,
   // close button) remains accessible even in the disabled state.

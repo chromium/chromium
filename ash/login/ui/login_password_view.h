@@ -6,6 +6,7 @@
 #define ASH_LOGIN_UI_LOGIN_PASSWORD_VIEW_H_
 
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/ime/ime_controller_impl.h"
@@ -78,7 +79,7 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   };
 
   using OnPasswordSubmit =
-      base::RepeatingCallback<void(const std::u16string& password)>;
+      base::RepeatingCallback<void(std::u16string_view password)>;
   using OnPasswordTextChanged = base::RepeatingCallback<void(bool is_empty)>;
 
   // Must call |Init| after construction.

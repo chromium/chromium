@@ -620,24 +620,15 @@ PaymentRequestBrowserTestBase::GetProfileLabelValues(
   views::View* parent_view = GetByDialogViewID(parent_view_id);
   EXPECT_TRUE(parent_view);
 
-  views::View* view =
-      GetChildByDialogViewID(parent_view, DialogViewID::PROFILE_LABEL_LINE_1);
-  if (view) {
-    line_labels.push_back(static_cast<views::Label*>(view)->GetText());
-  }
-  view =
-      GetChildByDialogViewID(parent_view, DialogViewID::PROFILE_LABEL_LINE_2);
-  if (view) {
-    line_labels.push_back(static_cast<views::Label*>(view)->GetText());
-  }
-  view =
-      GetChildByDialogViewID(parent_view, DialogViewID::PROFILE_LABEL_LINE_3);
-  if (view) {
-    line_labels.push_back(static_cast<views::Label*>(view)->GetText());
-  }
-  view = GetChildByDialogViewID(parent_view, DialogViewID::PROFILE_LABEL_ERROR);
-  if (view) {
-    line_labels.push_back(static_cast<views::Label*>(view)->GetText());
+  for (auto id :
+       {DialogViewID::PROFILE_LABEL_LINE_1, DialogViewID::PROFILE_LABEL_LINE_2,
+        DialogViewID::PROFILE_LABEL_LINE_3,
+        DialogViewID::PROFILE_LABEL_ERROR}) {
+    if (const views::View* const view =
+            GetChildByDialogViewID(parent_view, id)) {
+      line_labels.emplace_back(
+          static_cast<const views::Label*>(view)->GetText());
+    }
   }
 
   return line_labels;
@@ -650,14 +641,13 @@ PaymentRequestBrowserTestBase::GetShippingOptionLabelValues(
   views::View* parent_view = GetByDialogViewID(parent_view_id);
   EXPECT_TRUE(parent_view);
 
-  views::View* view = GetChildByDialogViewID(
-      parent_view, DialogViewID::SHIPPING_OPTION_DESCRIPTION);
-  DCHECK(view);
-  labels.push_back(static_cast<views::Label*>(view)->GetText());
-  view =
-      GetChildByDialogViewID(parent_view, DialogViewID::SHIPPING_OPTION_AMOUNT);
-  DCHECK(view);
-  labels.push_back(static_cast<views::Label*>(view)->GetText());
+  for (auto id : {DialogViewID::SHIPPING_OPTION_DESCRIPTION,
+                  DialogViewID::SHIPPING_OPTION_AMOUNT}) {
+    if (const views::View* const view =
+            GetChildByDialogViewID(parent_view, id)) {
+      labels.emplace_back(static_cast<const views::Label*>(view)->GetText());
+    }
+  }
   return labels;
 }
 
@@ -723,7 +713,7 @@ bool PaymentRequestBrowserTestBase::IsViewVisible(
   return view && view->GetVisible();
 }
 
-std::u16string PaymentRequestBrowserTestBase::GetEditorTextfieldValue(
+std::u16string_view PaymentRequestBrowserTestBase::GetEditorTextfieldValue(
     autofill::FieldType type) {
   ValidatingTextfield* textfield =
       static_cast<ValidatingTextfield*>(delegate_->dialog_view()->GetViewByID(
@@ -796,7 +786,8 @@ bool PaymentRequestBrowserTestBase::IsPayButtonEnabled() {
   return button->GetEnabled();
 }
 
-std::u16string PaymentRequestBrowserTestBase::GetPrimaryButtonLabel() const {
+std::u16string_view PaymentRequestBrowserTestBase::GetPrimaryButtonLabel()
+    const {
   return static_cast<views::MdTextButton*>(
              GetByDialogViewID(DialogViewID::PAY_BUTTON))
       ->GetText();
@@ -839,12 +830,12 @@ views::View* PaymentRequestBrowserTestBase::GetChildByDialogViewID(
   return parent->GetViewByID(static_cast<int>(id));
 }
 
-const std::u16string& PaymentRequestBrowserTestBase::GetLabelText(
+std::u16string_view PaymentRequestBrowserTestBase::GetLabelText(
     DialogViewID view_id) {
   return GetLabelText(view_id, dialog_view());
 }
 
-const std::u16string& PaymentRequestBrowserTestBase::GetLabelText(
+std::u16string_view PaymentRequestBrowserTestBase::GetLabelText(
     DialogViewID view_id,
     views::View* dialog_view) {
   views::View* view = GetChildByDialogViewID(dialog_view, view_id);
@@ -852,14 +843,14 @@ const std::u16string& PaymentRequestBrowserTestBase::GetLabelText(
   return static_cast<views::Label*>(view)->GetText();
 }
 
-const std::u16string& PaymentRequestBrowserTestBase::GetStyledLabelText(
+std::u16string_view PaymentRequestBrowserTestBase::GetStyledLabelText(
     DialogViewID view_id) {
   views::View* view = GetByDialogViewID(view_id);
   DCHECK(view);
   return static_cast<views::StyledLabel*>(view)->GetText();
 }
 
-const std::u16string& PaymentRequestBrowserTestBase::GetErrorLabelForType(
+std::u16string_view PaymentRequestBrowserTestBase::GetErrorLabelForType(
     autofill::FieldType type) {
   views::View* view = dialog_view()->GetViewByID(
       static_cast<int>(DialogViewID::ERROR_LABEL_OFFSET) + type);

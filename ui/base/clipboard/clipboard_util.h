@@ -6,6 +6,7 @@
 #define UI_BASE_CLIPBOARD_CLIPBOARD_UTIL_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -30,7 +31,7 @@ struct BookmarkData {
   std::string url;
 };
 
-bool ShouldSkipBookmark(const std::u16string& title, const std::string& url);
+bool ShouldSkipBookmark(std::u16string_view title, std::string_view url);
 
 }  // namespace ui::clipboard_util
 

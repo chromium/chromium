@@ -189,7 +189,7 @@ void DesktopMediaSourceView::UpdateAccessibleName() {
     GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
         IDS_DESKTOP_MEDIA_SOURCE_EMPTY_ACCESSIBLE_NAME));
   } else {
-    GetViewAccessibility().SetName(label_->GetText());
+    GetViewAccessibility().SetName(std::u16string(label_->GetText()));
   }
 }
 

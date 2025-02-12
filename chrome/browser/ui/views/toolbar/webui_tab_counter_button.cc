@@ -112,7 +112,7 @@ class NumberLabel : public views::Label {
 
   ~NumberLabel() override = default;
 
-  void SetText(const std::u16string& text) override {
+  void SetText(std::u16string_view text) override {
     SetFontList(text.length() > 1 ? double_digit_font_ : single_digit_font_);
     Label::SetText(text);
   }

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACTION_HOVER_CARD_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACTION_HOVER_CARD_BUBBLE_VIEW_H_
 
+#include <string_view>
+
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/tabs/fade_label_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
@@ -42,10 +44,10 @@ class ToolbarActionHoverCardBubbleView
   void SetTextFade(double percent);
 
   // Accessors used by tests.
-  std::u16string GetTitleTextForTesting() const;
-  std::u16string GetActionTitleTextForTesting() const;
-  std::u16string GetSiteAccessTitleTextForTesting() const;
-  std::u16string GetSiteAccessDescriptionTextForTesting() const;
+  std::u16string_view GetTitleTextForTesting() const;
+  std::u16string_view GetActionTitleTextForTesting() const;
+  std::u16string_view GetSiteAccessTitleTextForTesting() const;
+  std::u16string_view GetSiteAccessDescriptionTextForTesting() const;
   bool IsActionTitleVisible() const;
   bool IsSiteAccessSeparatorVisible() const;
   bool IsSiteAccessTitleVisible() const;

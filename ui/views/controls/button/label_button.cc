@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/lazy_instance.h"
@@ -50,7 +51,7 @@ constexpr Button::ButtonState kEnabledStates[] = {
 
 LabelButton::LabelButton(
     PressedCallback callback,
-    const std::u16string& text,
+    std::u16string_view text,
     int button_context,
     std::unique_ptr<LabelButtonImageContainer> image_container)
     : Button(std::move(callback)),
@@ -128,11 +129,11 @@ bool LabelButton::HasImage(ButtonState state) const {
          !button_state_image_models_[state]->IsEmpty();
 }
 
-const std::u16string& LabelButton::GetText() const {
+std::u16string_view LabelButton::GetText() const {
   return label_->GetText();
 }
 
-void LabelButton::SetText(const std::u16string& text) {
+void LabelButton::SetText(std::u16string_view text) {
   SetTextInternal(text);
 }
 
@@ -635,8 +636,8 @@ void LabelButton::StateChanged(ButtonState old_state) {
   VisualStateChanged();
 }
 
-void LabelButton::SetTextInternal(const std::u16string& text) {
-  GetViewAccessibility().SetName(text);
+void LabelButton::SetTextInternal(std::u16string_view text) {
+  GetViewAccessibility().SetName(std::u16string(text));
   label_->SetText(text);
 
   // Setting text cancels ShrinkDownThenClearText().
@@ -763,7 +764,7 @@ void LabelButtonActionViewInterface::ActionItemChangedImpl(
 }
 
 BEGIN_METADATA(LabelButton)
-ADD_PROPERTY_METADATA(std::u16string, Text)
+ADD_PROPERTY_METADATA(std::u16string_view, Text)
 ADD_PROPERTY_METADATA(gfx::HorizontalAlignment, HorizontalAlignment)
 ADD_PROPERTY_METADATA(gfx::Size, MinSize)
 ADD_PROPERTY_METADATA(gfx::Size, MaxSize)

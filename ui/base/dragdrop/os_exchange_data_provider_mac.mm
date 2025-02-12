@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 
 #include "base/apple/foundation_util.h"
 #include "base/check_op.h"
@@ -177,13 +178,13 @@ bool OSExchangeDataProviderMac::IsFromPrivileged() const {
       containsObject:kUTTypeChromiumPrivilegedInitiatedDrag];
 }
 
-void OSExchangeDataProviderMac::SetString(const std::u16string& string) {
+void OSExchangeDataProviderMac::SetString(std::u16string_view string) {
   [GetPasteboard() setString:base::SysUTF16ToNSString(string)
                      forType:NSPasteboardTypeString];
 }
 
 void OSExchangeDataProviderMac::SetURL(const GURL& url,
-                                       const std::u16string& title) {
+                                       std::u16string_view title) {
   NSArray<NSPasteboardItem*>* items = clipboard_util::PasteboardItemsFromUrls(
       @[ base::SysUTF8ToNSString(url.spec()) ],
       @[ base::SysUTF16ToNSString(title) ]);

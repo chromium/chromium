@@ -158,7 +158,7 @@ bool AssistantViewDelegateImpl::ShouldShowOnboarding() const {
 }
 
 void AssistantViewDelegateImpl::OnLauncherSearchChipPressed(
-    const std::u16string& query) {
+    std::u16string_view query) {
   for (auto& observer : view_delegate_observers_) {
     observer.OnLauncherSearchChipPressed(query);
   }

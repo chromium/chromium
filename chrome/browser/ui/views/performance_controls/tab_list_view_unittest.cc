@@ -175,7 +175,7 @@ TEST_F(TabListViewUnitTest, TabListRowViewAccessibleName) {
       data.GetString16Attribute(ax::mojom::StringAttribute::kName),
       l10n_util::GetStringFUTF16(
           IDS_CONCAT_TWO_STRINGS_WITH_COMMA,
-          second_row->GetTitleTextForTesting(),
+          std::u16string(second_row->GetTitleTextForTesting()),
           l10n_util::GetStringUTF16(
               IDS_PERFORMANCE_INTERVENTION_SINGLE_SUGGESTED_ROW_ACCNAME)));
 }

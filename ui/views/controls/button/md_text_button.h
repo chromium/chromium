@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -31,7 +32,7 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
  public:
   explicit MdTextButton(
       PressedCallback callback = PressedCallback(),
-      const std::u16string& text = std::u16string(),
+      std::u16string_view text = {},
       int button_context = style::CONTEXT_BUTTON_MD,
       bool use_text_color_for_icon = true,
       std::unique_ptr<LabelButtonImageContainer> image_container =
@@ -82,7 +83,7 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   // LabelButton:
   void OnThemeChanged() override;
   void SetEnabledTextColors(std::optional<SkColor> color) override;
-  void SetText(const std::u16string& text) override;
+  void SetText(std::u16string_view text) override;
   PropertyEffects UpdateStyleToIndicateDefaultStatus() override;
   void StateChanged(ButtonState old_state) override;
   void SetImageModel(ButtonState for_state,

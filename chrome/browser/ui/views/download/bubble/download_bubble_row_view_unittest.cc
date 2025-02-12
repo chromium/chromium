@@ -129,7 +129,7 @@ TEST_F(DownloadBubbleRowViewTest, UpdateTimeFromCompletedDownload) {
   download_item()->NotifyObserversDownloadUpdated();
   // Get starting label for a finished download and ensure it stays
   // the same until one timer interval.
-  std::u16string row_label = row_view()->GetSecondaryLabelTextForTesting();
+  std::u16string row_label(row_view()->GetSecondaryLabelTextForTesting());
   FastForward(base::Seconds(kTimeSinceDownloadCompletedUpdateSeconds - 1));
   EXPECT_EQ(row_label, row_view()->GetSecondaryLabelTextForTesting());
   // After a timer interval, check to make sure that the label has

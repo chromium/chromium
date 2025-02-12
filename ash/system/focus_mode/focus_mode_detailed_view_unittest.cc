@@ -670,9 +670,10 @@ TEST_F(FocusModeDetailedViewTest,
   auto pod = controller->CreateTile();
 
   auto* timer_textfield = GetTimerSettingTextfield();
-  auto textfield_text_before_increment = timer_textfield->GetText();
+  std::u16string textfield_text_before_increment(timer_textfield->GetText());
   LeftClickOn(GetTimerSettingIncrementButton());
-  auto textfield_text_after_increment = timer_textfield->GetText();
+  std::u16string_view textfield_text_after_increment =
+      timer_textfield->GetText();
   ASSERT_NE(textfield_text_before_increment, textfield_text_after_increment);
   EXPECT_EQ(base::StrCat({textfield_text_after_increment, u" min"}),
             pod->sub_label()->GetText());

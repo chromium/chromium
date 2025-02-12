@@ -64,7 +64,7 @@ class TextfieldModelTest : public ViewsTestBase,
       TextfieldModel* model) const {
     std::vector<std::u16string> selected_texts;
     for (auto range : model->render_text()->GetAllSelections()) {
-      selected_texts.push_back(model->GetTextFromRange(range));
+      selected_texts.emplace_back(model->GetTextFromRange(range));
     }
     return selected_texts;
   }

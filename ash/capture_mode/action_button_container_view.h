@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -65,7 +66,7 @@ class ASH_EXPORT ActionButtonContainerView : public views::View {
     // the try again link is only shown if `try_again_callback` is not null.
     void SetTryAgainCallback(base::RepeatingClosure try_again_callback);
 
-    const std::u16string& GetErrorMessageForTesting() const;
+    std::u16string_view GetErrorMessageForTesting() const;
 
    private:
     std::unique_ptr<SystemShadow> shadow_;

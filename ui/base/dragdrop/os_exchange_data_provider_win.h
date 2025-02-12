@@ -15,6 +15,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -155,8 +156,8 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderWin
   std::optional<url::Origin> GetRendererTaintedOrigin() const override;
   void MarkAsFromPrivileged() override;
   bool IsFromPrivileged() const override;
-  void SetString(const std::u16string& data) override;
-  void SetURL(const GURL& url, const std::u16string& title) override;
+  void SetString(std::u16string_view data) override;
+  void SetURL(const GURL& url, std::u16string_view title) override;
   void SetFilename(const base::FilePath& path) override;
   void SetFilenames(const std::vector<FileInfo>& filenames) override;
   // Test only method for adding virtual file content to the data store. The

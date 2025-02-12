@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_INSIGHTS_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_INSIGHTS_ICON_VIEW_H_
 
+#include <string_view>
+
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -45,8 +47,7 @@ class PriceInsightsIconView : public PageActionIconView {
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
 
-  const std::u16string& GetIconLabelForTesting();
-
+  std::u16string_view GetIconLabelForTesting() const;
   bool IsIconHighlightedForTesting();
 
  protected:

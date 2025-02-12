@@ -118,7 +118,8 @@ void TooltipViewAura::UpdateAccessibleName() {
     return;
   }
 
-  GetViewAccessibility().SetName(render_text_->GetDisplayText());
+  GetViewAccessibility().SetName(
+      std::u16string(render_text_->GetDisplayText()));
 }
 
 void TooltipViewAura::ResetDisplayRect() {

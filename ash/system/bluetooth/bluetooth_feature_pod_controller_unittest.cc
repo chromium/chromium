@@ -5,6 +5,7 @@
 #include "ash/system/bluetooth/bluetooth_feature_pod_controller.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -190,11 +191,11 @@ class BluetoothFeaturePodControllerTest
     return feature_tile_->icon_button()->GetEnabled();
   }
 
-  std::u16string GetButtonLabelText() {
+  std::u16string_view GetButtonLabelText() {
     return feature_tile_->label()->GetText();
   }
 
-  std::u16string GetButtonSubLabelText() {
+  std::u16string_view GetButtonSubLabelText() {
     return feature_tile_->sub_label()->GetText();
   }
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
@@ -373,8 +374,8 @@ std::vector<ExtensionMenuItemView*> ExtensionsMenuMainPageView::GetMenuItems()
   return menu_item_views;
 }
 
-const std::u16string&
-ExtensionsMenuMainPageView::GetSiteSettingLabelForTesting() const {
+std::u16string_view ExtensionsMenuMainPageView::GetSiteSettingLabelForTesting()
+    const {
   CHECK_IS_TEST();
   return site_settings_label_->GetText();
 }

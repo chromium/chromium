@@ -146,7 +146,7 @@ std::u16string ReturnToAppButtonBase::GetPeripheralsAccessibleName() const {
   return tooltip_text;
 }
 
-std::u16string ReturnToAppButtonBase::GetLabelText() const {
+std::u16string_view ReturnToAppButtonBase::GetLabelText() const {
   return label_->GetText();
 }
 

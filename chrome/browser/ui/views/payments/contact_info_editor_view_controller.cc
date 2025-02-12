@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/payments/contact_info_editor_view_controller.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
@@ -153,7 +154,7 @@ void ContactInfoEditorViewController::PopulateProfile(
     autofill::AutofillProfile* profile) {
   for (const auto& field : text_fields()) {
     profile->SetInfoWithVerificationStatus(
-        field.second.type, field.first->GetText(),
+        field.second.type, std::u16string(field.first->GetText()),
         state()->GetApplicationLocale(),
         autofill::VerificationStatus::kUserVerified);
   }
@@ -191,7 +192,7 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
 
 std::u16string
 ContactInfoEditorViewController::ContactInfoValidationDelegate::Format(
-    const std::u16string& text) {
+    std::u16string_view text) {
   return base::UTF8ToUTF16(autofill::i18n::FormatPhoneForDisplay(
       base::UTF16ToUTF8(text),
       autofill::AutofillCountry::CountryCodeForLocale(*locale_)));

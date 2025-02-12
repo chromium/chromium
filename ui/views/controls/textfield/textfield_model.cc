@@ -5,10 +5,13 @@
 #include "ui/views/controls/textfield/textfield_model.h"
 
 #include <algorithm>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
@@ -120,7 +123,7 @@ class Edit {
        std::vector<gfx::Range> old_secondary_selections,
        bool delete_backward,
        size_t new_cursor_pos,
-       const std::u16string& new_text,
+       std::u16string new_text,
        size_t new_text_start)
       : type_(type),
         merge_type_(merge_type),
@@ -130,7 +133,7 @@ class Edit {
         old_secondary_selections_(old_secondary_selections),
         delete_backward_(delete_backward),
         new_cursor_pos_(new_cursor_pos),
-        new_text_(new_text),
+        new_text_(std::move(new_text)),
         new_text_start_(new_text_start) {}
 
   // Each type of edit provides its own specific merge implementation. Assumes
@@ -204,7 +207,7 @@ class Edit {
 // insertion is at the cursor, which will advance by the insertion length.
 class InsertEdit : public Edit {
  public:
-  InsertEdit(bool mergeable, const std::u16string& new_text, size_t at)
+  InsertEdit(bool mergeable, std::u16string new_text, size_t at)
       : Edit(Type::kInsert,
              mergeable ? MergeType::kMergeable : MergeType::kDoNotMerge,
              {} /* old_texts */,
@@ -212,9 +215,14 @@ class InsertEdit : public Edit {
              {gfx::Range(at, at)} /* old_primary_selection */,
              {} /* old_secondary_selections */,
              false /* delete_backward */,
-             at + new_text.length() /* new_cursor_pos */,
-             new_text /* new_text */,
-             at /* new_text_start */) {}
+             0 /* new_cursor_pos -- will be set below */,
+             std::move(new_text) /* new_text */,
+             at /* new_text_start */) {
+    // Why not just pass `at + new_text.length()` as the appropriate arg above?
+    // Because we don't know what order those args will be evaluated in, so
+    // `new_text_` may already be moved-from at that point.
+    new_cursor_pos_ = at + new_text_.length();
+  }
 
   // Merge if |edit| is an insertion continuing forward where |this| ended. E.g.
   // If |this| changed "ab|c" to "abX|c", an edit to "abXY|c" can be merged.
@@ -242,7 +250,7 @@ class ReplaceEdit : public Edit {
               std::vector<gfx::Range> old_secondary_selections,
               bool backward,
               size_t new_cursor_pos,
-              const std::u16string& new_text,
+              std::u16string new_text,
               size_t new_text_start)
       : Edit(Type::kReplace,
              merge_type,
@@ -252,7 +260,7 @@ class ReplaceEdit : public Edit {
              old_secondary_selections,
              backward,
              new_cursor_pos,
-             new_text,
+             std::move(new_text),
              new_text_start) {}
 
   // Merge if |edit| is an insertion or replacement continuing forward where
@@ -362,7 +370,7 @@ std::u16string* GetKillBuffer() {
 }
 
 // Helper method to set the kill buffer.
-void SetKillBuffer(const std::u16string& buffer) {
+void SetKillBuffer(std::u16string_view buffer) {
   std::u16string* kill_buffer = GetKillBuffer();
   *kill_buffer = buffer;
 }
@@ -401,7 +409,7 @@ TextfieldModel::~TextfieldModel() {
   ClearComposition();
 }
 
-bool TextfieldModel::SetText(const std::u16string& new_text,
+bool TextfieldModel::SetText(std::u16string_view new_text,
                              size_t cursor_position) {
   using MergeType = internal::MergeType;
   bool changed = false;
@@ -417,20 +425,21 @@ bool TextfieldModel::SetText(const std::u16string& new_text,
     // Otherwise, force merge the edits.
     ExecuteAndRecordReplace(
         changed ? MergeType::kDoNotMerge : MergeType::kForceMerge,
-        {gfx::Range(0, text().length())}, cursor_position, new_text, 0U);
+        {gfx::Range(0, text().length())}, cursor_position,
+        std::u16string(new_text), 0U);
   }
   ClearSelection();
   return changed;
 }
 
-void TextfieldModel::Append(const std::u16string& new_text) {
+void TextfieldModel::Append(std::u16string new_text) {
   if (HasCompositionText()) {
     ConfirmCompositionText();
   }
   size_t save = GetCursorPosition();
   MoveCursor(gfx::LINE_BREAK, render_text_->GetVisualDirectionOfLogicalEnd(),
              gfx::SELECTION_NONE);
-  InsertText(new_text);
+  InsertText(std::move(new_text));
   render_text_->SetCursorPosition(save);
   ClearSelection();
 }
@@ -535,7 +544,7 @@ bool TextfieldModel::MoveCursorTo(const gfx::Point& point, bool select) {
   return render_text_->MoveCursorToPoint(point, select);
 }
 
-std::u16string TextfieldModel::GetSelectedText() const {
+std::u16string_view TextfieldModel::GetSelectedText() const {
   return GetTextFromRange(render_text_->selection());
 }
 
@@ -597,8 +606,8 @@ bool TextfieldModel::Undo() {
     CancelCompositionText();
   }
 
-  std::u16string old = text();
-  size_t old_cursor = GetCursorPosition();
+  const std::u16string old(text());
+  const size_t old_cursor = GetCursorPosition();
   (*current_edit_)->Commit();
   (*current_edit_)->Undo(this);
 
@@ -624,8 +633,8 @@ bool TextfieldModel::Redo() {
   } else {
     ++current_edit_;
   }
-  std::u16string old = text();
-  size_t old_cursor = GetCursorPosition();
+  const std::u16string old(text());
+  const size_t old_cursor = GetCursorPosition();
   (*current_edit_)->Redo(this);
   return old != text() || old_cursor != GetCursorPosition();
 }
@@ -660,7 +669,7 @@ bool TextfieldModel::Paste() {
   }
 
   if (render_text()->multiline()) {
-    InsertTextInternal(text, false);
+    InsertTextInternal(std::move(text), false);
     return true;
   }
 
@@ -676,7 +685,7 @@ bool TextfieldModel::Paste() {
     text = u" ";
   }
 
-  InsertTextInternal(text, false);
+  InsertTextInternal(std::move(text), false);
   return true;
 }
 
@@ -704,11 +713,10 @@ bool TextfieldModel::Transpose() {
   }
 
   SelectRange(gfx::Range(prev, next));
-  std::u16string text = GetSelectedText();
-  std::u16string transposed_text =
-      text.substr(cur - prev) + text.substr(0, cur - prev);
-
-  InsertTextInternal(transposed_text, false);
+  const std::u16string_view text = GetSelectedText();
+  InsertTextInternal(
+      base::StrCat({text.substr(cur - prev), text.substr(0, cur - prev)}),
+      false);
   return true;
 }
 
@@ -737,7 +745,7 @@ void TextfieldModel::DeleteSelection() {
 }
 
 void TextfieldModel::DeletePrimarySelectionAndInsertTextAt(
-    const std::u16string& new_text,
+    std::u16string new_text,
     size_t position) {
   using MergeType = internal::MergeType;
   if (HasCompositionText()) {
@@ -745,11 +753,13 @@ void TextfieldModel::DeletePrimarySelectionAndInsertTextAt(
   }
   // We don't use |ExecuteAndRecordReplaceSelection| because that assumes the
   // insertion occurs at the cursor.
+  const size_t new_pos = position + new_text.length();
   ExecuteAndRecordReplace(MergeType::kDoNotMerge, {render_text_->selection()},
-                          position + new_text.length(), new_text, position);
+                          new_pos, std::move(new_text), position);
 }
 
-std::u16string TextfieldModel::GetTextFromRange(const gfx::Range& range) const {
+std::u16string_view TextfieldModel::GetTextFromRange(
+    const gfx::Range& range) const {
   return render_text_->GetTextFromRange(range);
 }
 
@@ -770,8 +780,8 @@ void TextfieldModel::SetCompositionText(
   }
 
   size_t cursor = GetCursorPosition();
-  std::u16string new_text = text();
-  SetRenderTextText(new_text.insert(cursor, composition.text));
+  SetRenderTextText(base::StrCat(
+      {text().substr(0, cursor), composition.text, text().substr(cursor)}));
   composition_range_ = gfx::Range(cursor, cursor + composition.text.length());
   // Don't render IME spans with thickness "kNone".
   if (composition.ime_text_spans.size() > 0 &&
@@ -811,13 +821,14 @@ void TextfieldModel::SetCompositionFromExistingText(const gfx::Range& range) {
 
 size_t TextfieldModel::ConfirmCompositionText() {
   DCHECK(HasCompositionText());
-  std::u16string composition =
-      text().substr(composition_range_.start(), composition_range_.length());
   size_t composition_length = composition_range_.length();
   // TODO(oshima): current behavior on ChromeOS is a bit weird and not
   // sure exactly how this should work. Find out and fix if necessary.
   AddOrMergeEditHistory(std::make_unique<internal::InsertEdit>(
-      false, composition, composition_range_.start()));
+      false,
+      std::u16string(text().substr(composition_range_.start(),
+                                   composition_range_.length())),
+      composition_range_.start()));
   render_text_->SetCursorPosition(composition_range_.end());
   ClearComposition();
   if (delegate_) {
@@ -830,8 +841,9 @@ void TextfieldModel::CancelCompositionText() {
   DCHECK(HasCompositionText());
   gfx::Range range = composition_range_;
   ClearComposition();
-  std::u16string new_text = text();
-  SetRenderTextText(new_text.erase(range.start(), range.length()));
+  SetRenderTextText(
+      base::StrCat({text().substr(0, range.start()),
+                    text().substr(range.start() + range.length())}));
   render_text_->SetCursorPosition(range.start());
   if (delegate_) {
     delegate_->OnCompositionTextConfirmedOrCleared();
@@ -859,21 +871,22 @@ void TextfieldModel::ClearEditHistory() {
 /////////////////////////////////////////////////////////////////
 // TextfieldModel: private
 
-void TextfieldModel::InsertTextInternal(const std::u16string& new_text,
+void TextfieldModel::InsertTextInternal(std::u16string new_text,
                                         bool mergeable) {
   using MergeType = internal::MergeType;
   if (HasCompositionText()) {
     CancelCompositionText();
-    ExecuteAndRecordInsert(new_text, mergeable);
+    ExecuteAndRecordInsert(std::move(new_text), mergeable);
   } else if (HasSelection()) {
     ExecuteAndRecordReplaceSelection(
-        mergeable ? MergeType::kMergeable : MergeType::kDoNotMerge, new_text);
+        mergeable ? MergeType::kMergeable : MergeType::kDoNotMerge,
+        std::move(new_text));
   } else {
-    ExecuteAndRecordInsert(new_text, mergeable);
+    ExecuteAndRecordInsert(std::move(new_text), mergeable);
   }
 }
 
-void TextfieldModel::ReplaceTextInternal(const std::u16string& new_text,
+void TextfieldModel::ReplaceTextInternal(std::u16string new_text,
                                          bool mergeable) {
   if (HasCompositionText()) {
     CancelCompositionText();
@@ -891,7 +904,7 @@ void TextfieldModel::ReplaceTextInternal(const std::u16string& new_text,
     }
   }
   // Edit history is recorded in InsertText.
-  InsertTextInternal(new_text, mergeable);
+  InsertTextInternal(std::move(new_text), mergeable);
 }
 
 void TextfieldModel::ClearRedoHistory() {
@@ -917,7 +930,7 @@ void TextfieldModel::ExecuteAndRecordDelete(std::vector<gfx::Range> ranges,
   std::vector<std::u16string> old_texts;
   std::vector<size_t> old_text_starts;
   for (const auto& range : ranges) {
-    old_texts.push_back(GetTextFromRange(range));
+    old_texts.emplace_back(GetTextFromRange(range));
     old_text_starts.push_back(range.GetMin());
   }
 
@@ -932,21 +945,21 @@ void TextfieldModel::ExecuteAndRecordDelete(std::vector<gfx::Range> ranges,
 
 void TextfieldModel::ExecuteAndRecordReplaceSelection(
     internal::MergeType merge_type,
-    const std::u16string& new_text) {
+    std::u16string new_text) {
   auto replacement_ranges = render_text_->GetAllSelections();
   size_t new_text_start =
       adjust_position_for_removals(GetCursorPosition(), replacement_ranges);
   size_t new_cursor_pos = new_text_start + new_text.length();
 
   ExecuteAndRecordReplace(merge_type, replacement_ranges, new_cursor_pos,
-                          new_text, new_text_start);
+                          std::move(new_text), new_text_start);
 }
 
 void TextfieldModel::ExecuteAndRecordReplace(
     internal::MergeType merge_type,
     std::vector<gfx::Range> replacement_ranges,
     size_t new_cursor_pos,
-    const std::u16string& new_text,
+    std::u16string new_text,
     size_t new_text_start) {
   // We need only check replacement_ranges[0] as |delete_backwards_| is
   // irrelevant for multi-range deletions which can't be merged anyways.
@@ -956,22 +969,22 @@ void TextfieldModel::ExecuteAndRecordReplace(
   std::vector<std::u16string> old_texts;
   std::vector<size_t> old_text_starts;
   for (const auto& range : replacement_ranges) {
-    old_texts.push_back(GetTextFromRange(range));
+    old_texts.emplace_back(GetTextFromRange(range));
     old_text_starts.push_back(range.GetMin());
   }
 
   auto edit = std::make_unique<internal::ReplaceEdit>(
       merge_type, old_texts, old_text_starts, render_text_->selection(),
-      render_text_->secondary_selections(), backward, new_cursor_pos, new_text,
-      new_text_start);
+      render_text_->secondary_selections(), backward, new_cursor_pos,
+      std::move(new_text), new_text_start);
   edit->Redo(this);
   AddOrMergeEditHistory(std::move(edit));
 }
 
-void TextfieldModel::ExecuteAndRecordInsert(const std::u16string& new_text,
+void TextfieldModel::ExecuteAndRecordInsert(std::u16string new_text,
                                             bool mergeable) {
-  auto edit = std::make_unique<internal::InsertEdit>(mergeable, new_text,
-                                                     GetCursorPosition());
+  auto edit = std::make_unique<internal::InsertEdit>(
+      mergeable, std::move(new_text), GetCursorPosition());
   edit->Redo(this);
   AddOrMergeEditHistory(std::move(edit));
 }
@@ -1004,7 +1017,7 @@ void TextfieldModel::ModifyText(
     const gfx::Range& primary_selection,
     const std::vector<gfx::Range>& secondary_selections) {
   DCHECK_EQ(insertion_texts.size(), insertion_positions.size());
-  std::u16string old_text = text();
+  std::u16string old_text(text());
   ClearComposition();
 
   for (auto deletion : deletions) {
@@ -1025,8 +1038,8 @@ void TextfieldModel::ModifyText(
   }
 }
 
-void TextfieldModel::SetRenderTextText(const std::u16string& text) {
-  render_text_->SetText(text);
+void TextfieldModel::SetRenderTextText(std::u16string text) {
+  render_text_->SetText(std::move(text));
   if (delegate_) {
     delegate_->OnTextChanged();
   }

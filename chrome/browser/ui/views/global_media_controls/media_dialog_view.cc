@@ -578,7 +578,7 @@ void MediaDialogView::InitializeLiveCaptionSection() {
   live_caption_button->SetIsOn(
       profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
   live_caption_button->GetViewAccessibility().SetName(
-      live_caption_title_->GetText());
+      std::u16string(live_caption_title_->GetText()));
   live_caption_button_ =
       live_caption_container->AddChildView(std::move(live_caption_button));
 
@@ -625,7 +625,7 @@ void MediaDialogView::InitializeLiveTranslateSection() {
   live_translate_button->SetIsOn(
       profile_->GetPrefs()->GetBoolean(prefs::kLiveTranslateEnabled));
   live_translate_button->GetViewAccessibility().SetName(
-      live_translate_title_->GetText());
+      std::u16string(live_translate_title_->GetText()));
   auto* live_translate_container_layout =
       live_translate_container->SetLayoutManager(
           std::make_unique<views::BoxLayout>(

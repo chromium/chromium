@@ -8,6 +8,7 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -1269,7 +1270,7 @@ bool OmniboxEditModel::OnSpacePressed() {
 }
 
 bool OmniboxEditModel::MaybeAccelerateKeywordSelection(
-    const std::u16string& input_text,
+    std::u16string_view input_text,
     char16_t ch) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Only check for acceleration when the current input text is "@" exactly.
