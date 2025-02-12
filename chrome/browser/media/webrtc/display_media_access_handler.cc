@@ -57,16 +57,6 @@
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #endif
 
-#if defined(TOOLKIT_VIEWS)
-// If enabled, a capture request on the opener tab of a Picture in Picture
-// window will show up in the PiP window instead if the PiP window is active.
-// Otherwise, it will show up in the opener because that's where the capture
-// request originated.
-BASE_FEATURE(kDisplayCaptureUiInPipIfActive,
-             "DisplayCaptureUiInPipIfActive",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // defined(TOOLKIT_VIEWS)
-
 namespace {
 
 constexpr UrlIdentity::TypeSet allowed_types = {
@@ -176,8 +166,7 @@ void DisplayMediaAccessHandler::HandleRequest(
   //
   // TODO(emircan): Remove this once Mac UI doesn't use a window.
   if (web_contents->GetVisibility() != content::Visibility::VISIBLE &&
-      !(base::FeatureList::IsEnabled(kDisplayCaptureUiInPipIfActive) &&
-        web_contents->HasPictureInPictureDocument()) &&
+      !web_contents->HasPictureInPictureDocument() &&
       request.request_type != blink::MEDIA_DEVICE_UPDATE) {
     LOG(ERROR) << "Do not allow getDisplayMedia() on a backgrounded page.";
     std::move(callback).Run(
@@ -424,34 +413,32 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
   // If `web_contents` is the opener of a Document Picture in Picture window,
   // and if the pip window currently has the focus, then show the request in the
   // pip window instead.
-  if (base::FeatureList::IsEnabled(kDisplayCaptureUiInPipIfActive)) {
-    if (content::WebContents* const child_web_contents =
-            web_contents->HasPictureInPictureDocument()
-                ? PictureInPictureWindowManager::GetInstance()
-                      ->GetChildWebContents()
-                : nullptr) {
-      // There should not be more than one pip window.  If `web_contents`
-      // believes that it is a document pip opener, then make sure that the
-      // window manager agrees with it.
-      CHECK_EQ(PictureInPictureWindowManager::GetInstance()->GetWebContents(),
-               web_contents);
+  if (content::WebContents* const child_web_contents =
+          web_contents->HasPictureInPictureDocument()
+              ? PictureInPictureWindowManager::GetInstance()
+                    ->GetChildWebContents()
+              : nullptr) {
+    // There should not be more than one pip window.  If `web_contents`
+    // believes that it is a document pip opener, then make sure that the
+    // window manager agrees with it.
+    CHECK_EQ(PictureInPictureWindowManager::GetInstance()->GetWebContents(),
+             web_contents);
 
-      // The media-picker prompt will be associated with the PiP window if the
-      // user's last interaction was with the PiP. (This heuristic could in the
-      // future be replaced with an explicit control surface exposed to the
-      // app.)
-      //
-      // Note that `RenderWidgetHostView::HasFocus()` does not work as expected
-      // on Mac; it always returns true.  The Widget's activation state is what
-      // tracks the state we care about.  It's not 100% accurate either as a
-      // proxy for "the user's last interaction", but it's good enough.
-      if (gfx::NativeWindow native_window =
-              child_web_contents->GetTopLevelNativeWindow()) {
-        if (auto* browser_view =
-                BrowserView::GetBrowserViewForNativeWindow(native_window)) {
-          if (browser_view->frame()->IsActive()) {
-            ui_web_contents = child_web_contents;
-          }
+    // The media-picker prompt will be associated with the PiP window if the
+    // user's last interaction was with the PiP. (This heuristic could in the
+    // future be replaced with an explicit control surface exposed to the
+    // app.)
+    //
+    // Note that `RenderWidgetHostView::HasFocus()` does not work as expected
+    // on Mac; it always returns true.  The Widget's activation state is what
+    // tracks the state we care about.  It's not 100% accurate either as a
+    // proxy for "the user's last interaction", but it's good enough.
+    if (gfx::NativeWindow native_window =
+            child_web_contents->GetTopLevelNativeWindow()) {
+      if (auto* browser_view =
+              BrowserView::GetBrowserViewForNativeWindow(native_window)) {
+        if (browser_view->frame()->IsActive()) {
+          ui_web_contents = child_web_contents;
         }
       }
     }
