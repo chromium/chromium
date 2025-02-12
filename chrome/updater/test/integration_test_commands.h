@@ -211,7 +211,8 @@ class IntegrationTestCommands
   virtual void RunOfflineInstall(bool is_legacy_install,
                                  bool is_silent_install) = 0;
   virtual void RunOfflineInstallOsNotSupported(bool is_legacy_install,
-                                               bool is_silent_install) = 0;
+                                               bool is_silent_install,
+                                               const std::string& language) = 0;
   virtual void DMPushEnrollmentToken(const std::string& enrollment_token) = 0;
   virtual void DMDeregisterDevice() = 0;
   virtual void DMCleanup() = 0;
