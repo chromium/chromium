@@ -32,7 +32,7 @@ load("./branches.star", "branches")
 load("./builder_config.star", "register_builder_config")
 load("./builder_exemptions.star", "exempted_from_description_builders")
 load("./builder_health_indicators.star", "register_health_spec")
-load("./consoles.star", "register_builder_to_console_view")
+load("./consoles.star", "consoles", "register_builder_to_console_view")
 load("./gn_args.star", "register_gn_args")
 load("./nodes.star", "nodes")
 load("./recipe_experiments.star", "register_recipe_experiments_ref")
@@ -125,6 +125,9 @@ def _rotation(name):
         value = [name],
     )
 
+def _gardener_rotation_name(rotation):
+    return rotation + " rotation"
+
 # Gardener rotations that a builder can be added to (only takes effect on trunk)
 # New rotations can be added, but won't automatically show up in SoM without
 # changes to SoM code.
@@ -161,6 +164,20 @@ _DEFAULT_BUILDERLESS_OS_CATEGORIES = [os_category.LINUX, os_category.WINDOWS]
 # Macs all have SSDs, so it doesn't make sense to use the default behavior of
 # setting ssd:0 dimension
 _EXCLUDE_BUILDERLESS_SSD_OS_CATEGORIES = [os_category.MAC]
+
+# TODO(crbug.com/394945600): Remove this after migrating existing builders and
+# the short name is a required parameter for gardened builders.
+def _default_short_name(name):
+    words = [name]
+    for s in (" ", "-", "_"):
+        parts = [word.replace("(", "").split(s) for word in words]
+        words = []
+        for new_parts in parts:
+            words = args.listify(
+                words,
+                new_parts,
+            )
+    return "".join([part[0].upper() + part[1:3] for part in words])
 
 def _code_coverage_property(
         *,
@@ -440,6 +457,8 @@ def builder(
         pool = args.DEFAULT,
         ssd = args.DEFAULT,
         gardener_rotations = None,
+        gardener_rotation_console_category = None,
+        gardener_rotation_console_short_name = None,
         xcode = args.DEFAULT,
         console_view_entry = None,
         list_view = args.DEFAULT,
@@ -593,6 +612,12 @@ def builder(
         gardener_rotations: A string or list of strings identifying the gardener
             rotations that the builder should be included in. Will be merged
             with the module-level default.
+        gardener_rotation_console_category: A string to use as the category in
+            the gardener rotation console. This value is only used when a
+            gardener_rotations value is present.
+        gardener_rotation_console_short_name: A string to use as the short name
+            in the gardener rotation console. This value is only used when a
+            gardener_rotations value is present.
         xcode: a member of the `xcode` enum indicating the xcode version the
             builder requires. Emits a cache declaration of the form
             ```{
@@ -842,6 +867,14 @@ def builder(
         # TODO(343503161): Remove gardener_rotations after SoM is updated.
         properties["sheriff_rotations"] = gardener_rotations
         properties["gardener_rotations"] = gardener_rotations
+
+    if gardener_rotation_console_category and not gardener_rotations:
+        fail("gardener_rotations must also be set when " +
+             "gardener_rotation_console_category is set")
+
+    if gardener_rotation_console_short_name and not gardener_rotations:
+        fail("gardener_rotations must also be set when " +
+             "gardener_rotation_console_short_name is set")
 
     ssd = defaults.get_value("ssd", ssd)
     if ssd == args.COMPUTE:
@@ -1127,6 +1160,19 @@ def builder(
             entries = [console_view_entry]
         else:
             entries = console_view_entry
+        for rotation in gardener_rotations:
+            rotations = [getattr(builders.gardener_rotations, a) for a in dir(builders.gardener_rotations)]
+            if any([r and r[0] == rotation for r in rotations]):
+                console_view = _gardener_rotation_name(rotation)
+                default_short_name = _default_short_name(name)
+                entries = args.listify(
+                    entries,
+                    consoles.console_view_entry(
+                        console_view = _gardener_rotation_name(rotation),
+                        category = gardener_rotation_console_category,
+                        short_name = gardener_rotation_console_short_name or default_short_name,
+                    ),
+                )
         entries_without_console_view = [
             e
             for e in entries
@@ -1189,5 +1235,6 @@ builders = struct(
     defaults = defaults,
     os = os,
     gardener_rotations = gardener_rotations,
+    gardener_rotation_name = _gardener_rotation_name,
     free_space = free_space,
 )

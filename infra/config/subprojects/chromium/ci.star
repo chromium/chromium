@@ -149,6 +149,14 @@ luci.gitiles_poller(
     ("mirrors", "{} CQ Mirrors Console".format(settings.project_title)),
 )]
 
+def register_gardener_rotation_consoles():
+    rotations = [getattr(builders.gardener_rotations, a) for a in dir(builders.gardener_rotations)]
+    for rotation in rotations:
+        if rotation and len(rotation) > 0:
+            consoles.console_view(name = builders.gardener_rotation_name(rotation[0]))
+
+register_gardener_rotation_consoles()
+
 # The main console includes some entries for builders from the chrome project
 [branches.console_view_entry(
     console_view = "main",

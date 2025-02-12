@@ -52,6 +52,8 @@ rules {
         arg: "free_space"
         arg: "gce"
         arg: "gardener_rotations"
+        arg: "gardener_rotation_console_category"
+        arg: "gardener_rotation_console_short_name"
         arg: "tree_closing"
         arg: "console_view_entry"
         arg: "main_console_view"
