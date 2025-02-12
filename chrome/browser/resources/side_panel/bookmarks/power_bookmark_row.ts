@@ -182,7 +182,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   override async getUpdateComplete() {
     // Wait for all children to update before marking as complete.
     const result = await super.getUpdateComplete();
-    const children = [...this.shadowRoot!.querySelectorAll<CrLitElement>(
+    const children = [...this.shadowRoot.querySelectorAll<CrLitElement>(
         'power-bookmark-row')];
     await Promise.all(children.map(el => el.updateComplete));
     return result;
@@ -193,7 +193,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   }
 
   private onKeydown_(e: KeyboardEvent) {
-    if (this.shadowRoot!.activeElement !== this.currentUrlListItem_) {
+    if (this.shadowRoot.activeElement !== this.currentUrlListItem_) {
       return;
     }
     if (e.shiftKey && e.key === 'Tab') {
@@ -226,7 +226,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   }
 
   get currentUrlListItem_(): CrLitElement&CrUrlListItemElement {
-    return this.shadowRoot!.querySelector<CrLitElement&CrUrlListItemElement>(
+    return this.shadowRoot.querySelector<CrLitElement&CrUrlListItemElement>(
         '#crUrlListItem')!;
   }
 
@@ -278,7 +278,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   }
 
   private onInputDisplayChange_() {
-    const input = this.shadowRoot!.querySelector<CrInputElement>('#input');
+    const input = this.shadowRoot.querySelector<CrInputElement>('#input');
     if (input) {
       input.select();
     }
@@ -308,7 +308,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
       // Clicking the row should trigger a checkbox click rather than a
       // standard row click.
       const checkbox =
-          this.shadowRoot!.querySelector<CrCheckboxElement>('#checkbox')!;
+          this.shadowRoot.querySelector<CrCheckboxElement>('#checkbox')!;
       checkbox.checked = !checkbox.checked;
       return;
     }
@@ -402,7 +402,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
     event.preventDefault();
     event.stopPropagation();
     const inputElement =
-        this.shadowRoot!.querySelector<CrInputElement>('#input')!;
+        this.shadowRoot.querySelector<CrInputElement>('#input')!;
     this.dispatchEvent(this.createInputChangeEvent_(inputElement.value));
   }
 

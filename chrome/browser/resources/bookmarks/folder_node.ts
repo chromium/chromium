@@ -178,7 +178,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
     }
 
     this.changeKeyboardSelection_(
-        xDirection, yDirection, this.shadowRoot!.activeElement);
+        xDirection, yDirection, this.shadowRoot.activeElement);
 
     if (!handled) {
       handled = BookmarksCommandManagerElement.getInstance().handleKeyEvent(
@@ -323,8 +323,8 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
   }
 
   private getChildFolderNodes_(): BookmarksFolderNodeElement[] {
-    return Array.from(this.shadowRoot!.querySelectorAll(
-        'bookmarks-folder-node'));
+    return Array.from(
+        this.shadowRoot.querySelectorAll('bookmarks-folder-node'));
   }
 
   /**

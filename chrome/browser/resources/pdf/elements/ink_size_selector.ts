@@ -104,7 +104,7 @@ export class InkSizeSelectorElement extends InkSizeSelectorElementBase {
 
     const newSize = brushSizes[newIndex]!.size;
     const newSizeButton =
-        this.shadowRoot!.querySelector<HTMLElement>(`[data-size='${newSize}']`);
+        this.shadowRoot.querySelector<HTMLElement>(`[data-size='${newSize}']`);
     assert(newSizeButton);
     this.setBrushSize_(newSizeButton);
     newSizeButton.focus();

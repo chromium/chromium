@@ -2055,7 +2055,7 @@ export class AppElement extends AppElementBase {
     // boundaries to know when we've reached the bottom of the window and need
     // to scroll so the rest of the current highlight is showing.
     assert(this.shadowRoot);
-    const currentHighlights = this.shadowRoot!.querySelectorAll<HTMLElement>(
+    const currentHighlights = this.shadowRoot.querySelectorAll<HTMLElement>(
         '.' + currentReadHighlightClass);
     if (!currentHighlights) {
       return;

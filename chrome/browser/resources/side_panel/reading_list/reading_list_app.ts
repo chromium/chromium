@@ -134,7 +134,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     this.apiProxy_.updateCurrentPageActionButtonState();
 
     this.readingListEventTracker_.add(
-        this.shadowRoot!, MARKED_AS_READ_UI_EVENT,
+        this.shadowRoot, MARKED_AS_READ_UI_EVENT,
         this.onMarkedAsRead_.bind(this));
   }
 
@@ -150,7 +150,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     this.unregisterHelpBubble(READING_LIST_UNREAD_ELEMENT_ID);
 
     this.readingListEventTracker_.remove(
-        this.shadowRoot!, MARKED_AS_READ_UI_EVENT);
+        this.shadowRoot, MARKED_AS_READ_UI_EVENT);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -175,7 +175,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
         ADD_CURRENT_TAB_ELEMENT_ID, '#currentPageActionButton');
 
     const firstUnreadItem =
-        this.shadowRoot!.querySelector<HTMLElement>('.unread-item');
+        this.shadowRoot.querySelector<HTMLElement>('.unread-item');
     if (firstUnreadItem) {
       this.registerHelpBubble(READING_LIST_UNREAD_ELEMENT_ID, firstUnreadItem);
     }
@@ -196,7 +196,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     this.apiProxy_.getWindowData().then(({windows}) => {
       const activeWindow = windows.find((w) => w.active);
       const windowHeight =
-          activeWindow ? activeWindow!.height : windows[0]!.height;
+          activeWindow ? activeWindow.height : windows[0]!.height;
       this.minViewportHeight_ = windowHeight - this.$.footer.offsetHeight;
     });
   }

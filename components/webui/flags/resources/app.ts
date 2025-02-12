@@ -171,7 +171,7 @@ export class FlagsAppElement extends CrLitElement {
       HTMLElementTagNameMap[K];
   getRequiredElement<E extends HTMLElement = HTMLElement>(query: string): E;
   getRequiredElement(query: string) {
-    const el = this.shadowRoot!.querySelector(query);
+    const el = this.shadowRoot.querySelector(query);
     assert(el);
     assert(el instanceof HTMLElement);
     return el;
@@ -256,7 +256,7 @@ export class FlagsAppElement extends CrLitElement {
           loadTimeData.getString('deprecatedPageWarningExplanation');
       this.$.search.placeholder =
           loadTimeData.getString('deprecatedSearchPlaceholder');
-      for (const element of this.shadowRoot!.querySelectorAll('.no-match')) {
+      for (const element of this.shadowRoot.querySelectorAll('.no-match')) {
         element.textContent = loadTimeData.getString('deprecatedNoResults');
       }
     }
@@ -327,7 +327,7 @@ export class FlagsAppElement extends CrLitElement {
 
     // Available experiments
     const availableExperiments =
-        this.shadowRoot!.querySelectorAll<FlagsExperimentElement>(
+        this.shadowRoot.querySelectorAll<FlagsExperimentElement>(
             '#tab-content-available flags-experiment');
     const availableExperimentsHits =
         await highlightAllMatches(availableExperiments, searchTerm);
@@ -338,7 +338,7 @@ export class FlagsAppElement extends CrLitElement {
     // <if expr="not is_ios">
     // Unavailable experiments, which are undefined on iOS.
     const unavailableExperiments =
-        this.shadowRoot!.querySelectorAll<FlagsExperimentElement>(
+        this.shadowRoot.querySelectorAll<FlagsExperimentElement>(
             '#tab-content-unavailable flags-experiment');
     const unavailableExperimentsHits =
         await highlightAllMatches(unavailableExperiments, searchTerm);
@@ -406,13 +406,13 @@ export class FlagsAppElement extends CrLitElement {
       return;
     }
 
-    const experiment = this.shadowRoot!.querySelector(window.location.hash);
+    const experiment = this.shadowRoot.querySelector(window.location.hash);
     if (!experiment || experiment.classList.contains('referenced')) {
       return;
     }
 
     // Unhighlight whatever's highlighted.
-    const previous = this.shadowRoot!.querySelector('.referenced');
+    const previous = this.shadowRoot.querySelector('.referenced');
     if (previous) {
       previous.classList.remove('referenced');
     }

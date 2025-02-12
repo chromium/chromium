@@ -167,7 +167,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
         this.onToastClicked_(e);
 
     // <if expr="_google_chrome">
-    this.mojoHandler_!.isEligibleForEsbPromo().then((result) => {
+    this.mojoHandler_.isEligibleForEsbPromo().then((result) => {
       this.isEligibleForEsbPromo_ = result.result;
     });
     // </if>

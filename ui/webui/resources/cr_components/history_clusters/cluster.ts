@@ -173,7 +173,7 @@ export class ClusterElement extends ClusterElementBase {
     if (changedPrivateProperties.has('label_') && this.label_ !== 'no_label' &&
         this.cluster) {
       insertHighlightedTextWithMatchesIntoElement(
-          this.$.label, this.cluster.label!, this.cluster.labelMatchPositions);
+          this.$.label, this.cluster.label, this.cluster.labelMatchPositions);
     }
     if (changedPrivateProperties.has('imageUrl_')) {
       // iron-list can't handle our size changing because of loading an image

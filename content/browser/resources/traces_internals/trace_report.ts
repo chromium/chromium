@@ -178,7 +178,7 @@ export class TraceReportElement extends CrLitElement {
         bytes = new Uint8Array(data.bytes);
       } else {
         assert(!!data.sharedMemory, 'sharedMemory must be defined here');
-        const sharedMemory = data.sharedMemory!;
+        const sharedMemory = data.sharedMemory;
         const {buffer, result} =
             sharedMemory.bufferHandle.mapBuffer(0, sharedMemory.size);
         assert(result === Mojo.RESULT_OK, 'Could not map buffer');

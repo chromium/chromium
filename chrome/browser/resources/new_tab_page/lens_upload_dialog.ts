@@ -218,9 +218,9 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     this.updateComplete.then(() => {
       this.attachOutsideHandler_();
       if (this.isOffline_) {
-        this.shadowRoot!.getElementById('offlineRetryButton')!.focus();
+        this.shadowRoot.getElementById('offlineRetryButton')!.focus();
       } else {
-        this.shadowRoot!.getElementById('uploadText')!.focus();
+        this.shadowRoot.getElementById('uploadText')!.focus();
       }
     });
     recordLensUploadDialogAction(LensUploadDialogAction.DIALOG_OPENED);
@@ -293,9 +293,9 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     } else if (event.key === EventKeys.TAB && event.shiftKey) {
       event.preventDefault();
       if (this.isNormalOrError_) {
-        this.shadowRoot!.getElementById('inputSubmit')!.focus();
+        this.shadowRoot.getElementById('inputSubmit')!.focus();
       } else if (this.isOffline_) {
-        this.shadowRoot!.getElementById('offlineRetryButton')!.focus();
+        this.shadowRoot.getElementById('offlineRetryButton')!.focus();
       }
     }
   }

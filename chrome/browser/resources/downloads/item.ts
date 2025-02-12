@@ -695,7 +695,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       }
 
       assert(this.displayType_ === DisplayType.NORMAL);
-      const dangerType = this.data.dangerType as DangerType;
+      const dangerType: DangerType = this.data.dangerType;
       if (this.isSuspiciousEnterpriseApVerdict_(
               loadTimeData.getBoolean('requestsApVerdicts'), dangerType)) {
         return 'cr:warning';
@@ -1333,7 +1333,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     setTimeout(() => {
       const element = this.getFocusRow().getFirstFocusable('retry');
       if (element) {
-        (element as HTMLElement).focus();
+        element.focus();
       }
     });
   }

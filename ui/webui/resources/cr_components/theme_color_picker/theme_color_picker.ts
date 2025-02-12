@@ -158,9 +158,9 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
       return {type: ColorType.DEFAULT};
     }
     if (this.theme_.backgroundImageMainColor &&
-        this.theme_.backgroundImageMainColor!.value ===
+        this.theme_.backgroundImageMainColor.value ===
             this.theme_.seedColor.value) {
-        return {type: ColorType.CUSTOM};
+      return {type: ColorType.CUSTOM};
     }
     if (this.colors_.find(
             (color: ChromeColor) =>

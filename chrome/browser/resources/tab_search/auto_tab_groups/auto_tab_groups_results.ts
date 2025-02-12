@@ -86,7 +86,7 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
   }
 
   focusInput() {
-    const group = this.shadowRoot!.querySelector('auto-tab-groups-group');
+    const group = this.shadowRoot.querySelector('auto-tab-groups-group');
     if (!group) {
       return;
     }
@@ -136,7 +136,7 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
     event.preventDefault();
 
     const groups =
-        [...this.shadowRoot!.querySelectorAll('auto-tab-groups-group')];
+        [...this.shadowRoot.querySelectorAll('auto-tab-groups-group')];
     const organizations = groups.map((group: AutoTabGroupsGroupElement) => {
       return {
         organizationId: group.organizationId,
@@ -162,7 +162,7 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
       return;
     }
     const feedbackButtons =
-        this.$.feedbackButtons.shadowRoot!.querySelectorAll(`cr-icon-button`);
+        this.$.feedbackButtons.shadowRoot.querySelectorAll(`cr-icon-button`);
     const focusableElements = [
       this.$.learnMore,
       feedbackButtons[0]!,

@@ -223,7 +223,7 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
 
   private onDomChange_() {
     this.highlightableElements_ =
-        Array.from(this.shadowRoot!.querySelectorAll<HTMLElement>(
+        Array.from(this.shadowRoot.querySelectorAll<HTMLElement>(
             HIGHLIGHTABLE_ITEMS_SELECTOR));
 
     this.highlightableElements_.forEach(element => {
@@ -441,7 +441,7 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
     await this.updateComplete;
     this.selectItem_(
         Array
-            .from(this.shadowRoot!.querySelectorAll<OptionElement>(
+            .from(this.shadowRoot.querySelectorAll<OptionElement>(
                 SELECTABLE_ITEMS_SELECTOR))
             .find(option => option.value === this.value) ||
         null);

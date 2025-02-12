@@ -158,7 +158,7 @@ export class PermissionItemElement extends CrLitElement {
     }
 
     BrowserProxy.getInstance().handler.setPermission(
-        this.app.id, newPermission!);
+        this.app.id, newPermission);
 
     recordAppManagementUserAction(
         this.app.type,

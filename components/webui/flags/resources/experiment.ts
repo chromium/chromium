@@ -104,7 +104,7 @@ export class ExperimentElement extends CrLitElement {
       HTMLElementTagNameMap[K];
   getRequiredElement<E extends HTMLElement = HTMLElement>(query: string): E;
   getRequiredElement(query: string) {
-    const el = this.shadowRoot!.querySelector(query);
+    const el = this.shadowRoot.querySelector(query);
     assert(el);
     assert(el instanceof HTMLElement);
     return el;
@@ -178,15 +178,15 @@ export class ExperimentElement extends CrLitElement {
   }
 
   getSelect(): HTMLSelectElement|null {
-    return this.shadowRoot!.querySelector('select');
+    return this.shadowRoot.querySelector('select');
   }
 
   getTextarea(): HTMLTextAreaElement|null {
-    return this.shadowRoot!.querySelector('textarea');
+    return this.shadowRoot.querySelector('textarea');
   }
 
   getTextbox(): HTMLInputElement|null {
-    return this.shadowRoot!.querySelector('input');
+    return this.shadowRoot.querySelector('input');
   }
 
   /**

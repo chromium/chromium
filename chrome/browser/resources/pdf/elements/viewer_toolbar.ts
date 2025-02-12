@@ -358,7 +358,7 @@ export class ViewerToolbarElement extends CrLitElement {
   }
 
   private getZoomInput_(): HTMLInputElement {
-    return this.shadowRoot!.querySelector('#zoom-controls input')!;
+    return this.shadowRoot.querySelector('#zoom-controls input')!;
   }
 
   protected onZoomChange_() {
@@ -396,7 +396,7 @@ export class ViewerToolbarElement extends CrLitElement {
   }
 
   protected onMoreClick_() {
-    const anchor = this.shadowRoot!.querySelector<HTMLElement>('#more')!;
+    const anchor = this.shadowRoot.querySelector<HTMLElement>('#more')!;
     this.$.menu.showAt(anchor, {
       anchorAlignmentX: AnchorAlignment.CENTER,
       anchorAlignmentY: AnchorAlignment.AFTER_END,
@@ -421,8 +421,8 @@ export class ViewerToolbarElement extends CrLitElement {
   // <if expr="enable_ink">
   protected onDialogClose_() {
     const confirmed =
-        this.shadowRoot!.querySelector(
-                            'viewer-annotations-mode-dialog')!.wasConfirmed();
+        this.shadowRoot.querySelector(
+                           'viewer-annotations-mode-dialog')!.wasConfirmed();
     this.showAnnotationsModeDialog_ = false;
     if (confirmed) {
       this.dispatchEvent(new CustomEvent('annotation-mode-dialog-confirmed'));

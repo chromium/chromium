@@ -55,7 +55,7 @@ export class CrDialogDemoElement extends CrLitElement {
   protected statusTexts_: string[] = [];
 
   private getDialog_(): CrDialogElement|null {
-    return this.shadowRoot!.querySelector('cr-dialog');
+    return this.shadowRoot.querySelector('cr-dialog');
   }
 
   protected openDialog_() {

@@ -75,7 +75,7 @@ export class ViewerPageSelectorElement extends CrLitElement {
 
   /** @return True if the selector input field is currently focused. */
   isActive(): boolean {
-    return this.shadowRoot!.activeElement === this.$.pageSelector;
+    return this.shadowRoot.activeElement === this.$.pageSelector;
   }
 
   /** Immediately remove any non-digit characters. */

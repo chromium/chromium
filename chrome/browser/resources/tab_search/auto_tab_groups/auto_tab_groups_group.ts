@@ -118,7 +118,7 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
     if (!this.showInput_) {
       return null;
     }
-    return this.shadowRoot!.querySelector<CrInputElement>('#input');
+    return this.shadowRoot.querySelector<CrInputElement>('#input');
   }
 
   private computeTabDatas_(): TabData[] {
@@ -189,8 +189,8 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
       // Explicitly focus the element prior to the list in focus order and
       // override the default behavior, which would be to focus the row that
       // the currently focused close button is in.
-      this.shadowRoot!.querySelector<CrIconButtonElement>(
-                          `#rejectButton`)!.focus();
+      this.shadowRoot.querySelector<CrIconButtonElement>(
+                         `#rejectButton`)!.focus();
       handled = true;
     } else if (!event.shiftKey) {
       if (event.key === 'ArrowUp') {
@@ -212,7 +212,7 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
     if (this.$.selector.selectedItem) {
       const selectedItem = this.$.selector.selectedItem as TabSearchItemElement;
       const selectedItemCloseButton =
-          selectedItem.shadowRoot!.querySelector(`cr-icon-button`)!;
+          selectedItem.shadowRoot.querySelector(`cr-icon-button`)!;
       selectedItemCloseButton.focus();
       this.lastFocusedIndex_ =
           Number.parseInt(selectedItem.dataset['index']!, 10);
