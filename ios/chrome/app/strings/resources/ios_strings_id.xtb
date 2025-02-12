@@ -21,6 +21,7 @@
 <translation id="10614374240317010">Jangan pernah disimpan</translation>
 <translation id="1062138828266376352">PIN Anda tidak diubah. Periksa koneksi internet Anda, lalu coba lagi</translation>
 <translation id="1066060668811609597">Kelola Sinkronisasi</translation>
+<translation id="1074827084851510304">Anda akan menghapus {password_count} sandi dan daftar situs &amp; aplikasi yang Anda pilih agar tidak pernah menyimpan info login. Akun apa pun yang Anda buat untuk situs dan aplikasi tidak akan dihapus.</translation>
 <translation id="1076421457278169141">Kode telah dipindai</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}other{{count} tab}}</translation>
 <translation id="1082554859195167538">Ulasan produk untuk Anda</translation>
@@ -575,6 +576,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3523789730715594198">Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3529024052484145543">Tidak aman</translation>
+<translation id="3530024057633834563">Anda tidak memiliki sandi atau kunci sandi tersimpan, tetapi Anda dapat menghapus daftar situs &amp; aplikasi yang Anda pilih agar tidak pernah menyimpan info login. Akun apa pun yang Anda buat untuk situs dan aplikasi tidak akan dihapus.</translation>
 <translation id="3530206579861815432">Temukan dengan cepat tab yang terbuka atau yang baru saja ditutup di semua perangkat yang disinkronkan.</translation>
 <translation id="3530767473765895035">Kelola akun di perangkat ini…</translation>
 <translation id="3533436815740441613">Tab Baru</translation>
@@ -1600,6 +1602,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Halaman ditambahkan ke daftar bacaan di akun Anda, {email}}other{{count} halaman ditambahkan ke daftar bacaan di akun Anda, {email}}}</translation>
 <translation id="7947953824732555851">Terima dan masuk</translation>
+<translation id="7952670906562503188">Anda akan menghapus {passkey_count} kunci sandi dan daftar situs &amp; aplikasi yang Anda pilih agar tidak pernah menyimpan info login. Akun apa pun yang Anda buat untuk situs dan aplikasi tidak akan dihapus.</translation>
 <translation id="7958575506592576831">Informasi keamanan halaman</translation>
 <translation id="7961015016161918242">Jangan pernah</translation>
 <translation id="7966516440812255683">Situs dapat menggunakan cookie untuk menyempurnakan pengalaman penjelajahan Anda, misalnya untuk membuat Anda tetap login atau untuk mengingat item di keranjang belanja Anda.
@@ -1880,6 +1883,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9034759925968272072">Anda tidak akan dikeluarkan dari Akun Google. Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Bandwidth</translation>
 <translation id="9042893549633094279">Privasi dan keamanan</translation>
+<translation id="9055580485132823283">Anda akan menghapus {password_count} sandi, {passkey_count} kunci sandi, dan daftar situs &amp; aplikasi yang Anda pilih agar tidak pernah menyimpan info login. Akun apa pun yang Anda buat untuk situs dan aplikasi tidak akan dihapus.</translation>
 <translation id="9057030985451135243">Pelajari grup tab bersama</translation>
 <translation id="9057972802061533987">Tidak dapat mengikuti. Terjadi error.</translation>
 <translation id="9065203028668620118">Edit</translation>
