@@ -124,8 +124,6 @@ blink_modules_sources("webaudio") {
     "iir_filter_handler.h",
     "iir_filter_node.cc",
     "iir_filter_node.h",
-    "iir_processor.cc",
-    "iir_processor.h",
     "inspector_helper_mixin.cc",
     "inspector_helper_mixin.h",
     "inspector_web_audio_agent.cc",
