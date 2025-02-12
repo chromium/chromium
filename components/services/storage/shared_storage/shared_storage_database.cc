@@ -212,6 +212,9 @@ SharedStorageDatabase::SharedStorageDatabase(
     : db_(sql::DatabaseOptions()
               .set_wal_mode(base::FeatureList::IsEnabled(
                   blink::features::kSharedStorageAPIEnableWALForDatabase))
+              // Prevent SQLite from trying to use mmap, as SandboxedVfs does
+              // not currently support this.
+              .set_mmap_enabled(false)
               // We DCHECK that the page size is valid in the constructor for
               // `SharedStorageOptions`.
               .set_page_size(options->max_page_size)

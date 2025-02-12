@@ -77,8 +77,6 @@ namespace sql {
 
 namespace {
 
-bool enable_mmap_by_default_ = true;
-
 // The name of the main database associated with a sqlite3* connection.
 //
 // SQLite has the ability to ATTACH multiple databases to the same connection.
@@ -355,7 +353,7 @@ Database::Database(Database::Tag tag) : Database(DatabaseOptions{}, tag) {}
 
 Database::Database(DatabaseOptions options, Database::Tag tag)
     : options_(options),
-      mmap_disabled_(!enable_mmap_by_default_),
+      mmap_disabled_(!options.mmap_enabled_),
       histogram_tag_(tag.value),
       tracing_track_name_(base::StrCat({"Database: ", histogram_tag_})) {
   DCHECK_GE(options.page_size_, 512);
@@ -373,11 +371,6 @@ Database::Database(DatabaseOptions options, Database::Tag tag)
 
 Database::~Database() {
   Close();
-}
-
-// static
-void Database::DisableMmapByDefault() {
-  enable_mmap_by_default_ = false;
 }
 
 bool Database::Open(const base::FilePath& path) {

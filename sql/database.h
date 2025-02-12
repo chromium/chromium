@@ -248,6 +248,14 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
     return *this;
   }
 
+  // If true database attempts using memory mapped files. True by default. Only
+  // set to false when a condition is known that prevents the use of memory
+  // mapped files. See https://www.sqlite.org/mmap.html.
+  DatabaseOptions& set_mmap_enabled(bool mmap_enabled) {
+    mmap_enabled_ = mmap_enabled;
+    return *this;
+  }
+
  private:
   friend class Database;
   FRIEND_TEST_ALL_PREFIXES(DatabaseOptionsTest,
@@ -266,6 +274,7 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   bool mmap_alt_status_discouraged_ = false;
   bool enable_views_discouraged_ = false;
   const char* vfs_name_discouraged_ = nullptr;
+  bool mmap_enabled_ = true;
 };
 
 // Holds database diagnostics in a structured format.
@@ -381,12 +390,6 @@ class COMPONENT_EXPORT(SQL) Database {
   Database(Database&&) = delete;
   Database& operator=(Database&&) = delete;
   ~Database();
-
-  // Allows mmapping to be disabled globally by default in the calling process.
-  // Must be called before any threads attempt to create a Database.
-  //
-  // TODO(crbug.com/40144971): Remove this global configuration.
-  static void DisableMmapByDefault();
 
   // Pre-init configuration ----------------------------------------------------
 
