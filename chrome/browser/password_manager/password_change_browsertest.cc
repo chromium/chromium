@@ -468,6 +468,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
       ChangeFormSubmissionVerifier::SubmissionOutcome::kSuccess, 1);
   histogram_tester.ExpectTotalCount("PasswordManager.PasswordChangeTimeOverall",
                                     1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ChangePasswordFormDetected", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.ChangePasswordFormDetectionTime", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {

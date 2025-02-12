@@ -1180,6 +1180,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.ChangePasswordFormDetected" enum="Boolean"
+    expires_after="2025-11-30">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records whether the password change form was detected during the password
+    change flow. The metric is recorded either on the password form parsed
+    notification or on the timeout.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ChangePasswordFormDetectionTime" units="ms"
+    expires_after="2025-11-30">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    The time in milliseconds passed between starting to open the password change
+    tab and detecting the change password form. The metric is only reported on
+    successful change password form detection.
+  </summary>
+</histogram>
+
 <histogram
     name="PasswordManager.ClassificationCorrectness.ConfirmationPassword"
     enum="PasswordManagerClassificationCorrectness" expires_after="2025-06-29">
