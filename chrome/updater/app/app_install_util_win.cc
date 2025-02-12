@@ -47,15 +47,12 @@ int GetPriority(CompletionCodes code) {
 
 bool LaunchCmdLines(const ObserverCompletionInfo& info) {
   bool result = true;
-
-  for (size_t i = 0; i < info.apps_info.size(); ++i) {
-    const AppCompletionInfo& app_info = info.apps_info[i];
+  for (const AppCompletionInfo& app_info : info.apps_info) {
     if (FAILED(app_info.error_code)) {
       continue;
     }
     result &= SUCCEEDED(LaunchCmdLine(app_info));
   }
-
   return result;
 }
 
