@@ -529,27 +529,27 @@ TEST(MaybeReportConfidenceUMAsTest, ImageLoadingPriority) {
         "PageLoad.Clients.LCPP."
         "ImageLoadingPriority"
         ".TotalFrequencyOfActualPositive"
-        ".PerConfidence.2",
+        ".PerConfidence.3",
         99, /*expected_bucket_count=*/1);
     histogram_tester.ExpectUniqueSample(
         "PageLoad.Clients.LCPP."
         "ImageLoadingPriority"
         ".TotalFrequencyOfActualPositive"
         ".WithConfidence"
-        "90To100",
+        "90To100.2",
         total_frequency, /*expected_bucket_count=*/1);
     histogram_tester.ExpectTotalCount(
         "PageLoad.Clients.LCPP."
         "ImageLoadingPriority"
         ".TotalFrequencyOfActualNegative"
-        ".PerConfidence.2",
+        ".PerConfidence.3",
         /*expected_count=*/0);
     histogram_tester.ExpectTotalCount(
         "PageLoad.Clients.LCPP."
         "ImageLoadingPriority"
         ".TotalFrequencyOfActualNegative"
         ".WithConfidence"
-        "90To100",
+        "90To100.2",
         /*expected_count=*/0);
     expect_empty(histogram_tester);
   }
@@ -592,27 +592,27 @@ TEST(MaybeReportConfidenceUMAsTest, ImageLoadingPriority) {
         "PageLoad.Clients.LCPP"
         ".ImageLoadingPriority"
         ".TotalFrequencyOfActualPositive"
-        ".PerConfidence.2",
+        ".PerConfidence.3",
         9, /*expected_bucket_count=*/1);
     histogram_tester.ExpectUniqueSample(
         "PageLoad.Clients.LCPP"
         ".ImageLoadingPriority"
         ".TotalFrequencyOfActualPositive"
         ".WithConfidence"
-        "0To10",
+        "0To10.2",
         total_frequency, /*expected_bucket_count=*/1);
     histogram_tester.ExpectUniqueSample(
         "PageLoad.Clients.LCPP"
         ".ImageLoadingPriority"
         ".TotalFrequencyOfActualNegative"
-        ".PerConfidence.2",
+        ".PerConfidence.3",
         99, /*expected_bucket_count=*/1);
     histogram_tester.ExpectUniqueSample(
         "PageLoad.Clients.LCPP"
         ".ImageLoadingPriority"
         ".TotalFrequencyOfActualNegative"
         ".WithConfidence"
-        "90To100",
+        "90To100.2",
         total_frequency, /*expected_bucket_count=*/1);
     expect_empty(histogram_tester);
   }
@@ -785,13 +785,13 @@ TEST(MaybeReportConfidenceUMAsTest, Subresource) {
         ".Subresource"
         ".TotalFrequencyOfActualPositive"
         ".PerConfidence"
-        ".2",
+        ".3",
         99, /*expected_bucket_count=*/1);
     histogram_tester.ExpectUniqueSample(
         "PageLoad.Clients.LCPP"
         ".Subresource"
         ".TotalFrequencyOfActualPositive"
-        ".WithConfidence90To100",
+        ".WithConfidence90To100.2",
         total_frequency, /*expected_bucket_count=*/1);
     histogram_tester.ExpectUniqueSample(
         "PageLoad.Clients.LCPP"
@@ -799,14 +799,14 @@ TEST(MaybeReportConfidenceUMAsTest, Subresource) {
         ".TotalFrequencyOfActualPositive"
         ".PerConfidence"
         ".SameSite"
-        ".2",
+        ".3",
         99, /*expected_bucket_count=*/1);
     histogram_tester.ExpectUniqueSample(
         "PageLoad.Clients.LCPP"
         ".Subresource"
         ".TotalFrequencyOfActualPositive"
         ".WithConfidence90To100"
-        ".SameSite",
+        ".SameSite.2",
         total_frequency, /*expected_bucket_count=*/1);
     expect_empty(histogram_tester);
   }
