@@ -4056,13 +4056,20 @@ void GridLayoutAlgorithm::SetReadingFlowNodes(
     }
   };
 
+  Vector<const GridItemData*, 16> reordered_grid_items;
+  reordered_grid_items.ReserveInitialCapacity(grid_items.Size());
+  bool should_sort_by_reading_order = false;
+  for (const auto& grid_item : grid_items) {
+    reordered_grid_items.emplace_back(&grid_item);
+    // We optimize to only sort by reading-order if at least one item's value is
+    // not the default (0).
+    if (grid_item.node.Style().ReadingOrder() != 0) {
+      should_sort_by_reading_order = true;
+    }
+  }
+
   if (reading_flow == EReadingFlow::kGridRows ||
       reading_flow == EReadingFlow::kGridColumns) {
-    Vector<const GridItemData*, 16> reordered_grid_items;
-    reordered_grid_items.ReserveInitialCapacity(grid_items.Size());
-    for (const auto& grid_item : grid_items) {
-      reordered_grid_items.emplace_back(&grid_item);
-    }
     // We reorder grid items by their row/column indices.
     // If reading-flow is grid-rows, we should sort by row, then column.
     // If reading-flow is grid-columns, we should sort by column, then
@@ -4086,13 +4093,20 @@ void GridLayoutAlgorithm::SetReadingFlowNodes(
         };
     std::stable_sort(reordered_grid_items.begin(), reordered_grid_items.end(),
                      CompareGridItemsForReadingFlow);
-    for (const auto& grid_item : reordered_grid_items) {
-      AddItemIfNeeded(*grid_item);
-    }
-  } else {
-    for (const auto& grid_item : grid_items) {
-      AddItemIfNeeded(grid_item);
-    }
+  }
+  // After reading-flow ordering, items should still be sorted by reading-order.
+  if (should_sort_by_reading_order) {
+    auto CompareGridItemsForReadingOrder = [](const auto& lhs,
+                                              const auto& rhs) {
+      return lhs->node.Style().ReadingOrder() <
+             rhs->node.Style().ReadingOrder();
+    };
+    std::stable_sort(reordered_grid_items.begin(), reordered_grid_items.end(),
+                     CompareGridItemsForReadingOrder);
+  }
+
+  for (const auto& grid_item : reordered_grid_items) {
+    AddItemIfNeeded(*grid_item);
   }
   container_builder_.SetReadingFlowNodes(std::move(reading_flow_nodes));
 }

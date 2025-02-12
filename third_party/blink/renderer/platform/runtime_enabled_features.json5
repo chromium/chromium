@@ -1232,7 +1232,7 @@
       // TODO(crbug.com/393550130): Non-standard 'reading-order' keyword
       // to overwrite reading-flow order.
       name: "CSSReadingOrder",
-      status: "test",
+      status: "experimental",
       depends_on: ["CSSReadingFlow"],
     },
     {
