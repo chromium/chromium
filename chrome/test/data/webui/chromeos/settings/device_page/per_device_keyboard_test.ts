@@ -81,7 +81,7 @@ suite('<settings-per-device-keyboard>', () => {
   });
 
   test(
-      'Display correct name used for internal/external keyboards', async () => {
+      'Display correct name used for internal/external keyboards', () => {
         const subsections = perDeviceKeyboardPage.shadowRoot!.querySelectorAll(
             'settings-per-device-keyboard-subsection');
         for (let i = 0; i < subsections.length; i++) {
@@ -174,14 +174,14 @@ suite('<settings-per-device-keyboard>', () => {
     assertFalse(collapse.opened);
   });
 
-  test('Open keyboard shortcut viewer', async () => {
+  test('Open keyboard shortcut viewer', () => {
     perDeviceKeyboardPage.shadowRoot!
         .querySelector<CrLinkRowElement>('#shortcutCustomizationApp')!.click();
     assertEquals(
         1, devicePageBrowserProxy.getCallCount('showShortcutCustomizationApp'));
   });
 
-  test('Navigate to input tab', async () => {
+  test('Navigate to input tab', () => {
     perDeviceKeyboardPage.shadowRoot!
         .querySelector<CrLinkRowElement>('#inputRow')!.click();
     assertEquals(routes.OS_LANGUAGES_INPUT, Router.getInstance().currentRoute);
@@ -199,7 +199,7 @@ suite('<settings-per-device-keyboard>', () => {
                 '#noKeyboardsConnectedMessage')!.innerText.trim());
   });
 
-  test('Navigate to a11y keyboard settings subpage', async () => {
+  test('Navigate to a11y keyboard settings subpage', () => {
     perDeviceKeyboardPage.shadowRoot!
         .querySelector<CrLinkRowElement>('#a11yKeyboardRow')!.click();
     assertEquals(

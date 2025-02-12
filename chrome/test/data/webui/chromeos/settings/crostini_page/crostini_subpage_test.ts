@@ -116,7 +116,7 @@ suite('<settings-crostini-subpage>', () => {
           subpage.shadowRoot!.querySelector('#crostiniExtraContainersRow')));
     });
 
-    test('Shared paths', async () => {
+    test('Shared paths', () => {
       const button = subpage.shadowRoot!.querySelector<HTMLButtonElement>(
           '#crostiniSharedPathsRow');
       assertTrue(!!button);

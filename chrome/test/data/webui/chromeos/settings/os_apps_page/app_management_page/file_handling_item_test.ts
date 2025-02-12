@@ -76,7 +76,7 @@ suite('AppManagementFileHandlingItemTest', function() {
     assertTrue(!!dialog);
   });
 
-  test('File Handling learn more', async function() {
+  test('File Handling learn more', function() {
     const learnMore =
         fileHandlingItem.shadowRoot!.querySelector<HTMLElement>('#learn-more')!;
     assertTrue(!!learnMore);

@@ -55,7 +55,7 @@ suite('CrComponentsProfileDiscoveryListPageTest', function() {
         eSimPage.shadowRoot.querySelector('#profileDiscoveryPage');
   }
 
-  setup(async function() {
+  setup(function() {
     networkConfigRemote = new FakeNetworkConfig();
     MojoInterfaceProviderImpl.getInstance().setMojoServiceRemoteForTest(
         networkConfigRemote);

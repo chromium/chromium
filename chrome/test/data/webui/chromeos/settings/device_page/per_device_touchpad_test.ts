@@ -43,7 +43,7 @@ suite('<settings-per-device-touchpad>', () => {
   });
 
   test(
-      'Display correct name used for internal/external touchpads', async () => {
+      'Display correct name used for internal/external touchpads', () => {
         const subsections = perDeviceTouchpadPage.shadowRoot!.querySelectorAll(
             'settings-per-device-touchpad-subsection');
         for (let i = 0; i < subsections.length; i++) {

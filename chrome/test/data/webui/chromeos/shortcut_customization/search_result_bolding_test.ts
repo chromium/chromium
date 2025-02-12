@@ -84,7 +84,7 @@ suite('searchResultBoldingTest', function() {
         getBoldedDescription(description, 'تبويب').toString());
   });
 
-  test('Test blankspace types in result maintained', async () => {
+  test('Test blankspace types in result maintained', () => {
     const description = 'Turn&nbsp;on  &nbsp;Wi-Fi ';
     assertEquals(
         'Turn&nbsp;on  &nbsp;<b>Wi-F</b>i ',

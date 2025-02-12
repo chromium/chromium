@@ -47,23 +47,23 @@ suite('<office-fallback>', () => {
   // called.
   let testProxy: OfficeFallbackTestBrowserProxy;
 
-  const setUp = async (
-      enableRetryOption = true, enableQuickOfficeOption = true,
-      reasonMessage = 'a reason') => {
-    const dialogArgs: ProxyArgs = {
-      titleText: 'a title',
-      reasonMessage: reasonMessage,
-      instructionsMessage: 'an instruction',
-      enableRetryOption: enableRetryOption,
-      enableQuickOfficeOption: enableQuickOfficeOption,
-    };
-    testProxy = new OfficeFallbackTestBrowserProxy(dialogArgs);
-    OfficeFallbackBrowserProxy.setInstance(testProxy);
+  const setUp =
+      (enableRetryOption = true, enableQuickOfficeOption = true,
+       reasonMessage = 'a reason') => {
+        const dialogArgs: ProxyArgs = {
+          titleText: 'a title',
+          reasonMessage: reasonMessage,
+          instructionsMessage: 'an instruction',
+          enableRetryOption: enableRetryOption,
+          enableQuickOfficeOption: enableQuickOfficeOption,
+        };
+        testProxy = new OfficeFallbackTestBrowserProxy(dialogArgs);
+        OfficeFallbackBrowserProxy.setInstance(testProxy);
 
-    // Creates and attaches the <office-fallback> element to the DOM tree.
-    officeFallbackApp = document.createElement('office-fallback');
-    container.appendChild(officeFallbackApp);
-  };
+        // Creates and attaches the <office-fallback> element to the DOM tree.
+        officeFallbackApp = document.createElement('office-fallback');
+        container.appendChild(officeFallbackApp);
+      };
 
   /**
    * Runs prior to all the tests running, attaches a div to enable isolated
@@ -88,8 +88,8 @@ suite('<office-fallback>', () => {
    * Tests that the "try again" and "cancel" buttons are shown when the
    * `enableRetryOption` is enabled.
    */
-  test('Try again and cancel buttons shown', async () => {
-    await setUp(true, true);
+  test('Try again and cancel buttons shown', () => {
+    setUp(true, true);
     assertEquals(officeFallbackApp.$('#try-again-button').style.display, '');
     assertEquals(officeFallbackApp.$('#cancel-button').style.display, '');
     assertEquals(officeFallbackApp.$('#ok-button').style.display, 'none');
@@ -99,8 +99,8 @@ suite('<office-fallback>', () => {
    * Tests that the "OK" button is shown when the `enableRetryOption` is
    * disabled.
    */
-  test('OK button shown', async () => {
-    await setUp(false, true);
+  test('OK button shown', () => {
+    setUp(false, true);
     assertEquals(
         officeFallbackApp.$('#try-again-button').style.display, 'none');
     assertEquals(officeFallbackApp.$('#cancel-button').style.display, 'none');
@@ -111,8 +111,8 @@ suite('<office-fallback>', () => {
    * Tests that the "quick office" button is shown when the
    * `enableQuickOfficeOption` is enabled.
    */
-  test('Quick office button shown', async () => {
-    await setUp(true, true);
+  test('Quick office button shown', () => {
+    setUp(true, true);
     assertEquals(officeFallbackApp.$('#quick-office-button').style.display, '');
   });
 
@@ -120,8 +120,8 @@ suite('<office-fallback>', () => {
    * Tests that the "quick office" button is hidden when the
    * `enableQuickOfficeOption` is disabled.
    */
-  test('Quick office button hidden', async () => {
-    await setUp(true, false);
+  test('Quick office button hidden', () => {
+    setUp(true, false);
     assertEquals(
         officeFallbackApp.$('#quick-office-button').style.display, 'none');
   });
@@ -131,7 +131,7 @@ suite('<office-fallback>', () => {
    * mojo request.
    */
   test('Open in basic editor button', async () => {
-    await setUp();
+    setUp();
 
     officeFallbackApp.$('#quick-office-button').click();
     await testProxy.handler.whenCalled('close');
@@ -145,7 +145,7 @@ suite('<office-fallback>', () => {
    * mojo request.
    */
   test('Try again button', async () => {
-    await setUp();
+    setUp();
 
     officeFallbackApp.$('#try-again-button').click();
     await testProxy.handler.whenCalled('close');
@@ -159,7 +159,7 @@ suite('<office-fallback>', () => {
    * mojo request.
    */
   test('Cancel button', async () => {
-    await setUp();
+    setUp();
 
     officeFallbackApp.$('#cancel-button').click();
     await testProxy.handler.whenCalled('close');
@@ -173,7 +173,7 @@ suite('<office-fallback>', () => {
    * mojo request.
    */
   test('OK button', async () => {
-    await setUp();
+    setUp();
 
     officeFallbackApp.$('#ok-button').click();
     await testProxy.handler.whenCalled('close');
@@ -186,7 +186,7 @@ suite('<office-fallback>', () => {
    * mojo request.
    */
   test('Escape', async () => {
-    await setUp();
+    setUp();
 
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
     await testProxy.handler.whenCalled('close');

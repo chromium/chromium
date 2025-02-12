@@ -139,8 +139,8 @@ export function isGroupButtonActive(element: Element|null): boolean {
 export function initialiseEmojiPickerForTest(
     incognito = false, localStorage: Array<{key: string, value: string}> = []) {
   const setIncognito = (incognito: boolean) => {
-    EmojiPickerApiProxy.getInstance().isIncognitoTextField = async () =>
-        ({incognito});
+    EmojiPickerApiProxy.getInstance().isIncognitoTextField = () =>
+        (Promise.resolve({incognito}));
   };
 
   // Set default incognito state to False.

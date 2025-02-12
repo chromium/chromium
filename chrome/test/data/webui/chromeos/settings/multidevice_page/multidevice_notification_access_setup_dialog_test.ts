@@ -66,7 +66,7 @@ suite('<settings-multidevice-notification-access-setup-dialog>', () => {
     buttonContainer = container;
   });
 
-  test('Test success flow', async () => {
+  test('Test success flow', () => {
     assertTrue(isSetupInstructionsShownSeparately());
     assertTrue(!!queryCancelButton());
     const getStartedButton = queryGetStartedButton();
@@ -122,7 +122,7 @@ suite('<settings-multidevice-notification-access-setup-dialog>', () => {
     assertFalse(dialog.open);
   });
 
-  test('Test cancel during connecting flow', async () => {
+  test('Test cancel during connecting flow', () => {
     assertTrue(!!queryCancelButton());
     const getStartedButton = queryGetStartedButton();
     assertTrue(!!getStartedButton);
@@ -148,7 +148,7 @@ suite('<settings-multidevice-notification-access-setup-dialog>', () => {
     assertFalse(dialog.open);
   });
 
-  test('Test failure during connecting flow', async () => {
+  test('Test failure during connecting flow', () => {
     assertTrue(!!queryCancelButton());
     const getStartedButton = queryGetStartedButton();
     assertTrue(!!getStartedButton);
@@ -194,7 +194,7 @@ suite('<settings-multidevice-notification-access-setup-dialog>', () => {
     assertFalse(dialog.open);
   });
 
-  test('Test notification access prohibited', async () => {
+  test('Test notification access prohibited', () => {
     assertTrue(!!queryCancelButton());
     const getStartedButton = queryGetStartedButton();
     assertTrue(!!getStartedButton);

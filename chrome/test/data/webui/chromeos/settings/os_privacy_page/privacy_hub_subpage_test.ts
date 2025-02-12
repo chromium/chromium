@@ -70,7 +70,7 @@ function overriddenValues(privacyHubVersion: string) {
   }
 }
 
-async function parametrizedPrivacyHubSubpageTestsuite(
+function parametrizedPrivacyHubSubpageTestsuite(
     privacyHubVersion: string, enforceCameraLedFallback: boolean) {
   let privacyHubSubpage: SettingsPrivacyHubSubpage;
   let privacyHubBrowserProxy: TestPrivacyHubBrowserProxy;
@@ -95,12 +95,12 @@ async function parametrizedPrivacyHubSubpageTestsuite(
     Router.getInstance().resetRouteForTesting();
   });
 
-  async function createSubpage(): Promise<void> {
+  function createSubpage(): Promise<void> {
     clearBody();
     privacyHubSubpage = document.createElement('settings-privacy-hub-subpage');
     privacyHubSubpage.prefs = {...PRIVACY_HUB_PREFS};
     document.body.appendChild(privacyHubSubpage);
-    flush();
+    return flushTasks();
   }
 
   test('Suggested content, pref disabled', () => {
@@ -600,7 +600,7 @@ suite('<settings-privacy-hub-subpage> AllBuilds app permissions', () => {
 });
 
 
-async function testsuiteForMetricsConsentToggle() {
+function testsuiteForMetricsConsentToggle() {
   let settingsPage: SettingsPrivacyHubSubpage|OsSettingsPrivacyPageElement;
 
   // Which settings page to run the tests on.
@@ -631,7 +631,7 @@ async function testsuiteForMetricsConsentToggle() {
 
   let metricsConsentBrowserProxy: TestMetricsConsentBrowserProxy;
 
-  setup(async () => {
+  setup(() => {
     metricsConsentBrowserProxy = new TestMetricsConsentBrowserProxy();
     MetricsConsentBrowserProxyImpl.setInstanceForTesting(
         metricsConsentBrowserProxy);
@@ -658,8 +658,7 @@ async function testsuiteForMetricsConsentToggle() {
   });
 
   test(
-      'Send usage stats toggle visibility in os-settings-privacy-page',
-      async () => {
+      'Send usage stats toggle visibility in os-settings-privacy-page', () => {
         settingsPage = document.createElement('os-settings-privacy-page');
         document.body.appendChild(settingsPage);
         flush();
@@ -675,7 +674,7 @@ async function testsuiteForMetricsConsentToggle() {
 
   test(
       'Send usage stats toggle visibility in settings-privacy-hub-subpage',
-      async () => {
+      () => {
         settingsPage = document.createElement('settings-privacy-hub-subpage');
         settingsPage.prefs = {...PRIVACY_HUB_PREFS};
         document.body.appendChild(settingsPage);

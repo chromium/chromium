@@ -143,7 +143,7 @@ suite('PrefControlMixinInternal', () => {
   });
 
   suite('updatePrefValueFromUserAction()', () => {
-    test('Raises an error if called when pref is not defined', async () => {
+    test('Raises an error if called when pref is not defined', () => {
       assertThrows(() => {
         testElement.updatePrefValueFromUserAction('newValue9001');
       }, 'updatePrefValueFromUserAction() requires pref to be defined.');

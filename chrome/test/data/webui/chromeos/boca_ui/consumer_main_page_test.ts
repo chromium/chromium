@@ -5,11 +5,11 @@ import {assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
 suite('ClientDelegateTest', function() {
-  test('app bundle should have been loaded', async () => {
+  test('app bundle should have been loaded', () => {
     assertTrue(isVisible(document.querySelector('boca-app')));
   });
 
-  test('consumer home page should have been loaded', async () => {
+  test('consumer home page should have been loaded', () => {
     assertTrue(
         isVisible(document.querySelector('boca-app')!.shadowRoot!.querySelector(
             'student-view')));

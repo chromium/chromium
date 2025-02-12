@@ -24,7 +24,7 @@ suite('<settings-storage> for device page', () => {
   let fakeSystemDisplay: FakeSystemDisplay;
   let browserProxy: TestDevicePageBrowserProxy;
 
-  setup(async () => {
+  setup(() => {
     // Default is persistent user. If any test needs it, they can override.
     loadTimeData.overrideValues({
       isCryptohomeDataEphemeral: false,

@@ -50,7 +50,7 @@ suite('ApnListItemTest', function() {
 
   let mojoApi_: FakeNetworkConfig;
 
-  setup(async () => {
+  setup(() => {
     mojoApi_ = new FakeNetworkConfig();
     MojoInterfaceProviderImpl.getInstance().setMojoServiceRemoteForTest(
         mojoApi_);

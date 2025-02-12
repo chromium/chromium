@@ -69,7 +69,7 @@ suite('PrintPreviewCrosAppController', () => {
 
   // Verify `PrintPreviewPageHandler.startSession` is called when controller is
   // created.
-  test('triggers PrintPreviewPageHandlerComposite startSession', async () => {
+  test('triggers PrintPreviewPageHandlerComposite startSession', () => {
     // Reset call counts before creating controller.
     printPreviewPageHandler.reset();
 

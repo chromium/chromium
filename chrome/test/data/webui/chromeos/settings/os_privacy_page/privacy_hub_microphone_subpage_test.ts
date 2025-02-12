@@ -446,7 +446,7 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
     return noWebsiteHasAccessTextRow;
   }
 
-  test('Websites section texts', async () => {
+  test('Websites section texts', () => {
     assertEquals(
         privacyHubMicrophoneSubpage.i18n('websitesSectionTitle'),
         privacyHubMicrophoneSubpage.shadowRoot!
@@ -461,7 +461,7 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
         getNoWebsiteHasAccessTextRow().textContent!.trim());
   });
 
-  test('Websites section when microphone allowed', async () => {
+  test('Websites section when microphone allowed', () => {
     assertFalse(getManagePermissionsInChromeRow().hidden);
     assertTrue(getNoWebsiteHasAccessTextRow().hidden);
   });

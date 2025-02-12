@@ -22,7 +22,7 @@ suite('<emoji-picker>', () => {
     assert(customElements.get('emoji-picker'));
   });
 
-  test('first non-chevron, tab should be active by default', async () => {
+  test('first non-chevron, tab should be active by default', () => {
     const button = findInEmojiPicker(
         'emoji-group-button[data-group="emoji-history"]', 'cr-icon-button');
     assertFalse(isGroupButtonActive(button));
@@ -261,7 +261,7 @@ suite('<emoji-picker>', () => {
           'second emoji-variants failed to appear.');
     });
 
-    test('opening variants on the left side should not overflow', async () => {
+    test('opening variants on the left side should not overflow', () => {
       const groupsRect = emojiPicker.getBoundingClientRect();
 
       const variants = findEmojiVariants(firstEmojiButton);

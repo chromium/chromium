@@ -779,12 +779,12 @@ suite('shareDataPageTestSuite', () => {
     const fileAttachment =
         strictQuery('file-attachment', page.shadowRoot, FileAttachmentElement);
     const fakeFileData = [11, 22, 99];
-    fileAttachment.getAttachedFile = async () => {
+    fileAttachment.getAttachedFile = () => {
       const data: BigBuffer = {bytes: fakeFileData} as any;
-      return {
+      return Promise.resolve({
         fileName: {path: {path: 'fake.zip'}},
         fileData: data,
-      };
+      });
     };
 
     const request = (await clickSendAndWait(page)).detail.report;

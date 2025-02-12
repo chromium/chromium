@@ -20,7 +20,7 @@ suite('AppManagementUninstallButtonTest', () => {
   let uninstallButton: AppManagementUninstallButtonElement;
   let fakeHandler: FakePageHandler;
 
-  setup(async function() {
+  setup(function() {
     clearBody();
     fakeHandler = setupFakeHandler();
   });

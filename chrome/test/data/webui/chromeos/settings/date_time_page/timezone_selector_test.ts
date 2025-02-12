@@ -16,7 +16,7 @@ suite('<timezone-selector>', function() {
     timezoneSelector.remove();
   });
 
-  test('Per-user timezone disabled', async () => {
+  test('Per-user timezone disabled', () => {
     timezoneSelector = document.createElement('timezone-selector');
     timezoneSelector.prefs = {
       'cros': {
@@ -36,7 +36,7 @@ suite('<timezone-selector>', function() {
         timezoneSelector.shadowRoot!.querySelector('#userTimeZoneSelector'));
   });
 
-  test('Per-user timezone enabled', async () => {
+  test('Per-user timezone enabled', () => {
     timezoneSelector = document.createElement('timezone-selector');
     timezoneSelector.prefs = {
       'cros': {

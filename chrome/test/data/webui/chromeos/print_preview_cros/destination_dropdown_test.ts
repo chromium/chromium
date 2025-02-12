@@ -120,7 +120,7 @@ suite('DestinationDropdown', () => {
   });
 
   // Verify dropdown element has a controller configured.
-  test('has element controller', async () => {
+  test('has element controller', () => {
     assertTrue(
         !!controller,
         `${DestinationDropdownElement.is} should have controller configured`);

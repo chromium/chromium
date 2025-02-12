@@ -50,8 +50,7 @@ suite('emoji-picker-offline-gif', () => {
   });
 
   test(
-      'There exists emoji-error component in the Trending category.',
-      async () => {
+      'There exists emoji-error component in the Trending category.', () => {
         const categoryButton =
             emojiSearch.shadowRoot!
                 .querySelectorAll('emoji-category-button')[categoryIndex]!

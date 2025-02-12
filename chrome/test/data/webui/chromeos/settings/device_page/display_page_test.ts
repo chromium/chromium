@@ -158,7 +158,7 @@ suite('<settings-display>', () => {
     await flushTasks();
   }
 
-  setup(async () => {
+  setup(() => {
     Router.getInstance().navigateTo(routes.DISPLAY);
 
     fakeSystemDisplay = new FakeSystemDisplay();
@@ -234,7 +234,7 @@ suite('<settings-display>', () => {
           displaySettingsProvider.getExternalDisplayHistogram();
     });
 
-    test('page load', async () => {
+    test('page load', () => {
       // Verify histogram count for display settings page opened.
       assertEquals(
           1,

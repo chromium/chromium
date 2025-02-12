@@ -244,7 +244,7 @@ suite('<settings-privacy-hub-app-permission-row>', () => {
     return testRow.shadowRoot!.querySelector('cr-icon-button');
   }
 
-  test('Link to android settings displayed', async () => {
+  test('Link to android settings displayed', () => {
     assertFalse(isVisible(getAndroidSettingsLinkButton()));
 
     loadTimeData.overrideValues({

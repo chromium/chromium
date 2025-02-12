@@ -611,7 +611,7 @@ suite('sea pen', () => {
     loadTimeData.overrideValues({isSeaPenTextInputEnabled: false});
   });
 
-  suite('feedback', async () => {
+  suite('feedback', () => {
     // At the end of this test, a feedback dialog is expected to be opened in an
     // external window.
     test(`open feedback dialog`, async () => {
@@ -1327,7 +1327,7 @@ suite('dynamic color', () => {
     }
   });
 
-  test('shows color scheme options', async () => {
+  test('shows color scheme options', () => {
     setDynamicColorToggle(true);
 
     assertTrue(getDynamicColorToggle().checked);
@@ -1379,7 +1379,7 @@ suite('dynamic color', () => {
     assertEquals(4, seenTextColors.size, '4 unique colors seen');
   });
 
-  test('shows static color options', async () => {
+  test('shows static color options', () => {
     const toggleButton = getDynamicColorToggle();
 
     setDynamicColorToggle(false);

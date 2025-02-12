@@ -791,7 +791,7 @@ suite('<settings-internet-subpage>', () => {
         });
       });
 
-      test('Instant Hotspot page initiates tether scanning', async () => {
+      test('Instant Hotspot page initiates tether scanning', () => {
         loadTimeData.overrideValues({
           'isInstantHotspotRebrandEnabled': true,
         });
@@ -829,7 +829,7 @@ suite('<settings-internet-subpage>', () => {
       });
 
       [false, true].forEach(isInstantHotspotRebrandEnabled => {
-        test('Cellular page does not initiate tether scanning', async () => {
+        test('Cellular page does not initiate tether scanning', () => {
           loadTimeData.overrideValues({
             'isInstantHotspotRebrandEnabled': isInstantHotspotRebrandEnabled,
           });

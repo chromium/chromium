@@ -11,8 +11,8 @@ import {TestEmojiPickerApiProxy} from './test_emoji_picker_api_proxy.js';
 
 suite('emoji-picker-load', () => {
   const testApiProxy = new TestEmojiPickerApiProxy();
-  testApiProxy.getInitialQuery = async () => {
-    return {query: 'a'};
+  testApiProxy.getInitialQuery = () => {
+    return Promise.resolve({query: 'a'});
   };
   EmojiPickerApiProxy.setInstance(testApiProxy);
 

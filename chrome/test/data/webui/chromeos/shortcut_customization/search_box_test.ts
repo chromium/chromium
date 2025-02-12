@@ -134,7 +134,7 @@ suite('searchBoxTest', function() {
         input.selectionEnd === input.value.length;
   }
 
-  test('SearchBoxLoaded', async () => {
+  test('SearchBoxLoaded', () => {
     [searchBoxElement] = initSearchBoxElement();
     assertTrue(!!searchBoxElement);
   });
@@ -565,7 +565,7 @@ suite('searchBoxTest', function() {
                 ?.acceleratorLayoutInfo.description);
       });
 
-  test('Max query length has been set', async () => {
+  test('Max query length has been set', () => {
     [searchBoxElement, searchFieldElement, dropdownElement,
      resultsListElement] = initSearchBoxElement();
 

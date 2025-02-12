@@ -24,9 +24,9 @@ export class FakePersonalizationSearchHandler implements
     this.fakeResults_ = results;
   }
 
-  async search(_query: String16, _maxNumResults: number):
+  search(_query: String16, _maxNumResults: number):
       Promise<{results: SearchResult[]}> {
-    return {results: this.fakeResults_};
+    return Promise.resolve({results: this.fakeResults_});
   }
 
   addObserver(observer: SearchResultsObserverInterface): void {

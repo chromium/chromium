@@ -322,7 +322,7 @@ suite('<files-settings-card>', () => {
   });
 
   suite('with enableDriveFsBulkPinning set to true', () => {
-    setup(async () => {
+    setup(() => {
       loadTimeData.overrideValues({
         enableDriveFsBulkPinning: true,
       });
@@ -377,7 +377,7 @@ suite('<files-settings-card>', () => {
   });
 
   suite('with enableDriveFsMirrorSync set to true', () => {
-    setup(async () => {
+    setup(() => {
       loadTimeData.overrideValues({
         enableDriveFsMirrorSync: true,
       });
@@ -433,7 +433,7 @@ suite('<files-settings-card>', () => {
   });
 
   suite('when no share has been setup before', () => {
-    setup(async () => {
+    setup(() => {
       smbBrowserProxy.anySmbMounted = false;
     });
 
@@ -457,7 +457,7 @@ suite('<files-settings-card>', () => {
   });
 
   suite('when file shares have been setup before', () => {
-    setup(async () => {
+    setup(() => {
       smbBrowserProxy.anySmbMounted = true;
     });
 

@@ -199,17 +199,17 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy implements
   /**
    * Gets languages available for translate, spell checking, input and locale.
    */
-  async getLanguageList(): Promise<Language[]> {
-    return structuredClone(this.languages);
+  getLanguageList(): Promise<Language[]> {
+    return Promise.resolve(structuredClone(this.languages));
   }
 
   /**
    * Gets languages that should always be automatically translated.
    */
-  async getAlwaysTranslateLanguages(): Promise<string[]> {
+  getAlwaysTranslateLanguages(): Promise<string[]> {
     const alwaysTranslateMap =
         this.settingsPrefs_!.get('prefs.translate_allowlists.value');
-    return Object.keys(alwaysTranslateMap);
+    return Promise.resolve(Object.keys(alwaysTranslateMap));
   }
 
   /**
@@ -237,8 +237,9 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy implements
   /**
    * Gets languages that should never be offered to translate.
    */
-  async getNeverTranslateLanguages(): Promise<string[]> {
-    return this.settingsPrefs_!.get('prefs.translate_blocked_languages.value');
+  getNeverTranslateLanguages(): Promise<string[]> {
+    return Promise.resolve(
+        this.settingsPrefs_!.get('prefs.translate_blocked_languages.value'));
   }
 
   /**
@@ -348,8 +349,8 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy implements
   /**
    * Gets the translate target language (in most cases, the display locale).
    */
-  async getTranslateTargetLanguage(): Promise<string> {
-    return 'en';
+  getTranslateTargetLanguage(): Promise<string> {
+    return Promise.resolve('en');
   }
 
   /**
@@ -363,17 +364,16 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy implements
   /**
    * Gets the current status of the chosen spell check dictionaries.
    */
-  async getSpellcheckDictionaryStatuses():
-      Promise<SpellcheckDictionaryStatus[]> {
-    return [];
+  getSpellcheckDictionaryStatuses(): Promise<SpellcheckDictionaryStatus[]> {
+    return Promise.resolve([]);
   }
 
   /**
    * Gets the custom spell check words, in sorted order.
    */
-  async getSpellcheckWords(): Promise<string[]> {
+  getSpellcheckWords(): Promise<string[]> {
     this.methodCalled('getSpellcheckWords');
-    return [];
+    return Promise.resolve([]);
   }
 
   /**

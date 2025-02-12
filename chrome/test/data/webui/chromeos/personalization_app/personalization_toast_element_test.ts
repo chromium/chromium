@@ -28,7 +28,7 @@ suite('PersonalizationToastTest', function() {
     await flushTasks();
   });
 
-  test('hidden when no error is present', async () => {
+  test('hidden when no error is present', () => {
     assertEquals('', personalizationToastElement.innerHTML);
   });
 

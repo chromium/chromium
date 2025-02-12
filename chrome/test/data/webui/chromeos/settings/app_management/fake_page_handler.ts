@@ -182,22 +182,22 @@ export class FakePageHandler implements PageHandlerInterface {
     await this.page.$.flushForTesting();
   }
 
-  async getApps(): Promise<{apps: App[]}> {
-    return {apps: this.apps_};
+  getApps(): Promise<{apps: App[]}> {
+    return Promise.resolve({apps: this.apps_});
   }
 
-  async getApp(_appId: string): Promise<{app: App}> {
+  getApp(_appId: string): Promise<{app: App}> {
     assertNotReached();
   }
 
-  async getSubAppToParentMap():
+  getSubAppToParentMap():
       Promise<{subAppToParentMap: {[key: string]: string}}> {
-    return {subAppToParentMap: {}};
+    return Promise.resolve({subAppToParentMap: {}});
   }
 
   async getExtensionAppPermissionMessages(_appId: string):
       Promise<{messages: ExtensionAppPermissionMessage[]}> {
-    return {messages: []};
+    return Promise.resolve({messages: []});
   }
 
   setApps(appList: App[]): void {
@@ -288,13 +288,12 @@ export class FakePageHandler implements PageHandlerInterface {
     assertNotReached();
   }
 
-  async getOverlappingPreferredApps(_appId: string):
-      Promise<{appIds: string[]}> {
+  getOverlappingPreferredApps(_appId: string): Promise<{appIds: string[]}> {
     this.methodCalled('getOverlappingPreferredApps');
     if (!this.overlappingAppIds) {
-      return {appIds: []};
+      return Promise.resolve({appIds: []});
     }
-    return {appIds: this.overlappingAppIds};
+    return Promise.resolve({appIds: this.overlappingAppIds});
   }
 
   openStorePage(_appId: string): void {}

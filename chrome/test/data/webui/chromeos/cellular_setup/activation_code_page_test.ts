@@ -427,7 +427,7 @@ suite('CrComponentsActivationCodePageTest', function() {
 
   test(
       'Install error after manual entry should show error on input',
-      async function() {
+      function() {
         const input =
             activationCodePage.shadowRoot!.querySelector<CrInputElement>(
                 '#activationCode');
@@ -754,7 +754,7 @@ suite('CrComponentsActivationCodePageTest', function() {
         ACTIVATION_CODE_VALID);
   });
 
-  test('check carrier lock warning', async function() {
+  test('check carrier lock warning', function() {
     assertTrue(!!activationCodePage.shadowRoot!.querySelector(
         '#carrierLockWarningContainer'));
   });

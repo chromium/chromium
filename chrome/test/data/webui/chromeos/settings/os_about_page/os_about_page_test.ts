@@ -34,7 +34,7 @@ suite('<os-about-page> AllBuilds', () => {
   const SPINNER_ICON_DARK_MODE =
       'chrome://resources/images/throbber_small_dark.svg';
 
-  setup(async () => {
+  setup(() => {
     loadTimeData.overrideValues({
       isManaged: false,
     });

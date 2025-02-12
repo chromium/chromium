@@ -39,7 +39,7 @@ suite('<settings-smart-privacy-subpage>', () => {
     };
   }
 
-  setup(async () => {
+  setup(() => {
     // Options aren't shown unless the feature is enabled.
     loadTimeData.overrideValues({
       isQuickDimEnabled: true,
@@ -50,14 +50,15 @@ suite('<settings-smart-privacy-subpage>', () => {
         document.createElement('settings-smart-privacy-subpage');
     smartPrivacySubpage.prefs = makePrefs(false, false);
     document.body.appendChild(smartPrivacySubpage);
+    return Promise.resolve();
   });
 
-  teardown(async () => {
+  teardown(() => {
     smartPrivacySubpage.remove();
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('Snooping radio list visibility tied to pref', async () => {
+  test('Snooping radio list visibility tied to pref', () => {
     // The $ method won't find elements inside templates.
     const collapse =
         smartPrivacySubpage.shadowRoot!.querySelector<IronCollapseElement>(
@@ -74,7 +75,7 @@ suite('<settings-smart-privacy-subpage>', () => {
     assertTrue(collapse.opened);
   });
 
-  test('Quick dim slider visibility tied to pref', async () => {
+  test('Quick dim slider visibility tied to pref', () => {
     // The $ method won't find elements inside templates.
     const collapse =
         smartPrivacySubpage.shadowRoot!.querySelector<IronCollapseElement>(

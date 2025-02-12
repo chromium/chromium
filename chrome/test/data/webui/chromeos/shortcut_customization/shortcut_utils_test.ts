@@ -37,22 +37,22 @@ function areStandardAcceleratorInfosEqual(
 }
 
 suite('shortcutUtilsTest', function() {
-  test('CustomizationAllowed', async () => {
+  test('CustomizationAllowed', () => {
     loadTimeData.overrideValues({isCustomizationAllowed: true});
     assertTrue(isCustomizationAllowed());
   });
 
-  test('CustomizationDisallowed', async () => {
+  test('CustomizationDisallowed', () => {
     loadTimeData.overrideValues({isCustomizationAllowed: false});
     assertFalse(isCustomizationAllowed());
   });
 
-  test('GetAcceleratorId', async () => {
+  test('GetAcceleratorId', () => {
     assertEquals(`${0}-${80}`, getAcceleratorId(0, 80));
     assertEquals(`${0}-${80}`, getAcceleratorId('0', '80'));
   });
 
-  test('isTextAcceleratorInfo', async () => {
+  test('isTextAcceleratorInfo', () => {
     const textAcceleratorParts: TextAcceleratorPart[] =
         [{text: stringToMojoString16('a'), type: TextAcceleratorPartType.kKey}];
     const textAccelerator = createTextAcceleratorInfo(textAcceleratorParts);
@@ -60,7 +60,7 @@ suite('shortcutUtilsTest', function() {
     assertFalse(isStandardAcceleratorInfo(textAccelerator));
   });
 
-  test('isStandardAcceleratorInfo', async () => {
+  test('isStandardAcceleratorInfo', () => {
     const standardAccelerator = createStandardAcceleratorInfo(
         Modifier.ALT,
         /*keyCode=*/ 221,
@@ -69,7 +69,7 @@ suite('shortcutUtilsTest', function() {
     assertFalse(isTextAcceleratorInfo(standardAccelerator));
   });
 
-  test('GetAccelerator', async () => {
+  test('GetAccelerator', () => {
     const acceleratorInfo = createStandardAcceleratorInfo(
         Modifier.ALT,
         /*keyCode=*/ 221,
@@ -204,7 +204,7 @@ suite('shortcutUtilsTest', function() {
     areStandardAcceleratorInfosEqual(expectedOrder, initialOrder);
   });
 
-  test('sortStandardAcceleratorInfoStableOrder', async () => {
+  test('sortStandardAcceleratorInfoStableOrder', () => {
     const standardAcceleratorInfo1 = createStandardAcceleratorInfo(
         Modifier.ALT,
         /*keyCode=*/ 221,
@@ -235,7 +235,7 @@ suite('shortcutUtilsTest', function() {
     areStandardAcceleratorInfosEqual(expectedOrder, initialOrder);
   });
 
-  test('getSourceAndActionFromAcceleratorId', async () => {
+  test('getSourceAndActionFromAcceleratorId', () => {
     const result1 = getSourceAndActionFromAcceleratorId('3-45');
     assertDeepEquals(result1, {source: 3, action: 45});
 
@@ -243,7 +243,7 @@ suite('shortcutUtilsTest', function() {
     assertDeepEquals(result2, {source: 0, action: 33});
   });
 
-  test('getUnidentifiedKeyDisplay', async () => {
+  test('getUnidentifiedKeyDisplay', () => {
     // If unidentified keys in unidentifiedKeyCodeToKey map, return the mapped
     // value.
     const key_event_1 = new KeyboardEvent('keydown', {
@@ -262,7 +262,7 @@ suite('shortcutUtilsTest', function() {
     assertEquals('Key 10', getUnidentifiedKeyDisplay(key_event_2));
   });
 
-  test('areAcceleratorsEqual', async () => {
+  test('areAcceleratorsEqual', () => {
     const accelerator1: Accelerator = {
       keyCode: 65,  // A
       modifiers: Modifier.ALT,
@@ -285,7 +285,7 @@ suite('shortcutUtilsTest', function() {
     assertFalse(areAcceleratorsEqual(accelerator1, accelerator3));
   });
 
-  test('getNumpadKeyDisplay', async () => {
+  test('getNumpadKeyDisplay', () => {
     assertEquals('numpad 0', getNumpadKeyDisplay('Numpad0'));
     assertEquals('numpad 9', getNumpadKeyDisplay('Numpad9'));
     assertEquals('numpad +', getNumpadKeyDisplay('NumpadAdd'));

@@ -36,7 +36,7 @@ suite('<settings-multidevice-task-continuation-item>', () => {
     taskContinuationItem.remove();
   });
 
-  test('Chrome Sync off', async () => {
+  test('Chrome Sync off', () => {
     const prefs = getPrefs();
     prefs.tabsSynced = false;
     flush();
@@ -52,7 +52,7 @@ suite('<settings-multidevice-task-continuation-item>', () => {
     assertTrue(toggle.disabled);
   });
 
-  test('Chrome Sync on', async () => {
+  test('Chrome Sync on', () => {
     const prefs = getPrefs();
     prefs.tabsSynced = true;
     webUIListenerCallback('sync-prefs-changed', prefs);

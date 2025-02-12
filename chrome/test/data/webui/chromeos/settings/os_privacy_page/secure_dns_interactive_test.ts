@@ -310,7 +310,7 @@ suite('SettingsSecureDnsInteractive', function() {
     assertEquals('some_input', testElement.$.secureDnsInput.value);
   });
 
-  test('SecureDnsDropdownChangeInAutomaticMode', async function() {
+  test('SecureDnsDropdownChangeInAutomaticMode', function() {
     const secureDnsToggle = getSecureDnsToggle();
 
     testElement.prefs.dns_over_https.templates.value = 'resolver1_template';

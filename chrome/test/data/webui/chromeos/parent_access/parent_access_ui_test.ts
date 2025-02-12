@@ -35,7 +35,7 @@ suite('ParentAccessUiTest', function() {
   });
 
   // Tests that only allowed requests are allowed.
-  test('TestIsAllowedRequest', async () => {
+  test('TestIsAllowedRequest', () => {
     // HTTPS fetches to allowlisted domains are allowed.
     assertTrue(parentAccessUi.isAllowedRequest('https://families.google.com'));
     assertTrue(parentAccessUi.isAllowedRequest('https://somehost.gstatic.com'));
