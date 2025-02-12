@@ -37,7 +37,6 @@ namespace internal {
 
 const uint32_t AW_STATE_VERSION_INITIAL = 20130814;
 const uint32_t AW_STATE_VERSION_DATA_URL = 20151204;
-const uint32_t AW_STATE_VERSION_REVERSE_ENTRIES = 20250211;
 
 // The navigation history to be saved. Primarily exists for testing.
 class NavigationHistory {
@@ -61,9 +60,6 @@ class NavigationHistorySink {
 // They are broken up for unit testing, and should not be called out side of
 // tests.
 void WriteToPickle(NavigationHistory& history, base::Pickle* pickle);
-void WriteToPickle(uint32_t state_version,
-                   NavigationHistory& history,
-                   base::Pickle* pickle);
 void WriteHeaderToPickle(base::Pickle* pickle);
 void WriteHeaderToPickle(uint32_t state_version, base::Pickle* pickle);
 [[nodiscard]] uint32_t RestoreHeaderFromPickle(base::PickleIterator* iterator);
