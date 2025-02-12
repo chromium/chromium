@@ -170,14 +170,8 @@ void TailoredSecurityConsentedModalAndroid::HandleMessageAccepted() {
   if (base::FeatureList::IsEnabled(safe_browsing::kEsbAsASyncedSetting)) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-    // TODO(crbug.com/389996059): Create a boolean type pref indicating whether
-    // a notification was shown before. We should prevent showing the
-    // notification multiple times.
-    // TODO(crbug.com/392113427): Rename the is_esb_enabled_in_sync parameter in
-    // SetSafeBrowsingState.
     SetSafeBrowsingState(profile->GetPrefs(),
                          SafeBrowsingState::ENHANCED_PROTECTION);
-    ;
     // TODO(crbug.com/392612935): Log histogram for the dialog.
     // Log user actions if the action came from synced ESB setting.
     base::RecordAction(base::UserMetricsAction(

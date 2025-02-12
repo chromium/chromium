@@ -81,6 +81,18 @@ SafeBrowsingState GetSafeBrowsingState(const PrefService& prefs) {
   }
 }
 
+void SetSafeBrowsingSettingSetLocallyPref(PrefService* prefs, bool value) {
+  // Explicitly set the kSafeBrowsingSyncedEnhancedProtectionSetLocally
+  // after the user manually sets the safe browsing state using the settings UI.
+  // Setting this value in this API makes sure we do not show multiple Synced
+  // Enhanced Protection notifications or show it on the device where the user
+  // modified the setting.
+  if (base::FeatureList::IsEnabled(safe_browsing::kEsbAsASyncedSetting)) {
+    prefs->SetBoolean(prefs::kSafeBrowsingSyncedEnhancedProtectionSetLocally,
+                      value);
+  }
+}
+
 void SetSafeBrowsingState(PrefService* prefs,
                           SafeBrowsingState state,
                           bool is_esb_enabled_by_account_integration) {
@@ -213,6 +225,12 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   }
   registry->RegisterBooleanPref(prefs::kSafeBrowsingProceedAnywayDisabled,
                                 false);
+  registry->RegisterIntegerPref(
+      prefs::kSafeBrowsingSyncedEnhancedProtectionRetryState,
+      TailoredSecurityRetryState::UNSET);
+  registry->RegisterTimePref(
+      prefs::kSafeBrowsingSyncedEnhancedProtectionNextRetryTimestamp,
+      base::Time());
   registry->RegisterDictionaryPref(prefs::kSafeBrowsingIncidentsSent);
   registry->RegisterDictionaryPref(
       prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
@@ -238,6 +256,11 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kAccountTailoredSecurityShownNotification, false);
   registry->RegisterBooleanPref(
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
+  registry->RegisterBooleanPref(
+      prefs::kSafeBrowsingSyncedEnhancedProtectionSetLocally, false);
+  registry->RegisterTimePref(
+      prefs::kSafeBrowsingSyncedEnhancedProtectionUpdateTimestamp,
+      base::Time());
   registry->RegisterTimePref(prefs::kTailoredSecuritySyncFlowLastRunTime,
                              base::Time());
   registry->RegisterTimePref(prefs::kTailoredSecurityNextSyncFlowTimestamp,

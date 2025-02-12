@@ -81,6 +81,14 @@ static void JNI_SafeBrowsingBridge_SetSafeBrowsingState(
       /*is_esb_enabled_by_account_integration=*/false);
 }
 
+static void JNI_SafeBrowsingBridge_SetSafeBrowsingSettingSetLocallyPref(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile,
+    jboolean value) {
+  return safe_browsing::SetSafeBrowsingSettingSetLocallyPref(
+      GetPrefService(j_profile), value);
+}
+
 static jboolean JNI_SafeBrowsingBridge_IsSafeBrowsingManaged(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile) {
