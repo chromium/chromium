@@ -72,7 +72,7 @@ suite('ExtensionShortcutTest', function() {
       // rather than a fancy-schmancy custom element.
       return isChildVisible(e, s, true);
     }
-    const cards = keyboardShortcuts.shadowRoot!.querySelector('#container')!
+    const cards = keyboardShortcuts.shadowRoot.querySelector('#container')!
                       .querySelectorAll('.shortcut-card');
     assertEquals(2, cards.length);
 
@@ -91,7 +91,7 @@ suite('ExtensionShortcutTest', function() {
   });
 
   test('ScopeChange', async function() {
-    const selectElement = keyboardShortcuts.shadowRoot!.querySelector('select');
+    const selectElement = keyboardShortcuts.shadowRoot.querySelector('select');
     assertTrue(!!selectElement);
     selectElement.value = 'GLOBAL';
     selectElement.dispatchEvent(
@@ -106,7 +106,7 @@ suite('ExtensionShortcutTest', function() {
 
   test('UpdateShortcut', async function() {
     const shortcutInput =
-        keyboardShortcuts.shadowRoot!.querySelector('cr-shortcut-input');
+        keyboardShortcuts.shadowRoot.querySelector('cr-shortcut-input');
     assertTrue(!!shortcutInput);
     const field = shortcutInput.$.input;
     assertEquals('Ctrl + W', field.value);
@@ -169,8 +169,7 @@ suite('ExtensionShortcutTest', function() {
 
     // Test clearing the shortcut.
     shortcutInput.$.edit.click();
-    assertEquals(
-        shortcutInput.$.input, shortcutInput.shadowRoot!.activeElement);
+    assertEquals(shortcutInput.$.input, shortcutInput.shadowRoot.activeElement);
     arg = await testDelegate.whenCalled('updateExtensionCommandKeybinding');
     await microtasksFinished();
 

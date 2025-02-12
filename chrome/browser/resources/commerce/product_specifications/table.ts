@@ -126,7 +126,7 @@ export class TableElement extends CrLitElement {
 
   closeAllProductSelectionMenus() {
     const productSelectors =
-        this.shadowRoot!.querySelectorAll('product-selector');
+        this.shadowRoot.querySelectorAll('product-selector');
     productSelectors.forEach(productSelector => productSelector.closeMenu());
   }
 

@@ -128,12 +128,12 @@ export class ExtensionsRuntimeHostPermissionsElement extends CrLitElement {
   getSelectMenu(): HTMLSelectElement {
     const selectMenuId =
         this.enableEnhancedSiteControls ? '#newHostAccess' : '#hostAccess';
-    return this.shadowRoot!.querySelector<HTMLSelectElement>(selectMenuId)!;
+    return this.shadowRoot.querySelector<HTMLSelectElement>(selectMenuId)!;
   }
 
   getRemoveSiteDialog(): CrDialogElement {
-    return this.shadowRoot!.querySelector<CrDialogElement>(
-        '#removeSitesDialog')!;
+    return this.shadowRoot.querySelector<CrDialogElement>('#removeSitesDialog')!
+        ;
   }
 
   protected onHostAccessChange_() {

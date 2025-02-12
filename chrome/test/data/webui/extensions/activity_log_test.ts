@@ -76,8 +76,8 @@ suite('ExtensionsActivityLogTest', function() {
   // needed for iron-list as it reuses components but hides them when not in
   // use.
   function getStreamItems() {
-    return activityLog.shadowRoot!.querySelector('activity-log-stream')!
-        .shadowRoot!.querySelectorAll('activity-log-stream-item:not([hidden])');
+    return activityLog.shadowRoot.querySelector('activity-log-stream')!
+        .shadowRoot.querySelectorAll('activity-log-stream-item:not([hidden])');
   }
 
   test('clicking on back button navigates to the details page', async () => {

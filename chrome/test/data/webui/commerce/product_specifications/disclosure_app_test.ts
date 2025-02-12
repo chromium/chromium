@@ -55,12 +55,12 @@ suite('DisclosureAppTest', () => {
   });
 
   test('disclosure has 4 items', async () => {
-    const container = app.shadowRoot!.querySelectorAll('.item');
+    const container = app.shadowRoot.querySelectorAll('.item');
     assertEquals(4, container.length);
   });
 
   test('disclosure has correct icons', async () => {
-    const icons = app.shadowRoot!.querySelectorAll('.item cr-icon');
+    const icons = app.shadowRoot.querySelectorAll('.item cr-icon');
     assertEquals(4, icons.length);
     assertEquals(
         'product-specifications-disclosure:plant',
@@ -77,7 +77,7 @@ suite('DisclosureAppTest', () => {
   });
 
   test('disclosure has correct item text', async () => {
-    const items = app.shadowRoot!.querySelectorAll('.item div');
+    const items = app.shadowRoot.querySelectorAll('.item div');
     assertEquals(4, items.length);
     assertEquals(app.i18n('disclosureAboutItem'), items[0]!.textContent);
     assertEquals(app.i18n('disclosureTabItem'), items[1]!.textContent);

@@ -1347,7 +1347,7 @@ suite('AppTest', () => {
 
     async function clickFirstAvailableItemInFirstColumn() {
       const table = appElement.$.summaryTable;
-      const selector = table.shadowRoot!.querySelector<ProductSelectorElement>(
+      const selector = table.shadowRoot.querySelector<ProductSelectorElement>(
           'product-selector');
       assertTrue(!!selector);
       selector.$.currentProductContainer.click();
@@ -1670,10 +1670,10 @@ suite('AppTest', () => {
     // Wait for the loading animation to start.
     await loadingStartPromise;
     const feedbackLoading =
-        appElement.shadowRoot!.querySelector('#feedbackLoading');
+        appElement.shadowRoot.querySelector('#feedbackLoading');
     assertTrue(!!feedbackLoading);
     const feedbackButtons =
-        appElement.shadowRoot!.querySelector('#feedbackButtons');
+        appElement.shadowRoot.querySelector('#feedbackButtons');
     assertTrue(!!feedbackButtons);
 
     assertTrue(isVisible(feedbackLoading));
@@ -1700,9 +1700,9 @@ suite('AppTest', () => {
     // Wait for the loading animation to start.
     await loadingStartPromise;
     const feedbackLoading =
-        appElement.shadowRoot!.querySelector('#feedbackLoading');
+        appElement.shadowRoot.querySelector('#feedbackLoading');
     const feedbackButtons =
-        appElement.shadowRoot!.querySelector('#feedbackButtons');
+        appElement.shadowRoot.querySelector('#feedbackButtons');
 
     assertFalse(isVisible(feedbackLoading));
     assertFalse(isVisible(feedbackButtons));
@@ -1720,9 +1720,8 @@ suite('AppTest', () => {
       urlsParam: ['https://example.com/'],
     });
     await createAppElementWithPromiseValues(promiseValues);
-    const learnMoreLink =
-        appElement.shadowRoot!.querySelector('#learnMoreLink');
-    const disclaimer = appElement.shadowRoot!.querySelector('#disclaimer');
+    const learnMoreLink = appElement.shadowRoot.querySelector('#learnMoreLink');
+    const disclaimer = appElement.shadowRoot.querySelector('#disclaimer');
 
     assertTrue(!!learnMoreLink);
     assertTrue(isVisible(learnMoreLink));
@@ -1947,7 +1946,7 @@ suite('AppTest', () => {
 
       assertTrue(isVisible(appElement.$.empty));
       assertFalse(isVisible(appElement.$.specs));
-      const footer = appElement.shadowRoot!.querySelector('#footer');
+      const footer = appElement.shadowRoot.querySelector('#footer');
       assertFalse(isVisible(footer));
     });
 
@@ -2221,7 +2220,7 @@ suite('AppTest', () => {
 
     function updateCrFeedbackButtons(option: CrFeedbackOption) {
       const feedbackButtons =
-          appElement.shadowRoot!.querySelector('#feedbackButtons');
+          appElement.shadowRoot.querySelector('#feedbackButtons');
       assertTrue(!!feedbackButtons);
       feedbackButtons!.dispatchEvent(
           new CustomEvent('selected-option-changed', {
@@ -2359,9 +2358,9 @@ suite('AppTest', () => {
       // Wait for the loading animation to start.
       await loadingStartPromise;
       const feedbackLoading =
-          appElement.shadowRoot!.querySelector('#feedbackLoading');
+          appElement.shadowRoot.querySelector('#feedbackLoading');
       const feedbackButtons =
-          appElement.shadowRoot!.querySelector('#feedbackButtons');
+          appElement.shadowRoot.querySelector('#feedbackButtons');
 
       assertFalse(isVisible(feedbackLoading));
       assertFalse(isVisible(feedbackButtons));

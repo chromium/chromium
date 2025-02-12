@@ -36,12 +36,11 @@ suite('ExtensionManagerTest', function() {
   });
 
   function getExtensions(): chrome.developerPrivate.ExtensionInfo[] {
-    return manager.shadowRoot!.querySelector(
-                                  'extensions-item-list')!.extensions;
+    return manager.shadowRoot.querySelector('extensions-item-list')!.extensions;
   }
 
   function getApps(): chrome.developerPrivate.ExtensionInfo[] {
-    return manager.shadowRoot!.querySelector('extensions-item-list')!.apps;
+    return manager.shadowRoot.querySelector('extensions-item-list')!.apps;
   }
 
   function getExtensionByName(name: string):
@@ -98,37 +97,37 @@ suite('ExtensionManagerTest', function() {
 
   test('ChangePages', async () => {
     // We start on the item list.
-    manager.shadowRoot!.querySelector(
-                           'extensions-sidebar')!.$.sectionsExtensions.click();
+    manager.shadowRoot.querySelector(
+                          'extensions-sidebar')!.$.sectionsExtensions.click();
     await microtasksFinished();
     assertViewActive('extensions-item-list');
 
     // Switch: item list -> keyboard shortcuts.
-    manager.shadowRoot!.querySelector(
-                           'extensions-sidebar')!.$.sectionsShortcuts.click();
+    manager.shadowRoot.querySelector(
+                          'extensions-sidebar')!.$.sectionsShortcuts.click();
     await microtasksFinished();
     assertViewActive('extensions-keyboard-shortcuts');
 
     // Switch: item list -> detail view.
     const item =
-        manager.$['items-list'].shadowRoot!.querySelector('extensions-item');
+        manager.$['items-list'].shadowRoot.querySelector('extensions-item');
     assertTrue(!!item);
     const detailsButton =
-        item.shadowRoot!.querySelector<HTMLElement>('#detailsButton');
+        item.shadowRoot.querySelector<HTMLElement>('#detailsButton');
     assertTrue(!!detailsButton);
     detailsButton.click();
     await microtasksFinished();
     assertViewActive('extensions-detail-view');
 
     // Switch: detail view -> keyboard shortcuts.
-    manager.shadowRoot!.querySelector(
-                           'extensions-sidebar')!.$.sectionsShortcuts.click();
+    manager.shadowRoot.querySelector(
+                          'extensions-sidebar')!.$.sectionsShortcuts.click();
     await microtasksFinished();
     assertViewActive('extensions-keyboard-shortcuts');
 
     // We get back on the item list.
-    manager.shadowRoot!.querySelector(
-                           'extensions-sidebar')!.$.sectionsExtensions.click();
+    manager.shadowRoot.querySelector(
+                          'extensions-sidebar')!.$.sectionsExtensions.click();
     await microtasksFinished();
     assertViewActive('extensions-item-list');
   });
@@ -137,10 +136,10 @@ suite('ExtensionManagerTest', function() {
     manager.$.toolbar.narrow = true;
     const toolbar = manager.$.toolbar.$.toolbar;
     await microtasksFinished();
-    toolbar.shadowRoot!.querySelector<HTMLElement>('#menuButton')!.click();
+    toolbar.shadowRoot.querySelector<HTMLElement>('#menuButton')!.click();
 
     await eventToPromise('cr-drawer-opened', manager);
-    const drawer = manager.shadowRoot!.querySelector('cr-drawer');
+    const drawer = manager.shadowRoot.querySelector('cr-drawer');
     assertTrue(!!drawer);
 
     manager.$.toolbar.narrow = false;

@@ -140,16 +140,16 @@ suite('ExtensionManagerUnitTest', function() {
     await microtasksFinished();
 
     // The detail view is not present until navigation.
-    assertFalse(!!manager.shadowRoot!.querySelector('extensions-detail-view'));
+    assertFalse(!!manager.shadowRoot.querySelector('extensions-detail-view'));
     navigation.navigateTo({page: Page.DETAILS, extensionId: extension.id});
     await microtasksFinished();
     const detailsView =
-        manager.shadowRoot!.querySelector('extensions-detail-view');
+        manager.shadowRoot.querySelector('extensions-detail-view');
     assertTrue(!!detailsView);  // View should now be present.
     assertEquals(extension.id, detailsView.data.id);
     assertEquals(description, detailsView.data.description);
     const content =
-        detailsView.shadowRoot!.querySelector('.section .section-content');
+        detailsView.shadowRoot.querySelector('.section .section-content');
     assertTrue(!!content);
     assertEquals(description, content.textContent!.trim());
   });
@@ -169,7 +169,7 @@ suite('ExtensionManagerUnitTest', function() {
 
         navigation.navigateTo({page: Page.DETAILS, extensionId: extension.id});
         const detailsView =
-            manager.shadowRoot!.querySelector('extensions-detail-view');
+            manager.shadowRoot.querySelector('extensions-detail-view');
         assertTrue(!!detailsView);
 
         const extensionCopy = Object.assign({}, extension);
@@ -193,7 +193,7 @@ suite('ExtensionManagerUnitTest', function() {
 
         await microtasksFinished();
         const content =
-            detailsView.shadowRoot!.querySelector('.section .section-content');
+            detailsView.shadowRoot.querySelector('.section .section-content');
         assertTrue(!!content);
         assertEquals(newDescription, content.textContent!.trim());
       });

@@ -81,9 +81,7 @@ export class ExtensionsHostPermissionsToggleListElement extends
   private selectedHost_: string = '';
 
   getRestrictedSitesDialog(): ExtensionsRestrictedSitesDialogElement|null {
-    return this.shadowRoot!
-        .querySelector<ExtensionsRestrictedSitesDialogElement>(
-            'extensions-restricted-sites-dialog');
+    return this.shadowRoot.querySelector('extensions-restricted-sites-dialog');
   }
 
   /**

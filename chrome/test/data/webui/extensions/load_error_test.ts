@@ -37,35 +37,35 @@ suite('ExtensionLoadErrorTests', function() {
 
   test('RetryError', async function() {
     const dialogElement =
-        loadError.shadowRoot!.querySelector('cr-dialog')!.getNative();
+        loadError.shadowRoot.querySelector('cr-dialog')!.getNative();
     assertFalse(isElementVisible(dialogElement));
     loadError.show();
     assertTrue(isElementVisible(dialogElement));
 
     mockDelegate.setRetryLoadUnpackedError(stubLoadError);
-    loadError.shadowRoot!.querySelector<HTMLElement>('.action-button')!.click();
+    loadError.shadowRoot.querySelector<HTMLElement>('.action-button')!.click();
     const arg = await mockDelegate.whenCalled('retryLoadUnpacked');
     assertEquals(fakeGuid, arg);
     assertTrue(isElementVisible(dialogElement));
-    loadError.shadowRoot!.querySelector<HTMLElement>('.cancel-button')!.click();
+    loadError.shadowRoot.querySelector<HTMLElement>('.cancel-button')!.click();
     assertFalse(isElementVisible(dialogElement));
   });
 
   test('RetrySuccess', async function() {
     const dialogElement =
-        loadError.shadowRoot!.querySelector('cr-dialog')!.getNative();
+        loadError.shadowRoot.querySelector('cr-dialog')!.getNative();
     assertFalse(isElementVisible(dialogElement));
     loadError.show();
     assertTrue(isElementVisible(dialogElement));
 
-    loadError.shadowRoot!.querySelector<HTMLElement>('.action-button')!.click();
+    loadError.shadowRoot.querySelector<HTMLElement>('.action-button')!.click();
     const arg = await mockDelegate.whenCalled('retryLoadUnpacked');
     assertEquals(fakeGuid, arg);
     assertFalse(isElementVisible(dialogElement));
   });
 
   test('CodeSection', async () => {
-    assertTrue(loadError.$.code.shadowRoot!
+    assertTrue(loadError.$.code.shadowRoot
                    .querySelector<HTMLElement>('#scroll-container')!.hidden);
     const loadErrorWithSource = {
       error: 'Some error',
@@ -80,7 +80,7 @@ suite('ExtensionLoadErrorTests', function() {
 
     loadError.loadError = loadErrorWithSource;
     await microtasksFinished();
-    assertFalse(loadError.$.code.shadowRoot!
+    assertFalse(loadError.$.code.shadowRoot
                     .querySelector<HTMLElement>('#scroll-container')!.hidden);
   });
 
@@ -89,7 +89,7 @@ suite('ExtensionLoadErrorTests', function() {
     await microtasksFinished();
 
     // File should be visible with name.
-    const fileRow = loadError.shadowRoot!.querySelector<HTMLElement>('#file')!;
+    const fileRow = loadError.shadowRoot.querySelector<HTMLElement>('#file')!;
     assertFalse(fileRow.hidden);
     assertEquals(
         fileRow.querySelector<HTMLSpanElement>('.row-value')!.innerText,
@@ -97,23 +97,22 @@ suite('ExtensionLoadErrorTests', function() {
   });
 
   test('GenericError', async () => {
-    assertTrue(loadError.$.code.shadowRoot!
+    assertTrue(loadError.$.code.shadowRoot
                    .querySelector<HTMLElement>('#scroll-container')!.hidden);
 
     loadError.loadError = new Error('Some generic error');
     await microtasksFinished();
 
     // Code section should still be hidden because there is no source.
-    assertTrue(loadError.$.code.shadowRoot!
+    assertTrue(loadError.$.code.shadowRoot
                    .querySelector<HTMLElement>('#scroll-container')!.hidden);
 
     // File row should be hidden because there is no specific file.
     assertTrue(
-        loadError.shadowRoot!.querySelector<HTMLElement>('#file')!.hidden);
+        loadError.shadowRoot.querySelector<HTMLElement>('#file')!.hidden);
 
     // Error should be visible with message.
-    const errorRow =
-        loadError.shadowRoot!.querySelector<HTMLElement>('#error')!;
+    const errorRow = loadError.shadowRoot.querySelector<HTMLElement>('#error')!;
     assertFalse(errorRow.hidden);
     assertEquals(
         errorRow.querySelector<HTMLSpanElement>('.row-value')!.innerText,

@@ -57,9 +57,8 @@ suite('DescriptionCitationTest', () => {
     assertEquals('4', citationElement.$.citation.textContent!?.trim());
     assertTrue(citationElement.$.tooltip.textContent!?.includes('example.com'));
 
-    assertTrue(
-        !!citationElement.shadowRoot!.querySelector('.faviconContainer'));
-    assertTrue(!!citationElement.shadowRoot!.querySelector('.previewText'));
+    assertTrue(!!citationElement.shadowRoot.querySelector('.faviconContainer'));
+    assertTrue(!!citationElement.shadowRoot.querySelector('.previewText'));
 
     const label = loadTimeData.getStringF(
         'citationA11yLabel', 4, 8, 'product', 'example.com', 'Page Title',
@@ -87,8 +86,8 @@ suite('DescriptionCitationTest', () => {
     assertTrue(citationElement.$.tooltip.textContent!?.includes('example.com'));
 
     assertFalse(
-        !!citationElement.shadowRoot!.querySelector('.faviconContainer'));
-    assertFalse(!!citationElement.shadowRoot!.querySelector('.previewText'));
+        !!citationElement.shadowRoot.querySelector('.faviconContainer'));
+    assertFalse(!!citationElement.shadowRoot.querySelector('.previewText'));
 
     const expectedAriaLabel = loadTimeData.getStringF(
         'citationA11yLabel', 4, 8, 'product', 'example.com', '', '');

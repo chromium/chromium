@@ -148,7 +148,7 @@ suite('HorizontalCarouselTest', () => {
     // Columns themselves aren't focusable, but the nested
     // `#currentProductContainer` in their `product-selector`s are.
     const productSelectors =
-        tableElement.shadowRoot!.querySelectorAll<HTMLElement>(
+        tableElement.shadowRoot.querySelectorAll<HTMLElement>(
             '.col product-selector');
     assertEquals(6, productSelectors.length);
     let numScrollEnd = 0;

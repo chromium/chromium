@@ -75,7 +75,7 @@ suite('DescriptionSectionTest', () => {
 
   test('summaries render correctly', async () => {
     const summaries =
-        descriptionSectionElement.shadowRoot!.querySelectorAll('.summary-text');
+        descriptionSectionElement.shadowRoot.querySelectorAll('.summary-text');
 
     assertEquals(description.summary.length, summaries.length);
     summaries.forEach((_item, index) => {
@@ -87,7 +87,7 @@ suite('DescriptionSectionTest', () => {
   });
 
   test('citations are listed correctly', async () => {
-    const citations = descriptionSectionElement.shadowRoot!.querySelectorAll(
+    const citations = descriptionSectionElement.shadowRoot.querySelectorAll(
         'description-citation');
 
     assertEquals(3, citations.length);
@@ -107,7 +107,7 @@ suite('DescriptionSectionTest', () => {
   });
 
   test('attributes are listed correctly', async () => {
-    const attributes = descriptionSectionElement.shadowRoot!.querySelectorAll(
+    const attributes = descriptionSectionElement.shadowRoot.querySelectorAll(
         '.attribute-chip');
 
     assertEquals(description.attributes.length, attributes.length);

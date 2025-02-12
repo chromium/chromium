@@ -52,7 +52,7 @@ suite('ComparisonTableListTest', () => {
 
   function getListItems() {
     assertTrue(!!listElement);
-    return listElement.shadowRoot!.querySelectorAll(
+    return listElement.shadowRoot.querySelectorAll(
         'comparison-table-list-item');
   }
 

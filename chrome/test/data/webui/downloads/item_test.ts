@@ -211,11 +211,11 @@ suite('ItemTest', function() {
         });
         await microtasksFinished();
         assertEquals(
-            'cr:error', item.shadowRoot!.querySelector('cr-icon')!.icon);
+            'cr:error', item.shadowRoot.querySelector('cr-icon')!.icon);
         assertTrue(item.$['file-icon'].hidden);
         assertEquals(
             'red',
-            item.shadowRoot!.querySelector('cr-icon')!.getAttribute(
+            item.shadowRoot.querySelector('cr-icon')!.getAttribute(
                 'icon-color'));
 
         item.data = createDownload({
@@ -226,11 +226,11 @@ suite('ItemTest', function() {
         await microtasksFinished();
 
         assertEquals(
-            'cr:warning', item.shadowRoot!.querySelector('cr-icon')!.icon);
+            'cr:warning', item.shadowRoot.querySelector('cr-icon')!.icon);
         assertTrue(item.$['file-icon'].hidden);
         assertEquals(
             'grey',
-            item.shadowRoot!.querySelector('cr-icon')!.getAttribute(
+            item.shadowRoot.querySelector('cr-icon')!.getAttribute(
                 'icon-color'));
 
         item.data = createDownload({
@@ -242,11 +242,11 @@ suite('ItemTest', function() {
         await microtasksFinished();
 
         assertEquals(
-            'cr:warning', item.shadowRoot!.querySelector('cr-icon')!.icon);
+            'cr:warning', item.shadowRoot.querySelector('cr-icon')!.icon);
         assertTrue(item.$['file-icon'].hidden);
         assertEquals(
             'grey',
-            item.shadowRoot!.querySelector('cr-icon')!.getAttribute(
+            item.shadowRoot.querySelector('cr-icon')!.getAttribute(
                 'icon-color'));
 
         item.data = createDownload({
@@ -259,11 +259,11 @@ suite('ItemTest', function() {
         await microtasksFinished();
 
         assertEquals(
-            'cr:warning', item.shadowRoot!.querySelector('cr-icon')!.icon);
+            'cr:warning', item.shadowRoot.querySelector('cr-icon')!.icon);
         assertTrue(item.$['file-icon'].hidden);
         assertEquals(
             'grey',
-            item.shadowRoot!.querySelector('cr-icon')!.getAttribute(
+            item.shadowRoot.querySelector('cr-icon')!.getAttribute(
                 'icon-color'));
 
         item.data = createDownload({
@@ -276,11 +276,11 @@ suite('ItemTest', function() {
         await microtasksFinished();
 
         assertEquals(
-            'cr:warning', item.shadowRoot!.querySelector('cr-icon')!.icon);
+            'cr:warning', item.shadowRoot.querySelector('cr-icon')!.icon);
         assertTrue(item.$['file-icon'].hidden);
         assertEquals(
             'grey',
-            item.shadowRoot!.querySelector('cr-icon')!.getAttribute(
+            item.shadowRoot.querySelector('cr-icon')!.getAttribute(
                 'icon-color'));
 
         item.data = createDownload({
@@ -291,11 +291,11 @@ suite('ItemTest', function() {
         await microtasksFinished();
 
         assertEquals(
-            'cr:warning', item.shadowRoot!.querySelector('cr-icon')!.icon);
+            'cr:warning', item.shadowRoot.querySelector('cr-icon')!.icon);
         assertTrue(item.$['file-icon'].hidden);
         assertEquals(
             'grey',
-            item.shadowRoot!.querySelector('cr-icon')!.getAttribute(
+            item.shadowRoot.querySelector('cr-icon')!.getAttribute(
                 'icon-color'));
 
         item.data = createDownload({
@@ -307,11 +307,11 @@ suite('ItemTest', function() {
 
         assertEquals(
             'downloads:dangerous',
-            item.shadowRoot!.querySelector('cr-icon')!.icon);
+            item.shadowRoot.querySelector('cr-icon')!.icon);
         assertTrue(item.$['file-icon'].hidden);
         assertEquals(
             'red',
-            item.shadowRoot!.querySelector('cr-icon')!.getAttribute(
+            item.shadowRoot.querySelector('cr-icon')!.getAttribute(
                 'icon-color'));
 
         item.data = createDownload({
@@ -323,11 +323,11 @@ suite('ItemTest', function() {
 
         assertEquals(
             'downloads:dangerous',
-            item.shadowRoot!.querySelector('cr-icon')!.icon);
+            item.shadowRoot.querySelector('cr-icon')!.icon);
         assertTrue(item.$['file-icon'].hidden);
         assertEquals(
             'red',
-            item.shadowRoot!.querySelector('cr-icon')!.getAttribute(
+            item.shadowRoot.querySelector('cr-icon')!.getAttribute(
                 'icon-color'));
       });
 
@@ -342,7 +342,7 @@ suite('ItemTest', function() {
 
         assertEquals(
             'red',
-            item.shadowRoot!.querySelector('.description')!.getAttribute(
+            item.shadowRoot.querySelector('.description')!.getAttribute(
                 'description-color'));
 
         item.data = createDownload({
@@ -354,7 +354,7 @@ suite('ItemTest', function() {
 
         assertEquals(
             'grey',
-            item.shadowRoot!.querySelector('.description')!.getAttribute(
+            item.shadowRoot.querySelector('.description')!.getAttribute(
                 'description-color'));
 
         item.data = createDownload({
@@ -367,7 +367,7 @@ suite('ItemTest', function() {
 
         assertEquals(
             'grey',
-            item.shadowRoot!.querySelector('.description')!.getAttribute(
+            item.shadowRoot.querySelector('.description')!.getAttribute(
                 'description-color'));
 
         item.data = createDownload({
@@ -381,7 +381,7 @@ suite('ItemTest', function() {
 
         assertEquals(
             'grey',
-            item.shadowRoot!.querySelector('.description')!.getAttribute(
+            item.shadowRoot.querySelector('.description')!.getAttribute(
                 'description-color'));
 
         item.data = createDownload({
@@ -395,7 +395,7 @@ suite('ItemTest', function() {
 
         assertEquals(
             'grey',
-            item.shadowRoot!.querySelector('.description')!.getAttribute(
+            item.shadowRoot.querySelector('.description')!.getAttribute(
                 'description-color'));
 
         item.data = createDownload({
@@ -407,7 +407,7 @@ suite('ItemTest', function() {
 
         assertEquals(
             'grey',
-            item.shadowRoot!.querySelector('.description')!.getAttribute(
+            item.shadowRoot.querySelector('.description')!.getAttribute(
                 'description-color'));
 
         item.data = createDownload({
@@ -419,7 +419,7 @@ suite('ItemTest', function() {
 
         assertEquals(
             'red',
-            item.shadowRoot!.querySelector('.description')!.getAttribute(
+            item.shadowRoot.querySelector('.description')!.getAttribute(
                 'description-color'));
       });
 
@@ -427,7 +427,7 @@ suite('ItemTest', function() {
     function assertDescriptionText(expected: string) {
       assertEquals(
           expected,
-          item.shadowRoot!.querySelector('.description:not([hidden])')!
+          item.shadowRoot.querySelector('.description:not([hidden])')!
               .textContent!.trim());
     }
 
@@ -482,7 +482,7 @@ suite('ItemTest', function() {
   test('icon aria-hidden determined by display type', async () => {
     testIconLoader.setShouldIconsLoad(true);
 
-    const iconWrapper = item.shadowRoot!.querySelector('.icon-wrapper');
+    const iconWrapper = item.shadowRoot.querySelector('.icon-wrapper');
 
     item.data = createDownload({
       filePath: 'unique1',
@@ -525,7 +525,7 @@ suite('ItemTest', function() {
     assertTrue(isVisible(moreActionsButton));
     moreActionsButton.click();
     const saveDangerousButton =
-        item.shadowRoot!.querySelector<HTMLElement>('#save-dangerous');
+        item.shadowRoot.querySelector<HTMLElement>('#save-dangerous');
     assertTrue(!!saveDangerousButton);
     assertTrue(isVisible(saveDangerousButton));
     saveDangerousButton.click();
@@ -555,7 +555,7 @@ suite('ItemTest', function() {
     assertTrue(isVisible(moreActionsButton));
     moreActionsButton.click();
     const saveDangerousButton =
-        item.shadowRoot!.querySelector<HTMLElement>('#save-dangerous');
+        item.shadowRoot.querySelector<HTMLElement>('#save-dangerous');
     assertTrue(!!saveDangerousButton);
     assertTrue(isVisible(saveDangerousButton));
     saveDangerousButton.click();
@@ -578,9 +578,9 @@ suite('ItemTest', function() {
     assertTrue(isVisible(moreActionsButton));
     moreActionsButton.click();
     assertTrue(
-        isVisible(item.shadowRoot!.querySelector<HTMLElement>('#deep-scan')));
+        isVisible(item.shadowRoot.querySelector<HTMLElement>('#deep-scan')));
     assertTrue(isVisible(
-        item.shadowRoot!.querySelector<HTMLElement>('#bypass-deep-scan')));
+        item.shadowRoot.querySelector<HTMLElement>('#bypass-deep-scan')));
   });
 
   test('local decryption scan icon and text', async () => {
@@ -591,14 +591,14 @@ suite('ItemTest', function() {
     });
     await microtasksFinished();
 
-    const icon = item.shadowRoot!.querySelector<CrIconElement>(
+    const icon = item.shadowRoot.querySelector<CrIconElement>(
         'cr-icon[icon-color=grey]');
     assertTrue(!!icon);
     assertEquals('cr:warning', icon.icon);
     assertEquals(
         loadTimeData.getString('controlLocalPasswordScan'),
-        item.shadowRoot!.querySelector<HTMLElement>(
-                            '#deepScan')!.textContent!.trim());
+        item.shadowRoot.querySelector<HTMLElement>(
+                           '#deepScan')!.textContent!.trim());
   });
 
   test('open anyway dropdown button shown on failed deep scan', async () => {
@@ -614,7 +614,7 @@ suite('ItemTest', function() {
     assertTrue(isVisible(moreActionsButton));
     moreActionsButton.click();
     assertTrue(
-        isVisible(item.shadowRoot!.querySelector<HTMLElement>('#open-anyway')));
+        isVisible(item.shadowRoot.querySelector<HTMLElement>('#open-anyway')));
   });
 
   test('undo is shown in toast', async () => {
@@ -627,7 +627,7 @@ suite('ItemTest', function() {
     const moreActionsButton = item.getMoreActionsButton();
     assertFalse(isVisible(moreActionsButton));
     const quickRemoveButton =
-        item.shadowRoot!.querySelector<HTMLElement>('#quick-remove');
+        item.shadowRoot.querySelector<HTMLElement>('#quick-remove');
     assertTrue(!!quickRemoveButton);
     assertTrue(isVisible(quickRemoveButton));
     quickRemoveButton.click();
@@ -649,7 +649,7 @@ suite('ItemTest', function() {
     assertTrue(isVisible(moreActionsButton));
     moreActionsButton.click();
     const removeButton =
-        item.shadowRoot!.querySelector<HTMLElement>('#discard-dangerous');
+        item.shadowRoot.querySelector<HTMLElement>('#discard-dangerous');
     assertTrue(!!removeButton);
     removeButton.click();
     assertTrue(toastManager.slottedHidden);
@@ -670,7 +670,7 @@ suite('ItemTest', function() {
     assertTrue(isVisible(moreActionsButton));
     moreActionsButton.click();
     const removeButton =
-        item.shadowRoot!.querySelector<HTMLElement>('#discard-dangerous');
+        item.shadowRoot.querySelector<HTMLElement>('#discard-dangerous');
     assertTrue(!!removeButton);
     removeButton.click();
     assertTrue(toastManager.slottedHidden);
@@ -687,7 +687,7 @@ suite('ItemTest', function() {
     });
     await microtasksFinished();
     const quickRemoveButton =
-        item.shadowRoot!.querySelector<HTMLElement>('#quick-remove');
+        item.shadowRoot.querySelector<HTMLElement>('#quick-remove');
     assertTrue(!!quickRemoveButton);
     assertTrue(isVisible(quickRemoveButton));
     quickRemoveButton.click();
@@ -704,7 +704,7 @@ suite('ItemTest', function() {
     });
     await microtasksFinished();
     const quickRemoveButton =
-        item.shadowRoot!.querySelector<HTMLElement>('#quick-remove');
+        item.shadowRoot.querySelector<HTMLElement>('#quick-remove');
     assertTrue(!!quickRemoveButton);
     assertTrue(isVisible(quickRemoveButton));
     quickRemoveButton.click();
@@ -717,7 +717,7 @@ suite('ItemTest', function() {
     item.data = createDownload({url: undefined});
     await microtasksFinished();
     const copyDownloadLinkButton =
-        item.shadowRoot!.querySelector<HTMLElement>('#copy-download-link');
+        item.shadowRoot.querySelector<HTMLElement>('#copy-download-link');
     assertFalse(isVisible(copyDownloadLinkButton));
   });
 
@@ -737,7 +737,7 @@ suite('ItemTest', function() {
     });
     await microtasksFinished();
     const esbPromo =
-        item.shadowRoot!.querySelector<HTMLElement>('#esb-download-row-promo');
+        item.shadowRoot.querySelector<HTMLElement>('#esb-download-row-promo');
     assertTrue(!!esbPromo);
     assertTrue(isVisible(esbPromo));
     esbPromo.click();
@@ -758,13 +758,13 @@ suite('ItemTest', function() {
       url: stringToMojoUrl('http://evil.com'),
     });
     await microtasksFinished();
-    const esbPromo = item.shadowRoot!.querySelector('#esb-download-row-promo');
+    const esbPromo = item.shadowRoot.querySelector('#esb-download-row-promo');
     assertFalse(isVisible(esbPromo));
   });
   // </if>
 
   test('DownloadIsActive', async () => {
-    const content = item.shadowRoot!.querySelector<HTMLElement>('#content');
+    const content = item.shadowRoot.querySelector<HTMLElement>('#content');
     assertTrue(!!content);
     item.data = createDownload({
       state: State.kComplete,
@@ -819,7 +819,7 @@ suite('ItemFocusTest', function() {
         item.data = createDownload({url: stringToMojoUrl(url)});
         await microtasksFinished();
         const copyDownloadLinkButton =
-            item.shadowRoot!.querySelector<HTMLElement>('#copy-download-link');
+            item.shadowRoot.querySelector<HTMLElement>('#copy-download-link');
         assertTrue(!!copyDownloadLinkButton);
         copyDownloadLinkButton.click();
         const clipboardText = await navigator.clipboard.readText();

@@ -72,8 +72,8 @@ suite('ExtensionsActivityLogStreamItemTest', function() {
 
         await microtasksFinished();
         boundTestVisible('cr-expand-button', true);
-        activityLogStreamItem.shadowRoot!.querySelector(
-                                             'cr-expand-button')!.click();
+        activityLogStreamItem.shadowRoot.querySelector(
+                                            'cr-expand-button')!.click();
 
         await microtasksFinished();
         boundTestVisible('#page-url-link', true);
@@ -106,14 +106,13 @@ suite('ExtensionsActivityLogStreamItemTest', function() {
 
     await microtasksFinished();
     boundTestVisible('cr-expand-button', true);
-    activityLogStreamItem.shadowRoot!.querySelector(
-                                         'cr-expand-button')!.click();
+    activityLogStreamItem.shadowRoot.querySelector('cr-expand-button')!.click();
 
     await microtasksFinished();
     boundTestVisible('#args-list', true);
 
     const argsDisplayed =
-        activityLogStreamItem.shadowRoot!.querySelectorAll<HTMLElement>('.arg');
+        activityLogStreamItem.shadowRoot.querySelectorAll<HTMLElement>('.arg');
     assertEquals(4, argsDisplayed.length);
 
     assertEquals(`"${argUrl}"`, argsDisplayed[0]!.innerText!);
