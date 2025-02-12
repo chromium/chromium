@@ -22,7 +22,6 @@ enum class HeuristicSource {
   // Corresponds to regexes from the default file, but with at least one
   // `RegexFeature` enabled.
   kExperimentalRegexes,
-  kAutofillAiRegexes,
 #endif
   kAutofillMachineLearning,
   kPasswordManagerMachineLearning,

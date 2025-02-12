@@ -656,17 +656,9 @@ class IsFormAndFieldEligibleAutofillAiTest : public BaseAutofillAiManagerTest {
     autofill::FormData form_data;
     form_data.set_main_frame_origin(url::Origin::Create(url));
     auto form = std::make_unique<autofill::FormStructure>(form_data);
-    autofill::AutofillField& prediction_improvement_field =
-        test_api(*form).PushField();
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-    prediction_improvement_field.set_heuristic_type(
-        autofill::HeuristicSource::kAutofillAiRegexes,
-        autofill::IMPROVED_PREDICTION);
-#else
-    prediction_improvement_field.set_heuristic_type(
-        autofill::HeuristicSource::kLegacyRegexes,
-        autofill::IMPROVED_PREDICTION);
-#endif
+    autofill::AutofillField& field = test_api(*form).PushField();
+    SetPredictionTypesForField(
+        field, {autofill::NAME_FIRST, autofill::PASSPORT_NAME_TAG});
     return form;
   }
 };
@@ -678,10 +670,8 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest,
       /*enabled_features=*/{}, /*disable_features*/ {
           kAutofillAi, autofill::features::kAutofillAiWithDataSchema});
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
-  autofill::AutofillField* prediction_improvement_field = form->field(0);
 
-  EXPECT_FALSE(
-      manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
+  EXPECT_FALSE(manager().IsEligibleForAutofillAi(*form, *form->field(0)));
 }
 
 TEST_F(IsFormAndFieldEligibleAutofillAiTest,
@@ -691,12 +681,9 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest,
       autofill::features::kAutofillAiWithDataSchema);
 
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
-  autofill::AutofillField* prediction_improvement_field = form->field(0);
-  SetPredictionTypesForField(*prediction_improvement_field,
-                             {autofill::NAME_FIRST});
+  SetPredictionTypesForField(*form->field(0), {autofill::NAME_FIRST});
 
-  EXPECT_FALSE(
-      manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
+  EXPECT_FALSE(manager().IsEligibleForAutofillAi(*form, *form->field(0)));
 }
 
 TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleIfPrefIsDisabled) {
@@ -705,14 +692,9 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleIfPrefIsDisabled) {
       autofill::features::kAutofillAiWithDataSchema);
 
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
-  autofill::AutofillField* prediction_improvement_field = form->field(0);
-  SetPredictionTypesForField(
-      *prediction_improvement_field,
-      {autofill::NAME_FIRST, autofill::PASSPORT_NAME_TAG});
 
   EXPECT_CALL(client(), IsAutofillAiEnabledPref).WillOnce(Return(false));
-  EXPECT_FALSE(
-      manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
+  EXPECT_FALSE(manager().IsEligibleForAutofillAi(*form, *form->field(0)));
 }
 
 TEST_F(IsFormAndFieldEligibleAutofillAiTest, AutofillAiEligibility_Eligible) {
@@ -722,28 +704,17 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest, AutofillAiEligibility_Eligible) {
       /*disable_features*/ {kAutofillAi});
 
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
-  autofill::AutofillField* prediction_improvement_field = form->field(0);
-  SetPredictionTypesForField(
-      *prediction_improvement_field,
-      {autofill::NAME_FIRST, autofill::PASSPORT_NAME_TAG});
-
-  EXPECT_TRUE(
-      manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
+  EXPECT_TRUE(manager().IsEligibleForAutofillAi(*form, *form->field(0)));
 }
+
 TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleForNonEligibleUser) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       autofill::features::kAutofillAiWithDataSchema);
 
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
-  autofill::AutofillField* prediction_improvement_field = form->field(0);
-  SetPredictionTypesForField(
-      *prediction_improvement_field,
-      {autofill::NAME_FIRST, autofill::PASSPORT_NAME_TAG});
-
   ON_CALL(client(), IsUserEligible).WillByDefault(Return(false));
-  EXPECT_FALSE(
-      manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
+  EXPECT_FALSE(manager().IsEligibleForAutofillAi(*form, *form->field(0)));
 }
 
 }  // namespace
