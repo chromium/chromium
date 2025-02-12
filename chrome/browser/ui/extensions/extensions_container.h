@@ -5,11 +5,10 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_CONTAINER_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_CONTAINER_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 
-#include "base/functional/callback_forward.h"
-#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "extensions/common/extension_id.h"
