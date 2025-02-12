@@ -81,6 +81,10 @@ void EnterpriseSearchAggregatorProvider::Start(const AutocompleteInput& input,
   if (minimal_changes)
     return;
 
+  if (input.omit_asynchronous_matches()) {
+    return;
+  }
+
   input_ = input;
   done_ = false;  // Set true in callbacks.
 

@@ -309,6 +309,19 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, StartCallsStop) {
   EXPECT_TRUE(provider_->done());
 }
 
+// Test that a call to `Start()` will not set `done_` if
+// `omit_asynchronous_matches` is true.
+TEST_F(EnterpriseSearchAggregatorProviderTest,
+       StartLeavesDoneForOmitAsynchrnousMatches) {
+  AutocompleteInput input(u"keyword text", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  input.set_omit_asynchronous_matches(true);
+
+  provider_->done_ = true;
+  provider_->Start(input, false);
+  EXPECT_TRUE(provider_->done());
+}
+
 // Test response is parsed accurately.
 TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
   std::optional<base::Value> response =
