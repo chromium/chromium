@@ -99,6 +99,23 @@ using ::testing::UnorderedElementsAre;
 // Convenience function to static cast to ctrl_t.
 ctrl_t CtrlT(int i) { return static_cast<ctrl_t>(i); }
 
+// Enables sampling with 1 percent sampling rate and
+// resets the rate counter for the current thread.
+void SetSamplingRateTo1Percent() {
+  SetHashtablezEnabled(true);
+  SetHashtablezSampleParameter(100);  // Sample ~1% of tables.
+  // Reset rate counter for the current thread.
+  TestOnlyRefreshSamplingStateForCurrentThread();
+}
+
+// Disables sampling and resets the rate counter for the current thread.
+void DisableSampling() {
+  SetHashtablezEnabled(false);
+  SetHashtablezSampleParameter(1 << 16);
+  // Reset rate counter for the current thread.
+  TestOnlyRefreshSamplingStateForCurrentThread();
+}
+
 TEST(GrowthInfoTest, GetGrowthLeft) {
   GrowthInfo gi;
   gi.InitGrowthLeftNoDeleted(5);
@@ -1061,6 +1078,7 @@ TYPED_TEST(SmallTableResizeTest, ResizeGrowSmallTables) {
 }
 
 TYPED_TEST(SmallTableResizeTest, ResizeReduceSmallTables) {
+  DisableSampling();
   for (size_t source_size = 0; source_size < 32; ++source_size) {
     for (size_t target_size = 0; target_size <= source_size; ++target_size) {
       TypeParam t;
@@ -2233,7 +2251,7 @@ TYPED_TEST(SooTest, FindFullDeletedRegression) {
 
 TYPED_TEST(SooTest, ReplacingDeletedSlotDoesNotRehash) {
   // We need to disable hashtablez to avoid issues related to SOO and sampling.
-  SetHashtablezEnabled(false);
+  DisableSampling();
 
   size_t n;
   {
@@ -2601,7 +2619,7 @@ TYPED_TEST(SooTest, IterationOrderChangesOnRehash) {
 // This prevents dependency on pointer stability on small tables.
 TYPED_TEST(SooTest, UnstablePointers) {
   // We need to disable hashtablez to avoid issues related to SOO and sampling.
-  SetHashtablezEnabled(false);
+  DisableSampling();
 
   TypeParam table;
 
@@ -2739,12 +2757,17 @@ TYPED_TEST_SUITE(RawHashSamplerTest, RawHashSamplerTestTypes);
 TYPED_TEST(RawHashSamplerTest, Sample) {
   constexpr bool soo_enabled = std::is_same<SooIntTable, TypeParam>::value;
   // Enable the feature even if the prod default is off.
-  SetHashtablezEnabled(true);
-  SetHashtablezSampleParameter(100);  // Sample ~1% of tables.
+  SetSamplingRateTo1Percent();
 
   auto& sampler = GlobalHashtablezSampler();
   size_t start_size = 0;
-  absl::flat_hash_set<const HashtablezInfo*> preexisting_info;
+
+  // Reserve these utility tables, so that if they sampled, they'll be
+  // preexisting.
+  absl::flat_hash_set<const HashtablezInfo*> preexisting_info(10);
+  absl::flat_hash_map<size_t, int> observed_checksums(10);
+  absl::flat_hash_map<ssize_t, int> reservations(10);
+
   start_size += sampler.Iterate([&](const HashtablezInfo& info) {
     preexisting_info.insert(&info);
     ++start_size;
@@ -2771,8 +2794,6 @@ TYPED_TEST(RawHashSamplerTest, Sample) {
     }
   }
   size_t end_size = 0;
-  absl::flat_hash_map<size_t, int> observed_checksums;
-  absl::flat_hash_map<ssize_t, int> reservations;
   end_size += sampler.Iterate([&](const HashtablezInfo& info) {
     ++end_size;
     if (preexisting_info.contains(&info)) return;
@@ -2811,12 +2832,12 @@ TYPED_TEST(RawHashSamplerTest, Sample) {
 std::vector<const HashtablezInfo*> SampleSooMutation(
     absl::FunctionRef<void(SooIntTable&)> mutate_table) {
   // Enable the feature even if the prod default is off.
-  SetHashtablezEnabled(true);
-  SetHashtablezSampleParameter(100);  // Sample ~1% of tables.
+  SetSamplingRateTo1Percent();
 
   auto& sampler = GlobalHashtablezSampler();
   size_t start_size = 0;
-  absl::flat_hash_set<const HashtablezInfo*> preexisting_info;
+  // Reserve the table, so that if it sampled, it'll be preexisting.
+  absl::flat_hash_set<const HashtablezInfo*> preexisting_info(10);
   start_size += sampler.Iterate([&](const HashtablezInfo& info) {
     preexisting_info.insert(&info);
     ++start_size;
@@ -2940,8 +2961,7 @@ TEST(RawHashSamplerTest, SooTableRehashShrinkWhenSizeFitsInSoo) {
 
 TEST(RawHashSamplerTest, DoNotSampleCustomAllocators) {
   // Enable the feature even if the prod default is off.
-  SetHashtablezEnabled(true);
-  SetHashtablezSampleParameter(100);  // Sample ~1% of tables.
+  SetSamplingRateTo1Percent();
 
   auto& sampler = GlobalHashtablezSampler();
   size_t start_size = 0;
@@ -3478,22 +3498,22 @@ TEST(Table, CountedHash) {
 // IterateOverFullSlots doesn't support SOO.
 TEST(Table, IterateOverFullSlotsEmpty) {
   NonSooIntTable t;
-  auto fail_if_any = [](const ctrl_t*, auto* i) {
-    FAIL() << "expected no slots " << **i;
+  using SlotType = typename NonSooIntTable::slot_type;
+  auto fail_if_any = [](const ctrl_t*, void* i) {
+    FAIL() << "expected no slots " << **static_cast<SlotType*>(i);
   };
   container_internal::IterateOverFullSlots(
-      RawHashSetTestOnlyAccess::GetCommon(t),
-      RawHashSetTestOnlyAccess::GetSlots(t), fail_if_any);
+      RawHashSetTestOnlyAccess::GetCommon(t), sizeof(SlotType), fail_if_any);
   for (size_t i = 0; i < 256; ++i) {
     t.reserve(i);
     container_internal::IterateOverFullSlots(
-        RawHashSetTestOnlyAccess::GetCommon(t),
-        RawHashSetTestOnlyAccess::GetSlots(t), fail_if_any);
+        RawHashSetTestOnlyAccess::GetCommon(t), sizeof(SlotType), fail_if_any);
   }
 }
 
 TEST(Table, IterateOverFullSlotsFull) {
   NonSooIntTable t;
+  using SlotType = typename NonSooIntTable::slot_type;
 
   std::vector<int64_t> expected_slots;
   for (int64_t idx = 0; idx < 128; ++idx) {
@@ -3502,9 +3522,9 @@ TEST(Table, IterateOverFullSlotsFull) {
 
     std::vector<int64_t> slots;
     container_internal::IterateOverFullSlots(
-        RawHashSetTestOnlyAccess::GetCommon(t),
-        RawHashSetTestOnlyAccess::GetSlots(t),
-        [&t, &slots](const ctrl_t* ctrl, auto* i) {
+        RawHashSetTestOnlyAccess::GetCommon(t), sizeof(SlotType),
+        [&t, &slots](const ctrl_t* ctrl, void* slot) {
+          SlotType* i = static_cast<SlotType*>(slot);
           ptrdiff_t ctrl_offset =
               ctrl - RawHashSetTestOnlyAccess::GetCommon(t).control();
           ptrdiff_t slot_offset = i - RawHashSetTestOnlyAccess::GetSlots(t);
@@ -3523,16 +3543,16 @@ TEST(Table, IterateOverFullSlotsDeathOnRemoval) {
     if (reserve_size == -1) reserve_size = size;
     for (int64_t idx = 0; idx < size; ++idx) {
       NonSooIntTable t;
+      using SlotType = typename NonSooIntTable::slot_type;
       t.reserve(static_cast<size_t>(reserve_size));
       for (int val = 0; val <= idx; ++val) {
         t.insert(val);
       }
 
       container_internal::IterateOverFullSlots(
-          RawHashSetTestOnlyAccess::GetCommon(t),
-          RawHashSetTestOnlyAccess::GetSlots(t),
-          [&t](const ctrl_t*, auto* i) {
-            int64_t value = **i;
+          RawHashSetTestOnlyAccess::GetCommon(t), sizeof(SlotType),
+          [&t](const ctrl_t*, void* slot) {
+            int64_t value = **static_cast<SlotType*>(slot);
             // Erase the other element from 2*k and 2*k+1 pair.
             t.erase(value ^ 1);
           });
@@ -3558,16 +3578,16 @@ TEST(Table, IterateOverFullSlotsDeathOnInsert) {
     int64_t size = reserve_size / size_divisor;
     for (int64_t idx = 1; idx <= size; ++idx) {
       NonSooIntTable t;
+      using SlotType = typename NonSooIntTable::slot_type;
       t.reserve(static_cast<size_t>(reserve_size));
       for (int val = 1; val <= idx; ++val) {
         t.insert(val);
       }
 
       container_internal::IterateOverFullSlots(
-          RawHashSetTestOnlyAccess::GetCommon(t),
-          RawHashSetTestOnlyAccess::GetSlots(t),
-          [&t](const ctrl_t*, auto* i) {
-            int64_t value = **i;
+          RawHashSetTestOnlyAccess::GetCommon(t), sizeof(SlotType),
+          [&t](const ctrl_t*, void* slot) {
+            int64_t value = **static_cast<SlotType*>(slot);
             t.insert(-value);
           });
     }
@@ -3630,7 +3650,7 @@ TEST(Table, RehashToSooUnsampled) {
 
   // We disable hashtablez sampling for this test to ensure that the table isn't
   // sampled. When the table is sampled, it won't rehash down to SOO.
-  SetHashtablezEnabled(false);
+  DisableSampling();
 
   t.reserve(100);
   t.insert(0);

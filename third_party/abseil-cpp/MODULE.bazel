@@ -42,5 +42,5 @@ bazel_dep(
 # intended to be used by Abseil users depend on GoogleTest.
 bazel_dep(
     name = "googletest",
-    version = "1.15.2",
+    version = "1.16.0",
 )

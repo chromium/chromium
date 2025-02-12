@@ -134,10 +134,16 @@ HashtablezInfoHandle ForcedTrySample(size_t inline_element_size,
                                          inline_element_size, key_size,
                                          value_size, soo_capacity));
 }
+void TestOnlyRefreshSamplingStateForCurrentThread() {
+  global_next_sample.next_sample =
+      g_hashtablez_sample_parameter.load(std::memory_order_relaxed);
+  global_next_sample.sample_stride = global_next_sample.next_sample;
+}
 #else
 HashtablezInfoHandle ForcedTrySample(size_t, size_t, size_t, uint16_t) {
   return HashtablezInfoHandle{nullptr};
 }
+void TestOnlyRefreshSamplingStateForCurrentThread() {}
 #endif  // ABSL_INTERNAL_HASHTABLEZ_SAMPLE
 
 HashtablezInfo* SampleSlow(SamplingState& next_sample,

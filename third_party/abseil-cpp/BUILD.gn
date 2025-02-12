@@ -276,6 +276,7 @@ if (absl_build_tests) {
       deps = [
         "absl/algorithm:algorithm_test",
         "absl/algorithm:container_test",
+        "absl/base:attributes_test",
         "absl/base:config_test",
         "absl/base:no_destructor_test",
         "absl/base:nullability_default_nonnull_test",

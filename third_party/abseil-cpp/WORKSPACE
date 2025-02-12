@@ -21,17 +21,11 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # GoogleTest/GoogleMock framework. Used by most unit-tests.
 http_archive(
     name = "googletest",
-    sha256 = "7b42b4d6ed48810c5362c265a17faebe90dc2373c885e5216439d37927f02926",
-    strip_prefix = "googletest-1.15.2",
+    sha256 = "78c676fc63881529bf97bf9d45948d905a66833fbfa5318ea2cd7478cb98f399",
+    strip_prefix = "googletest-1.16.0",
     # Keep this URL in sync with the version in ci/cmake_common.sh and
     # ci/windows_msvc_cmake.bat.
-    urls = ["https://github.com/google/googletest/releases/download/v1.15.2/googletest-1.15.2.tar.gz"],
-    # Now that Abseil is using the canonical names from the Bazel Central Registry, map
-    # GoogleTest's old names to the new canonical names.
-    repo_mapping = {
-        "@com_google_absl": "@",
-        "@com_googlesource_code_re2": "@re2",
-    },
+    urls = ["https://github.com/google/googletest/releases/download/v1.16.0/googletest-1.16.0.tar.gz"],
 )
 
 # RE2 (the regular expression library used by GoogleTest)

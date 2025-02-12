@@ -695,6 +695,7 @@ cc_library(
         "//absl/base:endian",
         "//absl/base:prefetch",
         "//absl/base:raw_logging_internal",
+        "//absl/functional:function_ref",
         "//absl/hash",
         "//absl/memory",
         "//absl/meta:type_traits",
@@ -1008,6 +1009,7 @@ cc_test(
     deps = [
         ":flat_hash_map",
         ":flat_hash_set",
+        ":hashtablez_sampler",
         ":node_hash_map",
         ":node_hash_set",
         "@googletest//:gtest",

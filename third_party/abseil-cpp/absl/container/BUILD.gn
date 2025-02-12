@@ -400,6 +400,7 @@ absl_source_set("raw_hash_set") {
     "//third_party/abseil-cpp/absl/base:endian",
     "//third_party/abseil-cpp/absl/base:prefetch",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
+    "//third_party/abseil-cpp/absl/functional:function_ref",
     "//third_party/abseil-cpp/absl/hash",
     "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/meta:type_traits",
@@ -561,6 +562,7 @@ absl_test("sample_element_size_test") {
   deps = [
     ":flat_hash_map",
     ":flat_hash_set",
+    ":hashtablez_sampler",
     ":node_hash_map",
     ":node_hash_set",
   ]

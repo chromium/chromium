@@ -14,6 +14,6 @@
 
 # The commit of GoogleTest to be used in the CMake tests in this directory.
 # Keep this in sync with the commit in the WORKSPACE file.
-readonly ABSL_GOOGLETEST_VERSION="1.15.2"
+readonly ABSL_GOOGLETEST_VERSION="1.16.0"
 
 readonly ABSL_GOOGLETEST_DOWNLOAD_URL="https://github.com/google/googletest/releases/download/v${ABSL_GOOGLETEST_VERSION}/googletest-${ABSL_GOOGLETEST_VERSION}.tar.gz"
