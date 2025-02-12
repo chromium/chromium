@@ -1810,15 +1810,13 @@ StyleRuleProperty* CSSParserImpl::ConsumePropertyRule(
     CSSParserTokenStream& stream) {
   // Parse the prelude.
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
-  const CSSParserToken& name_token = stream.ConsumeIncludingWhitespace();
+  const CSSParserToken& name_token = stream.Peek();
   if (!CSSVariableParser::IsValidVariableName(name_token)) {
-    if (observer_) {
-      observer_->ObserveErroneousAtRule(prelude_offset_start,
-                                        CSSAtRuleID::kCSSAtRuleProperty);
-    }
+    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleProperty);
     return nullptr;
   }
   String name = name_token.Value().ToString();
+  stream.ConsumeIncludingWhitespace();
   wtf_size_t prelude_offset_end = stream.LookAheadOffset();
   if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream,
                                              CSSAtRuleID::kCSSAtRuleProperty)) {
