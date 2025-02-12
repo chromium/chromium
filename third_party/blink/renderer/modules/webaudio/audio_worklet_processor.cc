@@ -152,7 +152,14 @@ bool AudioWorkletProcessor::Process(
     TRACE_EVENT0(
         TRACE_DISABLED_BY_DEFAULT("audio-worklet"),
         "AudioWorkletProcessor::Process (author script execution)");
-    if (!definition->ProcessFunction()
+    auto* process_function = definition->ProcessFunction();
+    if (!process_function) {
+      SetErrorState(
+          AudioWorkletProcessorErrorState::kProcessMethodUndefinedError);
+      return false;
+    }
+
+    if (!process_function
              ->Invoke(this, ScriptValue(isolate, inputs_.Get(isolate)),
                       ScriptValue(isolate, outputs_.Get(isolate)),
                       ScriptValue(isolate, params_.Get(isolate)))
