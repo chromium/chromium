@@ -59,7 +59,6 @@ class CryptAuthFeatureStatusSetter;
 class CryptAuthKeyRegistry;
 class CryptAuthScheduler;
 class CryptAuthV2DeviceManager;
-class GcmDeviceInfoProvider;
 
 // Concrete DeviceSync implementation. When DeviceSyncImpl is constructed, it
 // starts an initialization flow with the following steps:
@@ -85,7 +84,6 @@ class DeviceSyncImpl : public DeviceSyncBase,
         gcm::GCMDriver* gcm_driver,
         instance_id::InstanceIDDriver* instance_id_driver,
         PrefService* profile_prefs,
-        const GcmDeviceInfoProvider* gcm_device_info_provider,
         ClientAppMetadataProvider* client_app_metadata_provider,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         std::unique_ptr<base::OneShotTimer> timer,
@@ -101,7 +99,6 @@ class DeviceSyncImpl : public DeviceSyncBase,
         gcm::GCMDriver* gcm_driver,
         instance_id::InstanceIDDriver* instance_id_driver,
         PrefService* profile_prefs,
-        const GcmDeviceInfoProvider* gcm_device_info_provider,
         ClientAppMetadataProvider* client_app_metadata_provider,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         std::unique_ptr<base::OneShotTimer> timer,
@@ -227,7 +224,6 @@ class DeviceSyncImpl : public DeviceSyncBase,
       gcm::GCMDriver* gcm_driver,
       instance_id::InstanceIDDriver* instance_id_driver,
       PrefService* profile_prefs,
-      const GcmDeviceInfoProvider* gcm_device_info_provider,
       ClientAppMetadataProvider* client_app_metadata_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       base::Clock* clock,
@@ -282,7 +278,6 @@ class DeviceSyncImpl : public DeviceSyncBase,
   raw_ptr<gcm::GCMDriver> gcm_driver_;
   raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
   raw_ptr<PrefService> profile_prefs_;
-  raw_ptr<const GcmDeviceInfoProvider> gcm_device_info_provider_;
   raw_ptr<ClientAppMetadataProvider> client_app_metadata_provider_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   raw_ptr<base::Clock> clock_;

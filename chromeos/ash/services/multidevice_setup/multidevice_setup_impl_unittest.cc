@@ -16,7 +16,6 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
-#include "chromeos/ash/services/device_sync/public/cpp/fake_gcm_device_info_provider.h"
 #include "chromeos/ash/services/multidevice_setup/account_status_change_delegate_notifier_impl.h"
 #include "chromeos/ash/services/multidevice_setup/android_sms_app_installing_status_observer.h"
 #include "chromeos/ash/services/multidevice_setup/eligible_host_devices_provider_impl.h"
@@ -612,10 +611,6 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
     fake_android_sms_pairing_state_tracker_ =
         std::make_unique<FakeAndroidSmsPairingStateTracker>();
 
-    fake_gcm_device_info_provider_ =
-        std::make_unique<device_sync::FakeGcmDeviceInfoProvider>(
-            cryptauth::GcmDeviceInfo());
-
     fake_eligible_host_devices_provider_factory_ =
         std::make_unique<FakeEligibleHostDevicesProviderFactory>(
             fake_device_sync_client_.get());
@@ -698,8 +693,7 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
         test_pref_service_.get(), fake_device_sync_client_.get(),
         fake_auth_token_validator_.get(), fake_oobe_completion_tracker_.get(),
         fake_android_sms_app_helper_delegate_.get(),
-        fake_android_sms_pairing_state_tracker_.get(),
-        fake_gcm_device_info_provider_.get(), is_secondary_user_);
+        fake_android_sms_pairing_state_tracker_.get(), is_secondary_user_);
   }
 
   void TearDown() override {
@@ -1025,8 +1019,6 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
   std::unique_ptr<FakeAuthTokenValidator> fake_auth_token_validator_;
   std::unique_ptr<OobeCompletionTracker> fake_oobe_completion_tracker_;
-  std::unique_ptr<device_sync::FakeGcmDeviceInfoProvider>
-      fake_gcm_device_info_provider_;
   bool is_secondary_user_ = false;
 
   std::unique_ptr<FakeEligibleHostDevicesProviderFactory>

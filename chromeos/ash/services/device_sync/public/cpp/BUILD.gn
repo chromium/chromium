@@ -14,7 +14,6 @@ source_set("cpp") {
     "device_sync_client_impl.h",
     "gcm_constants.cc",
     "gcm_constants.h",
-    "gcm_device_info_provider.h",
   ]
 
   public_deps = [
@@ -58,8 +57,6 @@ static_library("test_support") {
     "fake_client_app_metadata_provider.h",
     "fake_device_sync_client.cc",
     "fake_device_sync_client.h",
-    "fake_gcm_device_info_provider.cc",
-    "fake_gcm_device_info_provider.h",
   ]
 
   public_deps = [ ":cpp" ]

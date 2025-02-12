@@ -50,7 +50,6 @@
 #include "chromeos/ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_prefs.h"
 #include "chromeos/ash/services/device_sync/public/cpp/fake_client_app_metadata_provider.h"
-#include "chromeos/ash/services/device_sync/public/cpp/fake_gcm_device_info_provider.h"
 #include "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "chromeos/ash/services/device_sync/remote_device_provider_impl.h"
 #include "chromeos/ash/services/device_sync/software_feature_manager_impl.h"
@@ -72,23 +71,12 @@ namespace device_sync {
 namespace {
 
 const char kTestEmail[] = "example@gmail.com";
-const char kTestGcmDeviceInfoLongDeviceId[] = "longDeviceId";
 const char kTestCryptAuthGCMRegistrationId[] =
     "aValid:cryptAuth-RegistrationId";
 const char kTestDeprecatedCryptAuthGCMRegistrationId[] =
     "inValid-cryptAuthRegistrationId";
 const char kLocalDevicePublicKey[] = "localDevicePublicKey";
 const size_t kNumTestDevices = 5u;
-
-const cryptauth::GcmDeviceInfo& GetTestGcmDeviceInfo() {
-  static const base::NoDestructor<cryptauth::GcmDeviceInfo> gcm_device_info([] {
-    cryptauth::GcmDeviceInfo gcm_device_info;
-    gcm_device_info.set_long_device_id(kTestGcmDeviceInfoLongDeviceId);
-    return gcm_device_info;
-  }());
-
-  return *gcm_device_info;
-}
 
 multidevice::RemoteDeviceList GenerateTestRemoteDevices() {
   multidevice::RemoteDeviceList devices =
@@ -566,7 +554,6 @@ class DeviceSyncServiceTest : public ::testing::Test {
         gcm::GCMDriver* gcm_driver,
         instance_id::InstanceIDDriver* instance_id_driver,
         PrefService* profile_prefs,
-        const GcmDeviceInfoProvider* gcm_device_info_provider,
         ClientAppMetadataProvider* client_app_metadata_provider,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         std::unique_ptr<base::OneShotTimer> timer,
@@ -574,9 +561,9 @@ class DeviceSyncServiceTest : public ::testing::Test {
             get_attestation_certificates_function) override {
       return base::WrapUnique(new DeviceSyncImpl(
           identity_manager, gcm_driver, instance_id_driver, profile_prefs,
-          gcm_device_info_provider, client_app_metadata_provider,
-          std::move(url_loader_factory), simple_test_clock_,
-          std::move(mock_timer_), get_attestation_certificates_function));
+          client_app_metadata_provider, std::move(url_loader_factory),
+          simple_test_clock_, std::move(mock_timer_),
+          get_attestation_certificates_function));
     }
 
    private:
@@ -687,9 +674,6 @@ class DeviceSyncServiceTest : public ::testing::Test {
                                                     simple_test_clock_.get());
     DeviceSyncImpl::Factory::SetCustomFactory(
         fake_device_sync_impl_factory_.get());
-
-    fake_gcm_device_info_provider_ =
-        std::make_unique<FakeGcmDeviceInfoProvider>(GetTestGcmDeviceInfo());
   }
 
   void TearDown() override {
@@ -724,7 +708,6 @@ class DeviceSyncServiceTest : public ::testing::Test {
     device_sync_ = DeviceSyncImpl::Factory::Create(
         identity_test_environment_->identity_manager(), fake_gcm_driver_.get(),
         &fake_instance_id_driver_, test_pref_service_.get(),
-        fake_gcm_device_info_provider_.get(),
         fake_client_app_metadata_provider_.get(), shared_url_loader_factory,
         std::make_unique<base::OneShotTimer>(),
         base::BindRepeating(
@@ -1290,7 +1273,6 @@ class DeviceSyncServiceTest : public ::testing::Test {
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
   std::unique_ptr<gcm::FakeGCMDriver> fake_gcm_driver_;
   testing::NiceMock<MockInstanceIDDriver> fake_instance_id_driver_;
-  std::unique_ptr<FakeGcmDeviceInfoProvider> fake_gcm_device_info_provider_;
 
   bool device_already_enrolled_in_cryptauth_;
   bool last_force_enrollment_now_result_;
