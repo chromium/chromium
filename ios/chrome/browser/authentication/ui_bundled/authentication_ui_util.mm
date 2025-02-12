@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -176,23 +177,22 @@ BOOL ShouldShowManagedConfirmationForHostedDomain(
     return NO;
   }
 
-  if (HasMachineLevelPolicies()) {
+  // With multi-profiles, the user must be reminded of who is managing the new
+  // profile.
+  if (HasMachineLevelPolicies() &&
+      !AreSeparateProfilesForManagedAccountsEnabled()) {
     // Don't show the dialog if the browser has already machine level policies
     // as the user already knows that their browser is managed.
     return NO;
   }
 
-  if (access_point == signin_metrics::AccessPoint::kAccountMenu &&
-      base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
-    // Only show the dialog once per account, when switching from the Account
-    // Menu.
-    signin::GaiaIdHash gaia_id_hash =
-        signin::GaiaIdHash::FromGaiaId(GaiaId(gaia_id));
-    const base::Value* already_seen = syncer::GetAccountKeyedPrefValue(
-        prefs, prefs::kSigninHasAcceptedManagementDialog, gaia_id_hash);
-    if (already_seen && already_seen->GetIfBool().value_or(false)) {
-      return NO;
-    }
+  signin::GaiaIdHash gaia_id_hash =
+      signin::GaiaIdHash::FromGaiaId(GaiaId(gaia_id));
+  const base::Value* already_seen = syncer::GetAccountKeyedPrefValue(
+      prefs, prefs::kSigninHasAcceptedManagementDialog, gaia_id_hash);
+
+  if (already_seen && already_seen->GetIfBool().value_or(false)) {
+    return NO;
   }
 
   // Show the dialog if User Policy is enabled.
