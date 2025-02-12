@@ -11610,7 +11610,9 @@
                     "name": "Enabled_WithThrottling_20250121",
                     "enable_features": [
                         "AutofillAcrossIframesIos",
-                        "AutofillAcrossIframesIosThrottling",
+                        "AutofillAcrossIframesIosThrottling"
+                    ],
+                    "disable_features": [
                         "AutofillAcrossIframesIosTriggerFormExtraction"
                     ]
                 }
