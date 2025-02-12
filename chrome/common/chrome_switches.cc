@@ -899,6 +899,8 @@ const char kGlicGuestURL[] = "glic-guest-url";
 const char kCSPOverride[] = "glic-webui-csp-override";
 const char kGlicAlwaysOpenFre[] = "glic-always-open-fre";
 const char kGlicFreURL[] = "glic-fre-url";
+// Use --glic-open-on-startup=attached or --glic-open-on-startup=detached.
+const char kGlicOpenOnStartup[] = "glic-open-on-startup";
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
