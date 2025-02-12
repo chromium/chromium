@@ -450,16 +450,6 @@ const base::FeatureParam<bool> kIpPrivacyUseQuicProxiesOnly{
     /*name=*/"IpPrivacyUseQuicProxiesOnly",
     /*default_value=*/false};
 
-const base::FeatureParam<bool> kIpPrivacyUseSingleProxy{
-    &kEnableIpProtectionProxy,
-    /*name=*/"IpPrivacyUseSingleProxy",
-    /*default_value=*/false};
-
-const base::FeatureParam<std::string> kIpPrivacyAlwaysProxy{
-    &kEnableIpProtectionProxy,
-    /*name=*/"IpPrivacyAlwaysProxy",
-    /*default_value=*/""};
-
 const base::FeatureParam<bool> kIpPrivacyFallbackToDirect{
     &kEnableIpProtectionProxy,
     /*name=*/"IpPrivacyFallbackToDirect",

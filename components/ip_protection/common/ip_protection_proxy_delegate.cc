@@ -55,14 +55,6 @@ ProxyResolutionResult IpProtectionProxyDelegate::ClassifyRequest(
             << ") - " << message;
   };
 
-  const std::string& always_proxy = net::features::kIpPrivacyAlwaysProxy.Get();
-  if (!always_proxy.empty()) {
-    if (url.host() == always_proxy) {
-      return ProxyResolutionResult::kAttemptProxy;
-    }
-    return ProxyResolutionResult::kNoMdlMatch;
-  }
-
   // Check eligibility of this request.
   if (!ip_protection_core_->IsMdlPopulated()) {
     vlog("proxy allow list not populated");
@@ -143,14 +135,7 @@ void IpProtectionProxyDelegate::OnResolveProxy(
       // chains.
       CHECK(proxy_chain.is_multi_proxy());
 
-      // For debugging..
-      if (net::features::kIpPrivacyUseSingleProxy.Get()) {
-        proxy_list.AddProxyChain(net::ProxyChain::ForIpProtection({
-            proxy_chain.GetProxyServer(0),
-        }));
-      } else {
-        proxy_list.AddProxyChain(std::move(proxy_chain));
-      }
+      proxy_list.AddProxyChain(std::move(proxy_chain));
     }
   }
 
