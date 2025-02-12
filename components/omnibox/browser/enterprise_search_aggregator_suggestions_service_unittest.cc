@@ -103,7 +103,8 @@ class EnterpriseSearchAggregatorSuggestionsServiceTest : public testing::Test {
       enterprise_search_aggregator_suggestions_service_;
 };
 
-TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest, ValidateRequest) {
+TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest,
+       ValidateKeywordModeRequest) {
   SetUpPrimaryAccount();
 
   network::ResourceRequest resource_request;
@@ -138,7 +139,68 @@ TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest, ValidateRequest) {
   enterprise_search_aggregator_suggestions_service_
       ->CreateEnterpriseSearchAggregatorSuggestionsRequest(
           query, test_endpoint, request_future.GetCallback(),
-          loader_future.GetCallback(), complete_future.GetCallback());
+          loader_future.GetCallback(), complete_future.GetCallback(), true);
+
+  ASSERT_TRUE(request_future.Wait());
+  ASSERT_TRUE(loader_future.Wait());
+
+  complete_future.SetValue(nullptr,
+                           std::make_unique<std::string>(mock_response));
+  ASSERT_TRUE(complete_future.Wait());
+
+  EXPECT_TRUE(resource_request.site_for_cookies.IsEquivalent(
+      net::SiteForCookies::FromUrl(GURL(test_endpoint))))
+      << resource_request.site_for_cookies.ToDebugString();
+
+  EXPECT_EQ(resource_request.request_body->elements()->size(), 1u);
+
+  std::optional<base::Value> request_body =
+      base::JSONReader::Read(resource_request.request_body->elements()
+                                 ->at(0)
+                                 .As<network::DataElementBytes>()
+                                 .AsStringPiece());
+  std::optional<base::Value> test_request_body_value =
+      base::JSONReader::Read(test_request_body);
+  EXPECT_EQ(request_body, test_request_body_value);
+}
+
+TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest,
+       ValidateNonKeywordModeRequest) {
+  SetUpPrimaryAccount();
+
+  network::ResourceRequest resource_request;
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        resource_request = request;
+      }));
+
+  base::Value::Dict root;
+  root.Set("query", base::Value("test"));
+
+  base::Value::List suggestion_types_list;
+  std::vector<int> suggestion_types = {2, 3, 5};
+  for (const auto& item : suggestion_types) {
+    suggestion_types_list.Append(item);
+  }
+  root.Set("suggestionTypes", std::move(suggestion_types_list));
+
+  std::string test_request_body;
+  base::JSONWriter::Write(root, &test_request_body);
+  const std::u16string query = u"test";
+  const GURL test_endpoint = GURL("https://fake_url.com");
+
+  base::test::TestFuture<network::ResourceRequest*> request_future;
+  base::test::TestFuture<std::unique_ptr<network::SimpleURLLoader>,
+                         const std::string&>
+      loader_future;
+  base::test::TestFuture<const network::SimpleURLLoader*,
+                         std::unique_ptr<std::string>>
+      complete_future;
+
+  enterprise_search_aggregator_suggestions_service_
+      ->CreateEnterpriseSearchAggregatorSuggestionsRequest(
+          query, test_endpoint, request_future.GetCallback(),
+          loader_future.GetCallback(), complete_future.GetCallback(), false);
 
   ASSERT_TRUE(request_future.Wait());
   ASSERT_TRUE(loader_future.Wait());

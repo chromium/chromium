@@ -351,7 +351,8 @@ void RemoteSuggestionsService::
         const std::u16string& query,
         const GURL& suggest_url,
         StartCallback start_callback,
-        CompletionCallback completion_callback) {
+        CompletionCallback completion_callback,
+        bool in_keyword_mode) {
   if (!enterprise_search_aggregator_suggestions_service_) {
     return;
   }
@@ -370,7 +371,8 @@ void RemoteSuggestionsService::
                          std::move(start_callback)),
           base::BindOnce(&RemoteSuggestionsService::OnRequestCompleted,
                          weak_ptr_factory_.GetWeakPtr(), request_id,
-                         std::move(completion_callback)));
+                         std::move(completion_callback)),
+          in_keyword_mode);
 }
 
 std::unique_ptr<network::SimpleURLLoader>

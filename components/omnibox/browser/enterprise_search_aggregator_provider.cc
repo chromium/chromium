@@ -135,7 +135,8 @@ void EnterpriseSearchAggregatorProvider::Run() {
                          weak_ptr_factory_.GetWeakPtr()),
           base::BindOnce(
               &EnterpriseSearchAggregatorProvider::RequestCompleted,
-              base::Unretained(this) /* this owns SimpleURLLoader */));
+              base::Unretained(this) /* this owns SimpleURLLoader */),
+          input_.InKeywordMode());
 }
 
 void EnterpriseSearchAggregatorProvider::RequestStarted(
