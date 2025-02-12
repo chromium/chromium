@@ -43,7 +43,8 @@ class SchedulingEmbedder
 {
  public:
   SchedulingEmbedder(std::unique_ptr<Embedder> embedder,
-                     size_t scheduled_max,
+                     size_t max_jobs,
+                     size_t scheduled_max_batch_size,
                      bool use_performance_scenario);
   ~SchedulingEmbedder() override;
 
@@ -103,6 +104,9 @@ class SchedulingEmbedder
     Job(Job&&);
     Job& operator=(Job&&);
 
+    // Call the callback with status, etc. and record relevant histograms.
+    void Finish(ComputeEmbeddingsStatus status);
+
     // Data for the job is saved from calls to `ComputePassagesEmbeddings`.
     PassagePriority priority;
     TaskId task_id = kInvalidTaskId;
@@ -157,8 +161,15 @@ class SchedulingEmbedder
   // Starts empty; set when valid metadata is received from `embedder_`.
   EmbedderMetadata embedder_metadata_{0, 0};
 
+  // The maximum number of jobs to hold at once. Exceeding the cap
+  // will cause job failures on last pending jobs to avoid very high memory use.
+  // When the limit is reached, the last pending job is canceled instead of
+  // failing to accept the new job so that queries can still be accepted even
+  // if the queue is full of lower priority jobs awaiting performance scenario.
+  size_t max_jobs_;
+
   // The maximum number of embeddings to submit to the primary embedder.
-  size_t scheduled_max_;
+  size_t max_batch_size_;
 
   // Whether to block embedding work submission on performance scenario.
   bool use_performance_scenario_;

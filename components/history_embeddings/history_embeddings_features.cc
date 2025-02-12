@@ -145,10 +145,6 @@ const base::FeatureParam<bool> kAnswersInOmniboxScoped(&kHistoryEmbeddings,
                                                        "AnswersInOmniboxScoped",
                                                        true);
 
-const base::FeatureParam<int> kScheduledEmbeddingsMax(&kHistoryEmbeddings,
-                                                      "ScheduledEmbeddingsMax",
-                                                      1);
-
 const base::FeatureParam<bool> kSendQualityLog(&kHistoryEmbeddings,
                                                "SendQualityLog",
                                                true);
@@ -239,10 +235,6 @@ const base::FeatureParam<bool> kInsertTitlePassage(&kHistoryEmbeddings,
                                                    "InsertTitlePassage",
                                                    false);
 
-const base::FeatureParam<bool> kUsePerformanceScenario(&kHistoryEmbeddings,
-                                                       "UsePerformanceScenario",
-                                                       false);
-
 FeatureParameters::FeatureParameters(bool load_finch) {
   if (!load_finch) {
     return;
@@ -271,7 +263,6 @@ FeatureParameters::FeatureParameters(bool load_finch) {
   omnibox_scoped = kOmniboxScoped.Get();
   omnibox_unscoped = kOmniboxUnscoped.Get();
   answers_in_omnibox_scoped = kAnswersInOmniboxScoped.Get();
-  scheduled_embeddings_max = kScheduledEmbeddingsMax.Get();
   send_quality_log = kSendQualityLog.Get();
   send_quality_log_v2 = kSendQualityLogV2.Get();
   max_passages_per_page = kMaxPassagesPerPage.Get();
@@ -293,7 +284,6 @@ FeatureParameters::FeatureParameters(bool load_finch) {
   erase_non_ascii_characters = kEraseNonAsciiCharacters.Get();
   word_match_search_non_ascii_passages = kWordMatchSearchNonAsciiPassages.Get();
   insert_title_passage = kInsertTitlePassage.Get();
-  use_performance_scenario = kUsePerformanceScenario.Get();
 }
 
 FeatureParameters::FeatureParameters(const FeatureParameters&) = default;

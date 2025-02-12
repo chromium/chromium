@@ -74,8 +74,9 @@ class ScopedEmbeddingsModelInfoStatusLogger {
 PassageEmbeddingsServiceController::PassageEmbeddingsServiceController()
     : scheduling_embedder_(std::make_unique<SchedulingEmbedder>(
           std::make_unique<MlEmbedder>(this),
-          1,
-          false)) {
+          kSchedulerMaxJobs.Get(),
+          kSchedulerMaxBatchSize.Get(),
+          kUsePerformanceScenario.Get())) {
   observer_list_.AddObserver(scheduling_embedder_.get());
 }
 
@@ -172,9 +173,6 @@ EmbedderMetadata PassageEmbeddingsServiceController::GetEmbedderMetadata() {
 }
 
 std::unique_ptr<Embedder> PassageEmbeddingsServiceController::MakeEmbedder() {
-  // TODO(crbug.com/394893724): Rework embedder readiness and use central
-  //  SchedulingEmbedder. The existing observation is more complex than
-  //  necessary and can be simplified now since this class knows readiness.
   auto client = std::make_unique<SchedulingClientEmbedder>(
       scheduling_embedder_.get(),
       base::BindOnce(&PassageEmbeddingsServiceController::RemoveObserver,

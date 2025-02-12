@@ -5,6 +5,7 @@
 #include "components/passage_embeddings/scheduling_embedder.h"
 
 #include <memory>
+#include <tuple>
 
 #include "base/logging.h"
 #include "base/test/bind.h"
@@ -49,7 +50,7 @@ class SchedulingEmbedderTest : public testing::Test {
  protected:
   std::unique_ptr<SchedulingEmbedder> MakeEmbedder() {
     auto embedder = std::make_unique<SchedulingEmbedder>(
-        std::make_unique<MockEmbedderWithDelay>(), 1u, false);
+        std::make_unique<MockEmbedderWithDelay>(), 4u, 1u, false);
     embedder->SetEmbedderMetadata(EmbedderMetadata{1, 768});
     return embedder;
   }
@@ -152,6 +153,33 @@ TEST_F(SchedulingEmbedderTest, RecordsHistograms) {
   // previous two jobs.
   histogram_tester_.ExpectBucketCount(
       "History.Embeddings.ScheduledPassageCount", 3, 1);
+}
+
+TEST_F(SchedulingEmbedderTest, LimitsJobCount) {
+  auto embedder = MakeEmbedder();
+  ComputePassagesEmbeddingsFuture future1;
+  ComputePassagesEmbeddingsFuture future2;
+  ComputePassagesEmbeddingsFuture future3;
+  ComputePassagesEmbeddingsFuture future4;
+  ComputePassagesEmbeddingsFuture future5;
+
+  embedder->ComputePassagesEmbeddings(
+      PassagePriority::kPassive, {"test passage 1"}, future1.GetCallback());
+  embedder->ComputePassagesEmbeddings(
+      PassagePriority::kPassive, {"test passage 2"}, future2.GetCallback());
+  embedder->ComputePassagesEmbeddings(
+      PassagePriority::kPassive, {"test passage 3"}, future3.GetCallback());
+  embedder->ComputePassagesEmbeddings(
+      PassagePriority::kPassive, {"test passage 4"}, future4.GetCallback());
+  embedder->ComputePassagesEmbeddings(
+      PassagePriority::kPassive, {"test passage 5"}, future5.GetCallback());
+
+  // Final job interrupts the job at back of line when limit (4) is reached.
+  EXPECT_EQ(std::get<3>(future1.Take()), ComputeEmbeddingsStatus::kSuccess);
+  EXPECT_EQ(std::get<3>(future2.Take()), ComputeEmbeddingsStatus::kSuccess);
+  EXPECT_EQ(std::get<3>(future3.Take()), ComputeEmbeddingsStatus::kSuccess);
+  EXPECT_EQ(std::get<3>(future4.Take()), ComputeEmbeddingsStatus::kCanceled);
+  EXPECT_EQ(std::get<3>(future5.Take()), ComputeEmbeddingsStatus::kSuccess);
 }
 
 }  // namespace passage_embeddings
