@@ -89,10 +89,6 @@ ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
       return blink::mojom::ModelAvailabilityCheckResult::
           kNoTooManyRecentCrashes;
     case optimization_guide::OnDeviceModelEligibilityReason::
-        kTooManyRecentTimeouts:
-      return blink::mojom::ModelAvailabilityCheckResult::
-          kNoTooManyRecentTimeouts;
-    case optimization_guide::OnDeviceModelEligibilityReason::
         kSafetyModelNotAvailable:
       return blink::mojom::ModelAvailabilityCheckResult::
           kNoSafetyModelNotAvailable;

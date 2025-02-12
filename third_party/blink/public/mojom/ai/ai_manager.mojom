@@ -42,9 +42,6 @@ enum ModelAvailabilityCheckResult {
   // The model is not available because the on-device model process crashed too
   // many times for this version.
   kNoTooManyRecentCrashes = 9,
-  // The model is not available because the on-device model took too long too
-  // many times for this version.
-  kNoTooManyRecentTimeouts = 10,
   // The model is not available because the on-device safety model was required
   // but not available.
   kNoSafetyModelNotAvailable = 11,

@@ -133,6 +133,7 @@ struct SessionConfigParams {
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(OnDeviceModelEligibilityReason)
 enum class OnDeviceModelEligibilityReason {
   kUnknown = 0,
   // Success.
@@ -150,8 +151,9 @@ enum class OnDeviceModelEligibilityReason {
   kGpuBlocked = 5,
   // The on-device model process crashed too many times for this version.
   kTooManyRecentCrashes = 6,
+  // DEPRECATED
   // The on-device model took too long too many times for this version.
-  kTooManyRecentTimeouts = 7,
+  // kTooManyRecentTimeouts = 7,
   // The on-device safety model was required but not available.
   kSafetyModelNotAvailable = 8,
   // The on-device safety model was available but there was not a safety config
@@ -179,12 +181,10 @@ enum class OnDeviceModelEligibilityReason {
   // downloaded yet.
   kNoOnDeviceFeatureUsed = 18,
 
-  // This must be kept in sync with
-  // OptimizationGuideOnDeviceModelEligibilityReason in optimization/enums.xml.
-
   // Insert new values before this line.
   kMaxValue = kNoOnDeviceFeatureUsed,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OptimizationGuideOnDeviceModelEligibilityReason)
 
 std::ostream& operator<<(std::ostream& out,
                          const OnDeviceModelEligibilityReason& val);

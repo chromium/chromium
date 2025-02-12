@@ -23,8 +23,6 @@ std::ostream& operator<<(std::ostream& out,
       return out << "GpuBlocked";
     case OnDeviceModelEligibilityReason::kTooManyRecentCrashes:
       return out << "TooManyRecentCrashes";
-    case OnDeviceModelEligibilityReason::kTooManyRecentTimeouts:
-      return out << "TooManyRecentTimeouts";
     case OnDeviceModelEligibilityReason::kSafetyModelNotAvailable:
       return out << "SafetyModelNotAvailable";
     case OnDeviceModelEligibilityReason::kSafetyConfigNotAvailableForFeature:
