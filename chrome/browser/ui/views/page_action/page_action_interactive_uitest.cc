@@ -97,6 +97,7 @@ class PageActionUiTestBase {
   void ShowTestPageActionIcon() const { ShowPageAction(kActionShowTranslate); }
 
   void ShowTestSuggestionChip() const {
+    ShowPageAction(kActionShowTranslate);
     ShowSuggestionChip(kActionShowTranslate);
   }
 

@@ -90,7 +90,7 @@ void PageActionModel::SetActionItemProperties(
 
 bool PageActionModel::GetVisible() const {
   return is_tab_active_ && action_item_enabled_ && action_item_visible_ &&
-         (show_requested_ || show_suggestion_chip_) && !has_pinned_icon_;
+         show_requested_ && !has_pinned_icon_;
 }
 
 bool PageActionModel::GetShowSuggestionChip() const {
