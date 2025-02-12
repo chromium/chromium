@@ -162,6 +162,7 @@ class GpuIntegrationTest(
     super().__init__(*args, **kwargs)
     if self.artifacts is None:
       self.set_artifacts(None)
+    self._skip_was_due_to_expectation = False
 
   def set_artifacts(self,
                     artifacts: Optional[Type[acw.ArtifactCompatibilityWrapper]]
@@ -462,10 +463,9 @@ class GpuIntegrationTest(
     if args_differ:
       expected_results, _ = self.GetExpectationsForTest()
       if ResultType.Skip in expected_results:
-        message = (
+        self._skip_was_due_to_expectation = True
+        self.skipTest(
             'Determined that Skip expectation applies after browser restart')
-        logging.warning(message)
-        self.skipTest(message)
     # pylint: enable=protected-access
 
   def RestartBrowserWithArgs(self,
@@ -836,9 +836,17 @@ class GpuIntegrationTest(
     try:
       expected_crashes = self.GetExpectedCrashes(args)
       self.RunActualGpuTest(url, args)
-    except unittest.SkipTest:
+    except unittest.SkipTest as e:
+      # The re-raised exception isn't actually logged anywhere, so log it now
+      # in order to notify users of why the test was skipped.
+      logging.info('Programmatic skip reason: %s', e)
       # pylint: disable=attribute-defined-outside-init
       self.programmaticSkipIsExpected = True
+      # Only output associated bugs if the skip was due to an expectation, as
+      # otherwise incorrect/confusing bugs can be associated with the skip. See
+      # crbug.com/395919007 for more information.
+      if not self._skip_was_due_to_expectation:
+        self.shouldNotOutputAssociatedBugs = True
       # pylint: enable=attribute-defined-outside-init
       raise
     except Exception as e:
