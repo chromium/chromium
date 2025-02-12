@@ -19,6 +19,8 @@
 namespace {
 constexpr size_t kMobileMostVisitedTilesLimit = 10;
 constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
+constexpr size_t kMaxSuggestionsPerUnscopedExtension = 4;
+constexpr size_t kMaxExtensions = 2;
 }
 
 Section::Section(size_t limit,
@@ -254,6 +256,17 @@ DesktopNTPZpsIPHSection::DesktopNTPZpsIPHSection(
     : ZpsSection(1,
                  {
                      {1, omnibox::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP},
+                 },
+                 group_configs) {}
+
+DesktopZpsUnscopedExtensionSection::DesktopZpsUnscopedExtensionSection(
+    omnibox::GroupConfigMap& group_configs)
+    : ZpsSection(kMaxSuggestionsPerUnscopedExtension * kMaxExtensions,
+                 {
+                     {kMaxSuggestionsPerUnscopedExtension,
+                      omnibox::GROUP_UNSCOPED_EXTENSION_1},
+                     {kMaxSuggestionsPerUnscopedExtension,
+                      omnibox::GROUP_UNSCOPED_EXTENSION_2},
                  },
                  group_configs) {}
 
