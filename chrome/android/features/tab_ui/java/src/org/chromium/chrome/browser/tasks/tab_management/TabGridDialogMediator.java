@@ -1073,7 +1073,7 @@ public class TabGridDialogMediator
     private boolean shouldShowSendFeedback() {
         return mCollaborationService.getServiceStatus().isAllowedToJoin()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        DATA_SHARING, SHOW_SEND_FEEDBACK_PARAM, false);
+                        DATA_SHARING, SHOW_SEND_FEEDBACK_PARAM, true);
     }
 
     private void onGroupSharedStateChanged(@Nullable @GroupSharedState Integer groupSharedState) {

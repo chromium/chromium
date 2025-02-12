@@ -2045,6 +2045,16 @@ const FeatureEntry::FeatureVariation
          nullptr},
 };
 
+const FeatureEntry::FeatureParam kDataSharingShowSendFeedbackDisabled[] = {
+    {"show_send_feedback", "false"}};
+const FeatureEntry::FeatureParam kDataSharingShowSendFeedbackEnabled[] = {
+    {"show_send_feedback", "true"}};
+const FeatureEntry::FeatureVariation kDatasharingVariations[] = {
+    {"with feedback", kDataSharingShowSendFeedbackEnabled,
+     std::size(kDataSharingShowSendFeedbackEnabled)},
+    {"without feedback", kDataSharingShowSendFeedbackDisabled,
+     std::size(kDataSharingShowSendFeedbackEnabled)}};
+
 #if BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kContextualSearchSuppressShortViewWith300Dp[] =
@@ -10956,7 +10966,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"data-sharing", flag_descriptions::kDataSharingName,
      flag_descriptions::kDataSharingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(data_sharing::features::kDataSharingFeature)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(data_sharing::features::kDataSharingFeature,
+                                    kDatasharingVariations,
+                                    "Enabled")},
 
     {"data-sharing-join-only", flag_descriptions::kDataSharingJoinOnlyName,
      flag_descriptions::kDataSharingJoinOnlyDescription, kOsAll,
