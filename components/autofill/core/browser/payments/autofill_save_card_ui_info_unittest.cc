@@ -102,6 +102,7 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
       test::GetCreditCard());
 
   EXPECT_EQ(ui_info.logo_icon_id, IDR_INFOBAR_AUTOFILL_CC);
+  EXPECT_EQ(ui_info.logo_icon_description, u"");
   EXPECT_EQ(ui_info.title_text, l10n_util::GetStringUTF16(
                                     IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL));
   EXPECT_EQ(ui_info.description_text,
@@ -248,6 +249,13 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
 
   EXPECT_EQ(ui_info.logo_icon_id, is_gpay_branded() ? IDR_AUTOFILL_GOOGLE_PAY
                                                     : IDR_INFOBAR_AUTOFILL_CC);
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(ui_info.logo_icon_description,
+            is_gpay_branded()
+                ? l10n_util::GetStringUTF16(
+                      IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME)
+                : u"");
+#endif
   EXPECT_EQ(
       ui_info.title_text,
       l10n_util::GetStringUTF16(

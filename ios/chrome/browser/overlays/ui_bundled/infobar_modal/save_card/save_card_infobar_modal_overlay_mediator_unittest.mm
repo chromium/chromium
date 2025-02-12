@@ -65,6 +65,8 @@ static constexpr base::TimeDelta kConfirmationStateDuration =
     NSMutableArray<SaveCardMessageWithLinks*>* legalMessages;
 @property(nonatomic, assign) BOOL currentCardSaveAccepted;
 @property(nonatomic, assign) BOOL supportsEditing;
+@property(nonatomic, strong) UIImage* logoIcon;
+@property(nonatomic, copy) NSString* logoIconDescription;
 
 // Fake consumer specific properties.
 @property(nonatomic, assign) BOOL inLoadingState;
@@ -83,6 +85,8 @@ static constexpr base::TimeDelta kConfirmationStateDuration =
   self.currentCardSaveAccepted =
       [prefs[kCurrentCardSaveAcceptedPrefKey] boolValue];
   self.supportsEditing = [prefs[kSupportsEditingPrefKey] boolValue];
+  self.logoIcon = prefs[kLogoIconPrefKey];
+  self.logoIconDescription = prefs[kLogoIconDescriptionPrefKey];
 }
 
 - (void)showProgressWithUploadCompleted:(BOOL)uploadCompleted {
@@ -161,6 +165,9 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest, SetUpConsumer) {
               consumer.expirationMonth);
   EXPECT_NSEQ(base::SysUTF16ToNSString(delegate_->expiration_date_year()),
               consumer.expirationYear);
+  EXPECT_TRUE(consumer.logoIcon);
+  EXPECT_NSEQ(base::SysUTF16ToNSString(delegate_->logo_icon_description()),
+              consumer.logoIconDescription);
   EXPECT_FALSE(consumer.currentCardSaveAccepted);
   EXPECT_TRUE(consumer.supportsEditing);
   EXPECT_FALSE(consumer.inLoadingState);

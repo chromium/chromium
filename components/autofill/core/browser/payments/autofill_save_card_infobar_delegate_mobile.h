@@ -69,6 +69,9 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
   const gfx::Image& displayed_target_account_avatar() const {
     return ui_info_.displayed_target_account_avatar;
   }
+  const std::u16string& logo_icon_description() const {
+    return ui_info_.logo_icon_description;
+  }
 
   // Called when a link in the legal message text was clicked.
   virtual void OnLegalMessageLinkClicked(GURL url);
