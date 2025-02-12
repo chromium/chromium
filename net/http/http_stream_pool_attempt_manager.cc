@@ -74,6 +74,27 @@ std::string_view GetResultHistogramSuffix(std::optional<int> result) {
   return "Canceled";
 }
 
+std::string_view GetHistogramSuffixForStreamAttemptCancel(
+    StreamSocketCloseReason reason) {
+  switch (reason) {
+    case StreamSocketCloseReason::kSpdySessionCreated:
+      return "NewSpdySession";
+    case StreamSocketCloseReason::kQuicSessionCreated:
+      return "NewQuicSession";
+    case StreamSocketCloseReason::kUsingExistingSpdySession:
+      return "ExistingSpdySession";
+    case StreamSocketCloseReason::kUsingExistingQuicSession:
+      return "ExistingQuicSession";
+    case StreamSocketCloseReason::kUnspecified:
+    case StreamSocketCloseReason::kCloseAllConnections:
+    case StreamSocketCloseReason::kIpAddressChanged:
+    case StreamSocketCloseReason::kSslConfigChanged:
+    case StreamSocketCloseReason::kCannotUseTcpBasedProtocols:
+    case StreamSocketCloseReason::kAbort:
+      return "Other";
+  }
+}
+
 bool GetSupportsSpdy(HttpNetworkSession* session,
                      const HttpStreamKey& stream_key) {
   HttpServerProperties* properties = session->http_server_properties();
@@ -108,14 +129,28 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
   InFlightAttempt& operator=(const InFlightAttempt&) = delete;
 
   ~InFlightAttempt() override {
+    base::TimeDelta elapsed = base::TimeTicks::Now() - start_time_;
     base::UmaHistogramTimes(
         base::StrCat({"Net.HttpStreamPool.StreamAttemptTime.",
                       GetResultHistogramSuffix(result_)}),
-        base::TimeTicks::Now() - start_time_);
+        elapsed);
 
     if (cancel_reason_.has_value()) {
       base::UmaHistogramEnumeration(
           "Net.HttpStreamPool.StreamAttemptCancelReason", *cancel_reason_);
+
+      std::string_view suffix =
+          GetHistogramSuffixForStreamAttemptCancel(*cancel_reason_);
+      CHECK(manager_->initial_attempt_state_.has_value());
+      base::UmaHistogramEnumeration(
+          base::StrCat(
+              {"Net.HttpStreamPool.StreamAttemptCanceledInitialAttemptState.",
+               suffix}),
+          *manager_->initial_attempt_state_);
+      base::UmaHistogramTimes(
+          base::StrCat(
+              {"Net.HttpStreamPool.StreamAttemptCanceledTime.", suffix}),
+          elapsed);
     }
   }
 
@@ -539,6 +574,50 @@ bool HttpStreamPool::AttemptManager::IsSvcbOptional() {
   return !HostResolver::AllProtocolEndpointsHaveEch(endpoints);
 }
 
+HttpStreamPool::AttemptManager::InitialAttemptState
+HttpStreamPool::AttemptManager::CalculateInitialAttemptState() {
+  using enum InitialAttemptState;
+  if (CanUseQuic()) {
+    if (quic_version_.IsKnown()) {
+      if (supports_spdy_) {
+        return kCanUseQuicWithKnownVersionAndSupportsSpdy;
+      } else {
+        return kCanUseQuicWithKnownVersion;
+      }
+    } else {
+      if (supports_spdy_) {
+        return kCanUseQuicWithUnknownVersionAndSupportsSpdy;
+      } else {
+        return kCanUseQuicWithUnknownVersion;
+      }
+    }
+  } else {
+    if (quic_version_.IsKnown()) {
+      if (supports_spdy_) {
+        return kCannotUseQuicWithKnownVersionAndSupportsSpdy;
+      } else {
+        return kCannotUseQuicWithKnownVersion;
+      }
+    } else {
+      if (supports_spdy_) {
+        return kCannotUseQuicWithUnknownVersionAndSupportsSpdy;
+      } else {
+        return kCannotUseQuicWithUnknownVersion;
+      }
+    }
+  }
+}
+
+void HttpStreamPool::AttemptManager::MaybeSetInitialAttemptState() {
+  if (initial_attempt_state_.has_value()) {
+    return;
+  }
+
+  initial_attempt_state_ = CalculateInitialAttemptState();
+  base::UmaHistogramEnumeration("Net.HttpStreamPool.InitialAttemptState",
+                                *initial_attempt_state_);
+}
+
 int HttpStreamPool::AttemptManager::WaitForSSLConfigReady() {
   if (ssl_config_.has_value()) {
     return OK;
@@ -950,6 +1029,7 @@ HttpStreamPool::AttemptManager::CalculateMultiplexedSessionCreationInitiator() {
 }
 
 void HttpStreamPool::AttemptManager::StartInternal(RequestPriority priority) {
+  MaybeSetInitialAttemptState();
   UpdateStreamAttemptState();
 
   if (service_endpoint_request_ || service_endpoint_request_finished_) {

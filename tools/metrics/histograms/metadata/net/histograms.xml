@@ -2526,6 +2526,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.HttpStreamPool.InitialAttemptState"
+    enum="HttpStreamPoolInitialAttemptState" expires_after="2025-07-13">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Record the initial attempt state (whether known to support QUIC/SPDY,
+    attempt QUIC first, etc). Recorded the first time a
+    HttpStreamPool::AttemptManager starts a job or preconnect.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpStreamPool.JobCompleteTime.{Result}" units="ms"
     expires_after="2025-07-13">
   <owner>bashi@chromium.org</owner>
@@ -2610,6 +2621,42 @@ chromium-metrics-reviews@google.com.
     <variant name="Unspecified"/>
     <variant name="UsingExistingQuicSession"/>
     <variant name="UsingExistingSpdySession"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Net.HttpStreamPool.StreamAttemptCanceledInitialAttemptState.{Reason}"
+    enum="HttpStreamPoolInitialAttemptState" expires_after="2025-07-13">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Record the initial attempt state (whether known to support QUIC/SPDY,
+    attempt QUIC first, etc) when a StreamAttempt is canceled. Recorded for each
+    stream attempt upon destruction of the canceled attempt.
+  </summary>
+  <token key="Reason">
+    <variant name="ExistingQuicSession"/>
+    <variant name="ExistingSpdySession"/>
+    <variant name="NewQuicSession"/>
+    <variant name="NewSpdySession"/>
+    <variant name="Other"/>
+  </token>
+</histogram>
+
+<histogram name="Net.HttpStreamPool.StreamAttemptCanceledTime.{Reason}"
+    units="ms" expires_after="2025-07-13">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Time from when a stream attempt is created to when the attempt is canceled.
+    Recorded for each stream attempt upon destruction of the canceled attempt.
+  </summary>
+  <token key="Reason">
+    <variant name="ExistingQuicSession"/>
+    <variant name="ExistingSpdySession"/>
+    <variant name="NewQuicSession"/>
+    <variant name="NewSpdySession"/>
+    <variant name="Other"/>
   </token>
 </histogram>
 

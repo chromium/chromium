@@ -214,6 +214,33 @@ class HttpStreamPool::AttemptManager
   FRIEND_TEST_ALL_PREFIXES(HttpStreamPoolAttemptManagerTest,
                            GetIPEndPointToAttempt);
 
+  // Represents the initial attempt state of this manager.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(InitialAttemptState)
+  enum class InitialAttemptState {
+    kOther = 0,
+    // CanUseQuic() && quic_version_.IsKnown() && !supports_spdy_
+    kCanUseQuicWithKnownVersion = 1,
+    // CanUseQuic() && quic_version_.IsKnown() && supports_spdy_
+    kCanUseQuicWithKnownVersionAndSupportsSpdy = 2,
+    // CanUseQuic() && !quic_version_.IsKnown() && !supports_spdy_
+    kCanUseQuicWithUnknownVersion = 3,
+    // CanUseQuic() && !quic_version_.IsKnown() && supports_spdy_
+    kCanUseQuicWithUnknownVersionAndSupportsSpdy = 4,
+    // !CanUseQuic() && quic_version_.IsKnown() && !supports_spdy_
+    kCannotUseQuicWithKnownVersion = 5,
+    // !CanUseQuic() && quic_version_.IsKnown() && supports_spdy_
+    kCannotUseQuicWithKnownVersionAndSupportsSpdy = 6,
+    // !CanUseQuic() && !quic_version_.IsKnown() && !supports_spdy_
+    kCannotUseQuicWithUnknownVersion = 7,
+    // !CanUseQuic() && !quic_version_.IsKnown() && supports_spdy_
+    kCannotUseQuicWithUnknownVersionAndSupportsSpdy = 8,
+    kMaxValue = kCannotUseQuicWithUnknownVersionAndSupportsSpdy,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:HttpStreamPoolInitialAttemptState)
+
   // Represents failure of connection attempts. Used to notify job of completion
   // for failure cases.
   enum class FailureKind {
@@ -274,6 +301,9 @@ class HttpStreamPool::AttemptManager
   }
 
   int WaitForSSLConfigReady();
+
+  void MaybeSetInitialAttemptState();
+  InitialAttemptState CalculateInitialAttemptState();
 
   base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> GetSSLConfig(
       InFlightAttempt* attempt);
@@ -489,6 +519,10 @@ class HttpStreamPool::AttemptManager
   const raw_ptr<Group> group_;
 
   const NetLogWithSource net_log_;
+
+  // Keeps the initial attempt state. Set when `this` starts a job or
+  // preconnect.
+  std::optional<InitialAttemptState> initial_attempt_state_;
 
   NextProtoSet allowed_alpns_ = NextProtoSet::All();
 
