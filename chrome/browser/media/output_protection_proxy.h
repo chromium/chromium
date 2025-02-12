@@ -11,7 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/display/output_protection_delegate.h"
 #endif
 
@@ -52,7 +52,7 @@ class OutputProtectionProxy {
   int render_process_id_;
   int render_frame_id_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::OutputProtectionDelegate output_protection_delegate_;
 #endif
 

@@ -50,9 +50,9 @@
 #include "content/public/common/content_features.h"
 #endif  //  BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/media/chromeos_login_and_lock_media_access_handler.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/controlled_frame/controlled_frame_media_access_handler.h"
@@ -88,7 +88,7 @@ MediaCaptureDevicesDispatcher::MediaCaptureDevicesDispatcher()
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   media_access_handlers_.push_back(
       std::make_unique<ChromeOSLoginAndLockMediaAccessHandler>());
 #endif

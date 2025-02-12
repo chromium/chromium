@@ -44,7 +44,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -63,7 +63,7 @@ using net::UDPSocket;
 
 namespace media_router {
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void PostSendNetworkList(
     base::WeakPtr<DialServiceImpl> impl,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -73,7 +73,7 @@ void PostSendNetworkList(
                         base::BindOnce(&DialServiceImpl::SendNetworkList,
                                        std::move(impl), networks));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -130,7 +130,7 @@ std::string BuildRequest() {
   return request;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Finds the IP address of the preferred interface of network type |type|
 // to bind the socket and inserts the address into |bind_address_list|. This
 // ChromeOS version can prioritize wifi and ethernet interfaces.
@@ -183,7 +183,7 @@ void GetNetworkListOnUIThread(
       net::INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES,
       base::BindOnce(&PostSendNetworkList, std::move(impl), task_runner));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -447,7 +447,7 @@ void DialServiceImpl::StartDiscovery() {
 
   auto ui_task_runner = content::GetUIThreadTaskRunner({});
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ui_task_runner->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&GetBestBindAddressOnUIThread),
       base::BindOnce(&DialServiceImpl::DiscoverOnAddresses,

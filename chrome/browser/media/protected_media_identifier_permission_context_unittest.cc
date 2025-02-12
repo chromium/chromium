@@ -12,11 +12,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/dbus/constants/dbus_switches.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
+#include "chromeos/dbus/constants/dbus_switches.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
@@ -120,9 +117,7 @@ TEST_F(ProtectedMediaIdentifierPermissionContextTest,
   ASSERT_FALSE(IsProtectedMediaIdentifierEnabled(
       profile_testing_helper_.regular_profile()));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ProtectedMediaIdentifierPermissionContextTest,
        ProtectedMediaIdentifierEnabledOnDevModeWithAshSwitch) {
   command_line_->AppendSwitch(chromeos::switches::kSystemDevMode);
@@ -133,4 +128,4 @@ TEST_F(ProtectedMediaIdentifierPermissionContextTest,
   ASSERT_TRUE(IsProtectedMediaIdentifierEnabled(
       profile_testing_helper_.regular_profile()));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)

@@ -67,14 +67,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -310,7 +310,7 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
     // Guard against unexpected state changes.
     EXPECT_TRUE(webrtc_state_change_instructions_.empty());
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
     TestingBrowserProcess::GetGlobal()->ShutdownBrowserPolicyConnector();
 #endif
   }
@@ -321,7 +321,7 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
     SetLocalLogsObserver(&local_observer_);
     SetRemoteLogsObserver(&remote_observer_);
     LoadMainTestProfile();
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
     policy::BrowserPolicyConnectorBase::SetPolicyProviderForTesting(&provider_);
 #endif
   }
@@ -685,7 +685,7 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
                                 policy_allows_remote_logging.value());
     }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
     policy::PolicyMap policy_map;
     if (has_device_level_policies) {
       policy_map.Set("test-policy", policy::POLICY_LEVEL_MANDATORY,
@@ -829,7 +829,7 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   policy::MockConfigurationPolicyProvider provider_;
 #endif
 
@@ -1051,7 +1051,7 @@ class WebRtcEventLogManagerTestPolicy : public WebRtcEventLogManagerTestBase {
     WebRtcEventLogManagerTestBase::SetUp();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<user_manager::ScopedUserManager> GetScopedUserManager(
       user_manager::UserType user_type);
 #endif
@@ -3972,7 +3972,7 @@ TEST_F(WebRtcEventLogManagerTestPolicy, NotManagedRejectsRemoteLogging) {
   EXPECT_EQ(StartRemoteLogging(key), allow_remote_logging);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<user_manager::ScopedUserManager>
 WebRtcEventLogManagerTestPolicy::GetScopedUserManager(
     user_manager::UserType user_type) {
@@ -3996,7 +3996,7 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
        ManagedProfileAllowsRemoteLoggingByDefault) {
   const bool allow_remote_logging = true;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager =
       GetScopedUserManager(user_manager::UserType::kRegular);
 #endif
@@ -4021,7 +4021,7 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
 // TODO(crbug.com/1035829): Figure out whether this can be resolved by tweaking
 // the test setup or whether the Active Directory services need to be adapted
 // for easy testing.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(WebRtcEventLogManagerTestPolicy,
        ManagedProfileDoesNotAllowRemoteLoggingForSupervisedProfiles) {
   const bool allow_remote_logging = false;
@@ -4043,7 +4043,7 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
 }
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 TEST_F(WebRtcEventLogManagerTestPolicy,
        OnlyManagedByPlatformPoliciesDoesNotAllowRemoteLoggingByDefault) {
   const bool allow_remote_logging = false;

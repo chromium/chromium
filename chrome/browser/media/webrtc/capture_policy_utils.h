@@ -40,11 +40,9 @@ namespace capture_policy {
 
 extern const char kManagedAccessToGetAllScreensMediaAllowedForUrls[];
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const char kManagedMultiScreenCaptureAllowedForUrls[];
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_CHROMEOS)
+extern const char kManagedMultiScreenCaptureAllowedForUrls[];
+
 // Sets a multi capture service mock for testing.
 void SetMultiCaptureServiceForTesting(
     crosapi::mojom::MultiCaptureService* service);

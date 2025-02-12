@@ -616,13 +616,13 @@ class InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest
     // Flags use to automatically select the right desktop source and get
     // around security restrictions.
     // TODO(crbug.com/40274188): Use a less error-prone flag.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
                                     "Display");
 #else
     command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
                                     "Entire screen");
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   content::EvalJsResult Run(const std::string& method) {

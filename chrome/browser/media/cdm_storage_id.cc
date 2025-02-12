@@ -18,11 +18,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/functional/bind.h"
-#include "mojo/public/cpp/bindings/callback_helpers.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -107,7 +104,7 @@ void ComputeStorageId(const std::vector<uint8_t>& profile_salt,
   std::move(callback).Run(
       CalculateStorageId(storage_id_key, profile_salt, origin, machine_id));
 
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   CdmStorageIdCallback scoped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
                                                   std::vector<uint8_t>());

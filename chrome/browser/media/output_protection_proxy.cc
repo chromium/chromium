@@ -27,12 +27,12 @@ OutputProtectionProxy::OutputProtectionProxy(int render_process_id,
                                              int render_frame_id)
     : render_process_id_(render_process_id),
       render_frame_id_(render_frame_id)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       ,
       output_protection_delegate_(
           // On OS_CHROMEOS, NativeView and NativeWindow are both aura::Window*.
           GetRenderFrameView(render_process_id, render_frame_id))
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 {
 }
 
@@ -44,13 +44,13 @@ void OutputProtectionProxy::QueryStatus(QueryStatusCallback callback) {
   DVLOG(1) << __func__;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   output_protection_delegate_.QueryStatus(
       base::BindOnce(&OutputProtectionProxy::ProcessQueryStatusResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 #else
   ProcessQueryStatusResult(std::move(callback), true, 0, 0);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void OutputProtectionProxy::EnableProtection(
@@ -59,13 +59,13 @@ void OutputProtectionProxy::EnableProtection(
   DVLOG(1) << __func__;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   output_protection_delegate_.SetProtection(desired_method_mask,
                                             std::move(callback));
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
   NOTIMPLEMENTED();
   std::move(callback).Run(false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void OutputProtectionProxy::ProcessQueryStatusResult(

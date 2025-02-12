@@ -18,7 +18,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/display/screen.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
 #include "ui/aura/window.h"
 #elif BUILDFLAG(IS_LINUX)
@@ -26,7 +26,7 @@
 #include "content/public/browser/desktop_capture.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace {
 base::LazyInstance<std::vector<raw_ptr<aura::Window, VectorExperimental>>>::
     DestructorAtExit root_windows_for_testing_ = LAZY_INSTANCE_INITIALIZER;
@@ -41,7 +41,7 @@ base::LazyInstance<std::unique_ptr<webrtc::DesktopCapturer>>::DestructorAtExit
 #endif
 
 namespace {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 blink::mojom::StreamDevicesSetPtr EnumerateScreens(
     blink::mojom::MediaStreamType stream_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -124,7 +124,7 @@ ChromeScreenEnumerator::ChromeScreenEnumerator() = default;
 
 ChromeScreenEnumerator::~ChromeScreenEnumerator() = default;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ChromeScreenEnumerator::SetRootWindowsForTesting(
     std::vector<raw_ptr<aura::Window, VectorExperimental>> root_windows) {
   root_windows_for_testing_.Get() = std::move(root_windows);

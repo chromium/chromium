@@ -25,13 +25,10 @@
 #include "content/public/browser/render_frame_host.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/settings/cros_settings.h"
-#include "chromeos/ash/components/settings/cros_settings_names.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/media/platform_verification_chromeos.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -167,9 +164,7 @@ void CdmDocumentServiceImpl::ChallengePlatform(
     std::move(callback).Run(false, std::string(), std::string(), std::string());
     return;
   }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!platform_verification_flow_)
     platform_verification_flow_ =
         base::MakeRefCounted<ash::attestation::PlatformVerificationFlow>();
@@ -182,10 +177,10 @@ void CdmDocumentServiceImpl::ChallengePlatform(
 #else
   // Not supported, so return failure.
   std::move(callback).Run(false, std::string(), std::string(), std::string());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void CdmDocumentServiceImpl::OnPlatformChallenged(
     ChallengePlatformCallback callback,
     PlatformVerificationResult result,
@@ -210,7 +205,7 @@ void CdmDocumentServiceImpl::OnPlatformChallenged(
   std::move(callback).Run(true, signed_data, signature,
                           platform_key_certificate);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void CdmDocumentServiceImpl::GetStorageId(uint32_t version,
                                           GetStorageIdCallback callback) {

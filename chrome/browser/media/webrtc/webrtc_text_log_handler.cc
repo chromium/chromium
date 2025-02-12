@@ -60,7 +60,7 @@
 #include "base/mac/mac_util.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/system/statistics_provider.h"
 #endif
 
@@ -505,7 +505,7 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
   std::string computer_model = "Not available";
 #if BUILDFLAG(IS_MAC)
   computer_model = base::SysInfo::HardwareModelName();
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   if (const std::optional<std::string_view> computer_model_statistic =
           ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
               ash::system::kHardwareClassKey)) {

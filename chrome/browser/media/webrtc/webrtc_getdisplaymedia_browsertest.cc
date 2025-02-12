@@ -57,7 +57,7 @@
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_content_manager_test_helper.h"
 #endif
@@ -292,13 +292,13 @@ class WebRtcScreenCaptureBrowserTestWithPicker
                                      ? switches::kThisTabCaptureAutoAccept
                                      : switches::kThisTabCaptureAutoReject);
     } else {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
                                       "Display");
 #else
       command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
                                       "Entire screen");
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     }
   }
 
@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
                      /*is_tab_capture=*/PreferCurrentTab());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
                        ScreenCaptureVideoWithDlp) {
   if (!test_config_.should_prefer_current_tab &&
@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
   EXPECT_EQ(content::EvalJs(tab->GetPrimaryMainFrame(), "waitVideoUnmuted();"),
             "unmuted");
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // TODO(crbug.com/40744542): Real desktop capture is flaky on below platforms.
 // TODO(crbug.com/41493366): enable this flaky test.
@@ -1072,7 +1072,7 @@ class GetDisplayMediaChangeSourceBrowserTest
   void SetUp() override {
     // TODO(crbug.com/40245399): Fix GetDisplayMediaChangeSourceBrowserTest with
     // audio requested on ChromeOS
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (dynamic_surface_switching_requested_ && feature_enabled_ &&
         user_shared_audio_) {
       GTEST_SKIP();

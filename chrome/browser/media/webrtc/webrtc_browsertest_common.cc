@@ -46,17 +46,17 @@ const char kAdviseOnGclientSolution[] =
 
 #if defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER) || \
     defined(ADDRESS_SANITIZER)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const int kDefaultPollIntervalMsec = 2000;
 #else
 const int kDefaultPollIntervalMsec = 1000;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #else
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const int kDefaultPollIntervalMsec = 500;
 #else
 const int kDefaultPollIntervalMsec = 250;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif
 
 bool IsErrorResult(const std::string& result) {

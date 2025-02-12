@@ -32,7 +32,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif
 
@@ -116,13 +116,13 @@ bool MediaRouterEnabled(content::BrowserContext* context) {
     return false;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/1380828): Make the Media Router feature configurable via a
   // policy for non-user profiles, i.e. sign-in and lock screen profiles.
   if (!ash::IsUserBrowserContext(context)) {
     return false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // If the Media Router was already enabled or disabled for |context|, then it
   // must remain so.  The Media Router does not support dynamic
