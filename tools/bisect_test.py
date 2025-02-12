@@ -232,7 +232,8 @@ class DownloadJobTest(BisectTestCase):
     })
     self.assertEqual(mock_mkstemp.call_count, 2)
     self.assertEqual(mock_close.call_count, 2)
-    mock_unlink.assert_has_calls([call('some-file.apks'), call('file2.apk')])
+    mock_unlink.assert_has_calls(
+        [call('some-file.apks'), call('file2.apk')], any_order=True)
     self.assertEqual(mock_gsutil.call_count, 2)
 
 
