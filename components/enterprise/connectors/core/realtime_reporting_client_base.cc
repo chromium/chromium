@@ -63,10 +63,6 @@ void RealtimeReportingClientBase::InitRealtimeReportingClient(
     return;
   }
 
-  if (!ShouldInitRealtimeReportingClient()) {
-    return;
-  }
-
   // |identity_manager_| may be null in tests and in guest profiles. If there
   // is no identity manager then the profile username will be empty.
   if (!identity_manager_) {
@@ -296,10 +292,6 @@ void RealtimeReportingClientBase::UploadSecurityEventReportDeprecated(
 const std::string
 RealtimeReportingClientBase::GetProfilePolicyClientDescription() {
   return kProfilePolicyClientDescription;
-}
-
-bool RealtimeReportingClientBase::ShouldInitRealtimeReportingClient() {
-  return true;
 }
 
 }  // namespace enterprise_connectors

@@ -165,10 +165,6 @@ bool IsManagedGuestSession() {
 }
 }  // namespace
 
-BASE_FEATURE(kEnterpriseConnectorsEnabledOnMGS,
-             "EnterpriseConnectorsEnabledOnMGS",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // --------------------------------
 // ConnectorsService implementation
 // --------------------------------
@@ -201,9 +197,7 @@ std::unique_ptr<ClientMetadata> ConnectorsService::GetBasicClientMetadata(
   // In this case, we are just using the client metadata to indicate to
   // WebProtect whether or not the request is coming from a Managed Guest
   // Session on ChromeOS.
-  if (base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)) {
-    metadata->set_is_chrome_os_managed_guest_session(IsManagedGuestSession());
-  }
+  metadata->set_is_chrome_os_managed_guest_session(IsManagedGuestSession());
   return metadata;
 }
 
@@ -510,11 +504,6 @@ policy::PolicyScope ConnectorsService::GetPolicyScope(
 }
 
 bool ConnectorsService::ConnectorsEnabled() const {
-  if (IsManagedGuestSession() &&
-      !base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)) {
-    return false;
-  }
-
   Profile* profile = Profile::FromBrowserContext(context_);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -578,9 +567,7 @@ std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
     return metadata;
   }
 
-  if (base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)) {
-    metadata->set_is_chrome_os_managed_guest_session(IsManagedGuestSession());
-  }
+  metadata->set_is_chrome_os_managed_guest_session(IsManagedGuestSession());
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   bool include_device_info =
@@ -626,15 +613,10 @@ ConnectorsServiceFactory::~ConnectorsServiceFactory() = default;
 std::unique_ptr<KeyedService>
 ConnectorsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  bool observe_prefs =
-      IsManagedGuestSession()
-          ? base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)
-          : true;
-
   return std::make_unique<ConnectorsService>(
-      context, std::make_unique<ConnectorsManager>(
-                   user_prefs::UserPrefs::Get(context),
-                   GetServiceProviderConfig(), observe_prefs));
+      context,
+      std::make_unique<ConnectorsManager>(user_prefs::UserPrefs::Get(context),
+                                          GetServiceProviderConfig()));
 }
 
 content::BrowserContext* ConnectorsServiceFactory::GetBrowserContextToUse(

@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
@@ -65,21 +64,9 @@
 #include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "components/device_signals/core/browser/signals_aggregator.h"
 #include "components/device_signals/core/common/signals_constants.h"
-#include "components/policy/core/common/features.h"
 #endif
 
 namespace enterprise_connectors {
-
-namespace {
-
-bool IsManagedGuestSession() {
-#if BUILDFLAG(IS_CHROMEOS)
-  return chromeos::IsManagedGuestSession();
-#else
-  return false;
-#endif
-}
-}  // namespace
 
 RealtimeReportingClient::RealtimeReportingClient(
     content::BrowserContext* context)
@@ -93,17 +80,6 @@ RealtimeReportingClient::RealtimeReportingClient(
 }
 
 RealtimeReportingClient::~RealtimeReportingClient() = default;
-
-bool RealtimeReportingClient::ShouldInitRealtimeReportingClient() {
-  if (IsManagedGuestSession() &&
-      !base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)) {
-    DVLOG(2) << "Safe browsing real-time reporting is not enabled in Managed "
-                "Guest Sessions.";
-    return false;
-  }
-
-  return true;
-}
 
 void RealtimeReportingClient::SetBrowserCloudPolicyClientForTesting(
     policy::CloudPolicyClient* client) {
@@ -265,7 +241,7 @@ std::string RealtimeReportingClient::GetBrowserClientId() {
   }
   DCHECK(profile);
 
-  if (IsManagedGuestSession()) {
+  if (chromeos::IsManagedGuestSession()) {
     client_id = reporting::GetMGSUserClientId().value_or("");
   } else {
     client_id = reporting::GetUserClientId(profile).value_or("");
