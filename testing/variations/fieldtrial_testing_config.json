@@ -22962,28 +22962,6 @@
             ]
         }
     ],
-    "SubframeProcessReuseThresholds": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "SubframeProcessReuseMemoryThreshold": "2147483648"
-                    },
-                    "enable_features": [
-                        "SubframeProcessReuseThresholds"
-                    ]
-                }
-            ]
-        }
-    ],
     "SunfishFeature": [
         {
             "platforms": [
