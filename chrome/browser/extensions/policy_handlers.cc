@@ -68,6 +68,8 @@ bool IsValidUpdateUrl(const std::string& update_url) {
 }
 
 }  // namespace
+
+#if !BUILDFLAG(IS_ANDROID)
 // ExtensionListPolicyHandler implementation -----------------------------------
 
 ExtensionListPolicyHandler::ExtensionListPolicyHandler(const char* policy_name,
@@ -283,6 +285,7 @@ void ExtensionURLPatternListPolicyHandler::ApplyPolicySettings(
     prefs->SetValue(pref_path_, value->Clone());
   }
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // ExtensionSettingsPolicyHandler implementation  ------------------------------
 

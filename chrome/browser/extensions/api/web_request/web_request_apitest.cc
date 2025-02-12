@@ -41,6 +41,7 @@
 #include "chrome/browser/extensions/error_console/error_console_test_observer.h"
 #include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/extension_with_management_policy_apitest.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -142,7 +143,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/extension_with_management_policy_apitest.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -3188,6 +3188,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsFrontendInWebRequestApiTest, HiddenRequests) {
       RunExtensionTest("webrequest", {.extension_url = "test_devtools.html"}))
       << message_;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class WebRequestApiTestWithManagementPolicy
     : public ExtensionApiTestWithManagementPolicy,
@@ -3247,9 +3248,9 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
                                             request_counter_name));
 
   // Wait until all remote Javascript files have been blocked / pulled down.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), extension_test_url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents, extension_test_url));
+  content::WaitForLoadStop(web_contents);
 
   // Domain that hosts javascript file referenced by example_com.
   const std::string example2_com = "example2.com";
@@ -3276,16 +3277,21 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
   }
 
   // Wait until all remote Javascript files have been pulled down.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), extension_test_url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  web_contents = GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents, extension_test_url));
+  content::WaitForLoadStop(web_contents);
 
   // The server saw a request for the remote Javascript file.
   EXPECT_TRUE(BrowsedTo(example2_com));
 
+#if !BUILDFLAG(IS_ANDROID)
   // The request was hidden from the extension.
+  // TODO(crbug.com/371324825): Enable this check on desktop Android. This will
+  // require enabling PermissionsUpdater, the permissions API, and more
+  // extensions management code.
   EXPECT_EQ(1, GetCountFromBackgroundScript(extension, profile(),
                                             request_counter_name));
+#endif
 }
 
 // Tests that the webRequest events aren't dispatched when the URL of the
@@ -3311,26 +3317,33 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
   const std::string test_path = "/defaultresponse?protected_url";
 
   // Navigate to the protected domain and wait until page fully loads.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), embedded_test_server()->GetURL(protected_domain, test_path),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL(protected_domain, test_path)));
+  content::WaitForLoadStop(web_contents);
 
   // The server saw a request for the protected site.
   EXPECT_TRUE(BrowsedTo(protected_domain));
 
+#if !BUILDFLAG(IS_ANDROID)
   // The request was hidden from the extension.
+  // TODO(crbug.com/371324825): Enable this check on desktop Android. This will
+  // require enabling PermissionsUpdater, the permissions API, and more
+  // extensions management code.
   EXPECT_FALSE(before_request_listener.was_satisfied());
+#endif
 
   // Host not protected by policy.
   const std::string unprotected_domain = "notblockedexample.com";
 
   // Now we'll test browsing to a non-protected website where we expect the
   // extension to see the request.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), embedded_test_server()->GetURL(unprotected_domain, test_path),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  web_contents = GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL(unprotected_domain, test_path)));
+  content::WaitForLoadStop(web_contents);
 
   // The server saw a request for the non-protected site.
   EXPECT_TRUE(BrowsedTo(unprotected_domain));
@@ -3339,6 +3352,7 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
   EXPECT_TRUE(before_request_listener.was_satisfied());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Test that no webRequest events are seen for a protected host during normal
 // navigation. This replicates most of the tests from
 // WebRequestWithWithheldPermissions with a protected host. Granting a tab

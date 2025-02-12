@@ -331,9 +331,12 @@ static_library("test_support") {
 
   if (enable_extensions_core) {
     sources += [
+      "../browser/extensions/extension_with_management_policy_apitest.cc",
+      "../browser/extensions/extension_with_management_policy_apitest.h",
       "../common/extensions/manifest_tests/chrome_manifest_test.cc",
       "../common/extensions/manifest_tests/chrome_manifest_test.h",
     ]
+    public_deps += [ "//chrome/browser/extensions:test_support" ]
   }
 
   if (enable_extensions) {
@@ -358,8 +361,6 @@ static_library("test_support") {
       "../browser/extensions/extension_service_test_with_install.h",
       "../browser/extensions/extension_service_user_test_base.cc",
       "../browser/extensions/extension_service_user_test_base.h",
-      "../browser/extensions/extension_with_management_policy_apitest.cc",
-      "../browser/extensions/extension_with_management_policy_apitest.h",
       "../browser/extensions/mixin_based_extension_apitest.cc",
       "../browser/extensions/mixin_based_extension_apitest.h",
       "../browser/extensions/permissions/permissions_test_util.cc",
@@ -1487,6 +1488,7 @@ source_set("platform_browser_tests") {
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/extensions",
+      "//chrome/browser/extensions:test_support",
       "//chrome/browser/sync",
       "//components/embedder_support",
       "//components/privacy_sandbox:privacy_sandbox_settings_headers",

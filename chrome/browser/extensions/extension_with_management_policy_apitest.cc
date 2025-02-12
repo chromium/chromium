@@ -12,7 +12,7 @@
 
 ExtensionApiTestWithManagementPolicy::ExtensionApiTestWithManagementPolicy(
     ContextType context_type)
-    : ExtensionApiTest(context_type) {}
+    : ExtensionApiTestBase(context_type) {}
 ExtensionApiTestWithManagementPolicy::~ExtensionApiTestWithManagementPolicy() =
     default;
 
@@ -26,11 +26,11 @@ void ExtensionApiTestWithManagementPolicy::SetUp() {
   policy_provider_.SetAutoRefresh();
   policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
       &policy_provider_);
-  extensions::ExtensionApiTest::SetUp();
+  ExtensionApiTestBase::SetUp();
 }
 
 void ExtensionApiTestWithManagementPolicy::SetUpOnMainThread() {
-  extensions::ExtensionApiTest::SetUpOnMainThread();
+  ExtensionApiTestBase::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
 }
 

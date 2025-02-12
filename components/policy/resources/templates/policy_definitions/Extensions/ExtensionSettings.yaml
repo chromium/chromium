@@ -61,6 +61,7 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
+- android
 - fuchsia
 owners:
 - finnur@chromium.org
