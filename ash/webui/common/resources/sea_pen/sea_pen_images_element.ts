@@ -194,6 +194,12 @@ export class SeaPenImagesElement extends WithSeaPenStore {
         type: Array,
         value: null,
       },
+
+      latestTextQuery_: {
+        type: String,
+        value: null,
+        computed: 'computeLatestTextQuery_(seaPenQuery_)',
+      }
     };
   }
 
@@ -209,6 +215,7 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   private isSeaPenTextInputEnabled_: boolean;
   private seaPenQuery_: SeaPenQuery|null;
   private textQueryHistory_: TextQueryHistoryEntry[]|null;
+  private latestTextQuery_: string|null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -538,6 +545,18 @@ export class SeaPenImagesElement extends WithSeaPenStore {
                                   {model: {item: TextQueryHistoryEntry}}) {
     this.dispatchEvent(
         new SeaPenHistoryPromptSelectedEvent(e.model.item.query));
+  }
+
+  private onLatestTextQueryClicked_() {
+    if (!this.latestTextQuery_) {
+      return;
+    }
+    this.dispatchEvent(
+        new SeaPenHistoryPromptSelectedEvent(this.latestTextQuery_));
+  }
+
+  private computeLatestTextQuery_(seaPenQuery_: SeaPenQuery): string|null {
+    return seaPenQuery_?.textQuery?.trim() || null;
   }
 }
 

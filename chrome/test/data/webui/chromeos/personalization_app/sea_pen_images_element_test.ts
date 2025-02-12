@@ -146,6 +146,50 @@ suite('SeaPenImagesElementTest', function() {
     assertEquals(4, thumbnails!.length, 'should be 4 images available.');
   });
 
+  test('displays latest freeform prompt', async () => {
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
+    personalizationStore.data.wallpaper.seaPen.thumbnails =
+        seaPenProvider.thumbnails;
+    personalizationStore.data.wallpaper.seaPen.currentSeaPenQuery = {
+      textQuery: 'test freeform query',
+    };
+
+    // Initialize |seaPenImagesElement|.
+    seaPenImagesElement = initElement(SeaPenImagesElement);
+    await waitAfterNextRender(seaPenImagesElement);
+
+    const latestQuery = seaPenImagesElement.shadowRoot!.getElementById(
+        'latestTextQueryHeading');
+    assertTrue(!!latestQuery, 'the freeform prompt is available');
+    assertEquals(
+        'test freeform query', latestQuery.textContent?.trim(),
+        'the freeform prompt matches with the latest text query');
+  });
+
+  test('set the text query the latest freeform prompt is clicked', async () => {
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
+    personalizationStore.data.wallpaper.seaPen.thumbnails =
+        seaPenProvider.thumbnails;
+    personalizationStore.data.wallpaper.seaPen.currentSeaPenQuery = {
+      textQuery: 'test freeform query',
+    };
+
+    // Initialize |seaPenImagesElement|.
+    seaPenImagesElement = initElement(SeaPenImagesElement);
+    await waitAfterNextRender(seaPenImagesElement);
+
+    const latestQuery = seaPenImagesElement.shadowRoot!.getElementById(
+        'latestTextQueryHeading');
+    assertTrue(!!latestQuery, 'the freeform prompt is available');
+
+    const historyPromptSelectedEvent = eventToPromise(
+        SeaPenHistoryPromptSelectedEvent.EVENT_NAME, seaPenImagesElement);
+
+    latestQuery.click();
+
+    await historyPromptSelectedEvent;
+  });
+
   test('displays freeform history', async () => {
     personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
     personalizationStore.data.wallpaper.seaPen.thumbnails =
