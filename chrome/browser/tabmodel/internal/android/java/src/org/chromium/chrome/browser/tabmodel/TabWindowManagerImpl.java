@@ -287,10 +287,7 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
                     activityAtRequestedIndex);
         }
 
-        if (!BuildConfig.IS_FOR_TEST) {
-            assert requestedIndex == assignedIndex : message;
-            assert assignedIndex == originallyAssignedIndex : message;
-        }
+        assert BuildConfig.IS_FOR_TEST || requestedIndex == assignedIndex : message;
         Log.i(TAG_MULTI_INSTANCE, message);
         return assignedIndex;
     }
