@@ -252,6 +252,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.CoralService.EmbeddingEngine.FilteredCount"
+    units="count" expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    The number of input items in the Group request filtered out by the embedding
+    engine. There could be multiple reasons an item is filtered, including
+    unsupported language or safety violation. This is recorded everytime the
+    clustering engine starts processing a Group request.
+  </summary>
+</histogram>
+
+<histogram
+    name="Platform.CoralService.EmbeddingEngine.LanguageDetectionCacheHit"
+    enum="BooleanCacheHit" expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    Whether the language detection result cache is hit for each item in the
+    Group request to the coral service. This isn't recorded during
+    PrepareResource or CacheEmbeddings calls because what we care about is how
+    frequent the cache is hit when the user-facing feature is triggered (which
+    issues a Group request). This is recorded when embedding engine is
+    processing each entity in a Group request and checks whether it is present
+    in the embedding cache database.
+  </summary>
+</histogram>
+
+<histogram name="Platform.CoralService.EmbeddingEngine.LanguageSupported"
+    enum="BooleanSupported" expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    Whether the language detection result for each item in the Group request is
+    a supported language. This is recorded when embedding engine is processing
+    each entity in a Group request and checks whether the language is
+    unsupported and needs to be discarded.
+  </summary>
+</histogram>
+
 <histogram name="Platform.CoralService.EmbeddingEngine.ModelLoaded"
     enum="BooleanLoaded" expires_after="2025-11-19">
   <owner>hcyang@google.com</owner>
@@ -264,6 +304,32 @@ chromium-metrics-reviews@google.com.
     request). This is recorded when embedding engine is processing a Group
     request and reaches the step that it needs to check whether the model is
     already loded.
+  </summary>
+</histogram>
+
+<histogram name="Platform.CoralService.EmbeddingEngine.SafetyVerdict"
+    enum="CoralSafetyVerdict" expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    The safety verdict for each item in the Group request. This is recorded when
+    embedding engine is processing each entity in a Group request and checks
+    whether the safety check doesn't pass and needs to be discarded.
+  </summary>
+</histogram>
+
+<histogram name="Platform.CoralService.EmbeddingEngine.SafetyVerdictCacheHit"
+    enum="BooleanCacheHit" expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    Whether the safety verdict cache is hit for each item in the Group request
+    to the coral service. This isn't recorded during PrepareResource or
+    CacheEmbeddings calls because what we care about is how frequent the cache
+    is hit when the user-facing feature is triggered (which issues a Group
+    request). This is recorded when embedding engine is processing each entity
+    in a Group request and checks whether it is present in the embedding cache
+    database.
   </summary>
 </histogram>
 
@@ -299,6 +365,16 @@ chromium-metrics-reviews@google.com.
     <variant name="CacheEmbeddings"/>
     <variant name="Group"/>
   </token>
+</histogram>
+
+<histogram name="Platform.CoralService.Group.InputCount" units="count"
+    expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    The number of input items in the Group request. This is recorded everytime
+    the backend receives a Group request.
+  </summary>
 </histogram>
 
 <histogram

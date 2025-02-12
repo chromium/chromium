@@ -168,6 +168,11 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="kError"/>
 </enum>
 
+<enum name="CoralSafetyVerdict">
+  <int value="0" label="Pass"/>
+  <int value="1" label="Fail"/>
+</enum>
+
 <enum name="CoralStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Unknown Error"/>
