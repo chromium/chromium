@@ -77,8 +77,6 @@ class ArcDlcInstallHardwareChecker {
   // One-shot timer for retrying checks on non-removable block devices.
   base::OneShotTimer retry_timer_;
 
-  static const std::unordered_set<std::string> kSupportedGpuIds;
-
   // Weak pointer factory for safely handling callbacks
   base::WeakPtrFactory<ArcDlcInstallHardwareChecker> weak_factory_{this};
 };
