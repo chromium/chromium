@@ -4,6 +4,9 @@ file://components/omnibox/OWNERS
 # registrations we aim to keep long term.
 dgn@chromium.org
 
+# For search engine sync related changes only.
+ankushkush@google.com
+
 per-file search_engine_choice*=set noparent
 per-file search_engine_choice*=file://components/search_engines/search_engine_choice/COMPLIANCE_OWNERS
 
