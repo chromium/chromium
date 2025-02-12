@@ -83,8 +83,8 @@ public class TabContentManager {
     public static final String UMA_THUMBNAIL_FETCHING_RESULT =
             "Android.GridTabSwitcher.ThumbnailFetchingResult";
 
-    private static final String UMA_THUMBNAIL_CAPTURE_DURATION =
-            "Android.TabContentManager.CaptureThumbnail.Duration";
+    private static final String UMA_THUMBNAIL_CAPTURE_DURATION_FORMAT =
+            "Android.TabContentManager.CaptureThumbnail.%s.Duration";
 
     private float mThumbnailScale;
 
@@ -602,7 +602,7 @@ public class TabContentManager {
                             bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
             long durationMs = SystemClock.elapsedRealtime() - startTime;
             RecordHistogram.recordTimesHistogram(
-                    UMA_THUMBNAIL_CAPTURE_DURATION + ".NativePage", durationMs);
+                    String.format(UMA_THUMBNAIL_CAPTURE_DURATION_FORMAT, "NativePage"), durationMs);
             callback.onResult(resized);
         } else {
             if (tab.getWebContents() == null) {
@@ -614,7 +614,9 @@ public class TabContentManager {
                         if (bitmap != null) {
                             long durationMs = SystemClock.elapsedRealtime() - startTime;
                             RecordHistogram.recordTimesHistogram(
-                                    UMA_THUMBNAIL_CAPTURE_DURATION + ".WebContent", durationMs);
+                                    String.format(
+                                            UMA_THUMBNAIL_CAPTURE_DURATION_FORMAT, "WebContent"),
+                                    durationMs);
                         }
                         Callback.runNullSafe(callback, bitmap);
                     };
