@@ -225,6 +225,9 @@ class AuthenticationService : public KeyedService,
   // Clears the account settings prefs of all removed accounts from device.
   void ClearAccountSettingsPrefsOfRemovedAccounts();
 
+  // Called once account switching is done.
+  void AccountSwitchDone();
+
   // Returns the active identities for MDM.
   NSArray<id<SystemIdentity>>* ActiveIdentities();
 
