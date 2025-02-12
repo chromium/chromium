@@ -9,6 +9,7 @@
 
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_loader_impl.h"
 
+#include <numeric>
 #include <string>
 #include <utility>
 
@@ -99,6 +100,22 @@ bool GetStyleSheet(const base::Value::Dict& dict,
 }
 
 }  // namespace safe_html
+
+std::string AsyncParamDataAsCSV(
+    const std::set<std::pair<std::string, std::string>>& param_data) {
+  if (param_data.empty()) {
+    return "";
+  }
+
+  std::string csv = std::accumulate(
+      param_data.cbegin(), param_data.cend(), std::string(),
+      [&](std::string acc, const std::pair<std::string, std::string>& param) {
+        return acc + "," + param.first + ":" + param.second;
+      });
+
+  // Strip preceding comma and return value.
+  return csv.substr(1);
+}
 
 std::optional<OneGoogleBarData> JsonToOGBData(const base::Value& value,
                                               bool expect_async_bar_parts) {
@@ -340,20 +357,28 @@ GURL OneGoogleBarLoaderImpl::GetApiUrl() const {
     api_url = net::AppendQueryParameter(api_url, "hl", application_locale_);
   }
 
-  // Add the "async=" parameter. We can't use net::AppendQueryParameter for
-  // this because we need the ":" to remain unescaped.
-  GURL::Replacements replacements;
   std::string query = api_url.query();
   query += additional_query_params_;
+
   if (additional_query_params_.find("&async=") == std::string::npos) {
-    query += "&async=fixed:0";
+    // Add the "async=" parameter. We can't use net::AppendQueryParameter for
+    // this because we need the ":" to remain unescaped.
+    std::set<std::pair<std::string, std::string>> async_param_data;
+    async_param_data.emplace("fixed", "0");
+    if (async_bar_parts_) {
+      async_param_data.emplace("abp", "1");
+    }
+    if (!async_param_data.empty()) {
+      query += "&async=";
+      query += AsyncParamDataAsCSV(async_param_data);
+    }
   }
-  if (async_bar_parts_) {
-    query += "&expflags=OgbModule__use_async_bar_parts:true";
-  }
+
   if (query.at(0) == '&') {
     query = query.substr(1);
   }
+
+  GURL::Replacements replacements;
   replacements.SetQueryStr(query);
   return api_url.ReplaceComponents(replacements);
 }
