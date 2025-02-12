@@ -77,7 +77,6 @@ void AudioStream::ConsumeAndAccumulateTo(media::AudioBus* destination,
     const int consumed = std::min(front->frames(), remaining_frames_to_consume);
     audio_capture_util::AccumulateBusTo(
         /*source=*/*front, /*destination=*/destination,
-        /*source_start_frame=*/0,
         /*destination_start_frame=*/destination_start_frame,
         /*length=*/consumed);
     remaining_frames_to_consume -= consumed;

@@ -381,7 +381,7 @@ void AudioBus::Scale(float volume) {
   DCHECK(!is_bitstream_format_);
   if (volume > 0 && volume != 1) {
     for (auto channel : channel_data_) {
-      vector_math::FMUL(channel.data(), volume, frames(), channel.data());
+      vector_math::FMUL(channel, volume, channel);
     }
   } else if (volume == 0) {
     Zero();
