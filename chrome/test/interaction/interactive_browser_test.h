@@ -477,9 +477,28 @@ template <typename T>
 ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResult(
     ui::ElementIdentifier webcontents_id,
     const std::string& function,
-    T&& matcher) {
-  return internal::JsResultChecker<T>::CheckJsResult(webcontents_id, function,
-                                                     std::move(matcher));
+    T&& value) {
+  return std::move(
+      CheckElement(
+          webcontents_id,
+          [function,
+           value = ui::test::internal::MatcherTypeFor<T>(
+               std::forward<T>(value))](ui::TrackedElement* el) mutable {
+            std::string error_msg;
+            base::Value result =
+                el->AsA<TrackedElementWebContents>()->owner()->Evaluate(
+                    function, &error_msg);
+            if (!error_msg.empty()) {
+              LOG(ERROR) << "CheckJsResult() failed: " << error_msg;
+              return false;
+            }
+
+            auto m = internal::MakeValueMatcher(std::move(value));
+            return ui::test::internal::MatchAndExplain("CheckJsResult()", m,
+                                                       result);
+          })
+          .SetDescription(base::StringPrintf("CheckJsResult(\"\n%s\n\")",
+                                             function.c_str())));
 }
 
 // static
@@ -488,9 +507,41 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResultAt(
     ui::ElementIdentifier webcontents_id,
     const DeepQuery& where,
     const std::string& function,
-    T&& matcher) {
-  return internal::JsResultChecker<T>::CheckJsResultAt(
-      webcontents_id, where, function, std::move(matcher));
+    T&& value) {
+  return std::move(
+      CheckElement(
+          webcontents_id,
+          [where, function,
+           value = ui::test::internal::MatcherTypeFor<T>(
+               std::forward<T>(value))](ui::TrackedElement* el) mutable {
+            const auto full_function = base::StringPrintf(
+                R"(
+            (el, err) => {
+              if (err) {
+                throw err;
+              }
+              return (%s)(el);
+            }
+          )",
+                function.c_str());
+            std::string error_msg;
+            base::Value result =
+                el->AsA<TrackedElementWebContents>()->owner()->EvaluateAt(
+                    where, full_function, &error_msg);
+            if (!error_msg.empty()) {
+              LOG(ERROR) << "CheckJsResult() failed: " << error_msg;
+              return false;
+            }
+
+            auto m = internal::MakeValueMatcher(std::move(value));
+            return ui::test::internal::MatchAndExplain("CheckJsResultAt()", m,
+                                                       result);
+          })
+          .SetDescription(base::StringPrintf(
+              "CheckJsResultAt( %s, \"\n%s\n\")",
+              internal::InteractiveBrowserTestPrivate::DeepQueryToString(where)
+                  .c_str(),
+              function.c_str())));
 }
 
 #endif  // CHROME_TEST_INTERACTION_INTERACTIVE_BROWSER_TEST_H_
