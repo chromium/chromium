@@ -101,6 +101,14 @@ class CertificateProvisioningServiceImpl
 
   void OnFinishedProvisioning(bool success);
 
+  const std::string identity_name() const {
+    return context_delegate_->GetIdentityName();
+  }
+
+  const std::string temporary_identity_name() const {
+    return context_delegate_->GetTemporaryIdentityName();
+  }
+
   PrefChangeRegistrar pref_observer_;
   raw_ptr<PrefService> profile_prefs_;
   raw_ptr<CertificateStore> certificate_store_;
@@ -203,11 +211,10 @@ void CertificateProvisioningServiceImpl::OnPolicyUpdated() {
   if (IsPolicyEnabled() && !IsProvisioning()) {
     // Start by trying to load the current identity.
     LOG_POLICY(INFO, DEVICE_TRUST)
-        << "Managed identity provisioning started for: "
-        << kManagedProfileIdentityName;
+        << "Managed identity provisioning started for: " << identity_name();
     provisioning_context_.emplace();
     certificate_store_->GetIdentity(
-        kManagedProfileIdentityName,
+        identity_name(),
         base::BindOnce(
             &CertificateProvisioningServiceImpl::OnPermanentIdentityLoaded,
             weak_factory_.GetWeakPtr()));
@@ -288,7 +295,7 @@ void CertificateProvisioningServiceImpl::OnPermanentIdentityLoaded(
   LOG_POLICY(INFO, DEVICE_TRUST)
       << "Creating a private key in temporary storage...";
   certificate_store_->CreatePrivateKey(
-      kTemporaryManagedProfileIdentityName,
+      temporary_identity_name(),
       base::BindOnce(&CertificateProvisioningServiceImpl::OnPrivateKeyCreated,
                      weak_factory_.GetWeakPtr()));
 }
@@ -333,7 +340,7 @@ void CertificateProvisioningServiceImpl::OnPrivateKeyCreated(
       LOG_POLICY(INFO, DEVICE_TRUST)
           << "Private key creation conflict, attempting resolution...";
       certificate_store_->GetIdentity(
-          kTemporaryManagedProfileIdentityName,
+          temporary_identity_name(),
           base::BindOnce(
               &CertificateProvisioningServiceImpl::OnTemporaryIdentityLoaded,
               weak_factory_.GetWeakPtr()));
@@ -403,7 +410,7 @@ void CertificateProvisioningServiceImpl::OnCertificateCreatedResponse(
     LOG_POLICY(INFO, DEVICE_TRUST)
         << "Committing the certificate to storage...";
     certificate_store_->CommitCertificate(
-        kManagedProfileIdentityName, certificate,
+        identity_name(), certificate,
         base::BindOnce(
             &CertificateProvisioningServiceImpl::OnCertificateCommitted,
             weak_factory_.GetWeakPtr(), std::move(private_key), certificate));
@@ -414,8 +421,7 @@ void CertificateProvisioningServiceImpl::OnCertificateCreatedResponse(
     LOG_POLICY(INFO, DEVICE_TRUST)
         << "Committing the certificate to storage as an identity...";
     certificate_store_->CommitIdentity(
-        kTemporaryManagedProfileIdentityName, kManagedProfileIdentityName,
-        certificate,
+        temporary_identity_name(), identity_name(), certificate,
         base::BindOnce(
             &CertificateProvisioningServiceImpl::OnCertificateCommitted,
             weak_factory_.GetWeakPtr(), std::move(private_key), certificate));
@@ -446,7 +452,7 @@ void CertificateProvisioningServiceImpl::OnCertificateCommitted(
 
   LOG_POLICY(INFO, DEVICE_TRUST)
       << "Storage successfully updated, updating cached identity...";
-  cached_identity_.emplace(kManagedProfileIdentityName, std::move(private_key),
+  cached_identity_.emplace(identity_name(), std::move(private_key),
                            std::move(certificate));
 
   OnFinishedProvisioning(/*success=*/true);
