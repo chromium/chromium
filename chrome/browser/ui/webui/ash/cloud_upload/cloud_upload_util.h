@@ -110,7 +110,8 @@ enum class OfficeDriveOpenErrors {
   kDisableDrivePreferenceSet = 14,
   kDriveDisabledForAccountType = 15,
   kCannotGetRelativePath = 16,
-  kMaxValue = kCannotGetRelativePath,
+  kDriveFsUnavailable = 17,
+  kMaxValue = kDriveFsUnavailable,
 };
 
 // List of UMA enum values for opening Office files from OneDrive, with the
