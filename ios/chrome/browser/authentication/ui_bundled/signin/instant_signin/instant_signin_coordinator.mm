@@ -25,8 +25,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
-@interface InstantSigninCoordinator () <AuthenticationFlowDelegate,
-                                        IdentityChooserCoordinatorDelegate,
+@interface InstantSigninCoordinator () <IdentityChooserCoordinatorDelegate,
                                         InstantSigninMediatorDelegate>
 
 @end
@@ -191,16 +190,6 @@
   }
 }
 
-#pragma mark - AuthenticationFlowDelegate
-
-- (void)didPresentDialog {
-  [self removeActivityOverlay];
-}
-
-- (void)didDismissDialog {
-  [self showActivityOverlay];
-}
-
 #pragma mark - IdentityChooserCoordinatorDelegate
 
 - (void)identityChooserCoordinatorDidClose:
@@ -285,7 +274,6 @@
                                       accessPoint:self.accessPoint
                                 postSignInActions:postSigninActions
                          presentingViewController:self.baseViewController];
-  authenticationFlow.delegate = self;
   authenticationFlow.precedingHistorySync = YES;
   [_mediator startSignInOnlyFlowWithAuthenticationFlow:authenticationFlow];
 }

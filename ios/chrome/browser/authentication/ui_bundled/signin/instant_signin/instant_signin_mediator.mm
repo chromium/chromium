@@ -62,7 +62,6 @@ using signin_metrics::PromoAction;
 - (void)signInFlowCompletedForSignInOnlyWithResult:
     (SigninCoordinatorResult)result {
   CHECK(_authenticationFlow);
-  _authenticationFlow.delegate = nil;
   _authenticationFlow = nil;
   ProceduralBlock interruptionCompletion = _interruptionCompletion;
   _interruptionCompletion = nil;
