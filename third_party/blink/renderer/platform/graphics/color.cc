@@ -147,10 +147,6 @@ constexpr int BlueChannel(RGBA32 color) {
   return color & 0xFF;
 }
 
-constexpr int AlphaChannel(RGBA32 color) {
-  return (color >> 24) & 0xFF;
-}
-
 float AngleToUnitCircleDegrees(float angle) {
   return fmod(fmod(angle, 360.f) + 360.f, 360.f);
 }
@@ -170,22 +166,6 @@ Color::Color(int r, int g, int b) {
 
 Color::Color(int r, int g, int b, int a) {
   *this = FromRGBA(r, g, b, a);
-}
-
-// static
-Color Color::FromRGBALegacy(std::optional<int> r,
-                            std::optional<int> g,
-                            std::optional<int> b,
-                            std::optional<int> a) {
-  Color result = Color(
-      ClampInt255(a.value_or(0.f)) << 24 | ClampInt255(r.value_or(0.f)) << 16 |
-      ClampInt255(g.value_or(0.f)) << 8 | ClampInt255(b.value_or(0.f)));
-  result.param0_is_none_ = !r;
-  result.param1_is_none_ = !g;
-  result.param2_is_none_ = !b;
-  result.alpha_is_none_ = !a;
-  result.color_space_ = ColorSpace::kSRGBLegacy;
-  return result;
 }
 
 // static
@@ -1263,33 +1243,6 @@ void Color::GetHWB(double& hue, double& white, double& black) const {
   double max;
   GetHueMaxMin(hue, max, white);
   black = 1.0 - max;
-}
-
-Color ColorFromPremultipliedARGB(RGBA32 pixel_color) {
-  int alpha = AlphaChannel(pixel_color);
-  if (alpha && alpha < 255) {
-    return Color::FromRGBA(RedChannel(pixel_color) * 255 / alpha,
-                           GreenChannel(pixel_color) * 255 / alpha,
-                           BlueChannel(pixel_color) * 255 / alpha, alpha);
-  } else {
-    return Color::FromRGBA32(pixel_color);
-  }
-}
-
-RGBA32 PremultipliedARGBFromColor(const Color& color) {
-  unsigned pixel_color;
-
-  unsigned alpha = color.AlphaAsInteger();
-  if (alpha < 255) {
-    pixel_color = Color::FromRGBA((color.Red() * alpha + 254) / 255,
-                                  (color.Green() * alpha + 254) / 255,
-                                  (color.Blue() * alpha + 254) / 255, alpha)
-                      .Rgb();
-  } else {
-    pixel_color = color.Rgb();
-  }
-
-  return pixel_color;
 }
 
 // From https://www.w3.org/TR/css-color-4/#interpolation

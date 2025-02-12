@@ -190,11 +190,6 @@ class PLATFORM_EXPORT Color {
                  ClampInt255(g) << 8 | ClampInt255(b));
   }
 
-  static Color FromRGBALegacy(std::optional<int> r,
-                              std::optional<int> g,
-                              std::optional<int> b,
-                              std::optional<int> alpha);
-
   // Create a color using the rgba() syntax, with float arguments. All
   // parameters will be clamped to the [0, 1] interval.
   static constexpr Color FromRGBAFloat(float r, float g, float b, float a) {
@@ -484,8 +479,6 @@ class PLATFORM_EXPORT Color {
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream& os, const Color& color);
 
 PLATFORM_EXPORT int DifferenceSquared(const Color&, const Color&);
-PLATFORM_EXPORT Color ColorFromPremultipliedARGB(RGBA32);
-PLATFORM_EXPORT RGBA32 PremultipliedARGBFromColor(const Color&);
 
 }  // namespace blink
 
