@@ -125,6 +125,13 @@ void AccountCapabilitiesTestMutator::set_can_use_generative_ai_photo_editing(
   capabilities_->capabilities_map_[kCanUseGenerativeAiPhotoEditing] = value;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void AccountCapabilitiesTestMutator::set_can_use_chromeos_generative_ai(
+    bool value) {
+  capabilities_->capabilities_map_[kCanUseChromeOSGenerativeAi] = value;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 void AccountCapabilitiesTestMutator::SetAllSupportedCapabilities(bool value) {
   for (std::string_view name :
        AccountCapabilities::GetSupportedAccountCapabilityNames()) {

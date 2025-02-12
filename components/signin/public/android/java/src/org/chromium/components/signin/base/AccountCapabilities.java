@@ -218,6 +218,13 @@ public class AccountCapabilities {
     }
 
     /**
+     * @return canUseChromeOSGenerativeAi capability value.
+     */
+    public @Tribool int canUseChromeOSGenerativeAi() {
+        return getCapabilityByName(AccountCapabilitiesConstants.CAN_USE_CHROMEOS_GENERATIVE_AI);
+    }
+
+    /**
      * @param capabilityName the name of the capability to lookup.
      * @return the capability value associated to the name.
      */
