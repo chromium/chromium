@@ -845,12 +845,6 @@ public class TabListCoordinator
         return mMediator.isLastItemMessage();
     }
 
-    /** Provides the tab ID for the most recently swiped tab. */
-    @NonNull
-    ObservableSupplier<Integer> getRecentlySwipedTabSupplier() {
-        return mMediator.getRecentlySwipedTabSupplier();
-    }
-
     private void checkAwaitingLayout() {
         if (mAwaitingLayoutRunnable != null) {
             SimpleRecyclerViewAdapter.ViewHolder holder =
