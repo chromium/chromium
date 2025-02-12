@@ -21385,7 +21385,7 @@
             ]
         }
     ],
-    "SeaPenPromptRewrite": [
+    "SeaPenQueryRewrite": [
         {
             "platforms": [
                 "chromeos"
@@ -21394,7 +21394,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "SeaPenPromptRewrite"
+                        "SeaPenQueryRewrite"
                     ]
                 }
             ]
