@@ -73,7 +73,7 @@ suite('DescriptionSectionTest', () => {
     await microtasksFinished();
   });
 
-  test('summaries render correctly', async () => {
+  test('summaries render correctly', () => {
     const summaries =
         descriptionSectionElement.shadowRoot.querySelectorAll('.summary-text');
 
@@ -86,7 +86,7 @@ suite('DescriptionSectionTest', () => {
     });
   });
 
-  test('citations are listed correctly', async () => {
+  test('citations are listed correctly', () => {
     const citations = descriptionSectionElement.shadowRoot.querySelectorAll(
         'description-citation');
 
@@ -106,7 +106,7 @@ suite('DescriptionSectionTest', () => {
         citations[2]!.$.citation.getAttribute('aria-label'));
   });
 
-  test('attributes are listed correctly', async () => {
+  test('attributes are listed correctly', () => {
     const attributes = descriptionSectionElement.shadowRoot.querySelectorAll(
         '.attribute-chip');
 

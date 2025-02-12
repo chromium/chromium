@@ -10,6 +10,7 @@ import {DIAGNOSE_INFO_VIEW_ID, initializeMojo, REFRESH_FINISH_EVENT, REFRESH_STA
 import type {LocationInternalsHandlerInterface} from 'chrome://location-internals/location_internals.mojom-webui.js';
 import {LocationInternalsHandler, LocationInternalsHandlerReceiver} from 'chrome://location-internals/location_internals.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 import type {Time, TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -196,15 +197,20 @@ suite('LocationInternalsUITest', function() {
   let fakeLocationInternalsHandler: FakeLocationInternalsHandlerRemote|null =
       null;
 
-  suiteSetup(async function() {
+  suiteSetup(function() {
+    const promiseResolver = new PromiseResolver<void>();
+
     const internalsHandlerInterceptor =
         new MojoInterfaceInterceptor(LocationInternalsHandler.$interfaceName);
     internalsHandlerInterceptor.oninterfacerequest = (e) => {
       fakeLocationInternalsHandler =
           new FakeLocationInternalsHandlerRemote(e.handle);
+      promiseResolver.resolve();
     };
     internalsHandlerInterceptor.start();
     initializeMojo();
+
+    return promiseResolver.promise;
   });
 
   teardown(function() {
@@ -212,7 +218,7 @@ suite('LocationInternalsUITest', function() {
     geolocationInternalsRemote?.reset();
   });
 
-  test('PageLoaded', async function() {
+  test('PageLoaded', function() {
     const watchButton = getRequiredElement<HTMLElement>(WATCH_BUTTON_ID);
     assert(watchButton);
   });

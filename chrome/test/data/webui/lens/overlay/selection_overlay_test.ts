@@ -1128,7 +1128,7 @@ suite('SelectionOverlay', function() {
 
     test(
         `verify that translate text does not render if translate mode disabled`,
-        async () => {
+        () => {
           // Make sure only non-translated word divs are present and visible.
           const wordElements = selectionOverlayElement.$.textSelectionLayer
                                    .getWordNodesForTesting();

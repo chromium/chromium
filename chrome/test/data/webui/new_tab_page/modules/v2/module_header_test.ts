@@ -9,7 +9,7 @@ import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 suite('ModuleHeaderV2', () => {
   let moduleHeaderElementV2: ModuleHeaderElementV2;
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     moduleHeaderElementV2 = new ModuleHeaderElementV2();
     document.body.appendChild(moduleHeaderElementV2);

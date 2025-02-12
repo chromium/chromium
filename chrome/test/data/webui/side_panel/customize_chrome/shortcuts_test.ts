@@ -24,7 +24,7 @@ suite('ShortcutsTest', () => {
   let callbackRouterRemote: CustomizeChromePageRemote;
   let metrics: MetricsTracker;
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
         CustomizeChromePageHandlerRemote,

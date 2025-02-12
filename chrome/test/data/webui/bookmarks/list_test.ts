@@ -258,7 +258,7 @@ suite('<bookmarks-list> command manager integration test', function() {
     flush();
   });
 
-  test('show context menu', async () => {
+  test('show context menu', () => {
     const commandManager =
         app.shadowRoot!.querySelector('bookmarks-command-manager')!;
     const list = app.shadowRoot!.querySelector('bookmarks-list')!;

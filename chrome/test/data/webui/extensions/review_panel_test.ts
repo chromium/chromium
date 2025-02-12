@@ -34,7 +34,7 @@ suite('ExtensionsReviewPanel', function() {
     return microtasksFinished();
   });
 
-  test('ReviewPanelTextExists', async function() {
+  test('ReviewPanelTextExists', function() {
     // Review panel should be visible.
     const reviewPanelContainer = element.$.reviewPanelContainer;
     assertTrue(!!reviewPanelContainer);
@@ -90,7 +90,7 @@ suite('ExtensionsReviewPanel', function() {
     assertTrue(extensionsList.opened);
   });
 
-  test('ReviewPanelUnsafeExtensionRowsExist', async function() {
+  test('ReviewPanelUnsafeExtensionRowsExist', function() {
     const extensionNameContainers =
         element.shadowRoot.querySelectorAll('.panel-extension-row');
     assertEquals(extensionNameContainers.length, 1);

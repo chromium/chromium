@@ -28,7 +28,7 @@ suite('UpdateContentSelection', () => {
     return microtasksFinished();
   }
 
-  setup(async () => {
+  setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
@@ -125,7 +125,7 @@ suite('UpdateContentSelection', () => {
     assertEquals(10, selection.focusOffset);
   });
 
-  test('invalid selection clears selection', async () => {
+  test('invalid selection clears selection', () => {
     chrome.readingMode.startNodeId = -1;
     chrome.readingMode.endNodeId = -1;
 

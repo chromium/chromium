@@ -25,7 +25,7 @@ suite('Metrics', function() {
     disableLinkClicks();
   });
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testService = new TestBrowserService();

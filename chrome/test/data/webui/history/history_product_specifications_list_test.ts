@@ -89,7 +89,7 @@ suite('ProductSpecificationsListTest', () => {
     });
   });
 
-  test('load', async () => {
+  test('load', () => {
     const items = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
     assertEquals(4, items.length);
@@ -120,7 +120,7 @@ suite('ProductSpecificationsListTest', () => {
         items[3]!.item);
   });
 
-  test('displays correct header', async () => {
+  test('displays correct header', () => {
     const items = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
     assertEquals(4, items.length);
@@ -257,7 +257,7 @@ suite('ProductSpecificationsListTest', () => {
         shoppingServiceApi.getArgs('deleteProductSpecificationsSet')[1]);
   });
 
-  test('focus with arrow keys', async () => {
+  test('focus with arrow keys', () => {
     const items = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
 

@@ -205,7 +205,7 @@ suite('ExtensionItemListTest', function() {
     assertEquals(1, reviewPanel.extensions.length);
   });
 
-  test('ManifestV2DeprecationPanel_None', async function() {
+  test('ManifestV2DeprecationPanel_None', function() {
     // Panel is hidden for experiment on stage 0 (none).
     loadTimeData.overrideValues({MV2ExperimentStage: 0});
     setupElement();

@@ -616,7 +616,7 @@ suite('ProfilePickerProfilesReorderingTest', function() {
     expectedEndProfileOrder: string[],
   }) {
     // Adapts the function to 1 cycle.
-    testProfileReorderingDragCycles({
+    await testProfileReorderingDragCycles({
       expectedInitialProfileOrder: dragData.expectedInitialProfileOrder,
       dragEventCycles: [{
         dragIndex: dragData.dragIndex,

@@ -87,7 +87,7 @@ suite('NewTabPageDoodleShareDialogTest', () => {
         `mailto:?subject=foo&body=${encodeURIComponent('https://bar.com')}`);
   });
 
-  test('clicking done closes dialog', async () => {
+  test('clicking done closes dialog', () => {
     // Act.
     doodleShareDialog.$.doneButton.click();
 

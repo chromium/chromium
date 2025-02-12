@@ -37,7 +37,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
     'In the circle of life',
   ];
 
-  setup(async () => {
+  setup(() => {
     // Clearing the DOM should always be done first.
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

@@ -31,7 +31,7 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
     document.body.append(module);
   }
 
-  setup(async () => {
+  setup(() => {
     loadTimeData.overrideValues({
       modulesGoogleCalendarTitle: title,
       modulesGoogleCalendarDismissToastMessage: dismissToast,

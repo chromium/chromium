@@ -24,7 +24,7 @@ suite('ProductSpecificationsTableTest', () => {
   const shoppingServiceApi =
       TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
 
-  setup(async () => {
+  setup(() => {
     metrics = fakeMetricsPrivate();
     shoppingServiceApi.reset();
     ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
@@ -739,12 +739,12 @@ suite('ProductSpecificationsTableTest', () => {
       await microtasksFinished();
     });
 
-    test('detail title is hidden if it is `null`', async () => {
+    test('detail title is hidden if it is `null`', () => {
       const titles = tableElement.shadowRoot.querySelectorAll('.detail-title');
       assertEquals(8, titles.length);
     });
 
-    test('buying options are visible if price is available', async () => {
+    test('buying options are visible if price is available', () => {
       const buyingOptions =
           tableElement.shadowRoot.querySelectorAll('buying-options-section');
       assertEquals(2, buyingOptions.length);

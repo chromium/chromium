@@ -22,7 +22,7 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
   let callbackRouterRemote: PageRemote;
   let metrics: MetricsTracker;
 
-  setup(async () => {
+  setup(() => {
     loadTimeData.overrideValues({navigationStartTime: 0.0});
     metrics = fakeMetricsPrivate();
     windowProxy = installMock(WindowProxy);

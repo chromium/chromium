@@ -130,14 +130,14 @@ suite('AppTest', () => {
 
   const testId = 'abcdef01-2345-6789-abcd-ef0123456789';
 
-  async function createAppElement(): Promise<ProductSpecificationsElement> {
+  function createAppElement(): Promise<ProductSpecificationsElement> {
     appElement = document.createElement('product-specifications-app');
 
     loadingStartPromise = createLoadingStartPromise();
     loadingEndPromise = createLoadingEndPromise();
 
     document.body.appendChild(appElement);
-    return appElement;
+    return Promise.resolve(appElement);
   }
 
   async function createAppElementWithPromiseValues(
@@ -203,7 +203,7 @@ suite('AppTest', () => {
     callbackRouterRemote.onProductSpecificationsSetUpdated(set);
   }
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       defaultTableTitle: 'title',
@@ -1452,7 +1452,7 @@ suite('AppTest', () => {
               CompareTableColumnAction.UPDATE_FROM_RECENTLY_VIEWED));
     });
 
-    test('record metrics for success state', async () => {
+    test('record metrics for success state', () => {
       // Table has been loaded in test setup.
       assertEquals(
           1,
@@ -1894,11 +1894,11 @@ suite('AppTest', () => {
         await createAppElement();
       });
 
-      test('displays correct subtitle', async () => {
+      test('displays correct subtitle', () => {
         assertEquals(null, appElement.$.header.subtitle);
       });
 
-      test('page title is not clickable', async () => {
+      test('page title is not clickable', () => {
         assertFalse(appElement.$.header.isPageTitleClickable);
       });
     });
@@ -1915,7 +1915,7 @@ suite('AppTest', () => {
         await createAppElementWithPromiseValues(promiseValues);
       });
 
-      test('displays correct subtitle', async () => {
+      test('displays correct subtitle', () => {
         assertEquals('fooName', appElement.$.header.subtitle);
       });
 

@@ -341,7 +341,7 @@ suite('SettingsSectionTest', function() {
     assertTrue(!!settings.shadowRoot!.querySelector('passwords-exporter'));
   });
 
-  test('trustedVaultBannerVisibilityChangesWithState', async function() {
+  test('trustedVaultBannerVisibilityChangesWithState', function() {
     const settings = document.createElement('settings-section');
     document.body.appendChild(settings);
     webUIListenerCallback(

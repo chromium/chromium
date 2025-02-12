@@ -139,7 +139,7 @@ suite('DescriptionCitationTest', () => {
     assertEquals(1, metrics.count('Commerce.Compare.CitationClicked'));
   });
 
-  test('tooltip has no animation delay', async () => {
+  test('tooltip has no animation delay', () => {
     assertEquals(0, citationElement.$.tooltip.animationDelay);
   });
 });

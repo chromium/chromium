@@ -63,7 +63,7 @@ suite('ThemesTest', () => {
     await microtasksFinished();
   }
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     windowProxy = installMock(WindowProxy);
     handler = installMock(
