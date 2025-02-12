@@ -370,12 +370,7 @@ template("proto_library") {
     script = "//tools/protoc_wrapper/protoc_wrapper.py"
     args = protos
 
-    sources =
-        proto_sources + [
-          # Add this here as there are some protos which import descriptor.proto
-          # directly or indirectly.
-          "//third_party/protobuf/src/google/protobuf/descriptor.proto",
-        ]
+    sources = proto_sources
 
     outputs =
         get_path_info(protogens + protogens_cc + protogens_js + protogens_py,
@@ -471,8 +466,13 @@ template("proto_library") {
       }
     }
 
-    # System protoc is not used so it's necessary to build a chromium one.
-    inputs = [ _protoc_path ]
+    inputs = [
+      # System protoc is not used so it's necessary to build a chromium one.
+      _protoc_path,
+      # Add this here as there are some protos which import descriptor.proto
+      # directly or indirectly.
+      "//third_party/protobuf/src/google/protobuf/descriptor.proto",
+    ]
     deps = [ _protoc_label ]
     if (use_prebuilt_instrumented_libraries) {
       # When prebuilt instrumneted libraries are used, we need to tell that

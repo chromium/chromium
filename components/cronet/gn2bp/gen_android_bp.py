@@ -1109,12 +1109,15 @@ def create_proto_modules(blueprint, gn, target):
   if target.proto_plugin == 'source_set':
     return None
 
+  sources = {gn_utils.label_to_path(src) for src in target.sources}
+  absolute_sources = sorted([f"external/cronet/{src}" for src in sources])
+
   # Descriptor targets only generate a single target.
   if target.proto_plugin == 'descriptor':
     out = '{}.bin'.format(target_module_name)
 
     cmd += ['--descriptor_set_out=$(out)']
-    cmd += ['$(in)']
+    cmd += absolute_sources
 
     descriptor_module = Module('cc_genrule', target_module_name, target.name)
     descriptor_module.cmd = ' '.join(cmd)
@@ -1141,8 +1144,7 @@ def create_proto_modules(blueprint, gn, target):
   source_module_name = target_module_name
   source_module = Module('cc_genrule', source_module_name, target.name)
   blueprint.add_module(source_module)
-  source_module.srcs.update(
-      gn_utils.label_to_path(src) for src in target.sources)
+  source_module.srcs.update(sources)
 
   header_module = Module('cc_genrule', source_module_name + '_headers',
                          target.name)
@@ -1168,7 +1170,7 @@ def create_proto_modules(blueprint, gn, target):
   else:
     raise Exception('Unsupported proto plugin: %s' % target.proto_plugin)
 
-  cmd += ['$(in)']
+  cmd += absolute_sources
   source_module.cmd = ' '.join(cmd)
   header_module.cmd = source_module.cmd
   source_module.tools = tools
