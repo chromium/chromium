@@ -156,6 +156,19 @@ bool HTMLOptionElement::MatchesEnabledPseudoClass() const {
 }
 
 String HTMLOptionElement::DisplayLabel() const {
+  if (RuntimeEnabledFeatures::OptionLabelAttributeWhitespaceEnabled()) {
+    // If the label attribute is set and is not an empty string, then use its
+    // value. Otherwise, use inner text.
+    String label_attr = String(FastGetAttribute(html_names::kLabelAttr));
+    if (!label_attr.empty()) {
+      return label_attr.StripWhiteSpace(IsHTMLSpace<UChar>)
+          .SimplifyWhiteSpace(IsHTMLSpace<UChar>);
+    }
+    return CollectOptionInnerText()
+        .StripWhiteSpace(IsHTMLSpace<UChar>)
+        .SimplifyWhiteSpace(IsHTMLSpace<UChar>);
+  }
+
   String label_attr = String(FastGetAttribute(html_names::kLabelAttr))
     .StripWhiteSpace(IsHTMLSpace<UChar>).SimplifyWhiteSpace(IsHTMLSpace<UChar>);
   String inner_text = CollectOptionInnerText()
@@ -163,7 +176,7 @@ String HTMLOptionElement::DisplayLabel() const {
   // FIXME: The following treats an element with the label attribute set to
   // the empty string the same as an element with no label attribute at all.
   // Is that correct? If it is, then should the label function work the same
-  // way? https://github.com/whatwg/html/issues/10955
+  // way?
   return label_attr.empty() ? inner_text : label_attr;
 }
 
