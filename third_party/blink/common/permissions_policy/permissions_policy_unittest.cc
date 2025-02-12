@@ -3638,8 +3638,8 @@ TEST_F(DeprecateUnloadTest,
        {blink::features::kDeprecateUnloadByAllowList,
         {{features::kDeprecateUnloadAllowlist.name, http_origin1_.host()}}}},
       /*disabled_features=*/{});
-  EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(http_origin1_));
-  EXPECT_FALSE(
+  EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin1_));
+  EXPECT_TRUE(
       UnloadDeprecationAllowedForOrigin(http_origin1_.DeriveNewOpaqueOrigin()));
   // http_origin2 is not on the allow list.
   EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(http_origin2_));
@@ -3660,8 +3660,8 @@ TEST_F(DeprecateUnloadTest,
   EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin1_));
   EXPECT_TRUE(
       UnloadDeprecationAllowedForOrigin(http_origin1_.DeriveNewOpaqueOrigin()));
-  // http_origin2 is not on the allow list.
-  EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(http_origin2_));
+  // http_origin2 is not on the allow list but we are at 100%.
+  EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin2_));
 }
 
 // Test that we recognize the known types of headerless documents.

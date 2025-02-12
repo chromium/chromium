@@ -69,11 +69,12 @@ bool UnloadDeprecationAllowedForOrigin(const url::Origin& origin) {
     return false;
   }
 
+  // Hosts on the allowlist are deprecated regardless of other parameters.
   if (base::FeatureList::IsEnabled(features::kDeprecateUnloadByAllowList)) {
     static const base::NoDestructor<HostSet> hosts(
         UnloadDeprecationAllowedHosts());
-    if (!UnloadDeprecationAllowedForHost(shp.host(), *hosts)) {
-      return false;
+    if (UnloadDeprecationAllowedForHost(shp.host(), *hosts)) {
+      return true;
     }
   }
 
