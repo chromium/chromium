@@ -46,7 +46,6 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
         elements.declareView(URL_BAR);
-        elements.declareView(SUGGESTIONS_LIST);
     }
 
     public boolean isIncognito() {
