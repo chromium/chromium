@@ -17,6 +17,7 @@ source_set("contextual_cueing") {
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//components/optimization_guide/core",
     "//content/public/browser",
   ]
 }
