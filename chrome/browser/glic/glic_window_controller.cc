@@ -710,13 +710,8 @@ void GlicWindowController::AttachToBrowser(Browser& browser) {
   CHECK(GetGlicWidget());
   attached_browser_ = &browser;
   MovePositionToBrowserGlicButton(browser, /*animate=*/true);
-
-// TODO(crbug.com/395734073): Investigate reparenting to a holder widget on
-// Windows
-#if !BUILDFLAG(IS_MAC)
   // Close the holder window.
   holder_widget_.reset();
-#endif
 
   BrowserView* browser_view = browser.window()->AsBrowserView();
   CHECK(browser_view);
@@ -974,10 +969,6 @@ void GlicWindowController::HandleWindowDragWithOffset(
     // Set glic to a floating z-order while dragging so browsers brought into
     // focus by HandleGlicButtonIndicator won't show in front of glic.
     GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
-#if BUILDFLAG(IS_MAC)
-    // Mac: Make the glic widget a top-level widget before starting drag.
-    glic_widget_->Reparent(nullptr);
-#endif
     GetGlicWidget()->RunMoveLoop(
         mouse_offset, move_loop_source,
         views::Widget::MoveLoopEscapeBehavior::kDontHide);
@@ -996,9 +987,7 @@ void GlicWindowController::HandleAttachmentToBrowserWindows() {
   // No browser within attachment range so maybe reparent under an empty holder
   // widget.
   if (!browser) {
-#if !BUILDFLAG(IS_MAC)
     MaybeCreateHolderWindowAndReparent();
-#endif
     return;
   }
   // Attach to the found browser.
@@ -1107,9 +1096,7 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
   anchor_observer_.reset();
   browser_close_subscription_.reset();
 
-// TODO(crbug.com/395734073): Investigate reparenting to a holder widget on
-// Windows
-#if !BUILDFLAG(IS_MAC)
+
   if (!holder_widget_) {
     holder_widget_ = std::make_unique<views::Widget>();
     views::Widget::InitParams params(
@@ -1126,10 +1113,6 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
   }
 
   glic_widget_->Reparent(holder_widget_.get());
-#else  // BUILDFLAG(IS_MAC)
-  // Mac: Make the glic widget a top-level widget
-  glic_widget_->Reparent(nullptr);
-#endif
   NotifyIfPanelStateChanged();
 
   // When the glic window is in a detached state, elevate its z-order to be
@@ -1138,6 +1121,7 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
   GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
 #if BUILDFLAG(IS_MAC)
   GetGlicWidget()->SetActivationIndependence(true);
+  holder_widget_->SetVisibleOnAllWorkspaces(true);
   GetGlicWidget()->SetVisibleOnAllWorkspaces(true);
 #endif
 }

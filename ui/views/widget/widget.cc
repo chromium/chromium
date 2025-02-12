@@ -683,8 +683,7 @@ bool Widget::GetAccelerator(int cmd_id, ui::Accelerator* accelerator) const {
 
 void Widget::Reparent(Widget* parent) {
   gfx::NativeView child_view = GetNativeView();
-  gfx::NativeView parent_view =
-      parent ? parent->GetNativeView() : gfx::NativeView();
+  gfx::NativeView parent_view = parent->GetNativeView();
   internal::NativeWidgetPrivate::ReparentNativeView(child_view, parent_view);
   HandleNativeWidgetReparented(parent);
 }

@@ -311,11 +311,9 @@ void NativeWidgetMac::OnWidgetInitDone() {
 void NativeWidgetMac::ReparentNativeViewImpl(gfx::NativeView new_parent) {
   gfx::NativeView child = GetNativeView();
   DCHECK_NE(child, new_parent);
-  if (new_parent) {
-    DCHECK([new_parent.GetNativeNSView() window]);
-    CHECK(new_parent);
-    CHECK_NE([child.GetNativeNSView() superview], new_parent.GetNativeNSView());
-  }
+  DCHECK([new_parent.GetNativeNSView() window]);
+  CHECK(new_parent);
+  CHECK_NE([child.GetNativeNSView() superview], new_parent.GetNativeNSView());
 
   NativeWidgetMacNSWindowHost* child_window_host =
       NativeWidgetMacNSWindowHost::GetFromNativeView(child);
@@ -329,13 +327,12 @@ void NativeWidgetMac::ReparentNativeViewImpl(gfx::NativeView new_parent) {
       [child.GetNativeNSView() isDescendantOf:widget_view.GetNativeNSView()]);
   DCHECK(widget_window && ![widget_window.GetNativeNSWindow() isSheet]);
 
-  NativeWidgetMacNSWindowHost* new_parent_window_host =
-      new_parent ? NativeWidgetMacNSWindowHost::GetFromNativeView(new_parent)
-                 : nullptr;
+  NativeWidgetMacNSWindowHost* parent_window_host =
+      NativeWidgetMacNSWindowHost::GetFromNativeView(new_parent);
 
   // Early out for no-op changes.
-  if (new_parent_window_host && child == widget_view &&
-      child_window_host->parent() == new_parent_window_host) {
+  if (child == widget_view &&
+      child_window_host->parent() == parent_window_host) {
     return;
   }
 
@@ -347,7 +344,7 @@ void NativeWidgetMac::ReparentNativeViewImpl(gfx::NativeView new_parent) {
     widget->NotifyNativeViewHierarchyWillChange();
   }
 
-  child_window_host->SetParent(new_parent_window_host);
+  child_window_host->SetParent(parent_window_host);
 
   // And now, notify them that they have a brand new parent.
   for (Widget* widget : widgets) {
