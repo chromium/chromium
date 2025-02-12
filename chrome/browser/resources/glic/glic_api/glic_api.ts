@@ -162,10 +162,6 @@ export declare interface GlicBrowserHost {
   captureScreenshot?(): Promise<Screenshot>;
 
   /**
-   * @todo This has only a bare bones implementation: all options are ignored
-   *       and the returned TabData will be empty on a successful tab creation.
-   *       https://crbug.com/393391681
-   *
    * Creates a tab and navigates to a URL. It is made the active tab by default
    * but that can be changed using `options.openInBackground`.
    *
