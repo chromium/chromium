@@ -60,6 +60,7 @@ const CGFloat kGoogleSearchDoodleShrunkHeight = 68;
 // Height for the shrunk logo frame.
 // TODO(crbug.com/40744549): clean up post-launch.
 const CGFloat kGoogleSearchLogoHeight = 36;
+const CGFloat kLargeFakeboxGoogleSearchLogoHeight = 50;
 
 // The size of the symbol image.
 const CGFloat kSymbolContentSuggestionsPointSize = 18;
@@ -71,10 +72,31 @@ const CGFloat kButtonShadowRadius = 1.0;
 const CGFloat kButtonShadowVerticalOffset = 1.0;
 const CGFloat kNewBadgeOffsetFromButtonCenter = 14.0;
 
+// The height of the Fakebox.
+const CGFloat kFakeboxHeight = 65;
+const CGFloat kFakeboxHeightNonDynamic = 45;
+
+// The height of the Fakebox when it is pinned to the top.
+const CGFloat kPinnedFakeboxHeight = 48;
+const CGFloat kPinnedFakeboxHeightNonDynamic = 18;
+
 // Height and width of the new feature badge.
 const CGFloat kNewFeatureBadgeSize = 20;
 // Font size of the new feature badge label.
 const CGFloat kNewFeatureFontSize = 10;
+
+// Returns the amount of vertical margin to include in the Fake Toolbar.
+CGFloat FakeToolbarVerticalMargin() {
+  UIContentSizeCategory category =
+      [UIApplication sharedApplication].preferredContentSizeCategory;
+  CGFloat vertical_margin =
+      2 * kAdaptiveLocationBarVerticalMargin - kTopToolbarUnsplitMargin;
+  CGFloat dynamic_type_vertical_adjustment =
+      (ToolbarClampedFontSizeMultiplier(category) - 1) *
+      (kLocationBarVerticalMarginDynamicType +
+       kAdaptiveLocationBarVerticalMargin);
+  return vertical_margin + dynamic_type_vertical_adjustment;
+}
 
 // Returns the color to use for the Lens and Voice icons in the Fakebox.
 UIColor* FakeboxIconColor() {
@@ -130,6 +152,8 @@ CGFloat DoodleHeight(BOOL logo_is_showing,
     if (doodle_is_showing ||
         (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)) {
       return kGoogleSearchDoodleShrunkHeight;
+    } else if (ShouldEnlargeLogoAndFakebox()) {
+      return kLargeFakeboxGoogleSearchLogoHeight;
     } else {
       return kGoogleSearchLogoHeight;
     }
@@ -138,10 +162,17 @@ CGFloat DoodleHeight(BOOL logo_is_showing,
   return kGoogleSearchDoodleHeight;
 }
 
-CGFloat DoodleTopMargin(CGFloat top_inset,
+CGFloat DoodleTopMargin(BOOL logo_is_showing,
+                        BOOL doodle_is_showing,
                         UITraitCollection* trait_collection) {
   if (IsRegularXRegularSizeClass(trait_collection)) {
     return kDoodleTopMarginRegularXRegular;
+  }
+  CGFloat top_inset = 0;
+  if (logo_is_showing && !doodle_is_showing && ShouldEnlargeLogoAndFakebox()) {
+    // Shrink the top inset so that the enlarged logo has the same bottom
+    // positioning as the regular logo.
+    top_inset = kGoogleSearchLogoHeight - kLargeFakeboxGoogleSearchLogoHeight;
   }
   CGFloat top_margin =
       top_inset +
@@ -174,16 +205,31 @@ CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection) {
 }
 
 CGFloat FakeOmniboxHeight() {
+  if (ShouldEnlargeLogoAndFakebox()) {
+    CGFloat multiplier = ui_util::SystemSuggestedFontSizeMultiplier();
+    return AlignValueToPixel((kFakeboxHeight - kFakeboxHeightNonDynamic) *
+                                 multiplier +
+                             kFakeboxHeightNonDynamic);
+  }
   return ToolbarExpandedHeight(
       [UIApplication sharedApplication].preferredContentSizeCategory);
 }
 
 CGFloat PinnedFakeOmniboxHeight() {
+  if (ShouldEnlargeLogoAndFakebox()) {
+    CGFloat multiplier = ui_util::SystemSuggestedFontSizeMultiplier();
+    return AlignValueToPixel(
+        (kPinnedFakeboxHeight - kPinnedFakeboxHeightNonDynamic) * multiplier +
+        kPinnedFakeboxHeightNonDynamic);
+  }
   return LocationBarHeight(
       [UIApplication sharedApplication].preferredContentSizeCategory);
 }
 
 CGFloat FakeToolbarHeight() {
+  if (ShouldEnlargeLogoAndFakebox()) {
+    return PinnedFakeOmniboxHeight() + FakeToolbarVerticalMargin();
+  }
   return ToolbarExpandedHeight(
       [UIApplication sharedApplication].preferredContentSizeCategory);
 }
@@ -192,7 +238,7 @@ CGFloat HeightForLogoHeader(BOOL logo_is_showing,
                             BOOL doodle_is_showing,
                             UITraitCollection* trait_collection) {
   CGFloat header_height =
-      DoodleTopMargin(0, trait_collection) +
+      DoodleTopMargin(logo_is_showing, doodle_is_showing, trait_collection) +
       DoodleHeight(logo_is_showing, doodle_is_showing, trait_collection) +
       SearchFieldTopMargin() + FakeOmniboxHeight() +
       ntp_header::kScrolledToTopOmniboxBottomMargin +

@@ -59,12 +59,16 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 // The constants for the constraints affecting the end button; either Lens or
 // Voice Search, depending on if Lens is enabled.
 const CGFloat kEndButtonFakeboxTrailingSpace = 13.0;
-const CGFloat kEndButtonWithBadgeTrailingSpace = 7.0;
+const CGFloat kEndButtonNormalSizeFakeboxWithBadgeTrailingSpace = 7.0;
 const CGFloat kEndButtonOmniboxTrailingSpace = 7.0;
 
 // The constants for the constraints the leading-edge aligned UI elements.
 const CGFloat kHintLabelFakeboxLeadingSpace = 26.0;
 const CGFloat kHintLabelOmniboxLeadingSpace = 20.0;
+
+// The amount to inset the Fakebox from the rest of the modules on Home, when
+// Large Fakebox is enabled.
+const CGFloat kLargeFakeboxHorizontalMargin = 8.0;
 
 // The spacing between the items in the button stack.
 const CGFloat kButtonSpacing = 9.0;
@@ -84,6 +88,9 @@ const CGFloat kCustomizationNewBadgeOffset = 14.0;
 
 // The amount to inset the Fakebox from the rest of the modules on Home.
 CGFloat FakeboxHorizontalMargin(id<UITraitEnvironment> environment) {
+  if (IsSplitToolbarMode(environment) && ShouldEnlargeLogoAndFakebox()) {
+    return kLargeFakeboxHorizontalMargin;
+  }
   return 0.0;
 }
 
@@ -906,9 +913,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 // Returns end button fakebox trailing space depending on fakebox size and
 // whether the new badge is displayed.
 - (CGFloat)endButtonFakeboxTrailingSpace {
-  // If new bade is showing, reduce trailing space.
-  if (_useNewBadgeForLensButton) {
-    return kEndButtonWithBadgeTrailingSpace;
+  // If normal sized fakebox and new bade is showing, reduce trailing space.
+  if (_useNewBadgeForLensButton && !ShouldEnlargeLogoAndFakebox()) {
+    return kEndButtonNormalSizeFakeboxWithBadgeTrailingSpace;
   }
   // Common trailing space.
   return kEndButtonFakeboxTrailingSpace;
