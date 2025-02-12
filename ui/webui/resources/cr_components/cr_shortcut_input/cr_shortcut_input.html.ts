@@ -16,15 +16,14 @@ export function getHtml(this: CrShortcutInputElement) {
       ?invalid="${this.getIsInvalid_()}"
       .errorMessage="${this.getErrorString_()}"
       ?disabled="${this.inputDisabled}"
+      .inputTabindex="${this.readonly_ ? -1 : 0}"
       .value="${this.computeText_()}">
-    <div slot="suffix">
-      <cr-icon-button id="edit" title="$i18n{edit}"
-          aria-label="${this.editButtonAriaLabel}"
-          class="icon-edit no-overlap"
-          ?disabled="${this.inputDisabled}"
-          @click="${this.onEditClick_}">
-      </cr-icon-button>
-    </div>
+    <cr-icon-button id="edit" title="$i18n{edit}"
+        aria-label="${this.editButtonAriaLabel}"
+        slot="suffix" class="icon-edit no-overlap"
+        ?disabled="${this.inputDisabled}"
+        @click="${this.onEditClick_}">
+    </cr-icon-button>
   </cr-input>
 </div>
 <!--_html_template_end_-->`;
