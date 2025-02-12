@@ -8046,6 +8046,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kSettingsAppNotificationSettings)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+    {"sync-point-graph-validation",
+     flag_descriptions::kSyncPointGraphValidationName,
+     flag_descriptions::kSyncPointGraphValidationDescription,
+     kOsLinux | kOsMac | kOsWin | kOsCrOS | kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kSyncPointGraphValidation)},
+
     {"use-dns-https-svcb-alpn", flag_descriptions::kUseDnsHttpsSvcbAlpnName,
      flag_descriptions::kUseDnsHttpsSvcbAlpnDescription,
      kOsLinux | kOsMac | kOsWin | kOsCrOS | kOsAndroid,

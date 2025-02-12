@@ -8268,6 +8268,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "sync-point-graph-validation",
+    "owners": ["vmiura@google.com", "vtelezhnikov@google.com", "chrome-compositor@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "sync-webauthn-credentials",
     "owners": [ "chrome-webauthn@google.com" ],
     "expiry_milestone": 136

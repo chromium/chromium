@@ -1827,6 +1827,9 @@ extern const char kSensitiveContentWhileSwitchingTabsDescription[];
 extern const char kSettingsAppNotificationSettingsName[];
 extern const char kSettingsAppNotificationSettingsDescription[];
 
+extern const char kSyncPointGraphValidationName[];
+extern const char kSyncPointGraphValidationDescription[];
+
 extern const char kReadLaterFlagId[];
 extern const char kReadLaterName[];
 extern const char kReadLaterDescription[];

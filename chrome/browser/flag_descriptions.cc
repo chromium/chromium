@@ -3158,6 +3158,11 @@ const char kSettingsAppNotificationSettingsDescription[] =
     "lacros-chrome browser's notification permission page "
     "and the ChromeOS settings app.";
 
+const char kSyncPointGraphValidationName[] = "Sync point graph validation";
+const char kSyncPointGraphValidationDescription[] =
+    "When enabled, replaces synchronous GPU sync point validation with graph "
+    "based validation";
+
 const char kRecordWebAppDebugInfoName[] = "Record web app debug info";
 const char kRecordWebAppDebugInfoDescription[] =
     "Enables recording additional web app related debugging data to be "

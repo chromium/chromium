@@ -8902,6 +8902,7 @@ from previous Chrome versions.
   <int value="-2058148545" label="LinkLayerPrivacy:enabled"/>
   <int value="-2057927571"
       label="AutofillEnableSendingBcnInGetUploadDetails:enabled"/>
+  <int value="-2057849190" label="SyncPointGraphValidation:enabled"/>
   <int value="-2056436874" label="WebFeedAwareness:disabled"/>
   <int value="-2056351013" label="AutofillUpdatedCardUnmaskPromptUi:enabled"/>
   <int value="-2056198604" label="InterestFeedV2Hearts:disabled"/>
@@ -19610,6 +19611,7 @@ from previous Chrome versions.
   <int value="2137599770" label="enable-win32k-renderer-lockdown"/>
   <int value="2137726794" label="tab-groups-save-v2:disabled"/>
   <int value="2138146331" label="OmniboxVoiceSearchAlwaysVisible:enabled"/>
+  <int value="2138396252" label="SyncPointGraphValidation:disabled"/>
   <int value="2138431623" label="GlobalMediaControlsCrOSUpdatedUI:disabled"/>
   <int value="2138744939" label="ScreenSaverDuration:disabled"/>
   <int value="2139048614" label="UseSurfaceLayerForVideo:enabled"/>
