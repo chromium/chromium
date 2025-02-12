@@ -2090,30 +2090,30 @@ void CompositeEditCommand::AppliedEditing() {
   DCHECK(!IsCommandGroupWrapper());
   EventQueueScope scope;
 
+  LocalFrame* const frame = GetDocument().GetFrame();
+
+  // Don't clear the typing style with this selection change. We do those things
+  // elsewhere if necessary.
+  ChangeSelectionAfterCommand(
+      frame, CorrectedSelectionAfterCommand(EndingSelection(), &GetDocument()),
+      SetSelectionOptions::Builder()
+          .SetIsDirectional(SelectionIsDirectional())
+          .Build());
+
   const UndoStep& undo_step = *GetUndoStep();
   DispatchEditableContentChangedEvents(undo_step.StartingRootEditableElement(),
                                        undo_step.EndingRootEditableElement());
-  LocalFrame* const frame = GetDocument().GetFrame();
-  Editor& editor = frame->GetEditor();
+
   // TODO(editing-dev): Filter empty InputType after spec is finalized.
   DispatchInputEventEditableContentChanged(
       undo_step.StartingRootEditableElement(),
       undo_step.EndingRootEditableElement(), GetInputType(),
       TextDataForInputEvent(), IsComposingFromCommand(this));
 
-  const SelectionInDOMTree& new_selection =
-      CorrectedSelectionAfterCommand(EndingSelection(), &GetDocument());
-
-  // Don't clear the typing style with this selection change. We do those things
-  // elsewhere if necessary.
-  ChangeSelectionAfterCommand(frame, new_selection,
-                              SetSelectionOptions::Builder()
-                                  .SetIsDirectional(SelectionIsDirectional())
-                                  .Build());
-
-  if (!PreservesTypingStyle())
+  Editor& editor = frame->GetEditor();
+  if (!PreservesTypingStyle()) {
     editor.ClearTypingStyle();
-
+  }
   CompositeEditCommand* const last_edit_command = editor.LastEditCommand();
   // Command will be equal to last edit command only in the case of typing
   if (last_edit_command == this) {
@@ -2148,7 +2148,8 @@ void CompositeEditCommand::AppliedEditing() {
           .DidUserChangeContentEditableContent(*element);
     }
   }
-  editor.RespondToChangedContents(new_selection.Anchor());
+  editor.RespondToChangedContents(
+      frame->Selection().GetSelectionInDOMTree().Anchor());
 
   if (auto* rc = GetDocument().GetResourceCoordinator()) {
     rc->SetHadUserEdits();
