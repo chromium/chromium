@@ -234,6 +234,14 @@ bool StructTraits<
   }
 
   {
+    std::u16string pattern;
+    if (!data.ReadPattern(&pattern)) {
+      return false;
+    }
+    out->set_pattern(std::move(pattern));
+  }
+
+  {
     std::u16string placeholder;
     if (!data.ReadPlaceholder(&placeholder)) {
       return false;

@@ -364,6 +364,7 @@ struct FormFieldData {
   FormControlType form_control_type;
   string autocomplete_attribute;
   AutocompleteParsingResult? parsed_autocomplete;
+  mojo_base.mojom.String16 pattern;
   mojo_base.mojom.String16 placeholder;
   mojo_base.mojom.String16 css_classes;
   mojo_base.mojom.String16 aria_label;

@@ -502,6 +502,8 @@ gCrWeb.fill.webFormControlElementToFormField = function(
     field.role = fillConstants.ROLE_ATTRIBUTE_PRESENTATION;
   }
 
+  field.pattern_attribute = element.getAttribute('pattern') ?? '';
+
   field.placeholder_attribute = element.getAttribute('placeholder') || '';
   if (field.placeholder_attribute != null &&
     field.placeholder_attribute.length > fillConstants.MAX_DATA_LENGTH) {

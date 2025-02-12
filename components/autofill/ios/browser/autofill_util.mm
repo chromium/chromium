@@ -367,6 +367,11 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
       field.FindBool("should_autocomplete")
           .value_or(field_data->should_autocomplete()));
 
+  if (const std::string* pattern_attribute =
+          field.FindString("pattern_attribute")) {
+    field_data->set_pattern(base::UTF8ToUTF16(*pattern_attribute));
+  }
+
   if (const std::string* placeholder_attribute =
           field.FindString("placeholder_attribute")) {
     field_data->set_placeholder(base::UTF8ToUTF16(*placeholder_attribute));

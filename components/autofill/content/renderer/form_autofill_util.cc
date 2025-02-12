@@ -160,6 +160,7 @@ constexpr std::string_view kName = "name";
 constexpr std::string_view kNoScript = "noscript";
 constexpr std::string_view kOption = "option";
 constexpr std::string_view kParagraph = "p";
+constexpr std::string_view kPattern = "pattern";
 constexpr std::string_view kPlaceholder = "placeholder";
 constexpr std::string_view kRole = "role";
 constexpr std::string_view kScript = "script";
@@ -1895,6 +1896,10 @@ void WebFormControlElementToFormField(
   if (base::EqualsCaseInsensitiveASCII(GetAttribute<kRole>(element).Utf16(),
                                        "presentation")) {
     field->set_role(FormFieldData::RoleAttribute::kPresentation);
+  }
+
+  if (HasAttribute<kPattern>(element)) {
+    field->set_pattern(GetAttribute<kPattern>(element).Utf16());
   }
 
   field->set_placeholder(GetAttribute<kPlaceholder>(element).Utf16());
