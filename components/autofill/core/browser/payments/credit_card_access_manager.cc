@@ -268,9 +268,7 @@ void CreditCardAccessManager::LogMetricsAndFillFormForServerUnmaskFlows(
           ? PaymentsRpcCardType::kVirtualCard
           : PaymentsRpcCardType::kServerCard,
       flow_type);
-  if (card_->card_info_retrieval_enrollment_state() ==
-          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled &&
-      card_->record_type() == CreditCard::RecordType::kMaskedServerCard &&
+  if (card_->IsEnrolledInCardInfoRetrieval() &&
       (unmask_auth_flow_type == UnmaskAuthFlowType::kOtp ||
        unmask_auth_flow_type == UnmaskAuthFlowType::kOtpFallbackFromFido)) {
     autofill_metrics::LogCardInfoRetrievalEnrolledUnmaskResult(
@@ -933,9 +931,7 @@ void CreditCardAccessManager::OnOtpAuthenticationComplete(
     autofill_metrics::LogServerCardUnmaskResult(
         server_card_unmask_result, PaymentsRpcCardType::kVirtualCard,
         flow_type);
-    if (card_->card_info_retrieval_enrollment_state() ==
-            CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled &&
-        card_->record_type() == CreditCard::RecordType::kMaskedServerCard) {
+    if (card_->IsEnrolledInCardInfoRetrieval()) {
       autofill_metrics::LogCardInfoRetrievalEnrolledUnmaskResult(
           card_info_retrieval_enrolled_card_unmask_result);
     }
@@ -1352,6 +1348,10 @@ void CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived(
       autofill_metrics::LogServerCardUnmaskResult(
           ServerCardUnmaskResult::kFlowCancelled, card_->record_type(),
           ServerCardUnmaskFlowType::kRiskBased);
+      if (card_->IsEnrolledInCardInfoRetrieval()) {
+        autofill_metrics::LogCardInfoRetrievalEnrolledUnmaskResult(
+            CardInfoRetrievalEnrolledUnmaskResult::kFlowCancelled);
+      }
       Reset();
       break;
     case Result::kError:
@@ -1367,6 +1367,10 @@ void CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived(
               ? PaymentsRpcCardType::kVirtualCard
               : PaymentsRpcCardType::kServerCard,
           ServerCardUnmaskFlowType::kRiskBased);
+      if (card_->IsEnrolledInCardInfoRetrieval()) {
+        autofill_metrics::LogCardInfoRetrievalEnrolledUnmaskResult(
+            CardInfoRetrievalEnrolledUnmaskResult::kAuthenticationError);
+      }
       Reset();
       break;
     case Result::kVirtualCardRetrievalError:

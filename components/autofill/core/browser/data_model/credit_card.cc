@@ -846,6 +846,12 @@ bool CreditCard::IsEmpty(const std::string& app_locale) const {
   return types.empty();
 }
 
+bool CreditCard::IsEnrolledInCardInfoRetrieval() const {
+  return card_info_retrieval_enrollment_state() ==
+             CardInfoRetrievalEnrollmentState::kRetrievalEnrolled &&
+         record_type() == RecordType::kMaskedServerCard;
+}
+
 bool CreditCard::IsValid() const {
   return HasValidCardNumber() && HasValidExpirationDate();
 }
