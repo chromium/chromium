@@ -228,7 +228,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
     }
   }
 
-  ash_shell_init_ = std::make_unique<AshShellInit>();
+  ash_shell_init_ = std::make_unique<AshShellInit>(
+      CHECK_DEREF(g_browser_process->local_state()));
   ash::Shell::Get()
       ->login_unlock_throughput_recorder()
       ->post_login_deferred_task_runner()

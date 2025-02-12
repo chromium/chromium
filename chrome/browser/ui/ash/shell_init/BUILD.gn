@@ -14,7 +14,6 @@ static_library("shell_init") {
     "//ash",
     "//ash/constants",
     "//ash/quick_pair/keyed_service",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/ash/shell_delegate",
