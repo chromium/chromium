@@ -1730,14 +1730,12 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, CorsError) {
   idp_server()->SetConfigResponseDetails(config_details);
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern("Server did not send the correct CORS headers.");
   std::string expected_error =
       "IdentityCredentialError: Error retrieving a token.";
   EXPECT_EQ(expected_error,
             ExtractJsError(EvalJs(shell(), GetBasicRequestString())));
   ASSERT_TRUE(console_observer.Wait());
-  std::string expected_message =
-      "Server did not send the correct CORS headers.";
-  EXPECT_EQ(expected_message, console_observer.GetMessageAt(1u));
 }
 
 // Verify that auto re-authn can be triggered if the Rp is on the
@@ -1791,8 +1789,6 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest,
       "The 'mediation' parameter should be used outside of 'identity' in the "
       "FedCM API call.");
   EXPECT_EQ(std::string(kToken), EvalJs(shell(), script));
-  EXPECT_TRUE(base::MatchPattern(console_observer.GetMessageAt(0u),
-                                 "*The 'mediation' parameter*"));
   ASSERT_TRUE(console_observer.Wait());
 }
 
@@ -1857,8 +1853,6 @@ IN_PROC_BROWSER_TEST_F(WebIdModeBrowserTest, UseModeButtonInsteadOfActive) {
       "The mode button/widget are renamed to active/passive respectively and "
       "will be deprecated soon.");
   EXPECT_EQ(std::string(kToken), EvalJs(shell(), script));
-  EXPECT_TRUE(base::MatchPattern(console_observer.GetMessageAt(0u),
-                                 "*The mode button*"));
   ASSERT_TRUE(console_observer.Wait());
 }
 
