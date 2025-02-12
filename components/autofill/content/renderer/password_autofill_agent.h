@@ -546,12 +546,14 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // This function attempts to fill `username_element` and `password_element`
   // with values from `fill_data`. The `username_element` and `password_element`
-  // will only have the suggestedValue set. If a match is found, return true and
-  // Returns true if the password is filled.
+  // will only have the suggestedValue set. Notifies the browser about
+  // successful filling based on `notify_browser_of_successful_filling`. Returns
+  // true if filling was successful.
   bool FillUserNameAndPassword(blink::WebInputElement username_element,
                                blink::WebInputElement password_element,
                                const PasswordFormFillData& fill_data,
-                               RendererSavePasswordProgressLogger* logger);
+                               RendererSavePasswordProgressLogger* logger,
+                               bool notify_browser_of_successful_filling);
 
   // Logs whether a username value that was prefilled by the website was
   // overridden when trying to fill with an existing credential. This logs

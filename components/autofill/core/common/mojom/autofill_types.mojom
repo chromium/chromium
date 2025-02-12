@@ -483,6 +483,7 @@ struct PasswordFormFillData {
   array<PasswordAndMetadata> additional_logins;
   bool wait_for_username;
   array<FieldRendererId> suggestion_banned_fields;
+  bool notify_browser_of_successful_filling;
 };
 
 // autofill::PasswordFormGenerationData
