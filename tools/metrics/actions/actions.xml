@@ -12203,6 +12203,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Disabled">
+  <owner>iwells@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged anytime glic is disabled, regardless of source.
+  </description>
+</action>
+
+<action name="Glic.Enabled">
+  <owner>iwells@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged anytime glic is enabled, regardless of source.
+  </description>
+</action>
+
 <action name="GlicOsEntrypoint.ContextMenuSelection.Exit">
   <owner>agale@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>

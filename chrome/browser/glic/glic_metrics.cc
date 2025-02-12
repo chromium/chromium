@@ -9,6 +9,7 @@
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_fre_controller.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -132,6 +133,12 @@ GlicMetrics::GlicMetrics(Profile* profile) : profile_(profile) {
       base::BindRepeating(&GlicMetrics::OnImpressionTimerFired,
                           base::Unretained(this)));
   source_id_ = ukm::NoURLSourceId();
+
+  is_enabled_ = GlicEnabling::IsEnabledForProfile(profile_);
+  pref_registrar_.Init(profile_->GetPrefs());
+  pref_registrar_.Add(prefs::kGlicSettingsPolicy,
+                      base::BindRepeating(&GlicMetrics::OnEnabledChanged,
+                                          base::Unretained(this)));
 }
 GlicMetrics::~GlicMetrics() = default;
 
@@ -284,6 +291,20 @@ ukm::SourceId GlicMetrics::GetSourceId() {
     return web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   }
   return source_id_;
+}
+
+void GlicMetrics::OnEnabledChanged() {
+  bool is_enabled = GlicEnabling::IsEnabledForProfile(profile_);
+  if (is_enabled == is_enabled_) {
+    // No change, early exit.
+    return;
+  }
+  is_enabled_ = is_enabled;
+  if (is_enabled_) {
+    base::RecordAction(base::UserMetricsAction("Glic.Enabled"));
+  } else {
+    base::RecordAction(base::UserMetricsAction("Glic.Disabled"));
+  }
 }
 
 }  // namespace glic

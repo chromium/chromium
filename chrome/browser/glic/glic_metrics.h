@@ -9,6 +9,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enums.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class Profile;
@@ -56,6 +57,9 @@ class GlicMetrics {
   // Returns the source id for the targeted tab, or the untargeted source id.
   ukm::SourceId GetSourceId();
 
+  // Called when enabled changes.
+  void OnEnabledChanged();
+
   // These members are cleared in OnResponseStopped.
   base::TimeTicks input_submitted_time_;
   mojom::WebClientMode input_mode_;
@@ -79,6 +83,8 @@ class GlicMetrics {
   raw_ptr<GlicWindowController> window_controller_;
   raw_ptr<GlicFocusedTabManager> tab_manager_;
   raw_ptr<Profile> profile_;
+  bool is_enabled_ = false;
+  PrefChangeRegistrar pref_registrar_;
 };
 
 }  // namespace glic
