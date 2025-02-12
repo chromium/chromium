@@ -5,17 +5,33 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 
 #include "base/functional/concurrent_closures.h"
+#include "base/i18n/char_iterator.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
 namespace optimization_guide {
 
 namespace {
+
+// The maximum limit for computing the metrics.
+constexpr size_t kMaxWordLimit = 100000;
+constexpr size_t kMaxNodeLimit = 100000;
+
+struct ContentNodeMetrics {
+  size_t word_count = 0;
+  size_t node_count = 0;
+};
 
 void ApplyOptionsOverridesForWebContents(
     content::WebContents* web_contents,
@@ -76,39 +92,85 @@ std::optional<optimization_guide::RenderFrameInfo> GetRenderFrameInfo(
   return render_frame_info;
 }
 
-int CountContentNodes(const optimization_guide::proto::ContentNode& node) {
-  int node_count = 1;
-  for (const auto& child : node.children_nodes()) {
-    node_count += CountContentNodes(child);
+// Computes the metrics in one pass.
+void ComputeContentNodeMetrics(
+    const optimization_guide::proto::ContentNode& content_node,
+    ContentNodeMetrics* metrics) {
+  bool is_previous_char_whitespace = true;
+  for (base::i18n::UTF8CharIterator iter(
+           content_node.content_attributes().text_data().text_content());
+       metrics->word_count < kMaxWordLimit && !iter.end(); iter.Advance()) {
+    bool is_current_char_whitespace = base::IsUnicodeWhitespace(iter.get());
+    if (is_previous_char_whitespace && !is_current_char_whitespace) {
+      // Count the start of the word.
+      ++metrics->word_count;
+    }
+    is_previous_char_whitespace = is_current_char_whitespace;
   }
-  return node_count;
+  metrics->node_count += 1;
+
+  for (const auto& child : content_node.children_nodes()) {
+    ComputeContentNodeMetrics(child, metrics);
+    if (metrics->node_count > kMaxNodeLimit) {
+      break;
+    }
+  }
+}
+
+void RecordPageContentExtractionMetrics(
+    base::TimeDelta total_latency,
+    ukm::SourceId source_id,
+    optimization_guide::proto::AnnotatedPageContent proto) {
+  ContentNodeMetrics metrics;
+  auto total_size = proto.ByteSizeLong();
+  base::ElapsedTimer elapsed;
+
+  ComputeContentNodeMetrics(proto.root_node(), &metrics);
+  UMA_HISTOGRAM_TIMES("OptimizationGuide.AIPageContent.TotalLatency",
+                      total_latency);
+  // 10KB bucket up to 5MB.
+  // TODO(crbug.com/392115749): Use provided metrics when available.
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      "OptimizationGuide.AnnotatedPageContent.TotalSize2", total_size / 1024,
+      10, 5000, 50);
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      "OptimizationGuide.AnnotatedPageContent.TotalNodeCount",
+      metrics.node_count, 1, kMaxNodeLimit, 50);
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      "OptimizationGuide.AnnotatedPageContent.TotalWordCount",
+      metrics.word_count, 1, kMaxWordLimit, 50);
+
+  ukm::builders::OptimizationGuide_AnnotatedPageContent(source_id)
+      .SetTotalSize(ukm::GetExponentialBucketMinForBytes(total_size))
+      .SetExtractionLatency(ukm::GetExponentialBucketMinForUserTiming(
+          total_latency.InMilliseconds()))
+      .SetWordsCount(ukm::GetExponentialBucketMinForBytes(metrics.word_count))
+      .SetNodeCount(ukm::GetExponentialBucketMinForBytes(metrics.node_count))
+      .Record(ukm::UkmRecorder::Get());
+
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "OptimizationGuide.AnnotatedPageContent.ComputeMetricsLatency",
+      elapsed.Elapsed(), base::Microseconds(1), base::Milliseconds(5), 50);
 }
 
 void OnGotAIPageContentForAllFrames(
-    base::TimeTicks start_time,
+    base::ElapsedTimer elapsed_timer,
     content::GlobalRenderFrameHostToken main_frame_token,
+    ukm::SourceId source_id,
     std::unique_ptr<optimization_guide::AIPageContentMap> page_content_map,
     OnAIPageContentDone done_callback) {
   optimization_guide::proto::AnnotatedPageContent proto;
-  if (optimization_guide::ConvertAIPageContentToProto(
+  if (!optimization_guide::ConvertAIPageContentToProto(
           main_frame_token, *page_content_map,
           base::BindRepeating(&GetRenderFrameInfo), &proto)) {
-    UMA_HISTOGRAM_TIMES("OptimizationGuide.AIPageContent.TotalLatency",
-                        base::TimeTicks::Now() - start_time);
-    // 10KB bucket up to 5MB.
-    // TODO(crbug.com/392115749): Use provided metrics when available.
-    UMA_HISTOGRAM_CUSTOM_COUNTS(
-        "OptimizationGuide.AnnotatedPageContent.TotalSize2",
-        proto.ByteSizeLong() / 1024, 10, 5000, 50);
-    auto node_count = CountContentNodes(proto.root_node());
-    UMA_HISTOGRAM_CUSTOM_COUNTS(
-        "OptimizationGuide.AnnotatedPageContent.TotalNodeCount", node_count, 1,
-        100000, 50);
-    std::move(done_callback).Run(std::move(proto));
+    std::move(done_callback).Run(std::nullopt);
     return;
   }
-
-  std::move(done_callback).Run(std::nullopt);
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(RecordPageContentExtractionMetrics,
+                     elapsed_timer.Elapsed(), source_id, proto));
+  std::move(done_callback).Run(std::move(proto));
 }
 
 void OnGotAIPageContentForFrame(
@@ -193,8 +255,9 @@ void GetAIPageContent(content::WebContents* web_contents,
 
   std::move(concurrent)
       .Done(base::BindOnce(
-          &OnGotAIPageContentForAllFrames, base::TimeTicks::Now(),
+          &OnGotAIPageContentForAllFrames, base::ElapsedTimer(),
           web_contents->GetPrimaryMainFrame()->GetGlobalFrameToken(),
+          web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(),
           std::move(page_content_map), std::move(done_callback)));
 }
 
