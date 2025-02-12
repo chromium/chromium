@@ -57,6 +57,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/ai/AiAssistantService.java",
   "java/src/org/chromium/chrome/browser/ai/PageSummaryButtonController.java",
   "java/src/org/chromium/chrome/browser/ai/SystemAiProvider.java",
+  "java/src/org/chromium/chrome/browser/ai/SystemAiProviderFactory.java",
   "java/src/org/chromium/chrome/browser/ai/SystemAiProviderUpstreamImpl.java",
   "java/src/org/chromium/chrome/browser/announcement/AnnouncementNotificationManager.java",
   "java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
