@@ -42,10 +42,6 @@ class CollaborationController {
     // for result.
     kAuthenticating,
 
-    // Waiting for tab group sync service and data sharing service to be ready
-    // to use.
-    kWaitingForServicesToInitialize,
-
     // Authentication is completed. Controller will check requirements for each
     // specific flows.
     kCheckingFlowRequirements,
@@ -171,7 +167,7 @@ class CollaborationController {
   StateId GetStateForTesting();
 
  private:
-  static constexpr std::array<std::pair<StateId, StateId>, 29>
+  static constexpr std::array<std::pair<StateId, StateId>, 27>
       kValidTransitions = {{
           // kPending transitions to:
           //
@@ -181,7 +177,7 @@ class CollaborationController {
           //   complete successfully and authentication status is valid.
           //   kError: An error occurred during initialization.
           {StateId::kPending, StateId::kAuthenticating},
-          {StateId::kPending, StateId::kWaitingForServicesToInitialize},
+          {StateId::kPending, StateId::kCheckingFlowRequirements},
           {StateId::kPending, StateId::kError},
 
           // kAuthenticating transitions to:
@@ -190,19 +186,9 @@ class CollaborationController {
           //   completed and verified.
           //   kCancel: After the user cancels the process.
           //   kError: An error occurred during authentication.
-          {StateId::kAuthenticating, StateId::kWaitingForServicesToInitialize},
+          {StateId::kAuthenticating, StateId::kCheckingFlowRequirements},
           {StateId::kAuthenticating, StateId::kCancel},
           {StateId::kAuthenticating, StateId::kError},
-
-          // kWaitingForServicesToInitialize transition to:
-          //
-          //   kCheckingFlowRequirements: After all services finish
-          //   initializing.
-          //   kError: An error occurred while waiting for service
-          //   initialization.
-          {StateId::kWaitingForServicesToInitialize,
-           StateId::kCheckingFlowRequirements},
-          {StateId::kWaitingForServicesToInitialize, StateId::kError},
 
           // kCheckingFlowRequirements transition to:
           //
