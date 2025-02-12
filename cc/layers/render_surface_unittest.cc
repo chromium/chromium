@@ -131,7 +131,7 @@ TEST(RenderSurfaceTest, VerifySurfaceChangesAreTrackedProperly) {
   EXECUTE_AND_VERIFY_SURFACE_DID_NOT_CHANGE(
       render_surface->SetDrawOpacity(0.5f));
   EXECUTE_AND_VERIFY_SURFACE_DID_NOT_CHANGE(
-      render_surface->SetDrawTransform(dummy_matrix));
+      render_surface->SetDrawTransform(dummy_matrix, gfx::Vector2dF()));
 }
 
 TEST(RenderSurfaceTest, SanityCheckSurfaceCreatesCorrectSharedQuadState) {
@@ -158,7 +158,7 @@ TEST(RenderSurfaceTest, SanityCheckSurfaceCreatesCorrectSharedQuadState) {
   render_surface->SetContentRectForTesting(content_rect);
   render_surface->SetClipRect(clip_rect);
   render_surface->SetDrawOpacity(1.f);
-  render_surface->SetDrawTransform(origin);
+  render_surface->SetDrawTransform(origin, gfx::Vector2dF());
 
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData append_quads_data;
