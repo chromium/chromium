@@ -377,15 +377,13 @@ class ChromiumDepGraph {
         PROPERTY_OVERRIDES.each { id, overrides ->
             DependencyDescription dep = dependencies.get(id)
             if (dep) {
-                // Null-check is required since isShipped is a boolean. This
-                // check must come after all the deps are resolved instead of in
-                // customizeDep, since otherwise it gets overwritten.
+                // Null-check is required since isShipped is a boolean. This check must come after all the deps are
+                // resolved instead of in customizeDep, since otherwise it gets overwritten.
                 if (overrides.isShipped != null) {
                     dep.isShipped = overrides.isShipped
                 }
-                // if overrideLatest is true, set it recursively on the dep and
-                // all its children. This makes it easier to manage since you do
-                // not have to set it on a whole set of old deps.
+                // If overrideLatest is true, set it recursively on the dep and all its children. This is convenient
+                // since you do not have to set it on a whole set of old deps.
                 if (overrides.overrideLatest) {
                     recursivelyOverrideLatestVersion(dep)
                 }
@@ -760,9 +758,8 @@ class ChromiumDepGraph {
         String group, name, version, extension, displayName, description, url
         List<LicenseSpec> licenses
         String fileName, fileUrl
-        // |repoUrl| is the url to the repo that hosts this dep's artifact
-        // (|fileUrl|). Basically |fileUrl|.startsWith(|repoUrl|). |url| is the
-        // project homepage as supplied by the developer.
+        // |repoUrl| is the url to the repo that hosts this dep's artifact (|fileUrl|). Basically
+        // |fileUrl|.startsWith(|repoUrl|). |url| is the project homepage as supplied by the developer.
         String repoUrl
         // The local directory name to store the files like artifact, license file, 3pp subdirectory, and etc. Must be
         // lowercase since 3pp uses the directory name as part of the CIPD names. However CIPD does not allow uppercase
@@ -775,11 +772,12 @@ class ChromiumDepGraph {
         List<String> children
         String cipdSuffix
         String cpePrefix
-        // When set overrides the version downloaded by the 3pp fetch script to
-        // be, instead of the latest available, the resolved version by gradle
-        // in this run.
+        // The fetch_all.py normally fetches the latest version instead of the declared version in build.gradle. When
+        // overrideLatest is set to true, the actual version resolved by gradle (based on what is declared in
+        // build.gradle as well as the version other dependencies need) will be used.
         Boolean overrideLatest
-        // When set, consider only versions that contain this string.
+        // When set, //third_party/android_deps/fetch_common.py will only versions that contain this string to be valid.
+        // This variable is not used in groovy code.
         String versionFilter
 
     }
