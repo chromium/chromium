@@ -23,6 +23,7 @@
 #include "ash/webui/sanitize_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/callback.h"
@@ -75,6 +76,7 @@
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
 #include "chrome/browser/ui/ash/network/network_connect_delegate.h"
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
+#include "chrome/browser/ui/ash/network/network_portal_signin_controller.h"
 #include "chrome/browser/ui/ash/new_window/chrome_new_window_client.h"
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_client_impl.h"
@@ -406,6 +408,9 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
       std::make_unique<policy::DisplayRotationDefaultHandler>());
   display_settings_handler_->Start();
 
+  ash::NetworkPortalSigninController::Init(
+      CHECK_DEREF(g_browser_process->local_state()));
+
   // Do not create a NetworkPortalNotificationController for tests since the
   // NetworkPortalDetector instance may be replaced.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -522,6 +527,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   quick_insert_client_.reset();
   ash_web_view_factory_.reset();
   network_portal_notification_controller_.reset();
+  ash::NetworkPortalSigninController::Shutdown();
   display_settings_handler_.reset();
   media_client_.reset();
   login_screen_client_.reset();

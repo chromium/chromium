@@ -30,7 +30,6 @@ static_library("network") {
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/profiles:signin_profile_handler",
