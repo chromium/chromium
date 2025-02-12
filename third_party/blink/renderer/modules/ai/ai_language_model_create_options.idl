@@ -3,53 +3,34 @@
 // found in the LICENSE file.
 
 // https://github.com/webmachinelearning/prompt-api
-// TODO(crbug.com/394123703): Expand AILM abbreviation to AILanguageModel.
 
 // The argument to the prompt() method and others like it
-typedef (AILMPromptLine or sequence<AILMPromptLine>) AILanguageModelPromptInput;
-
-// Initial prompt lines
-dictionary AILMInitialPromptLineDict {
-  required AILanguageModelInitialPromptRole role;
-  required AILMPromptContent content;
-};
-typedef (
-  DOMString                     // interpreted as { role: "user", content: { type: "text", data: providedValue } }
-  or AILMPromptContent          // interpreted as { role: "user", content: providedValue }
-  or AILMInitialPromptLineDict  // canonical form
-) AILMInitialPromptLine;
+typedef (AILanguageModelPrompt or sequence<AILanguageModelPrompt>) AILanguageModelPromptInput;
 
 // Prompt lines
-dictionary AILMPromptLineDict {
-  required AILanguageModelPromptRole role;
-  required AILMPromptContent content;
-};
 typedef (
-  DOMString               // interpreted as { role: "user", content: { type: "text", data: providedValue } }
-  or AILMPromptContent    // interpreted as { role: "user", content: providedValue }
-  or AILMPromptLineDict   // canonical form
-) AILMPromptLine;
+  DOMString                     // interpreted as { role: "user", type: "text", content: providedValue }
+  or AILanguageModelPromptDict  // canonical form
+) AILanguageModelPrompt;
 
 // Prompt content inside the lines
-dictionary AILMPromptContentDict {
-  required AILanguageModelPromptType type;
-  required AILanguageModelPromptData data;
+dictionary AILanguageModelPromptDict {
+  AILanguageModelPromptRole role = "user";
+  AILanguageModelPromptType type = "text";
+  required AILanguageModelPromptContent content;
 };
-typedef (DOMString or AILMPromptContentDict) AILMPromptContent;
-// TODO(crbug.com/394123703): Use ImageBitmapSource and include BufferSource.
-typedef (HTMLImageElement or
-         SVGImageElement or
-         Blob or
-         ImageData or
-         ImageBitmap or
-         AudioBuffer or
-         HTMLAudioElement or
-         DOMString) AILanguageModelPromptData;
+
+enum AILanguageModelPromptRole { "system", "user", "assistant" };
+
 enum AILanguageModelPromptType { "text", "image", "audio" };
 
-// Prompt roles inside the lines
-enum AILanguageModelInitialPromptRole { "system", "user", "assistant" };
-enum AILanguageModelPromptRole { "user", "assistant" };
+typedef (
+  ImageBitmapSource
+  or AudioBuffer
+  or HTMLAudioElement
+  or BufferSource
+  or DOMString
+) AILanguageModelPromptContent;
 
 dictionary AILanguageModelCreateCoreOptions {
   [EnforceRange] unsigned long topK;
@@ -62,5 +43,5 @@ dictionary AILanguageModelCreateOptions : AILanguageModelCreateCoreOptions {
   AbortSignal signal;
   AICreateMonitorCallback monitor;
   DOMString systemPrompt;
-  sequence<AILMInitialPromptLine> initialPrompts;
+  sequence<AILanguageModelPrompt> initialPrompts;
 };
