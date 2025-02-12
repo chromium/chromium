@@ -605,6 +605,15 @@ void BrowserAccessibilityManagerWin::FireWinAccessibilityEvent(
   if (!hwnd)
     return;
 
+  // Ensure that IA2_EVENT_TEXT events are fired on IAccessibleText
+  // objects. Text leaf nodes do not support IAccessibleText/HyperText,
+  // but their parents do.
+  if (node->IsText() && (win_event_type == IA2_EVENT_TEXT_CARET_MOVED ||
+                         win_event_type == IA2_EVENT_TEXT_ATTRIBUTE_CHANGED)) {
+    node = node->PlatformGetParent();
+    DCHECK(node);  // A text node will always have a non-null parent.
+  }
+
   // Pass the negation of this node's unique id in the |child_id|
   // argument to NotifyWinEvent; the AT client will then call get_accChild
   // on the HWND's accessibility object and pass it that same id, which

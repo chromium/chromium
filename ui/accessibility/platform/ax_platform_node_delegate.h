@@ -200,8 +200,14 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // field.
   virtual std::u16string GetValueForControl() const;
 
-  // See `AXNode::GetUnignoredSelection`.
+  // Gets the unignored selection from the accessibility tree, meaning the
+  // selection whose endpoints are on unignored nodes. (An "ignored" node is a
+  // node that is not exposed to platform APIs: See `IsIgnored`.)
   virtual const AXSelection GetUnignoredSelection() const;
+  // Gets an unignored selection but the endpoints are adjusted so that they
+  // never fall on text objects, but are moved to the text nodes' parents
+  // instead, for compatibility with Text/Hypertext interfaces uses for IA2/ATK.
+  virtual const AXSelection GetHypertextSelection() const;
 
   // Creates a text position rooted at this object if it's a leaf node, or a
   // tree position otherwise.

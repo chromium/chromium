@@ -38,7 +38,11 @@ class AX_EXPORT AXSelection final {
   int focus_offset = ax::mojom::kNoSelectionOffset;
   ax::mojom::TextAffinity focus_affinity;
 
-  AXSelection& ToUnignoredSelection();
+  // Returns a selection that does not use ignored nodes for endpoints.
+  // If non_text_endpoints is true, returns an unignored selection but the
+  // endpoints are adjusted so that they never fall on text objects, but are
+  // moved to the text nodes' parents instead.
+  AXSelection& ToUnignoredSelection(bool non_text_endpoints = false);
 
  private:
   AXTreeID tree_id_;

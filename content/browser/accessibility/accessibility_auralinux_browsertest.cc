@@ -1821,8 +1821,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
       </html>)HTML");
 
   AtkObject* document = GetRendererAccessible();
-  AtkObject* section = atk_object_ref_accessible_child(document, 0);
-  AtkObject* edit = atk_object_ref_accessible_child(section, 0);
+  AtkObject* edit = atk_object_ref_accessible_child(document, 0);
   ASSERT_TRUE(IsAtkObjectEditable(edit));
   ASSERT_FALSE(IsAtkObjectFocused(edit));
 
@@ -1842,7 +1841,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   g_free(selected);
 
   g_object_unref(edit);
-  g_object_unref(section);
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
@@ -1946,7 +1944,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
           <html>
           <body>
             <div contenteditable="true">Text inside field</div>
-            anonymous block
+            <div>uneditable</div>
           </body>
           </html>)HTML"));
 
@@ -1954,26 +1952,22 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   EXPECT_EQ(2, atk_object_get_n_accessible_children(document));
 
   AtkObject* div_element = atk_object_ref_accessible_child(document, 0);
-  EXPECT_EQ(1, atk_object_get_n_accessible_children(ATK_OBJECT(div_element)));
-  AtkObject* text = atk_object_ref_accessible_child(ATK_OBJECT(div_element), 0);
-  AtkObject* anonymous_block = atk_object_ref_accessible_child(document, 1);
+  EXPECT_EQ(1, atk_object_get_n_accessible_children(div_element));
 
-  bool saw_caret_move_in_text = false;
-  ScopedGSignal caret_move_in_text_signal(
-      text, "text-caret-moved",
-      AdaptGCallbackToSetFlag(&saw_caret_move_in_text));
+  AtkObject* uneditable_block = atk_object_ref_accessible_child(document, 1);
 
   bool saw_caret_move_in_div = false;
+  bool saw_caret_move_in_uneditable_block = false;
+  bool saw_caret_move_in_document = false;
+
   ScopedGSignal caret_move_in_div_signal(
       div_element, "text-caret-moved",
       AdaptGCallbackToSetFlag(&saw_caret_move_in_div));
 
-  bool saw_caret_move_in_anonymous_block = false;
-  ScopedGSignal caret_move_in_anonymous_block_signal(
-      anonymous_block, "text-caret-moved",
-      AdaptGCallbackToSetFlag(&saw_caret_move_in_anonymous_block));
+  ScopedGSignal caret_move_in_uneditable_block_signal(
+      uneditable_block, "text-caret-moved",
+      AdaptGCallbackToSetFlag(&saw_caret_move_in_uneditable_block));
 
-  bool saw_caret_move_in_document = false;
   ScopedGSignal caret_move_in_document_signal(
       document, "text-caret-moved",
       AdaptGCallbackToSetFlag(&saw_caret_move_in_document));
@@ -1994,8 +1988,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   // We should see the event happen in div and not the static text element.
   EXPECT_TRUE(saw_caret_move_in_div);
-  EXPECT_FALSE(saw_caret_move_in_text);
-  EXPECT_FALSE(saw_caret_move_in_anonymous_block);
+  EXPECT_FALSE(saw_caret_move_in_uneditable_block);
   EXPECT_FALSE(saw_caret_move_in_document);
 
   saw_caret_move_in_div = false;
@@ -2003,17 +1996,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   AccessibilityNotificationWaiter document_selection_waiter(
       shell()->web_contents(), ui::kAXModeComplete,
       ax::mojom::Event::kDocumentSelectionChanged);
-  atk_text_set_caret_offset(ATK_TEXT(anonymous_block), 3);
+  atk_text_set_caret_offset(ATK_TEXT(uneditable_block), 3);
   ASSERT_TRUE(document_selection_waiter.WaitForNotification());
 
   EXPECT_FALSE(saw_caret_move_in_div);
-  EXPECT_FALSE(saw_caret_move_in_text);
-  EXPECT_FALSE(saw_caret_move_in_anonymous_block);
-  EXPECT_TRUE(saw_caret_move_in_document);
+  EXPECT_TRUE(saw_caret_move_in_uneditable_block);
+  EXPECT_FALSE(saw_caret_move_in_document);
 
   g_object_unref(div_element);
-  g_object_unref(anonymous_block);
-  g_object_unref(text);
+  g_object_unref(uneditable_block);
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
