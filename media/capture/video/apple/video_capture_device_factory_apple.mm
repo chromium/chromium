@@ -33,6 +33,10 @@
 #import "media/capture/video/mac/video_capture_metrics_mac.h"
 #endif
 
+BASE_FEATURE(kVideoCaptureDeviceFactoryAppleLogging,
+             "VideoCaptureDeviceFactoryAppleLogging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 void EnsureRunsOnCFRunLoopEnabledThread() {
@@ -148,9 +152,20 @@ void VideoCaptureDeviceFactoryApple::GetDevicesInfo(
   std::vector<VideoCaptureDeviceInfo> devices_info;
   DVLOG(1) << "Enumerating video capture devices using AVFoundation";
 
+  const bool debug_logging_enabled =
+      base::FeatureList::IsEnabled(kVideoCaptureDeviceFactoryAppleLogging);
+
   for (AVCaptureDevice* device in devices) {
     if ([device hasMediaType:AVMediaTypeVideo] ||
         [device hasMediaType:AVMediaTypeMuxed]) {
+      if (debug_logging_enabled) {
+        LOG(ERROR) << "\ndevice: "
+                   << base::SysNSStringToUTF8(device.localizedName) << "\n"
+                   << "id: " << base::SysNSStringToUTF8(device.uniqueID) << "\n"
+                   << "type: " << device.transportType << "\n"
+                   << "suspended: " << (device.suspended ? "true" : "false");
+      }
+
       if (device.suspended) {
         continue;
       }
@@ -177,12 +192,19 @@ void VideoCaptureDeviceFactoryApple::GetDevicesInfo(
           base::SysNSStringToUTF8(device.localizedName), device_id, model_id,
           capture_api, control_support, device_transport_type);
       if (IsDeviceBlocked(descriptor)) {
+        if (debug_logging_enabled) {
+          LOG(ERROR) << "Device is blocklisted";
+        }
         continue;
       }
       devices_info.emplace_back(descriptor);
 
       // Get supported formats
       devices_info.back().supported_formats = GetDeviceSupportedFormats(device);
+      if (debug_logging_enabled) {
+        LOG(ERROR) << "supported formats: "
+                   << devices_info.back().supported_formats.size();
+      }
     }
   }
 
