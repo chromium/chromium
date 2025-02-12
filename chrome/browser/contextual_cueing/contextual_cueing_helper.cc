@@ -97,7 +97,9 @@ tabs::GlicNudgeController* ContextualCueingHelper::GetGlicNudgeController() {
 
 void ContextualCueingHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame()) {
+  if (!navigation_handle->IsInMainFrame() || navigation_handle->IsErrorPage() ||
+      !navigation_handle->HasCommitted() ||
+      !navigation_handle->ShouldUpdateHistory()) {
     return;
   }
   if (PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
