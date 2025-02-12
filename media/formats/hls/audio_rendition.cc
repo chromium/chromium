@@ -61,8 +61,15 @@ ParseStatus::Or<absl::monostate> AudioRenditionGroup::AddRendition(
   }
 
   auto name = std::string(tag.name.Str());
-  if (renditions_map_.contains(name)) {
-    return ParseStatusCode::kRenditionGroupHasDuplicateRenditionNames;
+  while (renditions_map_.contains(name)) {
+    // TODO(crbug.com/395949828): According to the spec:
+    // "All EXT-X-MEDIA tags in the same Group MUST have different NAME
+    // attributes."
+    // However, it's fairly common for this to not be the case on the web at
+    // large, and safari's implementation will accept manifests with duplicate
+    // rendition names in a single group. We don't really use the name outside
+    // of the key for storage, so we can just append a number to it and be ok.
+    name += '0';
   }
 
   std::optional<std::string> language;
@@ -103,16 +110,6 @@ ParseStatus::Or<absl::monostate> AudioRenditionGroup::AddRendition(
   }
 
   return absl::monostate();
-}
-
-const AudioRendition* AudioRenditionGroup::GetRendition(
-    std::string_view name) const {
-  auto iter = renditions_map_.find(name);
-  if (iter == renditions_map_.end()) {
-    return nullptr;
-  }
-
-  return iter->second;
 }
 
 }  // namespace media::hls
