@@ -160,9 +160,8 @@ class GraphBuilderCoreml {
     ~WeightsFileHandle();
 
     // Write a single weight item.
-    base::expected<uint64_t, mojom::ErrorPtr> Write(
-        base::span<const uint8_t> bytes,
-        OperandDataType data_type);
+    base::expected<CoreML::Specification::MILSpec::Value, mojom::ErrorPtr>
+    Write(uint64_t operand_id, const WebNNConstantOperand& constant_operand);
 
     base::expected<std::unique_ptr<ScopedWeightItem>, mojom::ErrorPtr>
     CreateScopedWeightItem(OperandDataType data_type, size_t byte_size);
@@ -189,6 +188,8 @@ class GraphBuilderCoreml {
     base::TimeDelta weights_write_time_;
     bool has_error_ = false;
     bool finalized_ = false;
+    // Maps operand IDs to offsets in the weight file.
+    base::flat_map<uint64_t, uint64_t> constant_offsets_;
   };
 
   GraphBuilderCoreml(
@@ -203,9 +204,6 @@ class GraphBuilderCoreml {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> BuildCoreMLModel();
 
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> SerializeModel();
-
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> WriteImmediateWeights(
-      CoreML::Specification::MILSpec::Block& block);
 
   // No further methods may be called on this class after calling this method.
   [[nodiscard]] std::unique_ptr<Result> FinishAndTakeResult();
@@ -502,14 +500,6 @@ class GraphBuilderCoreml {
       const mojom::Where& operation,
       CoreML::Specification::MILSpec::Block& block);
 
-  // Add constants as immediate values in the model file.
-  void AddConstantImmediateValue(uint64_t constant_id,
-                                 CoreML::Specification::MILSpec::Block& block);
-  // Create a Value that points to an offset in weight file.
-  CoreML::Specification::MILSpec::Value CreateConstantFileValue(
-      uint64_t constant_id,
-      uint64_t offset);
-
   // Helpers.
   const mojom::Operand& GetOperand(uint64_t operand_id) const;
 
@@ -603,10 +593,6 @@ class GraphBuilderCoreml {
 
   const ContextProperties context_properties_;
   const mojom::CreateContextOptions::Device device_;
-
-  // Points to offset in weight file or identifier in coreml model file.
-  base::flat_map<uint64_t, std::variant<uint64_t, std::string_view>>
-      constant_pointers_;
 
   // Used to generate unique names for internal operands generated for WebNN
   // operations that need to be decomposed into multiple CoreML operations.
