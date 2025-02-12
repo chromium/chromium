@@ -18,7 +18,6 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
-#import "components/autofill/ios/common/features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/plus_addresses/features.h"
 #import "components/plus_addresses/grit/plus_addresses_strings.h"
@@ -32,7 +31,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/autofill/cells/autofill_address_profile_record_type.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/cells/autofill_profile_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller+toolbar_add.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -121,10 +119,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Coordinator to view/edit profile details.
 @property(nonatomic, strong)
     AutofillProfileEditCoordinator* autofillProfileEditCoordinator;
-
-// Add button for the toolbar, which allows the user to manually add a new
-// address.
-@property(nonatomic, strong) UIBarButtonItem* addButtonInToolbar;
 
 @end
 
@@ -376,16 +370,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Override.
 - (void)deleteItems:(NSArray<NSIndexPath*>*)indexPaths {
   [self showDeletionConfirmationForIndexPaths:indexPaths];
-}
-
-- (UIBarButtonItem*)customLeftToolbarButton {
-  // When in edit mode, a "Delete" button is shown as the left toolbar button.
-  // This button shouldn't be overridden with a custom one.
-  if (self.tableView.isEditing || !IsAddAddressManuallyEnabled()) {
-    return nil;
-  }
-
-  return self.addButtonInToolbar;
 }
 
 #pragma mark - UITableViewDelegate
@@ -655,17 +639,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
-- (UIBarButtonItem*)addButtonInToolbar {
-  if (!_addButtonInToolbar) {
-    _addButtonInToolbar =
-        [self addButtonWithAction:@selector(handleAddAddress)];
-    _addButtonInToolbar.enabled = YES;
-    // TODO(crbug.com/395114433): Change the status of the Button based on
-    // Enterprise Policy and Save Address Toggle.
-  }
-  return _addButtonInToolbar;
-}
-
 #pragma mark - PopoverLabelViewControllerDelegate
 
 - (void)didTapLinkURL:(NSURL*)URL {
@@ -891,12 +864,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return IsEligibleForMigrationToAccount(
              _personalDataManager->address_data_manager(), profile) &&
          self.userEmail != nil;
-}
-
-// Opens a new view controller `AutofillAddAddressViewController` for filling
-// and saving an address.
-- (void)handleAddAddress {
-  // TODO(crbug.com/393352820): Implement function.
 }
 
 @end

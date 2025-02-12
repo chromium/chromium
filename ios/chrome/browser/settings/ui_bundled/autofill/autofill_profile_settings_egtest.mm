@@ -7,14 +7,12 @@
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/common/autofill_features.h"
-#import "components/autofill/ios/common/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -33,7 +31,6 @@ using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
-using chrome_test_util::SettingsToolbarAddButton;
 using chrome_test_util::TabGridEditButton;
 
 namespace {
@@ -134,16 +131,6 @@ id<GREYMatcher> AddressesAndMoreNavBarTitle() {
       grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
 }
 
-// Matcher for the toolbar's edit button.
-id<GREYMatcher> SettingsToolbarEditButton() {
-  return grey_accessibilityID(kSettingsToolbarEditButtonId);
-}
-
-// Matcher for the toolbar's done button.
-id<GREYMatcher> SettingsToolbarDoneButton() {
-  return grey_accessibilityID(kSettingsToolbarEditDoneButtonId);
-}
-
 }  // namespace
 
 // Various tests for the Autofill profiles section of the settings.
@@ -155,16 +142,6 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
 - (void)setUp {
   [super setUp];
   [AutofillAppInterface clearProfilesStore];
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-
-  if ([self isRunningTest:@selector(testBottomToolbarAddButtonVisibility)]) {
-    config.features_enabled.push_back(kAddAddressManually);
-  }
-
-  return config;
 }
 
 - (void)tearDownHelper {
@@ -321,33 +298,6 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
       assertWithMatcher:grey_notNil()];
 
   [self exitSettingsMenu];
-}
-
-// Checks that the toolbar "Add" button is only visible when the table view is
-// not in edit mode.
-- (void)testBottomToolbarAddButtonVisibility {
-  [AutofillAppInterface saveExampleProfile];
-  [self openAutofillProfilesSettings];
-
-  // Verify the "Add" button is initially visible.
-  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Switch on edit mode.
-  [[EarlGrey selectElementWithMatcher:SettingsToolbarEditButton()]
-      performAction:grey_tap()];
-
-  // Confirm that the "Add" button no longer exists.
-  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
-      assertWithMatcher:grey_nil()];
-
-  // Switch off edit mode.
-  [[EarlGrey selectElementWithMatcher:SettingsToolbarDoneButton()]
-      performAction:grey_tap()];
-
-  // Verify the "Add" button is visible.
-  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Checks that the Autofill profile switch can be toggled on/off and the list of
