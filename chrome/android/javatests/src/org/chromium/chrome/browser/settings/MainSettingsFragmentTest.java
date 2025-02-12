@@ -1007,8 +1007,7 @@ public class MainSettingsFragmentTest {
                 prefTitleWithNewLabel,
                 mMainSettings.findPreference(MainSettings.PREF_ADDRESS_BAR).getTitle().toString());
 
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_CLICKED, true);
+        mMainSettings.findPreference(MainSettings.PREF_ADDRESS_BAR).performClick();
         restartSettings();
 
         Assert.assertEquals(

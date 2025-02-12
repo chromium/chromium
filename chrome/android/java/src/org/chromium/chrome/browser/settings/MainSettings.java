@@ -534,7 +534,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
             addressBarPreference.setOnPreferenceClickListener(
                     (unused) -> {
                         ChromeSharedPreferences.getInstance()
-                                .incrementInt(ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_CLICKED);
+                                .writeBoolean(
+                                        ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_CLICKED, true);
                         return false;
                     });
         } else {
