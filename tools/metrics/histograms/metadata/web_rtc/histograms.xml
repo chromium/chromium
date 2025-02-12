@@ -268,7 +268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureOutputLevelAverageRms"
-    units="dBFS (negated)" expires_after="2025-03-09">
+    units="dBFS (negated)" expires_after="2026-03-09">
   <owner>peah@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -281,7 +281,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureOutputLevelPeakRms"
-    units="dBFS (negated)" expires_after="2025-03-09">
+    units="dBFS (negated)" expires_after="2026-03-09">
   <owner>peah@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
