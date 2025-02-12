@@ -347,7 +347,9 @@ void NotificationPlatformBridgeAndroid::Display(
           : (persistent_notification_metadata
                  ? persistent_notification_metadata->is_suspicious
                  : false),
-      persistent_notification_metadata->skip_ua_buttons);
+      persistent_notification_metadata
+          ? persistent_notification_metadata->skip_ua_buttons
+          : false);
 
   regenerated_notification_infos_[notification.id()] =
       RegeneratedNotificationInfo(scope_url, std::nullopt);
