@@ -30,12 +30,12 @@ std::optional<base::Value> ParseJsonAndUnnestKey(
     std::string_view input,
     std::string_view key,
     base::Value::Type target_type) {
-  std::optional<base::Value> parsed = base::JSONReader::Read(input);
-  if (!parsed || !parsed->is_dict()) {
+  std::optional<base::Value::Dict> parsed = base::JSONReader::ReadDict(input);
+  if (!parsed) {
     return std::nullopt;
   }
 
-  std::optional<base::Value> unnested = parsed->GetDict().Extract(key);
+  std::optional<base::Value> unnested = parsed->Extract(key);
   if (!unnested || unnested->type() != target_type) {
     return std::nullopt;
   }

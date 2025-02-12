@@ -70,13 +70,14 @@ std::vector<std::string> PrintPreviewStickySettings::GetRecentlyUsedPrinters() {
   if (!sticky_settings_state)
     return {};
 
-  std::optional<base::Value> sticky_settings_state_value =
-      base::JSONReader::Read(*sticky_settings_state);
-  if (!sticky_settings_state_value || !sticky_settings_state_value->is_dict())
+  std::optional<base::Value::Dict> sticky_settings_state_value =
+      base::JSONReader::ReadDict(*sticky_settings_state);
+  if (!sticky_settings_state_value) {
     return {};
+  }
 
   base::Value::List* recent_destinations =
-      sticky_settings_state_value->GetDict().FindList(kRecentDestinations);
+      sticky_settings_state_value->FindList(kRecentDestinations);
   if (!recent_destinations)
     return {};
 
