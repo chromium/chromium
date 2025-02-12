@@ -898,8 +898,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::MoveEndpointByUnitImpl(
           MoveEndpointByCharacter(position_to_move, count, units_moved);
       break;
     case TextUnit_Format:
-      new_position = MoveEndpointByFormat(position_to_move, is_start_endpoint,
-                                          count, units_moved);
+      new_position = MoveEndpointByFormat(position_to_move, count, units_moved);
       break;
     case TextUnit_Word:
       new_position = MoveEndpointByWord(position_to_move, count, units_moved);
@@ -1377,14 +1376,11 @@ AXPlatformNodeTextRangeProviderWin::MoveEndpointByLine(
 AXPlatformNodeTextRangeProviderWin::AXPositionInstance
 AXPlatformNodeTextRangeProviderWin::MoveEndpointByFormat(
     const AXPositionInstance& endpoint,
-    const bool is_start_endpoint,
     const int count,
     int* units_moved) {
   return MoveEndpointByUnitHelper(std::move(endpoint),
-                                  is_start_endpoint
-                                      ? ax::mojom::TextBoundary::kFormatStart
-                                      : ax::mojom::TextBoundary::kFormatEnd,
-                                  count, units_moved);
+                                  ax::mojom::TextBoundary::kFormatStart, count,
+                                  units_moved);
 }
 
 AXPlatformNodeTextRangeProviderWin::AXPositionInstance
