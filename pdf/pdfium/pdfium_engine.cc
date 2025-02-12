@@ -4389,14 +4389,20 @@ bool PDFiumEngine::PageNeedsSearchify(int page_index) const {
 }
 
 void PDFiumEngine::ScheduleSearchifyIfNeeded(PDFiumPage* page) {
-  if (!page->available()) {
+  CHECK(page);
+  CHECK(page->available());
+
+  if (page->IsPageSearchified()) {
     return;
   }
+
   // TODO(crbug.com/40066441): Explore heuristics to run OCR on pages with large
   // images and a little text.
   bool page_has_text = page->GetCharCount() != 0;
 
-  // Report metric only once for each page.
+  // Report metric only once for each page. Note that it is possible to reach
+  // here multiple times for a given page, if the page was scheduled to be
+  // Searchified, but the Searchify operation did not complete for some reason.
   bool not_reported =
       page_has_text_metric_reported_.insert(page->index()).second;
   if (not_reported) {

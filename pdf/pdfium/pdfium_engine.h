@@ -466,7 +466,8 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Tells if the page is waiting to be searchified.
   bool PageNeedsSearchify(int page_index) const;
 
-  // Schedules searchify for the page if it has no text.
+  // Schedules searchify for the page if it has no text. `page` must be non-null
+  // and in an available state.
   void ScheduleSearchifyIfNeeded(PDFiumPage* page);
 
   // Cancels a pending searchify if it has not started yet. Ignores the request
