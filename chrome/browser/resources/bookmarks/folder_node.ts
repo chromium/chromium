@@ -72,7 +72,8 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
   protected isSelectedFolder_: boolean = false;
   protected hasChildFolder_: boolean = false;
 
-  override firstUpdated() {
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
     this.addEventListener('keydown', e => this.onKeydown_(e));
   }
 

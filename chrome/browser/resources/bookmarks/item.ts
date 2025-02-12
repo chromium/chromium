@@ -3,9 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import './shared_style.css.js';
 import '/strings.m.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -14,16 +11,18 @@ import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {selectItem} from './actions.js';
 import {BookmarksCommandManagerElement} from './command_manager.js';
 import {Command, MenuSource} from './constants.js';
-import {getTemplate} from './item.html.js';
-import {StoreClientMixin} from './store_client_mixin.js';
-import type {BookmarkNode} from './types.js';
+import {getCss} from './item.css.js';
+import {getHtml} from './item.html.js';
+import {StoreClientMixinLit} from './store_client_mixin_lit.js';
+import type {BookmarkNode, BookmarksPageState} from './types.js';
 
-const BookmarksItemElementBase = StoreClientMixin(PolymerElement);
+const BookmarksItemElementBase = StoreClientMixinLit(CrLitElement);
 
 export interface BookmarksItemElement {
   $: {
@@ -37,47 +36,39 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
     return 'bookmarks-item';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      itemId: {
-        type: String,
-        observer: 'onItemIdChanged_',
-      },
-      ironListTabIndex: Number,
-      item_: {
-        type: Object,
-        observer: 'onItemChanged_',
-      },
+      itemId: {type: String},
+      ironListTabIndex: {type: Number},
+      item_: {type: Object},
       isSelectedItem_: {
         type: Boolean,
-        reflectToAttribute: true,
+        reflect: true,
       },
-      isMultiSelect_: Boolean,
-      isFolder_: Boolean,
-      lastTouchPoints_: Number,
+      isMultiSelect_: {type: Boolean},
+      isFolder_: {type: Boolean},
+      lastTouchPoints_: {type: Number},
     };
   }
 
-  itemId: string;
-  private item_: BookmarkNode;
-  private isSelectedItem_: boolean;
-  private isMultiSelect_: boolean;
-  private isFolder_: boolean;
-  private lastTouchPoints_: number;
+  itemId: string = '';
+  ironListTabIndex?: number;
+  protected item_: BookmarkNode = {id: '', title: ''};
+  private isSelectedItem_: boolean = false;
+  private isMultiSelect_: boolean = false;
+  private isFolder_: boolean = false;
+  private lastTouchPoints_: number = -1;
 
-  static get observers() {
-    return [
-      'updateFavicon_(item_.url)',
-    ];
-  }
-
-  override ready() {
-    super.ready();
-
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
     this.addEventListener('click', e => this.onClick_(e as MouseEvent));
     this.addEventListener('dblclick', e => this.onDblClick_(e as MouseEvent));
     this.addEventListener('contextmenu', e => this.onContextMenu_(e));
@@ -94,13 +85,42 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.watch('item_', state => state.nodes[this.itemId]);
-    this.watch(
-        'isSelectedItem_', state => state.selection.items.has(this.itemId));
-    this.watch('isMultiSelect_', state => state.selection.items.size > 1);
-
     this.updateFromStore();
   }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('itemId') && this.itemId !== '') {
+      assert(this.getState().nodes[this.itemId]);
+      this.updateFromStore();
+    }
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('item_')) {
+      this.isFolder_ = !this.item_.url;
+      this.ariaLabel = this.item_.title || this.item_.url ||
+          loadTimeData.getString('folderLabel');
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('item_')) {
+      this.updateFavicon_(this.item_.url);
+    }
+  }
+
+  override onStateChanged(state: BookmarksPageState) {
+    this.item_ = state.nodes[this.itemId]!;
+    this.isSelectedItem_ = state.selection.items.has(this.itemId);
+    this.isMultiSelect_ = state.selection.items.size > 1;
+  }
+
 
   setIsSelectedItemForTesting(selected: boolean) {
     this.isSelectedItem_ = selected;
@@ -145,7 +165,7 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
     }));
   }
 
-  private onMenuButtonClick_(e: Event) {
+  protected onMenuButtonClick_(e: Event) {
     e.stopPropagation();
     e.preventDefault();
 
@@ -173,23 +193,8 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
     }));
   }
 
-  private getItemUrl_(): string {
+  protected getItemUrl_(): string {
     return this.item_.url || '';
-  }
-
-  private onItemIdChanged_() {
-    // TODO(tsergeant): Add a histogram to measure whether this assertion fails
-    // for real users.
-    assert(this.getState().nodes[this.itemId]);
-    this.updateFromStore();
-  }
-
-  private onItemChanged_() {
-    this.isFolder_ = !this.item_.url;
-    this.setAttribute(
-        'aria-label',
-        this.item_.title || this.item_.url ||
-            loadTimeData.getString('folderLabel'));
   }
 
   private onClick_(e: MouseEvent) {
@@ -265,14 +270,14 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
     }
   }
 
-  private updateFavicon_(url: string) {
+  private updateFavicon_(url?: string) {
     this.$.icon.className =
         url ? 'website-icon' : 'folder-icon icon-folder-open';
     this.$.icon.style.backgroundImage =
         url ? getFaviconForPageURL(url, false) : '';
   }
 
-  private getButtonAriaLabel_(): string {
+  protected getButtonAriaLabel_(): string {
     if (!this.item_) {
       return '';  // Item hasn't loaded, skip for now.
     }
@@ -292,6 +297,9 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
     return this.isSelectedItem_ && this.isMultiSelect_;
   }
 }
+
+// Exported for the autogenerated Lit .html.ts template file.
+export type ItemElement = BookmarksItemElement;
 
 declare global {
   interface HTMLElementTagNameMap {
