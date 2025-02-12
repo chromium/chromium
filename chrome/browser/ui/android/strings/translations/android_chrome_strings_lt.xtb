@@ -582,6 +582,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3701167022068948696">Ištaisyti dabar</translation>
 <translation id="3701515417135397388">Įspėti, jei slaptažodis buvo pažeistas įvykus duomenų saugos pažeidimui</translation>
 <translation id="3703166520839776970">Jei ši problema išlieka, toliau pasirinkite „Daugiau išsamios informacijos“, kad gautumėte daugiau informacijos iš „<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />“.</translation>
+<translation id="3708100450779900829">Kai įrenginys užlenktas, galite pasirinkti parinktį arba paliesti ir palaikyti adreso juostą, kad pakeistumėte padėtį</translation>
 <translation id="3710501561113687889">Kad būtų galima tęsti, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bendrins jūsų <ph name="FIELDS_STRING" /> su šia svetaine.</translation>
 <translation id="3710560693796335511">Bendradarbiavimas</translation>
 <translation id="3714981814255182093">Atidaryti radimo juostą</translation>
@@ -1090,7 +1091,6 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="604996488070107836">Nepavyko atsisiųsti „<ph name="FILE_NAME" />“ dėl nežinomos klaidos.</translation>
 <translation id="605721222689873409">MM</translation>
 <translation id="6059830886158432458">Čia galite valdyti savo pasakojimus ir veiklą</translation>
-<translation id="6070730414166672373">Susisiekiama su banku\u2026</translation>
 <translation id="6071995715087444295">Jei norite patikrinti, ar nėra pažeistų slaptažodžių, prisijunkite prie „Google“ paskyros</translation>
 <translation id="6085886413119427067">Nustatoma, kaip prisijungti prie svetainių saugiu ryšiu</translation>
 <translation id="6087286598828478206">Blokuoti ir išeiti iš grupės?</translation>
@@ -1127,7 +1127,6 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="6210748933810148297">Ne <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Peržiūrimas šis puslapis</translation>
 <translation id="6221633008163990886">Atrakinkite, kad galėtumėte eksportuoti slaptažodžius</translation>
-<translation id="6225572914528673855">Adreso juosta</translation>
 <translation id="6232535412751077445">Įgalinus funkciją „Nestebėti“, užklausa bus įtraukta į naršymo srautą. Poveikis priklauso nuo to, ar svetainė atsako į užklausą ir kaip užklausa interpretuojama.
 
 Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos jums skelbimus, nepagrįstus kitomis svetainėmis, kuriose lankėtės. Daugelis svetainių vis tiek rinks ir naudos jūsų naršymo duomenis, kad, pvz., patobulintų saugą, teiktų turinį, skelbimus bei rekomendacijas ir sugeneruotų ataskaitų teikimo statistiką.</translation>
@@ -1616,6 +1615,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8236063039629122676">Dabar perbraukę dešinėn galite grįžti atgal, kad peržiūrėtumėte ankstesnius puslapius, kuriuose lankėtės, o perbraukę kairėn – pirmyn</translation>
 <translation id="8236097722223016103">Pridėti prie žymių</translation>
 <translation id="8243077599929149377">Naudotojo vardo pridėjimas</translation>
+<translation id="8244387390464017490">Tinkinti naujo skirt. psl.</translation>
 <translation id="8250920743982581267">Dokumentai</translation>
 <translation id="8255617931166444521">Svetainės slapukai gali būti naudojami tik siekiant peržiūrėti naršymo veiklą toje svetainėje.</translation>
 <translation id="8258999165172757081">Pridėta</translation>

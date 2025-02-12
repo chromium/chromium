@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{ລາຄາຫຼຸດລົງໃນແຖບທີ່ເປີດຢູ່ຂອງທ່ານ}other{ລາຄາຫຼຸດລົງໃນແຖບທີ່ເປີດຢູ່ຂອງທ່ານ}}</translation>
 <translation id="5186036860380548585">ຕົວເລືອກມີໃຫ້ນຳໃຊ້ຢູ່ໃກ້ສ່ວນເທິງສຸດຂອງໜ້າຈໍ</translation>
 <translation id="5197729504361054390">ລາຍຊື່ຜູ້ຕິດຕໍ່ທີ່ທ່ານເລືອກຈະຖືກແບ່ງປັນກັບ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5198930230016462977">ປິດຊີດລຸ່ມສຸດຂອງການປັບແຕ່ງໜ້າແຖບໃໝ່ຂອງທ່ານແລ້ວ</translation>
 <translation id="5216942107514965959">ເຂົ້າເບິ່ງມື້ນີ້</translation>
 <translation id="5225463052809312700">ເປີດກ້ອງຖ່າຍຮູບ</translation>
 <translation id="5234764350956374838">ປ່ອຍໄປ</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">ການຕິດຕາມມື</translation>
 <translation id="5771720122942595109">ບລັອກ <ph name="PERMISSION_1" /> ໄວ້ແລ້ວ</translation>
 <translation id="5804241973901381774">ການ​ອະ​ນຸ​ຍາດ</translation>
+<translation id="5822675474983796325">ເປີດຊີດລຸ່ມສຸດຂອງການປັບແຕ່ງໜ້າແຖບໃໝ່ຂອງທ່ານຢູ່ລະດັບຄວາມສູງເຕັມໜ້າຈໍແລ້ວ</translation>
 <translation id="5844448279347999754">ເມື່ອເປີດ, ເວັບໄຊສາມາດຂໍເບິ່ງຂໍ້ຄວາມ ແລະ ຮູບທີ່ບັນທຶກໃສ່ຄລິບບອດຂອງທ່ານໄດ້. ເມື່ອເປີດ, ເວັບໄຊບໍ່ສາມາດເບິ່ງຂໍ້ຄວາມ ຫຼື ຮູບທີ່ບັນທຶກໃສ່ຄລິບບອດຂອງທ່ານໄດ້.</translation>
 <translation id="5853982612236235577">ເມື່ອເປີດ, ເວັບໄຊສາມາດຂໍສົ່ງການແຈ້ງເຕືອນໄດ້. ເມື່ອປິດ, ເວັບໄຊບໍ່ສາມາດສົ່ງການແຈ້ງເຕືອນໄດ້.</translation>
 <translation id="5860033963881614850">ປິດ</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">ຂະ​ຫຍາຍ​ແລ້ວ</translation>
 <translation id="7219254577985949841">ລຶບຂໍ້ມູນເວັບໄຊອອກບໍ?</translation>
 <translation id="723171743924126238">ເລືອກຮູບ</translation>
+<translation id="7243246278722455312">ຊີດລຸ່ມສຸດຂອງການປັບແຕ່ງໜ້າແຖບໃໝ່ຂອງທ່ານ</translation>
 <translation id="7243308994586599757">ທາງ​ເລືອກ​ມີ​ໃຫ້​ໃກ້​ປຸ່ມ​ຂອງ​ໜ້າ​ຈໍ</translation>
 <translation id="7250468141469952378">ເລືອກ <ph name="ITEM_COUNT" /> ລາຍການແລ້ວ</translation>
 <translation id="7260727271532453612">ອະນຸຍາດ <ph name="PERMISSION_1" /> ແລະ <ph name="PERMISSION_2" /> ແລ້ວ</translation>

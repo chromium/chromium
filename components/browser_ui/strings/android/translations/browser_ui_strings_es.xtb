@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Bajada de precio en tus pestañas abiertas}other{Bajadas de precio en tus pestañas abiertas}}</translation>
 <translation id="5186036860380548585">Opción disponible cerca de la parte superior de la pantalla</translation>
 <translation id="5197729504361054390">Los contactos que selecciones se compartirán con <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5198930230016462977">Hoja inferior de Personalizar la página Nueva pestaña cerrada</translation>
 <translation id="5216942107514965959">Última visita: hoy</translation>
 <translation id="5225463052809312700">Activar cámara</translation>
 <translation id="5234764350956374838">Cerrar</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Seguimiento de manos</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> bloqueado</translation>
 <translation id="5804241973901381774">Permisos</translation>
+<translation id="5822675474983796325">Hoja inferior de Personalizar la página Nueva pestaña abierta a altura completa</translation>
 <translation id="5844448279347999754">Cuando esta opción está activada, los sitios pueden solicitar permiso para ver el texto y las imágenes que se han guardado en tu portapapeles. Si está desactivada, los sitios no pueden ver el texto ni las imágenes que se han guardado en tu portapapeles.</translation>
 <translation id="5853982612236235577">Cuando esta opción está activada, los sitios pueden solicitar permiso para enviar notificaciones. Si está desactivada, los sitios no pueden enviar notificaciones.</translation>
 <translation id="5860033963881614850">Desactivado</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Ampliado</translation>
 <translation id="7219254577985949841">¿Eliminar datos del sitio?</translation>
 <translation id="723171743924126238">Seleccionar imágenes</translation>
+<translation id="7243246278722455312">Hoja inferior de Personalizar la página Nueva pestaña</translation>
 <translation id="7243308994586599757">Opciones disponibles cerca de la parte inferior de la pantalla</translation>
 <translation id="7250468141469952378">Elementos seleccionados: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" /> permitidos</translation>

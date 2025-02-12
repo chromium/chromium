@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Prijsdaling op je geopende tabbladen}other{Prijsdalingen op je geopende tabbladen}}</translation>
 <translation id="5186036860380548585">Optie beschikbaar boven aan het scherm</translation>
 <translation id="5197729504361054390">De contacten die je selecteert, worden gedeeld met <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5198930230016462977">Blad onderaan voor De pagina Nieuw tabblad aanpassen is gesloten</translation>
 <translation id="5216942107514965959">Laatst bezocht: vandaag</translation>
 <translation id="5225463052809312700">Camera aanzetten</translation>
 <translation id="5234764350956374838">Sluiten</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Handen volgen</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> geblokkeerd</translation>
 <translation id="5804241973901381774">Rechten</translation>
+<translation id="5822675474983796325">Blad onderaan voor De pagina Nieuw tabblad aanpassen is op volledige hoogte geopend</translation>
 <translation id="5844448279347999754">Als deze optie aanstaat, kunnen sites vragen of ze tekst en afbeeldingen mogen bekijken die op je klembord zijn opgeslagen. Staat de optie uit, dan kunnen sites geen tekst of afbeeldingen bekijken die op je klembord zijn opgeslagen.</translation>
 <translation id="5853982612236235577">Als deze optie aanstaat, kunnen sites vragen of ze je meldingen mogen sturen. Staat de optie uit, dan kunnen sites geen meldingen sturen.</translation>
 <translation id="5860033963881614850">Uit</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Uitgevouwen</translation>
 <translation id="7219254577985949841">Sitegegevens verwijderen?</translation>
 <translation id="723171743924126238">Afbeeldingen selecteren</translation>
+<translation id="7243246278722455312">Blad onderaan voor De pagina Nieuw tabblad aanpassen</translation>
 <translation id="7243308994586599757">Opties beschikbaar onder aan het scherm</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> geselecteerd</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> en <ph name="PERMISSION_2" /> toegestaan</translation>

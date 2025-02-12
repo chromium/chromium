@@ -8611,6 +8611,7 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
 
       Si cette règle n'est pas définie, la règle <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> s'applique. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="7238335422094660594">Activer le fournisseur <ph name="UIA_NAME" />.</translation>
+<translation id="7242191282517459095">YouTube (compatible depuis la version 135)</translation>
 <translation id="7244600351241637530">Si ce paramètre est activé, les utilisateurs qui ont déjà activé Phone Hub pourront afficher et télécharger les photos et vidéos récentes prises sur leur téléphone sur Chrome OS.
 
       S'il est désactivé, les utilisateurs ne seront pas autorisés à se servir de cette fonctionnalité. Si la règle <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> est désactivée, ils ne seront pas non plus autorisés à utiliser cette fonctionnalité.
@@ -9739,6 +9740,7 @@ Si cette règle n'est pas définie, l'écran de confidentialité est désactivé
 
       Pour en savoir plus sur la navigation sécurisée, consultez la page https://developers.google.com/safe-browsing.</translation>
 <translation id="8199823751103472868">Cette règle permet d'activer la disposition de clavier Hindi Inscript sur <ph name="PRODUCT_OS_NAME" />. Si elle est définie sur "false" ou si elle n'est pas configurée, cette disposition de clavier n'est pas disponible.</translation>
+<translation id="8202566089100454374">Google Maps (compatible depuis la version 135)</translation>
 <translation id="8202834945144737726">Activer le flux d'attestation <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> pour une liste d'URL sur l'écran de connexion</translation>
 <translation id="8210117014924235250">Cette règle permet de remplacer la liste des ensembles que le navigateur utilise pour les fonctionnalités liées aux ensembles de sites Web associés.
 

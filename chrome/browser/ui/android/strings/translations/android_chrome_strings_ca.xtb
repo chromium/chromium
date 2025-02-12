@@ -582,6 +582,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3701167022068948696">Corregeix ara</translation>
 <translation id="3701515417135397388">Rep un advertiment si una contrasenya s'ha posat en perill a causa d'una violació de les dades</translation>
 <translation id="3703166520839776970">Si el problema persisteix, tria Més detalls a continuació per obtenir més informació de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="3708100450779900829">Quan el dispositiu està plegat, pots triar una opció o mantenir premuda la barra d'adreces per canviar la posició</translation>
 <translation id="3710501561113687889">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà la teva informació (<ph name="FIELDS_STRING" />) amb aquest lloc web.</translation>
 <translation id="3710560693796335511">Col·laboració</translation>
 <translation id="3714981814255182093">Obre la barra de cerca</translation>
@@ -1090,7 +1091,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="604996488070107836">No s'ha pogut baixar <ph name="FILE_NAME" /> a causa d'un error desconegut.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla les teves històries i la teva activitat aquí</translation>
-<translation id="6070730414166672373">S'està contactant amb el banc\u2026</translation>
 <translation id="6071995715087444295">Per comprovar si hi ha contrasenyes en perill, inicia la sessió al teu Compte de Google</translation>
 <translation id="6085886413119427067">Determina com es connecta a llocs web amb una connexió segura</translation>
 <translation id="6087286598828478206">Vols bloquejar aquest membre i sortir del grup?</translation>
@@ -1127,7 +1127,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="6210748933810148297">No ets <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Es previsualitza aquesta pàgina</translation>
 <translation id="6221633008163990886">Desbloqueja per exportar les contrasenyes</translation>
-<translation id="6225572914528673855">Barra d'adreces</translation>
 <translation id="6232535412751077445">Si actives l'opció No rastregis, s'inclourà una sol·licitud al trànsit de navegació. Que s'apliqui o no dependrà de si algun lloc web respon a la sol·licitud i de com s'interpreta.
 
 Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud mostrant-te anuncis que no estiguin basats en altres llocs web que hagis visitat. Molts llocs web continuaran recopilant i utilitzant les teves dades de navegació (per exemple, per millorar la seguretat, per proporcionar contingut, anuncis i recomanacions i per generar estadístiques).</translation>
@@ -1283,6 +1282,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6850830437481525139">S'han tancat <ph name="TAB_COUNT" /> pestanyes</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Fitxers d'àudio, 1 fitxer d'àudio a la llista}other{Fitxers d'àudio, # fitxers d'àudio a la llista}}</translation>
 <translation id="685850645784703949">Discover de Google: desactivat</translation>
+<translation id="6861722405755529743">Botó de desbordament de la barra d'adreces d'interès</translation>
 <translation id="686366188661646310">Vols suprimir la contrasenya?</translation>
 <translation id="6864459304226931083">Baixa la imatge</translation>
 <translation id="686490460830618322">Full de filtratge per aplicació</translation>
@@ -1615,6 +1615,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8236063039629122676">Ara, lliscant cap a la dreta tornes enrere per veure les pàgines que has visitat anteriorment, i lliscant cap a l'esquerra avances</translation>
 <translation id="8236097722223016103">Afegeix a les adreces d'interès</translation>
 <translation id="8243077599929149377">Afegeix el teu nom d'usuari</translation>
+<translation id="8244387390464017490">Personalitza Pestanya nova</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8255617931166444521">Els llocs web només poden fer servir les teves galetes per veure la teva activitat de navegació només en aquests mateixos llocs web</translation>
 <translation id="8258999165172757081">S'ha afegit</translation>

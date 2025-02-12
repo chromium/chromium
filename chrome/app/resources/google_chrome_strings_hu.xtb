@@ -78,6 +78,7 @@
 <translation id="2094648590148273905">A ChromeOS Flex feltételei</translation>
 <translation id="2094919256425865063">Biztosan kilép a Chrome-ból?</translation>
 <translation id="2106831557840787829">A ChromeOS Flex létrejöttéhez egyéb <ph name="BEGIN_LINK_CROS_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_CROS_OSS" /> is hozzájárultak, például a <ph name="BEGIN_LINK_LINUX_OSS" />Linux fejlesztői környezet<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2108778574543343055">A Chrome háttérben való futtatásának letiltása az alkalmazásoknál</translation>
 <translation id="2120620239521071941">Ezzel <ph name="ITEMS_COUNT" /> elemet töröl az eszközről. Az adatok későbbi lekéréséhez jelentkezzen be a Chrome-ba a következő e-mail-címmel: <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Indítsa újra a Chrome frissítéshez</translation>
 <translation id="2123055963409958220">Segítsen a Chrome fejlesztésében a <ph name="BEGIN_LINK" />jelenlegi beállítások<ph name="END_LINK" /> elküldésével</translation>
@@ -139,6 +140,7 @@
 <translation id="2797864378188255696">Amikor <ph name="USER_EMAIL" /> fiókjával bejelentkezik a Google-szolgáltatásokba (például a Gmailbe vagy a YouTube-ba), ugyanazzal a fiókkal automatikusan bejelentkezhet a Chrome-ba is.</translation>
 <translation id="2799162042226656283">Az Ön Chrome böngészője</translation>
 <translation id="2799223571221894425">Újraindítás</translation>
+<translation id="2818684386420968393">A Chrome háttérben való futtatásának letiltása az alkalmazásoknál</translation>
 <translation id="2825024317344269723">Veszélyes webhely. A Chrome eltávolította az értesítéseket.</translation>
 <translation id="2841525013647267359">Fordítás a következő nyelvről:</translation>
 <translation id="2846251086934905009">Telepítési hiba: A telepítő nem fejezte be a folyamatot. A telepítés megszakadt.</translation>

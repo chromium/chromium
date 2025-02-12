@@ -582,6 +582,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3701167022068948696">지금 해결하기</translation>
 <translation id="3701515417135397388">정보 유출로 인해 비밀번호가 유출된 경우 경고</translation>
 <translation id="3703166520839776970">이 문제가 계속 발생하는 경우 아래의 '세부정보 더보기'를 선택하여 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 자세히 알아보세요.</translation>
+<translation id="3708100450779900829">기기를 접은 상태에서 옵션을 선택하거나 주소 표시줄을 길게 터치하여 위치를 변경할 수 있습니다.</translation>
 <translation id="3710501561113687889">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 <ph name="FIELDS_STRING" />을(를) 이 사이트와 공유해야 합니다.</translation>
 <translation id="3710560693796335511">공동작업</translation>
 <translation id="3714981814255182093">찾기 창 열기</translation>
@@ -1090,7 +1091,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="604996488070107836">알 수 없는 오류로 인해 <ph name="FILE_NAME" /> 다운로드에 실패했습니다.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">여기에서 스토리 및 활동을 관리하세요.</translation>
-<translation id="6070730414166672373">은행 연결 중\u2026</translation>
 <translation id="6071995715087444295">유출된 비밀번호가 있는지 확인하려면 Google 계정에 로그인하세요</translation>
 <translation id="6085886413119427067">보안 연결을 통해 웹사이트에 연결하는 방법을 지정합니다.</translation>
 <translation id="6087286598828478206">차단하고 그룹에서 나가시겠습니까?</translation>
@@ -1127,7 +1127,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6210748933810148297"><ph name="EMAIL" />이(가) 아닌가요?</translation>
 <translation id="6211386937064921208">페이지 미리보기입니다.</translation>
 <translation id="6221633008163990886">비밀번호를 내보내려면 잠금 해제하세요</translation>
-<translation id="6225572914528673855">주소 표시줄</translation>
 <translation id="6232535412751077445">‘추적 안함’을 사용하도록 설정하면 요청이 사용자의 인터넷 사용 트래픽에 포함됩니다. 웹사이트가 요청에 응답하는지 여부와 요청이 해석되는 방법에 따라 결과가 결정됩니다.
 
 예를 들어 어떤 웹사이트는 사용자가 방문한 다른 웹사이트를 기반으로 하지 않는 광고를 표시하여 이 요청에 응답할 수 있습니다. 그러나 대부분의 웹사이트에서는 보안을 개선하거나 웹사이트에 콘텐츠, 광고, 권장사항 등을 제공하거나 보고서 통계를 생성하기 위해 사용자의 인터넷 사용 기록을 계속 수집하고 사용합니다.</translation>
@@ -1283,6 +1282,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6850830437481525139">탭 <ph name="TAB_COUNT" />개를 닫았습니다.</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{오디오 파일, 목록에 있는 오디오 파일 1개}other{오디오 파일, 목록에 있는 오디오 파일 #개}}</translation>
 <translation id="685850645784703949">Google 디스커버 - 사용 안함</translation>
+<translation id="6861722405755529743">북마크바 더보기 버튼</translation>
 <translation id="686366188661646310">비밀번호를 삭제하시겠습니까?</translation>
 <translation id="6864459304226931083">이미지 다운로드</translation>
 <translation id="686490460830618322">앱 필터 시트</translation>
@@ -1615,6 +1615,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8236063039629122676">이제 오른쪽으로 스와이프하면 이전에 방문한 페이지로 이동하고, 왼쪽으로 스와이프하면 다음 페이지로 이동합니다.</translation>
 <translation id="8236097722223016103">북마크에 추가</translation>
 <translation id="8243077599929149377">사용자 이름 추가</translation>
+<translation id="8244387390464017490">새 탭 페이지 맞춤설정</translation>
 <translation id="8250920743982581267">문서</translation>
 <translation id="8255617931166444521">사이트에서 사용자의 사이트 내 탐색 활동을 보기 위해서만 쿠키를 사용할 수 있습니다.</translation>
 <translation id="8258999165172757081">추가됨</translation>

@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{ราคาต่ำลงในแท็บที่เปิดอยู่}other{ราคาต่ำลงในแท็บที่เปิดอยู่}}</translation>
 <translation id="5186036860380548585">ตัวเลือกอยู่ตรงบริเวณด้านบนของหน้าจอ</translation>
 <translation id="5197729504361054390">ระบบจะแชร์รายชื่อติดต่อที่คุณเลือกกับ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /></translation>
+<translation id="5198930230016462977">Bottom Sheet สำหรับปรับแต่งหน้าแท็บใหม่ปิดอยู่</translation>
 <translation id="5216942107514965959">เข้าชมล่าสุดวันนี้</translation>
 <translation id="5225463052809312700">เปิดกล้อง</translation>
 <translation id="5234764350956374838">ปิด</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">การติดตามการเคลื่อนไหวของมือ</translation>
 <translation id="5771720122942595109">บล็อก<ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">สิทธิ์</translation>
+<translation id="5822675474983796325">Bottom Sheet สำหรับปรับแต่งหน้าแท็บใหม่เปิดอยู่แบบเต็มความสูง</translation>
 <translation id="5844448279347999754">เมื่อเปิด เว็บไซต์จะขอดูข้อความและรูปภาพที่บันทึกไว้ในคลิปบอร์ดได้ เมื่อปิด เว็บไซต์จะดูข้อความหรือรูปภาพที่บันทึกไว้ในคลิปบอร์ดไม่ได้</translation>
 <translation id="5853982612236235577">เมื่อเปิด เว็บไซต์จะขอส่งการแจ้งเตือนได้ เมื่อปิด เว็บไซต์จะส่งการแจ้งเตือนไม่ได้</translation>
 <translation id="5860033963881614850">ปิด</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">ขยาย</translation>
 <translation id="7219254577985949841">ลบข้อมูลเว็บไซต์ใช่ไหม</translation>
 <translation id="723171743924126238">เลือกภาพ</translation>
+<translation id="7243246278722455312">Bottom Sheet สำหรับปรับแต่งหน้าแท็บใหม่</translation>
 <translation id="7243308994586599757">มีตัวเลือกอยู่ทางด้านล่างของหน้าจอ</translation>
 <translation id="7250468141469952378">เลือกไว้ <ph name="ITEM_COUNT" /> รายการ</translation>
 <translation id="7260727271532453612">อนุญาตให้เข้าถึง<ph name="PERMISSION_1" />และ<ph name="PERMISSION_2" /></translation>

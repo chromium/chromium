@@ -220,6 +220,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="114721135501989771">Dapatkan kecanggihan Google di Chrome</translation>
 <translation id="1147322039136785890">Sekarang saatnya <ph name="SUPERVISED_USER_NAME" /> yang menggunakan perangkat</translation>
 <translation id="1147991416141538220">Untuk meminta akses, hubungi administrator perangkat ini.</translation>
+<translation id="1148464196693569530">Izinkan Skrip Pengguna</translation>
 <translation id="1148624853678088576">Anda sudah siap!</translation>
 <translation id="1148669835763563782">Anda mendapatkan update software terbaru untuk keamanan yang ditingkatkan dan fitur Chromebook terbaru. Update ini mencakup pengalaman penyiapan yang ditingkatkan untuk membantu Anda memulai Chromebook dengan lancar.</translation>
 <translation id="1149401351239820326">Bulan akhir masa berlaku</translation>
@@ -6781,6 +6782,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5794414402486823030">Selalu buka dengan penampil sistem</translation>
 <translation id="5794700615121138172">Folder bersama Linux</translation>
 <translation id="5794786537412027208">Keluar dari semua Aplikasi Chrome</translation>
+<translation id="5795422263272161110">Tampilkan Berdampingan</translation>
 <translation id="5796485699458186843">&amp;Tab Samaran baru</translation>
 <translation id="5796956053441619942">URL dari perangkat jarak jauh tidak didukung</translation>
 <translation id="5797934230382081317">Pelajari cara memulai di &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; dan &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -7309,6 +7311,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6170498031581934115">Tidak dapat mengaktifkan proses debug ADB. Buka Setelan dan coba lagi.</translation>
 <translation id="6170675927290506430">Buka setelan notifikasi</translation>
 <translation id="6171779718418683144">Tanyakan pada setiap kunjungan</translation>
+<translation id="6172020488605056255">Klik kanan untuk menggunakan fitur Bantu baca</translation>
 <translation id="617213288191670920">Tidak ada bahasa yang ditambahkan</translation>
 <translation id="6173623053897475761">Ketik PIN Anda lagi</translation>
 <translation id="6174909075810107548">Gunakan “5” untuk menekan tombol mouse</translation>
@@ -8334,6 +8337,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6910190732484284349">Hapus kunci sandi untuk nama pengguna: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Dihapus</translation>
 <translation id="6910274140210351823">Gelap</translation>
+<translation id="691102290537033604">Ekstensi akan dapat menjalankan kode yang belum ditinjau oleh Google. Kode tersebut mungkin tidak aman, dan sebaiknya hanya aktifkan jika Anda mengetahui risikonya.</translation>
 <translation id="6911734910326569517">Jejak memori</translation>
 <translation id="6912007319859991306">PIN SIM Seluler</translation>
 <translation id="6912380255120084882">Coba perangkat lain</translation>
@@ -9844,6 +9848,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Suara <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Transfer Wi-Fi secara otomatis dari ponsel Android Anda</translation>
 <translation id="7991296728590311172">Setelan Tombol Akses</translation>
+<translation id="7992080146463834191">Meringkas konten, menyederhanakan bahasa yang kompleks, atau mengajukan pertanyaan.</translation>
 <translation id="7992203134935383159">Sintesis ucapan</translation>
 <translation id="799570308305997052">Tampilan web</translation>
 <translation id="7997826902155442747">Prioritas Proses</translation>
@@ -11101,6 +11106,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" sudah dinonaktifkan</translation>
 <translation id="8874647982044395866">Organik</translation>
 <translation id="8874790741333031443">Coba izinkan cookie pihak ketiga untuk sementara. Jika demikian, Anda akan mendapatkan lebih sedikit perlindungan terhadap penjelajahan, tetapi fitur situs cenderung berfungsi seperti yang diharapkan.</translation>
+<translation id="8875221558267407626">Meringkas konten, menyederhanakan bahasa yang kompleks, atau mengajukan pertanyaan</translation>
 <translation id="8875520811099717934">Upgrade Linux</translation>
 <translation id="8875736897340638404">Pilih visibilitas Anda</translation>
 <translation id="8876307312329369159">Setelan ini tidak dapat diubah dalam sesi demo.</translation>
@@ -11154,6 +11160,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8915916167043355778">Tutup semua</translation>
 <translation id="8916476537757519021">Subframe Mode Samaran: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Ya, Saya Setuju</translation>
+<translation id="8917980324687233736">Tampilkan berdampingan</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Menginstal aplikasi...</translation>
 <translation id="891931289445130855">Hapus data dan izin</translation>

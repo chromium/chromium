@@ -220,6 +220,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="114721135501989771">Profită de ingeniozitatea Google în Chrome</translation>
 <translation id="1147322039136785890"><ph name="SUPERVISED_USER_NAME" /> poate acum să folosească dispozitivul</translation>
 <translation id="1147991416141538220">Pentru a solicita acces, contactează administratorul dispozitivului.</translation>
+<translation id="1148464196693569530">Permite scripturile de utilizator</translation>
 <translation id="1148624853678088576">Ești gata!</translation>
 <translation id="1148669835763563782">Instalezi cea mai recentă actualizare de software pentru securitate sporită și cele mai noi funcții ale Chromebookului. Actualizarea include o experiență de configurare îmbunătățită, pentru a te ajuta să începi lucrul pe Chromebook fără probleme.</translation>
 <translation id="1149401351239820326">Luna expirării</translation>
@@ -6766,6 +6767,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5794414402486823030">Deschide întotdeauna cu Utilitarul de vizualizare al sistemului</translation>
 <translation id="5794700615121138172">Dosare comune în Linux</translation>
 <translation id="5794786537412027208">Ieși din toate aplicațiile Chrome</translation>
+<translation id="5795422263272161110">Afișează alăturat</translation>
 <translation id="5796485699458186843">Filă incognito &amp;nouă</translation>
 <translation id="5796956053441619942">Adresa URL de pe dispozitivul de la distanță nu este acceptată</translation>
 <translation id="5797934230382081317">Află cum să începi pe &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; și &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -7294,6 +7296,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6170498031581934115">Nu s-a putut activa remedierea erorilor prin ADB. Accesează Setări și încearcă din nou.</translation>
 <translation id="6170675927290506430">Accesează setările pentru notificări</translation>
 <translation id="6171779718418683144">Întreabă la fiecare accesare</translation>
+<translation id="6172020488605056255">Dă clic dreapta pentru a folosi funcția Ajută-mă să citesc</translation>
 <translation id="617213288191670920">Nu s-au adăugat limbi</translation>
 <translation id="6173623053897475761">Introdu din nou codul PIN</translation>
 <translation id="6174909075810107548">Folosește tasta „5” pentru a apăsa un buton al mouse-ului</translation>
@@ -8321,6 +8324,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6910190732484284349">Șterge cheia de acces pentru numele de utilizator <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Șters</translation>
 <translation id="6910274140210351823">Întunecat</translation>
+<translation id="691102290537033604">Extensia va putea rula cod care nu a fost examinat de Google. Este posibil ca acesta să nu fie sigur; activează opțiunea doar dacă știi ce faci.</translation>
 <translation id="6911734910326569517">Memorie utilizată</translation>
 <translation id="6912007319859991306">Codul PIN al cardului SIM pentru rețeaua mobilă</translation>
 <translation id="6912380255120084882">Încearcă alt dispozitiv</translation>
@@ -9832,6 +9836,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7990863024647916394">Vocea <ph name="COUNT" /> în <ph name="DISPLAY_NAME" /></translation>
 <translation id="7990958035181555539">Transferă automat conexiunea Wi-Fi de pe telefonul Android</translation>
 <translation id="7991296728590311172">Setările pentru Accesul prin comutare</translation>
+<translation id="7992080146463834191">Rezumă conținutul, simplifică limbajul complex sau pune întrebări.</translation>
 <translation id="7992203134935383159">Sintetizare vocală</translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Prioritatea procesului</translation>
@@ -11090,6 +11095,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8874448314264883207"><ph name="EXTENSION_NAME" /> a fost dezactivată</translation>
 <translation id="8874647982044395866">Organic</translation>
 <translation id="8874790741333031443">Încearcă să permiți temporar cookie-urile terță parte, ceea ce înseamnă mai puțină protecție pentru navigare, dar există șanse mai mari ca funcțiile site-urilor să funcționeze conform așteptărilor.</translation>
+<translation id="8875221558267407626">Rezumă conținut, simplifică limbajul complex sau pune întrebări</translation>
 <translation id="8875520811099717934">Upgrade la Linux</translation>
 <translation id="8875736897340638404">Alege vizibilitatea</translation>
 <translation id="8876307312329369159">Setarea nu poate fi modificată într-o sesiune demonstrativă.</translation>
@@ -11143,6 +11149,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8915916167043355778">Închide-le pe toate</translation>
 <translation id="8916476537757519021">Subcadru incognito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Da, accept</translation>
+<translation id="8917980324687233736">Afișează alăturat</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> utilizatorului <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Se instalează aplicația...</translation>
 <translation id="891931289445130855">Șterge datele și permisiunile</translation>

@@ -82,6 +82,7 @@
 <translation id="2094648590148273905">ChromeOS Flex шарттары</translation>
 <translation id="2094919256425865063">Баары бир Chrome'ду токтотосузбу?</translation>
 <translation id="2106831557840787829">ChromeOS Flex тутуму, <ph name="BEGIN_LINK_LINUX_OSS" />Linux'ту өнүктүрүү чөйрөсү<ph name="END_LINK_LINUX_OSS" /> сыяктуу, кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен иштейт.</translation>
+<translation id="2108778574543343055">Колдонмолор үчүн фондо иштеген Chrome'ду өчүрүү</translation>
 <translation id="2120620239521071941">Ушуну менен түзмөктөгү <ph name="ITEMS_COUNT" /> нерсе өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chrome'го <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
 <translation id="2121284319307530122">&amp;Chrome'ду жаңыртуу үчүн кайра иштетиңиз</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />Учурдагы жөндөөлөр<ph name="END_LINK" /> жөнүндө кабар берип, Chrome'ду өркүндөтүүгө кол кабыш кылыңыз</translation>
@@ -143,6 +144,7 @@
 <translation id="2797864378188255696"><ph name="USER_EMAIL" /> менен Gmail же YouTube сыяктуу Google кызматтарына киргенде, Chrome'го ошол эле аккаунт менен автоматтык түрдө кире аласыз</translation>
 <translation id="2799162042226656283">Chrome түзмөгүңүз</translation>
 <translation id="2799223571221894425">Кайра ишке киргизүү</translation>
+<translation id="2818684386420968393">Колдонмолор үчүн фондо иштеген Chrome'ду өчүрүү</translation>
 <translation id="2825024317344269723">Кооптуу сайт. Chrome билдирмелерди өчүрдү.</translation>
 <translation id="2841525013647267359">Төмөнкү тилден которуу</translation>
 <translation id="2846251086934905009">Орнотуу катасы: Орнотуу аягына чыккан жок. Орнотуу токтотулду.</translation>
@@ -356,6 +358,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="5596627076506792578">Дагы параметрлер</translation>
 <translation id="5602351063754773347">Chrome аны өчүрүүнү сунуштайт. <ph name="BEGIN_LINK" />Колдоого алынган кеңейтүүлөр жөнүндө кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome онлайн режиминде коопсуздугуңузду камсыз кылуу үчүн чоң аракеттерди кылат</translation>
+<translation id="5649680279845190972">Кеңейтүүлөрдү жана башкаларды бардык компьютерлериңизде колдонуу үчүн Chrome'го кириңиз</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> файлы кооптуу болушу мүмкүн, ошондуктан Chrome аны бөгөттөп койду.</translation>
 <translation id="566568153320186256">Chrome жылма сыдыруу жана видеодогу кадрлардын жыштыгы сыяктуу визуалдык кубулуштарды жана фондогу аракеттерди чектөө менен батареянын кубатын үнөмдөйт. <ph name="BEGIN_LINK" />Кубатты үнөмдөгүч жөнүндө кеңири маалымат алыңыз<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Аккаунтуңуздагы Chromе маалыматын өчүрүңүз</translation>

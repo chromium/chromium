@@ -220,6 +220,7 @@
 <translation id="114721135501989771">Chrome में Google स्मार्ट पाएं</translation>
 <translation id="1147322039136785890">अब <ph name="SUPERVISED_USER_NAME" /> इस डिवाइस का इस्तेमाल कर सकते हैं</translation>
 <translation id="1147991416141538220">ऐक्सेस मांगने के लिए, इस डिवाइस के एडमिन से संपर्क करें.</translation>
+<translation id="1148464196693569530">यूज़र स्क्रिप्ट को चालू करें</translation>
 <translation id="1148624853678088576">आप बिलकुल तैयार हैं!</translation>
 <translation id="1148669835763563782">आपको बेहतर सुरक्षा और Chromebook की नई सुविधाओं के लिए, सबसे नया सॉफ़्टवेयर अपडेट मिल रहा है. इस अपडेट में सेटअप के अनुभव को बेहतर बनाया गया है. इसकी मदद से, Chromebook को आसानी से इस्तेमाल किया जा सकता है.</translation>
 <translation id="1149401351239820326">समाप्ति माह</translation>
@@ -6779,6 +6780,7 @@
 <translation id="5794414402486823030">हमेशा सिस्‍टम व्‍यूअर से खोलें</translation>
 <translation id="5794700615121138172">Linux से Chromebook के साथ शेयर किए गए फ़ोल्डर</translation>
 <translation id="5794786537412027208">सभी Chrome Apps से बाहर निकलें</translation>
+<translation id="5795422263272161110">अगल-बगल दिखाएं</translation>
 <translation id="5796485699458186843">नया गुप्त टैब</translation>
 <translation id="5796956053441619942">रिमोट डिवाइस से मिला यूआरएल काम नहीं करता</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; और &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; पर शुरू करने का तरीका जानें</translation>
@@ -7307,6 +7309,7 @@
 <translation id="6170498031581934115">ADB डीबग करने की सुविधा चालू नहीं हो सकी. 'सेटिंग' पर जाएं और फिर से कोशिश करें.</translation>
 <translation id="6170675927290506430">सूचना सेटिंग पर जाएं</translation>
 <translation id="6171779718418683144">हर बार वेबसाइट पर आने के लिए पूछें</translation>
+<translation id="6172020488605056255">'पढ़ने में मेरी मदद करो' सुविधा इस्तेमाल करने के लिए राइट क्लिक करें</translation>
 <translation id="617213288191670920">कोई भाषा नहीं जोड़ी गई</translation>
 <translation id="6173623053897475761">अपना पिन दोबारा लिखें</translation>
 <translation id="6174909075810107548">माउस बटन को दबाने के लिए, “5” का इस्तेमाल करें</translation>
@@ -8334,6 +8337,7 @@
 <translation id="6910190732484284349">इस उपयोगकर्ता नाम के लिए पासकी मिटाएं: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">हटाया गया</translation>
 <translation id="6910274140210351823">डार्क</translation>
+<translation id="691102290537033604">इस एक्सटेंशन की मदद से उस कोड को चलाया जा सकेगा जिसकी समीक्षा Google ने नहीं की है. इस एक्सटेंशन को चालू करना असुरक्षित हो सकता है. ऐसा तब ही करें, जब यह आपकी ज़रूरत के मुताबिक काम कर रहा हो.</translation>
 <translation id="6911734910326569517">मेमोरी फ़ुटप्रिंट</translation>
 <translation id="6912007319859991306">सेल्युलर सिम के लिए पिन सेट करें</translation>
 <translation id="6912380255120084882">किसी दूसरे डिवाइस पर इस्तेमाल करके देखें</translation>
@@ -8639,7 +8643,7 @@
 <translation id="7134098520442464001">लेख को छोटा करें</translation>
 <translation id="7134951043985383439">खतरनाक फ़ाइल डाउनलोड की गई</translation>
 <translation id="7135729336746831607">क्या आप ब्लूटूथ चालू करना चाहते हैं?</translation>
-<translation id="7136694880210472378">डिफ़ॉल्ट बनाएं</translation>
+<translation id="7136694880210472378">डिफ़ॉल्ट के तौर पर सेट करें</translation>
 <translation id="7137277889990479760"><ph name="EMAIL" /> के तौर पर जारी रखें</translation>
 <translation id="7137771508221868414">साइटों और इंस्टॉल किए गए ऐप्लिकेशन के सेव किए गए कुल डेटा में से <ph name="TOTAL_USAGE" /> डेटा मिट जाएगा</translation>
 <translation id="7138678301420049075">अन्य</translation>
@@ -9843,6 +9847,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> आवाज़ <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Android फ़ोन के वाई-फ़ाई से अपने-आप कनेक्ट करें</translation>
 <translation id="7991296728590311172">ऐक्सेस का तरीका बदलने की सेटिंग</translation>
+<translation id="7992080146463834191">कॉन्टेंट के बारे में खास जानकारी पाएं, मुश्किल भाषा को आसान बनाएं या सवाल पूछें.</translation>
 <translation id="7992203134935383159">लिखाई को बोली में बदलने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="799570308305997052">वेबव्यू</translation>
 <translation id="7997826902155442747">प्राथमिकता संसाधित करें</translation>
@@ -11101,6 +11106,7 @@
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" को बंद किया गया है</translation>
 <translation id="8874647982044395866">ऑर्गैनिक</translation>
 <translation id="8874790741333031443">कुछ समय के लिए तीसरे पक्ष की कुकी को अनुमति दें. इसका मतलब है कि साइट को मिलने वाली ब्राउज़िंग से जुड़ी सुरक्षा कम हो जाएगी. हालांकि, साइट की सुविधाएं उम्मीद के मुताबिक काम करेंगी.</translation>
+<translation id="8875221558267407626">कॉन्टेंट के बारे में खास जानकारी पाएं, मुश्किल भाषा को आसान बनाएं या सवाल पूछें</translation>
 <translation id="8875520811099717934">Linux को अपग्रेड करना</translation>
 <translation id="8875736897340638404">'डिवाइस किसको दिखाई दे' सेटिंग में कोई विकल्प चुनें</translation>
 <translation id="8876307312329369159">यह सेटिंग किसी डेमो सत्र में बदली नहीं जा सकती है.</translation>
@@ -11154,6 +11160,7 @@
 <translation id="8915916167043355778">सभी बंद करें</translation>
 <translation id="8916476537757519021">गुप्त सबफ़्रेम: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">हां, मैं सहमत हूं</translation>
+<translation id="8917980324687233736">अगल-बगल दिखाएं</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> का <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">ऐप्लिकेशन इंस्टॉल हो रहा है...</translation>
 <translation id="891931289445130855">डेटा और अनुमतियां मिटाएं</translation>

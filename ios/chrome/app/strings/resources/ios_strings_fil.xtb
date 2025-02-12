@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa <ph name="BEGIN_LINK" />Mga Tuntunin ng Serbisyo<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Hindi kailanman nag-save</translation>
 <translation id="1062138828266376352">Hindi napalitan ang iyong PIN. Tingnan ang iyong koneksyon sa internet at subukan ulit</translation>
+<translation id="1074827084851510304">Ide-delete mo ang {password_count} (na) password at ang listahan ng mga site at app na pinili mong hinding-hindi magse-save ng impormasyon sa pag-sign in. Hindi made-delete ang anumang account na ginawa mo para sa mga site at app.</translation>
 <translation id="1076421457278169141">Na-scan na ang code</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}one{{count} tab}other{{count} na tab}}</translation>
 <translation id="1082554859195167538">Mga review ng produkto para sa iyo</translation>
@@ -574,6 +575,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3523789730715594198">Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3529024052484145543">Hindi secure</translation>
+<translation id="3530024057633834563">Wala kang anumang naka-save na password o passkey, pero puwede mong i-delete ang listahan ng mga site at app na pinili mong hinding-hindi magse-save ng impormasyon sa pag-sign in. Hindi made-delete ang anumang account na ginawa mo para sa mga site at app.</translation>
 <translation id="3530206579861815432">Mabilis na maghanap ng mga bukas at kamakailang isinarang tab sa lahat ng iyong naka-sync na device.</translation>
 <translation id="3530767473765895035">Pamahalaan ang mga account sa device na ito…</translation>
 <translation id="3533436815740441613">Bagong Tab</translation>
@@ -1601,6 +1603,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Naidagdag ang page sa iyong listahan ng babasahin sa account mo na {email}}one{Naidagdag ang {count} page sa iyong listahan ng babasahin sa account mo na {email}}other{Naidagdag ang {count} na page sa iyong listahan ng babasahin sa account mo na {email}}}</translation>
 <translation id="7947953824732555851">I-accept, mag-sign in</translation>
+<translation id="7952670906562503188">Ide-delete mo ang {passkey_count} (na) passkey at ang listahan ng mga site at app na pinili mong hinding-hindi magse-save ng impormasyon sa pag-sign in. Hindi made-delete ang anumang account na ginawa mo para sa mga site at app.</translation>
 <translation id="7958575506592576831">Impormasyon sa seguridad ng page</translation>
 <translation id="7961015016161918242">Hindi Kailanman</translation>
 <translation id="7966516440812255683">Puwedeng gumamit ng cookies ang mga site para pahusayin ang iyong karanasan sa pag-browse, halimbawa, para mapanatili kang naka-sign in o para maalala ang mga item sa shopping cart mo.
@@ -1882,6 +1885,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="9034759925968272072">Hindi ka masa-sign out sa iyong Google Account. Maaaring mayroong ibang mga uri ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Bandwidth</translation>
 <translation id="9042893549633094279">Privacy at seguridad</translation>
+<translation id="9055580485132823283">Ide-delete mo ang {password_count} (na) password, {passkey_count} (na) passkey, at ang listahan ng mga site at app na pinili mong hinding-hindi magse-save ng impormasyon sa pag-sign in. Hindi made-delete ang anumang account na ginawa mo para sa mga site at app.</translation>
 <translation id="9057030985451135243">Matuto tungkol sa mga naka-share na grupo ng tab</translation>
 <translation id="9057972802061533987">Hindi masubaybayan. Nagkaproblema.</translation>
 <translation id="9065203028668620118">I-edit</translation>

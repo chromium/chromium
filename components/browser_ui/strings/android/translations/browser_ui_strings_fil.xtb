@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Pagbaba ng presyo sa iyong mga nakabukas na tab}one{Pagbaba ng presyo sa iyong mga nakabukas na tab}other{na Pagbaba ng presyo sa iyong mga nakabukas na tab}}</translation>
 <translation id="5186036860380548585">Available ang opsyon malapit sa bandang itaas ng screen</translation>
 <translation id="5197729504361054390">Ibabahagi sa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ang mga contact na pipiliin mo.</translation>
+<translation id="5198930230016462977">Isinara ang bottom sheet ng pag-customize ng page ng bagong tab mo</translation>
 <translation id="5216942107514965959">Huling binisita ngayong araw</translation>
 <translation id="5225463052809312700">I-on ang camera</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Pag-track sa kamay</translation>
 <translation id="5771720122942595109">Naka-block ang <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Mga Pahintulot</translation>
+<translation id="5822675474983796325">Binuksan nang buo ang bottom sheet ng pag-customize ng page ng bagong tab mo</translation>
 <translation id="5844448279347999754">Kapag naka-on, puwedeng hilingin ng mga site na makita ang text at mga larawang naka-save sa iyong clipboard. Kapag naka-off, hindi makikita ng mga site ang text o mga larawang naka-save sa iyong clipboard.</translation>
 <translation id="5853982612236235577">Kapag naka-on, puwedeng hilingin ng mga site na magpadala ng mga notification. Kapag naka-off, hindi makakapagpadala ng mga notification ang mga site.</translation>
 <translation id="5860033963881614850">Naka-off</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Pinalawak</translation>
 <translation id="7219254577985949841">I-delete ang data ng site?</translation>
 <translation id="723171743924126238">Pumili ng mga larawan</translation>
+<translation id="7243246278722455312">Bottom sheet ng pag-customize ng page ng bagong tab mo</translation>
 <translation id="7243308994586599757">May mga opsyon malapit sa ibaba ng screen</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ang napili</translation>
 <translation id="7260727271532453612">Pinapayagan ang <ph name="PERMISSION_1" /> at <ph name="PERMISSION_2" /></translation>

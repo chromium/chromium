@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
+<translation id="1000127192436081677">‘အမြန် မျှဝေပါ’ ကို ပြောင်းပါ။ ‘အမြန် မျှဝေပါ’ <ph name="QUICK_SHARE_STATE" /> ထားသည်</translation>
 <translation id="1012876632442809908">USB-C ကိရိယာ (အရှေ့ပိုင်း ပို့တ်)</translation>
 <translation id="1013923882670373915">ဘလူးတုသ် ကိရိယာ"<ph name="DEVICE_NAME" />"က ချိတ်တွဲရန် ခွင့်ပြုချက် ရယူလိုသည်။ ကျေးဇူးပြုပြီး ထိုကိရိယာ ထဲသို့ ဒီPIN ကုဒ်ကို ထည့်ပေးပါ: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">၎င်းက Wi-Fi နှင့် မိုဘိုင်းကွန်ရက် တည်နေရာများ သုံးရန် <ph name="APP_NAME" /> အပါအဝင် တည်နေရာခွင့်ပြုချက်ရှိသော အက်ပ်၊ ဝဘ်ဆိုက်အားလုံးနှင့် ChromeOS တို့ကို ခွင့်ပြုပေးသည်။</translation>
@@ -154,6 +155,7 @@
 <translation id="1469148162491666137">၎င်းက ကင်မရာနှင့် မိုက်ခရိုဖုန်း ခွင့်ပြုချက်များပါသည့် <ph name="APP1_NAME" />၊ <ph name="APP2_NAME" />၊ အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို သုံးခွင့်ပေးသည်။ အင်တာနက်စာမျက်နှာကို ပြန်လည်စတင်ရမည် (သို့) အက်ပ်ကို ပြန်စရမည်။</translation>
 <translation id="147310119694673958">ဖုန်းဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">ဟော့စပေါ့ ဖွင့်/ပိတ်လုပ်သည်။ ဟော့စပေါ့ ဖွင့်ထားပြီး စက် ၁ ခု ချိတ်ဆက်ထားသည်။</translation>
+<translation id="1479685784053141667">အဆက်အသွယ်ထည့်ရန်</translation>
 <translation id="1479909375538722835">မျောနေသော အများသုံးနိုင်မှု မီနူး</translation>
 <translation id="1483493594462132177">ပို့ရန်</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -464,6 +466,7 @@
 <translation id="2598725286293895280">မျက်နှာပြင်ရှိ ပံ့ပိုးမထားသော အက်ပ်များ</translation>
 <translation id="2607678425161541573">အွန်လိုင်း လက်မှတ်ထိုးဝင်ခြင်း လိုအပ်သည်</translation>
 <translation id="2612072250312279703">လုပ်ဆောင်ချက် စောင့်ကြည့်စစ်ဆေးမှု</translation>
+<translation id="261210853165551493">ဖော်မက်လုပ်ခြင်းဖြင့် မိတ္တူကူးရန်</translation>
 <translation id="2612614436418177118">အက်ပ်သင်္ကေတတစ်ခုကို အက်ပ်ဇယားအတွင်းရွှေ့ရန်</translation>
 <translation id="2619052155095999743">ထည့်သွင်းရန်</translation>
 <translation id="2619326010008283367">လမ်းညွှန်အဆင့် <ph name="TOTAL_STEPS" /> ဆင့်အနက် <ph name="STEP" />။ သင့်စက်ဆက်တင်များကို Launcher တွင် ရှာတွေ့နိုင်သည်။ နောက်ခံပြောင်းခြင်း (သို့) စခရင်နားချိန်ပုံ သတ်မှတ်ခြင်းကဲ့သို့ ဆက်တင်များတွင် သင့် <ph name="PRODUCT_NAME" /> ကို စိတ်ကြိုက်လုပ်ကြည့်ပါ။</translation>
@@ -556,6 +559,7 @@
 <translation id="2932487126591186298">၁၀ မိနစ် ထည့်ထားသည်။ <ph name="REMAINING_TIME" /> ကျန်သည်။</translation>
 <translation id="2935225303485967257">ပရိုဖိုင်များ စီမံရန်</translation>
 <translation id="2941112035454246133">နိမ့်</translation>
+<translation id="2941232201846070406">အင်တာနက်ကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="2942350706960889382">နေရာချထားသည့် မှန်ဘီလူး</translation>
 <translation id="2942516765047364088">စင်၏ အနေအထား</translation>
 <translation id="2946119680249604491">ချိတ်ဆက်မှုကို ထည့်ရန်</translation>
@@ -971,6 +975,7 @@
 <translation id="4275663329226226506">မီဒီယာ</translation>
 <translation id="4279490309300973883">ထင်ဟပ်ပေးနေ</translation>
 <translation id="4280601795273309128">လုံခြုံရေးအပ်ဒိတ်များ ပြီးဆုံးပါပြီ။ သင့်စက်ကို အဆင့်မြှင့်ပါ။</translation>
+<translation id="4281739221820540368">Google Docs ပြုလုပ်ရန်</translation>
 <translation id="4283888303416325161">နောက်ထပ် လုံခြုံရေးအတွက် စကားဝှက်ထည့်ပါ</translation>
 <translation id="4285498937028063278">ပင်ဖြုတ်ရန်</translation>
 <translation id="428715201724021596">ပရိုဖိုင်ကို ချိတ်ဆက်နေသည်။ မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။</translation>
@@ -1043,6 +1048,7 @@
 <translation id="4513044611477939680">အမြန်မျှဝေပါ</translation>
 <translation id="4513946894732546136">အကြံပြုချက်</translation>
 <translation id="4518404433291145981">သင့် Chromebook ကို လော့ခ်ဖွင့်ရန် သင့်ဖုန်းကို ဦးစွာ လော့ခ်ဖွင့်ပါ</translation>
+<translation id="4525887279712865285">‘အမြန် မျှဝေပါ’ ဆက်တင်များကို ပြပါ</translation>
 <translation id="4527045527269911712">ဘလူးတုသ် ကိရိယာ "<ph name="DEVICE_NAME" />" က ချိတ်တွဲရန် ခွင့်ပြုချက် ရယူလိုသည်။</translation>
 <translation id="4531536770443562276">ဖန်သားပြင်အပြည့်သာ ရနိုင်သည်</translation>
 <translation id="4533343294786968049">ဘက်ထရီ သက်တမ်း ကြာရှည်စေခြင်း။ <ph name="FULLY_CHARGE_TIME" /> တွင် ဘက်ထရီအားပြည့်လိမ့်မည်။</translation>
@@ -1598,6 +1604,7 @@
 <translation id="6274202259872570803">ဖန်သားပြင် ထုတ်လွှင့်ခြင်း</translation>
 <translation id="6276708887952587684">စာမျက်နှာ အရင်းအမြစ်အား ကြည့်ရန်</translation>
 <translation id="6284232397434400372">ပုံရိပ်ပြတ်သားကိန်း ပြောင်းသွားခြင်း</translation>
+<translation id="6285871695023807425">Calendar တွင် ထည့်ရန်</translation>
 <translation id="6288235558961782912">မိဘခွင့်ပြုချက်ဖြင့် <ph name="USER_EMAIL_ADDRESS" /> ကို နောက်ပိုင်းတွင် ပြန်ထည့်နိုင်သည်။</translation>
 <translation id="6291221004442998378">အားသွင်းမနေပါ</translation>
 <translation id="6298183524022479114">ဤစက်ကို အက်ပ်တွင် စိတ်ကြိုက်လုပ်ပါ</translation>
@@ -1694,6 +1701,7 @@
 <translation id="6612889377159412215">လုပ်ဆောင်စရာ အပိုင်းခွဲ</translation>
 <translation id="6613765291890844037">သိုလှောင်ခန်း <ph name="STORAGE_IN_USE_SIZE" /> သုံးနေသည် | စုစုပေါင်း <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">အချက်အလက်လုံခြုံမှု ဖန်သားပြင်ကို ဖွင့်ထားသည်</translation>
+<translation id="6618277154885124991">Google Sheets ပြုလုပ်ရန်</translation>
 <translation id="6622679827379792051">သင့်ဖုန်းရှိ အက်ပ်များ ကြည့်ရှုမှုအတွက် စနစ်ထည့်သွင်းရန်</translation>
 <translation id="662279009180869175">မျက်နှာပြင် ခွဲ၍ပြသခြင်းကို အရွယ်ပြင်ရန် ဘယ်နှင့် ညာညွှန်မြား သုံးပါ</translation>
 <translation id="6624493541160101248">လက်ရှိမျက်နှာပြင်- <ph name="DESK_NAME" />။ မျက်နှာပြင် <ph name="DESK_COUNT" /> ခုအနက် <ph name="DESK_INDEX" />။</translation>
@@ -2249,6 +2257,7 @@
 <translation id="851660987304951246">အကြောင်းအရာများ အမြန်အနှစ်ချုပ်ရန် (သို့) မေးခွန်းများမေးရန် ‘ကူဖတ်ပေးပါ’ သုံးနိုင်သည်</translation>
 <translation id="8517041960877371778">သင်၏ <ph name="DEVICE_TYPE" /> ကိရိယာမှာ ဖွင့်ထားလျှင် အားသွင်း၍ ရချင်မှရမည်.</translation>
 <translation id="8535393432370007982">အရောင်ဖြင့် အစီအစဉ်တကျစီစဉ်မှုကို နောက်ပြန်ရန်</translation>
+<translation id="8539803091108018926">စာသားကို ‘ကလစ်ဘုတ်’ သို့ မိတ္တူကူးလိုက်ပါပြီ</translation>
 <translation id="8541078764854166027">ကင်မရာဘောင်ချိန်ရန်</translation>
 <translation id="8542053257095774575">သိမ်းထားသည့် မျက်နှာပြင်များ (သို့) ပုံစံများ မရှိပါ</translation>
 <translation id="8546059259582788728">အစီအစဉ်တကျစီခြင်းကို နောက်ပြန်ပြီးပြီ</translation>

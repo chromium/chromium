@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">Door verder te gaan, ga je akkoord met de <ph name="BEGIN_LINK" />Servicevoorwaarden<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Nooit opgeslagen</translation>
 <translation id="1062138828266376352">Je pincode is niet gewijzigd. Check de internetverbinding en probeer het opnieuw.</translation>
+<translation id="1074827084851510304">Je staat op het punt om {password_count} wachtwoorden en de lijst met sites en apps waarvoor je hebt gekozen om nooit inloggegevens op te slaan, te verwijderen. Accounts die je voor sites en apps hebt gemaakt, worden niet verwijderd.</translation>
 <translation id="1076421457278169141">Code gescand</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tabblad}other{{count} tabbladen}}</translation>
 <translation id="1082554859195167538">Productreviews voor jou</translation>
@@ -574,6 +575,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3523789730715594198">Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
 <translation id="3527085408025491307">Map</translation>
 <translation id="3529024052484145543">Niet beveiligd</translation>
+<translation id="3530024057633834563">Je hebt geen opgeslagen wachtwoorden of toegangssleutels, maar je kunt de lijst verwijderen met sites en apps waarvoor je hebt gekozen om nooit inloggegevens op te slaan. Accounts die je voor sites en apps hebt gemaakt, worden niet verwijderd.</translation>
 <translation id="3530206579861815432">Vind snel geopende en recent gesloten tabbladen op je gesynchroniseerde apparaten.</translation>
 <translation id="3530767473765895035">Accounts op dit apparaat beheren…</translation>
 <translation id="3533436815740441613">Nieuw tabblad</translation>
@@ -1601,6 +1603,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Pagina toegevoegd aan je leeslijst in je account, {email}}other{{count} pagina's toegevoegd aan je leeslijst in je account, {email}}}</translation>
 <translation id="7947953824732555851">Accepteren en inloggen</translation>
+<translation id="7952670906562503188">Je staat op het punt om {passkey_count} toegangssleutels en de lijst met sites en apps waarvoor je hebt gekozen om nooit inloggegevens op te slaan, te verwijderen. Accounts die je voor sites en apps hebt gemaakt, worden niet verwijderd.</translation>
 <translation id="7958575506592576831">Paginabeveiligingsinfo</translation>
 <translation id="7961015016161918242">Nooit</translation>
 <translation id="7966516440812255683">Sites mogen cookies gebruiken om de browsefunctionaliteit te verbeteren, bijvoorbeeld door je ingelogd te houden of door artikelen in je winkelwagen te onthouden.
@@ -1881,6 +1884,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="9034759925968272072">Je wordt niet uitgelogd van je Google-account. Voor je Google-account kunnen andere vormen van browsegeschiedenis beschikbaar zijn via <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Bandbreedte</translation>
 <translation id="9042893549633094279">Privacy en beveiliging</translation>
+<translation id="9055580485132823283">Je staat op het punt om {password_count} wachtwoorden, {passkey_count} toegangssleutels en de lijst met sites en apps waarvoor je hebt gekozen om nooit inloggegevens op te slaan, te verwijderen. Accounts die je voor sites en apps hebt gemaakt, worden niet verwijderd.</translation>
 <translation id="9057030985451135243">Meer informatie over gedeelde tabbladgroepen</translation>
 <translation id="9057972802061533987">Volgen is mislukt. Er is iets misgegaan.</translation>
 <translation id="9065203028668620118">Bewerken</translation>

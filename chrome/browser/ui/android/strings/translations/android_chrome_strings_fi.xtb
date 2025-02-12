@@ -1090,7 +1090,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="604996488070107836">Tiedoston <ph name="FILE_NAME" /> lataus epäonnistui tuntemattoman virheen vuoksi.</translation>
 <translation id="605721222689873409">VV</translation>
 <translation id="6059830886158432458">Muuta tarinoiden ja toiminnan asetuksia täällä</translation>
-<translation id="6070730414166672373">Otetaan yhteyttä pankkiisi\u2026</translation>
 <translation id="6071995715087444295">Kirjaudu Google-tilillesi, niin voit tarkistaa vaarantuneet salasanat</translation>
 <translation id="6085886413119427067">Määrittää, miten verkkosivustoihin yhdistetään suojatun yhteyden kautta</translation>
 <translation id="6087286598828478206">Estetäänkö ja poistutaanko ryhmästä?</translation>
@@ -1127,7 +1126,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="6210748933810148297">Etkö ole <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Tätä sivua esikatsellaan</translation>
 <translation id="6221633008163990886">Avaa lukitus viedäksesi salasanoja.</translation>
-<translation id="6225572914528673855">Osoitepalkki</translation>
 <translation id="6232535412751077445">Do Not Track -toiminnon käyttöönotto tarkoittaa sitä, että selausliikenteeseesi sisällytetään pyyntö. Sen vaikutus riippuu siitä, vastaako verkkosivusto pyyntöön ja miten pyyntöä tulkitaan.
 
 Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämällä sinulle mainoksia, jotka eivät perustu muihin vierailemiisi verkkosivustoihin. Monet sivustot keräävät ja käyttävät silti edelleen selaustietojasi – esimerkiksi turvallisuuden parantamiseen, sisällön, mainosten ja suositusten tarjoamiseen sekä raportointitilastojen luomiseen.</translation>
@@ -1283,6 +1281,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> välilehteä suljettiin.</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Audiotiedostot, 1 audiotiedosto listassa}other{Audiotiedostot, # audiotiedostoa listassa}}</translation>
 <translation id="685850645784703949">Google Discover – pois päältä</translation>
+<translation id="6861722405755529743">Kirjanmerkkipalkin ylivuotopainike</translation>
 <translation id="686366188661646310">Poistetaanko salasana?</translation>
 <translation id="6864459304226931083">Lataa kuva</translation>
 <translation id="686490460830618322">Sovellussuodatintaulukko</translation>

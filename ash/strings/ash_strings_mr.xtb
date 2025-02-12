@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
+<translation id="1000127192436081677">क्विक शेअर टॉगल करा. क्विक शेअर<ph name="QUICK_SHARE_STATE" /> आहे</translation>
 <translation id="1012876632442809908">USB-C डिव्‍हाइस (पुढील बाजूचे पोर्ट)</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" Bluetooth डिव्हाइस जोडण्यासाठी परवानगी घेऊ इच्छिते. कृपया त्या डिव्हाइसवर हा पिन एंटर करा: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">हे <ph name="APP_NAME" /> आणि स्थान परवानगीसह सर्व अ‍ॅप्स व वेबसाइट आणि ChromeOS ला वाय-फाय व मोबाइल नेटवर्क स्थान वापरण्याची अनुमती देते.</translation>
@@ -154,6 +155,7 @@
 <translation id="1469148162491666137">हे <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> आणि कॅमेरा व मायक्रोफोन वापरण्याच्या परवानग्यांसह सर्व अ‍ॅप्स व वेबसाइट अ‍ॅक्सेस करण्यास अनुमती देते. तुम्हाला वेब पेज रिफ्रेश करावे लागू शकते किंवा ॲप रीस्टार्ट करावे लागू शकते.</translation>
 <translation id="147310119694673958">फोनची बॅटरी <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">हॉटस्पॉट टॉगल करा. हॉटस्पॉट सुरू आहे, १ डिव्हाइस कनेक्ट केले आहे.</translation>
+<translation id="1479685784053141667">संपर्क तयार करा</translation>
 <translation id="1479909375538722835">फ्लोटिंग अ‍ॅक्सेसिबिलिटी मेनू</translation>
 <translation id="1483493594462132177">पाठवा</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -464,6 +466,7 @@
 <translation id="2598725286293895280">डेस्‍कमधील सपोर्ट नसलेली अ‍ॅप्स</translation>
 <translation id="2607678425161541573">ऑनलाइन साइन इन करणे आवश्यक आहे</translation>
 <translation id="2612072250312279703">अ‍ॅक्टिव्हिटी मॉनिटर</translation>
+<translation id="261210853165551493">फॉरमॅटिंगसह कॉपी करा</translation>
 <translation id="2612614436418177118">अ‍ॅप आयकन हा अ‍ॅप ग्रिडमध्ये हलवा</translation>
 <translation id="2619052155095999743">समाविष्ट करा</translation>
 <translation id="2619326010008283367">टूरच्या <ph name="TOTAL_STEPS" /> पायऱ्यांपैकी <ph name="STEP" />. लाँचर मध्ये तुम्ही तुमची डिव्हाइस सेटिंग्ज पाहू शकता. तुमचा वॉलपेपर बदलणे किंवा स्क्रीन सेव्हर सेट करणे यासारख्या गोष्टींसाठी सेटिंग्ज मध्ये तुमचे <ph name="PRODUCT_NAME" /> कस्टमाइझ करून पहा.</translation>
@@ -556,6 +559,7 @@
 <translation id="2932487126591186298">१० मिनिटे जोडली आहेत. <ph name="REMAINING_TIME" /> शिल्लक आहेत.</translation>
 <translation id="2935225303485967257">प्रोफाइल व्यवस्थापित करा</translation>
 <translation id="2941112035454246133">निम्न</translation>
+<translation id="2941232201846070406">तुमचे इंटरनेट तपासा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="2942350706960889382">डॉक केलेले मॅग्निफायर</translation>
 <translation id="2942516765047364088">शेल्फ स्थिती</translation>
 <translation id="2946119680249604491">कनेक्शन जोडा</translation>
@@ -640,6 +644,7 @@
 <translation id="3206735939915734551">कॅप्स लॉक सुरू/बंद करा</translation>
 <translation id="3207953481422525583">वापरकर्ता सेटिंग्ज</translation>
 <translation id="3208321278970793882">ॲप</translation>
+<translation id="3212221635583599601">अधिकसाठी इंटरनेटशी कनेक्ट करा</translation>
 <translation id="3213571860604332401">बुकमार्क म्हणून लिंक सेव्ह करा</translation>
 <translation id="3217205077783620295">व्हॉल्यूम सुरू आहे, टॉगल केल्याने ऑडिओ म्यूट होईल.</translation>
 <translation id="3226991577105957773">आणखी +<ph name="COUNT" /></translation>
@@ -971,6 +976,7 @@
 <translation id="4275663329226226506">माध्यम</translation>
 <translation id="4279490309300973883">मिररिंग</translation>
 <translation id="4280601795273309128">सुरक्षा अपडेट पूर्ण झाली आहेत. तुमचे डिव्हाइस अपग्रेड करा.</translation>
+<translation id="4281739221820540368">Google Docs तयार करा</translation>
 <translation id="4283888303416325161">आणखी सुरक्षिततेसाठी पासवर्ड एंटर करा</translation>
 <translation id="4285498937028063278">अनपिन</translation>
 <translation id="428715201724021596">प्रोफाइलशी कनेक्ट करत आहे. याला काही मिनिटे लागू शकतात.</translation>
@@ -1043,6 +1049,7 @@
 <translation id="4513044611477939680">क्विक शेअर</translation>
 <translation id="4513946894732546136">फीडबॅक</translation>
 <translation id="4518404433291145981">तुमचे Chromebook अनलॉक करण्यासाठी, आधी तुमचा फोन अनलॉक करा</translation>
+<translation id="4525887279712865285">क्विक शेअर सेटिंग्ज दाखवा</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" Bluetooth डिव्हाइस जोडण्यासाठी परवानगी घेऊ इच्छिते.</translation>
 <translation id="4531536770443562276">फक्त फुलस्क्रीन उपलब्ध आहे</translation>
 <translation id="4533343294786968049">तुमची बॅटरी लाइफ वाढवत आहे. <ph name="FULLY_CHARGE_TIME" /> पर्यंत बॅटरी पूर्णपणे चार्ज होईल.</translation>
@@ -1598,6 +1605,7 @@
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276708887952587684">पेज स्रोत पहा</translation>
 <translation id="6284232397434400372">रीझोल्युशन बदलले</translation>
+<translation id="6285871695023807425">Calendar मध्ये जोडा</translation>
 <translation id="6288235558961782912">पालकाच्या परवानगीने <ph name="USER_EMAIL_ADDRESS" /> नंतर पुन्हा जोडता येईल.</translation>
 <translation id="6291221004442998378">चार्ज होत नाही</translation>
 <translation id="6298183524022479114">ॲपमध्ये हे डिव्हाइस कस्टमाइझ करा</translation>
@@ -1694,6 +1702,7 @@
 <translation id="6612889377159412215">उपटास्क</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> स्टोरेज वापरात आहे | <ph name="STORAGE_TOTAL_SIZE" /> एकूण</translation>
 <translation id="6614169507485700968">गोपनीयता स्क्रीन सुरू आहे</translation>
+<translation id="6618277154885124991">Google Sheets तयार करा</translation>
 <translation id="6622679827379792051">तुमच्या फोनमधील ॲप्स पाहणे सेट करा</translation>
 <translation id="662279009180869175">स्प्लिट स्क्रीनचा आकार बदलण्यासाठी लेफ्ट आणि राइट अ‍ॅरो वापरा</translation>
 <translation id="6624493541160101248">सध्याचा डेस्क: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> पैकी <ph name="DESK_INDEX" /> डेस्‍क.</translation>
@@ -2249,6 +2258,7 @@
 <translation id="851660987304951246">आशयाचा झटपट सारांश देण्यासाठी किंवा प्रश्न विचारण्यासाठी मला वाचण्यात मदत करा वापरा</translation>
 <translation id="8517041960877371778">तुमचे <ph name="DEVICE_TYPE" /> सुरू केले असताना कदाचित चार्ज होणार नाही.</translation>
 <translation id="8535393432370007982">रंगानुसार क्रमवारीचा क्रम पहिल्यासारखा करा</translation>
+<translation id="8539803091108018926">मजकूर क्लिपबोर्डवर कॉपी केला</translation>
 <translation id="8541078764854166027">कॅमेरा फ्रेमिंग</translation>
 <translation id="8542053257095774575">कोणतीही सेव्ह केलेली डेस्‍क किंवा टेंप्लेट नाहीत</translation>
 <translation id="8546059259582788728">क्रमाने लावणे पहिल्यासारखे करण्यात यश आले</translation>

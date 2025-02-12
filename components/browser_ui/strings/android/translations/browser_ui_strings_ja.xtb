@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{開いているタブの値下げ情報}other{開いているタブの値下げ情報}}</translation>
 <translation id="5186036860380548585">設定は画面上部にあります</translation>
 <translation id="5197729504361054390">選択した連絡先が <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> と共有されます。</translation>
+<translation id="5198930230016462977">[新しいタブページをカスタマイズ] のボトムシートを閉じました</translation>
 <translation id="5216942107514965959">最終アクセス日: 今日</translation>
 <translation id="5225463052809312700">カメラをオンにする</translation>
 <translation id="5234764350956374838">閉じる</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">ハンド トラッキング</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />をブロック</translation>
 <translation id="5804241973901381774">権限</translation>
+<translation id="5822675474983796325">[新しいタブページをカスタマイズ] のボトムシートが画面全体に表示されています</translation>
 <translation id="5844448279347999754">オンにすると、サイトはクリップボードに保存されたテキストや画像の参照を要求できます。オフにすると、サイトはクリップボードに保存されたテキストや画像を参照できません。</translation>
 <translation id="5853982612236235577">オンにすると、サイトは通知の送信を要求できます。オフにすると、サイトは通知を送信できません。</translation>
 <translation id="5860033963881614850">オフ</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">展開表示中</translation>
 <translation id="7219254577985949841">サイトデータを削除しますか？</translation>
 <translation id="723171743924126238">画像を選択</translation>
+<translation id="7243246278722455312">[新しいタブページをカスタマイズ] のボトムシート</translation>
 <translation id="7243308994586599757">画面の下の方にオプションがあります</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> 件選択されています</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />を許可</translation>

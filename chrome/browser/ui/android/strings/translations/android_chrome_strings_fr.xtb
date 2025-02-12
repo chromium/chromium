@@ -582,6 +582,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3701167022068948696">Corriger maintenant</translation>
 <translation id="3701515417135397388">Recevoir une alerte si un mot de passe a été compromis lors d'une violation de données</translation>
 <translation id="3703166520839776970">Si le problème persiste, sélectionnez "Plus d'informations" ci-dessous pour obtenir des informations complémentaires auprès de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="3708100450779900829">Lorsque votre appareil est plié, vous pouvez choisir une option ou appuyer de manière prolongée sur la barre d'adresse pour changer sa position</translation>
 <translation id="3710501561113687889">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site <ph name="FIELDS_STRING" />.</translation>
 <translation id="3710560693796335511">Collaboration</translation>
 <translation id="3714981814255182093">Ouvrir la barre de recherche</translation>
@@ -1090,7 +1091,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="604996488070107836">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison d'une erreur inconnue.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Contrôlez vos articles et votre activité via ce menu</translation>
-<translation id="6070730414166672373">Nous contactons votre banque…</translation>
 <translation id="6071995715087444295">Pour vérifier si vos mots de passe ont été compromis, connectez-vous à votre compte Google</translation>
 <translation id="6085886413119427067">Détermine comment se connecter aux sites Web via une connexion sécurisée</translation>
 <translation id="6087286598828478206">Bloquer et quitter le groupe ?</translation>
@@ -1127,7 +1127,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="6210748933810148297"><ph name="EMAIL" /> n'est pas votre adresse e-mail ?</translation>
 <translation id="6211386937064921208">Aperçu de cette page</translation>
 <translation id="6221633008163990886">Déverrouiller pour exporter vos mots de passe</translation>
-<translation id="6225572914528673855">Barre d'adresse</translation>
 <translation id="6232535412751077445">Si vous interdisez le suivi, une demande sera incluse dans le trafic lié à votre navigation. Les résultats obtenus dépendent de la réponse du site (s'il répond ou non) et de la manière dont il interprète la demande.
 
 Par exemple, certains sites Web peuvent répondre à cette demande en diffusant des annonces qui ne sont pas déterminées en fonction des autres sites Web que vous avez consultés. Toutefois, nombre d'entre eux recueillent et utilisent vos données de navigation afin, par exemple, d'améliorer la sécurité ou d'afficher du contenu, des services, des annonces et des recommandations, ou encore pour générer des rapports statistiques.</translation>
@@ -1615,6 +1614,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8236063039629122676">Désormais, un balayage vers la droite vous ramène à la page précédente, et un balayage vers la gauche vous permet d'accéder à la page suivante</translation>
 <translation id="8236097722223016103">Ajouter aux favoris</translation>
 <translation id="8243077599929149377">Ajouter votre nom d'utilisateur</translation>
+<translation id="8244387390464017490">Personnaliser page "Nouvel onglet"</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8255617931166444521">Les sites ne peuvent utiliser vos cookies que pour voir votre activité de navigation sur ces sites</translation>
 <translation id="8258999165172757081">Ajouté</translation>

@@ -554,6 +554,7 @@
 <translation id="3628462041319107639">กำลังดาวน์โหลดโมเดลการถอดเสียงเป็นคำ…</translation>
 <translation id="3632040286124154621">คำแนะนำถูกใจ</translation>
 <translation id="3632579075709132555">เปิด/ปิดหน้าจอความเป็นส่วนตัว</translation>
+<translation id="3634941468757842845">เลือกธีม</translation>
 <translation id="3639873154908477486">ชื่อ (A ถึง Z)</translation>
 <translation id="3644695927181369554">คำแนะนำแย่</translation>
 <translation id="3651050199673793219">เลือกหน่วยวัดอุณหภูมิ</translation>
@@ -1540,6 +1541,7 @@
 <translation id="8132480444149501833">ขอตัวนับการรับส่งข้อมูล</translation>
 <translation id="8135609423982943441">Chromebook รีเซ็ตเป็นค่าเริ่มต้นที่ปลอดภัยแล้ว คุณปรับเปลี่ยนสิ่งเหล่านี้ได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8140591278915222789">สร้างของคุณเอง</translation>
 <translation id="8143951647992294073">เลือก <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">เครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" /></translation>

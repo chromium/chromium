@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Gostyngiad pris ar eich tabiau sydd ar agor}zero{Gostyngiadau pris ar eich tabiau sydd ar agor}two{Gostyngiadau pris ar eich tabiau sydd ar agor}few{Gostyngiadau pris ar eich tabiau sydd ar agor}many{Gostyngiadau pris ar eich tabiau sydd ar agor}other{Gostyngiadau pris ar eich tabiau sydd ar agor}}</translation>
 <translation id="5186036860380548585">Mae'r opsiwn ar gael yn agos at frig y sgrîn</translation>
 <translation id="5197729504361054390">Bydd y cysylltiadau rydych yn eu dewis yn cael eu rhannu gyda <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5198930230016462977">Dalen waelod addasu eich tudalen tab newydd wedi cau</translation>
 <translation id="5216942107514965959">Ymwelwyd ddiwethaf heddiw</translation>
 <translation id="5225463052809312700">Troi'r camera ymlaen</translation>
 <translation id="5234764350956374838">Diystyru</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Olrhain dwylo</translation>
 <translation id="5771720122942595109">Rhwystrwyd <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Caniatadau</translation>
+<translation id="5822675474983796325">Dalen waelod addasu eich tudalen tab newydd wedi'i hagor ar uchder llawn</translation>
 <translation id="5844448279347999754">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am weld testun a lluniau sydd wedi'u cadw ar eich clipfwrdd. Pan fydd wedi'i ddiffodd, ni all gwefannau weld testun a lluniau sydd wedi'u cadw ar eich clipfwrdd.</translation>
 <translation id="5853982612236235577">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am anfon hysbysiadau. Pan fydd wedi'i ddiffodd, ni all gwefannau anfon hysbysiadau.</translation>
 <translation id="5860033963881614850">Diffodd</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Wedi'i ehangu</translation>
 <translation id="7219254577985949841">Dileu data gwefan?</translation>
 <translation id="723171743924126238">Dewis lluniau</translation>
+<translation id="7243246278722455312">Dalen waelod addasu eich tudalen tab newydd</translation>
 <translation id="7243308994586599757">Mae opsiynau ar gael yn agos at waelod y sgrîn</translation>
 <translation id="7250468141469952378">Mae <ph name="ITEM_COUNT" /> wedi'u dewis</translation>
 <translation id="7260727271532453612">Caniateir <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /></translation>

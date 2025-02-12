@@ -96,6 +96,7 @@
 <translation id="2343156876103232566">Per enviar un número d'aquí al teu telèfon Android, inicia la sessió a Chromium en tots dos dispositius.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2361918034042471035">L'extensió "<ph name="EXTENSION_NAME" />" vol que iniciïs la sessió a Chromium</translation>
+<translation id="236943522426971115">Desactiva l'execució de Chromium en segon pla per a les aplicacions</translation>
 <translation id="2374216753258219393">Per utilitzar aquesta extensió com a <ph name="USER_EMAIL_ADDRESS" />, inicia la sessió a Chromium.</translation>
 <translation id="2384373936468275798">Chromium OS no ha pogut sincronitzar les teves dades perquè la informació d'inici de sessió del teu compte no està actualitzada.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Una o més extensions de Chromium estaven accedint a 1 dispositiu d'interfície humana}=1{Una o més extensions de Chromium estan accedint a 1 dispositiu d'interfície humana}other{Una o més extensions de Chromium estan accedint a # dispositius d'interfície humana}}</translation>
@@ -178,6 +179,7 @@
 <translation id="3406848076815591792">Vols canviar al perfil de Chromium existent?</translation>
 <translation id="3412460710772753638">Al gestor de contrasenyes en aquest dispositiu</translation>
 <translation id="3430503420100763906">Els perfils de Chromium et permeten separar tot el contingut de Chromium. Crea perfils per a amics i familiars, o separa la feina de la diversió.</translation>
+<translation id="3451656833730006755">Per accedir a les extensions i altres elements des de tots els teus ordinadors, inicia la sessió a Chromium</translation>
 <translation id="347328004046849135">Chromium t'enviarà una notificació quan iniciïs la sessió amb una contrasenya en perill</translation>
 <translation id="3474745554856756813">Amb aquesta acció, se suprimiran <ph name="ITEMS_COUNT" /> elements d'aquest dispositiu. Per recuperar les teves dades més endavant, inicia la sessió a Chromium com a <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> permet canviar entre perfils de Chromium</translation>
@@ -503,6 +505,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8013436988911883588">Un cop Chromium tingui accés, els llocs web et podran demanar accés.</translation>
 <translation id="80471789339884597">T'agraïm la instal·lació. Has de reiniciar tots els navegadors abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Mostra sempre la drecera de la cerca d'imatges</translation>
+<translation id="8077498902115777962">Desactiva l'execució de Chromium en segon pla per a les aplicacions</translation>
 <translation id="80790299200510644">Cerca d'imatges</translation>
 <translation id="8086881907087796310">La instal·lació ha fallat perquè l'ordinador no compleix els requisits mínims de maquinari.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>

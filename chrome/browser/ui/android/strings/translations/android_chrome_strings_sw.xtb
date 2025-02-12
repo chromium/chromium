@@ -1090,7 +1090,6 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="604996488070107836">Kipakuliwa cha <ph name="FILE_NAME" /> hakijafaulu kwa sababu ya hitilafu isiyojulikana.</translation>
 <translation id="605721222689873409">MK</translation>
 <translation id="6059830886158432458">Dhibiti hadithi na shughuli zako hapa</translation>
-<translation id="6070730414166672373">Inawasiliana na benki yako\u2026</translation>
 <translation id="6071995715087444295">Ili ukague manenosiri yaliyoathiriwa, ingia katika Akaunti yako ya Google</translation>
 <translation id="6085886413119427067">Hubainisha jinsi ya kuunganisha kwenye tovuti kupitia muunganisho salama</translation>
 <translation id="6087286598828478206">Ungependa kuzuia na kuondoka kwenye kikundi?</translation>
@@ -1127,7 +1126,6 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="6210748933810148297">Wewe si <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Unaangalia onyesho la kukagua ukurasa huu</translation>
 <translation id="6221633008163990886">Fungua ili uhamishe manenosiri yako</translation>
-<translation id="6225572914528673855">Sehemu ya anwani</translation>
 <translation id="6232535412751077445">Kuwasha ‘Usifuatilie’ kunamaanisha kuwa ombi litajumuishwa pamoja na maelezo yako mengine ya kuvinjari. Athari yoyote itategemea ikiwa tovuti inajibu ombi, na namna ombi litakavyofasiriwa.
 
 Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo ambayo hayalingani na tovuti nyingine ulizotembelea. Tovuti nyingi bado zitakusanya na kutumia data yako ya kuvinjari — kwa mfano ili kuboresha usalama, kutoa maudhui, matangazo na mapendekezo, na kuzalisha takwimu za kuripoti.</translation>
@@ -1283,6 +1281,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6850830437481525139">Vichupo <ph name="TAB_COUNT" /> vimefungwa</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Faili za sauti, faili 1 ya sauti kwenye orodha}other{Faili za sauti, faili # za sauti kwenye orodha}}</translation>
 <translation id="685850645784703949">Dokezo kutoka Google - imezimwa</translation>
+<translation id="6861722405755529743">Kitufe cha vipengee vya ziada cha sehemu ya alamisho</translation>
 <translation id="686366188661646310">Ungependa kufuta nenosiri?</translation>
 <translation id="6864459304226931083">Pakua picha</translation>
 <translation id="686490460830618322">Laha ya kichujio cha programu</translation>

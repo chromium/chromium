@@ -30,6 +30,7 @@
 <translation id="2118649612461486615">Дүкөн жөнүндө маалымат</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Жабылган өтмөктөр менен топторду Акыркы өтмөктөр жана Өтмөк топтору бөлүмүнөн кайра ачууга болот. Жашыруун өтмөк жеткиликсиз болот.}other{Жабылган өтмөктөр менен топторду Акыркы өтмөктөр жана Өтмөк топтору бөлүмүнөн кайра ачууга болот. # жашыруун өтмөк жеткиликсиз болот.}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> сайтында эми <ph name="CURRENT_PRICE" /></translation>
+<translation id="2242907120821295124"><ph name="TAB_GROUP_NAME" /> өтмөктөр тобу мындан ары жеткиликсиз</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Өтмөктү топтон ажыратуу}other{Өтмөктөрдү топтон ажыратуу}}</translation>
 <translation id="2271452184061378400">Өтмөк топтору ушул жерде сакталат</translation>
 <translation id="2277224997687551299">Топтун аталышын өзгөртүү</translation>
@@ -87,6 +88,7 @@
 <translation id="4783638485675352219">Ушул түзмөктөгү аталыштарды жана ачылган өтмөктөрдүн URL даректерин операциялык тутум менен бөлүшүү</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> сын-пикир)}other{(<ph name="REVIEWS_COUNT_MANY" /> сын-пикир)}}</translation>
 <translation id="4850886885716139402">Көрүнүш</translation>
+<translation id="4861611890274104875">Картаны этибарга албоо.</translation>
 <translation id="4861953997778766866">Бөлүшүлгөн өтмөк топторуна баары өзгөртүү киргизе алышат</translation>
 <translation id="4870911314065352661">Бардык өтмөктөр жабылсынбы?</translation>
 <translation id="4871719318659334896">Топту жабуу</translation>

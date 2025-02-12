@@ -1091,7 +1091,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="604996488070107836">Falha no download do arquivo <ph name="FILE_NAME" /> devido a um erro desconhecido.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controle suas matérias e atividade aqui</translation>
-<translation id="6070730414166672373">Entrando em contato com o banco\u2026</translation>
 <translation id="6071995715087444295">Para verificar se há senhas comprometidas, faça login na sua Conta do Google</translation>
 <translation id="6085886413119427067">Determina como se conectar a sites por uma conexão segura</translation>
 <translation id="6087286598828478206">Bloquear e sair do grupo?</translation>
@@ -1128,7 +1127,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="6210748933810148297">Não é <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Visualizando esta página</translation>
 <translation id="6221633008163990886">Desbloqueie para exportar suas senhas</translation>
-<translation id="6225572914528673855">Barra de endereço</translation>
 <translation id="6232535412751077445">Ao ativar o recurso "Não rastrear" uma solicitação é incluída no tráfego de navegação. O resultado depende da resposta de um site à solicitação e de como a solicitação é interpretada.
 
 Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que não têm qualquer relação com os sites que você costuma visitar. Mesmo assim, alguns websites ainda vão coletar e usar seus dados de navegação para, por exemplo, melhorar a segurança, gerar conteúdo, anúncios, recomendações e relatórios de estatística.</translation>
@@ -1284,6 +1282,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> guias fechadas</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Arquivos de áudio: 1 arquivo de áudio na lista}one{Arquivos de áudio: # arquivo de áudio na lista}other{Arquivos de áudio: # arquivos de áudio na lista}}</translation>
 <translation id="685850645784703949">Discover do Google (desativado)</translation>
+<translation id="6861722405755529743">Botão flutuante da barra de favoritos</translation>
 <translation id="686366188661646310">Excluir senha?</translation>
 <translation id="6864459304226931083">Baixar imagem</translation>
 <translation id="686490460830618322">Página de filtro de apps</translation>

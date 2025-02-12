@@ -96,6 +96,7 @@
 <translation id="2343156876103232566">Jos haluat lähettää numeron täältä Android-puhelimeesi, kirjaudu Chromiumiin molemmilla laitteilla.</translation>
 <translation id="2359808026110333948">Jatka</translation>
 <translation id="2361918034042471035">Laajennus "<ph name="EXTENSION_NAME" />" haluaa, että kirjaudut Chromiumiin</translation>
+<translation id="236943522426971115">Poista käytöstä Chromiumin taustalla toimiminen sovelluksissa</translation>
 <translation id="2374216753258219393">Jos haluat käyttää tätä laajennusta käyttäjänä <ph name="USER_EMAIL_ADDRESS" />, kirjaudu sisään Chromiumiin.</translation>
 <translation id="2384373936468275798">Chromium-käyttöjärjestelmä ei voi synkronoida tietoja, sillä tilin kirjautumistiedot ovat vanhentuneet.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Yhdellä tai useammalla Chromium-laajennuksella oli pääsy yhdelle HID-laitteelle}=1{Yhdellä tai useammalla Chromium-laajennuksella on pääsy yhdelle HID-laitteelle}other{Yhdellä tai useammalla Chromium-laajennuksella on pääsy # HID-laitteelle}}</translation>
@@ -503,6 +504,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8013436988911883588">Kun Chromiumilla on käyttöoikeus, sivustot voivat pyytää sitä sinulta.</translation>
 <translation id="80471789339884597">Kiitos asennuksesta. Kaikki selaimet pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
 <translation id="8054112667659782652">Näytä aina kuvahaun pikanäppäin</translation>
+<translation id="8077498902115777962">Poista käytöstä Chromiumin taustalla toimiminen sovelluksissa</translation>
 <translation id="80790299200510644">Kuvahaku</translation>
 <translation id="8086881907087796310">Asennus epäonnistui, koska tietokoneesi ei täytä laitteiston vähimmäisvaatimuksia.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> – Google Chrome for Testing</translation>

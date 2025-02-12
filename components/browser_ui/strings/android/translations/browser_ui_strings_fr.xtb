@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Baisse de prix dans les onglets ouverts}one{Baisse de prix dans les onglets ouverts}other{Baisses de prix dans les onglets ouverts}}</translation>
 <translation id="5186036860380548585">Cette option est disponible en haut de l'écran</translation>
 <translation id="5197729504361054390">Les contacts que vous sélectionnez seront partagés avec <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5198930230016462977">Bottom sheet de personnalisation de la page Nouvel onglet fermée</translation>
 <translation id="5216942107514965959">Dernière visite : aujourd'hui</translation>
 <translation id="5225463052809312700">Activer la caméra</translation>
 <translation id="5234764350956374838">Ignorer</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Suivi des mains</translation>
 <translation id="5771720122942595109">Autorisation refusée : <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Autorisations</translation>
+<translation id="5822675474983796325">Bottom sheet de personnalisation de la page Nouvel onglet ouverte à pleine hauteur</translation>
 <translation id="5844448279347999754">Lorsque cette option est activée, les sites peuvent demander à voir le texte et les images enregistrés dans le presse-papiers. Lorsqu'elle est désactivée, les sites ne peuvent pas voir le texte ni les images enregistrés dans le presse-papiers.</translation>
 <translation id="5853982612236235577">Lorsque cette option est activée, les sites peuvent demander à envoyer des notifications. Lorsqu'elle est désactivée, les sites ne peuvent pas envoyer de notifications.</translation>
 <translation id="5860033963881614850">Désactivé</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Développé</translation>
 <translation id="7219254577985949841">Supprimer les données du site ?</translation>
 <translation id="723171743924126238">Sélectionner des images</translation>
+<translation id="7243246278722455312">Bottom sheet de personnalisation de la page Nouvel onglet</translation>
 <translation id="7243308994586599757">Options disponibles au bas de l'écran</translation>
 <translation id="7250468141469952378">Nombre d'éléments sélectionnés : <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Autorisations accordées : <ph name="PERMISSION_1" /> et <ph name="PERMISSION_2" /></translation>

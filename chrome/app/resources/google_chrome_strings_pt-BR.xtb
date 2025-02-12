@@ -78,6 +78,7 @@
 <translation id="2094648590148273905">Termos do ChromeOS Flex</translation>
 <translation id="2094919256425865063">Sair do Chrome mesmo assim?</translation>
 <translation id="2106831557840787829">A criação do ChromeOS Flex só foi possível graças a um outro <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" />, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente de desenvolvimento do Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2108778574543343055">Desativar o Chrome em segundo plano para apps</translation>
 <translation id="2120620239521071941">Essa ação excluirá <ph name="ITEMS_COUNT" /> itens desse dispositivo. Para recuperar seus dados mais tarde, faça login no Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Reinicializar para atualizar o &amp;Chrome</translation>
 <translation id="2123055963409958220">Ajude a melhorar o Chrome informando as <ph name="BEGIN_LINK" />configurações atuais<ph name="END_LINK" /></translation>
@@ -139,6 +140,7 @@
 <translation id="2797864378188255696">Ao fazer login nos Serviços do Google (como o Gmail ou o YouTube) com <ph name="USER_EMAIL" />, você pode se conectar automaticamente ao Chrome com a mesma conta</translation>
 <translation id="2799162042226656283">Seu Chrome</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
+<translation id="2818684386420968393">Desativar o Chrome em segundo plano para apps</translation>
 <translation id="2825024317344269723">Site perigoso. O Chrome removeu as notificações.</translation>
 <translation id="2841525013647267359">Traduzir do</translation>
 <translation id="2846251086934905009">Erro de instalação: a instalação não foi concluída. A instalação foi cancelada.</translation>

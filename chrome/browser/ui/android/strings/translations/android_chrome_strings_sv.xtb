@@ -1091,7 +1091,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="604996488070107836">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av ett okänt fel.</translation>
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6059830886158432458">Styr dina berättelser och din aktivitet här</translation>
-<translation id="6070730414166672373">Kontaktar din bank \u2026</translation>
 <translation id="6071995715087444295">Logga in på Google-kontot för att kontrollera om det finns utsatta lösenord</translation>
 <translation id="6085886413119427067">Styr hur du ansluter till webbplatser via en säker anslutning</translation>
 <translation id="6087286598828478206">Vill du blockera och lämna gruppen?</translation>
@@ -1128,7 +1127,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6210748933810148297">Inte <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Förhandsgranskar sidan</translation>
 <translation id="6221633008163990886">Lås upp om du vill exportera dina lösenord</translation>
-<translation id="6225572914528673855">Adressfält</translation>
 <translation id="6232535412751077445">Om du aktiverar Do Not Track inkluderas en begäran i din surftrafik. Eventuella effekter beror på om webbplatsen svarar på begäran och hur begäran tolkas.
 
 Vissa webbplatser kan till exempel svara på begäran genom att visa annonser som inte baseras på andra webbplatser du har besökt. Många webbplatser samlar ändå in och använder din webbinformation – till exempel för att förbättra säkerheten, tillhandahålla innehåll, annonser och rekommendationer samt generera rapportstatistik.</translation>

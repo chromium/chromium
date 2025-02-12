@@ -96,6 +96,7 @@
 <translation id="2343156876103232566">Ha innen szeretne számot küldeni Android-telefonjára, jelentkezzen be a Chromiumba mindkét eszközén.</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2361918034042471035">A(z) „<ph name="EXTENSION_NAME" />” bővítmény arra kéri, hogy jelentkezzen be a Chromiumba</translation>
+<translation id="236943522426971115">A Chromium háttérben való futtatásának letiltása az alkalmazásoknál</translation>
 <translation id="2374216753258219393">Ha ezt a bővítményt a(z) <ph name="USER_EMAIL_ADDRESS" /> fiókban szeretné használni, jelentkezzen be a Chromiumba.</translation>
 <translation id="2384373936468275798">A ChromiumOS nem tudta szinkronizálni az adatokat, mert a fiók bejelentkezési adatai elavultak.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Valamelyik (akár több is) Chromium-bővítmény hozzáfért 1 HID-eszközhöz}=1{Valamelyik (akár több is) Chromium-bővítmény éppen hozzáfér 1 HID-eszközhöz}other{Valamelyik (akár több is) Chromium-bővítmény éppen hozzáfér # HID-eszközhöz}}</translation>
@@ -501,6 +502,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8013436988911883588">Miután hozzáférést biztosított a Chromiumnak, a webhelyek is hozzáférést kérhetnek.</translation>
 <translation id="80471789339884597">Köszönjük, hogy elvégezte a telepítést. A(z) <ph name="BUNDLE_NAME" /> használata előtt minden böngészőt újra kell indítania.</translation>
 <translation id="8054112667659782652">A Képkereső parancsikonja mindig jelenjen meg</translation>
+<translation id="8077498902115777962">A Chromium háttérben való futtatásának letiltása az alkalmazásoknál</translation>
 <translation id="80790299200510644">Képkereső</translation>
 <translation id="8086881907087796310">A telepítés sikertelen volt, mert a számítógép nem felel meg a minimális hardverkövetelményeknek.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> – Google Chrome for Testing</translation>

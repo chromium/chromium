@@ -78,6 +78,7 @@
 <translation id="2094648590148273905">‏شرایط ChromeOS Flex</translation>
 <translation id="2094919256425865063">‏درهرصورت از Chrome خارج می‌شوید؟</translation>
 <translation id="2106831557840787829">‏ارائه ChromeOS Flex با <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی مانند <ph name="BEGIN_LINK_LINUX_OSS" />محیط توسعه نرم‌افزاری Linux<ph name="END_LINK_LINUX_OSS" /> ممکن شده است.</translation>
+<translation id="2108778574543343055">‏غیرفعال کردن اجرای Chrome در پس‌زمینه برای برنامه‌ها</translation>
 <translation id="2120620239521071941">‏این کار <ph name="ITEMS_COUNT" /> مورد را از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> وارد سیستم Chrome شوید.</translation>
 <translation id="2121284319307530122">‏راه‌اندازی مجدد برای به‌روزرسانی Chrome</translation>
 <translation id="2123055963409958220">‏با گزارش <ph name="BEGIN_LINK" />تنظیمات کنونی<ph name="END_LINK" />، به بهتر شدن Chrome کمک کنید</translation>
@@ -139,6 +140,7 @@
 <translation id="2797864378188255696">‏وقتی با <ph name="USER_EMAIL" /> به سیستم سرویس‌های Google مثل Gmail یا YouTube وارد می‌شوید، می‌توانید به‌طور خودکار با همان حساب به سیستم Chrome وارد شوید</translation>
 <translation id="2799162042226656283">‏‫Chrome شما</translation>
 <translation id="2799223571221894425">راه‌اندازی مجدد</translation>
+<translation id="2818684386420968393">‏غیرفعال کردن اجرای Chrome در پس‌زمینه برای برنامه‌ها</translation>
 <translation id="2825024317344269723">‏سایت خطرناک. ‫Chrome اعلان‌ها را برداشت.</translation>
 <translation id="2841525013647267359">ترجمه کردن از</translation>
 <translation id="2846251086934905009">خطای نصب: نصب‌کننده کامل نشد. نصب لغو شد.</translation>

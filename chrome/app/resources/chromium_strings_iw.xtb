@@ -96,6 +96,7 @@
 <translation id="2343156876103232566">‏כדי לשלוח מספר מכאן לטלפון Android, יש להיכנס ל-Chromium בשני המכשירים.</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2361918034042471035">‏התוסף "<ph name="EXTENSION_NAME" />" מבקש ממך להיכנס ל-Chromium</translation>
+<translation id="236943522426971115">‏השבתת הפעילות של Chromium ברקע לאפליקציות</translation>
 <translation id="2374216753258219393">‏כדי להשתמש בתוסף הזה בתור <ph name="USER_EMAIL_ADDRESS" />, עליך להיכנס ל-Chromium.</translation>
 <translation id="2384373936468275798">‏לא בוצע סנכרון של הנתונים שלך ב-ChromiumOS כי פרטי הכניסה לחשבון לא מעודכנים.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{‏תוסף אחד לפחות ל-Chromium ניגש למכשיר ממשק אנושי (HID) אחד}=1{‏תוסף אחד לפחות ל-Chromium ניגש למכשיר ממשק אנושי (HID) אחד}one{‏תוסף אחד לפחות ל-Chromium ניגש ל-# מכשירי ממשק אנושי (HID)}two{‏תוסף אחד לפחות ל-Chromium ניגש ל-# מכשירי ממשק אנושי (HID)}other{‏תוסף אחד לפחות ל-Chromium ניגש ל-# מכשירי ממשק אנושי (HID)}}</translation>
@@ -176,6 +177,7 @@
 <translation id="3406848076815591792">‏לעבור לפרופיל קיים של Chromium?</translation>
 <translation id="3412460710772753638">עדכון במנהל הסיסמאות במכשיר הזה</translation>
 <translation id="3430503420100763906">‏באמצעות פרופילים ב-Chromium, מפרידים את כל הפריטים ב-Chromium. יוצרים פרופילים המיועדים לחברים ולבני משפחה או פרופילים נפרדים לעבודה ולבילויים בשעות הפנאי.</translation>
+<translation id="3451656833730006755">‏כדי לקבל גישה לתוספים ולנתונים נוספים בכל המחשבים, צריך להיכנס ל-Chromium</translation>
 <translation id="347328004046849135">‏אם מערכת Chromium תזהה שנכנסת עם סיסמה שנחשפה, היא תתריע לך על כך</translation>
 <translation id="3474745554856756813">‏פעולה זו תמחק <ph name="ITEMS_COUNT" /> פריטים מהמכשיר. כדי לשחזר את הנתונים מאוחר יותר, יש להיכנס אל Chromium עם <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">‏ניתן לעבור בין פרופילים של Chromium באמצעות <ph name="SHORTCUT" /></translation>
@@ -501,6 +503,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8013436988911883588">‏אחרי מתן גישה ל-Chromium, אתרים יוכלו לבקש ממך גישה.</translation>
 <translation id="80471789339884597">תודה שהתקנת. עליך להפעיל מחדש את כל הדפדפנים לפני השימוש ב-<ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">תמיד להציג את קיצור הדרך לחיפוש תמונות</translation>
+<translation id="8077498902115777962">‏השבתת הפעילות של Chromium ברקע לאפליקציות</translation>
 <translation id="80790299200510644">חיפוש באמצעות תמונות</translation>
 <translation id="8086881907087796310">ההתקנה נכשלה כי המחשב לא עומד בדרישות החומרה המינימליות.</translation>
 <translation id="8096472344908884505">‏<ph name="PAGE_TITLE" /> –‏ Google Chrome for Testing</translation>

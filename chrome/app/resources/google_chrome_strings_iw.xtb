@@ -78,6 +78,7 @@
 <translation id="2094648590148273905">‏התנאים של ChromeOS Flex</translation>
 <translation id="2094919256425865063">‏לסגור את Chrome בכל זאת?</translation>
 <translation id="2106831557840787829">‏השימוש ב-ChromeOS Flex מתאפשר בזכות <ph name="BEGIN_LINK_CROS_OSS" />תוכנת קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספת כמו <ph name="BEGIN_LINK_LINUX_OSS" />סביבת הפיתוח של Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2108778574543343055">‏השבתת הפעילות של Chrome ברקע לאפליקציות</translation>
 <translation id="2120620239521071941">‏פעולה זו תמחק <ph name="ITEMS_COUNT" /> פריטים מהמכשיר. כדי לשחזר את הנתונים מאוחר יותר, יש להיכנס אל Chrome עם <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">‏הפעלה מחדש לצורך עדכון &amp;Chrome</translation>
 <translation id="2123055963409958220">‏דיווח על <ph name="BEGIN_LINK" />ההגדרות הנוכחיות<ph name="END_LINK" /> יעזור לשפר את Chrome</translation>
@@ -139,6 +140,7 @@
 <translation id="2797864378188255696">‏כשנכנסים לשירותי Google כמו Gmail או YouTube עם <ph name="USER_EMAIL" />, אפשר להיכנס אוטומטית ל-Chrome עם אותו חשבון</translation>
 <translation id="2799162042226656283">‏ה-Chrome שלך</translation>
 <translation id="2799223571221894425">הפעלה מחדש</translation>
+<translation id="2818684386420968393">‏השבתת הפעילות של Chrome ברקע לאפליקציות</translation>
 <translation id="2825024317344269723">‏אתר מסוכן. ‫Chrome הסיר את ההתראות.</translation>
 <translation id="2841525013647267359">תרגום מ:</translation>
 <translation id="2846251086934905009">שגיאת התקנה: פעולת מנהל ההתקנה לא הושלמה. ההתקנה בוטלה.</translation>
@@ -348,6 +350,7 @@
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5602351063754773347">‏ההמלצה של Chrome היא להסיר אותו. <ph name="BEGIN_LINK" />מידע נוסף על תוספים נתמכים<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">‏‫Chrome עושה יותר כדי לשמור על הבטיחות שלך אונליין</translation>
+<translation id="5649680279845190972">‏כדי לקבל גישה לתוספים ולנתונים נוספים בכל המחשבים, צריך להיכנס ל-Chrome</translation>
 <translation id="565744775970812598">‏<ph name="FILE_NAME" /> עלול להיות מסוכן, ולכן Chrome חסם אותו.</translation>
 <translation id="566568153320186256">‏‫Chrome חוסך בחיי הסוללה על ידי הגבלת הפעילות ברקע והאפקטים החזותיים, כמו גלילה חלקה וקצב פריימים של סרטונים. <ph name="BEGIN_LINK" />מידע נוסף על מצב חיסכון באנרגיה<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">‏צריך למחוק את נתוני Chrome בחשבון</translation>

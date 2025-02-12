@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">A folytatással Ön elfogadja az <ph name="BEGIN_LINK" />Általános Szerződési Feltételeket<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Az alábbi oldalakról soha ne mentsen jelszavakat</translation>
 <translation id="1062138828266376352">A PIN-kódja nem változott meg. Ellenőrizze az internetkapcsolatot, és próbálja újra.</translation>
+<translation id="1074827084851510304">{password_count} jelszót, valamint azon webhelyek és alkalmazások listáját készül törölni, amelyeknél úgy döntött, hogy soha nem menti a bejelentkezési adatokat. A webhelyekhez és alkalmazásokhoz létrehozott fiókok nem törlődnek.</translation>
 <translation id="1076421457278169141">Kód beolvasva</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} lap}other{{count} lap}}</translation>
 <translation id="1082554859195167538">Termékvélemények Önnek</translation>
@@ -574,6 +575,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="3523789730715594198">A beállítások között bármikor leállíthatja a szinkronizálást. A Google az Ön előzményei alapján személyre szabhatja a Keresőt és más szolgáltatásokat.</translation>
 <translation id="3527085408025491307">Mappa</translation>
 <translation id="3529024052484145543">Nem biztonságos</translation>
+<translation id="3530024057633834563">Nincsenek mentett jelszavai vagy azonosítókulcsai, de törölheti azon webhelyek és alkalmazások listáját, amelyeknél úgy döntött, hogy soha nem menti a bejelentkezési adatokat. A webhelyekhez és alkalmazásokhoz létrehozott fiókok nem törlődnek.</translation>
 <translation id="3530206579861815432">Gyorsan megtalálhatja a megnyitott és a nemrégiben bezárt lapokat a szinkronizált eszközökön.</translation>
 <translation id="3530767473765895035">Fiókok kezelése ezen az eszközön…</translation>
 <translation id="3533436815740441613">Új lap</translation>
@@ -1601,6 +1603,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Oldal hozzáadva az Ön fiókjában ({email}) található olvasólistához}other{{count} oldal hozzáadva az Ön fiókjában ({email}) található olvasólistához}}</translation>
 <translation id="7947953824732555851">Elfogadás és bejelentkezés</translation>
+<translation id="7952670906562503188">{passkey_count} azonosítókulcsot, valamint azon webhelyek és alkalmazások listáját készül törölni, amelyeknél úgy döntött, hogy soha nem menti a bejelentkezési adatokat. A webhelyekhez és alkalmazásokhoz létrehozott fiókok nem törlődnek.</translation>
 <translation id="7958575506592576831">Oldal biztonsági információi</translation>
 <translation id="7961015016161918242">Soha</translation>
 <translation id="7966516440812255683">A webhelyek használhatnak cookie-kat a böngészés megkönnyítésére; például arra, hogy bejelentkezve tartsák Önt, vagy megjegyezzék a kosarában lévő termékeket.
@@ -1881,6 +1884,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="9034759925968272072">A rendszer nem jelentkezteti ki Google-fiókjából. Előfordulhat, hogy a böngészési előzmények más formái még megtalálhatók Google-fiókjában a <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> címen.</translation>
 <translation id="9039373489628511875">Sávszélesség</translation>
 <translation id="9042893549633094279">Adatvédelem és biztonság</translation>
+<translation id="9055580485132823283">{password_count} jelszót, {passkey_count} azonosítókulcsot, valamint azon webhelyek és alkalmazások listáját készül törölni, amelyeknél úgy döntött, hogy soha nem menti a bejelentkezési adatokat. A webhelyekhez és alkalmazásokhoz létrehozott fiókok nem törlődnek.</translation>
 <translation id="9057030985451135243">További információ a megosztott lapcsoportokról</translation>
 <translation id="9057972802061533987">Nem lehetséges a követés. Hiba történt.</translation>
 <translation id="9065203028668620118">Szerkesztés</translation>

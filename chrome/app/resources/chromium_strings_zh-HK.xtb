@@ -97,6 +97,7 @@
 <translation id="2343156876103232566">如要將號碼從此處傳送至 Android 手機，請在這兩部裝置上登入 Chromium。</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2361918034042471035">擴充程式「<ph name="EXTENSION_NAME" />」需要你登入 Chromium</translation>
+<translation id="236943522426971115">停用 Chromium 在應用程式背景執行的功能</translation>
 <translation id="2374216753258219393">如要以 <ph name="USER_EMAIL_ADDRESS" /> 身分使用此擴充程式，請登入 Chromium。</translation>
 <translation id="2384373936468275798">您的帳戶登入詳情已過時，因此 Chromium 作業系統無法同步處理您的資料。</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{當時至少有一個 Chromium 擴充程式正在存取 1 部 HID 裝置}=1{至少有一個 Chromium 擴充程式正在存取 1 部 HID 裝置}other{至少有一個 Chromium 擴充程式正在存取 # 部 HID 裝置}}</translation>
@@ -179,6 +180,7 @@
 <translation id="3406848076815591792">要切換至現有 Chromium 設定檔嗎？</translation>
 <translation id="3412460710772753638">儲存在此裝置的「密碼管理工具」中</translation>
 <translation id="3430503420100763906">透過 Chromium 設定檔，您可將所有 Chromium 內容分門別類，例如建立親朋好友專屬的設定檔，或劃分工作和娛樂內容。</translation>
+<translation id="3451656833730006755">如要在所有電腦上使用你的擴充程式和其他資料，請登入 Chromium</translation>
 <translation id="347328004046849135">如果您使用被盜用的密碼登入帳戶，Chromium 會通知您</translation>
 <translation id="3474745554856756813">這會刪除此裝置上的 <ph name="ITEMS_COUNT" /> 個項目。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chromium。</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> 可以切換唔同嘅 Chromium 設定檔</translation>
@@ -504,6 +506,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8013436988911883588">Chromium 獲得存取權後，網站便可向您要求存取權。</translation>
 <translation id="80471789339884597">多謝安裝。您必須先重新啟動所有瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="8054112667659782652">一律顯示「圖片搜尋」捷徑</translation>
+<translation id="8077498902115777962">停用 Chromium 在應用程式背景執行的功能</translation>
 <translation id="80790299200510644">圖片搜尋</translation>
 <translation id="8086881907087796310">由於你的電腦不符合最低硬件要求，因此安裝失敗。</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>

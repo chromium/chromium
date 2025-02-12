@@ -82,6 +82,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2094648590148273905">Termau ChromeOS Flex</translation>
 <translation id="2094919256425865063">Gadael Chrome beth bynnag?</translation>
 <translation id="2106831557840787829">Mae ChromeOS Flex yn bosib oherwydd <ph name="BEGIN_LINK_CROS_OSS" />meddalwedd ffynhonnell agored<ph name="END_LINK_CROS_OSS" /> ychwanegol, fel y mae <ph name="BEGIN_LINK_LINUX_OSS" />amgylchedd datblygu Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2108778574543343055">Analluogi Rhedeg Chrome yn y Cefndir ar gyfer Apiau</translation>
 <translation id="2120620239521071941">Bydd hyn yn dileu <ph name="ITEMS_COUNT" /> eitem o'r ddyfais hon. I adfer eich data yn nes ymlaen, mewngofnodwch i Chrome fel <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Ail-lansiwch i Ddiweddaru &amp;Chrome</translation>
 <translation id="2123055963409958220">Helpwch i wneud Chrome yn well drwy adrodd am <ph name="BEGIN_LINK" />y gosodiadau presennol<ph name="END_LINK" /></translation>
@@ -143,6 +144,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2797864378188255696">Wrth fewngofnodi i wasanaethau Google megis Gmail neu YouTube gyda <ph name="USER_EMAIL" />, gallwch fewngofnodi yn awtomatig i Chrome gyda'r un cyfrif</translation>
 <translation id="2799162042226656283">Eich Chrome</translation>
 <translation id="2799223571221894425">Ail-lansio</translation>
+<translation id="2818684386420968393">Analluogi rhedeg Chrome yn y cefndir ar gyfer apiau</translation>
 <translation id="2825024317344269723">Gwefan beryglus. Mae Chrome wedi tynnu hysbysiadau.</translation>
 <translation id="2841525013647267359">Cyfieithu o</translation>
 <translation id="2846251086934905009">Gwall gosod: Ni wnaeth y gosodwr orffen. Mae'r gosodiad wedi'i derfynu.</translation>
@@ -356,6 +358,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="5596627076506792578">Rhagor o ddewisiadau</translation>
 <translation id="5602351063754773347">Mae Chrome yn argymell eich bod yn ei dynnu. <ph name="BEGIN_LINK" />Dysgu rhagor am estyniadau a gefnogir<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Mae Chrome yn gwneud mwy i'ch cadw'n ddiogel ar-lein</translation>
+<translation id="5649680279845190972">I gael eich estyniadau a rhagor ar eich holl gyfrifiaduron, mewngofnodwch i Chrome</translation>
 <translation id="565744775970812598">Gallai <ph name="FILE_NAME" /> fod yn beryglus, felly mae Chrome wedi ei rwystro.</translation>
 <translation id="566568153320186256">Bydd Chrome yn arbed pŵer batri drwy gyfyngu ar weithgarwch cefndir ac effeithiau gweledol, megis sgrolio llyfn a chyfraddau ffrâm fideo. <ph name="BEGIN_LINK" />Dysgu rhagor am yr Arbedwr Ynni<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Clirio'r data Chrome yn eich cyfrif</translation>

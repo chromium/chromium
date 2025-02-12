@@ -1091,7 +1091,6 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="604996488070107836">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zbog nepoznate greške.</translation>
 <translation id="605721222689873409">GG</translation>
 <translation id="6059830886158432458">Ovde kontrolišite priče i aktivnosti</translation>
-<translation id="6070730414166672373">Obraćamo se banci\u2026</translation>
 <translation id="6071995715087444295">Da biste proverili da li ima ugroženih lozinki, prijavite se na Google nalog</translation>
 <translation id="6085886413119427067">Određuje kako da se poveže sa veb-sajtovima preko bezbedne veze</translation>
 <translation id="6087286598828478206">Želite da blokirate člana i napustite grupu?</translation>
@@ -1128,7 +1127,6 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="6210748933810148297">Niste <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Pregled ove stranice</translation>
 <translation id="6221633008163990886">Otključajte da biste izvezli lozinke</translation>
-<translation id="6225572914528673855">Traka za adresu</translation>
 <translation id="6232535412751077445">Ako omogućite funkciju „Ne prati“, zahtev će biti obuhvaćen saobraćajem pregledanja. Posledica te radnje zavisi od toga da li veb-sajt odgovara na zahtev i kako se zahtev tumači.
 
 Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa koji nisu zasnovani na drugim veb-sajtovima koje ste posetili. Mnogi veb-sajtovi će ipak prikupljati i koristiti podatke pregledanja, na primer, radi poboljšanja bezbednosti, pružanja sadržaja, oglasa i preporuka, kao i radi generisanja statistike izveštavanja.</translation>

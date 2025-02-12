@@ -1090,7 +1090,6 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="604996488070107836">Neizdevās lejupielādēt failu <ph name="FILE_NAME" />, jo radās nezināma kļūda.</translation>
 <translation id="605721222689873409">GG</translation>
 <translation id="6059830886158432458">Šeit varat kontrolēt jums rādītos rakstus un darbības.</translation>
-<translation id="6070730414166672373">Notiek saziņa ar jūsu banku\u2026</translation>
 <translation id="6071995715087444295">Lai pārbaudītu, vai neviena parole nav uzlauzta, pierakstieties Google kontā.</translation>
 <translation id="6085886413119427067">Nosaka, kā izveidot drošu savienojumu ar vietnēm.</translation>
 <translation id="6087286598828478206">Vai bloķēt lietotāju un pamest grupu?</translation>
@@ -1127,7 +1126,6 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="6210748933810148297"><ph name="EMAIL" /> nav mana e-pasta adrese</translation>
 <translation id="6211386937064921208">Notiek šīs lapas priekšskatīšana</translation>
 <translation id="6221633008163990886">Atbloķējiet, lai eksportētu paroles.</translation>
-<translation id="6225572914528673855">Adreses josla</translation>
 <translation id="6232535412751077445">Iespējojot funkciju “Nesekot”, jūsu pārlūkošanas datplūsmā tiks iekļauts pieprasījums. Rezultāts būs atkarīgs no tā, vai vietne nodrošinās atbildi uz pieprasījumu un kā pieprasījums tiks interpretēts.
 
 Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums reklāmas, kuru pamatā nav citas jūsu apmeklētās vietnes. Tomēr daudzas vietnes vāks un izmantos jūsu pārlūkošanas datus, piemēram, lai uzlabotu drošību, nodrošinātu saturu, reklāmas un ieteikumus un ģenerētu pārskatu statistiku.</translation>

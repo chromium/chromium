@@ -95,6 +95,7 @@
 <translation id="2343156876103232566">如要將號碼從這裡傳送到 Android 手機，請在這兩部裝置上登入 Chromium。</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2361918034042471035">擴充功能「<ph name="EXTENSION_NAME" />」要求你登入 Chromium</translation>
+<translation id="236943522426971115">停用 Chromium 在應用程式背景執行的功能</translation>
 <translation id="2374216753258219393">如要以 <ph name="USER_EMAIL_ADDRESS" /> 的身分使用這個擴充功能，請登入 Chromium。</translation>
 <translation id="2384373936468275798">你的帳戶登入詳細資料尚未更新，因此 Chromium OS 無法同步處理你的資料。</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{至少有 1 個 Chromium 擴充功能當時正在存取 1 部 HID 裝置}=1{至少有 1 個 Chromium 擴充功能正在存取 1 部 HID 裝置}other{至少有 1 個 Chromium 擴充功能正在存取 # 部 HID 裝置}}</translation>
@@ -177,6 +178,7 @@
 <translation id="3406848076815591792">要切換至現有的 Chromium 設定檔嗎？</translation>
 <translation id="3412460710772753638">在這部裝置的密碼管理工具中更新</translation>
 <translation id="3430503420100763906">你可以運用 Chromium 設定檔區隔各種 Chromium 資料，例如建立親朋好友的專屬設定檔，或是依工作和娛樂需要建立不同設定檔。</translation>
+<translation id="3451656833730006755">如要在所有電腦上使用你的擴充功能和其他資料，請登入 Chromium</translation>
 <translation id="347328004046849135">如果你使用遭外洩的密碼登入帳戶，Chromium 會通知你</translation>
 <translation id="3474745554856756813">登出後，系統會將 <ph name="ITEMS_COUNT" /> 個項目從這個裝置上刪除。日後如要重新取得你的資料，請以 <ph name="USER_EMAIL" /> 身分登入 Chromium。</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> 可以切換不同的 Chromium 設定檔</translation>
@@ -502,6 +504,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8013436988911883588">Chromium 取得存取權後，網站將可要求你授予存取權。</translation>
 <translation id="80471789339884597">感謝你安裝本服務。你必須重新啟動所有瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="8054112667659782652">一律顯示「圖片搜尋」捷徑</translation>
+<translation id="8077498902115777962">停用 Chromium 在應用程式背景執行的功能</translation>
 <translation id="80790299200510644">圖片搜尋</translation>
 <translation id="8086881907087796310">安裝失敗，因為電腦不符合最低硬體需求。</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>

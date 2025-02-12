@@ -582,6 +582,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3701167022068948696">Ayusin ngayon</translation>
 <translation id="3701515417135397388">Balaan ka kung nakompromiso ang isang password sa paglabag sa data</translation>
 <translation id="3703166520839776970">Kung patuloy na nangyayari ang isyung ito, piliin ang "Higit pang detalye" sa ibaba para kumuha ng higit pang impormasyon mula sa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="3708100450779900829">Kapag naka-fold ang iyong device, magagawa mong pumili ng opsyon o pindutin nang matagal ang address bar para baguhin ang posisyon</translation>
 <translation id="3710501561113687889">Para magpatuloy, ishe-share ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong <ph name="FIELDS_STRING" /> sa site na ito.</translation>
 <translation id="3710560693796335511">Pakikipag-collaborate</translation>
 <translation id="3714981814255182093">Buksan ang Bar sa Paghahanap</translation>
@@ -1090,7 +1091,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="604996488070107836">Hindi na-download ang <ph name="FILE_NAME" /> dahil sa isang hindi alam na error.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Kontrolin ang iyong mga kuwento at aktibidad dito</translation>
-<translation id="6070730414166672373">Nakikipag-ugnayan sa iyong bangko</translation>
 <translation id="6071995715087444295">Para tingnan kung may mga nakompromisong password, mag-sign in sa iyong Google Account</translation>
 <translation id="6085886413119427067">Tinutukoy kung paano kumonekta sa mga website sa secure na koneksyon</translation>
 <translation id="6087286598828478206">I-block ang grupo at umalis?</translation>
@@ -1127,7 +1127,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="6210748933810148297">Hindi si <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Pini-preview ang page na ito</translation>
 <translation id="6221633008163990886">I-unlock upang i-export ang iyong mga password</translation>
-<translation id="6225572914528673855">Address bar</translation>
 <translation id="6232535412751077445">Kapag na-enable mo ang “Huwag Subaybayan,” magsasama ng isang kahilingan sa trapiko ng iyong pagba-browse. Ang anumang magiging epekto ay dedepende sa pagtugon at pagbibigay-kahulugan ng website sa nabanggit na kahilingan.
 
 Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan ng pagpapakita sa iyo ng mga ad na hindi ibinatay sa iba pang nabisita mo nang website. Kokolektahin at gagamitin pa rin ng maraming website ang iyong data sa pag-browse - halimbawa, para mapahusay ang seguridad, makapagpakita ng content, mga ad, at rekomendasyon, at makabuo ng mga istatistika sa pag-uulat.</translation>
@@ -1283,6 +1282,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> (na) tab ang isinara</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Mga audio file, may 1 audio file sa listahan}one{Mga audio file, may # audio file sa listahan}other{Mga audio file, may # na audio file sa listahan}}</translation>
 <translation id="685850645784703949">Discover ng Google - naka-off</translation>
+<translation id="6861722405755529743">Overflow button ng bookmark bar</translation>
 <translation id="686366188661646310">I-delete ang password?</translation>
 <translation id="6864459304226931083">I-download ang larawan</translation>
 <translation id="686490460830618322">Sheet para sa filter ng app</translation>
@@ -1615,6 +1615,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8236063039629122676">Ngayon, dadalhin ka pabalik ng pag-swipe pakanan para makita ang mga dating page na binisita mo at ililipat ka pasulong ng pag-swipe pakaliwa</translation>
 <translation id="8236097722223016103">Idagdag sa mga bookmark</translation>
 <translation id="8243077599929149377">Idagdag ang iyong username</translation>
+<translation id="8244387390464017490">I-customize ang bagong tab</translation>
 <translation id="8250920743982581267">Mga Dokumento</translation>
 <translation id="8255617931166444521">Magagamit lang ng mga site ang iyong cookies para lang tingnan ang aktibidad mo sa pag-browse sa sarili nilang site</translation>
 <translation id="8258999165172757081">Naidagdag</translation>

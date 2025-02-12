@@ -82,6 +82,7 @@
 <translation id="2094648590148273905">ChromeOS Flex 약관</translation>
 <translation id="2094919256425865063">Chrome을 종료하시겠습니까?</translation>
 <translation id="2106831557840787829"><ph name="BEGIN_LINK_LINUX_OSS" />Linux 개발 환경<ph name="END_LINK_LINUX_OSS" />과 마찬가지로, ChromeOS Flex는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
+<translation id="2108778574543343055">앱에서 백그라운드 실행 중인 Chrome 사용 중지</translation>
 <translation id="2120620239521071941">항목 <ph name="ITEMS_COUNT" />개가 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chrome에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
 <translation id="2121284319307530122">다시 실행하여 Chrome 업데이트</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />현재 설정<ph name="END_LINK" />을 보고하여 Chrome 개선에 참여</translation>
@@ -143,6 +144,7 @@
 <translation id="2797864378188255696"><ph name="USER_EMAIL" /> 계정으로 Gmail 또는 YouTube와 같은 Google 서비스에 로그인하면 동일한 계정으로 Chrome에 자동으로 로그인할 수 있습니다.</translation>
 <translation id="2799162042226656283">내 Chrome</translation>
 <translation id="2799223571221894425">다시 시작</translation>
+<translation id="2818684386420968393">앱에서 백그라운드 실행 중인 Chrome 사용 중지</translation>
 <translation id="2825024317344269723">위험한 사이트입니다. Chrome에서 알림을 삭제했습니다.</translation>
 <translation id="2841525013647267359">출발어</translation>
 <translation id="2846251086934905009">설치 오류: 설치 프로그램이 완료되지 않았습니다. 설치가 중단되었습니다.</translation>
@@ -355,6 +357,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5596627076506792578">옵션 더보기</translation>
 <translation id="5602351063754773347">Chrome에서 삭제할 것을 권장합니다. <ph name="BEGIN_LINK" />지원되는 확장 프로그램에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome은 더 많은 기능으로 온라인 안전을 강화합니다.</translation>
+<translation id="5649680279845190972">모든 컴퓨터에서 확장 프로그램 등을 사용하려면 Chrome에 로그인하세요.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" />은(는) 위험할 수 있으므로 Chrome에서 차단했습니다.</translation>
 <translation id="566568153320186256">Chrome은 부드러운 스크롤 및 동영상 프레임 속도 같은 시각적 효과와 백그라운드 활동을 제한하여 배터리 전원을 절약합니다. <ph name="BEGIN_LINK" />에너지 절약 모드에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">계정의 Chrome 데이터 삭제</translation>

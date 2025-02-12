@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Baixada de preu en les pestanyes obertes}other{Baixades de preu en les pestanyes obertes}}</translation>
 <translation id="5186036860380548585">L'opció està disponible a prop de la part superior de la pantalla.</translation>
 <translation id="5197729504361054390">Els contactes que seleccionis es compartiran amb <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5198930230016462977">Full inferior de personalització de la pàgina Pestanya nova tancat</translation>
 <translation id="5216942107514965959">Darrera visita: avui</translation>
 <translation id="5225463052809312700">Activa la càmera</translation>
 <translation id="5234764350956374838">Ignora</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Seguiment de mans</translation>
 <translation id="5771720122942595109">S'ha bloquejat <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permisos</translation>
+<translation id="5822675474983796325">Full inferior de personalització de la pàgina Pestanya nova obert a alçada completa</translation>
 <translation id="5844448279347999754">Quan aquesta opció està activada, els llocs web poden demanar permís per veure el text i les imatges desats al porta-retalls. Quan aquesta opció està desactivada, els llocs web no poden veure el text ni les imatges desats al porta-retalls.</translation>
 <translation id="5853982612236235577">Quan aquesta opció està activada, els llocs web poden demanar permís per enviar notificacions. Quan aquesta opció està desactivada, els llocs web no poden enviar notificacions.</translation>
 <translation id="5860033963881614850">Desactivat</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Ampliat</translation>
 <translation id="7219254577985949841">Vols suprimir les dades del lloc web?</translation>
 <translation id="723171743924126238">Selecciona imatges</translation>
+<translation id="7243246278722455312">Full inferior de personalització de la pàgina Pestanya nova</translation>
 <translation id="7243308994586599757">Opcions disponibles a la part inferior de la pantalla</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> elements seleccionats</translation>
 <translation id="7260727271532453612">S'han permès <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>

@@ -80,6 +80,7 @@
 <translation id="2094648590148273905">Chrome OS Flexi tingimused</translation>
 <translation id="2094919256425865063">Kas väljuda Chrome'ist ikkagi?</translation>
 <translation id="2106831557840787829">Chrome OS Flexi ja ka <ph name="BEGIN_LINK_LINUX_OSS" />Linuxi arenduskeskkonna<ph name="END_LINK_LINUX_OSS" /> aluseks on <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="2108778574543343055">Keela Chrome'i akendeta taustal käitamine</translation>
 <translation id="2120620239521071941">See kustutab sellest seadmest <ph name="ITEMS_COUNT" /> üksust. Hiljem oma andmete toomiseks logige Chrome'i sisse kasutajana <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Taaskäivitage &amp;Chrome'i värskendamiseks</translation>
 <translation id="2123055963409958220">Aidake Chrome paremaks muuta, teavitades meid <ph name="BEGIN_LINK" />praegustest seadetest<ph name="END_LINK" /></translation>
@@ -141,6 +142,7 @@
 <translation id="2797864378188255696">E-posti aadressiga <ph name="USER_EMAIL" /> Google'i teenustesse (nt Gmaili või Youtube'i) sisse logides saate Chrome'i automaatselt sisse logida sama kontoga</translation>
 <translation id="2799162042226656283">Teie Chrome</translation>
 <translation id="2799223571221894425">Taaskäivita</translation>
+<translation id="2818684386420968393">Keela Chrome'i akendeta taustal käitamine</translation>
 <translation id="2825024317344269723">Ohtlik sait. Chrome eemaldas märguanded.</translation>
 <translation id="2841525013647267359">Tõlke lähtekeel</translation>
 <translation id="2846251086934905009">Installimisviga: installiprogrammi ei viidud lõpule. Installimine katkestati.</translation>

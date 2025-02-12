@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">選擇繼續即表示您同意《<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />》。</translation>
 <translation id="10614374240317010">一律不儲存</translation>
 <translation id="1062138828266376352">你的 PIN 碼並未變更。請檢查網路連線，然後再試一次</translation>
+<translation id="1074827084851510304">你即將刪除 {password_count} 組密碼，以及你選擇一律不儲存登入資訊的網站和應用程式清單。你為網站和應用程式建立的帳戶不會遭到刪除。</translation>
 <translation id="1076421457278169141">已掃描圖碼/條碼</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} 個分頁}other{{count} 個分頁}}</translation>
 <translation id="1082554859195167538">為你推薦的產品評論</translation>
@@ -574,6 +575,7 @@
 <translation id="3523789730715594198">你隨時可以透過「設定」停止同步作業。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="3527085408025491307">資料夾</translation>
 <translation id="3529024052484145543">不安全</translation>
+<translation id="3530024057633834563">目前未儲存任何密碼或密碼金鑰。不過，你可以刪除你選擇一律不儲存登入資訊的網站和應用程式清單。你為網站和應用程式建立的帳戶不會遭到刪除。</translation>
 <translation id="3530206579861815432">快速尋找所有已同步裝置上目前開啟和最近關閉的分頁</translation>
 <translation id="3530767473765895035">管理這部裝置上的帳戶</translation>
 <translation id="3533436815740441613">新分頁</translation>
@@ -1601,6 +1603,7 @@
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{已將網頁新增至帳戶 {email} 的閱讀清單}other{已將 {count} 個網頁新增至帳戶 {email} 的閱讀清單}}</translation>
 <translation id="7947953824732555851">接受並登入</translation>
+<translation id="7952670906562503188">你即將刪除 {passkey_count} 組密碼金鑰，以及你選擇一律不儲存登入資訊的網站和應用程式清單。你為網站和應用程式建立的帳戶不會遭到刪除。</translation>
 <translation id="7958575506592576831">網頁安全性資訊</translation>
 <translation id="7961015016161918242">一律不要</translation>
 <translation id="7966516440812255683">網站可使用 Cookie 改善瀏覽體驗，例如讓你保持登入狀態，或記住購物車中的商品。
@@ -1881,6 +1884,7 @@
 <translation id="9034759925968272072">您並不會因此登出 Google 帳戶，不過帳戶中可能仍保留了其他類型的瀏覽記錄 (可前往 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 查詢)。</translation>
 <translation id="9039373489628511875">頻寬</translation>
 <translation id="9042893549633094279">隱私權和安全性</translation>
+<translation id="9055580485132823283">你即將刪除 {password_count} 組密碼、{passkey_count} 組密碼金鑰，以及你選擇一律不儲存登入資訊的網站和應用程式清單。你為網站和應用程式建立的帳戶不會遭到刪除。</translation>
 <translation id="9057030985451135243">瞭解共用分頁群組</translation>
 <translation id="9057972802061533987">無法追蹤，發生錯誤。</translation>
 <translation id="9065203028668620118">編輯</translation>

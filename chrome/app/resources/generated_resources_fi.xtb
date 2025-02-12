@@ -220,6 +220,7 @@
 <translation id="114721135501989771">Googlen älykkäitä ratkaisuja Chromeen</translation>
 <translation id="1147322039136785890"><ph name="SUPERVISED_USER_NAME" /> voi nyt ottaa ohjat</translation>
 <translation id="1147991416141538220">Jos haluat pyytää käyttöoikeutta, ota yhteyttä laitteen järjestelmänvalvojaan.</translation>
+<translation id="1148464196693569530">Salli käyttäjäskriptit</translation>
 <translation id="1148624853678088576">Kaikki on valmista!</translation>
 <translation id="1148669835763563782">Saat viimeisimmän ohjelmistopäivityksen, joka parantaa turvallisuutta ja sisältää Chromebookin uusimmat ominaisuudet. Tämä päivitys sisältää parannetun käyttöönottokokemuksen, joten Chromebookin käytön aloittaminen on helppoa.</translation>
 <translation id="1149401351239820326">Viimeinen voimassaolokuukausi</translation>
@@ -6777,6 +6778,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5794414402486823030">Avaa aina järjestelmän katselusovelluksella</translation>
 <translation id="5794700615121138172">Linuxin jaetut kansiot</translation>
 <translation id="5794786537412027208">Sulje kaikki Chrome-sovellukset</translation>
+<translation id="5795422263272161110">Näytä rinnakkain</translation>
 <translation id="5796485699458186843">Uusi incognito-välilehti</translation>
 <translation id="5796956053441619942">Etälaitteen URL-osoitetta ei tueta</translation>
 <translation id="5797934230382081317">Lue lisää &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Androidin&lt;/a&gt; ja &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS:n&lt;/a&gt; käytön aloittamisesta</translation>
@@ -7305,6 +7307,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6170498031581934115">ADB-virheenkorjauksen käyttöönotto ei onnistunut. Siirry asetuksiin ja yritä uudelleen.</translation>
 <translation id="6170675927290506430">Siirry ilmoitusasetuksiin</translation>
 <translation id="6171779718418683144">Kysy jokaisella käynnillä</translation>
+<translation id="6172020488605056255">Käytä Auta minua lukemaan ‑ominaisuutta kakkospainikkeella</translation>
 <translation id="617213288191670920">Kieliä ei lisätty</translation>
 <translation id="6173623053897475761">Kirjoita PIN-koodi uudelleen</translation>
 <translation id="6174909075810107548">Paina hiiren painiketta painamalla "5"</translation>
@@ -8330,6 +8333,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6910190732484284349">Poista avainkoodi käyttäjätunnukselta: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Poistettu</translation>
 <translation id="6910274140210351823">Tumma</translation>
+<translation id="691102290537033604">Laajennus voi suorittaa koodia, jota Google ei ole tarkastanut. Se voi olla vaarallista. Ota tämä käyttöön vain, jos tiedät, mitä teet.</translation>
 <translation id="6911734910326569517">Käytetty muisti</translation>
 <translation id="6912007319859991306">Mobiiliverkon SIM-lukituksen PIN-koodi</translation>
 <translation id="6912380255120084882">Kokeile toista laitetta</translation>
@@ -9840,6 +9844,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Ääni <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Siirrä Wi-Fi-yhteys automaattisesti Android-puhelimesta</translation>
 <translation id="7991296728590311172">Kytkimen käytön asetukset</translation>
+<translation id="7992080146463834191">Tee yhteenveto sisällöstä, yksinkertaista monimutkaista kieltä tai kysy kysymyksiä.</translation>
 <translation id="7992203134935383159">Puhesynteesi</translation>
 <translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">Prosessien tärkeysjärjestys</translation>
@@ -11097,6 +11102,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" on laitettu pois päältä</translation>
 <translation id="8874647982044395866">Orgaaninen</translation>
 <translation id="8874790741333031443">Kokeile sallia kolmannen osapuolen evästeet väliaikaisesti. Selauksen suojaus ei tällöin ole niin vahva, mutta sivuston ominaisuudet toimivat todennäköisemmin oikein.</translation>
+<translation id="8875221558267407626">Tee yhteenveto sisällöstä, yksinkertaista monimutkaista kieltä tai kysy kysymyksiä</translation>
 <translation id="8875520811099717934">Linux-päivitys</translation>
 <translation id="8875736897340638404">Valitse näkyvyytesi</translation>
 <translation id="8876307312329369159">Tätä asetusta ei voi muuttaa demo-käyttökerralla.</translation>
@@ -11150,6 +11156,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8915916167043355778">Sulje kaikki</translation>
 <translation id="8916476537757519021">Incognito-alakehys: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Kyllä</translation>
+<translation id="8917980324687233736">Näytä rinnakkain</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> (<ph name="GIVEN_NAME" />)</translation>
 <translation id="8918900204934259333">Asennetaan sovellusta…</translation>
 <translation id="891931289445130855">Poista dataa ja lupia</translation>

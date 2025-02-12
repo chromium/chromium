@@ -220,6 +220,7 @@
 <translation id="114721135501989771">‏תכונות חכמות של Google</translation>
 <translation id="1147322039136785890">עכשיו התור של <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">כדי לבקש גישה, צריך לפנות למנהל של המכשיר הזה.</translation>
+<translation id="1148464196693569530">אישור לסקריפטים של משתמשים</translation>
 <translation id="1148624853678088576">הכל מוכן!</translation>
 <translation id="1148669835763563782">‏אנחנו מספקים לך עכשיו את עדכון התוכנה האחרון לאבטחה משופרת ואת התכונות החדשות ביותר של Chromebook. העדכון הזה כולל חוויית הגדרה משופרת כדי שיהיה לך קל להתחיל לעבוד בצורה חלקה ב-Chromebook.</translation>
 <translation id="1149401351239820326">חודש פקיעת התוקף</translation>
@@ -6781,6 +6782,7 @@
 <translation id="5794414402486823030">תמיד לפתוח באמצעות מציג המערכת</translation>
 <translation id="5794700615121138172">‏תיקיות משותפות של Linux</translation>
 <translation id="5794786537412027208">‏יציאה מכל אפליקציות Chrome</translation>
+<translation id="5795422263272161110">הצגה זו לצד זו</translation>
 <translation id="5796485699458186843">&amp;כרטיסיית מצב אנונימי חדשה</translation>
 <translation id="5796956053441619942">‏כתובת ה-URL מהמכשיר שמחובר לרשת אחרת לא נתמכת</translation>
 <translation id="5797934230382081317">‏כך מתחילים להשתמש במנהל הסיסמאות ב-&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; וב-&lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;.</translation>
@@ -7309,6 +7311,7 @@
 <translation id="6170498031581934115">‏לא ניתן היה להפעיל ניפוי באגים באמצעות ADB. עליך לעבור להגדרות ולנסות שוב.</translation>
 <translation id="6170675927290506430">לדף הגדרת ההתראות</translation>
 <translation id="6171779718418683144">הצגת השאלה בכל ביקור</translation>
+<translation id="6172020488605056255">כדי להשתמש בתכונה "עזרה בקריאה", לוחצים לחיצה ימנית</translation>
 <translation id="617213288191670920">לא נוספו שפות</translation>
 <translation id="6173623053897475761">יש להקליד שוב את הקוד</translation>
 <translation id="6174909075810107548">משתמשים במקש "5" כדי ללחוץ על כפתור העכבר</translation>
@@ -8338,6 +8341,7 @@
 <translation id="6910190732484284349">מחיקת מפתח הגישה של שם המשתמש: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">נמחק</translation>
 <translation id="6910274140210351823">כהה</translation>
+<translation id="691102290537033604">‏התוסף יוכל להריץ קוד שלא נבדק על ידי Google. יכול להיות שזה לא בטוח. מומלץ להפעיל את האפשרות הזו רק אם ברור לך במה מדובר.</translation>
 <translation id="6911734910326569517">הזיכרון שבשימוש</translation>
 <translation id="6912007319859991306">‏קוד גישה לכרטיס ה-SIM הסלולרי</translation>
 <translation id="6912380255120084882">צריך לנסות מכשיר אחר</translation>
@@ -9848,6 +9852,7 @@
 <translation id="7990863024647916394">קול <ph name="COUNT" /> ב<ph name="DISPLAY_NAME" /></translation>
 <translation id="7990958035181555539">‏העברת ההגדרות של ה-Wi-Fi באופן אוטומטי מטלפון Android</translation>
 <translation id="7991296728590311172">הגדרות גישה באמצעות מתג</translation>
+<translation id="7992080146463834191">מסכמים תכנים, מפשטים שפה מורכבת או שואלים שאלות.</translation>
 <translation id="7992203134935383159">סינתזת דיבור</translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">עדיפות תהליך</translation>
@@ -11109,6 +11114,7 @@
 <translation id="8874448314264883207">תוסף אחד (<ph name="EXTENSION_NAME" />) הושבת</translation>
 <translation id="8874647982044395866">אורגני</translation>
 <translation id="8874790741333031443">‏אפשר להפעיל קובצי cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה במהלך הגלישה, אבל סביר יותר שהתכונות באתר יפעלו כצפוי.</translation>
+<translation id="8875221558267407626">מסכמים תכנים, מפשטים שפה מורכבת או שואלים שאלות</translation>
 <translation id="8875520811099717934">‏שדרוג של Linux</translation>
 <translation id="8875736897340638404">בחירת הרשאות הגישה שלך</translation>
 <translation id="8876307312329369159">לא ניתן לשנות את ההגדרה הזו בסשן להדגמה.</translation>
@@ -11162,6 +11168,7 @@
 <translation id="8915916167043355778">סגירת הכול</translation>
 <translation id="8916476537757519021">תת-מסגרת למצב אנונימי: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">כן, מקובל עלי.</translation>
+<translation id="8917980324687233736">הצגה זו לצד זו</translation>
 <translation id="8918637186205009138">ה-<ph name="DEVICE_TYPE" /> של <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">האפליקציה מותקנת…</translation>
 <translation id="891931289445130855">מחיקת הנתונים וההרשאות</translation>

@@ -582,6 +582,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3701167022068948696">Nu oplossen</translation>
 <translation id="3701515417135397388">Waarschuwen als een wachtwoord is gelekt bij een gegevenslek</translation>
 <translation id="3703166520839776970">Als dit probleem zich blijft voordoen, kies je hieronder Meer informatie voor meer informatie van <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="3708100450779900829">Als je apparaat is dichtgevouwen, kun je een optie kiezen of je vinger op de adresbalk houden om de positie te wijzigen</translation>
 <translation id="3710501561113687889"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je <ph name="FIELDS_STRING" /> met deze site om door te gaan.</translation>
 <translation id="3710560693796335511">Samenwerking</translation>
 <translation id="3714981814255182093">De zoekbalk openen</translation>
@@ -1090,7 +1091,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="604996488070107836">Download van <ph name="FILE_NAME" /> mislukt vanwege een onbekende fout.</translation>
 <translation id="605721222689873409">JJ</translation>
 <translation id="6059830886158432458">Beheer hier je artikelen en activiteiten</translation>
-<translation id="6070730414166672373">Contact opnemen met je bank\u2026</translation>
 <translation id="6071995715087444295">Log in op je Google-account om te checken op gehackte wachtwoorden</translation>
 <translation id="6085886413119427067">Bepaalt hoe verbinding wordt gemaakt met websites via een beveiligde verbinding</translation>
 <translation id="6087286598828478206">Blokkeren en groep verlaten?</translation>
@@ -1127,7 +1127,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6210748933810148297">Niet <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Voorbeeld van deze pagina bekijken</translation>
 <translation id="6221633008163990886">Ontgrendel het apparaat om je wachtwoorden te exporteren</translation>
-<translation id="6225572914528673855">Adresbalk</translation>
 <translation id="6232535412751077445">Als je Niet bijhouden aanzet, wordt hiervoor een verzoek opgenomen in je browseverkeer. Het resultaat daarvan hangt af van of een website reageert op het verzoek en hoe het verzoek wordt geïnterpreteerd.
 
 Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken die niet zijn gebaseerd op andere websites die je hebt bezocht. Toch blijven veel websites je browsegegevens nog verzamelen en gebruiken, bijvoorbeeld om de beveiliging te verbeteren, om content, services, advertenties en aanbevelingen te leveren en om rapportagestatistieken te genereren.</translation>
@@ -1283,6 +1282,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> tabbladen gesloten</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Audiobestanden, 1 audiobestand in lijst}other{Audiobestanden, # audiobestanden in lijst}}</translation>
 <translation id="685850645784703949">Discover van Google - uit</translation>
+<translation id="6861722405755529743">Overloopknop voor bookmarkbalk</translation>
 <translation id="686366188661646310">Wachtwoord verwijderen?</translation>
 <translation id="6864459304226931083">Afbeelding downloaden</translation>
 <translation id="686490460830618322">Blad voor app-filter</translation>
@@ -1615,6 +1615,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8236063039629122676">Als je nu naar rechts swipet, ga je terug naar eerdere pagina's die je hebt bezocht en als je naar links swipet, ga je vooruit</translation>
 <translation id="8236097722223016103">Toevoegen aan bookmarks</translation>
 <translation id="8243077599929149377">Voeg je gebruikersnaam toe</translation>
+<translation id="8244387390464017490">Pagina Nieuw tabblad aanpassen</translation>
 <translation id="8250920743982581267">Documenten</translation>
 <translation id="8255617931166444521">Sites kunnen je cookies alleen gebruiken om je browse-activiteit op hun eigen site te bekijken</translation>
 <translation id="8258999165172757081">Toegevoegd</translation>

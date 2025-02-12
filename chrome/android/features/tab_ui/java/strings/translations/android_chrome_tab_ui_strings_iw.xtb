@@ -30,6 +30,7 @@
 <translation id="2118649612461486615">פרטי החנות</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{אפשר לפתוח מחדש את הכרטיסיות והקבוצות שסגרת בקטע 'כרטיסיות אחרונות' ובקטע 'קבוצות של כרטיסיות'. הכרטיסייה הפרטית לא תהיה זמינה.}one{אפשר לפתוח מחדש את הכרטיסיות והקבוצות שסגרת בקטע 'כרטיסיות אחרונות' ובקטע 'קבוצות של כרטיסיות'. ‫# הכרטיסיות הפרטיות לא יהיו זמינות.}two{אפשר לפתוח מחדש את הכרטיסיות והקבוצות שסגרת בקטע 'כרטיסיות אחרונות' ובקטע 'קבוצות של כרטיסיות'. ‫# הכרטיסיות הפרטיות לא יהיו זמינות.}other{אפשר לפתוח מחדש את הכרטיסיות והקבוצות שסגרת בקטע 'כרטיסיות אחרונות' ובקטע 'קבוצות של כרטיסיות'. ‫# הכרטיסיות הפרטיות לא יהיו זמינות.}}</translation>
 <translation id="2162620598375156287">עכשיו במחיר <ph name="CURRENT_PRICE" /> ב-<ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2242907120821295124">קבוצת הכרטיסיות <ph name="TAB_GROUP_NAME" /> לא זמינה יותר</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{הסרת הכרטיסייה מהקבוצה}one{הסרת הכרטיסיות מהקבוצה}two{הסרת הכרטיסיות מהקבוצה}other{הסרת הכרטיסיות מהקבוצה}}</translation>
 <translation id="2271452184061378400">קבוצות הכרטיסיות שלך נשמרות כאן</translation>
 <translation id="2277224997687551299">עריכת שם הקבוצה</translation>
@@ -87,6 +88,7 @@
 <translation id="4783638485675352219">‏שיתוף הכותרות וכתובות ה-URL של הכרטיסיות הפתוחות מהמכשיר הזה עם מערכת ההפעלה</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(ביקורת אחת ‒ <ph name="REVIEWS_COUNT_ONE" />)}one{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}two{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}other{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}}</translation>
 <translation id="4850886885716139402">הצגה</translation>
+<translation id="4861611890274104875">סגירת הכרטיס.</translation>
 <translation id="4861953997778766866">כולם יכולים לבצע שינויים בקבוצות הכרטיסיות ששיתפת</translation>
 <translation id="4870911314065352661">לסגור את כל הכרטיסיות?</translation>
 <translation id="4871719318659334896">סגירת הקבוצה</translation>

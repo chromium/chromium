@@ -582,6 +582,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3701167022068948696">Trwsio nawr</translation>
 <translation id="3701515417135397388">Eich rhybuddio os cafodd cyfrinair ei darganfod mewn achos o dor data</translation>
 <translation id="3703166520839776970">Os yw'r mater hwn yn dal i ddigwydd, dewiswch 'Rhagor o fanylion' isod i gael rhagor o wybodaeth gan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="3708100450779900829">Pan fydd eich dyfais wedi'i phlygu, gallwch ddewis opsiwn neu gyffwrdd a dal y bar cyfeiriad i newid y safle</translation>
 <translation id="3710501561113687889">I barhau, bydd <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> yn rhannu'ch <ph name="FIELDS_STRING" /> â'r wefan hon.</translation>
 <translation id="3710560693796335511">Cydweithrediad</translation>
 <translation id="3714981814255182093">Agorwch y Bar Chwilio</translation>
@@ -1090,7 +1091,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="604996488070107836">Wedi methu â lawrlwytho <ph name="FILE_NAME" /> oherwydd gwall anhysbys.</translation>
 <translation id="605721222689873409">BB</translation>
 <translation id="6059830886158432458">Rheoli eich straeon a'ch gweithgarwch yma</translation>
-<translation id="6070730414166672373">Wrthi'n cysylltu â'ch banc\u2026</translation>
 <translation id="6071995715087444295">I wirio am gyfrineiriau sydd wedi'u darganfod, mewngofnodwch i'ch Cyfrif Google</translation>
 <translation id="6085886413119427067">Yn pennu sut i gysylltu â gwefannau dros gysylltiad diogel</translation>
 <translation id="6087286598828478206">Rhwystro a gadael y grŵp?</translation>
@@ -1127,7 +1127,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="6210748933810148297">Nid <ph name="EMAIL" /> ydych chi?</translation>
 <translation id="6211386937064921208">Wrthi'n dangos rhagolwg o'r dudalen hon</translation>
 <translation id="6221633008163990886">Datglowch i allforio'ch cyfrineiriau</translation>
-<translation id="6225572914528673855">Bar cyfeiriad</translation>
 <translation id="6232535412751077445">Mae galluogi “Do Not Track” yn golygu y bydd cais yn cael ei gynnwys gyda'ch traffig pori. Mae unrhyw effaith yn dibynnu a yw gwefan yn ymateb i'r cais, a sut mae'r cais yn cael ei ddehongli.
 
 Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion i chi nad ydynt seiliedig ar wefannau eraill rydych wedi ymweld â nhw. Bydd llawer o wefannau yn dal i gasglu a defnyddio'ch data pori - er enghraifft i wella diogelwch, i ddarparu cynnwys, hysbysebion ac argymhellion, ac i gynhyrchu ystadegau adrodd.</translation>
@@ -1283,6 +1282,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6850830437481525139">Mae <ph name="TAB_COUNT" /> o dabiau wedi'u cau</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Ffeiliau sain, 1 ffeil sain yn y rhestr}zero{Ffeiliau sain, # ffeiliau sain yn y rhestr}two{Ffeiliau sain, # ffeil sain yn y rhestr}few{Ffeiliau sain, # ffeil sain yn y rhestr}many{Ffeiliau sain, # ffeil sain yn y rhestr}other{Ffeiliau sain, # ffeil sain yn y rhestr}}</translation>
 <translation id="685850645784703949">Darganfod gan Google - wedi'i ddiffodd</translation>
+<translation id="6861722405755529743">Botwm gorlif bar nod tudalen</translation>
 <translation id="686366188661646310">Dileu'r cyfrinair?</translation>
 <translation id="6864459304226931083">Lawrlwytho'r llun</translation>
 <translation id="686490460830618322">Taflen hidlo ap</translation>
@@ -1615,6 +1615,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8236063039629122676">Nawr, mae sweipio i'r dde yn mynd â chi yn ôl i weld tudalennau blaenorol rydych chi wedi ymweld â nhw ac mae sweipio i'r chwith yn eich symud ymlaen</translation>
 <translation id="8236097722223016103">Ychwanegu at nodau tudalen</translation>
 <translation id="8243077599929149377">Ychwanegwch eich enw defnyddiwr</translation>
+<translation id="8244387390464017490">Addasu tudalen tab newydd</translation>
 <translation id="8250920743982581267">Dogfennau</translation>
 <translation id="8255617931166444521">Dim ond i weld eich gweithgarwch pori ar eu gwefan eu hunain y gall gwefannau ddefnyddio'ch cwcis</translation>
 <translation id="8258999165172757081">Ychwanegwyd</translation>

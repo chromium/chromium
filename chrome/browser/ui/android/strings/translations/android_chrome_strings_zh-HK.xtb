@@ -582,6 +582,7 @@
 <translation id="3701167022068948696">立即修正</translation>
 <translation id="3701515417135397388">在密碼於資料外洩中被盜用時警告你</translation>
 <translation id="3703166520839776970">如果此問題持續發生，選取下方的「更多詳情」即可從「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」取得更多資訊。</translation>
+<translation id="3708100450779900829">你可以使用下方選項變更裝置摺起時的網址列位置。此外，按住網址列也可以變更位置</translation>
 <translation id="3710501561113687889">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享你的<ph name="FIELDS_STRING" />。</translation>
 <translation id="3710560693796335511">協作</translation>
 <translation id="3714981814255182093">開啟搜尋列</translation>
@@ -1090,7 +1091,6 @@
 <translation id="604996488070107836">發生不明錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">請在這裡控制您的報導和活動</translation>
-<translation id="6070730414166672373">正在聯絡銀行\u2026</translation>
 <translation id="6071995715087444295">如要檢查密碼是否被盜用，請登入 Google 帳戶</translation>
 <translation id="6085886413119427067">判斷如何透過安全連線連接網站</translation>
 <translation id="6087286598828478206">要封鎖並離開群組嗎？</translation>
@@ -1127,7 +1127,6 @@
 <translation id="6210748933810148297">不是 <ph name="EMAIL" /> 嗎？</translation>
 <translation id="6211386937064921208">正在預覽此網頁</translation>
 <translation id="6221633008163990886">解鎖即可匯出您的密碼</translation>
-<translation id="6225572914528673855">網址列</translation>
 <translation id="6232535412751077445">啟用「不追蹤」即表示您的瀏覽流量將包含一個要求，其效用視乎網站會否回應要求，以及如何解讀要求。
 
 舉例來說，部分網站可能會在顯示廣告時，選擇不根據您所瀏覽的網站記錄來顯示廣告。許多網站仍會收集您的瀏覽資料，並將這些資料用於下列目的：提高網站安全性、在網站上提供相關的內容、廣告和推薦項目，以及產生報告統計資料。</translation>
@@ -1283,6 +1282,7 @@
 <translation id="6850830437481525139">已關閉 <ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{音訊檔案，清單中有 1 個音訊檔案}other{音訊檔案，清單中有 # 個音訊檔案}}</translation>
 <translation id="685850645784703949">Google 探索 - 關閉</translation>
+<translation id="6861722405755529743">書籤列展開式按鈕</translation>
 <translation id="686366188661646310">要刪除密碼嗎？</translation>
 <translation id="6864459304226931083">下載圖片</translation>
 <translation id="686490460830618322">應用程式篩選器工作表</translation>
@@ -1615,6 +1615,7 @@
 <translation id="8236063039629122676">現在，向右輕掃即可返回之前瀏覽的頁面，向左掃則可前進</translation>
 <translation id="8236097722223016103">加入書籤</translation>
 <translation id="8243077599929149377">新增你的使用者名稱</translation>
+<translation id="8244387390464017490">自訂新分頁</translation>
 <translation id="8250920743982581267">文件</translation>
 <translation id="8255617931166444521">網站只能使用 Cookie 查看您在該網站的瀏覽活動</translation>
 <translation id="8258999165172757081">已新增</translation>

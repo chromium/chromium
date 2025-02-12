@@ -220,6 +220,7 @@
 <translation id="114721135501989771">在 Chrome 中體驗 Google 的智能功能</translation>
 <translation id="1147322039136785890">現在可交由<ph name="SUPERVISED_USER_NAME" />使用</translation>
 <translation id="1147991416141538220">如要求存取權，請聯絡此裝置的管理員。</translation>
+<translation id="1148464196693569530">允許使用者指令碼</translation>
 <translation id="1148624853678088576">您已完成全部設定！</translation>
 <translation id="1148669835763563782">你正在接收最新的軟件更新版本，享有加強安全保障和最新的 Chromebook 功能。此更新提升了設定體驗，有助順利開始使用 Chromebook。</translation>
 <translation id="1149401351239820326">到期月份</translation>
@@ -6767,6 +6768,7 @@
 <translation id="5794414402486823030">一律使用系統檢視器開啟</translation>
 <translation id="5794700615121138172">Linux 共用資料夾</translation>
 <translation id="5794786537412027208">結束所有 Chrome 應用程式</translation>
+<translation id="5795422263272161110">並排顯示</translation>
 <translation id="5796485699458186843">新無痕式分頁</translation>
 <translation id="5796956053441619942">不支援來自遠端裝置的網址</translation>
 <translation id="5797934230382081317">瞭解如何在 &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; 和 &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; 裝置上開始使用密碼管理工具</translation>
@@ -7294,6 +7296,7 @@
 <translation id="6170498031581934115">無法啟用 ADB 偵錯。請前往「設定」，然後再試一次。</translation>
 <translation id="6170675927290506430">前往通知設定</translation>
 <translation id="6171779718418683144">每次瀏覽時都詢問</translation>
+<translation id="6172020488605056255">按一下右鍵即可使用「幫我閱讀」</translation>
 <translation id="617213288191670920">沒有新增任何語言</translation>
 <translation id="6173623053897475761">重新輸入 PIN</translation>
 <translation id="6174909075810107548">按下「5」代表按下滑鼠按鍵</translation>
@@ -8319,6 +8322,7 @@
 <translation id="6910190732484284349">刪除以下使用者名稱嘅密鑰：<ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">已刪除</translation>
 <translation id="6910274140210351823">深色</translation>
+<translation id="691102290537033604">擴充程式將可執行未經 Google 審核的程式碼。這可能不安全，除非有明確用途，否則請不要啟用此設定。</translation>
 <translation id="6911734910326569517">記憶體使用量</translation>
 <translation id="6912007319859991306">流動網絡 SIM 卡 PIN</translation>
 <translation id="6912380255120084882">嘗試使用其他裝置</translation>
@@ -9829,6 +9833,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> 語音 <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">自動從 Android 手機轉移 Wi-Fi 設定</translation>
 <translation id="7991296728590311172">「按鈕控制」設定</translation>
+<translation id="7992080146463834191">撮要內容、簡化複雜用語或提問。</translation>
 <translation id="7992203134935383159">語音合成</translation>
 <translation id="799570308305997052">網頁檢視</translation>
 <translation id="7997826902155442747">處理優先次序</translation>
@@ -11084,6 +11089,7 @@
 <translation id="8874448314264883207">「<ph name="EXTENSION_NAME" />」已關閉</translation>
 <translation id="8874647982044395866">自然</translation>
 <translation id="8874790741333031443">請嘗試暫時允許使用第三方 Cookie，這代表瀏覽保護程度較低，但網站功能較容易如期運作。</translation>
+<translation id="8875221558267407626">撮要內容、簡化複雜用語或提問</translation>
 <translation id="8875520811099717934">Linux 升級</translation>
 <translation id="8875736897340638404">選擇分享設定</translation>
 <translation id="8876307312329369159">此設定無法在示範工作階段中變更。</translation>
@@ -11137,6 +11143,7 @@
 <translation id="8915916167043355778">全部關閉</translation>
 <translation id="8916476537757519021">無痕模式子頁框：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">係，我同意</translation>
+<translation id="8917980324687233736">並排顯示</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">正在安裝應用程式…</translation>
 <translation id="891931289445130855">刪除資料和權限</translation>

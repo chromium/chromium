@@ -284,6 +284,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{זוהתה ירידה במחיר בכרטיסיות הפתוחות}one{זוהו ירידות במחירים בכרטיסיות הפתוחות}two{זוהו ירידות במחירים בכרטיסיות הפתוחות}other{זוהו ירידות במחירים בכרטיסיות הפתוחות}}</translation>
 <translation id="5186036860380548585">האפשרות זמינה בחלק העליון של המסך</translation>
 <translation id="5197729504361054390">אנשי הקשר שייבחרו ישותפו עם <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5198930230016462977">הגיליון התחתון להתאמה אישית של דף הכרטיסייה החדשה נסגר</translation>
 <translation id="5216942107514965959">הכניסה האחרונה בוצעה היום</translation>
 <translation id="5225463052809312700">הפעלת המצלמה</translation>
 <translation id="5234764350956374838">סגירה</translation>
@@ -328,6 +329,7 @@
 <translation id="5750869797196646528">מעקב אחר תנועות הידיים</translation>
 <translation id="5771720122942595109">חסומה: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">הרשאות</translation>
+<translation id="5822675474983796325">הגיליון התחתון להתאמה אישית של דף הכרטיסייה החדשה נפתח בגובה מלא</translation>
 <translation id="5844448279347999754">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה לראות טקסט ותמונות שנשמרו בלוח העריכה. כשהאפשרות מושבתת, אתרים לא יכולים לראות טקסט או תמונות שנשמרו בלוח העריכה.</translation>
 <translation id="5853982612236235577">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה לשלוח התראות. כשהאפשרות מושבתת, אתרים לא יכולים לשלוח התראות.</translation>
 <translation id="5860033963881614850">כבוי</translation>
@@ -435,6 +437,7 @@
 <translation id="7203150201908454328">מורחב</translation>
 <translation id="7219254577985949841">למחוק את הנתונים מהאתר?</translation>
 <translation id="723171743924126238">בחירת תמונות</translation>
+<translation id="7243246278722455312">גיליון תחתון להתאמה אישית של דף הכרטיסייה החדשה</translation>
 <translation id="7243308994586599757">אפשרויות הזמינות באזור החלק התחתון של המסך</translation>
 <translation id="7250468141469952378">נבחרו <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">פועלות: <ph name="PERMISSION_1" /> וגם <ph name="PERMISSION_2" /></translation>

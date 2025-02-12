@@ -131,7 +131,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="1513858653616922153">Slett passordet</translation>
 <translation id="1521774566618522728">Aktiv i dag</translation>
 <translation id="153446405401665083">En ny versjon av Chrome er tilgjengelig</translation>
-<translation id="1540012742443808215">Adressefeltet er for øyeblikket øverst</translation>
+<translation id="1540012742443808215">Adressefeltet er øverst</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 bokmerke er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din (<ph name="ACCOUNT_EMAIL" />).}other{# bokmerker er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1544084554881119930">Betalingsmåter og adresser krypteres ikke. Nettleserloggen fra Chrome synkroniseres ikke.
 Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordfrasen blir verken sendt til eller lagret av Google. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
@@ -582,6 +582,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3701167022068948696">Løs dette nå</translation>
 <translation id="3701515417135397388">Få en advarsel hvis passord blir utsatt for sikkerhetsbrudd</translation>
 <translation id="3703166520839776970">Hvis problemet vedvarer, kan du velge «Mer informasjon» under for å få mer informasjon fra <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="3708100450779900829">Når enheten er sammenbrettet, kan du velge et alternativ eller trykke og holde på adressefeltet for å endre posisjonen</translation>
 <translation id="3710501561113687889">Før du kan fortsette, må <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dele <ph name="FIELDS_STRING" /> med dette nettstedet.</translation>
 <translation id="3710560693796335511">Samarbeid</translation>
 <translation id="3714981814255182093">Åpne søkeraden</translation>
@@ -1090,7 +1091,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="604996488070107836">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt på grunn av en ukjent feil.</translation>
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6059830886158432458">Styr nyhetssakene dine og aktiviteten din her</translation>
-<translation id="6070730414166672373">Kontakter banken din \u2026</translation>
 <translation id="6071995715087444295">For å sjekke om du har passord som er utsatt for sikkerhetsbrudd, logg på Google-kontoen din</translation>
 <translation id="6085886413119427067">Avgjør hvordan en sikker forbindelse brukes til å koble til nettsteder</translation>
 <translation id="6087286598828478206">Vil du blokkere og forlate gruppen?</translation>
@@ -1127,7 +1127,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="6210748933810148297">Ikke <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Forhåndsviser denne siden</translation>
 <translation id="6221633008163990886">Lås opp for å eksportere passordene dine</translation>
-<translation id="6225572914528673855">Adressefelt</translation>
 <translation id="6232535412751077445">Hvis du slår på «Deaktivering av sporing», blir det sendt en forespørsel sammen med nettrafikken din. Hvilke virkninger dette eventuelt får, avhenger av om det aktuelle nettstedet svarer på forespørselen eller ikke, samt hvordan forespørselen tolkes.
 
 Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg annonser som ikke er basert på andre nettsteder du har besøkt. Mange nettsteder samler likevel inn og bruker nettlesingsdataene dine – for eksempel for å forbedre sikkerheten, for å levere innhold, annonser og anbefalinger og for å generere rapporteringsstatistikk.</translation>
@@ -1185,7 +1184,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6459045781120991510">Undersøkelser</translation>
 <translation id="6461962085415701688">Kan ikke åpne filen</translation>
 <translation id="6464977750820128603">Du kan se nettstedene du besøker i Chrome, og angi tidtakere for dem.\n\nGoogle får informasjon om nettstedene du angir tidtakere for, og hvor lenge du besøker dem. Denne informasjonen brukes til å gjøre Digital balanse bedre.</translation>
-<translation id="6468703991511753953">Adressefeltet er for øyeblikket nederst</translation>
+<translation id="6468703991511753953">Adressefeltet er nederst</translation>
 <translation id="6470181189905173055">Sidene du har åpnet i Chrome mens du har brukt <ph name="APP_LABEL" />, vises her.</translation>
 <translation id="6473086018775716761">Listen over delingsalternativer er åpnet i halv høyde.</translation>
 <translation id="6475951671322991020">Last ned videoen</translation>
@@ -1616,6 +1615,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8236063039629122676">Nå kan du sveipe til høyre for å se sider du har besøkt tidligere, og til venstre for å gå fremover</translation>
 <translation id="8236097722223016103">Legg til i bokmerker</translation>
 <translation id="8243077599929149377">Legg til brukernavnet ditt</translation>
+<translation id="8244387390464017490">Tilpass Ny fane-siden</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
 <translation id="8255617931166444521">Nettsteder kan bare bruke informasjonskapslene dine til å se surfeaktiviteten din på sitt eget nettsted</translation>
 <translation id="8258999165172757081">Lagt til</translation>

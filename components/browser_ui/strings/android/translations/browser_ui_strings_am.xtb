@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{ክፍት በሆኑ ትሮችዎ ላይ የዋጋ ቅናሽ}one{ክፍት በሆኑ ትሮችዎ ላይ የዋጋ ቅናሽ}other{ክፍት በሆኑ ትሮችዎ ላይ የዋጋዎች ቅናሽ}}</translation>
 <translation id="5186036860380548585">አማራጮች ከማያ ገጹ አናት አጠገብ ይገኛሉ</translation>
 <translation id="5197729504361054390">የመረጧቸው እውቂያዎች ለ<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ይጋራሉ።</translation>
+<translation id="5198930230016462977">የእርስዎን አዲስ የትር ገፅ የግርጌ ሉህ እንደተዘጋ ያብጁ</translation>
 <translation id="5216942107514965959">መጨረሻ የተጎበኘው ዛሬ</translation>
 <translation id="5225463052809312700">ካሜራን አብራ</translation>
 <translation id="5234764350956374838">አሰናብት</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">የእጅ ክትትል</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> ታግዷል</translation>
 <translation id="5804241973901381774">ፍቃዶች</translation>
+<translation id="5822675474983796325">የእርስዎ አዲስ የትር ገፅ የግርጌ ሉህ በሙሉ ቁመት እንደተከፈተ ያብጁ</translation>
 <translation id="5844448279347999754">ሲበራ፣ ጣቢያዎች ወደ ቅንጥብ ሰሌዳዎ የተቀመጡ ጽሑፎችን እና ምስሎችን ለማየት መጠየቅ ይችላሉ። ሲጠፋ፣ ጣቢያዎች ወደ ቅንጥብ ሰሌዳዎ የተቀመጡ ጽሑፎችን ወይም ምስሎችን ማየት አይችሉም።</translation>
 <translation id="5853982612236235577">ሲበራ፣ ጣቢያዎች ማሳወቂያዎችን ለመላክ መጠየቅ ይችላሉ። ሲጠፋ፣ ጣቢያዎች ማሳወቂያዎችን መላክ አይችሉም።</translation>
 <translation id="5860033963881614850">አጥፋ</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">ተዘርግቷል</translation>
 <translation id="7219254577985949841">የጣቢያ ውሂብ ይሰረዝ?</translation>
 <translation id="723171743924126238">ምስሎችን ይምረጡ</translation>
+<translation id="7243246278722455312">የእርስዎን አዲስ የትር ገፅ የግርጌ ሉህ ያብጁ</translation>
 <translation id="7243308994586599757">አማራጮች ከማያ ገጹ ግርጌ አጠገብ ይገኛሉ</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ተመርጠዋል</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> እና <ph name="PERMISSION_2" /> ተፈቅደዋል</translation>

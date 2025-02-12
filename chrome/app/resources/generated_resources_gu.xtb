@@ -220,6 +220,7 @@
 <translation id="114721135501989771">Chromeમાં Google સ્માર્ટ મેળવો</translation>
 <translation id="1147322039136785890">હવે <ph name="SUPERVISED_USER_NAME" />નો વારો છે</translation>
 <translation id="1147991416141538220">ઍક્સેસ વિશે પૂછવા માટે આ ડિવાઇસના વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
+<translation id="1148464196693569530">વપરાશકર્તાની સ્ક્રિપ્ટને મંજૂરી આપો</translation>
 <translation id="1148624853678088576">તમે બધું સેટ કરી લીધું!</translation>
 <translation id="1148669835763563782">તમે વધારેલી સુરક્ષા તેમજ તદ્દન નવી Chromebook સુવિધાઓ માટેની સૌથી તાજેતરની સૉફ્ટવેર અપડેટ મેળવી રહ્યાં છો. આ અપડેટમાં સેટપનો એક બહેતર અનુભવ શામેલ છે, જેનાથી તમને તમારી Chromebookનો ઉપયોગ શરૂ કરવાનું સરળ થવામાં સહાય મળશે.</translation>
 <translation id="1149401351239820326">સમય સમાપ્તિ મહિનો</translation>
@@ -6767,6 +6768,7 @@
 <translation id="5794414402486823030">હંમેશા સિસ્ટમ દર્શક સાથે ખોલો</translation>
 <translation id="5794700615121138172">Linuxએ શેર કરેલા ફોલ્ડરો</translation>
 <translation id="5794786537412027208">બધી Chrome એપ્લિકેશન્સને છોડી દો</translation>
+<translation id="5795422263272161110">બાજુ-બાજુમાં બતાવો</translation>
 <translation id="5796485699458186843">નવી છૂપી ટૅબ</translation>
 <translation id="5796956053441619942">રિમોટ ડિવાઇસમાંથી URL સપોર્ટ કરતું નથી</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; અને &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; પર શરૂઆત કરવાની રીત જાણો</translation>
@@ -7296,6 +7298,7 @@ USB ડિવાઇસ</translation>
 <translation id="6170498031581934115">ADB ડિબગીંગ ચાલુ કરી શકાયું નથી. સેટિંગમાં જઈને ફરી પ્રયાસ કરો.</translation>
 <translation id="6170675927290506430">નોટિફિકેશનના સેટિંગમાં જાઓ</translation>
 <translation id="6171779718418683144">દરેક મુલાકાત વખતે પૂછો</translation>
+<translation id="6172020488605056255">વાંચવામાં મારી સહાય કરો સુવિધાનો ઉપયોગ કરવા માટે રાઇટ ક્લિક કરો</translation>
 <translation id="617213288191670920">કોઈ ભાષા ઉમેરી નથી</translation>
 <translation id="6173623053897475761">તમારો પિન ફરી ટાઇપ કરો</translation>
 <translation id="6174909075810107548">માઉસનું બટન દબાવવા માટે “5”નો ઉપયોગ કરો</translation>
@@ -8323,6 +8326,7 @@ USB ડિવાઇસ</translation>
 <translation id="6910190732484284349">વપરાશકર્તાના આ નામ માટેની પાસકી ડિલીટ કરો: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">કાઢી નાખ્યું</translation>
 <translation id="6910274140210351823">ડાર્ક</translation>
+<translation id="691102290537033604">એક્સ્ટેન્શન એ કોડ ચલાવી શકશે જેનો Google દ્વારા રિવ્યૂ કરવામાં આવ્યો નથી. તે કદાચ અસલામત હોઈ શકે છે અને જો તમે જાણતા હો કે તમે શું કરી રહ્યાં છો, તો જ તમારે આને ચાલુ કરવું જોઈએ.</translation>
 <translation id="6911734910326569517">મેમરી ફૂટપ્રિન્ટ</translation>
 <translation id="6912007319859991306">સેલ્યુલર સિમ પિન</translation>
 <translation id="6912380255120084882">કોઈ બીજું ડિવાઇસ અજમાવી જુઓ</translation>
@@ -9833,6 +9837,7 @@ USB ડિવાઇસ</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> અવાજ <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">તમારા Android ફોનમાંથી ઑટોમૅટિક રીતે વાઇ-ફાઇ ટ્રાન્સફર કરો</translation>
 <translation id="7991296728590311172">સ્વિચ ઍક્સેસ સેટિંગ</translation>
+<translation id="7992080146463834191">કન્ટેન્ટનો સારાંશ આપો, જટિલ ભાષાને સરળ બનાવો અથવા પ્રશ્નો પૂછો.</translation>
 <translation id="7992203134935383159">સ્પીચ સિન્થેસીસ</translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">પ્રાધાન્યતા પર પ્રક્રિયા કરો</translation>
@@ -11086,6 +11091,7 @@ USB ડિવાઇસ</translation>
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" બંધ કરવામાં આવ્યું હતું</translation>
 <translation id="8874647982044395866">ઑર્ગેનિક</translation>
 <translation id="8874790741333031443">ત્રીજા પક્ષની કુકીને હંગામી રીતે મંજૂરી આપવાનો પ્રયાસ કરવાનો અર્થ છે બ્રાઉઝિંગ સંરક્ષણ સાઇટ સુવિધાઓની અપેક્ષા મુજબ કાર્ય કરવાની સંભાવના વધુ છે.</translation>
+<translation id="8875221558267407626">કન્ટેન્ટનો સારાંશ આપો, જટિલ ભાષાને સરળ બનાવો અથવા પ્રશ્નો પૂછો</translation>
 <translation id="8875520811099717934">Linux અપગ્રેડ કરો</translation>
 <translation id="8875736897340638404">તમારી દૃશ્યતા પસંદ કરો</translation>
 <translation id="8876307312329369159">ડેમો સત્રમાં આ સેટિંગ બદલી શકાતી નથી.</translation>
@@ -11139,6 +11145,7 @@ USB ડિવાઇસ</translation>
 <translation id="8915916167043355778">બધા બંધ કરો</translation>
 <translation id="8916476537757519021">છુપો મોડ સબફ્રેમ: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">હા, હું સંમત છું</translation>
+<translation id="8917980324687233736">બાજુ-બાજુમાં બતાવો</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />ની <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">ઍપ ઇન્સ્ટૉલ કરી રહ્યાં છીએ...</translation>
 <translation id="891931289445130855">ડેટા અને પરવાનગીઓ ડિલીટ કરો</translation>

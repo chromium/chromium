@@ -96,6 +96,7 @@
 <translation id="2343156876103232566">‏برای ارسال شماره از اینجا به تلفن Android خود، در هر دو دستگاه به سیستم Chromium وارد شوید.</translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2361918034042471035">‏افزونه «<ph name="EXTENSION_NAME" />» از شما می‌خواهد به سیستم Chromium وارد شوید</translation>
+<translation id="236943522426971115">‏غیرفعال کردن اجرای Chromium در پس‌زمینه برای برنامه‌ها</translation>
 <translation id="2374216753258219393">‏برای استفاده از این افزونه با حساب <ph name="USER_EMAIL_ADDRESS" />، به سیستم Chromium وارد شوید.</translation>
 <translation id="2384373936468275798">‏ChromiumOS نتوانست داده‌های شما را همگام‌سازی کند زیرا جزئیات ورود به حساب شما به‌روز نیست.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{‏یک یا چند افزونه Chromium به یک «دستگاه میانای انسانی» (HID) دسترسی داشتند}=1{‏یک یا چند افزونه Chromium به یک «دستگاه میانای انسانی» (HID) دسترسی دارند}one{‏یک یا چند افزونه Chromium به # «دستگاه میانای انسانی» (HID) دسترسی دارند}other{‏یک یا چند افزونه Chromium به # «دستگاه میانای انسانی» (HID) دسترسی دارند}}</translation>
@@ -501,6 +502,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8013436988911883588">‏وقتی Chromium دسترسی داشته باشد، وب‌سایت‌ها می‌توانند مجوز دسترسی درخواست کنند.</translation>
 <translation id="80471789339884597">بابت نصب از شما سپاس‌گزاریم. قبل‌از استفاده از <ph name="BUNDLE_NAME" />، باید همه مرورگرها را بازراه‌اندازی کنید.</translation>
 <translation id="8054112667659782652">میان‌بر «جستجوی تصویر» همیشه نشان داده شود</translation>
+<translation id="8077498902115777962">‏غیرفعال کردن اجرای Chromium در پس‌زمینه برای برنامه‌ها</translation>
 <translation id="80790299200510644">جستجوی تصویر</translation>
 <translation id="8086881907087796310">نصب انجام نشد زیرا رایانه شما با حداقل شرایط سخت‌افزاری مطابقت ندارد.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>

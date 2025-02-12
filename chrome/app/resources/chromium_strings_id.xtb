@@ -96,6 +96,7 @@
 <translation id="2343156876103232566">Untuk mengirimkan nomor dari sini ke ponsel Android Anda, login ke Chromium di kedua perangkat.</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2361918034042471035">Ekstensi "<ph name="EXTENSION_NAME" />" ingin Anda login ke Chromium</translation>
+<translation id="236943522426971115">Nonaktifkan Chromium agar Tidak Menjalankan Aplikasi di Latar Belakang</translation>
 <translation id="2374216753258219393">Untuk menggunakan ekstensi ini sebagai <ph name="USER_EMAIL_ADDRESS" />, login ke Chromium.</translation>
 <translation id="2384373936468275798">ChromiumOS tidak dapat menyinkronkan data karena detail login akun Anda belum diperbarui.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Tidak ada perangkat HID yang diakses oleh ekstensi Chromium}=1{1 perangkat HID sedang diakses oleh satu atau beberapa ekstensi Chromium}other{# perangkat HID sedang diakses oleh satu atau beberapa ekstensi Chromium}}</translation>
@@ -503,6 +504,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8013436988911883588">Setelah Chromium memiliki akses, situs dapat meminta akses dari Anda.</translation>
 <translation id="80471789339884597">Terima kasih telah menginstal. Anda harus memulai ulang semua browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Selalu tampilkan pintasan Penelusuran Gambar</translation>
+<translation id="8077498902115777962">Nonaktifkan Chromium agar tidak menjalankan aplikasi di latar belakang</translation>
 <translation id="80790299200510644">Penelusuran Gambar</translation>
 <translation id="8086881907087796310">Penginstalan gagal karena komputer Anda tidak memenuhi persyaratan hardware minimum.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>

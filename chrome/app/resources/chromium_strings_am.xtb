@@ -98,6 +98,7 @@
 <translation id="2343156876103232566">አንድ ቁጥር ከዚህ ወደ የእርስዎ Android ስልክ ለመላክ በሁለቱም መሣሪያዎች ላይ በመለያ ወደ Chromium ይግቡ።</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2361918034042471035">ቅጥያው «<ph name="EXTENSION_NAME" />» ወደ በመለያ Chromium እንዲገቡ ይፈልጋል</translation>
+<translation id="236943522426971115">Chromium ለመተግበሪያዎች በዳራ ውስጥ እንዳያሄድ አሰናክል</translation>
 <translation id="2374216753258219393">እንደ <ph name="USER_EMAIL_ADDRESS" /> ሆነው ይህን ቅጥያ ለመጠቀም በመለያ ወደ Chromium ይግቡ።</translation>
 <translation id="2384373936468275798">የመለያ መግቢያ ዝርዝሮችዎ ጊዜ ያለፈባቸው ስለሆኑ ChromiumOS ውሂብዎን ማስመር አልቻለም።</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 የኤችአይዲ መሣሪያ በአንድ ወይም ከዚያ በላይ በሆኑ የChromium ቅጥያዎች እየተደረሰበት ነበር}=1{1 የኤችአይዲ መሣሪያ በአንድ ወይም ከዚያ በላይ በሆኑ የChromium ቅጥያዎች እየተደረሰበት ነው}one{# የኤችአይዲ መሣሪያ በአንድ ወይም ከዚያ በላይ በሆኑ የChromium ቅጥያዎች እየተደረሰበት ነው}other{# የኤችአይዲ መሣሪያዎች በአንድ ወይም ከዚያ በላይ በሆኑ የChromium ቅጥያዎች እየተደረሰባቸው ነው}}</translation>
@@ -180,6 +181,7 @@
 <translation id="3406848076815591792">ወደ ነባር የChromium መገለጫ ይቀየር?</translation>
 <translation id="3412460710772753638">በዚህ መሣሪያ ላይ በይለፍ ቃል አስተዳዳሪ ውስጥ</translation>
 <translation id="3430503420100763906">በ Chromium መገለጫዎች ሁሉንም የ Chromium ነገሮችዎን መለየት ይችላሉ። ለጓደኞች እና ለቤተሰብ መገለጫዎችን ይፍጠሩ፣ ወይም በሥራ እና በመዝናኛ መካከል ይከፋፈሉ።</translation>
+<translation id="3451656833730006755">የእርስዎን ቅጥያዎች እና ሌሎችንም በሁሉም ኮምፒውተሮችዎ ላይ ለማግኘት ወደ Chromium ይግቡ</translation>
 <translation id="347328004046849135">እርስዎ በተጠለፈ የይለፍ ቃል ሲገቡ Chromium ያሳውቀዎታል</translation>
 <translation id="3474745554856756813">ይሄ <ph name="ITEMS_COUNT" /> ንጥሎችን ከዚህ መሣሪያ ይሰርዛል። ውሂብዎን በኋላ ላይ ሰርስረው ለማውጣት እንደ <ph name="USER_EMAIL" /> ሆነው ወደ Chromium ይግቡ።</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> በChromium መገለጫዎች መካከል መቀያየር ይችላል</translation>
@@ -505,6 +507,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="8013436988911883588">አንዴ Chromium መዳረሻ ከኖረው በኋላ ድር ጣቢያዎች እርስዎን መዳረሻ መጠየቅ ይችላሉ።</translation>
 <translation id="80471789339884597">ሰለተጫኑ እናመሰግናለን። <ph name="BUNDLE_NAME" />ን ከመጠቀምዎ በፊት ሁሉንም አሳሾችዎን እንደገና ማስጀመር አለብዎት።</translation>
 <translation id="8054112667659782652">የምስል ፍለጋ አቋራጭን ሁልጊዜ አሳይ</translation>
+<translation id="8077498902115777962">Chromium ለመተግበሪያዎች በዳራ ውስጥ እንዳያሄድ አሰናክል</translation>
 <translation id="80790299200510644">ምስል ፈልግ</translation>
 <translation id="8086881907087796310">ኮምፒውተርዎ አነስተኛውን የሃርድዌር መስፈርቶች ስላላሟላ መጫኑ አልተሳካም።</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome ለሙከራ</translation>

@@ -1090,7 +1090,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="604996488070107836">Stažení souboru <ph name="FILE_NAME" /> se nezdařilo z důvodu neznámé chyby.</translation>
 <translation id="605721222689873409">RR</translation>
 <translation id="6059830886158432458">Zde můžete ovládat své příběhy a aktivity</translation>
-<translation id="6070730414166672373">Kontaktování banky\u2026</translation>
 <translation id="6071995715087444295">Pokud chcete zkontrolovat, zda nedošlo k prolomení hesel, přihlaste se k účtu Google</translation>
 <translation id="6085886413119427067">Určuje způsob připojení k webům přes zabezpečené připojení</translation>
 <translation id="6087286598828478206">Zablokovat a opustit skupinu?</translation>
@@ -1127,7 +1126,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="6210748933810148297">Nejste <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Zobrazování náhledu této stránky</translation>
 <translation id="6221633008163990886">Chcete-li exportovat hesla, odemkněte zařízení</translation>
-<translation id="6225572914528673855">Adresní řádek</translation>
 <translation id="6232535412751077445">Pokud povolíte požadavek Do Not Track, bude připojován k datům provozu prohlížení. Účinek tohoto požadavku závisí na tom, zda na něj budou webové stránky reagovat a jak jej budou interpretovat.
 
 Některé weby mohou například na tento požadavek reagovat tak, že vám zobrazí reklamy, které nejsou založeny na ostatních navštívených webových stránkách. Řada webů bude i nadále shromažďovat vaše údaje o prohlížení a používat je například ke zlepšení zabezpečení, poskytování obsahu, reklam a doporučení a ke generování statistik pro přehledy.</translation>

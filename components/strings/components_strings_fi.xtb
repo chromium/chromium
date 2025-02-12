@@ -1273,6 +1273,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3248329428895535435">Älä näytä tällä sivustolla</translation>
 <translation id="3249102948665905108">Tiedostojen lataus tänne: <ph name="CLOUD_PROVIDER" /> valmis, mutta siinä tapahtui virheitä</translation>
 <translation id="3252772880526154546">Arkkitehtuuri</translation>
+<translation id="3253225298092156258">Ei saatavilla</translation>
 <translation id="3254301855501243548">18 x 22 tuumaa</translation>
 <translation id="3255926992597692024">Chromium yrittää muuttaa maksutapojen täyttämisen asetuksia.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, luo uusi tapahtuma nopeasti Google Kalenterissa painamalla sarkainta ja sitten Enter</translation>
