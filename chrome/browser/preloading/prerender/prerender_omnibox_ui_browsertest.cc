@@ -113,6 +113,8 @@ class PrerenderOmniboxUIBrowserTest : public InProcessBrowserTest,
       : prerender_helper_(base::BindRepeating(
             &PrerenderOmniboxUIBrowserTest::GetActiveWebContents,
             base::Unretained(this))) {
+    scoped_feature_list_.InitWithFeatures(
+        {}, {kSearchPrefetchOnlyAllowDefaultMatchPreloading});
   }
 
   void SetUp() override {
@@ -248,6 +250,7 @@ class PrerenderOmniboxUIBrowserTest : public InProcessBrowserTest,
 
   base::ScopedMockElapsedTimersForTest scoped_test_timer_;
   content::test::PrerenderTestHelper prerender_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   ui::PageTransition last_finished_page_transition_type_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
@@ -602,7 +605,8 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
             &PrerenderOmniboxUIBrowserTest::GetActiveWebContents,
             base::Unretained(this))) {
     scoped_feature_list_.InitWithFeatures(
-        {features::kSupportSearchSuggestionForPrerender2}, {});
+        {features::kSupportSearchSuggestionForPrerender2},
+        {kSearchPrefetchOnlyAllowDefaultMatchPreloading});
   }
 
   void SetUpOnMainThread() override {
