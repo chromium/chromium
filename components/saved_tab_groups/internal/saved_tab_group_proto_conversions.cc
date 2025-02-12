@@ -167,6 +167,7 @@ SavedTabGroup DataToSavedTabGroup(const proto::SavedTabGroupData& data) {
   bool created_before_syncing_tab_groups = false;
   base::Time last_user_interaction_time;
   base::Uuid originating_tab_group_guid;
+  bool is_hidden = false;
   if (data.has_local_tab_group_data()) {
     created_before_syncing_tab_groups =
         data.local_tab_group_data().created_before_syncing_tab_groups();
@@ -177,6 +178,7 @@ SavedTabGroup DataToSavedTabGroup(const proto::SavedTabGroupData& data) {
       originating_tab_group_guid = base::Uuid::ParseLowercase(
           data.local_tab_group_data().originating_tab_group_guid());
     }
+    is_hidden = data.local_tab_group_data().is_group_hidden();
   }
 
   SavedTabGroup group = SavedTabGroup(
@@ -188,6 +190,7 @@ SavedTabGroup DataToSavedTabGroup(const proto::SavedTabGroupData& data) {
   if (originating_tab_group_guid.is_valid()) {
     group.SetOriginatingTabGroupGuid(std::move(originating_tab_group_guid));
   }
+  group.SetIsHidden(is_hidden);
 
   return group;
 }
@@ -245,6 +248,7 @@ proto::SavedTabGroupData SavedTabGroupToData(const SavedTabGroup& group) {
     local_data->set_originating_tab_group_guid(
         group.originating_tab_group_guid().value().AsLowercaseString());
   }
+  local_data->set_is_group_hidden(group.is_hidden());
 
   pb_data.set_version(kCurrentSchemaVersion);
 

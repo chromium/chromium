@@ -118,6 +118,7 @@ TEST_F(SavedTabGroupConversionTest, GroupToDataRetainsData) {
       base::Uuid::GenerateRandomV4();
   group.SetLastUserInteractionTime(time_);
   group.SetOriginatingTabGroupGuid(kOriginatingSavedTabGroupGuid);
+  group.SetIsHidden(true);
 
   proto::SavedTabGroupData proto =
       SavedTabGroupSyncBridge::SavedTabGroupToDataForTest(group);
@@ -203,6 +204,7 @@ TEST_F(SavedTabGroupConversionTest, VerifyLocalFieldsOnProtoToGroupConversion) {
   pb_local_group_data->set_created_before_syncing_tab_groups(true);
   pb_local_group_data->set_last_user_interaction_time_windows_epoch_micros(
       time_in_micros);
+  pb_local_group_data->set_is_group_hidden(true);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   std::string serialized_local_id = base::Token::CreateRandom().ToString();

@@ -2324,12 +2324,122 @@ TEST_F(TabGroupSyncServiceTest, ShouldReturnSharedTabGroupOnly) {
       .WillByDefault(testing::Return(true));
   MakeTabGroupShared(local_group_id_1_, collaboration_id);
 
-  EXPECT_THAT(tab_group_sync_service_->GetAllGroups(), SizeIs(3));
+  const std::vector<SavedTabGroup> all_groups =
+      tab_group_sync_service_->GetAllGroups();
+  EXPECT_THAT(all_groups, SizeIs(3));
   EXPECT_THAT(model_->saved_tab_groups(), SizeIs(4));
+  EXPECT_THAT(all_groups, Not(Contains(HasGuid(group_1_.saved_guid()))));
 
   // The group is still accessible by ID.
   EXPECT_NE(tab_group_sync_service_->GetGroup(group_1_.saved_guid()),
             std::nullopt);
+  // Simulate the case that the originating group is removed from sync after
+  // the migration. It should have no impact on what is being returned from
+  // GetAllGroups().
+  model_->RemovedFromSync(group_1_.saved_guid());
+  WaitForPostedTasks();
+  EXPECT_THAT(tab_group_sync_service_->GetAllGroups(), SizeIs(3));
+  EXPECT_THAT(model_->saved_tab_groups(), SizeIs(3));
+}
+
+TEST_F(TabGroupSyncServiceTest,
+       RemoteAddSharedGroupWhenOriginatingGroupIsClosed) {
+  // Simulate remote transition to shared tab group from `group_1_`.
+  SavedTabGroup shared_group = test::CreateTestSavedTabGroupWithNoTabs();
+  shared_group.SetCollaborationId(CollaborationId("collaboration"));
+  shared_group.SetOriginatingTabGroupGuid(group_1_.saved_guid());
+
+  // Close the group before the shared group is added by remote.
+  tab_group_sync_service_->RemoveLocalTabGroupMapping(
+      local_group_id_1_, ClosingSource::kClosedByUser);
+  model_->AddedFromSync(shared_group);
+  WaitForPostedTasks();
+
+  // The saved tab group should be present in GetAllGroups() while the shared
+  // one is not accessible.
+  EXPECT_THAT(tab_group_sync_service_->GetAllGroups(),
+              Contains(HasGuid(group_1_.saved_guid())));
+  EXPECT_THAT(tab_group_sync_service_->GetAllGroups(),
+              Not(Contains(IsSharedGroup())));
+
+  // Add new remote tabs to make the group available for the transition.
+  model_->AddTabToGroupFromSync(
+      shared_group.saved_guid(),
+      test::CreateSavedTabGroupTab("http://foo.com", u"title",
+                                   shared_group.saved_guid()));
+  WaitForPostedTasks();
+
+  // Only shared tab group should be returned now.
+  EXPECT_THAT(tab_group_sync_service_->GetAllGroups(),
+              Not(Contains(HasGuid(group_1_.saved_guid()))));
+  EXPECT_THAT(tab_group_sync_service_->GetAllGroups(),
+              Contains(HasGuid(shared_group.saved_guid())));
+}
+
+// Tests that saved tab group is returned if tab group migration didn't
+// complete.
+TEST_F(TabGroupSyncServiceTest, ShouldReturnSavedTabGroupDuringTransition) {
+  ASSERT_THAT(tab_group_sync_service_->GetAllGroups(), SizeIs(3));
+  ASSERT_THAT(model_->saved_tab_groups(), SizeIs(3));
+
+  std::string collaboration_id = "collaboration";
+  ON_CALL(*collaboration_finder_,
+          IsCollaborationAvailable(Eq(collaboration_id)))
+      .WillByDefault(testing::Return(true));
+  tab_group_sync_service_->MakeTabGroupShared(
+      local_group_id_1_, collaboration_id, base::DoNothing());
+
+  // During the transition, GetAllGroups() could also return 3 groups,
+  // including the original saved group.
+  std::vector<SavedTabGroup> all_groups =
+      tab_group_sync_service_->GetAllGroups();
+  EXPECT_THAT(all_groups, SizeIs(3));
+  EXPECT_THAT(model_->saved_tab_groups(), SizeIs(4));
+  EXPECT_THAT(all_groups, Contains(HasGuid(group_1_.saved_guid())));
+
+  // Simulate all shared tab groups as committed to the server.
+  for (const SavedTabGroup* group : model_->GetSharedTabGroupsOnly()) {
+    model_->MarkTransitionedToShared(group->saved_guid());
+  }
+  WaitForPostedTasks();
+
+  // Once committed, GetAllGroups() should still return 3 groups but a
+  // shared group instead of the original saved group.
+  all_groups = tab_group_sync_service_->GetAllGroups();
+  EXPECT_THAT(all_groups, SizeIs(3));
+  EXPECT_THAT(model_->saved_tab_groups(), SizeIs(4));
+  EXPECT_THAT(all_groups, Not(Contains(HasGuid(group_1_.saved_guid()))));
+}
+
+// Tests that after transitioning from a shared tab group to a saved tab group,
+// the saved tab group is the only tab group returned by GetAllGroups().
+TEST_F(TabGroupSyncServiceTest, ShouldReturnSavedTabGroupOnly) {
+  std::optional<SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(local_group_id_1_);
+  MakeTabGroupShared(local_group_id_1_, "collaboration");
+  ASSERT_THAT(tab_group_sync_service_->GetAllGroups(), SizeIs(3));
+  ASSERT_THAT(model_->saved_tab_groups(), SizeIs(4));
+  std::optional<SavedTabGroup> shared_group =
+      tab_group_sync_service_->GetGroup(local_group_id_1_);
+
+  // Unshare the tab group.
+  tab_group_sync_service_->AboutToUnShareTabGroup(local_group_id_1_,
+                                                  base::DoNothing());
+  tab_group_sync_service_->OnTabGroupUnShareComplete(local_group_id_1_, true);
+
+  // During the transition, GetAllGroups() should return 3 groups, including
+  // the original shared group.
+  std::vector<SavedTabGroup> all_groups =
+      tab_group_sync_service_->GetAllGroups();
+  EXPECT_THAT(all_groups, SizeIs(3));
+  EXPECT_THAT(model_->saved_tab_groups(), SizeIs(5));
+  EXPECT_THAT(all_groups, Contains(HasGuid(shared_group->saved_guid())));
+
+  WaitForPostedTasks();
+  all_groups = tab_group_sync_service_->GetAllGroups();
+  EXPECT_THAT(all_groups, SizeIs(3));
+  EXPECT_THAT(model_->saved_tab_groups(), SizeIs(5));
+  EXPECT_THAT(all_groups, Not(Contains(HasGuid(shared_group->saved_guid()))));
 }
 
 class EmptyTabGroupSyncServiceTest : public TabGroupSyncServiceTest {

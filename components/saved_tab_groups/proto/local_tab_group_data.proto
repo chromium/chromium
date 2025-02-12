@@ -29,4 +29,9 @@ message LocalTabGroupData {
 
   // Shared tab group GUID from which this saved tab group was created.
   optional string originating_tab_group_guid = 6;
+
+  // Whether the group should be hidden from UI and not be shown to the user.
+  // For example, the originating saved tab groups will be hidden after
+  // transitioning to shared groups.
+  optional bool is_group_hidden = 7;
 }
