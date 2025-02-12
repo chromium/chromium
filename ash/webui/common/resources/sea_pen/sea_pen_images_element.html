@@ -234,7 +234,7 @@
       </template>
     </iron-list>
     <template is="dom-if" if="[[showHistory_]]" restamp>
-      <h2 id="historyTitle">
+      <h2 id="historyTitle" aria-describedby="historyTooltip">
         [[i18n('seaPenFreeformPreviousPrompts')]]
         <iron-icon
           role="tooltip"
