@@ -426,13 +426,13 @@ UBiDiLevel InlineCursorPosition::BidiLevel() const {
       return 0;
     }
     const TextOffsetRange offset = TextOffset();
-    auto* const item =
+    const auto item_it =
         std::ranges::find_if(*items, [offset](const InlineItem& item) {
           return item.StartOffset() <= offset.start &&
                  item.EndOffset() >= offset.end;
         });
-    CHECK(item != items->end(), base::NotFatalUntil::M130) << this;
-    return item->BidiLevel();
+    CHECK(item_it != items->end(), base::NotFatalUntil::M130) << this;
+    return item_it->BidiLevel();
   }
 
   if (IsAtomicInline()) {
