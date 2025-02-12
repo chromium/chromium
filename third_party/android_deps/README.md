@@ -55,7 +55,7 @@ Full steps to add a new third party library or update existing libraries:
    packager to create the new CIPD packages. The 3pp packager runs every 6
    hours.  You can see the latest runs [here][3pp_bot]. See
    [`//docs/cipd_and_3pp.md`][cipd_and_3pp_doc] for how it works. Anyone on the
-   Clank build core team and any trooper can trigger the bot on demand for you.
+   Clank Commons team and any trooper can trigger the bot on demand for you.
 
 9. If your follow up CL takes more than a day please revert the original CL.
    Once the bot uploads to cipd there is no need to keep the modified 3pp files.
