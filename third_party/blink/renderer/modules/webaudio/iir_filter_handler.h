@@ -8,12 +8,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_basic_processor_handler.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_handler.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class AudioNode;
+class IIRFilter;
 
 class IIRFilterHandler final : public AudioHandler {
  public:
@@ -25,22 +26,12 @@ class IIRFilterHandler final : public AudioHandler {
       bool is_filter_stable);
   ~IIRFilterHandler() override;
 
-  void Process(uint32_t frames_to_process) override;
-  void ProcessOnlyAudioParams(uint32_t frames_to_process) override;
-  void PullInputs(uint32_t frames_to_process) override;
-  void Initialize() override;
-  void Uninitialize() override;
-
-  // Called in the main thread when the number of channels for the input may
-  // have changed.
-  void CheckNumberOfChannelsForInput(AudioNodeInput*) override;
-
   // Get the magnitude and phase response of the filter at the given
   // set of frequencies (in Hz). The phase response is in radians.
   void GetFrequencyResponse(int n_frequencies,
                             const float* frequency_hz,
                             float* mag_response,
-                            float* phase_response);
+                            float* phase_response) const;
 
  private:
   IIRFilterHandler(AudioNode&,
@@ -49,32 +40,52 @@ class IIRFilterHandler final : public AudioHandler {
                    const Vector<double>& feedback_coef,
                    bool is_filter_stable);
 
-  // Returns the number of channels for both the input and the output.
-  unsigned NumberOfChannels();
-  AudioProcessor* Processor() { return processor_.get(); }
+  // AudioHandler
+  void Process(uint32_t frames_to_process) override;
+  void ProcessOnlyAudioParams(uint32_t frames_to_process) override {}
+  void Initialize() override;
+  void Uninitialize() override;
+  void CheckNumberOfChannelsForInput(AudioNodeInput*) override;
+  bool RequiresTailProcessing() const override;
+  double TailTime() const override;
+  double LatencyTime() const override;
+  void PullInputs(uint32_t frames_to_process) override;
 
   // Returns true if the first output sample of any channel is non-finite.  This
-  // is a proxy for determining if the filter state is bad.  For
-  // BiquadFilterNodes and IIRFilterNodes, if the internal state has non-finite
-  // values, the non-finite value propagates pretty much forever in the output.
-  // This is because infinities and NaNs are sticky.
+  // is a proxy for determining if the filter state is bad.  For IIRFilterNodes,
+  // if the internal state has non-finite values, the non-finite value
+  // propagates pretty much forever in the output.  This is because infinities
+  // and NaNs are sticky.
   bool HasNonFiniteOutput() const;
 
   void NotifyBadState() const;
 
-  bool RequiresTailProcessing() const override;
-  double TailTime() const override;
-  double LatencyTime() const override;
+  // Since `Process()` is called on a different thread than `Initialize()` and
+  // `Uninitialize()`, guard access to the processing kernels with a lock.
+  mutable base::Lock process_lock_;
+  Vector<std::unique_ptr<IIRFilter>> kernels_ GUARDED_BY(process_lock_);
 
-  std::unique_ptr<AudioProcessor> processor_;
+  // The feedback and feedforward filter coefficients for the IIR filter.
+  AudioDoubleArray feedback_;
+  AudioDoubleArray feedforward_;
 
-  // Only notify the user of the once.  No need to spam the console with
-  // messages, because once we're in a bad state, it usually stays that way
-  // forever.  Only accessed from audio thread.
+  // The Nyquist frequency (half the sampling rate) is used in
+  // `GetFrequencyResponse()`.
+  const float nyquist_frequency_;
+
+  // Tail time is expensive to calculate for IIR filters.  Since the filter
+  // parameters do not change in this class, cache this value during
+  // construction.
+  double tail_time_;
+
+  // The IIR kernel for computing the frequency response and tail time.
+  std::unique_ptr<IIRFilter> response_kernel_;
+
+  // Only notify the user once.  No need to spam the console with messages,
+  // because once we're in a bad state, it usually stays that way forever.  Only
+  // accessed from audio thread.
   bool did_warn_bad_filter_state_ = false;
-
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
   base::WeakPtrFactory<IIRFilterHandler> weak_ptr_factory_{this};
 };
 
