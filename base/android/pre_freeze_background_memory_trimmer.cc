@@ -458,6 +458,12 @@ void PreFreezeBackgroundMemoryTrimmer::UnregisterMemoryMetricInternal(
   metrics_.erase(metrics_.begin() + index);
 }
 
+void PreFreezeBackgroundMemoryTrimmer::SetOnStartSelfCompactionCallback(
+    base::RepeatingCallback<void(void)> callback) {
+  base::AutoLock locker(lock());
+  Instance().on_self_compact_callback_ = callback;
+}
+
 // static
 bool PreFreezeBackgroundMemoryTrimmer::SelfCompactionIsSupported() {
   return IsMadvisePageoutSupported();
@@ -517,13 +523,16 @@ void PreFreezeBackgroundMemoryTrimmer::StartSelfCompaction(
     uint64_t max_bytes,
     base::TimeTicks started_at) {
   TRACE_EVENT0("base", "StartSelfCompaction");
+  base::trace_event::EmitNamedTrigger("start-self-compaction");
   {
     base::AutoLock locker(lock());
     process_compacted_metadata_.emplace(
         "PreFreezeBackgroundMemoryTrimmer.ProcessCompacted",
         /*is_compacted=*/1, base::SampleMetadataScope::kProcess);
+    if (on_self_compact_callback_) {
+      on_self_compact_callback_.Run();
+    }
   }
-  base::trace_event::EmitNamedTrigger("start-self-compaction");
   metric->RecordBeforeMetrics();
   MaybePostSelfCompactionTask(std::move(task_runner), std::move(regions),
                               std::move(metric), max_bytes, started_at);

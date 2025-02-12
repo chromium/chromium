@@ -64,6 +64,10 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/track_event.pbzero.h"
 #include "v8/include/v8.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/pre_freeze_background_memory_trimmer.h"
+#endif
+
 namespace base {
 class LazyNow;
 }  // namespace base
@@ -2194,6 +2198,23 @@ void MainThreadSchedulerImpl::RemovePageScheduler(
 void MainThreadSchedulerImpl::OnPageFrozen(
     base::MemoryReductionTaskContext called_from) {
 #if BUILDFLAG(IS_ANDROID)
+  base::android::PreFreezeBackgroundMemoryTrimmer::
+      SetOnStartSelfCompactionCallback(base::BindRepeating(
+          [](scoped_refptr<base::SequencedTaskRunner> task_runner,
+             base::WeakPtr<MainThreadSchedulerImpl> s) {
+            task_runner->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    [](base::WeakPtr<MainThreadSchedulerImpl> s) {
+                      s->memory_purge_manager_.RecordAreAllPagesFrozenMetric(
+                          "Memory.SelfCompact2.Renderer.AreAllPagesFrozen");
+                    },
+                    s));
+          },
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          // |memory_purge_manager_| is a member of |this|, and will be deleted
+          // first, so a raw pointer is safe here.
+          weak_factory_.GetWeakPtr()));
   memory_purge_manager_.SetOnAllPagesFrozenCallback(base::BindRepeating(
       [](MainThreadSchedulerImpl* s, bool is_frozen) {
         if (s->isolate()) {

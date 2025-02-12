@@ -107,6 +107,12 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   static void UnregisterMemoryMetric(const PreFreezeMetric* metric)
       LOCKS_EXCLUDED(lock());
 
+  // The callback runs in the thread pool. The caller cannot make any thread
+  // safety assumptions for the callback execution (e.g. it could run
+  // concurrently with the thread that registered it).
+  static void SetOnStartSelfCompactionCallback(base::RepeatingClosure callback)
+      LOCKS_EXCLUDED(lock());
+
   static bool SelfCompactionIsSupported();
 
   // Compacts the memory for the process.
@@ -308,6 +314,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
       base::TimeTicks::Min();
   std::optional<base::ScopedSampleMetadata> process_compacted_metadata_
       GUARDED_BY(lock());
+  base::RepeatingClosure on_self_compact_callback_ GUARDED_BY(lock());
   bool supports_modern_trim_;
 };
 
