@@ -12,6 +12,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/test/scoped_feature_list.h"
+#include "content/public/common/content_features.h"
 #else
 #include "chrome/test/base/devtools_agent_coverage_observer.h"
 #endif
@@ -74,9 +75,6 @@ class WebUIMochaBrowserTest : public PlatformBrowserTest {
   virtual Profile* GetProfileForSetup();
 
   // PlatformBrowserTest overrides.
-#if BUILDFLAG(IS_ANDROID)
-  void SetUp() override;
-#endif
   void SetUpOnMainThread() override;
 
   void set_test_loader_host(const std::string& host);
@@ -104,7 +102,13 @@ class WebUIMochaBrowserTest : public PlatformBrowserTest {
   std::string test_loader_scheme_;
 
 #if BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList scoped_feature_list_;
+  // On Android, JavaScript console messages are only added to test logs if
+  // kLogJsConsoleMessages is enabled (on other platforms, such messages are
+  // included in test logs by default). Console messages are necessary for
+  // WebUI tests since they include logs indicating which tests in a suite
+  // passed/failed and the console errors related to any failures.
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kLogJsConsoleMessages};
 #else
   // Handles collection of code coverage.
   std::unique_ptr<DevToolsAgentCoverageObserver> coverage_handler_;

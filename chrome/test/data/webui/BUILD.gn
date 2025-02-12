@@ -21,7 +21,10 @@ assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 source_set("browser_tests") {
   testonly = true
 
-  sources = [ "flags/flags_browsertest.cc" ]
+  sources = [
+    "chrome_urls/chrome_urls_browsertest.cc",
+    "flags/flags_browsertest.cc",
+  ]
 
   if (!is_android) {
     sources += [
@@ -30,7 +33,6 @@ source_set("browser_tests") {
       "bluetooth_internals/bluetooth_internals_browsertest.cc",
       "bookmarks/bookmarks_browsertest.cc",
       "chrome_timeticks_browsertest.cc",
-      "chrome_urls/chrome_urls_browsertest.cc",
       "commerce/product_specifications/product_specifications_browsertest.cc",
       "commerce_internals/commerce_internals_browsertest.cc",
       "cr_components/cr_components_browsertest.cc",
@@ -169,7 +171,10 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  deps = [ "//chrome/test:test_support" ]
+  deps = [
+    "//chrome/test:test_support",
+    "//components/webui/chrome_urls/",
+  ]
 
   if (!is_android) {
     deps += [
@@ -218,7 +223,6 @@ source_set("browser_tests") {
       "//components/site_engagement/content",
       "//components/spellcheck/browser:browser",
       "//components/user_education/common",
-      "//components/webui/chrome_urls/",
       "//net:test_support",
     ]
   }
@@ -429,12 +433,14 @@ generate_grd("build_grd") {
     ":build_chai_grdp",
     ":build_mocha_grdp",
     ":build_ts",
+    "chrome_urls:build_grdp",
     "flags:build_grdp",
   ]
 
   grdp_files = [
     "$target_gen_dir/chai_resources.grdp",
     "$target_gen_dir/mocha_resources.grdp",
+    "$target_gen_dir/chrome_urls/resources.grdp",
     "$target_gen_dir/flags/resources.grdp",
   ]
 
@@ -449,7 +455,6 @@ generate_grd("build_grd") {
       "access_code_cast:build_grdp",
       "bluetooth_internals:build_grdp",
       "bookmarks:build_grdp",
-      "chrome_urls:build_grdp",
       "commerce/product_specifications:build_grdp",
       "commerce_internals:build_grdp",
       "cr_components:build_grdp",
@@ -505,7 +510,6 @@ generate_grd("build_grd") {
       "$target_gen_dir/bluetooth_internals/resources.grdp",
       "$target_gen_dir/webview/resources.grdp",
       "$target_gen_dir/bookmarks/resources.grdp",
-      "$target_gen_dir/chrome_urls/resources.grdp",
       "$target_gen_dir/commerce/product_specifications/resources.grdp",
       "$target_gen_dir/commerce_internals/resources.grdp",
       "$target_gen_dir/cr_components/resources.grdp",
