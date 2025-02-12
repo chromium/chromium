@@ -1154,6 +1154,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.OutlookCalendar.EventClickIndex" units="count"
+    expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the index of a clicked calendar event on the Outlook Calendar module,
+    with the first event at 0. Recorded when the header of an event is clicked,
+    but not when other aspects are clicked for an expanded event. Only logged on
+    the 1P NTP. Note that even if the user has Google as their default search
+    engine, Incognito and Guest mode NTPs are not considered 1P and don't log
+    this histogram.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.OutlookCalendar.RequestResult"
     enum="OutlookCalendarRequestResult" expires_after="2026-01-20">
   <owner>jennserrano@google.com</owner>
@@ -1182,6 +1197,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.OutlookCalendar.ShownEvents" units="count"
+    expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the number of events shown on the Outlook Calendar module after
+    filtering the response from the Microsoft Graph API. This will never be more
+    than the number of events the UI supports. Recorded when the events are
+    first populated so it will not log when there are 0 results, since the
+    module would not show. Only logged on the 1P NTP. Note that even if the user
+    has Google as their default search engine, Incognito and Guest mode NTPs are
+    not considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.OutlookCalendar.ThrottlingWaitTime" units="seconds"
     expires_after="2026-01-20">
   <owner>jennserrano@google.com</owner>
@@ -1191,6 +1222,20 @@ chromium-metrics-reviews@google.com.
     Time in seconds that should be waited out before attempting another request
     to the Microosft Graph API because of throttling. Recorded when the response
     is receieved. Only logged on the 1P NTP. Note that even if the user has
+    Google as their default search engine, Incognito and Guest mode NTPs are not
+    considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.OutlookCalendar.UserAction"
+    enum="NTPCalendarAction" expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs count of each type of user action within the Outlook Calendar module,
+    depending on which part of the card was interacted with (event title,
+    attachment, etc). Only logged on the 1P NTP. Note that even if the user has
     Google as their default search engine, Incognito and Guest mode NTPs are not
     considered 1P and don't log this histogram.
   </summary>
