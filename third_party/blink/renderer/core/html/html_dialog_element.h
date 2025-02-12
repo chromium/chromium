@@ -53,13 +53,10 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
 
   void Trace(Visitor*) const override;
 
-  // ignore_open_attribute ensures that the closing steps are run even if the
-  // open attribute is removed by script.
-  // async_focus makes previously_focused_element_ get focused after waiting
-  // for a task instead of getting focused synchronously.
+  // open_attribute_being_removed should only be true when `close()` is being
+  // run from the attribute change steps for the `open` attribute.
   void close(const String& return_value = String(),
-             bool ignore_open_attribute = false,
-             bool async_focus = false);
+             bool open_attribute_being_removed = false);
   void requestClose(ExceptionState& exception_state) {
     requestClose(String(), exception_state);
   }
