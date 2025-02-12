@@ -6332,11 +6332,19 @@ IN_PROC_BROWSER_TEST_F(NavigationQueueingBrowserTest, Regular) {
   histogram_tester().ExpectBucketCount(
       "Navigation.PendingCommit.DidBlockGetFrameHostForNavigation.Regular",
       true, 1);
-  // For 2 blocked navigations, 4 total blocks are expected: 2 when trying to
-  // assign a RenderFrameHost when starting a navigation, and 2 when trying to
-  // pick a final RenderFrameHost to commit the navigation.
-  histogram_tester().ExpectBucketCount(
-      "Navigation.PendingCommit.BlockedCount.Regular", 4, 1);
+  if (base::FeatureList::IsEnabled(features::kDeferSpeculativeRFHCreation)) {
+    // For 2 blocked navigations, 2 total blocks are expected when trying to
+    // pick a final RenderFrameHost to commit the navigation. The attempt to
+    // create a RenderFrameHost when starting the navigation will be skipped.
+    histogram_tester().ExpectBucketCount(
+        "Navigation.PendingCommit.BlockedCount.Regular", 2, 1);
+  } else {
+    // For 2 blocked navigations, 4 total blocks are expected: 2 when trying to
+    // assign a RenderFrameHost when starting a navigation, and 2 when trying to
+    // pick a final RenderFrameHost to commit the navigation.
+    histogram_tester().ExpectBucketCount(
+        "Navigation.PendingCommit.BlockedCount.Regular", 4, 1);
+  }
   histogram_tester().ExpectBucketCount(
       "Navigation.PendingCommit.BlockedCommitCount.Regular", 2, 1);
 }
@@ -9169,11 +9177,11 @@ class DeferSpeculativeRFHCreationRenderProcessTest
  public:
   DeferSpeculativeRFHCreationRenderProcessTest()
       : warmup_spare_render_process_(GetParam()) {
-    always_spare_render_process_feature_list_.InitAndDisableFeature(
-        features::kSpareRendererForSitePerProcess);
     std::map<std::string, std::string> parameters = {
         {"warmup_spare_process", GetParam() ? "true" : "false"},
     };
+    always_spare_render_process_feature_list_.InitAndEnableFeature(
+        features::kSpareRendererForSitePerProcess);
     defer_rfh_feature_list_.InitAndEnableFeatureWithParameters(
         features::kDeferSpeculativeRFHCreation, parameters);
     InitAndEnableRenderDocumentFeature(
@@ -9524,7 +9532,9 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationReuseRFHTest,
       NavigationRequest::From(nav_manager.GetNavigationHandle());
   ASSERT_EQ(navigation_request->state(),
             NavigationRequest::NavigationState::WILL_START_REQUEST);
+  ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
   ASSERT_FALSE(navigation_request->HasLoader());
+  ASSERT_TRUE(nav_manager.WaitForResponse());
   ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
   ASSERT_EQ(navigation_request->GetAssociatedRFHType(),
             NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
