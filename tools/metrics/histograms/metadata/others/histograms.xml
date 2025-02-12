@@ -4780,7 +4780,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.SecurityPage.SurveyRequested" enum="Boolean"
-    expires_after="2025-01-26">
+    expires_after="2025-05-12">
   <owner>zackhan@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
