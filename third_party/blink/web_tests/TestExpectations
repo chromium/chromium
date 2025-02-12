@@ -2704,7 +2704,7 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac12 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/restriction-focus.html [ Crash Failure ]
+crbug.com/395921918 [ Mac12 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/restriction-focus.html [ Crash Failure ]
 crbug.com/395482243 external/wpt/webdriver/tests/bidi/browsing_context/context_created/context_created.py [ Timeout ]
 crbug.com/395482243 external/wpt/webdriver/tests/bidi/browsing_context/context_destroyed/original_opener.py [ Timeout ]
 crbug.com/395482243 external/wpt/webdriver/tests/bidi/browsing_context/get_tree/original_opener.py [ Timeout ]
