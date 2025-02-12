@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "remoting/host/it2me/it2me_host.h"
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
 #pragma allow_unsafe_libc_calls
 #endif
-
-#include "remoting/host/it2me/it2me_host.h"
 
 #include <memory>
 #include <optional>
@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -25,6 +26,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -42,6 +44,7 @@
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/host_event_reporter.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
+#include "remoting/host/it2me/it2me_constants.h"
 #include "remoting/host/policy_watcher.h"
 #include "remoting/host/register_support_host_request.h"
 #include "remoting/host/xmpp_register_support_host_request.h"
@@ -252,11 +255,17 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
 
   void RunUntilStateChanged(It2MeHostState expected_state);
 
+  // Posts a task to the network thread, which posts a task back to the current
+  // thread to unblock. Useful when waiting for a side effect in the network
+  // thread to take place.
+  void RunNetworkThreadPendingTasks();
+
   void RunValidationCallback(const std::string& remote_jid);
 
   void StartHost();
   void StartHost(std::optional<ChromeOsEnterpriseParams> enterprise_params);
   void ShutdownHost();
+  void SimulateEffectiveSessionPoliciesReceived();
 
   static base::Value MakeList(std::initializer_list<std::string_view> values);
 
@@ -477,6 +486,12 @@ void It2MeHostTest::RunUntilStateChanged(It2MeHostState expected_state) {
   state_change_callback_ = run_loop.QuitClosure();
   run_loop.Run();
 }
+void It2MeHostTest::RunNetworkThreadPendingTasks() {
+  base::RunLoop run_loop;
+  network_task_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                         run_loop.QuitClosure());
+  run_loop.Run();
+}
 
 void It2MeHostTest::RunValidationCallback(const std::string& remote_jid) {
   base::RunLoop run_loop;
@@ -521,6 +536,17 @@ void It2MeHostTest::ShutdownHost() {
   }
 }
 
+void It2MeHostTest::SimulateEffectiveSessionPoliciesReceived() {
+  base::RunLoop run_loop;
+  network_task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(
+          base::IgnoreResult(&It2MeHost::OnEffectiveSessionPoliciesReceived),
+          it2me_host_, SessionPolicies{}),
+      run_loop.QuitClosure());
+  run_loop.Run();
+}
+
 base::Value It2MeHostTest::MakeList(
     std::initializer_list<std::string_view> values) {
   base::Value::List result;
@@ -561,7 +587,7 @@ TEST_F(It2MeHostTest, IceConfig) {
   ASSERT_EQ(It2MeHostState::kDisconnected, last_host_state_);
 }
 
-TEST_F(It2MeHostTest, NatTraversalPolicyEnabled) {
+TEST_F(It2MeHostTest, LocalNatTraversalPolicyEnabled) {
   SetPolicies(
       {{policy::key::kRemoteAccessHostFirewallTraversal, base::Value(true)}});
 
@@ -574,7 +600,7 @@ TEST_F(It2MeHostTest, NatTraversalPolicyEnabled) {
   ASSERT_EQ(It2MeHostState::kDisconnected, last_host_state_);
 }
 
-TEST_F(It2MeHostTest, NatTraversalPolicyDisabled) {
+TEST_F(It2MeHostTest, LocalNatTraversalPolicyDisabled) {
   SetPolicies(
       {{policy::key::kRemoteAccessHostFirewallTraversal, base::Value(false)}});
 
@@ -587,27 +613,7 @@ TEST_F(It2MeHostTest, NatTraversalPolicyDisabled) {
   ASSERT_EQ(It2MeHostState::kDisconnected, last_host_state_);
 }
 
-// TODO(crbug.com/40715894): flaky test.
-TEST_F(It2MeHostTest,
-       DISABLED_NatTraversalPolicyDisabledTransitionCausesDisconnect) {
-  StartHost();
-  ASSERT_EQ(It2MeHostState::kReceivedAccessCode, last_host_state_);
-
-  EXPECT_TRUE(last_nat_traversal_enabled_value_);
-  EXPECT_TRUE(last_relay_connections_allowed_value_);
-
-  SetPolicies(
-      {{policy::key::kRemoteAccessHostFirewallTraversal, base::Value(false)},
-       {policy::key::kRemoteAccessHostAllowRelayedConnection,
-        base::Value(true)}});
-  RunUntilStateChanged(It2MeHostState::kDisconnected);
-
-  EXPECT_FALSE(last_nat_traversal_enabled_value_);
-  EXPECT_TRUE(last_relay_connections_allowed_value_);
-  ASSERT_EQ(It2MeHostState::kDisconnected, last_host_state_);
-}
-
-TEST_F(It2MeHostTest, RelayPolicyEnabled) {
+TEST_F(It2MeHostTest, LocalRelayPolicyEnabled) {
   SetPolicies({{policy::key::kRemoteAccessHostAllowRelayedConnection,
                 base::Value(true)}});
 
@@ -620,7 +626,7 @@ TEST_F(It2MeHostTest, RelayPolicyEnabled) {
   ASSERT_EQ(It2MeHostState::kDisconnected, last_host_state_);
 }
 
-TEST_F(It2MeHostTest, RelayPolicyDisabled) {
+TEST_F(It2MeHostTest, LocalRelayPolicyDisabled) {
   SetPolicies({{policy::key::kRemoteAccessHostAllowRelayedConnection,
                 base::Value(false)}});
 
@@ -633,22 +639,60 @@ TEST_F(It2MeHostTest, RelayPolicyDisabled) {
   ASSERT_EQ(It2MeHostState::kDisconnected, last_host_state_);
 }
 
-// TODO(crbug.com/40718796): Flaky test.
-TEST_F(It2MeHostTest, DISABLED_RelayPolicyDisabledTransitionCausesDisconnect) {
+TEST_F(
+    It2MeHostTest,
+    LocalNatPoliciesChangedBeforeEffectivePoliciesAreReceived_ReportedToObserver) {
+  SetPolicies({
+      {policy::key::kRemoteAccessHostFirewallTraversal, base::Value(true)},
+      {policy::key::kRemoteAccessHostAllowRelayedConnection, base::Value(true)},
+  });
+
   StartHost();
   ASSERT_EQ(It2MeHostState::kReceivedAccessCode, last_host_state_);
 
   EXPECT_TRUE(last_nat_traversal_enabled_value_);
   EXPECT_TRUE(last_relay_connections_allowed_value_);
 
-  SetPolicies(
-      {{policy::key::kRemoteAccessHostFirewallTraversal, base::Value(true)},
-       {policy::key::kRemoteAccessHostAllowRelayedConnection,
-        base::Value(false)}});
-  RunUntilStateChanged(It2MeHostState::kDisconnected);
+  SetPolicies({
+      {policy::key::kRemoteAccessHostFirewallTraversal, base::Value(false)},
+      {policy::key::kRemoteAccessHostAllowRelayedConnection,
+       base::Value(false)},
+  });
+  RunNetworkThreadPendingTasks();
+
+  EXPECT_FALSE(last_nat_traversal_enabled_value_);
+  EXPECT_FALSE(last_relay_connections_allowed_value_);
+
+  ShutdownHost();
+  ASSERT_EQ(It2MeHostState::kDisconnected, last_host_state_);
+}
+
+TEST_F(
+    It2MeHostTest,
+    LocalNatPoliciesChangedAfterEffectivePoliciesAreReceived_NotReportedToObserver) {
+  SetPolicies({
+      {policy::key::kRemoteAccessHostFirewallTraversal, base::Value(true)},
+      {policy::key::kRemoteAccessHostAllowRelayedConnection, base::Value(true)},
+  });
+
+  StartHost();
+  ASSERT_EQ(It2MeHostState::kReceivedAccessCode, last_host_state_);
 
   EXPECT_TRUE(last_nat_traversal_enabled_value_);
-  EXPECT_FALSE(last_relay_connections_allowed_value_);
+  EXPECT_TRUE(last_relay_connections_allowed_value_);
+
+  SimulateEffectiveSessionPoliciesReceived();
+  SetPolicies({
+      {policy::key::kRemoteAccessHostFirewallTraversal, base::Value(false)},
+      {policy::key::kRemoteAccessHostAllowRelayedConnection,
+       base::Value(false)},
+  });
+  RunNetworkThreadPendingTasks();
+
+  EXPECT_TRUE(last_nat_traversal_enabled_value_);
+  EXPECT_TRUE(last_relay_connections_allowed_value_);
+
+  ShutdownHost();
   ASSERT_EQ(It2MeHostState::kDisconnected, last_host_state_);
 }
 

@@ -15,7 +15,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "remoting/base/errors.h"
 #include "remoting/base/local_session_policies_provider.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/host_status_observer.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
@@ -201,12 +203,18 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
                            const base::TimeDelta& lifetime,
                            protocol::ErrorCode error_code);
 
-  // Handlers for NAT traversal and domain policies.
-  void UpdateNatPolicies(bool nat_policy_value, bool relay_policy_value);
+  std::optional<ErrorCode> OnEffectiveSessionPoliciesReceived(
+      const SessionPolicies& session_policies);
+
+  // Reports the NAT policies to the observer. Will always report if no policies
+  // have been reported, and will not report if the policies have not changed.
+  void ReportNatPolicies(const SessionPolicies& session_policies);
+
+  // Handlers for domain policies.
   void UpdateHostDomainListPolicy(std::vector<std::string> host_domain_list);
   void UpdateClientDomainListPolicy(
       std::vector<std::string> client_domain_list);
-  void UpdateSessionPolicies(const base::Value::Dict& platform_policies);
+  void UpdateLocalSessionPolicies(const base::Value::Dict& platform_policies);
 
   void DisconnectOnNetworkThread(
       protocol::ErrorCode error_code = protocol::ErrorCode::OK);
@@ -269,11 +277,18 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   std::unique_ptr<It2MeConfirmationDialogFactory> confirmation_dialog_factory_;
   std::unique_ptr<It2MeConfirmationDialogProxy> confirmation_dialog_proxy_;
 
-  // Stores the current nat traversal policy value.
-  bool nat_traversal_enabled_ = false;
+  // Indicates whether the session policies can still change. Once the session
+  // has connected, any changes to the session policies will disconnect the
+  // session.
+  bool session_policies_finalized_ = false;
 
-  // Stores the current relay connections allowed policy value.
-  bool relay_connections_allowed_ = false;
+  // Stores the last nat traversal policy and relay connections allowed policy
+  // values that have been reported to the observer. nullopt indicates that the
+  // policy has not be reported.
+  // Note: if these policies are not specified in SessionPolicies, they will be
+  // `true` rather than nullopt.
+  std::optional<bool> last_reported_nat_traversal_enabled_ = false;
+  std::optional<bool> last_reported_relay_connections_allowed_ = false;
 
   // Set when the session was initiated for a managed Chrome OS device by an
   // admin using the admin console.

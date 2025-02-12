@@ -176,6 +176,8 @@ void MockIt2MeHost::Connect(
 
   host_context_ = std::move(context);
   observer_ = std::move(observer);
+  local_session_policies_provider_ =
+      std::make_unique<LocalSessionPoliciesProvider>();
 
   host_context()->network_task_runner()->PostTask(
       FROM_HERE,
@@ -213,6 +215,9 @@ void MockIt2MeHost::Disconnect() {
   log_to_server_.reset();
   register_request_.reset();
   signal_strategy_.reset();
+  session_policies_finalized_ = false;
+  last_reported_nat_traversal_enabled_.reset();
+  last_reported_relay_connections_allowed_.reset();
 
   RunSetState(It2MeHostState::kDisconnected);
 }
