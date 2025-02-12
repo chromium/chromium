@@ -23,10 +23,68 @@ namespace {
 
 using PasswordChangeOutcome = optimization_guide::proto ::
     PasswordChangeSubmissionData_PasswordChangeOutcome;
+using PasswordChangeErrorCase = optimization_guide::proto ::
+    PasswordChangeSubmissionData_PasswordChangeErrorCase;
 using ProtoTreeUpdate = optimization_guide::proto::AXTreeUpdate;
+using SubmissionOutcome = ChangeFormSubmissionVerifier::SubmissionOutcome;
 
 // Max numbers of nodes for the AX Tree Update Snapshot.
 constexpr int kMaxNodesInAXTreeSnapshot = 5000;
+
+constexpr char kSubmissionOutcomeHistogramName[] =
+    "PasswordManager.PasswordChangeSubmissionOutcome";
+
+void LogSubmissionOutcome(SubmissionOutcome outcome) {
+  base::UmaHistogramEnumeration(kSubmissionOutcomeHistogramName, outcome);
+}
+
+void RecordOutcomeMetrics(
+    optimization_guide::proto ::PasswordChangeSubmissionData submission_data) {
+  PasswordChangeOutcome outcome = submission_data.submission_outcome();
+  if (outcome ==
+      PasswordChangeOutcome::
+          PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME) {
+    LogSubmissionOutcome(SubmissionOutcome::kSuccess);
+    return;
+  }
+  if (outcome ==
+      PasswordChangeOutcome::
+          PasswordChangeSubmissionData_PasswordChangeOutcome_UNKNOWN_OUTCOME) {
+    LogSubmissionOutcome(SubmissionOutcome::kUnknown);
+    return;
+  }
+  for (auto error_case_enum : submission_data.error_case()) {
+    PasswordChangeErrorCase error_case = optimization_guide::proto ::
+        PasswordChangeSubmissionData_PasswordChangeErrorCase(error_case_enum);
+    switch (error_case) {
+      case optimization_guide::proto::
+          PasswordChangeSubmissionData_PasswordChangeErrorCase_OLD_PASSWORD_INCORRECT:
+        LogSubmissionOutcome(SubmissionOutcome::kErrorOldPasswordIncorrect);
+        break;
+      case optimization_guide::proto::
+          PasswordChangeSubmissionData_PasswordChangeErrorCase_PASSWORDS_DO_NOT_MATCH:
+        LogSubmissionOutcome(SubmissionOutcome::kErrorOldPasswordDoNotMatch);
+        break;
+      case optimization_guide::proto::
+          PasswordChangeSubmissionData_PasswordChangeErrorCase_NEW_PASSWORD_INCORRECT:
+        LogSubmissionOutcome(SubmissionOutcome::kErrorNewPasswordIncorrect);
+        break;
+      case optimization_guide::proto::
+          PasswordChangeSubmissionData_PasswordChangeErrorCase_PAGE_ERROR:
+        LogSubmissionOutcome(SubmissionOutcome::kPageError);
+        break;
+      case optimization_guide::proto::
+          PasswordChangeSubmissionData_PasswordChangeErrorCase_UNKNOWN_CASE:
+      default:
+        LogSubmissionOutcome(SubmissionOutcome::kUncategorizedError);
+        break;
+    }
+  }
+
+  if (!submission_data.error_case_size()) {
+    LogSubmissionOutcome(SubmissionOutcome::kUncategorizedError);
+  }
+}
 
 }  // namespace
 
@@ -166,6 +224,7 @@ void ChangeFormSubmissionVerifier::OnExecutionResponseCallback(
   CHECK(callback_);
 
   if (!execution_result.response.has_value()) {
+    LogSubmissionOutcome(SubmissionOutcome::kNoResponse);
     std::move(callback_).Run(false);
     return;
   }
@@ -174,9 +233,12 @@ void ChangeFormSubmissionVerifier::OnExecutionResponseCallback(
           optimization_guide::proto::PasswordChangeResponse>(
           execution_result.response.value());
   if (!response) {
+    LogSubmissionOutcome(SubmissionOutcome::kCouldNotParse);
     std::move(callback_).Run(false);
     return;
   }
+
+  RecordOutcomeMetrics(response.value().outcome_data());
   PasswordChangeOutcome outcome =
       response.value().outcome_data().submission_outcome();
   if (outcome !=
@@ -188,6 +250,5 @@ void ChangeFormSubmissionVerifier::OnExecutionResponseCallback(
     std::move(callback_).Run(false);
     return;
   }
-
   std::move(callback_).Run(true);
 }

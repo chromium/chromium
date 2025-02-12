@@ -2608,6 +2608,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordChangeSubmissionOutcome"
+    enum="SubmissionOutcome" expires_after="2026-02-04">
+  <owner>fiorellab@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    The password change submission outcome. This is recorded when receiving a
+    response from the optimization guide service to a request made with the
+    representation of the web page where the submission happened.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordChangeTimeOverall" units="ms"
     expires_after="2025-11-30">
   <owner>atsvirchkova@google.com</owner>

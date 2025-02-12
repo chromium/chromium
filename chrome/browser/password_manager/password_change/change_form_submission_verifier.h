@@ -33,6 +33,27 @@ class ModelQualityLogEntry;
 // of submission.
 class ChangeFormSubmissionVerifier {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(SubmissionOutcome)
+  enum class SubmissionOutcome {
+    kUncategorizedError = 0,
+    // Successful outcome, new password saved in credentials.
+    kSuccess = 1,
+    // Unknown outcome, password is pre-saved.
+    kUnknown = 2,
+    // Failure cases, password is not saved.
+    kErrorOldPasswordIncorrect = 3,
+    kErrorOldPasswordDoNotMatch = 4,
+    kErrorNewPasswordIncorrect = 5,
+    kPageError = 6,
+    kNoResponse = 7,
+    kCouldNotParse = 8,
+    kMaxValue = kCouldNotParse,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:SubmissionOutcome)
+
   using FormSubmissionResultCallback = base::OnceCallback<void(bool)>;
   static constexpr base::TimeDelta kSubmissionWaitingTimeout =
       base::Seconds(10);
