@@ -11,8 +11,8 @@
 
 #include "base/time/time.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
+#include "third_party/boringssl/src/include/openssl/pki/ocsp.h"
 #include "third_party/boringssl/src/pki/ocsp.h"
-#include "third_party/boringssl/src/pki/ocsp_revocation_status.h"
 #include "third_party/boringssl/src/pki/signature_algorithm.h"
 
 namespace net {
