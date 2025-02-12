@@ -39,6 +39,23 @@ void SetPropertyForWebContentsPageNode(
   (data->*setter_function)(value);
 }
 
+// Helper function to return a property from a decorator associated with
+// WebContents. This will do the WebContents to PageNode translation and read
+// the property from the appropriate decorator.
+// This function can only be called from the UI thread.
+template <typename T, class decorator_data_type>
+T GetPropertyForWebContentsPageNode(content::WebContents* contents,
+                                    T (decorator_data_type::*getter_function)()
+                                        const) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  base::WeakPtr<PageNode> node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(contents);
+  const auto* data =
+      decorator_data_type::GetOrCreate(PageNodeImpl::FromNode(node.get()));
+  DCHECK(data);
+  return (data->*getter_function)();
+}
+
 }  // namespace performance_manager
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_DECORATORS_DECORATORS_UTILS_H_

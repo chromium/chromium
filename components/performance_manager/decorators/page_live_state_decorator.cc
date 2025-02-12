@@ -422,6 +422,102 @@ void PageLiveStateDecorator::SetIsDevToolsOpen(content::WebContents* contents,
       is_dev_tools_open);
 }
 
+// static
+bool PageLiveStateDecorator::IsConnectedToUSBDevice(
+    content::WebContents* contents) {
+  return GetPropertyForWebContentsPageNode<bool>(
+      contents, &PageLiveStateDataImpl::IsConnectedToUSBDevice);
+}
+
+// static
+bool PageLiveStateDecorator::IsConnectedToBluetoothDevice(
+    content::WebContents* contents) {
+  return GetPropertyForWebContentsPageNode<bool>(
+      contents, &PageLiveStateDataImpl::IsConnectedToBluetoothDevice);
+}
+
+// static
+bool PageLiveStateDecorator::IsConnectedToHidDevice(
+    content::WebContents* contents) {
+  return GetPropertyForWebContentsPageNode<bool>(
+      contents, &PageLiveStateDataImpl::IsConnectedToHidDevice);
+}
+
+// static
+bool PageLiveStateDecorator::IsConnectedToSerialPort(
+    content::WebContents* contents) {
+  return GetPropertyForWebContentsPageNode<bool>(
+      contents, &PageLiveStateDataImpl::IsConnectedToSerialPort);
+}
+
+// static
+bool PageLiveStateDecorator::IsCapturingVideo(content::WebContents* contents) {
+  return GetPropertyForWebContentsPageNode<bool>(
+      contents, &PageLiveStateDataImpl::IsCapturingVideo);
+}
+
+// static
+bool PageLiveStateDecorator::IsCapturingAudio(content::WebContents* contents) {
+  return GetPropertyForWebContentsPageNode<bool>(
+      contents, &PageLiveStateDataImpl::IsCapturingAudio);
+}
+
+// static
+bool PageLiveStateDecorator::IsBeingMirrored(content::WebContents* contents) {
+  return GetPropertyForWebContentsPageNode<bool>(
+      contents, &PageLiveStateDataImpl::IsBeingMirrored);
+}
+
+// static
+bool PageLiveStateDecorator::IsCapturingWindow(content::WebContents* contents) {
+  return GetPropertyForWebContentsPageNode<bool>(
+      contents, &PageLiveStateDataImpl::IsCapturingWindow);
+}
+
+// static
+bool PageLiveStateDecorator::IsCapturingDisplay(
+    content::WebContents* contents) {
+  return GetPropertyForWebContentsPageNode<bool>(
+      contents, &PageLiveStateDataImpl::IsCapturingDisplay);
+}
+
+// static
+bool PageLiveStateDecorator::IsAutoDiscardable(content::WebContents* contents) {
+  return GetPropertyForWebContentsPageNode<bool>(
+      contents, &PageLiveStateDataImpl::IsAutoDiscardable);
+}
+
+// static
+bool PageLiveStateDecorator::WasDiscarded(content::WebContents* contents) {
+  return GetPropertyForWebContentsPageNode<bool>(
+      contents, &PageLiveStateDataImpl::WasDiscarded);
+}
+
+// static
+bool PageLiveStateDecorator::IsActiveTab(content::WebContents* contents) {
+  return GetPropertyForWebContentsPageNode<bool>(
+      contents, &PageLiveStateDataImpl::IsActiveTab);
+}
+
+// static
+bool PageLiveStateDecorator::IsPinnedTab(content::WebContents* contents) {
+  return GetPropertyForWebContentsPageNode<bool>(
+      contents, &PageLiveStateDataImpl::IsPinnedTab);
+}
+
+// static
+bool PageLiveStateDecorator::IsDevToolsOpen(content::WebContents* contents) {
+  return GetPropertyForWebContentsPageNode<bool>(
+      contents, &PageLiveStateDataImpl::IsDevToolsOpen);
+}
+
+// static
+bool PageLiveStateDecorator::UpdatedTitleOrFaviconInBackground(
+    content::WebContents* contents) {
+  return GetPropertyForWebContentsPageNode<bool>(
+      contents, &PageLiveStateDataImpl::UpdatedTitleOrFaviconInBackground);
+}
+
 void PageLiveStateDecorator::OnPassedToGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this,
                                                            kDescriberName);
@@ -471,6 +567,17 @@ void PageLiveStateDecorator::OnFaviconUpdated(const PageNode* page_node) {
   if (!page_node->IsVisible()) {
     PageLiveStateDataImpl::GetOrCreate(PageNodeImpl::FromNode(page_node))
         ->set_updated_title_or_favicon_in_background(true);
+  }
+}
+
+void PageLiveStateDecorator::OnAboutToBeDiscarded(
+    const PageNode* page_node,
+    const PageNode* new_page_node) {
+  if (const auto* data =
+          PageLiveStateDataImpl::Get(PageNodeImpl::FromNode(page_node))) {
+    // IsAutoDiscardable is a tab property so applies to the new PageNode too.
+    PageLiveStateDataImpl::GetOrCreate(PageNodeImpl::FromNode(new_page_node))
+        ->set_is_auto_discardable(data->IsAutoDiscardable());
   }
 }
 

@@ -40,6 +40,10 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
+#include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/test_support/test_harness_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/navigation_simulator.h"
@@ -60,6 +64,8 @@ namespace resource_coordinator {
 namespace {
 
 using LoadingState = TabLoadTracker::LoadingState;
+using PageLiveStateDecorator = performance_manager::PageLiveStateDecorator;
+using PerformanceManager = performance_manager::PerformanceManager;
 
 constexpr base::TimeDelta kShortDelay = base::Seconds(1);
 
@@ -107,6 +113,15 @@ class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
     ChromeRenderViewHostTestHarness::SetUp();
+    pm_helper_.SetUp();
+
+    PerformanceManager::GetGraph()->PassToGraph(
+        std::make_unique<PageLiveStateDecorator>());
+
+    // FormInteractionTabHelper asserts that its observer exists whenever
+    // PerformanceManager is initialized.
+    PerformanceManager::GetGraph()->PassToGraph(
+        FormInteractionTabHelper::CreateGraphObserver());
 
     metrics::DesktopSessionDurationTracker::Initialize();
 
@@ -144,6 +159,7 @@ class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
       tab_strip_model_->DetachAndDeleteWebContentsAt(0);
     tab_strip_model_.reset();
     metrics::DesktopSessionDurationTracker::CleanupForTesting();
+    pm_helper_.TearDown();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -160,6 +176,16 @@ class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
     return web_contents;
   }
 
+  // Create a new test WebContents, as in AddNewHiddenWebContentsToTabStrip().
+  // If the TabLifecycleUnitSource is observing the tab strip, returns the
+  // TabLifecycleUnit that it created for the WebContents, otherwise returns
+  // nullptr. (By default tests don't observe the tab strip so that they can
+  // manually create TabLifecycleUnits.)
+  TabLifecycleUnit* AddNewHiddenLifecycleUnitToTabStrip() {
+    content::WebContents* contents = AddNewHiddenWebContentsToTabStrip();
+    return GetTabLifecycleUnitSource()->GetTabLifecycleUnit(contents);
+  }
+
   ::testing::StrictMock<MockTabLifecycleObserver> observer_;
   base::ObserverList<TabLifecycleObserver>::UncheckedAndDanglingUntriaged
       observers_;
@@ -174,6 +200,7 @@ class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
   TestTabStripModelDelegate tab_strip_model_delegate_;
   ScopedSetClocksForTesting scoped_set_clocks_for_testing_;
   tabs::PreventTabFeatureInitialization prevent_;
+  performance_manager::PerformanceManagerTestHarnessHelper pm_helper_;
 };
 
 class TabLifecycleUnitTest::ScopedEnterpriseOptOut {
@@ -238,6 +265,7 @@ TEST_F(TabLifecycleUnitTest, AutoDiscardable) {
   // Advance time enough that the tab is urgent discardable.
   test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
   EXPECT_TRUE(tab_lifecycle_unit.IsAutoDiscardable());
+  EXPECT_TRUE(PageLiveStateDecorator::IsAutoDiscardable(web_contents_));
   ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit);
 
   EXPECT_CALL(observer_,
@@ -245,6 +273,7 @@ TEST_F(TabLifecycleUnitTest, AutoDiscardable) {
   tab_lifecycle_unit.SetAutoDiscardable(false);
   ::testing::Mock::VerifyAndClear(&observer_);
   EXPECT_FALSE(tab_lifecycle_unit.IsAutoDiscardable());
+  EXPECT_FALSE(PageLiveStateDecorator::IsAutoDiscardable(web_contents_));
   ExpectCanDiscardFalseAllReasons(
       &tab_lifecycle_unit,
       DecisionFailureReason::LIVE_STATE_EXTENSION_DISALLOWED);
@@ -254,7 +283,33 @@ TEST_F(TabLifecycleUnitTest, AutoDiscardable) {
   tab_lifecycle_unit.SetAutoDiscardable(true);
   ::testing::Mock::VerifyAndClear(&observer_);
   EXPECT_TRUE(tab_lifecycle_unit.IsAutoDiscardable());
+  EXPECT_TRUE(PageLiveStateDecorator::IsAutoDiscardable(web_contents_));
   ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit);
+}
+
+TEST_F(TabLifecycleUnitTest, AutoDiscardablePersistsThroughDiscard) {
+  // Start observing the TabStripModel so that TabLifecycleUnitSource will be
+  // informed when the tab is discarded. TabLifecycleUnitSource expects to fully
+  // manage TabLifecycleUnits after this, so create a new WebContents that will
+  // get a TabLifecycleUnit attached.
+  tab_strip_model_->AddObserver(GetTabLifecycleUnitSource());
+  TabLifecycleUnit* tab_lifecycle_unit = AddNewHiddenLifecycleUnitToTabStrip();
+
+  tab_lifecycle_unit->SetAutoDiscardable(false);
+
+  // Manual discard by an extension is allowed when AutoDiscardable is false.
+  EXPECT_TRUE(
+      tab_lifecycle_unit->DiscardTab(LifecycleUnitDiscardReason::EXTERNAL, 0));
+  EXPECT_FALSE(tab_lifecycle_unit->IsAutoDiscardable());
+  EXPECT_FALSE(PageLiveStateDecorator::IsAutoDiscardable(
+      tab_lifecycle_unit->GetWebContents()));
+
+  EXPECT_TRUE(tab_lifecycle_unit->Load());
+  EXPECT_FALSE(tab_lifecycle_unit->IsAutoDiscardable());
+  EXPECT_FALSE(PageLiveStateDecorator::IsAutoDiscardable(
+      tab_lifecycle_unit->GetWebContents()));
+
+  tab_strip_model_->RemoveObserver(GetTabLifecycleUnitSource());
 }
 
 TEST_F(TabLifecycleUnitTest, CannotDiscardCrashed) {
