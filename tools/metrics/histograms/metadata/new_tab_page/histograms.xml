@@ -621,6 +621,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.MicrosoftAuth.AuthStarted"
+    enum="NTPMicrosoftAuthType" expires_after="2026-02-06">
+  <owner>rtatum@google.com</owner>
+  <owner>pauladedeji@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the type of Microsoft Auth (Silent or Popup) whenever Microsoft
+    authentication is initiated by the NTP. This is only logged on the 1P NTP
+    when the Microsoft Authentication module and another Microsoft module are
+    enabled. It can be logged because of an initial login or because an access
+    token expires.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Module.Click" enum="ModuleTypeOnStartAndNTP"
     expires_after="2025-07-27">
   <owner>hanxi@chromium.org</owner>
