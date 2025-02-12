@@ -2410,6 +2410,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.23.0 -> 0.23.2"
 notes = "Some IFT changes, and better compatibility with empty PrivateDict in CFF."
 
+[[audits.read-fonts]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.25.3 -> 0.26.0"
+notes = "Added min_byte_range() method, expose IndexSubtableList for bitmaps. No new unsafe. Gvar delta API changes."
+
 [[audits.regex]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -3171,6 +3177,12 @@ who = "Dominik Röttsches <drott@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.26.4 -> 0.26.5"
 notes = "Contains fixes for hdmx metrics for fonts such as Arimo, Tinos, Market Sans."
+
+[[audits.skrifa]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.26.5 -> 0.27.0"
+notes = "Mostly a fuzzer fix, rejecting oversized composite outlines."
 
 [[audits.small_ctor]]
 who = "danakj@chromium.org"
