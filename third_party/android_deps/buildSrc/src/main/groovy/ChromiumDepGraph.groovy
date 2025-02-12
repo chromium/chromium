@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 import groovy.transform.AutoClone
 import groovy.util.slurpersupport.GPathResult
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.artifacts.component.ModuleComponentSelector
-import org.gradle.api.artifacts.repositories.ArtifactRepository
 import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.artifacts.ResolvedDependency
 import org.gradle.api.artifacts.ResolvedModuleVersion
 import org.gradle.api.artifacts.component.ComponentIdentifier
+import org.gradle.api.artifacts.component.ModuleComponentSelector
+import org.gradle.api.artifacts.repositories.ArtifactRepository
 import org.gradle.api.artifacts.result.DependencyResult
 import org.gradle.api.logging.Logger
 
@@ -26,239 +27,239 @@ class ChromiumDepGraph {
     // Some libraries don't properly fill their POM with the appropriate licensing information. It is provided here from
     // manual lookups. Note that licenseUrl must provide textual content rather than be an html page.
     static final Map<String, PropertyOverride> PROPERTY_OVERRIDES = [
-        androidx_multidex_multidex: new PropertyOverride(
-            url: 'https://maven.google.com/androidx/multidex/multidex/2.0.0/multidex-2.0.0.aar'),
-        com_google_android_datatransport_transport_api: new PropertyOverride(
-            description: 'Interfaces for data logging in gmscore SDKs.'),
-        com_google_android_datatransport_transport_backend_cct: new PropertyOverride(
-            exclude: true),  // We're not using datatransport functionality.
-        com_google_android_datatransport_transport_runtime: new PropertyOverride(
-            exclude: true),  // We're not using datatransport functionality.
-        com_google_android_gms_play_services_cloud_messaging: new PropertyOverride(
-            description: 'Firebase Cloud Messaging library that interfaces with gmscore.'),
-        com_google_android_gms_play_services_location: new PropertyOverride(
-            description: 'Provides data about the device\'s physical location via gmscore.'),
-        com_google_auto_service_auto_service_annotations: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        com_google_auto_value_auto_value_annotations: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        com_google_code_gson_gson: new PropertyOverride(
-            url: 'https://github.com/google/gson',
-            description: 'A Java serialization/deserialization library to convert Java Objects into JSON and back',
-            licenseUrl: 'https://raw.githubusercontent.com/google/gson/master/LICENSE',
-            licenseName: 'Apache 2.0'),
-        com_google_errorprone_error_prone_annotation: new PropertyOverride(
-            // Robolectric has a (seemingly unnecessary) dep on this. It's meant to be needed
-            // only for writing custom Error Prone checks. Chrome's copy is within the
-            // Error Prone fat jar: //third_party/android_build_tools/error_prone
-            // Depending on this fat jar pulls in a conflicting copy of protobuf library.
-            exclude: true),
-        com_google_errorprone_error_prone_annotations: new PropertyOverride(
-            url: 'https://github.com/google/error-prone/tree/master/annotations',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0',
-            description: 'ErrorProne Annotations.',),
-        com_google_firebase_firebase_annotations: new PropertyOverride(
-            description: 'Common annotations for Firebase SKDs.'),
-        com_google_firebase_firebase_common: new PropertyOverride(
-            description: 'Common classes for Firebase SDKs.'),
-        com_google_firebase_firebase_components: new PropertyOverride(
-            description: 'Provides dependency management for Firebase SDKs.'),
-        com_google_firebase_firebase_datatransport: new PropertyOverride(
-            exclude: true),  // We're not using datatransport functionality.
-        com_google_firebase_firebase_encoders_json: new PropertyOverride(
-            description: 'JSON encoders used in Firebase SDKs.'),
-        com_google_firebase_firebase_encoders: new PropertyOverride(
-            description: 'Commonly used encoders for Firebase SKDs.'),
-        com_google_firebase_firebase_iid_interop: new PropertyOverride(
-            description: 'Interface library for Firebase IID SDK.'),
-        com_google_firebase_firebase_iid: new PropertyOverride(
-            description: 'Firebase IID SDK to get access to Instance IDs.'),
-        com_google_firebase_firebase_installations_interop: new PropertyOverride(
-            description: 'Interface library for Firebase Installations SDK.'),
-        com_google_firebase_firebase_installations: new PropertyOverride(
-            description: 'Firebase Installations SDK containing the client libraries to manage FIS.'),
-        com_google_firebase_firebase_measurement_connector: new PropertyOverride(
-            description: 'Bridge interfaces for Firebase analytics into gmscore.'),
-        com_google_firebase_firebase_messaging: new PropertyOverride(
-            description: 'Firebase Cloud Messaging SDK to send and receive push messages via FCM.'),
-        com_google_guava_failureaccess: new PropertyOverride(
-            url: 'https://github.com/google/guava',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        com_google_guava_guava: new PropertyOverride(
-            url: 'https://github.com/google/guava',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0',
-            // Both -jre and -android versions are listed. Filter to only the -jre ones.
-            versionFilter: '-jre'),
-        com_google_guava_guava_android: new PropertyOverride(
-            url: 'https://github.com/google/guava',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0',
-            // Both -jre and -android versions are listed. Filter to only the -android ones.
-            versionFilter: '-android'),
-        com_google_testparameterinjector_test_parameter_injector: new PropertyOverride(
-            url: 'https://github.com/google/TestParameterInjector',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        com_squareup_wire_wire_runtime_jvm: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_bouncycastle_bcprov_jdk18on: new PropertyOverride(
-            cpePrefix: 'cpe:/a:bouncycastle:legion-of-the-bouncy-castle:1.72',
-            url: 'https://github.com/bcgit/bc-java',
-            licensePath: 'licenses/Bouncy_Castle-2015.txt',
-            licenseName: 'MIT'),
-        org_codehaus_mojo_animal_sniffer_annotations: new PropertyOverride(
-            url: 'http://www.mojohaus.org/animal-sniffer/animal-sniffer-annotations/',
-            description: 'Animal Sniffer Annotations allow marking methods which Animal Sniffer should ignore ' +
-                         'signature violations of.',
-            licenseUrl: 'https://raw.githubusercontent.com/mojohaus/animal-sniffer/master/animal-sniffer-annotations/pom.xml',
-            licensePath: 'licenses/Codehaus_License-2009.txt',
-            licenseName: 'MIT'),
-        com_google_protobuf_protobuf_lite: new PropertyOverride(
-            exclude: true, // There is a phantom dep on this target, but this is deprecated and not used in chrome.
-            url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/README.md',
-            licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
-            licenseName: 'BSD'),
-        com_google_protobuf_protobuf_javalite: new PropertyOverride(
-            url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md',
-            licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
-            licenseName: 'BSD'),
-        jakarta_inject_jakarta_inject_api: new PropertyOverride(
-            // Help gradle resolve the same version that our 3pp script does.
-            versionFilter: '\\d+\\.\\d+\\.\\d+$'),
-        javax_annotation_javax_annotation_api: new PropertyOverride(
-            isShipped: false,  // Annotations are stripped by R8.
-            licenseName: 'CDDL-1.1, GPL-2.0-with-classpath-exception',
-            licenseUrl: 'https://raw.githubusercontent.com/javaee/javax.annotation/refs/heads/master/LICENSE'),
-        javax_annotation_jsr250_api: new PropertyOverride(
-            isShipped: false,  // Annotations are stripped by R8.
-            licenseName: 'CDDL-1.0',
-            licensePath: 'licenses/CDDL-1.0.txt'),
-        net_bytebuddy_byte_buddy: new PropertyOverride(
-            url: 'https://github.com/raphw/byte-buddy',
-            licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
-            licenseName: 'Apache 2.0'),
-        net_bytebuddy_byte_buddy_agent: new PropertyOverride(
-            url: 'https://github.com/raphw/byte-buddy',
-            licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
-            licenseName: 'Apache 2.0'),
-        net_bytebuddy_byte_buddy_android: new PropertyOverride(
-            url: 'https://github.com/raphw/byte-buddy',
-            licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
-            licenseName: 'Apache 2.0'),
-        org_checkerframework_checker_compat_qual: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
-            licenseName: 'Apache-2.0, MIT, GPL-2.0-with-classpath-exception'),
-        org_checkerframework_checker_qual: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
-            licenseName: 'Apache-2.0, MIT, GPL-2.0-with-classpath-exception'),
-        org_checkerframework_checker_util: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/checker-util/LICENSE.txt',
-            licenseName: 'MIT'),
-        org_conscrypt_conscrypt_openjdk_uber: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/google/conscrypt/master/LICENSE',
-            licenseName: 'Apache 2.0'),
-        org_hamcrest_hamcrest: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/hamcrest/JavaHamcrest/master/LICENSE',
-            licenseName: 'BSD'),
-        org_jsoup_jsoup: new PropertyOverride(
-            cpePrefix: 'cpe:/a:jsoup:jsoup:1.14.3',
-            licenseUrl: 'https://raw.githubusercontent.com/jhy/jsoup/master/LICENSE',
-            licenseName: 'The MIT License'),
-        org_mockito_mockito_android: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/mockito/mockito/main/LICENSE',
-            licenseName: 'The MIT License'),
-        org_mockito_mockito_core: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/mockito/mockito/main/LICENSE',
-            licenseName: 'The MIT License'),
-        org_mockito_mockito_subclass: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/mockito/mockito/main/LICENSE',
-            licenseName: 'The MIT License'),
-        org_objenesis_objenesis: new PropertyOverride(
-            url: 'http://objenesis.org/index.html',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_ow2_asm_asm: new PropertyOverride(
-            licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
-            licenseName: 'BSD'),
-        org_ow2_asm_asm_analysis: new PropertyOverride(
-            licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
-            licenseName: 'BSD'),
-        org_ow2_asm_asm_commons: new PropertyOverride(
-            licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
-            licenseName: 'BSD'),
-        org_ow2_asm_asm_tree: new PropertyOverride(
-            licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
-            licenseName: 'BSD'),
-        org_ow2_asm_asm_util: new PropertyOverride(
-            licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
-            licenseName: 'BSD'),
-        org_robolectric_annotations: new PropertyOverride(
-            licenseName: 'Apache-2.0, MIT',
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
-        org_robolectric_junit: new PropertyOverride(
-            licenseName: 'Apache-2.0, MIT',
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
-        org_robolectric_nativeruntime: new PropertyOverride(
-            licenseName: 'Apache-2.0, MIT',
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
-        org_robolectric_nativeruntime_dist_compat: new PropertyOverride(
-            licenseName: 'Apache-2.0, MIT',
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
-        org_robolectric_pluginapi: new PropertyOverride(
-            licenseName: 'Apache-2.0, MIT',
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
-        org_robolectric_plugins_maven_dependency_resolver: new PropertyOverride(
-            licenseName: 'Apache-2.0, MIT',
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
-        org_robolectric_resources: new PropertyOverride(
-            licenseName: 'Apache-2.0, MIT',
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
-        org_robolectric_robolectric: new PropertyOverride(
-            licenseName: 'Apache-2.0, MIT',
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
-        org_robolectric_sandbox: new PropertyOverride(
-            licenseName: 'Apache-2.0, MIT',
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
-        org_robolectric_shadowapi: new PropertyOverride(
-            licenseName: 'Apache-2.0, MIT',
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
-        org_robolectric_shadows_framework: new PropertyOverride(
-            licenseName: 'Apache-2.0, MIT',
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
-        org_robolectric_utils: new PropertyOverride(
-            licenseName: 'Apache-2.0, MIT',
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
-        org_robolectric_utils_reflector: new PropertyOverride(
-            licenseName: 'Apache-2.0, MIT',
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
-        // Prevent version changing ~weekly. https://crbug.com/1257197
-        org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm: new PropertyOverride(
-            resolveVersion: '1.8.1'),
-        org_jetbrains_kotlinx_kotlinx_coroutines_android: new PropertyOverride(
-            resolveVersion: '1.8.1'),
-        org_jetbrains_kotlinx_kotlinx_coroutines_guava: new PropertyOverride(
-            resolveVersion: '1.8.1'),
-        org_jetbrains_kotlinx_kotlinx_serialization_core_jvm: new PropertyOverride(
-            resolveVersion: '1.7.2'),
-        org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm: new PropertyOverride(
-            resolveVersion: '1.7.3'),
+            androidx_multidex_multidex: new PropertyOverride(
+                    url: 'https://maven.google.com/androidx/multidex/multidex/2.0.0/multidex-2.0.0.aar'),
+            com_google_android_datatransport_transport_api: new PropertyOverride(
+                    description: 'Interfaces for data logging in gmscore SDKs.'),
+            com_google_android_datatransport_transport_backend_cct: new PropertyOverride(
+                    exclude: true),  // We're not using datatransport functionality.
+            com_google_android_datatransport_transport_runtime: new PropertyOverride(
+                    exclude: true),  // We're not using datatransport functionality.
+            com_google_android_gms_play_services_cloud_messaging: new PropertyOverride(
+                    description: 'Firebase Cloud Messaging library that interfaces with gmscore.'),
+            com_google_android_gms_play_services_location: new PropertyOverride(
+                    description: 'Provides data about the device\'s physical location via gmscore.'),
+            com_google_auto_service_auto_service_annotations: new PropertyOverride(
+                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+                    licenseName: 'Apache 2.0'),
+            com_google_auto_value_auto_value_annotations: new PropertyOverride(
+                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+                    licenseName: 'Apache 2.0'),
+            com_google_code_gson_gson: new PropertyOverride(
+                    url: 'https://github.com/google/gson',
+                    description: 'A Java serialization/deserialization library to convert Java Objects into JSON and back',
+                    licenseUrl: 'https://raw.githubusercontent.com/google/gson/master/LICENSE',
+                    licenseName: 'Apache 2.0'),
+            com_google_errorprone_error_prone_annotation: new PropertyOverride(
+                    // Robolectric has a (seemingly unnecessary) dep on this. It's meant to be needed
+                    // only for writing custom Error Prone checks. Chrome's copy is within the
+                    // Error Prone fat jar: //third_party/android_build_tools/error_prone
+                    // Depending on this fat jar pulls in a conflicting copy of protobuf library.
+                    exclude: true),
+            com_google_errorprone_error_prone_annotations: new PropertyOverride(
+                    url: 'https://github.com/google/error-prone/tree/master/annotations',
+                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+                    licenseName: 'Apache 2.0',
+                    description: 'ErrorProne Annotations.',),
+            com_google_firebase_firebase_annotations: new PropertyOverride(
+                    description: 'Common annotations for Firebase SKDs.'),
+            com_google_firebase_firebase_common: new PropertyOverride(
+                    description: 'Common classes for Firebase SDKs.'),
+            com_google_firebase_firebase_components: new PropertyOverride(
+                    description: 'Provides dependency management for Firebase SDKs.'),
+            com_google_firebase_firebase_datatransport: new PropertyOverride(
+                    exclude: true),  // We're not using datatransport functionality.
+            com_google_firebase_firebase_encoders_json: new PropertyOverride(
+                    description: 'JSON encoders used in Firebase SDKs.'),
+            com_google_firebase_firebase_encoders: new PropertyOverride(
+                    description: 'Commonly used encoders for Firebase SKDs.'),
+            com_google_firebase_firebase_iid_interop: new PropertyOverride(
+                    description: 'Interface library for Firebase IID SDK.'),
+            com_google_firebase_firebase_iid: new PropertyOverride(
+                    description: 'Firebase IID SDK to get access to Instance IDs.'),
+            com_google_firebase_firebase_installations_interop: new PropertyOverride(
+                    description: 'Interface library for Firebase Installations SDK.'),
+            com_google_firebase_firebase_installations: new PropertyOverride(
+                    description: 'Firebase Installations SDK containing the client libraries to manage FIS.'),
+            com_google_firebase_firebase_measurement_connector: new PropertyOverride(
+                    description: 'Bridge interfaces for Firebase analytics into gmscore.'),
+            com_google_firebase_firebase_messaging: new PropertyOverride(
+                    description: 'Firebase Cloud Messaging SDK to send and receive push messages via FCM.'),
+            com_google_guava_failureaccess: new PropertyOverride(
+                    url: 'https://github.com/google/guava',
+                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+                    licenseName: 'Apache 2.0'),
+            com_google_guava_guava: new PropertyOverride(
+                    url: 'https://github.com/google/guava',
+                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+                    licenseName: 'Apache 2.0',
+                    // Both -jre and -android versions are listed. Filter to only the -jre ones.
+                    versionFilter: '-jre'),
+            com_google_guava_guava_android: new PropertyOverride(
+                    url: 'https://github.com/google/guava',
+                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+                    licenseName: 'Apache 2.0',
+                    // Both -jre and -android versions are listed. Filter to only the -android ones.
+                    versionFilter: '-android'),
+            com_google_testparameterinjector_test_parameter_injector: new PropertyOverride(
+                    url: 'https://github.com/google/TestParameterInjector',
+                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+                    licenseName: 'Apache 2.0'),
+            com_squareup_wire_wire_runtime_jvm: new PropertyOverride(
+                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+                    licenseName: 'Apache 2.0'),
+            org_bouncycastle_bcprov_jdk18on: new PropertyOverride(
+                    cpePrefix: 'cpe:/a:bouncycastle:legion-of-the-bouncy-castle:1.72',
+                    url: 'https://github.com/bcgit/bc-java',
+                    licensePath: 'licenses/Bouncy_Castle-2015.txt',
+                    licenseName: 'MIT'),
+            org_codehaus_mojo_animal_sniffer_annotations: new PropertyOverride(
+                    url: 'http://www.mojohaus.org/animal-sniffer/animal-sniffer-annotations/',
+                    description: 'Animal Sniffer Annotations allow marking methods which Animal Sniffer should ignore ' +
+                            'signature violations of.',
+                    licenseUrl: 'https://raw.githubusercontent.com/mojohaus/animal-sniffer/master/animal-sniffer-annotations/pom.xml',
+                    licensePath: 'licenses/Codehaus_License-2009.txt',
+                    licenseName: 'MIT'),
+            com_google_protobuf_protobuf_lite: new PropertyOverride(
+                    exclude: true, // There is a phantom dep on this target, but this is deprecated and not used in chrome.
+                    url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/README.md',
+                    licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
+                    licenseName: 'BSD'),
+            com_google_protobuf_protobuf_javalite: new PropertyOverride(
+                    url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md',
+                    licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
+                    licenseName: 'BSD'),
+            jakarta_inject_jakarta_inject_api: new PropertyOverride(
+                    // Help gradle resolve the same version that our 3pp script does.
+                    versionFilter: '\\d+\\.\\d+\\.\\d+$'),
+            javax_annotation_javax_annotation_api: new PropertyOverride(
+                    isShipped: false,  // Annotations are stripped by R8.
+                    licenseName: 'CDDL-1.1, GPL-2.0-with-classpath-exception',
+                    licenseUrl: 'https://raw.githubusercontent.com/javaee/javax.annotation/refs/heads/master/LICENSE'),
+            javax_annotation_jsr250_api: new PropertyOverride(
+                    isShipped: false,  // Annotations are stripped by R8.
+                    licenseName: 'CDDL-1.0',
+                    licensePath: 'licenses/CDDL-1.0.txt'),
+            net_bytebuddy_byte_buddy: new PropertyOverride(
+                    url: 'https://github.com/raphw/byte-buddy',
+                    licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
+                    licenseName: 'Apache 2.0'),
+            net_bytebuddy_byte_buddy_agent: new PropertyOverride(
+                    url: 'https://github.com/raphw/byte-buddy',
+                    licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
+                    licenseName: 'Apache 2.0'),
+            net_bytebuddy_byte_buddy_android: new PropertyOverride(
+                    url: 'https://github.com/raphw/byte-buddy',
+                    licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
+                    licenseName: 'Apache 2.0'),
+            org_checkerframework_checker_compat_qual: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
+                    licenseName: 'Apache-2.0, MIT, GPL-2.0-with-classpath-exception'),
+            org_checkerframework_checker_qual: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
+                    licenseName: 'Apache-2.0, MIT, GPL-2.0-with-classpath-exception'),
+            org_checkerframework_checker_util: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/checker-util/LICENSE.txt',
+                    licenseName: 'MIT'),
+            org_conscrypt_conscrypt_openjdk_uber: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/google/conscrypt/master/LICENSE',
+                    licenseName: 'Apache 2.0'),
+            org_hamcrest_hamcrest: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/hamcrest/JavaHamcrest/master/LICENSE',
+                    licenseName: 'BSD'),
+            org_jsoup_jsoup: new PropertyOverride(
+                    cpePrefix: 'cpe:/a:jsoup:jsoup:1.14.3',
+                    licenseUrl: 'https://raw.githubusercontent.com/jhy/jsoup/master/LICENSE',
+                    licenseName: 'The MIT License'),
+            org_mockito_mockito_android: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/mockito/mockito/main/LICENSE',
+                    licenseName: 'The MIT License'),
+            org_mockito_mockito_core: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/mockito/mockito/main/LICENSE',
+                    licenseName: 'The MIT License'),
+            org_mockito_mockito_subclass: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/mockito/mockito/main/LICENSE',
+                    licenseName: 'The MIT License'),
+            org_objenesis_objenesis: new PropertyOverride(
+                    url: 'http://objenesis.org/index.html',
+                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+                    licenseName: 'Apache 2.0'),
+            org_ow2_asm_asm: new PropertyOverride(
+                    licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
+                    licenseName: 'BSD'),
+            org_ow2_asm_asm_analysis: new PropertyOverride(
+                    licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
+                    licenseName: 'BSD'),
+            org_ow2_asm_asm_commons: new PropertyOverride(
+                    licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
+                    licenseName: 'BSD'),
+            org_ow2_asm_asm_tree: new PropertyOverride(
+                    licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
+                    licenseName: 'BSD'),
+            org_ow2_asm_asm_util: new PropertyOverride(
+                    licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
+                    licenseName: 'BSD'),
+            org_robolectric_annotations: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_junit: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_nativeruntime: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_nativeruntime_dist_compat: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_pluginapi: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_plugins_maven_dependency_resolver: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_resources: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_robolectric: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_sandbox: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_shadowapi: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_shadows_framework: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_utils: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_utils_reflector: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            // Prevent version changing ~weekly. https://crbug.com/1257197
+            org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm: new PropertyOverride(
+                    resolveVersion: '1.8.1'),
+            org_jetbrains_kotlinx_kotlinx_coroutines_android: new PropertyOverride(
+                    resolveVersion: '1.8.1'),
+            org_jetbrains_kotlinx_kotlinx_coroutines_guava: new PropertyOverride(
+                    resolveVersion: '1.8.1'),
+            org_jetbrains_kotlinx_kotlinx_serialization_core_jvm: new PropertyOverride(
+                    resolveVersion: '1.7.2'),
+            org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm: new PropertyOverride(
+                    resolveVersion: '1.7.3'),
     ]
 
     // Local text versions of HTML licenses. This cannot replace PROPERTY_OVERRIDES because some libraries refer to
     // license templates such as https://opensource.org/licenses/MIT.
     // Keys should be 'https', since customizeLicenses() will normalize URLs to https.
     static final Map<String, String> LICENSE_OVERRIDES = [
-      'https://developer.android.com/studio/terms.html': 'licenses/Android_SDK_License-December_9_2016.txt',
-      'https://openjdk.java.net/legal/gplv2+ce.html': 'licenses/GNU_v2_with_Classpath_Exception_1991.txt',
-      'https://scripts.sil.org/cms/scripts/page.php?item_id=OFL_web': 'licenses/SIL_Open_Font.txt',
-      'https://www.unicode.org/copyright.html#License': 'licenses/Unicode.txt',
-      'https://www.unicode.org/license.html': 'licenses/Unicode.txt',
+            'https://developer.android.com/studio/terms.html': 'licenses/Android_SDK_License-December_9_2016.txt',
+            'https://openjdk.java.net/legal/gplv2+ce.html': 'licenses/GNU_v2_with_Classpath_Exception_1991.txt',
+            'https://scripts.sil.org/cms/scripts/page.php?item_id=OFL_web': 'licenses/SIL_Open_Font.txt',
+            'https://www.unicode.org/copyright.html#License': 'licenses/Unicode.txt',
+            'https://www.unicode.org/license.html': 'licenses/Unicode.txt',
     ]
 
     final Map<String, DependencyDescription> dependencies = [:]
@@ -296,13 +297,13 @@ class ChromiumDepGraph {
         Set<ResolvedDependency> deps = [] as Set
         Map<String, SortedSet<String>> resolvedDeps = [:]
         String[] configNames = [
-            'compile',
-            'compileLatest',
-            'buildCompile',
-            'testCompile',
-            'androidTestCompile',
-            'androidTestCompileLatest',
-            'buildCompileNoDeps'
+                'compile',
+                'compileLatest',
+                'buildCompile',
+                'testCompile',
+                'androidTestCompile',
+                'androidTestCompileLatest',
+                'buildCompileNoDeps'
         ]
         for (Project project : projects) {
             for (String configName : configNames) {
@@ -327,20 +328,20 @@ class ChromiumDepGraph {
 
         resolvedDeps['testCompile'].each { id ->
             DependencyDescription dep = dependencies.get(id)
-            assert dep : "No dependency collected for artifact ${id}"
+            assert dep: "No dependency collected for artifact ${id}"
             dep.testOnly = true
         }
 
         (resolvedDeps['androidTestCompile'] + resolvedDeps['androidTestCompileLatest']).each { id ->
             DependencyDescription dep = dependencies.get(id)
-            assert dep : "No dependency collected for artifact ${id}"
+            assert dep: "No dependency collected for artifact ${id}"
             dep.supportsAndroid = true
             dep.testOnly = true
         }
 
         (resolvedDeps['buildCompile'] + resolvedDeps['buildCompileNoDeps']).each { id ->
             DependencyDescription dep = dependencies.get(id)
-            assert dep : "No dependency collected for artifact ${id}"
+            assert dep: "No dependency collected for artifact ${id}"
             dep.usedInBuild = true
             dep.testOnly = false
         }
@@ -351,7 +352,7 @@ class ChromiumDepGraph {
                 return
             }
             DependencyDescription dep = dependencies.get(id)
-            assert dep : "No dependency collected for artifact ${id}"
+            assert dep: "No dependency collected for artifact ${id}"
             dep.supportsAndroid = true
             dep.testOnly = false
             dep.isShipped = true
@@ -434,7 +435,7 @@ class ChromiumDepGraph {
             }
         } else if (!areAllModuleArtifactsSameFile(dependency.moduleArtifacts)) {
             throw new IllegalStateException("The dependency ${id} has multiple different artifacts: " +
-                                            "${dependency.moduleArtifacts}")
+                    "${dependency.moduleArtifacts}")
         } else {
             ResolvedArtifact artifact = dependency.moduleArtifacts[0]
             if (artifact.extension != 'jar' && artifact.extension != 'aar') {
@@ -535,23 +536,23 @@ class ChromiumDepGraph {
             logger.debug("Using Android license for $dep.id")
             dep.licenses.clear()
             dep.licenses.add(new LicenseSpec(
-                name: 'Android Software Development Kit License',
-                path: 'licenses/Android_SDK_License-December_9_2016.txt'))
+                    name: 'Android Software Development Kit License',
+                    path: 'licenses/Android_SDK_License-December_9_2016.txt'))
         }
 
         if (overrides) {
             if (overrides.licenseName) {
                 dep.licenses.clear()
                 LicenseSpec license = new LicenseSpec(
-                    name : overrides.licenseName,
-                    path: overrides.licensePath,
-                    url: overrides.licenseUrl,
+                        name: overrides.licenseName,
+                        path: overrides.licensePath,
+                        url: overrides.licenseUrl,
                 )
                 dep.licenses.add(license)
             } else {
                 if (overrides.licensePath || overrides.licenseUrl) {
                     throw new IllegalStateException('PropertyOverride must specify "licenseName" if either ' +
-                                                    '"licensePath" or "licenseUrl" is specified.')
+                            '"licensePath" or "licenseUrl" is specified.')
                 }
             }
         }
@@ -631,9 +632,9 @@ class ChromiumDepGraph {
         List<LicenseSpec> out = []
         for (GPathResult license : licenses) {
             out.add(new LicenseSpec(
-              name: license.name.text(),
-              url: license.url.text()
-          ))
+                    name: license.name.text(),
+                    url: license.url.text()
+            ))
         }
         return out
     }

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 import groovy.json.JsonOutput
 import groovy.text.SimpleTemplateEngine
 import groovy.text.Template
@@ -13,13 +14,9 @@ import org.gradle.api.tasks.TaskAction
 
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentMap
-import java.util.concurrent.Executors
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Future
-import java.util.regex.Pattern
+import java.util.concurrent.*
 import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 /**
  * Task to download dependencies specified in {@link ChromiumPlugin} and configure the Chromium build to integrate them.
@@ -51,63 +48,63 @@ class BuildConfigGenerator extends DefaultTask {
 
     // Use this to exclude a dep from being depended upon but keep the target.
     private static final List<String> DISALLOW_DEPS = [
-        // Only useful for SDK < Q where monochrome cannot use profiles because webview.
-        'androidx_profileinstaller_profileinstaller',
+            // Only useful for SDK < Q where monochrome cannot use profiles because webview.
+            'androidx_profileinstaller_profileinstaller',
     ]
 
     // These targets will not be downloaded from maven. Deps onto them will be made
     // to point to the existing targets instead.
     static final Map<String, String> EXISTING_LIBS = [
-        com_ibm_icu_icu4j: '//third_party/icu4j:icu4j_java',
-        com_almworks_sqlite4java_sqlite4java: '//third_party/sqlite4java:sqlite4java_java',
-        com_google_guava_listenablefuture: '//third_party/android_deps:guava_android_java',
-        com_jakewharton_android_repackaged_dalvik_dx: '//third_party/aosp_dalvik:aosp_dalvik_dx_java',
-        junit_junit: '//third_party/junit:junit',
-        net_bytebuddy_byte_buddy_android: '//third_party/byte_buddy:byte_buddy_android_java',
-        org_hamcrest_hamcrest_core: '//third_party/hamcrest:hamcrest_core_java',
-        org_hamcrest_hamcrest_integration: '//third_party/hamcrest:hamcrest_integration_java',
-        org_hamcrest_hamcrest_library: '//third_party/hamcrest:hamcrest_library_java',
-        org_jetbrains_annotations: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
-        org_jetbrains_kotlin_kotlin_stdlib_jdk7: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
-        org_jetbrains_kotlin_kotlin_stdlib_jdk8: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
-        org_jetbrains_kotlin_kotlin_stdlib_common: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
-        org_jetbrains_kotlin_kotlin_stdlib: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
+            com_ibm_icu_icu4j: '//third_party/icu4j:icu4j_java',
+            com_almworks_sqlite4java_sqlite4java: '//third_party/sqlite4java:sqlite4java_java',
+            com_google_guava_listenablefuture: '//third_party/android_deps:guava_android_java',
+            com_jakewharton_android_repackaged_dalvik_dx: '//third_party/aosp_dalvik:aosp_dalvik_dx_java',
+            junit_junit: '//third_party/junit:junit',
+            net_bytebuddy_byte_buddy_android: '//third_party/byte_buddy:byte_buddy_android_java',
+            org_hamcrest_hamcrest_core: '//third_party/hamcrest:hamcrest_core_java',
+            org_hamcrest_hamcrest_integration: '//third_party/hamcrest:hamcrest_integration_java',
+            org_hamcrest_hamcrest_library: '//third_party/hamcrest:hamcrest_library_java',
+            org_jetbrains_annotations: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
+            org_jetbrains_kotlin_kotlin_stdlib_jdk7: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
+            org_jetbrains_kotlin_kotlin_stdlib_jdk8: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
+            org_jetbrains_kotlin_kotlin_stdlib_common: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
+            org_jetbrains_kotlin_kotlin_stdlib: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
     ]
 
     // Some libraries have such long names they'll create a path that exceeds the 200 char path limit, which is
     // enforced by presubmit checks for Windows. This mapping shortens the name for .info files.
     // Needs to match mapping in fetch_all.py.
     private static final Map<String, String> REDUCED_ID_LENGTH_MAP = [
-        'com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework':
-            'com_google_android_accessibility_test_framework',
+            'com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework':
+                    'com_google_android_accessibility_test_framework',
     ]
 
     // These targets will still be downloaded from maven. Any deps onto them will be made
     // to point to the aliased target instead.
     static final Map<String, String> ALIASED_LIBS = [
-        // Use fully-qualified labels here since androidx might refer to them.
-        com_google_android_material_material: '//third_party/android_deps:material_design_java',
-        com_google_android_play_feature_delivery: '//third_party/android_deps:playcore_java',
-        com_google_dagger_dagger_compiler: '//third_party/android_deps:dagger_processor',
-        com_google_dagger_dagger: '//third_party/android_deps:dagger_java',
-        com_google_guava_failureaccess: '//third_party/android_deps:guava_android_java',
-        com_google_guava_guava_android: '//third_party/android_deps:guava_android_java',
-        com_google_protobuf_protobuf_javalite: '//third_party/android_deps:protobuf_lite_runtime_java',
-        net_bytebuddy_byte_buddy: '//third_party/byte_buddy:byte_buddy_android_java',
-        // Logic for google_play_services_package added below.
+            // Use fully-qualified labels here since androidx might refer to them.
+            com_google_android_material_material: '//third_party/android_deps:material_design_java',
+            com_google_android_play_feature_delivery: '//third_party/android_deps:playcore_java',
+            com_google_dagger_dagger_compiler: '//third_party/android_deps:dagger_processor',
+            com_google_dagger_dagger: '//third_party/android_deps:dagger_java',
+            com_google_guava_failureaccess: '//third_party/android_deps:guava_android_java',
+            com_google_guava_guava_android: '//third_party/android_deps:guava_android_java',
+            com_google_protobuf_protobuf_javalite: '//third_party/android_deps:protobuf_lite_runtime_java',
+            net_bytebuddy_byte_buddy: '//third_party/byte_buddy:byte_buddy_android_java',
+            // Logic for google_play_services_package added below.
     ]
 
     // Targets that are disabled when enable_chrome_android_internal=true.
     static final Map<String, String> CONDITIONAL_LIBS = [
-        com_google_android_material_material: '!defined(material_design_target)',
-        com_google_android_play_feature_delivery: '!defined(playcore_target)',
-        com_google_dagger_dagger_compiler: '!defined(dagger_annotation_processor_target)',
-        com_google_dagger_dagger_producers: '!defined(dagger_annotation_processor_target)',
-        com_google_dagger_dagger_spi: '!defined(dagger_annotation_processor_target)',
-        com_google_dagger_dagger: '!defined(dagger_java_target)',
-        com_google_guava_guava_android: '!defined(guava_android_target)',
-        com_google_protobuf_protobuf_javalite: '!defined(android_proto_runtime)',
-        // Logic for google_play_services_package added below.
+            com_google_android_material_material: '!defined(material_design_target)',
+            com_google_android_play_feature_delivery: '!defined(playcore_target)',
+            com_google_dagger_dagger_compiler: '!defined(dagger_annotation_processor_target)',
+            com_google_dagger_dagger_producers: '!defined(dagger_annotation_processor_target)',
+            com_google_dagger_dagger_spi: '!defined(dagger_annotation_processor_target)',
+            com_google_dagger_dagger: '!defined(dagger_java_target)',
+            com_google_guava_guava_android: '!defined(guava_android_target)',
+            com_google_protobuf_protobuf_javalite: '!defined(android_proto_runtime)',
+            // Logic for google_play_services_package added below.
     ]
 
     // Prefixes of autorolled libraries in //third_party/android_deps_autorolled.
@@ -279,12 +276,12 @@ class BuildConfigGenerator extends DefaultTask {
                     downloadFile(dependency.id, license.url, destFile)
                     if (destFile.text.contains('<html')) {
                         throw new RuntimeException("Found HTML in LICENSE file at ${license.url}. "
-                        + "Please add an override to ChromiumDepGraph.groovy for ${dependency.id}.")
+                                + "Please add an override to ChromiumDepGraph.groovy for ${dependency.id}.")
                     }
                 })
             }
         }
-                                 }
+    }
 
     static void mergeLicenses(ChromiumDepGraph.DependencyDescription dependency, String normalisedRepoPath) {
         String depDir = computeDepDir(dependency)
@@ -326,8 +323,8 @@ class BuildConfigGenerator extends DefaultTask {
 
     static String make3ppFetch(Template fetchTemplate, ChromiumDepGraph.DependencyDescription dependency) {
         Map bindMap = [
-            copyrightHeader: COPYRIGHT_HEADER,
-            dependency: dependency,
+                copyrightHeader: COPYRIGHT_HEADER,
+                dependency: dependency,
         ]
         return fetchTemplate.make(bindMap).toString()
     }
@@ -347,8 +344,8 @@ class BuildConfigGenerator extends DefaultTask {
         // *template*. Generally the actual license can be found in the source code.
         if (sourceUrl.contains('://opensource.org/licenses')) {
             throw new RuntimeException('Found templated license URL for dependency '
-                + id + ': ' + sourceUrl
-                + '. You will need to edit PROPERTY_OVERRIDES for this dep.')
+                    + id + ': ' + sourceUrl
+                    + '. You will need to edit PROPERTY_OVERRIDES for this dep.')
         }
         URL urlObj = new URL(sourceUrl)
         HttpURLConnection connection
@@ -478,11 +475,11 @@ class BuildConfigGenerator extends DefaultTask {
         updateBuildTargetDeclaration(graph, normalisedRepoPath)
         if (!ignoreDEPS) {
             updateDepsDeclaration(graph, cipdBucket, repositoryPath,
-                                  "${normalisedRepoPath}/../../DEPS")
+                    "${normalisedRepoPath}/../../DEPS")
         }
         dependencyDirectories.sort { path1, path2 -> return path1 <=> path2 }
         updateReadmeReferenceFile(dependencyDirectories,
-                                  "${normalisedRepoPath}/additional_readme_paths.json")
+                "${normalisedRepoPath}/additional_readme_paths.json")
     }
 
     void appendBuildTarget(ChromiumDepGraph.DependencyDescription dependency,
@@ -531,7 +528,7 @@ class BuildConfigGenerator extends DefaultTask {
 
             if (targetName.contains('guava') && (
                     gnTarget == '//third_party/android_deps:guava_android_java' ||
-                    gnTarget == ':com_google_guava_guava_java')) {
+                            gnTarget == ':com_google_guava_guava_java')) {
                 // Prevent circular dep caused by having listenablefuture aliased to guava_android.
                 return
             }
@@ -543,14 +540,14 @@ class BuildConfigGenerator extends DefaultTask {
 
         String condition = CONDITIONAL_LIBS.get(dependency.id)
         if (isPlayServicesTarget(dependency.id)) {
-          assert condition == null : dependency.id
-          condition = 'google_play_services_package == "//third_party/android_deps"'
+            assert condition == null: dependency.id
+            condition = 'google_play_services_package == "//third_party/android_deps"'
         }
 
         String libPath = "${LIBS_DIRECTORY}/${dependency.directoryName}"
         sb.append(GEN_REMINDER)
         if (condition != null) {
-          sb.append("if ($condition) {\n")
+            sb.append("if ($condition) {\n")
         }
         boolean isAndroidX = targetName.startsWith('androidx')
         if (dependency.extension == 'jar') {
@@ -601,7 +598,7 @@ class BuildConfigGenerator extends DefaultTask {
 
         sb.append('}\n')
         if (condition != null) {
-          sb.append("}\n")
+            sb.append("}\n")
         }
     }
 
@@ -612,7 +609,7 @@ class BuildConfigGenerator extends DefaultTask {
             // Cannot add only the specific target because doing so breaks nested template target.
             String visibilityLabel = aliasedLib.replaceAll(':.*', ':*')
             if (CONDITIONAL_LIBS.containsKey(dependency.id)) {
-              sb.append('  # Target is swapped out when internal code is enabled.\n')
+                sb.append('  # Target is swapped out when internal code is enabled.\n')
             }
             sb.append("  # Please depend on $aliasedLib instead.\n")
             sb.append("  visibility = [ \"$visibilityLabel\" ]\n")
@@ -688,8 +685,8 @@ class BuildConfigGenerator extends DefaultTask {
         }
         if (dependencyExtension == 'jar' && (
                 dependencyId.startsWith('io_grpc_') ||
-                dependencyId == 'com_google_firebase_firebase_encoders' ||
-                dependencyId == 'com_google_guava_guava_android')) {
+                        dependencyId == 'com_google_firebase_firebase_encoders' ||
+                        dependencyId == 'com_google_guava_guava_android')) {
             sb.append('  # https://crbug.com/1412551\n')
             sb.append('  requires_android = true\n')
         }
@@ -846,8 +843,8 @@ class BuildConfigGenerator extends DefaultTask {
     private static void addPreconditionsOverrideTreatment(StringBuilder sb, String dependencyId) {
         String targetName = translateTargetName(dependencyId)
         switch (targetName) {
-          case 'com_google_guava_guava_android':
-          case 'google_play_services_basement':
+            case 'com_google_guava_guava_android':
+            case 'google_play_services_basement':
                 String libraryDep = '//third_party/android_deps/local_modifications/preconditions:' +
                         computePreconditionsStubLibraryForDep(dependencyId)
                 sb.append("""
