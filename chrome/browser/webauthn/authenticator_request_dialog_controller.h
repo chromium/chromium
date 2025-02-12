@@ -342,8 +342,6 @@ class AuthenticatorRequestDialogController
   void set_allow_icloud_keychain(bool);
   void set_should_create_in_icloud_keychain(bool);
 
-  void set_enclave_can_be_default(bool can_be_default);
-
 #if BUILDFLAG(IS_MAC)
   void RecordMacOsStartedHistogram();
   void RecordMacOsSuccessHistogram(device::FidoRequestType,
@@ -612,9 +610,7 @@ class AuthenticatorRequestDialogController
   bool has_icloud_drive_enabled_ = false;
 #endif
 
-  bool enclave_can_be_default_ = true;
-
-  // The credential types that are being asked for
+  // The credential types that are being asked for.
   int credential_types_ =
       static_cast<int>(blink::mojom::CredentialTypeFlags::kNone);
 
