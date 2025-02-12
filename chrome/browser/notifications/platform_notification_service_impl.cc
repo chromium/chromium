@@ -12,6 +12,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/notification_content_detection_service_factory.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -40,8 +40,8 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
-#include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/platform_notification_context.h"
@@ -77,6 +77,11 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/metrics/histogram_functions.h"
 #endif  // IS_CHROMEOS_ASH
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/notification_content_detection_service_factory.h"
+#include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_service.h"
+#endif
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -300,6 +305,7 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
   auto metadata = std::make_unique<PersistentNotificationMetadata>();
   metadata->service_worker_scope = service_worker_scope;
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (safe_browsing::IsSafeBrowsingEnabled(*profile_->GetPrefs()) &&
       base::FeatureList::IsEnabled(
           safe_browsing::kOnDeviceNotificationContentDetectionModel)) {
@@ -333,6 +339,7 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
       }
     }
   }
+#endif
 
   NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::WEB_PERSISTENT, notification,

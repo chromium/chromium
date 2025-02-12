@@ -75,9 +75,11 @@ class Origin;
 
 class GURL;
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE) || BUILDFLAG(IS_IOS)
 namespace safe_browsing {
 class PasswordProtectionService;
 }
+#endif
 
 namespace device_reauth {
 class DeviceAuthenticator;
@@ -413,9 +415,11 @@ class PasswordManagerClient {
   // Returns the current best guess as to the page's display language.
   virtual autofill::LanguageCode GetPageLanguage() const;
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE) || BUILDFLAG(IS_IOS)
   // Return the PasswordProtectionService associated with this instance.
   virtual safe_browsing::PasswordProtectionService*
   GetPasswordProtectionService() const = 0;
+#endif
 
   // Maybe triggers a hats survey that measures the user's perception of
   // Autofill for passwords. When triggering happens, the survey dialog will be
@@ -427,7 +431,7 @@ class PasswordManagerClient {
   virtual void TriggerUserPerceptionOfPasswordManagerSurvey(
       const std::string& filling_assistance);
 
-#if defined(ON_FOCUS_PING_ENABLED)
+#if defined(ON_FOCUS_PING_ENABLED) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // Checks the safe browsing reputation of the webpage when the
   // user focuses on a username/password field. This is used for reporting
   // only, and won't trigger a warning.

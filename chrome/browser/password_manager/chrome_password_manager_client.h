@@ -248,18 +248,21 @@ class ChromePasswordManagerClient
   autofill::LogManager* GetCurrentLogManager() override;
   void AnnotateNavigationEntry(bool has_password_field) override;
   autofill::LanguageCode GetPageLanguage() const override;
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()
       const override;
+#endif
   void TriggerUserPerceptionOfPasswordManagerSurvey(
       const std::string& filling_assistance) override;
 
-#if defined(ON_FOCUS_PING_ENABLED)
+#if defined(ON_FOCUS_PING_ENABLED) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   void CheckSafeBrowsingReputation(const GURL& form_action,
                                    const GURL& frame_url) override;
 #endif
 
-  // Reporting these events is only supported when extensions are enabled.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Reporting these events is only supported when extensions are enabled and
+  // safe browsing is available.
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   void MaybeReportEnterpriseLoginEvent(
       const GURL& url,
       bool is_federated,

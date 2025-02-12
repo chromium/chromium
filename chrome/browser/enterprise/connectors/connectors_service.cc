@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
@@ -41,6 +40,7 @@
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_prefs/user_prefs.h"
@@ -73,6 +73,10 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_params_proxy.h"
 #include "components/policy/core/common/policy_loader_lacros.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/enterprise/connectors/common.h"
 #endif
 
 namespace enterprise_connectors {
@@ -214,6 +218,7 @@ std::optional<ReportingSettings> ConnectorsService::GetReportingSettings() {
   if (!settings.has_value())
     return std::nullopt;
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   Profile* profile = Profile::FromBrowserContext(context_);
   if (IncludeDeviceInfo(profile, /*per_profile=*/false)) {
     // The device dm token includes additional information like a device id,
@@ -226,7 +231,8 @@ std::optional<ReportingSettings> ConnectorsService::GetReportingSettings() {
       return settings;
     }
   }
-#endif
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return ConnectorsServiceBase::GetReportingSettings();
 }
@@ -434,12 +440,16 @@ std::string ConnectorsService::GetRealTimeUrlCheckIdentifier() const {
     return GetClientId(profile);
   }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager) {
     return std::string();
   }
 
   return GetProfileEmail(identity_manager);
+#else
+  return std::string();
+#endif
 }
 
 ConnectorsManager* ConnectorsService::ConnectorsManagerForTesting() {
@@ -572,6 +582,7 @@ std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
     metadata->set_is_chrome_os_managed_guest_session(IsManagedGuestSession());
   }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   bool include_device_info =
       IncludeDeviceInfo(profile, reporting_settings.value().per_profile);
 
@@ -581,6 +592,7 @@ std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
     PopulateDeviceMetadata(reporting_settings.value(), profile,
                            metadata->mutable_device());
   }
+#endif
 
   return metadata;
 }
