@@ -378,6 +378,17 @@ BASE_FEATURE(kReloadHiddenTabsWithCrashedSubframes,
 #endif
 );
 
+#if BUILDFLAG(IS_ANDROID)
+// If enabled, then orientation lock won't claim to work on anything but phone
+// form factors.  Tablets already do unpredictable things, such as letterboxing
+// vs rotating and/or (successfully) ignoring the request entirely.  Setting
+// this flag turns off those use-cases which nobody should be relying on right
+// now anyway; they don't work.
+BASE_FEATURE(kRestrictOrientationLockToPhones,
+             "RestrictOrientationLockToPhones",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kServiceWorkerAvoidMainThreadForInitialization,
              "ServiceWorkerAvoidMainThreadForInitialization",
 #if BUILDFLAG(IS_ANDROID)
