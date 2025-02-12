@@ -162,7 +162,9 @@ void VideoCaptureDeviceFactoryApple::GetDevicesInfo(
         LOG(ERROR) << "\ndevice: "
                    << base::SysNSStringToUTF8(device.localizedName) << "\n"
                    << "id: " << base::SysNSStringToUTF8(device.uniqueID) << "\n"
+#if BUILDFLAG(IS_MAC)
                    << "type: " << device.transportType << "\n"
+#endif
                    << "suspended: " << (device.suspended ? "true" : "false");
       }
 
