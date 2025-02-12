@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/blocklist.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/cws_info_service.h"
+#include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_telemetry_service_verdict_handler.h"
@@ -72,6 +73,7 @@ namespace extensions {
 class ChromeExtensionRegistrarDelegate;
 class ComponentLoader;
 class CrxInstaller;
+class DelayedInstallManager;
 class ExtensionActionStorageManager;
 class ExtensionErrorController;
 class ExtensionRegistry;
@@ -423,8 +425,18 @@ class ExtensionService : public ExtensionServiceInterface,
   bool UserCanDisableInstalledExtension(
       const std::string& extension_id) override;
 
-  // Removes an extension from the delayed installs list.
-  void RemoveDelayedInstall(scoped_refptr<const Extension> extension);
+  // Helper to determine if installing an extensions should proceed immediately,
+  // or if we should delay the install until further notice, or if the install
+  // should be aborted. A pending install is delayed or aborted when any of the
+  // delayers say so and only proceeds when all delayers return INSTALL.
+  // |extension| is the extension to be installed. |install_immediately| is the
+  // install flag set with the install. |reason| is the reason associated with
+  // the install delayer that wants to defer or abort the install.
+  // TODO(crbug.com/395695804): Migrate this function to DelayedInstallManager.
+  InstallGate::Action ShouldDelayExtensionInstall(
+      const Extension* extension,
+      bool install_immediately,
+      ExtensionPrefs::DelayReason* reason) const;
 
   //////////////////////////////////////////////////////////////////////////////
   // Simple Accessors
@@ -446,7 +458,9 @@ class ExtensionService : public ExtensionServiceInterface,
     return unpacked_install_directory_;
   }
 
-  const ExtensionSet* delayed_installs() const { return &delayed_installs_; }
+  // TODO(crbug.com/395695804): Make this return a DelayedInstallManager* and
+  // make that class provide the ExtensionSet.
+  const ExtensionSet* delayed_installs() const;
 
   Profile* profile() { return profile_; }
 
@@ -595,18 +609,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // initially.
   DisableReasonSet GetDisableReasonsOnInstalled(const Extension* extension);
 
-  // Helper to determine if installing an extensions should proceed immediately,
-  // or if we should delay the install until further notice, or if the install
-  // should be aborted. A pending install is delayed or aborted when any of the
-  // delayers say so and only proceeds when all delayers return INSTALL.
-  // |extension| is the extension to be installed. |install_immediately| is the
-  // install flag set with the install. |reason| is the reason associated with
-  // the install delayer that wants to defer or abort the install.
-  InstallGate::Action ShouldDelayExtensionInstall(
-      const Extension* extension,
-      bool install_immediately,
-      ExtensionPrefs::DelayReason* reason) const;
-
   // Manages the blocklisted extensions, intended as callback from
   // Blocklist::GetBlocklistedIDs.
   void ManageBlocklist(const Blocklist::BlocklistStateMap& blocklisted_ids);
@@ -669,11 +671,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // Set of allowlisted enabled extensions loaded from the
   // --disable-extensions-except command line flag.
   std::set<std::string> disable_flag_exempted_extensions_;
-
-  // The list of extension installs delayed for various reasons.  The reason
-  // for delayed install is stored in ExtensionPrefs. These are not part of
-  // ExtensionRegistry because they are not yet installed.
-  ExtensionSet delayed_installs_;
 
   // Hold the set of pending extensions.
   PendingExtensionManager pending_extension_manager_;
@@ -775,6 +772,10 @@ class ExtensionService : public ExtensionServiceInterface,
   base::ScopedObservation<CWSInfoService, CWSInfoService::Observer>
       cws_info_service_observation_{this};
 
+  // Depends on `extension_registrar` so must come after it.
+  DelayedInstallManager delayed_install_manager_;
+
+  // TODO(crbug.com/395695804): Move this member to DelayedInstallManager.
   using InstallGateRegistry = std::map<ExtensionPrefs::DelayReason,
                                        raw_ptr<InstallGate, CtnExperimental>>;
   InstallGateRegistry install_delayer_registry_;

@@ -16,6 +16,7 @@ class FilePath;
 }
 
 namespace extensions {
+class DelayedInstallManager;
 class ExtensionPrefs;
 class ExtensionRegistry;
 class ExtensionService;
@@ -35,13 +36,13 @@ class ChromeExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
       const ChromeExtensionRegistrarDelegate&) = delete;
   ~ChromeExtensionRegistrarDelegate() override;
 
+  // Provides pointers to objects that are constructed after this one.
+  void Init(ExtensionRegistrar* registrar,
+            DelayedInstallManager* delayed_install);
+
   // Clears member pointers. Call this during KeyedService two-phase shutdown to
   // avoid dangling pointers.
   void Shutdown();
-
-  void set_extension_registrar(ExtensionRegistrar* registrar) {
-    extension_registrar_ = registrar;
-  }
 
   // ExtensionRegistrar::Delegate:
   void PreAddExtension(const Extension* extension,
@@ -96,6 +97,7 @@ class ChromeExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   raw_ptr<ExtensionSystem> system_ = nullptr;
   raw_ptr<ExtensionRegistry> registry_ = nullptr;
   raw_ptr<ExtensionRegistrar> extension_registrar_ = nullptr;
+  raw_ptr<DelayedInstallManager> delayed_install_manager_ = nullptr;
 
   base::WeakPtrFactory<ChromeExtensionRegistrarDelegate> weak_factory_{this};
 };

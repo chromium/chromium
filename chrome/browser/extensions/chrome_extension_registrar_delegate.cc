@@ -10,6 +10,7 @@
 #include "base/barrier_closure.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/data_deleter.h"
+#include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
 #include "chrome/browser/extensions/extension_disabled_ui.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -83,12 +84,21 @@ ChromeExtensionRegistrarDelegate::ChromeExtensionRegistrarDelegate(
 
 ChromeExtensionRegistrarDelegate::~ChromeExtensionRegistrarDelegate() = default;
 
+void ChromeExtensionRegistrarDelegate::Init(
+    ExtensionRegistrar* registrar,
+    DelayedInstallManager* delayed_install) {
+  extension_registrar_ = registrar;
+  delayed_install_manager_ = delayed_install;
+}
+
 void ChromeExtensionRegistrarDelegate::Shutdown() {
   // Avoid dangling pointers. The Profile outlives this object but some other
   // classes don't.
   extension_prefs_ = nullptr;
   system_ = nullptr;
   registry_ = nullptr;
+  extension_registrar_ = nullptr;
+  delayed_install_manager_ = nullptr;
 }
 
 void ChromeExtensionRegistrarDelegate::PreAddExtension(
@@ -219,15 +229,15 @@ void ChromeExtensionRegistrarDelegate::PostUninstallExtension(
 
 void ChromeExtensionRegistrarDelegate::PostNotifyUninstallExtension(
     scoped_refptr<const Extension> extension) {
-  extension_service_->RemoveDelayedInstall(extension);
+  delayed_install_manager_->Remove(extension->id());
 }
 
 void ChromeExtensionRegistrarDelegate::LoadExtensionForReload(
     const ExtensionId& extension_id,
     const base::FilePath& path,
     ExtensionRegistrar::LoadErrorBehavior load_error_behavior) {
-  if (extension_service_->delayed_installs()->Contains(extension_id) &&
-      extension_service_->FinishDelayedInstallationIfReady(
+  if (delayed_install_manager_->Contains(extension_id) &&
+      delayed_install_manager_->FinishDelayedInstallationIfReady(
           extension_id, true /*install_immediately*/)) {
     return;
   }

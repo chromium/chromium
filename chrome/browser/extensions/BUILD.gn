@@ -437,6 +437,8 @@ source_set("extensions") {
       "cws_info_service_factory.h",
       "data_deleter.cc",
       "data_deleter.h",
+      "delayed_install_manager.cc",
+      "delayed_install_manager.h",
       "device_permissions_dialog_controller.cc",
       "device_permissions_dialog_controller.h",
       "devtools_util.cc",

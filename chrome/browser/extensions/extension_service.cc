@@ -42,6 +42,7 @@
 #include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
+#include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_action_storage_manager.h"
 #include "chrome/browser/extensions/extension_disabled_ui.h"
 #include "chrome/browser/extensions/extension_error_controller.h"
@@ -405,10 +406,12 @@ ExtensionService::ExtensionService(
       extension_registrar_(profile_, extension_registrar_delegate_.get()),
       force_installed_tracker_(registry_, profile_),
       force_installed_metrics_(registry_, profile_, &force_installed_tracker_),
-      corrupted_extension_reinstaller_(profile_) {
+      corrupted_extension_reinstaller_(profile_),
+      delayed_install_manager_(this, extension_prefs_, &extension_registrar_) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   TRACE_EVENT0("browser,startup", "ExtensionService::ExtensionService::ctor");
-  extension_registrar_delegate_->set_extension_registrar(&extension_registrar_);
+  extension_registrar_delegate_->Init(&extension_registrar_,
+                                      &delayed_install_manager_);
 
   // Figure out if extension installation should be enabled.
   if (ExtensionsBrowserClient::Get()->AreExtensionsDisabled(*command_line,
@@ -490,10 +493,10 @@ ExtensionService::~ExtensionService() {
   // profile is in the process of being deleted.
   for (const auto& provider : external_extension_providers_)
     provider->ServiceShutdown();
-  extension_registrar_delegate_->set_extension_registrar(nullptr);
 }
 
 void ExtensionService::Shutdown() {
+  delayed_install_manager_.Shutdown();
   cws_info_service_observation_.Reset();
   ExtensionManagementFactory::GetForBrowserContext(profile())->RemoveObserver(
       this);
@@ -599,7 +602,7 @@ void ExtensionService::MaybeFinishShutdownDelayed() {
           extension_prefs_->GetDelayedInstallCreationFlags(info.extension_id),
           info.extension_id, &error);
       if (extension.get()) {
-        delayed_installs_.Insert(extension);
+        delayed_install_manager_.Insert(extension);
       }
     }
   }
@@ -929,15 +932,14 @@ void ExtensionService::RecordPermissionMessagesHistogram(
   }
 }
 
-void ExtensionService::RemoveDelayedInstall(
-    scoped_refptr<const Extension> extension) {
-  delayed_installs_.Remove(extension->id());
-}
-
 content::BrowserContext* ExtensionService::GetBrowserContext() const {
   // Implemented in the .cc file to avoid adding a profile.h dependency to
   // extension_service.h.
   return profile_;
+}
+
+const ExtensionSet* ExtensionService::delayed_installs() const {
+  return &delayed_install_manager_.delayed_installs();
 }
 
 void ExtensionService::CheckManagementPolicy() {
@@ -1409,7 +1411,7 @@ void ExtensionService::OnExtensionInstalled(
           install_parameter, std::move(ruleset_install_prefs));
 
       // Transfer ownership of |extension|.
-      delayed_installs_.Insert(extension);
+      delayed_install_manager_.Insert(extension);
 
       if (delay_reason == ExtensionPrefs::DelayReason::kWaitForIdle) {
         // Notify observers that app update is available.
@@ -1471,7 +1473,7 @@ void ExtensionService::AddNewOrUpdatedExtension(
   extension_prefs_->OnExtensionInstalled(extension, initial_state, page_ordinal,
                                          install_flags, install_parameter,
                                          std::move(ruleset_install_prefs));
-  delayed_installs_.Remove(extension->id());
+  delayed_install_manager_.Remove(extension->id());
   if (InstallVerifier::NeedsVerification(*extension, GetBrowserContext()))
     InstallVerifier::Get(GetBrowserContext())->VerifyExtension(extension->id());
 
@@ -1481,45 +1483,13 @@ void ExtensionService::AddNewOrUpdatedExtension(
 bool ExtensionService::FinishDelayedInstallationIfReady(
     const std::string& extension_id,
     bool install_immediately) {
-  // Check if the extension already got installed.
-  const Extension* extension = delayed_installs_.GetByID(extension_id);
-  if (!extension)
-    return false;
-
-  ExtensionPrefs::DelayReason reason;
-  const InstallGate::Action action =
-      ShouldDelayExtensionInstall(extension, install_immediately, &reason);
-  switch (action) {
-    case InstallGate::INSTALL:
-      break;
-    case InstallGate::DELAY:
-      // Bail out and continue to delay the install.
-      return false;
-    case InstallGate::ABORT:
-      delayed_installs_.Remove(extension_id);
-      // Make sure no version of the extension is actually installed, (i.e.,
-      // that this delayed install was not an update).
-      CHECK(!extension_prefs_->GetInstalledExtensionInfo(extension_id));
-      extension_prefs_->DeleteExtensionPrefs(extension_id);
-      return false;
-  }
-
-  scoped_refptr<const Extension> delayed_install =
-      GetPendingExtensionUpdate(extension_id);
-  CHECK(delayed_install.get());
-  delayed_installs_.Remove(extension_id);
-
-  if (!extension_prefs_->FinishDelayedInstallInfo(extension_id)) {
-    NOTREACHED();
-  }
-
-  extension_registrar_.FinishInstallation(delayed_install.get());
-  return true;
+  return delayed_install_manager_.FinishDelayedInstallationIfReady(
+      extension_id, install_immediately);
 }
 
 const Extension* ExtensionService::GetPendingExtensionUpdate(
     const std::string& id) const {
-  return delayed_installs_.GetByID(id);
+  return delayed_install_manager_.GetPendingExtensionUpdate(id);
 }
 
 void ExtensionService::TerminateExtension(const std::string& extension_id) {
@@ -1700,7 +1670,7 @@ void ExtensionService::RenderProcessHostDestroyed(
     }
 
     for (const auto& id : affected_ids) {
-      if (delayed_installs_.Contains(id)) {
+      if (delayed_install_manager_.Contains(id)) {
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(
@@ -1788,15 +1758,9 @@ InstallGate::Action ExtensionService::ShouldDelayExtensionInstall(
   return InstallGate::INSTALL;
 }
 
+// TODO(crbug.com/395695804): Migrate all callers to DelayedInstallManager.
 void ExtensionService::MaybeFinishDelayedInstallations() {
-  std::vector<std::string> to_be_installed;
-  for (const auto& extension : delayed_installs_) {
-    to_be_installed.push_back(extension->id());
-  }
-  for (const auto& extension_id : to_be_installed) {
-    FinishDelayedInstallationIfReady(extension_id,
-                                     false /*install_immediately*/);
-  }
+  delayed_install_manager_.MaybeFinishDelayedInstallations();
 }
 
 void ExtensionService::OnBlocklistUpdated() {
