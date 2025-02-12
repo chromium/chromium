@@ -11911,6 +11911,42 @@
             ]
         }
     ],
+    "IOSFullscreenTransition": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledSlowSpeed",
+                    "params": {
+                        "FullscreenTransitionSpeed": "0"
+                    },
+                    "enable_features": [
+                        "FullscreenTransition"
+                    ]
+                },
+                {
+                    "name": "EnabledFastSpeed",
+                    "params": {
+                        "FullscreenTransitionSpeed": "2"
+                    },
+                    "enable_features": [
+                        "FullscreenTransition"
+                    ]
+                },
+                {
+                    "name": "EnabledMediumDelay",
+                    "params": {
+                        "MediumFullscreenTransitionOffset": "true"
+                    },
+                    "enable_features": [
+                        "FullscreenTransition"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSHomeCustomization": [
         {
             "platforms": [
