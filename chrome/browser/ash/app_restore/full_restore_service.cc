@@ -66,6 +66,7 @@
 #include "components/app_restore/window_info.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/url_formatter.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -893,19 +894,27 @@ void FullRestoreService::OnSessionInformationReceived(
 
         // Use the tab title if possible. If no tab title is available and it is
         // a chrome WebUI, use the host piece (history, extensions, etc.).
-        // Otherwise we will default to the app title, "Chrome".
+        // Otherwise we will use the formatted url as tab title.
         std::string tab_title = base::UTF16ToUTF8(entry.title());
-        if (tab_title.empty() &&
-            entry.original_request_url().SchemeIs(content::kChromeUIScheme)) {
-          tab_title = entry.original_request_url().host_piece();
+        const GURL& url = entry.original_request_url();
+        if (tab_title.empty()) {
+          if (url.SchemeIs(content::kChromeUIScheme)) {
+            tab_title = url.host_piece();
+          } else {
+            tab_title = base::UTF16ToUTF8(url_formatter::FormatUrl(
+                entry.virtual_url().is_empty() ? url : entry.virtual_url(),
+                url_formatter::kFormatUrlOmitDefaults |
+                    url_formatter::kFormatUrlOmitTrivialSubdomains |
+                    url_formatter::kFormatUrlOmitHTTPS,
+                base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+          }
         }
 
         if (active_tab_title.empty()) {
           active_tab_title = tab_title;
         }
 
-        tab_infos.push_back(InformedRestoreContentsData::TabInfo(
-            entry.original_request_url(), tab_title));
+        tab_infos.emplace_back(url, tab_title);
       }
     };
 
