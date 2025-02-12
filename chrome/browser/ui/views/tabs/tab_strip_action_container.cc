@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
@@ -257,7 +258,9 @@ TabStripActionContainer::TabStripActionContainer(
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
-  UpdateGlicButton();
+  if (GlicEnabling::IsProfileEligible(tab_strip_controller->GetProfile())) {
+    glic_button_ = AddChildView(CreateGlicButton());
+  }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
   SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -344,22 +347,40 @@ TabStripActionContainer::CreateAutoTabGroupButton(
 }
 
 #if BUILDFLAG(ENABLE_GLIC)
-void TabStripActionContainer::UpdateGlicButton() {
-  bool need_button =
-      GlicEnabling::IsEnabledForProfile(tab_strip_controller_->GetProfile());
-  if (!glic_button_ && need_button) {
-    std::unique_ptr<glic::GlicButton> glic_button =
-        std::make_unique<glic::GlicButton>(tab_strip_controller_);
-    glic_button->SetProperty(views::kCrossAxisAlignmentKey,
-                             views::LayoutAlignment::kCenter);
-    glic_button->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
+std::unique_ptr<glic::GlicButton> TabStripActionContainer::CreateGlicButton() {
+  std::unique_ptr<glic::GlicButton> glic_button =
+      std::make_unique<glic::GlicButton>(
+          tab_strip_controller_,
+          base::BindRepeating(&TabStripActionContainer::OnGlicButtonClicked,
+                              base::Unretained(this)),
+          glic::GlicVectorIconManager::GetVectorIcon(
+              IDR_GLIC_BUTTON_VECTOR_ICON),
+          l10n_util::GetStringUTF16(IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP));
 
-    glic_button_ = AddChildView(std::move(glic_button));
-  } else if (glic_button_ && !need_button) {
-    RemoveChildViewT(std::exchange(glic_button_, nullptr));
-  }
+  glic_button->SetProperty(views::kCrossAxisAlignmentKey,
+                           views::LayoutAlignment::kCenter);
+  glic_button->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
+
+  return glic_button;
+}
+
+void TabStripActionContainer::OnGlicButtonClicked() {
+  // Indicate that the glic button was pressed so that we can either close the
+  // IPH promo (if present) or note that it has already been used to prevent
+  // unnecessarily displaying the promo.
+  tab_strip_controller_->GetBrowserWindowInterface()
+      ->GetUserEducationInterface()
+      ->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHGlicPromoFeature,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+
+  glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+      tab_strip_controller_->GetProfile())
+      ->ToggleUI(tab_strip_controller_->GetBrowserWindowInterface(),
+                 /*prevent_close=*/false,
+                 glic::InvocationSource::kTopChromeButton);
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
@@ -523,8 +544,9 @@ void TabStripActionContainer::ExecuteShowTabStripNudge(
   if (button == glic_nudge_button_) {
 #if BUILDFLAG(ENABLE_GLIC)
     // Hide the glic button while the nudge is shown
-    // TODO (crbug.com/388849547) add animation for glic button
-    glic_button_->SetVisible(false);
+    if (glic_button_) {
+      glic_button_->SetIsShowingNudge(true);
+    }
 #endif  // BUILDFLAG(ENABLE_GLIC)
   }
 
@@ -663,10 +685,9 @@ void TabStripActionContainer::OnAnimationSessionEnded() {
     scoped_tab_strip_modal_ui_.reset();
 
 #if BUILDFLAG(ENABLE_GLIC)
-
     if (glic_button_ && !glic_button_->GetVisible()) {
       // Show the glic button after the nudge is hidden
-      glic_button_->SetVisible(true);
+      glic_button_->SetIsShowingNudge(false);
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
   }

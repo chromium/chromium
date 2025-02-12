@@ -101,10 +101,6 @@ class TabStripActionContainer : public views::View,
   }
 
   glic::GlicButton* GetGlicButton() { return glic_button_; }
-#if BUILDFLAG(ENABLE_GLIC)
-  // Ensures the Glic button's existence matches the current configuration.
-  void UpdateGlicButton();
-#endif
 
   ProductSpecificationsButton* GetProductSpecificationsButton() {
     return product_specifications_button_;
@@ -133,6 +129,11 @@ class TabStripActionContainer : public views::View,
   // the nudge.
   void SetLockedExpansionMode(LockedExpansionMode mode,
                               TabStripNudgeButton* button);
+
+#if BUILDFLAG(ENABLE_GLIC)
+  std::unique_ptr<glic::GlicButton> CreateGlicButton();
+  void OnGlicButtonClicked();
+#endif
 
   void OnTabDeclutterButtonClicked();
   void OnTabDeclutterButtonDismissed();

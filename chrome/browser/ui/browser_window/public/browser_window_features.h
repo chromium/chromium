@@ -12,6 +12,7 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 namespace glic {
+class GlicButtonController;
 class GlicIphController;
 }
 #endif
@@ -230,6 +231,7 @@ class BrowserWindowFeatures {
   std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
 
 #if BUILDFLAG(ENABLE_GLIC)
+  std::unique_ptr<glic::GlicButtonController> glic_button_controller_;
   std::unique_ptr<glic::GlicIphController> glic_iph_controller_;
 #endif
 

@@ -38,11 +38,13 @@
 #include "chrome/browser/ui/views/data_sharing/data_sharing_open_group_helper.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/common/chrome_features.h"
 #include "components/collaboration/public/collaboration_service.h"
@@ -54,8 +56,10 @@
 #include "components/saved_tab_groups/public/features.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_button_controller.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_iph_controller.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #endif
 namespace {
 
@@ -235,6 +239,16 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   // The controller relies on performance manager which isn't initialized in
   // some unit tests without browser view.
   if (browser_view->GetIsNormalType()) {
+#if BUILDFLAG(ENABLE_GLIC)
+    if (GlicEnabling::IsProfileEligible(browser_view->browser()->profile())) {
+      glic_button_controller_ = std::make_unique<glic::GlicButtonController>(
+          browser_view->GetProfile(),
+          browser_view->tab_strip_region_view()->GetGlicButton(),
+          glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+              browser_view->GetProfile()));
+    }
+#endif
+
     memory_saver_opt_in_iph_controller_ =
         std::make_unique<MemorySaverOptInIPHController>(
             browser_view->browser());
@@ -257,6 +271,10 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
 void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
   memory_saver_opt_in_iph_controller_.reset();
   lens_overlay_entry_point_controller_.reset();
+
+#if BUILDFLAG(ENABLE_GLIC)
+  glic_button_controller_.reset();
+#endif
 
   // TODO(crbug.com/346148093): This logic should not be gated behind a
   // conditional.

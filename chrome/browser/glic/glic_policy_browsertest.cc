@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -234,12 +235,12 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyAffectsGlicButtonInNewWindows) {
   {
     // A new window in profile 1 shouldn't have the Glic button.
     Browser* new_window_profile_1 = CreateBrowser(profile_1_);
-    EXPECT_FALSE(GetGlicButtonForBrowser(new_window_profile_1));
+    EXPECT_FALSE(GetGlicButtonForBrowser(new_window_profile_1)->GetVisible());
 
     // A new window in profile 2 should continue to have the Glic button since
     // only profile 1 disabled Glic.
     Browser* new_window_profile_2 = CreateBrowser(profile_2_);
-    EXPECT_TRUE(GetGlicButtonForBrowser(new_window_profile_2));
+    EXPECT_TRUE(GetGlicButtonForBrowser(new_window_profile_2)->GetVisible());
   }
 
   // Re-enable the policy. Ensure the button is recreated.
@@ -251,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyAffectsGlicButtonInNewWindows) {
     // A new window in profile 1 should again get the Glic button now that the
     // policy is re-enabled.
     Browser* new_window_profile_1 = CreateBrowser(profile_1_);
-    EXPECT_TRUE(GetGlicButtonForBrowser(new_window_profile_1));
+    EXPECT_TRUE(GetGlicButtonForBrowser(new_window_profile_1)->GetVisible());
   }
 }
 
@@ -268,10 +269,10 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, GlicButtonInExistingWindows) {
   Browser* profile_2_window_2 = CreateBrowser(profile_2_);
 
   // Ensure the button was created in each window.
-  EXPECT_TRUE(GetGlicButtonForBrowser(profile_1_window_1));
-  EXPECT_TRUE(GetGlicButtonForBrowser(profile_1_window_2));
-  EXPECT_TRUE(GetGlicButtonForBrowser(profile_2_window_1));
-  EXPECT_TRUE(GetGlicButtonForBrowser(profile_2_window_2));
+  EXPECT_TRUE(GetGlicButtonForBrowser(profile_1_window_1)->GetVisible());
+  EXPECT_TRUE(GetGlicButtonForBrowser(profile_1_window_2)->GetVisible());
+  EXPECT_TRUE(GetGlicButtonForBrowser(profile_2_window_1)->GetVisible());
+  EXPECT_TRUE(GetGlicButtonForBrowser(profile_2_window_2)->GetVisible());
 
   // Disable the policy in the first profile.
   SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kDisabled);
@@ -280,12 +281,12 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, GlicButtonInExistingWindows) {
 
   {
     // The windows in profile 1 should have lost their Glic button.
-    EXPECT_FALSE(GetGlicButtonForBrowser(profile_1_window_1));
-    EXPECT_FALSE(GetGlicButtonForBrowser(profile_1_window_2));
+    EXPECT_FALSE(GetGlicButtonForBrowser(profile_1_window_1)->GetVisible());
+    EXPECT_FALSE(GetGlicButtonForBrowser(profile_1_window_2)->GetVisible());
 
     // The windows in profile 2 should have kept their Glic button.
-    EXPECT_TRUE(GetGlicButtonForBrowser(profile_2_window_1));
-    EXPECT_TRUE(GetGlicButtonForBrowser(profile_2_window_2));
+    EXPECT_TRUE(GetGlicButtonForBrowser(profile_2_window_1)->GetVisible());
+    EXPECT_TRUE(GetGlicButtonForBrowser(profile_2_window_2)->GetVisible());
   }
 
   // Re-enable the policy. Ensure the button is recreated.
@@ -295,12 +296,12 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, GlicButtonInExistingWindows) {
 
   {
     // The windows in profile 1 should get back their Glic button.
-    EXPECT_TRUE(GetGlicButtonForBrowser(profile_1_window_1));
-    EXPECT_TRUE(GetGlicButtonForBrowser(profile_1_window_2));
+    EXPECT_TRUE(GetGlicButtonForBrowser(profile_1_window_1)->GetVisible());
+    EXPECT_TRUE(GetGlicButtonForBrowser(profile_1_window_2)->GetVisible());
 
     // The windows in profile 2 still have their Glic button.
-    EXPECT_TRUE(GetGlicButtonForBrowser(profile_2_window_1));
-    EXPECT_TRUE(GetGlicButtonForBrowser(profile_2_window_2));
+    EXPECT_TRUE(GetGlicButtonForBrowser(profile_2_window_1)->GetVisible());
+    EXPECT_TRUE(GetGlicButtonForBrowser(profile_2_window_2)->GetVisible());
   }
 }
 
