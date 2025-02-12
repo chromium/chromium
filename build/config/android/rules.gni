@@ -3654,16 +3654,7 @@ if (!is_robolectric && enable_java_templates) {
       apk_target = invoker.android_test_apk
       incremental_apk = _incremental_apk
 
-      public_deps = [
-        ":$_apk_operations_target_name",
-        apk_target,
-      ]
-      if (defined(invoker.apk_under_test)) {
-        public_deps += [ invoker.apk_under_test ]
-      }
-      if (defined(invoker.additional_apks)) {
-        public_deps += invoker.additional_apks
-      }
+      public_deps = [ ":$_apk_operations_target_name" ]
       if (use_rts) {
         if (!defined(data_deps)) {
           data_deps = []
