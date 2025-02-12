@@ -54,28 +54,12 @@ namespace {
 constexpr ui::InteractionSequence::ContextMode kDefaultWebContentsContextMode =
     ui::InteractionSequence::ContextMode::kAny;
 
-// Matcher that determines whether a particular value is truthy.
-//
-// Uses an `internal::MatchableValue` because much of the gtest infrastructure
-// expects a value that can be copied, and `base::Value` cannot.
-class IsTruthyMatcher
-    : public testing::MatcherInterface<const internal::MatchableValue&> {
- public:
-  using is_gtest_matcher = void;
-
-  bool MatchAndExplain(const internal::MatchableValue& x,
-                       testing::MatchResultListener* listener) const override {
-    return WebContentsInteractionTestUtil::IsTruthy(x.value());
-  }
-
-  void DescribeTo(std::ostream* os) const override { *os << "is truthy"; }
-
-  void DescribeNegationTo(std::ostream* os) const override {
-    *os << "is falsy";
-  }
-};
-
 }  // namespace
+
+DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(InteractiveBrowserTestApi,
+                                       kDefaultWaitForJsResultEvent);
+DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(InteractiveBrowserTestApi,
+                                       kDefaultWaitForJsResultAtEvent);
 
 InteractiveBrowserTestApi::InteractiveBrowserTestApi()
     : InteractiveBrowserTestApi(
@@ -750,7 +734,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ExecuteJsAt(
 ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResult(
     ui::ElementIdentifier webcontents_id,
     const std::string& function) {
-  return CheckJsResult(webcontents_id, function, IsTruthyMatcher());
+  return CheckJsResult(webcontents_id, function, internal::IsTruthyMatcher());
 }
 
 // static
@@ -758,7 +742,22 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResultAt(
     ui::ElementIdentifier webcontents_id,
     const DeepQuery& where,
     const std::string& function) {
-  return CheckJsResultAt(webcontents_id, where, function, IsTruthyMatcher());
+  return CheckJsResultAt(webcontents_id, where, function,
+                         internal::IsTruthyMatcher());
+}
+
+InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::WaitForJsResult(
+    ui::ElementIdentifier webcontents_id,
+    const std::string& function) {
+  return WaitForJsResult(webcontents_id, function, IsTruthy());
+}
+
+InteractiveBrowserTestApi::MultiStep
+InteractiveBrowserTestApi::WaitForJsResultAt(
+    ui::ElementIdentifier webcontents_id,
+    const DeepQuery& where,
+    const std::string& function) {
+  return WaitForJsResultAt(webcontents_id, where, function, IsTruthy());
 }
 
 InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::MoveMouseTo(
