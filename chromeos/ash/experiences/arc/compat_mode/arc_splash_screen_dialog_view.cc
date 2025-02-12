@@ -158,10 +158,9 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
     aura::Window* parent,
     views::View* anchor,
     bool is_for_unresizable)
-    : anchor_(anchor),
-      close_callback_(std::move(close_callback)),
-      background_color_id_(cros_tokens::kCrosSysDialogContainer) {
+    : anchor_(anchor), close_callback_(std::move(close_callback)) {
   // Setup delegate.
+  set_background_color(cros_tokens::kCrosSysDialogContainer);
   SetArrow(views::BubbleBorder::Arrow::BOTTOM_CENTER);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_parent_window(parent);
@@ -291,11 +290,6 @@ void ArcSplashScreenDialogView::AddedToWidget() {
   if (frame) {
     frame->SetCornerRadius(kCornerRadius);
   }
-}
-
-void ArcSplashScreenDialogView::OnThemeChanged() {
-  views::BubbleDialogDelegateView::OnThemeChanged();
-  set_color(GetColorProvider()->GetColor(background_color_id_));
 }
 
 void ArcSplashScreenDialogView::OnViewIsDeleting(View* observed_view) {

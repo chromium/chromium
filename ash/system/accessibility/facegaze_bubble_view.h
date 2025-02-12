@@ -44,9 +44,6 @@ class ASH_EXPORT FaceGazeBubbleView : public views::BubbleDialogDelegateView {
   // Updates text content of this view.
   void Update(const std::u16string& text, bool is_warning);
 
-  // views::BubbleDialogDelegateView:
-  void OnThemeChanged() override;
-
   // views::View:
   void OnMouseEntered(const ui::MouseEvent& event) override;
 

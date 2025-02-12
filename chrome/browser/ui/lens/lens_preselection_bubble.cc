@@ -65,6 +65,7 @@ LensPreselectionBubble::LensPreselectionBubble(
   set_close_on_deactivate(false);
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_corner_radius(48);
+  set_background_color(kColorLensOverlayToastBackground);
   SetProperty(views::kElementIdentifierKey, kLensPreselectionBubbleElementId);
   SetAccessibleWindowRole(ax::mojom::Role::kAlertDialog);
   SetCancelCallback(std::move(on_cancel_callback));
@@ -167,7 +168,6 @@ gfx::Rect LensPreselectionBubble::GetBubbleBounds() {
 void LensPreselectionBubble::OnThemeChanged() {
   BubbleDialogDelegateView::OnThemeChanged();
   const auto* color_provider = GetColorProvider();
-  set_color(color_provider->GetColor(kColorLensOverlayToastBackground));
   icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       offline_ ? vector_icons::kErrorOutlineIcon

@@ -282,6 +282,7 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
                                TranslateArrow(params.arrow),
                                views::BubbleBorder::STANDARD_SHADOW),
       id_(id) {
+  set_background_color(cros_tokens::kCrosSysDialogContainer);
   SetCanActivate(true);
 
   // When hosted within a `views::ScrollView`, the anchor view may be
@@ -757,10 +758,6 @@ void HelpBubbleViewAsh::OnThemeChanged() {
   views::BubbleDialogDelegateView::OnThemeChanged();
 
   const auto* color_provider = GetColorProvider();
-  const SkColor background_color =
-      color_provider->GetColor(cros_tokens::kCrosSysDialogContainer);
-  set_color(background_color);
-
   const SkColor foreground_color =
       color_provider->GetColor(cros_tokens::kCrosSysOnSurface);
   if (icon_view_) {
@@ -768,6 +765,8 @@ void HelpBubbleViewAsh::OnThemeChanged() {
         foreground_color, icon_view_->GetPreferredSize().height() / 2));
   }
 
+  const SkColor background_color =
+      color_provider->GetColor(cros_tokens::kCrosSysDialogContainer);
   for (views::Label* label : labels_) {
     label->SetBackgroundColor(background_color);
     label->SetEnabledColor(foreground_color);

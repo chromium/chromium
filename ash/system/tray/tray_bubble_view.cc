@@ -326,6 +326,13 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   // layer as doing so could result in visual artifacts.
   SetPaintClientToLayer(false);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+
+  const ui::ColorId background_color_id =
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysSystemBaseElevated
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+  set_background_color(background_color_id);
+
   DCHECK(delegate_);
   DCHECK(params_.parent_window);
   // anchor_widget() is computed by BubbleDialogDelegateView().
@@ -651,7 +658,7 @@ void TrayBubbleView::OnThemeChanged() {
       chromeos::features::IsSystemBlurEnabled()
           ? cros_tokens::kCrosSysSystemBaseElevated
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-  set_color(GetColorProvider()->GetColor(background_color_id));
+  set_background_color(GetColorProvider()->GetColor(background_color_id));
 }
 
 void TrayBubbleView::MouseMovedOutOfHost() {

@@ -179,9 +179,8 @@ TEST_P(HelpBubbleViewAshBodyIconTest, BodyIcon) {
 // Verifies that help bubbles have the appropriate background color.
 TEST_F(HelpBubbleViewAshTest, BackgroundColor) {
   const auto* const help_bubble_view = CreateHelpBubbleView();
-  const auto* const color_provider = help_bubble_view->GetColorProvider();
   EXPECT_EQ(help_bubble_view->background_color(),
-            color_provider->GetColor(cros_tokens::kCrosSysDialogContainer));
+            cros_tokens::kCrosSysDialogContainer);
 }
 
 // Verifies that help bubbles can activate.

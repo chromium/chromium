@@ -67,7 +67,6 @@ class ArcSplashScreenDialogView : public views::BubbleDialogDelegateView,
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void AddedToWidget() override;
-  void OnThemeChanged() override;
 
   // views::BubbleDialogDelegateView
   gfx::Rect GetBubbleBounds() override;
@@ -90,8 +89,6 @@ class ArcSplashScreenDialogView : public views::BubbleDialogDelegateView,
 
   base::OnceClosure close_callback_;
   raw_ptr<views::LabelButton> close_button_ = nullptr;
-
-  const ui::ColorId background_color_id_;
 
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       anchor_highlight_observations_{this};

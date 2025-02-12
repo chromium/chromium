@@ -190,7 +190,7 @@ void ShelfShutdownConfirmationBubble::OnThemeChanged() {
       AshColorProvider::ContentLayerType::kButtonLabelColor);
   cancel_->SetEnabledTextColors(button_color);
   confirm_->SetEnabledTextColors(button_color);
-  set_color(ShelfConfig::Get()->GetDefaultShelfColor(GetWidget()));
+  set_background_color(ShelfConfig::Get()->GetDefaultShelfColor(GetWidget()));
 }
 
 std::u16string ShelfShutdownConfirmationBubble::GetAccessibleWindowTitle()

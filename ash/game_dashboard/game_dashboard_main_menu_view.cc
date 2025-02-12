@@ -814,7 +814,7 @@ GameDashboardMainMenuView::GameDashboardMainMenuView(
     : context_(context) {
   DCHECK(context_);
   DCHECK(context_->game_dashboard_button_widget());
-
+  set_background_color(cros_tokens::kCrosSysSystemBaseElevatedOpaque);
   SetBorder(views::CreateRoundedRectBorder(
       /*thickness=*/1, kBubbleCornerRadius,
       cros_tokens::kCrosSysSystemHighlight1));
@@ -1438,12 +1438,6 @@ GameDashboardMainMenuView::GetGameControlsSetupNudgeForTesting() {
 const views::Label* GameDashboardMainMenuView::GetScreenSizeRowSubtitle() {
   return screen_size_row_ ? screen_size_row_->feature_header()->GetSubtitle()
                           : nullptr;
-}
-
-void GameDashboardMainMenuView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  set_color(GetColorProvider()->GetColor(
-      cros_tokens::kCrosSysSystemBaseElevatedOpaque));
 }
 
 BEGIN_METADATA(GameDashboardMainMenuView)

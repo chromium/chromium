@@ -31,7 +31,7 @@ namespace ash {
 
 namespace {
 
-constexpr ui::ColorId kBackgroundColor =
+constexpr ui::ColorId kBackgroundColorId =
     cros_tokens::kCrosSysSystemBaseElevatedOpaque;
 constexpr ui::ColorId kWarningBackgroundColor =
     cros_tokens::kCrosSysWarningContainer;
@@ -76,6 +76,7 @@ std::unique_ptr<views::ImageView> CreateImageView(
 FaceGazeBubbleView::FaceGazeBubbleView(
     const base::RepeatingCallback<void()>& on_mouse_entered)
     : on_mouse_entered_(std::move(on_mouse_entered)) {
+  set_background_color(kBackgroundColorId);
   set_parent_window(
       Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                           kShellWindowId_AccessibilityBubbleContainer));
@@ -111,23 +112,18 @@ void FaceGazeBubbleView::Update(const std::u16string& text, bool is_warning) {
   SizeToContents();
 }
 
-void FaceGazeBubbleView::OnThemeChanged() {
-  BubbleDialogDelegateView::OnThemeChanged();
-  set_color(GetColorProvider()->GetColor(kBackgroundColor));
-}
-
 void FaceGazeBubbleView::OnMouseEntered(const ui::MouseEvent& event) {
   on_mouse_entered_.Run();
 }
 
 void FaceGazeBubbleView::UpdateColor(bool is_warning) {
   ui::ColorId background_color_id =
-      is_warning ? kWarningBackgroundColor : kBackgroundColor;
+      is_warning ? kWarningBackgroundColor : kBackgroundColorId;
   SkColor background_color = GetColorProvider()->GetColor(background_color_id);
   ui::ColorId foreground_color =
       is_warning ? kWarningForegroundColor : kColorAshTextColorPrimary;
 
-  set_color(background_color);
+  set_background_color(background_color_id);
   View* const contents_view = GetContentsView();
   DCHECK(contents_view);
   contents_view->SetBackground(

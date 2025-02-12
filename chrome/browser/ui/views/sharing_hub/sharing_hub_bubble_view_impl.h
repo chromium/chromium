@@ -39,9 +39,6 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
   // SharingHubBubbleView:
   void Hide() override;
 
-  // LocationBarBubbleDelegateView:
-  void OnThemeChanged() override;
-
   // Public for testing.
   void OnActionSelected(SharingHubBubbleActionButton* button);
 
