@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/password_change/change_form_submission_verifier.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -189,6 +190,8 @@ void ChangeFormSubmissionVerifier::RequestAXTree() {
   if (!web_contents_) {
     return;
   }
+  base::UmaHistogramBoolean(kPasswordChangeSubmittedHistogram,
+                            submission_detected_);
   web_contents_->RequestAXTreeSnapshot(
       base::BindOnce(&ChangeFormSubmissionVerifier::ProcessTree,
                      weak_ptr_factory_.GetWeakPtr()),

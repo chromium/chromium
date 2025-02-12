@@ -57,6 +57,8 @@ class ChangeFormSubmissionVerifier {
   using FormSubmissionResultCallback = base::OnceCallback<void(bool)>;
   static constexpr base::TimeDelta kSubmissionWaitingTimeout =
       base::Seconds(10);
+  static constexpr char kPasswordChangeSubmittedHistogram[] =
+      "PasswordManager.PasswordChangeVerificationTriggeredAutomatically";
 
   ChangeFormSubmissionVerifier(content::WebContents* web_contents,
                                FormSubmissionResultCallback callback);
