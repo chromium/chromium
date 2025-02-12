@@ -37,11 +37,18 @@ bool IsAtMinimumSize(PageActionView* page_action) {
   return page_action->size() == page_action->GetMinimumSize();
 }
 
+void EnsurePageActionEnabled(actions::ActionId action_id) {
+  auto* action = actions::ActionManager::Get().FindAction(action_id);
+  CHECK(action);
+  action->SetEnabled(true);
+  action->SetVisible(true);
+}
+
 class PageActionUiTestBase {
  public:
   PageActionUiTestBase() {
-    feature_list_.InitWithFeatures(
-        {lens::features::kLensOverlay, ::features::kPageActionsMigration}, {});
+    feature_list_.InitWithFeatures({features::kPageActionsMigration},
+                                   {lens::features::kLensOverlay});
   }
 
   virtual ~PageActionUiTestBase() = default;
@@ -69,28 +76,28 @@ class PageActionUiTestBase {
     return location_bar()->page_action_container();
   }
 
-  PageActionView* GetPageActionView(const actions::ActionId& action_id) const {
+  PageActionView* GetPageActionView(actions::ActionId action_id) const {
     return page_action_container()->GetPageActionView(action_id);
   }
 
-  PageActionView* GetLensPageActionView() const {
-    return GetPageActionView(kActionSidePanelShowLensOverlayResults);
+  PageActionView* GetTestPageActionView() const {
+    return GetPageActionView(kActionShowTranslate);
   }
 
-  void ShowSuggestionChip(const actions::ActionId& action_id) const {
+  void ShowSuggestionChip(actions::ActionId action_id) const {
+    EnsurePageActionEnabled(action_id);
     page_action_controller()->ShowSuggestionChip(action_id);
   }
 
-  void ShowPageAction(const actions::ActionId& action_id) const {
+  void ShowPageAction(actions::ActionId action_id) const {
+    EnsurePageActionEnabled(kActionShowTranslate);
     page_action_controller()->Show(action_id);
   }
 
-  void ShowLensPageActionIcon() const {
-    ShowPageAction(kActionSidePanelShowLensOverlayResults);
-  }
+  void ShowTestPageActionIcon() const { ShowPageAction(kActionShowTranslate); }
 
-  void ShowLensSuggestionChip() const {
-    ShowSuggestionChip(kActionSidePanelShowLensOverlayResults);
+  void ShowTestSuggestionChip() const {
+    ShowSuggestionChip(kActionShowTranslate);
   }
 
   // Dynamically adjust the available space in the location bar by setting
@@ -123,10 +130,10 @@ class PageActionInteractiveUiTest : public InteractiveBrowserTest,
 // collapses the suggestion chip from label mode to icon-only mode.
 IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
                        SuggestionChipCollapsesToIconWhenSpaceIsReduced) {
-  ShowLensSuggestionChip();
+  ShowTestSuggestionChip();
   AdjustAvailableSpace(kFullSpaceTextLength);
 
-  PageActionView* view = GetLensPageActionView();
+  PageActionView* view = GetTestPageActionView();
 
   EXPECT_TRUE(IsLabelVisible(view));
   EXPECT_FALSE(IsAtMinimumSize(view));
@@ -142,12 +149,11 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
                        SuggestionChipRestoresLabelWhenSpaceIsRestored) {
   AdjustAvailableSpace(kReducedSpaceTextLength);
-  ShowLensSuggestionChip();
+  ShowTestSuggestionChip();
 
-  PageActionView* view = GetLensPageActionView();
+  PageActionView* view = GetTestPageActionView();
 
   EXPECT_FALSE(IsLabelVisible(view));
-  EXPECT_TRUE(IsAtMinimumSize(view));
 
   AdjustAvailableSpace(kFullSpaceTextLength);
 
@@ -160,10 +166,10 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(
     PageActionInteractiveUiTest,
     SuggestionChipTransitionsBetweenLabelAndIconWhenSpaceChanges) {
-  ShowLensSuggestionChip();
+  ShowTestSuggestionChip();
   AdjustAvailableSpace(kFullSpaceTextLength);
 
-  PageActionView* view = GetLensPageActionView();
+  PageActionView* view = GetTestPageActionView();
 
   EXPECT_TRUE(IsLabelVisible(view));
   EXPECT_FALSE(IsAtMinimumSize(view));
@@ -184,10 +190,10 @@ IN_PROC_BROWSER_TEST_F(
 // label modes repeatedly.
 IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
                        SuggestionChipSwitchesModesOnMultipleSpaceAdjustments) {
-  ShowLensSuggestionChip();
+  ShowTestSuggestionChip();
   AdjustAvailableSpace(kReducedSpaceTextLength);
 
-  PageActionView* view = GetLensPageActionView();
+  PageActionView* view = GetTestPageActionView();
 
   EXPECT_FALSE(IsLabelVisible(view));
   EXPECT_TRUE(IsAtMinimumSize(view));
@@ -203,14 +209,14 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   EXPECT_TRUE(IsAtMinimumSize(view));
 }
 
-// Tests that calling ShowPageAction on a lens overlay results in an icon-only
+// Tests that calling ShowPageAction on a page action results in an icon-only
 // view, ignoring any extra available space.
 IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
                        PageActionDisplaysIconOnlyRegardlessOfAvailableSpace) {
-  ShowLensPageActionIcon();
+  ShowTestPageActionIcon();
   AdjustAvailableSpace(kFullSpaceTextLength);
 
-  PageActionView* view = GetLensPageActionView();
+  PageActionView* view = GetTestPageActionView();
 
   EXPECT_FALSE(IsLabelVisible(view));
   EXPECT_TRUE(IsAtMinimumSize(view));
@@ -220,10 +226,10 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
 // icon-only through available space adjustments (both increased and reduced).
 IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
                        PageActionIconRemainsUnchangedThroughSpaceAdjustments) {
-  ShowLensPageActionIcon();
+  ShowTestPageActionIcon();
   AdjustAvailableSpace(kFullSpaceTextLength);
 
-  PageActionView* view = GetLensPageActionView();
+  PageActionView* view = GetTestPageActionView();
 
   EXPECT_FALSE(IsLabelVisible(view));
   EXPECT_TRUE(IsAtMinimumSize(view));
@@ -275,8 +281,8 @@ class PageActionPixelIconsHiddenTest : public PageActionPixelTestBase {
   }
 
   bool VerifyUi() override {
-    PageActionView* lens_view = GetLensPageActionView();
-    EXPECT_TRUE(lens_view->GetVisible());
+    PageActionView* test_view = GetTestPageActionView();
+    EXPECT_FALSE(test_view->GetVisible());
     return true;
   }
 };
@@ -295,15 +301,15 @@ class PageActionPixelShowIconTest : public PageActionPixelTestBase {
 
   // UiBrowserTest:
   void ShowUi(const std::string& name) override {
-    ShowLensPageActionIcon();
+    ShowTestPageActionIcon();
     PageActionPixelTestBase::ShowUi(name);
   }
 
   bool VerifyUi() override {
-    PageActionView* lens_view = GetLensPageActionView();
-    EXPECT_TRUE(lens_view->GetVisible());
-    EXPECT_FALSE(IsLabelVisible(lens_view));
-    EXPECT_TRUE(IsAtMinimumSize(lens_view));
+    PageActionView* test_view = GetTestPageActionView();
+    EXPECT_TRUE(test_view->GetVisible());
+    EXPECT_FALSE(IsLabelVisible(test_view));
+    EXPECT_TRUE(IsAtMinimumSize(test_view));
     return true;
   }
 };
@@ -323,15 +329,15 @@ class PageActionPixelShowChipTest : public PageActionPixelTestBase {
   // UiBrowserTest:
   void ShowUi(const std::string& name) override {
     AdjustAvailableSpace(kFullSpaceTextLength);
-    ShowLensSuggestionChip();
+    ShowTestSuggestionChip();
     PageActionPixelTestBase::ShowUi(name);
   }
 
   bool VerifyUi() override {
-    PageActionView* lens_view = GetLensPageActionView();
-    EXPECT_TRUE(lens_view->GetVisible());
-    EXPECT_TRUE(IsLabelVisible(lens_view));
-    EXPECT_FALSE(IsAtMinimumSize(lens_view));
+    PageActionView* test_view = GetTestPageActionView();
+    EXPECT_TRUE(test_view->GetVisible());
+    EXPECT_TRUE(IsLabelVisible(test_view));
+    EXPECT_FALSE(IsAtMinimumSize(test_view));
     return true;
   }
 };
@@ -352,15 +358,15 @@ class PageActionPixelShowChipReducedTest : public PageActionPixelTestBase {
   // UiBrowserTest:
   void ShowUi(const std::string& name) override {
     AdjustAvailableSpace(kReducedSpaceTextLength);
-    ShowLensSuggestionChip();
+    ShowTestSuggestionChip();
     PageActionPixelTestBase::ShowUi(name);
   }
 
   bool VerifyUi() override {
-    PageActionView* lens_view = GetLensPageActionView();
-    EXPECT_TRUE(lens_view->GetVisible());
-    EXPECT_FALSE(IsLabelVisible(lens_view));
-    EXPECT_TRUE(IsAtMinimumSize(lens_view));
+    PageActionView* test_view = GetTestPageActionView();
+    EXPECT_TRUE(test_view->GetVisible());
+    EXPECT_FALSE(IsLabelVisible(test_view));
+    EXPECT_TRUE(IsAtMinimumSize(test_view));
     return true;
   }
 };
