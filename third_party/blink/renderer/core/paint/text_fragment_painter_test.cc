@@ -136,4 +136,31 @@ TEST_P(TextFragmentPainterTest, WheelEventListenerOnInlineElement) {
                                hit_test_data, gfx::Rect(0, 0, 150, 100))));
 }
 
+TEST_P(TextFragmentPainterTest,
+       WheelEventListenerOnInlineElementUnderBackgroundClipText) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <div style="background-clip: text; color: transparent;
+                background-color: blue">
+      <div style="overflow: hidden; height: 10px">
+        <span id="child" style="font: 50px Ahem">ABC</span>
+      </div>
+    </div>
+  )HTML");
+
+  SetWheelEventListener("child");
+  GetLayoutView().SetSubtreeShouldDoFullPaintInvalidation();
+  UpdateAllLifecyclePhasesForTest();
+
+  int wheel_hit_test_data_count = 0;
+  for (const auto& chunk : ContentPaintChunks()) {
+    if (chunk.hit_test_data && chunk.hit_test_data->wheel_event_rects.size()) {
+      wheel_hit_test_data_count++;
+      EXPECT_THAT(chunk.hit_test_data->wheel_event_rects,
+                  ElementsAre(gfx::Rect(8, 8, 150, 50)));
+    }
+  }
+  EXPECT_EQ(1, wheel_hit_test_data_count);
+}
+
 }  // namespace blink
