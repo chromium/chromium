@@ -183,6 +183,11 @@ int ReportNumberOfAccountsMetrics(
         base::StrCat({kPasswordManager, store_suffix, kAccountsPerSiteSuffix,
                       kOverallSuffix, custom_passphrase_suffix}),
         accounts_per_site);
+
+    // Same as above but not split by custom passphrase.
+    LogAccountStatHiRes(base::StrCat({kPasswordManager, store_suffix,
+                                      kAccountsPerSiteSuffix, kOverallSuffix}),
+                        accounts_per_site);
   }
 
   static constexpr std::string_view kTotalAccountsByTypeSuffix =
