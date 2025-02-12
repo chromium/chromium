@@ -165,7 +165,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
   void OnEndNavigationCommit();
 
   // Must be called before `CommitResponse()`.
-  void UpdateUrls(const GURL& url,
+  void UpdateUrls(const GURL& creation_url,
                   const std::optional<url::Origin>& top_frame_origin,
                   const blink::StorageKey& storage_key);
 
@@ -213,6 +213,14 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // The URL may also change on redirects during loading. Once
   // is_response_committed() is true, the URL should no longer change.
   const GURL& url() const { return url_; }
+
+  // The creation_url is the same as the url property above, but without
+  // having the URL fragment removed. This is necessary for the
+  // JS ServiceWorkerClient.url() property.
+  // See https://html.spec.whatwg.org/C/#concept-environment-creation-url
+  //
+  // TODO(crbug.com/384759487): Consider merging `url()` into `creation_url()`.
+  const GURL& creation_url() const { return creation_url_; }
 
   // The origin of the top frame of the client. This is more specific than the
   // `top_frame_site` in the storage key, so must be passed separately.
@@ -378,7 +386,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   friend class ServiceWorkerContainerHostTest;
 
-  void UpdateUrlsInternal(const GURL& url,
+  void UpdateUrlsInternal(const GURL& creation_url,
                           const std::optional<url::Origin>& top_frame_origin,
                           const blink::StorageKey& storage_key);
 
@@ -471,6 +479,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   // See comments for the getter functions.
   GURL url_;
+  GURL creation_url_;
   std::optional<url::Origin> top_frame_origin_;
   blink::StorageKey key_;
 

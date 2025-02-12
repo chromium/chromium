@@ -421,6 +421,16 @@ BASE_FEATURE(kServiceWorkerStaticRouterStartServiceWorker,
              "ServiceWorkerStaticRouterStartServiceWorker",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// (crbug.com/41337436): Enabled feature will have the ServiceWorker Client.url
+// property be the creation URL. This means it does not reflect changes to the
+// URL made by history.pushState() or similar history APIs.
+// When disabled the ServiceWorker Client.url property will be the document URL
+// including changes to history.pushState().
+// This is temporarily DISABLED_BY_DEFAULT pending API owner approval.
+BASE_FEATURE(kServiceWorkerClientUrlIsCreationUrl,
+             "ServiceWorkerClientUrlIsCreationUrl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables skipping the early call to CommitPending when navigating away from a
 // crashed frame.
 BASE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame,

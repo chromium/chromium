@@ -82,11 +82,8 @@ void ServiceWorkerMainResourceHandle::InitializeForRequest(
       nullptr,
       /*notify_controllerchange=*/false);
 
-  const GURL stripped_url =
-      net::SimplifyUrlForRequest(tentative_resource_request.url);
-
   service_worker_client()->UpdateUrls(
-      stripped_url,
+      tentative_resource_request.url,
       // The storage key only has a top_level_site, not
       // an origin, so we must extract the origin from
       // trusted_params.
@@ -95,7 +92,7 @@ void ServiceWorkerMainResourceHandle::InitializeForRequest(
                 .top_frame_origin()
           : std::nullopt,
       service_worker_client()->CalculateStorageKeyForUpdateUrls(
-          stripped_url, isolation_info_));
+          tentative_resource_request.url, isolation_info_));
 }
 
 }  // namespace content
