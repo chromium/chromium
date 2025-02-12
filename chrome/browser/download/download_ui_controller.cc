@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/bubble/download_bubble_utils.h"
 #include "chrome/browser/download/download_crx_util.h"

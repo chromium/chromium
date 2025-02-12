@@ -30,7 +30,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -149,7 +148,7 @@
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/skyvault/skyvault_rename_handler.h"
 #endif
 
@@ -1874,7 +1873,7 @@ bool ChromeDownloadManagerDelegate::IsOpenInBrowserPreferredForFile(
 
   // On Android, always prefer opening with an external app. On ChromeOS, there
   // are no external apps so just allow all opens to be handled by the "System."
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && \
     BUILDFLAG(ENABLE_PLUGINS)
   // TODO(asanka): Consider other file types and MIME types.
   // http://crbug.com/323561
@@ -2069,11 +2068,11 @@ ChromeDownloadManagerDelegate::GetQuarantineConnectionCallback() {
 std::unique_ptr<download::DownloadItemRenameHandler>
 ChromeDownloadManagerDelegate::GetRenameHandlerForDownload(
     download::DownloadItem* download_item) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return policy::SkyvaultRenameHandler::CreateIfNeeded(download_item);
 #else
   return nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void ChromeDownloadManagerDelegate::CheckSavePackageAllowed(

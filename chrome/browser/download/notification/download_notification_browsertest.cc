@@ -24,7 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -67,19 +67,17 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_pref_names.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
 #endif
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Structure to describe an account info.
 struct TestAccountInfo {
   const char* const email;
@@ -97,7 +95,7 @@ static const TestAccountInfo kTestAccounts[] = {
     {"charlie@invalid.domain", GaiaId::Literal("10003"), "hashcharl",
      "Charlie"},
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
  public:
@@ -1020,9 +1018,8 @@ IN_PROC_BROWSER_TEST_F(DownloadNotificationTest,
   chrome::CloseWindow(incognito_browser());
 }
 
-// These tests have ash dependency so they are only available for ash.
-// TODO(crbug.com/40204280): Enable these tests for Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// These tests depend on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 
 //////////////////////////////////////////////////
 // Test with multi profiles
@@ -1220,4 +1217,4 @@ IN_PROC_BROWSER_TEST_F(MultiProfileDownloadNotificationTest,
     EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)

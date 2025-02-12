@@ -79,7 +79,7 @@
 #include "extensions/common/extension.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
@@ -2966,7 +2966,7 @@ TEST_F(DownloadTargetDeterminerTest, DetermineLocalPathReturnsContentUri) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Tests that DLP policies are checked before determining the download path.
 class DownloadTargetDeterminerDlpTest : public DownloadTargetDeterminerTest {
  protected:

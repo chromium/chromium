@@ -67,7 +67,7 @@
 #include "ui/shell_dialogs/select_file_utils_win.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -1262,7 +1262,7 @@ DownloadConfirmationReason DownloadTargetDeterminer::NeedsConfirmation(
 
 bool DownloadTargetDeterminer::IsDownloadDlpBlocked(
     const base::FilePath& download_path) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   auto* web_contents =
       download_ ? content::DownloadItemUtils::GetWebContents(download_)
                 : nullptr;

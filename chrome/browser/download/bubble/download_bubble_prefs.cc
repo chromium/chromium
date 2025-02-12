@@ -5,7 +5,6 @@
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 
 #include "base/feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -22,11 +21,11 @@ namespace download {
 bool IsDownloadBubbleEnabled() {
 // Download bubble won't replace the old download notification in
 // Ash. See https://crbug.com/1323505.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return false;
 #else
   return true;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool ShouldShowDownloadBubble(Profile* profile) {

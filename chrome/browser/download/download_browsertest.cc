@@ -44,7 +44,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -2971,8 +2970,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithHistogramTester,
 }
 
 // Times out often on debug ChromeOS because test is slow.
-#if BUILDFLAG(IS_CHROMEOS_ASH) && \
-    (!defined(NDEBUG) || defined(MEMORY_SANITIZER))
+#if BUILDFLAG(IS_CHROMEOS) && (!defined(NDEBUG) || defined(MEMORY_SANITIZER))
 #define MAYBE_SaveLargeImage DISABLED_SaveLargeImage
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -3189,13 +3187,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, SaveImageInPostPage) {
   ASSERT_EQ(jpeg_url, download_items[0]->GetOriginalUrl());
 }
 
-// TODO(crbug.com/40840482): Flaky on lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_DownloadErrorsServer DISABLED_DownloadErrorsServer
-#else
-#define MAYBE_DownloadErrorsServer DownloadErrorsServer
-#endif
-IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadErrorsServer) {
+IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadErrorsServer) {
   DownloadInfo download_info[] = {
       {// Normal navigated download.
        "a_zip_file.zip", "a_zip_file.zip", DOWNLOAD_NAVIGATE,
@@ -3621,20 +3613,11 @@ IN_PROC_BROWSER_TEST_P(DownloadReferrerPolicyTest, SaveLinkAsReferrerPolicy) {
   }
 }
 
-// TODO(crbug.com/40804227): Flaky on Lacros
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_SaveLinkAsVsCrossOriginResourcePolicy \
-  DISABLED_SaveLinkAsVsCrossOriginResourcePolicy
-#else
-#define MAYBE_SaveLinkAsVsCrossOriginResourcePolicy \
-  SaveLinkAsVsCrossOriginResourcePolicy
-#endif
 // This test ensures that Cross-Origin-Resource-Policy response header doesn't
 // apply to download requests initiated via Save Link As context menu (such
 // requests are considered browser-initiated).  See also
 // https://crbug.com/952834.
-IN_PROC_BROWSER_TEST_F(DownloadTest,
-                       MAYBE_SaveLinkAsVsCrossOriginResourcePolicy) {
+IN_PROC_BROWSER_TEST_F(DownloadTest, SaveLinkAsVsCrossOriginResourcePolicy) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EnableFileChooser(true);
 
@@ -4177,8 +4160,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_PauseResumeCancel) {
 // quarantining files on Mac because it is not a cocoa app.
 // TODO(benjhayden) test the equivalents on other platforms.
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-    defined(ARCH_CPU_ARM_FAMILY)
+#if BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM_FAMILY)
 // Timing out on ARM linux: http://crbug.com/238459
 #define MAYBE_DownloadTest_PercentComplete DISABLED_DownloadTest_PercentComplete
 #elif BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
@@ -5151,7 +5133,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_DownloadAndWait) {
 }
 
 // Tests for the download shelf.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Test that the download shelf is per-window by starting a download in one
 // tab, opening a second tab, closing the shelf, going back to the first tab,
 // and checking that the shelf is closed.
@@ -5212,7 +5194,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CloseShelfOnDownloadsTab) {
   // The download shelf should now be closed.
   EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Flaky. crbug.com/1383009
 // Test that when downloading an item in Incognito mode, the download surface is

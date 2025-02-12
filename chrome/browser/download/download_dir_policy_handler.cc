@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -98,7 +97,7 @@ void DownloadDirPolicyHandler::ApplyPolicySettingsWithParameters(
     prefs->SetBoolean(prefs::kPromptForDownload, false);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const bool download_to_drive =
       download_dir_util::DownloadToDrive(string_value, parameters);
   const bool download_to_one_drive =
@@ -107,8 +106,6 @@ void DownloadDirPolicyHandler::ApplyPolicySettingsWithParameters(
   // If the policy enforces a cloud location, ensure the corresponding service
   // remains enabled.
   if (is_mandatory) {
-    // Drive is disabled only in Ash and not Lacros, because Lacros respects
-    // Drive availability status in Ash automatically.
     if (download_to_drive) {
       prefs->SetBoolean(drive::prefs::kDisableDrive, false);
     } else if (download_to_one_drive) {
@@ -124,7 +121,7 @@ void DownloadDirPolicyHandler::ApplyPolicySettingsWithParameters(
     prefs->SetString(prefs::kFilesAppDefaultLocation,
                      download_dir_util::kLocationOneDrive);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void DownloadDirPolicyHandler::ApplyPolicySettings(

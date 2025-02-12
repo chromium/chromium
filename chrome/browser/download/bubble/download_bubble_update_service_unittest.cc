@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/download/bubble/download_bubble_display_info.h"
 #include "chrome/browser/download/bubble/download_bubble_update_service_factory.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -1203,8 +1203,8 @@ TEST_F(DownloadBubbleUpdateServiceIncognitoTest, InitIncognito) {
 }
 
 // Ephemeral warnings are only enabled when the download bubble is enabled,
-// which it is not on ChromeOS Ash.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// which it is not on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
 // Tests that the DownloadBubbleDisplayInfo is updated when a download with an
 // ephemeral warning expires.
 TEST_F(DownloadBubbleUpdateServiceTest, OnEphemeralWarningExpired) {
@@ -1306,6 +1306,6 @@ TEST_F(DownloadBubbleUpdateServiceIncognitoTest,
   ASSERT_EQ(models.size(), 1u);
   EXPECT_EQ(models[0]->GetContentId().id, "regular_profile_normal_download");
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
