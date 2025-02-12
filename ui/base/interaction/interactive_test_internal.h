@@ -19,6 +19,7 @@
 #include "base/containers/contains.h"
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
@@ -93,6 +94,61 @@ class InteractiveTestPrivate {
     kIgnoreAndContinue,
   };
 
+  // Provides a copyable handle to some test state that can be output in the
+  // event of a test failure. The context will persist until `End()` is called
+  // or the test ends.
+  //
+  // Example:
+  // ```
+  //   auto MyVerb() {
+  //     AdditionalContext context = CreateAdditionalContext();
+  //     return Steps(
+  //
+  //       // Set the context. Note the use of the `mutable` keyword:
+  //       AfterShow(..., [context]() mutable {
+  //         context.Set(...);
+  //       }),
+  //
+  //       // Context is still valid here, even if it's not modified.
+  //       WithElement(..., [](ui::TrackedElement*) {
+  //         ...
+  //       }),
+  //
+  //       Do([context]() { context.End(); })
+  //
+  //       // Since no more steps reference `context` it is no longer valid
+  //       // here; if the test were to fail, no additional information would
+  //       // be printed.
+  //       PressButton(...));
+  //   }
+  // ```
+  class AdditionalContext {
+   public:
+    AdditionalContext();
+    AdditionalContext(const AdditionalContext& other);
+    AdditionalContext& operator=(const AdditionalContext& other);
+    ~AdditionalContext();
+
+    // Adds or replaces the existing value with `additional_context`. Until this
+    // is called, nothing will be stored or output.
+    void Set(const std::string_view& additional_context);
+
+    // Fetches the current value of the context.
+    std::string Get() const;
+
+    // Removes the context.
+    void Clear();
+
+   private:
+    friend InteractiveTestPrivate;
+
+    // Creates a new context with the given `owner` and `handle`.
+    AdditionalContext(InteractiveTestPrivate& owner, intptr_t handle);
+
+    base::WeakPtr<InteractiveTestPrivate> owner_;
+    intptr_t handle_ = 0;
+  };
+
   explicit InteractiveTestPrivate(
       std::unique_ptr<InteractionTestUtil> test_util);
   virtual ~InteractiveTestPrivate();
@@ -131,6 +187,14 @@ class InteractiveTestPrivate {
   // is null, assumes there is exactly one matching observer in some context.
   // Returns true on success.
   bool RemoveStateObserver(ElementIdentifier id, ElementContext context);
+
+  // Creates an additional context that will persist as long as copies of the
+  // context exist.
+  [[nodiscard]] AdditionalContext CreateAdditionalContext();
+
+  // Gets a string representation of the current additional context for this
+  // test.
+  std::vector<std::string> GetAdditionalContext() const;
 
   // Call this method during test SetUp(), or SetUpOnMainThread() for browser
   // tests.
@@ -242,6 +306,9 @@ class InteractiveTestPrivate {
 
   // Overrides the default test failure behavior to test the API itself.
   InteractionSequence::AbortedCallback aborted_callback_for_testing_;
+
+  intptr_t next_additional_context_handle_ = 1U;
+  std::map<intptr_t, std::string> additional_context_data_;
 
   base::WeakPtrFactory<InteractiveTestPrivate> weak_ptr_factory_{this};
 

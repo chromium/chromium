@@ -68,6 +68,7 @@ class InteractiveTestApi {
   using TextEntryMode = InteractionTestUtil::TextEntryMode;
   using OnIncompatibleAction =
       internal::InteractiveTestPrivate::OnIncompatibleAction;
+  using AdditionalContext = internal::InteractiveTestPrivate::AdditionalContext;
 
   // Construct a MultiStep from one or more StepBuilders and/or MultiSteps.
   template <typename... Args>

@@ -451,6 +451,13 @@ bool InteractiveTestApi::RunTestSequenceImpl(
                        "logged.";
               }
               if (impl) {
+                const auto additional_context = impl->GetAdditionalContext();
+                if (!additional_context.empty()) {
+                  oss << "\nAdditional test context:";
+                  for (const auto& ctx : additional_context) {
+                    oss << "\n * " << ctx;
+                  }
+                }
                 impl->DebugDumpElements(context).PrintTo(oss);
               }
               return oss.str();
