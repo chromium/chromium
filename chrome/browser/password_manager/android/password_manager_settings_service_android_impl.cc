@@ -170,6 +170,8 @@ void PasswordManagerSettingsServiceAndroidImpl::TurnOffAutoSignIn() {
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::Init() {
+  CHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kLoginDbDeprecationAndroid));
   bridge_helper_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
   lifecycle_helper_->RegisterObserver(base::BindRepeating(
       &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,

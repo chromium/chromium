@@ -196,6 +196,7 @@ using password_manager::PasswordManagerClientHelper;
 using password_manager::PasswordManagerDriver;
 using password_manager::PasswordManagerMetricsRecorder;
 using password_manager::PasswordManagerSetting;
+using password_manager::PasswordManagerSettingsService;
 using password_manager::metrics_util::PasswordType;
 using sessions::SerializedNavigationEntry;
 
@@ -288,7 +289,8 @@ bool ChromePasswordManagerClient::IsSavingAndFillingEnabled(
   }
   password_manager::PasswordManagerSettingsService* settings_service =
       PasswordManagerSettingsServiceFactory::GetForProfile(profile_);
-  return settings_service->IsSettingEnabled(
+  return settings_service &&
+         settings_service->IsSettingEnabled(
              PasswordManagerSetting::kOfferToSavePasswords) &&
          !IsOffTheRecord() && IsFillingEnabled(url);
 }
@@ -324,8 +326,8 @@ bool ChromePasswordManagerClient::IsAutoSignInEnabled() const {
 #endif
   password_manager::PasswordManagerSettingsService* settings_service =
       PasswordManagerSettingsServiceFactory::GetForProfile(profile_);
-  return settings_service->IsSettingEnabled(
-      PasswordManagerSetting::kAutoSignIn);
+  return settings_service && settings_service->IsSettingEnabled(
+                                 PasswordManagerSetting::kAutoSignIn);
 }
 
 void ChromePasswordManagerClient::TriggerUserPerceptionOfPasswordManagerSurvey(
@@ -1341,10 +1343,10 @@ version_info::Channel ChromePasswordManagerClient::GetChannel() const {
 void ChromePasswordManagerClient::RefreshPasswordManagerSettingsIfNeeded()
     const {
 #if BUILDFLAG(IS_ANDROID)
-  // TODO (b/334091460): Add
-  // password_manager_android_util::AreMinUpmRequirementsMet() check here.
-  PasswordManagerSettingsServiceFactory::GetForProfile(profile_)
-      ->RequestSettingsFromBackend();
+  if (PasswordManagerSettingsService* settings_service =
+          PasswordManagerSettingsServiceFactory::GetForProfile(profile_)) {
+    settings_service->RequestSettingsFromBackend();
+  }
 #endif
 }
 

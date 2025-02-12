@@ -733,15 +733,17 @@ StoreMetricsReporter::StoreMetricsReporter(
 
   is_safe_browsing_enabled_ = safe_browsing::IsSafeBrowsingEnabled(*prefs_);
 
-  // TODO(crbug/358998546): use PasswordManagerSettingsService here.
-  base::UmaHistogramEnumeration(
-      base::StrCat({kPasswordManager, ".EnableState"}),
-      CredentialsEnableServiceSettingToPasswordManagerEnableState(
-          prefs_->FindPreference(
-              password_manager::prefs::kCredentialsEnableService)));
-  base::UmaHistogramBoolean(
-      base::StrCat({kPasswordManager, ".AutoSignin"}),
-      settings->IsSettingEnabled(PasswordManagerSetting::kAutoSignIn));
+  if (settings) {
+    // TODO(crbug.com/358998546): use PasswordManagerSettingsService here.
+    base::UmaHistogramEnumeration(
+        base::StrCat({kPasswordManager, ".EnableState"}),
+        CredentialsEnableServiceSettingToPasswordManagerEnableState(
+            prefs_->FindPreference(
+                password_manager::prefs::kCredentialsEnableService)));
+    base::UmaHistogramBoolean(
+        base::StrCat({kPasswordManager, ".AutoSignin"}),
+        settings->IsSettingEnabled(PasswordManagerSetting::kAutoSignIn));
+  }
 
   ReportBiometricAuthenticationBeforeFillingMetrics(prefs_);
   ReportPasswordReencryption(prefs_);
