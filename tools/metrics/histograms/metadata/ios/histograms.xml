@@ -2561,13 +2561,13 @@ chromium-metrics-reviews@google.com.
   <summary>
     The amount of time taken to launch the app until the app UI is ready to
     receive input. This measures startup until the same point as
-    Startup.ColdStartFromProcessCreationTimeV2 but is computed by iOS in a way
-    that accounts for app pre-warming. The exact adjustments made to account for
-    pre-warming are not documented by Apple. This metric only covers cold
-    starts, that is, when Chrome is not running and is then launched into the
-    foreground. It does not cover warms starts, that is, when Chrome is already
-    running in the background and is then brought into the foreground. Logged
-    when a MXMetricPayload is received (one per day).
+    Startup.ColdStartFromMain but is computed by iOS in a way that accounts for
+    app pre-warming. The exact adjustments made to account for pre-warming are
+    not documented by Apple. This metric only covers cold starts, that is, when
+    Chrome is not running and is then launched into the foreground. It does not
+    cover warms starts, that is, when Chrome is already running in the
+    background and is then brought into the foreground. Logged when a
+    MXMetricPayload is received (one per day).
 
     This is only recorded on iOS 16+, and recorded only if user opted in for
     sharing diagnostic data on iOS device with Apple. The exact percentage of
