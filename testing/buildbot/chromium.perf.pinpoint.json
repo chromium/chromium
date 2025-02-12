@@ -445,6 +445,9 @@
           "--ignore-benchmark-exit-code"
         ],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_webview_test_suite",
@@ -1480,8 +1483,7 @@
         "merge": {
           "args": [
             "--lightweight",
-            "--skip-perf",
-            "--upload-skia-json"
+            "--skip-perf"
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -1563,7 +1565,8 @@
   "win-11-processor-perf": {
     "merge": {
       "args": [
-        "--lightweight"
+        "--lightweight",
+        "--upload-skia-json"
       ],
       "script": "//tools/perf/process_perf_results.py"
     }
