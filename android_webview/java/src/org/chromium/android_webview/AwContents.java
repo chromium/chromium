@@ -493,7 +493,7 @@ public class AwContents implements SmartClipProvider {
 
     private final DefaultVideoPosterRequestHandler mDefaultVideoPosterRequestHandler;
 
-    // Bound method for suppling Picture instances to the AwContentsClient. Will be null if the
+    // Bound method for supplying Picture instances to the AwContentsClient. Will be null if the
     // picture listener API has not yet been enabled, or if it is using invalidation-only mode.
     private Callable<Picture> mPictureListenerContentProvider;
 
@@ -2242,7 +2242,7 @@ public class AwContents implements SmartClipProvider {
 
         // For backwards compatibility, apps targeting less than K will have JS URLs evaluated
         // directly and any result of the evaluation will not replace the current page content.
-        // Matching Chrome behavior more closely; apps targetting >= K that load a JS URL will
+        // Matching Chrome behavior more closely; apps targeting >= K that load a JS URL will
         // have the result of that URL replace the content of the current page.
         final String javaScriptScheme = "javascript:";
         if (mAppTargetSdkVersion < Build.VERSION_CODES.KITKAT && url.startsWith(javaScriptScheme)) {
