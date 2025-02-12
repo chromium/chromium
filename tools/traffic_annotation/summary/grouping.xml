@@ -369,6 +369,7 @@ after discussions on the right group.
       <annotation id="remoting_compute_engine_instance_identity_token"/>
       <annotation id="remoting_compute_engine_instance_access_token"/>
       <annotation id="remoting_compute_engine_instance_access_token_scopes"/>
+      <annotation id="metrics_report_dwa"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
