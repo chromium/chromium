@@ -162,18 +162,9 @@ impl std::fmt::Display for LibType {
 /// the usual behavior, which traverses from all workspace members and the root
 /// workspace package. The package names in `roots` should still only contain
 /// workspace members.
-///
-/// `exclude` optionally lists packages to exclude from dependency resolution.
-/// Listed packages will still be included in upstream dependency lists, but
-/// downstream dependencies will not be explored. E.g. if `bar` is listed, and
-/// `foo` -> `bar` -> `baz` is in the dependency graph, `foo` will have `bar` as
-/// a `DepOfDep` entry, but neither `bar` nor `baz` will be included in the
-/// output. The intended use-case is when build rules for certain packages must
-/// be written manually.
 pub fn collect_dependencies(
     metadata: &cargo_metadata::Metadata,
     roots: Option<Vec<String>>,
-    exclude: Option<Vec<String>>,
     extra_config: &BuildConfig,
 ) -> Vec<Package> {
     // The metadata is split into two parts:
@@ -205,21 +196,11 @@ pub fn collect_dependencies(
     // since it is not actually built.
     let fake_root: &cargo_metadata::PackageId = resolved_graph.root.as_ref().unwrap();
 
-    let exclude = match exclude {
-        Some(exclude) => metadata
-            .packages
-            .iter()
-            .filter_map(|pkg| if exclude.contains(&pkg.name) { Some(&pkg.id) } else { None })
-            .collect(),
-        None => HashSet::new(),
-    };
-
     // `explore_node`, our recursive depth-first traversal function, needs to
     // share state between stack frames. Construct the shared state.
     let mut traversal_state = TraversalState {
         dep_graph: &dep_graph,
         root: fake_root,
-        exclude,
         visited: HashSet::new(),
         path: Vec::new(),
         dependencies: HashMap::new(),
@@ -381,8 +362,6 @@ struct TraversalState<'a> {
     dep_graph: &'a MetadataGraph<'a>,
     /// The fake root package that we exclude from `dependencies`.
     root: &'a cargo_metadata::PackageId,
-    /// Set of packages to exclude from traversal.
-    exclude: HashSet<&'a cargo_metadata::PackageId>,
     /// Set of packages already visited by `explore_node`.
     visited: HashSet<&'a cargo_metadata::PackageId>,
     /// The path of package IDs to the current node. For human consumption.
@@ -396,10 +375,6 @@ struct TraversalState<'a> {
 fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::Node) {
     // Mark the node as visited, or continue if it's already visited.
     if !state.visited.insert(&node.id) {
-        return;
-    }
-
-    if state.exclude.contains(&node.id) {
         return;
     }
 
@@ -433,9 +408,6 @@ fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::No
         // node multiple times, but this is OK since we'll skip it in the
         // recursive call.
         let target_node: &cargo_metadata::Node = state.dep_graph.nodes.get(&dep_edge.pkg).unwrap();
-        if state.exclude.contains(&target_node.id) {
-            continue;
-        }
 
         explore_node(state, target_node);
 
@@ -579,7 +551,7 @@ mod tests {
 
         let metadata: cargo_metadata::Metadata =
             serde_json::from_str(SAMPLE_CARGO_METADATA).unwrap();
-        let mut dependencies = collect_dependencies(&metadata, None, None, &config);
+        let mut dependencies = collect_dependencies(&metadata, None, &config);
         dependencies.sort_by(|left, right| {
             left.package_name.cmp(&right.package_name).then(left.version.cmp(&right.version))
         });
@@ -889,7 +861,7 @@ mod tests {
 
         // Start from "foo" workspace member.
         let mut dependencies =
-            collect_dependencies(&metadata, Some(vec!["foo".to_string()]), None, &config);
+            collect_dependencies(&metadata, Some(vec!["foo".to_string()]), &config);
         dependencies.sort_by(|left, right| {
             left.package_name.cmp(&right.package_name).then(left.version.cmp(&right.version))
         });
@@ -914,26 +886,6 @@ mod tests {
             dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
             &["alloc", "std"]
         );
-    }
-
-    #[test]
-    fn exclude_dependency() {
-        let metadata: cargo_metadata::Metadata =
-            serde_json::from_str(SAMPLE_CARGO_METADATA).unwrap();
-        let config = BuildConfig::default();
-
-        let deps_with_exclude =
-            collect_dependencies(&metadata, None, Some(vec!["serde_derive".to_string()]), &config);
-        let deps_without_exclude = collect_dependencies(&metadata, None, None, &config);
-
-        let pkgs_with_exclude: HashSet<&str> =
-            deps_with_exclude.iter().map(|dep| dep.package_name.as_str()).collect();
-        let pkgs_without_exclude: HashSet<&str> =
-            deps_without_exclude.iter().map(|dep| dep.package_name.as_str()).collect();
-        let mut diff: Vec<&str> =
-            pkgs_without_exclude.difference(&pkgs_with_exclude).copied().collect();
-        diff.sort_unstable();
-        assert_eq!(diff, ["proc-macro2", "quote", "serde_derive", "syn", "unicode-ident",]);
     }
 
     // test_metadata.json contains the output of "cargo metadata" run in

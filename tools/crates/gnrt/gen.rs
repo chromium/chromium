@@ -107,12 +107,7 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
                         paths.std_fake_root_config_template.display(),
                     )
                 })?;
-        deps::collect_dependencies(
-            &metadata,
-            Some(vec![config.resolve.root.clone()]),
-            None,
-            &config,
-        )
+        deps::collect_dependencies(&metadata, Some(vec![config.resolve.root.clone()]), &config)
     };
 
     // Filter out any crates' dependencies removed by config file.
@@ -255,7 +250,6 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
             HashMap::new(),
         )?,
         Some(vec![config.resolve.root.clone()]),
-        None,
         &config,
     );
 
