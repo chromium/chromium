@@ -17,9 +17,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
@@ -29,7 +26,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
-#include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
@@ -168,35 +164,16 @@ void AppManagementPageHandlerChromeOs::OnPinnedChanged(
 void AppManagementPageHandlerChromeOs::GetSubAppToParentMap(
     GetSubAppToParentMapCallback callback) {
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile());
-  if (provider) {
-    // Web apps are managed in the current process (Ash or Lacros).
-    provider->scheduler().ScheduleCallbackWithResult(
-        "AppManagementPageHandlerBase::GetSubAppToParentMap",
-        web_app::AllAppsLockDescription(),
-        base::BindOnce(
-            [](web_app::AllAppsLock& lock, base::Value::Dict& debug_value) {
-              return lock.registrar().GetSubAppToParentMap();
-            }),
-        /*on_complete=*/std::move(callback),
-        /*arg_for_shutdown=*/base::flat_map<std::string, std::string>());
-    return;
-  }
-
-  // Web app data needs to be fetched from the Lacros process.
-  crosapi::mojom::WebAppProviderBridge* web_app_provider_bridge =
-      crosapi::CrosapiManager::Get()
-          ->crosapi_ash()
-          ->web_app_service_ash()
-          ->GetWebAppProviderBridge();
-  if (web_app_provider_bridge) {
-    web_app_provider_bridge->GetSubAppToParentMap(std::move(callback));
-    return;
-  }
-  LOG(ERROR) << "Could not find WebAppProviderBridge.";
-
-  // Reaching here means that WebAppProviderBridge and WebAppProvider were both
-  // not found.
-  std::move(callback).Run(base::flat_map<std::string, std::string>());
+  CHECK(provider);
+  provider->scheduler().ScheduleCallbackWithResult(
+      "AppManagementPageHandlerBase::GetSubAppToParentMap",
+      web_app::AllAppsLockDescription(),
+      base::BindOnce(
+          [](web_app::AllAppsLock& lock, base::Value::Dict& debug_value) {
+            return lock.registrar().GetSubAppToParentMap();
+          }),
+      /*on_complete=*/std::move(callback),
+      /*arg_for_shutdown=*/base::flat_map<std::string, std::string>());
 }
 
 void AppManagementPageHandlerChromeOs::GetExtensionAppPermissionMessages(

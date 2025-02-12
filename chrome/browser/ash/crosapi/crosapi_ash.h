@@ -108,7 +108,6 @@ class StructuredMetricsServiceAsh;
 class SuggestionServiceAsh;
 class TimeZoneServiceAsh;
 class VpnServiceAsh;
-class WebAppServiceAsh;
 class WebKioskServiceAsh;
 class VirtualKeyboardAsh;
 class VolumeManagerAsh;
@@ -324,8 +323,6 @@ class CrosapiAsh : public mojom::Crosapi {
       override;
   void BindVpnService(
       mojo::PendingReceiver<mojom::VpnService> receiver) override;
-  void BindWebAppService(
-      mojo::PendingReceiver<mojom::WebAppService> receiver) override;
   void BindWebKioskService(
       mojo::PendingReceiver<mojom::WebKioskService> receiver) override;
   void BindGuestOsSkForwarderFactory(
@@ -476,8 +473,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return suggestion_service_ash_.get();
   }
 
-  WebAppServiceAsh* web_app_service_ash() { return web_app_service_ash_.get(); }
-
   WebKioskServiceAsh* web_kiosk_service_ash() {
     return web_kiosk_service_ash_.get();
   }
@@ -577,7 +572,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<VirtualKeyboardAsh> virtual_keyboard_ash_;
   std::unique_ptr<VolumeManagerAsh> volume_manager_ash_;
   std::unique_ptr<VpnServiceAsh> vpn_service_ash_;
-  std::unique_ptr<WebAppServiceAsh> web_app_service_ash_;
   std::unique_ptr<WebKioskServiceAsh> web_kiosk_service_ash_;
 
   mojo::ReceiverSet<mojom::Crosapi, CrosapiId> receiver_set_;
