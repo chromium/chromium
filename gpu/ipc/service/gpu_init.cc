@@ -26,7 +26,6 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
-#include "components/crash/core/common/crash_key.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_driver_bug_list.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
@@ -1256,35 +1255,6 @@ bool GpuInit::InitializeVulkan() {
     vulkan_implementation_.reset();
     return false;
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  // Check if any VkPhysicalDeviceFeatures that Dawn/Vulkan requires are not
-  // available when Ganesh/Vulkan is used.
-  // TODO(crbug.com/381535049): Remove after collecting data to see if any of
-  // these features explain discrepancies in Vulkan user counts.
-  if (auto& features = vulkan_info.physical_devices.front().features;
-      !features.robustBufferAccess || !features.textureCompressionETC2 ||
-      !features.textureCompressionASTC_LDR || !features.depthBiasClamp ||
-      !features.fragmentStoresAndAtomics || !features.fullDrawIndexUint32 ||
-      !features.imageCubeArray || !features.independentBlend ||
-      !features.sampleRateShading) {
-    static crash_reporter::CrashKeyString<256> crash_key(
-        "vulkan-physical-device-features");
-    std::string feature_str = base::StringPrintf(
-        "robustBufferAccess=%d textureCompressionETC2=%d "
-        "textureCompressionASTC_LDR=%d depthBiasClamp=%d "
-        "fragmentStoresAndAtomics=%d fullDrawIndexUint32=%d "
-        "imageCubeArray=%d independentBlend=%d sampleRateShading=%d",
-        features.robustBufferAccess, features.textureCompressionETC2,
-        features.textureCompressionASTC_LDR, features.depthBiasClamp,
-        features.fragmentStoresAndAtomics, features.fullDrawIndexUint32,
-        features.imageCubeArray, features.independentBlend,
-        features.sampleRateShading);
-    crash_reporter::ScopedCrashKeyString crash_key_scope(&crash_key,
-                                                         feature_str);
-    base::debug::DumpWithoutCrashing();
-  }
-#endif
 
   gpu_info_.hardware_supports_vulkan = true;
   gpu_info_.vulkan_info =
