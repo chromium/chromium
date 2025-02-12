@@ -23351,6 +23351,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "has_background": "false"
+                    },
                     "enable_features": [
                         "TabstripComboButton"
                     ]
