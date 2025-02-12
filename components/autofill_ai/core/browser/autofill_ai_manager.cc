@@ -137,6 +137,10 @@ bool ShouldShowNewEntitySavePrompt(
     base::span<const autofill::EntityInstance> current_entities) {
   return std::ranges::none_of(
       current_entities, [&](const autofill::EntityInstance& existing_entity) {
+        // Entities of different type should not be merged.
+        if (entity.type() != existing_entity.type()) {
+          return false;
+        }
         autofill::EntityInstance::EntityMergeability mergeability =
             existing_entity.GetEntityMergeability(entity);
         // If `entity` can be merged into `existing_entity`, a save prompt
@@ -159,6 +163,10 @@ std::optional<autofill::EntityInstance> MaybeUpdateEntity(
     const autofill::EntityInstance& entity,
     base::span<const autofill::EntityInstance> current_entities) {
   for (const autofill::EntityInstance& existing_entity : current_entities) {
+    // Entities of different type should not be merged.
+    if (entity.type() != existing_entity.type()) {
+      continue;
+    }
     autofill::EntityInstance::EntityMergeability mergeability =
         existing_entity.GetEntityMergeability(entity);
     if (mergeability.mergeable_attributes.empty()) {
