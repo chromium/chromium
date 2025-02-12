@@ -11617,6 +11617,21 @@
             ]
         }
     ],
+    "IOSAutofillFixPostFillingPaymentSheet": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillFixPostFillingPaymentSheet"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAutofillInIsolatedWorld": [
         {
             "platforms": [
