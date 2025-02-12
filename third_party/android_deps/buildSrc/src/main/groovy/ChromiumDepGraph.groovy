@@ -84,10 +84,6 @@ class ChromiumDepGraph {
             description: 'Bridge interfaces for Firebase analytics into gmscore.'),
         com_google_firebase_firebase_messaging: new PropertyOverride(
             description: 'Firebase Cloud Messaging SDK to send and receive push messages via FCM.'),
-        com_google_android_gms_play_services_tflite_impl: new PropertyOverride(
-            overrideLatest: true),
-        com_google_android_gms_play_services_tflite_java: new PropertyOverride(
-            overrideLatest: true),
         com_google_guava_failureaccess: new PropertyOverride(
             url: 'https://github.com/google/guava',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
@@ -132,8 +128,6 @@ class ChromiumDepGraph {
             url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md',
             licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
             licenseName: 'BSD'),
-        org_tensorflow_tensorflow_lite_api: new PropertyOverride(
-            overrideLatest: true),
         jakarta_inject_jakarta_inject_api: new PropertyOverride(
             // Help gradle resolve the same version that our 3pp script does.
             versionFilter: '\\d+\\.\\d+\\.\\d+$'),

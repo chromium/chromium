@@ -19,7 +19,7 @@ SPEC = fetch_common.Spec(repo_url=_REPO_URL,
                          module_name='jspecify',
                          file_ext='jar',
                          patch_version='cr1',
-                         version_override='1.0.0',
+                         version_override=None,
                          version_filter=None)
 
 if __name__ == '__main__':
