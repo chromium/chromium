@@ -206,7 +206,9 @@ class BluetoothFeaturePodControllerTest
     return feature_tile_->GetTooltipText();
   }
 
-  const char* GetButtonIconName() { return feature_tile_->vector_icon_->name; }
+  const gfx::VectorIcon* GetButtonIcon() {
+    return feature_tile_->vector_icon_.get();
+  }
 
   const char* GetToggledOnHistogramName() {
     return "Ash.QuickSettings.FeaturePod.ToggledOn";
@@ -308,7 +310,7 @@ TEST_P(BluetoothFeaturePodControllerTest, HasCorrectMetadataWhenOff) {
                     IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_TOOLTIP)),
             GetDrillInTooltipText());
 
-  EXPECT_STREQ(kUnifiedMenuBluetoothDisabledIcon.name, GetButtonIconName());
+  EXPECT_EQ(&kUnifiedMenuBluetoothDisabledIcon, GetButtonIcon());
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP,
                 l10n_util::GetStringUTF16(
@@ -330,7 +332,7 @@ TEST_P(BluetoothFeaturePodControllerTest, HasCorrectMetadataWithZeroDevices) {
                     IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_TOOLTIP)),
             GetDrillInTooltipText());
 
-  EXPECT_STREQ(kUnifiedMenuBluetoothIcon.name, GetButtonIconName());
+  EXPECT_EQ(&kUnifiedMenuBluetoothIcon, GetButtonIcon());
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP,
                 l10n_util::GetStringUTF16(
@@ -364,7 +366,7 @@ TEST_P(BluetoothFeaturePodControllerTest, HasCorrectMetadataWithOneDevice) {
                     public_name)),
             GetDrillInTooltipText());
 
-  EXPECT_STREQ(kUnifiedMenuBluetoothConnectedIcon.name, GetButtonIconName());
+  EXPECT_EQ(&kUnifiedMenuBluetoothConnectedIcon, GetButtonIcon());
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP,
                 l10n_util::GetStringFUTF16(
@@ -461,7 +463,7 @@ TEST_P(BluetoothFeaturePodControllerTest,
               base::FormatNumber(kMultipleDeviceCount))),
       GetDrillInTooltipText());
 
-  EXPECT_STREQ(kUnifiedMenuBluetoothConnectedIcon.name, GetButtonIconName());
+  EXPECT_EQ(&kUnifiedMenuBluetoothConnectedIcon, GetButtonIcon());
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP,
