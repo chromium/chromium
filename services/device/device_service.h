@@ -73,11 +73,14 @@ namespace device {
 
 #if !BUILDFLAG(IS_ANDROID)
 class HidManagerImpl;
-class SerialPortManagerImpl;
 #endif
 
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 class PressureManagerImpl;
+#endif
+
+#if defined(IS_SERIAL_ENABLED_PLATFORM)
+class SerialPortManagerImpl;
 #endif
 
 class DeviceService;
