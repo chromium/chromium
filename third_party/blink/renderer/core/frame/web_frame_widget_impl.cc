@@ -1902,12 +1902,10 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
     }
   }
 
-  gfx::Size old_visible_viewport_size_in_dips =
-      widget_base_->VisibleViewportSizeInDIPs();
+  gfx::Size old_visible_viewport_size = widget_base_->VisibleViewportSize();
   ApplyVisualPropertiesSizing(visual_properties);
 
-  if (old_visible_viewport_size_in_dips !=
-      widget_base_->VisibleViewportSizeInDIPs()) {
+  if (old_visible_viewport_size != widget_base_->VisibleViewportSize()) {
     ForEachLocalFrameControlledByWidget(
         local_root_->GetFrame(),
         &WebLocalFrameImpl::ResetHasScrolledFocusedEditableIntoView);
@@ -1915,8 +1913,8 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
     // Propagate changes down to child local root RenderWidgets and
     // BrowserPlugins in other frame trees/processes.
     ForEachRemoteFrameControlledByWidget(
-        [visible_viewport_size = widget_base_->VisibleViewportSizeInDIPs()](
-            RemoteFrame* remote_frame) {
+        [visible_viewport_size =
+             widget_base_->VisibleViewportSize()](RemoteFrame* remote_frame) {
           remote_frame->DidChangeVisibleViewportSize(visible_viewport_size);
         });
   }
@@ -2016,8 +2014,7 @@ void WebFrameWidgetImpl::ApplyVisualPropertiesSizing(
   // Store this even when auto-resizing, it is the size of the full viewport
   // used for clipping, and this value is propagated down the Widget
   // hierarchy via the VisualProperties waterfall.
-  widget_base_->SetVisibleViewportSizeInDIPs(
-      visual_properties.visible_viewport_size);
+  widget_base_->SetVisibleViewportSize(visual_properties.visible_viewport_size);
 
   virtual_keyboard_resize_height_physical_px_ =
       visual_properties.virtual_keyboard_resize_height_physical_px;
@@ -2028,9 +2025,7 @@ void WebFrameWidgetImpl::ApplyVisualPropertiesSizing(
       size_ = new_size;
 
       View()->ResizeWithBrowserControls(
-          size_.value(),
-          widget_base_->DIPsToCeiledBlinkSpace(
-              widget_base_->VisibleViewportSizeInDIPs()),
+          size_.value(), widget_base_->VisibleViewportSize(),
           visual_properties.browser_controls_params);
     }
 
@@ -2049,8 +2044,7 @@ void WebFrameWidgetImpl::ApplyVisualPropertiesSizing(
     // main frame do not do this in order to not clobber the source of truth
     // in the main frame.
     if (!View()->MainFrameImpl()) {
-      View()->Resize(widget_base_->DIPsToCeiledBlinkSpace(
-          widget_base_->VisibleViewportSizeInDIPs()));
+      View()->Resize(widget_base_->VisibleViewportSize());
     }
 
     Resize(new_size);
@@ -2338,8 +2332,8 @@ void WebFrameWidgetImpl::EnableDeviceEmulation(
 
     device_emulator_ = MakeGarbageCollected<ScreenMetricsEmulator>(
         this, widget_base_->screen_infos(), size_in_dips,
-        widget_base_->VisibleViewportSizeInDIPs(),
-        widget_base_->WidgetScreenRect(), widget_base_->WindowScreenRect());
+        widget_base_->VisibleViewportSize(), widget_base_->WidgetScreenRect(),
+        widget_base_->WindowScreenRect());
   }
   device_emulator_->ChangeEmulationParams(parameters);
 }
@@ -3348,8 +3342,8 @@ void WebFrameWidgetImpl::SetScreenRects(const gfx::Rect& widget_screen_rect,
   widget_base_->SetScreenRects(widget_screen_rect, window_screen_rect);
 }
 
-gfx::Size WebFrameWidgetImpl::VisibleViewportSizeInDIPs() {
-  return widget_base_->VisibleViewportSizeInDIPs();
+gfx::Size WebFrameWidgetImpl::VisibleViewportSize() {
+  return widget_base_->VisibleViewportSize();
 }
 
 void WebFrameWidgetImpl::SetPendingWindowRect(
@@ -4717,12 +4711,12 @@ void WebFrameWidgetImpl::SetScreenMetricsEmulationParameters(
 void WebFrameWidgetImpl::SetScreenInfoAndSize(
     const display::ScreenInfos& screen_infos,
     const gfx::Size& widget_size_in_dips,
-    const gfx::Size& visible_viewport_size_in_dips) {
+    const gfx::Size& visible_viewport_size) {
   // Emulation happens on regular main frames which don't use auto-resize mode.
   DCHECK(!AutoResizeMode());
 
   UpdateScreenInfo(screen_infos);
-  widget_base_->SetVisibleViewportSizeInDIPs(visible_viewport_size_in_dips);
+  widget_base_->SetVisibleViewportSize(visible_viewport_size);
   Resize(widget_base_->DIPsToCeiledBlinkSpace(widget_size_in_dips));
 }
 
