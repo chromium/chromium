@@ -31,6 +31,7 @@
 #include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
 #include "content/browser/dips/dips_service_impl.h"
 #include "content/browser/dips/dips_utils.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -599,11 +600,14 @@ void BrowsingDataRemoverImpl::RemoveImpl(
 
     // Clears the BFCache entries that match the removal filter for the current
     // browser context.
+    // Clears the Prerender Cache for the current browser context.
     auto storage_key_filter = filter_builder->BuildStorageKeyFilter();
     for (WebContentsImpl* web_contents : WebContentsImpl::GetAllWebContents()) {
       if (web_contents->GetBrowserContext() == browser_context_) {
         web_contents->GetController().GetBackForwardCache().Flush(
             storage_key_filter);
+        web_contents->GetPrerenderHostRegistry()->CancelAllHosts(
+            PrerenderFinalStatus::kBrowsingDataRemoved);
       }
     }
   }

@@ -191,6 +191,8 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::OtherPrerenderedPageActivated;
     case PrerenderFinalStatus::kPrerenderFailedDuringPrefetch:
       return Preload::PrerenderFinalStatusEnum::PrerenderFailedDuringPrefetch;
+    case PrerenderFinalStatus::kBrowsingDataRemoved:
+      return Preload::PrerenderFinalStatusEnum::BrowsingDataRemoved;
   }
 }
 

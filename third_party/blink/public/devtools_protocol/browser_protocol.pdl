@@ -12675,6 +12675,7 @@ experimental domain Preload
       OtherPrerenderedPageActivated
       V8OptimizerDisabled
       PrerenderFailedDuringPrefetch
+      BrowsingDataRemoved
 
   # Fired when a preload enabled state is updated.
   event preloadEnabledStateUpdated

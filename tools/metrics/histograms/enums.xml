@@ -22513,6 +22513,7 @@ Called by update_net_error_codes.py.-->
   <int value="84" label="kOtherPrerenderedPageActivated"/>
   <int value="85" label="kV8OptimizerDisabled (obsoleted)"/>
   <int value="86" label="kPrerenderFailedDuringPrefetch"/>
+  <int value="87" label="kBrowsingDataRemoved"/>
 </enum>
 
 <enum name="PreviewsCoinFlipResult">

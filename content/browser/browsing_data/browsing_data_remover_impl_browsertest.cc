@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "content/public/browser/browsing_data_remover.h"
-
 #include <memory>
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -19,6 +17,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/browsing_data/shared_storage_clear_site_data_tester.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -32,6 +31,7 @@
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
@@ -996,6 +996,51 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
   EXPECT_THAT(tester.GetSharedStorageOrigins(),
               testing::UnorderedElementsAre(origin, sub_origin));
   EXPECT_EQ(15 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
+}
+
+class BrowsingDataRemoverImplPrerenderingBrowserTest
+    : public BrowsingDataRemoverImplBrowserTest {
+ public:
+  BrowsingDataRemoverImplPrerenderingBrowserTest() {
+    prerender_helper_ =
+        std::make_unique<test::PrerenderTestHelper>(base::BindRepeating(
+            &BrowsingDataRemoverImplPrerenderingBrowserTest::web_contents,
+            base::Unretained(this)));
+  }
+  ~BrowsingDataRemoverImplPrerenderingBrowserTest() override = default;
+
+ protected:
+  test::PrerenderTestHelper& prerender_helper() { return *prerender_helper_; }
+
+  WebContents* web_contents() { return shell()->web_contents(); }
+
+  std::unique_ptr<test::PrerenderTestHelper> prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrerenderingBrowserTest,
+                       ClearCacheCancelsPrerendering) {
+  GURL initial_url = ssl_server().GetURL("/title1.html");
+  GURL prerendering_url = ssl_server().GetURL("/empty.html");
+
+  // 1) Navigate to the initial url.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // 2) Add and wait for prerendering of the prerendering url to complete.
+  FrameTreeNodeId host_id = prerender_helper().AddPrerender(prerendering_url);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+
+  // 3) Remove the browsing data with DATA_TYPE_CACHE.
+  auto filter = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete);
+  filter->AddRegisterableDomain(ssl_server().base_url().host());
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_CACHE,
+                          std::move(filter));
+  host_observer.WaitForDestroyed();
+
+  // 4) Verify that prerendering was canceled due to removing browsing data.
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderFinalStatus::kBrowsingDataRemoved, 1);
 }
 
 }  // namespace content
