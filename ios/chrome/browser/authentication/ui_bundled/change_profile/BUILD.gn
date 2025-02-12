@@ -8,6 +8,8 @@ source_set("change_profile") {
   sources = [
     "change_profile_bookmarks_continuation.h",
     "change_profile_bookmarks_continuation.mm",
+    "change_profile_load_url.h",
+    "change_profile_load_url.mm",
     "change_profile_reading_list_continuation.h",
     "change_profile_reading_list_continuation.mm",
     "change_profile_recent_tabs_continuation.h",
@@ -28,5 +30,7 @@ source_set("change_profile") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
   ]
 }
