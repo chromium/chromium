@@ -100,9 +100,14 @@ TEST(HlsPlaylistTest, IdentifyPlaylist) {
   error_test(ParseStatusCode::kPlaylistHasUnsupportedVersion,
              "#EXT-X-VERSION:11\n");
 
-  // Conflicting tag kinds should result in an error
-  error_test(ParseStatusCode::kMultivariantPlaylistHasMediaPlaylistTag,
-             "#EXT-X-STREAM-INF\n#EXTINF\n");
+  // Conflicting tag kinds should result in an error.
+  // TODO(crbug.com/395950145): It's really common for multivariant
+  // playlists to incorrectly add an "EXT-X-ENDLIST" tag at the end,
+  // which, while disallowed by spec, is accepted by most other HLS
+  // implementations. We can't fail parsing and thus playback as a
+  // result, in order to maintain compatibility.
+  ok_test(Playlist::kDefaultVersion, Playlist::Kind::kMultivariantPlaylist,
+          "#EXT-X-STREAM-INF\n#EXTINF\n");
   error_test(ParseStatusCode::kMediaPlaylistHasMultivariantPlaylistTag,
              "#EXTINF\n#EXT-X-STREAM-INF\n");
 
