@@ -19,8 +19,8 @@
 #include "base/strings/string_util.h"
 #include "google_apis/google_api_keys.h"
 #include "remoting/base/directory_service_client.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/passthrough_oauth_token_getter.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/pin_hash.h"
 #include "remoting/host/setup/host_starter.h"
@@ -51,10 +51,10 @@ class OAuthHostStarter : public HostStarterBase {
 
   // DirectoryServiceClient callbacks.
   void OnDeleteHostResponse(
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<apis::v1::DeleteHostResponse> response);
   void OnRegisterHostResponse(
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<apis::v1::RegisterHostResponse> response);
 
  private:
@@ -115,7 +115,7 @@ void OAuthHostStarter::ApplyConfigValues(base::Value::Dict& config) {
 }
 
 void OAuthHostStarter::OnRegisterHostResponse(
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<apis::v1::RegisterHostResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -131,7 +131,7 @@ void OAuthHostStarter::OnRegisterHostResponse(
 }
 
 void OAuthHostStarter::OnDeleteHostResponse(
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<apis::v1::DeleteHostResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

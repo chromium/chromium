@@ -82,11 +82,10 @@ void CorpLoggingServiceClient::ReportSessionDisconnected(
       internal::GetReportSessionDisconnectedRequest(request_struct);
   auto request =
       std::make_unique<ProtobufHttpRequest>(std::move(request_config));
-  request->SetResponseCallback(
-      base::BindOnce([](const ProtobufHttpStatus& status,
-                        std::unique_ptr<Empty> proto) {
-        return status;
-      }).Then(std::move(done)));
+  request->SetResponseCallback(base::BindOnce([](const HttpStatus& status,
+                                                 std::unique_ptr<Empty> proto) {
+                                 return status;
+                               }).Then(std::move(done)));
   http_client_.ExecuteRequest(std::move(request));
 }
 

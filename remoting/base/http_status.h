@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_BASE_PROTOBUF_HTTP_STATUS_H_
-#define REMOTING_BASE_PROTOBUF_HTTP_STATUS_H_
+#ifndef REMOTING_BASE_HTTP_STATUS_H_
+#define REMOTING_BASE_HTTP_STATUS_H_
 
 #include <string>
 
@@ -16,7 +16,7 @@ namespace protobufhttpclient {
 class Status;
 }  // namespace protobufhttpclient
 
-class ProtobufHttpStatus {
+class HttpStatus {
  public:
   // This is the same as the gRPC status code.
   enum class Code : int {
@@ -41,15 +41,15 @@ class ProtobufHttpStatus {
   };
 
   // An OK pre-defined instance.
-  static const ProtobufHttpStatus& OK();
+  static const HttpStatus& OK();
 
-  explicit ProtobufHttpStatus(net::HttpStatusCode http_status_code);
-  explicit ProtobufHttpStatus(net::Error net_error);
-  explicit ProtobufHttpStatus(const protobufhttpclient::Status& status);
-  ProtobufHttpStatus(Code code, const std::string& error_message);
-  ProtobufHttpStatus(const protobufhttpclient::Status& status,
-                     const std::string& response_body);
-  ~ProtobufHttpStatus();
+  explicit HttpStatus(net::HttpStatusCode http_status_code);
+  explicit HttpStatus(net::Error net_error);
+  explicit HttpStatus(const protobufhttpclient::Status& status);
+  HttpStatus(Code code, const std::string& error_message);
+  HttpStatus(const protobufhttpclient::Status& status,
+             const std::string& response_body);
+  ~HttpStatus();
 
   // Indicates whether the http request was successful based on the status code.
   bool ok() const;
@@ -72,4 +72,4 @@ class ProtobufHttpStatus {
 
 }  // namespace remoting
 
-#endif  // REMOTING_BASE_PROTOBUF_HTTP_STATUS_H_
+#endif  // REMOTING_BASE_HTTP_STATUS_H_

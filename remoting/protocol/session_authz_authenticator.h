@@ -13,7 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "remoting/base/constants.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/session_authz_service_client.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/proto/session_authz_service.h"
@@ -119,7 +119,7 @@ class SessionAuthzAuthenticator : public Authenticator {
   void GenerateHostToken(base::OnceClosure resume_callback);
   void OnHostTokenGenerated(
       base::OnceClosure resume_callback,
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<internal::GenerateHostTokenResponseStruct> response);
   void AddHostTokenElement(jingle_xmpp::XmlElement* message);
   void VerifySessionToken(const jingle_xmpp::XmlElement& message,
@@ -127,10 +127,10 @@ class SessionAuthzAuthenticator : public Authenticator {
   void OnVerifiedSessionToken(
       const jingle_xmpp::XmlElement& message,
       base::OnceClosure resume_callback,
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<internal::VerifySessionTokenResponseStruct> response);
   void HandleSessionAuthzError(const std::string_view& action_name,
-                               const ProtobufHttpStatus& status);
+                               const HttpStatus& status);
   void StartReauthorizerIfNecessary();
   void OnReauthorizationFailed();
 

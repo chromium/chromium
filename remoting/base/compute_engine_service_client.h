@@ -16,7 +16,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "net/http/http_status_code.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 
 namespace net {
 struct NetworkTrafficAnnotationTag;
@@ -34,16 +34,11 @@ namespace remoting {
 // does not exist in other contexts.
 class ComputeEngineServiceClient {
  public:
-  // Use an alias for ProtobufHttpStatus since this class does not use protobuf
-  // but the ProtobufHttpStatus class is useful for transforming errors.
-  // TODO: joedow - Rename ProtobufHttpStatus to be generic so it can be used
-  // in any HTTP request class.
-  using HttpStatusCode = ProtobufHttpStatus;
-  // TODO: joedow - Remove the second arg when ProtobufHttpStatus is updated for
+  // TODO: joedow - Remove the second arg when HttpStatus is updated for
   // use outside of the Protobuf* classes since that struct already has a
   // |response_body| field.
   using ResponseCallback =
-      base::OnceCallback<void(HttpStatusCode, std::optional<std::string>)>;
+      base::OnceCallback<void(HttpStatus, std::optional<std::string>)>;
 
   explicit ComputeEngineServiceClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);

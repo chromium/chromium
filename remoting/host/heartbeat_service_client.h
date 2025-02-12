@@ -16,7 +16,7 @@ class TimeDelta;
 
 namespace remoting {
 
-class ProtobufHttpStatus;
+class HttpStatus;
 
 // HeartbeatServiceClient is an interface which is used by the HeartbeatSender
 // to target a specific backend API and hide implementation details of that API
@@ -26,7 +26,7 @@ class HeartbeatServiceClient {
   // |status| will be valid for all invocations, the other args must be checked
   // as they may not be populated for all APIs.
   using HeartbeatResponseCallback =
-      base::OnceCallback<void(const ProtobufHttpStatus& status,
+      base::OnceCallback<void(const HttpStatus& status,
                               std::optional<base::TimeDelta> wait_interval,
                               const std::string& primary_user_email,
                               std::optional<bool> require_session_authorization,
@@ -57,8 +57,7 @@ class HeartbeatServiceClient {
 
   // Common error handler for all HeartbeatServiceClients. Should only be called
   // if the status response for a heartbeat is an error.
-  void OnError(HeartbeatResponseCallback callback,
-               const ProtobufHttpStatus& status);
+  void OnError(HeartbeatResponseCallback callback, const HttpStatus& status);
 };
 
 }  // namespace remoting

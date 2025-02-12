@@ -34,36 +34,36 @@ struct NetworkTrafficAnnotationTag;
 
 namespace remoting {
 
-class ProtobufHttpStatus;
+class HttpStatus;
 
 // A service client that communicates with the directory service.
 class CloudServiceClient {
  public:
   using GenerateHostTokenCallback = base::OnceCallback<void(
-      const ProtobufHttpStatus&,
+      const HttpStatus&,
       std::unique_ptr<::google::internal::remoting::cloud::v1alpha::
                           GenerateHostTokenResponse>)>;
   using GenerateIceConfigCallback = base::OnceCallback<void(
-      const ProtobufHttpStatus&,
+      const HttpStatus&,
       std::unique_ptr<::google::internal::remoting::cloud::v1alpha::
                           GenerateIceConfigResponse>)>;
   using ProvisionGceInstanceCallback = base::OnceCallback<void(
-      const ProtobufHttpStatus&,
+      const HttpStatus&,
       std::unique_ptr<
           ::google::remoting::cloud::v1::ProvisionGceInstanceResponse>)>;
   using ReauthorizeHostCallback = base::OnceCallback<void(
-      const ProtobufHttpStatus&,
+      const HttpStatus&,
       std::unique_ptr<::google::internal::remoting::cloud::v1alpha::
                           ReauthorizeHostResponse>)>;
   using SendHeartbeatCallback = base::OnceCallback<void(
-      const ProtobufHttpStatus&,
+      const HttpStatus&,
       std::unique_ptr<::google::internal::remoting::cloud::v1alpha::Empty>)>;
   using UpdateRemoteAccessHostCallback = base::OnceCallback<void(
-      const ProtobufHttpStatus&,
+      const HttpStatus&,
       std::unique_ptr<
           ::google::internal::remoting::cloud::v1alpha::RemoteAccessHost>)>;
   using VerifySessionTokenCallback = base::OnceCallback<void(
-      const ProtobufHttpStatus&,
+      const HttpStatus&,
       std::unique_ptr<::google::internal::remoting::cloud::v1alpha::
                           VerifySessionTokenResponse>)>;
 

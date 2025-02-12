@@ -58,15 +58,15 @@ class CloudSessionAuthzServiceClient : public SessionAuthzServiceClient {
  private:
   void OnGenerateHostTokenResponse(
       GenerateHostTokenCallback callback,
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<GenerateHostTokenResponse> response);
   void OnVerifySessionTokenResponse(
       VerifySessionTokenCallback callback,
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<VerifySessionTokenResponse> response);
   void OnReauthorizeHostResponse(
       ReauthorizeHostCallback callback,
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<ReauthorizeHostResponse> response);
 
   CloudServiceClient client_;
@@ -110,7 +110,7 @@ void CloudSessionAuthzServiceClient::ReauthorizeHost(
 
 void CloudSessionAuthzServiceClient::OnGenerateHostTokenResponse(
     GenerateHostTokenCallback callback,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<GenerateHostTokenResponse> response) {
   auto response_struct =
       std::make_unique<internal::GenerateHostTokenResponseStruct>();
@@ -121,7 +121,7 @@ void CloudSessionAuthzServiceClient::OnGenerateHostTokenResponse(
 
 void CloudSessionAuthzServiceClient::OnVerifySessionTokenResponse(
     VerifySessionTokenCallback callback,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<VerifySessionTokenResponse> response) {
   auto response_struct =
       std::make_unique<internal::VerifySessionTokenResponseStruct>();
@@ -180,7 +180,7 @@ void CloudSessionAuthzServiceClient::OnVerifySessionTokenResponse(
 
 void CloudSessionAuthzServiceClient::OnReauthorizeHostResponse(
     ReauthorizeHostCallback callback,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<ReauthorizeHostResponse> response) {
   auto response_struct =
       std::make_unique<internal::ReauthorizeHostResponseStruct>();

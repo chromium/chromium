@@ -7,9 +7,9 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/time.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/protobuf_http_client.h"
 #include "remoting/base/protobuf_http_request_config.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/protobuf_http_stream_parser.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
@@ -46,8 +46,7 @@ void ProtobufHttpStreamRequest::OnMessage(const std::string& message) {
   }
 }
 
-void ProtobufHttpStreamRequest::OnStreamClosed(
-    const ProtobufHttpStatus& status) {
+void ProtobufHttpStreamRequest::OnStreamClosed(const HttpStatus& status) {
   DCHECK(stream_closed_callback_);
   DCHECK(invalidator_);
 
@@ -58,7 +57,7 @@ void ProtobufHttpStreamRequest::OnStreamClosed(
   std::move(invalidator).Run();
 }
 
-void ProtobufHttpStreamRequest::OnAuthFailed(const ProtobufHttpStatus& status) {
+void ProtobufHttpStreamRequest::OnAuthFailed(const HttpStatus& status) {
   // Can't call OnStreamClosed here since it invokes the |invalidator_|.
   std::move(stream_closed_callback_).Run(status);
 }
@@ -114,8 +113,8 @@ void ProtobufHttpStreamRequest::OnRetry(base::OnceClosure start_retry) {
 }
 
 void ProtobufHttpStreamRequest::OnStreamReadyTimeout() {
-  OnStreamClosed(ProtobufHttpStatus(ProtobufHttpStatus::Code::DEADLINE_EXCEEDED,
-                                    "Stream connection failed: timeout"));
+  OnStreamClosed(HttpStatus(HttpStatus::Code::DEADLINE_EXCEEDED,
+                            "Stream connection failed: timeout"));
 }
 
 }  // namespace remoting

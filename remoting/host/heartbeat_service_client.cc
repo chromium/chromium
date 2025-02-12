@@ -7,7 +7,7 @@
 #include <optional>
 
 #include "base/functional/callback.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 
 namespace remoting {
 
@@ -15,7 +15,7 @@ HeartbeatServiceClient::HeartbeatServiceClient() = default;
 HeartbeatServiceClient::~HeartbeatServiceClient() = default;
 
 void HeartbeatServiceClient::OnError(HeartbeatResponseCallback callback,
-                                     const ProtobufHttpStatus& status) {
+                                     const HttpStatus& status) {
   CHECK(!status.ok());
   std::move(callback).Run(status, /*wait_interval=*/std::nullopt,
                           /*primary_user_email=*/"",

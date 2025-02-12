@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "remoting/base/cloud_service_client.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/setup/host_starter.h"
 #include "remoting/host/setup/host_starter_base.h"
@@ -48,7 +48,7 @@ class CloudHostStarter : public HostStarterBase {
 
   // CloudServiceClient callback.
   void OnProvisionGceInstanceResponse(
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<ProvisionGceInstanceResponse> response);
 
  private:
@@ -86,7 +86,7 @@ void CloudHostStarter::RegisterNewHost(
 }
 
 void CloudHostStarter::OnProvisionGceInstanceResponse(
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<ProvisionGceInstanceResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

@@ -57,12 +57,12 @@ class FtlMessageReceptionChannel final : public MessageReceptionChannel {
   };
 
   void OnReceiveMessagesStreamReady();
-  void OnReceiveMessagesStreamClosed(const ProtobufHttpStatus& status);
+  void OnReceiveMessagesStreamClosed(const HttpStatus& status);
   void OnMessageReceived(
       std::unique_ptr<ftl::ReceiveMessagesResponse> response);
 
   void RunStreamReadyCallbacks();
-  void RunStreamClosedCallbacks(const ProtobufHttpStatus& status);
+  void RunStreamClosedCallbacks(const HttpStatus& status);
   void RetryStartReceivingMessagesWithBackoff();
   void RetryStartReceivingMessages();
   void StartReceivingMessagesInternal();

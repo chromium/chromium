@@ -18,11 +18,11 @@
 #include "net/base/network_interfaces.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/protobuf_http_client.h"
 #include "remoting/base/protobuf_http_request.h"
 #include "remoting/base/protobuf_http_request_config.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/service_urls.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/server_log_entry_host.h"
@@ -265,7 +265,7 @@ void HeartbeatSender::SendLiteHeartbeat(bool useLiteHeartbeat) {
   observer_->OnHeartbeatSent();
 }
 
-bool HeartbeatSender::CheckHttpStatus(const ProtobufHttpStatus& status) {
+bool HeartbeatSender::CheckHttpStatus(const HttpStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (status.ok()) {
@@ -290,7 +290,7 @@ bool HeartbeatSender::CheckHttpStatus(const ProtobufHttpStatus& status) {
     backoff_.InformOfRequest(false);
   }
 
-  if (status.error_code() == ProtobufHttpStatus::Code::DEADLINE_EXCEEDED) {
+  if (status.error_code() == HttpStatus::Code::DEADLINE_EXCEEDED) {
     LOG(ERROR) << "Heartbeat timed out.";
   }
 
@@ -299,14 +299,14 @@ bool HeartbeatSender::CheckHttpStatus(const ProtobufHttpStatus& status) {
   // host ID in the heartbeat. So even if all of the first few heartbeats
   // get a "host ID not found" error, that's not a good enough reason to
   // exit.
-  if (status.error_code() == ProtobufHttpStatus::Code::NOT_FOUND &&
+  if (status.error_code() == HttpStatus::Code::NOT_FOUND &&
       (initial_heartbeat_sent_ ||
        (backoff_.failure_count() > kMaxResendOnHostNotFoundCount))) {
     delegate_->OnHostNotFound();
     return false;
   }
 
-  if (status.error_code() == ProtobufHttpStatus::Code::UNAUTHENTICATED) {
+  if (status.error_code() == HttpStatus::Code::UNAUTHENTICATED) {
     oauth_token_getter_->InvalidateCache();
     if (backoff_.failure_count() > kMaxResendOnUnauthenticatedCount) {
       delegate_->OnAuthFailed();
@@ -318,12 +318,12 @@ bool HeartbeatSender::CheckHttpStatus(const ProtobufHttpStatus& status) {
 }
 
 base::TimeDelta HeartbeatSender::CalculateDelay(
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::optional<base::TimeDelta> optMinDelay) {
   // Calculate delay before sending the next message.
   base::TimeDelta delay;
   switch (status.error_code()) {
-    case ProtobufHttpStatus::Code::OK:
+    case HttpStatus::Code::OK:
       if (optMinDelay.has_value()) {
         LOG_IF(WARNING, *optMinDelay < kMinimumHeartbeatInterval)
             << "Received suspicious interval_seconds: " << *optMinDelay
@@ -331,10 +331,10 @@ base::TimeDelta HeartbeatSender::CalculateDelay(
       }
       delay = optMinDelay.value_or(kMinimumHeartbeatInterval);
       break;
-    case ProtobufHttpStatus::Code::NOT_FOUND:
+    case HttpStatus::Code::NOT_FOUND:
       delay = kResendDelayOnHostNotFound;
       break;
-    case ProtobufHttpStatus::Code::UNAUTHENTICATED:
+    case HttpStatus::Code::UNAUTHENTICATED:
       delay = kResendDelayOnUnauthenticated;
       break;
     default:
@@ -347,14 +347,14 @@ base::TimeDelta HeartbeatSender::CalculateDelay(
 }
 
 void HeartbeatSender::OnLegacyHeartbeatResponse(
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::optional<base::TimeDelta> wait_interval,
     const std::string& primary_user_email,
     std::optional<bool> require_session_authorization,
     std::optional<bool> use_lite_heartbeat) {
   if (CheckHttpStatus(status)) {
     bool useLiteHeartbeat = false;
-    if (status.error_code() == ProtobufHttpStatus::Code::OK) {
+    if (status.error_code() == HttpStatus::Code::OK) {
       if (use_lite_heartbeat.has_value()) {
         useLiteHeartbeat = *use_lite_heartbeat;
       }
@@ -374,7 +374,7 @@ void HeartbeatSender::OnLegacyHeartbeatResponse(
 }
 
 void HeartbeatSender::OnSendHeartbeatResponse(
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::optional<base::TimeDelta> wait_interval,
     const std::string& primary_user_email,
     std::optional<bool> require_session_authorization,

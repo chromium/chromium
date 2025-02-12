@@ -9,7 +9,7 @@
 #include <string_view>
 
 #include "base/functional/callback_forward.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/proto/session_authz_service.h"
 
 namespace remoting {
@@ -19,13 +19,13 @@ namespace remoting {
 class SessionAuthzServiceClient {
  public:
   using GenerateHostTokenCallback = base::OnceCallback<void(
-      const ProtobufHttpStatus&,
+      const HttpStatus&,
       std::unique_ptr<internal::GenerateHostTokenResponseStruct>)>;
   using VerifySessionTokenCallback = base::OnceCallback<void(
-      const ProtobufHttpStatus&,
+      const HttpStatus&,
       std::unique_ptr<internal::VerifySessionTokenResponseStruct>)>;
   using ReauthorizeHostCallback = base::OnceCallback<void(
-      const ProtobufHttpStatus&,
+      const HttpStatus&,
       std::unique_ptr<internal::ReauthorizeHostResponseStruct>)>;
 
   virtual ~SessionAuthzServiceClient() = default;

@@ -15,8 +15,8 @@
 #include "base/time/time.h"
 #include "net/base/backoff_entry.h"
 #include "net/http/http_status_code.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/mock_session_authz_service_client.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/proto/session_authz_service.h"
 #include "remoting/protocol/errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,14 +36,12 @@ auto Respond(std::string_view session_reauth_token,
   auto response = std::make_unique<internal::ReauthorizeHostResponseStruct>();
   response->session_reauth_token = session_reauth_token;
   response->session_reauth_token_lifetime = session_reauth_token_lifetime;
-  return base::test::RunOnceCallback<2>(ProtobufHttpStatus::OK(),
-                                        std::move(response));
+  return base::test::RunOnceCallback<2>(HttpStatus::OK(), std::move(response));
 }
 
 template <typename CodeType>
 auto RespondError(CodeType code) {
-  return base::test::RunOnceCallbackRepeatedly<2>(ProtobufHttpStatus(code),
-                                                  nullptr);
+  return base::test::RunOnceCallbackRepeatedly<2>(HttpStatus(code), nullptr);
 }
 
 }  // namespace

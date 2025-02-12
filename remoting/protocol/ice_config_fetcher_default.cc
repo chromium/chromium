@@ -10,9 +10,9 @@
 #include "build/build_config.h"
 #include "google_apis/google_api_keys.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/protobuf_http_request.h"
 #include "remoting/base/protobuf_http_request_config.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/service_urls.h"
 #include "remoting/proto/remoting/v1/network_traversal_messages.pb.h"
 #include "remoting/protocol/ice_config.h"
@@ -105,7 +105,7 @@ void IceConfigFetcherDefault::GetIceConfig(OnIceConfigCallback callback) {
 }
 
 void IceConfigFetcherDefault::OnResponse(
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<apis::v1::GetIceConfigResponse> response) {
   DCHECK(!on_ice_config_callback_.is_null());
 

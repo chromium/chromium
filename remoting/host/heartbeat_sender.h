@@ -29,8 +29,8 @@ class SharedURLLoaderFactory;
 
 namespace remoting {
 
+class HttpStatus;
 class OAuthTokenGetter;
-class ProtobufHttpStatus;
 
 // HeartbeatSender periodically sends heartbeat to the directory service. See
 // the HeartbeatRequest message in directory_messages.proto for more details.
@@ -133,18 +133,18 @@ class HeartbeatSender final : public SignalStrategy::Listener {
   void SendFullHeartbeat();
   void SendLiteHeartbeat(bool useLiteHeartbeat);
 
-  bool CheckHttpStatus(const ProtobufHttpStatus& status);
-  base::TimeDelta CalculateDelay(const ProtobufHttpStatus& status,
+  bool CheckHttpStatus(const HttpStatus& status);
+  base::TimeDelta CalculateDelay(const HttpStatus& status,
                                  std::optional<base::TimeDelta> optMinDelay);
 
   void OnLegacyHeartbeatResponse(
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::optional<base::TimeDelta> wait_interval,
       const std::string& primary_user_email,
       std::optional<bool> require_session_authorization,
       std::optional<bool> use_lite_heartbeat);
   void OnSendHeartbeatResponse(
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::optional<base::TimeDelta> wait_interval,
       const std::string& primary_user_email,
       std::optional<bool> require_session_authorization,

@@ -259,10 +259,10 @@ void HostStarterBase::HandleError(const std::string& error_message,
   ReportError(error_message, base::BindOnce(std::move(on_done_), error_result));
 }
 
-void HostStarterBase::HandleHttpStatusError(const ProtobufHttpStatus& status) {
+void HostStarterBase::HandleHttpStatusError(const HttpStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ProtobufHttpStatus::Code error_code = status.error_code();
+  HttpStatus::Code error_code = status.error_code();
   std::string error_message = status.error_message();
   LOG(ERROR) << "\n  Received error code: " << static_cast<int>(error_code)
              << ", message: " << error_message;
@@ -291,9 +291,9 @@ void HostStarterBase::HandleHttpStatusError(const ProtobufHttpStatus& status) {
   }
 
   auto result = NETWORK_ERROR;
-  if (error_code == ProtobufHttpStatus::Code::PERMISSION_DENIED) {
+  if (error_code == HttpStatus::Code::PERMISSION_DENIED) {
     result = PERMISSION_DENIED;
-  } else if (error_code == ProtobufHttpStatus::Code::UNAUTHENTICATED) {
+  } else if (error_code == HttpStatus::Code::UNAUTHENTICATED) {
     result = OAUTH_ERROR;
   }
 

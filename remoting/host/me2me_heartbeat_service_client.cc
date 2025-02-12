@@ -59,7 +59,7 @@ void Me2MeHeartbeatServiceClient::CancelPendingRequests() {
 
 void Me2MeHeartbeatServiceClient::OnLegacyHeartbeatResponse(
     HeartbeatResponseCallback callback,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<apis::v1::HeartbeatResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -90,7 +90,7 @@ void Me2MeHeartbeatServiceClient::OnLegacyHeartbeatResponse(
 
 void Me2MeHeartbeatServiceClient::OnSendHeartbeatResponse(
     HeartbeatResponseCallback callback,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<apis::v1::SendHeartbeatResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

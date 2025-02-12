@@ -22,7 +22,7 @@ namespace {
 
 template <typename Type>
 using ResponseCallback =
-    base::OnceCallback<void(const ProtobufHttpStatus&, std::unique_ptr<Type>)>;
+    base::OnceCallback<void(const HttpStatus&, std::unique_ptr<Type>)>;
 
 template <typename ProtoType, typename StructType>
 using ConversionFunction = std::unique_ptr<StructType> (*)(const ProtoType&);
@@ -37,8 +37,7 @@ ResponseCallback<ProtoType> ConvertCallback(
   return base::BindOnce(
       [](ResponseCallback<StructType> struct_callback,
          ConversionFunction<ProtoType, StructType> conversion_function,
-         const ProtobufHttpStatus& status,
-         std::unique_ptr<ProtoType> proto_type) {
+         const HttpStatus& status, std::unique_ptr<ProtoType> proto_type) {
         std::move(struct_callback)
             .Run(status,
                  proto_type ? conversion_function(*proto_type) : nullptr);

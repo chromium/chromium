@@ -71,7 +71,7 @@ void CorpHeartbeatServiceClient::CancelPendingRequests() {
 
 void CorpHeartbeatServiceClient::OnSendHeartbeatResponse(
     HeartbeatResponseCallback callback,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<Empty>) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RunHeartbeatResponseCallback(std::move(callback), status);
@@ -79,7 +79,7 @@ void CorpHeartbeatServiceClient::OnSendHeartbeatResponse(
 
 void CorpHeartbeatServiceClient::OnUpdateRemoteAccessHostResponse(
     HeartbeatResponseCallback callback,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<internal::RemoteAccessHostV1Proto>) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (status.ok()) {
@@ -91,7 +91,7 @@ void CorpHeartbeatServiceClient::OnUpdateRemoteAccessHostResponse(
 
 void CorpHeartbeatServiceClient::OnReportHostOffline(
     HeartbeatResponseCallback callback,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<internal::RemoteAccessHostV1Proto>) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RunHeartbeatResponseCallback(std::move(callback), status);
@@ -110,7 +110,7 @@ void CorpHeartbeatServiceClient::MakeUpdateRemoteAccessHostCall(
 
 void CorpHeartbeatServiceClient::RunHeartbeatResponseCallback(
     HeartbeatResponseCallback callback,
-    const ProtobufHttpStatus& status) {
+    const HttpStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!status.ok()) {

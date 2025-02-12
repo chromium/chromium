@@ -14,7 +14,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -219,18 +219,18 @@ void ComputeEngineServiceClient::OnRequestComplete(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   net::Error net_error = static_cast<net::Error>(url_loader_->NetError());
-  ProtobufHttpStatus http_status = ProtobufHttpStatus::OK();
+  HttpStatus http_status = HttpStatus::OK();
   if (net_error != net::Error::OK &&
       net_error != net::Error::ERR_HTTP_RESPONSE_CODE_FAILURE) {
-    http_status = ProtobufHttpStatus(net_error);
+    http_status = HttpStatus(net_error);
   } else if (!url_loader_->ResponseInfo() ||
              !url_loader_->ResponseInfo()->headers ||
              url_loader_->ResponseInfo()->headers->response_code() <= 0) {
-    http_status = ProtobufHttpStatus(
-        ProtobufHttpStatus::Code::INTERNAL,
-        "Failed to get HTTP status from the response header.");
+    http_status =
+        HttpStatus(HttpStatus::Code::INTERNAL,
+                   "Failed to get HTTP status from the response header.");
   } else {
-    http_status = ProtobufHttpStatus(static_cast<net::HttpStatusCode>(
+    http_status = HttpStatus(static_cast<net::HttpStatusCode>(
         url_loader_->ResponseInfo()->headers->response_code()));
   }
 

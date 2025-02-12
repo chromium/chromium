@@ -13,9 +13,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/mock_oauth_token_getter.h"
 #include "remoting/base/oauth_token_getter.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
 #include "remoting/signaling/messaging_client.h"
 #include "remoting/signaling/registration_manager.h"
@@ -118,7 +118,7 @@ class FakeMessagingClient : public MessagingClient {
     }
   }
 
-  void RejectReceivingMessages(const ProtobufHttpStatus& status) {
+  void RejectReceivingMessages(const HttpStatus& status) {
     DCHECK(is_receiving_messages_);
     std::vector<DoneCallback> on_closed_callbacks;
     on_closed_callbacks.swap(on_closed_callbacks_);
@@ -137,9 +137,9 @@ class FakeMessagingClient : public MessagingClient {
 
 class FakeRegistrationManager : public RegistrationManager {
  public:
-  using SignInCallback = base::RepeatingCallback<ProtobufHttpStatus(
-      std::string* out_registration_id,
-      std::string* out_auth_token)>;
+  using SignInCallback =
+      base::RepeatingCallback<HttpStatus(std::string* out_registration_id,
+                                         std::string* out_auth_token)>;
 
   FakeRegistrationManager() = default;
   ~FakeRegistrationManager() override = default;
@@ -162,11 +162,11 @@ class FakeRegistrationManager : public RegistrationManager {
   void ExpectSignInGaiaSucceeds() {
     EXPECT_CALL(*this, SignInGaia(_)).WillOnce([&](DoneCallback callback) {
       is_signed_in_ = true;
-      std::move(callback).Run(ProtobufHttpStatus::OK());
+      std::move(callback).Run(HttpStatus::OK());
     });
   }
 
-  void ExpectSignInGaiaFails(const ProtobufHttpStatus& status) {
+  void ExpectSignInGaiaFails(const HttpStatus& status) {
     EXPECT_CALL(*this, SignInGaia(_)).WillOnce([status](DoneCallback callback) {
       std::move(callback).Run(status);
     });
@@ -282,8 +282,8 @@ TEST_F(FtlSignalStrategyTest, SignInGaiaAuthError_InvalidatesOAuthToken) {
   ASSERT_FALSE(signal_strategy_->IsSignInError());
 
   ExpectGetOAuthTokenSucceedsWithFakeCreds();
-  registration_manager_->ExpectSignInGaiaFails(ProtobufHttpStatus(
-      ProtobufHttpStatus::Code::UNAUTHENTICATED, "unauthenticated"));
+  registration_manager_->ExpectSignInGaiaFails(
+      HttpStatus(HttpStatus::Code::UNAUTHENTICATED, "unauthenticated"));
   EXPECT_CALL(*token_getter_, InvalidateCache()).WillOnce(Return());
 
   signal_strategy_->Connect();
@@ -328,7 +328,7 @@ TEST_F(FtlSignalStrategyTest, StartStream_Failure) {
   signal_strategy_->Connect();
   ASSERT_TRUE(registration_manager_->IsSignedIn());
   messaging_client_->RejectReceivingMessages(
-      ProtobufHttpStatus(ProtobufHttpStatus::Code::UNAVAILABLE, "unavailable"));
+      HttpStatus(HttpStatus::Code::UNAVAILABLE, "unavailable"));
   // Remain signed-in for non-auth related error.
   ASSERT_TRUE(registration_manager_->IsSignedIn());
 
@@ -352,7 +352,7 @@ TEST_F(FtlSignalStrategyTest, StreamRemotelyClosed) {
   signal_strategy_->Connect();
   messaging_client_->AcceptReceivingMessages();
   messaging_client_->RejectReceivingMessages(
-      ProtobufHttpStatus(ProtobufHttpStatus::Code::UNAVAILABLE, "unavailable"));
+      HttpStatus(HttpStatus::Code::UNAVAILABLE, "unavailable"));
   // Remain signed-in for non-auth related error.
   ASSERT_TRUE(registration_manager_->IsSignedIn());
 
@@ -382,7 +382,7 @@ TEST_F(FtlSignalStrategyTest, SendStanza_Success) {
                                 const ftl::ChromotingMessage& message,
                                 MessagingClient::DoneCallback on_done) {
         ASSERT_EQ(stanza_string, message.xmpp().stanza());
-        std::move(on_done).Run(ProtobufHttpStatus::OK());
+        std::move(on_done).Run(HttpStatus::OK());
       });
   signal_strategy_->SendStanza(std::move(stanza));
 }
@@ -402,8 +402,8 @@ TEST_F(FtlSignalStrategyTest, SendStanza_AuthError) {
       .WillOnce([](const std::string&, const std::string&,
                    const ftl::ChromotingMessage& message,
                    MessagingClient::DoneCallback on_done) {
-        std::move(on_done).Run(ProtobufHttpStatus(
-            ProtobufHttpStatus::Code::UNAUTHENTICATED, "unauthenticated"));
+        std::move(on_done).Run(
+            HttpStatus(HttpStatus::Code::UNAUTHENTICATED, "unauthenticated"));
       });
   signal_strategy_->SendStanza(std::move(stanza));
 
@@ -431,8 +431,8 @@ TEST_F(FtlSignalStrategyTest, SendStanza_NetworkError) {
       .WillOnce([](const std::string&, const std::string&,
                    const ftl::ChromotingMessage& message,
                    MessagingClient::DoneCallback on_done) {
-        std::move(on_done).Run(ProtobufHttpStatus(
-            ProtobufHttpStatus::Code::UNAVAILABLE, "unavailable"));
+        std::move(on_done).Run(
+            HttpStatus(HttpStatus::Code::UNAVAILABLE, "unavailable"));
       });
   signal_strategy_->SendStanza(std::move(stanza));
 
@@ -532,7 +532,7 @@ TEST_F(FtlSignalStrategyTest, SendMessage_Success) {
                                   const ftl::ChromotingMessage& message,
                                   MessagingClient::DoneCallback on_done) {
         ASSERT_EQ(message_payload, message.xmpp().stanza());
-        std::move(on_done).Run(ProtobufHttpStatus::OK());
+        std::move(on_done).Run(HttpStatus::OK());
       });
 
   signal_strategy_->SendMessage(
@@ -553,8 +553,8 @@ TEST_F(FtlSignalStrategyTest, SendMessage_AuthError) {
       .WillOnce([](const std::string&, const std::string&,
                    const ftl::ChromotingMessage& message,
                    MessagingClient::DoneCallback on_done) {
-        std::move(on_done).Run(ProtobufHttpStatus(
-            ProtobufHttpStatus::Code::UNAUTHENTICATED, "unauthenticated"));
+        std::move(on_done).Run(
+            HttpStatus(HttpStatus::Code::UNAUTHENTICATED, "unauthenticated"));
       });
 
   ftl::ChromotingMessage message;
@@ -587,8 +587,8 @@ TEST_F(FtlSignalStrategyTest, SendMessage_NetworkError) {
       .WillOnce([](const std::string&, const std::string&,
                    const ftl::ChromotingMessage& message,
                    MessagingClient::DoneCallback on_done) {
-        std::move(on_done).Run(ProtobufHttpStatus(
-            ProtobufHttpStatus::Code::UNAVAILABLE, "unavailable"));
+        std::move(on_done).Run(
+            HttpStatus(HttpStatus::Code::UNAVAILABLE, "unavailable"));
       });
 
   ftl::ChromotingMessage message;
