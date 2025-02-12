@@ -36,7 +36,7 @@ namespace ash {
 namespace {
 
 constexpr char kTenorBaseUrl[] = "https://tenor.googleapis.com";
-constexpr char kHttpMethod[] = "GET";
+constexpr HttpMethod kHttpMethod = HttpMethod::kGet;
 constexpr char kHttpContentType[] = "application/json";
 
 constexpr char kContentFilterName[] = "contentfilter";
@@ -99,13 +99,13 @@ std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
   return std::make_unique<EndpointFetcher>(
       /*url_loader_factory=*/std::move(url_loader_factory),
       /*url=*/url,
-      /*http_method=*/kHttpMethod,
       /*content_type=*/kHttpContentType,
       /*timeout=*/kTimeout,
       /*post_data=*/"",
       /*headers=*/std::vector<std::string>(),
-      /*cors_exempt_headers=*/std::vector<std::string>(),
-      /*annotation_tag=*/annotation_tag, ash::GetChannel());
+      /*cors_exempt_headers=*/std::vector<std::string>(), ash::GetChannel(),
+      EndpointFetcher::RequestParams::Builder(kHttpMethod, annotation_tag)
+          .Build());
 }
 
 const base::Value::List* FindList(
