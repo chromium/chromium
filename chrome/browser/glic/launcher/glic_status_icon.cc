@@ -7,8 +7,10 @@
 #include <memory>
 #include <optional>
 
+#include "base/location.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/version_info/channel.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -129,7 +131,9 @@ void GlicStatusIcon::OnStatusIconClicked() {
 }
 
 void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
-  auto* profile = GlicProfileManager::GetInstance()->GetProfileForLaunch();
+  // If the profile isn't loaded, getting the profile can be blocking.
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
   switch (command_id) {
     case IDC_GLIC_STATUS_ICON_MENU_SHOW: {
       controller_->Show(InvocationSource::kOsButtonMenu);
@@ -138,18 +142,21 @@ void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
       break;
     }
     case IDC_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT: {
+      auto* profile = GlicProfileManager::GetInstance()->GetProfileForLaunch();
       OpenGlicKeyboardShortcutSetting(profile);
       base::RecordAction(base::UserMetricsAction(
           "GlicOsEntrypoint.ContextMenuSelection.OpenHotkeySettings"));
       break;
     }
     case IDC_GLIC_STATUS_ICON_MENU_REMOVE_ICON: {
+      auto* profile = GlicProfileManager::GetInstance()->GetProfileForLaunch();
       OpenGlicOsToggleSetting(profile);
       base::RecordAction(base::UserMetricsAction(
           "GlicOsEntrypoint.ContextMenuSelection.RemoveIcon"));
       break;
     }
     case IDC_GLIC_STATUS_ICON_MENU_SETTINGS: {
+      auto* profile = GlicProfileManager::GetInstance()->GetProfileForLaunch();
       OpenGlicSettingsPage(profile);
       base::RecordAction(base::UserMetricsAction(
           "GlicOsEntrypoint.ContextMenuSelection.OpenSettings"));
