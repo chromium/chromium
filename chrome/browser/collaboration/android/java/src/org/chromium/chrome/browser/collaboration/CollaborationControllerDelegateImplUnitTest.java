@@ -31,10 +31,14 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.widget.loading.LoadingFullscreenCoordinator;
 import org.chromium.components.collaboration.FlowType;
 import org.chromium.components.collaboration.Outcome;
@@ -73,6 +77,9 @@ public class CollaborationControllerDelegateImplUnitTest {
     @Mock private Callback<Boolean> mCloseScreenCallback;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private LoadingFullscreenCoordinator mLoadingFullscreenCoordinator;
+    @Mock private SigninManager mSigninManager;
+    @Mock private SettingsNavigation mSettingsNavigation;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
 
     @Mock
     private CollaborationControllerDelegateImpl.Natives
@@ -86,7 +93,11 @@ public class CollaborationControllerDelegateImplUnitTest {
         CollaborationControllerDelegateImplJni.setInstanceForTesting(
                 mCollaborationControllerDelegateImplNativeMock);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
 
+        doReturn(mSigninManager).when(mIdentityServicesProvider).getSigninManager(mProfile);
+        doReturn(true).when(mSigninManager).isSigninAllowed();
         doReturn((long) 0)
                 .when(mCollaborationControllerDelegateImplNativeMock)
                 .createNativeObject(any());
@@ -137,6 +148,31 @@ public class CollaborationControllerDelegateImplUnitTest {
         intentCallbackCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, null);
         verify(mCollaborationControllerDelegateImplNativeMock)
                 .runResultCallback(eq(Outcome.SUCCESS), eq(resultCallback));
+    }
+
+    @Test
+    public void testSigninNotAllowed() {
+        createDelegate(FlowType.JOIN);
+        long resultCallback = 1;
+
+        doReturn(false).when(mSigninManager).isSigninAllowed();
+
+        mCollaborationControllerDelegateImpl.showAuthenticationUi(resultCallback);
+        verify(mLoadingFullscreenCoordinator).closeLoadingScreen();
+
+        ArgumentCaptor<PropertyModel> propertyModelCaptor =
+                ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mModalDialogManager).showDialog(propertyModelCaptor.capture(), anyInt());
+
+        ModalDialogProperties.Controller controller =
+                propertyModelCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
+        controller.onClick(propertyModelCaptor.getValue(), ButtonType.POSITIVE);
+        verify(mModalDialogManager).dismissDialog(any(), anyInt());
+        verify(mSettingsNavigation).startSettings(eq(mActivity), anyInt());
+
+        controller.onDismiss(propertyModelCaptor.getValue(), DialogDismissalCause.NAVIGATE);
+        verify(mCollaborationControllerDelegateImplNativeMock)
+                .runResultCallback(eq(Outcome.CANCEL), eq(resultCallback));
     }
 
     @Test
