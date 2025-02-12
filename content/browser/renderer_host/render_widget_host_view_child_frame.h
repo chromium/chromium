@@ -95,7 +95,6 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void WasOccluded() override;
   gfx::Rect GetViewBounds() override;
   gfx::Size GetVisibleViewportSize() override;
-  gfx::Size GetVisibleViewportSizeDevicePx() override;
   void SetInsets(const gfx::Insets& insets) override;
   gfx::NativeView GetNativeView() override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
