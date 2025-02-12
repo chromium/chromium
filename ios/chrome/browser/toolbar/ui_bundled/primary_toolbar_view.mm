@@ -524,7 +524,8 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
 
   _bannerPromoBackground = [[UIView alloc] init];
   _bannerPromoBackground.translatesAutoresizingMaskIntoConstraints = NO;
-  _bannerPromoBackground.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
+  _bannerPromoBackground.backgroundColor =
+      [UIColor colorNamed:@"banner_promo_background_color"];
   _bannerPromoBackground.clipsToBounds = YES;
   [self addSubview:_bannerPromoBackground];
 
