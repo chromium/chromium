@@ -200,6 +200,14 @@ Please follow these general guidelines:
 In both cases, when filing bugs, please include links to the build and/or CL
 (including relevant patchset information) in question.
 
+### How do I stop the CQ?
+
+There are a few ways to do this. Here are 3:
+
+1. Change the Commit-Queue value from +1 to 0 in Gerrit UI.
+2. Upload a new patchset which triggers a new dry run (Ex: git cl upload -d).
+3. Code-Review -1. This prevents a CL from landing.
+
 ### How do I add a new builder to the CQ?
 
 There are several requirements for a builder to be added to the Commit Queue.
