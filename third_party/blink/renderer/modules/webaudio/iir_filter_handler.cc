@@ -14,6 +14,8 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/platform/audio/audio_dsp_kernel.h"
 #include "third_party/blink/renderer/platform/audio/audio_dsp_kernel_processor.h"
@@ -28,6 +30,8 @@ namespace blink {
 namespace {
 
 constexpr uint32_t kNumberOfChannels = 1;
+
+constexpr unsigned kDefaultNumberOfOutputChannels = 1;
 
 }  // namespace
 
@@ -183,20 +187,19 @@ IIRFilterHandler::IIRFilterHandler(AudioNode& node,
                                    const Vector<double>& feedforward_coef,
                                    const Vector<double>& feedback_coef,
                                    bool is_filter_stable)
-    : AudioBasicProcessorHandler(
-          kNodeTypeIIRFilter,
-          node,
+    : AudioHandler(kNodeTypeIIRFilter, node, sample_rate),
+      processor_(std::make_unique<IIRProcessor>(
           sample_rate,
-          std::make_unique<IIRProcessor>(
-              sample_rate,
-              kNumberOfChannels,
-              node.context()->GetDeferredTaskHandler().RenderQuantumFrames(),
-              feedforward_coef,
-              feedback_coef,
-              is_filter_stable)) {
+          kNumberOfChannels,
+          node.context()->GetDeferredTaskHandler().RenderQuantumFrames(),
+          feedforward_coef,
+          feedback_coef,
+          is_filter_stable)) {
   DCHECK(Context());
   DCHECK(Context()->GetExecutionContext());
 
+  AddInput();
+  AddOutput(kDefaultNumberOfOutputChannels);
   task_runner_ = Context()->GetExecutionContext()->GetTaskRunner(
       TaskType::kMediaElementEvent);
 }
@@ -211,8 +214,27 @@ scoped_refptr<IIRFilterHandler> IIRFilterHandler::Create(
       node, sample_rate, feedforward_coef, feedback_coef, is_filter_stable));
 }
 
+IIRFilterHandler::~IIRFilterHandler() {
+  // Safe to call the uninitialize() because it's final.
+  Uninitialize();
+}
 void IIRFilterHandler::Process(uint32_t frames_to_process) {
-  AudioBasicProcessorHandler::Process(frames_to_process);
+  AudioBus* destination_bus = Output(0).Bus();
+
+  if (!IsInitialized() || !Processor() ||
+      Processor()->NumberOfChannels() != NumberOfChannels()) {
+    destination_bus->Zero();
+  } else {
+    scoped_refptr<AudioBus> source_bus = Input(0).Bus();
+
+    // FIXME: if we take "tail time" into account, then we can avoid calling
+    // processor()->process() once the tail dies down.
+    if (!Input(0).IsConnected()) {
+      source_bus->Zero();
+    }
+
+    Processor()->Process(source_bus.get(), destination_bus, frames_to_process);
+  }
 
   if (!did_warn_bad_filter_state_) {
     // Inform the user once if the output has a non-finite value.  This is a
@@ -228,6 +250,78 @@ void IIRFilterHandler::Process(uint32_t frames_to_process) {
   }
 }
 
+void IIRFilterHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
+  if (!IsInitialized() || !Processor()) {
+    return;
+  }
+
+  Processor()->ProcessOnlyAudioParams(frames_to_process);
+}
+
+// Nice optimization in the very common case allowing for "in-place" processing
+void IIRFilterHandler::PullInputs(uint32_t frames_to_process) {
+  // Render input stream - suggest to the input to render directly into output
+  // bus for in-place processing in process() if possible.
+  Input(0).Pull(Output(0).Bus(), frames_to_process);
+}
+
+void IIRFilterHandler::Initialize() {
+  if (IsInitialized()) {
+    return;
+  }
+
+  DCHECK(Processor());
+  Processor()->Initialize();
+
+  AudioHandler::Initialize();
+}
+
+void IIRFilterHandler::Uninitialize() {
+  if (!IsInitialized()) {
+    return;
+  }
+
+  DCHECK(Processor());
+  Processor()->Uninitialize();
+
+  AudioHandler::Uninitialize();
+}
+
+// As soon as we know the channel count of our input, we can lazily initialize.
+// Sometimes this may be called more than once with different channel counts, in
+// which case we must safely uninitialize and then re-initialize with the new
+// channel count.
+void IIRFilterHandler::CheckNumberOfChannelsForInput(AudioNodeInput* input) {
+  DCHECK(Context()->IsAudioThread());
+  Context()->AssertGraphOwner();
+
+  DCHECK_EQ(input, &Input(0));
+  DCHECK(Processor());
+
+  unsigned number_of_channels = input->NumberOfChannels();
+
+  if (IsInitialized() && number_of_channels != Output(0).NumberOfChannels()) {
+    // We're already initialized but the channel count has changed.
+    Uninitialize();
+  }
+
+  if (!IsInitialized()) {
+    // This will propagate the channel count to any nodes connected further down
+    // the chain...
+    Output(0).SetNumberOfChannels(number_of_channels);
+
+    // Re-initialize the processor with the new channel count.
+    Processor()->SetNumberOfChannels(number_of_channels);
+    Initialize();
+  }
+
+  AudioHandler::CheckNumberOfChannelsForInput(input);
+}
+
+unsigned IIRFilterHandler::NumberOfChannels() {
+  return Output(0).NumberOfChannels();
+}
+
 void IIRFilterHandler::GetFrequencyResponse(int n_frequencies,
                                             const float* frequency_hz,
                                             float* mag_response,
@@ -235,6 +329,19 @@ void IIRFilterHandler::GetFrequencyResponse(int n_frequencies,
   static_cast<IIRProcessor*>(Processor())
       ->GetFrequencyResponse(n_frequencies, frequency_hz, mag_response,
                              phase_response);
+}
+
+bool IIRFilterHandler::HasNonFiniteOutput() const {
+  AudioBus* output_bus = Output(0).Bus();
+
+  for (wtf_size_t k = 0; k < output_bus->NumberOfChannels(); ++k) {
+    AudioChannel* channel = output_bus->Channel(k);
+    if (channel->length() > 0 && !std::isfinite(channel->Data()[0])) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void IIRFilterHandler::NotifyBadState() const {
@@ -248,6 +355,18 @@ void IIRFilterHandler::NotifyBadState() const {
           mojom::blink::ConsoleMessageSource::kJavaScript,
           mojom::blink::ConsoleMessageLevel::kWarning,
           NodeTypeName() + ": state is bad, probably due to unstable filter."));
+}
+
+bool IIRFilterHandler::RequiresTailProcessing() const {
+  return processor_->RequiresTailProcessing();
+}
+
+double IIRFilterHandler::TailTime() const {
+  return processor_->TailTime();
+}
+
+double IIRFilterHandler::LatencyTime() const {
+  return processor_->LatencyTime();
 }
 
 }  // namespace blink
