@@ -2251,6 +2251,9 @@ message ExtensionTelemetryReportRequest {
     // Bitmask of reason(s) the Chrome extension is disabled.
     // Bit positions are defined in extensions::disable_reason::DisableReason
     // (located in //extensions/browser/disable_reason.h)
+    //
+    // TODO(crbug.com/372186532): This field will be deprecated in favor of
+    // disable_reasons_list field below.
     optional uint32 disable_reasons = 13;
 
     // Manifest.json file associated with the extension. Only populated for
@@ -2274,7 +2277,12 @@ message ExtensionTelemetryReportRequest {
     // Installation policy for the extension determined by enterprise policy.
     optional InstallationPolicy installation_policy = 17;
 
-    // Next available tag number: 18.
+    // List of reasons for which the Chrome extension is disabled. The reason
+    // values are defined in extensions::disable_reason::DisableReason (located
+    // in //extensions/browser/disable_reason.h).
+    repeated uint32 disable_reasons_list = 18;
+
+    // Next available tag number: 19.
   }
 
   // Information about the various telemetry signals.
