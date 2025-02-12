@@ -2649,8 +2649,7 @@ void View::Focus() {
         view_accessibility_ ? view_accessibility_->FocusedVirtualChild()
                             : nullptr;
     if (focused_virtual_child) {
-      focused_virtual_child->NotifyAccessibilityEventDeprecated(
-          ax::mojom::Event::kFocus);
+      focused_virtual_child->NotifyEvent(ax::mojom::Event::kFocus, true);
     } else {
       NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
     }

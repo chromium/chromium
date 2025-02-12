@@ -98,6 +98,7 @@ void ViewAccessibility::AddVirtualChildView(
 void ViewAccessibility::AddVirtualChildViewAt(
     std::unique_ptr<AXVirtualView> virtual_view,
     size_t index) {
+  CHECK(view_);
   DCHECK(virtual_view);
   DCHECK_LE(index, virtual_children_.size());
 
@@ -114,6 +115,9 @@ void ViewAccessibility::AddVirtualChildViewAt(
   auto insert_iterator =
       virtual_children_.begin() + static_cast<ptrdiff_t>(index);
   virtual_children_.insert(insert_iterator, std::move(virtual_view));
+
+  AXVirtualView* added_view = virtual_children_[index].get();
+  added_view->OnViewHasNewAncestor(view_);
 }
 
 std::unique_ptr<AXVirtualView> ViewAccessibility::RemoveVirtualChildView(
@@ -229,8 +233,7 @@ void ViewAccessibility::OverrideFocus(AXVirtualView* virtual_view) {
 
   if (view_->HasFocus()) {
     if (focused_virtual_child_) {
-      focused_virtual_child_->NotifyAccessibilityEventDeprecated(
-          ax::mojom::Event::kFocus);
+      focused_virtual_child_->NotifyEvent(ax::mojom::Event::kFocus, true);
     } else {
       NotifyEvent(ax::mojom::Event::kFocus, true);
     }
@@ -689,6 +692,12 @@ void ViewAccessibility::SetIsEnabled(bool is_enabled) {
     data_.SetRestriction(ax::mojom::Restriction::kNone);
   }
 
+  // AXVirtualViews should be marked as disabled if their
+  // owner View is disabled.
+  for (auto& virtual_child : virtual_children()) {
+    virtual_child->SetIsEnabledRecursive(is_enabled);
+  }
+
   UpdateFocusableState();
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kRestriction,
@@ -1056,6 +1065,11 @@ void ViewAccessibility::SetShowContextMenu(bool show_context_menu) {
   } else {
     data_.RemoveAction(ax::mojom::Action::kShowContextMenu);
   }
+
+  // We must add/remove the action to any virtual children as well.
+  for (auto& virtual_child : virtual_children()) {
+    virtual_child->SetShowContextMenuRecursive(show_context_menu);
+  }
 }
 
 void ViewAccessibility::SetContainerLiveStatus(const std::string& status) {
@@ -1131,16 +1145,23 @@ void ViewAccessibility::SetHasFocusableAncestor(bool ancestor_focusable) {
 
 void ViewAccessibility::SetHasFocusableAncestorRecursive(
     bool ancestor_focusable) {
-  CHECK(view_);
-  for (auto& child : view_->children()) {
-    child->GetViewAccessibility().SetHasFocusableAncestor(ancestor_focusable);
-    // If the child has been explicitly set to focusable, we skip its subtree
-    // since their state will be respected and should already be up to date.
-    if (child->GetFocusBehavior() != View::FocusBehavior::NEVER) {
-      continue;
+  if (view_) {
+    for (auto& child : view_->children()) {
+      child->GetViewAccessibility().SetHasFocusableAncestor(ancestor_focusable);
+      // If the child has been explicitly set to focusable, we skip its subtree
+      // since their state will be respected and should already be up to date.
+      if (child->GetFocusBehavior() != View::FocusBehavior::NEVER) {
+        continue;
+      }
+      child->GetViewAccessibility().SetHasFocusableAncestorRecursive(
+          ancestor_focusable);
     }
-    child->GetViewAccessibility().SetHasFocusableAncestorRecursive(
-        ancestor_focusable);
+  }
+
+  // Now we do the same for any virtual children.
+  for (auto& child : virtual_children()) {
+    child->SetHasFocusableAncestor(ancestor_focusable);
+    child->SetHasFocusableAncestorRecursive(ancestor_focusable);
   }
 
   UpdateIgnoredState();
@@ -1177,6 +1198,12 @@ void ViewAccessibility::UpdateInvisibleByInheritanceRecursive(
   for (auto& child : view_->children()) {
     child->GetViewAccessibility().UpdateInvisibleByInheritanceRecursive(
         initial_view, invisible_by_inheritance);
+  }
+
+  // Now we do the same for any virtual children.
+  for (auto& child : virtual_children()) {
+    child->UpdateParentViewIsDrawnRecursive(initial_view,
+                                            !invisible_by_inheritance);
   }
 }
 
@@ -1227,6 +1254,11 @@ void ViewAccessibility::OnViewHasNewAncestor(const View* new_ancestor) {
   UpdateReadyToNotifyEvents();
   for (auto& child : view_->children()) {
     child->GetViewAccessibility().OnViewHasNewAncestor(new_ancestor);
+  }
+
+  // Now we do the same for any virtual children.
+  for (auto& child : virtual_children()) {
+    child->OnViewHasNewAncestor(ancestor_focusable);
   }
 }
 
@@ -1390,6 +1422,11 @@ void ViewAccessibility::CompleteCacheInitializationRecursive() {
       child->GetViewAccessibility().CompleteCacheInitializationRecursive();
     }
   }
+
+  // Now we do the same for any virtual children.
+  for (auto& child : virtual_children()) {
+    child->CompleteCacheInitializationRecursive();
+  }
 }
 
 void ViewAccessibility::OnWidgetClosing(Widget* widget) {
@@ -1479,12 +1516,12 @@ void ViewAccessibility::UpdateIgnoredState() {
 // ignored.
 #if !BUILDFLAG(IS_CHROMEOS)
   bool is_ignored = should_be_ignored_ || pruned_ ||
-                    data_.role == ax::mojom::Role::kNone ||
+                    GetCachedRole() == ax::mojom::Role::kNone ||
                     (has_focusable_ancestor_ &&
                      view_->GetFocusBehavior() == View::FocusBehavior::NEVER);
 #else
-  bool is_ignored =
-      should_be_ignored_ || pruned_ || data_.role == ax::mojom::Role::kNone;
+  bool is_ignored = should_be_ignored_ || pruned_ ||
+                    GetCachedRole() == ax::mojom::Role::kNone;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   SetState(ax::mojom::State::kIgnored, is_ignored);
   UpdateFocusableState();
@@ -1505,9 +1542,15 @@ void ViewAccessibility::SetReadyToNotifyEvents() {
 void ViewAccessibility::SetWidgetClosedRecursive(Widget* widget, bool value) {
   is_widget_closed_ = value;
 
-  internal::ScopedChildrenLock lock(view_);
-  for (auto& child : view_->children()) {
-    child->GetViewAccessibility().SetWidgetClosedRecursive(widget, value);
+  if (view_) {
+    internal::ScopedChildrenLock lock(view_);
+    for (auto& child : view_->children()) {
+      child->GetViewAccessibility().SetWidgetClosedRecursive(widget, value);
+    }
+  }
+
+  for (auto& child : virtual_children()) {
+    child->SetWidgetClosedRecursive(widget, value);
   }
 }
 

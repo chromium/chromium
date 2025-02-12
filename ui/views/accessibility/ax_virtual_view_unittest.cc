@@ -74,8 +74,8 @@ class AXVirtualViewTest : public ViewsTestBase {
     button->GetViewAccessibility().SetName(u"Button");
     button_ = widget_->GetContentsView()->AddChildView(std::move(button));
     auto virtual_label = std::make_unique<AXVirtualView>();
-    virtual_label->GetCustomData().role = ax::mojom::Role::kStaticText;
-    virtual_label->GetCustomData().SetNameChecked("Label");
+    virtual_label->SetRole(ax::mojom::Role::kStaticText);
+    virtual_label->SetName("Label");
     virtual_label_ = virtual_label.get();
     button_->GetViewAccessibility().AddVirtualChildView(
         std::move(virtual_label));
@@ -146,7 +146,7 @@ TEST_F(AXVirtualViewTest, AccessibilityRoleAndName) {
 // The focusable state of a virtual view should not depend on the focusable
 // state of the real view ancestor, however the enabled state should.
 TEST_F(AXVirtualViewTest, FocusableAndEnabledState) {
-  virtual_label_->GetCustomData().AddState(ax::mojom::State::kFocusable);
+  virtual_label_->ForceSetIsFocusable(true);
   EXPECT_TRUE(GetButtonAccessibility()->HasState(ax::mojom::State::kFocusable));
   EXPECT_TRUE(virtual_label_->HasState(ax::mojom::State::kFocusable));
   EXPECT_EQ(ax::mojom::Restriction::kNone,
@@ -174,7 +174,7 @@ TEST_F(AXVirtualViewTest, FocusableAndEnabledState) {
 
   button_->SetEnabled(true);
   button_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  virtual_label_->GetCustomData().RemoveState(ax::mojom::State::kFocusable);
+  virtual_label_->ForceSetIsFocusable(false);
   EXPECT_TRUE(GetButtonAccessibility()->HasState(ax::mojom::State::kFocusable));
   EXPECT_FALSE(virtual_label_->HasState(ax::mojom::State::kFocusable));
   EXPECT_EQ(ax::mojom::Restriction::kNone,
@@ -598,7 +598,7 @@ TEST_F(AXVirtualViewTest, TreeNavigationWithIgnoredVirtualViews) {
 
   AXVirtualView* virtual_child_1 = new AXVirtualView;
   virtual_label_->AddChildView(base::WrapUnique(virtual_child_1));
-  virtual_child_1->GetCustomData().AddState(ax::mojom::State::kIgnored);
+  virtual_child_1->SetIsIgnored(true);
 
   EXPECT_EQ(0u, virtual_label_->GetChildCount());
   EXPECT_EQ(0u, virtual_child_1->GetChildCount());
@@ -640,7 +640,7 @@ TEST_F(AXVirtualViewTest, TreeNavigationWithIgnoredVirtualViews) {
             virtual_child_2->ChildAtIndex(1));
 
   // Try ignoring a node by changing its role, instead of its state.
-  virtual_child_2->GetCustomData().role = ax::mojom::Role::kNone;
+  virtual_child_2->SetRole(ax::mojom::Role::kNone);
 
   EXPECT_EQ(button_->GetNativeViewAccessible(), virtual_label_->GetParent());
   EXPECT_EQ(virtual_label_->GetNativeObject(), virtual_child_1->GetParent());
@@ -706,7 +706,7 @@ TEST_F(AXVirtualViewTest, TreeNavigationWithIgnoredVirtualViews) {
             virtual_label_->ChildAtIndex(2));
 
   // An ignored root node should not be exposed.
-  virtual_label_->GetCustomData().AddState(ax::mojom::State::kIgnored);
+  virtual_label_->SetIsIgnored(true);
 
   EXPECT_EQ(button_->GetNativeViewAccessible(), virtual_label_->GetParent());
   EXPECT_EQ(button_->GetNativeViewAccessible(), virtual_child_1->GetParent());
@@ -730,8 +730,8 @@ TEST_F(AXVirtualViewTest, TreeNavigationWithIgnoredVirtualViews) {
 
   // Test for mixed ignored and unignored root nodes.
   AXVirtualView* virtual_label_2 = new AXVirtualView;
-  virtual_label_2->GetCustomData().role = ax::mojom::Role::kStaticText;
-  virtual_label_2->GetCustomData().SetNameChecked("Label");
+  virtual_label_2->SetRole(ax::mojom::Role::kStaticText);
+  virtual_label_2->SetName("Label");
   button_->GetViewAccessibility().AddVirtualChildView(
       base::WrapUnique(virtual_label_2));
 
@@ -744,7 +744,7 @@ TEST_F(AXVirtualViewTest, TreeNavigationWithIgnoredVirtualViews) {
             GetButtonAccessibility()->ChildAtIndex(3));
 
   // A focusable node should not be ignored.
-  virtual_child_1->GetCustomData().AddState(ax::mojom::State::kFocusable);
+  virtual_child_1->ForceSetIsFocusable(true);
 
   EXPECT_EQ(2u, GetButtonAccessibility()->GetChildCount());
   EXPECT_EQ(1u, virtual_label_->GetChildCount());
@@ -763,12 +763,10 @@ TEST_F(AXVirtualViewTest, HitTesting) {
 
   // Test that hit testing is recursive.
   AXVirtualView* virtual_child_1 = new AXVirtualView;
-  virtual_child_1->GetCustomData().relative_bounds.bounds =
-      gfx::RectF(0, 0, 10, 10);
+  virtual_child_1->SetBounds(gfx::RectF(0, 0, 10, 10));
   virtual_label_->AddChildView(base::WrapUnique(virtual_child_1));
   AXVirtualView* virtual_child_2 = new AXVirtualView;
-  virtual_child_2->GetCustomData().relative_bounds.bounds =
-      gfx::RectF(5, 5, 5, 5);
+  virtual_child_2->SetBounds(gfx::RectF(5, 5, 5, 5));
   virtual_child_1->AddChildView(base::WrapUnique(virtual_child_2));
   gfx::Point point_1 = gfx::Point(2, 2) + offset_from_origin;
   EXPECT_EQ(virtual_child_1->GetNativeObject(),
@@ -779,12 +777,10 @@ TEST_F(AXVirtualViewTest, HitTesting) {
 
   // Test that hit testing follows the z-order.
   AXVirtualView* virtual_child_3 = new AXVirtualView;
-  virtual_child_3->GetCustomData().relative_bounds.bounds =
-      gfx::RectF(5, 5, 10, 10);
+  virtual_child_3->SetBounds(gfx::RectF(5, 5, 10, 10));
   virtual_label_->AddChildView(base::WrapUnique(virtual_child_3));
   AXVirtualView* virtual_child_4 = new AXVirtualView;
-  virtual_child_4->GetCustomData().relative_bounds.bounds =
-      gfx::RectF(10, 10, 10, 10);
+  virtual_child_4->SetBounds(gfx::RectF(10, 10, 10, 10));
   virtual_child_3->AddChildView(base::WrapUnique(virtual_child_4));
   EXPECT_EQ(virtual_child_3->GetNativeObject(),
             virtual_label_->HitTestSync(point_2.x(), point_2.y()));
@@ -793,7 +789,7 @@ TEST_F(AXVirtualViewTest, HitTesting) {
             virtual_label_->HitTestSync(point_3.x(), point_3.y()));
 
   // Test that hit testing skips ignored nodes but not their descendants.
-  virtual_child_3->GetCustomData().AddState(ax::mojom::State::kIgnored);
+  virtual_child_3->SetIsIgnored(true);
   EXPECT_EQ(virtual_child_2->GetNativeObject(),
             virtual_label_->HitTestSync(point_2.x(), point_2.y()));
   EXPECT_EQ(virtual_child_4->GetNativeObject(),

@@ -209,7 +209,7 @@ void TabAppSelectionHost::OnNativeWidgetVisibilityChanged(bool visible) {
     base::UmaHistogramBoolean("Ash.Birch.Coral.ClusterExpanded", true);
     owner_->GetFocusManager()->ClearFocus();
     GetContentsView()->GetViewAccessibility().NotifyEvent(
-        ax::mojom::Event::kMenuStart);
+        ax::mojom::Event::kMenuStart, /*send_native_event=*/true);
 
     auto on_animation_end = base::BindRepeating(
         [](base::WeakPtr<views::Widget> self) {

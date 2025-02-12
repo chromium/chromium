@@ -688,7 +688,8 @@ void TabAppSelectionView::SetFocus(views::View* focus_view) {
     focus_ring->SchedulePaint();
   }
 
-  focus_view->GetViewAccessibility().NotifyEvent(ax::mojom::Event::kSelection);
+  focus_view->GetViewAccessibility().NotifyEvent(ax::mojom::Event::kSelection,
+                                                 /*send_native_event=*/true);
 }
 
 void TabAppSelectionView::SetBlur(views::View* blur_view) {

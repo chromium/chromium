@@ -576,9 +576,7 @@ class TableViewTest : public ViewsTestBase,
       const int normalized_index = index - first_row_index;
 
       // Make sure the stored row index matches the row index in the table.
-      const ui::AXNodeData& row_data = row->GetCustomData();
-      const int stored_index =
-          row_data.GetIntAttribute(ax::mojom::IntAttribute::kTableRowIndex);
+      const int stored_index = row->GetTableRowIndex();
       EXPECT_EQ(stored_index, normalized_index);
     }
   }
@@ -939,7 +937,14 @@ TEST_P(TableViewTest, ChangingCellFiresAccessibilityEvent) {
   // value.
   // Change the [3, 0] cell to [-1, 0].
   model_->ChangeRow(3, -1, 0);
-  EXPECT_EQ(1, text_changed_count);
+  // When the platform does not support keyboard navigation by cell,
+  // we end up changing the accessible name on both the row and the cell,
+  // which will trigger two events.
+  if constexpr (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+    EXPECT_EQ(2, text_changed_count);
+  } else {
+    EXPECT_EQ(1, text_changed_count);
+  }
   text_changed_count = 0;
 
   // Ensure that "changing" the cell to the same value doesn't fire the event.

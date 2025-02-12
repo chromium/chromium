@@ -84,7 +84,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // (see OverrideFocus, etc. below).
   virtual void GetAccessibleNodeData(ui::AXNodeData* node_data) const;
 
-  void NotifyEvent(ax::mojom::Event event_type, bool send_native_event = true);
+  virtual void NotifyEvent(ax::mojom::Event event_type, bool send_native_event);
 
   // Made to be overridden on platforms that need the temporary
   // `AtomicViewAXTreeManager` to enable more accessibility functionalities for
@@ -338,7 +338,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // it is not advisable to mark a View as enabled in the accessibility tree,
   // while the real View is actually disabled, because such a View will not
   // respond to user actions.
-  void SetIsEnabled(bool is_enabled);
+  virtual void SetIsEnabled(bool is_enabled);
   bool GetIsEnabled() const;
 
   void SetTableRowCount(int row_count);
@@ -421,7 +421,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   Widget* GetNextWindowFocus() const;
   Widget* GetPreviousWindowFocus() const;
 
-  void SetShowContextMenu(bool show_context_menu);
+  virtual void SetShowContextMenu(bool show_context_menu);
 
   void SetContainerLiveStatus(const std::string& status);
   void RemoveContainerLiveStatus();
@@ -449,7 +449,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // The view is considered focusable if it is not set to never receive focus
   // This function must be called whenever an attribute that can affect the
   // focusable state changes
-  void UpdateFocusableState();
+  virtual void UpdateFocusableState();
 
   // Updates has_focusable_ancestor_ and the view's ignored state, which depends
   // on this variable.
@@ -477,7 +477,9 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // invisible if it is not visible and its role is not kAlert, or if it is
   // "invisible by inheritance", meaning one of its ancestors was set to be
   // invisible.
-  void UpdateInvisibleState();
+  virtual void UpdateInvisibleState();
+
+  bool should_be_invisible() const { return should_be_invisible_; }
 
   // Override the child tree id.
   void SetChildTreeID(ui::AXTreeID tree_id);
@@ -575,7 +577,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void OnWidgetClosing(Widget* widget) override;
   void OnWidgetDestroyed(Widget* widget) override;
 
-  void OnWidgetUpdated(Widget* widget, Widget* old_widget);
+  virtual void OnWidgetUpdated(Widget* widget, Widget* old_widget);
 
   void CompleteCacheInitialization();
 
@@ -652,9 +654,71 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   virtual void FireNativeEvent(ax::mojom::Event event_type);
 
-  bool should_be_invisible() const { return should_be_invisible_; }
-
   const ui::AXNodeData& data() const { return data_; }
+
+  // Updates the ignored state of the `data_` object.
+  // The view is considered ignored if it should be ignored as per
+  // `should_be_ignored_`, or if it has been pruned (`pruned_`), or if its role
+  // is 'kNone'.
+  virtual void UpdateIgnoredState();
+
+  void SetState(ax::mojom::State state, bool is_enabled);
+
+  // We don't want to fire accessibility events when the view is being
+  // initialized and any setters are called from their respective constructors.
+  // We only want to fire events of any subtree of views when that subtree of
+  // views is connected to a RootView. This way we ensure that we don't fire
+  // events for views that are not connected to a valid tree. See
+  // `SetRootViewIsReadyToNotifyEvents`.
+  virtual void UpdateReadyToNotifyEvents();
+
+  void SetReadyToNotifyEvents();
+
+  void SetWidgetClosedRecursive(Widget* widget, bool value);
+
+  void SetDataForClosedWidget(ui::AXNodeData* data) const;
+
+  // Contains data that is populated by the setters in this class.
+  // This member is tied to the ViewsAX project. Which is introducing a new
+  // system to set accessible properties in a "push" fashion (instead of pull).
+  // Authors are encouraged to start using it today, and it will eventually
+  // replace the old system. For now, while the migration to the new system
+  // happens, we allow the old system to coexist with he new one by just
+  // unioning the data from both systems. This is done in
+  // GetAccessibleNodeData().
+  ui::AXNodeData data_;
+
+  // Used to determine if a View should be ignored by accessibility clients by
+  // being a non-focusable child of a focusable ancestor.
+  // E.g., LabelButtons contain Labels, but a11y should just show that there's a
+  // button. This helps us make sure this element is excluded from the a11y tree
+  // if there's a focusable parent. All focusable elements should be leaf nodes.
+  // Exceptions to this rule will themselves be accessibility focusable.
+  // TODO(crbug.com/371237539): Eventually this should be standardized across
+  // platforms.
+  bool has_focusable_ancestor_ = false;
+
+  bool pruned_ = false;
+
+  // This keeps track of whether the view is invisible by an ancestor being set
+  // to be invisible.
+  bool is_invisible_by_inheritance_ = false;
+
+  // This is set to true when the view is explicitly marked as ignored by
+  // `SetIsIgnored`. It is not the only condition that will cause a view to have
+  // the ignored accessible state, as `pruned_` and `is_leaf_` can also cause
+  // this. See `UpdateIgnoredState`.
+  bool should_be_ignored_ = false;
+
+  // This is set to true when the view is explicitly marked as invisible by
+  // `SetIsInvisible`. It is not the only condition that will cause a view to
+  // have the invisible accessible state. See `UpdateInvisibleState`.
+  bool should_be_invisible_ = false;
+
+  // Prevents accessibility events from being fired during initialization of
+  // the owning View.
+  // True once a View is connected to a RootView.
+  bool ready_to_notify_events_ = false;
 
   // Used for testing. Called every time an accessibility event is fired.
   AccessibilityEventsCallback accessibility_events_callback_;
@@ -677,26 +741,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void PruneSubtree();
   void UnpruneSubtree();
 
-  // Updates the ignored state of the `data_` object.
-  // The view is considered ignored if it should be ignored as per
-  // `should_be_ignored_`, or if it has been pruned (`pruned_`), or if its role
-  // is 'kNone'.
-  void UpdateIgnoredState();
-
-  // We don't want to fire accessibility events when the view is being
-  // initialized and any setters are called from their respective constructors.
-  // We only want to fire events of any subtree of views when that subtree of
-  // views is connected to a RootView. This way we ensure that we don't fire
-  // events for views that are not connected to a valid tree. See
-  // `SetRootViewIsReadyToNotifyEvents`.
-  void UpdateReadyToNotifyEvents();
-
-  void SetReadyToNotifyEvents();
-
-  void SetWidgetClosedRecursive(Widget* widget, bool value);
-
-  void SetDataForClosedWidget(ui::AXNodeData* data) const;
-
   void OnRoleChanged(ax::mojom::Role role);
   void OnIntAttributeChanged(ax::mojom::IntAttribute attribute,
                              std::optional<int> value);
@@ -707,8 +751,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void OnStateChanged(ax::mojom::State state, bool is_enabled);
   void OnIntListAttributeChanged(ax::mojom::IntListAttribute attribute,
                                  const std::optional<std::vector<int>>& value);
-
-  void SetState(ax::mojom::State state, bool is_enabled);
 
   void SetBlockNotifyEvents(bool block);
 
@@ -728,33 +770,11 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   const ui::AXUniqueId unique_id_{ui::AXUniqueId::Create()};
 
-  // Contains data that is populated by the setters in this class.
-  // This member is tied to the ViewsAX project. Which is introducing a new
-  // system to set accessible properties in a "push" fashion (instead of pull).
-  // Authors are encouraged to start using it today, and it will eventually
-  // replace the old system. For now, while the migration to the new system
-  // happens, we allow the old system to coexist with he new one by just
-  // unioning the data from both systems. This is done in
-  // GetAccessibleNodeData().
-  ui::AXNodeData data_;
 
   // If set to true, anything that is a descendant of this view will be hidden
   // from accessibility by 'pruning' it from the tree, and setting `pruned_` to
   // true.
   bool is_leaf_ = false;
-
-  bool pruned_ = false;
-
-  // This is set to true when the view is explicitly marked as ignored by
-  // `SetIsIgnored`. It is not the only condition that will cause a view to have
-  // the ignored accessible state, as `pruned_` and `is_leaf_` can also cause
-  // this. See `UpdateIgnoredState`.
-  bool should_be_ignored_ = false;
-
-  // This is set to true when the view is explicitly marked as invisible by
-  // `SetIsInvisible`. It is not the only condition that will cause a view to
-  // have the invisible accessible state. See `UpdateInvisibleState`.
-  bool should_be_invisible_ = false;
 
   // Used by the Views system to help some assistive technologies, such as
   // screen readers, transition focus from one widget to another.
@@ -764,28 +784,9 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // Whether to move accessibility focus to an ancestor.
   bool propagate_focus_to_ancestor_ = false;
 
-  // Used to determine if a View should be ignored by accessibility clients by
-  // being a non-focusable child of a focusable ancestor.
-  // E.g., LabelButtons contain Labels, but a11y should just show that there's a
-  // button. This helps us make sure this element is excluded from the a11y tree
-  // if there's a focusable parent. All focusable elements should be leaf nodes.
-  // Exceptions to this rule will themselves be accessibility focusable.
-  // TODO(crbug.com/371237539): Eventually this should be standardized across
-  // platforms.
-  bool has_focusable_ancestor_ = false;
-
   // Whether we need to ensure an AtomicViewAXTreeManager is created for this
   // View.
   bool needs_ax_tree_manager_ = false;
-
-  // Prevents accessibility events from being fired during initialization of
-  // the owning View.
-  // True once a View is connected to a RootView.
-  bool ready_to_notify_events_ = false;
-
-  // This keeps track of whether the view is invisible by an ancestor being set
-  // to be invisible.
-  bool is_invisible_by_inheritance_ = false;
 
   bool is_widget_closed_ = false;
 

@@ -121,11 +121,6 @@ class VIEWS_EXPORT AXVirtualView : public ViewAccessibility,
 
   const char* GetViewClassName() const;
   gfx::NativeViewAccessible GetNativeObject() const override;
-  void NotifyAccessibilityEventDeprecated(ax::mojom::Event event_type);
-  // Allows clients to modify the AXNodeData for this virtual view. This should
-  // be used for attributes that are relatively stable and do not change
-  // dynamically.
-  ui::AXNodeData& GetCustomData();
 
   // ui::AXPlatformNodeDelegate. Note that
   // - Some of these functions have Mac-specific implementations in
@@ -153,7 +148,6 @@ class VIEWS_EXPORT AXVirtualView : public ViewAccessibility,
   bool AccessibilityPerformAction(const ui::AXActionData& data) override;
   bool ShouldIgnoreHoveredStateForTesting() override;
   bool IsOffscreen() const override;
-  ui::AXPlatformNodeId GetUniqueId() const override;
   gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent() override;
   std::vector<int32_t> GetColHeaderNodeIds() const override;
   std::vector<int32_t> GetColHeaderNodeIds(int col_index) const override;
@@ -189,6 +183,35 @@ class VIEWS_EXPORT AXVirtualView : public ViewAccessibility,
   void PruneVirtualSubtree();
   void UnpruneVirtualSubtree();
 
+  // Warning: This method will overwrite the focusable state. In most
+  // cases, we compute the focusable state automatically in
+  // `UpdateFocusableState`, however, AXVirtualViews are not Views, so we need
+  // to provide a way to set their focusable state manually, similar to
+  // the `FocusBehavior` in Views.
+  void ForceSetIsFocusable(bool focusable);
+  void ResetIsFocusable();
+
+  // This is also called by `ViewAccessibility::OnViewHasNewAncestor`, to update
+  // the relevant attributes on its AXVirtualView subtree.
+  void OnViewHasNewAncestor(bool ancestor_focusable);
+
+  void OnViewHasNewAncestor(const AXVirtualView* new_ancestor);
+
+  // `ViewAccessibility` overrides.
+  void NotifyEvent(ax::mojom::Event event_type,
+                   bool send_native_event) override;
+  void UpdateFocusableState() override;
+  void UpdateInvisibleState() override;
+  void OnWidgetClosing(Widget* widget) override;
+  void OnWidgetDestroyed(Widget* widget) override;
+  void OnWidgetUpdated(Widget* widget, Widget* old_widget) override;
+  void UpdateReadyToNotifyEvents() override;
+  void UpdateIgnoredState() override;
+  void SetIsEnabled(bool enabled) override;
+  void SetShowContextMenu(bool show_context_menu) override;
+
+  bool parent_view_is_drawn() const { return parent_view_is_drawn_; }
+
  protected:
   // Forwards a request from assistive technology to perform an action on this
   // virtual view to the owner view's accessible action handler.
@@ -216,6 +239,15 @@ class VIEWS_EXPORT AXVirtualView : public ViewAccessibility,
     parent_view_ = view_accessibility;
   }
 
+  // AXVirtualViews should be marked as disabled if their
+  // owner View is disabled.
+  void SetIsEnabledRecursive(bool enabled);
+
+  void SetShowContextMenuRecursive(bool show_context_menu);
+
+  void UpdateParentViewIsDrawnRecursive(const views::View* initial_view,
+                                        bool parent_view_is_drawn);
+
   // We own this, but it is reference-counted on some platforms so we can't use
   // a unique_ptr. It is destroyed in the destructor.
   raw_ptr<ui::AXPlatformNode> ax_platform_node_;
@@ -235,13 +267,9 @@ class VIEWS_EXPORT AXVirtualView : public ViewAccessibility,
   // this object, if any.
   raw_ptr<AXAuraObjCache> ax_aura_obj_cache_ = nullptr;
 
-  const ui::AXUniqueId unique_id_{ui::AXUniqueId::Create()};
-  ui::AXNodeData custom_data_;
-  base::RepeatingCallback<void(ui::AXNodeData*)> populate_data_callback_;
+  std::optional<bool> should_be_focusable_ = std::nullopt;
 
-  // If set to true, this virtual view will be hidden from accessibility by
-  // 'pruning' it from the tree, by marking it as ignored in `GetData()`.
-  bool pruned_ = false;
+  bool parent_view_is_drawn_ = true;
 
   friend class ViewAccessibility;
 };

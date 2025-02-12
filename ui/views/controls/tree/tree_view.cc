@@ -306,10 +306,8 @@ void TreeView::Collapse(ui::TreeModelNode* model_node) {
     DrawnNodesChanged();
     AXVirtualView* ax_view = node->accessibility_view();
     if (ax_view) {
-      ax_view->NotifyAccessibilityEventDeprecated(
-          ax::mojom::Event::kExpandedChanged);
-      ax_view->NotifyAccessibilityEventDeprecated(
-          ax::mojom::Event::kRowCollapsed);
+      ax_view->NotifyEvent(ax::mojom::Event::kExpandedChanged, true);
+      ax_view->NotifyEvent(ax::mojom::Event::kRowCollapsed, true);
     }
     NotifyAccessibilityEventDeprecated(ax::mojom::Event::kRowCountChanged,
                                        true);
@@ -324,10 +322,8 @@ void TreeView::Expand(TreeModelNode* node) {
     AXVirtualView* ax_view =
         internal_node ? internal_node->accessibility_view() : nullptr;
     if (ax_view) {
-      ax_view->NotifyAccessibilityEventDeprecated(
-          ax::mojom::Event::kExpandedChanged);
-      ax_view->NotifyAccessibilityEventDeprecated(
-          ax::mojom::Event::kRowExpanded);
+      ax_view->NotifyEvent(ax::mojom::Event::kExpandedChanged, true);
+      ax_view->NotifyEvent(ax::mojom::Event::kRowExpanded, true);
     }
     NotifyAccessibilityEventDeprecated(ax::mojom::Event::kRowCountChanged,
                                        true);
@@ -353,10 +349,8 @@ void TreeView::ExpandAll(TreeModelNode* node) {
     AXVirtualView* ax_view =
         internal_node ? internal_node->accessibility_view() : nullptr;
     if (ax_view) {
-      ax_view->NotifyAccessibilityEventDeprecated(
-          ax::mojom::Event::kExpandedChanged);
-      ax_view->NotifyAccessibilityEventDeprecated(
-          ax::mojom::Event::kRowExpanded);
+      ax_view->NotifyEvent(ax::mojom::Event::kExpandedChanged, true);
+      ax_view->NotifyEvent(ax::mojom::Event::kRowExpanded, true);
     }
     NotifyAccessibilityEventDeprecated(ax::mojom::Event::kRowCountChanged,
                                        true);
@@ -403,8 +397,7 @@ void TreeView::SetRootShown(bool root_shown) {
   // There should always be a virtual accessibility view for the root, unless
   // someone calls this method before setting a model.
   if (ax_view) {
-    ax_view->NotifyAccessibilityEventDeprecated(
-        ax::mojom::Event::kStateChanged);
+    ax_view->NotifyEvent(ax::mojom::Event::kStateChanged, true);
   }
   DrawnNodesChanged();
 }
@@ -668,8 +661,8 @@ void TreeView::TreeNodeChanged(TreeModel* model, TreeModelNode* model_node) {
   if (old_width != node->text_width() &&
       ((node == &root_ && root_shown_) ||
        (node != &root_ && IsExpanded(node->parent()->model_node())))) {
-    node->accessibility_view()->NotifyAccessibilityEventDeprecated(
-        ax::mojom::Event::kLocationChanged);
+    node->accessibility_view()->NotifyEvent(ax::mojom::Event::kLocationChanged,
+                                            true);
     DrawnNodesChanged();
   }
 
@@ -920,8 +913,7 @@ void TreeView::UpdateSelection(TreeModelNode* model_node,
     AXVirtualView* ax_selected_view =
         node ? node->accessibility_view() : nullptr;
     if (ax_selected_view) {
-      ax_selected_view->NotifyAccessibilityEventDeprecated(
-          ax::mojom::Event::kSelection);
+      ax_selected_view->NotifyEvent(ax::mojom::Event::kSelection, true);
     } else {
       NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection, true);
     }
@@ -978,7 +970,7 @@ void TreeView::UpdateAccessiblePositionalProperties(InternalNode* node) {
     return;
   }
 
-  ui::AXNodeData& node_data = node->accessibility_view()->GetCustomData();
+  AXVirtualView* accessibility_view = node->accessibility_view();
 
   int row = -1;
 
@@ -986,10 +978,9 @@ void TreeView::UpdateAccessiblePositionalProperties(InternalNode* node) {
     const int depth = root_depth();
     if (depth >= 0) {
       row = 1;
-      node_data.AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel,
-                                int32_t{depth + 1});
-      node_data.AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, 1);
-      node_data.AddIntAttribute(ax::mojom::IntAttribute::kSetSize, 1);
+      accessibility_view->SetHierarchicalLevel(int32_t{depth + 1});
+      accessibility_view->SetPosInSet(1);
+      accessibility_view->SetSetSize(1);
     }
   } else {
     if (!node->parent()) {
@@ -1000,8 +991,7 @@ void TreeView::UpdateAccessiblePositionalProperties(InternalNode* node) {
       int depth = 0;
       row = GetRowForInternalNode(node, &depth);
       if (depth >= 0) {
-        node_data.AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel,
-                                  int32_t{depth + 1});
+        accessibility_view->SetHierarchicalLevel(int32_t{depth + 1});
       }
     }
 
@@ -1010,25 +1000,26 @@ void TreeView::UpdateAccessiblePositionalProperties(InternalNode* node) {
     size_t pos_in_parent = node->parent()->GetIndexOf(node).value() + 1;
     size_t sibling_size =
         model_->GetChildren(node->parent()->model_node()).size();
-    node_data.AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
-                              static_cast<int32_t>(pos_in_parent));
-    node_data.AddIntAttribute(ax::mojom::IntAttribute::kSetSize,
-                              static_cast<int32_t>(sibling_size));
+    accessibility_view->SetPosInSet(static_cast<int32_t>(pos_in_parent));
+    accessibility_view->SetSetSize(static_cast<int32_t>(sibling_size));
   }
 
   int ignored_depth;
   const bool is_visible_or_offscreen =
       row >= 0 && GetNodeByRow(row, &ignored_depth) == node;
   if (is_visible_or_offscreen) {
-    node_data.AddState(ax::mojom::State::kFocusable);
-    node_data.AddAction(ax::mojom::Action::kFocus);
-    node_data.AddAction(ax::mojom::Action::kScrollToMakeVisible);
+    accessibility_view->ForceSetIsFocusable(true);
+    accessibility_view->SetIsInvisible(false);
+    accessibility_view->AddAction(ax::mojom::Action::kFocus);
+    accessibility_view->AddAction(ax::mojom::Action::kScrollToMakeVisible);
     gfx::Rect node_bounds = GetBackgroundBoundsForNode(node);
-    node_data.relative_bounds.bounds = gfx::RectF(node_bounds);
+    accessibility_view->SetBounds(gfx::RectF(node_bounds));
   } else {
-    node_data.AddState(node != &root_ || root_shown_
-                           ? ax::mojom::State::kInvisible
-                           : ax::mojom::State::kIgnored);
+    if (node != &root_ || root_shown_) {
+      accessibility_view->SetIsInvisible(true);
+    } else {
+      accessibility_view->SetIsIgnored(true);
+    }
   }
 }
 
@@ -1061,10 +1052,10 @@ std::unique_ptr<AXVirtualView> TreeView::CreateAndSetAccessibilityView(
     InternalNode* node) {
   DCHECK(node);
   auto ax_view = std::make_unique<AXVirtualView>();
-  ui::AXNodeData& node_data = ax_view->GetCustomData();
-  node_data.role = ax::mojom::Role::kTreeItem;
+  ax_view->SetRole(ax::mojom::Role::kTreeItem);
   if (base::i18n::IsRTL()) {
-    node_data.SetTextDirection(ax::mojom::WritingDirection::kRtl);
+    ax_view->SetTextDirection(
+        static_cast<int>(ax::mojom::WritingDirection::kRtl));
   }
 
   node->set_accessibility_view(ax_view.get());
@@ -1080,9 +1071,8 @@ void TreeView::SetAccessibleSelectionForNode(InternalNode* node,
   AXVirtualView* ax_view = node->accessibility_view();
   DCHECK(ax_view);
 
-  ui::AXNodeData& node_data = ax_view->GetCustomData();
-  node_data.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected);
-  node_data.SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kSelect);
+  ax_view->SetIsSelected(selected);
+  ax_view->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kSelect);
 }
 
 void TreeView::DrawnNodesChanged() {
@@ -1618,14 +1608,10 @@ void TreeView::InternalNode::SetAccessibleIsExpanded(bool expanded) {
     return;
   }
 
-  ui::AXNodeData& node_data = accessibility_view_->GetCustomData();
-
   if (expanded) {
-    node_data.RemoveState(ax::mojom::State::kCollapsed);
-    node_data.AddState(ax::mojom::State::kExpanded);
+    accessibility_view_->SetIsExpanded();
   } else {
-    node_data.RemoveState(ax::mojom::State::kExpanded);
-    node_data.AddState(ax::mojom::State::kCollapsed);
+    accessibility_view_->SetIsCollapsed();
   }
 }
 
@@ -1646,11 +1632,11 @@ void TreeView::InternalNode::UpdateAccessibleName() {
   }
 
   std::u16string name = model_node()->GetTitle();
-  ui::AXNodeData& node_data = accessibility_view_->GetCustomData();
   if (name.empty()) {
-    node_data.SetNameExplicitlyEmpty();
+    accessibility_view_->SetName(
+        std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   } else {
-    node_data.SetNameChecked(name);
+    accessibility_view_->SetName(name);
   }
 }
 

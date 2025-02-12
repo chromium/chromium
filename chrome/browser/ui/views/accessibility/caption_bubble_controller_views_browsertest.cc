@@ -316,7 +316,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     }
     auto& ax_lines = GetLabel()->GetViewAccessibility().virtual_children();
     for (auto& ax_line : ax_lines) {
-      node_datas.push_back(ax_line->GetCustomData());
+      node_datas.push_back(ax_line->GetData());
     }
     return node_datas;
   }
