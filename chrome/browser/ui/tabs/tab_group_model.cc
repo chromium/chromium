@@ -23,24 +23,13 @@ TabGroupModel::TabGroupModel(TabGroupController* controller)
 
 TabGroupModel::~TabGroupModel() = default;
 
-TabGroup* TabGroupModel::AddTabGroup(
-    const tab_groups::TabGroupId& id,
-    std::optional<tab_groups::TabGroupVisualData> visual_data,
-    base::PassKey<TabStripModel>) {
+void TabGroupModel::AddTabGroup(TabGroup* group, base::PassKey<TabStripModel>) {
   // The tab group must not already exist - replacing the old group without
   // first removing it would invalidate pointers to the old group and could
   // easily UAF.
-  CHECK(!ContainsTabGroup(id));
-
-  auto tab_group = std::make_unique<TabGroup>(
-      controller_, id,
-      visual_data.value_or(
-          tab_groups::TabGroupVisualData(std::u16string(), GetNextColor())));
-  if (groups_.find(id) == groups_.end()) {
-    group_ids_.emplace_back(id);
-  }
-  groups_[id] = std::move(tab_group);
-  return groups_[id].get();
+  CHECK(!ContainsTabGroup(group->id()));
+  group_ids_.emplace_back(group->id());
+  groups_[group->id()] = group;
 }
 
 bool TabGroupModel::ContainsTabGroup(const tab_groups::TabGroupId& id) const {
@@ -63,7 +52,8 @@ std::vector<tab_groups::TabGroupId> TabGroupModel::ListTabGroups() const {
   return group_ids_;
 }
 
-tab_groups::TabGroupColorId TabGroupModel::GetNextColor() const {
+tab_groups::TabGroupColorId TabGroupModel::GetNextColor(
+    base::PassKey<TabStripModel>) const {
   std::vector<tab_groups::TabGroupColorId> used_colors;
   for (const auto& id_group_pair : groups_) {
     used_colors.push_back(id_group_pair.second->visual_data()->color());

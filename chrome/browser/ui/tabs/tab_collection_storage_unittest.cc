@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_util.h"
+#include "chrome/browser/ui/tabs/unpinned_tab_collection.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -272,10 +273,8 @@ TEST_F(TabCollectionStorageTest, DISABLED_InvalidArgumentsTabOperations) {
 }
 
 TEST_F(TabCollectionStorageTest, AddMixedTabAndCollectionOperation) {
-  auto tab_collection_one = std::make_unique<tabs::TabGroupTabCollection>(
-      tab_groups::TabGroupId::GenerateNew());
-  auto tab_collection_two = std::make_unique<tabs::TabGroupTabCollection>(
-      tab_groups::TabGroupId::GenerateNew());
+  auto tab_collection_one = std::make_unique<tabs::UnpinnedTabCollection>();
+  auto tab_collection_two = std::make_unique<tabs::UnpinnedTabCollection>();
 
   tabs::TabCollection* tab_collection_one_ptr = tab_collection_one.get();
   tabs::TabCollection* tab_collection_two_ptr = tab_collection_two.get();
@@ -308,10 +307,8 @@ TEST_F(TabCollectionStorageTest, AddMixedTabAndCollectionOperation) {
 }
 
 TEST_F(TabCollectionStorageTest, RemoveMixedTabAndCollectionOperation) {
-  auto tab_collection_one = std::make_unique<tabs::TabGroupTabCollection>(
-      tab_groups::TabGroupId::GenerateNew());
-  auto tab_collection_two = std::make_unique<tabs::TabGroupTabCollection>(
-      tab_groups::TabGroupId::GenerateNew());
+  auto tab_collection_one = std::make_unique<tabs::UnpinnedTabCollection>();
+  auto tab_collection_two = std::make_unique<tabs::UnpinnedTabCollection>();
 
   tabs::TabCollection* tab_collection_one_ptr = tab_collection_one.get();
   tabs::TabCollection* tab_collection_two_ptr = tab_collection_two.get();
@@ -342,8 +339,7 @@ TEST_F(TabCollectionStorageTest, RemoveMixedTabAndCollectionOperation) {
 }
 
 TEST_F(TabCollectionStorageTest, CloseMixedTabAndCollectionOperation) {
-  auto tab_collection_one = std::make_unique<tabs::TabGroupTabCollection>(
-      tab_groups::TabGroupId::GenerateNew());
+  auto tab_collection_one = std::make_unique<tabs::UnpinnedTabCollection>();
   tabs::TabCollection* tab_collection_one_ptr = tab_collection_one.get();
   tabs::TabCollectionStorage* collection_storage = GetTabCollectionStorage();
 
@@ -367,12 +363,10 @@ TEST_F(TabCollectionStorageTest, MoveMixedTabAndCollectionOperation) {
       std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
   tabs::TabModel* tab_model_one_ptr = tab_model_one.get();
 
-  auto tab_collection_one = std::make_unique<tabs::TabGroupTabCollection>(
-      tab_groups::TabGroupId::GenerateNew());
+  auto tab_collection_one = std::make_unique<tabs::UnpinnedTabCollection>();
   tabs::TabCollection* tab_collection_one_ptr = tab_collection_one.get();
 
-  auto tab_collection_two = std::make_unique<tabs::TabGroupTabCollection>(
-      tab_groups::TabGroupId::GenerateNew());
+  auto tab_collection_two = std::make_unique<tabs::UnpinnedTabCollection>();
   tabs::TabCollection* tab_collection_two_ptr = tab_collection_two.get();
 
   tabs::TabCollectionStorage* collection_storage = GetTabCollectionStorage();

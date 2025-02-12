@@ -229,13 +229,13 @@ size_t TabStripCollection::TotalTabCount() const {
   return TabCountRecursive();
 }
 
-void TabStripCollection::CreateGroup(
+void TabStripCollection::CreateTabGroup(
     std::unique_ptr<tabs::TabGroupTabCollection> tab_group_collection) {
   CHECK(tab_group_collection);
   detached_group_collections_.push_back(std::move(tab_group_collection));
 }
 
-void TabStripCollection::CloseDetachedGroup(
+void TabStripCollection::CloseDetachedTabGroup(
     const tab_groups::TabGroupId& group_id) {
   PopDetachedGroupCollection(group_id).reset();
 }

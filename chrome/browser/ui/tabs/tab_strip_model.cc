@@ -1208,10 +1208,12 @@ void TabStripModel::AddTabGroup(const tab_groups::TabGroupId group_id,
                                 tab_groups::TabGroupVisualData visual_data) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
   CHECK(SupportsTabGroups());
-  group_model_->AddTabGroup(group_id, visual_data,
+  std::unique_ptr<tabs::TabGroupTabCollection> group_collection =
+      std::make_unique<tabs::TabGroupTabCollection>(group_id, visual_data,
+                                                    this);
+  group_model_->AddTabGroup(group_collection->GetTabGroup(),
                             base::PassKey<TabStripModel>());
-  contents_data_->CreateGroup(
-      std::make_unique<tabs::TabGroupTabCollection>(group_id));
+  contents_data_->CreateTabGroup(std::move(group_collection));
 }
 
 tab_groups::TabGroupId TabStripModel::AddToNewGroup(
@@ -2718,10 +2720,16 @@ void TabStripModel::AddToNewGroupImpl(
     return true;
   }());
 
-  group_model_->AddTabGroup(new_group, visual_data,
+  std::unique_ptr<tabs::TabGroupTabCollection> group_collection =
+      std::make_unique<tabs::TabGroupTabCollection>(
+          new_group,
+          tab_groups::TabGroupVisualData(
+              std::u16string(),
+              group_model_->GetNextColor(base::PassKey<TabStripModel>())),
+          this);
+  group_model_->AddTabGroup(group_collection->GetTabGroup(),
                             base::PassKey<TabStripModel>());
-  contents_data_->CreateGroup(
-      std::make_unique<tabs::TabGroupTabCollection>(new_group));
+  contents_data_->CreateTabGroup(std::move(group_collection));
 
   // Find a destination for the first tab that's not pinned or inside another
   // group. We will stack the rest of the tabs up to its right.
@@ -3075,7 +3083,7 @@ void TabStripModel::RemoveTabFromGroupModel(
 
   if (tab_group->IsEmpty()) {
     group_model_->RemoveTabGroup(group, base::PassKey<TabStripModel>());
-    contents_data_->CloseDetachedGroup(group);
+    contents_data_->CloseDetachedTabGroup(group);
   }
 }
 

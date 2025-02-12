@@ -94,11 +94,11 @@ class TabStripCollection : public TabCollection {
 
   // Adds the `tab_group_collection` to `detached_group_collections_`
   // so that it can be used when inserting a tab to a group.
-  void CreateGroup(
+  void CreateTabGroup(
       std::unique_ptr<tabs::TabGroupTabCollection> tab_group_collection);
 
   // Clears all detached groups present in `detached_group_collections_`.
-  void CloseDetachedGroup(const tab_groups::TabGroupId& group_id);
+  void CloseDetachedTabGroup(const tab_groups::TabGroupId& group_id);
 
   TabCollectionStorage* GetTabCollectionStorageForTesting() {
     return impl_.get();
