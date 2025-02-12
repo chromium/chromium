@@ -5,6 +5,7 @@
 import("//device/vr/buildflags/buildflags.gni")
 
 if (is_android) {
+  import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
   import("//third_party/jni_zero/jni_zero.gni")
 }
@@ -434,6 +435,21 @@ if (enable_openxr) {
       public_deps = [ ":openxr_data" ]
 
       data_deps = [ "//device/vr:json_mock" ]
+    }
+
+    if (is_android) {
+      android_apk("openxr_test_support_apk") {
+        # Used as an additional_apk in test scripts.
+        never_incremental = true
+        testonly = true
+
+        shared_libraries = [ ":openxr_mock" ]
+        library_always_compress =
+            [ "libmock_vr_clients/bin/openxr/libopenxrruntime.so" ]
+
+        apk_name = "OpenXrTestSupport"
+        android_manifest = "openxr/test/AndroidManifest.xml"
+      }
     }
   }
 }
