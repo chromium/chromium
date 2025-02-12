@@ -25,9 +25,11 @@
 #include "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #include "components/optimization_guide/proto/icon_view_metadata.pb.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 
@@ -119,6 +121,7 @@ class ContextualCueingHelperBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
                        TestCueLabelDisplayed) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   EnableSignIn();
   SetUpEnabledHints();
@@ -135,10 +138,23 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeDecision.GlicContextualCueing",
       contextual_cueing::NudgeDecision::kSuccess, 1);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::ContextualCueing_NudgeDecision::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
+  ukm_recorder.ExpectEntryMetric(
+      entry,
+      ukm::builders::ContextualCueing_NudgeDecision::kOptimizationTypeName,
+      static_cast<int64_t>(optimization_guide::proto::GLIC_CONTEXTUAL_CUEING));
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::ContextualCueing_NudgeDecision::kNudgeDecisionName,
+      static_cast<int64_t>(contextual_cueing::NudgeDecision::kSuccess));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest, TestCueNotAvailable) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   EnableSignIn();
 
@@ -154,11 +170,25 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest, TestCueNotAvailable) {
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeDecision.GlicContextualCueing",
       contextual_cueing::NudgeDecision::kServerDataUnavailable, 1);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::ContextualCueing_NudgeDecision::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
+  ukm_recorder.ExpectEntryMetric(
+      entry,
+      ukm::builders::ContextualCueing_NudgeDecision::kOptimizationTypeName,
+      static_cast<int64_t>(optimization_guide::proto::GLIC_CONTEXTUAL_CUEING));
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::ContextualCueing_NudgeDecision::kNudgeDecisionName,
+      static_cast<int64_t>(
+          contextual_cueing::NudgeDecision::kServerDataUnavailable));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
                        TestServerDataMalformed) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   EnableSignIn();
   optimization_guide::OptimizationMetadata metadata;
@@ -180,11 +210,25 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeDecision.GlicContextualCueing",
       contextual_cueing::NudgeDecision::kServerDataMalformed, 1);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::ContextualCueing_NudgeDecision::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
+  ukm_recorder.ExpectEntryMetric(
+      entry,
+      ukm::builders::ContextualCueing_NudgeDecision::kOptimizationTypeName,
+      static_cast<int64_t>(optimization_guide::proto::GLIC_CONTEXTUAL_CUEING));
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::ContextualCueing_NudgeDecision::kNudgeDecisionName,
+      static_cast<int64_t>(
+          contextual_cueing::NudgeDecision::kServerDataMalformed));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
                        TestServerDataNoCueLabel) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   EnableSignIn();
   optimization_guide::proto::GlicContextualCueingMetadata cueing_metadata;
@@ -211,6 +255,19 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeDecision.GlicContextualCueing",
       contextual_cueing::NudgeDecision::kClientConditionsUnmet, 1);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::ContextualCueing_NudgeDecision::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
+  ukm_recorder.ExpectEntryMetric(
+      entry,
+      ukm::builders::ContextualCueing_NudgeDecision::kOptimizationTypeName,
+      static_cast<int64_t>(optimization_guide::proto::GLIC_CONTEXTUAL_CUEING));
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::ContextualCueing_NudgeDecision::kNudgeDecisionName,
+      static_cast<int64_t>(
+          contextual_cueing::NudgeDecision::kClientConditionsUnmet));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,

@@ -25,6 +25,8 @@
 #include "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -36,9 +38,10 @@ namespace contextual_cueing {
 
 class ScopedNudgeDecisionRecorder {
  public:
-  explicit ScopedNudgeDecisionRecorder(
-      optimization_guide::proto::OptimizationType optimization_type)
-      : optimization_type_(optimization_type) {}
+  ScopedNudgeDecisionRecorder(
+      optimization_guide::proto::OptimizationType optimization_type,
+      ukm::SourceId source_id)
+      : optimization_type_(optimization_type), source_id_(source_id) {}
   ~ScopedNudgeDecisionRecorder() {
     CHECK_NE(nudge_decision_, NudgeDecision::kUnknown);
     base::UmaHistogramEnumeration(
@@ -46,6 +49,12 @@ class ScopedNudgeDecisionRecorder {
             optimization_guide::GetStringNameForOptimizationType(
                 optimization_type_),
         nudge_decision_);
+
+    auto* ukm_recorder = ukm::UkmRecorder::Get();
+    ukm::builders::ContextualCueing_NudgeDecision(source_id_)
+        .SetNudgeDecision(static_cast<int64_t>(nudge_decision_))
+        .SetOptimizationType(optimization_type_)
+        .Record(ukm_recorder->Get());
   }
 
   void set_nudge_decision(NudgeDecision nudge_decision) {
@@ -56,6 +65,7 @@ class ScopedNudgeDecisionRecorder {
 
  private:
   optimization_guide::proto::OptimizationType optimization_type_;
+  ukm::SourceId source_id_;
   NudgeDecision nudge_decision_ = NudgeDecision::kUnknown;
 };
 
@@ -108,7 +118,8 @@ void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
 
   std::unique_ptr<ScopedNudgeDecisionRecorder> recorder =
       std::make_unique<ScopedNudgeDecisionRecorder>(
-          optimization_guide::proto::GLIC_CONTEXTUAL_CUEING);
+          optimization_guide::proto::GLIC_CONTEXTUAL_CUEING,
+          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
   optimization_guide::OptimizationMetadata metadata;
   auto decision = optimization_guide_keyed_service_->CanApplyOptimization(
       web_contents()->GetLastCommittedURL(),
