@@ -184,7 +184,10 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
         }
         switch (mDialogDelegate.getEmbeddedPromptVariant()) {
             case EmbeddedPromptVariant.ASK -> {
-                denyDelegate();
+                // There is no X button on Android. The negative button here is an extra option
+                // providing to users so they can temporarily block the permission (identical to
+                // dismiss).
+                acknowledgeDelegate();
             }
             case EmbeddedPromptVariant.OS_SYSTEM_SETTINGS -> {
                 acknowledgeDelegate();
