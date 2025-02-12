@@ -14328,7 +14328,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.DefaultBrowserPromo.NonModal.Accepted">
   <owner>rkgibson@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <description>
     The user accepted a non modal promo. This will either take them to the
     settings instructions for default browser ot directly into settings. To
@@ -14339,7 +14339,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.DefaultBrowserPromo.NonModal.Appear">
   <owner>rkgibson@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <description>
     The user triggered a non modal default promo, and it appeared. iOS only.
   </description>
@@ -14347,7 +14347,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.DefaultBrowserPromo.NonModal.Dismiss">
   <owner>rkgibson@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <description>
     The user dismissed explicitly a non modal promo. iOS only.
   </description>
@@ -14355,7 +14355,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.DefaultBrowserPromo.NonModal.Timeout">
   <owner>rkgibson@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <description>
     A non modal promo timed out and was dismissed. iOS only.
   </description>
@@ -14389,7 +14389,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.DefaultBrowserPromo.TailoredFullscreen.Accepted">
   <owner>rkgibson@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <description>
     The user accepted a tailored browser fullscreen promo modal, and was taken
     to the Settings app. iOS only.
@@ -14398,7 +14398,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.DefaultBrowserPromo.TailoredFullscreen.Appear">
   <owner>rkgibson@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <description>A tailored fullscren promo appeared. iOS only.</description>
 </action>
 
@@ -14413,7 +14413,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss">
   <owner>rkgibson@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <description>
     The user dismissed a tailored browser fullscreen promo modal by swiping
     down. iOS only.
@@ -14511,7 +14511,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.EmailExperience.LongPress.Copy">
   <owner>erahmaoui@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     User tapped on the copy button after long-pressing on an email address.
   </description>
@@ -14519,7 +14519,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.EmailExperience.LongPress.CreateEmail">
   <owner>erahmaoui@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     User tapped on the &quot;Create Email&quot; button after long-pressing on an
     email address.
@@ -14528,7 +14528,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.EmailExperience.LongPress.Display">
   <owner>erahmaoui@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The number of times the email experience context menu was displayed after a
     user long press on an email address.
@@ -14537,7 +14537,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.EmailExperience.OneTap.CreateEmail">
   <owner>erahmaoui@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The number of times the user tapped on an underlined email address and
     triggered the &quot;Create mail with&quot; view controller.
@@ -14546,7 +14546,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.ExperienceKit.Calendar.Copy">
   <owner>erahmaoui@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     Recorded when user taps Copy in context menu after a long press on an date.
   </description>
@@ -14554,7 +14554,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.ExperienceKit.Calendar.Display">
   <owner>erahmaoui@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The number of times the user triggered the &quot;add-to-calendar&quot;
     context after a long press on a date.
@@ -14563,7 +14563,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.ExperienceKit.Maps.Copy">
   <owner>erahmaoui@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     Recorded when user taps Copy in context menu after a long press on an
     address.
@@ -14572,7 +14572,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.ExperienceKit.Maps.Directions">
   <owner>erahmaoui@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The number of times the user triggered the &quot;get-directions&quot;
     context after a long press on an address.
@@ -14581,7 +14581,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.ExperienceKit.Maps.MenuDisplayed">
   <owner>erahmaoui@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The number of times the user triggered the maps context menu after a long
     press on an address, this includes all the menu contexts,
@@ -14591,7 +14591,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.ExperienceKit.Maps.OneTap.View">
   <owner>erahmaoui@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The number of times the user tapped on an underlined address and triggered
     the &quot;view-locationh&quot; view controller.
@@ -14600,7 +14600,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.ExperienceKit.Maps.View">
   <owner>erahmaoui@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The number of times the user triggered the &quot;view-location&quot; context
     after a long press on an address.
@@ -14609,7 +14609,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.FindInPage.FindNext">
   <owner>qpubert@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The number of times the user navigated to the next match in Find in Page on
     iOS. For instance, the user pressed the Next button in the system Find panel
@@ -14620,7 +14620,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.FindInPage.FindPrevious">
   <owner>qpubert@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The number of times the user navigated to the previous match in Find in Page
     on iOS. For instance, the user pressed the Previous button in the system
@@ -14631,7 +14631,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.FindInPage.SearchStarted">
   <owner>qpubert@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The number of times the user started a new Find in Page search on iOS. This
     is recorded every time the Chrome Find bar is presented and every time the
@@ -14990,7 +14990,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.PhoneNumberExperience.LongPress.AddCountryCode">
   <owner>erahmaoui@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     User tapped on the Add Country Code button after long-pressing on a phone
     number.
@@ -14999,7 +14999,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.PhoneNumberExperience.LongPress.AddToContacts">
   <owner>erahmaoui@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     User tapped on the add to contacts button after long-pressing on a phone
     number.
@@ -15008,7 +15008,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.PhoneNumberExperience.LongPress.Call">
   <owner>erahmaoui@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     User tapped on the Call button after long-pressing on a phone number.
   </description>
@@ -15016,7 +15016,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.PhoneNumberExperience.LongPress.Copy">
   <owner>erahmaoui@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     User tapped on the Copy button after long-pressing on a phone number.
   </description>
@@ -15024,7 +15024,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.PhoneNumberExperience.LongPress.Display">
   <owner>erahmaoui@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user long pressed a phone number and the phone number experience context
     menu was displayed.
@@ -15033,7 +15033,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.PhoneNumberExperience.LongPress.Facetime">
   <owner>erahmaoui@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     User tapped on the facetime button after long-pressing on a phone number.
   </description>
@@ -15041,7 +15041,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.PhoneNumberExperience.LongPress.SendMessage">
   <owner>erahmaoui@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     User tapped on the send message button after long-pressing on a phone
     number.
@@ -15050,7 +15050,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.PhoneNumberExperience.OneTap.Call">
   <owner>erahmaoui@google.com</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The number of times the user tapped on an underlined phone number and was
     prompted to make a phone call.
@@ -15508,7 +15508,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOSPasswordsSettingsCloseWithSwipe">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
+  <owner>nicolasmacbeth@google.com</owner>
   <description>
     Reported when Passwords Settings UI was dismissed using swipe down gesture.
     iOS only.
@@ -20378,7 +20379,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Close">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user closed the Manual Fallback view by tapping the keyboard icon.
@@ -20386,7 +20387,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_ClosePopover">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user closed the Manual Fallback Popover view. This happens when the user
@@ -20395,7 +20396,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_ClosePull">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user closed the Manual Fallback view by pulling. This happens when the
@@ -20404,7 +20405,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_CreditCard_OpenAddPaymentMethod">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on &quot;Add Payment Method...&quot; on the Password Manual
@@ -20413,7 +20414,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_CreditCard_OpenManageCreditCard">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on &quot;Manage credit cards&quot; on the Password Manual
@@ -20440,7 +20441,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_CreditCard_SelectCardholderName">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a cardholder name in the Credit Card Fallback view.
@@ -20448,7 +20449,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_CreditCard_SelectCardNumber">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a credit card number in the Credit Card Fallback view.
@@ -20456,7 +20457,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_CreditCard_SelectExpirationMonth">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on an expiration month in the Credit Card Fallback view.
@@ -20464,7 +20465,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_CreditCard_SelectExpirationYear">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on an expiration year in the Credit Card Fallback view.
@@ -20509,19 +20510,19 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_OpenCreditCard">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>The user opened Credit Card Manual Fallback view.</description>
 </action>
 
 <action name="ManualFallback_OpenPassword">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>The user opened the Password Manual Fallback view.</description>
 </action>
 
 <action name="ManualFallback_OpenProfile">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>The user opened the Profile Manual Fallback view.</description>
 </action>
@@ -20538,7 +20539,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Password_OpenManagePassword">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on &quot;Manage passwords&quot; on the Password Manual
@@ -20555,7 +20556,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Password_OpenOtherPassword">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on &quot;Use other password&quot; on the Password Manual
@@ -20573,7 +20574,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Password_SelectPassword">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a password in the Password Manual Fallback view.
@@ -20581,7 +20582,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Password_SelectUsername">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a username in the Password Manual Fallback view.
@@ -20599,7 +20600,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Profiles_Address1">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on line 1 in the Address Manual Fallback view.
@@ -20607,7 +20608,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Profiles_Address2">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on line 2 in the Address Manual Fallback view.
@@ -20615,7 +20616,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Profiles_City">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a city in the Address Manual Fallback view.
@@ -20623,7 +20624,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Profiles_Company">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a company name in the Address Manual Fallback view.
@@ -20631,7 +20632,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Profiles_Country">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a country in the Address Manual Fallback view.
@@ -20639,7 +20640,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Profiles_EmailAddress">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on an email address in the Address Manual Fallback view.
@@ -20647,7 +20648,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Profiles_OpenManageProfiles">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on &quot;Manage addresses&quot; on the Password Manual
@@ -20665,7 +20666,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Profiles_PhoneNumber">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a phone number in the Address Manual Fallback view.
@@ -20673,7 +20674,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Profiles_SelectFirstName">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a first name in the Address Manual Fallback view.
@@ -20681,7 +20682,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Profiles_SelectLastName">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a last name in the Address Manual Fallback view.
@@ -20689,7 +20690,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Profiles_SelectMiddleName">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a middle name in the Address Manual Fallback view.
@@ -20697,7 +20698,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Profiles_State">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a state / province in the Address Manual Fallback view.
@@ -20715,7 +20716,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Profiles_Zip">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a zip code in the Address Manual Fallback view.
@@ -24821,7 +24822,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobilePasswordsSettingsClose">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>kazinova@google.com</owner>
   <owner>sczs@chromium.org</owner>
   <description>
@@ -26656,7 +26657,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileThumbstripCreateIncognitoTab">
   <obsolete>Deprecated as of 06/2023</obsolete>
-  <owner>djean@chromium.org</owner>
   <owner>edchin@chromium.org</owner>
   <description>
     User in the iOS thumbstrip created a new incognito tab using the new tab
@@ -26666,7 +26666,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileThumbstripCreateRegularTab">
   <obsolete>Deprecated as of 06/2023</obsolete>
-  <owner>djean@chromium.org</owner>
   <owner>edchin@chromium.org</owner>
   <description>
     User in the iOS thumbstrip created a new regular tab using the new tab
@@ -27240,7 +27239,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileWebContextMenuOpenInNewWindow">
   <owner>marq@chromium.org</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <description>
     Recorded when user taps Open In New Window in context menu. iOS only.
   </description>
@@ -34955,7 +34954,7 @@ should be able to be added at any place in this file.
 
 <action name="Settings.DownloadsSettings">
   <owner>qpubert@google.com.org</owner>
-  <owner>djean@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     Reported when user navigates to Downloads Settings. iOS only.
   </description>

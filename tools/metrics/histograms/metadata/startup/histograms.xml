@@ -1181,8 +1181,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Startup.ShowDefaultPromoFromApps"
     enum="MobileSessionCallerApp" expires_after="2023-05-23">
-  <owner>djean@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <summary>
     The external application requesting showing the default browser settings.
     Logged when the command is received from the external application. Histogram

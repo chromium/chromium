@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Mobile.ContextMenu.CopyImage" enum="ContextMenuIOSCopyImage"
     expires_after="2026-01-31">
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     Logged when &quot;copy image&quot; from context menu is invoked. Log the
@@ -115,7 +115,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Mobile.ContextMenu.GetImageDataByJsResult"
     enum="ContextMenuIOSGetImageDataByJsResult" expires_after="2026-01-31">
-  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     Result of getting image data by JavaScript for CopyImage, SaveImage and

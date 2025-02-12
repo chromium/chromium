@@ -1954,7 +1954,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.iOS.InfoBar.PasswordSave" enum="Boolean"
     expires_after="2025-08-10">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>sczs@google.com</owner>
   <summary>
     This metric counts how many times the Save Password infobar is shown.
