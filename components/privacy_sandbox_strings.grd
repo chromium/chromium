@@ -468,6 +468,24 @@
       <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_SCROLL_TO_CHOOSE_BUTTON_V3" desc="" translateable="false" formatter_data="android_java">
         Scroll to choose
       </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DROPDOWN_TITLE_1_V3" desc="" translateable="false" formatter_data="android_java">
+        What data is used?
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DROPDOWN_DESCRIPTION_1_V3" desc="" translateable="false" formatter_data="android_java">
+        Your ad topics are based on your recent browsing history, a list of sites you’ve visited using Chrome on this device.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DROPDOWN_TITLE_2_V3" desc="" translateable="false" formatter_data="android_java">
+        How do sites use this data?
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DROPDOWN_DESCRIPTION_2_V3" desc="" translateable="false" formatter_data="android_java">
+        Chrome notes topics of interest as you browse. Topic labels are predefined and include things like, Arts &amp; Entertainment, Shopping, and Sports. Later, a site you visit can ask Chrome for a few of your topics to personalize the ads you see.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DROPDOWN_TITLE_3_V3" desc="" translateable="false" formatter_data="android_java">
+        How can you manage this data?
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DROPDOWN_DESCRIPTION_3_V3" desc="" translateable="false" formatter_data="android_java">
+        Chrome auto-deletes topics that are older than 4 weeks. As you keep browsing, a topic might reappear on the list. You can also block topics you don’t want Chrome to share with sites and turn ad topics off at any time in Chrome settings.
+      </message>
       <!--Ad Topics EEA Notice - Ads API UX Enhancements -->
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_DESCRIPTION_1_V2" desc="This string explains the function of “ad privacy features”. “Ad” is short for “advertisement”." formatter_data="android_java">
         Ad privacy features help limit what websites and their advertising partners can learn about you when they show you personalized ads.

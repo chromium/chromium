@@ -14,13 +14,13 @@ found in the LICENSE file.
     android:orientation="vertical">
 
    <androidx.constraintlayout.widget.ConstraintLayout
-       android:id="@+id/privacy_sandbox_notice_eea_main_layout"
+       android:id="@+id/privacy_sandbox_consent_eea_main_layout"
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
        android:orientation="vertical">
 
        <org.chromium.components.browser_ui.widget.BoundedLinearLayout
-           android:id="@+id/privacy_sandbox_notice_eea_view"
+           android:id="@+id/privacy_sandbox_consent_eea_view"
            android:layout_width="match_parent"
            android:layout_height="match_parent"
            android:orientation="vertical"
@@ -36,7 +36,7 @@ found in the LICENSE file.
                android:fillViewport="true">
 
                <LinearLayout
-                   android:id="@+id/privacy_sandbox_notice_eea_content"
+                   android:id="@+id/privacy_sandbox_consent_eea_content"
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content"
                    android:layout_marginHorizontal="@dimen/list_item_default_margin"
@@ -53,7 +53,7 @@ found in the LICENSE file.
                        android:importantForAccessibility="no" />
 
                    <TextView
-                       android:id="@+id/privacy_sandbox_notice_title"
+                       android:id="@+id/privacy_sandbox_consent_title"
                        android:layout_marginBottom="@dimen/list_item_default_margin"
                        android:includeFontPadding="false"
                        android:layout_width="wrap_content"
@@ -72,7 +72,7 @@ found in the LICENSE file.
                        style="@style/TextAppearance.TextMedium.Secondary" />
 
                    <LinearLayout
-                       android:id="@+id/privacy_sandbox_notice_eea_description_cards"
+                       android:id="@+id/privacy_sandbox_consent_eea_description_cards"
                        android:layout_width="match_parent"
                        android:layout_height="match_parent"
                        android:layout_marginTop="8dp"
@@ -265,14 +265,14 @@ found in the LICENSE file.
                            android:layout_width="0dp"
                            android:layout_height="wrap_content"
                            android:gravity="center_vertical"
-                           android:minHeight="@dimen/privacy_sandbox_notice_dropdown_button_height_v3"
+                           android:minHeight="@dimen/privacy_sandbox_consent_dropdown_button_height_v3"
                            android:text="@string/privacy_sandbox_m1_consent_ads_topic_dropdown_v3"
                            style="@style/TextAppearance.TextMedium.Secondary" />
 
                        <org.chromium.ui.widget.CheckableImageView
                            android:id="@+id/ad_measurement_expand_arrow"
                            android:layout_width="20dp"
-                           android:layout_height="@dimen/privacy_sandbox_notice_dropdown_button_height_v3"/>
+                           android:layout_height="@dimen/privacy_sandbox_consent_dropdown_button_height_v3"/>
                    </LinearLayout>
 
                    <LinearLayout
