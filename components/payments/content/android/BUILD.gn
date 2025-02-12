@@ -289,6 +289,7 @@ generate_jni("minimal_jni") {
 
 android_library("minimal_java") {
   sources = [
+    "java/src/org/chromium/components/payments/AndroidIntentLauncher.java",
     "java/src/org/chromium/components/payments/CSPChecker.java",
     "java/src/org/chromium/components/payments/DialogController.java",
     "java/src/org/chromium/components/payments/MojoStructCollection.java",
@@ -313,6 +314,7 @@ android_library("minimal_java") {
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
   srcjar_deps = [
@@ -428,23 +430,17 @@ robolectric_library("junit") {
 
 android_library("unit_device_javatests") {
   testonly = true
-  sources = [
-    "javatests/src/org/chromium/components/payments/AndroidPaymentAppUnitTest.java",
-    "javatests/src/org/chromium/components/payments/WindowAndroidIntentLauncherUnitTest.java",
-  ]
+  sources = [ "javatests/src/org/chromium/components/payments/AndroidPaymentAppUnitTest.java" ]
   deps = [
     ":browser_binding_unit_device_javatests",
     ":java",
     "//base:base_java_test_support",
-    "//base:callback_java",
     "//components/payments/mojom:mojom_java",
-    "//content/public/android:content_full_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
-    "//ui/android:ui_no_recycler_view_java",
   ]
 }

@@ -41,7 +41,7 @@ import java.util.Map;
 @Batch(Batch.UNIT_TESTS)
 public class AndroidPaymentAppUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private AndroidPaymentApp.Launcher mLauncherMock;
+    @Mock private AndroidIntentLauncher mLauncherMock;
     @Mock private DialogController mDialogControllerMock;
 
     private String mErrorMessage;

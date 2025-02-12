@@ -157,9 +157,8 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
         }
 
         @Override
-        @Nullable
-        public Integer getPayIntentErrorStringId() {
-            return mDelegate.getPayIntentErrorStringId();
+        public AndroidIntentLauncher getAndroidIntentLauncher() {
+            return mDelegate.getAndroidIntentLauncher();
         }
     }
 

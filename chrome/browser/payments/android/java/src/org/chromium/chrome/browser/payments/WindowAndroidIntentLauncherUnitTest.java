@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.payments;
+package org.chromium.chrome.browser.payments;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
@@ -22,19 +22,19 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.R;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
 
 /** Tests for the Android intent-based payment app launcher. */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class WindowAndroidIntentLauncherUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private static final int ERROR_ID = 1;
     private final Intent mIntent = new Intent();
 
     @Mock private WebContents mWebContents;
@@ -45,7 +45,7 @@ public class WindowAndroidIntentLauncherUnitTest {
     @SmallTest
     @Test
     public void testCannotLaunchPaymentAppForDestroyedWebContents() throws Exception {
-        var launcher = new AndroidPaymentApp.LauncherImpl(mWebContents, ERROR_ID);
+        var launcher = new WindowAndroidIntentLauncher(mWebContents);
         when(mWebContents.isDestroyed()).thenReturn(true);
 
         launcher.launchPaymentApp(mIntent, mErrorCallback, mIntentCallback);
@@ -57,7 +57,7 @@ public class WindowAndroidIntentLauncherUnitTest {
     @SmallTest
     @Test
     public void testCannotLaunchPaymentAppForNullTopLevelNativeWindow() throws Exception {
-        var launcher = new AndroidPaymentApp.LauncherImpl(mWebContents, ERROR_ID);
+        var launcher = new WindowAndroidIntentLauncher(mWebContents);
         when(mWebContents.isDestroyed()).thenReturn(false);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(null);
 
@@ -70,7 +70,7 @@ public class WindowAndroidIntentLauncherUnitTest {
     @SmallTest
     @Test
     public void testErrorCallbackWhenCannotLaunchIntent() throws Exception {
-        var launcher = new AndroidPaymentApp.LauncherImpl(mWebContents, ERROR_ID);
+        var launcher = new WindowAndroidIntentLauncher(mWebContents);
         when(mWebContents.isDestroyed()).thenReturn(false);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         when(mWindowAndroid.showIntent(any(Intent.class), any(), any())).thenReturn(false);
@@ -83,7 +83,7 @@ public class WindowAndroidIntentLauncherUnitTest {
     @SmallTest
     @Test
     public void testErrorCallbackWhenPrivateActivity() throws Exception {
-        var launcher = new AndroidPaymentApp.LauncherImpl(mWebContents, ERROR_ID);
+        var launcher = new WindowAndroidIntentLauncher(mWebContents);
         when(mWebContents.isDestroyed()).thenReturn(false);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         when(mWindowAndroid.showIntent(any(Intent.class), any(), any()))
@@ -99,7 +99,7 @@ public class WindowAndroidIntentLauncherUnitTest {
     @SmallTest
     @Test
     public void testNoErrorCallbackOnSuccessfulIntentLaunch() throws Exception {
-        var launcher = new AndroidPaymentApp.LauncherImpl(mWebContents, ERROR_ID);
+        var launcher = new WindowAndroidIntentLauncher(mWebContents);
         when(mWebContents.isDestroyed()).thenReturn(false);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         when(mWindowAndroid.showIntent(any(Intent.class), any(), any())).thenReturn(true);
@@ -107,6 +107,8 @@ public class WindowAndroidIntentLauncherUnitTest {
         launcher.launchPaymentApp(mIntent, mErrorCallback, mIntentCallback);
 
         verify(mErrorCallback, never()).onResult(any());
-        verify(mWindowAndroid).showIntent(eq(mIntent), eq(mIntentCallback), eq(ERROR_ID));
+        verify(mWindowAndroid)
+                .showIntent(
+                        eq(mIntent), eq(mIntentCallback), eq(R.string.payments_android_app_error));
     }
 }

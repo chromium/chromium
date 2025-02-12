@@ -12,7 +12,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -23,6 +22,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.page_info.CertificateChainHelper;
 import org.chromium.components.payments.AbortReason;
+import org.chromium.components.payments.AndroidIntentLauncher;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.DialogController;
 import org.chromium.components.payments.ErrorStrings;
@@ -79,6 +79,7 @@ public class ChromePaymentRequestService
 
     private final PaymentUiService mPaymentUiService;
     private final DialogController mDialogController;
+    private final AndroidIntentLauncher mAndroidIntentLauncher;
 
     private boolean mWasRetryCalled;
     private boolean mHasClosed;
@@ -224,6 +225,7 @@ public class ChromePaymentRequestService
                         (context, style) -> {
                             return new AlertDialog.Builder(context, style);
                         });
+        mAndroidIntentLauncher = new WindowAndroidIntentLauncher(mWebContents);
         if (PaymentRequestService.getNativeObserverForTest() != null) {
             PaymentRequestService.getNativeObserverForTest()
                     .onPaymentUiServiceCreated(mPaymentUiService);
@@ -694,9 +696,8 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    @Nullable
-    public Integer getPayIntentErrorStringId() {
-        return R.string.payments_android_app_error;
+    public AndroidIntentLauncher getAndroidIntentLauncher() {
+        return mAndroidIntentLauncher;
     }
 
     // Implement PaymentUiService.Delegate:

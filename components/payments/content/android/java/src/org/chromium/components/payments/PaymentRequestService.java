@@ -1170,9 +1170,8 @@ public class PaymentRequestService
 
     // Implements PaymentAppFactoryDelegate:
     @Override
-    @Nullable
-    public Integer getPayIntentErrorStringId() {
-        return mBrowserPaymentRequest.getPayIntentErrorStringId();
+    public AndroidIntentLauncher getAndroidIntentLauncher() {
+        return mBrowserPaymentRequest.getAndroidIntentLauncher();
     }
 
     /**

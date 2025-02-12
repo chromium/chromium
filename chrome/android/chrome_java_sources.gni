@@ -913,6 +913,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/payments/ServiceWorkerPaymentAppBridge.java",
   "java/src/org/chromium/chrome/browser/payments/SettingsAutofillAndPaymentsObserver.java",
   "java/src/org/chromium/chrome/browser/payments/ShippingStrings.java",
+  "java/src/org/chromium/chrome/browser/payments/WindowAndroidIntentLauncher.java",
   "java/src/org/chromium/chrome/browser/payments/handler/PaymentHandlerActionModeCallback.java",
   "java/src/org/chromium/chrome/browser/payments/handler/PaymentHandlerContentFrameLayout.java",
   "java/src/org/chromium/chrome/browser/payments/handler/PaymentHandlerCoordinator.java",

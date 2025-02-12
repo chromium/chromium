@@ -12,7 +12,6 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
@@ -23,7 +22,6 @@ import org.chromium.components.payments.intent.WebPaymentIntentHelperType;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperTypeConverter;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -45,7 +43,7 @@ import java.util.Set;
 public class AndroidPaymentApp extends PaymentApp
         implements IsReadyToPayServiceHelper.ResultHandler, WindowAndroid.IntentCallback {
     private final Handler mHandler;
-    private final Launcher mLauncher;
+    private final AndroidIntentLauncher mLauncher;
     private final DialogController mDialogController;
     private final Set<String> mMethodNames;
     private final boolean mIsIncognito;
@@ -68,73 +66,11 @@ public class AndroidPaymentApp extends PaymentApp
     // Set inside launchPaymentApp and used to validate the received response.
     @Nullable private WebPaymentIntentHelperType.PaymentOptions mPaymentOptions;
 
-    /** The interface for launching Android payment apps. */
-    public interface Launcher {
-        /**
-         * Launch the payment app via an intent.
-         *
-         * @param intent The intent that includes the payment app identification and parameters.
-         * @param errorCallback The callback invoked when invoking the payment app fails.
-         * @param intentCallback The callback invoked when the payment app responds to the intent.
-         */
-        void launchPaymentApp(
-                Intent intent,
-                Callback<String> errorCallback,
-                WindowAndroid.IntentCallback intentCallback);
-    }
-
-    /**
-     * The default implementation of payment app launcher that uses WindowAndroid for invoking
-     * Android apps.
-     */
-    public static class LauncherImpl implements Launcher {
-        private final WebContents mWebContents;
-        @Nullable private final Integer mErrorId;
-
-        /**
-         * @param webContents The web contents whose WindowAndroid should be used for invoking
-         *     Android payment apps and receiving the result.
-         * @param errorId The resource identifier of the error string to be shown if activity is
-         *     paused before intent results, or null if no message is required.
-         */
-        public LauncherImpl(WebContents webContents, @Nullable Integer errorId) {
-            mWebContents = webContents;
-            mErrorId = errorId;
-        }
-
-        // Launcher implementation.
-        @Override
-        public void launchPaymentApp(
-                Intent intent,
-                Callback<String> errorCallback,
-                WindowAndroid.IntentCallback intentCallback) {
-            if (mWebContents.isDestroyed()) {
-                errorCallback.onResult(ErrorStrings.PAYMENT_APP_LAUNCH_FAIL);
-                return;
-            }
-
-            WindowAndroid window = mWebContents.getTopLevelNativeWindow();
-            if (window == null) {
-                errorCallback.onResult(ErrorStrings.PAYMENT_APP_LAUNCH_FAIL);
-                return;
-            }
-
-            try {
-                if (!window.showIntent(intent, intentCallback, mErrorId)) {
-                    errorCallback.onResult(ErrorStrings.PAYMENT_APP_LAUNCH_FAIL);
-                }
-            } catch (SecurityException e) {
-                // Payment app does not have android:exported="true" on the PAY activity.
-                errorCallback.onResult(ErrorStrings.PAYMENT_APP_PRIVATE_ACTIVITY);
-            }
-        }
-    }
-
     /**
      * Builds the point of interaction with a locally installed 3rd party native Android payment
      * app.
      *
-     * @param launcher Helps launching the Android payment app. Overridden in unit tests.
+     * @param launcher Helps launching the Android payment app.
      * @param dialogController Helps showing informational or warning dialogs.
      * @param packageName The name of the package of the payment app.
      * @param activity The name of the payment activity in the payment app.
@@ -153,7 +89,7 @@ public class AndroidPaymentApp extends PaymentApp
      * @param removeDeprecatedFields Whether intents should omit deprecated fields.
      */
     public AndroidPaymentApp(
-            Launcher launcher,
+            AndroidIntentLauncher launcher,
             DialogController dialogController,
             String packageName,
             String activity,

@@ -59,6 +59,8 @@ robolectric_library("junit") {
     "//mojo/public/java:system_java",
     "//services/service_manager/public/java:service_manager_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_test_rules_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
@@ -71,6 +73,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/payments/ChromePaymentRequestFactoryTest.java",
     "java/src/org/chromium/chrome/browser/payments/DialogControllerImplUnitTest.java",
     "java/src/org/chromium/chrome/browser/payments/PaymentRequestIntegrationTest.java",
+    "java/src/org/chromium/chrome/browser/payments/WindowAndroidIntentLauncherUnitTest.java",
     "java/src/org/chromium/chrome/browser/payments/handler/toolbar/PaymentHandlerToolbarMediatorTest.java",
   ]
 }
