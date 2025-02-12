@@ -1,8 +1,8 @@
-Tests that unsafe headers result in an error
+Tests that unsafe headers results in an error
 {
     error : {
         code : -32602
-        message : Unsafe header
+        message : Unsafe header: Cookie2
     }
     id : <number>
     sessionId : <string>

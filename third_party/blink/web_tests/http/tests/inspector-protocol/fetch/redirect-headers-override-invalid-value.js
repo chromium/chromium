@@ -1,12 +1,11 @@
-(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
+(async function (/** @type {import('test_runner').TestRunner} */ testRunner) {
   const { session, dp } = await testRunner.startBlank(
-    `Tests that unsafe headers results in an error`,
+    `Tests that invalid header value results in an error`,
   );
 
   await dp.Fetch.enable();
-
   const finalUrl = testRunner.url(
-    '../network/resources/echo-headers.php?headers=Cookie2',
+    '../network/resources/echo-headers.php?headers=Content-Type',
   );
   const redirectUrl = testRunner.url(
     `../fetch/resources/redirect.pl?${finalUrl}`,
@@ -20,8 +19,8 @@
     await dp.Fetch.continueRequest({
       requestId: beforeRedirect.requestId,
       headers: [
-        // One of the unsafe headers name according to network::IsRequestHeaderSafe.
-        { name: 'Cookie2', value: 'bar=bazz' },
+        // Invalid header value according to net::HttpUtil::IsValidHeaderValue.
+        { name: 'Content-Type', value: 'plain\ntext' },
       ],
     }),
   );
@@ -29,10 +28,13 @@
     requestId: beforeRedirect.requestId,
   });
   const afterRedirect = (await dp.Fetch.onceRequestPaused()).params;
-  testRunner.log('Cookie2 after redirect:' + (afterRedirect.request.headers['cookie2'] ?? 'unset'));
+  testRunner.log(
+    'X-DevTools-Test:  after redirect:' +
+      (afterRedirect.request.headers['X-DevTools-Test: '] ?? 'unset'),
+  );
   dp.Fetch.continueRequest({
     requestId: afterRedirect.requestId,
   });
   testRunner.log(await contentPromise);
   testRunner.completeTest();
-})
+});

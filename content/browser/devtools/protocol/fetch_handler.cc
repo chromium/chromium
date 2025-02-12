@@ -166,7 +166,8 @@ template <typename Callback>
 bool ValidateHeaders(Fetch::HeaderEntry* entry, Callback* callback) {
   if (!net::HttpUtil::IsValidHeaderName(entry->GetName()) ||
       !net::HttpUtil::IsValidHeaderValue(entry->GetValue())) {
-    callback->sendFailure(Response::InvalidParams("Invalid header"));
+    callback->sendFailure(
+        Response::InvalidParams("Invalid header: " + entry->GetName()));
     return false;
   }
   return true;
@@ -179,7 +180,8 @@ bool ValidateHeadersForRequest(
     return false;
   }
   if (!network::IsRequestHeaderSafe(entry->GetName(), entry->GetValue())) {
-    callback->sendFailure(Response::InvalidParams("Unsafe header"));
+    callback->sendFailure(
+        Response::InvalidParams("Unsafe header: " + entry->GetName()));
     return false;
   }
   return true;
