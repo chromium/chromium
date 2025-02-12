@@ -259,8 +259,8 @@ bool CrxUpdateService::DoUnregisterComponent(const std::string& id) {
 std::vector<std::string> CrxUpdateService::GetComponentIDs() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<std::string> ids;
-  for (const auto& it : components_) {
-    ids.push_back(it.first);
+  for (const auto& [app_id, registration] : components_) {
+    ids.push_back(app_id);
   }
   return ids;
 }

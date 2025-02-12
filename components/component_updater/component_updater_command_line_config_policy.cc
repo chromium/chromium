@@ -23,25 +23,26 @@ namespace {
 // use these values in production code.
 
 // Speed up the initial component checking.
-const char kSwitchFastUpdate[] = "fast-update";
+constexpr char kSwitchFastUpdate[] = "fast-update";
 
 // Disables pings. Pings are the requests sent to the update server that report
 // the success or the failure of component install or update attempts.
-const char kSwitchDisablePings[] = "disable-pings";
+constexpr char kSwitchDisablePings[] = "disable-pings";
 
 // Sets the URL for updates.
-const char kSwitchUrlSource[] = "url-source";
+constexpr char kSwitchUrlSource[] = "url-source";
 
 // Disables differential updates.
-const char kSwitchDisableDeltaUpdates[] = "disable-delta-updates";
+constexpr char kSwitchDisableDeltaUpdates[] = "disable-delta-updates";
 
 // Configures the initial delay before the first component update check. The
 // value is in seconds.
-const char kInitialDelay[] = "initial-delay";
+constexpr char kInitialDelay[] = "initial-delay";
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Disables background downloads.
-const char kSwitchDisableBackgroundDownloads[] = "disable-background-downloads";
+constexpr char kSwitchDisableBackgroundDownloads[] =
+    "disable-background-downloads";
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 // If there is an element of |vec| of the form |test|=.*, returns the right-
@@ -50,14 +51,11 @@ const char kSwitchDisableBackgroundDownloads[] = "disable-background-downloads";
 // further nesting of switch arguments.
 std::string GetSwitchArgument(const std::vector<std::string>& vec,
                               const char* test) {
-  if (vec.empty()) {
-    return std::string();
-  }
-  for (auto it = vec.begin(); it != vec.end(); ++it) {
-    const std::size_t found = it->find("=");
+  for (const std::string& s : vec) {
+    const auto found = s.find("=");
     if (found != std::string::npos) {
-      if (it->substr(0, found) == test) {
-        return it->substr(found + 1);
+      if (s.substr(0, found) == test) {
+        return s.substr(found + 1);
       }
     }
   }
@@ -67,7 +65,7 @@ std::string GetSwitchArgument(const std::vector<std::string>& vec,
 }  // namespace
 
 // Add "testrequest=1" attribute to the update check request.
-const char kSwitchTestRequestParam[] = "test-request";
+constexpr char kSwitchTestRequestParam[] = "test-request";
 
 ComponentUpdaterCommandLineConfigPolicy::
     ComponentUpdaterCommandLineConfigPolicy(const base::CommandLine* cmdline) {
