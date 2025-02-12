@@ -235,6 +235,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LocalStorage.DatabaseOpen" enum="LevelDBStatus"
+    expires_after="2025-10-31">
+  <owner>arichiv@chromium.org</owner>
+  <owner>tamartol@microsoft.com</owner>
+  <summary>
+    Emitted when the local storage database fails to open. Using to investigate
+    distribution of various types of local storage corruption.
+  </summary>
+</histogram>
+
 <histogram name="LocalStorage.DaysSinceLastModified400DaysGT" units="days"
     expires_after="2025-10-31">
   <owner>arichiv@chromium.org</owner>
