@@ -463,10 +463,6 @@ void AutocompleteController::ExtendMatchSubtypes(
       subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_HISTORY_BODY);
       break;
     }
-    case AutocompleteMatchType::HISTORY_KEYWORD: {
-      subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_HISTORY_KEYWORD);
-      break;
-    }
     case AutocompleteMatchType::BOOKMARK_TITLE: {
       subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_BOOKMARK_TITLE);
       break;
