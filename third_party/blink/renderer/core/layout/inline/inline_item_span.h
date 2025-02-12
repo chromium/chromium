@@ -46,7 +46,7 @@ struct InlineItemSpan final {
 
   const InlineItem& front() const {
     CHECK(!empty());
-    return *begin();
+    return **begin();
   }
 
   void Trace(Visitor* visitor) const { visitor->Trace(data_); }

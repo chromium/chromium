@@ -16,7 +16,7 @@ namespace {
 
 struct SameSizeAsInlineItem {
   UntracedMember<void*> members[2];
-  unsigned integers[3];
+  unsigned integers[4];
   unsigned bit_fields : 32;
 };
 
@@ -185,7 +185,8 @@ const char* InlineItem::InlineItemTypeToString(InlineItemType val) const {
 void InlineItem::SetSegmentData(const RunSegmenter::RunSegmenterRange& range,
                                 InlineItems* items) {
   unsigned segment_data = InlineItemSegment::PackSegmentData(range);
-  for (InlineItem& item : *items) {
+  for (Member<InlineItem>& item_ptr : *items) {
+    InlineItem& item = *item_ptr;
     if (item.Type() == InlineItem::kText) {
       item.segment_data_ = segment_data;
     }
@@ -205,16 +206,17 @@ unsigned InlineItem::SetBidiLevel(InlineItems& items,
                                   unsigned index,
                                   unsigned end_offset,
                                   UBiDiLevel level) {
-  for (; items[index].end_offset_ < end_offset; index++)
-    items[index].SetBidiLevel(level);
-  InlineItem* item = &items[index];
+  for (; items[index]->end_offset_ < end_offset; index++) {
+    items[index]->SetBidiLevel(level);
+  }
+  InlineItem* item = items[index];
   item->SetBidiLevel(level);
 
   if (item->end_offset_ == end_offset) {
     // Let close items have the same bidi-level as the previous item.
     while (index + 1 < items.size() &&
-           items[index + 1].Type() == InlineItem::kCloseTag) {
-      items[++index].SetBidiLevel(level);
+           items[index + 1]->Type() == InlineItem::kCloseTag) {
+      items[++index]->SetBidiLevel(level);
     }
   } else {
     // If a reused item needs to split, |SetNeedsLayout| to ensure the line is
@@ -239,6 +241,24 @@ const Font& InlineItem::FontWithSvgScaling() const {
   return *Style()->GetFont();
 }
 
+wtf_size_t InlineItem::Index(base::span<const Member<InlineItem>> items) const {
+  wtf_size_t index = 0;
+  for (const Member<InlineItem>& item : items) {
+    if (this == &*item) {
+      return index;
+    }
+    ++index;
+  }
+  return index;
+}
+
+void InlineItem::UpdateIndex(base::span<Member<InlineItem>> items) {
+  wtf_size_t index = 0;
+  for (Member<InlineItem>& item : items) {
+    item->index_ = index++;
+  }
+}
+
 String InlineItem::ToString() const {
   String object_info;
   if (const auto* layout_text = DynamicTo<LayoutText>(GetLayoutObject())) {
@@ -257,12 +277,14 @@ String InlineItem::ToString() const {
 // @param index The index to split.
 // @param offset The offset to split at.
 void InlineItem::Split(InlineItems& items, unsigned index, unsigned offset) {
-  DCHECK_GT(offset, items[index].start_offset_);
-  DCHECK_LT(offset, items[index].end_offset_);
-  items[index].shape_result_ = nullptr;
-  items.insert(index + 1, items[index]);
-  items[index].end_offset_ = offset;
-  items[index + 1].start_offset_ = offset;
+  InlineItem* source = &*items[index];
+  DCHECK_GT(offset, source->start_offset_);
+  DCHECK_LT(offset, source->end_offset_);
+  source->shape_result_ = nullptr;
+  InlineItem* copy = MakeGarbageCollected<InlineItem>(*source);
+  source->end_offset_ = offset;
+  copy->start_offset_ = offset;
+  items.insert(index + 1, copy);
 }
 
 #if DCHECK_IS_ON()

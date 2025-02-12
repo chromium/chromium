@@ -257,7 +257,8 @@ void SvgTextLayoutAttributesBuilder::Build(const String& ifc_text_content,
     text_length_stack.push_back(
         SVGTextLengthContext{block_flow_, addressable_index});
   }
-  for (const auto& item : items) {
+  for (const auto& item_ptr : items) {
+    const InlineItem& item = *item_ptr;
     const LayoutObject* object = item.GetLayoutObject();
 
     if (item.Type() == InlineItem::kOpenTag) {

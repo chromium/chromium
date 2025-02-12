@@ -426,13 +426,14 @@ UBiDiLevel InlineCursorPosition::BidiLevel() const {
       return 0;
     }
     const TextOffsetRange offset = TextOffset();
-    const auto item_it =
-        std::ranges::find_if(*items, [offset](const InlineItem& item) {
+    const auto item_it = std::ranges::find_if(
+        *items, [offset](const Member<InlineItem>& item_ptr) {
+          const InlineItem& item = *item_ptr;
           return item.StartOffset() <= offset.start &&
                  item.EndOffset() >= offset.end;
         });
     CHECK(item_it != items->end(), base::NotFatalUntil::M130) << this;
-    return item_it->BidiLevel();
+    return (*item_it)->BidiLevel();
   }
 
   if (IsAtomicInline()) {
@@ -444,7 +445,7 @@ UBiDiLevel InlineCursorPosition::BidiLevel() const {
     const auto item = std::ranges::find(items, GetLayoutObject(),
                                         &InlineItem::GetLayoutObject);
     CHECK(item != items.end(), base::NotFatalUntil::M130) << this;
-    return item->BidiLevel();
+    return (*item)->BidiLevel();
   }
 
   NOTREACHED();

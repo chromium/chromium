@@ -12,7 +12,7 @@
 
 namespace blink {
 
-InlineItemResult::InlineItemResult(const InlineItemPtr& item,
+InlineItemResult::InlineItemResult(const InlineItem& item,
                                    unsigned index,
                                    const TextOffsetRange& text_offset,
                                    bool break_anywhere_if_overflow,

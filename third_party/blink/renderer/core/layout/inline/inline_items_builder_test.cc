@@ -22,7 +22,7 @@ namespace blink {
 
 #define EXPECT_ITEM_OFFSET(item, type, start, end) \
   {                                                \
-    const auto& item_ref = (item);                 \
+    const auto& item_ref = *(item);                \
     EXPECT_EQ(type, item_ref.Type());              \
     EXPECT_EQ(start, item_ref.StartOffset());      \
     EXPECT_EQ(end, item_ref.EndOffset());          \
@@ -134,7 +134,7 @@ class InlineItemsBuilderTest : public RenderingTest {
   void ValidateItems() {
     unsigned current_offset = 0;
     for (unsigned i = 0; i < items_->size(); i++) {
-      const InlineItem& item = items_->at(i);
+      const InlineItem& item = *items_->at(i);
       EXPECT_EQ(current_offset, item.StartOffset());
       EXPECT_LE(item.StartOffset(), item.EndOffset());
       current_offset = item.EndOffset();
@@ -156,12 +156,13 @@ class InlineItemsBuilderTest : public RenderingTest {
       // Collect items for this LayoutObject.
       DCHECK(input.layout_text);
       for (wtf_size_t i = 0; i != data->items.size();) {
-        if (data->items[i].GetLayoutObject() == input.layout_text) {
+        if (data->items[i]->GetLayoutObject() == input.layout_text) {
           wtf_size_t begin = i;
           i++;
           while (i < data->items.size() &&
-                 data->items[i].GetLayoutObject() == input.layout_text)
+                 data->items[i]->GetLayoutObject() == input.layout_text) {
             i++;
+          }
           input.layout_text->SetInlineItems(data, begin, i - begin);
         } else {
           ++i;
@@ -323,7 +324,7 @@ TEST_F(InlineItemsBuilderTest, CollapseZeroWidthSpaces) {
 
 TEST_F(InlineItemsBuilderTest, CollapseZeroWidthSpaceAndNewLineAtEnd) {
   EXPECT_EQ(String(u"\u200B"), TestAppend(u"\u200B\n"));
-  EXPECT_EQ(InlineItem::kNotCollapsible, items_->at(0).EndCollapseType());
+  EXPECT_EQ(InlineItem::kNotCollapsible, items_->at(0)->EndCollapseType());
 }
 
 #if SEGMENT_BREAK_TRANSFORMATION_FOR_EAST_ASIAN_WIDTH
@@ -384,12 +385,12 @@ TEST_F(InlineItemsBuilderTest, NewLines) {
   SetWhiteSpace(EWhiteSpace::kPre);
   EXPECT_EQ("apple\norange\ngrape\n", TestAppend("apple\norange\ngrape\n"));
   EXPECT_EQ(6u, items_->size());
-  EXPECT_EQ(InlineItem::kText, items_->at(0).Type());
-  EXPECT_EQ(InlineItem::kControl, items_->at(1).Type());
-  EXPECT_EQ(InlineItem::kText, items_->at(2).Type());
-  EXPECT_EQ(InlineItem::kControl, items_->at(3).Type());
-  EXPECT_EQ(InlineItem::kText, items_->at(4).Type());
-  EXPECT_EQ(InlineItem::kControl, items_->at(5).Type());
+  EXPECT_EQ(InlineItem::kText, items_->at(0)->Type());
+  EXPECT_EQ(InlineItem::kControl, items_->at(1)->Type());
+  EXPECT_EQ(InlineItem::kText, items_->at(2)->Type());
+  EXPECT_EQ(InlineItem::kControl, items_->at(3)->Type());
+  EXPECT_EQ(InlineItem::kText, items_->at(4)->Type());
+  EXPECT_EQ(InlineItem::kControl, items_->at(5)->Type());
 }
 
 TEST_F(InlineItemsBuilderTest, IgnorablePre) {

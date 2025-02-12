@@ -41,33 +41,26 @@ struct CORE_EXPORT InlineItemsData : public GarbageCollected<InlineItemsData> {
   // The DOM to text content offset mapping of this inline node.
   Member<OffsetMapping> offset_mapping;
 
-  unsigned ToItemIndex(const InlineItem& item) const {
-    auto index = std::distance(items.data(), &item);
-    CHECK_GE(index, 0);
-    CHECK_LT(static_cast<size_t>(index), items.size());
-    return static_cast<unsigned>(index);
-  }
-
   bool IsValidOffset(unsigned index, unsigned offset) const {
-    return index < items.size() && items[index].IsValidOffset(offset);
+    return index < items.size() && items[index]->IsValidOffset(offset);
   }
   bool IsValidOffset(const InlineItemTextIndex& index) const {
     return IsValidOffset(index.item_index, index.text_offset);
   }
 
   void AssertOffset(unsigned index, unsigned offset) const {
-    items[index].AssertOffset(offset);
+    items[index]->AssertOffset(offset);
   }
   void AssertOffset(const InlineItemTextIndex& index) const {
     AssertOffset(index.item_index, index.text_offset);
   }
   void AssertEndOffset(unsigned index, unsigned offset) const {
-    items[index].AssertEndOffset(offset);
+    items[index]->AssertEndOffset(offset);
   }
 
   // Get a list of `kOpenTag` items between `start_index` to
   // `start_index + size`.
-  using OpenTagItems = Vector<const InlineItem*, 16>;
+  using OpenTagItems = HeapVector<Member<InlineItem>, 16>;
   void GetOpenTagItems(wtf_size_t start_index,
                        wtf_size_t size,
                        OpenTagItems* open_items) const;

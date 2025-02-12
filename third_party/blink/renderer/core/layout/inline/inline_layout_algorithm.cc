@@ -1436,7 +1436,7 @@ void InlineLayoutAlgorithm::PositionLeadingFloats(
   unsigned index = GetBreakToken() ? GetBreakToken()->StartItemIndex() : 0;
   HeapVector<PositionedFloat>& positioned_floats = leading_floats.floats;
   for (; index < items.size(); ++index) {
-    const InlineItem& item = items[index];
+    const InlineItem& item = *items[index];
 
     // Abort if we've found something non-empty.
     if (!item.IsEmptyItem())

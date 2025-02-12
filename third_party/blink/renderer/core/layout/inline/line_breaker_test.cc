@@ -407,7 +407,7 @@ TEST_F(LineBreakerTest, OverflowMargin) {
   EXPECT_EQ(3u, lines.size());
   EXPECT_EQ("123", lines[0].first);
   EXPECT_EQ("456", lines[1].first);
-  DCHECK_EQ(InlineItem::kCloseTag, items[lines[1].second - 1].Type());
+  DCHECK_EQ(InlineItem::kCloseTag, items[lines[1].second - 1]->Type());
   EXPECT_EQ("789", lines[2].first);
 
   // Same as above, but this time "456" overflows the line because it is 70px.
@@ -415,7 +415,7 @@ TEST_F(LineBreakerTest, OverflowMargin) {
   EXPECT_EQ(3u, lines.size());
   EXPECT_EQ("123", lines[0].first);
   EXPECT_EQ("456", lines[1].first);
-  DCHECK_EQ(InlineItem::kCloseTag, items[lines[1].second].Type());
+  DCHECK_EQ(InlineItem::kCloseTag, items[lines[1].second]->Type());
   EXPECT_EQ("789", lines[2].first);
 }
 
