@@ -393,16 +393,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-treeitem-focus-reference-target.html"));
 }
 
-// TODO(crbug.com/40844027): Flaky on win & mac
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_AccessibilityEventsAriaComboBoxFocus \
-  DISABLED_AccessibilityEventsAriaComboBoxFocus
-#else
-#define MAYBE_AccessibilityEventsAriaComboBoxFocus \
-  AccessibilityEventsAriaComboBoxFocus
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsAriaComboBoxFocus) {
+                       AccessibilityEventsAriaComboBoxFocus) {
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-focus.html"));
 }
 
