@@ -246,7 +246,6 @@ void SyncHandler::FireOnGetLocalDataDescriptionReceived(
 void SyncHandler::HandleOnGetLocalDataDescriptionReceived(
     base::Value callback_id,
     std::map<syncer::DataType, syncer::LocalDataDescription> data) {
-  AllowJavascript();
   int local_password_count =
       data.contains(syncer::PASSWORDS)
           ? data[syncer::PASSWORDS].local_data_models.size()
