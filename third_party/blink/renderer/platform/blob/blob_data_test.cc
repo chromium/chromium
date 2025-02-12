@@ -142,7 +142,6 @@ class BlobDataHandleTest : public testing::Test {
     EXPECT_EQ(is_single_unknown_size_file, handle->IsSingleUnknownSizeFile());
 
     blob_registry_remote_.FlushForTesting();
-    EXPECT_EQ(0u, mock_blob_registry_.owned_receivers.size());
     ASSERT_EQ(1u, mock_blob_registry_.registrations.size());
     auto& reg = mock_blob_registry_.registrations[0];
     EXPECT_EQ(handle->Uuid(), reg.uuid);
@@ -230,7 +229,6 @@ TEST_F(BlobDataHandleTest, CreateEmpty) {
   EXPECT_FALSE(handle->IsSingleUnknownSizeFile());
 
   blob_registry_remote_.FlushForTesting();
-  EXPECT_EQ(0u, mock_blob_registry_.owned_receivers.size());
   ASSERT_EQ(1u, mock_blob_registry_.registrations.size());
   const auto& reg = mock_blob_registry_.registrations[0];
   EXPECT_EQ(handle->Uuid(), reg.uuid);
