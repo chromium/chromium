@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/session/arc_reven_hardware_checker.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_hardware_checker.h"
 
 #include <iomanip>
 
@@ -36,53 +36,56 @@ constexpr int64_t kMaxRetries = 50;
 constexpr base::TimeDelta kHardwareInfoReadyRetryInterval =
     base::Milliseconds(100);
 
-const std::unordered_set<std::string> ArcRevenHardwareChecker::kSupportedGpuIds{
-    "8086:9a49", "8086:9a78", "8086:9a60", "8086:9a40", "8086:9a70",
-    "8086:9a68", "8086:9a59", "8086:9af8", "8086:9ad9", "8086:9ac9",
-    "8086:9ac0", "8086:a780", "8086:a781", "8086:a782", "8086:a783",
-    "8086:a788", "8086:a789", "8086:a78a", "8086:a78b", "8086:a7a9",
-    "8086:a721", "8086:a7a1", "8086:a720", "8086:a7a8", "8086:a7a0",
-    "8086:5917", "8086:5916", "8086:5912", "8086:591e", "8086:5921",
-    "8086:5906", "8086:591c", "8086:5926", "8086:593b", "8086:5923",
-    "8086:5927", "8086:591b", "8086:591d", "8086:591a", "8086:87c0",
-    "8086:5915", "8086:5913", "8086:590b", "8086:5902", "8086:590e",
-    "8086:5908", "8086:590a", "8086:4e61", "8086:4e55", "8086:4e71",
-    "8086:4e51", "8086:4e57", "8086:3185", "8086:3184", "8086:3ea0",
-    "8086:9b41", "8086:3e92", "8086:9bc8", "8086:3e91", "8086:9ba8",
-    "8086:9bc5", "8086:3ea5", "8086:3e90", "8086:9bc4", "8086:3ea9",
-    "8086:3e9b", "8086:9bca", "8086:3e98", "8086:9b21", "8086:9baa",
-    "8086:3ea8", "8086:3ea6", "8086:3ea7", "8086:3ea2", "8086:3ba5",
-    "8086:3ea1", "8086:3e9c", "8086:3e99", "8086:3e93", "8086:9bac",
-    "8086:9bab", "8086:9ba4", "8086:9ba2", "8086:9ba0", "8086:9ea4",
-    "8086:9bcc", "8086:9bcb", "8086:9bc2", "8086:9bc0", "8086:3ea3",
-    "8086:87ca", "8086:9bf6", "8086:9be6", "8086:9bc6", "8086:3e94",
-    "8086:3e9a", "8086:3e96", "1002:15e7", "8086:4692", "8086:4690",
-    "8086:4693", "8086:4682", "8086:4680", "8086:468b", "8086:468a",
-    "8086:4688", "8086:46d1", "8086:46d0", "8086:46d2", "8086:46a8",
-    "8086:46b3", "8086:4628", "8086:46a6", "8086:46c3", "8086:46a3",
-    "8086:46a2", "8086:46a1", "8086:46a0", "8086:462a", "8086:46b2",
-    "8086:46b1", "8086:46b0", "8086:46aa", "8086:4626", "1002:15d8",
-    "1002:1638"};
+const std::unordered_set<std::string>
+    ArcDlcInstallHardwareChecker::kSupportedGpuIds{
+        "8086:9a49", "8086:9a78", "8086:9a60", "8086:9a40", "8086:9a70",
+        "8086:9a68", "8086:9a59", "8086:9af8", "8086:9ad9", "8086:9ac9",
+        "8086:9ac0", "8086:a780", "8086:a781", "8086:a782", "8086:a783",
+        "8086:a788", "8086:a789", "8086:a78a", "8086:a78b", "8086:a7a9",
+        "8086:a721", "8086:a7a1", "8086:a720", "8086:a7a8", "8086:a7a0",
+        "8086:5917", "8086:5916", "8086:5912", "8086:591e", "8086:5921",
+        "8086:5906", "8086:591c", "8086:5926", "8086:593b", "8086:5923",
+        "8086:5927", "8086:591b", "8086:591d", "8086:591a", "8086:87c0",
+        "8086:5915", "8086:5913", "8086:590b", "8086:5902", "8086:590e",
+        "8086:5908", "8086:590a", "8086:4e61", "8086:4e55", "8086:4e71",
+        "8086:4e51", "8086:4e57", "8086:3185", "8086:3184", "8086:3ea0",
+        "8086:9b41", "8086:3e92", "8086:9bc8", "8086:3e91", "8086:9ba8",
+        "8086:9bc5", "8086:3ea5", "8086:3e90", "8086:9bc4", "8086:3ea9",
+        "8086:3e9b", "8086:9bca", "8086:3e98", "8086:9b21", "8086:9baa",
+        "8086:3ea8", "8086:3ea6", "8086:3ea7", "8086:3ea2", "8086:3ba5",
+        "8086:3ea1", "8086:3e9c", "8086:3e99", "8086:3e93", "8086:9bac",
+        "8086:9bab", "8086:9ba4", "8086:9ba2", "8086:9ba0", "8086:9ea4",
+        "8086:9bcc", "8086:9bcb", "8086:9bc2", "8086:9bc0", "8086:3ea3",
+        "8086:87ca", "8086:9bf6", "8086:9be6", "8086:9bc6", "8086:3e94",
+        "8086:3e9a", "8086:3e96", "1002:15e7", "8086:4692", "8086:4690",
+        "8086:4693", "8086:4682", "8086:4680", "8086:468b", "8086:468a",
+        "8086:4688", "8086:46d1", "8086:46d0", "8086:46d2", "8086:46a8",
+        "8086:46b3", "8086:4628", "8086:46a6", "8086:46c3", "8086:46a3",
+        "8086:46a2", "8086:46a1", "8086:46a0", "8086:462a", "8086:46b2",
+        "8086:46b1", "8086:46b0", "8086:46aa", "8086:4626", "1002:15d8",
+        "1002:1638"};
 
-ArcRevenHardwareChecker::ArcRevenHardwareChecker() = default;
-ArcRevenHardwareChecker::~ArcRevenHardwareChecker() = default;
+ArcDlcInstallHardwareChecker::ArcDlcInstallHardwareChecker() = default;
+ArcDlcInstallHardwareChecker::~ArcDlcInstallHardwareChecker() = default;
 
-void ArcRevenHardwareChecker::IsRevenDeviceCompatibleForArc(
+void ArcDlcInstallHardwareChecker::IsCompatible(
     base::OnceCallback<void(bool)> callback) {
   if (!probe_service_ || !probe_service_.is_connected()) {
     ash::cros_healthd::ServiceConnection::GetInstance()->BindProbeService(
         probe_service_.BindNewPipeAndPassReceiver());
-    probe_service_.set_disconnect_handler(base::BindOnce(
-        &ArcRevenHardwareChecker::OnDisconnect, weak_factory_.GetWeakPtr()));
+    probe_service_.set_disconnect_handler(
+        base::BindOnce(&ArcDlcInstallHardwareChecker::OnDisconnect,
+                       weak_factory_.GetWeakPtr()));
   }
   // Check whether the hardware information is ready.
   probe_service_->ProbeTelemetryInfo(
       {mojom::ProbeCategoryEnum::kNonRemovableBlockDevices},
-      base::BindOnce(&ArcRevenHardwareChecker::OnCheckNonRemovableBlockDevices,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindOnce(
+          &ArcDlcInstallHardwareChecker::OnCheckNonRemovableBlockDevices,
+          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ArcRevenHardwareChecker::OnCheckNonRemovableBlockDevices(
+void ArcDlcInstallHardwareChecker::OnCheckNonRemovableBlockDevices(
     base::OnceCallback<void(bool)> callback,
     mojom::TelemetryInfoPtr info_ptr) {
   // Successfully obtained block device information.
@@ -100,7 +103,7 @@ void ArcRevenHardwareChecker::OnCheckNonRemovableBlockDevices(
         {mojom::ProbeCategoryEnum::kCpu,
          mojom::ProbeCategoryEnum::kNonRemovableBlockDevices,
          mojom::ProbeCategoryEnum::kMemory, mojom::ProbeCategoryEnum::kBus},
-        base::BindOnce(&ArcRevenHardwareChecker::OnRevenHardwareChecked,
+        base::BindOnce(&ArcDlcInstallHardwareChecker::OnHardwareChecked,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
     return;
   }
@@ -121,23 +124,24 @@ void ArcRevenHardwareChecker::OnCheckNonRemovableBlockDevices(
   retry_timer_.Start(
       FROM_HERE, kHardwareInfoReadyRetryInterval,
       base::BindOnce(
-          &ArcRevenHardwareChecker::OnRetryNonRemovableBlockDevicesCheck,
+          &ArcDlcInstallHardwareChecker::OnRetryNonRemovableBlockDevicesCheck,
           weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ArcRevenHardwareChecker::OnRetryNonRemovableBlockDevicesCheck(
+void ArcDlcInstallHardwareChecker::OnRetryNonRemovableBlockDevicesCheck(
     base::OnceCallback<void(bool)> callback) {
   probe_service_->ProbeTelemetryInfo(
       {mojom::ProbeCategoryEnum::kNonRemovableBlockDevices},
-      base::BindOnce(&ArcRevenHardwareChecker::OnCheckNonRemovableBlockDevices,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindOnce(
+          &ArcDlcInstallHardwareChecker::OnCheckNonRemovableBlockDevices,
+          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ArcRevenHardwareChecker::OnDisconnect() {
+void ArcDlcInstallHardwareChecker::OnDisconnect() {
   probe_service_.reset();
 }
 
-void ArcRevenHardwareChecker::OnRevenHardwareChecked(
+void ArcDlcInstallHardwareChecker::OnHardwareChecked(
     base::OnceCallback<void(bool)> callback,
     mojom::TelemetryInfoPtr info_ptr) {
   if (info_ptr.is_null()) {
@@ -155,7 +159,7 @@ void ArcRevenHardwareChecker::OnRevenHardwareChecked(
   std::move(callback).Run(is_compatible);
 }
 
-bool ArcRevenHardwareChecker::CheckMemoryRequirements(
+bool ArcDlcInstallHardwareChecker::CheckMemoryRequirements(
     const mojom::TelemetryInfoPtr& info_ptr) const {
   if (!info_ptr->memory_result) {
     LOG(WARNING) << "No memory result in response from cros_healthd.";
@@ -168,7 +172,7 @@ bool ArcRevenHardwareChecker::CheckMemoryRequirements(
   }
 
   if (memory_info->total_memory_kib < kMinMemorySizeInKiB) {
-    LOG(WARNING) << "Memory fails arcvm hardware requirements on reven: "
+    LOG(WARNING) << "Memory fails arcvm hardware requirements on device: "
                  << memory_info->total_memory_kib << " KiB available, "
                  << kMinMemorySizeInKiB << " KiB required.";
     return false;
@@ -177,7 +181,7 @@ bool ArcRevenHardwareChecker::CheckMemoryRequirements(
   return true;
 }
 
-bool ArcRevenHardwareChecker::CheckCpuRequirements(
+bool ArcDlcInstallHardwareChecker::CheckCpuRequirements(
     const mojom::TelemetryInfoPtr& info_ptr) const {
   if (!info_ptr->cpu_result) {
     LOG(WARNING) << "No CPU result in response from cros_healthd.";
@@ -190,7 +194,7 @@ bool ArcRevenHardwareChecker::CheckCpuRequirements(
   }
 
   if (!cpu_info->virtualization || !cpu_info->virtualization->has_kvm_device) {
-    LOG(WARNING) << "CPU fails arcvm hardware requirements on reven: no KVM "
+    LOG(WARNING) << "CPU fails arcvm hardware requirements on device: no KVM "
                     "virtualization.";
     return false;
   }
@@ -198,7 +202,7 @@ bool ArcRevenHardwareChecker::CheckCpuRequirements(
   return true;
 }
 
-bool ArcRevenHardwareChecker::CheckStorageRequirements(
+bool ArcDlcInstallHardwareChecker::CheckStorageRequirements(
     const mojom::TelemetryInfoPtr& info_ptr) const {
   if (!info_ptr->block_device_result) {
     LOG(WARNING) << "No block device result in response from cros_healthd.";
@@ -217,15 +221,17 @@ bool ArcRevenHardwareChecker::CheckStorageRequirements(
   for (const auto& device : block_devices_info) {
     if (device->purpose == mojom::StorageDevicePurpose::kBootDevice) {
       if (device->size < kMinStorageSizeInBytes) {
-        LOG(WARNING) << "Boot disk fails arcvm hardware requirements on reven: "
-                     << device->size << " bytes available, "
-                     << kMinStorageSizeInBytes << " bytes required.";
+        LOG(WARNING)
+            << "Boot disk fails arcvm hardware requirements on device: "
+            << device->size << " bytes available, " << kMinStorageSizeInBytes
+            << " bytes required.";
         continue;
       }
 
       if (device->is_rotational.has_value() && device->is_rotational.value()) {
-        LOG(WARNING) << "Boot disk fails arcvm hardware requirements on reven: "
-                        "Spinning HDD.";
+        LOG(WARNING)
+            << "Boot disk fails arcvm hardware requirements on device: "
+               "Spinning HDD.";
         continue;
       }
 
@@ -233,12 +239,12 @@ bool ArcRevenHardwareChecker::CheckStorageRequirements(
     }
   }
 
-  LOG(WARNING) << "Boot disk fails arcvm hardware requirements on reven: no "
+  LOG(WARNING) << "Boot disk fails arcvm hardware requirements on device: no "
                   "suitable boot device.";
   return false;
 }
 
-bool ArcRevenHardwareChecker::CheckPciRequirements(
+bool ArcDlcInstallHardwareChecker::CheckPciRequirements(
     const mojom::TelemetryInfoPtr& info_ptr) const {
   if (!info_ptr->bus_result) {
     LOG(WARNING) << "No bus result in response from cros_healthd.";
@@ -264,7 +270,7 @@ bool ArcRevenHardwareChecker::CheckPciRequirements(
     }
   }
 
-  LOG(WARNING) << "GPU fails arcvm hardware requirements on reven: no "
+  LOG(WARNING) << "GPU fails arcvm hardware requirements on device: no "
                   "compatible device found.";
 
   return false;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ARC_SESSION_ARC_REVEN_HARDWARE_CHECKER_H_
-#define CHROME_BROWSER_ASH_ARC_SESSION_ARC_REVEN_HARDWARE_CHECKER_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_DLC_INSTALLER_ARC_DLC_INSTALL_HARDWARE_CHECKER_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_DLC_INSTALLER_ARC_DLC_INSTALL_HARDWARE_CHECKER_H_
 
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -15,14 +15,13 @@ namespace arc {
 // This class is responsible for checking whether the hardware is compatible
 // with ARC (Android Runtime for Chrome). It interacts with the CrosHealthd
 // service to obtain hardware telemetry and perform compatibility checks.
-class ArcRevenHardwareChecker {
+class ArcDlcInstallHardwareChecker {
  public:
-  ArcRevenHardwareChecker();
-  virtual ~ArcRevenHardwareChecker();
+  ArcDlcInstallHardwareChecker();
+  virtual ~ArcDlcInstallHardwareChecker();
   // Initiates a hardware compatibility check. The result of the check will
   // be reported through the provided callback.
-  virtual void IsRevenDeviceCompatibleForArc(
-      base::OnceCallback<void(bool)> callback);
+  virtual void IsCompatible(base::OnceCallback<void(bool)> callback);
 
  private:
   // Callback invoked when the CrosHealthd service disconnects.
@@ -41,9 +40,8 @@ class ArcRevenHardwareChecker {
   // Callback invoked when telemetry information is received from CrosHealthd.
   // This processes the telemetry info and invokes the provided callback with
   // the result of the hardware compatibility check.
-  void OnRevenHardwareChecked(
-      base::OnceCallback<void(bool)> callback,
-      ash::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+  void OnHardwareChecked(base::OnceCallback<void(bool)> callback,
+                         ash::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
   // Checks whether the system memory meets the compatibility requirements.
   // Requirement: System memory (RAM) must be at least 4 GB.
@@ -79,13 +77,12 @@ class ArcRevenHardwareChecker {
   // One-shot timer for retrying checks on non-removable block devices.
   base::OneShotTimer retry_timer_;
 
-  static const std::unordered_set<std::string> kSupportedWiFiIds;
   static const std::unordered_set<std::string> kSupportedGpuIds;
 
   // Weak pointer factory for safely handling callbacks
-  base::WeakPtrFactory<ArcRevenHardwareChecker> weak_factory_{this};
+  base::WeakPtrFactory<ArcDlcInstallHardwareChecker> weak_factory_{this};
 };
 
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_ASH_ARC_SESSION_ARC_REVEN_HARDWARE_CHECKER_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_DLC_INSTALLER_ARC_DLC_INSTALL_HARDWARE_CHECKER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/session/arc_reven_hardware_checker.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_hardware_checker.h"
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -35,14 +35,15 @@ constexpr bool kNotSpinHdd = false;
 constexpr mojom::StorageDevicePurpose kStoragePurpose =
     mojom::StorageDevicePurpose::kBootDevice;
 
-class ArcRevenHardwareCheckerTest : public testing::Test {
+class ArcDlcInstallHardwareCheckerTest : public testing::Test {
  public:
-  ArcRevenHardwareCheckerTest() = default;
-  ~ArcRevenHardwareCheckerTest() override = default;
+  ArcDlcInstallHardwareCheckerTest() = default;
+  ~ArcDlcInstallHardwareCheckerTest() override = default;
 
-  ArcRevenHardwareCheckerTest(const ArcRevenHardwareCheckerTest&) = delete;
-  ArcRevenHardwareCheckerTest& operator=(const ArcRevenHardwareCheckerTest&) =
+  ArcDlcInstallHardwareCheckerTest(const ArcDlcInstallHardwareCheckerTest&) =
       delete;
+  ArcDlcInstallHardwareCheckerTest& operator=(
+      const ArcDlcInstallHardwareCheckerTest&) = delete;
 
   void SetUp() override {
     ash::cros_healthd::FakeCrosHealthd::InitializeInBrowserTest();
@@ -69,7 +70,7 @@ class ArcRevenHardwareCheckerTest : public testing::Test {
         },
         &run_loop, &result_received);
 
-    checker_.IsRevenDeviceCompatibleForArc(std::move(callback));
+    checker_.IsCompatible(std::move(callback));
     run_loop.Run();
     EXPECT_EQ(expected_compatibility, result_received);
   }
@@ -148,7 +149,7 @@ class ArcRevenHardwareCheckerTest : public testing::Test {
         mojom::BusInfo::NewPciBusInfo(std::move(pci_bus_info)));
   }
 
-  ArcRevenHardwareChecker checker_;
+  ArcDlcInstallHardwareChecker checker_;
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -156,7 +157,7 @@ class ArcRevenHardwareCheckerTest : public testing::Test {
 };
 
 // Test failure due to insufficient memory size.
-TEST_F(ArcRevenHardwareCheckerTest, MemoryRequirementNotMet) {
+TEST_F(ArcDlcInstallHardwareCheckerTest, MemoryRequirementNotMet) {
   auto info = mojom::TelemetryInfo::New();
   info->block_device_result =
       CreateBlockDeviceResult(kStorageSizeMeetsRequirementInBytes);
@@ -166,7 +167,7 @@ TEST_F(ArcRevenHardwareCheckerTest, MemoryRequirementNotMet) {
 }
 
 // Test failure due to absent KVM support.
-TEST_F(ArcRevenHardwareCheckerTest, CpuRequirementNotMet) {
+TEST_F(ArcDlcInstallHardwareCheckerTest, CpuRequirementNotMet) {
   auto info = mojom::TelemetryInfo::New();
   info->memory_result = CreateMemoryResult(kMemorySizeMeetsRequirementInKiB);
   info->block_device_result =
@@ -177,7 +178,7 @@ TEST_F(ArcRevenHardwareCheckerTest, CpuRequirementNotMet) {
 }
 
 // Test failure due to insufficient storage size.
-TEST_F(ArcRevenHardwareCheckerTest, StorageRequirementNotMet) {
+TEST_F(ArcDlcInstallHardwareCheckerTest, StorageRequirementNotMet) {
   auto info = mojom::TelemetryInfo::New();
   info->memory_result = CreateMemoryResult(kMemorySizeMeetsRequirementInKiB);
   info->cpu_result = CreateCpuResult(kHasKvmDevice);
@@ -189,7 +190,7 @@ TEST_F(ArcRevenHardwareCheckerTest, StorageRequirementNotMet) {
 }
 
 // Test failure due to unsupported GPU device ID.
-TEST_F(ArcRevenHardwareCheckerTest, BusRequirementNotMet) {
+TEST_F(ArcDlcInstallHardwareCheckerTest, BusRequirementNotMet) {
   auto info = mojom::TelemetryInfo::New();
   info->memory_result = CreateMemoryResult(kMemorySizeMeetsRequirementInKiB);
   info->cpu_result = CreateCpuResult(kHasKvmDevice);
@@ -200,7 +201,7 @@ TEST_F(ArcRevenHardwareCheckerTest, BusRequirementNotMet) {
   RunCheckerAndExpect(kNotMeetHwRequirement);
 }
 
-TEST_F(ArcRevenHardwareCheckerTest, AllHardwareRequirementMet) {
+TEST_F(ArcDlcInstallHardwareCheckerTest, AllHardwareRequirementMet) {
   auto info = mojom::TelemetryInfo::New();
   info->memory_result = CreateMemoryResult(kMemorySizeMeetsRequirementInKiB);
   info->cpu_result = CreateCpuResult(kHasKvmDevice);
@@ -212,7 +213,7 @@ TEST_F(ArcRevenHardwareCheckerTest, AllHardwareRequirementMet) {
   RunCheckerAndExpect(kMeetHwRequirement);
 }
 
-TEST_F(ArcRevenHardwareCheckerTest, BlockDeviceCheckErrorAfterRetries) {
+TEST_F(ArcDlcInstallHardwareCheckerTest, BlockDeviceCheckErrorAfterRetries) {
   auto info = ash::cros_healthd::mojom::TelemetryInfo::New();
   info->block_device_result = CreateErrorStorageTag();
   SetFakeTelemetryInfoResponse(std::move(info));
