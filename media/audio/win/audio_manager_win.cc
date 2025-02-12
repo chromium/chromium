@@ -335,13 +335,6 @@ bool AudioManagerWin::IsEchoCancellationSupported(
     return false;
   }
 
-  const base::win::Version version = base::win::GetVersion();
-  if (version < base::win::Version::WIN11_24H2) {
-    VLOG(1) << "Can't enable native system AEC since it requires Windows 24H2 "
-               "or later.";
-    return false;
-  }
-
   if (AudioDeviceDescription::IsLoopbackDevice(audio_device_id)) {
     VLOG(1) << "Native system AEC can't be applied for loopback devices";
     return false;
