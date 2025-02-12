@@ -4721,6 +4721,10 @@ const char kTabResumptionModuleAndroidName[] = "Tab Resumption Module";
 const char kTabResumptionModuleAndroidDescription[] =
     "Enable showing tab suggestions on Android";
 
+const char kTabStripContextMenuAndroidName[] = "Tab Strip Context Menu Android";
+const char kTabStripContextMenuAndroidDescription[] =
+    "Enables context menus upon long-pressing on a tab on the tab strip.";
+
 const char kTabStripGroupCollapseAndroidName[] =
     "Tab Strip Group Collapse Android";
 const char kTabStripGroupCollapseAndroidDescription[] =
