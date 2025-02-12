@@ -112,6 +112,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.MotionEventUtils;
 import org.chromium.ui.base.LocalizationUtils;
@@ -703,7 +704,7 @@ public class StripLayoutHelper
             mTabHoverCardView.destroy();
             mTabHoverCardView = null;
         }
-        if (shouldEnableGroupSharing(mTabGroupModelFilter.getTabModel().getProfile())) {
+        if (mDataSharingService != null) {
             mDataSharingService.removeObserver(mDataSharingObserver);
             mDataSharingService = null;
         }
@@ -1082,7 +1083,7 @@ public class StripLayoutHelper
         // DataSharingObserver is added before tabs and groups are created on tab strip, so we can
         // listen to collaboration change as soon as the tab strip is initialized.
         // TODO(crbug.com/380511640) Use SharedGroupObserver instead of DataSharingObserver.
-        if (shouldEnableGroupSharing(profile)) {
+        if (shouldEnableGroupSharing()) {
             mDataSharingService = DataSharingServiceFactory.getForProfile(profile);
             mCollaborationService = CollaborationServiceFactory.getForProfile(profile);
             mTabGroupSyncObserver =
@@ -1102,6 +1103,18 @@ public class StripLayoutHelper
 
                             updateSharedTabGroupIfNeeded(groupTitle);
                         }
+
+                        @Override
+                        public void onTabGroupUpdated(
+                                SavedTabGroup group, @TriggerSource int source) {
+                            if (group == null || group.localId == null) return;
+                            GroupData groupData =
+                                    mCollaborationService.getGroupData(group.collaborationId);
+                            StripLayoutGroupTitle groupTitle =
+                                    StripLayoutUtils.findGroupTitle(
+                                            mStripGroupTitles, group.localId.tabGroupId);
+                            updateOrClearSharedState(groupData, groupTitle);
+                        }
                     };
             mTabGroupSyncService.addObserver(mTabGroupSyncObserver);
             mDataSharingObserver =
@@ -1118,7 +1131,13 @@ public class StripLayoutHelper
 
                         @Override
                         public void onGroupRemoved(String collaborationId) {
-                            clearSharedTabGroup(collaborationId);
+                            StripLayoutGroupTitle groupTitle =
+                                    StripLayoutUtils.findGroupTitleByCollaborationId(
+                                            mStripGroupTitles,
+                                            collaborationId,
+                                            mTabGroupSyncService);
+                            if (groupTitle == null) return;
+                            clearSharedTabGroup(groupTitle);
                         }
                     };
             mDataSharingService.addObserver(mDataSharingObserver);
@@ -1142,8 +1161,9 @@ public class StripLayoutHelper
         rebuildStripViews();
     }
 
-    private boolean shouldEnableGroupSharing(Profile profile) {
-        if (profile == null) {
+    private boolean shouldEnableGroupSharing() {
+        Profile profile = mTabGroupModelFilter.getTabModel().getProfile();
+        if (profile == null || profile.isOffTheRecord()) {
             return false;
         }
         CollaborationService collaborationService =
@@ -2021,9 +2041,8 @@ public class StripLayoutHelper
     }
 
     /**
-     * Updates the shared state and avatar face piles for a tab group if it has multiple
-     * collaborators. If the group no longer qualifies as a shared group, clears the shared state
-     * and removes the avatar.
+     * retrieves the corresponding group title using the group's collaboration ID then updates or
+     * clears the shared state accordingly.
      *
      * @param groupData The shared group data.
      */
@@ -2032,10 +2051,23 @@ public class StripLayoutHelper
         StripLayoutGroupTitle groupTitle =
                 StripLayoutUtils.findGroupTitleByCollaborationId(
                         mStripGroupTitles, collaborationId, mTabGroupSyncService);
+        updateOrClearSharedState(groupData, groupTitle);
+    }
+
+    /**
+     * Updates the shared state and avatar face piles for a tab group if it has multiple
+     * collaborators. If the group no longer qualifies as a shared group, clears the shared state
+     * and removes the avatar.
+     *
+     * @param groupData The shared group data.
+     * @param groupTitle The group title to update or clear shared state.
+     */
+    private void updateOrClearSharedState(GroupData groupData, StripLayoutGroupTitle groupTitle) {
+        if (groupTitle == null) return;
         if (TabShareUtils.hasMultipleCollaborators(groupData)) {
-            updateSharedTabGroup(collaborationId, groupTitle);
+            updateSharedTabGroup(groupData.groupToken.collaborationId, groupTitle);
         } else {
-            clearSharedTabGroup(collaborationId);
+            clearSharedTabGroup(groupTitle);
         }
     }
 
@@ -2046,7 +2078,7 @@ public class StripLayoutHelper
      */
     private void updateSharedTabGroupIfNeeded(@NonNull StripLayoutGroupTitle groupTitle) {
         Token tabGroupId = groupTitle.getTabGroupId();
-        if (shouldEnableGroupSharing(mTabGroupModelFilter.getTabModel().getProfile())) {
+        if (shouldEnableGroupSharing()) {
             SavedTabGroup savedTabGroup =
                     mTabGroupSyncService.getGroup(new LocalTabGroupId(tabGroupId));
             if (savedTabGroup == null || savedTabGroup.collaborationId == null) return;
@@ -2066,9 +2098,8 @@ public class StripLayoutHelper
      * @param collaborationId The sharing ID associated with the group.
      * @param groupTitle The group title to update with the shared tab group state.
      */
-    private void updateSharedTabGroup(String collaborationId, StripLayoutGroupTitle groupTitle) {
-        if (groupTitle == null) return;
-
+    private void updateSharedTabGroup(
+            String collaborationId, @NonNull StripLayoutGroupTitle groupTitle) {
         // Setup bubbler and show all notifications.
         if (groupTitle.getTabBubbler() == null) {
             TabBubbler tabBubbler =
@@ -2094,16 +2125,9 @@ public class StripLayoutHelper
      * Clear group avatar face piles displayed on group title and other share related group title
      * data.
      *
-     * @param collaborationId The sharing ID associated with the group..
+     * @param groupTitle The groupTitle to clear shared state.
      */
-    private void clearSharedTabGroup(String collaborationId) {
-        StripLayoutGroupTitle groupTitle =
-                StripLayoutUtils.findGroupTitleByCollaborationId(
-                        mStripGroupTitles, collaborationId, mTabGroupSyncService);
-
-        if (groupTitle == null) {
-            return;
-        }
+    private void clearSharedTabGroup(@NonNull StripLayoutGroupTitle groupTitle) {
         groupTitle.clearSharedTabGroup();
         mLayerTitleCache.removeSharedGroupAvatar(groupTitle.getRootId());
         updateGroupTextAndSharedState(groupTitle);
