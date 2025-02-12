@@ -23,9 +23,6 @@ namespace scheduler {
 
 using base::sequence_manager::TaskQueue;
 
-// static
-constexpr base::TimeDelta IdleHelper::kMaximumIdlePeriod;
-
 IdleHelper::IdleHelper(
     SchedulerHelper* helper,
     Delegate* delegate,
@@ -37,13 +34,11 @@ IdleHelper::IdleHelper(
       idle_queue_(idle_queue),
       state_(helper, delegate, idle_period_tracing_name),
       required_quiescence_duration_before_long_idle_period_(
-          required_quiescence_duration_before_long_idle_period),
-      is_shutdown_(false) {
-  weak_idle_helper_ptr_ = weak_factory_.GetWeakPtr();
+          required_quiescence_duration_before_long_idle_period) {
   enable_next_long_idle_period_closure_.Reset(base::BindRepeating(
-      &IdleHelper::EnableLongIdlePeriod, weak_idle_helper_ptr_));
+      &IdleHelper::EnableLongIdlePeriod, weak_factory_.GetWeakPtr()));
   on_idle_task_posted_closure_.Reset(base::BindRepeating(
-      &IdleHelper::OnIdleTaskPostedOnMainThread, weak_idle_helper_ptr_));
+      &IdleHelper::OnIdleTaskPostedOnMainThread, weak_factory_.GetWeakPtr()));
   idle_task_runner_ = base::MakeRefCounted<SingleThreadIdleTaskRunner>(
       base::MakeRefCounted<BlinkSchedulerSingleThreadTaskRunner>(
           idle_queue_->CreateTaskRunner(
@@ -97,21 +92,19 @@ IdleHelper::IdlePeriodState IdleHelper::ComputeNewLongIdlePeriodState(
   if (wake_up) {
     // Limit the idle period duration to be before the next pending task.
     long_idle_period_duration =
-        std::min(wake_up->time - now, kMaximumIdlePeriod);
+        std::min(wake_up->time - now, kMaximumIdlePeriodDuration);
   } else {
-    long_idle_period_duration = kMaximumIdlePeriod;
+    long_idle_period_duration = kMaximumIdlePeriodDuration;
   }
 
-  if (long_idle_period_duration >=
-      base::Milliseconds(kMinimumIdlePeriodDurationMillis)) {
+  if (long_idle_period_duration >= kMinimumIdlePeriodDuration) {
     *next_long_idle_period_delay_out = long_idle_period_duration;
     if (!idle_queue_->HasTaskToRunImmediatelyOrReadyDelayedTask())
       return IdlePeriodState::kInLongIdlePeriodPaused;
     return IdlePeriodState::kInLongIdlePeriod;
   } else {
     // If we can't start the idle period yet then try again after wake-up.
-    *next_long_idle_period_delay_out =
-        base::Milliseconds(kRetryEnableLongIdlePeriodDelayMillis);
+    *next_long_idle_period_delay_out = kRetryEnableLongIdlePeriodDelay;
     return IdlePeriodState::kNotInIdlePeriod;
   }
 }
@@ -164,6 +157,12 @@ void IdleHelper::EnableLongIdlePeriod() {
   }
 }
 
+void IdleHelper::StartShortIdlePeriod(base::TimeTicks now,
+                                      base::TimeTicks idle_period_deadline) {
+  StartIdlePeriod(IdlePeriodState::kInShortIdlePeriod, now,
+                  idle_period_deadline);
+}
+
 void IdleHelper::StartIdlePeriod(IdlePeriodState new_state,
                                  base::TimeTicks now,
                                  base::TimeTicks idle_period_deadline) {
@@ -176,8 +175,7 @@ void IdleHelper::StartIdlePeriod(IdlePeriodState new_state,
   idle_task_runner_->EnqueueReadyDelayedIdleTasks();
 
   base::TimeDelta idle_period_duration(idle_period_deadline - now);
-  if (idle_period_duration <
-      base::Milliseconds(kMinimumIdlePeriodDurationMillis)) {
+  if (idle_period_duration < kMinimumIdlePeriodDuration) {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
                  "NotStartingIdlePeriodBecauseDeadlineIsTooClose",
                  "idle_period_duration_ms",
@@ -450,13 +448,21 @@ void IdleHelper::State::TraceEventIdlePeriodStateChange(
       last_idle_task_trace_time_ = now;
       running_idle_task_for_tracing_ = true;
       new_sub_trace_event_name = "RunningIdleTask";
-    } else if (new_state == IdlePeriodState::kInShortIdlePeriod) {
-      new_sub_trace_event_name = "ShortIdlePeriod";
-    } else if (IsInLongIdlePeriod(new_state) &&
-               new_state != IdlePeriodState::kInLongIdlePeriodPaused) {
-      new_sub_trace_event_name = "LongIdlePeriod";
-    } else if (new_state == IdlePeriodState::kInLongIdlePeriodPaused) {
-      new_sub_trace_event_name = "LongIdlePeriodPaused";
+    } else {
+      switch (new_state) {
+        case IdlePeriodState::kInShortIdlePeriod:
+          new_sub_trace_event_name = "ShortIdlePeriod";
+          break;
+        case IdlePeriodState::kInLongIdlePeriod:
+          new_sub_trace_event_name = "LongIdlePeriod";
+          break;
+        case IdlePeriodState::kInLongIdlePeriodPaused:
+          new_sub_trace_event_name = "LongIdlePeriodPaused";
+          break;
+        case IdlePeriodState::kNotInIdlePeriod:
+          // No sub trace event.
+          break;
+      }
     }
 
     if (new_sub_trace_event_name) {
@@ -494,8 +500,6 @@ const char* IdleHelper::IdlePeriodStateToString(
       return "in_long_idle_period";
     case IdlePeriodState::kInLongIdlePeriodPaused:
       return "in_long_idle_period_paused";
-    default:
-      NOTREACHED();
   }
 }
 

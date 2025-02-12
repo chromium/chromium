@@ -68,19 +68,24 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
     virtual void OnPendingTasksChanged(bool has_tasks) = 0;
   };
 
-  // Keep IdleHelper::IdlePeriodStateToString in sync with this enum.
   enum class IdlePeriodState {
     kNotInIdlePeriod,
     kInShortIdlePeriod,
     kInLongIdlePeriod,
     kInLongIdlePeriodPaused,
-    // Must be the last entry.
-    kIdlePeriodStateCount,
-    kFirstIdlePeriodState = kNotInIdlePeriod,
   };
 
-  // The maximum length of an idle period.
-  static constexpr base::TimeDelta kMaximumIdlePeriod = base::Milliseconds(50);
+  // The minimum duration of an idle period.
+  static constexpr base::TimeDelta kMinimumIdlePeriodDuration =
+      base::Milliseconds(1);
+
+  // The maximum duration of an idle period.
+  static constexpr base::TimeDelta kMaximumIdlePeriodDuration =
+      base::Milliseconds(50);
+
+  // The minimum delay to wait between retrying to initiate a long idle time.
+  static constexpr base::TimeDelta kRetryEnableLongIdlePeriodDelay =
+      base::Milliseconds(1);
 
   // |helper|, |delegate|, and |idle_queue| are not owned by IdleHelper object
   // and must outlive it.
@@ -105,6 +110,13 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
   // time if no idle time is available.
   scoped_refptr<SingleThreadIdleTaskRunner> IdleTaskRunner();
 
+  // Start a short idle period with a given idle period deadline. Unlike long
+  // idle periods, a new idle period will not start after this idle period
+  // finishes unless this method is called again or long idle periods are
+  // enabled.
+  void StartShortIdlePeriod(base::TimeTicks now,
+                            base::TimeTicks idle_period_deadline);
+
   // If |required_quiescence_duration_before_long_idle_period_| is zero then
   // immediately initiate a long idle period, otherwise check if any tasks have
   // run recently and if so, check again after a delay of
@@ -114,11 +126,6 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
   // |required_quiescence_duration_before_long_idle_period_| is non-zero.
   // NOTE EndIdlePeriod will disable the long idle periods.
   void EnableLongIdlePeriod();
-
-  // Start an idle period with a given idle period deadline.
-  void StartIdlePeriod(IdlePeriodState new_idle_period_state,
-                       base::TimeTicks now,
-                       base::TimeTicks idle_period_deadline);
 
   // This will end an idle period either started with StartIdlePeriod or
   // EnableLongIdlePeriod.
@@ -184,11 +191,10 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
     const char* last_sub_trace_event_name_ = nullptr;
   };
 
-  // The minimum duration of an idle period.
-  static const int kMinimumIdlePeriodDurationMillis = 1;
-
-  // The minimum delay to wait between retrying to initiate a long idle time.
-  static const int kRetryEnableLongIdlePeriodDelayMillis = 1;
+  // Start an idle period with a given idle period deadline.
+  void StartIdlePeriod(IdlePeriodState new_idle_period_state,
+                       base::TimeTicks now,
+                       base::TimeTicks idle_period_deadline);
 
   // Returns the new idle period state for the next long idle period. Fills in
   // |next_long_idle_period_delay_out| with the next time we should try to
@@ -220,12 +226,8 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
   CancelableClosureHolder on_idle_task_posted_closure_;
 
   State state_;
-
   base::TimeDelta required_quiescence_duration_before_long_idle_period_;
-
-  bool is_shutdown_;
-
-  base::WeakPtr<IdleHelper> weak_idle_helper_ptr_;
+  bool is_shutdown_ = false;
   base::WeakPtrFactory<IdleHelper> weak_factory_{this};
 };
 

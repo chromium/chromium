@@ -818,9 +818,8 @@ void MainThreadSchedulerImpl::DidCommitFrameToCompositor() {
   if (now < main_thread_only().estimated_next_frame_begin) {
     // TODO(rmcilroy): Consider reducing the idle period based on the runtime of
     // the next pending delayed tasks (as currently done in for long idle times)
-    idle_helper_.StartIdlePeriod(
-        IdleHelper::IdlePeriodState::kInShortIdlePeriod, now,
-        main_thread_only().estimated_next_frame_begin);
+    idle_helper_.StartShortIdlePeriod(
+        now, main_thread_only().estimated_next_frame_begin);
   }
 
   main_thread_only().idle_time_estimator.DidCommitFrameToCompositor();
@@ -858,8 +857,7 @@ void MainThreadSchedulerImpl::BeginMainFrameNotExpectedUntil(
 
     // TODO(rmcilroy): Consider reducing the idle period based on the runtime of
     // the next pending delayed tasks (as currently done in for long idle times)
-    idle_helper_.StartIdlePeriod(
-        IdleHelper::IdlePeriodState::kInShortIdlePeriod, now, time);
+    idle_helper_.StartShortIdlePeriod(now, time);
   }
 }
 
