@@ -326,7 +326,7 @@ void ResourcePool::OnResourceReleased(size_t unique_id,
 
   resource->set_resource_id(viz::kInvalidResourceId);
   if (context_provider_)
-    resource->gpu_backing()->returned_sync_token = sync_token;
+    resource->backing()->returned_sync_token = sync_token;
   DidFinishUsingResource(std::move(*busy_it));
   busy_resources_.erase(busy_it);
 }
@@ -335,11 +335,8 @@ bool ResourcePool::PrepareForExport(
     const InUsePoolResource& in_use_resource,
     viz::TransferableResource::ResourceSource resource_source) {
   PoolResource* resource = in_use_resource.resource_;
-  // Exactly one of gpu or software backing should exist.
-  DCHECK(resource->gpu_backing() || resource->software_backing());
-  DCHECK(!resource->gpu_backing() || !resource->software_backing());
-  Backing* backing = resource->gpu_backing() ? resource->gpu_backing()
-                                             : resource->software_backing();
+  Backing* backing = resource->backing();
+  DCHECK(backing);
   viz::TransferableResource transferable;
   if (!backing->shared_image) {
     // This can happen if we failed to allocate a GpuMemoryBuffer. Avoid
@@ -666,11 +663,8 @@ void ResourcePool::PoolResource::OnMemoryDump(
   // the root ownership.
   const int kImportance =
       static_cast<int>(gpu::TracingImportance::kClientOwner);
-  if (software_backing_ && software_backing_->shared_image) {
-    software_backing_->shared_image->OnMemoryDump(pmd, dump->guid(),
-                                                  kImportance);
-  } else if (gpu_backing_ && gpu_backing_->shared_image) {
-    gpu_backing_->shared_image->OnMemoryDump(pmd, dump->guid(), kImportance);
+  if (backing_ && backing_->shared_image) {
+    backing_->shared_image->OnMemoryDump(pmd, dump->guid(), kImportance);
   }
 
   uint64_t total_bytes = memory_usage();
