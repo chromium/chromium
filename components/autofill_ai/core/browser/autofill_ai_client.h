@@ -50,8 +50,6 @@ class AutofillAiClient {
 
     SavePromptAcceptanceResult(bool prompt_was_accepted,
                                bool did_user_interact,
-                               bool did_thumbs_up_triggered,
-                               bool did_thumbs_down_triggered,
                                std::optional<autofill::EntityInstance> entity);
     explicit SavePromptAcceptanceResult(bool prompt_was_accepted);
     SavePromptAcceptanceResult(const SavePromptAcceptanceResult&);
@@ -62,9 +60,6 @@ class AutofillAiClient {
 
     bool prompt_was_accepted = false;
     bool did_user_interact = false;
-    // TODO(crbug.com/389629676): Delete feedback infrastructure.
-    bool did_thumbs_up_triggered = false;
-    bool did_thumbs_down_triggered = false;
 
     // Set when `prompt_was_accepted` is true.
     // TODO(crbug.com/389629676): Remove `prompt_was_accepted` in favour of

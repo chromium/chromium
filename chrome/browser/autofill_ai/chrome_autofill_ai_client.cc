@@ -211,8 +211,7 @@ void ChromeAutofillAiClient::ShowSaveAutofillAiBubble(
   if (auto* controller = autofill_ai::SaveAutofillAiDataController::GetOrCreate(
           &*web_contents_)) {
     controller->OfferSave(std::move(entity),
-                          std::move(prompt_acceptance_callback),
-                          base::DoNothing());
+                          std::move(prompt_acceptance_callback));
     return;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

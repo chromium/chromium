@@ -34,17 +34,13 @@ class MockSaveAutofillAiDataController : public SaveAutofillAiDataController {
   MOCK_METHOD(void,
               OfferSave,
               (autofill::EntityInstance,
-               AutofillAiClient::SavePromptAcceptanceCallback,
-               LearnMoreClickedCallback),
+               AutofillAiClient::SavePromptAcceptanceCallback),
               (override));
   MOCK_METHOD(base::optional_ref<const autofill::EntityInstance>,
               GetAutofillAiData,
               (),
               (const override));
   MOCK_METHOD(void, OnSaveButtonClicked, (), (override));
-  MOCK_METHOD(void, OnThumbsUpClicked, (), (override));
-  MOCK_METHOD(void, OnThumbsDownClicked, (), (override));
-  MOCK_METHOD(void, OnLearnMoreClicked, (), (override));
   MOCK_METHOD(void, OnBubbleClosed, (AutofillAiBubbleClosedReason), (override));
   base::WeakPtr<SaveAutofillAiDataController> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
@@ -133,39 +129,4 @@ TEST_F(SaveAutofillAiDataBubbleViewTest, CancelInvokesTheController) {
   view().CancelDialog();
 }
 
-TEST_F(SaveAutofillAiDataBubbleViewTest, ThumbsUpInvokesTheController) {
-  CreateViewAndShow();
-
-  // Assert that the controller respective method is called.
-  EXPECT_CALL(mock_controller(), OnThumbsUpClicked);
-
-  // Clicks on the thumbs up button.
-  ClickButton(views::AsViewClass<views::ImageButton>(
-      view().GetBubbleFrameView()->GetViewByID(
-          SaveAutofillAiDataBubbleView::kThumbsUpButtonViewID)));
-}
-
-TEST_F(SaveAutofillAiDataBubbleViewTest, ThumbsDownInvokesTheController) {
-  CreateViewAndShow();
-
-  // Assert that the controller respective method is called.
-  EXPECT_CALL(mock_controller(), OnThumbsDownClicked);
-
-  // Clicks on the thumbs down button.
-  ClickButton(views::AsViewClass<views::ImageButton>(
-      view().GetBubbleFrameView()->GetViewByID(
-          SaveAutofillAiDataBubbleView::kThumbsDownButtonViewID)));
-}
-
-TEST_F(SaveAutofillAiDataBubbleViewTest, LearnMoreClickTriggersCallback) {
-  CreateViewAndShow();
-
-  // Assert that the controller respective method is called.
-  EXPECT_CALL(mock_controller(), OnLearnMoreClicked);
-
-  auto* suggestion_text = views::AsViewClass<views::StyledLabel>(
-      view().GetBubbleFrameView()->GetViewByID(
-          SaveAutofillAiDataBubbleView::kLearnMoreStyledLabelViewID));
-  suggestion_text->ClickFirstLinkForTesting();
-}
 }  // namespace autofill_ai

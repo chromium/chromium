@@ -21,7 +21,6 @@ namespace autofill_ai {
 // bubble.
 class SaveAutofillAiDataController {
  public:
-  using LearnMoreClickedCallback = base::RepeatingCallback<void()>;
 
   enum class AutofillAiBubbleClosedReason {
     // Bubble closed reason not specified.
@@ -48,23 +47,12 @@ class SaveAutofillAiDataController {
       content::WebContents* web_contents);
 
   // Shows a save Autofill AI data bubble which the user can accept or decline.
-  virtual void OfferSave(
-      autofill::EntityInstance entity,
-      AutofillAiClient::SavePromptAcceptanceCallback
-          save_prompt_acceptance_callback,
-      LearnMoreClickedCallback learn_more_clicked_callback) = 0;
+  virtual void OfferSave(autofill::EntityInstance entity,
+                         AutofillAiClient::SavePromptAcceptanceCallback
+                             save_prompt_acceptance_callback) = 0;
 
   // Called when the user accepts to save Autofill AI data.
   virtual void OnSaveButtonClicked() = 0;
-
-  // Called when the user clicks on the thumbs up button in the dialog.
-  virtual void OnThumbsUpClicked() = 0;
-
-  // Called when the user clicks on the thumbs down button in the dialog.
-  virtual void OnThumbsDownClicked() = 0;
-
-  // Called when the user clicks on the learn more button in the dialog.
-  virtual void OnLearnMoreClicked() = 0;
 
   // Returns the Autofill AI data to be displayed in the UI.
   virtual base::optional_ref<const autofill::EntityInstance> GetAutofillAiData()
