@@ -637,6 +637,12 @@ void GlicWindowController::ShowFinish() {
     ResetPresentationTimingState();
   }
 
+  // Whenever the glic window is shown, it should have focus. The following line
+  // of code appears to be necessary but not sufficient and there are still some
+  // edge cases.
+  // TODO(crbug.com/390637019): Fully fix and remove this comment.
+  GetGlicView()->web_view()->GetWebContents()->Focus();
+
   window_event_observer_ =
       std::make_unique<WindowEventObserver>(this, GetGlicView());
 
