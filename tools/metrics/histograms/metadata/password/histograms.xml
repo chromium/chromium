@@ -2236,6 +2236,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.LogInWithPasswordChangeSubmission"
+    enum="BooleanSuccess" expires_after="2026-02-04">
+  <owner>fiorellab@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records whether or not a login is successful using a password previously
+    saved through password change flow. It is recorded at the moment of
+    detecting a succesful or failed log in.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.ManagePasswordsReferrer"
     enum="ManagePasswordsReferrer" expires_after="2025-06-22">
   <owner>kazinova@google.com</owner>
