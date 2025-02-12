@@ -41,9 +41,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/gl/gl_switches.h"
 
-// TODO(crbug.com/40184242): Enable this test suite on Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace {
 
 using ::content::WebContents;
@@ -1165,5 +1162,3 @@ IN_PROC_BROWSER_TEST_P(SubCaptureSelfCaptureOnlyBrowserTest, ApplySubCapture) {
   EXPECT_EQ(expect_permitted, tabs_[kMainTab].ApplySubCaptureTarget(
                                   target, type_, capturing_entity_));
 }
-
-#endif  //  !BUILDFLAG(IS_CHROMEOS_LACROS)

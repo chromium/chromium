@@ -280,17 +280,12 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
           DesktopMediaPicker::Params::RequestSource::kExtension);
 
 #if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   const content::DesktopMediaID screen_id =
       content::DesktopMediaID::RegisterNativeWindow(
           content::DesktopMediaID::TYPE_SCREEN,
           primary_root_window_for_testing_
               ? primary_root_window_for_testing_.get()
               : ash::Shell::Get()->GetPrimaryRootWindow());
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  const content::DesktopMediaID screen_id = content::DesktopMediaID(
-      content::DesktopMediaID::TYPE_SCREEN, webrtc::kFullDesktopScreenId);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // base::Unretained(this) is safe because DesktopCaptureAccessHandler is owned
   // by MediaCaptureDevicesDispatcher, which is a lazy singleton which is

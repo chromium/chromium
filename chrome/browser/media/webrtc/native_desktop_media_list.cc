@@ -197,20 +197,7 @@ content::DesktopMediaID::Id GetUpdatedWindowId(
   // also means that the collided non-aura window cannot be captured.
 #if defined(USE_AURA)
   if (!is_source_list_delegated) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // The lacros capturer is not delegated and can circumvent the collision
-    // described above because it receives additional information about each
-    // window from Ash-chrome; however, it is limited in how it can convey
-    // that information. |FormatSources|, above, will put the internal ID into
-    // the window_id slot; but this will not yet be a registered native
-    // window, as the capturer does not run on the UI thread. Thus, we still
-    // need to find and register this window here and then overwrite the
-    // window_id. If the window_id has not been set, we'll just fail to find a
-    // corresponding window and the state will remain unset.
-    DesktopMediaID::Id search_id = desktop_media_id.window_id;
-#else
     DesktopMediaID::Id search_id = desktop_media_id.id;
-#endif
     aura::WindowTreeHost* const host =
         aura::WindowTreeHost::GetForAcceleratedWidget(
             *reinterpret_cast<gfx::AcceleratedWidget*>(&search_id));
@@ -226,10 +213,6 @@ content::DesktopMediaID::Id GetUpdatedWindowId(
       // about the window. There are potential race conditions where this
       // could happen, so don't throw an error, but do log it in case any
       // issues pop up in the future so we can debug it.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      LOG(ERROR) << __func__ << ": Could not find window but had window id";
-      window_id = DesktopMediaID::kNullId;
-#endif
     }
   }
 #elif BUILDFLAG(IS_MAC)
@@ -530,14 +513,6 @@ NativeDesktopMediaList::Worker::FormatSources(
         NOTREACHED();
     }
     DesktopMediaID source_id(source_type, sources[i].id);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // We need to communicate this in_process_id to
-    // |RefreshForVizFrameSinkWindows|, so we'll use the window_id. If
-    // |in_process_id| is unset, then window_id will also remain unset and all
-    // will be fine. See |RefreshForVizFrameSinkWindows| for a more in-depth
-    // explanation.
-    source_id.window_id = sources[i].in_process_id;
-#endif
     source_descriptions.emplace_back(std::move(source_id), title);
   }
 

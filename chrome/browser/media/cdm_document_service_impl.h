@@ -22,10 +22,6 @@
 #include "chrome/browser/ash/attestation/platform_verification_flow.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/content_protection.mojom.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 // Implements media::mojom::CdmDocumentService. Can only be used on the
 // UI thread because PlatformVerificationFlow and the pref service lives on the
 // UI thread.
@@ -80,11 +76,6 @@ class CdmDocumentServiceImpl final
                             const std::string& signed_data,
                             const std::string& signature,
                             const std::string& platform_key_certificate);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnPlatformChallenged(ChallengePlatformCallback callback,
-                            crosapi::mojom::ChallengePlatformResultPtr result);
 #endif
 
   void OnStorageIdResponse(GetStorageIdCallback callback,

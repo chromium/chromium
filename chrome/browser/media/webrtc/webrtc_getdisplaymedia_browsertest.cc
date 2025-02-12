@@ -391,12 +391,10 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 // On linux debug bots, it's flaky as well.
-#elif ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-       !defined(NDEBUG))
+#elif BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 // On linux asan bots, it's flaky as well - msan and other rel bot are fine.
-#elif ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-       defined(ADDRESS_SANITIZER))
+#elif BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 #else
 #define MAYBE_ScreenCaptureVideoAndAudio ScreenCaptureVideoAndAudio
@@ -949,14 +947,6 @@ class GetDisplayMediaHiDpiBrowserTest
 
     ASSERT_TRUE(embedded_test_server()->Start());
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // The picker itself shows previews which are unsupported in Lacros tests.
-    base::Value::List matchlist;
-    matchlist.Append("*");
-    browser()->profile()->GetPrefs()->SetList(
-        prefs::kTabCaptureAllowedByOrigins, std::move(matchlist));
-#endif
-
     // Fire up the page.
     tab_ = OpenTestPageInNewTab(kMainHtmlPage);
   }
@@ -1082,7 +1072,7 @@ class GetDisplayMediaChangeSourceBrowserTest
   void SetUp() override {
     // TODO(crbug.com/40245399): Fix GetDisplayMediaChangeSourceBrowserTest with
     // audio requested on ChromeOS
-#if (BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (dynamic_surface_switching_requested_ && feature_enabled_ &&
         user_shared_audio_) {
       GTEST_SKIP();

@@ -78,7 +78,6 @@ TEST_F(ChromeScreenEnumeratorTest, NoScreen) {
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::NO_HARDWARE, actual_result);
 }
 
-// TODO(crbug.com/40247902): Fix these tests for lacros.
 TEST_F(ChromeScreenEnumeratorTest, SingleScreen) {
   ChromeScreenEnumerator::SetRootWindowsForTesting(
       GenerateScreensList(/*number_of_screens=*/1u));

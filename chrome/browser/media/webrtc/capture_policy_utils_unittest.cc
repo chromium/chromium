@@ -329,19 +329,11 @@ class MultiCaptureTest
  protected:
   bool ExpectedIsMultiCaptureAllowed() {
     std::vector<std::string> allowed_urls = AllowedOrigins();
-    return
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        IsMainProfile() &&
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-        base::Contains(allowed_urls, CurrentOrigin());
+    return base::Contains(allowed_urls, CurrentOrigin());
   }
 
   bool ExpectedIsMultiCaptureAllowedForAnyUrl() {
-    return
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        IsMainProfile() &&
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-        !AllowedOrigins().empty();
+    return !AllowedOrigins().empty();
   }
 
  private:

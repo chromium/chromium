@@ -19,12 +19,10 @@
 namespace aura {
 class Window;
 }
-
-#elif BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
 namespace webrtc {
 class DesktopCapturer;
 }
-
 #endif
 
 // Whereas ScreenEnumerator is exposed in content/,
@@ -42,7 +40,7 @@ class ChromeScreenEnumerator : public media::ScreenEnumerator {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   static void SetRootWindowsForTesting(
       std::vector<raw_ptr<aura::Window, VectorExperimental>> root_windows);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
   static void SetDesktopCapturerForTesting(
       std::unique_ptr<webrtc::DesktopCapturer> capturer);
 #endif

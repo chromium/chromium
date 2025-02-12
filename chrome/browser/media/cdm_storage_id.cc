@@ -25,11 +25,6 @@
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/content_protection.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #if BUILDFLAG(ENABLE_RLZ)
 #include "rlz/lib/machine_id.h"
@@ -117,21 +112,6 @@ void ComputeStorageId(const std::vector<uint8_t>& profile_salt,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
                                                   std::vector<uint8_t>());
   ash::SystemSaltGetter::Get()->GetSystemSalt(
-      base::BindOnce(&ComputeAndReturnStorageId, profile_salt, origin,
-                     std::move(scoped_callback)));
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (!lacros_service ||
-      !lacros_service->IsAvailable<crosapi::mojom::ContentProtection>() ||
-      lacros_service->GetInterfaceVersion<crosapi::mojom::ContentProtection>() <
-          1) {
-    std::move(callback).Run(std::vector<uint8_t>());
-    return;
-  }
-  CdmStorageIdCallback scoped_callback =
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
-                                                  std::vector<uint8_t>());
-  lacros_service->GetRemote<crosapi::mojom::ContentProtection>()->GetSystemSalt(
       base::BindOnce(&ComputeAndReturnStorageId, profile_salt, origin,
                      std::move(scoped_callback)));
 #else

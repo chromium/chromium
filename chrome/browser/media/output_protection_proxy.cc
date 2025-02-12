@@ -15,39 +15,12 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/display/types/display_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#include "ui/aura/window.h"
-#include "ui/aura/window_tree_host.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace {
-
 gfx::NativeView GetRenderFrameView(int render_process_id, int render_frame_id) {
   auto* host =
       content::RenderFrameHost::FromID(render_process_id, render_frame_id);
   return host ? host->GetNativeView() : gfx::NativeView();
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-std::optional<std::string> GetWindowId(int render_process_id,
-                                       int render_frame_id) {
-  gfx::NativeView native_view =
-      GetRenderFrameView(render_process_id, render_frame_id);
-  if (!native_view)
-    return std::nullopt;
-
-  aura::Window* root_window = native_view->GetRootWindow();
-  if (!root_window)
-    return std::nullopt;
-
-  aura::WindowTreeHost* window_tree_host = root_window->GetHost();
-  DCHECK(window_tree_host);
-
-  return window_tree_host->GetUniqueId();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 }  // namespace
 
 OutputProtectionProxy::OutputProtectionProxy(int render_process_id,
@@ -75,21 +48,6 @@ void OutputProtectionProxy::QueryStatus(QueryStatusCallback callback) {
   output_protection_delegate_.QueryStatus(
       base::BindOnce(&OutputProtectionProxy::ProcessQueryStatusResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::optional<std::string> window_id =
-      GetWindowId(render_process_id_, render_frame_id_);
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (window_id &&
-      lacros_service->IsAvailable<crosapi::mojom::ContentProtection>()) {
-    lacros_service->GetRemote<crosapi::mojom::ContentProtection>()
-        ->QueryWindowStatus(
-            window_id.value(),
-            base::BindOnce(
-                &OutputProtectionProxy::ProcessQueryStatusResultLacros,
-                weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  } else {
-    ProcessQueryStatusResult(std::move(callback), /*success=*/false, 0, 0);
-  }
 #else
   ProcessQueryStatusResult(std::move(callback), true, 0, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -104,18 +62,6 @@ void OutputProtectionProxy::EnableProtection(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   output_protection_delegate_.SetProtection(desired_method_mask,
                                             std::move(callback));
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::optional<std::string> window_id =
-      GetWindowId(render_process_id_, render_frame_id_);
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (window_id &&
-      lacros_service->IsAvailable<crosapi::mojom::ContentProtection>()) {
-    lacros_service->GetRemote<crosapi::mojom::ContentProtection>()
-        ->EnableWindowProtection(window_id.value(), desired_method_mask,
-                                 std::move(callback));
-  } else {
-    std::move(callback).Run(/*success=*/false);
-  }
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
   NOTIMPLEMENTED();
   std::move(callback).Run(false);
@@ -150,17 +96,3 @@ void OutputProtectionProxy::ProcessQueryStatusResult(
 
   std::move(callback).Run(success, new_link_mask, protection_mask);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void OutputProtectionProxy::ProcessQueryStatusResultLacros(
-    QueryStatusCallback callback,
-    crosapi::mojom::ContentProtectionWindowStatusPtr window_status) {
-  if (window_status) {
-    ProcessQueryStatusResult(std::move(callback), /*success=*/true,
-                             window_status->link_mask,
-                             window_status->protection_mask);
-  } else {
-    ProcessQueryStatusResult(std::move(callback), /*success=*/false, 0, 0);
-  }
-}
-#endif
