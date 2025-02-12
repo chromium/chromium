@@ -431,13 +431,8 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     if (IsGpuContextLost())
       return nullptr;
 
-    const SkImageInfo& info = GetSkImageInfo();
     return CanvasResourceSharedImage::Create(
-        gfx::Size(info.width(), info.height()),
-        viz::SkColorTypeToSinglePlaneSharedImageFormat(
-            info.colorInfo().colorType()),
-        info.colorInfo().alphaType(),
-        SkColorSpaceToGfxColorSpace(info.colorInfo().refColorSpace()),
+        Size(), GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
         ContextProviderWrapper(), CreateWeakPtr(), is_accelerated_,
         shared_image_usage_flags_);
   }
