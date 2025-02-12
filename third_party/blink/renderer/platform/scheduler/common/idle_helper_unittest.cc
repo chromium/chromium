@@ -664,60 +664,6 @@ TEST_F(IdleHelperTest, TestLongIdlePeriodWhenShutdown) {
   EXPECT_EQ(0, run_count);
 }
 
-void TestCanExceedIdleDeadlineIfRequiredTask(IdleHelperForTest* idle_helper,
-                                             bool* can_exceed_idle_deadline_out,
-                                             int* run_count,
-                                             base::TimeTicks deadline) {
-  *can_exceed_idle_deadline_out =
-      idle_helper->CanExceedIdleDeadlineIfRequired();
-  (*run_count)++;
-}
-
-TEST_F(IdleHelperTest, CanExceedIdleDeadlineIfRequired) {
-  int run_count = 0;
-  bool can_exceed_idle_deadline = false;
-
-  // Should return false if not in an idle period.
-  EXPECT_FALSE(idle_helper_->CanExceedIdleDeadlineIfRequired());
-
-  // Should return false for short idle periods.
-  idle_task_runner_->PostIdleTask(
-      FROM_HERE, base::BindOnce(&TestCanExceedIdleDeadlineIfRequiredTask,
-                                idle_helper_.get(), &can_exceed_idle_deadline,
-                                &run_count));
-  idle_helper_->StartIdlePeriod(
-      IdleHelper::IdlePeriodState::kInShortIdlePeriod,
-      test_task_runner_->NowTicks(),
-      test_task_runner_->NowTicks() + base::Milliseconds(10));
-  test_task_runner_->RunUntilIdle();
-  EXPECT_EQ(1, run_count);
-  EXPECT_FALSE(can_exceed_idle_deadline);
-
-  // Should return false for a long idle period which is shortened due to a
-  // pending delayed task.
-  default_task_runner_->PostDelayedTask(FROM_HERE, base::BindOnce(&NullTask),
-                                        base::Milliseconds(10));
-  idle_task_runner_->PostIdleTask(
-      FROM_HERE, base::BindOnce(&TestCanExceedIdleDeadlineIfRequiredTask,
-                                idle_helper_.get(), &can_exceed_idle_deadline,
-                                &run_count));
-  idle_helper_->EnableLongIdlePeriod();
-  test_task_runner_->RunUntilIdle();
-  EXPECT_EQ(2, run_count);
-  EXPECT_FALSE(can_exceed_idle_deadline);
-
-  // Next long idle period will be for the maximum time, so
-  // CanExceedIdleDeadlineIfRequired should return true.
-  test_task_runner_->AdvanceMockTickClock(maximum_idle_period_duration());
-  idle_task_runner_->PostIdleTask(
-      FROM_HERE, base::BindOnce(&TestCanExceedIdleDeadlineIfRequiredTask,
-                                idle_helper_.get(), &can_exceed_idle_deadline,
-                                &run_count));
-  test_task_runner_->RunUntilIdle();
-  EXPECT_EQ(3, run_count);
-  EXPECT_TRUE(can_exceed_idle_deadline);
-}
-
 class IdleHelperWithQuiescencePeriodTest : public BaseIdleHelperTest {
  public:
   IdleHelperWithQuiescencePeriodTest(

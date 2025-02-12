@@ -73,7 +73,6 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
     kNotInIdlePeriod,
     kInShortIdlePeriod,
     kInLongIdlePeriod,
-    kInLongIdlePeriodWithMaxDeadline,
     kInLongIdlePeriodPaused,
     // Must be the last entry.
     kIdlePeriodStateCount,
@@ -124,16 +123,6 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
   // This will end an idle period either started with StartIdlePeriod or
   // EnableLongIdlePeriod.
   void EndIdlePeriod();
-
-  // Returns true if a currently running idle task could exceed its deadline
-  // without impacting user experience too much. This should only be used if
-  // there is a task which cannot be pre-empted and is likely to take longer
-  // than the largest expected idle task deadline. It should NOT be polled to
-  // check whether more work can be performed on the current idle task after
-  // its deadline has expired - post a new idle task for the continuation of the
-  // work in this case.
-  // Must be called from the thread this class was created on.
-  bool CanExceedIdleDeadlineIfRequired() const;
 
   // Returns the deadline for the current idle task.
   base::TimeTicks CurrentIdleTaskDeadline() const;

@@ -107,8 +107,6 @@ IdleHelper::IdlePeriodState IdleHelper::ComputeNewLongIdlePeriodState(
     *next_long_idle_period_delay_out = long_idle_period_duration;
     if (!idle_queue_->HasTaskToRunImmediatelyOrReadyDelayedTask())
       return IdlePeriodState::kInLongIdlePeriodPaused;
-    if (long_idle_period_duration == kMaximumIdlePeriod)
-      return IdlePeriodState::kInLongIdlePeriodWithMaxDeadline;
     return IdlePeriodState::kInLongIdlePeriod;
   } else {
     // If we can't start the idle period yet then try again after wake-up.
@@ -336,16 +334,7 @@ bool IdleHelper::IsInIdlePeriod(IdlePeriodState state) {
 // static
 bool IdleHelper::IsInLongIdlePeriod(IdlePeriodState state) {
   return state == IdlePeriodState::kInLongIdlePeriod ||
-         state == IdlePeriodState::kInLongIdlePeriodWithMaxDeadline ||
          state == IdlePeriodState::kInLongIdlePeriodPaused;
-}
-
-bool IdleHelper::CanExceedIdleDeadlineIfRequired() const {
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
-               "CanExceedIdleDeadlineIfRequired");
-  helper_->CheckOnValidThread();
-  return state_.idle_period_state() ==
-         IdlePeriodState::kInLongIdlePeriodWithMaxDeadline;
 }
 
 IdleHelper::IdlePeriodState IdleHelper::SchedulerIdlePeriodState() const {
@@ -503,8 +492,6 @@ const char* IdleHelper::IdlePeriodStateToString(
       return "in_short_idle_period";
     case IdlePeriodState::kInLongIdlePeriod:
       return "in_long_idle_period";
-    case IdlePeriodState::kInLongIdlePeriodWithMaxDeadline:
-      return "in_long_idle_period_with_max_deadline";
     case IdlePeriodState::kInLongIdlePeriodPaused:
       return "in_long_idle_period_paused";
     default:
