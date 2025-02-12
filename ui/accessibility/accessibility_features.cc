@@ -127,6 +127,13 @@ bool IsUseAXPositionForDocumentMarkersEnabled() {
       ::features::kUseAXPositionForDocumentMarkers);
 }
 
+BASE_FEATURE(kAXRandomizedStressTests,
+             "AXRandomizedStressTests",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAXRandomizedStressTestsEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAXRandomizedStressTests);
+}
+
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kIChromeAccessible,
              "IChromeAccessible",

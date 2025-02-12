@@ -112,6 +112,11 @@ AX_BASE_EXPORT bool IsTextBasedAudioDescriptionEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUseAXPositionForDocumentMarkers);
 AX_BASE_EXPORT bool IsUseAXPositionForDocumentMarkersEnabled();
 
+// Randomly turn the accessibility engine on based on certain conditions. We do
+// not put this flag in chrome://flags so we can get the cleanest data possible.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAXRandomizedStressTests);
+AX_BASE_EXPORT bool IsAXRandomizedStressTestsEnabled();
+
 #if BUILDFLAG(IS_WIN)
 // Use Chrome-specific accessibility COM API.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kIChromeAccessible);
