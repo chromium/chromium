@@ -5694,8 +5694,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
              =1 {{COUNT} tab}
              other {{COUNT} tabs}}
       </message>
-      <message name="IDS_IOS_SHARE_KIT_JOIN_TAB_GROUP" desc="The type of element that the user will be opening when trying to join a shared group. Used in the context 'Join and open *tab group* with Ali'" meaning="You are trying to join a shared tab group">
-        tab group
+      <message name="IDS_IOS_SHARE_KIT_JOIN_TAB_GROUP" desc="The type of element that the user will be opening when trying to join a shared group. Used in the context 'Join and open *tab group* with Ali'. The string should start with a capital letter, if applicable." meaning="You are trying to join a shared tab group">
+        Tab group
       </message>
       <message name="IDS_IOS_SHARE_KIT_MANAGE_DISCLAIMER" desc="Disclaimer for managing a tab group.">
         Anyone with the link can edit all tabs.
