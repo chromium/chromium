@@ -653,6 +653,15 @@ if (is_android) {
         "//content/app/ios/appex/app.entitlements"
   }
 
+  declare_args() {
+    ios_content_process_bundle_identifier =
+        "$ios_content_shell_bundle_identifier.ContentProcessExtension"
+    ios_network_process_bundle_identifier =
+        "$ios_content_shell_bundle_identifier.NetworkProcessExtension"
+    ios_gpu_process_bundle_identifier =
+        "$ios_content_shell_bundle_identifier.GPUProcessExtension"
+  }
+
   ios_app_bundle("content_shell") {
     info_plist = "app/ios/ios-app.plist"
     testonly = true
@@ -694,17 +703,17 @@ if (is_android) {
 
   browserkit_extension("gpu_process") {
     testonly = true
-    bundle_identifier = "$shared_bundle_id_for_test_apps.GPUProcess"
+    bundle_identifier = ios_gpu_process_bundle_identifier
   }
 
   browserkit_extension("network_process") {
     testonly = true
-    bundle_identifier = "$shared_bundle_id_for_test_apps.NetworkProcess"
+    bundle_identifier = ios_network_process_bundle_identifier
   }
 
   browserkit_extension("content_process") {
     testonly = true
-    bundle_identifier = "$shared_bundle_id_for_test_apps.ContentProcess"
+    bundle_identifier = ios_content_process_bundle_identifier
   }
 } else {
   executable("content_shell") {
