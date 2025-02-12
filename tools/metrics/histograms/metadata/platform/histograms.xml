@@ -1363,6 +1363,36 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Platform.MantisService.Latency.{OperationType}" units="ms"
+    expires_after="2025-11-19">
+  <owner>fairuzi@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    Milliseconds taken by a {OperationType} request to the Mantis service. It is
+    recorded when any request to Mantis service completes with successful return
+    status.
+  </summary>
+  <token key="OperationType">
+    <variant name="ClassifyImageSafety"/>
+    <variant name="GenerativeFill"/>
+    <variant name="Inpainting"/>
+    <variant name="LoadModel"/>
+    <variant name="Segmentation"/>
+  </token>
+</histogram>
+
+<histogram name="Platform.MantisService.ModelLoaded" enum="BooleanLoaded"
+    expires_after="2025-11-19">
+  <owner>fairuzi@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    Whether the model is already loaded (i.e. processor is already initialized).
+    This is recorded when mantis service is receiving a processor initialization
+    request and reaches the step that it needs to check whether the processor is
+    already initialized.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Mem" units="%" expires_after="2022-07-02">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
