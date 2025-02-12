@@ -544,6 +544,10 @@ void PreFreezeBackgroundMemoryTrimmer::FinishSelfCompaction(
   TRACE_EVENT0("base", "FinishSelfCompaction");
   if (ShouldContinueSelfCompaction(started_at)) {
     metric->RecordDelayedMetrics();
+    base::AutoLock locker(lock());
+    UmaHistogramMediumTimes(
+        "Memory.SelfCompact2.Renderer.TimeSinceLastCancel",
+        base::TimeTicks::Now() - self_compaction_last_cancelled_);
   }
 }
 
