@@ -100,6 +100,9 @@ enum class CardUploadEnabled {
   kMaxValue = kEnabledByFlag,
 };
 
+// TODO(crbug.com/395731509): Refactor Save Card offer metrics across all
+// platforms.
+
 // Metrics to track event when the save card prompt is offered.
 enum class SaveCardPromptOffer {
   // These values are persisted to logs. Entries should not be renumbered and
