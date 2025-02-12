@@ -1456,61 +1456,20 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
     base::ElapsedTimer timer;
     BrowsingContextGroupSwap ignored_bcg_swap_info =
         BrowsingContextGroupSwap::CreateDefault();
-    BrowserContext* browser_context =
-        frame_tree_node_->navigator().controller().GetBrowserContext();
-    DeferSpeculativeRFHAction defer_action =
-        DeferSpeculativeRFHAction::kNotDeferred;
-    if (base::FeatureList::IsEnabled(features::kDeferSpeculativeRFHCreation) &&
-        CanIntentionallyDeferSpeculativeRFHForRequest(request, browser_context,
-                                                      frame_tree_node_)) {
-      // By skipping GetFrameHostForNavigation(), we are no longer calculating
-      // the site instance here.
-      // Traces showed that calculating the site instance will take 0.5ms even
-      // on a very powerful workstation in a release build.
-      // The GetFrameHostForNavigation() function will be called in
-      // NavigationRequest::OnStartChecksComplete after staring the URL loader.
-      if (features::kWarmupSpareProcessCreationWhenDeferRFH.Get() &&
-          RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes()) {
-        // Since Android does not create a spare renderer by default, we choose
-        // to check IsSpareProcessKeptAtAllTimes() before warming up a renderer.
-        // Also we need to respect the spare renderer timeout value on Android
-        // so as not to accidentally create a permanent spare renderer.
-        // Otherwise the performance improvement might be caused by keeping a
-        // spare renderer rather than skipping the creation of the RFH.
-        std::optional<base::TimeDelta> timeout = std::nullopt;
-        // TODO(crbug.com/394973143): Move the timeout logic to
-        // SpareRenderProcessHostManagerImpl
-        if (base::FeatureList::IsEnabled(
-                features::kAndroidWarmUpSpareRendererWithTimeout)) {
-          timeout = base::Seconds(
-              features::kAndroidSpareRendererTimeoutSeconds.Get());
-        }
-        SpareRenderProcessHostManagerImpl::Get().WarmupSpare(browser_context,
-                                                             timeout);
-        defer_action =
-            DeferSpeculativeRFHAction::kDeferredWithRenderProcessWarmUp;
-      } else {
-        defer_action =
-            DeferSpeculativeRFHAction::kDeferredWithoutRenderProcessWarmUp;
-      }
-    } else {
-      auto result = GetFrameHostForNavigation(
-          request, &ignored_bcg_swap_info,
-          ProcessAllocationContext::CreateForNavigationRequest(
-              ProcessAllocationNavigationStage::kBeforeNetworkRequest,
-              request->GetNavigationId()));
-      if (result.has_value()) {
-        DCHECK(result.value());
-      } else if (result.error() ==
-                 GetFrameHostForNavigationFailed::kBlockedByPendingCommit) {
-        frame_tree_node_->render_manager()
-            ->speculative_frame_host()
-            ->RecordMetricsForBlockedGetFrameHostAttempt(
-                /* commit_attempt=*/false);
-      }
+    auto result = GetFrameHostForNavigation(
+        request, &ignored_bcg_swap_info,
+        ProcessAllocationContext::CreateForNavigationRequest(
+            ProcessAllocationNavigationStage::kBeforeNetworkRequest,
+            request->GetNavigationId()));
+    if (result.has_value()) {
+      DCHECK(result.value());
+    } else if (result.error() ==
+               GetFrameHostForNavigationFailed::kBlockedByPendingCommit) {
+      frame_tree_node_->render_manager()
+          ->speculative_frame_host()
+          ->RecordMetricsForBlockedGetFrameHostAttempt(
+              /* commit_attempt=*/false);
     }
-    base::UmaHistogramEnumeration("Navigation.DeferSpeculativeRFHAction",
-                                  defer_action);
     if (request->GetURL().SchemeIsHTTPOrHTTPS()) {
       base::UmaHistogramMicrosecondsTimes(
           "Navigation.GetFrameHostForNavigationTime"
@@ -1821,6 +1780,38 @@ RenderFrameHostManager::GetFrameHostForNavigation(
                         "reason", reason);
     return base::unexpected(
         GetFrameHostForNavigationFailed::kBlockedByPendingCommit);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kDeferSpeculativeRFHCreation) &&
+      !use_current_rfh) {
+    DeferSpeculativeRFHAction defer_action =
+        DeferSpeculativeRFHAction::kNotDeferred;
+    if (CanIntentionallyDeferSpeculativeRFHForRequest(
+            request, current_site_instance->GetBrowserContext(),
+            frame_tree_node_)) {
+      if (features::kWarmupSpareProcessCreationWhenDeferRFH.Get() &&
+          !dest_site_instance->HasProcess()) {
+        SpareRenderProcessHostManagerImpl::Get().WarmupSpare(
+            dest_site_instance->GetBrowserContext());
+        defer_action =
+            DeferSpeculativeRFHAction::kDeferredWithRenderProcessWarmUp;
+      } else {
+        defer_action =
+            DeferSpeculativeRFHAction::kDeferredWithoutRenderProcessWarmUp;
+      }
+    }
+    if (request->state() == NavigationRequest::NavigationState::NOT_STARTED) {
+      base::UmaHistogramEnumeration("Navigation.DeferSpeculativeRFHAction",
+                                    defer_action);
+    }
+    if (defer_action != DeferSpeculativeRFHAction::kNotDeferred) {
+      AppendReason(reason, "GetFrameHostForNavigation / intentional-defer");
+      TRACE_EVENT_INSTANT("navigation",
+                          "RenderFrameHostManager::GetFrameHostForNavigation",
+                          "reason", reason);
+      return base::unexpected(
+          GetFrameHostForNavigationFailed::kIntentionalDefer);
+    }
   }
 
   // We only do this if the policy allows it and are recovering a crashed frame.
