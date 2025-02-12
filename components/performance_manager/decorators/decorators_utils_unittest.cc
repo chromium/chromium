@@ -6,8 +6,12 @@
 
 #include <utility>
 
-#include "base/test/bind.h"
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
+#include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,19 +31,56 @@ class FakePageNodeDecoratorData
   FakePageNodeDecoratorData& operator=(const FakePageNodeDecoratorData&) =
       delete;
 
-  void SetOnSetPropertyCalledExpectations(base::OnceClosure closure_to_call,
-                                          int expected_value) {
-    closure_to_call_ = std::move(closure_to_call);
-    expected_value_ = expected_value;
-  }
-  void SetProperty(int value) {
-    EXPECT_EQ(expected_value_, value);
-    std::move(closure_to_call_).Run();
-  }
+  int value() const { return value_; }
+
+  void SetProperty(int value) { value_ = value; }
 
  private:
-  base::OnceClosure closure_to_call_;
-  int expected_value_;
+  int value_ = 0;
+};
+
+class SetPropertyDuringDestructionObserver final : public PageNodeObserver {
+ public:
+  explicit SetPropertyDuringDestructionObserver(const PageNode* page_node)
+      : contents_(page_node->GetWebContents()) {
+    observation_.Observe(page_node->GetGraph());
+  }
+
+  ~SetPropertyDuringDestructionObserver() final = default;
+
+  SetPropertyDuringDestructionObserver(
+      const SetPropertyDuringDestructionObserver&) = delete;
+  SetPropertyDuringDestructionObserver& operator=(
+      const SetPropertyDuringDestructionObserver&) = delete;
+
+  // Returns true if OnPageNodeRemoved was called for the observed PageNode.
+  bool page_node_removed() const { return page_node_removed_; }
+
+ private:
+  // PageNodeObserver:
+  void OnPageNodeRemoved(const PageNode* page_node) final {
+    ASSERT_TRUE(contents_);
+    if (contents_.get() != page_node->GetWebContents().get()) {
+      // Wrong PageNode.
+      return;
+    }
+
+    // The PageNode is no longer in the graph, so can't be looked up from the
+    // WebContents. The WebContents itself should still exist because this is
+    // invoked synchronously from WebContentsObserver::WebContentsDestroyed.
+    EXPECT_FALSE(
+        PerformanceManager::GetPrimaryPageNodeForWebContents(contents_.get()));
+
+    // The test passes if this doesn't crash.
+    SetPropertyForWebContentsPageNode(
+        contents_.get(), &FakePageNodeDecoratorData::SetProperty, 9999);
+    observation_.Reset();
+    page_node_removed_ = true;
+  }
+
+  base::ScopedObservation<Graph, PageNodeObserver> observation_{this};
+  base::WeakPtr<content::WebContents> contents_;
+  bool page_node_removed_ = false;
 };
 
 class DecoratorsUtilsTest : public PerformanceManagerTestHarness {
@@ -62,29 +103,35 @@ class DecoratorsUtilsTest : public PerformanceManagerTestHarness {
 // Test that the function parameter for SetPropertyForWebContentsPageNode has
 // been called.
 TEST_F(DecoratorsUtilsTest, SetPropertyForWebContentsPageNode) {
-  base::RunLoop run_loop;
   constexpr int kFakePropertyValue = 1234;
 
   // Set up and create a dummy PageNode.
   base::WeakPtr<PageNode> node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
-  auto quit_closure = run_loop.QuitClosure();
-  auto call_on_graph_cb = base::BindLambdaForTesting([&]() {
-    EXPECT_TRUE(node);
-    FakePageNodeDecoratorData::GetOrCreate(PageNodeImpl::FromNode(node.get()))
-        ->SetOnSetPropertyCalledExpectations(std::move(quit_closure),
-                                             kFakePropertyValue);
-  });
-  PerformanceManager::CallOnGraph(FROM_HERE, call_on_graph_cb);
+  ASSERT_TRUE(node);
 
   // Call to the tested function with SetProperty passed in as argument.
-  // SetProperty contains the RunLoop's quit closure.
   SetPropertyForWebContentsPageNode(web_contents(),
                                     &FakePageNodeDecoratorData::SetProperty,
                                     kFakePropertyValue);
 
-  // This will run until SetProperty calls the closure.
-  run_loop.Run();
+  auto* data = FakePageNodeDecoratorData::Get(node.get());
+  ASSERT_TRUE(data);
+  EXPECT_EQ(data->value(), kFakePropertyValue);
+}
+
+TEST_F(DecoratorsUtilsTest, SetPropertyForWebContentsPageNodeDuringDelete) {
+  // Set up and create a dummy PageNode.
+  base::WeakPtr<PageNode> node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
+  ASSERT_TRUE(node);
+
+  SetPropertyDuringDestructionObserver destruction_observer(node.get());
+
+  // Destroy the WebContents. The test passes if `destruction_observer`
+  // calls SetPropertyForWebContentsPageNode without crashing.
+  DeleteContents();
+  EXPECT_TRUE(destruction_observer.page_node_removed());
 }
 
 }  // namespace performance_manager
