@@ -1639,13 +1639,6 @@ const char kEnableProcessPerSiteUpToMainFrameThresholdDescription[] =
     "Proactively reuses same-site renderer processes to host multiple main "
     "frames, up to a certain threshold.";
 
-const char kDropInputEventsBeforeFirstPaintName[] =
-    "Drop Input Events Before First Paint";
-const char kDropInputEventsBeforeFirstPaintDescription[] =
-    "Before the user can see the first paint of a new page they cannot "
-    "intentionally interact with elements on that page. By dropping the events "
-    "we prevent accidental interaction with a page the user has not seen yet.";
-
 const char kBoundaryEventDispatchTracksNodeRemovalName[] =
     "Boundary Event Dispatch Tracks Node Removal";
 const char kBoundaryEventDispatchTracksNodeRemovalDescription[] =

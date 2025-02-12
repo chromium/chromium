@@ -2161,11 +2161,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "drop-input-events-before-first-paint",
-    "owners": [ "mustaq@chromium.org", "blink-interactions-team@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "dynamic-color-gamut",
     "owners": [ "cblume@chromium.org", "ccameron@chromium.org" ],
     "expiry_milestone": 90

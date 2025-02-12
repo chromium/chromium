@@ -738,8 +738,6 @@ class WebAppLinkCapturingParameterizedBrowserTest
       public testing::WithParamInterface<LinkCaptureTestParam> {
  public:
   WebAppLinkCapturingParameterizedBrowserTest() {
-    // kDropInputEventsBeforeFirstPaint is disabled to de-flake our simulated
-    // clicks.
     std::string mode = "reimpl_default_on";
     const char* param_name =
         ::testing::UnitTest::GetInstance()->current_test_info()->value_param();
@@ -754,8 +752,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
         /*enabled_features=*/{base::test::FeatureRefAndParams(
             features::kPwaNavigationCapturing,
             {{"link_capturing_state", mode}})},
-        /*disabled_features=*/{
-            blink::features::kDropInputEventsBeforeFirstPaint});
+        /*disabled_features=*/{});
   }
 
   // Returns the expectations JSON file name without extension.

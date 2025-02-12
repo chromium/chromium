@@ -932,9 +932,6 @@ extern const char kExperimentalRgbKeyboardPatternsDescription[];
 extern const char kRetailCouponsName[];
 extern const char kRetailCouponsDescription[];
 
-extern const char kDropInputEventsBeforeFirstPaintName[];
-extern const char kDropInputEventsBeforeFirstPaintDescription[];
-
 extern const char kBoundaryEventDispatchTracksNodeRemovalName[];
 extern const char kBoundaryEventDispatchTracksNodeRemovalDescription[];
 
