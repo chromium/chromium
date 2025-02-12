@@ -1747,6 +1747,12 @@ BASE_FEATURE(kLobsterRightClickMenu,
              "LobsterRightClickMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enabling this flag allows Lobster to receive and use the rewritten queries
+// returned from the server.
+BASE_FEATURE(kLobsterUseRewrittenQuery,
+             "LobsterUseRewrittenQuery",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables / Disables the lobster feature from the feature management module.
 BASE_FEATURE(kFeatureManagementLobster,
              "FeatureManagementLobster",
@@ -3931,6 +3937,10 @@ bool IsLobsterEnabled() {
   return base::FeatureList::IsEnabled(kLobsterDogfood) ||
          (base::FeatureList::IsEnabled(kLobster) &&
           base::FeatureList::IsEnabled(kFeatureManagementLobster));
+}
+
+bool IsLobsterUseRewrittenQuery() {
+  return base::FeatureList::IsEnabled(kLobsterUseRewrittenQuery);
 }
 
 bool IsLobsterAlwaysShowDisclaimerForTesting() {
