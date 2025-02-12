@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
-GEN_INCLUDE(['../common/testing/mock_tts.js']);
+GEN_INCLUDE(['../../common/testing/mock_tts.js']);
 
 /**
  * Browser tests for select-to-speak's feature to speak text

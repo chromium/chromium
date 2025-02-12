@@ -47,7 +47,7 @@ ts_library("ts_build") {
 
   composite = true
 
-  deps = [ "../common:ts_build" ]
+  deps = [ "../../common:ts_build" ]
 
   extra_deps = [ ":stage_ts_build" ]
 
@@ -55,18 +55,18 @@ ts_library("ts_build") {
       [ "/common/*|" + rebase_path("$common_tsc_dir/*", target_gen_dir) ]
 
   definitions = [
-    "../definitions/accessibility_private_mv2.d.ts",
-    "../definitions/automation.d.ts",
-    "../definitions/clipboard_mv2.d.ts",
-    "../definitions/extensions.d.ts",
-    "../definitions/extension_types.d.ts",
-    "../definitions/i18n.d.ts",
-    "../definitions/runtime.d.ts",
-    "../definitions/settings_private_mv2.d.ts",
-    "../definitions/storage_mv2.d.ts",
-    "../definitions/tabs.d.ts",
-    "../definitions/tts.d.ts",
-    "../definitions/windows.d.ts",
+    "../../definitions/accessibility_private_mv2.d.ts",
+    "../../definitions/automation.d.ts",
+    "../../definitions/clipboard_mv2.d.ts",
+    "../../definitions/extensions.d.ts",
+    "../../definitions/extension_types.d.ts",
+    "../../definitions/i18n.d.ts",
+    "../../definitions/runtime.d.ts",
+    "../../definitions/settings_private_mv2.d.ts",
+    "../../definitions/storage_mv2.d.ts",
+    "../../definitions/tabs.d.ts",
+    "../../definitions/tts.d.ts",
+    "../../definitions/windows.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
@@ -74,7 +74,7 @@ ts_library("ts_build") {
 
   in_files = ts_modules
 
-  tsconfig_base = "../tsconfig.base.json"
+  tsconfig_base = "../../tsconfig.base.json"
 }
 
 # Instead of setting up one copy target for each subdirectory, use a script
@@ -85,7 +85,7 @@ run_jsbundler("copied_files") {
   clear_dest_dirs = [ "." ]
   deps = [
     ":ts_build",
-    "../common:copied_files",
+    "../../common:copied_files",
   ]
   sources = [
     "background.html",
@@ -155,13 +155,13 @@ js2gtest("select_to_speak_extjs_tests") {
     "ui_manager_unittest.js",
   ]
   gen_include_files = [
-    "../common/testing/accessibility_test_base.js",
-    "../common/testing/callback_helper.js",
-    "../common/testing/e2e_test_base.js",
-    "../common/testing/fake_chrome_event.js",
-    "../common/testing/fake_settings_private.js",
-    "../common/testing/mock_storage.js",
-    "../common/testing/mock_tts.js",
+    "../../common/testing/accessibility_test_base.js",
+    "../../common/testing/callback_helper.js",
+    "../../common/testing/e2e_test_base.js",
+    "../../common/testing/fake_chrome_event.js",
+    "../../common/testing/fake_settings_private.js",
+    "../../common/testing/mock_storage.js",
+    "../../common/testing/mock_tts.js",
     "select_to_speak_e2e_test_base.js",
     "pipe.jpg",
   ]

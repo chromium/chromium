@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
-GEN_INCLUDE(['../common/testing/mock_storage.js']);
+GEN_INCLUDE(['../../common/testing/mock_storage.js']);
 
 /**
  * Browser tests for Select-to-speak's preferences and prefs migration.
