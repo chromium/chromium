@@ -1,0 +1,17 @@
+This is a wdspec test.
+[FAIL] test_relative_url
+  AssertionError
+[FAIL] test_navigate_with_beforeunload_prompt[capabilities0-True-none]
+  AssertionError: Navigation should not be finished before prompt is handled.
+[FAIL] test_navigate_with_beforeunload_prompt[capabilities0-False-none]
+  AssertionError: Navigation should not be finished before prompt is handled.
+[FAIL] test_navigate_with_beforeunload_prompt_in_iframe[capabilities0-True-none]
+  AssertionError: Navigation should not be finished before prompt is handled.
+[FAIL] test_navigate_with_beforeunload_prompt_in_iframe[capabilities0-False-none]
+  AssertionError: Navigation should not be finished before prompt is handled.
+[FAIL] test_navigate_with_beforeunload_prompt_in_iframe_navigate_in_top_context[capabilities0-True-none]
+  AssertionError: Navigation should not be finished before prompt is handled.
+[FAIL] test_navigate_with_beforeunload_prompt_in_iframe_navigate_in_top_context[capabilities0-False-none]
+  AssertionError: Navigation should not be finished before prompt is handled.
+Harness: the test ran to completion.
+
