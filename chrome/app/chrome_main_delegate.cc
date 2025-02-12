@@ -114,6 +114,7 @@
 
 #include "base/base_switches.h"
 #include "base/files/important_file_writer_cleaner.h"
+#include "base/process/process_handle.h"
 #include "base/win/atl.h"
 #include "base/win/dark_mode_support.h"
 #include "base/win/resource_exhaustion.h"
@@ -935,6 +936,15 @@ void ChromeMainDelegate::CommonEarlyInitialization(InvokedIn invoked_in) {
   std::string process_type =
       command_line->GetSwitchValueASCII(switches::kProcessType);
   bool is_browser_process = process_type.empty();
+
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(features::kDisableBoostPriority)) {
+    // The second argument to this function *disables* boosting if true. See
+    // https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-setprocesspriorityboost
+    SetProcessPriorityBoost(/*hProcess=*/base::GetCurrentProcessHandle(),
+                            /*bDisablePriorityBoost=*/true);
+  }
+#endif
 
   // Enable Split cache by default here and not in content/ so as to not
   // impact non-Chrome embedders like WebView, Cronet etc. This only enables
