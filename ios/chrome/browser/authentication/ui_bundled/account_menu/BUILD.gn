@@ -34,7 +34,6 @@ source_set("account_menu") {
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy/ui_bundled:management_util",
     "//ios/chrome/browser/push_notification/model:push_notification_service_header",
-    "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
     "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
     "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
