@@ -10,6 +10,7 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/version.h"
+#import "ios/chrome/browser/price_insights/model/price_insights_feature.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_item.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
@@ -304,6 +305,9 @@ WhatsNewItem* ConstructWhatsNewItem(NSDictionary* entry) {
 
 NSString* WhatsNewFilePath() {
   NSString* bundle_path = [base::apple::FrameworkBundle() bundlePath];
-  NSString* entries_file_path = [bundle_path stringByAppendingPathComponent:kfileName];
+  NSString* entries_file_path =
+      [bundle_path stringByAppendingPathComponent:IsPriceInsightsRegionEnabled()
+                                                      ? kfilePriceInsightsName
+                                                      : kfileName];
   return entries_file_path;
 }
