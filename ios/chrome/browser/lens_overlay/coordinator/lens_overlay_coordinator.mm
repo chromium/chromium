@@ -111,7 +111,7 @@ const int kExpectedExitAnimationCount = 2;
   ContextMenuConfigurationProvider* _resultContextMenuProvider;
 
   /// The tab helper associated with the current UI.
-  raw_ptr<LensOverlayTabHelper> _associatedTabHelper;
+  base::WeakPtr<LensOverlayTabHelper> _associatedTabHelper;
 
   /// Coordinator of the omnibox.
   OmniboxCoordinator* _omniboxCoordinator;
@@ -429,7 +429,10 @@ const int kExpectedExitAnimationCount = 2;
 
   _resultsPagePresenter.delegate = nil;
   [_metricsRecorder setLensOverlayInForeground:NO];
-  _associatedTabHelper->UpdateSnapshotStorage();
+  if (_associatedTabHelper) {
+    _associatedTabHelper->UpdateSnapshotStorage();
+  }
+
   [self dismissRestorationWindow];
   __weak id<LensCommands> weakCommands =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
@@ -653,9 +656,11 @@ const int kExpectedExitAnimationCount = 2;
   // bottom sheet in the view hierarchy. Refrain from commiting it to
   // the storage until the web state is marked hidden, as by that point all
   // other updates should be issued.
-  _associatedTabHelper->RecordViewportSnaphot();
-  _associatedTabHelper->RecordSheetDimensionState(
-      _resultsPagePresenter.sheetDimension);
+  if (_associatedTabHelper) {
+    _associatedTabHelper->RecordViewportSnaphot();
+    _associatedTabHelper->RecordSheetDimensionState(
+        _resultsPagePresenter.sheetDimension);
+  }
   if (IsLensOverlaySameTabNavigationEnabled()) {
     CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
     [HandlerForProtocol(dispatcher, BrowserCoordinatorCommands)
@@ -764,7 +769,7 @@ const int kExpectedExitAnimationCount = 2;
              name:UIApplicationDidReceiveMemoryWarningNotification
            object:nil];
 
-  _associatedTabHelper = [self activeTabHelper];
+  _associatedTabHelper = self.activeTabHelper->GetWeakPtr();
 
   _metricsRecorder = [[LensOverlayMetricsRecorder alloc]
       initWithEntrypoint:entrypoint
@@ -919,7 +924,7 @@ const int kExpectedExitAnimationCount = 2;
   _mediator = nil;
   _consentViewController = nil;
   _isExiting = NO;
-  _associatedTabHelper = nil;
+  _associatedTabHelper = nullptr;
   _metricsRecorder = nil;
   _containerPresenter = nil;
   _resultsPagePresenter = nil;
@@ -955,12 +960,8 @@ const int kExpectedExitAnimationCount = 2;
   web::WebState* activeWebState =
       browser->GetWebStateList()->GetActiveWebState();
 
-  if (!activeWebState) {
-    return NO;
-  }
-
   UIWindow* sceneWindow = browser->GetSceneState().window;
-  if (!sceneWindow) {
+  if (!sceneWindow || !_associatedTabHelper || !activeWebState) {
     return NO;
   }
 
