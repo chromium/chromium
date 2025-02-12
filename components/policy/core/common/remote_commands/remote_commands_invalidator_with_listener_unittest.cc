@@ -185,4 +185,26 @@ TEST_F(RemoteCommandsInvalidatorWithInvalidationListenerTest,
   invalidator_.Shutdown();
 }
 
+TEST_F(RemoteCommandsInvalidatorWithInvalidationListenerTest,
+       HasCorrectInvalidationType) {
+  RemoteCommandsInvalidatorImpl device_invalidator(
+      &core_, task_environment_.GetMockClock(),
+      PolicyInvalidationScope::kDevice);
+  RemoteCommandsInvalidatorImpl browser_invalidator(
+      &core_, task_environment_.GetMockClock(), PolicyInvalidationScope::kCBCM);
+  RemoteCommandsInvalidatorImpl user_invalidator(
+      &core_, task_environment_.GetMockClock(), PolicyInvalidationScope::kUser);
+
+  EXPECT_EQ(device_invalidator.GetType(), "DEVICE_REMOTE_COMMAND");
+  EXPECT_EQ(browser_invalidator.GetType(), "BROWSER_REMOTE_COMMAND");
+  EXPECT_EQ(user_invalidator.GetType(),
+#if BUILDFLAG(IS_CHROMEOS)
+            "CONSUMER_USER_REMOTE_COMMAND"
+#else
+            "PROFILE_REMOTE_COMMAND"
+#endif
+
+  );
+}
+
 }  // namespace policy
