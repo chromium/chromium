@@ -24,29 +24,33 @@ class HotspotIconTest : public AshTestBase {
 };
 
 TEST_F(HotspotIconTest, HotspotEnabledIcon) {
-  EXPECT_EQ(&kHotspotOnIcon,
-            &hotspot_icon::GetIconForHotspot(HotspotState::kEnabled));
+  const gfx::VectorIcon& icon =
+      hotspot_icon::GetIconForHotspot(HotspotState::kEnabled);
+  EXPECT_STREQ(kHotspotOnIcon.name, icon.name);
 }
 
 TEST_F(HotspotIconTest, HotspotDisabledIcon) {
-  EXPECT_EQ(&kHotspotOffIcon,
-            &hotspot_icon::GetIconForHotspot(HotspotState::kDisabled));
+  const gfx::VectorIcon& icon =
+      hotspot_icon::GetIconForHotspot(HotspotState::kDisabled);
+  EXPECT_STREQ(kHotspotOffIcon.name, icon.name);
 }
 
 TEST_F(HotspotIconTest, HotspotEnablingIcon) {
-  EXPECT_EQ(&kHotspotDotIcon,
-            &hotspot_icon::GetIconForHotspot(HotspotState::kEnabling));
+  const gfx::VectorIcon& icon =
+      hotspot_icon::GetIconForHotspot(HotspotState::kEnabling);
+  EXPECT_STREQ(kHotspotDotIcon.name, icon.name);
   task_environment()->FastForwardBy(base::Milliseconds(500));
-  EXPECT_EQ(&kHotspotOneArcIcon,
-            &hotspot_icon::GetIconForHotspot(HotspotState::kEnabling));
+  EXPECT_STREQ(kHotspotOneArcIcon.name,
+               hotspot_icon::GetIconForHotspot(HotspotState::kEnabling).name);
   task_environment()->FastForwardBy(base::Milliseconds(500));
-  EXPECT_EQ(&kHotspotOnIcon,
-            &hotspot_icon::GetIconForHotspot(HotspotState::kEnabling));
+  EXPECT_STREQ(kHotspotOnIcon.name,
+               hotspot_icon::GetIconForHotspot(HotspotState::kEnabling).name);
 }
 
 TEST_F(HotspotIconTest, HotspotDisablingIcon) {
-  EXPECT_EQ(&kHotspotOffIcon,
-            &hotspot_icon::GetIconForHotspot(HotspotState::kDisabling));
+  const gfx::VectorIcon& icon =
+      hotspot_icon::GetIconForHotspot(HotspotState::kDisabling);
+  EXPECT_STREQ(kHotspotOffIcon.name, icon.name);
 }
 
 }  // namespace ash::hotspot_icon
