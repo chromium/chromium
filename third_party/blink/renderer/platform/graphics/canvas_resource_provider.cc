@@ -1468,7 +1468,9 @@ CanvasResourceProvider::CanvasResourceProvider(
                               viz::ToClosestSkColorType(format),
                               alpha_type,
                               color_space.ToSkColorSpace())),
+      size_(size),
       format_(format),
+      alpha_type_(alpha_type),
       color_space_(color_space),
       resource_host_(resource_host),
       recorder_(std::make_unique<MemoryManagedPaintRecorder>(Size(), this)),
@@ -1713,18 +1715,10 @@ GrDirectContext* CanvasResourceProvider::GetGrContext() const {
   return context_provider_wrapper_->ContextProvider().GetGrContext();
 }
 
-gfx::Size CanvasResourceProvider::Size() const {
-  return gfx::Size(info_.width(), info_.height());
-}
-
 SkSurfaceProps CanvasResourceProvider::GetSkSurfaceProps() const {
   const bool can_use_lcd_text =
       GetSkImageInfo().alphaType() == kOpaque_SkAlphaType;
   return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
-}
-
-SkAlphaType CanvasResourceProvider::GetAlphaType() const {
-  return GetSkImageInfo().alphaType();
 }
 
 std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(

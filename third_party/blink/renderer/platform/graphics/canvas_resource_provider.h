@@ -182,12 +182,17 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // FlushCanvas and preserve recording only if IsPrinting or
   // FlushReason indicates printing in progress.
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason);
+
+  // TODO(crbug.com/371227617): Trim callsites of this method to those that
+  // actually need to pass this info to Skia APIs and then eliminate the
+  // method/this class holding `info_` by inlining creation of SkImageInfo at
+  // those callsites.
   const SkImageInfo& GetSkImageInfo() const { return info_; }
   SkSurfaceProps GetSkSurfaceProps() const;
   viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
   gfx::ColorSpace GetColorSpace() const { return color_space_; }
-  SkAlphaType GetAlphaType() const;
-  gfx::Size Size() const;
+  SkAlphaType GetAlphaType() const { return alpha_type_; }
+  gfx::Size Size() const { return size_; }
   virtual bool IsValid() const = 0;
   virtual bool IsAccelerated() const = 0;
   // Returns true if the resource can be used by the display compositor.
@@ -444,7 +449,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // Note that `info_` should be const, but the relevant SkImageInfo
   // constructors do not exist.
   SkImageInfo info_;
+  gfx::Size size_;
   viz::SharedImageFormat format_;
+  SkAlphaType alpha_type_;
   gfx::ColorSpace color_space_;
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
