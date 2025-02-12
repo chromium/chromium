@@ -2215,6 +2215,11 @@ component("base") {
         "message_loop/message_pump_io_ios.cc",
         "message_loop/message_pump_io_ios.h",
       ]
+    } else if (use_blink) {
+      sources += [
+        "message_loop/message_pump_io_ios_libdispatch.cc",
+        "message_loop/message_pump_io_ios_libdispatch.h",
+      ]
     } else {
       sources += [
         "message_loop/message_pump_kqueue.cc",
@@ -3988,6 +3993,8 @@ test("base_unittests") {
     }
     if (is_cronet_build) {
       sources += [ "message_loop/message_pump_io_ios_unittest.cc" ]
+    } else if (use_blink) {
+      sources += [ "message_loop/message_pump_io_ios_libdispatch_unittest.cc" ]
     } else {
       sources += [ "message_loop/message_pump_kqueue_unittest.cc" ]
     }
