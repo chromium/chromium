@@ -112,32 +112,18 @@ void InterceptNavigationThrottle::OnCheckComplete(bool should_ignore) {
   should_ignore_ = should_ignore;
   pending_check_ = false;
 
-  // This function is re-entrant when deferring, as we need to synchronously run
-  // the deferred ShouldIgnoreNavigation check. Early exit here on the
-  // re-entrant call of this function.
-  if (!deferring_) {
+  if (deferring_redirect_ && !should_ignore_) {
+    CHECK(deferring_);
+    deferring_redirect_ = false;
+    CheckIfShouldIgnoreNavigation();
+    // Careful, we may be re-entrant here for synchronous checks.
     return;
   }
-
-  bool deferring = deferring_;
-  // Make sure we early-exit on any re-entrant calls so we only resume/cancel
-  // once.
-  deferring_ = false;
-
-  if (deferring_redirect_) {
-    // Will be synchronous because deferring_redirect is true.
-    if (!should_ignore_) {
-      CheckIfShouldIgnoreNavigation();
-      // If any clients start requiring deferrals on synchronous redirect
-      // checks, we need to complicate the logic here significantly to account
-      // for that.
-      CHECK(!pending_check_);
-    }
-    deferring_redirect_ = false;
-  }
-  if (deferring) {
+  deferring_redirect_ = false;
+  if (deferring_) {
     UMA_HISTOGRAM_TIMES("Android.Intent.InterceptNavigationDeferDuration",
                         base::TimeTicks::Now() - defer_start_);
+    deferring_ = false;
     if (should_ignore_) {
       CancelDeferredNavigation(content::NavigationThrottle::CANCEL_AND_IGNORE);
     } else {
@@ -153,11 +139,13 @@ bool InterceptNavigationThrottle::ShouldCheckAsynchronously() const {
   // - Subframe navigations, which aren't observed on Android, and should be
   //   fast on other platforms.
   // - non-http/s URLs, which are more likely to be intercepted.
+  // - If we're already deferring, the navigation is blocked, so checking async
+  //   is counter-productive.
   return mode_ == SynchronyMode::kAsync &&
          navigation_handle()->IsInMainFrame() &&
          !navigation_handle()->IsPost() &&
          navigation_handle()->GetURL().SchemeIsHTTPOrHTTPS() &&
-         base::FeatureList::IsEnabled(kAsyncCheck) && !deferring_redirect_;
+         base::FeatureList::IsEnabled(kAsyncCheck) && !deferring_;
 }
 
 base::WeakPtr<InterceptNavigationThrottle>
