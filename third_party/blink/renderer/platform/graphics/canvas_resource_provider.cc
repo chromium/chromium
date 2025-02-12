@@ -259,21 +259,16 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProvider,
 
  private:
   scoped_refptr<CanvasResource> CreateResource() final {
-    SkImageInfo info = GetSkImageInfo();
-    if (!viz::SkColorTypeToSinglePlaneSharedImageFormat(info.colorType())
-             .IsBitmapFormatSupported()) {
+    auto format = GetSharedImageFormat();
+    if (!format.IsBitmapFormatSupported()) {
       // If the rendering format is not supported, downgrade to 8-bits.
       // TODO(junov): Should we try 12-12-12-12 and 10-10-10-2?
-      info = info.makeColorType(kN32_SkColorType);
+      format = GetN32FormatForCanvas();
     }
 
-    return CanvasResourceSharedBitmap::Create(
-        gfx::Size(info.width(), info.height()),
-        viz::SkColorTypeToSinglePlaneSharedImageFormat(
-            info.colorInfo().colorType()),
-        info.colorInfo().alphaType(),
-        SkColorSpaceToGfxColorSpace(info.colorInfo().refColorSpace()),
-        CreateWeakPtr(), shared_image_interface_provider_);
+    return CanvasResourceSharedBitmap::Create(Size(), format, GetAlphaType(),
+                                              GetColorSpace(), CreateWeakPtr(),
+                                              shared_image_interface_provider_);
   }
 
   scoped_refptr<CanvasResource> ProduceCanvasResource(
