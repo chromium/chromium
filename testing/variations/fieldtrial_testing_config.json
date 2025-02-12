@@ -18919,11 +18919,7 @@
     "RasterInducingScroll": [
         {
             "platforms": [
-                "android_webview",
-                "android",
-                "chromeos",
                 "linux",
-                "mac",
                 "windows"
             ],
             "experiments": [
