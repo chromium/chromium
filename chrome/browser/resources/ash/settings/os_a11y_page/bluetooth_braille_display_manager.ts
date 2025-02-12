@@ -182,8 +182,12 @@ export class BluetoothBrailleDisplayManager {
       this.connectInternal(display);
     } else {
       // Disconnect any previously connected bluetooth braille display.
-      await chrome.bluetoothPrivate.disconnectAll(
-          this.preferredDisplayAddress_);
+      try {
+        await chrome.bluetoothPrivate.disconnectAll(
+            this.preferredDisplayAddress_);
+      } catch (error) {
+        console.error(`Error disconnecting previous display: ${error}`);
+      }
       this.connectInternal(display);
     }
   }
@@ -195,28 +199,36 @@ export class BluetoothBrailleDisplayManager {
         'settings.a11y.chromevox.preferred_braille_display_address',
         display.address);
 
-    if (!display.connected) {
-      await chrome.bluetoothPrivate.connect(display.address);
-    }
-
     if (!display.paired) {
       chrome.bluetoothPrivate.pair(display.address);
+    }
+
+    if (!display.connected) {
+      await chrome.bluetoothPrivate.connect(display.address);
     }
   }
 
   /**
    * Disconnects the given display and clears it from Brltty.
    */
-  disconnect(display: chrome.bluetooth.Device): void {
-    chrome.bluetoothPrivate.disconnectAll(display.address);
+  async disconnect(display: chrome.bluetooth.Device): Promise<void> {
+    try {
+      await chrome.bluetoothPrivate.disconnectAll(display.address);
+    } catch (error) {
+      console.error(`Error disconnecting previous display: ${error}`);
+    }
     this.chromeVoxSubpageBrowserProxy_.updateBluetoothBrailleDisplayAddress('');
   }
 
   /**
    * Forgets the given display.
    */
-  forget(display: chrome.bluetooth.Device): void {
-    chrome.bluetoothPrivate.forgetDevice(display.address);
+  async forget(display: chrome.bluetooth.Device): Promise<void> {
+    try {
+      await chrome.bluetoothPrivate.forgetDevice(display.address);
+    } catch (error) {
+      console.error(`Error forgetting previous display: ${error}`);
+    }
     this.chromeVoxSubpageBrowserProxy_.updateBluetoothBrailleDisplayAddress('');
   }
 
