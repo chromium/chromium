@@ -12,12 +12,14 @@ struct ConfigureQuickActionsWidgetEntry: TimelineEntry {
   let useColorLensAndVoiceIcons: Bool
   let isPreview: Bool
   let avatar: Image?
+  let gaiaID: String
 }
 
 struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
   func placeholder(in context: Context) -> ConfigureQuickActionsWidgetEntry {
     ConfigureQuickActionsWidgetEntry(
-      date: Date(), useLens: false, useColorLensAndVoiceIcons: false, isPreview: true, avatar: nil)
+      date: Date(), useLens: false, useColorLensAndVoiceIcons: false, isPreview: true, avatar: nil,
+      gaiaID: "")
   }
 
   func getSnapshot(
@@ -29,7 +31,8 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
       useLens: shouldUseLens(),
       useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
       isPreview: context.isPreview,
-      avatar: nil
+      avatar: nil,
+      gaiaID: ""
     )
     completion(entry)
   }
@@ -43,7 +46,8 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
       useLens: shouldUseLens(),
       useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
       isPreview: context.isPreview,
-      avatar: nil
+      avatar: nil,
+      gaiaID: ""
     )
     let entries: [ConfigureQuickActionsWidgetEntry] = [entry]
     let timeline: Timeline = Timeline(entries: entries, policy: .never)
@@ -106,7 +110,8 @@ struct QuickActionsWidget: Widget {
 
     func placeholder(in context: Context) -> ConfigureQuickActionsWidgetEntry {
       ConfigureQuickActionsWidgetEntry(
-        date: Date(), useLens: false, useColorLensAndVoiceIcons: false, isPreview: true, avatar: nil
+        date: Date(), useLens: false, useColorLensAndVoiceIcons: false, isPreview: true,
+        avatar: nil, gaiaID: ""
       )
     }
 
@@ -114,12 +119,14 @@ struct QuickActionsWidget: Widget {
       -> ConfigureQuickActionsWidgetEntry
     {
       let avatar: Image? = configuration.avatarForProfile(profile: configuration.profile)
+      let gaiaID = configuration.gaiaForAccount(account: configuration.profile)
       let entry = ConfigureQuickActionsWidgetEntry(
         date: Date(),
         useLens: shouldUseLens(),
         useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
         isPreview: context.isPreview,
-        avatar: avatar
+        avatar: avatar,
+        gaiaID: gaiaID
       )
       return entry
     }
@@ -128,12 +135,14 @@ struct QuickActionsWidget: Widget {
       ConfigureQuickActionsWidgetEntry
     > {
       let avatar: Image? = configuration.avatarForProfile(profile: configuration.profile)
+      let gaiaID = configuration.gaiaForAccount(account: configuration.profile)
       let entry = ConfigureQuickActionsWidgetEntry(
         date: Date(),
         useLens: shouldUseLens(),
         useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
         isPreview: context.isPreview,
-        avatar: avatar
+        avatar: avatar,
+        gaiaID: gaiaID
       )
       let entries: [ConfigureQuickActionsWidgetEntry] = [entry]
       let timeline: Timeline = Timeline(entries: entries, policy: .never)
@@ -190,7 +199,10 @@ struct QuickActionsWidgetEntryView: View {
       ZStack {
         VStack {
           Spacer()
-          Link(destination: WidgetConstants.QuickActionsWidget.searchUrl) {
+          Link(
+            destination: destinationURL(
+              url: WidgetConstants.QuickActionsWidget.searchUrl, gaia: entry.gaiaID)
+          ) {
             ZStack {
               RoundedRectangle(cornerRadius: 26)
                 .frame(height: 52)
@@ -233,14 +245,18 @@ struct QuickActionsWidgetEntryView: View {
           // Show interactive buttons if the widget is fully loaded, and show
           // the custom placeholder otherwise.
           if redactionReasons.isEmpty {
-            Link(destination: WidgetConstants.QuickActionsWidget.incognitoUrl) {
+            Link(
+              destination: destinationURL(
+                url: WidgetConstants.QuickActionsWidget.incognitoUrl, gaia: entry.gaiaID)
+            ) {
               symbolWithName(symbolName: "widget_incognito_icon", system: false)
                 .frame(minWidth: 0, maxWidth: .infinity)
             }
             .accessibility(label: Text(incognitoA11yLabel))
             Separator(height: separatorHeight)
             Link(
-              destination: WidgetConstants.QuickActionsWidget.voiceSearchUrl
+              destination: destinationURL(
+                url: WidgetConstants.QuickActionsWidget.voiceSearchUrl, gaia: entry.gaiaID)
             ) {
               symbolWithName(symbolName: "widget_voice_icon", system: false)
                 .symbolRenderingMode(
@@ -252,7 +268,10 @@ struct QuickActionsWidgetEntryView: View {
             .accessibility(label: Text(voiceSearchA11yLabel))
             Separator(height: separatorHeight)
             if entry.useLens {
-              Link(destination: WidgetConstants.QuickActionsWidget.lensUrl) {
+              Link(
+                destination: destinationURL(
+                  url: WidgetConstants.QuickActionsWidget.lensUrl, gaia: entry.gaiaID)
+              ) {
                 symbolWithName(symbolName: "widget_lens_icon", system: false)
                   .symbolRenderingMode(
                     (colorScheme == .light && entry.useColorLensAndVoiceIcons)
@@ -262,7 +281,10 @@ struct QuickActionsWidgetEntryView: View {
               }
               .accessibility(label: Text(lensA11yLabel))
             } else {
-              Link(destination: WidgetConstants.QuickActionsWidget.qrCodeUrl) {
+              Link(
+                destination: destinationURL(
+                  url: WidgetConstants.QuickActionsWidget.qrCodeUrl, gaia: entry.gaiaID)
+              ) {
                 symbolWithName(symbolName: "qrcode", system: true)
                   .frame(minWidth: 0, maxWidth: .infinity)
               }
