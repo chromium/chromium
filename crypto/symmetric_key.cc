@@ -78,32 +78,6 @@ std::unique_ptr<SymmetricKey> SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
 }
 
 // static
-std::unique_ptr<SymmetricKey> SymmetricKey::DeriveKeyFromPasswordUsingScrypt(
-    Algorithm,
-    const std::string& password,
-    const std::string& salt,
-    size_t cost_parameter,
-    size_t block_size,
-    size_t parallelization_parameter,
-    size_t max_memory_bytes,
-    size_t key_size_in_bits) {
-  if ((key_size_in_bits % 8) || !IsValidKeySize(key_size_in_bits / 8)) {
-    return nullptr;
-  }
-
-  kdf::ScryptParams params = {
-      .cost = cost_parameter,
-      .block_size = block_size,
-      .parallelization = parallelization_parameter,
-      .max_memory_bytes = max_memory_bytes,
-  };
-  std::vector<uint8_t> key(key_size_in_bits / 8);
-  kdf::DeriveKeyScrypt(params, base::as_byte_span(password),
-                       base::as_byte_span(salt), key, SubtlePassKey{});
-  return std::make_unique<SymmetricKey>(key);
-}
-
-// static
 std::unique_ptr<SymmetricKey> SymmetricKey::Import(Algorithm,
                                                    const std::string& raw_key) {
   if (!IsValidKeySize(raw_key.size())) {
