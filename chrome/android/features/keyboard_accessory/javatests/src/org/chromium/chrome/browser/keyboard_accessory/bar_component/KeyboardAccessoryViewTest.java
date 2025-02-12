@@ -449,7 +449,6 @@ public class KeyboardAccessoryViewTest {
                                 .setItemTag("")
                                 .setSuggestionType(SuggestionType.CREATE_NEW_PLUS_ADDRESS)
                                 .setFeatureForIph("")
-                                .setIphDescriptionText("IPH description")
                                 .setApplyDeactivatedStyle(false)
                                 .build(),
                         new Action(AUTOFILL_SUGGESTION, unused -> {}));
@@ -466,7 +465,7 @@ public class KeyboardAccessoryViewTest {
                 });
 
         onViewWaiting(withText("Create plus address"));
-        waitForHelpBubble(withText("IPH description"));
+        waitForHelpBubble(withText(R.string.plus_address_create_suggestion_iph_android));
         assertThat(mKeyboardAccessoryView.take().areClicksAllowedWhenObscured(), is(true));
         onView(withChild(withText("Create plus address"))).check(matches(isSelected()));
         onView(withText("Create plus address")).perform(click());

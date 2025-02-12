@@ -184,11 +184,6 @@ Matcher<std::vector<Suggestion>> IsSingleCreatePlusAddressSuggestion() {
                 &feature_engagement::kIPHPlusAddressCreateSuggestionFeature)),
 #endif
       Field(&Suggestion::icon, Suggestion::Icon::kPlusAddress),
-#if BUILDFLAG(IS_ANDROID)
-      Field(&Suggestion::iph_description_text,
-            l10n_util::GetStringUTF16(
-                IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_ANDROID)),
-#endif  // BUILDFLAG(IS_ANDROID)
       Field(&Suggestion::labels, labels)));
 }
 

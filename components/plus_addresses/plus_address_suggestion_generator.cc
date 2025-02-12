@@ -315,10 +315,6 @@ PlusAddressSuggestionGenerator::CreateNewPlusAddressSuggestion() {
   suggestion.feature_for_new_badge = &features::kPlusAddressesEnabled;
   suggestion.iph_metadata = Suggestion::IPHMetadata(
       &feature_engagement::kIPHPlusAddressCreateSuggestionFeature);
-#if BUILDFLAG(IS_ANDROID)
-  suggestion.iph_description_text =
-      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_ANDROID);
-#endif  // BUILDFLAG(IS_ANDROID)
   return suggestion;
 }
 
