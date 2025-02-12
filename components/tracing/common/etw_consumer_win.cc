@@ -43,27 +43,6 @@ struct IsGuidLess {
   }
 };
 
-// Returns the size, in bytes, of a pointer-sized value in an event based on the
-// `Flags` member of an event's `EVENT_HEADER`.
-size_t GetPointerSize(uint16_t event_header_flags) {
-  // Default to the native pointer size with the expectation that, in the
-  // general case, the bitness of this binary matches the bitness of the OS.
-#if defined(ARCH_CPU_64_BITS)
-  static constexpr size_t kThisPointerSize = 8;
-  static constexpr size_t kOtherPointerSize = 4;
-  static constexpr uint16_t kOtherSizeFlag = EVENT_HEADER_FLAG_32_BIT_HEADER;
-#elif defined(ARCH_CPU_32_BITS)
-  static constexpr size_t kThisPointerSize = 4;
-  static constexpr size_t kOtherPointerSize = 8;
-  static constexpr uint16_t kOtherSizeFlag = EVENT_HEADER_FLAG_64_BIT_HEADER;
-#else
-#error Unsupported architecture
-#endif
-  return (event_header_flags & kOtherSizeFlag) == kOtherSizeFlag
-             ? kOtherPointerSize
-             : kThisPointerSize;
-}
-
 }  // namespace
 
 EtwConsumer::EtwConsumer(
@@ -148,6 +127,26 @@ bool EtwConsumer::ProcessBuffer(EVENT_TRACE_LOGFILE* buffer) {
   // Release the handle to finalize the previous message.
   self->packet_handle_ = {};
   return true;  // Continue processing events.
+}
+
+// static
+size_t EtwConsumer::GetPointerSize(uint16_t event_header_flags) {
+  // Default to the native pointer size with the expectation that, in the
+  // general case, the bitness of this binary matches the bitness of the OS.
+#if defined(ARCH_CPU_64_BITS)
+  static constexpr size_t kThisPointerSize = 8;
+  static constexpr size_t kOtherPointerSize = 4;
+  static constexpr uint16_t kOtherSizeFlag = EVENT_HEADER_FLAG_32_BIT_HEADER;
+#elif defined(ARCH_CPU_32_BITS)
+  static constexpr size_t kThisPointerSize = 4;
+  static constexpr size_t kOtherPointerSize = 8;
+  static constexpr uint16_t kOtherSizeFlag = EVENT_HEADER_FLAG_64_BIT_HEADER;
+#else
+#error Unsupported architecture
+#endif
+  return (event_header_flags & kOtherSizeFlag) == kOtherSizeFlag
+             ? kOtherPointerSize
+             : kThisPointerSize;
 }
 
 void EtwConsumer::HandleProcessEvent(const EVENT_HEADER& header,
