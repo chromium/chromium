@@ -44,3 +44,16 @@ struct WidgetConstants {
     static let url = URL(string: "chromewidgetkit://search-passwords-widget/search-passwords")!
   }
 }
+
+// Returns the destination URL appending the gaiaID if available.
+func destinationURL(url: URL, gaia: String) -> URL {
+  if gaia.isEmpty {
+    return url
+  }
+  guard var components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
+    return url
+  }
+  components.queryItems = [URLQueryItem(name: "gaia_id", value: gaia)]
+
+  return components.url ?? url
+}
