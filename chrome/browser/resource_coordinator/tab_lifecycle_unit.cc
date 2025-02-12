@@ -76,7 +76,7 @@ TabLifecycleUnitSource::TabLifecycleUnit::TabLifecycleUnit(
         observers,
     content::WebContents* web_contents,
     TabStripModel* tab_strip_model)
-    : LifecycleUnitBase(source, web_contents->GetVisibility()),
+    : LifecycleUnitBase(source),
       content::WebContentsObserver(web_contents),
       observers_(observers),
       tab_strip_model_(tab_strip_model),
@@ -618,7 +618,6 @@ void TabLifecycleUnitSource::TabLifecycleUnit::OnVisibilityChanged(
   } else if (wall_time_when_hidden_.is_max()) {
     wall_time_when_hidden_ = NowTicks();
   }
-  OnLifecycleUnitVisibilityChanged(visibility);
 }
 
 void TabLifecycleUnitSource::TabLifecycleUnit::CheckDeviceUsage(

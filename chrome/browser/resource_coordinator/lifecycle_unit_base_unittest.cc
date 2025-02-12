@@ -11,7 +11,6 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit_source_base.h"
 #include "chrome/browser/resource_coordinator/test_lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/time.h"
-#include "content/public/browser/visibility.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,8 +30,6 @@ class MockLifecycleUnitObserver : public LifecycleUnitObserver {
                void(LifecycleUnit*,
                     LifecycleUnitState,
                     LifecycleUnitStateChangeReason));
-  MOCK_METHOD2(OnLifecycleUnitVisibilityChanged,
-               void(LifecycleUnit*, content::Visibility));
   MOCK_METHOD1(OnLifecycleUnitDestroyed, void(LifecycleUnit*));
 };
 

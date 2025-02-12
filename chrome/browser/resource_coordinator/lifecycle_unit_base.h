@@ -12,7 +12,6 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/resource_coordinator/time.h"
-#include "content/public/browser/visibility.h"
 
 namespace resource_coordinator {
 
@@ -24,8 +23,7 @@ using ::mojom::LifecycleUnitStateChangeReason;
 // Base class for a LifecycleUnit.
 class LifecycleUnitBase : public LifecycleUnit {
  public:
-  explicit LifecycleUnitBase(LifecycleUnitSourceBase* source,
-                             content::Visibility visibility);
+  explicit LifecycleUnitBase(LifecycleUnitSourceBase* source);
 
   LifecycleUnitBase(const LifecycleUnitBase&) = delete;
   LifecycleUnitBase& operator=(const LifecycleUnitBase&) = delete;
@@ -59,9 +57,6 @@ class LifecycleUnitBase : public LifecycleUnit {
   virtual void OnLifecycleUnitStateChanged(
       LifecycleUnitState last_state,
       LifecycleUnitStateChangeReason reason);
-
-  // Notifies observers that the visibility of the LifecycleUnit has changed.
-  void OnLifecycleUnitVisibilityChanged(content::Visibility visibility);
 
   // Notifies observers that the LifecycleUnit is being destroyed. This is
   // invoked by derived classes rather than by the base class to avoid notifying

@@ -99,9 +99,6 @@ class MockLifecycleUnitObserver : public LifecycleUnitObserver {
                void(LifecycleUnit* lifecycle_unit,
                     LifecycleUnitState,
                     LifecycleUnitStateChangeReason));
-  MOCK_METHOD2(OnLifecycleUnitVisibilityChanged,
-               void(LifecycleUnit* lifecycle_unit,
-                    content::Visibility visibility));
   MOCK_METHOD1(OnLifecycleUnitDestroyed, void(LifecycleUnit* lifecycle_unit));
 };
 

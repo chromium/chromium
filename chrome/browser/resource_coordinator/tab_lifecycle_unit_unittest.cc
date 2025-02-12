@@ -22,7 +22,6 @@
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
-#include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
@@ -41,7 +40,6 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/navigation_simulator.h"
@@ -86,23 +84,6 @@ class MockTabLifecycleObserver : public TabLifecycleObserver {
 };
 
 }  // namespace
-
-class MockLifecycleUnitObserver : public LifecycleUnitObserver {
- public:
-  MockLifecycleUnitObserver() = default;
-
-  MockLifecycleUnitObserver(const MockLifecycleUnitObserver&) = delete;
-  MockLifecycleUnitObserver& operator=(const MockLifecycleUnitObserver&) =
-      delete;
-
-  MOCK_METHOD3(OnLifecycleUnitStateChanged,
-               void(LifecycleUnit*,
-                    LifecycleUnitState,
-                    LifecycleUnitStateChangeReason));
-  MOCK_METHOD1(OnLifecycleUnitDestroyed, void(LifecycleUnit*));
-  MOCK_METHOD2(OnLifecycleUnitVisibilityChanged,
-               void(LifecycleUnit*, content::Visibility));
-};
 
 class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
  protected:
@@ -517,68 +498,36 @@ TEST_F(TabLifecycleUnitTest, InitialLastActiveTimeForHiddenLifecycleUnit) {
   EXPECT_EQ(NowTicks(), lifecycle_unit.GetWallTimeWhenHiddenForTesting());
 }
 
-TEST_F(TabLifecycleUnitTest, NotifiedOfWebContentsVisibilityChanges) {
-  using ::testing::InvokeWithoutArgs;
-
+TEST_F(TabLifecycleUnitTest, LastActiveTimeUpdatedOnVisibilityChange) {
   TabLifecycleUnit tab_lifecycle_unit(GetTabLifecycleUnitSource(), &observers_,
                                       web_contents_, tab_strip_model_.get());
 
-  ::testing::StrictMock<MockLifecycleUnitObserver> observer;
-  tab_lifecycle_unit.AddObserver(&observer);
-
-  EXPECT_CALL(observer, OnLifecycleUnitVisibilityChanged(
-                            &tab_lifecycle_unit, content::Visibility::VISIBLE))
-      .WillOnce(InvokeWithoutArgs([&] {
-        EXPECT_EQ(base::TimeTicks::Max(),
-                  tab_lifecycle_unit.GetWallTimeWhenHiddenForTesting());
-      }));
   web_contents_->WasShown();
-  ::testing::Mock::VerifyAndClear(&observer);
+  EXPECT_EQ(base::TimeTicks::Max(),
+            tab_lifecycle_unit.GetWallTimeWhenHiddenForTesting());
 
   test_tick_clock_.Advance(base::Minutes(1));
-  base::TimeTicks wall_time_when_hidden = NowTicks();
-  EXPECT_CALL(observer, OnLifecycleUnitVisibilityChanged(
-                            &tab_lifecycle_unit, content::Visibility::HIDDEN))
-      .WillOnce(InvokeWithoutArgs([&] {
-        EXPECT_EQ(wall_time_when_hidden,
-                  tab_lifecycle_unit.GetWallTimeWhenHiddenForTesting());
-      }));
   web_contents_->WasHidden();
-  ::testing::Mock::VerifyAndClear(&observer);
+  base::TimeTicks wall_time_when_hidden = NowTicks();
+  EXPECT_EQ(wall_time_when_hidden,
+            tab_lifecycle_unit.GetWallTimeWhenHiddenForTesting());
 
   test_tick_clock_.Advance(base::Minutes(1));
+  web_contents_->WasOccluded();
   // `wall_time_when_hidden` not updated because it was already HIDDEN.
-  EXPECT_CALL(observer, OnLifecycleUnitVisibilityChanged(
-                            &tab_lifecycle_unit, content::Visibility::OCCLUDED))
-      .WillOnce(InvokeWithoutArgs([&] {
-        EXPECT_EQ(wall_time_when_hidden,
-                  tab_lifecycle_unit.GetWallTimeWhenHiddenForTesting());
-      }));
-  web_contents_->WasOccluded();
-  ::testing::Mock::VerifyAndClear(&observer);
+  EXPECT_EQ(wall_time_when_hidden,
+            tab_lifecycle_unit.GetWallTimeWhenHiddenForTesting());
 
   test_tick_clock_.Advance(base::Minutes(1));
-  EXPECT_CALL(observer, OnLifecycleUnitVisibilityChanged(
-                            &tab_lifecycle_unit, content::Visibility::VISIBLE))
-      .WillOnce(InvokeWithoutArgs([&] {
-        EXPECT_EQ(base::TimeTicks::Max(),
-                  tab_lifecycle_unit.GetWallTimeWhenHiddenForTesting());
-      }));
   web_contents_->WasShown();
-  ::testing::Mock::VerifyAndClear(&observer);
+  EXPECT_EQ(base::TimeTicks::Max(),
+            tab_lifecycle_unit.GetWallTimeWhenHiddenForTesting());
 
   test_tick_clock_.Advance(base::Minutes(1));
-  wall_time_when_hidden = NowTicks();
-  EXPECT_CALL(observer, OnLifecycleUnitVisibilityChanged(
-                            &tab_lifecycle_unit, content::Visibility::OCCLUDED))
-      .WillOnce(InvokeWithoutArgs([&] {
-        EXPECT_EQ(wall_time_when_hidden,
-                  tab_lifecycle_unit.GetWallTimeWhenHiddenForTesting());
-      }));
   web_contents_->WasOccluded();
-  ::testing::Mock::VerifyAndClear(&observer);
-
-  tab_lifecycle_unit.RemoveObserver(&observer);
+  wall_time_when_hidden = NowTicks();
+  EXPECT_EQ(wall_time_when_hidden,
+            tab_lifecycle_unit.GetWallTimeWhenHiddenForTesting());
 }
 
 }  // namespace resource_coordinator
