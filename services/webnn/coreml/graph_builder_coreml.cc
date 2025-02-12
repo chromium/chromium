@@ -129,6 +129,8 @@ constexpr char kOpConv2dTypeName[] = "conv";
 constexpr char kOpConvTranspose2dTypeName[] = "conv_transpose";
 constexpr char kOpCumulativeSumTypeName[] = "cumsum";
 constexpr char kOpDequantizeLinearTypeName[] = "dequantize";
+constexpr char kOpDequantizeLinearConstTypeName[] =
+    "constexpr_affine_dequantize";
 constexpr char kOpEluTypeName[] = "elu";
 constexpr char kOpExpandTypeName[] = "tile";
 constexpr char kOpFillTypeName[] = "fill";
@@ -872,8 +874,14 @@ GraphBuilderCoreml::WeightsFileHandle::~WeightsFileHandle() = default;
 base::expected<CoreML::Specification::MILSpec::Value, mojom::ErrorPtr>
 GraphBuilderCoreml::WeightsFileHandle::Write(
     uint64_t operand_id,
-    const WebNNConstantOperand& constant_operand) {
+    const WebNNConstantOperand& constant_operand,
+    std::optional<base::span<const uint32_t>> reshape_dimensions) {
   CHECK(!has_error_ && !finalized_);
+
+  base::span<const uint32_t> dimensions =
+      reshape_dimensions.has_value() ? *reshape_dimensions
+                                     : constant_operand.descriptor().shape();
+
   // CoreML allows writing constants directly into the model file as
   // `ImmediateValue` or to a separate weight file. It does not support int32
   // serialization to the weight file. Therefore, int32 values are written as
@@ -884,8 +892,8 @@ GraphBuilderCoreml::WeightsFileHandle::Write(
   if (constant_operand.descriptor().shape().empty() ||
       constant_operand.descriptor().data_type() == OperandDataType::kInt32) {
     return CreateConstantImmediateValue(
-        constant_operand.descriptor().shape(),
-        constant_operand.descriptor().data_type(), constant_operand.ByteSpan());
+        dimensions, constant_operand.descriptor().data_type(),
+        constant_operand.ByteSpan());
   }
   if (!constant_offsets_.contains(operand_id)) {
     ASSIGN_OR_RETURN(
@@ -901,7 +909,7 @@ GraphBuilderCoreml::WeightsFileHandle::Write(
   }
   return CreateConstantFileValue(
       OperandTypeToMILDataType(constant_operand.descriptor().data_type()),
-      constant_operand.descriptor().shape(), constant_offsets_[operand_id]);
+      dimensions, constant_offsets_[operand_id]);
 }
 
 base::expected<std::unique_ptr<GraphBuilderCoreml::ScopedWeightItem>,
@@ -2234,6 +2242,14 @@ GraphBuilderCoreml::AddOperationForDequantizeLinear(
         "or vector. Blockwise dequantization is not supported.");
   }
 
+  if (scale_operand_info.dimensions.size() == 1 &&
+      scale_operand_info.dimensions[0] !=
+          input_operand_info
+              .dimensions[input_operand_info.dimensions.size() - 1]) {
+    return NewNotSupportedError(
+        "Unsupported options to dequantizeLinear. The size of 'scale' must be "
+        "equal to the size of the input's last dimension.");
+  }
   // TODO(crbug.com/338529226): These params must all be constant tensors.
   if (!constant_operands_->contains(operation.zero_point_operand_id)) {
     return NewNotSupportedError(
@@ -2250,6 +2266,10 @@ GraphBuilderCoreml::AddOperationForDequantizeLinear(
            zero_point_operand_info.mil_data_type);
   CHECK_EQ(scale_operand_info.mil_data_type,
            GetOperandInfo(operation.output_operand_id).mil_data_type);
+
+  if (constant_operands_->contains(operation.input_operand_id)) {
+    return AddOperationForDequantizeLinearConst(operation, block);
+  }
 
   uint64_t input_operand_id = operation.input_operand_id;
   if (input_operand_info.dimensions.empty()) {
@@ -2278,24 +2298,82 @@ GraphBuilderCoreml::AddOperationForDequantizeLinear(
 
   // An "axis" must be specified if "scale" is a vector.
   if (!scale_operand_info.dimensions.empty()) {
-    CHECK_EQ(scale_operand_info.dimensions.size(), 1u);
-    // Find `axis` which satisfies: size(scale_vector) == input.shape[axis]
-    auto axis_it = std::ranges::find(input_operand_info.dimensions,
-                                     scale_operand_info.dimensions[0]);
-    if (axis_it == input_operand_info.dimensions.end()) {
-      return NewNotSupportedError(
-          "Unsupported options to dequantizeLinear. The length of the 'scale' "
-          "vector must match a dimension of the input. Blockwise "
-          "dequantization is not supported.");
-    }
-
-    int32_t axis = base::checked_cast<int32_t>(
-        axis_it - input_operand_info.dimensions.begin());
     SetInputWithValue(*op->mutable_inputs(), kOpParamAxis,
-                      CreateScalarImmediateValue(axis));
+                      CreateScalarImmediateValue(base::checked_cast<int32_t>(
+                          input_operand_info.dimensions.size() - 1)));
   }
 
   if (input_operand_id != operation.input_operand_id) {
+    ASSIGN_OR_RETURN(
+        uint64_t output_operand_id,
+        GenerateInternalOperandInfo(
+            GetOperandInfo(operation.output_operand_id).mil_data_type,
+            std::array<uint32_t, 1>{1}));
+    PopulateNamedValueType(output_operand_id, *op->add_outputs());
+    RETURN_IF_ERROR(AddOperationForReshape(output_operand_id,
+                                           operation.output_operand_id, block));
+  } else {
+    PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  }
+  return base::ok();
+}
+
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForDequantizeLinearConst(
+    const mojom::DequantizeLinear& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  const OperandInfo& scale_operand_info =
+      GetOperandInfo(operation.scale_operand_id);
+
+  CHECK(constant_operands_->contains(operation.input_operand_id));
+  CHECK(constant_operands_->contains(operation.zero_point_operand_id));
+  CHECK(constant_operands_->contains(operation.scale_operand_id));
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpDequantizeLinearConstTypeName);
+
+  static constexpr char kParamInput[] = "quantized_data";
+  bool input_needs_reshape = input_operand_info.dimensions.empty();
+  CoreML::Specification::MILSpec::Value value;
+  if (input_needs_reshape) {
+    ASSIGN_OR_RETURN(value,
+                     weights_file_handle_->Write(
+                         operation.input_operand_id,
+                         *constant_operands_->at(operation.input_operand_id),
+                         std::array<uint32_t, 1>{1}));
+  } else {
+    ASSIGN_OR_RETURN(value,
+                     weights_file_handle_->Write(
+                         operation.input_operand_id,
+                         *constant_operands_->at(operation.input_operand_id)));
+  }
+  // This op requires all parameters passed as attributes instead of inputs.
+  (*op->mutable_attributes())[kParamInput] = std::move(value);
+
+  static constexpr char kParamZeroPoint[] = "zero_point";
+  static constexpr char kParamScale[] = "scale";
+
+  ASSIGN_OR_RETURN(
+      (*op->mutable_attributes())[kParamZeroPoint],
+      weights_file_handle_->Write(
+          operation.zero_point_operand_id,
+          *constant_operands_->at(operation.zero_point_operand_id)))
+
+  ASSIGN_OR_RETURN((*op->mutable_attributes())[kParamScale],
+                   weights_file_handle_->Write(
+                       operation.scale_operand_id,
+                       *constant_operands_->at(operation.scale_operand_id)))
+
+  int32_t axis = 0;
+  if (!scale_operand_info.dimensions.empty()) {
+    axis =
+        base::checked_cast<int32_t>(input_operand_info.dimensions.size() - 1);
+  }
+  (*op->mutable_attributes())[kOpParamAxis] = CreateScalarImmediateValue(axis);
+
+  if (input_needs_reshape) {
     ASSIGN_OR_RETURN(
         uint64_t output_operand_id,
         GenerateInternalOperandInfo(
@@ -5047,7 +5125,7 @@ GraphBuilderCoreml::SetInputFromOperand(
   // Non-constant operands should already have an entity in the model.
   if (!constant_operands_->contains(operand_id)) {
     inputs[key].add_arguments()->set_name(
-        std::string(GetOperandInfo(operand_id).coreml_name));
+        GetOperandInfo(operand_id).coreml_name);
     return base::ok();
   }
   ASSIGN_OR_RETURN(CoreML::Specification::MILSpec::Value value,

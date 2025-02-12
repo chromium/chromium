@@ -161,7 +161,10 @@ class GraphBuilderCoreml {
 
     // Write a single weight item.
     base::expected<CoreML::Specification::MILSpec::Value, mojom::ErrorPtr>
-    Write(uint64_t operand_id, const WebNNConstantOperand& constant_operand);
+    Write(uint64_t operand_id,
+          const WebNNConstantOperand& constant_operand,
+          std::optional<base::span<const uint32_t>> reshape_dimensions =
+              std::nullopt);
 
     base::expected<std::unique_ptr<ScopedWeightItem>, mojom::ErrorPtr>
     CreateScopedWeightItem(OperandDataType data_type, size_t byte_size);
@@ -304,6 +307,10 @@ class GraphBuilderCoreml {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddOperationForDequantizeLinear(const mojom::DequantizeLinear& operation,
                                   CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddOperationForDequantizeLinearConst(
+      const mojom::DequantizeLinear& operation,
+      CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddOperationForElementwiseBinary(
       std::variant<uint64_t, CoreML::Specification::MILSpec::Value> lhs_operand,
