@@ -42,7 +42,6 @@ import "chromeos/crosapi/mojom/firewall_hole.mojom";
 import "chromeos/crosapi/mojom/force_installed_tracker.mojom";
 import "chromeos/crosapi/mojom/full_restore.mojom";
 import "chromeos/crosapi/mojom/fullscreen_controller.mojom";
-import "chromeos/crosapi/mojom/geolocation.mojom";
 import "chromeos/crosapi/mojom/identity_manager.mojom";
 import "chromeos/crosapi/mojom/idle_service.mojom";
 import "chromeos/crosapi/mojom/image_writer.mojom";
@@ -327,11 +326,7 @@ interface Crosapi {
   [MinVersion=94] BindFullscreenController@98(
       pending_receiver<FullscreenController> receiver);
 
-  // Binds the GeolocationService interface for getting network access point
-  // information.
-  // Added in M95.
-  [MinVersion=43]
-  BindGeolocationService@48(pending_receiver<GeolocationService> receiver);
+  // BindGeolocationService@48 was removed.
 
   // Binds the IdentityManager interface for reading identity information.
   // Added in M96.

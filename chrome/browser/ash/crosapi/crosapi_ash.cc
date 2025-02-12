@@ -44,7 +44,6 @@
 #include "chrome/browser/ash/crosapi/force_installed_tracker_ash.h"
 #include "chrome/browser/ash/crosapi/full_restore_ash.h"
 #include "chrome/browser/ash/crosapi/fullscreen_controller_ash.h"
-#include "chrome/browser/ash/crosapi/geolocation_service_ash.h"
 #include "chrome/browser/ash/crosapi/identity_manager_ash.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/image_writer_ash.h"
@@ -201,7 +200,6 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<ForceInstalledTrackerAsh>()),
       full_restore_ash_(std::make_unique<FullRestoreAsh>()),
       fullscreen_controller_ash_(std::make_unique<FullscreenControllerAsh>()),
-      geolocation_service_ash_(std::make_unique<GeolocationServiceAsh>()),
       identity_manager_ash_(std::make_unique<IdentityManagerAsh>()),
       idle_service_ash_(std::make_unique<IdleServiceAsh>()),
       input_methods_ash_(std::make_unique<InputMethodsAsh>()),
@@ -460,11 +458,6 @@ void CrosapiAsh::BindFullRestore(
 void CrosapiAsh::BindFullscreenController(
     mojo::PendingReceiver<crosapi::mojom::FullscreenController> receiver) {
   fullscreen_controller_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindGeolocationService(
-    mojo::PendingReceiver<crosapi::mojom::GeolocationService> receiver) {
-  geolocation_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindHidManager(
