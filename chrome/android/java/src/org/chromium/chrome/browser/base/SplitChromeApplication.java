@@ -21,6 +21,8 @@ import org.chromium.base.JavaUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.IdentifierNameString;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 
 /**
@@ -29,6 +31,7 @@ import org.chromium.chrome.browser.language.GlobalAppLocaleController;
  * split. In the browser process, the necessary logic is loaded from the chrome split using
  * reflection.
  */
+@NullMarked
 public class SplitChromeApplication extends SplitCompatApplication {
 
     private static @IdentifierNameString String sImplClassName =
@@ -41,10 +44,10 @@ public class SplitChromeApplication extends SplitCompatApplication {
     private static final ArraySet<String> sCachedSplits = new ArraySet<>();
 
     @SuppressLint("StaticFieldLeak")
-    private static SplitPreloader sSplitPreloader;
+    private static @Nullable SplitPreloader sSplitPreloader;
 
-    private String mChromeApplicationClassName;
-    private Resources mResources;
+    private final String mChromeApplicationClassName;
+    private @Nullable Resources mResources;
 
     public SplitChromeApplication() {
         this(sImplClassName);
@@ -80,7 +83,7 @@ public class SplitChromeApplication extends SplitCompatApplication {
         super.attachBaseContext(context);
     }
 
-    private static String getPreloadClassName(String split) {
+    private static @Nullable String getPreloadClassName(String split) {
         if (split.equals(CHROME_SPLIT_NAME)) {
             return sChromePreloadName;
         }
@@ -128,9 +131,7 @@ public class SplitChromeApplication extends SplitCompatApplication {
                 }
                 return context;
             } catch (PackageManager.NameNotFoundException e) {
-                JavaUtils.throwUnchecked(e);
-                // Never reached, just here to appease compiler.
-                return null;
+                throw JavaUtils.throwUnchecked(e);
             }
         }
     }

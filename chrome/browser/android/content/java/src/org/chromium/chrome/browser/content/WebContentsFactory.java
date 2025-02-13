@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.content;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetId;
@@ -15,6 +16,7 @@ import org.chromium.net.NetId;
  * This factory creates WebContents objects and the associated native counterpart. TODO(dtrainor):
  * Move this to the content/ layer if BrowserContext is ever supported in Java.
  */
+@NullMarked
 public class WebContentsFactory {
     private WebContentsFactory() {}
 

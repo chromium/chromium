@@ -13,6 +13,9 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import org.chromium.base.BundleUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -21,9 +24,10 @@ import java.io.PrintWriter;
  * ContentProvider base class which will call through to the given {@link Impl}. This class must be
  * present in the base module, while the Impl can be in the chrome module.
  */
+@NullMarked
 public class SplitCompatContentProvider extends ContentProvider {
     private final Object mImplLock = new Object();
-    private Impl mImpl;
+    private @Nullable Impl mImpl;
     private String mContentProviderClassName;
 
     public SplitCompatContentProvider(String contentProviderClassName) {
@@ -53,25 +57,29 @@ public class SplitCompatContentProvider extends ContentProvider {
     @Override
     public Cursor query(
             Uri uri,
-            String[] projection,
-            String selection,
-            String[] selectionArgs,
-            String sortOrder) {
+            String @Nullable [] projection,
+            @Nullable String selection,
+            String @Nullable [] selectionArgs,
+            @Nullable String sortOrder) {
         return getImpl().query(uri, projection, selection, selectionArgs, sortOrder);
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(Uri uri, @Nullable ContentValues values) {
         return getImpl().insert(uri, values);
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(Uri uri, @Nullable String selection, String @Nullable [] selectionArgs) {
         return getImpl().delete(uri, selection, selectionArgs);
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(
+            Uri uri,
+            @Nullable ContentValues values,
+            @Nullable String selection,
+            String @Nullable [] selectionArgs) {
         return getImpl().update(uri, values, selection, selectionArgs);
     }
 
@@ -92,31 +100,36 @@ public class SplitCompatContentProvider extends ContentProvider {
     public abstract static class Impl {
         private SplitCompatContentProvider mContentProvider;
 
+        @Initializer
         protected void setContentProvider(SplitCompatContentProvider contentProvider) {
             mContentProvider = contentProvider;
         }
 
-        protected final Context getContext() {
+        protected final @Nullable Context getContext() {
             return mContentProvider.getContext();
         }
 
-        protected final String getCallingPackage() {
+        protected final @Nullable String getCallingPackage() {
             return mContentProvider.getCallingPackage();
         }
 
         public abstract Cursor query(
                 Uri uri,
-                String[] projection,
-                String selection,
-                String[] selectionArgs,
-                String sortOrder);
+                String @Nullable [] projection,
+                @Nullable String selection,
+                String @Nullable [] selectionArgs,
+                @Nullable String sortOrder);
 
-        public abstract Uri insert(Uri uri, ContentValues values);
+        public abstract Uri insert(Uri uri, @Nullable ContentValues values);
 
-        public abstract int delete(Uri uri, String selection, String[] selectionArgs);
+        public abstract int delete(
+                Uri uri, @Nullable String selection, String @Nullable [] selectionArgs);
 
         public abstract int update(
-                Uri uri, ContentValues values, String selection, String[] selectionArgs);
+                Uri uri,
+                @Nullable ContentValues values,
+                @Nullable String selection,
+                String @Nullable [] selectionArgs);
 
         public abstract String getType(Uri uri);
 

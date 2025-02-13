@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.incognito;
 
 import org.chromium.build.annotations.IdentifierNameString;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.base.SplitCompatIntentService;
 
 /** See {@link IncognitoNotificationServiceImpl}. */
+@NullMarked
 public class IncognitoNotificationService extends SplitCompatIntentService {
     private static final String TAG = "incognito_notification";
 

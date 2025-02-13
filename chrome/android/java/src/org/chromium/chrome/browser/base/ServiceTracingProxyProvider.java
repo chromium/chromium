@@ -17,14 +17,14 @@ import android.os.IInterface;
 import android.os.SystemClock;
 import android.telephony.TelephonyManager;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.version_info.Channel;
 import org.chromium.base.version_info.VersionConstants;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
@@ -41,6 +41,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>TODO(crbug.com/40850079): Support tracing system services cached in StaticServiceFetchers.
  * Right now we only support services cached per-context in CachedServiceFetchers.
  */
+@NullMarked
 public class ServiceTracingProxyProvider {
     private static final String TAG = "TracingProxyProvider";
 
@@ -104,7 +105,7 @@ public class ServiceTracingProxyProvider {
     }
 
     // DO NOT MODIFY THIS ARRAY. This is a reference to the service cache in ContextImpl.
-    private final Object[] mServiceCache;
+    private final @Nullable Object[] mServiceCache;
     // Same length as |mServiceCache|, true if the corresponding service has been proxied.
     AtomicBoolean[] mServiceCacheProxied;
 
@@ -155,6 +156,7 @@ public class ServiceTracingProxyProvider {
         } catch (Throwable throwable) {
             Log.d(TAG, TRACE_FAILED, throwable);
             serviceCache = new Object[0];
+            mServiceCacheProxied = new AtomicBoolean[0];
         }
         mServiceCache = serviceCache;
     }
@@ -262,8 +264,8 @@ public class ServiceTracingProxyProvider {
         return service;
     }
 
-    private static Object callNoArgMethod(Object instance, Class<?> clazz, String methodName)
-            throws Exception {
+    private static Object callNoArgMethod(
+            @Nullable Object instance, Class<?> clazz, String methodName) throws Exception {
         Method method;
         try {
             method = (Method) sGetDeclaredMethod.invoke(clazz, methodName, null);
@@ -274,7 +276,7 @@ public class ServiceTracingProxyProvider {
         return method.invoke(instance);
     }
 
-    private static Object getField(Object instance, Class<?> clazz, String fieldName)
+    private static Object getField(@Nullable Object instance, Class<?> clazz, String fieldName)
             throws Exception {
         Field field;
         try {

@@ -16,13 +16,14 @@ import android.content.Intent;
 import android.os.Build;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -37,6 +38,7 @@ import java.lang.annotation.RetentionPolicy;
  * ClassLoader, see b/169196314 for more details.
  */
 @RequiresApi(Build.VERSION_CODES.P)
+@NullMarked
 public class SplitCompatAppComponentFactory extends AppComponentFactory {
     private static final String TAG = "SplitCompat";
 
@@ -63,10 +65,8 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
     private static @ProcessCreationReason int sProcessCreationReason =
             ProcessCreationReason.UNINITIALIZED;
 
-    @NonNull
     @Override
-    public Activity instantiateActivity(
-            @NonNull ClassLoader cl, @NonNull String className, Intent intent)
+    public Activity instantiateActivity(ClassLoader cl, String className, @Nullable Intent intent)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         setProcessCreationReason(ProcessCreationReason.ACTIVITY);
 
@@ -76,9 +76,8 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
         return super.instantiateActivity(getComponentClassLoader(cl, className), className, intent);
     }
 
-    @NonNull
     @Override
-    public ContentProvider instantiateProvider(@NonNull ClassLoader cl, @NonNull String className)
+    public ContentProvider instantiateProvider(ClassLoader cl, String className)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         // Android always initializes all ContentProviders when it initializes the Application,
         // however the process could be started for other reasons. Set to pending for now.
@@ -88,10 +87,9 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
         return super.instantiateProvider(getComponentClassLoader(cl, className), className);
     }
 
-    @NonNull
     @Override
     public BroadcastReceiver instantiateReceiver(
-            @NonNull ClassLoader cl, @NonNull String className, Intent intent)
+            ClassLoader cl, String className, @Nullable Intent intent)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         setProcessCreationReason(ProcessCreationReason.BROADCAST_RECEIVER);
 
@@ -101,10 +99,8 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
         return super.instantiateReceiver(getComponentClassLoader(cl, className), className, intent);
     }
 
-    @NonNull
     @Override
-    public Service instantiateService(
-            @NonNull ClassLoader cl, @NonNull String className, Intent intent)
+    public Service instantiateService(ClassLoader cl, String className, @Nullable Intent intent)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         setProcessCreationReason(ProcessCreationReason.SERVICE);
         return super.instantiateService(cl, className, intent);

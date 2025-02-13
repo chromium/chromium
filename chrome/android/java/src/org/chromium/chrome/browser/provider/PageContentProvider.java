@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.provider;
 
 import org.chromium.build.annotations.IdentifierNameString;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.base.SplitCompatContentProvider;
 
 /** See {@link PageContentProviderImpl}. */
+@NullMarked
 public class PageContentProvider extends SplitCompatContentProvider {
     private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.provider.PageContentProviderImpl";

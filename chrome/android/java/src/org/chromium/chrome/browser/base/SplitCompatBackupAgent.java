@@ -10,12 +10,16 @@ import android.app.backup.BackupDataOutput;
 import android.content.Context;
 import android.os.ParcelFileDescriptor;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.io.IOException;
 
 /**
  * BackupAgent base class which will call through to the given {@link Impl}. This class must be
  * present in the base module, while the Impl can be in the chrome module.
  */
+@NullMarked
 public class SplitCompatBackupAgent extends BackupAgent {
     private String mBackupAgentClassName;
     private Impl mImpl;
@@ -52,13 +56,13 @@ public class SplitCompatBackupAgent extends BackupAgent {
      * SplitCompatBackupAgent}.
      */
     public abstract static class Impl {
-        private SplitCompatBackupAgent mBackupAgent;
+        private @Nullable SplitCompatBackupAgent mBackupAgent;
 
         protected final void setBackupAgent(SplitCompatBackupAgent backupAgent) {
             mBackupAgent = backupAgent;
         }
 
-        protected final BackupAgent getBackupAgent() {
+        protected final @Nullable BackupAgent getBackupAgent() {
             return mBackupAgent;
         }
 
