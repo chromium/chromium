@@ -205,6 +205,18 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       CheckControllerWidgetMode(GlicWindowMode::kAttached));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       HotkeyDetachedWithNotNormalBrowser) {
+  RunTestSequence(Do([&]() {
+                    Browser* const pwa =
+                        CreateBrowserForApp("app name", browser()->profile());
+                    pwa->window()->Activate();
+                  }),
+                  SimulateGlicHotkey(),
+                  InAnyContext(WaitForShow(kGlicViewElementId)),
+                  CheckControllerWidgetMode(GlicWindowMode::kDetached));
+}
+
 #if !BUILDFLAG(IS_LINUX)
 // This appears to be flaky on Linux. Perhaps Minimizing isn't synchronous
 // on Linux.
