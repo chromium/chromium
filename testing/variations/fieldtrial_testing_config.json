@@ -9982,9 +9982,6 @@
             "experiments": [
                 {
                     "name": "Enabled_20240112",
-                    "params": {
-                        "send_on_enter_bfcache": "true"
-                    },
                     "enable_features": [
                         "FetchLaterAPI"
                     ]
