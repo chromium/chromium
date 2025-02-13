@@ -1618,6 +1618,9 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       case ax::mojom::DetailsFrom::kInterestTarget:
         AddAttributeToList("details-from", "interest-target", attributes);
         break;
+      case ax::mojom::DetailsFrom::kCommandfor:
+        AddAttributeToList("details-from", "command-for", attributes);
+        break;
     }
   }
 

@@ -1,0 +1,23 @@
+AXWebArea
+++AXGroup
+++++AXButton AXTitle='d1 button - outside - show-modal'
+++++AXButton AXExpanded=0 AXTitle='d1 button - outside - unrelated action'
+++++AXButton AXTitle='d1 button - outside - custom action'
+++++AXButton AXTitle='d1 button - outside - close'
+++++AXButton AXTitle='d2 button - outside - show-modal'
+++++AXButton AXExpanded=0 AXTitle='d2 button - outside - unrelated action'
+++++AXButton AXTitle='d2 button - outside - custom action'
+++++AXButton AXTitle='d2 button - outside - close'
+++++AXGroup AXSubrole=AXApplicationDialog
+++++++AXButton AXTitle='d2 button - inside - show-modal'
+++++++AXButton AXTitle='d2 button - inside - close'
+++++++AXButton AXTitle='Button inside popover, with unrelated action'
+++++++AXButton AXTitle='d2 button - inside - custom action'
+++++AXButton AXTitle='d3 button - outside - show-modal'
+++++AXButton AXExpanded=0 AXTitle='d3 button - outside - unrelated action'
+++++AXButton AXTitle='d3 button - outside - custom action'
+++++AXButton AXTitle='d3 button - outside - close'
+++++AXButton AXTitle='d3 button - outside - show-modal'
+++++AXButton AXExpanded=0 AXTitle='d3 button - outside - unrelated action'
+++++AXButton AXTitle='d3 button - outside - custom action'
+++++AXButton AXTitle='d3 button - outside - close'

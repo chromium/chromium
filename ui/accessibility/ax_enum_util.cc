@@ -2476,6 +2476,8 @@ const char* ToString(ax::mojom::DetailsFrom details_from) {
       return "popoverTarget";
     case ax::mojom::DetailsFrom::kInterestTarget:
       return "interestTarget";
+    case ax::mojom::DetailsFrom::kCommandfor:
+      return "commandforAttribute";
   }
 
   return "";

@@ -1,0 +1,6 @@
+Document
+++Window Window.IsModal=true
+++++Button Name='d1 button - inside - show-modal'
+++++Button Name='d1 button - inside - close'
+++++Button Name='Button inside popover, with unrelated action'
+++++Button Name='d1 button - inside - custom action'

@@ -905,6 +905,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Heuristic to get the target popover for an invoking element.
   AXObject* GetPopoverTargetForInvoker() const;
 
+  // Heuristic to get the target element defined by the `commandfor` attribute
+  // on an invoking element.
+  AXObject* GetCommandForElement() const;
+
   // Heuristic to get the interest target for an invoking element.
   // Returns null if the interest target points to plain content and can be
   // expose as a description instead.

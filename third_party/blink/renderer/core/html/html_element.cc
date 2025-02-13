@@ -1396,6 +1396,13 @@ void MarkPopoverInvokersDirty(const HTMLElement& popover) {
       cache->MarkElementDirty(invoker);
     }
   }
+  for (auto* invoker_candidate :
+       *popover.GetTreeScope().RootNode().CommandInvokers()) {
+    auto* invoker = To<HTMLButtonElement>(invoker_candidate);
+    if (popover == invoker->commandForElement()) {
+      cache->MarkElementDirty(invoker);
+    }
+  }
 }
 }  // namespace
 
@@ -2282,12 +2289,17 @@ bool HTMLElement::DispatchFocusEvent(
                                      source_capabilities);
 }
 
+bool HTMLElement::IsValidBuiltinPopoverCommand(HTMLElement& invoker,
+                                               CommandEventType command) {
+  return command == CommandEventType::kTogglePopover ||
+         command == CommandEventType::kHidePopover ||
+         command == CommandEventType::kShowPopover;
+}
+
 bool HTMLElement::IsValidBuiltinCommand(HTMLElement& invoker,
                                         CommandEventType command) {
   return Element::IsValidBuiltinCommand(invoker, command) ||
-         command == CommandEventType::kTogglePopover ||
-         command == CommandEventType::kHidePopover ||
-         command == CommandEventType::kShowPopover ||
+         IsValidBuiltinPopoverCommand(invoker, command) ||
          (RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled() &&
           (command == CommandEventType::kToggleFullscreen ||
            command == CommandEventType::kRequestFullscreen ||

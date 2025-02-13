@@ -1430,6 +1430,9 @@ enum DetailsFrom {
   // The details comes from a popover that will show when the user shows
   // interest in the current element, e.g. hovers.
   kInterestTarget,
+
+  // The details comes from a commandFor attribute.
+  kCommandfor,
 };
 
 // Next value: 4
