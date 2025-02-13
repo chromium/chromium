@@ -20,7 +20,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/media/router/media_router_feature.h"

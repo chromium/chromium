@@ -8,7 +8,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/power_monitor_test_utils.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/feedback/system_logs/log_sources/performance_log_source.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/performance_manager/test_support/fake_power_monitor_source.h"
