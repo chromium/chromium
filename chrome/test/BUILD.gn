@@ -4647,7 +4647,6 @@ if (!is_android) {
         "../browser/ui/views/media_router/presentation_receiver_window_view_browsertest.cc",
         "../browser/ui/views/omnibox/omnibox_popup_view_views_browsertest.cc",
         "../browser/ui/views/omnibox/omnibox_suggestion_button_row_browsertest.cc",
-        "../browser/ui/views/page_action/pwa_install_view_browsertest.cc",
         "../browser/ui/views/page_action/zoom_view_browsertest.cc",
         "../browser/ui/views/page_info/about_this_site_side_panel_coordinator_browsertest.cc",
         "../browser/ui/views/page_info/merchant_trust_side_panel_coordinator_browsertest.cc",
@@ -4715,6 +4714,7 @@ if (!is_android) {
         "../browser/ui/views/upgrade_notification_controller_browsertest.cc",
         "../browser/ui/views/user_education/help_bubble_factory_views_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_uninstall_dialog_browsertest.cc",
+        "../browser/ui/web_applications/pwa_install_page_action_browsertest.cc",
       ]
       if (enable_dice_support) {
         deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation" ]
