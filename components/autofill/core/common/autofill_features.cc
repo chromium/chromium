@@ -57,6 +57,9 @@ BASE_FEATURE(kAutofillAiWithDataSchema,
              "AutofillAiWithDataSchema",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<int> kAutofillAiWithDataSchemaServerExperimentId{
+    &kAutofillAiWithDataSchema, "autofill_ai_server_experiment_id", 0};
+
 // Same as `kAutofillAddressUserPerceptionSurvey` but for credit card forms.
 BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
              "AutofillCreditCardUserPerceptionSurvey",

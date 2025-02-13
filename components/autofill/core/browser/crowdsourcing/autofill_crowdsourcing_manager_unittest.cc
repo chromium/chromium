@@ -1415,6 +1415,31 @@ TEST_P(AutofillQueryTest, ExpiredCacheInResponse) {
   }
 }
 
+// Tests that setting the "autofill_ai_server_experiment_id" parameter for
+// kAutofillAiWithDataSchema adds the parameter as an experiment to the query
+// request.
+TEST_P(AutofillQueryTest, IncludesAutofillAiExperiment) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAiWithDataSchema,
+      {{"autofill_ai_server_experiment_id", "12345678"}});
+
+  std::vector<std::unique_ptr<FormStructure>> form_structures;
+  form_structures.push_back(std::make_unique<FormStructure>(
+      test::GetFormData({.fields = {{.role = NAME_FIRST}}})));
+
+  payloads().clear();
+  ASSERT_TRUE(SendQueryRequest(form_structures));
+  EXPECT_EQ(1, call_count());
+
+  ASSERT_THAT(payloads(), SizeIs(1));
+  AutofillPageQueryRequest query_contents;
+  ASSERT_TRUE(query_contents.ParseFromString(payloads()[0]));
+
+  ASSERT_EQ(1, query_contents.experiments_size());
+  EXPECT_EQ(12345678, query_contents.experiments(0));
+}
+
 TEST_P(AutofillQueryTest, Metadata) {
   // Initialize a form. Note that this state is post-parse.
   FormData form;
