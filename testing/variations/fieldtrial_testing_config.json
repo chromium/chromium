@@ -12094,40 +12094,6 @@
             ]
         }
     ],
-    "IOSMeasurementExperience": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240419",
-                    "enable_features": [
-                        "EnableMeasurementsExperience"
-                    ]
-                },
-                {
-                    "name": "MeasurementsOnly_20240419",
-                    "enable_features": [
-                        "EnableMeasurementsExperience"
-                    ]
-                },
-                {
-                    "name": "ViewportOnly_20240419",
-                    "enable_features": [
-                        "EnableViewportIntents"
-                    ]
-                },
-                {
-                    "name": "MeasurementsAndViewport_20240419",
-                    "enable_features": [
-                        "EnableMeasurementsExperience",
-                        "EnableViewportIntents"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSNewFeedPositioningStudy": [
         {
             "platforms": [
