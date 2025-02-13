@@ -11,18 +11,11 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "crypto/sha2.h"
-#include "crypto/symmetric_key.h"
+#include "crypto/hash.h"
+#include "crypto/kdf.h"
+#include "crypto/subtle_passkey.h"
 
 namespace ash {
-
-namespace {
-
-// Parameters for the transformation to KEY_TYPE_SALTED_AES256_1234.
-const int kNumIterations = 1234;
-const int kKeySizeInBits = 256;
-
-}  // namespace
 
 Key::Key() : key_type_(KEY_TYPE_PASSWORD_PLAIN) {}
 
@@ -66,30 +59,37 @@ void Key::Transform(KeyType target_key_type, const std::string& salt) {
     NOTREACHED();
   }
 
+  std::string salted_secret = salt + secret_;
   switch (target_key_type) {
     case KEY_TYPE_SALTED_SHA256_TOP_HALF: {
       // TODO(stevenjb/nkostylev): Handle empty salt gracefully.
       CHECK(!salt.empty());
-      char hash[crypto::kSHA256Length];
-      crypto::SHA256HashString(salt + secret_, &hash, sizeof(hash));
+      auto hash = crypto::hash::Sha256(base::as_byte_span(salted_secret));
 
       // Keep only the first half of the hash for 'weak' hashing so that the
       // plain text secret cannot be reconstructed even if the hashing is
       // reversed.
-      secret_ = base::ToLowerASCII(base::HexEncode(
-          reinterpret_cast<const void*>(hash), sizeof(hash) / 2));
+      //
+      // Crypto note: this does not make much sense. An exhaustive search for
+      // the input secret would just need to check for the first half of the
+      // hash matching to have an extremely high probability of being the
+      // correct secret anyway, and there's not (nor is there likely to be) any
+      // feasible way to invert SHA-256 directly.
+      secret_ = base::ToLowerASCII(
+          base::HexEncode(base::span(hash).first(hash.size() / 2)));
       break;
     }
     case KEY_TYPE_SALTED_PBKDF2_AES256_1234: {
-      std::unique_ptr<crypto::SymmetricKey> key(
-          crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-              crypto::SymmetricKey::AES, secret_, salt, kNumIterations,
-              kKeySizeInBits));
-      secret_ = base::Base64Encode(key->key());
+      std::array<uint8_t, 32> derived;
+      crypto::kdf::DeriveKeyPbkdf2HmacSha1(
+          {.iterations = 1234}, base::as_byte_span(secret_),
+          base::as_byte_span(salt), derived, crypto::SubtlePassKey{});
+      secret_ = base::Base64Encode(derived);
       break;
     }
     case KEY_TYPE_SALTED_SHA256:
-      secret_ = base::Base64Encode(crypto::SHA256HashString(salt + secret_));
+      secret_ = base::Base64Encode(
+          crypto::hash::Sha256(base::as_byte_span(salted_secret)));
       break;
 
     default:
