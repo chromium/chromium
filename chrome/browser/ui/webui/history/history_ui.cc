@@ -289,11 +289,6 @@ HistoryUI::HistoryUI(content::WebUI* web_ui)
                                                  base::Unretained(this)));
 
   web_ui->AddMessageHandler(std::make_unique<webui::NavigationHandler>());
-  auto browsing_history_handler = std::make_unique<BrowsingHistoryHandler>();
-  BrowsingHistoryHandler* browsing_history_handler_ptr =
-      browsing_history_handler.get();
-  web_ui->AddMessageHandler(std::move(browsing_history_handler));
-  browsing_history_handler_ptr->StartQueryHistory();
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 
   auto foreign_session_handler =
@@ -326,6 +321,13 @@ void HistoryUI::BindInterface(
       std::move(pending_page_handler),
       Profile::FromWebUI(web_ui())->GetWeakPtr(), web_ui(),
       /*for_side_panel=*/false);
+}
+
+void HistoryUI::BindInterface(
+    mojo::PendingReceiver<history::mojom::PageHandler> pending_page_handler) {
+  browsing_history_handler_ = std::make_unique<BrowsingHistoryHandler>(
+      std::move(pending_page_handler), Profile::FromWebUI(web_ui()),
+      web_ui()->GetWebContents());
 }
 
 void HistoryUI::BindInterface(

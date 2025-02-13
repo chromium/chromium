@@ -9266,7 +9266,10 @@ test("unit_tests") {
       "../browser/policy/developer_tools_policy_handler_unittest.cc",
     ]
 
-    deps += [ "//components/webauthn/core/browser:test_support" ]
+    deps += [
+      "//components/webauthn/core/browser:test_support",
+      "//ui/webui/resources/cr_components/history:mojo_bindings",
+    ]
   }
 
   if (use_gio) {

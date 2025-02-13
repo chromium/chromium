@@ -264,7 +264,7 @@ suite(`routing-test-with-history-clusters-pref-set`, () => {
     navigateTo('/grouped', app);
     assertEquals(`chrome://history/grouped`, window.location.href);
     const lastSelectedTab =
-        await testBrowserService.whenCalled('setLastSelectedTab');
+        await testBrowserService.handler.whenCalled('setLastSelectedTab');
     assertEquals(lastSelectedTab, 1);
   });
 

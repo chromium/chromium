@@ -1860,6 +1860,7 @@ static_library("ui") {
       "//ui/web_dialogs",
       "//ui/webui/resources/cr_components/app_management:mojo_bindings",
       "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
+      "//ui/webui/resources/cr_components/history:mojo_bindings",
       "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
       "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",
       "//ui/webui/resources/js/browser_command:mojo_bindings",

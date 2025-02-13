@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/js/icon.js';
 
 import {HistoryResultType} from 'chrome://resources/cr_components/history/constants.js';
+import type {HistoryEntry} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
@@ -22,7 +23,6 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserServiceImpl} from './browser_service.js';
-import type {HistoryEntry} from './externs.js';
 import {getTemplate} from './history_item.html.js';
 
 export interface HistoryItemElement {
@@ -268,7 +268,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
     }
 
     const browserService = BrowserServiceImpl.getInstance();
-    browserService.removeBookmark(this.item.url);
+    browserService.handler.removeBookmark(this.item.url);
     browserService.recordAction('BookmarkStarClicked');
 
     this.fire_('remove-bookmark-stars', this.item.url);

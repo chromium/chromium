@@ -121,6 +121,7 @@
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
+#include "ui/webui/resources/cr_components/history/history.mojom.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
 #include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
@@ -487,6 +488,9 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       most_visited::mojom::MostVisitedPageHandlerFactory, NewTabPageUI,
       NewTabPageThirdPartyUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<history::mojom::PageHandler,
+                                         HistoryUI>(map);
 
   auto* history_clusters_service =
       HistoryClustersServiceFactory::GetForBrowserContext(

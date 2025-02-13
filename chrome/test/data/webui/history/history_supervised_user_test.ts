@@ -24,17 +24,20 @@ suite('history-list supervised-user', function() {
     testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);
 
-    testService.setQueryResult({
-      info: createHistoryInfo(),
-      value: TEST_HISTORY_RESULTS,
-    });
+    testService.handler.setResultFor('queryHistory', Promise.resolve({
+      results: {
+        info: createHistoryInfo(),
+        value: TEST_HISTORY_RESULTS,
+      },
+    }));
+
     app = document.createElement('history-app');
     document.body.appendChild(app);
 
     historyList = app.$.history;
     toolbar = app.$.toolbar;
     return Promise.all([
-      testService.whenCalled('queryHistory'),
+      testService.handler.whenCalled('queryHistory'),
       ensureLazyLoaded(),
     ]);
   });
@@ -67,7 +70,7 @@ suite('history-list supervised-user', function() {
         .then(() => {
           toolbar.deleteSelectedItems();
           // Make sure that removeVisits is not being called.
-          assertEquals(0, testService.getCallCount('removeVisits'));
+          assertEquals(0, testService.handler.getCallCount('removeVisits'));
         });
   });
 
