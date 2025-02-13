@@ -644,6 +644,7 @@ void ConfigurePartitions(
         opts.backup_ref_ptr =
             enable_brp ? partition_alloc::PartitionOptions::kEnabled
                        : partition_alloc::PartitionOptions::kDisabled;
+        opts.backup_ref_ptr_extra_extras_size = brp_extra_extras_size;
         opts.zapping_by_free_flags =
             zapping_by_free_flags
                 ? partition_alloc::PartitionOptions::kEnabled
