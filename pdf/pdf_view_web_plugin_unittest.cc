@@ -161,8 +161,9 @@ MATCHER(SearchStringResultEq, "") {
 }
 
 MATCHER_P(IsExpectedImeKeyEvent, expected_text, "") {
-  if (arg.GetType() != blink::WebInputEvent::Type::kChar)
+  if (arg.GetType() != blink::WebInputEvent::Type::kChar) {
     return false;
+  }
 
   const auto& event = static_cast<const blink::WebKeyboardEvent&>(arg);
   return event.GetModifiers() == blink::WebInputEvent::kNoModifiers &&
@@ -365,6 +366,7 @@ class FakePdfHost : public pdf::mojom::PdfHost {
               SetListener,
               (mojo::PendingRemote<pdf::mojom::PdfListener>),
               (override));
+  MOCK_METHOD(void, OnDocumentLoadComplete, (), (override));
   MOCK_METHOD(void, UpdateContentRestrictions, (int32_t), (override));
   MOCK_METHOD(void,
               SaveUrlAs,
@@ -739,6 +741,7 @@ TEST_F(PdfViewWebPluginFullFrameTest, DocumentLoadComplete) {
                                                    kContentRestrictionPaste |
                                                    kContentRestrictionCut |
                                                    kContentRestrictionCopy));
+  EXPECT_CALL(pdf_host_, OnDocumentLoadComplete);
   plugin_->DocumentLoadComplete();
 
   EXPECT_EQ(PdfViewWebPlugin::DocumentLoadState::kComplete,
@@ -751,6 +754,7 @@ TEST_F(PdfViewWebPluginTest, DocumentLoadFailed) {
 
   EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF.LoadFailure"));
   EXPECT_CALL(*client_ptr_, DidStopLoading).Times(0);
+  EXPECT_CALL(pdf_host_, OnDocumentLoadComplete).Times(0);
   plugin_->DocumentLoadFailed();
 
   EXPECT_EQ(PdfViewWebPlugin::DocumentLoadState::kFailed,

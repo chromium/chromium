@@ -48,6 +48,10 @@ interface PdfListener {
 interface PdfHost {
   SetListener(pending_remote<PdfListener> client);
 
+  // Invoked when document load is completed successfully. Will not be invoked
+  // if the load fails.
+  OnDocumentLoadComplete();
+
   // Updates the content restrictions, i.e. to disable print/copy.
   UpdateContentRestrictions(int32 restrictions);
 
