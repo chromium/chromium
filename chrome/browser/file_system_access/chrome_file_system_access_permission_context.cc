@@ -2194,6 +2194,9 @@ ChromeFileSystemAccessPermissionContext::ConvertObjectsToGrants(
     const base::Value::Dict& object_dict = object->value;
     const base::FilePath path =
         base::ValueToFilePath(object_dict.Find(kPermissionPathKey)).value();
+    if (path.empty()) {
+      continue;
+    }
     const std::string display_name =
         StringOrEmpty(object_dict.FindString(kPermissionDisplayNameKey));
     HandleType handle_type =

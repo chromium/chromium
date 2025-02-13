@@ -61,6 +61,9 @@ std::vector<blink::mojom::DataTransferFilePtr> FileInfosToDataTransferFiles(
   for (const ui::FileInfo& file_info : filenames) {
     blink::mojom::DataTransferFilePtr file =
         blink::mojom::DataTransferFile::New();
+    if (file_info.path.empty()) {
+      continue;
+    }
     file->path = file_info.path;
     file->display_name = file_info.display_name;
     mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken>
