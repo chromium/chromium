@@ -12,7 +12,10 @@ promise_test(async t => {
     session.promptStreaming(kTestPrompt);
   // Run GC.
   gc();
-  assert_true(Object.prototype.toString.call(streamingResponse) === "[object ReadableStream]");
+  assert_equals(
+    Object.prototype.toString.call(streamingResponse),
+    "[object ReadableStream]"
+  );
   const reader = streamingResponse.getReader();
   let result = "";
   while (true) {
@@ -24,5 +27,5 @@ promise_test(async t => {
       result += value;
     }
   }
-  assert_true(result.length > 0, "The result should not be empty.");
+  assert_greater_than(result.length, 0, "The result should not be empty.");
 }, 'Prompt Streaming API must continue even after GC has been performed.');

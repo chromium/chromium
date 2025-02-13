@@ -12,5 +12,5 @@ promise_test(async () => {
   // Run GC.
   gc();
   const result = await promptPromise;
-  assert_true(typeof result === "string");
+  assert_equals(typeof result, "string");
 }, 'Prompt API must continue even after GC has been performed.');
