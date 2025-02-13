@@ -396,7 +396,7 @@ static const CGFloat kOffsetForConnectedCell = 16;
   ];
 
   self.siteNameLabel = CreateLabel();
-  self.overflowMenuButton = CreateOverflowMenuButton();
+  self.overflowMenuButton = CreateOverflowMenuButton(_cellIndex);
   self.headerView = CreateHeaderView(self.faviconView, self.siteNameLabel,
                                      self.overflowMenuButton);
   [self.contentView addSubview:self.headerView];
