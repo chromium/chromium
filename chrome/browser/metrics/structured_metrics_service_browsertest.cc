@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   EXPECT_EQ(sm_service->recorder()->event_storage()->RecordedEventsCount(), 0);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, SystemProfilePopulated) {
   auto* sm_service = GetSMService();
 
@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, SystemProfilePopulated) {
   EXPECT_EQ(system_profile.app_version(),
             GetSMService()->GetMetricsServiceClient()->GetVersionString());
 }
-#endif  //  BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  //  BUILDFLAG(IS_CHROMEOS)
 
 class TestStructuredMetricsServiceDisabled
     : public StructuredMetricsServiceTestBase {

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 
 source_set("structured") {
   sources = []
@@ -15,7 +14,7 @@ source_set("structured") {
     "//components/metrics/structured/lib",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//components/metrics/structured:external_metrics" ]
   } else if (is_win || is_linux || is_mac) {
     sources += [

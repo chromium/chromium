@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/site_isolation/site_details.h"
 #include "components/nacl/common/nacl_process_type.h"
 #include "content/public/browser/browser_thread.h"
@@ -76,7 +75,7 @@ void MetricsMemoryDetails::UpdateHistograms() {
       }
     }
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Chrome OS exposes system-wide graphics driver memory which has historically
   // been a source of leak/bloat.
   base::GraphicsMemoryInfoKB meminfo;

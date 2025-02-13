@@ -9,7 +9,6 @@
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/common/pref_names.h"
@@ -24,10 +23,10 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/policy/core/common/features.h"
@@ -110,7 +109,7 @@ void ChangeMetricsReportingStateWithReply(
   // should be propagated to metrics service regardless if the policy is managed
   // or not.
   // TODO(crbug.com/40232452): Possibly change |is_chrome_os| to use
-  // BUILDFLAG(IS_CHROMEOS_ASH).
+  // BUILDFLAG(IS_CHROMEOS).
   bool is_chrome_os =
       (called_from ==
        ChangeMetricsReportingStateCalledFrom::kCrosMetricsSettingsChange) ||
@@ -206,7 +205,7 @@ void ApplyMetricsReportingPolicy() {
 }
 
 bool IsMetricsReportingPolicyManaged() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   policy::BrowserPolicyConnectorAsh* policy_connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   return policy_connector->IsDeviceEnterpriseManaged();
@@ -215,7 +214,7 @@ bool IsMetricsReportingPolicyManaged() {
   const PrefService::Preference* pref =
       pref_service->FindPreference(metrics::prefs::kMetricsReportingEnabled);
   return pref && pref->IsManaged();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void ClearPreviouslyCollectedMetricsData() {

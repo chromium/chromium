@@ -60,10 +60,10 @@
 #include "components/crash/core/app/crashpad.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
-#include "components/metrics/structured/recorder.h"               // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/metrics/structured/recorder.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace metrics {
 namespace internal {
@@ -140,7 +140,7 @@ bool IsClientInSampleImpl(PrefService* local_state) {
       metrics::internal::kMetricsReportingFeature);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Callback to update the metrics reporting state when the Chrome OS metrics
 // reporting setting changes.
 void OnCrosMetricsReportingSettingChange(
@@ -275,7 +275,7 @@ bool ChromeMetricsServicesManagerClient::GetSamplingRatePerMille(int* rate) {
   return true;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ChromeMetricsServicesManagerClient::OnCrosSettingsCreated() {
   // Listen for changes to metrics reporting state.
   reporting_setting_subscription_ =

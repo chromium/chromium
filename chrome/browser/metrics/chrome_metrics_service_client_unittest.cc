@@ -14,7 +14,6 @@
 #include "base/test/task_environment.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
@@ -41,13 +40,9 @@
 #include "extensions/common/extension_builder.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_test_helper.h"
 #endif
 
 class TestChromeMetricsServiceClient : public ChromeMetricsServiceClient {
@@ -73,7 +68,7 @@ class TestChromeMetricsServiceClient : public ChromeMetricsServiceClient {
       variations::SyntheticTrialRegistry* synthetic_trial_registry)
       : ChromeMetricsServiceClient(state_manager, synthetic_trial_registry) {}
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void AsyncInitSystemProfileProvider() override {}
 #endif
 };
@@ -98,7 +93,7 @@ class ChromeMetricsServiceClientTest : public testing::Test {
         &prefs_, &enabled_state_provider_, std::wstring(), base::FilePath());
     metrics_state_manager_->InstantiateFieldTrialList();
     ASSERT_TRUE(profile_manager_.SetUp());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     scoped_feature_list_.InitWithFeatures(
         {features::kUmaStorageDimensions,
          metrics::dwa::kDwaFeature},
@@ -110,14 +105,14 @@ class ChromeMetricsServiceClientTest : public testing::Test {
     ash::LoginState::Initialize();
 #else
     scoped_feature_list_.InitAndEnableFeature(metrics::dwa::kDwaFeature);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     ash::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     // ChromeMetricsServiceClient::Initialize() initializes
     // IdentifiabilityStudySettings as part of creating the
     // PrivacyBudgetUkmEntryFilter. Reset them after the test.
@@ -133,9 +128,6 @@ class ChromeMetricsServiceClientTest : public testing::Test {
   std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
   metrics::TestEnabledStateProvider enabled_state_provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::ScopedLacrosServiceTestHelper lacros_test_helper_;
-#endif
 };
 
 namespace {
@@ -181,15 +173,10 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterUKMProviders) {
   // FormFactorMetricsProvider, FieldTrialsProvider,
   // PrivacyBudgetMetricsProvider, and ComponentMetricsProvider.
   size_t expected_providers = 10;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOSMetricsProvider
   expected_providers++;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // LacrosMetricsProvider
-  expected_providers++;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   std::unique_ptr<ChromeMetricsServiceClient> chrome_metrics_service_client =
       TestChromeMetricsServiceClient::Create(metrics_state_manager_.get(),
@@ -250,12 +237,7 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   expected_providers += 3;
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // LacrosMetricsProvider.
-  expected_providers++;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // AmbientModeMetricsProvider, AssistantServiceMetricsProvider,
   // CrosHealthdMetricsProvider, ChromeOSMetricsProvider,
   // ChromeOSHistogramMetricsProvider, ChromeShelfMetricsProvider,
@@ -266,27 +248,22 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   // UserTypeByDeviceTypeMetricsProvider, WallpaperMetricsProvider,
   // and VmmMetricsProvider.
   expected_providers += 16;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // ChromeSigninStatusMetricsProvider (for non ChromeOS).
   // AccessibilityMetricsProvider, FamilyLinkUserMetricsProvider
   expected_providers += 3;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
   // PowerMetricsProvider, GoogleUpdateMetricsProviderMac
   expected_providers += 2;
 #endif  // BUILDFLAG(IS_MAC)
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   expected_providers++;  // DesktopPlatformFeaturesMetricsProvider
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS_LACROS))
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // DesktopSessionMetricsProvider

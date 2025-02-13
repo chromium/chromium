@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_METRICS_ENROLLMENT_STATUS_H_
 #define CHROME_BROWSER_METRICS_ENROLLMENT_STATUS_H_
 
-// Possible device enrollment status for a Chrome OS device. Used by both
-// ash-chrome and lacros-chrome.
+// Possible device enrollment status for a Chrome OS device.
 // Used by UMA histogram, so entries shouldn't be reordered or removed.
 enum class EnrollmentStatus {
   kNonManaged = 0,
