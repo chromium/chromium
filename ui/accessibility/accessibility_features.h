@@ -63,6 +63,10 @@ AX_BASE_EXPORT bool IsAccessibilityPruneRedundantInlineConnectivityEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityTreeForViews);
 AX_BASE_EXPORT bool IsAccessibilityTreeForViewsEnabled();
 
+// Serialize Views' accessibility data as soon as it changes.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kViewsAccessibilitySerializeOnDataChange);
+AX_BASE_EXPORT bool IsViewsAccessibilitySerializeOnDataChangeEnabled();
+
 // Use Alternative mechanism for acquiring image descriptions.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kImageDescriptionsAlternateRouting);
 AX_BASE_EXPORT bool IsImageDescriptionsAlternateRoutingEnabled();

@@ -66,6 +66,14 @@ bool IsAccessibilityTreeForViewsEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityTreeForViews);
 }
 
+BASE_FEATURE(kViewsAccessibilitySerializeOnDataChanged,
+             "ViewsAccessibilitySerializeOnDataChanged",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsViewsAccessibilitySerializeOnDataChangeEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kViewsAccessibilitySerializeOnDataChanged);
+}
+
 BASE_FEATURE(kImageDescriptionsAlternateRouting,
              "ImageDescriptionsAlternateRouting",
              base::FEATURE_DISABLED_BY_DEFAULT);
