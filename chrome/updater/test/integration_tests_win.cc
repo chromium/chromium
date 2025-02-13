@@ -682,7 +682,7 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
   if (is_silent_install || expect_success) {
     EXPECT_TRUE(WaitForUpdaterExit());
   } else {
-    CloseInstallCompleteDialog({},
+    CloseInstallCompleteDialog({}, base::UTF8ToWide(language),
                                GetLocalizedString(string_resource_id_to_find,
                                                   base::UTF8ToWide(language)));
   }
@@ -1919,9 +1919,11 @@ void RunFakeLegacyUpdater(UpdaterScope scope) {
 }
 
 void CloseInstallCompleteDialog(const std::u16string& bundle_name,
+                                const std::wstring& lang,
                                 const std::wstring& child_window_text_to_find,
                                 bool verify_app_logo_loaded) {
-  const std::wstring window_title = ui::GetInstallerDisplayName(bundle_name);
+  const std::wstring window_title =
+      ui::GetInstallerDisplayName(bundle_name, lang);
   bool found = false;
   base::Process process;
   ASSERT_TRUE(WaitFor(

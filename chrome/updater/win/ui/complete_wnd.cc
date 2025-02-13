@@ -16,8 +16,9 @@ namespace updater::ui {
 CompleteWnd::CompleteWnd(int dialog_id,
                          DWORD control_classes,
                          WTL::CMessageLoop* message_loop,
-                         HWND parent)
-    : OmahaWnd(dialog_id, message_loop, parent),
+                         HWND parent,
+                         const std::wstring& lang)
+    : OmahaWnd(dialog_id, message_loop, parent, lang),
       events_sink_(nullptr),
       control_classes_(control_classes | ICC_STANDARD_CLASSES) {}
 
@@ -90,7 +91,8 @@ void CompleteWnd::DisplayCompletionDialog(bool is_success,
     return;
   }
 
-  SetDlgItemText(IDC_CLOSE, GetLocalizedString(IDS_UPDATER_CLOSE_BASE).c_str());
+  SetDlgItemText(IDC_CLOSE,
+                 GetLocalizedString(IDS_UPDATER_CLOSE_BASE, lang()).c_str());
 
   CHECK(!text.empty());
 
@@ -106,8 +108,9 @@ void CompleteWnd::DisplayCompletionDialog(bool is_success,
 
     if (!help_url.empty()) {
       help_url_ = help_url.c_str();
-      SetDlgItemText(IDC_GET_HELP,
-                     GetLocalizedString(IDS_GET_HELP_TEXT_BASE).c_str());
+      SetDlgItemText(
+          IDC_GET_HELP,
+          GetLocalizedString(IDS_GET_HELP_TEXT_BASE, lang()).c_str());
     }
   }
 

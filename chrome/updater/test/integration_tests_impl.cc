@@ -599,13 +599,15 @@ void InstallUpdaterAndApp(UpdaterScope scope,
     Run(scope, command_line, nullptr);
 
     std::u16string bundle_name;
+    std::wstring lang;
     if (!tag.empty()) {
       tagging::TagArgs tag_args;
       ASSERT_EQ(tagging::ErrorCode::kSuccess,
                 tagging::Parse(tag, {}, tag_args));
       bundle_name = base::UTF8ToUTF16(tag_args.bundle_name);
+      lang = base::UTF8ToWide(tag_args.language);
     }
-    CloseInstallCompleteDialog(bundle_name,
+    CloseInstallCompleteDialog(bundle_name, lang,
                                base::UTF8ToWide(child_window_text_to_find),
                                verify_app_logo_loaded);
 #else

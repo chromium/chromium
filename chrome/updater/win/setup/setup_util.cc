@@ -27,6 +27,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/installer/util/install_service_work_item.h"
@@ -423,12 +424,14 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
     }
   }
 
+  const std::wstring language = base::UTF8ToWide(GetTagLanguage());
   list->AddWorkItem(new installer::InstallServiceWorkItem(
       GetServiceName(internal_service).c_str(),
       GetLocalizedString(internal_service
                              ? IDS_INTERNAL_UPDATER_SERVICE_DISPLAY_NAME_BASE
-                             : IDS_UPDATER_SERVICE_DISPLAY_NAME_BASE),
-      GetLocalizedString(IDS_UPDATER_SERVICE_DESCRIPTION_BASE),
+                             : IDS_UPDATER_SERVICE_DISPLAY_NAME_BASE,
+                         language),
+      GetLocalizedString(IDS_UPDATER_SERVICE_DESCRIPTION_BASE, language),
       SERVICE_AUTO_START, com_service_command, com_switch, UPDATER_KEY, clsids,
       {}));
 
