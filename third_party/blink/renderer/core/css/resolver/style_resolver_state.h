@@ -269,6 +269,14 @@ class CORE_EXPORT StyleResolverState {
     return has_unsupported_guaranteed_invalid_;
   }
 
+  // The element to start the search from, when looking for a CQ size container.
+  Element* NearestSizeContainer() const {
+    return style_recalc_context_ ? style_recalc_context_->container : nullptr;
+  }
+
+  // See StyleRequest.pseudo_id.
+  PseudoId GetPseudoId() const { return pseudo_id_; }
+
  private:
   CSSToLengthConversionData UnzoomedLengthConversionData(const FontSizeStyle&);
   // When resolving cq* units, this element is used to start the search

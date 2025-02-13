@@ -180,15 +180,20 @@ unsigned LinkMatchTypeFromInsideLink(EInsideLink inside_link) {
 }
 
 bool EvaluateAndAddContainerQueries(
-    Element* style_container_candidate,
+    Element& element,
+    PseudoId pseudo_id,
     const ContainerQuery& container_query,
     const StyleRecalcContext& style_recalc_context,
     ContainerSelectorCache& container_selector_cache,
     MatchResult& result) {
   for (const ContainerQuery* current = &container_query; current;
        current = current->Parent()) {
+    Element* starting_element =
+        ContainerQueryEvaluator::DetermineStartingElement(
+            element, pseudo_id, container_query.Selector(),
+            /*nearest_size_container=*/style_recalc_context.container);
     if (!ContainerQueryEvaluator::EvalAndAdd(
-            style_container_candidate, style_recalc_context, *current,
+            starting_element, style_recalc_context, *current,
             container_selector_cache, result)) {
       return false;
     }
@@ -613,13 +618,10 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       // elements when they depend on the originating element.
       if (pseudo_style_request_.pseudo_id != kPseudoIdNone ||
           result.dynamic_pseudo == kPseudoIdNone) {
-        Element* style_container_candidate =
-            pseudo_style_request_.pseudo_id == kPseudoIdNone
-                ? FlatTreeTraversal::ParentElement(context_.GetElement())
-                : &context_.GetElement();
         if (!EvaluateAndAddContainerQueries(
-                style_container_candidate, *container_query,
-                style_recalc_context_, container_selector_cache_, result_)) {
+                context_.GetElement(), pseudo_style_request_.pseudo_id,
+                *container_query, style_recalc_context_,
+                container_selector_cache_, result_)) {
           if (AffectsAnimations(rule_data)) {
             result_.SetConditionallyAffectsAnimations();
           }
@@ -630,24 +632,9 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
         // when not actually matching style for the pseudo element itself. Still
         // we need to keep track of size/style query dependencies since query
         // changes may cause pseudo elements to start being generated.
-        bool selects_size = false;
-        bool selects_style = false;
-        bool selects_scroll_state = false;
         for (const ContainerQuery* current = container_query; current;
              current = current->Parent()) {
-          selects_size |= current->Selector().SelectsSizeContainers();
-          selects_style |= current->Selector().SelectsStyleContainers();
-          selects_scroll_state |=
-              current->Selector().SelectsScrollStateContainers();
-        }
-        if (selects_size) {
-          result_.SetDependsOnSizeContainerQueries();
-        }
-        if (selects_style) {
-          result_.SetDependsOnStyleContainerQueries();
-        }
-        if (selects_scroll_state) {
-          result_.SetDependsOnScrollStateContainerQueries();
+          ContainerQueryEvaluator::SetDependencyFlags(*current, result_);
         }
       }
     }
