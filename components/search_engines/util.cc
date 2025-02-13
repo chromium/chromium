@@ -555,6 +555,7 @@ void GetSearchProvidersUsingKeywordResult(
     KeywordWebDataService* service,
     PrefService* prefs,
     search_engines::SearchEngineChoiceService* search_engine_choice_service,
+    const TemplateURLPrepopulateData::Resolver& template_url_data_resolver,
     TemplateURLService::OwnedTemplateURLVector* template_urls,
     TemplateURL* default_search_provider,
     const SearchTermsData& search_terms_data,
@@ -580,9 +581,9 @@ void GetSearchProvidersUsingKeywordResult(
 
   out_updated_keywords_metadata = keyword_result.metadata;
   GetSearchProvidersUsingLoadedEngines(
-      service, prefs, search_engine_choice_service, template_urls,
-      default_search_provider, search_terms_data, out_updated_keywords_metadata,
-      removed_keyword_guids);
+      service, prefs, search_engine_choice_service, template_url_data_resolver,
+      template_urls, default_search_provider, search_terms_data,
+      out_updated_keywords_metadata, removed_keyword_guids);
 
   // If a data change happened, it should not cause a version downgrade.
   // Upgrades (builtin > new) or feature-related merges (builtin == new) only
@@ -596,6 +597,7 @@ void GetSearchProvidersUsingLoadedEngines(
     KeywordWebDataService* service,
     PrefService* prefs,
     search_engines::SearchEngineChoiceService* search_engine_choice_service,
+    const TemplateURLPrepopulateData::Resolver& template_url_data_resolver,
     TemplateURLService::OwnedTemplateURLVector* template_urls,
     TemplateURL* default_search_provider,
     const SearchTermsData& search_terms_data,
@@ -603,8 +605,7 @@ void GetSearchProvidersUsingLoadedEngines(
     std::set<std::string>* removed_keyword_guids) {
   DCHECK(template_urls);
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          prefs, search_engine_choice_service);
+      template_url_data_resolver.GetPrepopulatedEngines();
   RemoveDuplicatePrepopulateIDs(service, prepopulated_urls,
                                 default_search_provider, template_urls,
                                 search_terms_data, removed_keyword_guids);

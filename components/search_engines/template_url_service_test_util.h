@@ -8,6 +8,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -65,6 +66,10 @@ class TemplateURLServiceUnitTestBase : public testing::Test {
 
   PrefService& pref_service() { return pref_service_; }
 
+  TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver() {
+    return *prepopulate_data_resolver_.get();
+  }
+
   search_engines::SearchEngineChoiceService& search_engine_choice_service() {
     return *search_engine_choice_service_.get();
   }
@@ -83,6 +88,8 @@ class TemplateURLServiceUnitTestBase : public testing::Test {
       regional_capabilities_service_;
   std::unique_ptr<search_engines::SearchEngineChoiceService>
       search_engine_choice_service_;
+  std::unique_ptr<TemplateURLPrepopulateData::Resolver>
+      prepopulate_data_resolver_;
   std::unique_ptr<TemplateURLService> template_url_service_;
 };
 

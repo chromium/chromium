@@ -10,13 +10,12 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 ReconcilingTemplateURLDataHolder::ReconcilingTemplateURLDataHolder(
-    PrefService* pref_service,
-    search_engines::SearchEngineChoiceService* search_engine_choice_service)
-    : pref_service_{pref_service},
-      search_engine_choice_service_{search_engine_choice_service} {}
+    TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver)
+    : prepopulate_data_resolver_(prepopulate_data_resolver) {}
 
 ReconcilingTemplateURLDataHolder::~ReconcilingTemplateURLDataHolder() = default;
 
@@ -59,8 +58,7 @@ std::unique_ptr<TemplateURLData>
 ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsByKeyword(
     const std::u16string& keyword) const {
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          pref_service_, search_engine_choice_service_);
+      prepopulate_data_resolver_->GetPrepopulatedEngines();
 
   auto engine_iter =
       std::ranges::find(prepopulated_urls, keyword, &TemplateURLData::keyword);
@@ -85,8 +83,7 @@ std::unique_ptr<TemplateURLData>
 ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsById(
     int prepopulate_id) const {
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          pref_service_, search_engine_choice_service_);
+      prepopulate_data_resolver_->GetPrepopulatedEngines();
 
   auto engine_iter = std::ranges::find(prepopulated_urls, prepopulate_id,
                                        &TemplateURLData::prepopulate_id);

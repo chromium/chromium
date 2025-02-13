@@ -21,6 +21,7 @@
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/chrome_template_url_service_client.h"
+#include "chrome/browser/search_engines/template_url_prepopulate_data_resolver_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
@@ -243,10 +244,12 @@ TemplateURLServiceTestUtil::CreateTemplateURLServiceForTesting(
     std::unique_ptr<TemplateURLServiceClient> client,
     base::RepeatingClosure dsp_change_callback) {
   return std::make_unique<TemplateURLService>(
-      *profile->GetPrefs(),
+      CHECK_DEREF(profile->GetPrefs()),
       CHECK_DEREF(
           search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
               profile)),
+      CHECK_DEREF(
+          TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile)),
       std::move(search_terms_data), web_data_service, std::move(client),
       std::move(dsp_change_callback));
 }
@@ -257,17 +260,13 @@ TemplateURLServiceTestUtil::CreateTemplateURLServiceForTesting(
     Profile* profile,
     base::span<const TemplateURLService::Initializer> initializers) {
   return std::make_unique<TemplateURLService>(
-      *profile->GetPrefs(),
+      CHECK_DEREF(profile->GetPrefs()),
       CHECK_DEREF(
           search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
               profile)),
+      CHECK_DEREF(
+          TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile)),
       initializers);
-}
-
-search_engines::SearchEngineChoiceService*
-TemplateURLServiceTestUtil::search_engine_choice_service() {
-  return search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
-      profile_.get());
 }
 
 void TemplateURLServiceTestUtil::OnTemplateURLServiceChanged() {

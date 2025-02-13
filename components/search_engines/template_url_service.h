@@ -60,6 +60,10 @@ namespace syncer {
 class SyncData;
 }
 
+namespace TemplateURLPrepopulateData {
+class Resolver;
+}
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -139,6 +143,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
   TemplateURLService(
       PrefService& prefs,
       search_engines::SearchEngineChoiceService& search_engine_choice_service,
+      TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
       std::unique_ptr<SearchTermsData> search_terms_data,
       const scoped_refptr<KeywordWebDataService>& web_data_service,
       std::unique_ptr<TemplateURLServiceClient> client,
@@ -149,6 +154,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
   explicit TemplateURLService(
       PrefService& prefs,
       search_engines::SearchEngineChoiceService& search_engine_choice_service,
+      TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
       base::span<const TemplateURLService::Initializer> initializers = {});
 
   TemplateURLService(const TemplateURLService&) = delete;
@@ -587,8 +593,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
   static std::unique_ptr<TemplateURL>
   CreateTemplateURLFromTemplateURLAndSyncData(
       TemplateURLServiceClient* client,
-      PrefService* prefs,
-      search_engines::SearchEngineChoiceService* search_engine_choice_service,
+      const TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
       const SearchTermsData& search_terms_data,
       const TemplateURL* existing_turl,
       const syncer::SyncData& sync_data,
@@ -885,6 +890,8 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   raw_ref<search_engines::SearchEngineChoiceService>
       search_engine_choice_service_;
+
+  raw_ref<TemplateURLPrepopulateData::Resolver> prepopulate_data_resolver_;
 
   std::unique_ptr<SearchTermsData> search_terms_data_ =
       std::make_unique<SearchTermsData>();

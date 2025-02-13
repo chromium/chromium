@@ -20,10 +20,6 @@
 #include "components/search_engines/template_url_service_observer.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 
-namespace search_engines {
-class SearchEngineChoiceService;
-}
-
 class KeywordWebDataService;
 
 // Sets the managed preferences for the default search provider. `enabled`
@@ -139,7 +135,6 @@ class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {
   KeywordWebDataService* web_data_service() { return web_data_service_.get(); }
   TemplateURLService* model() { return model_.get(); }
   TestingProfile* profile() { return profile_.get(); }
-  search_engines::SearchEngineChoiceService* search_engine_choice_service();
 
  private:
   static TestingProfile::TestingFactories

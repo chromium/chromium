@@ -201,9 +201,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, PRE_OverridenDSEPersists) {
 // from profile.
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OverridenDSEPersists) {
   Profile* profile = browser()->profile();
+  TemplateURLPrepopulateData::Resolver* prepopulate_data_resolver =
+      TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile);
   DefaultSearchManager default_manager(
       profile->GetPrefs(),
       search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile),
+      CHECK_DEREF(prepopulate_data_resolver),
       DefaultSearchManager::ObserverCallback());
 
   DefaultSearchManager::Source source;

@@ -7,12 +7,14 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/search_engines/template_url_prepopulate_data_resolver_factory.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
@@ -24,6 +26,7 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
@@ -354,8 +357,10 @@ std::unique_ptr<TemplateURL> TemplateURLServiceSyncTest::Deserialize(
   syncer::SyncChangeList dummy;
   TestTemplateURLServiceClient client;
   return TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
-      &client, profile_a()->GetTestingPrefService(),
-      test_util_a_->search_engine_choice_service(), SearchTermsData(),
+      &client,
+      CHECK_DEREF(TemplateURLPrepopulateData::ResolverFactory::GetForProfile(
+          profile_a())),
+      SearchTermsData(),
       /*existing_turl=*/nullptr, sync_data, &dummy);
 }
 
@@ -1818,9 +1823,8 @@ TEST_F(TemplateURLServiceSyncTest, PreSyncUpdates) {
   const char16_t kNewKeyword16[] = u"somethingnew";
   // Fetch the prepopulate search engines so we know what they are.
   std::vector<std::unique_ptr<TemplateURLData>> prepop_turls =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          profile_a()->GetTestingPrefService(),
-          test_util_a_->search_engine_choice_service());
+      TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile_a())
+          ->GetPrepopulatedEngines();
 
   std::vector<std::unique_ptr<TemplateURLData>> starter_pack_turls =
       TemplateURLStarterPackData::GetStarterPackEngines();
@@ -2052,9 +2056,8 @@ TEST_F(TemplateURLServiceSyncTest, MergeInSyncTemplateURL) {
 
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine) {
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
-          profile_a()->GetTestingPrefService(),
-          test_util_a_->search_engine_choice_service()));
+      TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile_a())
+          ->GetFallbackSearch());
 
   // Merge with an initial list containing a prepopulated engine with a wrong
   // URL.
@@ -2078,9 +2081,8 @@ TEST_F(TemplateURLServiceSyncTest, AddPrepopulatedEngine) {
                                     syncer::SyncDataList(), PassProcessor());
 
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
-          profile_a()->GetTestingPrefService(),
-          test_util_a_->search_engine_choice_service()));
+      TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile_a())
+          ->GetFallbackSearch());
   std::unique_ptr<TemplateURL> sync_turl = CopyTemplateURL(
       default_turl.get(), "http://wrong.url.com?q={searchTerms}", "default");
 
@@ -2099,9 +2101,8 @@ TEST_F(TemplateURLServiceSyncTest, AddPrepopulatedEngine) {
 
 TEST_F(TemplateURLServiceSyncTest, UpdatePrepopulatedEngine) {
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
-          profile_a()->GetTestingPrefService(),
-          test_util_a_->search_engine_choice_service()));
+      TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile_a())
+          ->GetFallbackSearch());
 
   TemplateURLData data = *default_turl;
   data.SetURL("http://old.wrong.url.com?q={searchTerms}");
@@ -2131,9 +2132,8 @@ TEST_F(TemplateURLServiceSyncTest, UpdatePrepopulatedEngine) {
 
 TEST_F(TemplateURLServiceSyncTest, MergeEditedPrepopulatedEngine) {
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
-          profile_a()->GetTestingPrefService(),
-          test_util_a_->search_engine_choice_service()));
+      TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile_a())
+          ->GetFallbackSearch());
 
   TemplateURLData data(*default_turl);
   data.safe_for_autoreplace = false;
@@ -2162,9 +2162,8 @@ TEST_F(TemplateURLServiceSyncTest, MergeEditedPrepopulatedEngine) {
 
 TEST_F(TemplateURLServiceSyncTest, MergeConflictingPrepopulatedEngine) {
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
-          profile_a()->GetTestingPrefService(),
-          test_util_a_->search_engine_choice_service()));
+      TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile_a())
+          ->GetFallbackSearch());
 
   TemplateURLData data(*default_turl);
   data.SetKeyword(u"old_kw");
@@ -2227,9 +2226,8 @@ TEST_F(TemplateURLServiceSyncTest, MergeConflictingPrepopulatedEngine) {
 
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngineWithChangedKeyword) {
   const TemplateURLData default_data =
-      *TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
-          profile_a()->GetTestingPrefService(),
-          test_util_a_->search_engine_choice_service());
+      *TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile_a())
+           ->GetFallbackSearch();
 
   // Add a prepopulated search engine and mark it as default.
   model()->Add(std::make_unique<TemplateURL>(default_data));
@@ -2279,9 +2277,8 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngineWithChangedKeyword) {
 
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Pref_Change_Add) {
   const TemplateURLData default_data =
-      *TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
-          profile_a()->GetTestingPrefService(),
-          test_util_a_->search_engine_choice_service());
+      *TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile_a())
+           ->GetFallbackSearch();
 
   // Add a prepopulated search engine and mark it as default.
   model()->Add(std::make_unique<TemplateURL>(default_data));
@@ -2349,9 +2346,8 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Pref_Change_Add) {
 
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Pref_Add_Change) {
   const TemplateURLData default_data =
-      *TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
-          profile_a()->GetTestingPrefService(),
-          test_util_a_->search_engine_choice_service());
+      *TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile_a())
+           ->GetFallbackSearch();
 
   // Add a prepopulated search engine and mark it as default.
   model()->Add(std::make_unique<TemplateURL>(default_data));
@@ -2419,9 +2415,8 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Pref_Add_Change) {
 
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Change_Add_Pref) {
   const TemplateURLData default_data =
-      *TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
-          profile_a()->GetTestingPrefService(),
-          test_util_a_->search_engine_choice_service());
+      *TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile_a())
+           ->GetFallbackSearch();
 
   // Add a prepopulated search engine and mark it as default.
   model()->Add(std::make_unique<TemplateURL>(default_data));
@@ -2489,9 +2484,8 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Change_Add_Pref) {
 
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Add_Change_Pref) {
   const TemplateURLData default_data =
-      *TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
-          profile_a()->GetTestingPrefService(),
-          test_util_a_->search_engine_choice_service());
+      *TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile_a())
+           ->GetFallbackSearch();
 
   // Add a prepopulated search engine and mark it as default.
   model()->Add(std::make_unique<TemplateURL>(default_data));
@@ -2559,9 +2553,8 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Add_Change_Pref) {
 
 TEST_F(TemplateURLServiceSyncTest, MergeNonEditedPrepopulatedEngine) {
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
-          profile_a()->GetTestingPrefService(),
-          test_util_a_->search_engine_choice_service()));
+      TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile_a())
+          ->GetFallbackSearch());
 
   TemplateURLData data(*default_turl);
   data.safe_for_autoreplace = true;  // Can be replaced with built-in values.
@@ -2962,9 +2955,8 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
   const char16_t kNewKeyword16[] = u"somethingnew";
   // Fetch the prepopulate search engines so we know what they are.
   std::vector<std::unique_ptr<TemplateURLData>> prepop_turls =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          profile_a()->GetTestingPrefService(),
-          test_util_a_->search_engine_choice_service());
+      TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile_a())
+          ->GetPrepopulatedEngines();
 
   std::vector<std::unique_ptr<TemplateURLData>> starter_pack_turls =
       TemplateURLStarterPackData::GetStarterPackEngines();

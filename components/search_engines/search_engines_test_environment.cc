@@ -41,6 +41,7 @@ SearchEnginesTestEnvironment::ServiceFactories CreateDefaultFactories(
         return std::make_unique<TemplateURLService>(
             environment.pref_service(),
             environment.search_engine_choice_service(),
+            environment.prepopulate_data_resolver(),
             deps.template_url_service_initializer);
       });
 

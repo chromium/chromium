@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
@@ -14,6 +15,7 @@
 #include "base/values.h"
 #include "components/country_codes/country_codes.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -21,6 +23,7 @@
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/search_engines/util.h"
@@ -73,8 +76,8 @@ std::unique_ptr<TemplateURL> CreatePrepopulateTemplateURL(
 // will be set to the version number for the loaded data or to 0 if no
 // prepopulated engines were loaded.
 void CallGetSearchProvidersUsingLoadedEngines(
-    PrefService* prefs,
-    search_engines::SearchEngineChoiceService* search_engine_choice_service,
+    search_engines::SearchEnginesTestEnvironment&
+        search_engines_test_environment,
     TemplateURLService::OwnedTemplateURLVector* template_urls,
     WDKeywordsResult::Metadata& inout_resource_metadata,
     os_crypt_async::OSCryptAsync* os_crypt) {
@@ -103,7 +106,9 @@ void CallGetSearchProvidersUsingLoadedEngines(
     std::set<std::string> removed_keyword_guids;
 
     GetSearchProvidersUsingLoadedEngines(
-        keyword_web_data.get(), prefs, search_engine_choice_service,
+        keyword_web_data.get(), &search_engines_test_environment.pref_service(),
+        &search_engines_test_environment.search_engine_choice_service(),
+        search_engines_test_environment.prepopulate_data_resolver(),
         template_urls,
         /*default_search_provider=*/nullptr, search_terms_data,
         inout_resource_metadata, &removed_keyword_guids);
@@ -323,10 +328,9 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
     WDKeywordsResult::Metadata resource_metadata;
     resource_metadata.builtin_keyword_data_version = initial_state.data_version;
     resource_metadata.builtin_keyword_country = initial_state.country;
-    CallGetSearchProvidersUsingLoadedEngines(
-        &prefs(),
-        &search_engines_test_environment_.search_engine_choice_service(),
-        &template_urls, resource_metadata, os_crypt_.get());
+    CallGetSearchProvidersUsingLoadedEngines(search_engines_test_environment_,
+                                             &template_urls, resource_metadata,
+                                             os_crypt_.get());
 
     std::optional<bool> use_extended_list_output =
         prefs().HasPrefPath(

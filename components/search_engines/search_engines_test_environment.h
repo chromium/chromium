@@ -109,6 +109,8 @@ class SearchEnginesTestEnvironment {
   const ServiceFactories service_factories_overrides_;
   const ServiceFactories default_factories_;
 
+  // Services below have dependencies between each other, they must be kept
+  // in order to ensure destruction correctness.
   std::unique_ptr<regional_capabilities::RegionalCapabilitiesService>
       regional_capabilities_service_;
   std::unique_ptr<SearchEngineChoiceService> search_engine_choice_service_;
