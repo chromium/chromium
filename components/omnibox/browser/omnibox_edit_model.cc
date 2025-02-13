@@ -2591,6 +2591,10 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   TemplateURLService* service = controller_->client()->GetTemplateURLService();
   TemplateURL* template_url = match.GetTemplateURL(service, false);
   if (template_url) {
+    // |match| is a Search navigation or a URL navigation in keyword mode; log
+    // search engine usage metrics.
+    AutocompleteMatch::LogSearchEngineUsed(match, service);
+
     if (ui::PageTransitionTypeIncludingQualifiersIs(
             match.transition, ui::PAGE_TRANSITION_KEYWORD) ||
         match.provider->type() ==

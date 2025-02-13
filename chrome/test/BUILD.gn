@@ -10635,6 +10635,7 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/fullscreen_keyboard_browsertest_base.cc",
       "../browser/ui/fullscreen_keyboard_browsertest_base.h",
       "../browser/ui/keyboard_lock_interactive_browsertest.cc",
+      "../browser/ui/omnibox/omnibox_metrics_browsertest.cc",
       "../browser/ui/omnibox/omnibox_view_browsertest.cc",
       "../browser/ui/passwords/manage_passwords_test.cc",
       "../browser/ui/passwords/manage_passwords_test.h",
