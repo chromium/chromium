@@ -190,19 +190,19 @@ bool ShouldMergeEnterpriseSearchEngines(const TemplateURL& existing_turl,
 // Creates a new `TemplateURL` that copies updates fields from `new_values` into
 // `existing_turl`. Only fields set by policy are copied from `new_values`, all
 // other fields are copied unchanged from `existing_turl`.
-TemplateURL MergeEnterpriseSearchEngines(const TemplateURL& existing_turl,
-                                         const TemplateURL& new_values) {
-  CHECK_EQ(existing_turl.keyword(), new_values.keyword());
+TemplateURLData MergeEnterpriseSearchEngines(TemplateURLData existing_data,
+                                             const TemplateURL& new_values) {
+  CHECK_EQ(existing_data.keyword(), new_values.keyword());
 
-  TemplateURLData merged_data(existing_turl.data());
+  TemplateURLData merged_data(existing_data);
   merged_data.SetShortName(new_values.short_name());
   merged_data.SetURL(new_values.url());
   merged_data.featured_by_policy = new_values.featured_by_policy();
-  if (existing_turl.policy_origin() ==
+  if (existing_data.policy_origin ==
       TemplateURLData::PolicyOrigin::kSearchAggregator) {
     merged_data.favicon_url = new_values.favicon_url();
   }
-  return TemplateURL(merged_data);
+  return merged_data;
 }
 
 std::unique_ptr<TemplateURL> UpdateExistingURLWithAccountData(
@@ -2735,9 +2735,8 @@ void TemplateURLService::ApplyEnterpriseSearchChanges(
                    /*new_values=*/*search_engine)) {
       UpdateData(/*existing_turl=*/it->second,
                  /*new_data=*/MergeEnterpriseSearchEngines(
-                     /*existing_turl=*/*it->second,
-                     /*new_values=*/*search_engine)
-                     .data());
+                     /*existing_data=*/it->second->data(),
+                     /*new_values=*/*search_engine));
     }
   }
 }
