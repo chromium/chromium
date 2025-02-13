@@ -5,22 +5,25 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_DELAYED_INSTALL_MANAGER_H_
 #define CHROME_BROWSER_EXTENSIONS_DELAYED_INSTALL_MANAGER_H_
 
+#include <map>
+
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/extensions/install_gate.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 
 namespace extensions {
 class ExtensionPrefs;
 class ExtensionRegistrar;
-class ExtensionService;
+class InstallGate;
 
 // Manages a set of extension installs delayed for various reasons.  The reason
 // for delayed install is stored in ExtensionPrefs. These are not part of
 // ExtensionRegistry because they are not yet installed.
 class DelayedInstallManager {
  public:
-  DelayedInstallManager(ExtensionService* extension_service,
-                        ExtensionPrefs* extension_prefs,
+  DelayedInstallManager(ExtensionPrefs* extension_prefs,
                         ExtensionRegistrar* extension_registrar);
   DelayedInstallManager(const DelayedInstallManager&) = delete;
   DelayedInstallManager& operator=(const DelayedInstallManager&) = delete;
@@ -43,6 +46,10 @@ class DelayedInstallManager {
   // no updates are pending for the extension returns null.
   const Extension* GetPendingExtensionUpdate(const ExtensionId& id) const;
 
+  // Finish install (if possible) of extensions that were still delayed while
+  // the browser was shut down.
+  void FinishInstallationsDelayedByShutdown();
+
   // Checks for delayed installation for all pending installs.
   void MaybeFinishDelayedInstallations();
 
@@ -54,14 +61,34 @@ class DelayedInstallManager {
   bool FinishDelayedInstallationIfReady(const ExtensionId& extension_id,
                                         bool install_immediately);
 
+  // Register/unregister an InstallGate with the service.
+  void RegisterInstallGate(ExtensionPrefs::DelayReason reason,
+                           InstallGate* install_delayer);
+  void UnregisterInstallGate(InstallGate* install_delayer);
+
+  // Helper to determine if installing an extensions should proceed immediately,
+  // or if we should delay the install until further notice, or if the install
+  // should be aborted. A pending install is delayed or aborted when any of the
+  // delayers say so and only proceeds when all delayers return INSTALL.
+  // |extension| is the extension to be installed. |install_immediately| is the
+  // install flag set with the install. |reason| is the reason associated with
+  // the install delayer that wants to defer or abort the install.
+  InstallGate::Action ShouldDelayExtensionInstall(
+      const Extension* extension,
+      bool install_immediately,
+      ExtensionPrefs::DelayReason* reason) const;
+
   const ExtensionSet& delayed_installs() const { return delayed_installs_; }
 
  private:
-  raw_ptr<ExtensionService> extension_service_;
   raw_ptr<ExtensionPrefs> extension_prefs_;
   raw_ptr<ExtensionRegistrar> extension_registrar_;
 
   ExtensionSet delayed_installs_;
+
+  using InstallGateRegistry = std::map<ExtensionPrefs::DelayReason,
+                                       raw_ptr<InstallGate, CtnExperimental>>;
+  InstallGateRegistry install_delayer_registry_;
 };
 
 }  // namespace extensions

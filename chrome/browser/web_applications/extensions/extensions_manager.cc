@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
+#include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_gate.h"
@@ -32,13 +33,13 @@ class ExtensionInstallGateImpl : public extensions::InstallGate,
       : extension_service_(
             extensions::ExtensionSystem::Get(profile)->extension_service()) {
     CHECK(extension_service_);
-    extension_service_->RegisterInstallGate(
+    extension_service_->delayed_install_manager()->RegisterInstallGate(
         extensions::ExtensionPrefs::DelayReason::kGc,
         static_cast<ExtensionInstallGateImpl*>(this));
   }
 
   ~ExtensionInstallGateImpl() override {
-    extension_service_->UnregisterInstallGate(this);
+    extension_service_->delayed_install_manager()->UnregisterInstallGate(this);
   }
 
   extensions::InstallGate::Action ShouldDelay(

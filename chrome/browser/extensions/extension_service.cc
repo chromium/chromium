@@ -414,7 +414,7 @@ ExtensionService::ExtensionService(
       force_installed_tracker_(registry_, profile_),
       force_installed_metrics_(registry_, profile_, &force_installed_tracker_),
       corrupted_extension_reinstaller_(profile_),
-      delayed_install_manager_(this, extension_prefs_, &extension_registrar_) {
+      delayed_install_manager_(extension_prefs_, &extension_registrar_) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   TRACE_EVENT0("browser,startup", "ExtensionService::ExtensionService::ctor");
   extension_registrar_delegate_->Init(&extension_registrar_,
@@ -570,7 +570,7 @@ void ExtensionService::Init() {
     }
   }
   EnabledReloadableExtensions();
-  MaybeFinishShutdownDelayed();
+  delayed_install_manager_.FinishInstallationsDelayedByShutdown();
   SetReadyAndNotifyListeners();
 
   UninstallMigratedExtensions();
@@ -596,30 +596,6 @@ void ExtensionService::EnabledReloadableExtensions() {
   TRACE_EVENT0("browser,startup",
                "ExtensionService::EnabledReloadableExtensions");
   extension_registrar_.EnabledReloadableExtensions();
-}
-
-// TODO(crbug.com/395695804): Move this function to DelayedInstallManager.
-void ExtensionService::MaybeFinishShutdownDelayed() {
-  TRACE_EVENT0("browser,startup",
-               "ExtensionService::MaybeFinishShutdownDelayed");
-
-  const ExtensionPrefs::ExtensionsInfo delayed_info =
-      extension_prefs_->GetAllDelayedInstallInfo();
-  for (const auto& info : delayed_info) {
-    scoped_refptr<const Extension> extension;
-    if (info.extension_manifest) {
-      std::string error;
-      extension = Extension::Create(
-          info.extension_path, info.extension_location,
-          *info.extension_manifest,
-          extension_prefs_->GetDelayedInstallCreationFlags(info.extension_id),
-          info.extension_id, &error);
-      if (extension.get()) {
-        delayed_install_manager_.Insert(extension);
-      }
-    }
-  }
-  delayed_install_manager_.MaybeFinishDelayedInstallations();
 }
 
 scoped_refptr<CrxInstaller> ExtensionService::CreateUpdateInstaller(
@@ -1425,9 +1401,10 @@ void ExtensionService::OnExtensionInstalled(
   allowlist()->OnExtensionInstalled(id, install_flags);
 
   ExtensionPrefs::DelayReason delay_reason;
-  InstallGate::Action action = ShouldDelayExtensionInstall(
-      extension, !!(install_flags & kInstallFlagInstallImmediately),
-      &delay_reason);
+  InstallGate::Action action =
+      delayed_install_manager_.ShouldDelayExtensionInstall(
+          extension, !!(install_flags & kInstallFlagInstallImmediately),
+          &delay_reason);
   switch (action) {
     case InstallGate::INSTALL:
       AddNewOrUpdatedExtension(extension, initial_state, install_flags,
@@ -1775,23 +1752,6 @@ DisableReasonSet ExtensionService::GetDisableReasonsOnInstalled(
   return {};
 }
 
-InstallGate::Action ExtensionService::ShouldDelayExtensionInstall(
-    const Extension* extension,
-    bool install_immediately,
-    ExtensionPrefs::DelayReason* reason) const {
-  for (const auto& entry : install_delayer_registry_) {
-    InstallGate* const delayer = entry.second;
-    InstallGate::Action action =
-        delayer->ShouldDelay(extension, install_immediately);
-    if (action != InstallGate::INSTALL) {
-      *reason = entry.first;
-      return action;
-    }
-  }
-
-  return InstallGate::INSTALL;
-}
-
 void ExtensionService::OnBlocklistUpdated() {
   blocklist_->GetBlocklistedIDs(
       registry_->GenerateInstalledExtensionsSet().GetIDs(),
@@ -1835,23 +1795,6 @@ void ExtensionService::AddUpdateObserver(UpdateObserver* observer) {
 
 void ExtensionService::RemoveUpdateObserver(UpdateObserver* observer) {
   update_observers_.RemoveObserver(observer);
-}
-
-void ExtensionService::RegisterInstallGate(ExtensionPrefs::DelayReason reason,
-                                           InstallGate* install_delayer) {
-  DCHECK(install_delayer_registry_.end() ==
-         install_delayer_registry_.find(reason));
-  install_delayer_registry_[reason] = install_delayer;
-}
-
-void ExtensionService::UnregisterInstallGate(InstallGate* install_delayer) {
-  for (auto it = install_delayer_registry_.begin();
-       it != install_delayer_registry_.end(); ++it) {
-    if (it->second == install_delayer) {
-      install_delayer_registry_.erase(it);
-      return;
-    }
-  }
 }
 
 bool ExtensionService::UserCanDisableInstalledExtension(
