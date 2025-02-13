@@ -7,6 +7,7 @@ package org.chromium.android_webview.common;
 import org.chromium.base.BaseFeatures;
 import org.chromium.base.BaseSwitches;
 import org.chromium.blink_public.common.BlinkFeatures;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.base.CcFeatures;
 import org.chromium.cc.base.CcSwitches;
 import org.chromium.components.autofill.AndroidAutofillFeatures;
@@ -44,6 +45,7 @@ import org.chromium.ui.gfx.GfxSwitches;
  * to display) as well as the WebView implementation (so it knows which features/flags are safe to
  * honor).
  */
+@NullMarked
 public final class ProductionSupportedFlagList {
     // Do not instantiate this class.
     private ProductionSupportedFlagList() {}
