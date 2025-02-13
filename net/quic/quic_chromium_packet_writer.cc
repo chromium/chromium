@@ -128,7 +128,7 @@ void QuicChromiumPacketWriter::SetPacket(const char* buffer, size_t buf_len) {
 quic::WriteResult QuicChromiumPacketWriter::WritePacket(
     const char* buffer,
     size_t buf_len,
-    const quic::QuicIpAddress& self_address,
+    const quiche::QuicheIpAddress& self_address,
     const quic::QuicSocketAddress& peer_address,
     quic::PerPacketOptions* /*options*/,
     const quic::QuicPacketWriterParams& /*params*/) {
@@ -280,7 +280,7 @@ bool QuicChromiumPacketWriter::SupportsEcn() const {
 }
 
 quic::QuicPacketBuffer QuicChromiumPacketWriter::GetNextWriteLocation(
-    const quic::QuicIpAddress& self_address,
+    const quiche::QuicheIpAddress& self_address,
     const quic::QuicSocketAddress& peer_address) {
   return {nullptr, nullptr};
 }
