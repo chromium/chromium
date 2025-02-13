@@ -501,6 +501,11 @@ class MediaDevicesManagerTest : public ::testing::Test {
         .IsRunning();
   }
 
+  bool IsVideoCaptureServiceDeviceChangedObserverInitialized() {
+    return media_devices_manager_
+               ->video_capture_service_device_changed_observer_ != nullptr;
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 #endif
 
@@ -1816,5 +1821,48 @@ TEST_F(MediaDevicesManagerTest, StartAndStopMonitoringWithModes) {
   EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaVideoInput),
             MediaDevicesManager::CachePolicy::NO_CACHE);
 }
-#endif
+
+TEST_F(MediaDevicesManagerTest, StopMonitoringReleaseVideoChangedObserver) {
+  // Tests that VideoCaptureDevicesChangedObserver is released when
+  // StopMonitoring is called.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_
+      .InitFromCommandLine(/*enable_features=*/
+                           "RunVideoCaptureServiceInBrowserProcess,"
+                           "ReleaseVideoSourceProviderIfNotInUse",
+                           /*disable_features=*/"AudioServiceOutOfProcess");
+  EXPECT_CALL(*mock_video_capture_provider_, GetDeviceInfosAsync(_));
+  EXPECT_CALL(*video_capture_device_factory_, MockGetDevicesInfo());
+  EXPECT_CALL(media_devices_manager_client_, InputDevicesChangedUI(_, _));
+
+  // StopMonitoring will reset VideoChangedObserver as well as its
+  // disconnect video source provider timer.
+  auto system_monitor = std::make_unique<base::SystemMonitor>();
+  media_devices_manager_->StartMonitoring(
+      /*audio_device_monitoring_mode=*/MediaDevicesManager::
+          DeviceMonitoringMode(false),
+      /*video_device_monitoring_mode=*/MediaDevicesManager::
+          DeviceMonitoringMode(true));
+
+  // Create VideoCaptureDevicesChangedObserver manually.
+  InitVideoCaptureDevicesChangedObserver();
+  EXPECT_TRUE(IsVideoCaptureServiceDeviceChangedObserverInitialized());
+
+  // With VideoCaptureHosts set is empty, the timer should be started.
+  media_devices_manager_->UpdateVideoCaptureHostsEmptyState(true);
+  EXPECT_TRUE(IsDisconnectVideoSourceProviderTimerRunning());
+
+  // StopMonitoring will reset VideoCaptureDevicesChangedObserver and
+  // disconnect video source provider timer.
+  media_devices_manager_->StopMonitoring(
+      /*audio_device_monitoring_mode=*/MediaDevicesManager::
+          DeviceMonitoringMode(false),
+      /*video_device_monitoring_mode=*/MediaDevicesManager::
+          DeviceMonitoringMode(true));
+
+  EXPECT_FALSE(IsVideoCaptureServiceDeviceChangedObserverInitialized());
+  EXPECT_FALSE(IsDisconnectVideoSourceProviderTimerRunning());
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 }  // namespace content
