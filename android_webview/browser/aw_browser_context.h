@@ -118,7 +118,7 @@ class AwBrowserContext : public content::BrowserContext,
       const base::android::JavaParamRef<jobject>& io_thread_client);
 
   int AllowedPrerenderingCount() const;
-  void SetAllowedPrerenderingCount(int allowed_count);
+  void SetAllowedPrerenderingCount(JNIEnv* const env, int allowed_count);
 
   // content::BrowserContext implementation.
   base::FilePath GetPath() override;

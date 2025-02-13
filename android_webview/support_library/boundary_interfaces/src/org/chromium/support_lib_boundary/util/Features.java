@@ -309,5 +309,5 @@ public class Features {
             "WEB_STORAGE_DELETE_BROWSING_DATA";
 
     // Profile.setSpeculativeLoadingConfig
-    public static final String SPECULATIVE_LOADING_CONFIG = "SPECULATIVE_LOADING_CONFIG";
+    public static final String SPECULATIVE_LOADING_CONFIG = "SPECULATIVE_LOADING_CONFIG_V2";
 }

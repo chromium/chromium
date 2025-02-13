@@ -24,6 +24,7 @@ import com.android.webview.chromium.SpeculativeLoadingConfig;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.support_lib_boundary.PrefetchOperationCallbackBoundaryInterface;
 import org.chromium.support_lib_boundary.ProfileBoundaryInterface;
+import org.chromium.support_lib_boundary.SpeculativeLoadingConfigBoundaryInterface;
 import org.chromium.support_lib_boundary.SpeculativeLoadingParametersBoundaryInterface;
 import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
@@ -133,10 +134,14 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
     public void setSpeculativeLoadingConfig(
             /* SpeculativeLoadingConfig */ InvocationHandler config) {
         recordApiCall(ApiCall.SET_SPECULATIVE_LOADING_CONFIG);
-        SpeculativeLoadingConfig speculativeLoadingConfig =
+        SpeculativeLoadingConfigBoundaryInterface speculativeLoadingConfig =
                 BoundaryInterfaceReflectionUtil.castToSuppLibClass(
-                        SpeculativeLoadingConfig.class, config);
-        mProfileImpl.setSpeculativeLoadingConfig(speculativeLoadingConfig);
+                        SpeculativeLoadingConfigBoundaryInterface.class, config);
+        mProfileImpl.setSpeculativeLoadingConfig(
+                new SpeculativeLoadingConfig(
+                        speculativeLoadingConfig.getMaxPrefetches(),
+                        speculativeLoadingConfig.getPrefetchTTLSeconds(),
+                        speculativeLoadingConfig.getMaxPrerenders()));
     }
 
     private PrefetchOperationCallback createOperationCallback(
