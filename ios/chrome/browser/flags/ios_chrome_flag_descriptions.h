@@ -662,6 +662,11 @@ extern const char kLensOverlayEnableIPadCompatibilityDescription[];
 extern const char kLensOverlayEnableLandscapeCompatibilityName[];
 extern const char kLensOverlayEnableLandscapeCompatibilityDescription[];
 
+// Title and description for the flag to allow the LVF escape hatch in lens
+// overlay overflow menu.
+extern const char kLensOverlayEnableLVFEscapeHatchName[];
+extern const char kLensOverlayEnableLVFEscapeHatchDescription[];
+
 // Title and description for the flag to enable the Lens overlay location bar
 // entrypoint.
 extern const char kLensOverlayEnableLocationBarEntrypointName[];
