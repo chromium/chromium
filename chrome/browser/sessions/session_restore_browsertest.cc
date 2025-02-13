@@ -1406,7 +1406,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MemoryPressureLoadsNotAllTabs) {
 }
 
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWebUI) {
-  const GURL webui_url(chrome::kChromeUIOmniboxURL);
+  const GURL webui_url(chrome::kChromeUIDownloadsURL);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), webui_url));
   content::WebContents* old_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
