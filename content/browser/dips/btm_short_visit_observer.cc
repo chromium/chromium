@@ -99,26 +99,29 @@ void BtmShortVisitObserver::DidFinishNavigation(
         // Round the duration to the nearest second.
         const int64_t visit_seconds =
             (visit_duration.InMilliseconds() + 500) / 1000;
-        const std::string next_site = GetSite(
-            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+        const std::string next_site = GetSite(navigation_handle->GetURL());
+        const bool prev_site_same = prev_site_ == visit_site;
+        const bool next_site_same = visit_site == next_site;
 
-        ukm::builders::BTM_ShortVisit(page_source_id_)
-            .SetVisitDuration(visit_seconds)
-            .SetExitWasRendererInitiated(
-                navigation_handle->IsRendererInitiated())
-            .SetExitHadUserGesture(navigation_handle->HasUserGesture())
-            .SetExitPageTransition(navigation_handle->GetPageTransition())
-            // TODO: .SetSiteEngagement()
-            // TODO: .SetTimeSinceLastInteraction()
-            .SetPreviousSiteSame(prev_site_ == visit_site)
-            .SetNextSiteSame(visit_site == next_site)
-            .SetPreviousAndNextSiteSame(prev_site_ == next_site)
-            .Record(ukm::UkmRecorder::Get());
+        if (!prev_site_same || !next_site_same) {
+          ukm::builders::BTM_ShortVisit(page_source_id_)
+              .SetVisitDuration(visit_seconds)
+              .SetExitWasRendererInitiated(
+                  navigation_handle->IsRendererInitiated())
+              .SetExitHadUserGesture(navigation_handle->HasUserGesture())
+              .SetExitPageTransition(navigation_handle->GetPageTransition())
+              // TODO: .SetSiteEngagement()
+              // TODO: .SetTimeSinceLastInteraction()
+              .SetPreviousSiteSame(prev_site_same)
+              .SetNextSiteSame(next_site_same)
+              .SetPreviousAndNextSiteSame(prev_site_ == next_site)
+              .Record(ukm::UkmRecorder::Get());
+        }
       }
     }
   }
 
-  page_source_id_ = web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  page_source_id_ = navigation_handle->GetNextPageUkmSourceId();
   last_committed_at_ = clock_->Now();
   prev_site_ = visit_site;
 }
