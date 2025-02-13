@@ -147,7 +147,6 @@
   E_CPONLY(kColorExtensionMenuPinButtonIcon) \
   E_CPONLY(kColorExtensionMenuPinButtonIconDisabled) \
   E_CPONLY(kColorExtensionsMenuContainerBackground) \
-  E_CPONLY(kColorExtensionsToolbarControlsBackground) \
   E_CPONLY(kColorExtensionsMenuText) \
   E_CPONLY(kColorExtensionsMenuSecondaryText) \
   /* Feature Promo bubble colors. */ \
