@@ -691,6 +691,7 @@ experimental domain Audits
       kInlineViolation
       kEvalViolation
       kURLViolation
+      kSRIViolation
       kTrustedTypesSinkViolation
       kTrustedTypesPolicyViolation
       kWasmEvalViolation

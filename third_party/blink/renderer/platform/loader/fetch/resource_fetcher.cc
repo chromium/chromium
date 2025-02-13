@@ -1265,9 +1265,9 @@ ResourceFetcher::UpdateRequestForTransparentPlaceholderImage(
   // and block things we ought to block.
   if (Context().CheckAndEnforceCSPForRequest(
           resource_request.GetRequestContext(),
-          resource_request.GetRequestDestination(), params.Url(),
-          params.Options(), ReportingDisposition::kReport, params.Url(),
-          ResourceRequestHead::RedirectStatus::kNoRedirect) ==
+          resource_request.GetRequestDestination(), resource_request.GetMode(),
+          params.Url(), params.Options(), ReportingDisposition::kReport,
+          params.Url(), ResourceRequestHead::RedirectStatus::kNoRedirect) ==
       ResourceRequestBlockedReason::kCSP) {
     return ResourceRequestBlockedReason::kCSP;
   }

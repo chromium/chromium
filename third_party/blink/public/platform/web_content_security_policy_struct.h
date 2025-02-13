@@ -107,6 +107,7 @@ struct WebContentSecurityPolicy {
   WebContentSecurityPolicyHeader header;
   bool use_reporting_api;
   std::vector<WebString> report_endpoints;
+  network::mojom::CSPRequireSRIFor require_sri_for;
   network::mojom::CSPRequireTrustedTypesFor require_trusted_types_for;
   std::optional<WebCSPTrustedTypes> trusted_types;
   std::vector<WebString> parsing_errors;

@@ -19688,6 +19688,27 @@
             ]
         }
     ],
+    "RequireSRIFor": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CSPRequireSRIFor",
+                        "SRIMessageSignatureEnforcement"
+                    ]
+                }
+            ]
+        }
+    ],
     "ResamplingScrollEvents": [
         {
             "platforms": [

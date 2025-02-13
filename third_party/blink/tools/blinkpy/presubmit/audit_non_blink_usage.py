@@ -1292,6 +1292,7 @@ _CONFIG = [
             # The Blink public API is shared between non-Blink and Blink code
             # and must use the regular variants.
             'mojom::.+',
+            'network::mojom::.+',
             'ui::mojom::WindowShowState',
             'ui::mojom::WindowShowState::.+',
 

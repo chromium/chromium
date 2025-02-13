@@ -248,6 +248,12 @@ BASE_FEATURE(kPreloadedDictionaryConditionalUse,
              "PreloadedDictionaryConditionalUse",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the `require-sri-for` CSP directive, which enables developers to
+// ensure all their external scripts have their integrity enforced.
+BASE_FEATURE(kCSPRequireSRIFor,
+             "CSPRequireSRIFor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kVisibilityAwareResourceScheduler,
              "VisibilityAwareResourceScheduler",
              base::FEATURE_DISABLED_BY_DEFAULT);

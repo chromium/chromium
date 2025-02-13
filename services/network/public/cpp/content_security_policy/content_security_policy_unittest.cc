@@ -774,6 +774,62 @@ TEST(ContentSecurityPolicy, ParseRequireTrustedTypesFor) {
   }
 }
 
+TEST(ContentSecurityPolicy, ParseRequireSRIFor) {
+  base::test::ScopedFeatureList features_list{features::kCSPRequireSRIFor};
+  const struct {
+    std::string input;
+    size_t errors;
+    network::mojom::CSPRequireSRIFor expected;
+  } kTestCases[]{
+      {
+          "",
+          1u,
+          network::mojom::CSPRequireSRIFor::None,
+      },
+      {
+          "'script'",
+          0u,
+          network::mojom::CSPRequireSRIFor::Script,
+      },
+      {
+          "'wasm' 'script'",
+          1u,
+          network::mojom::CSPRequireSRIFor::Script,
+      },
+      {
+          "'script' 'wasm' 'script'",
+          1u,
+          network::mojom::CSPRequireSRIFor::Script,
+      },
+      {
+          "'wasm'",
+          2u,
+          network::mojom::CSPRequireSRIFor::None,
+      },
+      {
+          "'style'",
+          2u,
+          network::mojom::CSPRequireSRIFor::None,
+      },
+      {
+          "script",
+          2u,
+          network::mojom::CSPRequireSRIFor::None,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    std::vector<mojom::ContentSecurityPolicyPtr> policies =
+        ParseCSP(base::StringPrintf("require-sri-for %s", test_case.input));
+    EXPECT_EQ(
+        policies[0]->raw_directives[mojom::CSPDirectiveName::RequireSRIFor],
+        test_case.input);
+    EXPECT_EQ(policies[0]->directives.size(), 0u);
+    EXPECT_EQ(policies[0]->parsing_errors.size(), test_case.errors);
+    EXPECT_EQ(policies[0]->require_sri_for, test_case.expected);
+  }
+}
+
 TEST(ContentSecurityPolicy, ParseTrustedTypes) {
   {
     std::vector<mojom::ContentSecurityPolicyPtr> policies =
