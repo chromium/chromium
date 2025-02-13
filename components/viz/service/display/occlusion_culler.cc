@@ -303,16 +303,21 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
         // Compute the occlusion region in the quad content space for 2d-scale,
         // rotation(90, 180, 270) and 2d-translation transforms. Note that 0
         // scale transform will fail the positive scale check.
+        // (See crrev.com/c/788283 for the rationale)
+        // Given:
+        // * Scale transform can be inverted by multiplying 1/scale.
+        //  (given scale > 0)
+        // * Translation transform can be inverted by applying reversed
+        //   directional translation.
+        // * Rotation transform can be inverted by applying rotation
+        //   in opposite direction.
+        // Therefore, `transform` is always invertible.
+        // Note: `Transform::IsInvertible()` check is necessary to ensure no
+        // overflows occur when calculating the inverse. (It is inexpensive for
+        // 2d transforms)
         if (current_sqs_intersects_occlusion &&
-            Is2dAndRightAngledRotationOrPositiveScaleOrTranslation(transform)) {
-          // Given:
-          // * Scale transform can be inverted by multiplying 1/scale.
-          //  (given scale > 0)
-          // * Translation transform can be inverted by applying reversed
-          //   directional translation.
-          // * Rotation transform can be inverted by applying rotation
-          //   in opposite direction.
-          // Therefore, `transform` is always invertible.
+            Is2dAndRightAngledRotationOrPositiveScaleOrTranslation(transform) &&
+            transform.IsInvertible()) {
           const gfx::Transform reverse_transform =
               transform.GetCheckedInverse();
           DCHECK_LE(occlusion_in_target_space.GetRegionComplexity(),
