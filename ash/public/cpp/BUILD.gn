@@ -213,6 +213,8 @@ component("cpp") {
     "lobster/lobster_session.h",
     "lobster/lobster_system_state.cc",
     "lobster/lobster_system_state.h",
+    "lobster/lobster_text_input_context.cc",
+    "lobster/lobster_text_input_context.h",
     "locale_update_controller.cc",
     "locale_update_controller.h",
     "lock_screen_widget_factory.cc",

@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SYSTEM_STATE_PROVIDER_H_
 #define CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SYSTEM_STATE_PROVIDER_H_
 
+#include "ash/public/cpp/lobster/lobster_text_input_context.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/ime/text_input_type.h"
 
 class Profile;
 
@@ -19,7 +21,8 @@ class LobsterSystemStateProvider {
   explicit LobsterSystemStateProvider(Profile* profile);
   ~LobsterSystemStateProvider();
 
-  ash::LobsterSystemState GetSystemState();
+  ash::LobsterSystemState GetSystemState(
+      const ash::LobsterTextInputContext& text_input_context);
 
  private:
   raw_ptr<Profile> profile_;

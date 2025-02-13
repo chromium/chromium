@@ -11,6 +11,7 @@
 #include "ash/public/cpp/lobster/lobster_client.h"
 #include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
+#include "ash/public/cpp/lobster/lobster_text_input_context.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/lobster/lobster_service.h"
 #include "chrome/browser/ash/lobster/lobster_system_state_provider.h"
@@ -26,7 +27,8 @@ class LobsterClientImpl : public ash::LobsterClient {
 
   // LobsterClient overrides
   void SetActiveSession(ash::LobsterSession* session) override;
-  ash::LobsterSystemState GetSystemState() override;
+  ash::LobsterSystemState GetSystemState(
+      const ash::LobsterTextInputContext& text_input_context) override;
   void RequestCandidates(const std::string& query,
                          int num_candidates,
                          ash::RequestCandidatesCallback) override;

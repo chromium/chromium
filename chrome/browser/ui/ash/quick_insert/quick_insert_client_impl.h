@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/input_method/editor_announcer.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/base/ime/text_input_client.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -66,8 +67,7 @@ class QuickInsertClientImpl
   bool IsEligibleForEditor() override;
   ShowEditorCallback CacheEditorContext() override;
   ShowLobsterCallback CacheLobsterContext(
-      bool support_image_insertion,
-      const gfx::Rect& caret_bounds) override;
+      ui::TextInputClient* text_input_client) override;
   void GetSuggestedEditorResults(
       SuggestedEditorResultsCallback callback) override;
   void GetRecentLocalFileResults(size_t max_files,

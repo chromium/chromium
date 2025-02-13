@@ -88,6 +88,7 @@ source_set("unit_tests") {
     "lobster_feedback_unittest.cc",
     "lobster_image_provider_from_snapper_unittest.cc",
     "lobster_service_unittest.cc",
+    "lobster_system_state_provider_unittest.cc",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

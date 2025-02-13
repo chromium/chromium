@@ -65,6 +65,7 @@
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/aura/window.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_widget_types.h"
@@ -367,8 +368,8 @@ QuickInsertClientImpl::CacheEditorContext() {
 }
 
 QuickInsertClientImpl::ShowLobsterCallback
-QuickInsertClientImpl::CacheLobsterContext(bool support_image_insertion,
-                                           const gfx::Rect& caret_bounds) {
+QuickInsertClientImpl::CacheLobsterContext(
+    ui::TextInputClient* text_input_client) {
   if (!ash::features::IsLobsterEnabled()) {
     return base::NullCallback();
   }
@@ -382,9 +383,8 @@ QuickInsertClientImpl::CacheLobsterContext(bool support_image_insertion,
     return base::NullCallback();
   }
 
-  lobster_trigger_ =
-      lobster_controller->CreateTrigger(ash::LobsterEntryPoint::kQuickInsert,
-                                        support_image_insertion, caret_bounds);
+  lobster_trigger_ = lobster_controller->CreateTrigger(
+      ash::LobsterEntryPoint::kQuickInsert, text_input_client);
 
   if (!lobster_trigger_) {
     return base::NullCallback();

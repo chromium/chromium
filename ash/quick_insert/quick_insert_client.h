@@ -19,6 +19,7 @@
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "ui/base/ime/text_input_client.h"
 #include "url/gurl.h"
 
 class SkBitmap;
@@ -28,7 +29,6 @@ class FaviconService;
 }
 
 namespace gfx {
-class Rect;
 class Size;
 }
 
@@ -83,8 +83,7 @@ class ASH_EXPORT QuickInsertClient {
   virtual ShowEditorCallback CacheEditorContext() = 0;
 
   virtual ShowLobsterCallback CacheLobsterContext(
-      bool support_image_insertion,
-      const gfx::Rect& caret_bounds) = 0;
+      ui::TextInputClient* text_input_client) = 0;
 
   virtual void GetSuggestedEditorResults(
       SuggestedEditorResultsCallback callback) = 0;

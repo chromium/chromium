@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/quick_insert/mock_quick_insert_client.h"
 #include "ash/quick_insert/quick_insert_category.h"
 #include "ash/quick_insert/quick_insert_client.h"
 #include "base/memory/scoped_refptr.h"
@@ -39,7 +40,7 @@ class ASH_EXPORT MockQuickInsertClient : public QuickInsertClient {
   MOCK_METHOD(ShowEditorCallback, CacheEditorContext, (), (override));
   MOCK_METHOD(ShowLobsterCallback,
               CacheLobsterContext,
-              (bool support_image_insertion, const gfx::Rect& caret_bounds),
+              (ui::TextInputClient * text_input_client),
               (override));
   MOCK_METHOD(void,
               GetSuggestedEditorResults,
