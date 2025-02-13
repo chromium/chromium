@@ -375,4 +375,8 @@ BASE_FEATURE(kFedCmContinueWithoutName,
              "FedCmContinueWithoutName",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kByDateHistoryInSidePanel,
+             "ByDateHistoryInSidePanel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

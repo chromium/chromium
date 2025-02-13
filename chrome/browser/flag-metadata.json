@@ -1120,6 +1120,13 @@
       "expiry_milestone": 137
   },
   {
+    "name": "by-date-history-in-side-panel",
+    "owners": [
+      "mfacey@chromium.org",
+      "johntlee@chromium.org"],
+      "expiry_milestone": 140
+  },
+  {
     "name": "calculate-native-win-occlusion",
     "owners": [ "davidbienvenu@chromium.org", "fdoray@chromium.org" ],
     "expiry_milestone": 130

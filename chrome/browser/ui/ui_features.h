@@ -244,6 +244,9 @@ BASE_DECLARE_FEATURE(kCompositorLoadingAnimations);
 // say "Continue" instead of "Continue as Firstname Lastname".
 BASE_DECLARE_FEATURE(kFedCmContinueWithoutName);
 
+// If enabled, the by date history will show in the side panel.
+BASE_DECLARE_FEATURE(kByDateHistoryInSidePanel);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_
