@@ -241,16 +241,23 @@ void WorkerFetchContext::AddResourceTiming(
   resource_timing_notifier_->AddResourceTiming(std::move(info), initiator_type);
 }
 
+void WorkerFetchContext::ModifyRequestForMixedContentUpgrade(
+    ResourceRequest& request) {
+  MixedContentChecker::UpgradeInsecureRequest(
+      request, &GetResourceFetcherProperties().GetFetchClientSettingsObject(),
+      global_scope_, mojom::blink::RequestContextFrameType::kNone,
+      global_scope_->ContentSettingsClient());
+}
+
 void WorkerFetchContext::PopulateResourceRequestBeforeCacheAccess(
     const ResourceLoaderOptions& options,
     ResourceRequest& request) {
   DCHECK(RuntimeEnabledFeatures::
              MinimimalResourceRequestPrepBeforeCacheLookupEnabled());
 
-  MixedContentChecker::UpgradeInsecureRequest(
-      request, &GetResourceFetcherProperties().GetFetchClientSettingsObject(),
-      global_scope_, mojom::RequestContextFrameType::kNone,
-      global_scope_->ContentSettingsClient());
+  if (!RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled()) {
+    ModifyRequestForMixedContentUpgrade(request);
+  }
 }
 
 void WorkerFetchContext::WillSendRequest(ResourceRequest& request) {

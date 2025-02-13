@@ -108,22 +108,22 @@ class PartialResourceRequest {
 
 }  // namespace
 
-class ResourceFetcherTest : public testing::Test {
+class ResourceFetcherTestBase : public testing::Test {
  public:
-  ResourceFetcherTest()
+  ResourceFetcherTestBase()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     Resource::SetClockForTesting(task_environment_.GetMockClock());
     // The state of global LcppEnabled flag depends on several feature flags
     // which can be enabled/disabled in tests. Clear the global flag value.
     ResetLcppEnabledForTesting();
   }
-  ~ResourceFetcherTest() override {
+  ~ResourceFetcherTestBase() override {
     MemoryCache::Get()->EvictResources();
     Resource::SetClockForTesting(nullptr);
   }
 
-  ResourceFetcherTest(const ResourceFetcherTest&) = delete;
-  ResourceFetcherTest& operator=(const ResourceFetcherTest&) = delete;
+  ResourceFetcherTestBase(const ResourceFetcherTestBase&) = delete;
+  ResourceFetcherTestBase& operator=(const ResourceFetcherTestBase&) = delete;
 
   class TestResourceLoadObserver final : public ResourceLoadObserver {
    public:
@@ -220,7 +220,20 @@ class ResourceFetcherTest : public testing::Test {
   ScopedTestingPlatformSupport<FetchTestingPlatformSupport> platform_;
 };
 
-TEST_F(ResourceFetcherTest, StartLoadAfterFrameDetach) {
+class ResourceFetcherTest : public ResourceFetcherTestBase,
+                            public testing::WithParamInterface<bool> {
+ public:
+  ResourceFetcherTest() : scoped_preload_link_rel_data_urls_(GetParam()) {}
+
+ private:
+  ScopedPreloadLinkRelDataUrlsForTest scoped_preload_link_rel_data_urls_;
+};
+
+INSTANTIATE_TEST_SUITE_P(ResourceFetcherTest,
+                         ResourceFetcherTest,
+                         testing::Bool());
+
+TEST_P(ResourceFetcherTest, StartLoadAfterFrameDetach) {
   KURL secure_url("https://secureorigin.test/image.png");
   // Try to request a url. The request should fail, and a resource in an error
   // state should be returned, and no resource should be present in the cache.
@@ -244,7 +257,7 @@ TEST_F(ResourceFetcherTest, StartLoadAfterFrameDetach) {
       secure_url, SecurityOrigin::CreateUniqueOpaque(), ResourceType::kImage));
 }
 
-TEST_F(ResourceFetcherTest, UseExistingResource) {
+TEST_P(ResourceFetcherTest, UseExistingResource) {
   base::HistogramTester histogram_tester;
   auto* fetcher = CreateFetcher();
 
@@ -293,7 +306,7 @@ TEST_F(ResourceFetcherTest, UseExistingResource) {
       0 /* RevalidationPolicy::kUse */, 2);
 }
 
-TEST_F(ResourceFetcherTest, MetricsPerTopFrameSite) {
+TEST_P(ResourceFetcherTest, MetricsPerTopFrameSite) {
   base::HistogramTester histogram_tester;
 
   KURL url("http://127.0.0.1:8000/foo.html");
@@ -362,7 +375,7 @@ TEST_F(ResourceFetcherTest, MetricsPerTopFrameSite) {
       0 /* RevalidationPolicy::kUse */, 2);
 }
 
-TEST_F(ResourceFetcherTest, MetricsPerTopFrameSiteOpaqueOrigins) {
+TEST_P(ResourceFetcherTest, MetricsPerTopFrameSiteOpaqueOrigins) {
   base::HistogramTester histogram_tester;
 
   KURL url("http://127.0.0.1:8000/foo.html");
@@ -432,7 +445,7 @@ TEST_F(ResourceFetcherTest, MetricsPerTopFrameSiteOpaqueOrigins) {
       0 /* RevalidationPolicy::kUse */, 2);
 }
 
-TEST_F(ResourceFetcherTest, Vary) {
+TEST_P(ResourceFetcherTest, Vary) {
   scoped_refptr<const SecurityOrigin> source_origin =
       SecurityOrigin::CreateUniqueOpaque();
   KURL url("http://127.0.0.1:8000/foo.html");
@@ -462,7 +475,7 @@ TEST_F(ResourceFetcherTest, Vary) {
   new_resource->Loader()->Cancel();
 }
 
-TEST_F(ResourceFetcherTest, VaryOnBack) {
+TEST_P(ResourceFetcherTest, VaryOnBack) {
   scoped_refptr<const SecurityOrigin> source_origin =
       SecurityOrigin::CreateUniqueOpaque();
   auto* fetcher = CreateFetcher(
@@ -492,7 +505,7 @@ TEST_F(ResourceFetcherTest, VaryOnBack) {
   EXPECT_EQ(resource, new_resource);
 }
 
-TEST_F(ResourceFetcherTest, VaryResource) {
+TEST_P(ResourceFetcherTest, VaryResource) {
   auto* fetcher = CreateFetcher();
 
   KURL url("http://127.0.0.1:8000/foo.html");
@@ -568,7 +581,7 @@ class RequestSameResourceOnComplete
   scoped_refptr<const SecurityOrigin> source_origin_;
 };
 
-TEST_F(ResourceFetcherTest, DISABLED_RevalidateWhileFinishingLoading) {
+TEST_P(ResourceFetcherTest, DISABLED_RevalidateWhileFinishingLoading) {
   scoped_refptr<const SecurityOrigin> source_origin =
       SecurityOrigin::CreateUniqueOpaque();
   KURL url("http://127.0.0.1:8000/foo.png");
@@ -602,7 +615,7 @@ TEST_F(ResourceFetcherTest, DISABLED_RevalidateWhileFinishingLoading) {
 #else
 #define MAYBE_DontReuseMediaDataUrl DontReuseMediaDataUrl
 #endif
-TEST_F(ResourceFetcherTest, MAYBE_DontReuseMediaDataUrl) {
+TEST_P(ResourceFetcherTest, MAYBE_DontReuseMediaDataUrl) {
   auto* fetcher = CreateFetcher();
   ResourceRequest request(KURL("data:text/html,foo"));
   request.SetRequestContext(mojom::blink::RequestContextType::VIDEO);
@@ -662,7 +675,7 @@ class ServeRequestsOnCompleteClient final
 // ResourceLoader::Cancel(). If the ResourceLoader doesn't promptly cancel its
 // URLLoader before notifying its clients, a nested run loop  may send a network
 // response, leading to an invalid state transition in ResourceLoader.
-TEST_F(ResourceFetcherTest, ResponseOnCancel) {
+TEST_P(ResourceFetcherTest, ResponseOnCancel) {
   KURL url("http://127.0.0.1:8000/foo.png");
   RegisterMockedURLLoad(url);
 
@@ -734,7 +747,7 @@ class ScopedMockRedirectRequester {
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
-TEST_F(ResourceFetcherTest, SynchronousRequest) {
+TEST_P(ResourceFetcherTest, SynchronousRequest) {
   KURL url("http://127.0.0.1:8000/foo.png");
   RegisterMockedURLLoad(url);
 
@@ -751,7 +764,7 @@ TEST_F(ResourceFetcherTest, SynchronousRequest) {
             resource->GetResourceRequest().Priority());
 }
 
-TEST_F(ResourceFetcherTest, PingPriority) {
+TEST_P(ResourceFetcherTest, PingPriority) {
   KURL url("http://127.0.0.1:8000/foo.png");
   RegisterMockedURLLoad(url);
 
@@ -765,7 +778,7 @@ TEST_F(ResourceFetcherTest, PingPriority) {
             resource->GetResourceRequest().Priority());
 }
 
-TEST_F(ResourceFetcherTest, PreloadResourceTwice) {
+TEST_P(ResourceFetcherTest, PreloadResourceTwice) {
   auto* fetcher = CreateFetcher();
 
   KURL url("http://127.0.0.1:8000/foo.png");
@@ -794,7 +807,7 @@ TEST_F(ResourceFetcherTest, PreloadResourceTwice) {
   EXPECT_TRUE(resource->IsUnusedPreload());
 }
 
-TEST_F(ResourceFetcherTest, LinkPreloadResourceAndUse) {
+TEST_P(ResourceFetcherTest, LinkPreloadResourceAndUse) {
   auto* fetcher = CreateFetcher();
 
   KURL url("http://127.0.0.1:8000/foo.png");
@@ -833,7 +846,7 @@ TEST_F(ResourceFetcherTest, LinkPreloadResourceAndUse) {
   EXPECT_FALSE(resource->IsUnusedPreload());
 }
 
-TEST_F(ResourceFetcherTest, PreloadMatchWithBypassingCache) {
+TEST_P(ResourceFetcherTest, PreloadMatchWithBypassingCache) {
   auto* fetcher = CreateFetcher();
   KURL url("http://127.0.0.1:8000/foo.png");
   RegisterMockedURLLoad(url);
@@ -857,7 +870,7 @@ TEST_F(ResourceFetcherTest, PreloadMatchWithBypassingCache) {
   EXPECT_TRUE(resource->IsLinkPreload());
 }
 
-TEST_F(ResourceFetcherTest, CrossFramePreloadMatchIsNotAllowed) {
+TEST_P(ResourceFetcherTest, CrossFramePreloadMatchIsNotAllowed) {
   auto* fetcher = CreateFetcher();
   auto* fetcher2 = CreateFetcher();
 
@@ -884,7 +897,7 @@ TEST_F(ResourceFetcherTest, CrossFramePreloadMatchIsNotAllowed) {
   EXPECT_TRUE(resource->IsLinkPreload());
 }
 
-TEST_F(ResourceFetcherTest, RepetitiveLinkPreloadShouldBeMerged) {
+TEST_P(ResourceFetcherTest, RepetitiveLinkPreloadShouldBeMerged) {
   auto* fetcher = CreateFetcher();
 
   KURL url("http://127.0.0.1:8000/foo.png");
@@ -918,7 +931,7 @@ TEST_F(ResourceFetcherTest, RepetitiveLinkPreloadShouldBeMerged) {
   EXPECT_FALSE(resource1->IsUnusedPreload());
 }
 
-TEST_F(ResourceFetcherTest, RepetitiveSpeculativePreloadShouldBeMerged) {
+TEST_P(ResourceFetcherTest, RepetitiveSpeculativePreloadShouldBeMerged) {
   auto* fetcher = CreateFetcher();
 
   KURL url("http://127.0.0.1:8000/foo.png");
@@ -953,7 +966,7 @@ TEST_F(ResourceFetcherTest, RepetitiveSpeculativePreloadShouldBeMerged) {
   EXPECT_FALSE(resource1->IsUnusedPreload());
 }
 
-TEST_F(ResourceFetcherTest, SpeculativePreloadShouldBePromotedToLinkPreload) {
+TEST_P(ResourceFetcherTest, SpeculativePreloadShouldBePromotedToLinkPreload) {
   auto* fetcher = CreateFetcher();
 
   KURL url("http://127.0.0.1:8000/foo.png");
@@ -994,7 +1007,7 @@ TEST_F(ResourceFetcherTest, SpeculativePreloadShouldBePromotedToLinkPreload) {
   EXPECT_TRUE(resource1->IsLinkPreload());
 }
 
-TEST_F(ResourceFetcherTest, Revalidate304) {
+TEST_P(ResourceFetcherTest, Revalidate304) {
   scoped_refptr<const SecurityOrigin> source_origin =
       SecurityOrigin::CreateUniqueOpaque();
 
@@ -1023,7 +1036,7 @@ TEST_F(ResourceFetcherTest, Revalidate304) {
   EXPECT_NE(resource, new_resource);
 }
 
-TEST_F(ResourceFetcherTest, LinkPreloadResourceMultipleFetchersAndMove) {
+TEST_P(ResourceFetcherTest, LinkPreloadResourceMultipleFetchersAndMove) {
   auto* fetcher = CreateFetcher();
   auto* fetcher2 = CreateFetcher();
 
@@ -1057,7 +1070,7 @@ TEST_F(ResourceFetcherTest, LinkPreloadResourceMultipleFetchersAndMove) {
 #else
 #define MAYBE_ContentTypeDataURL ContentTypeDataURL
 #endif
-TEST_F(ResourceFetcherTest, MAYBE_ContentTypeDataURL) {
+TEST_P(ResourceFetcherTest, MAYBE_ContentTypeDataURL) {
   auto* fetcher = CreateFetcher();
   FetchParameters fetch_params = FetchParameters::CreateForTest(
       ResourceRequest("data:text/testmimetype,foo"));
@@ -1073,7 +1086,7 @@ TEST_F(ResourceFetcherTest, MAYBE_ContentTypeDataURL) {
 // Note: Not blocking it is important because there are some embedders of
 // Android WebView that are intercepting Content-ID URLs and serve their own
 // resources. Please see https://crbug.com/739658.
-TEST_F(ResourceFetcherTest, ContentIdURL) {
+TEST_P(ResourceFetcherTest, ContentIdURL) {
   KURL url("cid:0123456789@example.com");
   ResourceResponse response(url);
   response.SetHttpStatusCode(200);
@@ -1096,7 +1109,7 @@ TEST_F(ResourceFetcherTest, ContentIdURL) {
   }
 }
 
-TEST_F(ResourceFetcherTest, StaleWhileRevalidate) {
+TEST_P(ResourceFetcherTest, StaleWhileRevalidate) {
   scoped_refptr<const SecurityOrigin> source_origin =
       SecurityOrigin::CreateUniqueOpaque();
   auto* observer = MakeGarbageCollected<TestResourceLoadObserver>();
@@ -1158,7 +1171,7 @@ TEST_F(ResourceFetcherTest, StaleWhileRevalidate) {
   EXPECT_FALSE(MemoryCache::Get()->Contains(resource));
 }
 
-TEST_F(ResourceFetcherTest, CachedResourceShouldNotCrashByNullURL) {
+TEST_P(ResourceFetcherTest, CachedResourceShouldNotCrashByNullURL) {
   auto* fetcher = CreateFetcher();
 
   // Make sure |cached_resources_map_| is not empty, so that HashMap lookup
@@ -1177,7 +1190,7 @@ TEST_F(ResourceFetcherTest, CachedResourceShouldNotCrashByNullURL) {
   ASSERT_EQ(fetcher->CachedResource(KURL()), nullptr);
 }
 
-TEST_F(ResourceFetcherTest, DeprioritizeSubframe) {
+TEST_P(ResourceFetcherTest, DeprioritizeSubframe) {
   auto& properties = *MakeGarbageCollected<TestResourceFetcherProperties>();
   auto* fetcher = CreateFetcher(properties);
   ResourceRequest request(KURL("https://www.example.com/"));
@@ -1261,7 +1274,7 @@ TEST_F(ResourceFetcherTest, DeprioritizeSubframe) {
   }
 }
 
-TEST_F(ResourceFetcherTest, BoostImagePriority) {
+TEST_P(ResourceFetcherTest, BoostImagePriority) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kBoostImagePriority);
   auto& properties = *MakeGarbageCollected<TestResourceFetcherProperties>();
@@ -1379,7 +1392,7 @@ TEST_F(ResourceFetcherTest, BoostImagePriority) {
   }
 }
 
-TEST_F(ResourceFetcherTest, IsPotentiallyLCPElement) {
+TEST_P(ResourceFetcherTest, IsPotentiallyLCPElement) {
   for (const auto& test_cases :
        {std::make_pair("medium", ResourceLoadPriority::kMedium),
         std::make_pair("high", ResourceLoadPriority::kHigh),
@@ -1415,7 +1428,7 @@ TEST_F(ResourceFetcherTest, IsPotentiallyLCPElement) {
   }
 }
 
-TEST_F(ResourceFetcherTest, Detach) {
+TEST_P(ResourceFetcherTest, Detach) {
   DetachableResourceFetcherProperties& properties =
       MakeGarbageCollected<TestResourceFetcherProperties>()->MakeDetachable();
   auto* const fetcher = MakeGarbageCollected<ResourceFetcher>(
@@ -1436,7 +1449,7 @@ TEST_F(ResourceFetcherTest, Detach) {
   EXPECT_TRUE(properties.IsDetached());
 }
 
-TEST_F(ResourceFetcherTest, DuplicatePreloadAllowsPriorityChange) {
+TEST_P(ResourceFetcherTest, DuplicatePreloadAllowsPriorityChange) {
   auto* fetcher = CreateFetcher();
 
   KURL url("http://127.0.0.1:8000/foo.png");
@@ -1485,7 +1498,7 @@ TEST_F(ResourceFetcherTest, DuplicatePreloadAllowsPriorityChange) {
   EXPECT_FALSE(resource1->IsUnusedPreload());
 }
 
-TEST_F(ResourceFetcherTest, StrongReferenceThreshold) {
+TEST_P(ResourceFetcherTest, StrongReferenceThreshold) {
   // `kTestResourceFilename` has 103 bytes.
   const int64_t kMockResourceSize = 103;
 
@@ -1530,30 +1543,38 @@ TEST_F(ResourceFetcherTest, StrongReferenceThreshold) {
 }
 
 class ResourceFetcherInspectorTest
-    : public ResourceFetcherTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+    : public ResourceFetcherTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
-  ResourceFetcherInspectorTest() = default;
+  ResourceFetcherInspectorTest()
+      : scoped_skip_callbacks_when_devtools_not_open_(
+            IsSkipCallbacksWhenDevToolsNotOpenEnabled()),
+        scoped_preload_link_rel_data_urls_(IsPreloadLinkRelDataUrlsEnabled()) {}
 
  protected:
   bool IsSkipCallbacksWhenDevToolsNotOpenEnabled() {
     return std::get<0>(GetParam());
   }
   bool IsInterestedInAllRequests() { return std::get<1>(GetParam()); }
+  bool IsPreloadLinkRelDataUrlsEnabled() { return std::get<2>(GetParam()); }
+
+ private:
+  ScopedSkipCallbacksWhenDevToolsNotOpenForTest
+      scoped_skip_callbacks_when_devtools_not_open_;
+  ScopedPreloadLinkRelDataUrlsForTest scoped_preload_link_rel_data_urls_;
 };
 
 INSTANTIATE_TEST_SUITE_P(ResourceFetcherInspectorTest,
                          ResourceFetcherInspectorTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
 
 TEST_P(ResourceFetcherInspectorTest,
        EmulateLoadStartedForInspectorOncePerResourceDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kEmulateLoadStartedForInspectorOncePerResource);
-  ScopedSkipCallbacksWhenDevToolsNotOpenForTest
-      skip_callbacks_when_devtools_not_open(
-          IsSkipCallbacksWhenDevToolsNotOpenEnabled());
   auto* observer = MakeGarbageCollected<TestResourceLoadObserver>();
   observer->SetInterestedInAllRequests(IsInterestedInAllRequests());
 
@@ -1623,9 +1644,6 @@ TEST_P(ResourceFetcherInspectorTest,
 
 TEST_P(ResourceFetcherInspectorTest,
        EmulateLoadStartedForInspectorOncePerResourceEnabled) {
-  ScopedSkipCallbacksWhenDevToolsNotOpenForTest
-      skip_callbacks_when_devtools_not_open(
-          IsSkipCallbacksWhenDevToolsNotOpenEnabled());
   auto* observer = MakeGarbageCollected<TestResourceLoadObserver>();
   observer->SetInterestedInAllRequests(IsInterestedInAllRequests());
 
@@ -1691,9 +1709,6 @@ TEST_P(ResourceFetcherInspectorTest,
 // Verify that the ad bit is copied to WillSendRequest's request when the
 // response is served from the memory cache.
 TEST_P(ResourceFetcherInspectorTest, WillSendRequestAdBit) {
-  ScopedSkipCallbacksWhenDevToolsNotOpenForTest
-      skip_callbacks_when_devtools_not_open(
-          IsSkipCallbacksWhenDevToolsNotOpenEnabled());
   // Add a resource to the memory cache.
   scoped_refptr<const SecurityOrigin> source_origin =
       SecurityOrigin::CreateUniqueOpaque();
@@ -1738,14 +1753,10 @@ TEST_P(ResourceFetcherInspectorTest, WillSendRequestAdBit) {
   }
 }
 
-class DeferUnusedPreloadResourceFetcherTest : public ResourceFetcherTest {
+class DeferUnusedPreloadResourceFetcherTestBase
+    : public ResourceFetcherTestBase {
  public:
-  DeferUnusedPreloadResourceFetcherTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kLCPPDeferUnusedPreload,
-          {{features::kLcppDeferUnusedPreloadTiming.name, "post_task"}}}},
-        {});
-  }
+  DeferUnusedPreloadResourceFetcherTestBase() = default;
 
   ResourceFetcher* CreateFetcher() {
     MockFetchContext* context = MakeGarbageCollected<MockFetchContext>();
@@ -1753,7 +1764,7 @@ class DeferUnusedPreloadResourceFetcherTest : public ResourceFetcherTest {
 
     scoped_refptr<const SecurityOrigin> source_origin =
         SecurityOrigin::CreateUniqueOpaque();
-    auto* fetcher = ResourceFetcherTest::CreateFetcher(
+    auto* fetcher = ResourceFetcherTestBase::CreateFetcher(
         *MakeGarbageCollected<TestResourceFetcherProperties>(source_origin),
         context);
     fetcher->EnableDeferUnusedPreloadForTesting();
@@ -1765,14 +1776,34 @@ class DeferUnusedPreloadResourceFetcherTest : public ResourceFetcherTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   const Vector<KURL> potentially_unused_preloads_{
       KURL("http://127.0.0.1:8000/test.jpg"),
       KURL("http://127.0.0.1:8000/test2.jpg"),
       KURL("http://127.0.0.1:8000/test3.jpg")};
 };
 
-TEST_F(DeferUnusedPreloadResourceFetcherTest, IsPotentiallyUnusedPreload) {
+class DeferUnusedPreloadResourceFetcherTest
+    : public DeferUnusedPreloadResourceFetcherTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  DeferUnusedPreloadResourceFetcherTest()
+      : scoped_preload_link_rel_data_urls_(GetParam()) {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kLCPPDeferUnusedPreload,
+          {{features::kLcppDeferUnusedPreloadTiming.name, "post_task"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  ScopedPreloadLinkRelDataUrlsForTest scoped_preload_link_rel_data_urls_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DeferUnusedPreloadResourceFetcherTest,
+                         testing::Bool());
+
+TEST_P(DeferUnusedPreloadResourceFetcherTest, IsPotentiallyUnusedPreload) {
   ResourceFetcher* fetcher = CreateFetcher();
   // A single preload request.
   {
@@ -1899,11 +1930,12 @@ TEST_F(DeferUnusedPreloadResourceFetcherTest, IsPotentiallyUnusedPreload) {
 }
 
 class DeferUnusedPreloadWithPreloadedReasonResourceFetcherTest
-    : public DeferUnusedPreloadResourceFetcherTest,
+    : public DeferUnusedPreloadResourceFetcherTestBase,
       public testing::WithParamInterface<
-          features::LcppDeferUnusedPreloadPreloadedReason> {
+          std::tuple<features::LcppDeferUnusedPreloadPreloadedReason, bool>> {
  public:
-  DeferUnusedPreloadWithPreloadedReasonResourceFetcherTest() {
+  DeferUnusedPreloadWithPreloadedReasonResourceFetcherTest()
+      : scoped_preload_link_rel_data_urls_(std::get<1>(GetParam())) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kLCPPDeferUnusedPreload,
           {{features::kLcppDeferUnusedPreloadPreloadedReason.name,
@@ -1912,7 +1944,7 @@ class DeferUnusedPreloadWithPreloadedReasonResourceFetcherTest
   }
 
   features::LcppDeferUnusedPreloadPreloadedReason PreloadedReason() {
-    return GetParam();
+    return std::get<0>(GetParam());
   }
 
   std::string GetParamString() {
@@ -1929,16 +1961,19 @@ class DeferUnusedPreloadWithPreloadedReasonResourceFetcherTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  ScopedPreloadLinkRelDataUrlsForTest scoped_preload_link_rel_data_urls_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     DeferUnusedPreloadWithPreloadedReasonResourceFetcherTest,
-    testing::Values(
-        features::LcppDeferUnusedPreloadPreloadedReason::kAll,
-        features::LcppDeferUnusedPreloadPreloadedReason::kLinkPreloadOnly,
-        features::LcppDeferUnusedPreloadPreloadedReason::
-            kBrowserSpeculativePreloadOnly));
+    testing::Combine(
+        testing::Values(
+            features::LcppDeferUnusedPreloadPreloadedReason::kAll,
+            features::LcppDeferUnusedPreloadPreloadedReason::kLinkPreloadOnly,
+            features::LcppDeferUnusedPreloadPreloadedReason::
+                kBrowserSpeculativePreloadOnly),
+        testing::Bool()));
 
 TEST_P(DeferUnusedPreloadWithPreloadedReasonResourceFetcherTest, NotPreload) {
   ResourceFetcher* fetcher = CreateFetcher();
@@ -2053,11 +2088,13 @@ TEST_P(DeferUnusedPreloadWithPreloadedReasonResourceFetcherTest,
 }
 
 class DeferUnusedPreloadWithExcludedResourceTypeResourceFetcherTest
-    : public DeferUnusedPreloadResourceFetcherTest,
+    : public DeferUnusedPreloadResourceFetcherTestBase,
       public testing::WithParamInterface<
-          features::LcppDeferUnusedPreloadExcludedResourceType> {
+          std::tuple<features::LcppDeferUnusedPreloadExcludedResourceType,
+                     bool>> {
  public:
-  DeferUnusedPreloadWithExcludedResourceTypeResourceFetcherTest() {
+  DeferUnusedPreloadWithExcludedResourceTypeResourceFetcherTest()
+      : scoped_preload_link_rel_data_urls_(std::get<1>(GetParam())) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kLCPPDeferUnusedPreload,
           {{features::kLcppDeferUnusedPreloadExcludedResourceType.name,
@@ -2066,7 +2103,7 @@ class DeferUnusedPreloadWithExcludedResourceTypeResourceFetcherTest
   }
 
   features::LcppDeferUnusedPreloadExcludedResourceType ExcludedResourceType() {
-    return GetParam();
+    return std::get<0>(GetParam());
   }
 
   std::string GetParamString() {
@@ -2084,15 +2121,18 @@ class DeferUnusedPreloadWithExcludedResourceTypeResourceFetcherTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  ScopedPreloadLinkRelDataUrlsForTest scoped_preload_link_rel_data_urls_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     DeferUnusedPreloadWithExcludedResourceTypeResourceFetcherTest,
-    testing::Values(
-        features::LcppDeferUnusedPreloadExcludedResourceType::kNone,
-        features::LcppDeferUnusedPreloadExcludedResourceType::kStyleSheet,
-        features::LcppDeferUnusedPreloadExcludedResourceType::kScript));
+    testing::Combine(
+        testing::Values(
+            features::LcppDeferUnusedPreloadExcludedResourceType::kNone,
+            features::LcppDeferUnusedPreloadExcludedResourceType::kStyleSheet,
+            features::LcppDeferUnusedPreloadExcludedResourceType::kScript),
+        testing::Bool()));
 
 TEST_P(DeferUnusedPreloadWithExcludedResourceTypeResourceFetcherTest,
        LinkPreload) {
@@ -2138,10 +2178,13 @@ TEST_P(DeferUnusedPreloadWithExcludedResourceTypeResourceFetcherTest,
 }
 
 class TransparentPlaceholderResourceFetcherTest
-    : public ResourceFetcherTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+    : public ResourceFetcherTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
-  TransparentPlaceholderResourceFetcherTest() {
+  TransparentPlaceholderResourceFetcherTest()
+      : scoped_skip_callbacks_when_devtools_not_open_(
+            IsSkipCallbacksWhenDevToolsNotOpenEnabled()),
+        scoped_preload_link_rel_data_urls_(IsPreloadLinkRelDataUrlsEnabled()) {
     if (IsSimplifyLoadingTransparentPlaceholderImageEnabled()) {
       scoped_feature_list_.InitAndEnableFeature(
           features::kSimplifyLoadingTransparentPlaceholderImage);
@@ -2160,18 +2203,22 @@ class TransparentPlaceholderResourceFetcherTest
     return std::get<1>(GetParam());
   }
 
+  bool IsPreloadLinkRelDataUrlsEnabled() { return std::get<2>(GetParam()); }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  ScopedSkipCallbacksWhenDevToolsNotOpenForTest
+      scoped_skip_callbacks_when_devtools_not_open_;
+  ScopedPreloadLinkRelDataUrlsForTest scoped_preload_link_rel_data_urls_;
 };
 
 INSTANTIATE_TEST_SUITE_P(TransparentPlaceholderResourceFetcherTest,
                          TransparentPlaceholderResourceFetcherTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
 
 TEST_P(TransparentPlaceholderResourceFetcherTest, InspectorAttached) {
-  ScopedSkipCallbacksWhenDevToolsNotOpenForTest
-      skip_callbacks_when_devtools_not_open(
-          IsSkipCallbacksWhenDevToolsNotOpenEnabled());
   auto* observer = MakeGarbageCollected<TestResourceLoadObserver>();
   observer->SetInterestedInAllRequests(true);
 
@@ -2200,9 +2247,6 @@ TEST_P(TransparentPlaceholderResourceFetcherTest, InspectorAttached) {
 }
 
 TEST_P(TransparentPlaceholderResourceFetcherTest, InspectorNotAttached) {
-  ScopedSkipCallbacksWhenDevToolsNotOpenForTest
-      skip_callbacks_when_devtools_not_open(
-          IsSkipCallbacksWhenDevToolsNotOpenEnabled());
   auto* observer = MakeGarbageCollected<TestResourceLoadObserver>();
   observer->SetInterestedInAllRequests(false);
 

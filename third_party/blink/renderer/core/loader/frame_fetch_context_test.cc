@@ -314,8 +314,9 @@ class FrameFetchContextModifyRequestTest : public FrameFetchContextTest {
       : example_origin(SecurityOrigin::Create(KURL("https://example.test/"))) {}
 
  protected:
-  void ModifyRequestForCSP(ResourceRequest& resource_request,
-                           mojom::RequestContextFrameType frame_type) {
+  void ModifyRequestForMixedContentUpgrade(
+      ResourceRequest& resource_request,
+      mojom::RequestContextFrameType frame_type) {
     document->GetFrame()->Loader().ModifyRequestForCSP(
         resource_request,
         &document->Fetcher()->GetProperties().GetFetchClientSettingsObject(),
@@ -337,7 +338,7 @@ class FrameFetchContextModifyRequestTest : public FrameFetchContextTest {
     ResourceRequest resource_request(input_url);
     resource_request.SetRequestContext(request_context);
 
-    ModifyRequestForCSP(resource_request, frame_type);
+    ModifyRequestForMixedContentUpgrade(resource_request, frame_type);
 
     EXPECT_EQ(expected_url.GetString(), resource_request.Url().GetString());
     EXPECT_EQ(expected_url.Protocol(), resource_request.Url().Protocol());
@@ -357,16 +358,16 @@ class FrameFetchContextModifyRequestTest : public FrameFetchContextTest {
     resource_request.SetRequestContext(
         mojom::blink::RequestContextType::SCRIPT);
 
-    ModifyRequestForCSP(resource_request, frame_type);
+    ModifyRequestForMixedContentUpgrade(resource_request, frame_type);
 
     EXPECT_EQ(
         should_prefer ? String("1") : String(),
         resource_request.HttpHeaderField(http_names::kUpgradeInsecureRequests));
 
-    // Calling modifyRequestForCSP more than once shouldn't affect the
-    // header.
+    // Calling modifyRequestForMixedContentUpgrade more than once shouldn't
+    // affect the header.
     if (should_prefer) {
-      GetFetchContext()->ModifyRequestForCSP(resource_request);
+      GetFetchContext()->ModifyRequestForMixedContentUpgrade(resource_request);
       EXPECT_EQ("1", resource_request.HttpHeaderField(
                          http_names::kUpgradeInsecureRequests));
     }
@@ -389,8 +390,8 @@ class FrameFetchContextModifyRequestTest : public FrameFetchContextTest {
     document->domWindow()->GetSecurityContext().SetInsecureRequestPolicy(
         policy);
 
-    ModifyRequestForCSP(resource_request,
-                        mojom::RequestContextFrameType::kNone);
+    ModifyRequestForMixedContentUpgrade(resource_request,
+                                        mojom::RequestContextFrameType::kNone);
 
     EXPECT_EQ(expected_value, resource_request.IsAutomaticUpgrade());
   }

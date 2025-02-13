@@ -96,6 +96,8 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
                          const AtomicString& initiator_type) override;
   bool AllowImage() const override;
 
+  void ModifyRequestForMixedContentUpgrade(ResourceRequest&) override;
+
   void PopulateResourceRequestBeforeCacheAccess(
       const ResourceLoaderOptions& options,
       ResourceRequest& request) override;
@@ -118,7 +120,6 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   bool DoesLCPPHaveLcpElementLocatorHintData() override;
 
   // Exposed for testing.
-  void ModifyRequestForCSP(ResourceRequest&);
   void AddClientHintsIfNecessary(const std::optional<float> resource_width,
                                  ResourceRequest&);
 

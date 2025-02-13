@@ -82,6 +82,7 @@ class WorkerFetchContext final : public BaseFetchContext {
   void AddAdditionalRequestHeaders(ResourceRequest&) override;
   void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr,
                          const AtomicString& initiator_type) override;
+  void ModifyRequestForMixedContentUpgrade(ResourceRequest&) override;
   void PopulateResourceRequestBeforeCacheAccess(
       const ResourceLoaderOptions& options,
       ResourceRequest& request) override;
