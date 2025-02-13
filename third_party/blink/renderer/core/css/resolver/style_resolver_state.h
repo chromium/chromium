@@ -209,7 +209,10 @@ class CORE_EXPORT StyleResolverState {
   bool UsesHighlightPseudoInheritance() const {
     return uses_highlight_pseudo_inheritance_;
   }
-  bool IsOutsideFlatTree() const { return is_outside_flat_tree_; }
+  // See StyleRecalcContext::is_outside_flat_tree.
+  bool IsOutsideFlatTree() const {
+    return style_recalc_context_ && style_recalc_context_->is_outside_flat_tree;
+  }
 
   bool CanTriggerAnimations() const { return can_trigger_animations_; }
 
@@ -270,8 +273,14 @@ class CORE_EXPORT StyleResolverState {
 
  private:
   CSSToLengthConversionData UnzoomedLengthConversionData(const FontSizeStyle&);
+  // When resolving cq* units, this element is used to start the search
+  // for suitable size containers.
+  Element* ContainerUnitContext() const;
+  // See StyleRecalcContext::GetAnchorEvaluator().
+  AnchorEvaluator* GetAnchorEvaluator() const;
 
   ElementResolveContext element_context_;
+  const StyleRecalcContext* style_recalc_context_ = nullptr;
   Document* document_;
 
   // The primary output for each element's style resolve.
@@ -304,10 +313,6 @@ class CORE_EXPORT StyleResolverState {
 
   ElementStyleResources element_style_resources_;
   ElementType element_type_;
-  Element* container_unit_context_;
-
-  // See StyleRecalcContext::anchor_evaluator_.
-  AnchorEvaluator* anchor_evaluator_ = nullptr;
 
   // Whether this element is inside a link or not. Note that this is different
   // from ElementLinkState() if the element is not a link itself but is inside
@@ -325,9 +330,6 @@ class CORE_EXPORT StyleResolverState {
   // True if this is a highlight style request, and highlight inheritance
   // should be used for this highlight pseudo.
   const bool uses_highlight_pseudo_inheritance_;
-  // See StyleRecalcContext::is_outside_flat_tree. Set to false if there is no
-  // StyleRecalcContext.
-  const bool is_outside_flat_tree_;
 
   // True if this style resolution can start or stop animations and transitions.
   // One case where animations and transitions can not be triggered is when we
