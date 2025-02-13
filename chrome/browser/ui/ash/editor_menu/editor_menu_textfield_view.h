@@ -44,6 +44,7 @@ class EditorMenuTextfieldView : public views::View,
   // views::View:
   void Layout(PassKey) override;
   void AddedToWidget() override;
+  void OnThemeChanged() override;
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
@@ -54,6 +55,7 @@ class EditorMenuTextfieldView : public views::View,
  private:
   void InitLayout();
   void OnTextfieldArrowButtonPressed();
+  void SetColors();
 
   // `delegate_` outlives `this`.
   raw_ptr<EditorMenuViewDelegate> delegate_ = nullptr;
