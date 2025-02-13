@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Hinnalangus avatud vahelehtedel}other{Hinnalangused avatud vahelehtedel}}</translation>
 <translation id="5186036860380548585">Valik on saadaval ekraanikuva ülaosas</translation>
 <translation id="5197729504361054390">Teie valitud kontakte jagatakse saidiga <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5198930230016462977">Uue vahelehe kohandamise alumine leht on suletud</translation>
 <translation id="5216942107514965959">Viimati külastati täna</translation>
 <translation id="5225463052809312700">Lülita kaamera sisse</translation>
 <translation id="5234764350956374838">Loobu</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Käeliigutuste jälgimine</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> on keelatud</translation>
 <translation id="5804241973901381774">Load</translation>
+<translation id="5822675474983796325">Uue vahelehe kohandamise alumine leht on avatud täispikkuses</translation>
 <translation id="5844448279347999754">Kui see on sisse lülitatud, võivad saidid küsida luba teie lõikelauale salvestatud teksti ja piltide nägemiseks. Kui see on välja lülitatud, ei näe saidid teie lõikelauale salvestatud teksti ega pilte.</translation>
 <translation id="5853982612236235577">Kui see on sisse lülitatud, võivad saidid küsida luba märguannete saatmiseks. Kui see on välja lülitatud, ei saa saidid märguandeid saata.</translation>
 <translation id="5860033963881614850">Väljas</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Laiendatud</translation>
 <translation id="7219254577985949841">Kas kustutada saidi andmed?</translation>
 <translation id="723171743924126238">Kujutiste valimine</translation>
+<translation id="7243246278722455312">Uue vahelehe kohandamise alumine leht</translation>
 <translation id="7243308994586599757">Valikud on saadaval ekraani allosas</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> on valitud</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> on lubatud</translation>

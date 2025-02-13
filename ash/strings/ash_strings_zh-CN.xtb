@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1000127192436081677">开启/关闭“快速分享”功能。“快速分享”功能已<ph name="QUICK_SHARE_STATE" /></translation>
 <translation id="1012876632442809908">USB-C 设备（前方端口）</translation>
 <translation id="1013923882670373915">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。请在该设备上输入以下PIN码：<ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">如果您开启地理定位，即意味着允许“<ph name="APP_NAME" />”、所有具有位置信息权限的应用和网站以及 ChromeOS 使用 Wi-Fi 和移动网络位置信息。</translation>
@@ -154,6 +155,7 @@
 <translation id="1469148162491666137">这将允许“<ph name="APP1_NAME" />”“<ph name="APP2_NAME" />”以及所有具有摄像头和麦克风使用权限的应用和网站使用摄像头/麦克风。您可能需要刷新网页或重启应用。</translation>
 <translation id="147310119694673958">手机电量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">开启/关闭热点。热点处于开启状态，且已连接 1 部设备。</translation>
+<translation id="1479685784053141667">创建联系人</translation>
 <translation id="1479909375538722835">悬浮无障碍功能菜单</translation>
 <translation id="1483493594462132177">发送</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -464,6 +466,7 @@
 <translation id="2598725286293895280">该桌面中含有不受支持的应用</translation>
 <translation id="2607678425161541573">需要在线登录</translation>
 <translation id="2612072250312279703">活动监视器</translation>
+<translation id="261210853165551493">复制带格式的文本</translation>
 <translation id="2612614436418177118">在应用网格内移动某个应用图标</translation>
 <translation id="2619052155095999743">插入</translation>
 <translation id="2619326010008283367">导览第 <ph name="STEP" /> 步，共 <ph name="TOTAL_STEPS" /> 步。您可在启动器中查找设备设置。不妨尝试在“设置”中自定义您的 <ph name="PRODUCT_NAME" />，例如更换壁纸或设置屏保。</translation>
@@ -556,6 +559,7 @@
 <translation id="2932487126591186298">已增加 10 分钟。还剩 <ph name="REMAINING_TIME" />。</translation>
 <translation id="2935225303485967257">管理个人资料</translation>
 <translation id="2941112035454246133">低</translation>
+<translation id="2941232201846070406">请检查网络连接，然后重试</translation>
 <translation id="2942350706960889382">停靠的放大镜</translation>
 <translation id="2942516765047364088">任务栏位置</translation>
 <translation id="2946119680249604491">添加连接</translation>
@@ -971,6 +975,7 @@
 <translation id="4275663329226226506">媒体</translation>
 <translation id="4279490309300973883">正在镜像</translation>
 <translation id="4280601795273309128">安全更新已终止。请升级您的设备。</translation>
+<translation id="4281739221820540368">创建 Google 文档</translation>
 <translation id="4283888303416325161">请输入密码以增强安全性</translation>
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="428715201724021596">正在连接到配置文件。这可能需要几分钟的时间。</translation>
@@ -1043,6 +1048,7 @@
 <translation id="4513044611477939680">快速分享</translation>
 <translation id="4513946894732546136">反馈</translation>
 <translation id="4518404433291145981">若要解锁 Chromebook，请先解锁您的手机</translation>
+<translation id="4525887279712865285">显示“快速分享”设置</translation>
 <translation id="4527045527269911712">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。</translation>
 <translation id="4531536770443562276">仅支持全屏模式</translation>
 <translation id="4533343294786968049">正在减缓电池老化，延长电池寿命。电池电量将在<ph name="FULLY_CHARGE_TIME" /> 之前充满。</translation>
@@ -1597,6 +1603,7 @@
 <translation id="6274202259872570803">抓屏</translation>
 <translation id="6276708887952587684">查看网页源代码</translation>
 <translation id="6284232397434400372">分辨率已更改</translation>
+<translation id="6285871695023807425">添加到日历</translation>
 <translation id="6288235558961782912">日后在获得家长允许的情况下可以重新添加 <ph name="USER_EMAIL_ADDRESS" />。</translation>
 <translation id="6291221004442998378">未在充电</translation>
 <translation id="6298183524022479114">在应用内自定义此设备</translation>
@@ -1693,6 +1700,7 @@
 <translation id="6612889377159412215">子任务</translation>
 <translation id="6613765291890844037">存储空间：已用 <ph name="STORAGE_IN_USE_SIZE" /> | 总共 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">已开启隐私保护屏</translation>
+<translation id="6618277154885124991">创建 Google 表格</translation>
 <translation id="6622679827379792051">设置查看手机中的应用</translation>
 <translation id="662279009180869175">使用向左键和向右键可调整分屏大小</translation>
 <translation id="6624493541160101248">当前桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 个桌面（共 <ph name="DESK_COUNT" /> 个）。</translation>
@@ -2248,6 +2256,7 @@
 <translation id="851660987304951246">使用“帮我读”功能可快速总结内容或提问</translation>
 <translation id="8517041960877371778">您的 <ph name="DEVICE_TYPE" /> 在开启时可能无法充电。</translation>
 <translation id="8535393432370007982">撤消按颜色排序</translation>
+<translation id="8539803091108018926">已将文本复制到剪贴板</translation>
 <translation id="8541078764854166027">相机取景</translation>
 <translation id="8542053257095774575">尚未保存任何桌面或模板</translation>
 <translation id="8546059259582788728">已成功撤消排序</translation>

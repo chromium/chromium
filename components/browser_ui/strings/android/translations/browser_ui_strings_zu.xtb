@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Intengo yehlile kumathebhu akho avuliwe}one{Intengo yehlile kumathebhu akho avuliwe}other{Intengo yehlile kumathebhu akho avuliwe}}</translation>
 <translation id="5186036860380548585">Inketho iyatholakala eduze kwaphezulu kwesikrini</translation>
 <translation id="5197729504361054390">Oxhumana nabo obakhethayo bazokwabiwa no-<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5198930230016462977">Hlela ngendlela oyithandayo ikhasi lakho elisha lethebhu yeshidi eliphansi elivaliwe</translation>
 <translation id="5216942107514965959">Kugcine ukuvakashelwa namuhla</translation>
 <translation id="5225463052809312700">Vula ikhamera</translation>
 <translation id="5234764350956374838">Cashisa</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Ukulandelela isandla</translation>
 <translation id="5771720122942595109">I-<ph name="PERMISSION_1" /> ivinjiwe</translation>
 <translation id="5804241973901381774">Izimvume</translation>
+<translation id="5822675474983796325">Hlela ngendlela oyithandayo ikhasi lakho elisha lethebhu yeshidi eliphansi elivulwe ngokuphakama okuphelele</translation>
 <translation id="5844448279347999754">Lapho ivuliwe, amasayithi angacela ukubona umbhalo nemifanekiso elondolozwe ebhodini lakho lokunamathisela. Lapho ivaliwe, amasayithi awakwazi ukubona umbhalo noma imifanekiso elondolozwe ebhodini lakho lokunamathisela.</translation>
 <translation id="5853982612236235577">Lapho ivuliwe, amasayithi angakwazi ukucela ukuthumela izaziso. Lapho ivaliwe, amasayithi awakwazi ukuthumela izaziso.</translation>
 <translation id="5860033963881614850">Valiwe</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Inwetshiwe</translation>
 <translation id="7219254577985949841">Sula idatha yesayithi?</translation>
 <translation id="723171743924126238">Khetha izithombe</translation>
+<translation id="7243246278722455312">Hlela ngendlela oyithandayo ikhasi lakho elisha lethebhu yeshidi eliphansi</translation>
 <translation id="7243308994586599757">Izinketho ziyatholakala eduze kwangaphansi kwesikrini</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> kukhethiwe</translation>
 <translation id="7260727271532453612">I-<ph name="PERMISSION_1" /> ne-<ph name="PERMISSION_2" /> kuvunyelwe</translation>

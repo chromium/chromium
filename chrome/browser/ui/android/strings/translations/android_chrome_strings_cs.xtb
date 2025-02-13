@@ -582,6 +582,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3701167022068948696">Vyřešit</translation>
 <translation id="3701515417135397388">Upozornit vás, pokud bylo heslo prozrazeno při incidentu porušení zabezpečení údajů</translation>
 <translation id="3703166520839776970">Pokud tento problém přetrvává, vyberte níže možnost Další podrobnosti. Získáte tak další informace od poskytovatele <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="3708100450779900829">Když je zařízení složené, můžete vybrat možnost nebo změnit polohu dotykem a podržením adresního řádku</translation>
 <translation id="3710501561113687889">Aby bylo možné pokračovat, bude <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> s tímto webem sdílet tyto vaše údaje: <ph name="FIELDS_STRING" />.</translation>
 <translation id="3710560693796335511">Spolupráce</translation>
 <translation id="3714981814255182093">Otevřít lištu Najít</translation>
@@ -1281,6 +1282,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6850830437481525139">Zavřené karty: <ph name="TAB_COUNT" /></translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Zvukové soubory, 1 zvukový soubor v seznamu}few{Zvukové soubory, # zvukové soubory v seznamu}many{Zvukové soubory, # zvukového souboru v seznamu}other{Zvukové soubory, # zvukových souborů v seznamu}}</translation>
 <translation id="685850645784703949">Kanál Objevit od Googlu – vypnuto</translation>
+<translation id="6861722405755529743">Tlačítko přetečení lišty záložek</translation>
 <translation id="686366188661646310">Vymazat heslo?</translation>
 <translation id="6864459304226931083">Stáhnout obrázek</translation>
 <translation id="686490460830618322">Panel filtrování podle aplikace</translation>
@@ -1613,6 +1615,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8236063039629122676">Přejetím doprava se vrátíte na předchozí navštívené stránky a přejetím doleva přejdete vpřed</translation>
 <translation id="8236097722223016103">Přidat do záložek</translation>
 <translation id="8243077599929149377">Přidejte své uživatelské jméno</translation>
+<translation id="8244387390464017490">Upravit stránku nová karta</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
 <translation id="8255617931166444521">Weby mohou pomocí souborů cookie sledovat aktivitu prohlížení pouze na svém vlastním webu</translation>
 <translation id="8258999165172757081">Přidáno</translation>

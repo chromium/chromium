@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{کاهش قیمت در برگه‌های باز}one{کاهش قیمت در برگه‌های باز}other{کاهش قیمت‌ها در برگه‌های باز}}</translation>
 <translation id="5186036860380548585">گزینه مربوطه در نزدیکی بالای صفحه دردسترس است</translation>
 <translation id="5197729504361054390">مخاطبین انتخابی شما با <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> هم‌رسانی می‌شود.</translation>
+<translation id="5198930230016462977">برگ زیرین «سفارشی‌سازی صفحه برگه جدید» بسته شده است</translation>
 <translation id="5216942107514965959">آخرین بازدید: امروز</translation>
 <translation id="5225463052809312700">روشن کردن دوربین</translation>
 <translation id="5234764350956374838">رد کردن</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">ردیابی دست</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> مسدود شد</translation>
 <translation id="5804241973901381774">اجازه‌ها</translation>
+<translation id="5822675474983796325">برگ زیرین «سفارشی‌سازی صفحه برگه جدید» به‌طور کامل باز شده است</translation>
 <translation id="5844448279347999754">هرگاه روشن باشد، سایت‌ها می‌توانند از شما بخواهند نوشتار و تصاویر ذخیره‌شده در بریده‌دان شما را ببینند. هرگاه روشن باشد، سایت‌ها نمی‌توانند نوشتار و تصاویر ذخیره‌شده در بریده‌دان شما را ببینند.</translation>
 <translation id="5853982612236235577">هرگاه روشن باشد، سایت‌ها می‌توانند ارسال اعلان را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند اعلان ارسال کنند.</translation>
 <translation id="5860033963881614850">خاموش</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">باز شده</translation>
 <translation id="7219254577985949841">داده‌های سایت حذف شود؟</translation>
 <translation id="723171743924126238">انتخاب تصاویر</translation>
+<translation id="7243246278722455312">برگ زیرین «سفارشی‌سازی صفحه برگه جدید»</translation>
 <translation id="7243308994586599757">گزینه‌ها در نزدیک پایین صفحه نمایش در دسترس هستند</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> مورد انتخاب شد</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> مجاز هستند</translation>

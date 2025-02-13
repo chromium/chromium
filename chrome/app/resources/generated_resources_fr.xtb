@@ -220,6 +220,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="114721135501989771">Profitez des fonctionnalités intelligentes de Google dans Chrome</translation>
 <translation id="1147322039136785890">C'est au tour de l'utilisateur <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Pour demander l'accès, contactez l'administrateur de cet appareil.</translation>
+<translation id="1148464196693569530">Autoriser les scripts utilisateur</translation>
 <translation id="1148624853678088576">Vous êtes prêt !</translation>
 <translation id="1148669835763563782">La dernière mise à jour logicielle s'installe pour vous offrir une sécurité renforcée et les dernières fonctionnalités Chromebook. Cette mise à jour inclut une expérience de configuration améliorée pour vous aider à bien démarrer sur votre Chromebook.</translation>
 <translation id="1149401351239820326">Mois d'expiration</translation>
@@ -1188,7 +1189,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1815097521077272760">Vous avez été invité à tester les commandes au clavier pour ce jeu.</translation>
 <translation id="1815181278146012280">Me demander lorsqu'un site souhaite accéder aux périphériques HID</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> autres…</translation>
-<translation id="1816036116994822943">Vitesse de recherche pour le clavier</translation>
+<translation id="1816036116994822943">Vitesse d'exploration du clavier</translation>
 <translation id="1817871734039893258">Récupération de fichier Microsoft</translation>
 <translation id="1818913467757368489">Importation du journal en cours.</translation>
 <translation id="1819377896744763509">La configuration peut prendre un peu plus de temps…</translation>
@@ -3674,7 +3675,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3586931643579894722">Masquer les détails</translation>
 <translation id="3587279952965197737">Ne doit pas comporter plus de <ph name="MAX_CHARACTER_COUNT" /> caractères</translation>
 <translation id="3587438013689771191">En savoir plus sur : <ph name="SUBPAGE_TITLE" /></translation>
-<translation id="3587482841069643663">Tous</translation>
+<translation id="3587482841069643663">Complète</translation>
 <translation id="3588790464166520201">Autorisé à installer des gestionnaires de paiement</translation>
 <translation id="3589010096969411438">Accordée. Activez le micro à l'aide du bouton physique.</translation>
 <translation id="3589766037099229847">Contenu non sécurisé bloqué</translation>
@@ -4046,7 +4047,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3818662907126913619">Vous devez fournir à votre organisation des informations concernant cet appareil pour pouvoir l'utiliser avec votre profil <ph name="DOMAIN" />.
 
 Cela peut inclure des informations sur les logiciels installés, les fichiers, votre navigateur et le système d'exploitation de l'appareil.</translation>
-<translation id="3819164369574292143">Agrandissez des éléments à l'écran via un zoom avant. Appuyez sur Recherche+Ctrl+M pour activer ou désactiver la loupe. Appuyez sur Ctrl+Alt+Touches fléchées pour vous déplacer après avoir fait un zoom avant.</translation>
+<translation id="3819164369574292143">Zoomez pour agrandir des éléments à l'écran. Appuyez sur Recherche+Ctrl+M pour activer ou désactiver la loupe. Appuyez sur Ctrl+Alt+Touches fléchées pour vous déplacer après avoir zoomé.</translation>
 <translation id="3819257035322786455">Sauvegarder</translation>
 <translation id="3819261658055281761">Échec de l'enregistrement du jeton d'accès aux API à long terme pour cet appareil.</translation>
 <translation id="3819800052061700452">&amp;Plein écran</translation>
@@ -6766,6 +6767,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5794414402486823030">Toujours ouvrir avec le lecteur système</translation>
 <translation id="5794700615121138172">Dossiers partagés par Linux</translation>
 <translation id="5794786537412027208">Quitter toutes les applications Chrome</translation>
+<translation id="5795422263272161110">Afficher côte à côte</translation>
 <translation id="5796485699458186843">Nouvel ongle&amp;t de navigation privée</translation>
 <translation id="5796956053441619942">L'URL de l'appareil à distance n'est pas compatible</translation>
 <translation id="5797934230382081317">Découvrez comment faire vos premiers pas sur &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; et &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -7294,6 +7296,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6170498031581934115">Impossible d'activer le débogage ADB. Accédez aux paramètres et réessayez.</translation>
 <translation id="6170675927290506430">Accéder aux paramètres de notification</translation>
 <translation id="6171779718418683144">Demander à chaque visite</translation>
+<translation id="6172020488605056255">Effectuez un clic droit pour utiliser M'aider à lire</translation>
 <translation id="617213288191670920">Aucune langue ajoutée</translation>
 <translation id="6173623053897475761">Saisir à nouveau votre code</translation>
 <translation id="6174909075810107548">Utiliser "5" pour appuyer sur un bouton de la souris</translation>
@@ -8321,6 +8324,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6910190732484284349">Supprimer la clé d'accès pour <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Supprimé</translation>
 <translation id="6910274140210351823">Sombre</translation>
+<translation id="691102290537033604">L'extension pourra exécuter du code qui n'a pas été examiné par Google. Cette option pouvant être dangereuse, ne l'activez que si vous êtes sûr de vous.</translation>
 <translation id="6911734910326569517">Espace mémoire utilisé</translation>
 <translation id="6912007319859991306">Code PIN mobile de la carte SIM</translation>
 <translation id="6912380255120084882">Essayer avec un autre appareil</translation>
@@ -9404,7 +9408,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="769824636077131955">Impossible de vérifier si ce document est sûr, car il est trop volumineux. Vous ne pouvez pas imprimer de documents de plus de 50 Mo.</translation>
 <translation id="7698507637739331665">Certains éléments sont bloqués</translation>
 <translation id="7700516433658473670">Imprimantes et scanners</translation>
-<translation id="7701040980221191251">Aucun</translation>
+<translation id="7701040980221191251">Désactivée</translation>
 <translation id="7701869757853594372">Handles utilisateur</translation>
 <translation id="7702463352133825032">Arrêter de diffuser sur <ph name="DEVICE_NAME" /></translation>
 <translation id="7704305437604973648">Tâche</translation>
@@ -9832,6 +9836,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> - Voix <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Transférer automatiquement le Wi-Fi depuis votre téléphone Android</translation>
 <translation id="7991296728590311172">Paramètres Switch Access</translation>
+<translation id="7992080146463834191">Résumez des contenus, simplifiez du langage complexe ou posez des questions.</translation>
 <translation id="7992203134935383159">Synthèse vocale</translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Priorité de traitement</translation>
@@ -10073,6 +10078,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8155676038687609779">{COUNT,plural, =0{Aucun mot de passe compromis trouvé}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
 <translation id="8157248655669507702">Activez les données mobiles afin d'installer un profil eSIM</translation>
 <translation id="8157704005178149728">Configuration de la supervision…</translation>
+<translation id="8157728322324420120">Recommandations</translation>
 <translation id="8157849462797352650">Votre appareil bénéficie des dernières mises à jour de sécurité, de stabilité et de performances</translation>
 <translation id="8158117992543756526">Cet appareil cessera de recevoir automatiquement des mises à jour logicielles et de sécurité en <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Une vibration confirme les actions comme le partage d'écran et le changement de bureau. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -11090,6 +11096,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8874448314264883207"><ph name="EXTENSION_NAME" /> a été désactivée</translation>
 <translation id="8874647982044395866">Bio</translation>
 <translation id="8874790741333031443">Essayez d'autoriser temporairement les cookies tiers. Vous réduirez ainsi la protection de la navigation, mais les fonctionnalités du site auront plus de chances de fonctionner comme prévu.</translation>
+<translation id="8875221558267407626">Résumez des contenus, simplifiez du langage complexe ou posez des questions</translation>
 <translation id="8875520811099717934">Mise à niveau de Linux</translation>
 <translation id="8875736897340638404">Sélectionnez un paramètre de visibilité</translation>
 <translation id="8876307312329369159">Impossible de modifier ce paramètre dans une session de démonstration.</translation>
@@ -11143,6 +11150,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8915916167043355778">Tout fermer</translation>
 <translation id="8916476537757519021">Sous-cadre de navigation privée : <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">J'accepte</translation>
+<translation id="8917980324687233736">Afficher côte à côte</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Installation de l'appli...</translation>
 <translation id="891931289445130855">Supprimer les données et autorisations</translation>

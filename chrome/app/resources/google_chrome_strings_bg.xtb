@@ -80,6 +80,7 @@
 <translation id="2094648590148273905">Общи условия на ChromeOS Flex</translation>
 <translation id="2094919256425865063">Искате ли да затворите Chrome въпреки това?</translation>
 <translation id="2106831557840787829">ChromeOS Flex съществува благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />. Това се отнася и за <ph name="BEGIN_LINK_LINUX_OSS" />базираната на Linux среда на програмиране<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2108778574543343055">Деактивиране на изпълнението на Chrome на заден план за приложения</translation>
 <translation id="2120620239521071941"><ph name="ITEMS_COUNT" /> елемента ще се изтрият от това устройство. За да извлечете данните си по-късно, влезте в Chrome като <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Повторно стартиране за актуализиране на &amp;Chrome</translation>
 <translation id="2123055963409958220">Помогнете за подобряването на Chrome, като подадете сигнал за <ph name="BEGIN_LINK" />текущите настройки<ph name="END_LINK" /></translation>
@@ -141,6 +142,7 @@
 <translation id="2797864378188255696">Когато използвате <ph name="USER_EMAIL" /> за вход в услуги на Google, като например Gmail или YouTube, можете автоматично да влизате в Chrome със същия профил</translation>
 <translation id="2799162042226656283">Вашият Chrome</translation>
 <translation id="2799223571221894425">Стартиране отново</translation>
+<translation id="2818684386420968393">Деактивиране на изпълнението на Chrome на заден план за приложения</translation>
 <translation id="2825024317344269723">Опасен сайт. Chrome премахна разрешението за известията.</translation>
 <translation id="2841525013647267359">Превод от</translation>
 <translation id="2846251086934905009">Грешка при инсталирането: Инсталационната програма не завърши. Инсталирането е прекратено.</translation>

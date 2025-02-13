@@ -582,6 +582,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3701167022068948696">Fix now</translation>
 <translation id="3701515417135397388">Warn you if a password was compromised in a data breach</translation>
 <translation id="3703166520839776970">If this issue keeps happening, choose 'More details' below to get more information from <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="3708100450779900829">When your device is folded, you can choose an option or touch and hold the address bar to change the position</translation>
 <translation id="3710501561113687889">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your <ph name="FIELDS_STRING" /> with this site.</translation>
 <translation id="3710560693796335511">Collaboration</translation>
 <translation id="3714981814255182093">Open the Find Bar</translation>
@@ -1281,6 +1282,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> tabs closed</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Audio files, 1 audio file in list}other{Audio files, # audio files in list}}</translation>
 <translation id="685850645784703949">Discover by Google – off</translation>
+<translation id="6861722405755529743">Bookmarks bar overflow button</translation>
 <translation id="686366188661646310">Delete password?</translation>
 <translation id="6864459304226931083">Download image</translation>
 <translation id="686490460830618322">App filter sheet</translation>
@@ -1613,6 +1615,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8236063039629122676">Now, a right swipe takes you backwards to see previous pages that you've visited and a left swipe moves you forwards</translation>
 <translation id="8236097722223016103">Add to bookmarks</translation>
 <translation id="8243077599929149377">Add your username</translation>
+<translation id="8244387390464017490">Customise new tab page</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8255617931166444521">Sites can only use your cookies to see your browsing activity only on their own site</translation>
 <translation id="8258999165172757081">Added</translation>

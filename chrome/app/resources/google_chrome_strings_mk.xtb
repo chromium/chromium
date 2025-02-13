@@ -82,6 +82,7 @@
 <translation id="2094648590148273905">Услови за ChromeOS Flex</translation>
 <translation id="2094919256425865063">Сепак да се напушти Chrome?</translation>
 <translation id="2106831557840787829">ChromeOS Flex е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />, како што е <ph name="BEGIN_LINK_LINUX_OSS" />Linux-околината за програмирање<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2108778574543343055">Оневозможете Chrome да се извршува во заднина за апликациите</translation>
 <translation id="2120620239521071941">Ова ќе избрише <ph name="ITEMS_COUNT" /> ставки од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Рестартирајте за да се ажурира &amp;Chrome</translation>
 <translation id="2123055963409958220">Помогнете да го подобриме Chrome со пријавување на <ph name="BEGIN_LINK" />тековните поставки<ph name="END_LINK" /></translation>
@@ -143,6 +144,7 @@
 <translation id="2797864378188255696">При најавување на услуги на Google како Gmail или YouTube со <ph name="USER_EMAIL" />, може да се најавувате на Chrome автоматски со истата сметка</translation>
 <translation id="2799162042226656283">Вашиот Chrome</translation>
 <translation id="2799223571221894425">Рестартирај</translation>
+<translation id="2818684386420968393">Оневозможете Chrome да се извршува во заднина за апликациите</translation>
 <translation id="2825024317344269723">Опасен сајт. Chrome ги отстрани известувањата.</translation>
 <translation id="2841525013647267359">Преведи од</translation>
 <translation id="2846251086934905009">Грешка при инсталирање: инсталаторот не заврши. Инсталацијата е прекината.</translation>
@@ -356,6 +358,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="5596627076506792578">Повеќе опции</translation>
 <translation id="5602351063754773347">Chrome препорачува да ја отстраните. <ph name="BEGIN_LINK" />Дознајте повеќе за поддржаните екстензии<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome вложува повеќе напори за да ве штити онлајн</translation>
+<translation id="5649680279845190972">За да ги добиете екстензиите и друго на сите ваши компјутери, најавете се на Chrome</translation>
 <translation id="565744775970812598">Датотеката <ph name="FILE_NAME" /> може да биде опасна, па затоа Chrome ја блокираше.</translation>
 <translation id="566568153320186256">Chrome ја штеди батеријата така што ги ограничува активноста во заднина и визуелните ефекти, како лесно лизгање и стапки на видеокадри. <ph name="BEGIN_LINK" />Дознајте повеќе за „Штедачот на енергија“<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">избришете ги податоците од Chrome во вашата сметка</translation>

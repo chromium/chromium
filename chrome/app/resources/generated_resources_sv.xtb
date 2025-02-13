@@ -220,6 +220,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="114721135501989771">Få Google-teknik i Chrome</translation>
 <translation id="1147322039136785890">Nu kan <ph name="SUPERVISED_USER_NAME" /> ta över</translation>
 <translation id="1147991416141538220">Kontakta enhetens administratör om du vill ha åtkomst.</translation>
+<translation id="1148464196693569530">Tillåt användarskript</translation>
 <translation id="1148624853678088576">Nu är det klart!</translation>
 <translation id="1148669835763563782">Du får den senaste mjukvaruuppdateringen för ökad säkerhet och de senaste Chromebook-funktionerna. Uppdateringen innehåller en förbättrad konfigureringsupplevelse så att det blir enkelt att komma igång med din Chromebook.</translation>
 <translation id="1149401351239820326">Utgångsmånad</translation>
@@ -6781,6 +6782,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5794414402486823030">Öppna alltid med systemets visningsprogram</translation>
 <translation id="5794700615121138172">Delade mappar i Linux</translation>
 <translation id="5794786537412027208">Stäng alla Chrome-appar</translation>
+<translation id="5795422263272161110">Visa sida vid sida</translation>
 <translation id="5796485699458186843">Ny inkognitoflik</translation>
 <translation id="5796956053441619942">Webbadressen från fjärrenheten stöds inte</translation>
 <translation id="5797934230382081317">Läs mer om hur du kommer igång på &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; och &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -7309,6 +7311,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6170498031581934115">Det gick inte att aktivera felsökning med ADB. Öppna inställningarna och försök igen.</translation>
 <translation id="6170675927290506430">Öppna aviseringsinställningarna</translation>
 <translation id="6171779718418683144">Fråga vid varje besök</translation>
+<translation id="6172020488605056255">Högerklicka för att använda Hjälp mig läsa</translation>
 <translation id="617213288191670920">Inga språk har lagts till</translation>
 <translation id="6173623053897475761">Skriv pinkoden en gång till</translation>
 <translation id="6174909075810107548">Använd siffran 5 för att trycka på en musknapp</translation>
@@ -8334,6 +8337,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6910190732484284349">Radera nyckeln för användarnamnet <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Borttagen</translation>
 <translation id="6910274140210351823">Mörkt</translation>
+<translation id="691102290537033604">Tillägget kan köra kod som inte har granskats av Google. Detta kan vara osäkert och du bör bara aktivera tillägget om du vet vad du gör.</translation>
 <translation id="6911734910326569517">Minnesanvändning</translation>
 <translation id="6912007319859991306">Pinkod för SIM-kort</translation>
 <translation id="6912380255120084882">Testa med en annan enhet</translation>
@@ -9845,6 +9849,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Röst <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Överför automatiskt wifi-användaruppgifter från Android-telefonen</translation>
 <translation id="7991296728590311172">Inställningar för brytarstyrning</translation>
+<translation id="7992080146463834191">Sammanfatta innehåll, förenkla komplicerat språk eller ställ frågor.</translation>
 <translation id="7992203134935383159">Talsyntes</translation>
 <translation id="799570308305997052">Webbvy</translation>
 <translation id="7997826902155442747">Prioriteringsprocess</translation>
@@ -10086,6 +10091,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8155676038687609779">{COUNT,plural, =0{Inga utsatta lösenord hittades}=1{{COUNT} utsatt lösenord}other{{COUNT} utsatta lösenord}}</translation>
 <translation id="8157248655669507702">Aktivera mobildata om du vill installera en eSIM-profil</translation>
 <translation id="8157704005178149728">Konfigurerar kontroll</translation>
+<translation id="8157728322324420120">Våra förslag</translation>
 <translation id="8157849462797352650">Enheten får de senaste säkerhets-, stabilitets- och prestandauppdateringarna</translation>
 <translation id="8158117992543756526">Enheten får inga automatiska program- eller säkerhetsuppdateringar sedan <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Få återkoppling i form av vibration vid åtgärder som att dela upp skärmen eller byta skrivbord. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
@@ -11102,6 +11108,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8874448314264883207"><ph name="EXTENSION_NAME" /> har stängts av</translation>
 <translation id="8874647982044395866">Organisk</translation>
 <translation id="8874790741333031443">Testa att tillfälligt tillåta tredjepartscookies, vilket innebär mindre skydd när du surfar men större sannolikhet att webbplatsfunktionerna fungerar som förväntat.</translation>
+<translation id="8875221558267407626">Sammanfatta innehåll, förenkla komplicerat språk eller ställ frågor</translation>
 <translation id="8875520811099717934">Uppgradering av Linux</translation>
 <translation id="8875736897340638404">Välj synlighetsinställning</translation>
 <translation id="8876307312329369159">Inställningen kan inte ändras i demoläget.</translation>
@@ -11155,6 +11162,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8915916167043355778">Stäng alla</translation>
 <translation id="8916476537757519021">Underram i inkognitoläge: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Ja</translation>
+<translation id="8917980324687233736">Visa sida vid sida</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> som tillhör <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Installerar appen …</translation>
 <translation id="891931289445130855">Radera data och behörigheter</translation>

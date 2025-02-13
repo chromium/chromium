@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{আপোনাৰ খুলি ৰখা টেবসমূহত মূল্য কমাৰ তথ্য}one{আপোনাৰ খুলি ৰখা টেবসমূহত মূল্য কমাৰ তথ্য}other{আপোনাৰ খুলি ৰখা টেবসমূহত মূল্য কমাৰ তথ্য}}</translation>
 <translation id="5186036860380548585">স্ক্ৰীনৰ ওপৰৰ অংশৰ ওচৰত বিকল্পটো উপলব্ধ</translation>
 <translation id="5197729504361054390">আপুনি বাছনি কৰা সম্পৰ্কবোৰ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />ৰ সৈতে শ্বেয়াৰ কৰা হ’ব।</translation>
+<translation id="5198930230016462977">আপোনাৰ নতুন টেবৰ পৃষ্ঠাৰ তলৰ শ্বীটখন কাষ্টমাইজ কৰাটো বন্ধ কৰা হৈছে</translation>
 <translation id="5216942107514965959">শেষবাৰ আজি চাইছে</translation>
 <translation id="5225463052809312700">কেমেৰা অন কৰক</translation>
 <translation id="5234764350956374838">অগ্ৰাহ্য কৰক</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">হাতৰ ট্ৰেকিং</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />ক অৱৰোধ কৰা আছে</translation>
 <translation id="5804241973901381774">অনুমতি</translation>
+<translation id="5822675474983796325">আপোনাৰ নতুন টেবৰ পৃষ্ঠাৰ তলৰ শ্বীটখন কাষ্টমাইজ কৰাটো পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
 <translation id="5844448279347999754">অন কৰা থাকিলে, ছাইটে আপোনাৰ ক্লিপব'ৰ্ড থকা পাঠ আৰু প্ৰতিচ্ছবিসমূহ চাবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে আপোনাৰ ক্লিপব'ৰ্ড থকা পাঠ আৰু প্ৰতিচ্ছবিসমূহ চাব নোৱাৰে।</translation>
 <translation id="5853982612236235577">অন কৰা থাকিলে, ছাইটে জাননী পঠিয়াবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে জাননী পঠিয়াব নোৱাৰে।</translation>
 <translation id="5860033963881614850">অফ আছে</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">বিস্তাৰিত</translation>
 <translation id="7219254577985949841">ছাইটৰ ডেটা মচিবনে?</translation>
 <translation id="723171743924126238">ছবি বাছনি কৰক</translation>
+<translation id="7243246278722455312">আপোনাৰ নতুন টেবৰ পৃষ্ঠাৰ তলৰ শ্বীটখন কাষ্টমাইজ কৰক</translation>
 <translation id="7243308994586599757">স্ক্ৰীনৰ কাষৰ বুটামত উপলব্ধ বিকল্প</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />টা বাছনি কৰা হৈছে</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> আৰু <ph name="PERMISSION_2" />ৰ অনুমতি দিয়া আছে</translation>

@@ -82,6 +82,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2094648590148273905">Chrome OS Flex terms</translation>
 <translation id="2094919256425865063">Quit Chrome anyway?</translation>
 <translation id="2106831557840787829">Chrome OS Flex is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2108778574543343055">Disable Chrome running in background for apps</translation>
 <translation id="2120620239521071941">This will delete <ph name="ITEMS_COUNT" /> items from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Relaunch to Update &amp;Chrome</translation>
 <translation id="2123055963409958220">Help make Chrome better by reporting the <ph name="BEGIN_LINK" />current settings<ph name="END_LINK" /></translation>
@@ -143,6 +144,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2797864378188255696">When signing in to Google services like Gmail or YouTube with <ph name="USER_EMAIL" />, you can automatically sign in to Chrome with the same account</translation>
 <translation id="2799162042226656283">Your Chrome</translation>
 <translation id="2799223571221894425">Relaunch</translation>
+<translation id="2818684386420968393">Disable Chrome running in background for apps</translation>
 <translation id="2825024317344269723">Dangerous site. Chrome removed notifications.</translation>
 <translation id="2841525013647267359">Translate from</translation>
 <translation id="2846251086934905009">Install error: The installer did not complete. The installation has been aborted.</translation>
@@ -356,6 +358,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="5602351063754773347">Chrome recommends that you remove it. <ph name="BEGIN_LINK" />Learn more about supported extensions<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome does more to keep you safe online</translation>
+<translation id="5649680279845190972">To get your extensions and more on all your computers, sign in to Chrome</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> may be dangerous, so Chrome has blocked it.</translation>
 <translation id="566568153320186256">Chrome conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates. <ph name="BEGIN_LINK" />Learn more about Energy Saver<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Clear the Chrome data in your account</translation>

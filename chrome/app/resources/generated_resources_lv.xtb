@@ -220,6 +220,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="114721135501989771">Google viedās tehnoloģijas pārlūkā Chrome</translation>
 <translation id="1147322039136785890">Tagad <ph name="SUPERVISED_USER_NAME" /> var izmantot ierīci</translation>
 <translation id="1147991416141538220">Lai pieprasītu piekļuvi, sazinieties ar šīs ierīces administratoru.</translation>
+<translation id="1148464196693569530">Atļaut lietotāja skriptus</translation>
 <translation id="1148624853678088576">Gatavs!</translation>
 <translation id="1148669835763563782">Jūs saņemat visjaunāko programmatūras atjauninājumu, kas ietver uzlabotu drošību un jaunākās Chromebook funkcijas. Šajā atjauninājumā ir ietvertas uzlabotas iestatīšanas iespējas sekmīgākai darba uzsākšanai jūsu Chromebook datorā.</translation>
 <translation id="1149401351239820326">Derīguma termiņa mēnesis</translation>
@@ -6765,6 +6766,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5794414402486823030">Vienmēr atvērt, izmantojot sistēmas skatītāju</translation>
 <translation id="5794700615121138172">Linux koplietotās mapes</translation>
 <translation id="5794786537412027208">Aizvērt visas Chrome lietotnes</translation>
+<translation id="5795422263272161110">Rādīt līdzās</translation>
 <translation id="5796485699458186843">Jauna inkognito &amp;cilne</translation>
 <translation id="5796956053441619942">URL no attālās ierīces netiek atbalstīts.</translation>
 <translation id="5797934230382081317">Uzziniet, kā sākt darbu &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; vai &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; ierīcē</translation>
@@ -7292,6 +7294,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6170498031581934115">Nevarēja iespējot ADB atkļūdošanu. Dodieties uz sadaļu Iestatījumi un mēģiniet vēlreiz.</translation>
 <translation id="6170675927290506430">Pāriet uz paziņojumu iestatījumiem</translation>
 <translation id="6171779718418683144">Vaicāt katrā apmeklējuma reizē</translation>
+<translation id="6172020488605056255">Noklikšķiniet ar peles labo pogu, lai izmantotu funkciju “Palīdzība lasīšanā”.</translation>
 <translation id="617213288191670920">Nav pievienota neviena valoda</translation>
 <translation id="6173623053897475761">Ierakstiet PIN kodu vēlreiz</translation>
 <translation id="6174909075810107548">Lai nospiestu peles pogu, izmantojiet taustiņu “5”</translation>
@@ -8321,6 +8324,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6910190732484284349">Dzēst piekļuves atslēgu lietotājvārdam: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Dzēsts</translation>
 <translation id="6910274140210351823">Tumšs</translation>
+<translation id="691102290537033604">Paplašinājums varēs izpildīt kodu, ko uzņēmums Google nav pārskatījis. Tas var nebūt droši, tādēļ ieteicams to iespējot tikai tad, ja esat patiešām pārliecināts.</translation>
 <translation id="6911734910326569517">Atmiņas pēdas nospiedums</translation>
 <translation id="6912007319859991306">Mobilā tīkla SIM kartes PIN</translation>
 <translation id="6912380255120084882">Mēģiniet citā ierīcē</translation>
@@ -9831,6 +9835,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />: <ph name="COUNT" />. balss</translation>
 <translation id="7990958035181555539">Automātiski pārsūtiet Wi-Fi no Android tālruņa</translation>
 <translation id="7991296728590311172">Slēdžu piekļuves iestatījumi</translation>
+<translation id="7992080146463834191">Iegūstiet satura apkopojumu, vienkāršojiet sarežģītu tekstu vai uzdodiet jautājumus.</translation>
 <translation id="7992203134935383159">Runas sintēze</translation>
 <translation id="799570308305997052">Tīmekļa skats</translation>
 <translation id="7997826902155442747">Procesa prioritāte</translation>
@@ -10072,6 +10077,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8155676038687609779">{COUNT,plural, =0{Netika atrasta neviena uzlauzta parole}=1{{COUNT} uzlauzta parole}zero{{COUNT} uzlauztas paroles}one{{COUNT} uzlauzta parole}other{{COUNT} uzlauztas paroles}}</translation>
 <translation id="8157248655669507702">Lai instalētu eSIM profilu, iespējojiet mobilos datus.</translation>
 <translation id="8157704005178149728">Notiek uzraudzības iestatīšana</translation>
+<translation id="8157728322324420120">Ieteikumi jums</translation>
 <translation id="8157849462797352650">Jūsu ierīcē tiks izmantoti visjaunākie drošības, stabilitātes un veiktspējas atjauninājumi.</translation>
 <translation id="8158117992543756526">Šajā ierīcē vairs netiek saņemti automātiskie programmatūras un drošības atjauninājumi (pēdējais atjauninājums saņemts: <ph name="MONTH_AND_YEAR" />). <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="8159652640256729753">Saņemiet apstiprinājumu ar vibrāciju tādām darbībām kā ekrāna sadalīšana un darbvietu pārslēgšana. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
@@ -11090,6 +11096,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="8874448314264883207">Paplašinājums “<ph name="EXTENSION_NAME" />” tika izslēgts</translation>
 <translation id="8874647982044395866">Organiskais stils</translation>
 <translation id="8874790741333031443">Īslaicīgi atļaujiet izmantot trešo pušu sīkfailus. Tas nozīmē, ka pārlūkošanas aizsardzības līmenis būs zemāks, taču pastāv lielāka iespēja, ka vietnes funkcijas darbosies, kā paredzēts.</translation>
+<translation id="8875221558267407626">Iegūstiet satura apkopojumu, vienkāršojiet sarežģītu tekstu vai uzdodiet jautājumus</translation>
 <translation id="8875520811099717934">Linux jaunināšana</translation>
 <translation id="8875736897340638404">Izvēlieties redzamības iestatījumu.</translation>
 <translation id="8876307312329369159">Demonstrācijas sesijā šo iestatījumu nevar mainīt.</translation>
@@ -11143,6 +11150,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="8915916167043355778">Aizvērt visu</translation>
 <translation id="8916476537757519021">Inkognito apakšrāmis: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Jā, piekrītu</translation>
+<translation id="8917980324687233736">Rādīt līdzās</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" />, ko izmanto <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Notiek lietotnes instalēšana…</translation>
 <translation id="891931289445130855">Dzēst datus un atļaujas</translation>

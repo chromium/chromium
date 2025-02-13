@@ -220,6 +220,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="114721135501989771">Získejte do Chromu chytré funkce Google</translation>
 <translation id="1147322039136785890">Teď je na řadě <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Chcete-li požádat o přístup, kontaktujte administrátora tohoto zařízení.</translation>
+<translation id="1148464196693569530">Povolit uživatelské skripty</translation>
 <translation id="1148624853678088576">Vše je nastaveno!</translation>
 <translation id="1148669835763563782">Získáváte nejnovější aktualizaci softwaru pro rozšířené zabezpečení a nejnovější funkce Chromebooku. Tato aktualizace zahrnuje vylepšený proces nastavení, který vám pomůže s hladkým začátkem na Chromebooku.</translation>
 <translation id="1149401351239820326">Měsíc vypršení platnosti</translation>
@@ -6763,6 +6764,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5794414402486823030">Vždy otevřít pomocí systémového prohlížeče</translation>
 <translation id="5794700615121138172">Sdílené složky Linuxu</translation>
 <translation id="5794786537412027208">Ukončit všechny aplikace Chrome</translation>
+<translation id="5795422263272161110">Zobrazit vedle sebe</translation>
 <translation id="5796485699458186843">Nová anonymní kar&amp;ta</translation>
 <translation id="5796956053441619942">Adresa URL ze vzdáleného zařízení není podporována</translation>
 <translation id="5797934230382081317">Přečtěte si, jak začít v systému &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; nebo &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -7290,6 +7292,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6170498031581934115">Ladění ADB nebylo možné zapnout. Přejděte do nastavení a zkuste to znovu.</translation>
 <translation id="6170675927290506430">Přejít do nastavení oznámení</translation>
 <translation id="6171779718418683144">Při každé návštěvě se zeptat</translation>
+<translation id="6172020488605056255">Klepnutím pravým tlačítkem myši použijete funkci Pomoz mi přečíst</translation>
 <translation id="617213288191670920">Nejsou přidány žádné jazyky</translation>
 <translation id="6173623053897475761">Znovu zadejte PIN</translation>
 <translation id="6174909075810107548">Klávesou „5“ stisknete tlačítko myši</translation>
@@ -8319,6 +8322,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6910190732484284349">Smazat přístupový klíč pro uživatelské jméno <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Smazáno</translation>
 <translation id="6910274140210351823">Temná</translation>
+<translation id="691102290537033604">Rozšíření bude moct spouštět kód, který společnost Google nezkontrolovala. Tato funkce může být nebezpečná a měli byste ji povolit, jen pokud víte, co děláte.</translation>
 <translation id="6911734910326569517">Obsazená paměť</translation>
 <translation id="6912007319859991306">PIN mobilní SIM karty</translation>
 <translation id="6912380255120084882">Vyzkoušejte jiné zařízení</translation>
@@ -9829,6 +9833,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7990863024647916394">Hlas <ph name="DISPLAY_NAME" /> <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Automaticky přenést Wi-Fi z telefonu Android</translation>
 <translation id="7991296728590311172">Nastavení přístupu pomocí přepínačů</translation>
+<translation id="7992080146463834191">Shrne obsah, zjednoduší složitý text a odpoví na otázky</translation>
 <translation id="7992203134935383159">Syntéza řeči</translation>
 <translation id="799570308305997052">Webové zobrazení</translation>
 <translation id="7997826902155442747">Priorita procesu</translation>
@@ -10070,6 +10075,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8155676038687609779">{COUNT,plural, =0{Nebylo nalezeno žádné prolomené heslo}=1{Bylo nalezeno {COUNT} prolomené heslo}few{Byla nalezena {COUNT} prolomená hesla}many{Bylo nalezeno {COUNT} prolomeného hesla}other{Bylo nalezeno {COUNT} prolomených hesel}}</translation>
 <translation id="8157248655669507702">Pokud chcete nainstalovat profil eSIM, povolte mobilní data</translation>
 <translation id="8157704005178149728">Nastavování dohledu</translation>
+<translation id="8157728322324420120">Návrhy pro vás</translation>
 <translation id="8157849462797352650">Vaše zařízení získá nejnovější aktualizace zabezpečení, stability a výkonu</translation>
 <translation id="8158117992543756526">Toto zařízení přestalo v <ph name="MONTH_AND_YEAR" /> dostávat automatické aktualizace softwaru a zabezpečení. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Potvrzovat akce jako rozdělení obrazovky nebo přepnutí plochy vibrací. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
@@ -11087,6 +11093,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8874448314264883207">Rozšíření <ph name="EXTENSION_NAME" /> bylo vypnuto</translation>
 <translation id="8874647982044395866">Organické</translation>
 <translation id="8874790741333031443">Zkuste dočasně povolit soubory cookie třetích stran – budete při procházení méně chráněni, ale funkce webu budou s větší pravděpodobností fungovat správně.</translation>
+<translation id="8875221558267407626">Shrne obsah, zjednoduší složitý text a odpoví na otázky</translation>
 <translation id="8875520811099717934">Upgradovat Linux</translation>
 <translation id="8875736897340638404">Vyberte svou viditelnost</translation>
 <translation id="8876307312329369159">Toto nastavení v ukázkové relaci nelze změnit.</translation>
@@ -11140,6 +11147,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8915916167043355778">Zavřít vše</translation>
 <translation id="8916476537757519021">Anonymní podrámec: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Souhlasím</translation>
+<translation id="8917980324687233736">Zobrazit vedle sebe</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />: <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">Instalování aplikace…</translation>
 <translation id="891931289445130855">Vymazat data a oprávnění</translation>

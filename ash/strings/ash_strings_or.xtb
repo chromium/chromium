@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
+<translation id="1000127192436081677">Quick Share ଟୋଗଲ କରନ୍ତୁ। Quick Share ହେଉଛି <ph name="QUICK_SHARE_STATE" /></translation>
 <translation id="1012876632442809908">USB-C ଡିଭାଇସ୍ (ସାମ୍‌ନା ପୋର୍ଟ)</translation>
 <translation id="1013923882670373915">ବ୍ଲୁଟୁଥ୍‌ ଡିଭାଇସ୍‌ "<ph name="DEVICE_NAME" />"କୁ ପେୟାର୍‌ କରିବାକୁ ଅନୁମତି ଚାହୁଁଛି। ଦୟାକରି ଏହି ଡିଭାଇସ୍‌ରେ ଏହି ପିନ୍‌କୋଡ୍‌ ଲେଖନ୍ତୁ: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">ୱାଇ-ଫାଇ ଓ ମୋବାଇଲ ନେଟୱାର୍କ ଲୋକେସନ ବ୍ୟବହର କରିବାକୁ ଏହା <ph name="APP_NAME" /> ଏବଂ ଲୋକେସନ ଅନୁମତି ଥିବା ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ଏବଂ ChromeOSକୁ ଅନୁମତି ଦିଏ।</translation>
@@ -154,6 +155,7 @@
 <translation id="1469148162491666137">ଏହା କେମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ ଅନୁମତି ସହିତ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ଏବଂ ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ଆକ୍ସେସ କରିବାକୁ ଅନୁମତି ଦିଏ। ଆପଣଙ୍କୁ ୱେବ ପୃଷ୍ଠାକୁ ରିଫ୍ରେସ କରିବା କିମ୍ବା ଆପକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ ହୋଇପାରେ।</translation>
 <translation id="147310119694673958">ଫୋନ୍ ବ୍ୟାଟେରୀ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">ହଟସ୍ପଟକୁ ଟୋଗଲ କରନ୍ତୁ। ହଟସ୍ପଟ ଚାଲୁ ଅଛି, 1 ଡିଭାଇସ କନେକ୍ଟ କରାଯାଇଛି।</translation>
+<translation id="1479685784053141667">କଣ୍ଟାକ୍ଟ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="1479909375538722835">ଫ୍ଲୋଟିଂ ଆକ୍ସେସିବିଲିଟୀ ମେନୁ</translation>
 <translation id="1483493594462132177">ପଠାନ୍ତୁ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -464,6 +466,7 @@
 <translation id="2598725286293895280">ଡେସ୍କରେ ଅସମର୍ଥିତ ଆପ୍ସ ଅଛି</translation>
 <translation id="2607678425161541573">ଅନଲାଇନ୍ ସାଇନ୍ ଇନ୍ କରିବା ଆବଶ୍ୟକ</translation>
 <translation id="2612072250312279703">କାର୍ଯ୍ୟକଳାପ ମନିଟର</translation>
+<translation id="261210853165551493">ଫର୍ମାଟିଂ ସହ କପି କରନ୍ତୁ</translation>
 <translation id="2612614436418177118">ଆପ ଗ୍ରିଡ ମଧ୍ୟରେ ଥିବା ଏକ ଆପ ଆଇକନକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="2619052155095999743">ଇନସାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="2619326010008283367">ଟୁରର <ph name="TOTAL_STEPS" /> ଷ୍ଟେପରୁ <ph name="STEP" /> ନମ୍ବର ଷ୍ଟେପ। ଆପଣ ଲଞ୍ଚରରେ ଆପଣଙ୍କ ଡିଭାଇସର ସେଟିଂସକୁ ଖୋଜିପାରିବେ। ଆପଣଙ୍କ ୱାଲପେପରକୁ ପରିବର୍ତ୍ତନ କରିବା କିମ୍ବା ଏକ ସ୍କ୍ରିନ ସେଭର ସେଟ କରିବା ପରି ସେଟିଂସରେ ଆପଣଙ୍କ <ph name="PRODUCT_NAME" />କୁ କଷ୍ଟମାଇଜ କରିବା ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -556,6 +559,7 @@
 <translation id="2932487126591186298">10 ମିନିଟ ଯୋଗ କରାଯାଇଛି। <ph name="REMAINING_TIME" /> ବାକି ଅଛି।</translation>
 <translation id="2935225303485967257">ପ୍ରୋଫାଇଲଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2941112035454246133">କମ୍</translation>
+<translation id="2941232201846070406">ଆପଣଙ୍କ ଇଣ୍ଟର୍ନେଟ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="2942350706960889382">ଡକ୍‌ଡ ମ୍ୟାଗ୍ନିଫାୟର୍</translation>
 <translation id="2942516765047364088">ସେଲ୍ଫ ସ୍ଥିତି</translation>
 <translation id="2946119680249604491">ସଂଯୋଗ ଯୋଗ କରନ୍ତୁ</translation>
@@ -640,6 +644,7 @@
 <translation id="3206735939915734551">Caps Lockକୁ ଚାଲୁ/ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="3207953481422525583">ୟୁଜର ସେଟିଂସ</translation>
 <translation id="3208321278970793882">ଆପ୍</translation>
+<translation id="3212221635583599601">ଅଧିକ ପାଇଁ ଇଣ୍ଟର୍ନେଟ ସହ କନେକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="3213571860604332401">ବୁକମାର୍କ ଭାବେ ଲିଙ୍କ ସେଭ କରନ୍ତୁ</translation>
 <translation id="3217205077783620295">ଭଲ୍ୟୁମ୍ ଚାଲୁ ଅଛି, ଟୋଗଲ୍ କରିବା ଦ୍ୱାରା ଅଡିଓ ମ୍ୟୁଟ୍ ହୋଇଯିବ।</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" />ଟି ଅଧିକ</translation>
@@ -971,6 +976,7 @@
 <translation id="4275663329226226506">ମିଡିଆ</translation>
 <translation id="4279490309300973883">ପ୍ରତିଫଳନ</translation>
 <translation id="4280601795273309128">ସୁରକ୍ଷା ଅପଡେଟ ସମାପ୍ତ ହୋଇଛି। ଆପଣଙ୍କ ଡିଭାଇସକୁ ଅପଗ୍ରେଡ କରନ୍ତୁ।</translation>
+<translation id="4281739221820540368">Google Docs ତିଆରି କରନ୍ତୁ</translation>
 <translation id="4283888303416325161">ଅଧିକ ସୁରକ୍ଷା ପାଇଁ ପାସୱାର୍ଡ ଲେଖନ୍ତୁ</translation>
 <translation id="4285498937028063278">ଅନ୍‌ପିନ୍ କରନ୍ତୁ</translation>
 <translation id="428715201724021596">ପ୍ରୋଫାଇଲ୍ ସହ ସଂଯୋଗ କରାଯାଉଛି। ଏଥିପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ।</translation>
@@ -1043,6 +1049,7 @@
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">ମତାମତ</translation>
 <translation id="4518404433291145981">ଆପଣଙ୍କ Chromebookକୁ ଅନଲକ୍ କରିବା ପାଇଁ, ପ୍ରଥମେ ଆପଣଙ୍କ ଫୋନକୁ ଅନଲକ୍ କରନ୍ତୁ</translation>
+<translation id="4525887279712865285">କୁଇକ ସେୟାରିଂ ସେଟିଂ ଦେଖାନ୍ତୁ</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସ୍ ପେୟାର୍ କରିବାକୁ ଅନୁମତି ଚାହୁଁଛି।</translation>
 <translation id="4531536770443562276">କେବଳ ପୂର୍ଣ୍ଣସ୍କ୍ରିନ ଉପଲବ୍ଧ ଅଟେ</translation>
 <translation id="4533343294786968049">ଆପଣଙ୍କ ବ୍ୟାଟେରୀ ଲାଇଫ ବଢ଼ାଯାଉଛି। <ph name="FULLY_CHARGE_TIME" /> ସୁଦ୍ଧା ବ୍ୟାଟେରୀ ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ଚାର୍ଜ ହେବ।</translation>
@@ -1598,6 +1605,7 @@
 <translation id="6274202259872570803">ସ୍କ୍ରିନକାଷ୍ଟ</translation>
 <translation id="6276708887952587684">ପୃଷ୍ଠା ଉତ୍ସ ଦେଖନ୍ତୁ</translation>
 <translation id="6284232397434400372">ରିଜୋଲ୍ୟୁସନ୍ ପରିବର୍ତ୍ତିତ ହୋଇଛି</translation>
+<translation id="6285871695023807425">Calendarରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6288235558961782912">ବାପାମା'ଙ୍କ ଅନୁମତି ସହିତ <ph name="USER_EMAIL_ADDRESS" /> ପୁଣି-ଯୋଗ କରିପାରିବେ।</translation>
 <translation id="6291221004442998378">ଚାର୍ଜ ହେଉନାହିଁ</translation>
 <translation id="6298183524022479114">ଆପରେ ଏହି ଡିଭାଇସକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
@@ -1693,6 +1701,7 @@
 <translation id="6612889377159412215">ସବଟାସ୍କ</translation>
 <translation id="6613765291890844037">ଷ୍ଟୋରେଜ ବ୍ୟବହାର କରାଯାଉଛି <ph name="STORAGE_IN_USE_SIZE" /> | ମୋଟ<ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">ଗୋପନୀୟତା ସ୍କ୍ରିନ ଚାଲୁ ଅଛି</translation>
+<translation id="6618277154885124991">Google Sheets ତିଆରି କରନ୍ତୁ</translation>
 <translation id="6622679827379792051">ଆପଣଙ୍କ ଫୋନର ଆପ୍ସକୁ ଭ୍ୟୁ କରିବା ସେଟ ଅପ କରନ୍ତୁ</translation>
 <translation id="662279009180869175">ସ୍ପ୍ଲିଟ ସ୍କ୍ରିନକୁ ରିସାଇଜ କରିବା ପାଇଁ ବାମ ଏବଂ ଡାହାଣ ତୀର ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="6624493541160101248">ବର୍ତ୍ତମାନର ଡେସ୍କ: <ph name="DESK_NAME" />। <ph name="DESK_COUNT" />ରୁ <ph name="DESK_INDEX" /> ଡେସ୍କ।</translation>
@@ -2248,6 +2257,7 @@
 <translation id="851660987304951246">ଶୀଘ୍ର ବିଷୟବସ୍ତୁର ସାରାଂଶ ତିଆରି କରିବା କିମ୍ବା ପ୍ରଶ୍ନ ପଚାରିବା ପାଇଁ 'ମୋତେ ପଢ଼ିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ'କୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8517041960877371778">ଯେତେବେଳେ ଏହା ଚାଲୁ ଅଛି, ସେତେବେଳେ ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ଚାର୍ଜ ହୋ‍ଇନପାରେ।</translation>
 <translation id="8535393432370007982">ରଙ୍ଗ ଅନୁସାରେ ସର୍ଟ କରିବାକୁ ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
+<translation id="8539803091108018926">କ୍ଲିପବୋର୍ଡକୁ ଟେକ୍ସଟ କପି କରାଯାଇଛି</translation>
 <translation id="8541078764854166027">କେମେରା ଫ୍ରେମିଂ</translation>
 <translation id="8542053257095774575">କୌଣସି ସେଭ ହୋଇଥିବା ଡେସ୍କ କିମ୍ବା ଟେମ୍ପଲେଟ ନାହିଁ</translation>
 <translation id="8546059259582788728">ସର୍ଟ କରିବାକୁ ପୂର୍ବବତ୍ କରିବା ବିଫଳ ହୋଇଛି</translation>

@@ -196,6 +196,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1129348283834595293">Sajberpank</translation>
 <translation id="1129420403709586868">da pregleda slike i medijski sadržaj sa telefona</translation>
 <translation id="1129850422003387628">Upravljajte aplikacijama</translation>
+<translation id="1130430615924359526">{0,plural, =1{Zatvori prozor bez arhiviranja}one{Zatvori prozore bez arhiviranja (# prozor)}few{Zatvori prozore bez arhiviranja (# prozora)}other{Zatvori prozore bez arhiviranja (# prozora)}}</translation>
 <translation id="113050636487300043">Odaberite ime i temu boja da biste razlikovali profile</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – deo grupe <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Nivo napunjenosti baterije za desnu <ph name="PERCENTAGE" />%.</translation>
@@ -1511,6 +1512,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2042279886444479655">Aktivni profili</translation>
 <translation id="2042427131767688936">Da bi se uverila da ovaj uređaj može bezbedno da se koristi, organizacija može da vidi informacije o operativnom sistemu, pregledaču i podešavanjima, kao i o softveru koji je instaliran na uređaju.</translation>
 <translation id="2044014337866019681">Uverite se da verifikujete <ph name="ACCOUNT" /> da biste otključali sesiju.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Zatvori prozor u režimu gosta}one{Zatvori prozore u režimu gosta (# prozor)}few{Zatvori prozore u režimu gosta (# prozora)}other{Zatvori prozore u režimu gosta (# prozora)}}</translation>
 <translation id="204497730941176055">Naziv šablona Microsoft sertifikata</translation>
 <translation id="2045211794962848221">Više vam se neće prikazivati ova konkretna poruka</translation>
 <translation id="2045838962742066664">Unos prečicama</translation>
@@ -7355,6 +7357,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6214106213498203737">Akvarel</translation>
 <translation id="621470880408090483">Ne dozvoljavaj sajtovima da se povezuju sa Bluetooth uređajima</translation>
 <translation id="6215039389782910006">{1,plural, =1{Da bi lozinke bile bezbedne, <ph name="BRAND" /> se zaključava posle 1 minuta neaktivnosti}one{Da bi lozinke bile bezbedne, <ph name="BRAND" /> se zaključava posle # minuta neaktivnosti}few{Da bi lozinke bile bezbedne, <ph name="BRAND" /> se zaključava posle # minuta neaktivnosti}other{Da bi lozinke bile bezbedne, <ph name="BRAND" /> se zaključava posle # minuta neaktivnosti}}</translation>
+<translation id="6216154119179790291">Skroluj do prve kartice</translation>
 <translation id="6216239400972191926">Odbijeni sajtovi i aplikacije</translation>
 <translation id="6216601812881225442">Kontejner ne podržava promenu veličine. Da biste prilagodili količinu prostora koja se unapred dodeljuje Linux-u, napravite rezervnu kopiju i vratite je u novom kontejneru.</translation>
 <translation id="6216696360484424239">Prijavite se automatski</translation>
@@ -7551,6 +7554,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6357305427698525450">Neki podržani linkovi će se i dalje otvarati u <ph name="APP_NAME" /> ili <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Drugi stabilni identifikatori (npr. heševi ili UUID-ovi)</translation>
 <translation id="6358884629796491903">Zmaj</translation>
+<translation id="6359640073754977254">Skroluj do poslednje kartice</translation>
 <translation id="6361850914223837199">Detalji greške:</translation>
 <translation id="6362853299801475928">P&amp;rijavi problem...</translation>
 <translation id="6363786367719063276">Pregledajte evidencije</translation>
@@ -8663,6 +8667,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7160911207516219534">Bočne table</translation>
 <translation id="716210145227921528">Pristupni ključ je izbrisan</translation>
 <translation id="7165263843655074092">Dobijate standardnu bezbednosnu zaštitu na ovom uređaju</translation>
+<translation id="7166017546802325772">Nema ažuriranja za ovu grupu</translation>
 <translation id="716640248772308851">„<ph name="EXTENSION" />“ može da čita slike, video i audio datoteke na navedenim lokacijama.</translation>
 <translation id="7166815366658507447">Hotspot je omogućen</translation>
 <translation id="7167327771183668296">Automatski klikovi</translation>
@@ -10079,6 +10084,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8155676038687609779">{COUNT,plural, =0{Nije pronađena nijedna ugrožena lozinka}=1{{COUNT} ugrožena lozinka}one{{COUNT} ugrožena lozinka}few{{COUNT} ugrožene lozinke}other{{COUNT} ugroženih lozinki}}</translation>
 <translation id="8157248655669507702">Omogućite mobilne podatke da biste instalirali eSIM profil</translation>
 <translation id="8157704005178149728">Nadzor se podešava</translation>
+<translation id="8157728322324420120">Predlozi za vas</translation>
 <translation id="8157849462797352650">Uređaj dobija najnovija ažuriranja za bezbednost, stabilnost i performanse</translation>
 <translation id="8158117992543756526">Ovaj uređaj je prestao da dobija automatska ažuriranja softvera i bezbednosna ažuriranja u: <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Primajte potvrdu vibracijom za radnje kao što su podeljeni ekran i menjanje radnih površina. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
@@ -10214,6 +10220,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8258027225380843424">Uvoz je uspeo!</translation>
 <translation id="8259048637628995340">Povežite Android telefon za besprekoran doživljaj</translation>
 <translation id="8260177673299865994">Poboljšajte zaštitu pri preuzimanju</translation>
+<translation id="8260473380156923937">Chrome aplikacije će uskoro postati zastarele. Za alternative se obratite programeru ili kontaktu za IT uslugu.</translation>
 <translation id="8260864402787962391">Miš</translation>
 <translation id="8261378640211443080"><ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ne navodi ovaj dodatak i on je možda dodat bez vašeg znanja.</translation>
 <translation id="8261506727792406068">Izbriši</translation>

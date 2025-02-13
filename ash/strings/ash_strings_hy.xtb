@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
+<translation id="1000127192436081677">Միացնել/անջատել Quick Share գործառույթը։ Quick Share-ը <ph name="QUICK_SHARE_STATE" /></translation>
 <translation id="1012876632442809908">USB-C սարք (առջևի միացք)</translation>
 <translation id="1013923882670373915">«<ph name="DEVICE_NAME" />» Bluetooth սարքը զուգավորվելու թույլտվություն է խնդրում: Մուտքագրեք սարքում հետևյալ PIN կոդը` <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">Այս կարգավորումը թույլ է տալիս ChromeOS-ին, <ph name="APP_NAME" /> հավելվածին և բոլոր հավելվածներին ու կայքերին, որոնք ունեն տեղորոշման թույլտվություն, օգտագործել Wi-Fi-ի և բջջային ցանցերի տեղադրության մասին տվյալները։</translation>
@@ -154,6 +155,7 @@
 <translation id="1469148162491666137">Սա օգտագործման թույլտվություն է տրամադրում <ph name="APP1_NAME" /> և <ph name="APP2_NAME" /> հավելվածներին, ինչպես նաև բոլոր այն հավելվածներին ու կայքերին, որոնք ունեն տեսախցիկի և խոսափողի օգտագործման թույլտվություն։ Հնարավոր է՝ անհրաժեշտ լինի թարմացնել վեբ էջը կամ վերագործարկել հավելվածը։</translation>
 <translation id="147310119694673958">Հեռախոսի մարտկոց՝ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">Միացնել/անջատել թեժ կետը։ Թեժ կետը միացված է, և 1 սարք միացած է դրան։</translation>
+<translation id="1479685784053141667">Ստեղծել կոնտակտ</translation>
 <translation id="1479909375538722835">Հատուկ գործառույթների լողացող ընտրացանկ</translation>
 <translation id="1483493594462132177">Ուղարկել</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -464,6 +466,7 @@
 <translation id="2598725286293895280">Չաջակցվող հավելվածներ աշխատասեղանում</translation>
 <translation id="2607678425161541573">Անհրաժեշտ է առցանց մուտք գործել</translation>
 <translation id="2612072250312279703">գործողությունների մոնիտոր</translation>
+<translation id="261210853165551493">Պատճենել ձևաչափումով</translation>
 <translation id="2612614436418177118">Տեղաշարժել հավելվածի պատկերակը հավելվածների ցանցում</translation>
 <translation id="2619052155095999743">Զետեղել</translation>
 <translation id="2619326010008283367">Ուղեցույցի քայլ <ph name="STEP" />՝ <ph name="TOTAL_STEPS" />-ից։ Ձեր սարքի կարգավորումները կարող եք գտնել Գործարկիչում։ Կարգավորումներում փորձեք հարմարեցնել <ph name="PRODUCT_NAME" />-ը, օրինակ՝ փոխել պաստառը կամ կարգավորել էկրանապահը։</translation>
@@ -556,6 +559,7 @@
 <translation id="2932487126591186298">Ավելացվել է 10 րոպե։ Մնացել է <ph name="REMAINING_TIME" />։</translation>
 <translation id="2935225303485967257">Կառավարել պրոֆիլները</translation>
 <translation id="2941112035454246133">Ցածր</translation>
+<translation id="2941232201846070406">Ստուգեք ինտերնետ կապը և նորից փորձեք</translation>
 <translation id="2942350706960889382">Ամրացված խոշորացույց</translation>
 <translation id="2942516765047364088">Դարակի դիրքը</translation>
 <translation id="2946119680249604491">Ավելացնել կապակցում</translation>
@@ -971,6 +975,7 @@
 <translation id="4275663329226226506">Տեսախցիկ և խոսափող</translation>
 <translation id="4279490309300973883">Հայելապատճենում</translation>
 <translation id="4280601795273309128">Ձեր սարքն այլևս չի ստանա անվտանգության թարմացումներ։ Ձեռք բերեք նոր սարք։</translation>
+<translation id="4281739221820540368">Ստեղծել Google փաստաթուղթ</translation>
 <translation id="4283888303416325161">Անվտանգության նկատառումներից ելնելով՝ մուտքագրեք գաղտնաբառը</translation>
 <translation id="4285498937028063278">Ապամրացնել</translation>
 <translation id="428715201724021596">Միանում է պրոֆիլին։ Դա կարող է մի քանի րոպե տևել։</translation>
@@ -1043,6 +1048,7 @@
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Հետադարձ կապ</translation>
 <translation id="4518404433291145981">Ձեր Chromebook-ն ապակողպելու համար նախ ապակողպեք ձեր հեռախոսը</translation>
+<translation id="4525887279712865285">Ցույց տալ Quick Share գործառույթի կարգավորումները</translation>
 <translation id="4527045527269911712">«<ph name="DEVICE_NAME" />» Bluetooth սարքը զուգավորվելու թույլտվություն է խնդրում:</translation>
 <translation id="4531536770443562276">Հասանելի է միայն լիաէկրան ռեժիմը</translation>
 <translation id="4533343294786968049">Մարտկոցի աշխատաժամանակը երկարացվում է։ Այն լրիվ կլիցքավորվի մինչև <ph name="FULLY_CHARGE_TIME" />։</translation>
@@ -1598,6 +1604,7 @@
 <translation id="6274202259872570803">Սքրինքաստ</translation>
 <translation id="6276708887952587684">Դիտել էջի կոդը</translation>
 <translation id="6284232397434400372">Լուծաչափը փոխվել է</translation>
+<translation id="6285871695023807425">Ավելացնել Օրացույցում</translation>
 <translation id="6288235558961782912">Ծնողների թույլտվությամբ <ph name="USER_EMAIL_ADDRESS" /> օգտատիրոջը հնարավոր կլինի նորից ավելացնել ավելի ուշ:</translation>
 <translation id="6291221004442998378">Չի լիցքավորվում</translation>
 <translation id="6298183524022479114">Կարգավորեք այս սարքը հավելվածում</translation>
@@ -1694,6 +1701,7 @@
 <translation id="6612889377159412215">ենթաառաջադրանք</translation>
 <translation id="6613765291890844037">Օգտագործվում է <ph name="STORAGE_IN_USE_SIZE" /> տարածք | Ընդհանուր տարածքը՝ <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Գաղտնիության էկրանը միացված է</translation>
+<translation id="6618277154885124991">Ստեղծել Google աղյուսակ</translation>
 <translation id="6622679827379792051">Կարգավորել հեռախոսի հավելվածների դիտումը</translation>
 <translation id="662279009180869175">Տրոհված էկրանի չափը փոխելու համար օգտագործեք ձախ և աջ սլաքները</translation>
 <translation id="6624493541160101248">Ընթացիկ աշխատասեղանը՝ <ph name="DESK_NAME" />։ Աշխատասեղան <ph name="DESK_INDEX" />՝ <ph name="DESK_COUNT" />-ից։</translation>
@@ -2249,6 +2257,7 @@
 <translation id="851660987304951246">Օգտագործեք «Օգնիր ինձ կարդալ» գործառույթը՝ բովանդակությունն արագ ամփոփելու կամ հարցեր տալու համար</translation>
 <translation id="8517041960877371778">Որպեսզի ձեր <ph name="DEVICE_TYPE" /> սարքը լիցքավորվի, անհրաժեշտ է անջատել այն:</translation>
 <translation id="8535393432370007982">Ըստ գույնի դասավորումը հետարկվեց</translation>
+<translation id="8539803091108018926">Տեքստը պատճենվեց սեղմատախտակին</translation>
 <translation id="8541078764854166027">Կադրավորում</translation>
 <translation id="8542053257095774575">Պահված աշխատասեղաններ կամ ձևանմուշներ չկան</translation>
 <translation id="8546059259582788728">Դասավորումը հետարկվեց</translation>

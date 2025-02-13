@@ -220,6 +220,7 @@
 <translation id="114721135501989771">Google zekası Chrome'da</translation>
 <translation id="1147322039136785890">Şimdi sıra <ph name="SUPERVISED_USER_NAME" /> adlı kullanıcıda</translation>
 <translation id="1147991416141538220">Erişim izni istemek için bu cihazın yöneticisiyle iletişime geçin.</translation>
+<translation id="1148464196693569530">Kullanıcı komut dosyalarına izin ver</translation>
 <translation id="1148624853678088576">Hazırsınız!</translation>
 <translation id="1148669835763563782">Gelişmiş güvenlik ve en yeni Chromebook özellikleri için en son yazılım güncellemesini alıyorsunuz. Bu güncelleme, Chromebook'unuzda sorunsuz bir başlangıç yapmanıza yardımcı olacak gelişmiş bir kurulum deneyimi içerir.</translation>
 <translation id="1149401351239820326">Son kullanım tarihinin ayı</translation>
@@ -6764,6 +6765,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5794414402486823030">Daima sistem görüntüleyici ile açın</translation>
 <translation id="5794700615121138172">Linux paylaşılan klasörler</translation>
 <translation id="5794786537412027208">Tüm Chrome Uygulamalarından Çık</translation>
+<translation id="5795422263272161110">Yan Yana Göster</translation>
 <translation id="5796485699458186843">Yeni Gizli sekme</translation>
 <translation id="5796956053441619942">Uzak cihazdan gelen URL desteklenmiyor</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; ve &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;'i nasıl kullanmaya başlayacağınızı öğrenin</translation>
@@ -7292,6 +7294,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6170498031581934115">ADB hata ayıklama işlevi etkinleştirilemedi. Ayarlar'a gidip tekrar deneyin.</translation>
 <translation id="6170675927290506430">Bildirim ayarlarına gidin</translation>
 <translation id="6171779718418683144">Her ziyarette sor</translation>
+<translation id="6172020488605056255">Okumama Yardım Et özelliğini kullanmak için sağ tıklayın</translation>
 <translation id="617213288191670920">Dil eklenmedi</translation>
 <translation id="6173623053897475761">PIN'inizi tekrar yazın</translation>
 <translation id="6174909075810107548">Bir fare düğmesine basmak için "5" tuşunu kullanın</translation>
@@ -8317,6 +8320,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6910190732484284349"><ph name="USER_EMAIL" /> kullanıcı adı için geçiş anahtarını silin</translation>
 <translation id="6910211073230771657">Silindi</translation>
 <translation id="6910274140210351823">Koyu</translation>
+<translation id="691102290537033604">Uzantı, Google tarafından incelenmemiş kodları çalıştırabilecek. Bu işlem güvenli olmayabilir. Yalnızca sonuçlarını biliyorsanız bu seçeneği etkinleştirin.</translation>
 <translation id="6911734910326569517">Kullanılan bellek miktarı</translation>
 <translation id="6912007319859991306">Hücresel SIM PIN'i</translation>
 <translation id="6912380255120084882">Farklı bir cihaz deneyin</translation>
@@ -9827,6 +9831,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Ses <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Android telefonunuzdan kablosuz bağlantıyı otomatik olarak aktarın</translation>
 <translation id="7991296728590311172">Anahtar Erişimi ayarları</translation>
+<translation id="7992080146463834191">İçeriği özetleyin, karmaşık dili basitleştirin veya soru sorun.</translation>
 <translation id="7992203134935383159">Konuşma sentezi</translation>
 <translation id="799570308305997052">Web görünümü</translation>
 <translation id="7997826902155442747">Süreç Önceliği</translation>
@@ -10068,6 +10073,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8155676038687609779">{COUNT,plural, =0{Sızdırılmış şifre bulunmadı}=1{Sızdırılmış {COUNT} şifre}other{Sızdırılmış {COUNT} şifre}}</translation>
 <translation id="8157248655669507702">eSIM profili yüklemek için mobil veriyi etkinleştirin</translation>
 <translation id="8157704005178149728">Gözetim kuruluyor</translation>
+<translation id="8157728322324420120">Sizin için önerilenler</translation>
 <translation id="8157849462797352650">Cihazınız en son güvenlik, kararlılık ve performans güncellemelerini alır</translation>
 <translation id="8158117992543756526">Bu cihaz, <ph name="MONTH_AND_YEAR" /> tarihinde otomatik yazılım ve güvenlik güncellemelerini almayı durdurdu. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Bölünmüş ekran ve masa değiştirme gibi işlemler için titreşim onayı alın. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
@@ -11084,6 +11090,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" devre dışı bırakıldı</translation>
 <translation id="8874647982044395866">Organik</translation>
 <translation id="8874790741333031443">Üçüncü taraf çerezlerine geçici olarak izin vermeyi deneyin. Bu durumda, internette gezinirken daha az korunursunuz ancak site özelliklerinin beklendiği gibi çalışma olasılığı daha yüksektir.</translation>
+<translation id="8875221558267407626">İçeriği özetleyin, karmaşık dili basitleştirin veya soru sorun</translation>
 <translation id="8875520811099717934">Linux'u yeni sürüme geçir</translation>
 <translation id="8875736897340638404">Görünürlük ayarınızı seçin</translation>
 <translation id="8876307312329369159">Bu ayar demo oturumunda değiştirilemez.</translation>
@@ -11137,6 +11144,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8915916167043355778">Tümünü kapat</translation>
 <translation id="8916476537757519021">Gizli Alt Çerçeve: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Evet</translation>
+<translation id="8917980324687233736">Yan yana göster</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> adlı kişinin <ph name="DEVICE_TYPE" /> cihazı</translation>
 <translation id="8918900204934259333">Uygulama yükleniyor...</translation>
 <translation id="891931289445130855">Verileri ve izinleri sil</translation>

@@ -285,6 +285,7 @@
 <translation id="2164946989711475905">Login…</translation>
 <translation id="2175927920773552910">Kode QR</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="219283042927675668">Tab dalam grup</translation>
 <translation id="2194856509914051091">Hal-hal yang perlu dipertimbangkan</translation>
 <translation id="2196428379625389579">Telusuri di web</translation>
 <translation id="2199562093267256223">Tindakan ini akan menghapus grup dari semua perangkat yang digunakan untuk login ke <ph name="USER_EMAIL" /></translation>
@@ -914,6 +915,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5016420433031926653">Kirim ke <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">15 menit terakhir</translation>
 <translation id="5020732097997376541">Ketuk "ikon Lens"</translation>
+<translation id="5021500396464456616">Hubungi orang yang mengirim link ini</translation>
 <translation id="5024511550058813796">Histori Anda akan tersedia di semua perangkat yang disinkronkan, sehingga Anda dapat melanjutkan kegiatan Anda</translation>
 <translation id="5038113048373546701">Dapatkan notifikasi berita, olahraga, dan lainnya berdasarkan minat Anda</translation>
 <translation id="5039804452771397117">Izinkan</translation>
@@ -978,7 +980,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5295239312320826323">Hapus akun <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Tampilkan</translation>
 <translation id="5311061401280561833">Akses kamera dan mikrofon diizinkan</translation>
-<translation id="531209241254508943">grup tab</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> dari <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5318298563956633672">Anda sudah memantau produk ini.</translation>
@@ -1941,6 +1942,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="966593914872420832">Penelusuran suara</translation>
 <translation id="968653181266955408">Dapatkan notifikasi konten</translation>
 <translation id="973493300226275298">Pantau harga produk di semua toko online. Anda akan mendapatkan notifikasi jika ada diskon.</translation>
+<translation id="973788791897303708">Grup tab ini penuh</translation>
 <translation id="976392601789283511">Membuka ulang tab yang terakhir ditutup</translation>
 <translation id="981498610235328462">Organisasi mengizinkan Anda login hanya dengan akun tertentu. Akun yang tidak diizinkan akan disembunyikan.</translation>
 <translation id="984275831282074731">Metode pembayaran</translation>

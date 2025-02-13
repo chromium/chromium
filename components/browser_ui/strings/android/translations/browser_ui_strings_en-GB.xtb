@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Price drop on your open tabs}other{Price drops on your open tabs}}</translation>
 <translation id="5186036860380548585">Option available near top of the screen</translation>
 <translation id="5197729504361054390">The contacts that you select will be shared with <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5198930230016462977">Customise your new tab page bottom sheet closed</translation>
 <translation id="5216942107514965959">Last visited today</translation>
 <translation id="5225463052809312700">Turn on camera</translation>
 <translation id="5234764350956374838">Dismiss</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Hand tracking</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blocked</translation>
 <translation id="5804241973901381774">Permissions</translation>
+<translation id="5822675474983796325">Customise your new tab page bottom sheet opened at full height</translation>
 <translation id="5844448279347999754">When on, sites can ask to see text and images saved to your clipboard. When off, sites can't see text or images saved to your clipboard.</translation>
 <translation id="5853982612236235577">When on, sites can ask to send notifications. When off, sites can't send notifications.</translation>
 <translation id="5860033963881614850">Off</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Expanded</translation>
 <translation id="7219254577985949841">Delete site data?</translation>
 <translation id="723171743924126238">Select images</translation>
+<translation id="7243246278722455312">Customise your new tab page bottom sheet</translation>
 <translation id="7243308994586599757">Options available near bottom of the screen</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> selected</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> and <ph name="PERMISSION_2" /> allowed</translation>

@@ -285,6 +285,7 @@
 <translation id="2164946989711475905">ಸೈನ್ ಇನ್ ಮಾಡಿ…</translation>
 <translation id="2175927920773552910">QR ಕೋಡ್</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="219283042927675668">ಗುಂಪಿನಲ್ಲಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="2194856509914051091">ಪರಿಗಣಿಸಬೇಕಾದ ಸಂಗತಿಗಳು</translation>
 <translation id="2196428379625389579">ವೆಬ್‌ನಲ್ಲಿ ಹುಡುಕಿ</translation>
 <translation id="2199562093267256223">ಇದು <ph name="USER_EMAIL" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿರುವ ಎಲ್ಲಾ ಸಾಧನಗಳಿಂದ ಗುಂಪನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
@@ -914,6 +915,7 @@
 <translation id="5016420433031926653"><ph name="USER_EMAIL" /> ಗೆ ಕಳುಹಿಸಿ</translation>
 <translation id="5017529052065664584">ಹಿಂದಿನ 15 ನಿಮಿಷಗಳು</translation>
 <translation id="5020732097997376541">"Lens ಐಕಾನ್" ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
+<translation id="5021500396464456616">ಈ ಲಿಂಕ್ ಕಳುಹಿಸಿದ ವ್ಯಕ್ತಿಯನ್ನು ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="5024511550058813796">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಿಂಕ್‌ ಮಾಡಿದ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಇತಿಹಾಸ ಲಭ್ಯವಿರುತ್ತದೆ, ಇದರಿಂದ ನೀವು ಮಾಡುತ್ತಿದ್ದ ಕೆಲಸವನ್ನು ನೀವು ಮುಂದುವರಿಸಬಹುದು</translation>
 <translation id="5038113048373546701">ನಿಮ್ಮ ಆಸಕ್ತಿಯ ಆಧಾರದ ಮೇಲೆ ಸುದ್ದಿ, ಕ್ರೀಡೆ ಮತ್ತು ಇನ್ನಷ್ಟಕ್ಕಾಗಿ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸಿ</translation>
 <translation id="5039804452771397117">ಅನುಮತಿಸಿ</translation>
@@ -978,7 +980,6 @@
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> ಖಾತೆಯನ್ನು ತೆಗೆದುಹಾಕಬೇಕೆ?</translation>
 <translation id="5300589172476337783">ತೋರಿಸಿ</translation>
 <translation id="5311061401280561833">ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್ ಆ್ಯಕ್ಸೆಸ್‌ ಅನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
-<translation id="531209241254508943">ಟ್ಯಾಬ್ ಗುಂಪು</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> ರಲ್ಲಿ <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="5318298563956633672">ನೀವು ಈ ಉತ್ಪನ್ನವನ್ನು ಈಗಾಗಲೇ ಟ್ರ್ಯಾಕ್ ಮಾಡುತ್ತಿದ್ದೀರಿ.</translation>
@@ -1941,6 +1942,7 @@
 <translation id="966593914872420832">ಧ್ವನಿ ಹುಡುಕಾಟ</translation>
 <translation id="968653181266955408">ಕಂಟೆಂಟ್‌ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="973493300226275298">ಆನ್‌ಲೈನ್ ಸ್ಟೋರ್‌ಗಳಾದ್ಯಂತ ಉತ್ಪನ್ನದ ಬೆಲೆಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ. ಬೆಲೆ ಕುಸಿತವಾದರೆ ನೀವು ಎಚ್ಚರಿಕೆ ಪಡೆಯುತ್ತೀರಿ.</translation>
+<translation id="973788791897303708">ಈ ಟ್ಯಾಬ್ ಗುಂಪು ಭರ್ತಿಯಾಗಿದೆ</translation>
 <translation id="976392601789283511">ಕೊನೆಯದಾಗಿ ಮುಚ್ಚಿದ ಟ್ಯಾಬ್ ಅನ್ನು ಪುನಃ ತೆರೆಯಿರಿ</translation>
 <translation id="981498610235328462">ಕೆಲವು ಖಾತೆಗಳ ಮೂಲಕ ಮಾತ್ರ ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮ್ಮ ಸಂಸ್ಥೆ ನಿಮಗೆ ಅನುಮತಿ ನೀಡುತ್ತದೆ. ಅನುಮತಿಸದ ಖಾತೆಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="984275831282074731">ಪಾವತಿ ವಿಧಾನಗಳು</translation>

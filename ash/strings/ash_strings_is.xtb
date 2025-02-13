@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
+<translation id="1000127192436081677">Kveiktu/slökktu á flýtideilingu. <ph name="QUICK_SHARE_STATE" /> er á flýtideilingu.</translation>
 <translation id="1012876632442809908">USB-C-tæki (tengi að framan)</translation>
 <translation id="1013923882670373915">Bluetooth-tækið „<ph name="DEVICE_NAME" />“ óskar eftir heimild til pörunar. Sláðu þetta PIN-númer inn í því tæki: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">Þetta gerir <ph name="APP_NAME" /> og öllum forritum og vefsvæðum með staðsetningarheimild og ChromeOS kleift að nota staðsetningu WiFi-nets og farsímakerfa.</translation>
@@ -154,6 +155,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1469148162491666137">Þetta veitir <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> og öllum forritum og vefsvæðum með myndavélar- og hljóðnemaheimildir aðgang. Þú gætir þurft að endurnýja vefsíðuna eða endurræsa forritið.</translation>
 <translation id="147310119694673958">Símarafhlaða <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">Kveikja/slökkva á heitum reit. Kveikt er á heitum reit, 1 tæki er tengt.</translation>
+<translation id="1479685784053141667">Búa til tengilið</translation>
 <translation id="1479909375538722835">Fljótandi aðgengisvalmynd</translation>
 <translation id="1483493594462132177">Senda</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -464,6 +466,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2598725286293895280">Óstudd forrit í skrifborði</translation>
 <translation id="2607678425161541573">Innskráningar á netinu er krafist</translation>
 <translation id="2612072250312279703">virknieftirlit</translation>
+<translation id="261210853165551493">Afrita með sniði</translation>
 <translation id="2612614436418177118">Færa forritatákn innan forritatöflu</translation>
 <translation id="2619052155095999743">Setja inn</translation>
 <translation id="2619326010008283367">Skref <ph name="STEP" /> af <ph name="TOTAL_STEPS" /> í kynningu. Þú finnur stillingar tækisins í ræsiforritinu. Prófaðu að sérsníða <ph name="PRODUCT_NAME" />-tækið þitt í stillingunum, t.d. að skipta um veggfóður eða stilla skjávara.</translation>
@@ -556,6 +559,7 @@ Annars verður aftur kveikt á innbyggða snertifletinum eftir <ph name="TIMEOUT
 <translation id="2932487126591186298">10 mínútum var bætt við. <ph name="REMAINING_TIME" /> eftir.</translation>
 <translation id="2935225303485967257">Stjórna prófílum</translation>
 <translation id="2941112035454246133">Lítill</translation>
+<translation id="2941232201846070406">Athugaðu nettenginguna og reyndu aftur</translation>
 <translation id="2942350706960889382">Stækkunargler í föstum glugga</translation>
 <translation id="2942516765047364088">Hillustaðsetning</translation>
 <translation id="2946119680249604491">Bæta tengingu við</translation>
@@ -972,6 +976,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4275663329226226506">Margmiðlun</translation>
 <translation id="4279490309300973883">Speglun</translation>
 <translation id="4280601795273309128">Öryggisuppfærslum er lokið. Uppfærðu tækið þitt.</translation>
+<translation id="4281739221820540368">Búa til Google-skjöl</translation>
 <translation id="4283888303416325161">Sláðu inn aðgangsorð til að auka öryggið</translation>
 <translation id="4285498937028063278">Losa</translation>
 <translation id="428715201724021596">Tengist prófíl. Þetta gæti tekið nokkrar mínútur.</translation>
@@ -1044,6 +1049,7 @@ Eitt tæki er tengt.</translation>
 <translation id="4513044611477939680">Flýtideiling</translation>
 <translation id="4513946894732546136">Ábendingar</translation>
 <translation id="4518404433291145981">Taktu símann þinn fyrst úr lás áður en þú tekur Chromebook úr lás</translation>
+<translation id="4525887279712865285">Opna stillingar flýtideilingar</translation>
 <translation id="4527045527269911712">Bluetooth-tækið „<ph name="DEVICE_NAME" />“ vill fá heimild til að parast.</translation>
 <translation id="4531536770443562276">Aðeins tiltækt á öllum skjánum</translation>
 <translation id="4533343294786968049">Lengir rafhlöðuendingu. Rafhlaðan verður fullhlaðin fyrir <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -1599,6 +1605,7 @@ Engin tæki eru tengd.</translation>
 <translation id="6274202259872570803">Skjáupptaka</translation>
 <translation id="6276708887952587684">Skoða frumkóða síðu</translation>
 <translation id="6284232397434400372">Upplausn breytt</translation>
+<translation id="6285871695023807425">Bæta við dagatal</translation>
 <translation id="6288235558961782912">Hægt er að bæta <ph name="USER_EMAIL_ADDRESS" /> við aftur síðar með leyfi foreldris.</translation>
 <translation id="6291221004442998378">Ekki í hleðslu</translation>
 <translation id="6298183524022479114">Sérsníða þetta tæki í forriti</translation>
@@ -1695,6 +1702,7 @@ Ný uppsetning</translation>
 <translation id="6612889377159412215">undirverkefni</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> af geymslurými í notkun | <ph name="STORAGE_TOTAL_SIZE" /> alls</translation>
 <translation id="6614169507485700968">Kveikt er á persónuverndarskjá</translation>
+<translation id="6618277154885124991">Búa til Google-töflureikna</translation>
 <translation id="6622679827379792051">Setja upp skoðun forrita símans</translation>
 <translation id="662279009180869175">Notaðu vinstri og hægri örvatakkana til að breyta stærðinni á skiptum skjá.</translation>
 <translation id="6624493541160101248">Núverandi skrifborð: <ph name="DESK_NAME" />. Skrifborð <ph name="DESK_INDEX" /> af <ph name="DESK_COUNT" />.</translation>
@@ -2250,6 +2258,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="851660987304951246">Notaðu „Hjálpa mér að lesa“ til að gera snögga samantekt á efni eða spyrja spurninga</translation>
 <translation id="8517041960877371778">Ekki er víst að <ph name="DEVICE_TYPE" /> hlaðist á meðan kveikt er á tölvunni.</translation>
 <translation id="8535393432370007982">Afturkalla röðun eftir lit</translation>
+<translation id="8539803091108018926">Texti afritaður á klippiborð</translation>
 <translation id="8541078764854166027">Myndavélarrammi</translation>
 <translation id="8542053257095774575">Engin vistuð skrifborð eða sniðmát</translation>
 <translation id="8546059259582788728">Röðun var afturkölluð</translation>

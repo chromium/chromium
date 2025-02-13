@@ -82,6 +82,7 @@
 <translation id="2094648590148273905">ChromeOS Flex ସର୍ତ୍ତାବଳୀ</translation>
 <translation id="2094919256425865063">ଯେକୌଣସି ମତେ Chrome ପରିତ୍ୟାଗ କରିବେ?</translation>
 <translation id="2106831557840787829">ChromeOS Flex <ph name="BEGIN_LINK_LINUX_OSS" />Linux ଡେଭଲପମେଣ୍ଟ ଏନଭାୟରନମେଣ୍ଟ<ph name="END_LINK_LINUX_OSS" /> ପରି ଅତିରିକ୍ତ <ph name="BEGIN_LINK_CROS_OSS" />ଓପନ ସୋର୍ସ ସଫ୍ଟୱେର<ph name="END_LINK_CROS_OSS" /> ଦ୍ୱାରା ସମ୍ଭବପର ହୋଇଛି।</translation>
+<translation id="2108778574543343055">ଆପ୍ସ ପାଇଁ ବେକଗ୍ରାଉଣ୍ଡରେ ଚାଲୁଥିବା Chrome ଅକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="2120620239521071941">ଏହି ଡିଭାଇସ୍‌ରୁ ଏହା <ph name="ITEMS_COUNT" />ଟି ଆଇଟମ୍‌ ଡିଲିଟ୍‌ କରିବ। ପରେ ଆପଣଙ୍କର ଡାଟା ପୁନଃପ୍ରାପ୍ତ କରିବାକୁ, Chromeରେ <ph name="USER_EMAIL" />ଭାବେ ସାଇନ୍‌ ଇନ୍‌ କରନ୍ତୁ।</translation>
 <translation id="2121284319307530122">&amp;Chrome ଅପଡେଟ୍ କରିବା ପାଇଁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />ବର୍ତ୍ତମାନ ସେଟିଂସ୍‌<ph name="END_LINK" />ର ରିପୋର୍ଟ କରି Chromeକୁ ଆହୁରି ଉତ୍ତମ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
@@ -143,6 +144,7 @@
 <translation id="2797864378188255696"><ph name="USER_EMAIL" /> ମାଧ୍ୟମରେ Gmail କିମ୍ବା YouTube ପରି Google ସେବାଗୁଡ଼ିକରେ ସାଇନ ଇନ କରିବା ସମୟରେ, ଆପଣ ସମାନ ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ସ୍ୱତଃ Chromeରେ ସାଇନ ଇନ କରିପାରିବେ</translation>
 <translation id="2799162042226656283">ଆପଣଙ୍କର Chrome</translation>
 <translation id="2799223571221894425">ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
+<translation id="2818684386420968393">ଆପ୍ସ ପାଇଁ ବେକଗ୍ରାଉଣ୍ଡରେ ଚାଲୁଥିବା Chrome ଅକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="2825024317344269723">ବିପଦଜନକ ସାଇଟ। Chrome ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ କାଢ଼ି ଦେଇଛି।</translation>
 <translation id="2841525013647267359">ଏଠାରୁ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="2846251086934905009">ଇନଷ୍ଟଲ କରିବାରେ ତ୍ରୁଟି: ଇନଷ୍ଟଲର ସମ୍ପୂର୍ଣ୍ଣ ହୋଇନାହିଁ। ଇନଷ୍ଟଲେସନକୁ ରଦ୍ଦ କରାଯାଇଛି।</translation>
@@ -355,6 +357,7 @@
 <translation id="5596627076506792578">ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="5602351063754773347">ଆପଣ ଏହାକୁ କାଢ଼ି ଦିଅନ୍ତୁ ବୋଲି Chrome ସୁପାରିଶ କରେ। <ph name="BEGIN_LINK" />ସପୋର୍ଟ କରୁଥିବା ଏକ୍ସଟେନସନଗୁଡ଼ିକ ବିଷୟରେ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">ଆପଣଙ୍କୁ ଅନଲାଇନରେ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ Chrome ଅଧିକ କାର୍ଯ୍ୟ କରିଥାଏ</translation>
+<translation id="5649680279845190972">ଆପଣଙ୍କର ସମସ୍ତ କମ୍ପ୍ୟୁଟରରେ ଆପଣଙ୍କ ଏକ୍ସଟେନସନ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> ବିପଜ୍ଜନକ ହୋଇପାରେ, ତେଣୁ Chrome ଏହାକୁ ବ୍ଲକ୍ କରିଦେଇଛି।</translation>
 <translation id="566568153320186256">Chrome ସ୍ମୁଥ ସ୍କ୍ରୋଲିଂ ଏବଂ ଭିଡିଓ ଫ୍ରେମ ରେଟ ପରି ବେକଗ୍ରାଉଣ୍ଡ କାର୍ଯ୍ୟକଳାପ ଏବଂ ଭିଜୁଆଲ ଇଫେକ୍ଟଗୁଡ଼ିକୁ ସୀମିତ କରି ବେଟେରୀ ପାୱାରକୁ ସଂରକ୍ଷିତ କରିଥାଏ। <ph name="BEGIN_LINK" />ଏନର୍ଜି ସେଭର ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chrome ଡାଟାକୁ ଖାଲି କରନ୍ତୁ</translation>

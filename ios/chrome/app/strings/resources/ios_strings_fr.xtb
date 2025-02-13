@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">En continuant, vous acceptez les <ph name="BEGIN_LINK" />Conditions d'utilisation<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Jamais enregistrés</translation>
 <translation id="1062138828266376352">Votre code n'a pas été modifié. Vérifiez votre connexion Internet, puis réessayez</translation>
+<translation id="1074827084851510304">Vous êtes sur le point de supprimer {password_count} mots de passe et la liste des sites et applis pour lesquels vous avez choisi de ne jamais enregistrer d'informations de connexion. Les comptes que vous avez créés pour des sites et des applis ne seront pas supprimés.</translation>
 <translation id="1076421457278169141">Code scanné</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} onglet}one{{count} onglet}other{{count} onglets}}</translation>
 <translation id="1082554859195167538">Avis sur les produits pour vous</translation>
@@ -284,6 +285,7 @@
 <translation id="2164946989711475905">Connexion…</translation>
 <translation id="2175927920773552910">QR code</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="219283042927675668">Onglets dans le groupe</translation>
 <translation id="2194856509914051091">Éléments à prendre en compte</translation>
 <translation id="2196428379625389579">Rechercher sur le Web</translation>
 <translation id="2199562093267256223">Le groupe sera supprimé de tous les appareils connectés à <ph name="USER_EMAIL" />.</translation>
@@ -574,6 +576,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3523789730715594198">Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="3527085408025491307">Dossier</translation>
 <translation id="3529024052484145543">Non sécurisé</translation>
+<translation id="3530024057633834563">Vous n'avez pas enregistré de mot de passe ni de clé d'accès, mais vous pouvez supprimer la liste des sites et applis pour lesquels vous avez choisi de ne jamais enregistrer d'informations de connexion. Les comptes que vous avez créés pour des sites et des applis ne seront pas supprimés.</translation>
 <translation id="3530206579861815432">Retrouvez rapidement les onglets ouverts et fermés récemment sur vos appareils synchronisés.</translation>
 <translation id="3530767473765895035">Gérer les comptes sur cet appareil…</translation>
 <translation id="3533436815740441613">Nouvel onglet</translation>
@@ -894,6 +897,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4936354130727646074">Ne jamais déplacer</translation>
 <translation id="4937410517508563815">Enregistrer les mots de passe dans le compte</translation>
 <translation id="4938338714234463591">Vous pourrez ainsi utiliser votre voix avec certaines fonctionnalités sur les sites Web.</translation>
+<translation id="4938560988715301237">Toutes les saisies automatiques</translation>
 <translation id="4938716880833771969">Vos notifications sont affichées silencieusement</translation>
 <translation id="4941089862236492464">Désolé, un problème est survenu lors du partage de l'élément.</translation>
 <translation id="4944543191714094452">Rechercher sur la page…</translation>
@@ -911,6 +915,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5016420433031926653">Envoyer à <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">15 dernières minutes</translation>
 <translation id="5020732097997376541">Appuyez sur l'icône Lens</translation>
+<translation id="5021500396464456616">Contactez la personne qui vous a envoyé ce lien</translation>
 <translation id="5024511550058813796">Comme vous aurez votre historique sur tous vos appareils synchronisés, vous pourrez continuer vos activités</translation>
 <translation id="5038113048373546701">Recevez des notifications sur l'actualité, le sport et plus selon vos centres d'intérêt</translation>
 <translation id="5039804452771397117">Autoriser</translation>
@@ -975,7 +980,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5295239312320826323">Supprimer le compte <ph name="USER_EMAIL" /> ?</translation>
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5311061401280561833">Accès à la caméra et au micro autorisé</translation>
-<translation id="531209241254508943">groupe d'onglets</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> sur <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5318298563956633672">Vous suivez déjà ce produit.</translation>
@@ -1542,7 +1546,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="769134787192530091">Synchronisation de vos onglets…</translation>
 <translation id="7696316012653762532">Options de traduction de la page</translation>
 <translation id="7700527812567437847">Rechercher sur l'écran avec Google Lens</translation>
-<translation id="7701040980221191251">Aucun</translation>
+<translation id="7701040980221191251">Désactivée</translation>
 <translation id="7711440461521638739">Tous vos mots de passe sont uniques</translation>
 <translation id="7712361583414030698">Afficher la version hors connexion</translation>
 <translation id="7719038820139380048">Connectez-vous pour obtenir des contenus conformes à vos centres d'intérêt.</translation>
@@ -1600,6 +1604,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Page ajoutée à votre liste de lecture dans votre compte {email}}one{{count} page ajoutée à votre liste de lecture dans votre compte {email}}other{{count} pages ajoutées à votre liste de lecture dans votre compte {email}}}</translation>
 <translation id="7947953824732555851">Accepter/Se connecter</translation>
+<translation id="7952670906562503188">Vous êtes sur le point de supprimer {passkey_count} clés d'accès et la liste des sites et applis pour lesquels vous avez choisi de ne jamais enregistrer d'informations de connexion. Les comptes que vous avez créés pour des sites et des applis ne seront pas supprimés.</translation>
 <translation id="7958575506592576831">Informations sur la sécurité de cette page</translation>
 <translation id="7961015016161918242">Jamais</translation>
 <translation id="7966516440812255683">Les sites peuvent utiliser des cookies pour améliorer votre expérience de navigation (par exemple, pour maintenir votre connexion ou mémoriser les articles de votre panier).
@@ -1880,6 +1885,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9034759925968272072">Vous ne serez pas déconnecté de votre compte Google. Celui-ci conserve peut-être d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Bande passante</translation>
 <translation id="9042893549633094279">Confidentialité et sécurité</translation>
+<translation id="9055580485132823283">Vous êtes sur le point de supprimer {password_count} mots de passe, {passkey_count} clés d'accès et la liste des sites et applis pour lesquels vous avez choisi de ne jamais enregistrer d'informations de connexion. Les comptes que vous avez créés pour des sites et des applis ne seront pas supprimés.</translation>
 <translation id="9057030985451135243">En savoir plus sur les groupes d'onglets partagés</translation>
 <translation id="9057972802061533987">Impossible de vous abonner en raison d'une erreur.</translation>
 <translation id="9065203028668620118">Modifier</translation>
@@ -1936,6 +1942,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="966593914872420832">Recherche vocale</translation>
 <translation id="968653181266955408">Recevoir des notifications sur les contenus</translation>
 <translation id="973493300226275298">Suivez le prix d'un produit sur toutes les boutiques en ligne. Vous serez averti en cas de baisse.</translation>
+<translation id="973788791897303708">Ce groupe d'onglets est complet</translation>
 <translation id="976392601789283511">Rouvrir le dernier onglet fermé</translation>
 <translation id="981498610235328462">Votre organisation ne vous autorise à vous connecter qu'avec certains comptes. Ceux qui ne sont pas autorisés sont masqués.</translation>
 <translation id="984275831282074731">Modes de paiement</translation>

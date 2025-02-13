@@ -1282,6 +1282,7 @@
 <translation id="6850830437481525139">已关闭 <ph name="TAB_COUNT" /> 个标签页</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{音频文件，列表中有 1 个音频文件}other{音频文件，列表中有 # 个音频文件}}</translation>
 <translation id="685850645784703949">Google 探索 - 已关闭</translation>
+<translation id="6861722405755529743">书签栏溢出按钮</translation>
 <translation id="686366188661646310">删除密码？</translation>
 <translation id="6864459304226931083">下载图片</translation>
 <translation id="686490460830618322">应用过滤器工作表</translation>

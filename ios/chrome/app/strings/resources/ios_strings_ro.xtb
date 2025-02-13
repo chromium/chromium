@@ -285,6 +285,7 @@
 <translation id="2164946989711475905">Conectează-te…</translation>
 <translation id="2175927920773552910">Cod QR</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="219283042927675668">File în grup</translation>
 <translation id="2194856509914051091">De reținut</translation>
 <translation id="2196428379625389579">Caută pe web</translation>
 <translation id="2199562093267256223">Astfel, grupul se va șterge de pe toate dispozitivele conectate la <ph name="USER_EMAIL" />.</translation>
@@ -896,6 +897,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4936354130727646074">Nu le muta niciodată</translation>
 <translation id="4937410517508563815">Salvează parolele în cont</translation>
 <translation id="4938338714234463591">Astfel, vei putea să folosești vocea cu anumite funcții de pe site-uri.</translation>
+<translation id="4938560988715301237">Toate completările automate</translation>
 <translation id="4938716880833771969">Notificările se trimit fără sunet</translation>
 <translation id="4941089862236492464">A apărut o problemă la trimiterea articolului.</translation>
 <translation id="4944543191714094452">Caută în pagină…</translation>
@@ -913,6 +915,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5016420433031926653">Trimite la <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Ultimele 15 minute</translation>
 <translation id="5020732097997376541">Atinge pictograma Lens</translation>
+<translation id="5021500396464456616">Contactează persoana care ți-a trimis acest link</translation>
 <translation id="5024511550058813796">Istoricul apare pe toate dispozitivele tale sincronizate. Astfel, poți continua ceea ce făceai</translation>
 <translation id="5038113048373546701">Primește notificări pentru știri, sport și altele pe baza intereselor tale</translation>
 <translation id="5039804452771397117">Permite</translation>
@@ -977,7 +980,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5295239312320826323">Elimini contul <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Afișează</translation>
 <translation id="5311061401280561833">Se acordă acces la camera foto și la microfon</translation>
-<translation id="531209241254508943">grup de file</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> din <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Salvează</translation>
 <translation id="5318298563956633672">Urmărești deja acest produs.</translation>
@@ -1940,6 +1942,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="966593914872420832">Căutare vocală</translation>
 <translation id="968653181266955408">Primește notificări privind conținutul</translation>
 <translation id="973493300226275298">Urmărește prețul unui produs în mai multe magazine online. Vei primi alerte când scade prețul.</translation>
+<translation id="973788791897303708">Acest grup de file este plin</translation>
 <translation id="976392601789283511">Redeschide ultima filă închisă</translation>
 <translation id="981498610235328462">Organizația îți permite să te conectezi doar cu anumite conturi. Conturile nepermise sunt ascunse.</translation>
 <translation id="984275831282074731">Metode de plată</translation>

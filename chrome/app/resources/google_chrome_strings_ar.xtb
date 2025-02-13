@@ -80,6 +80,7 @@
 <translation id="2094648590148273905">‏أحكام نظام التشغيل ChromeOS Flex</translation>
 <translation id="2094919256425865063">‏هل تريد الخروج من Chrome على أي حال؟</translation>
 <translation id="2106831557840787829">‏أصبح نظام التشغيل ChromeOS Flex متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />، كما هو الحال في <ph name="BEGIN_LINK_LINUX_OSS" />بيئة تطوير نظام التشغيل Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2108778574543343055">‏إيقاف تشغيل Chrome في الخلفية أثناء عمل التطبيقات</translation>
 <translation id="2120620239521071941">‏سيعمل هذا على حذف <ph name="ITEMS_COUNT" /> من العناصر من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chrome كـ <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">‏إعادة تشغيل متصفِّح Chrome لتحديثه</translation>
 <translation id="2123055963409958220">‏يمكنك المساعدة في تحسين Chrome بالإبلاغ عن <ph name="BEGIN_LINK" />الإعدادات الحالية<ph name="END_LINK" /></translation>
@@ -141,6 +142,7 @@
 <translation id="2797864378188255696">‏عند تسجيل الدخول إلى خدمات Google، مثل Gmail أو YouTube باستخدام <ph name="USER_EMAIL" />، يمكنك تسجيل الدخول تلقائيًا إلى Chrome باستخدام الحساب نفسه</translation>
 <translation id="2799162042226656283">‏بياناتك على Chrome</translation>
 <translation id="2799223571221894425">إعادة تشغيل</translation>
+<translation id="2818684386420968393">‏إيقاف تشغيل Chrome في الخلفية أثناء عمل التطبيقات</translation>
 <translation id="2825024317344269723">‏هذا الموقع الإلكتروني خطير، لذلك أزال Chrome إذن الإشعارات.</translation>
 <translation id="2841525013647267359">ترجمة من</translation>
 <translation id="2846251086934905009">خطأ في التثبيت: لم تكتمل أداة التثبيت. تم إلغاء عملية التثبيت.</translation>

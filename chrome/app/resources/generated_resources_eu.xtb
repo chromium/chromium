@@ -220,6 +220,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="114721135501989771">Lortu Google eginbide aurreratuak Chrome-n</translation>
 <translation id="1147322039136785890"><ph name="SUPERVISED_USER_NAME" /> erabiltzailearen txanda da orain</translation>
 <translation id="1147991416141538220">Erabiltzeko baimena eskatzeko, jarri gailuaren administratzailearekin harremanetan.</translation>
+<translation id="1148464196693569530">Eman erabiltzaileen scriptak erabiltzeko baimena</translation>
 <translation id="1148624853678088576">Prest zaude!</translation>
 <translation id="1148669835763563782">Chromebook-aren eginbiderik berrienak eta segurtasun hobetua lortzeko jaso duzu azken software-eguneratzea. Eguneratze honek konfigurazio-prozesu hobetu bat dauka, Chromebook-a arazorik gabe erabiltzen hasteko.</translation>
 <translation id="1149401351239820326">Iraungitze-hilabetea</translation>
@@ -6762,6 +6763,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5794414402486823030">Ireki beti sistema-ikustailearekin</translation>
 <translation id="5794700615121138172">Linux-eko karpeta partekatuak</translation>
 <translation id="5794786537412027208">Irten Chrome-ren aplikazio guztietatik</translation>
+<translation id="5795422263272161110">Erakutsi alboz albo</translation>
 <translation id="5796485699458186843">Ezkutuko moduko beste fitxa bat</translation>
 <translation id="5796956053441619942">Urruneko gailuaren URLa ez da onartzen</translation>
 <translation id="5797934230382081317">Lortu &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android-en&lt;/a&gt; eta &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS-en&lt;/a&gt; erabiltzen hasteko argibideak</translation>
@@ -7289,6 +7291,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6170498031581934115">Ezin izan da gaitu ADB arazketa. Joan Ezarpenak atalera eta saiatu berriro.</translation>
 <translation id="6170675927290506430">Joan jakinarazpen-ezarpenetara</translation>
 <translation id="6171779718418683144">Galdetu bisita bakoitzean</translation>
+<translation id="6172020488605056255">Egin klik eskuineko botoiarekin Irakurtzeko laguntza erabiltzeko</translation>
 <translation id="617213288191670920">Ez da gehitu hizkuntzarik</translation>
 <translation id="6173623053897475761">Idatzi berriro PINa</translation>
 <translation id="6174909075810107548">Erabili "5" saguaren botoi bat sakatzeko</translation>
@@ -8314,6 +8317,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6910190732484284349">Ezabatu <ph name="USER_EMAIL" /> erabiltzaile-izenari dagokion sarbide-gakoa</translation>
 <translation id="6910211073230771657">Ezabatu egin da</translation>
 <translation id="6910274140210351823">Iluna</translation>
+<translation id="691102290537033604">Google-k berrikusi ez duen kodea exekutatu ahal izango du luzapen honek. Baliteke segurua ez izatea; beraz, gai ezazu zer egiten ari zaren baldin badakizu soilik.</translation>
 <translation id="6911734910326569517">Memoriaren erabilera</translation>
 <translation id="6912007319859991306">Mugikorreko SIMaren PINa</translation>
 <translation id="6912380255120084882">Erregistratu beste gailu bat</translation>
@@ -9823,6 +9827,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> <ph name="COUNT" />. ahotsa</translation>
 <translation id="7990958035181555539">Transferitu wifia Android-eko telefonotik automatikoki</translation>
 <translation id="7991296728590311172">Erabilerraztasun-osagarriaren ezarpenak</translation>
+<translation id="7992080146463834191">Laburbildu edukia, sinplifikatu hizkera konplexua edo egin galderak.</translation>
 <translation id="7992203134935383159">Hizketaren sintesia</translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Prozesuaren lehentasuna</translation>
@@ -10063,6 +10068,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8155676038687609779">{COUNT,plural, =0{Ez da aurkitu arriskuan dagoen pasahitzik}=1{{COUNT} pasahitz arriskuan}other{{COUNT} pasahitz arriskuan}}</translation>
 <translation id="8157248655669507702">eSIMaren profil bat instalatzeko, gaitu datu-konexioa</translation>
 <translation id="8157704005178149728">Gainbegiratzea konfiguratzen</translation>
+<translation id="8157728322324420120">Zuri iradokiak</translation>
 <translation id="8157849462797352650">Gailuak segurtasuna, egonkortasuna eta errendimendua hobetzeko eguneratze berrienak eskuratuko ditu</translation>
 <translation id="8158117992543756526">Data honetan utzi zitzaion softwarea eta segurtasun-eguneratzeak automatikoki jasotzeari: <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Pantaila zatitzen, lan-eremuz aldatzen eta antzeko ekintzak egiten dituzunean, jaso berrespena dardara baten bidez. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
@@ -11079,6 +11085,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" desaktibatu da</translation>
 <translation id="8874647982044395866">Organikoa</translation>
 <translation id="8874790741333031443">Eman hirugarrenen cookieak erabiltzeko baimena aldi baterako. Babes txikiagoa izango duzu arakatzean, baina webgunearen eginbideek espero bezala funtzionatzeko probabilitate handiagoa izango dute.</translation>
+<translation id="8875221558267407626">Laburbildu edukia, sinplifikatu hizkera konplexua edo egin galderak</translation>
 <translation id="8875520811099717934">Linux-en bertsio-berritzea</translation>
 <translation id="8875736897340638404">Aukeratu ikusgaitasuna</translation>
 <translation id="8876307312329369159">Ezarpen hau ezin da aldatu demo saioetan.</translation>
@@ -11132,6 +11139,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8915916167043355778">Itxi guztiak</translation>
 <translation id="8916476537757519021">Ezkutuko moduko azpimarkoa: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Bai, ados</translation>
+<translation id="8917980324687233736">Erakutsi alboz albo</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> erabiltzailearen <ph name="DEVICE_TYPE" /> gailua</translation>
 <translation id="8918900204934259333">Aplikazioa instalatzen…</translation>
 <translation id="891931289445130855">Ezabatu datuak eta baimenak</translation>

@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Penurunan harga di tab yang terbuka}other{Penurunan harga di tab yang terbuka}}</translation>
 <translation id="5186036860380548585">Opsi tersedia di dekat bagian atas layar</translation>
 <translation id="5197729504361054390">Kontak yang Anda pilih akan dibagikan dengan <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5198930230016462977">Sheet bawah sesuaikan halaman tab baru ditutup</translation>
 <translation id="5216942107514965959">Terakhir dibuka hari ini</translation>
 <translation id="5225463052809312700">Aktifkan kamera</translation>
 <translation id="5234764350956374838">Tutup</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Pelacakan tangan</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> diblokir</translation>
 <translation id="5804241973901381774">Izin</translation>
+<translation id="5822675474983796325">Sheet bawah sesuaikan halaman tab baru terbuka sepenuhnya</translation>
 <translation id="5844448279347999754">Jika diaktifkan, situs dapat meminta untuk melihat teks dan gambar yang disimpan ke papan klip Anda. Jika dinonaktifkan, situs tidak dapat melihat teks atau gambar yang disimpan ke papan klip Anda.</translation>
 <translation id="5853982612236235577">Jika diaktifkan, situs dapat meminta untuk mengirim notifikasi. Jika dinonaktifkan, situs tidak dapat mengirim notifikasi.</translation>
 <translation id="5860033963881614850">Nonaktif</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Diperluas</translation>
 <translation id="7219254577985949841">Hapus data situs?</translation>
 <translation id="723171743924126238">Pilih gambar</translation>
+<translation id="7243246278722455312">Sheet bawah sesuaikan halaman tab baru</translation>
 <translation id="7243308994586599757">Opsi terdapat di dekat bagian bawah layar</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> dipilih</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> dan <ph name="PERMISSION_2" /> diizinkan</translation>

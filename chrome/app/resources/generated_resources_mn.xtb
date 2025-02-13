@@ -220,6 +220,7 @@
 <translation id="114721135501989771">Chrome-д Google smarts авах</translation>
 <translation id="1147322039136785890">Одоо <ph name="SUPERVISED_USER_NAME" />-н ээлж</translation>
 <translation id="1147991416141538220">Хандалт хүсэхийн тулд энэ төхөөрөмжийн администратортай холбоо барина уу.</translation>
+<translation id="1148464196693569530">Хэрэглэгчийн скриптийг зөвшөөрөх</translation>
 <translation id="1148624853678088576">Бүх зүйл бэлэн боллоо!</translation>
 <translation id="1148669835763563782">Та сайжруулсан аюулгүй байдал болон Chromebook-н цоо шинэ онцлогуудын сүүлийн үеийн программ хангамжийн шинэчлэлтийг авч байна. Энэ шинэчлэлтэд танд Chromebook дээрээ саадгүй эхлэхэд туслах тохируулгын сайжруулсан хэрэглээ багтсан.</translation>
 <translation id="1149401351239820326">Хугацаа дуусах сар</translation>
@@ -6777,6 +6778,7 @@
 <translation id="5794414402486823030">Систем харагчтай үргэлж хамт нээх</translation>
 <translation id="5794700615121138172">Linux-н хуваалцсан фолдерууд</translation>
 <translation id="5794786537412027208">Бүх Chrome Apps-аас гарах</translation>
+<translation id="5795422263272161110">Зэрэгцүүлэн харуулах</translation>
 <translation id="5796485699458186843">Шинэ нууцлалтай &amp;таб</translation>
 <translation id="5796956053441619942">Алсын зайн төхөөрөмжийн URL-г дэмждэггүй</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; болон &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; дээр хэрхэн эхлэх талаар мэдэж авна уу</translation>
@@ -7304,6 +7306,7 @@
 <translation id="6170498031581934115">ADB алдаа засахыг идэвхжүүлж чадсангүй Тохиргоо хэсэгт очиж, дахин оролдоно уу.</translation>
 <translation id="6170675927290506430">Мэдэгдлийн тохиргоо руу очих</translation>
 <translation id="6171779718418683144">Зочлох бүрд асуух</translation>
+<translation id="6172020488605056255">Надад уншихад тусал онцлогийг ашиглахын тулд баруун талыг товшино уу</translation>
 <translation id="617213288191670920">Нэмсэн хэл байхгүй</translation>
 <translation id="6173623053897475761">ПИН-ээ дахин бичих</translation>
 <translation id="6174909075810107548">Хулганын товчийг дарахын тулд “5”-ыг ашиглана уу</translation>
@@ -8329,6 +8332,7 @@
 <translation id="6910190732484284349">Хэрэглэгчийн нэрийн нэвтрэх түлхүүрийг устгана уу: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Устгасан</translation>
 <translation id="6910274140210351823">Бараан</translation>
+<translation id="691102290537033604">Өргөтгөл Google-н хянаагүй кодыг ажиллуулах боломжтой болно. Энэ нь аюултай байж болзошгүй бөгөөд та юу хийж байгаагаа мэдэж байгаа тохиолдолд л үүнийг идэвхжүүлэх ёстой.</translation>
 <translation id="6911734910326569517">Санах ойн ул мөр</translation>
 <translation id="6912007319859991306">Үүрэн холбооны SIM-н ПИН</translation>
 <translation id="6912380255120084882">Өөр төхөөрөмж туршина уу</translation>
@@ -9838,6 +9842,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Дуу хоолой <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Android утаснаасаа Wi-Fi-г автоматаар шилжүүлэх</translation>
 <translation id="7991296728590311172">Сэлгүүрийн тохиргоо</translation>
+<translation id="7992080146463834191">Контентыг хураангуйлж, нарийн төвөгтэй үг хэллэгийг хялбарчилж, асуулт асууна уу.</translation>
 <translation id="7992203134935383159">Ярианы синтез</translation>
 <translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">Боловсруулалтын тэргүүлэх чиглэл</translation>
@@ -10077,6 +10082,7 @@
 <translation id="8155676038687609779">{COUNT,plural, =0{Алдагдсан нууц үг олдсонгүй}=1{Алдагдсан {COUNT} нууц үг}other{Алдагдсан {COUNT} нууц үг}}</translation>
 <translation id="8157248655669507702">eSIM-н профайл суулгахын тулд мобайл датаг идэвхжүүлнэ үү</translation>
 <translation id="8157704005178149728">Хяналтыг тохируулж байна</translation>
+<translation id="8157728322324420120">Танд санал болгосон</translation>
 <translation id="8157849462797352650">Таны төхөөрөмж хамгийн сүүлийн үеийн аюулгүй байдал, тогтвортой байдал, гүйцэтгэлийн шинэчлэлтийг авна</translation>
 <translation id="8158117992543756526">Энэ төхөөрөмж <ph name="MONTH_AND_YEAR" />-д программ хангамж болон аюулгүй байдлын автомат шинэчлэлт авахаа зогсоосон байна. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Дэлгэцийг хуваах болон дэлгэц сэлгэх зэрэг үйлдэлд чичиргээтэй баталгаажуулалт хүлээн авна уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
@@ -11091,6 +11097,7 @@
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />"-г унтраасан</translation>
 <translation id="8874647982044395866">Органик</translation>
 <translation id="8874790741333031443">Гуравдагч талын күүкинүүдийг түр зуур зөвшөөрч үзнэ үү. Энэ нь үзэх хамгаалалт багасах хэдий ч сайтын онцлогууд тооцоолсны дагуу ажиллах магадлал өндөр байна гэсэн үг юм.</translation>
+<translation id="8875221558267407626">Контентыг хураангуйлах, нарийн төвөгтэй үг хэллэгийг хялбарчлах, асуулт асуух</translation>
 <translation id="8875520811099717934">Linux-н сайжруулалт</translation>
 <translation id="8875736897340638404">Харагдцаа сонгоно уу</translation>
 <translation id="8876307312329369159">Энэ тохиргоог демо харилцан үйлдэлд өөрчлөх боломжгүй.</translation>
@@ -11144,6 +11151,7 @@
 <translation id="8915916167043355778">Бүгдийг хаах</translation>
 <translation id="8916476537757519021">Нууцлалтай дэд хүрээ: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Тийм, би зөвшөөрч байна</translation>
+<translation id="8917980324687233736">Зэрэгцүүлэн харуулах</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />-н <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">Аппыг суулгаж байна...</translation>
 <translation id="891931289445130855">Өгөгдөл болон зөвшөөрлийг устгах</translation>

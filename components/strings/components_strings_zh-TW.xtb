@@ -3327,12 +3327,14 @@
 <translation id="6896758677409633944">複製</translation>
 <translation id="6897140037006041989">使用者代理程式</translation>
 <translation id="6898699227549475383">組織 (O)</translation>
+<translation id="6900702165119149418">你已登出帳戶</translation>
 <translation id="6903907808598579934">開啟同步功能</translation>
 <translation id="6907458757809079309">健身</translation>
 <translation id="691024665142758461">下載多個檔案</translation>
 <translation id="6915804003454593391">使用者：</translation>
 <translation id="6916193791494646625">請提供要下載的原因 (必填)</translation>
 <translation id="6917795328362592458">系統發現你剛才使用的密碼因為資料侵害事件而遭到外洩。為確保帳戶安全，密碼管理工具建議你立即檢查已儲存的密碼。</translation>
+<translation id="6917873303492266709">如要分享、加入分頁群組並在其中協作，請前往設定頁面開啟「允許登入 Chrome」</translation>
 <translation id="6921197121276419421">已允許安裝網頁應用程式</translation>
 <translation id="6924013822850225188">選擇是否在結帳時查看卡片福利 (依據銀行條款規定)</translation>
 <translation id="6925267999184670015">North American B+</translation>
@@ -3497,7 +3499,7 @@
 <translation id="7192537357091279678">電腦磁碟機與儲存空間</translation>
 <translation id="7193661028827781021">參考資料</translation>
 <translation id="719464814642662924">Visa</translation>
-<translation id="7195432682252510959">請於結帳時使用這個折扣代碼。有效期限：<ph name="DATE" />。</translation>
+<translation id="7195432682252510959">請於結帳時使用這個折扣碼。有效期限：<ph name="DATE" />。</translation>
 <translation id="7195852673246414183">開啟這項設定後，請返回這個分頁開始輸入內容</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可開啟新的無痕分頁以進行私密瀏覽</translation>

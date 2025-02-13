@@ -283,7 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Pad cijene na otvorenim karticama}one{Padovi cijena na otvorenim karticama}few{Padovi cijena na otvorenim karticama}other{Padovi cijena na otvorenim karticama}}</translation>
 <translation id="5186036860380548585">Opcije su dostupne pri vrhu ekrana</translation>
 <translation id="5197729504361054390">Kontakti koje odaberete će se podijeliti s web lokacijom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
-<translation id="5198930230016462977">Zatvorena je prilagodba donje tablice stranice nove kartice</translation>
+<translation id="5198930230016462977">Donja tabela prilagođavanja stranice nove kartice je zatvorena</translation>
 <translation id="5216942107514965959">Posljednji put je posjećeno danas</translation>
 <translation id="5225463052809312700">Uključi kameru</translation>
 <translation id="5234764350956374838">Odbaci</translation>
@@ -328,7 +328,7 @@
 <translation id="5750869797196646528">Praćenje ruku</translation>
 <translation id="5771720122942595109">Blokirano: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Odobrenja</translation>
-<translation id="5822675474983796325">Prilagodba donje tablice stranice nove kartice otvorena je u punoj visini</translation>
+<translation id="5822675474983796325">Donja tabela prilagođavanja stranice nove kartice je otvorena u punoj visini</translation>
 <translation id="5844448279347999754">Kada je postavka uključena, web lokacije mogu zatražiti da vide tekst i slike sačuvane u međumemoriji. Kada je postavka isključena, web lokacije ne mogu vidjeti tekst ni slike sačuvane u međumemoriji.</translation>
 <translation id="5853982612236235577">Kada je postavka uključena, web lokacije mogu zatražiti da šalju obavještenja. Kada je postavka isključena, web lokacije ne mogu slati obavještenja.</translation>
 <translation id="5860033963881614850">Isklj.</translation>
@@ -436,7 +436,7 @@
 <translation id="7203150201908454328">Prošireno</translation>
 <translation id="7219254577985949841">Izbrisati podatke web lokacije?</translation>
 <translation id="723171743924126238">Odaberi slike</translation>
-<translation id="7243246278722455312">Prilagodba donje tablice stranice nove kartice</translation>
+<translation id="7243246278722455312">Donja tabela prilagođavanja stranice nove kartice</translation>
 <translation id="7243308994586599757">Opcije su dostupne pri dnu ekrana</translation>
 <translation id="7250468141469952378">Odabrano <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Dozvoljeno: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>

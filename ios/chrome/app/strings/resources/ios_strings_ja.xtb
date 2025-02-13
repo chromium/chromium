@@ -285,6 +285,7 @@
 <translation id="2164946989711475905">ログイン…</translation>
 <translation id="2175927920773552910">QR コード</translation>
 <translation id="2186206192313702726">Google レンズ</translation>
+<translation id="219283042927675668">グループ内のタブ</translation>
 <translation id="2194856509914051091">留意事項</translation>
 <translation id="2196428379625389579">ウェブで検索</translation>
 <translation id="2199562093267256223"><ph name="USER_EMAIL" /> にログインしているすべてのデバイスからグループを削除します。</translation>
@@ -914,6 +915,7 @@
 <translation id="5016420433031926653">送信先: <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">過去 15 分間</translation>
 <translation id="5020732097997376541">「レンズアイコン」をタップする</translation>
+<translation id="5021500396464456616">このリンクを送信したユーザーにお問い合わせください</translation>
 <translation id="5024511550058813796">同期しているすべてのデバイスから履歴にアクセスして、作業の続きを行うことができます</translation>
 <translation id="5038113048373546701">興味や関心に基づくニュースやスポーツなどの通知を受け取ることができます</translation>
 <translation id="5039804452771397117">許可する</translation>
@@ -978,7 +980,6 @@
 <translation id="5295239312320826323">アカウント（<ph name="USER_EMAIL" />）を削除しますか？</translation>
 <translation id="5300589172476337783">表示</translation>
 <translation id="5311061401280561833">カメラとマイクへのアクセスが許可されています</translation>
-<translation id="531209241254508943">タブグループ</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318298563956633672">この商品はすでにトラッキングしています。</translation>
@@ -1941,6 +1942,7 @@
 <translation id="966593914872420832">音声検索</translation>
 <translation id="968653181266955408">コンテンツの通知を受け取る</translation>
 <translation id="973493300226275298">複数のオンライン ショップで商品の価格をトラッキングします。値下げされた場合は、アラートが表示されます。</translation>
+<translation id="973788791897303708">このタブグループのユーザーは上限に達しました</translation>
 <translation id="976392601789283511">最後に閉じたタブを開く</translation>
 <translation id="981498610235328462">組織が特定のアカウントでのログインしか許可していません。許可されていないアカウントは非表示になっています。</translation>
 <translation id="984275831282074731">お支払い方法</translation>

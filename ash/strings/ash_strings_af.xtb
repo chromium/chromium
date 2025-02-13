@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
+<translation id="1000127192436081677">Wissel Kitsdeel. Kitsdeel is <ph name="QUICK_SHARE_STATE" /></translation>
 <translation id="1012876632442809908">USB C-toestel (poort aan voorkant)</translation>
 <translation id="1013923882670373915">Bluetooth-toestel "<ph name="DEVICE_NAME" />" vra toestemming om saam te bind. Voer asseblief hierdie PIN-kode op daardie toestel in: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">Dit laat <ph name="APP_NAME" /> en alle apps en webwerwe met die liggingtoestemming en ChromeOS toe om wi-fi- en selnetwerkligging te gebruik.</translation>
@@ -154,6 +155,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1469148162491666137">Dit gee toegang vir <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> en alle apps en webwerwe met die kamera- en mikrofoontoestemming. Jy sal die webblasy moet herlaai of die app moet herbegin.</translation>
 <translation id="147310119694673958">Foonbattery <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">Wissel warmkol. Warmkol is aan; 1 toestel is gekoppel</translation>
+<translation id="1479685784053141667">Skep kontak</translation>
 <translation id="1479909375538722835">Swewende toeganklikheidkieslys</translation>
 <translation id="1483493594462132177">Stuur</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -464,6 +466,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2598725286293895280">Ongesteunde programme in lessenaar</translation>
 <translation id="2607678425161541573">Aanlyn aanmelding word vereis</translation>
 <translation id="2612072250312279703">aktiwiteitmonitor</translation>
+<translation id="261210853165551493">Kopieer met formatering</translation>
 <translation id="2612614436418177118">Skuif 'n appikoon binne approoster</translation>
 <translation id="2619052155095999743">Invoeg</translation>
 <translation id="2619326010008283367">Toerstap <ph name="STEP" /> van <ph name="TOTAL_STEPS" />. Jy kan jou toestelinstellings in Lanseerder vind. Probeer om jou <ph name="PRODUCT_NAME" /> in Instellings te pasmaak, soos om jou muurpapier te verander of ’n sluimerskerm te stel.</translation>
@@ -556,6 +559,7 @@ Anders sal die ingeboude raakpaneel binne <ph name="TIMEOUT_SECONDS" /> geherakt
 <translation id="2932487126591186298">10 minute bygevoeg. <ph name="REMAINING_TIME" /> oor.</translation>
 <translation id="2935225303485967257">Bestuur profiele</translation>
 <translation id="2941112035454246133">Laag</translation>
+<translation id="2941232201846070406">Gaan jou internet na en probeer weer</translation>
 <translation id="2942350706960889382">Gedokte vergrootglas</translation>
 <translation id="2942516765047364088">Rakposisie</translation>
 <translation id="2946119680249604491">Voeg verbinding by</translation>
@@ -640,6 +644,7 @@ Anders sal die ingeboude raakpaneel binne <ph name="TIMEOUT_SECONDS" /> geherakt
 <translation id="3206735939915734551">Skakel Caps Lock aan/af</translation>
 <translation id="3207953481422525583">Gebruikerinstellings</translation>
 <translation id="3208321278970793882">Program</translation>
+<translation id="3212221635583599601">Koppel aan die internet vir meer</translation>
 <translation id="3213571860604332401">Stoor skakel as boekmerk</translation>
 <translation id="3217205077783620295">Volume is aan. Wissel om oudio te demp.</translation>
 <translation id="3226991577105957773">+nog <ph name="COUNT" /></translation>
@@ -972,6 +977,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4275663329226226506">Media</translation>
 <translation id="4279490309300973883">Weerspieëling</translation>
 <translation id="4280601795273309128">Sekuriteitopdaterings het geëindig. Gradeer jou toestel op.</translation>
+<translation id="4281739221820540368">Skep Google-dokumente</translation>
 <translation id="4283888303416325161">Voer wagwoord in vir meer sekuriteit</translation>
 <translation id="4285498937028063278">Ontspeld</translation>
 <translation id="428715201724021596">Koppel tans aan profiel. Dit kan 'n paar minute neem.</translation>
@@ -1044,6 +1050,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4513044611477939680">Kitsdeel</translation>
 <translation id="4513946894732546136">Terugvoer</translation>
 <translation id="4518404433291145981">Ontsluit eers jou foon as jy jou Chromebook wil ontsluit</translation>
+<translation id="4525887279712865285">Wys Kitsdeel-instellings</translation>
 <translation id="4527045527269911712">Bluetooth-toestel "<ph name="DEVICE_NAME" />" wil graag toestemming hê om saam te bind.</translation>
 <translation id="4531536770443562276">Net volskerm is beskikbaar</translation>
 <translation id="4533343294786968049">Verleng jou batterylewe. Battery sal teen <ph name="FULLY_CHARGE_TIME" /> volledig gelaai wees.</translation>
@@ -1599,6 +1606,7 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="6274202259872570803">Skermopname</translation>
 <translation id="6276708887952587684">Bekyk bladsybron</translation>
 <translation id="6284232397434400372">Resolusie het verander</translation>
+<translation id="6285871695023807425">Voeg by kalender</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> kan later weer met 'n ouer se toestemming bygevoeg word.</translation>
 <translation id="6291221004442998378">Laai nie</translation>
 <translation id="6298183524022479114">Pasmaak hierdie toestel in app</translation>
@@ -1695,6 +1703,7 @@ Nuwe installasie</translation>
 <translation id="6612889377159412215">subtaak</translation>
 <translation id="6613765291890844037">Berging <ph name="STORAGE_IN_USE_SIZE" /> word tans gebruik | <ph name="STORAGE_TOTAL_SIZE" /> totaal</translation>
 <translation id="6614169507485700968">Privaatheidskerm is aan</translation>
+<translation id="6618277154885124991">Skep Google-sigblaaie</translation>
 <translation id="6622679827379792051">Stel jou foon op om jou apps te bekyk</translation>
 <translation id="662279009180869175">Gebruik links- en regspyl om die grootte van verdeelde skerm te verander</translation>
 <translation id="6624493541160101248">Huidige lessenaar: <ph name="DESK_NAME" />. Lessenaar <ph name="DESK_INDEX" /> van <ph name="DESK_COUNT" />.</translation>
@@ -2250,6 +2259,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="851660987304951246">Gebruik Help My Lees om inhoud vinnig op te som of om vrae te vra</translation>
 <translation id="8517041960877371778">Jou <ph name="DEVICE_TYPE" /> mag nie laai terwyl dit aangeskakel is nie.</translation>
 <translation id="8535393432370007982">Ontdoen sorteervolgorde volgens kleur</translation>
+<translation id="8539803091108018926">Teks is na knipbord gekopieer</translation>
 <translation id="8541078764854166027">Kamera se raamfunksie</translation>
 <translation id="8542053257095774575">Geen gestoorde lessenaars of template nie</translation>
 <translation id="8546059259582788728">Sortering is suksesvol ontdoen</translation>

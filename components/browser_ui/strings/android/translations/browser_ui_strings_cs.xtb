@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Pokles ceny na vašich otevřených kartách}few{Poklesy cen na vašich otevřených kartách}many{Poklesy cen na vašich otevřených kartách}other{Poklesy cen na vašich otevřených kartách}}</translation>
 <translation id="5186036860380548585">Možnost je k dispozici u horního okraje obrazovky</translation>
 <translation id="5197729504361054390">Vybrané kontakty budou sdíleny s webem <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5198930230016462977">Zavřený spodní panel Přizpůsobení stránky Nová karta</translation>
 <translation id="5216942107514965959">Naposledy navštíveno dnes</translation>
 <translation id="5225463052809312700">Zapnout kameru</translation>
 <translation id="5234764350956374838">Zavřít</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Sledování rukou</translation>
 <translation id="5771720122942595109">Oprávnění <ph name="PERMISSION_1" /> je zablokováno</translation>
 <translation id="5804241973901381774">Oprávnění</translation>
+<translation id="5822675474983796325">Spodní panel Přizpůsobení stránky Nová karta otevřený na celou výšku</translation>
 <translation id="5844448279347999754">Když je tato možnost zapnutá, weby mohou žádat o zobrazení textu a obrázků uložených do schránky. Když je vypnutá, weby k textům ani obrázkům uloženým do schránky nemají přístup.</translation>
 <translation id="5853982612236235577">Když je tato možnost zapnutá, weby mohou žádat o odesílání oznámení. Když je vypnutá, weby oznámení odesílat nemohou.</translation>
 <translation id="5860033963881614850">Vypnuto</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Rozbaleno</translation>
 <translation id="7219254577985949841">Vymazat data webu?</translation>
 <translation id="723171743924126238">Vyberte fotky</translation>
+<translation id="7243246278722455312">Spodní panel Přizpůsobení stránky Nová karta</translation>
 <translation id="7243308994586599757">Možnosti jsou k dispozici ve spodní části obrazovky</translation>
 <translation id="7250468141469952378">Vybráno: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Oprávnění <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /> jsou povolena</translation>

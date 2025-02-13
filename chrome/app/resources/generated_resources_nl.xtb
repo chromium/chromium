@@ -10068,6 +10068,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8155676038687609779">{COUNT,plural, =0{Geen gehackte wachtwoorden gevonden}=1{{COUNT} gehackt wachtwoord}other{{COUNT} gehackte wachtwoorden}}</translation>
 <translation id="8157248655669507702">Zet mobiele data aan om een e-simkaartprofiel te installeren</translation>
 <translation id="8157704005178149728">Toezicht instellen</translation>
+<translation id="8157728322324420120">Voorgesteld voor jou</translation>
 <translation id="8157849462797352650">Je apparaat krijgt de nieuwste beveiligings-, stabiliteits- en prestatie-updates</translation>
 <translation id="8158117992543756526">Dit apparaat krijgt geen automatische software- en beveiligingsupdates meer sinds <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Krijg een trillingsbevestiging voor acties zoals scherm splitsen en tussen bureaus schakelen. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>

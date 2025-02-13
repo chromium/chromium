@@ -10102,6 +10102,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8155676038687609779">{COUNT,plural, =0{Najdeno ni bilo nobeno ogroženo geslo}=1{{COUNT} ogroženo geslo}one{{COUNT} ogroženo geslo}two{{COUNT} ogroženi gesli}few{{COUNT} ogrožena gesla}other{{COUNT} ogroženih gesel}}</translation>
 <translation id="8157248655669507702">Če želite namestiti profil eSIM, omogočite prenos podatkov v mobilnem omrežju.</translation>
 <translation id="8157704005178149728">Nastavljanje nadzora</translation>
+<translation id="8157728322324420120">Predlagano za vas</translation>
 <translation id="8157849462797352650">Vaša naprava bo dobila najnovejše posodobitve varnosti, stabilnosti in učinkovitosti delovanja</translation>
 <translation id="8158117992543756526">Datum, ko je ta naprava prenehala prejemati samodejne posodobitve programske opreme in varnostne posodobitve: <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Prejemanje potrditev z vibriranjem za dejanja, kot sta razdeljen zaslon in preklop med namizji. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>

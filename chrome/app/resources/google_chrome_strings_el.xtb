@@ -80,6 +80,7 @@
 <translation id="2094648590148273905">Όροι ChromeOS Flex</translation>
 <translation id="2094919256425865063">Να τερματιστεί η λειτουργία του Chrome ούτως ή άλλως;</translation>
 <translation id="2106831557840787829">Το ChromeOS Flex υλοποιήθηκε με τη βοήθεια πρόσθετου <ph name="BEGIN_LINK_CROS_OSS" />λογισμικού ανοικτού κώδικα<ph name="END_LINK_CROS_OSS" />, όπως είναι το <ph name="BEGIN_LINK_LINUX_OSS" />περιβάλλον ανάπτυξης Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2108778574543343055">Απενεργοποίηση του Chromium, όταν εκτελούνται εφαρμογές στο παρασκήνιο</translation>
 <translation id="2120620239521071941">Με αυτή την ενέργεια θα διαγραφούν <ph name="ITEMS_COUNT" /> στοιχεία από αυτήν τη συσκευή. Για να ανακτήσετε τα δεδομένα σας αργότερα, συνδεθείτε στο Chrome ως <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Επανεκκίνηση για ενημέρωση του &amp;Chrome</translation>
 <translation id="2123055963409958220">Συμβάλετε στη βελτίωση του Chrome, αναφέροντας τις <ph name="BEGIN_LINK" />τρέχουσες ρυθμίσεις<ph name="END_LINK" /></translation>
@@ -141,6 +142,7 @@
 <translation id="2797864378188255696">Όταν συνδέεστε σε υπηρεσίες Google, όπως το Gmail ή το YouTube, με τον λογαριασμό <ph name="USER_EMAIL" />, μπορείτε να συνδέεστε αυτόματα στο Chrome με τον ίδιο λογαριασμό</translation>
 <translation id="2799162042226656283">Το δικό σας Chrome</translation>
 <translation id="2799223571221894425">Επανεκκίνηση</translation>
+<translation id="2818684386420968393">Απενεργοποίηση του Chromium, όταν εκτελούνται εφαρμογές στο παρασκήνιο</translation>
 <translation id="2825024317344269723">Επικίνδυνος ιστότοπος. Το Chrome κατάργησε ειδοποιήσεις.</translation>
 <translation id="2841525013647267359">Μετάφραση από</translation>
 <translation id="2846251086934905009">Σφάλμα εγκατάστασης: Το πρόγραμμα εγκατάστασης δεν ολοκληρώθηκε. Η εγκατάσταση ακυρώθηκε.</translation>
@@ -352,6 +354,7 @@
 <translation id="5596627076506792578">Περισσότερες επιλογές</translation>
 <translation id="5602351063754773347">Το Chrome προτείνει να την καταργήσετε. <ph name="BEGIN_LINK" />Μάθετε περισσότερα σχετικά με τις υποστηριζόμενες επεκτάσεις<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Το Chrome κάνει περισσότερα για την ασφάλειά σας στο διαδίκτυο</translation>
+<translation id="5649680279845190972">Για να έχετε στη διάθεσή σας τις επεκτάσεις σας και άλλα στοιχεία σε όλους τους υπολογιστές σας, συνδεθείτε στο Chrome</translation>
 <translation id="565744775970812598">Το αρχείο <ph name="FILE_NAME" /> μπορεί να είναι επικίνδυνο, επομένως έχει αποκλειστεί από το Chrome.</translation>
 <translation id="566568153320186256">Το Chrome εξοικονομεί μπαταρία περιορίζοντας τη δραστηριότητα στο παρασκήνιο και τα οπτικά εφέ, όπως είναι η ομαλή κύλιση και οι ρυθμοί καρέ βίντεο. <ph name="BEGIN_LINK" />Μάθετε περισσότερα σχετικά με την Εξοικονόμηση ενέργειας<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Διαγράψτε τα δεδομένα του Chrome στον λογαριασμό σας</translation>

@@ -285,6 +285,7 @@
 <translation id="2164946989711475905">Кирүү…</translation>
 <translation id="2175927920773552910">QR код</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="219283042927675668">Топтогу өтмөктөр</translation>
 <translation id="2194856509914051091">Эске ала турган нерселер</translation>
 <translation id="2196428379625389579">Интернетте издөө</translation>
 <translation id="2199562093267256223">Ушуну менен топ <ph name="USER_EMAIL" /> аккаунтуна кирип турган бардык түзмөктөрдөн өчүрүлөт.</translation>
@@ -914,6 +915,7 @@
 <translation id="5016420433031926653">Кимге: <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Акыркы 15 мүнөттө</translation>
 <translation id="5020732097997376541">"Lens сүрөтчөсүн" таптап коюңуз</translation>
+<translation id="5021500396464456616">Бул шилтемени жөнөткөн киши менен байланышыңыз</translation>
 <translation id="5024511550058813796">Бардык шайкештирилген түзмөктөрүңүздө таржымал күйгүзүлөт, андыктан ишиңизди токтогон жериңизден уланта аласыз</translation>
 <translation id="5038113048373546701">Сиз кызыккан нерселердин негизинде жаңылыктар, спорт жана башкалар боюнча билдирмелерди алыңыз</translation>
 <translation id="5039804452771397117">Ооба</translation>
@@ -978,7 +980,6 @@
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> аккаунту өчүрүлсүнбү?</translation>
 <translation id="5300589172476337783">Көрсөтүү</translation>
 <translation id="5311061401280561833">Камера менен микрофонду колдонууга уруксат берилди</translation>
-<translation id="531209241254508943">өтмөктөр тобу</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> ичинен <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">Сактоо</translation>
 <translation id="5318298563956633672">Бул товарга көз салып жатасыз.</translation>
@@ -1941,6 +1942,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="966593914872420832">Айтып издөө</translation>
 <translation id="968653181266955408">Мазмун тууралуу билдирмелерди алуу</translation>
 <translation id="973493300226275298">Интернет дүкөндөрүндөгү товардын баасына көз салыңыз. Баасы арзандаганда, билдирүүлөрдү аласыз.</translation>
+<translation id="973788791897303708">Бул өтмөктөр тобу толуп калды</translation>
 <translation id="976392601789283511">Акыркы жабылган өтмөктү кайра ачуу</translation>
 <translation id="981498610235328462">Уюмуңуз белгилүү бир аккаунттар менен гана кирүүгө уруксат берет. Тыюу салынган аккаунттар жашырылып турат.</translation>
 <translation id="984275831282074731">Төлөм ыкмалары</translation>

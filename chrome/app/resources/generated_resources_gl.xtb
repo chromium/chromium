@@ -220,6 +220,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="114721135501989771">Obter tecnoloxía de Google en Chrome</translation>
 <translation id="1147322039136785890">Agora é a quenda de <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Para solicitar acceso, ponte en contacto co administrador deste dispositivo.</translation>
+<translation id="1148464196693569530">Permitir scripts do usuario</translation>
 <translation id="1148624853678088576">Xa terminaches</translation>
 <translation id="1148669835763563782">Estás descargando a actualización de software máis recente para desfrutar da seguranza mellorada e das funcións máis novas de Chromebook. Nesta actualización mellorouse o proceso de configuración para que os primeiros pasos co teu Chromebook vaian como unha seda.</translation>
 <translation id="1149401351239820326">Mes de caducidade</translation>
@@ -6768,6 +6769,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5794414402486823030">Abrir sempre co visualizador do sistema</translation>
 <translation id="5794700615121138172">Cartafoles compartidos de Linux</translation>
 <translation id="5794786537412027208">Saír de todas as aplicacións de Chrome</translation>
+<translation id="5795422263272161110">Mostrar en paralelo</translation>
 <translation id="5796485699458186843">Nova pestana do modo de incógni&amp;to</translation>
 <translation id="5796956053441619942">Non se admite o URL do dispositivo remoto</translation>
 <translation id="5797934230382081317">Máis información sobre como comezar a usar &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; e &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -7295,6 +7297,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6170498031581934115">Non se puido activar a depuración de ADB. Accede á configuración e téntao de novo.</translation>
 <translation id="6170675927290506430">Ir á configuración de notificacións</translation>
 <translation id="6171779718418683144">Preguntar en cada visita</translation>
+<translation id="6172020488605056255">Fai clic co botón dereito para usar Axúdame a ler</translation>
 <translation id="617213288191670920">Non se engadiu ningún idioma</translation>
 <translation id="6173623053897475761">Escribe o PIN de novo</translation>
 <translation id="6174909075810107548">Usa a tecla 5 para premer un botón do rato</translation>
@@ -8320,6 +8323,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6910190732484284349">Eliminar a clave de acceso do nome de usuario: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Eliminado</translation>
 <translation id="6910274140210351823">Escuro</translation>
+<translation id="691102290537033604">Esta extensión poderá executar código que Google non revisou. Pode que non sexa seguro, polo que só debes activar esta opción se sabes o que estás facendo.</translation>
 <translation id="6911734910326569517">Uso de memoria</translation>
 <translation id="6912007319859991306">PIN da SIM do móbil</translation>
 <translation id="6912380255120084882">Proba cun dispositivo diferente</translation>
@@ -9830,6 +9834,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />, voz <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Transferir automaticamente a wifi desde o teléfono Android</translation>
 <translation id="7991296728590311172">Acceso con interruptores</translation>
+<translation id="7992080146463834191">Resume contido, simplifica linguaxe complexa ou fai preguntas</translation>
 <translation id="7992203134935383159">Síntese de voz</translation>
 <translation id="799570308305997052">Vista web</translation>
 <translation id="7997826902155442747">Prioridade do proceso</translation>
@@ -10070,6 +10075,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8155676038687609779">{COUNT,plural, =0{Non se atoparon contrasinais vulnerados}=1{{COUNT} contrasinal vulnerado}other{{COUNT} contrasinais vulnerados}}</translation>
 <translation id="8157248655669507702">Activa os datos móbiles para instalar un perfil de eSIM</translation>
 <translation id="8157704005178149728">Configurando supervisión</translation>
+<translation id="8157728322324420120">Suxestións personalizadas</translation>
 <translation id="8157849462797352650">O teu dispositivo recibirá as últimas novidades en seguranza, estabilidade e rendemento</translation>
 <translation id="8158117992543756526">Este dispositivo deixou de recibir actualizacións automáticas de software e de seguranza en <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Recibe, a través de vibracións, a confirmación de que se levaron a cabo determinadas accións, como dividir a pantalla ou cambiar de escritorio. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
@@ -11086,6 +11092,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8874448314264883207">Desactivouse a extensión <ph name="EXTENSION_NAME" /></translation>
 <translation id="8874647982044395866">Orgánico</translation>
 <translation id="8874790741333031443">Proba a permitir de maneira temporal as cookies de terceiros. Terás menos protección, pero é máis probable que as funcións do sitio vaian segundo o previsto.</translation>
+<translation id="8875221558267407626">Resume contido, simplifica linguaxe complexa ou fai preguntas</translation>
 <translation id="8875520811099717934">Actualización de Linux</translation>
 <translation id="8875736897340638404">Escolle a túa visibilidade</translation>
 <translation id="8876307312329369159">Esta opción de configuración non se pode cambiar nunha sesión de demostración.</translation>
@@ -11139,6 +11146,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8915916167043355778">Pechar todo</translation>
 <translation id="8916476537757519021">Submarco de incógnito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Si, acepto</translation>
+<translation id="8917980324687233736">Mostrar en paralelo</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Instalando aplicación...</translation>
 <translation id="891931289445130855">Eliminar datos e permisos</translation>

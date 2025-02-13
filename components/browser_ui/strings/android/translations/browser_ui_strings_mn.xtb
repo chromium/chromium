@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Таны нээлттэй табууд дээрх үнийн хямдрал}other{Таны нээлттэй табууд дээрх үнийн хямдралууд}}</translation>
 <translation id="5186036860380548585">Сонголт дэлгэцийн дээд хэсэгт байна</translation>
 <translation id="5197729504361054390">Таны сонгох харилцагчдыг <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-тай хуваалцана.</translation>
+<translation id="5198930230016462977">Шинэ таб хуудсаа өөрчлөх доод хүснэгтийг хаасан</translation>
 <translation id="5216942107514965959">Хамгийн сүүлд өнөөдөр зочилсон</translation>
 <translation id="5225463052809312700">Камерыг асаах</translation>
 <translation id="5234764350956374838">Хэрэгсэхгүй болго</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Гар хянах</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />-г блоклосон</translation>
 <translation id="5804241973901381774">Зөвшөөрлүүд</translation>
+<translation id="5822675474983796325">Шинэ таб хуудсаа өөрчлөх доод хүснэгтийг бүтэн өндрөөр нээсэн</translation>
 <translation id="5844448279347999754">Асаалттай үед сайтууд таны түр санах ойд хадгалсан текст болон зургуудыг харахыг хүсэх боломжтой. Унтраалттай үед сайтууд таны түр санах ойд хадгалсан текст эсвэл зургуудыг харах боломжгүй.</translation>
 <translation id="5853982612236235577">Асаалттай үед сайтууд мэдэгдэл илгээхийг хүсэх боломжтой. Унтраалттай үед сайтууд мэдэгдэл илгээх боломжгүй.</translation>
 <translation id="5860033963881614850">Идэвхгүй байна</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Өргөтгөсөн</translation>
 <translation id="7219254577985949841">Сайтын өгөгдлийг устгах уу?</translation>
 <translation id="723171743924126238">Зураг сонгох</translation>
+<translation id="7243246278722455312">Шинэ таб хуудсаа өөрчлөх доод хүснэгт</translation>
 <translation id="7243308994586599757">Дэлгэцийн доод хэсэгт сонголт боломжтой</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />-г сонгосон</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> болон <ph name="PERMISSION_2" />-г зөвшөөрсөн</translation>

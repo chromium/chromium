@@ -471,6 +471,7 @@
 <translation id="1791415068765905273">Прикажи све табеле за поређење</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали информацијама, приватношћу и безбедношћу на Google налогу</translation>
+<translation id="1793473605302304726">Плаћање на рате</translation>
 <translation id="1793631236004319016">Последњи пут коришћена пре <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, доступно је више радњи, притисните Tab да бисте их прегледали</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -3328,12 +3329,14 @@
 <translation id="6896758677409633944">Копирај</translation>
 <translation id="6897140037006041989">Кориснички агент</translation>
 <translation id="6898699227549475383">Организација (O)</translation>
+<translation id="6900702165119149418">Одјављени сте</translation>
 <translation id="6903907808598579934">Укључи синхронизацију</translation>
 <translation id="6907458757809079309">Фитнес</translation>
 <translation id="691024665142758461">да преузме више датотека</translation>
 <translation id="6915804003454593391">Корисник:</translation>
 <translation id="6916193791494646625">Наведите разлог за преузимање (обавезно)</translation>
 <translation id="6917795328362592458">Лозинка коју сте управо користили је пронађена при повреди података. Да бисте заштитили налоге, Менаџер лозинки препоручује да проверите сачуване лозинке.</translation>
+<translation id="6917873303492266709">Да бисте делили групе картица, придруживали им се и сарађивали у њима, отворите подешавања и укључите Дозволи пријављивање у Chrome</translation>
 <translation id="6921197121276419421">Инсталирање веб-апликација је дозвољено</translation>
 <translation id="6924013822850225188">Одаберите да ли ћете при плаћању видети предности картице (примењују се услови банке)</translation>
 <translation id="6925267999184670015">North American B+</translation>
@@ -3409,6 +3412,7 @@
 <translation id="7042616127917168121">Прецизирајте резултате</translation>
 <translation id="7043552168914147882">Залиха папира</translation>
 <translation id="7044081119134178347">Камера је дозвољена овај пут</translation>
+<translation id="704738887031336226">Прикажи опције <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />плаћања на рате<ph name="PAY_OVER_TIME_HELP_LINK_END" /> приликом плаћања</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Покушали сте да посетите <ph name="DOMAIN" />, али је сервер представио сертификат са периодом важења који је предугачак да би био поуздан.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Ова картица тренутно не може да се сачува}one{Ове картице тренутно не могу да се сачувају}few{Ове картице тренутно не могу да се сачувају}other{Ове картице тренутно не могу да се сачувају}}</translation>

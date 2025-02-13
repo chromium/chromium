@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Redução no preço nas guias abertas}one{Redução no preço nas guias abertas}other{Reduções nos preços nas guias abertas}}</translation>
 <translation id="5186036860380548585">Opção disponível perto da parte superior da tela</translation>
 <translation id="5197729504361054390">Os contatos selecionados serão compartilhados com <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5198930230016462977">A página inferior "Personalizar 'Nova guia'" está aberta</translation>
 <translation id="5216942107514965959">Última visita: hoje</translation>
 <translation id="5225463052809312700">Ativar câmera</translation>
 <translation id="5234764350956374838">Dispensar</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Rastreamento de mãos</translation>
 <translation id="5771720122942595109">Bloqueada: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permissões</translation>
+<translation id="5822675474983796325">A página inferior "Personalizar 'Nova guia'" está aberta no tamanho máximo</translation>
 <translation id="5844448279347999754">Quando essa configuração está ativada, os sites podem pedir para acessar texto e imagens na sua área de transferência. Quando está desativada, os sites não podem acessar texto e imagens na sua área de transferência.</translation>
 <translation id="5853982612236235577">Quando essa configuração está ativada, os sites podem pedir para enviar notificações. Quando está desativada, os sites não podem enviar notificações.</translation>
 <translation id="5860033963881614850">Desativada</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Expandido</translation>
 <translation id="7219254577985949841">Excluir dados do site?</translation>
 <translation id="723171743924126238">Selecionar imagens</translation>
+<translation id="7243246278722455312">A página inferior "Personalizar 'Nova guia'" está aberta</translation>
 <translation id="7243308994586599757">Opções disponíveis perto da parte inferior da tela</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> itens selecionados</translation>
 <translation id="7260727271532453612">Permitidas: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>

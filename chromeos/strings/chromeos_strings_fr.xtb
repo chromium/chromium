@@ -554,6 +554,7 @@
 <translation id="3628462041319107639">Téléchargement du modèle de transcription…</translation>
 <translation id="3632040286124154621">Bonne suggestion</translation>
 <translation id="3632579075709132555">Activer/Désactiver l'écran de confidentialité</translation>
+<translation id="3634941468757842845">Choisir un thème</translation>
 <translation id="3639873154908477486">Nom (A à Z)</translation>
 <translation id="3644695927181369554">Mauvaise suggestion</translation>
 <translation id="3651050199673793219">Sélectionner une unité de température</translation>
@@ -1443,7 +1444,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7683228889864052081">teinte du clavier</translation>
 <translation id="7690294790491645610">Confirmer le nouveau mot de passe</translation>
 <translation id="7696506367342213250">collines d'argile</translation>
-<translation id="7701040980221191251">Aucun</translation>
+<translation id="7701040980221191251">Désactivée</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
 <translation id="7718231387947923843">lumière du clavier</translation>
@@ -1540,6 +1541,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8132480444149501833">Demander les compteurs de trafic</translation>
 <translation id="8135609423982943441">Les paramètres par défaut sécurisés de votre Chromebook ont été rétablis. Vous pouvez les modifier à tout moment dans les paramètres.</translation>
 <translation id="8138405288920084977">LTE Advanced</translation>
+<translation id="8140591278915222789">Créer le vôtre</translation>
 <translation id="8143951647992294073">Sélectionnez <ph name="TOPIC_SOURCE" /> - <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Outils développeurs</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>

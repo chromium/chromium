@@ -582,6 +582,7 @@
 <translation id="3701167022068948696">දැන් නිරාකරණ කරන්න</translation>
 <translation id="3701515417135397388">දත්ත කඩ කිරීමක දී මුරපදයක් අවදානමට ලක්වුවහොත් ඔබට අනතුරු අඟවන්න</translation>
 <translation id="3703166520839776970">මෙම ගැටලුව දිගටම සිදු වන්නේ නම්, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> වෙතින් වැඩිදුර තොරතුරු ලබා ගැනීමට පහත "වැඩිදුර විස්තර" තෝරා ගන්න.</translation>
+<translation id="3708100450779900829">ඔබේ උපාංගය නැමුණු විට, ඔබට විකල්පයක් තෝරා ගත හැක, නැතහොත් ස්ථානය වෙනස් කිරීමට ලිපින තීරුව ස්පර්ශ කර අල්ලාගෙන සිටින්න</translation>
 <translation id="3710501561113687889">ඉදිරියට යාමට, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ඔබේ <ph name="FIELDS_STRING" /> මෙම අඩවිය සමග බෙදා ගනු ඇත.</translation>
 <translation id="3710560693796335511">සහයෝගිතාවය</translation>
 <translation id="3714981814255182093">සෙවීම් තීරුව විවෘත කරන්න</translation>
@@ -1281,6 +1282,7 @@
 <translation id="6850830437481525139">පටිති <ph name="TAB_COUNT" /> ක් වසන ලදී</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{ශ්‍රව්‍ය ගොනු, ලැයිස්තුවේ 1 ශ්‍රව්‍ය ගොනුවක්}one{ශ්‍රව්‍ය ගොනු, ලැයිස්තුවේ ශ්‍රව්‍ය ගොනු #ක්}other{ශ්‍රව්‍ය ගොනු, ලැයිස්තුවේ ශ්‍රව්‍ය ගොනු #ක්}}</translation>
 <translation id="685850645784703949">Google වෙතින් Discover - ක්‍රියාවිරහිතයි</translation>
+<translation id="6861722405755529743">පිටුසන් තීරු පිටාර බොත්තම</translation>
 <translation id="686366188661646310">මුරපදය මකන්නද?</translation>
 <translation id="6864459304226931083">රූපය බාගන්න</translation>
 <translation id="686490460830618322">යෙදුම් පෙරහන් පත්‍රය</translation>
@@ -1613,6 +1615,7 @@
 <translation id="8236063039629122676">දැන්, ඔබ ගිය පෙර පිටු බැලීමට දකුණට ස්වයිප් කිරීමෙන් ඔබව පසුපසට ගෙන යන අතර වමට ස්වයිප් කිරීමෙන් ඔබව ඉදිරියට ගෙන යයි</translation>
 <translation id="8236097722223016103">පිටුසන් වෙත එක් කරන්න</translation>
 <translation id="8243077599929149377">ඔබේ පරිශීලක නාමය එක් කරන්න</translation>
+<translation id="8244387390464017490">නව පටිති පිටුව අභිරුචිකරණය කරන්න</translation>
 <translation id="8250920743982581267">ලේඛන</translation>
 <translation id="8255617931166444521">ඔවුන්ගේම අඩවියේ පමණක් ඔබගේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම බැලීමට පමණක් අඩවිවලට ඔබගේ කුකි භාවිත කිරීමට හැකිය</translation>
 <translation id="8258999165172757081">එක් කළේය</translation>

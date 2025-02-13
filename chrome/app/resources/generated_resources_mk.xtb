@@ -220,6 +220,7 @@
 <translation id="114721135501989771">Добијте ги паметните опции на Google во Chrome</translation>
 <translation id="1147322039136785890">Сега <ph name="SUPERVISED_USER_NAME" /> е на ред</translation>
 <translation id="1147991416141538220">За да побарате пристап, контактирајте со администраторот на уредов.</translation>
+<translation id="1148464196693569530">Дозволете кориснички скрипти</translation>
 <translation id="1148624853678088576">Подготвени сте!</translation>
 <translation id="1148669835763563782">Се инсталира најновото ажурирање на софтверот за подобрена безбедност и најновите функции на Chromebook. Ажурирањево опфаќа подобрено доживување со поставување што ќе ви овозможи лесен почеток на вашиот Chromebook.</translation>
 <translation id="1149401351239820326">Месец на истекување</translation>
@@ -1950,7 +1951,7 @@
 <translation id="2328561734797404498">Рестартирајте го уредот за да го користите <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Кога сте во режимот „Инкогнито“, сајтовите може да користат колачиња само за да ја гледаат вашата активност од прелистувањето на нивниот сајт. Колачињата се бришат на крајот на сесијата во „Инкогнито“.</translation>
 <translation id="2329597144923131178">Најавете се за да ги добиете обележувачите, историјата, лозинките и другите поставки на сите ваши уреди.</translation>
-<translation id="2331334586452217517">Содржините од сајтов се испраќаат до Google и може да ги гледаат прегледувачи. За <ph name="PASSWORD_CHANGE" />.</translation>
+<translation id="2331334586452217517">Содржините од сајтов се испраќаат до Google и може да ги гледаат прегледувачи. Информации за <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="2332115969598251205">Не може да се вчитаат уредите зачувани на <ph name="PRIMARY_EMAIL" />. Проверете ја интернет-врската и обидете се повторно.</translation>
 <translation id="2332131598580221120">Прикажи во продавница</translation>
 <translation id="2332515770639153015">„Подобреното безбедно прелистување“ е вклучено</translation>
@@ -6782,6 +6783,7 @@
 <translation id="5794414402486823030">Секогаш отворај со прегледувачот на системот</translation>
 <translation id="5794700615121138172">Споделени папки на Linux</translation>
 <translation id="5794786537412027208">Затвори ги сите апликации на Chrome</translation>
+<translation id="5795422263272161110">Прикажувај едно до друго</translation>
 <translation id="5796485699458186843">Нова кар&amp;тичка „Инкогнито“</translation>
 <translation id="5796956053441619942">URL-адресата од далечинскиот уред не е поддржана</translation>
 <translation id="5797934230382081317">Дознајте како да започнете на &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; и &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -7310,6 +7312,7 @@
 <translation id="6170498031581934115">Не може да се овозможи отстранување грешки на ADB. Отворете „Поставки“ и обидете се повторно.</translation>
 <translation id="6170675927290506430">Одете во поставките за известувања</translation>
 <translation id="6171779718418683144">Прашувај при секоја посета</translation>
+<translation id="6172020488605056255">Кликнете со десното копче за да користите „Помош при читање“</translation>
 <translation id="617213288191670920">Не се додадени јазици</translation>
 <translation id="6173623053897475761">Напишете го вашиот PIN повторно</translation>
 <translation id="6174909075810107548">Користете „5“ за да притиснете копче на глувчето</translation>
@@ -8337,6 +8340,7 @@
 <translation id="6910190732484284349">Бришење криптографски клуч за корисничко име: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Избришано</translation>
 <translation id="6910274140210351823">Темно</translation>
+<translation id="691102290537033604">Екстензијата ќе може да го извршува кодот што не го прегледал Google. Може да биде небезбедна, па ова треба да го овозможите само ако знаете што правите.</translation>
 <translation id="6911734910326569517">Потребна меморија</translation>
 <translation id="6912007319859991306">PIN за SIM-картичката</translation>
 <translation id="6912380255120084882">Пробајте со друг уред</translation>
@@ -9847,6 +9851,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Глас <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Автоматско префрлање Wi-Fi од телефонот со Android</translation>
 <translation id="7991296728590311172">Поставки за „Пристап со прекинувачи“</translation>
+<translation id="7992080146463834191">Резимирајте содржини, поедноставувајте сложени текстови или поставувајте прашања.</translation>
 <translation id="7992203134935383159">Синтеза на говор</translation>
 <translation id="799570308305997052">Веб-приказ</translation>
 <translation id="7997826902155442747">Приоритет на процес</translation>
@@ -10087,6 +10092,7 @@
 <translation id="8155676038687609779">{COUNT,plural, =0{Не се најдени компромитирани лозинки}=1{{COUNT} компромитирана лозинка}one{{COUNT} компромитирана лозинка}other{{COUNT} компромитирани лозинки}}</translation>
 <translation id="8157248655669507702">Овозможете мобилен интернет за да инсталирате профил на eSIM</translation>
 <translation id="8157704005178149728">Се поставува надзор</translation>
+<translation id="8157728322324420120">Препорачано за вас</translation>
 <translation id="8157849462797352650">Вашиот уред ќе ги добие најновите ажурирања за безбедност, стабилност и изведба</translation>
 <translation id="8158117992543756526">Уредов престана да добива автоматски софтверски и безбедносни ажурирања во <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Добивајте потврда преку вибрации за дејства, како поделен екран и префрлување работни површини. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
@@ -11107,6 +11113,7 @@
 <translation id="8874448314264883207">Екстензијата „<ph name="EXTENSION_NAME" />“ е исклучена</translation>
 <translation id="8874647982044395866">Органско</translation>
 <translation id="8874790741333031443">Обидете се со привремено дозволување колачиња од трети страни, што значи помала заштита при прелистување, но поголема веројатност функциите на сајтот да работат според очекувањата.</translation>
+<translation id="8875221558267407626">Резимирајте содржини, поедноставувајте сложени текстови или поставувајте прашања</translation>
 <translation id="8875520811099717934">Надградба на Linux</translation>
 <translation id="8875736897340638404">Изберете поставка за видливоста</translation>
 <translation id="8876307312329369159">Поставкава не може да се промени во демо-сесија.</translation>
@@ -11160,6 +11167,7 @@
 <translation id="8915916167043355778">Затвори ги сите</translation>
 <translation id="8916476537757519021">Инкогнито подрамка: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Да, прифаќам</translation>
+<translation id="8917980324687233736">Прикажувај едно до друго</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> на <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Се инсталира апликацијата…</translation>
 <translation id="891931289445130855">Избриши ги податоците и дозволите</translation>

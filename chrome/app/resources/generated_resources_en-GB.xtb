@@ -220,6 +220,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="114721135501989771">Get Google smarts in Chrome</translation>
 <translation id="1147322039136785890">Now it's <ph name="SUPERVISED_USER_NAME" />'s turn</translation>
 <translation id="1147991416141538220">To ask for access, contact the administrator of this device.</translation>
+<translation id="1148464196693569530">Allow user scripts</translation>
 <translation id="1148624853678088576">You’re all set!</translation>
 <translation id="1148669835763563782">You’re getting the latest software update for enhanced security and the newest Chromebook features. This update includes an improved setup experience to help you get off to a smooth start on your Chromebook.</translation>
 <translation id="1149401351239820326">Expiry month</translation>
@@ -6781,6 +6782,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5794414402486823030">Always open with system viewer</translation>
 <translation id="5794700615121138172">Linux shared folders</translation>
 <translation id="5794786537412027208">Quit all Chrome Apps</translation>
+<translation id="5795422263272161110">Show side by side</translation>
 <translation id="5796485699458186843">New Incognito tab</translation>
 <translation id="5796956053441619942">The URL from the remote device is not supported</translation>
 <translation id="5797934230382081317">Learn how to get started on &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; and &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -7309,6 +7311,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6170498031581934115">Couldn't enable ADB debugging. Go to Settings and try again.</translation>
 <translation id="6170675927290506430">Go to notification settings</translation>
 <translation id="6171779718418683144">Ask on every visit</translation>
+<translation id="6172020488605056255">Right-click to use Help me read</translation>
 <translation id="617213288191670920">No languages added</translation>
 <translation id="6173623053897475761">Type your PIN again</translation>
 <translation id="6174909075810107548">Use '5' to press a mouse button</translation>
@@ -8334,6 +8337,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6910190732484284349">Delete passkey for username: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Deleted</translation>
 <translation id="6910274140210351823">Dark</translation>
+<translation id="691102290537033604">The extension will be able to run code which has not been reviewed by Google. It may be unsafe and you should only enable this if you know what you are doing.</translation>
 <translation id="6911734910326569517">Memory footprint</translation>
 <translation id="6912007319859991306">Mobile SIM PIN</translation>
 <translation id="6912380255120084882">Try a different device</translation>
@@ -9845,6 +9849,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Voice <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Transfer Wi-Fi automatically from your Android phone</translation>
 <translation id="7991296728590311172">Switch Access settings</translation>
+<translation id="7992080146463834191">Summarise content, simplify complex language or ask questions.</translation>
 <translation id="7992203134935383159">Speech synthesis</translation>
 <translation id="799570308305997052">Web view</translation>
 <translation id="7997826902155442747">Process Priority</translation>
@@ -10086,6 +10091,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8155676038687609779">{COUNT,plural, =0{No compromised passwords found}=1{{COUNT} compromised password}other{{COUNT} compromised passwords}}</translation>
 <translation id="8157248655669507702">Enable mobile data to install an eSIM profile</translation>
 <translation id="8157704005178149728">Setting up supervision</translation>
+<translation id="8157728322324420120">Suggested for you</translation>
 <translation id="8157849462797352650">Your device gets the latest security, stability and performance updates</translation>
 <translation id="8158117992543756526">This device stopped getting automatic software and security updates in <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Receive vibration confirmation for actions like split screen and switching desks. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -11102,6 +11108,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8874448314264883207">'<ph name="EXTENSION_NAME" />' was turned off</translation>
 <translation id="8874647982044395866">Organic</translation>
 <translation id="8874790741333031443">Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.</translation>
+<translation id="8875221558267407626">Summarise content, simplify complex language or ask questions</translation>
 <translation id="8875520811099717934">Linux upgrade</translation>
 <translation id="8875736897340638404">Choose your visibility</translation>
 <translation id="8876307312329369159">This setting can't be changed in a demo session.</translation>
@@ -11155,6 +11162,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8915916167043355778">Close all</translation>
 <translation id="8916476537757519021">Incognito Subframe: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Yes, I'm in</translation>
+<translation id="8917980324687233736">Show side by side</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />'s <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">Installing app…</translation>
 <translation id="891931289445130855">Delete data and permissions</translation>

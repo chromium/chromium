@@ -96,6 +96,7 @@
 <translation id="2343156876103232566">‏لإرسال رقم من هذا الجهاز إلى جهازك الذي يعمل بنظام التشغيل Android، يُرجى تسجيل الدخول إلى Chromium على الجهازَين.</translation>
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2361918034042471035">‏تطلب منك الإضافة "<ph name="EXTENSION_NAME" />" تسجيل الدخول إلى Chromium</translation>
+<translation id="236943522426971115">‏إيقاف تشغيل Chromium في الخلفية أثناء عمل التطبيقات</translation>
 <translation id="2374216753258219393">‏لاستخدام هذه الإضافة على الحساب <ph name="USER_EMAIL_ADDRESS" />، عليك تسجيل الدخول إلى Chromium.</translation>
 <translation id="2384373936468275798">‏تعذّر على نظام التشغيل Chromium مزامنة بياناتك لأن تفاصيل تسجيل الدخول إلى حسابك قديمة.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{‏كانت إضافة واحدة أو أكثر من إضافات Chromium تصل إلى جهاز HID واحد}=1{‏تصل إضافة واحدة أو أكثر من إضافات Chromium إلى جهاز HID واحد}two{‏تصل إضافة واحدة أو أكثر من إضافات Chromium إلى جهازَي HID}few{‏تصل إضافة واحدة أو أكثر من إضافات Chromium إلى # أجهزة HID}many{‏تصل إضافة واحدة أو أكثر من إضافات Chromium إلى # جهاز HID}other{‏تصل إضافة واحدة أو أكثر من إضافات Chromium إلى # جهاز HID}}</translation>
@@ -504,6 +505,7 @@
 <translation id="8013436988911883588">‏بعد حصول Chromium على إمكانية الوصول، ستتمكن المواقع الإلكترونية من مطالبتك بإمكانية الوصول.</translation>
 <translation id="80471789339884597">شكرًا على التثبيت. عليك إعادة تشغيل جميع المتصفِّحات قبل استخدام <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">عرض اختصار ميزة "البحث بالصور" دائمًا</translation>
+<translation id="8077498902115777962">‏إيقاف تشغيل Chromium في الخلفية أثناء عمل التطبيقات</translation>
 <translation id="80790299200510644">البحث بالصور</translation>
 <translation id="8086881907087796310">تعذّر تثبيت التطبيق لعدم استيفاء جهاز الكمبيوتر للحد الأدنى من متطلبات الأجهزة.</translation>
 <translation id="8096472344908884505">‏صفحة "<ph name="PAGE_TITLE" />": إصدار Google Chrome for Testing</translation>

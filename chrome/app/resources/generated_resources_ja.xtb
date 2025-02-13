@@ -8644,6 +8644,7 @@
 <translation id="7160911207516219534">サイドパネル</translation>
 <translation id="716210145227921528">削除したパスキー</translation>
 <translation id="7165263843655074092">このデバイスは標準のセキュリティ機能で保護されます</translation>
+<translation id="7166017546802325772">このグループへの変更はありません</translation>
 <translation id="716640248772308851">「<ph name="EXTENSION" />」はチェックした場所にある画像、動画、音声の各ファイルを読み取ることができます。</translation>
 <translation id="7166815366658507447">アクセス ポイントを有効にしました</translation>
 <translation id="7167327771183668296">自動クリック</translation>
@@ -10059,6 +10060,7 @@
 <translation id="8155676038687609779">{COUNT,plural, =0{不正使用されたパスワードは見つかりませんでした}=1{不正使用されたパスワード: {COUNT} 件}other{不正使用されたパスワード: {COUNT} 件}}</translation>
 <translation id="8157248655669507702">eSIM プロファイルをインストールするにはモバイルデータを有効にしてください</translation>
 <translation id="8157704005178149728">管理機能の設定</translation>
+<translation id="8157728322324420120">おすすめ</translation>
 <translation id="8157849462797352650">デバイスで最新のセキュリティ、安定性、パフォーマンスのアップデートを受け取れます</translation>
 <translation id="8158117992543756526">このデバイスのソフトウェアとセキュリティの自動更新は <ph name="MONTH_AND_YEAR" /> に停止しました。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">画面の分割やデスクの切り替えなどの操作をバイブレーションで確認します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>

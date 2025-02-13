@@ -30,6 +30,7 @@ Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph na
 <translation id="2118649612461486615">Butiksinfo</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Dine lukkede faner og grupper kan åbnes igen via sektionerne Seneste faner og Fanegrupper. Din inkognitofane er ikke tilgængelig.}one{Dine lukkede faner og grupper kan åbnes igen via sektionerne Seneste faner og Fanegrupper. # inkognitofane er ikke tilgængelig.}other{Dine lukkede faner og grupper kan åbnes igen via sektionerne Seneste faner og Fanegrupper. # inkognitofaner er ikke tilgængelige.}}</translation>
 <translation id="2162620598375156287">Fås nu til <ph name="CURRENT_PRICE" /> på <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2242907120821295124">Fanegruppen <ph name="TAB_GROUP_NAME" /> er ikke længere tilgængelig</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Ophæv gruppering af fane}one{Ophæv gruppering af fane}other{Ophæv gruppering af faner}}</translation>
 <translation id="2271452184061378400">Dine fanegrupper gemmes her</translation>
 <translation id="2277224997687551299">Rediger gruppenavn</translation>
@@ -87,6 +88,7 @@ Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph na
 <translation id="4783638485675352219">Del titler og webadresser på åbne faner fra denne enhed med operativsystemet</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> anmeldelse)}one{(<ph name="REVIEWS_COUNT_MANY" /> anmeldelse)}other{(<ph name="REVIEWS_COUNT_MANY" /> anmeldelser)}}</translation>
 <translation id="4850886885716139402">Vis</translation>
+<translation id="4861611890274104875">Luk kortet.</translation>
 <translation id="4861953997778766866">Alle kan ændre dine delte fanegrupper</translation>
 <translation id="4870911314065352661">Vil du lukke alle faner?</translation>
 <translation id="4871719318659334896">Luk gruppe</translation>
