@@ -393,8 +393,8 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
 
     if (should_record_blocking_metrics) {
       EnsureAutoPipSettingHelper();
-      auto_pip_setting_helper_->OnAutoPipBlockedByPermission(
-          GetHistogramNameForReason());
+      auto_pip_setting_helper_->OnAutoPipBlockedByPermission(GetAutoPipReason(),
+                                                             GetUkmSourceId());
     }
     return false;
   } else if (setting == CONTENT_SETTING_ASK &&
@@ -404,8 +404,7 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
 
     if (should_record_blocking_metrics) {
       EnsureAutoPipSettingHelper();
-      auto_pip_setting_helper_->OnAutoPipBlockedByIncognito(
-          GetHistogramNameForReason());
+      auto_pip_setting_helper_->OnAutoPipBlockedByIncognito(GetAutoPipReason());
     }
     return false;
   }
@@ -535,18 +534,16 @@ AutoPictureInPictureTabHelper::GetPrimaryMainRoutedFrame() const {
   return {rfh};
 }
 
-std::string AutoPictureInPictureTabHelper::GetHistogramNameForReason() const {
-  if (IsUsingCameraOrMicrophone()) {
-    return "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
-           "VideoConferencing.PromptResultV2";
+std::optional<ukm::SourceId> AutoPictureInPictureTabHelper::GetUkmSourceId()
+    const {
+  const std::optional<content::RenderFrameHost*> rfh =
+      GetPrimaryMainRoutedFrame();
+
+  if (!rfh) {
+    return std::nullopt;
   }
 
-  if (MeetsVideoPlaybackConditions()) {
-    return "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
-           "MediaPlayback.PromptResultV2";
-  }
-
-  return std::string();
+  return {rfh.value()->GetPageUkmSourceId()};
 }
 
 AutoPipSettingHelper::AutoPipReason
@@ -590,7 +587,8 @@ AutoPictureInPictureTabHelper::CreateOverlayPermissionViewIfNeeded(
   EnsureAutoPipSettingHelper();
 
   return auto_pip_setting_helper_->CreateOverlayViewIfNeeded(
-      std::move(close_pip_cb), GetHistogramNameForReason(), anchor_view, arrow);
+      std::move(close_pip_cb), auto_pip_trigger_reason_, GetUkmSourceId(),
+      anchor_view, arrow);
 }
 
 void AutoPictureInPictureTabHelper::OnUserClosedWindow() {
@@ -601,7 +599,8 @@ void AutoPictureInPictureTabHelper::OnUserClosedWindow() {
   }
 
   // There might be the auto-pip setting UI shown, so forward this.
-  auto_pip_setting_helper_->OnUserClosedWindow(GetHistogramNameForReason());
+  auto_pip_setting_helper_->OnUserClosedWindow(GetAutoPipReason(),
+                                               GetUkmSourceId());
 }
 
 void AutoPictureInPictureTabHelper::OnTabBecameActive() {

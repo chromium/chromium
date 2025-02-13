@@ -34,6 +34,7 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/browser/navigation_entry.h"
@@ -49,6 +50,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/media_session/public/cpp/test/audio_focus_test_util.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -62,6 +64,10 @@ using testing::AtLeast;
 using testing::Return;
 
 namespace {
+
+using UkmEntry = ukm::builders::
+    Media_AutoPictureInPicture_EnterPictureInPicture_AutomaticReason_PromptResultV2;
+using PromptResult = AutoPipSettingHelper::PromptResult;
 
 const base::FilePath::CharType kAutoDocumentPipPage[] =
     FILE_PATH_LITERAL("media/picture-in-picture/autopip-document.html");
@@ -202,6 +208,8 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
     content::SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
+
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
   void SetUp() override {
@@ -216,10 +224,22 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
   }
 
-  void LoadAutoDocumentPipPage(Browser* browser) {
-    GURL test_page_url = ui_test_utils::GetTestUrl(
-        base::FilePath(base::FilePath::kCurrentDirectory),
-        base::FilePath(kAutoDocumentPipPage));
+  void LoadAutoDocumentPipPage(Browser* browser,
+                               std::string_view hostname = {}) {
+    GURL test_page_url;
+    if (hostname.empty()) {
+      test_page_url = ui_test_utils::GetTestUrl(
+          base::FilePath(base::FilePath::kCurrentDirectory),
+          base::FilePath(kAutoDocumentPipPage));
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
+      return;
+    }
+
+    ASSERT_TRUE(embedded_https_test_server().Start());
+    test_page_url = embedded_https_test_server().GetURL(
+        hostname, base::FilePath(FILE_PATH_LITERAL("/"))
+                      .Append(kAutoDocumentPipPage)
+                      .MaybeAsASCII());
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
   }
 
@@ -229,10 +249,22 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
                      "a.com", kIframeAutoDocumentMediaPlaybackPipPage)));
   }
 
-  void LoadCameraMicrophonePage(Browser* browser) {
-    GURL test_page_url = ui_test_utils::GetTestUrl(
-        base::FilePath(base::FilePath::kCurrentDirectory),
-        base::FilePath(kCameraPage));
+  void LoadCameraMicrophonePage(Browser* browser,
+                                std::string_view hostname = {}) {
+    GURL test_page_url;
+    if (hostname.empty()) {
+      test_page_url = ui_test_utils::GetTestUrl(
+          base::FilePath(base::FilePath::kCurrentDirectory),
+          base::FilePath(kCameraPage));
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
+      return;
+    }
+
+    ASSERT_TRUE(embedded_https_test_server().Start());
+    test_page_url = embedded_https_test_server().GetURL(
+        hostname, base::FilePath(FILE_PATH_LITERAL("/"))
+                      .Append(kCameraPage)
+                      .MaybeAsASCII());
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
   }
 
@@ -599,6 +631,52 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     return overlay_view;
   }
 
+  void CheckPromptResultUkmRecorded(GURL url,
+                                    std::string_view expected_metric_name,
+                                    PromptResult expected_prompt_result) {
+    const auto& entries =
+        ukm_recorder()->GetEntriesByName(UkmEntry::kEntryName);
+    size_t found_count = 0u;
+    const ukm::mojom::UkmEntry* last_entry = nullptr;
+    for (const ukm::mojom::UkmEntry* entry : entries) {
+      const ukm::UkmSource* source =
+          ukm_recorder()->GetSourceForSourceId(entry->source_id);
+      if (!source || source->url() != url) {
+        continue;
+      }
+      if (!ukm_recorder()->EntryHasMetric(entry, expected_metric_name)) {
+        continue;
+      }
+      found_count++;
+      last_entry = entry;
+    }
+    ASSERT_NE(nullptr, last_entry);
+
+    const int64_t* metric =
+        ukm::TestUkmRecorder::GetEntryMetric(last_entry, expected_metric_name);
+    ASSERT_TRUE(metric);
+    EXPECT_EQ(static_cast<int>(expected_prompt_result), *metric);
+    EXPECT_EQ(1u, found_count);
+  }
+
+  void CheckPromptResultUkmMetricNotRecorded(
+      GURL url,
+      std::string_view not_expected_metric_name) {
+    const auto& entries =
+        ukm_recorder()->GetEntriesByName(UkmEntry::kEntryName);
+    for (const ukm::mojom::UkmEntry* entry : entries) {
+      const ukm::UkmSource* source =
+          ukm_recorder()->GetSourceForSourceId(entry->source_id);
+      if (!source || source->url() != url) {
+        continue;
+      }
+      ASSERT_FALSE(
+          ukm_recorder()->EntryHasMetric(entry, not_expected_metric_name));
+    }
+  }
+
+  ukm::TestAutoSetUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
+
  protected:
   virtual std::vector<base::test::FeatureRef> GetEnabledFeatures() {
     return {blink::features::kDocumentPictureInPictureAPI,
@@ -610,6 +688,7 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
       audio_focus_observer_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
 class AutoPictureInPictureWithVideoPlaybackBrowserTest
@@ -1015,9 +1094,9 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
                        PromptResultRecorded_VideoConferencingAllowOnce) {
   // Load a page that registers for autopip and start video playback.
-  LoadCameraMicrophonePage(browser());
+  LoadCameraMicrophonePage(browser(), "a.com");
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  GetUserMediaAndAccept(browser()->tab_strip_model()->GetActiveWebContents());
+  GetUserMediaAndAccept(web_contents);
 
   base::HistogramTester histograms;
   {
@@ -1037,17 +1116,19 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   auto samples =
       histograms.GetHistogramSamplesSinceCreation(kVideoConferencingHistogram);
 
-  // Verify that the "allow once" prompt result is recorded for the "video
-  // conferencing" metric.
+  // Verify metrics.
   EXPECT_EQ(1, samples->TotalCount());
-  EXPECT_EQ(1, samples->GetCount(3));  // Allow once
+  EXPECT_EQ(1, samples->GetCount(static_cast<int>(PromptResult::kAllowOnce)));
+  CheckPromptResultUkmRecorded(web_contents->GetLastCommittedURL(),
+                               UkmEntry::kVideoConferencingName,
+                               PromptResult::kAllowOnce);
 }
 
 IN_PROC_BROWSER_TEST_F(
     AutoPictureInPictureTabHelperBrowserTest,
     PromptResultRecorded_VideoConferencingNotShownAllowedOnEveryVisit) {
   // Load a page that registers for autopip and start video playback.
-  LoadCameraMicrophonePage(browser());
+  LoadCameraMicrophonePage(browser(), "a.com");
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   GetUserMediaAndAccept(browser()->tab_strip_model()->GetActiveWebContents());
   SetContentSetting(web_contents, CONTENT_SETTING_ALLOW);
@@ -1066,16 +1147,19 @@ IN_PROC_BROWSER_TEST_F(
   auto samples =
       histograms.GetHistogramSamplesSinceCreation(kVideoConferencingHistogram);
 
-  // Verify that the "not shown allowed on every visit" prompt result is
-  // recorded for the "video conferencing" metric.
+  // Verify metrics.
   EXPECT_EQ(1, samples->TotalCount());
-  EXPECT_EQ(1, samples->GetCount(4));  // Not shown allowed on every visit
+  EXPECT_EQ(1, samples->GetCount(static_cast<int>(
+                   PromptResult::kNotShownAllowedOnEveryVisit)));
+  CheckPromptResultUkmRecorded(web_contents->GetLastCommittedURL(),
+                               UkmEntry::kVideoConferencingName,
+                               PromptResult::kNotShownAllowedOnEveryVisit);
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
                        PromptResultRecorded_VideoConferencingNotShownBlocked) {
   // Load a page that registers for autopip and start video playback.
-  LoadCameraMicrophonePage(browser());
+  LoadCameraMicrophonePage(browser(), "a.com");
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   GetUserMediaAndAccept(browser()->tab_strip_model()->GetActiveWebContents());
   SetContentSetting(web_contents, CONTENT_SETTING_BLOCK);
@@ -1088,17 +1172,20 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   auto samples =
       histograms.GetHistogramSamplesSinceCreation(kVideoConferencingHistogram);
 
-  // Verify that the "not shown blocked" prompt result is recorded for the
-  // "video conferencing" metric.
+  // Verify metrics.
   EXPECT_EQ(1, samples->TotalCount());
-  EXPECT_EQ(1, samples->GetCount(6));  // Not shown blocked
+  EXPECT_EQ(
+      1, samples->GetCount(static_cast<int>(PromptResult::kNotShownBlocked)));
+  CheckPromptResultUkmRecorded(web_contents->GetLastCommittedURL(),
+                               UkmEntry::kVideoConferencingName,
+                               PromptResult::kNotShownBlocked);
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
                        PromptResultNotRecorded) {
   // Load a page that registers for autopip and do not starts using
   // camera/microphone.
-  LoadCameraMicrophonePage(browser());
+  LoadCameraMicrophonePage(browser(), "a.com");
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
   auto* tab_helper =
@@ -1116,7 +1203,11 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   auto samples =
       histograms.GetHistogramSamplesSinceCreation(kVideoConferencingHistogram);
+
+  // Verify metrics.
   EXPECT_EQ(0, samples->TotalCount());
+  CheckPromptResultUkmMetricNotRecorded(web_contents->GetLastCommittedURL(),
+                                        UkmEntry::kVideoConferencingName);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1124,7 +1215,7 @@ IN_PROC_BROWSER_TEST_F(
     PromptResultRecorded_VideoConferencingNotShownIncognito) {
   // Load a page that registers for autopip and start video playback.
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
-  LoadCameraMicrophonePage(incognito_browser);
+  LoadCameraMicrophonePage(incognito_browser, "a.com");
   auto* web_contents =
       incognito_browser->tab_strip_model()->GetActiveWebContents();
   GetUserMediaAndAccept(
@@ -1139,10 +1230,12 @@ IN_PROC_BROWSER_TEST_F(
   auto samples =
       histograms.GetHistogramSamplesSinceCreation(kVideoConferencingHistogram);
 
-  // Verify that the "not shown incognito" prompt result is recorded for the
-  // "video conferencing" metric.
+  // Verify metrics.
   EXPECT_EQ(1, samples->TotalCount());
-  EXPECT_EQ(1, samples->GetCount(7));  // Not shown incognito
+  EXPECT_EQ(
+      1, samples->GetCount(static_cast<int>(PromptResult::kNotShownIncognito)));
+  CheckPromptResultUkmMetricNotRecorded(web_contents->GetLastCommittedURL(),
+                                        UkmEntry::kVideoConferencingName);
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
@@ -1989,7 +2082,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        PromptResultRecorded_VideoPlaybackAllowOnce) {
   // Load a page that registers for autopip and start video playback.
-  LoadAutoDocumentPipPage(browser());
+  LoadAutoDocumentPipPage(browser(), "a.com");
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
@@ -2015,10 +2108,12 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   auto samples =
       histograms.GetHistogramSamplesSinceCreation(kMediaPlaybackHistogram);
 
-  // Verify that the "allow once" prompt result is recorded for the "media
-  // playback" metric.
+  // Verify metrics.
   EXPECT_EQ(1, samples->TotalCount());
-  EXPECT_EQ(1, samples->GetCount(3));  // Allow once
+  EXPECT_EQ(1, samples->GetCount(static_cast<int>(PromptResult::kAllowOnce)));
+  CheckPromptResultUkmRecorded(web_contents->GetLastCommittedURL(),
+                               UkmEntry::kMediaPlaybackName,
+                               PromptResult::kAllowOnce);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2055,7 +2150,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        PromptResultRecorded_VideoConferencingTakesPrecedence) {
   // Load a page that registers for autopip and start video playback.
-  LoadAutoDocumentPipPage(browser());
+  LoadAutoDocumentPipPage(browser(), "a.com");
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
@@ -2089,7 +2184,14 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   // picture reasons: "video conferencing" and "media playback". This is because
   // the video conferencing check is always performed first.
   EXPECT_EQ(1, samples->TotalCount());
-  EXPECT_EQ(1, samples->GetCount(3));  // Allow this time
+  EXPECT_EQ(1, samples->GetCount(static_cast<int>(PromptResult::kAllowOnce)));
+
+  // Verify UKMs.
+  CheckPromptResultUkmRecorded(web_contents->GetLastCommittedURL(),
+                               UkmEntry::kVideoConferencingName,
+                               PromptResult::kAllowOnce);
+  CheckPromptResultUkmMetricNotRecorded(web_contents->GetLastCommittedURL(),
+                                        UkmEntry::kMediaPlaybackName);
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,

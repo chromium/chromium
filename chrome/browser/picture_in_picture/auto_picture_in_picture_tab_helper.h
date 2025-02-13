@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/views/bubble/bubble_border.h"
 
 namespace permissions {
@@ -223,17 +224,16 @@ class AutoPictureInPictureTabHelper
   // returned. Otherwise, an empty optional is returned.
   std::optional<content::RenderFrameHost*> GetPrimaryMainRoutedFrame() const;
 
-  // Returns the histogram name corresponding to the reason for entering auto
-  // picture in picture. Use caution when modifying this method since the
-  // returned value is used for logging.
+  // Returns the page UKM SourceId associated with the primary main routed frame
+  // for the MediaSession, if it exists.
+  std::optional<ukm::SourceId> GetUkmSourceId() const;
+
+  // Returns the reason for entering auto picture in picture.
   //
   // Note that a media element can meet both, the "video conferencing" and
   // "media playback" conditions. If both conditions are met, this method will
-  // return the "video conferencing" histogram. On the other hand, if no
-  // conditions are met, an empty string will be returned.
-  std::string GetHistogramNameForReason() const;
-
-  // Returns the reason for entering auto picture in picture.
+  // return the "video conferencing" histogram. If no
+  // conditions are met, `AutoPipReason::kUnknown` will be returned.
   AutoPipSettingHelper::AutoPipReason GetAutoPipReason() const;
 
   // Accumulates the total time spent in picture in picture during the lifetime

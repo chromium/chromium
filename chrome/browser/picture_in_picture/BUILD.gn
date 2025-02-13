@@ -96,6 +96,7 @@ source_set("impl") {
       "//components/strings:components_strings",
       "//components/url_formatter",
       "//net",
+      "//services/metrics/public/cpp:ukm_builders",
       "//third_party/blink/public/common:headers",
       "//ui/views",
     ]
