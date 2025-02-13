@@ -438,6 +438,14 @@ bool IsWasmTtsComponentUpdaterEnabled() {
          base::FeatureList::IsEnabled(
              ::features::kWasmTtsComponentUpdaterEnabled);
 }
+
+BASE_FEATURE(kWasmTtsEngineAutoInstallDisabled,
+             "WasmTtsEngineAutoInstallDisabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsWasmTtsEngineAutoInstallDisabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kWasmTtsEngineAutoInstallDisabled);
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 }  // namespace features
