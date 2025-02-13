@@ -440,10 +440,10 @@ export class SettingsNearbyShareSubpageElement extends
   }
 
   private showHighVisibilityPage_(timeoutInSeconds?: number): void {
-    const shutoffTimeoutInSeconds =
-        timeoutInSeconds || this.isQuickShareV2Enabled_ ?
+    const defaultTimeout = this.isQuickShareV2Enabled_ ?
         DEFAULT_HIGH_VISIBILITY_TIMEOUT_S :
         DEFAULT_HIGH_VISIBILITY_TIMEOUT_LEGACY_S;
+    const shutoffTimeoutInSeconds = timeoutInSeconds || defaultTimeout;
 
     this.showReceiveDialog_ = true;
     flush();
