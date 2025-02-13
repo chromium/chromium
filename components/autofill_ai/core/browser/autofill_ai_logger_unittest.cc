@@ -102,8 +102,6 @@ class BaseAutofillAiTest : public testing::Test {
     webdata_helper_.WaitUntilIdle();
   }
 
-  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
-
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -295,8 +293,6 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
     AddEntityInstance(autofill::test::GetPassportEntityInstance());
   }
   manager().OnFormSeen(*form);
-  // Unless `EntityDataManager` API is updated, we need to wait until idle.
-  RunUntilIdle();
 
   if (user_saw_suggestions()) {
     manager().OnSuggestionsShown(
