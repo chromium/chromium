@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Basic contributions
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'runAdAuction' on 'Navigator': aggregationCoordinatorOrigin 'https://web-platform.test:8444' is not a recognized coordinator origin."
+[FAIL] reserved.always
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'runAdAuction' on 'Navigator': aggregationCoordinatorOrigin 'https://web-platform.test:8444' is not a recognized coordinator origin."
+[FAIL] reserved.win
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'runAdAuction' on 'Navigator': aggregationCoordinatorOrigin 'https://web-platform.test:8444' is not a recognized coordinator origin."
+[FAIL] reserved.loss
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'runAdAuction' on 'Navigator': aggregationCoordinatorOrigin 'https://web-platform.test:8444' is not a recognized coordinator origin."
+[FAIL] reserved.once
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'runAdAuction' on 'Navigator': aggregationCoordinatorOrigin 'https://web-platform.test:8444' is not a recognized coordinator origin."
+Harness: the test ran to completion.
+

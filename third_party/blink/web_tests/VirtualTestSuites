@@ -1470,11 +1470,12 @@
       "qingxinwu@google.com"
     ],
     "bases": [
+      "external/wpt/fledge/tentative/private-aggregation.https.window.js",
       "external/wpt/fledge/tentative/server-response-private-aggregation.https.window.js"
     ],
     "args": [
       "--private-aggregation-developer-mode",
-      "--enable-features=EnableBandAPrivateAggregation,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fweb-platform.test%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}"
+      "--enable-features=EnableBandAPrivateAggregation,AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform.test%3A8444,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fweb-platform.test%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}"
     ],
     "expires": "Jul 14, 2025"
   },
