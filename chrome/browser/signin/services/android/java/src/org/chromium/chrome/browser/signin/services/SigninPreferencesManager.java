@@ -26,6 +26,7 @@ public class SigninPreferencesManager {
     // LINT.IfChange(SigninPromoAccessPointId)
     @StringDef({
         SigninPromoAccessPointId.BOOKMARKS,
+        SigninPromoAccessPointId.HISTORY_PAGE,
         SigninPromoAccessPointId.NTP,
         SigninPromoAccessPointId.RECENT_TABS,
         SigninPromoAccessPointId.SETTINGS
@@ -33,6 +34,7 @@ public class SigninPreferencesManager {
     @Retention(RetentionPolicy.SOURCE)
     public @interface SigninPromoAccessPointId {
         String BOOKMARKS = "Bookmarks";
+        String HISTORY_PAGE = "HistoryPage";
         String NTP = "Ntp";
         String RECENT_TABS = "RecentTabs"; // Only used for histograms
         String SETTINGS = "Settings";

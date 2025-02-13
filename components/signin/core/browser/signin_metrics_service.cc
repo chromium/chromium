@@ -181,6 +181,7 @@ void MaybeRecordWebSigninToChromeSigninTimes(
     case signin_metrics::AccessPoint::kDriveFilePickerIos:
     case signin_metrics::AccessPoint::kCollaborationTabGroup:
     case signin_metrics::AccessPoint::kGlicLaunchButton:
+    case signin_metrics::AccessPoint::kHistoryPage:
       return;
   }
 

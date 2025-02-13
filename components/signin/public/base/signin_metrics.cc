@@ -467,6 +467,7 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kWebauthnModalDialog:
     case AccessPoint::kCctAccountMismatchNotification:
     case AccessPoint::kDriveFilePickerIos:
+    case AccessPoint::kHistoryPage:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
                    << " is not supposed to log signin user actions.";
     case AccessPoint::kCollaborationTabGroup:
@@ -752,6 +753,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kDriveFilePickerIos:
     case AccessPoint::kCollaborationTabGroup:
     case AccessPoint::kGlicLaunchButton:
+    case AccessPoint::kHistoryPage:
       NOTREACHED() << "Signin_Impression_From* user actions are not recorded "
                       "for access point "
                    << static_cast<int>(access_point);

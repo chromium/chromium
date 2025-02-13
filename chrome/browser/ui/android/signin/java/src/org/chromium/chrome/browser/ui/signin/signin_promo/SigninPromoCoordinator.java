@@ -105,13 +105,11 @@ public final class SigninPromoCoordinator {
         mImpressionTracker.setListener(mMediator::recordImpression);
     }
 
-    public void increasePromoShowCount() {
-        // TODO(crbug.com/327387704): Implement this method
-    }
-
     static int getLayoutResId(@SigninAccessPoint int accessPoint) {
         return switch (accessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER -> R.layout.sync_promo_view_bookmarks;
+                // TODO(crbug.com/388201374): Create layout for history page promo.
+            case SigninAccessPoint.HISTORY_PAGE -> R.layout.sync_promo_view_bookmarks;
             case SigninAccessPoint.NTP_FEED_TOP_PROMO -> R.layout
                     .sync_promo_view_content_suggestions;
             case SigninAccessPoint.RECENT_TABS -> R.layout.sync_promo_view_recent_tabs;

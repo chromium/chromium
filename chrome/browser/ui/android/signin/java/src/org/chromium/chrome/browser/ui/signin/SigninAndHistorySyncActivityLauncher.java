@@ -24,6 +24,7 @@ public interface SigninAndHistorySyncActivityLauncher {
     @IntDef({
         SigninAccessPoint.RECENT_TABS,
         SigninAccessPoint.BOOKMARK_MANAGER,
+        SigninAccessPoint.HISTORY_PAGE,
         SigninAccessPoint.NTP_FEED_TOP_PROMO,
         SigninAccessPoint.NTP_FEED_BOTTOM_PROMO,
         SigninAccessPoint.SAFETY_CHECK,

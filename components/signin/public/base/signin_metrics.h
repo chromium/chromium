@@ -251,11 +251,14 @@ enum class AccessPoint : int {
   kCollaborationTabGroup = 73,
   // Glic launch button on the tab strip.
   kGlicLaunchButton = 74,
+  // History sync promo shown on the History page. Should not be visible when
+  // the use is not signed-in. Android only.
+  kHistoryPage = 75,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kGlicLaunchButton,  // This must be last.
+  kMaxValue = kHistoryPage,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 
