@@ -6,6 +6,15 @@
 
 namespace lens {
 
+bool IsLVFEntrypoint(LensOverlayEntrypoint entrypoint) {
+  return entrypoint == LensOverlayEntrypoint::kLVFCameraCapture ||
+         entrypoint == LensOverlayEntrypoint::kLVFImagePicker;
+}
+
+bool IsImageContextMenuEntrypoint(LensOverlayEntrypoint entrypoint) {
+  return entrypoint == LensOverlayEntrypoint::kSearchImageContextMenu;
+}
+
 LensOverlayInvocationSource InvocationSourceFromEntrypoint(
     LensOverlayEntrypoint entrypoint) {
   switch (entrypoint) {

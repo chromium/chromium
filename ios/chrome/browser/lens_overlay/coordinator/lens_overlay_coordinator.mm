@@ -145,8 +145,8 @@ const int kExpectedExitAnimationCount = 2;
   /// Presenter for the lens container.
   LensOverlayContainerPresenter* _containerPresenter;
 
-  /// Whether the image should be repositioned when exiting.
-  BOOL _shouldResetSelectionToInitialPositionOnExit;
+  // The entrypoint associated with the current session.
+  LensOverlayEntrypoint _entrypoint;
 }
 
 #pragma mark - public
@@ -158,10 +158,9 @@ const int kExpectedExitAnimationCount = 2;
 #pragma mark - Helpers
 
 // Returns whether the UI was created succesfully.
-- (BOOL)createUIWithImageSource:(LensImageSource*)imageSource
-                     entrypoint:(LensOverlayEntrypoint)entrypoint {
+- (BOOL)createUIWithImageSource:(LensImageSource*)imageSource {
   [self createContainerViewController];
-  [self createSelectionUIWithImageSource:imageSource entrypoint:entrypoint];
+  [self createSelectionUIWithImageSource:imageSource];
   if (!_selectionViewController) {
     return NO;
   }
@@ -186,8 +185,7 @@ const int kExpectedExitAnimationCount = 2;
   return YES;
 }
 
-- (void)createSelectionUIWithImageSource:(LensImageSource*)imageSource
-                              entrypoint:(LensOverlayEntrypoint)entrypoint {
+- (void)createSelectionUIWithImageSource:(LensImageSource*)imageSource {
   if (_selectionViewController) {
     return;
   }
@@ -195,7 +193,7 @@ const int kExpectedExitAnimationCount = 2;
   LensOverlayConfigurationFactory* lensConfigurationFactory =
       [[LensOverlayConfigurationFactory alloc] init];
   LensConfiguration* config = [lensConfigurationFactory
-      configurationForEntrypoint:entrypoint
+      configurationForEntrypoint:_entrypoint
                          profile:self.browser->GetProfile()];
 
   LensOverlayOverflowMenuFactory* overflowMenuFactory =
@@ -280,12 +278,9 @@ const int kExpectedExitAnimationCount = 2;
   // infrastructure still needs to be built to allow the restoration window to
   // be displayed when exiting and re-entering the experience.
   [self prepareSnapshotCapturingInfrastructure];
-  _shouldResetSelectionToInitialPositionOnExit =
-      (entrypoint == LensOverlayEntrypoint::kLVFCameraCapture);
   LensImageSource* imageSource =
       [[LensImageSource alloc] initWithImageMetadata:metadata];
   [self handleOverlayImageSourceFound:imageSource
-                           entrypoint:entrypoint
                              animated:YES
                            completion:completion];
 }
@@ -298,12 +293,9 @@ const int kExpectedExitAnimationCount = 2;
   // infrastructure still needs to be built to allow the restoration window to
   // be displayed when exiting and re-entering the experience.
   [self prepareSnapshotCapturingInfrastructure];
-  _shouldResetSelectionToInitialPositionOnExit =
-      (entrypoint == LensOverlayEntrypoint::kLVFCameraCapture);
   LensImageSource* imageSource =
       [[LensImageSource alloc] initWithSnapshot:image];
   [self handleOverlayImageSourceFound:imageSource
-                           entrypoint:entrypoint
                              animated:YES
                            completion:completion];
 }
@@ -312,13 +304,11 @@ const int kExpectedExitAnimationCount = 2;
                  entrypoint:(LensOverlayEntrypoint)entrypoint
                  completion:(void (^)(BOOL))completion {
   [self prepareOverlayWithEntrypoint:entrypoint];
-  _shouldResetSelectionToInitialPositionOnExit = YES;
   __weak __typeof(self) weakSelf = self;
   [self captureSnapshotWithCompletion:^(UIImage* snapshot) {
     LensImageSource* imageSource =
         [[LensImageSource alloc] initWithSnapshot:snapshot];
     [weakSelf handleOverlayImageSourceFound:imageSource
-                                 entrypoint:entrypoint
                                    animated:animated
                                  completion:completion];
   }];
@@ -326,7 +316,6 @@ const int kExpectedExitAnimationCount = 2;
 
 // Handles presenting the base image to be used in the overlay.
 - (void)handleOverlayImageSourceFound:(LensImageSource*)imageSource
-                           entrypoint:(LensOverlayEntrypoint)entrypoint
                              animated:(BOOL)animated
                            completion:(void (^)(BOOL))completion {
   if (!imageSource.isValid) {
@@ -336,8 +325,7 @@ const int kExpectedExitAnimationCount = 2;
     return;
   }
 
-  BOOL success = [self createUIWithImageSource:imageSource
-                                    entrypoint:entrypoint];
+  BOOL success = [self createUIWithImageSource:imageSource];
   if (success) {
     [self showLensUI:animated completion:completion];
   } else {
@@ -391,24 +379,24 @@ const int kExpectedExitAnimationCount = 2;
     return;
   }
 
-  // Start the selection UI only when the container is presented. This avoids
-  // results being reported before the container is fully shown.
-  if ([self termsOfServiceAccepted]) {
-    [_selectionViewController start];
-  }
-
   if (self.shouldShowConsentFlow) {
     if (self.isResultsBottomSheetCreated) {
       [self stopResultPage];
     }
     [self presentConsentFlow];
-  } else if (self.isResultsBottomSheetCreated) {
-    // Only show the bottom sheet when in selection. For translate, build the
-    // necessary infrastructure but don't show it, effectively starting it
-    // hidden.
-    [self buildResultsBottomSheetPresentation];
-    if (!_selectionViewController.translateFilterActive) {
-      [self showResultsBottomSheet];
+  } else {
+    // Start the selection UI only when the container is presented. This avoids
+    // results being reported before the container is fully shown.
+    [_selectionViewController start];
+
+    if (self.isResultsBottomSheetCreated) {
+      // Only show the bottom sheet when in selection. For translate, build the
+      // necessary infrastructure but don't show it, effectively starting it
+      // hidden.
+      [self buildResultsBottomSheetPresentation];
+      if (!_selectionViewController.translateFilterActive) {
+        [self showResultsBottomSheet];
+      }
     }
   }
 
@@ -609,7 +597,7 @@ const int kExpectedExitAnimationCount = 2;
     [weakContainerPresenter fadeSelectionUIWithCompletion:completion];
   };
 
-  if (_shouldResetSelectionToInitialPositionOnExit) {
+  if (self.shouldResetSelectionToInitialPositionOnExit) {
     [_selectionViewController
         resetSelectionAreaToInitialPosition:onSelectionExitPositionSettled];
   } else {
@@ -803,6 +791,7 @@ const int kExpectedExitAnimationCount = 2;
              name:UIApplicationDidReceiveMemoryWarningNotification
            object:nil];
 
+  _entrypoint = entrypoint;
   _associatedTabHelper = self.activeTabHelper->GetWeakPtr();
 
   _metricsRecorder = [[LensOverlayMetricsRecorder alloc]
@@ -825,8 +814,15 @@ const int kExpectedExitAnimationCount = 2;
 }
 
 - (BOOL)shouldShowConsentFlow {
-  return !self.termsOfServiceAccepted ||
-         base::FeatureList::IsEnabled(kLensOverlayForceShowOnboardingScreen);
+  if (lens::IsLVFEntrypoint(_entrypoint) ||
+      lens::IsImageContextMenuEntrypoint(_entrypoint)) {
+    return NO;
+  }
+
+  BOOL forceShowConsent =
+      base::FeatureList::IsEnabled(kLensOverlayForceShowOnboardingScreen);
+
+  return !self.termsOfServiceAccepted || forceShowConsent;
 }
 
 - (BOOL)termsOfServiceAccepted {
@@ -837,6 +833,15 @@ const int kExpectedExitAnimationCount = 2;
 
   return self.browser->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kLensOverlayConditionsAccepted);
+}
+
+- (void)checkTermsOfServiceIfNeeded {
+  if (lens::IsLVFEntrypoint(_entrypoint) ||
+      lens::IsImageContextMenuEntrypoint(_entrypoint)) {
+    return;
+  }
+
+  CHECK(self.termsOfServiceAccepted);
 }
 
 - (void)startResultPage {
@@ -1032,6 +1037,12 @@ const int kExpectedExitAnimationCount = 2;
   [self destroyLensUI:NO reason:lens::LensOverlayDismissalSource::kLowMemory];
 }
 
+// Whether the image should be repositioned when exiting.
+- (BOOL)shouldResetSelectionToInitialPositionOnExit {
+  return _entrypoint != LensOverlayEntrypoint::kSearchImageContextMenu &&
+         _entrypoint != LensOverlayEntrypoint::kLVFImagePicker;
+}
+
 - (BOOL)isLensOverlayVisible {
   return _containerPresenter.isLensOverlayVisible;
 }
@@ -1048,7 +1059,7 @@ const int kExpectedExitAnimationCount = 2;
     return;
   }
 
-  CHECK([self termsOfServiceAccepted]);
+  [self checkTermsOfServiceIfNeeded];
   [self disableSelectionInteraction:NO];
   [_selectionViewController setTopIconsHidden:NO];
   [_selectionViewController start];
