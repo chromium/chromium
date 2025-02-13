@@ -31,7 +31,8 @@ void CheckDrawLayer(HeadsUpDisplayLayerImpl* layer,
   AppendQuadsData data;
   bool will_draw = layer->WillDraw(draw_mode, resource_provider);
   if (will_draw) {
-    layer->AppendQuads({.draw_mode = draw_mode}, render_pass.get(), &data);
+    layer->AppendQuads(AppendQuadsContext{draw_mode, {}, false},
+                       render_pass.get(), &data);
   }
   viz::CompositorRenderPassList pass_list;
   pass_list.push_back(std::move(render_pass));

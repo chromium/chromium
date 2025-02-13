@@ -253,7 +253,8 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
   AppendQuadsData data;
   host_impl.active_tree()->root_layer()->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
   host_impl.active_tree()->root_layer()->AppendQuads(
-      {.draw_mode = DRAW_MODE_SOFTWARE}, render_pass.get(), &data);
+      AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false}, render_pass.get(),
+      &data);
   host_impl.active_tree()->root_layer()->DidDraw(nullptr);
 }
 

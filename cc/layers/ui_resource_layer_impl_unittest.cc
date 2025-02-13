@@ -60,7 +60,8 @@ void QuadSizeTest(FakeUIResourceLayerTreeHostImpl* host_impl,
 
   AppendQuadsData data;
   host_impl->active_tree()->root_layer()->AppendQuads(
-      {.draw_mode = DRAW_MODE_HARDWARE}, render_pass.get(), &data);
+      AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+      &data);
 
   // Verify quad rects
   const viz::QuadList& quads = render_pass->quad_list;
@@ -109,7 +110,8 @@ void NeedsBlendingTest(FakeUIResourceLayerTreeHostImpl* host_impl,
 
   AppendQuadsData data;
   host_impl->active_tree()->root_layer()->AppendQuads(
-      {.draw_mode = DRAW_MODE_HARDWARE}, render_pass.get(), &data);
+      AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+      &data);
 
   // Verify needs_blending is set appropriately.
   const viz::QuadList& quads = render_pass->quad_list;

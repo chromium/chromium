@@ -106,8 +106,8 @@ static std::unique_ptr<viz::CompositorRenderPass> DoAppendQuadsWithScaledMask(
   RenderSurfaceImpl* render_surface_impl = GetRenderSurface(surface);
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData append_quads_data;
-  render_surface_impl->AppendQuads({.draw_mode = draw_mode}, render_pass.get(),
-                                   &append_quads_data);
+  render_surface_impl->AppendQuads(AppendQuadsContext{draw_mode, {}, false},
+                                   render_pass.get(), &append_quads_data);
   return render_pass;
 }
 

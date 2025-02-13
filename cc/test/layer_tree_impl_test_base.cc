@@ -91,8 +91,8 @@ void LayerTreeImplTestBase::AppendQuads(LayerImpl* layer_impl) {
   AppendQuadsData data;
   render_pass_->quad_list.clear();
   render_pass_->shared_quad_state_list.clear();
-  layer_impl->AppendQuads({.draw_mode = DRAW_MODE_HARDWARE}, render_pass_.get(),
-                          &data);
+  layer_impl->AppendQuads(AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false},
+                          render_pass_.get(), &data);
 }
 
 void LayerTreeImplTestBase::AppendQuadsWithOcclusion(
@@ -108,7 +108,7 @@ void LayerTreeImplTestBase::AppendQuadsWithOcclusion(
   layer_impl->draw_properties().occlusion_in_content_space = occlusion;
 
   if (layer_impl->WillDraw(DRAW_MODE_HARDWARE, resource_provider())) {
-    layer_impl->AppendQuads({.draw_mode = DRAW_MODE_HARDWARE},
+    layer_impl->AppendQuads(AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false},
                             render_pass_.get(), &data);
     layer_impl->DidDraw(resource_provider());
   }
@@ -128,8 +128,8 @@ void LayerTreeImplTestBase::AppendQuadsForPassWithOcclusion(
   layer_impl->draw_properties().occlusion_in_content_space = occlusion;
 
   layer_impl->WillDraw(DRAW_MODE_HARDWARE, resource_provider());
-  layer_impl->AppendQuads({.draw_mode = DRAW_MODE_HARDWARE}, given_render_pass,
-                          &data);
+  layer_impl->AppendQuads(AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false},
+                          given_render_pass, &data);
   layer_impl->DidDraw(resource_provider());
 }
 
@@ -144,7 +144,7 @@ void LayerTreeImplTestBase::AppendSurfaceQuadsWithOcclusion(
   surface_impl->set_occlusion_in_content_space(
       Occlusion(gfx::Transform(), SimpleEnclosedRegion(occluded),
                 SimpleEnclosedRegion()));
-  surface_impl->AppendQuads({.draw_mode = DRAW_MODE_HARDWARE},
+  surface_impl->AppendQuads(AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false},
                             render_pass_.get(), &data);
 }
 

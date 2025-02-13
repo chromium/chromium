@@ -1010,8 +1010,8 @@ class FluentOverlayScrollbarOpacityLayerTreeHostImplTest
     scrollbar->SetThumbThicknessScaleFactor(thickness);
     auto render_pass = viz::CompositorRenderPass::Create();
     AppendQuadsData append_quads_data;
-    scrollbar->AppendQuads({.draw_mode = DRAW_MODE_HARDWARE}, render_pass.get(),
-                           &append_quads_data);
+    scrollbar->AppendQuads(AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false},
+                           render_pass.get(), &append_quads_data);
     if (expected_opacity == 0.f) {
       // If the opacity of the track is expected to be zero, the layer code
       // makes an early return and doesn't append the track's quads.
