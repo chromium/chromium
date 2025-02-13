@@ -55,17 +55,17 @@ class AXTreeSourceViewsTest : public ViewsTestBase {
     widget_->Init(std::move(params));
     widget_->SetContentsView(std::make_unique<View>());
 
-    label1_ = new Label(u"Label 1");
+    label1_ = widget_->GetContentsView()->AddChildView(
+        std::make_unique<Label>(u"Label 1"));
     label1_->SetBounds(1, 1, 111, 111);
-    widget_->GetContentsView()->AddChildView(label1_.get());
 
-    label2_ = new Label(u"Label 2");
+    label2_ = widget_->GetContentsView()->AddChildView(
+        std::make_unique<Label>(u"Label 2"));
     label2_->SetBounds(2, 2, 222, 222);
-    widget_->GetContentsView()->AddChildView(label2_.get());
 
-    textfield_ = new Textfield();
+    textfield_ =
+        widget_->GetContentsView()->AddChildView(std::make_unique<Textfield>());
     textfield_->SetBounds(222, 2, 20, 200);
-    widget_->GetContentsView()->AddChildView(textfield_.get());
   }
 
   void TearDown() override {
@@ -148,9 +148,9 @@ TEST_F(AXTreeSourceViewsTest, GetTreeDataWithFocus) {
 }
 
 TEST_F(AXTreeSourceViewsTest, IgnoredView) {
-  View* ignored_view = new View();
+  View* ignored_view =
+      widget_->GetContentsView()->AddChildView(std::make_unique<View>());
   ignored_view->GetViewAccessibility().SetIsIgnored(true);
-  widget_->GetContentsView()->AddChildView(ignored_view);
 
   AXAuraObjCache cache;
   TestAXTreeSourceViews tree(cache.GetOrCreate(widget_.get())->GetUniqueId(),

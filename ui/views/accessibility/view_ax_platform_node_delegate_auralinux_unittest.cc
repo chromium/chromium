@@ -37,9 +37,8 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, TextfieldAccessibility) {
 
   View* content = widget->SetContentsView(std::make_unique<View>());
 
-  Textfield* textfield = new Textfield;
+  Textfield* textfield = content->AddChildView(std::make_unique<Textfield>());
   textfield->GetViewAccessibility().SetName(u"Name");
-  content->AddChildView(textfield);
 
   ASSERT_EQ(0, atk_object_get_n_accessible_children(
                    textfield->GetNativeViewAccessible()))
