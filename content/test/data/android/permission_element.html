@@ -14,6 +14,15 @@
     <permission id="geolocation" type="geolocation">
   </div>
   <script>
+    function checkGeolocation() {
+      navigator.permissions.query({name: 'geolocation'}).then(permission => {
+          window.document.title = permission.state;
+          permission.onchange = () => {
+            window.document.title = permission.state;
+          };
+      });
+    }
+
     document.getElementById('parent').addEventListener('resolve', (event) => {
       window.document.title = 'resolve';
     });
