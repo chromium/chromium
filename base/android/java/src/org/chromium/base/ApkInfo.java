@@ -146,17 +146,27 @@ public final class ApkInfo {
     public static boolean targetsAtLeastU() {
         int target = ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion;
 
+        return target >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+    }
+
+    /**
+     * Checks if the application targets pre-release SDK B. This must be manually maintained as the
+     * SDK goes through finalization.
+     */
+    public static boolean targetAtLeastB() {
+        int target = ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion;
+
         // Logic for pre-API-finalization:
         // return BuildCompat.isAtLeastU() && target == Build.VERSION_CODES.CUR_DEVELOPMENT;
 
         // Logic for after API finalization but before public SDK release has to just hardcode the
         // appropriate SDK integer. This will include Android builds with the finalized SDK, and
         // also pre-API-finalization builds (because CUR_DEVELOPMENT == 10000).
-        // return target >= 34;
+        return target >= 36;
 
         // Now that the public SDK is upstreamed we can use the defined constant. All users of this
         // should now just inline this check themselves.
-        return target >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+        // return target >= Build.VERSION_CODES.<PLACE_HOLDER>;
     }
 
     public static boolean isInitializedForTesting() {
