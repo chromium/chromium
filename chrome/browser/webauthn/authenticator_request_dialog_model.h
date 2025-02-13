@@ -379,7 +379,7 @@ struct AuthenticatorRequestDialogModel
   // Returns a user-friendly description for a |type|. If |type| is kPhone, a
   // |phone_name| must be passed.
   static std::u16string GetMechanismDescription(
-      device::AuthenticatorType type,
+      const device::DiscoverableCredentialMetadata& cred,
       const std::optional<std::string>& phone_name);
 
   explicit AuthenticatorRequestDialogModel(

@@ -29,6 +29,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_types.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -91,16 +92,22 @@ AUTHENTICATOR_EVENTS
 
 // static
 std::u16string AuthenticatorRequestDialogModel::GetMechanismDescription(
-    device::AuthenticatorType type,
+    const device::DiscoverableCredentialMetadata& cred,
     const std::optional<std::string>& phone_name) {
-  if (type == device::AuthenticatorType::kPhone) {
+  if (cred.source == device::AuthenticatorType::kPhone) {
     return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SOURCE_PHONE,
                                       base::UTF8ToUTF16(*phone_name));
   }
-  int message;
   const bool gpm_enabled =
       base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
-  switch (type) {
+  if (cred.provider_name) {
+    return gpm_enabled ? base::UTF8ToUTF16(*cred.provider_name)
+                       : l10n_util::GetStringFUTF16(
+                             IDS_WEBAUTHN_SOURCE_CUSTOM_VENDOR,
+                             base::UTF8ToUTF16(*cred.provider_name));
+  }
+  int message;
+  switch (cred.source) {
     case device::AuthenticatorType::kWinNative:
       message = gpm_enabled ? IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO_NEW
                             : IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO;
@@ -110,8 +117,6 @@ std::u16string AuthenticatorRequestDialogModel::GetMechanismDescription(
                             : IDS_WEBAUTHN_SOURCE_CHROME_PROFILE;
       break;
     case device::AuthenticatorType::kICloudKeychain:
-      // TODO(crbug.com/40265798): Use IDS_WEBAUTHN_SOURCE_CUSTOM_VENDOR for
-      // third party providers.
       message = gpm_enabled ? IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN_NEW
                             : IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN;
       break;

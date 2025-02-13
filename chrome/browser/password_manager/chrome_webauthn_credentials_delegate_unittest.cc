@@ -71,21 +71,24 @@ const device::DiscoverableCredentialMetadata user1{
     device::PublicKeyCredentialUserEntity(
         device::fido_parsing_utils::Materialize(kUserId),
         kUserName1,
-        /*display_name=*/std::nullopt)};
+        /*display_name=*/std::nullopt),
+    /*provider_name=*/std::nullopt};
 const device::DiscoverableCredentialMetadata user2{
     device::AuthenticatorType::kOther, kRpId,
     device::fido_parsing_utils::Materialize(kCredId2),
     device::PublicKeyCredentialUserEntity(
         device::fido_parsing_utils::Materialize(kUserId),
         kUserName2,
-        /*display_name=*/std::nullopt)};
+        /*display_name=*/std::nullopt),
+    /*provider_name=*/std::nullopt};
 const device::DiscoverableCredentialMetadata userGpm{
     device::AuthenticatorType::kEnclave, kRpId,
     device::fido_parsing_utils::Materialize(kCredIdGpm),
     device::PublicKeyCredentialUserEntity(
         device::fido_parsing_utils::Materialize(kUserId),
         kUserName1,
-        /*display_name=*/std::nullopt)};
+        /*display_name=*/std::nullopt),
+    /*provider_name=*/std::nullopt};
 
 PasskeyCredential CreatePasskey(std::vector<uint8_t> cred_id,
                                 std::string username,

@@ -51,7 +51,8 @@ void LocalCredentialManagementMac::Enumerate(
     credential_metadata.emplace_back(
         device::AuthenticatorType::kTouchID, credential.rp_id,
         credential.credential_id,
-        credential.metadata.ToPublicKeyCredentialUserEntity());
+        credential.metadata.ToPublicKeyCredentialUserEntity(),
+        /*provider_name=*/std::nullopt);
   }
   std::sort(credential_metadata.begin(), credential_metadata.end(),
             CredentialComparator());

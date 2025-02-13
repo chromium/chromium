@@ -312,32 +312,66 @@ const device::PublicKeyCredentialUserEntity kPhoneUser2({3, 4, 5, 6},
                                                         "D",
                                                         std::nullopt);
 
-const device::DiscoverableCredentialMetadata
-    kCred1(device::AuthenticatorType::kOther, "rp.com", {0}, kUser1);
+const device::DiscoverableCredentialMetadata kCred1(
+    device::AuthenticatorType::kOther,
+    "rp.com",
+    {0},
+    kUser1,
+    /*provider_name=*/std::nullopt);
 const device::DiscoverableCredentialMetadata kCred1FromICloudKeychain(
     device::AuthenticatorType::kICloudKeychain,
     "rp.com",
     {4},
-    kUser1);
+    kUser1,
+    /*provider_name=*/std::nullopt);
 const device::DiscoverableCredentialMetadata kCred1FromChromeOS(
     device::AuthenticatorType::kChromeOS,
     "rp.com",
     {4},
-    kUser1);
-const device::DiscoverableCredentialMetadata
-    kCred2(device::AuthenticatorType::kOther, "rp.com", {1}, kUser2);
-const device::DiscoverableCredentialMetadata
-    kPhoneCred1(device::AuthenticatorType::kPhone, "rp.com", {2}, kPhoneUser1);
-const device::DiscoverableCredentialMetadata
-    kPhoneCred2(device::AuthenticatorType::kPhone, "rp.com", {3}, kPhoneUser2);
-const device::DiscoverableCredentialMetadata
-    kWinCred1(device::AuthenticatorType::kWinNative, "rp.com", {0}, kUser1);
-const device::DiscoverableCredentialMetadata
-    kWinCred2(device::AuthenticatorType::kWinNative, "rp.com", {1}, kUser2);
-const device::DiscoverableCredentialMetadata
-    kTouchIDCred1(device::AuthenticatorType::kTouchID, "rp.com", {4}, kUser1);
-const device::DiscoverableCredentialMetadata
-    kEnclaveCred1(device::AuthenticatorType::kEnclave, "rp.com", {1}, kUser1);
+    kUser1,
+    /*provider_name=*/std::nullopt);
+const device::DiscoverableCredentialMetadata kCred2(
+    device::AuthenticatorType::kOther,
+    "rp.com",
+    {1},
+    kUser2,
+    /*provider_name=*/std::nullopt);
+const device::DiscoverableCredentialMetadata kPhoneCred1(
+    device::AuthenticatorType::kPhone,
+    "rp.com",
+    {2},
+    kPhoneUser1,
+    /*provider_name=*/std::nullopt);
+const device::DiscoverableCredentialMetadata kPhoneCred2(
+    device::AuthenticatorType::kPhone,
+    "rp.com",
+    {3},
+    kPhoneUser2,
+    /*provider_name=*/std::nullopt);
+const device::DiscoverableCredentialMetadata kWinCred1(
+    device::AuthenticatorType::kWinNative,
+    "rp.com",
+    {0},
+    kUser1,
+    /*provider_name=*/std::nullopt);
+const device::DiscoverableCredentialMetadata kWinCred2(
+    device::AuthenticatorType::kWinNative,
+    "rp.com",
+    {1},
+    kUser2,
+    /*provider_name=*/std::nullopt);
+const device::DiscoverableCredentialMetadata kTouchIDCred1(
+    device::AuthenticatorType::kTouchID,
+    "rp.com",
+    {4},
+    kUser1,
+    /*provider_name=*/std::nullopt);
+const device::DiscoverableCredentialMetadata kEnclaveCred1(
+    device::AuthenticatorType::kEnclave,
+    "rp.com",
+    {1},
+    kUser1,
+    /*provider_name=*/std::nullopt);
 
 AuthenticatorRequestDialogModel::Mechanism::CredentialInfo CredentialInfoFrom(
     const device::DiscoverableCredentialMetadata& metadata) {

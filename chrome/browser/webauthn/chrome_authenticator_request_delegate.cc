@@ -1171,7 +1171,8 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
         device::PublicKeyCredentialUserEntity(
             std::vector<uint8_t>(passkey.user_id().begin(),
                                  passkey.user_id().end()),
-            passkey.user_name(), passkey.user_display_name()));
+            passkey.user_name(), passkey.user_display_name()),
+        /*provider_name=*/std::nullopt);
   }
 }
 

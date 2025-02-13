@@ -1412,7 +1412,8 @@ void AuthenticatorRequestDialogController::SelectAccount(
   for (const auto& response : ephemeral_state_.responses_) {
     model_->creds.emplace_back(AuthenticatorType::kOther,
                                model_->relying_party_id,
-                               response.credential->id, *response.user_entity);
+                               response.credential->id, *response.user_entity,
+                               /*provider_name=*/std::nullopt);
   }
   selection_callback_ = std::move(callback);
   SetCurrentStep(Step::kSelectAccount);
@@ -2145,7 +2146,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
               base::Unretained(this), cred.cred_id));
       mechanism.description =
           AuthenticatorRequestDialogModel::GetMechanismDescription(
-              cred.source, model_->priority_phone_name);
+              cred, model_->priority_phone_name);
     }
     for (const auto& password : passwords_) {
       Mechanism mechanism(

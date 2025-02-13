@@ -128,7 +128,8 @@ TEST_F(WinAuthenticatorTest,
   EXPECT_TRUE(future.Wait());
 
   DiscoverableCredentialMetadata expected = DiscoverableCredentialMetadata(
-      AuthenticatorType::kWinNative, kRpId, kCredentialId, user);
+      AuthenticatorType::kWinNative, kRpId, kCredentialId, user,
+      /*provider_name=*/std::nullopt);
   EXPECT_EQ(std::get<0>(future.Get()),
             std::vector<DiscoverableCredentialMetadata>{expected});
   EXPECT_EQ(
@@ -202,7 +203,8 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_Unsupported) {
   EXPECT_TRUE(future.Wait());
 
   DiscoverableCredentialMetadata expected = DiscoverableCredentialMetadata(
-      AuthenticatorType::kWinNative, kRpId, kCredentialId, user);
+      AuthenticatorType::kWinNative, kRpId, kCredentialId, user,
+      /*provider_name=*/std::nullopt);
   EXPECT_EQ(std::get<0>(future.Get()),
             std::vector<DiscoverableCredentialMetadata>{});
   EXPECT_EQ(std::get<1>(future.Get()),
@@ -230,7 +232,8 @@ TEST_F(WinAuthenticatorTest,
   EXPECT_TRUE(future.Wait());
 
   DiscoverableCredentialMetadata expected = DiscoverableCredentialMetadata(
-      AuthenticatorType::kWinNative, kRpId, kCredentialId, user1);
+      AuthenticatorType::kWinNative, kRpId, kCredentialId, user1,
+      /*provider_name=*/std::nullopt);
   EXPECT_THAT(std::get<0>(future.Get()), testing::ElementsAre(expected));
   EXPECT_EQ(
       std::get<1>(future.Get()),

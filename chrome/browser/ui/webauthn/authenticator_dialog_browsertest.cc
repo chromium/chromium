@@ -664,23 +664,38 @@ class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
     device::DiscoverableCredentialMetadata gpm_cred(
         device::AuthenticatorType::kEnclave, "example.com", {1},
         device::PublicKeyCredentialUserEntity({1}, "elisa.g.beckett@gmail.com",
-                                              "Elisa Beckett"));
+                                              "Elisa Beckett"),
+        std::nullopt);
     device::DiscoverableCredentialMetadata local_cred1(
         device::AuthenticatorType::kTouchID, "example.com", {1},
         device::PublicKeyCredentialUserEntity({1}, "elisa.g.beckett@gmail.com",
-                                              "Elisa Beckett"));
+                                              "Elisa Beckett"),
+        std::nullopt);
     device::DiscoverableCredentialMetadata local_cred2(
         device::AuthenticatorType::kTouchID, "example.com", {2},
         device::PublicKeyCredentialUserEntity({2}, "elisa.beckett@ink-42.com",
-                                              "Elisa Beckett"));
+                                              "Elisa Beckett"),
+        std::nullopt);
     device::DiscoverableCredentialMetadata phone_cred1(
         device::AuthenticatorType::kPhone, "example.com", {3},
         device::PublicKeyCredentialUserEntity({1}, "elisa.g.beckett@gmail.com",
-                                              "Elisa Beckett"));
+                                              "Elisa Beckett"),
+        std::nullopt);
     device::DiscoverableCredentialMetadata phone_cred2(
         device::AuthenticatorType::kPhone, "example.com", {4},
         device::PublicKeyCredentialUserEntity({2}, "elisa.beckett@ink-42.com",
-                                              "Elisa Beckett"));
+                                              "Elisa Beckett"),
+        std::nullopt);
+    device::DiscoverableCredentialMetadata ick_cred1(
+        device::AuthenticatorType::kICloudKeychain, "example.com", {5},
+        device::PublicKeyCredentialUserEntity({1}, "elisa.beckett@gmail.com",
+                                              "Elisa Beckett"),
+        "Example Passkey Provider");
+    device::DiscoverableCredentialMetadata ick_cred2(
+        device::AuthenticatorType::kICloudKeychain, "example.com", {6},
+        device::PublicKeyCredentialUserEntity({2}, "elisa.beckett@ink-42.com",
+                                              "Elisa Beckett"),
+        "Another Example Passkey Provider");
     model_->user_entity = local_cred1.user;
 
     // Configure a phone from sync.
@@ -822,6 +837,13 @@ class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
     } else if (name == "gpm_locked_pin") {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMLockedPin);
+    } else if (name == "icloud_keychain_cred") {
+      transport_availability.has_empty_allow_list = true;
+      controller_->set_allow_icloud_keychain(true);
+      transport_availability.recognized_credentials = {
+          std::move(ick_cred1),
+          std::move(ick_cred2),
+      };
     } else {
       NOTREACHED();
     }
@@ -970,6 +992,11 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_gpm_locked_pin) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_icloud_keychain_cred) {
   ShowAndVerifyUi();
 }
 

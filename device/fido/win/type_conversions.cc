@@ -374,7 +374,9 @@ WinCredentialDetailsListToCredentialMetadata(
                 : std::nullopt,
             user->pwszDisplayName
                 ? std::make_optional(base::WideToUTF8(user->pwszDisplayName))
-                : std::nullopt));
+                : std::nullopt),
+        // TODO(nsatragno): integrate with pwszAuthenticatorName.
+        /*provider_name=*/std::nullopt);
     metadata.system_created = !credential->bRemovable;
     result.push_back(std::move(metadata));
   }

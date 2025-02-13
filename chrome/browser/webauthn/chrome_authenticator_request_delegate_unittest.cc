@@ -651,7 +651,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, FilterGoogleComPasskeys) {
           device::AuthenticatorType::kOther, test.rp_id,
           std::vector<uint8_t>{0},
           device::PublicKeyCredentialUserEntity(
-              std::vector<uint8_t>(user_id.begin(), user_id.end())));
+              std::vector<uint8_t>(user_id.begin(), user_id.end())),
+          /*provider_name=*/std::nullopt);
     }
     data.has_platform_authenticator_credential = test.recognized_credential;
 
@@ -659,7 +660,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, FilterGoogleComPasskeys) {
     // affect setting the recognized credentials flag.
     data.recognized_credentials.emplace_back(
         device::AuthenticatorType::kICloudKeychain, test.rp_id,
-        std::vector<uint8_t>{0}, device::PublicKeyCredentialUserEntity({1}));
+        std::vector<uint8_t>{0}, device::PublicKeyCredentialUserEntity({1}),
+        /*provider_name=*/std::nullopt);
     data.has_icloud_keychain_credential = device::FidoRequestHandlerBase::
         RecognizedCredential::kHasRecognizedCredential;
 
@@ -708,7 +710,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
   data.recognized_credentials.emplace_back(
       device::AuthenticatorType::kOther, kGoogleRpId, std::vector<uint8_t>{0},
       device::PublicKeyCredentialUserEntity(
-          std::vector<uint8_t>(user_id.begin(), user_id.end())));
+          std::vector<uint8_t>(user_id.begin(), user_id.end())),
+      /*provider_name=*/std::nullopt);
   data.has_platform_authenticator_credential = device::FidoRequestHandlerBase::
       RecognizedCredential::kHasRecognizedCredential;
 
@@ -1010,7 +1013,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateWithPasswordsTest,
   transports_info.recognized_credentials = {
       device::DiscoverableCredentialMetadata(
           device::AuthenticatorType::kEnclave, kRpId, {},
-          device::PublicKeyCredentialUserEntity())};
+          device::PublicKeyCredentialUserEntity(),
+          /*provider_name=*/std::nullopt)};
 
   // still waiting for passwords.
   EXPECT_CALL(mock_closure, Run).Times(0);

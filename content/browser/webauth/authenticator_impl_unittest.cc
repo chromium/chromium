@@ -9485,7 +9485,8 @@ class ICloudKeychainAuthenticatorImplTest : public AuthenticatorImplTest {
   static std::vector<device::DiscoverableCredentialMetadata> GetCredentials() {
     device::DiscoverableCredentialMetadata metadata(
         device::AuthenticatorType::kICloudKeychain, kTestRelyingPartyId,
-        {1, 2, 3, 4}, {{5, 6, 7, 8}, "name", "displayName"});
+        {1, 2, 3, 4}, {{5, 6, 7, 8}, "name", "displayName"},
+        /*provider_name=*/std::nullopt);
     return {std::move(metadata)};
   }
 
