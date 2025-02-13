@@ -8,11 +8,12 @@ import android.content.Context;
 import android.os.Build;
 import android.provider.Settings;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Helper class for Direct writing feature support and settings. */
+@NullMarked
 public class DirectWritingSettingsHelper {
     private DirectWritingSettingsHelper() {}
 
@@ -81,7 +82,7 @@ public class DirectWritingSettingsHelper {
         }
     }
 
-    private static String getDefaultInputMethod(Context context) {
+    private static @Nullable String getDefaultInputMethod(Context context) {
         if (StylusHandwritingFeatureMap.isEnabledOrDefault(
                 StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS, false)) {
             return StylusWritingSettingsState.getInstance().getDefaultInputMethod();

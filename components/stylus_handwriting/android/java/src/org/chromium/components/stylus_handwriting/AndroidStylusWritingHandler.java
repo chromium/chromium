@@ -20,6 +20,7 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.StylusWritingHandler;
 import org.chromium.content_public.browser.WebContents;
 
@@ -27,6 +28,7 @@ import java.util.List;
 
 /** Allows stylus handwriting using the Android stylus writing APIs introduced in Android T. */
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@NullMarked
 public class AndroidStylusWritingHandler implements StylusWritingHandler, StylusApiOption {
     private static final String TAG = "AndroidStylus";
 

@@ -6,6 +6,8 @@ package org.chromium.components.stylus_handwriting;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -23,6 +25,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 
@@ -30,10 +35,11 @@ import java.util.List;
  * Direct writing Service connection handler class. Takes care of calling DW Service APIs for
  * getting DW functionality.
  */
+@NullMarked
 class DirectWritingServiceBinder {
     private static final String TAG = "DWServiceBinder";
-    private IDirectWritingService mRemoteDwService;
-    private String mPackageName;
+    private @Nullable IDirectWritingService mRemoteDwService;
+    private @Nullable String mPackageName;
 
     private final ServiceConnection mConnection =
             new ServiceConnection() {
@@ -59,12 +65,12 @@ class DirectWritingServiceBinder {
                     // service so that we can reconnect and start writing again. This also ensures
                     // service callback is registered again which would have been reset at service
                     // when this happened.
-                    unbindService(mContext);
+                    unbindService(assumeNonNull(mContext));
                 }
             };
 
-    private DirectWritingTriggerCallback mTriggerCallback;
-    private Context mContext;
+    private @Nullable DirectWritingTriggerCallback mTriggerCallback;
+    private @Nullable Context mContext;
 
     /** Callback interface for DirectWritingTrigger class. */
     public interface DirectWritingTriggerCallback {
@@ -227,6 +233,7 @@ class DirectWritingServiceBinder {
         }
     }
 
+    @EnsuresNonNullIf("mRemoteDwService")
     boolean isServiceConnected() {
         return mRemoteDwService != null;
     }
@@ -250,7 +257,7 @@ class DirectWritingServiceBinder {
         }
     }
 
-    void onStopRecognition(MotionEvent me, Rect editableBounds, View rootView) {
+    void onStopRecognition(@Nullable MotionEvent me, @Nullable Rect editableBounds, View rootView) {
         if (!isServiceConnected()) return;
         try {
             Bundle bundle = DirectWritingBundleUtil.buildBundle(me, editableBounds, rootView);
@@ -275,7 +282,8 @@ class DirectWritingServiceBinder {
         }
     }
 
-    void updateEditableBounds(Rect editableBounds, View rootView, boolean isOnlyRectChanged) {
+    void updateEditableBounds(
+            @Nullable Rect editableBounds, View rootView, boolean isOnlyRectChanged) {
         if (!isServiceConnected()) return;
         try {
             mRemoteDwService.onBoundedEditTextChanged(
