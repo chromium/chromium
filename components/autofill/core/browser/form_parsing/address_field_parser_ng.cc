@@ -675,6 +675,16 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
     case LOYALTY_MEMBERSHIP_PROGRAM:
     case LOYALTY_MEMBERSHIP_PROVIDER:
     case LOYALTY_MEMBERSHIP_ID:
+    case CAR_OWNER_TAG:
+    case CAR_LICENSE_PLATE:
+    case CAR_REGISTRATION:
+    case CAR_MAKE:
+    case CAR_MODEL:
+    case DRIVERS_LICENSE_NAME_TAG:
+    case DRIVERS_LICENSE_REGION:
+    case DRIVERS_LICENSE_NUMBER:
+    case DRIVERS_LICENSE_EXPIRATION_DATE_TAG:
+    case DRIVERS_LICENSE_ISSUE_DATE_TAG:
     case MAX_VALID_FIELD_TYPE:
       return std::nullopt;
   }

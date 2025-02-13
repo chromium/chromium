@@ -477,6 +477,11 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="ALTERNATIVE_FULL_NAME"/>
   <variant name="ALTERNATIVE_GIVEN_NAME"/>
   <variant name="AMBIGUOUS_TYPE"/>
+  <variant name="CAR_LICENSE_PLATE"/>
+  <variant name="CAR_MAKE"/>
+  <variant name="CAR_MODEL"/>
+  <variant name="CAR_OWNER_TAG"/>
+  <variant name="CAR_REGISTRATION"/>
   <variant name="COMPANY_NAME"/>
   <variant name="CONFIRMATION_PASSWORD"/>
   <variant name="CREDIT_CARD_EXP_2_DIGIT_YEAR"/>
@@ -492,6 +497,11 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="CREDIT_CARD_TYPE"/>
   <variant name="CREDIT_CARD_VERIFICATION_CODE"/>
   <variant name="DELIVERY_INSTRUCTIONS"/>
+  <variant name="DRIVERS_LICENSE_EXPIRATION_DATE_TAG"/>
+  <variant name="DRIVERS_LICENSE_ISSUE_DATE_TAG"/>
+  <variant name="DRIVERS_LICENSE_NAME_TAG"/>
+  <variant name="DRIVERS_LICENSE_NUMBER"/>
+  <variant name="DRIVERS_LICENSE_REGION"/>
   <variant name="EMAIL_ADDRESS"/>
   <variant name="EMPTY_TYPE"/>
   <variant name="FIELD_WITH_DEFAULT_VALUE"/>
