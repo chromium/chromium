@@ -395,4 +395,18 @@ std::ostream& operator<<(std::ostream& out, const MatchableValue& value) {
   return out << value.value();
 }
 
+bool IsTruthyMatcher::MatchAndExplain(
+    const internal::MatchableValue& x,
+    testing::MatchResultListener* listener) const {
+  return WebContentsInteractionTestUtil::IsTruthy(x.value());
+}
+
+void IsTruthyMatcher::DescribeTo(std::ostream* os) const {
+  *os << "is truthy";
+}
+
+void IsTruthyMatcher::DescribeNegationTo(std::ostream* os) const {
+  *os << "is falsy";
+}
+
 }  // namespace internal
