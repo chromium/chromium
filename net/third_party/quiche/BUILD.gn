@@ -59,12 +59,12 @@ component("quiche") {
               "overrides/quiche_platform_impl/quiche_server_stats_impl.h",
               "overrides/quiche_platform_impl/quiche_stack_trace_impl.cc",
               "overrides/quiche_platform_impl/quiche_stack_trace_impl.h",
-              "overrides/quiche_platform_impl/quiche_time_utils_impl.cc",
-              "overrides/quiche_platform_impl/quiche_time_utils_impl.h",
               "overrides/quiche_platform_impl/quiche_url_utils_impl.cc",
               "overrides/quiche_platform_impl/quiche_url_utils_impl.h",
               "src/quiche/common/platform/default/quiche_platform_impl/quiche_flags_impl.cc",
               "src/quiche/common/platform/default/quiche_platform_impl/quiche_flags_impl.h",
+              "src/quiche/common/platform/default/quiche_platform_impl/quiche_time_utils_impl.cc",
+              "src/quiche/common/platform/default/quiche_platform_impl/quiche_time_utils_impl.h",
               "src/quiche/http2/hpack/hpack_static_table_entries.inc",
             ] + quiche_core_hdrs + quiche_core_srcs + binary_http_srcs +
             binary_http_hdrs + oblivious_http_srcs + oblivious_http_hdrs
@@ -129,8 +129,8 @@ if (build_epoll_based_tools) {
   static_library("epoll_tool_support") {
     testonly = true
     sources = [
-                "overrides/quiche_platform_impl/quiche_udp_socket_platform_impl.h",
                 "src/quiche/common/platform/default/quiche_platform_impl/quiche_stream_buffer_allocator_impl.h",
+                "src/quiche/common/platform/default/quiche_platform_impl/quiche_udp_socket_platform_impl.h",
               ] + io_tool_support_srcs + io_tool_support_hdrs
 
     configs += [ ":quiche_internal_config" ]
