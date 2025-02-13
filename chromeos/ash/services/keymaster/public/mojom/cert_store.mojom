@@ -9,7 +9,7 @@
 
 module arc.keymaster.mojom;
 
-import "chrome/services/keymanagement/public/mojom/cert_store_types.mojom";
+import "chromeos/ash/services/keymanagement/public/mojom/cert_store_types.mojom";
 
 // Metadata to uniquely identify a chaps key.
 struct ChapsKeyData {

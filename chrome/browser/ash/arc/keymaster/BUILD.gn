@@ -16,9 +16,9 @@ static_library("keymaster") {
 
   deps = [
     "//base",
-    "//chrome/services/keymaster/public/mojom",
     "//chromeos/ash/components/dbus/arc",
     "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/services/keymaster/public/mojom",
     "//components/keyed_service/core",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",

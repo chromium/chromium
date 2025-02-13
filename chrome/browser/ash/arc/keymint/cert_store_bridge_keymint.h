@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/services/keymint/public/mojom/cert_store.mojom.h"
+#include "chromeos/ash/services/keymint/public/mojom/cert_store.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/invitation.h"
 

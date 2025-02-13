@@ -3,6 +3,10 @@ include_rules = [
   # details.
   "-chrome",
 
+  "+chromeos/ash/services/keymanagement/public/mojom",
+  "+chromeos/ash/services/keymaster/public/mojom",
+  "+chromeos/ash/services/keymint/public/mojom",
+
   # This directory is in //chrome, which violates the rule above. Allow this
   # directory to #include its own files.
   "+chrome/browser/ash/arc/enterprise",
@@ -28,8 +32,5 @@ include_rules = [
   "+chrome/browser/ui/browser.h",
   "+chrome/common/net",
   "+chrome/common/pref_names.h",
-  "+chrome/services/keymanagement/public/mojom",
-  "+chrome/services/keymaster/public/mojom",
-  "+chrome/services/keymint/public/mojom",
   "+chrome/test/base",
 ]

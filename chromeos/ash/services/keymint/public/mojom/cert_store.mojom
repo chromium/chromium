@@ -10,7 +10,7 @@
 // Note that this module name is different than keymint.mojom's.
 module arc.keymint.mojom;
 
-import "chrome/services/keymanagement/public/mojom/cert_store_types.mojom";
+import "chromeos/ash/services/keymanagement/public/mojom/cert_store_types.mojom";
 
 // Metadata to uniquely identify a chaps key.
 struct ChapsKeyData {
