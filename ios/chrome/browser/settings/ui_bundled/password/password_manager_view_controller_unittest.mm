@@ -48,7 +48,6 @@
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/chrome/test/app/sync_test_util.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -60,28 +59,12 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-using password_manager::InsecureType;
-using password_manager::MockBulkLeakCheckService;
-using password_manager::PasswordForm;
-using password_manager::TestPasswordStore;
-using ::testing::Return;
-
-// TODO(crbug.com/40839348): Remove this double and uses TestSyncUserSettings
-@interface TestPasswordsMediator : PasswordsMediator
-
-@property(nonatomic) OnDeviceEncryptionState encryptionState;
-
-@end
-
-@implementation TestPasswordsMediator
-
-- (OnDeviceEncryptionState)onDeviceEncryptionState {
-  return self.encryptionState;
-}
-
-@end
-
 namespace {
+
+using ::password_manager::InsecureType;
+using ::password_manager::MockBulkLeakCheckService;
+using ::password_manager::PasswordForm;
+using ::password_manager::TestPasswordStore;
 
 // Use this test suite for tests that verify behaviors of
 // PasswordManagerViewController before loading the passwords for the first time
@@ -118,14 +101,13 @@ class PasswordManagerViewControllerTest
     CreateController();
 
     ProfileIOS* profile = browser_->GetProfile();
-    mediator_ = [[TestPasswordsMediator alloc]
+    mediator_ = [[PasswordsMediator alloc]
         initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
                                          GetForProfile(profile)
                        faviconLoader:IOSChromeFaviconLoaderFactory::
                                          GetForProfile(profile)
                          syncService:SyncServiceFactory::GetForProfile(profile)
                          prefService:profile->GetPrefs()];
-    mediator_.encryptionState = OnDeviceEncryptionStateNotShown;
 
     // Inject some fake passwords to pass the loading state.
     PasswordManagerViewController* passwords_controller =
@@ -354,7 +336,7 @@ class PasswordManagerViewControllerTest
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
-  TestPasswordsMediator* mediator_;
+  PasswordsMediator* mediator_;
   ScopedKeyWindow scoped_window_;
   UIViewController* root_view_controller_ = nil;
   id passwords_settings_commands_strict_mock_;
