@@ -373,9 +373,16 @@ bool IsPasswordManagerAvailable(
     std::unique_ptr<PasswordManagerUtilBridgeInterface> util_bridge) {
   CHECK(base::FeatureList::IsEnabled(
       password_manager::features::kLoginDbDeprecationAndroid));
-  if (!util_bridge->IsInternalBackendPresent()) {
+  return IsPasswordManagerAvailable(prefs,
+                                    util_bridge->IsInternalBackendPresent());
+}
+
+bool IsPasswordManagerAvailable(const PrefService* prefs,
+                                bool is_internal_backend_present) {
+  if (!is_internal_backend_present) {
     return false;
   }
+
   if (!HasMinGmsVersionForFullUpmSupport()) {
     return false;
   }
