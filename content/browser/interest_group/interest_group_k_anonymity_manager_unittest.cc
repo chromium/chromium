@@ -12,8 +12,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
@@ -848,6 +850,25 @@ TEST_F(InterestGroupKAnonymityManagerTestWithMock, QuerySetShouldBatch) {
     // There are two k-anon keys per ad, one bidding key and one reporting key.
     EXPECT_EQ(2 * kNumAds, maybe_group.value()->hashed_kanon_keys.size());
   }
+}
+
+TEST_F(InterestGroupKAnonymityManagerTestWithMock,
+       QuerySetDoesNotQueryUnlessQueryKAnonymityFeatureIsEnabled) {
+  base::test::ScopedFeatureList disabled_feature_list;
+  disabled_feature_list.InitAndDisableFeature(features::kFledgeQueryKAnonymity);
+
+  auto manager = CreateManager(/*has_error=*/false,
+                               /*query_sets_delay=*/base::Milliseconds(10));
+  const GURL top_frame = GURL("https://www.example.com/foo");
+  const url::Origin owner = url::Origin::Create(top_frame);
+
+  blink::InterestGroup group =
+      CreateAndJoinInterestGroup(owner, "foo", manager.get(), top_frame);
+  task_environment().FastForwardBy(base::Minutes(1));
+
+  // JoinInterestGroup would normally trigger a Query for k-anon status, but
+  // because queries below.
+  EXPECT_THAT(delegate()->TakeQueryIDs(), testing::IsEmpty());
 }
 
 }  // namespace content
