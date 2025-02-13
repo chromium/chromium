@@ -235,7 +235,6 @@ struct EffectNode {
   // updated on EffectNodes via EffectTree::AddCopyRequest(), as it will then be
   // properly updated on the Viz side by LayerContextImpl's handling of the
   // `copy_output_requests` that are passed over the wire for each node.
-  bool has_copy_request;
   bool subtree_has_copy_request;
   int32 closest_ancestor_with_copy_request_id;
 };

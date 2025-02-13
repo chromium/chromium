@@ -224,11 +224,6 @@ void LayerTreePixelTest::BeginTest() {
   } else {
     layer_tree_host()->property_trees()->effect_tree_mutable().AddCopyRequest(
         target->effect_tree_index(), CreateCopyOutputRequest());
-    layer_tree_host()
-        ->property_trees()
-        ->effect_tree_mutable()
-        .Node(target->effect_tree_index())
-        ->has_copy_request = true;
   }
   PostSetNeedsCommitToMainThread();
 }

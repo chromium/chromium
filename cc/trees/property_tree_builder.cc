@@ -525,7 +525,6 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
         layer->bounds(), layer_tree_host_->device_scale_factor());
   }
   node->cache_render_surface = layer->cache_render_surface();
-  node->has_copy_request = layer->HasCopyRequest();
   node->filters = layer->filters();
   node->backdrop_filters = layer->backdrop_filters();
   node->backdrop_filter_bounds = layer->backdrop_filter_bounds();

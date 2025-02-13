@@ -1158,6 +1158,8 @@ void EffectTree::UpdateClosestAncestorSharedElement(EffectNode* node,
 void EffectTree::AddCopyRequest(
     int node_id,
     std::unique_ptr<viz::CopyOutputRequest> request) {
+  EffectNode* effect_node = Node(node_id);
+  effect_node->has_copy_request = true;
   copy_requests_.insert(std::make_pair(node_id, std::move(request)));
 }
 

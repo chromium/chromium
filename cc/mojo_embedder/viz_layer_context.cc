@@ -168,7 +168,6 @@ void ComputePropertyTreeNodeUpdate(
   wire->blend_mode = base::checked_cast<uint32_t>(new_node.blend_mode);
   wire->target_id = new_node.target_id;
   wire->copy_output_requests = std::move(copy_requests);
-  wire->has_copy_request = new_node.has_copy_request;
   wire->subtree_has_copy_request = new_node.subtree_has_copy_request;
   wire->closest_ancestor_with_copy_request_id =
       new_node.closest_ancestor_with_copy_request_id;

@@ -552,7 +552,6 @@ TEST(EffectTreeTest, CopyOutputRequestsAreTransformed) {
   EffectTree& effect_tree = property_trees.effect_tree_mutable();
   EffectNode effect_node;
   effect_node.render_surface_reason = RenderSurfaceReason::kTest;
-  effect_node.has_copy_request = true;
   effect_node.transform_id = contents_root.id;
   effect_node.id = effect_tree.Insert(effect_node, 0);
   effect_tree.UpdateEffects(effect_node.id);
@@ -651,7 +650,6 @@ TEST(EffectTreeTest, CopyOutputRequestsThatBecomeIllegalAreDropped) {
   EffectTree& effect_tree = property_trees.effect_tree_mutable();
   EffectNode effect_node;
   effect_node.render_surface_reason = RenderSurfaceReason::kTest;
-  effect_node.has_copy_request = true;
   effect_node.transform_id = contents_root.id;
   effect_node.id = effect_tree.Insert(effect_node, 0);
   effect_tree.UpdateEffects(effect_node.id);

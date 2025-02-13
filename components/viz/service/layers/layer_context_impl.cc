@@ -191,7 +191,6 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   node.blend_mode = static_cast<SkBlendMode>(wire.blend_mode);
   node.target_id = wire.target_id;
 
-  node.has_copy_request = wire.has_copy_request;
   node.subtree_has_copy_request = wire.subtree_has_copy_request;
   node.closest_ancestor_with_copy_request_id =
       wire.closest_ancestor_with_copy_request_id;
