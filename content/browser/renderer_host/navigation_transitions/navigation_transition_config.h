@@ -25,6 +25,10 @@ class NavigationTransitionConfig {
 
   // Provides the duration for a cache to be invisible before its evicted.
   static base::TimeDelta GetCleanupDelayForInvisibleCaches();
+
+  // Whether to use background priority to transfer the navigation screenshot
+  // between processes.
+  static bool ShouldTransferScreenshotInBackgroundPriority();
 };
 
 }  // namespace content

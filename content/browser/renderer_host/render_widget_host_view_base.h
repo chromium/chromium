@@ -25,6 +25,7 @@
 #include "components/input/input_router_impl.h"
 #include "components/input/render_input_router.h"
 #include "components/input/render_widget_host_view_input.h"
+#include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/common/surfaces/scoped_surface_id_allocator.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -77,6 +78,8 @@ class TouchSelectionControllerInputObserver;
 class WebContentsAccessibility;
 class DelegatedFrameHost;
 class SyntheticGestureTarget;
+
+using CopyOutputIpcPriority = viz::CopyOutputRequest::IpcPriority;
 
 // Basic implementation shared by concrete RenderWidgetHostView subclasses.
 class CONTENT_EXPORT RenderWidgetHostViewBase
@@ -166,6 +169,14 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
       base::OnceCallback<void(const SkBitmap&)> callback);
+
+#if BUILDFLAG(IS_ANDROID)
+  virtual void CopyFromExactSurfaceWithIpcPriority(
+      const gfx::Rect& src_rect,
+      const gfx::Size& output_size,
+      base::OnceCallback<void(const SkBitmap&)> callback,
+      CopyOutputIpcPriority ipc_priority);
+#endif
 
   // For HiDPI capture mode, allow applying a render scale multiplier
   // which modifies the effective device scale factor. Use a scale
