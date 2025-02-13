@@ -1037,11 +1037,6 @@ VerificationStatus AutofillProfile::GetVerificationStatus(
   return form_group->GetVerificationStatus(type);
 }
 
-std::u16string AutofillProfile::GetInfo(FieldType type,
-                                        const std::string& app_locale) const {
-  return GetInfo(AutofillType(type), app_locale);
-}
-
 std::u16string AutofillProfile::GetInfo(const AutofillType& type,
                                         const std::string& app_locale) const {
   const FormGroup* form_group = FormGroupForType(type.GetStorableType());

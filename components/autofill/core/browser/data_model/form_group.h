@@ -55,9 +55,7 @@ class FormGroup {
 
   // Returns the string that should be auto-filled into a text field given the
   // type of that field, localized to the given |app_locale| if appropriate.
-  // TODO(crbug.com/40264633): Remove the `AutofillType` version.
-  virtual std::u16string GetInfo(FieldType type,
-                                 const std::string& app_locale) const = 0;
+  // TODO(crbug.com/40264633): Make `type` a `FieldType`.
   virtual std::u16string GetInfo(const AutofillType& type,
                                  const std::string& app_locale) const = 0;
 

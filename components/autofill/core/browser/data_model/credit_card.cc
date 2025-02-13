@@ -1119,8 +1119,9 @@ FieldTypeSet CreditCard::GetSupportedTypes() const {
   return supported_types;
 }
 
-std::u16string CreditCard::GetInfo(FieldType type,
+std::u16string CreditCard::GetInfo(const AutofillType& autofill_type,
                                    const std::string& app_locale) const {
+  FieldType type = autofill_type.GetStorableType();
   if (type == CREDIT_CARD_NUMBER) {
     // Web pages should never actually be filled by a masked server card,
     // but this function is used at the preview stage.
@@ -1130,11 +1131,6 @@ std::u16string CreditCard::GetInfo(FieldType type,
     return StripCardNumberSeparators(number_);
   }
   return GetRawInfo(type);
-}
-
-std::u16string CreditCard::GetInfo(const AutofillType& type,
-                                   const std::string& app_locale) const {
-  return GetInfo(type.GetStorableType(), app_locale);
 }
 
 bool CreditCard::SetInfoWithVerificationStatus(const AutofillType& type,

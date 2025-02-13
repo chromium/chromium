@@ -154,11 +154,6 @@ FieldTypeSet NameInfo::GetSupportedTypes() const {
   return supported_types;
 }
 
-std::u16string NameInfo::GetInfo(FieldType type,
-                                 const std::string& app_locale) const {
-  return GetRawInfo(type);
-}
-
 std::u16string NameInfo::GetInfo(const AutofillType& type,
                                  const std::string& app_locale) const {
   return GetRawInfo(type.GetStorableType());
@@ -232,11 +227,6 @@ FieldTypeSet EmailInfo::GetSupportedTypes() const {
   return supported_types;
 }
 
-std::u16string EmailInfo::GetInfo(FieldType type,
-                                  const std::string& app_locale) const {
-  return GetRawInfo(type);
-}
-
 std::u16string EmailInfo::GetInfo(const AutofillType& type,
                                   const std::string& app_locale) const {
   return GetRawInfo(type.GetStorableType());
@@ -292,11 +282,6 @@ void CompanyInfo::GetMatchingTypes(const std::u16string& text,
   } else if (text.empty()) {
     matching_types->insert(EMPTY_TYPE);
   }
-}
-
-std::u16string CompanyInfo::GetInfo(FieldType type,
-                                    const std::string& app_locale) const {
-  return GetRawInfo(type);
 }
 
 std::u16string CompanyInfo::GetInfo(const AutofillType& type,

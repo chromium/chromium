@@ -191,11 +191,6 @@ FieldTypeSet Address::GetSupportedTypes() const {
   return GetRoot().GetSupportedTypes();
 }
 
-std::u16string Address::GetInfo(FieldType type,
-                                const std::string& app_locale) const {
-  return GetInfo(AutofillType(type), app_locale);
-}
-
 std::u16string Address::GetInfo(const AutofillType& type,
                                 const std::string& locale) const {
   std::string country_code =

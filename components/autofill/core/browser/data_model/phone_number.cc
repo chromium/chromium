@@ -172,8 +172,9 @@ void PhoneNumber::GetMatchingTypes(const std::u16string& text,
 //   (650)2345678 -> 6502345678
 //   1-800-FLOWERS -> 18003569377
 // If the phone cannot be normalized, returns the stored value verbatim.
-std::u16string PhoneNumber::GetInfo(FieldType type,
+std::u16string PhoneNumber::GetInfo(const AutofillType& autofill_type,
                                     const std::string& app_locale) const {
+  FieldType type = autofill_type.GetStorableType();
   UpdateCacheIfNeeded(app_locale);
 
   // When the phone number autofill has stored cannot be normalized, it
@@ -266,11 +267,6 @@ std::u16string PhoneNumber::GetInfo(FieldType type,
     default:
       NOTREACHED();
   }
-}
-
-std::u16string PhoneNumber::GetInfo(const AutofillType& type,
-                                    const std::string& app_locale) const {
-  return GetInfo(type.GetStorableType(), app_locale);
 }
 
 bool PhoneNumber::SetInfoWithVerificationStatus(const AutofillType& type,

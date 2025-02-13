@@ -61,7 +61,8 @@ class AutofillType {
         server_predictions;
   };
 
-  explicit AutofillType(FieldType field_type = NO_SERVER_DATA);
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  AutofillType(FieldType field_type = NO_SERVER_DATA);
   explicit AutofillType(HtmlFieldType field_type);
   AutofillType(const AutofillType& autofill_type) = default;
   AutofillType& operator=(const AutofillType& autofill_type) = default;
