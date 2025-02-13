@@ -22,7 +22,45 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/test_event_router_observer.h"
 
+using ::testing::Eq;
+using ::testing::ExplainMatchResult;
+using ::testing::Pointwise;
+
 namespace extensions {
+
+// Matches a `BookmarkTreeNode` against a `BookmarkNode`.
+MATCHER(MatchesBookmarkNode, "") {
+  const extensions::api::bookmarks::BookmarkTreeNode& bookmark_tree_node =
+      std::get<0>(arg);
+  const bookmarks::BookmarkNode& bookmark_node = *std::get<1>(arg);
+
+  return ExplainMatchResult(Eq(base::NumberToString(bookmark_node.id())),
+                            bookmark_tree_node.id, result_listener) &&
+         ExplainMatchResult(
+             Eq(base::NumberToString(bookmark_node.parent()->id())),
+             bookmark_tree_node.parent_id, result_listener) &&
+         ExplainMatchResult(Eq(bookmark_node.GetTitle()),
+                            base::UTF8ToUTF16(bookmark_tree_node.title),
+                            result_listener) &&
+         ExplainMatchResult(Eq(bookmark_node.url().spec()),
+                            bookmark_tree_node.url.value_or(""),
+                            result_listener);
+}
+
+// Matches a `base::Value::List` of `BookmarkTreeNode`s against the provided
+// `BookmarkNode`s.
+MATCHER_P(ResultMatchesNodes, nodes, "") {
+  std::vector<extensions::api::bookmarks::BookmarkTreeNode>
+      result_bookmark_tree_nodes;
+  std::ranges::transform(
+      arg.GetList(), std::back_inserter(result_bookmark_tree_nodes),
+      [](const base::Value& value) {
+        return extensions::api::bookmarks::BookmarkTreeNode::FromValue(value)
+            .value();
+      });
+  return ExplainMatchResult(Pointwise(MatchesBookmarkNode(), nodes),
+                            result_bookmark_tree_nodes, result_listener);
+}
 
 class BookmarksApiUnittest : public ExtensionServiceTestBase {
  public:
@@ -181,21 +219,31 @@ TEST_F(BookmarksApiUnittest, Create_NonExistentParent) {
   EXPECT_EQ("Can't find parent bookmark for id.", error);
 }
 
-// Tests that attempting to create a bookmark with a parent that is not
-// visible fails.
-// TODO(crbug.com/392614318): Enforce visibility on write operations.
-TEST_F(BookmarksApiUnittest, DISABLED_Create_NonVisibleParent) {
+TEST_F(BookmarksApiUnittest, Create_NonVisibleParent) {
   // The mobile node is not visible, because it is empty.
   ASSERT_FALSE(model()->mobile_node()->IsVisible());
 
   auto create_function = base::MakeRefCounted<BookmarksCreateFunction>();
-  std::string error = api_test_utils::RunFunctionAndReturnError(
-      create_function.get(),
-      absl::StrFormat(R"([{"parentId": "%d"}])", model()->mobile_node()->id()),
-      profile());
-  EXPECT_EQ("Parameter 'parentId' does not specify a folder.", error);
 
-  EXPECT_TRUE(model()->mobile_node()->children().empty());
+  // TODO(crbug.com/395071423): this request should fail, since the mobile node
+  // is not visible on the API.
+  base::Value result =
+      extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+          create_function.get(),
+          absl::StrFormat(R"([{"parentId": "%lu", "title": "New folder"}])",
+                          model()->mobile_node()->id()),
+          profile())
+          .value();
+  api::bookmarks::BookmarkTreeNode result_node =
+      extensions::api::bookmarks::BookmarkTreeNode::FromValue(result).value();
+
+  // The new folder should be added as the last child of the parent folder.
+  EXPECT_EQ(result_node.parent_id,
+            base::NumberToString(model()->mobile_node()->id()));
+  EXPECT_EQ(result_node.index, folder_node()->children().size() - 1);
+
+  // The mobile node is now visible, as it no longer empty.
+  ASSERT_TRUE(model()->mobile_node()->IsVisible());
 }
 
 TEST_F(BookmarksApiUnittest,
@@ -207,19 +255,9 @@ TEST_F(BookmarksApiUnittest,
           absl::StrFormat(R"(["%lu"])", model()->other_node()->id()), profile())
           .value();
 
-  std::vector<int64_t> result_bookmark_ids;
-  std::ranges::transform(
-      result.GetList(), std::back_inserter(result_bookmark_ids),
-      [](const base::Value& value) {
-        int64_t id;
-        CHECK(base::StringToInt64(
-            extensions::api::bookmarks::BookmarkTreeNode::FromValue(value)->id,
-            &id));
-        return id;
-      });
-
-  EXPECT_THAT(result_bookmark_ids,
-              testing::ElementsAre(model()->other_node()->id()));
+  std::vector<const bookmarks::BookmarkNode*> expected_nodes = {
+      model()->other_node()};
+  EXPECT_THAT(result, ResultMatchesNodes(expected_nodes));
 }
 
 TEST_F(BookmarksApiUnittest,
@@ -235,19 +273,111 @@ TEST_F(BookmarksApiUnittest,
           absl::StrFormat(R"(["%lu"])", model()->other_node()->id()), profile())
           .value();
 
-  std::vector<int64_t> result_bookmark_ids;
-  std::ranges::transform(
-      result.GetList(), std::back_inserter(result_bookmark_ids),
-      [](const base::Value& value) {
-        int64_t id;
-        CHECK(base::StringToInt64(
-            extensions::api::bookmarks::BookmarkTreeNode::FromValue(value)->id,
-            &id));
-        return id;
-      });
+  std::vector<const bookmarks::BookmarkNode*> expected_nodes = {
+      model()->other_node()};
+  EXPECT_THAT(result, ResultMatchesNodes(expected_nodes));
+}
 
-  EXPECT_THAT(result_bookmark_ids,
-              testing::ElementsAre(model()->other_node()->id()));
+TEST_F(BookmarksApiUnittest, Get_ReturnsEmptyForNonVisibleFolder) {
+  // The mobile node is not visible, because it is empty.
+  ASSERT_FALSE(model()->mobile_node()->IsVisible());
+
+  // TODO(crbug.com/395071423): this request should fail, since the mobile node
+  // is not visible on the API.
+  auto get_function = base::MakeRefCounted<BookmarksGetFunction>();
+  base::Value result =
+      extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+          get_function.get(),
+          absl::StrFormat(R"(["%lu"])", model()->mobile_node()->id()),
+          profile())
+          .value();
+
+  EXPECT_THAT(result.GetList(), ::testing::IsEmpty());
+}
+
+TEST_F(BookmarksApiUnittest, Get_FailsForNonExistentId) {
+  auto get_function = base::MakeRefCounted<BookmarksGetFunction>();
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      get_function.get(), R"(["1233456"])", profile());
+
+  EXPECT_EQ(error, extensions::bookmarks_errors::kNoNodeError);
+}
+
+TEST_F(BookmarksApiUnittest, GetChildren_ReturnsEmptyForNonVisibleFolder) {
+  // The mobile node is not visible, because it is empty.
+  ASSERT_FALSE(model()->mobile_node()->IsVisible());
+
+  // TODO(crbug.com/395071423): this request should fail, since the mobile node
+  // is not visible on the API.
+  auto get_function = base::MakeRefCounted<BookmarksGetChildrenFunction>();
+  base::Value result =
+      extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+          get_function.get(),
+          absl::StrFormat(R"(["%lu"])", model()->mobile_node()->id()),
+          profile())
+          .value();
+
+  EXPECT_THAT(result.GetList(), ::testing::IsEmpty());
+}
+
+TEST_F(BookmarksApiUnittest, GetChildren_FailsForNonExistentId) {
+  auto get_function = base::MakeRefCounted<BookmarksGetChildrenFunction>();
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      get_function.get(), R"(["1233456"])", profile());
+
+  EXPECT_EQ(error, extensions::bookmarks_errors::kNoNodeError);
+}
+
+TEST_F(BookmarksApiUnittest, GetSubTree_ReturnsEmptyForNonVisibleFolder) {
+  // The mobile node is not visible, because it is empty.
+  ASSERT_FALSE(model()->mobile_node()->IsVisible());
+
+  // TODO(crbug.com/395071423): this request should fail, since the mobile node
+  // is not visible on the API.
+  auto get_function = base::MakeRefCounted<BookmarksGetSubTreeFunction>();
+  base::Value result =
+      extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+          get_function.get(),
+          absl::StrFormat(R"(["%lu"])", model()->mobile_node()->id()),
+          profile())
+          .value();
+
+  EXPECT_THAT(result.GetList(), ::testing::IsEmpty());
+}
+
+TEST_F(BookmarksApiUnittest, GetSubTree_FailsForNonExistentId) {
+  auto get_function = base::MakeRefCounted<BookmarksGetSubTreeFunction>();
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      get_function.get(), R"(["1233456"])", profile());
+
+  EXPECT_EQ(error, extensions::bookmarks_errors::kNoNodeError);
+}
+
+TEST_F(BookmarksApiUnittest, Search_MatchesTitle) {
+  auto function = base::MakeRefCounted<BookmarksSearchFunction>();
+  base::Value result =
+      extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(), R"([{"title": "Empty folder"}])", profile())
+          .value();
+
+  std::vector<const bookmarks::BookmarkNode*> expected_nodes = {
+      folder_node()};
+  EXPECT_THAT(result, ResultMatchesNodes(expected_nodes));
+}
+
+TEST_F(BookmarksApiUnittest, Search_NonVisibleFolderNotReturned) {
+  // Set the title of the folder node to a fixed value.
+  model()->SetTitle(model()->mobile_node(), u"Mobile Bookmarks",
+                    bookmarks::metrics::BookmarkEditSource::kOther);
+  ASSERT_FALSE(model()->mobile_node()->IsVisible());
+
+  auto function = base::MakeRefCounted<BookmarksSearchFunction>();
+  base::Value result =
+      extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(), R"([{"title": "Mobile Bookmarks"}])", profile())
+          .value();
+
+  EXPECT_THAT(result.GetList(), ::testing::IsEmpty());
 }
 
 TEST_F(BookmarksApiUnittest,
@@ -257,16 +387,6 @@ TEST_F(BookmarksApiUnittest,
       extensions::api_test_utils::RunFunctionAndReturnSingleResult(
           get_tree_function.get(), R"([])", profile())
           .value();
-  std::vector<int64_t> result_bookmark_ids;
-  std::ranges::transform(
-      result.GetList(), std::back_inserter(result_bookmark_ids),
-      [](const base::Value& value) {
-        int64_t id;
-        CHECK(base::StringToInt64(
-            extensions::api::bookmarks::BookmarkTreeNode::FromValue(value)->id,
-            &id));
-        return id;
-      });
 
   // The result should contain a single root node. Check that its children
   // include the three permanent folders, plus the non-permanent folder/url.
@@ -287,6 +407,53 @@ TEST_F(BookmarksApiUnittest,
             base::NumberToString(url_node()->id()));
   EXPECT_EQ(other_node.children.value()[1].id,
             base::NumberToString(folder_node()->id()));
+}
+
+TEST_F(BookmarksApiUnittest, GetTree_SucceedsWhenLocalAndAccountFolders) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      syncer::kSyncEnableBookmarksInTransportMode};
+  model()->CreateAccountPermanentFolders();
+
+  auto get_tree_function = base::MakeRefCounted<BookmarksGetTreeFunction>();
+  const base::Value result =
+      extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+          get_tree_function.get(), R"([])", profile())
+          .value();
+
+  // The result should contain a single root node. Check that its children
+  // include the three permanent folders, plus the non-permanent folder/url.
+  ASSERT_EQ(result.GetList().size(), 1u);
+  auto root_node = extensions::api::bookmarks::BookmarkTreeNode::FromValue(
+      result.GetList()[0]);
+  EXPECT_EQ(root_node->id, "0");
+
+  ASSERT_EQ(root_node->children.value().size(), 4u);
+
+  // TODO(crbug.com/382263783): the account folders should be returned before
+  // the local folders.
+  EXPECT_EQ(root_node->children.value()[0].id,
+            base::NumberToString(model()->bookmark_bar_node()->id()));
+  EXPECT_EQ(root_node->children.value()[0].index, 0);
+
+  EXPECT_EQ(root_node->children.value()[1].id,
+            base::NumberToString(model()->other_node()->id()));
+  auto& other_node = root_node->children.value()[1];
+  EXPECT_EQ(other_node.index, 1);
+  ASSERT_EQ(other_node.children.value().size(), 2u);
+  EXPECT_EQ(other_node.children.value()[0].id,
+            base::NumberToString(url_node()->id()));
+  EXPECT_EQ(other_node.children.value()[1].id,
+            base::NumberToString(folder_node()->id()));
+
+  // TODO(crbug.com/395071423): the child indices for the permanent folders
+  // should be sequential.
+  EXPECT_EQ(root_node->children.value()[2].id,
+            base::NumberToString(model()->account_bookmark_bar_node()->id()));
+  EXPECT_EQ(root_node->children.value()[2].index, 4);
+
+  EXPECT_EQ(root_node->children.value()[3].id,
+            base::NumberToString(model()->account_other_node()->id()));
+  EXPECT_EQ(root_node->children.value()[3].index, 5);
 }
 
 // Tests that moving from local to account storage is allowed.
@@ -348,22 +515,29 @@ TEST_F(BookmarksApiUnittest, Move_NonExistentParent) {
   ASSERT_TRUE(url_node->children().empty());
 }
 
-// Tests that attempting to move a bookmark to a non-visible parent returns an
-// error.
-// TODO(crbug.com/392614318): Enforce visibility on write operations.
-TEST_F(BookmarksApiUnittest, DISABLED_Move_NonVisibleParent) {
+TEST_F(BookmarksApiUnittest, Move_NonVisibleParent) {
   // The mobile node is not visible, because it is empty.
   ASSERT_FALSE(model()->mobile_node()->IsVisible());
 
+  // TODO(crbug.com/395071423): this request should fail, since the mobile node
+  // is not visible on the API.
   auto move_function = base::MakeRefCounted<BookmarksMoveFunction>();
-  std::string error = api_test_utils::RunFunctionAndReturnError(
-      move_function.get(),
-      absl::StrFormat(R"(["%s", {"parentId": "%d"}])", folder_node_id().c_str(),
-                      model()->mobile_node()->id()),
-      profile());
-  EXPECT_EQ("Can't find parent bookmark for id.", error);
+  base::Value result =
+      extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+          move_function.get(),
+          absl::StrFormat(R"(["%lu", {"parentId": "%lu"}])",
+                          folder_node()->id(), model()->mobile_node()->id()),
+          profile())
+          .value();
+  api::bookmarks::BookmarkTreeNode result_node =
+      extensions::api::bookmarks::BookmarkTreeNode::FromValue(result).value();
 
-  EXPECT_TRUE(model()->mobile_node()->children().empty());
+  EXPECT_EQ(result_node.parent_id,
+            base::NumberToString(model()->mobile_node()->id()));
+  EXPECT_EQ(result_node.index, 0);
+  EXPECT_EQ(model()->mobile_node()->children()[0].get(), folder_node());
+
+  ASSERT_TRUE(model()->mobile_node()->IsVisible());
 }
 
 // Tests that attempting to move a folder to itself returns an error.
