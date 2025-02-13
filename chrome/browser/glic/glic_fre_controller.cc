@@ -24,6 +24,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
 
 namespace glic {
 
@@ -66,11 +67,12 @@ bool GlicFreController::CanShowFreDialog(Browser* browser) {
   if (!browser) {
     return false;
   }
-  // If there is a browser, the FRE can also only be shown if no
-  // other modal is currently being shown on the same tab.
+
+  // If there is a browser, the FRE can only be shown if no other modal is
+  // currently being shown on the same tab.
   tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(
       browser->tab_strip_model()->GetActiveWebContents());
-  return tab && tab->CanShowModalUI();
+  return tab->CanShowModalUI();
 }
 
 void GlicFreController::ShowFreDialog(Browser* browser) {
@@ -95,18 +97,36 @@ void GlicFreController::ShowFreDialogAfterAuthCheck(
   // Close any existing FRE dialog before showing.
   DismissFre();
 
+  fre_view_ = new GlicFreDialogView(
+      profile_, gfx::Size(kFreDefaultWidth, kFreDefaultHeight));
+
   tabs::TabInterface* tab_interface = tabs::TabInterface::GetFromContents(
       browser->tab_strip_model()->GetActiveWebContents());
+  // Note that this call to `CreateShowDialogAndBlockTabInteraction` is
+  // necessarily preceded by a call to `CanShowModalUI`. See
+  // `GlicFreController::CanShowFreDialog`.
+  // TODO(crbug.com/393400004): This returned widget should be configured to
+  // use a synchronous close.
+  fre_widget_ = tab_interface->GetTabFeatures()
+                    ->tab_dialog_manager()
+                    ->CreateShowDialogAndBlockTabInteraction(fre_view_);
+  tab_showing_modal_ = tab_interface;
+  will_detach_subscription_ = tab_showing_modal_->RegisterWillDetach(
+      base::BindRepeating(&GlicFreController::OnTabShowingModalWillDetach,
+                          base::Unretained(this)));
+}
 
-  if (tab_interface->CanShowModalUI()) {
-    fre_view_ = new GlicFreDialogView(
-        profile_, gfx::Size(kFreDefaultWidth, kFreDefaultHeight));
+void GlicFreController::DismissFreIfOpenOnActiveTab(Browser* browser) {
+  if (!browser) {
+    return;
+  }
 
-    // TODO(crbug.com/393400004): This returned widget should be configured to
-    // use a synchronous close.
-    fre_widget_ = tab_interface->GetTabFeatures()
-                      ->tab_dialog_manager()
-                      ->CreateShowDialogAndBlockTabInteraction(fre_view_);
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(
+      browser->tab_strip_model()->GetActiveWebContents());
+
+  // If the FRE is being shown on the current tab, close it.
+  if (fre_widget_ && tab_showing_modal_ == tab) {
+    DismissFre();
   }
 }
 
@@ -141,6 +161,8 @@ void GlicFreController::DismissFre() {
   if (fre_widget_) {
     fre_view_ = nullptr;
     fre_widget_.reset();
+    tab_showing_modal_ = nullptr;
+    will_detach_subscription_ = {};
   }
 }
 
@@ -169,6 +191,12 @@ void GlicFreController::OnCheckIsDefaultBrowserFinished(
     g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                  true);
   }
+}
+
+void GlicFreController::OnTabShowingModalWillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  DismissFre();
 }
 
 bool GlicFreController::IsShowingDialogForTesting() const {
