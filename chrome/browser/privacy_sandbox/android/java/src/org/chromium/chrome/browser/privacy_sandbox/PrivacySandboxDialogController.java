@@ -8,6 +8,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.view.ViewGroup;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -30,6 +32,7 @@ public class PrivacySandboxDialogController {
     private static WeakReference<Dialog> sDialog;
     private static boolean sDisableAnimations;
     private static boolean sDisableEEANoticeForTesting;
+    private static boolean sShowMoreButtonForTesting;
     private static Runnable sOnDialogDismissedRunnable;
 
     public static boolean shouldShowPrivacySandboxDialog(Profile profile, int surfaceType) {
@@ -134,7 +137,10 @@ public class PrivacySandboxDialogController {
             case PromptType.M1_NOTICE_RESTRICTED:
                 dialog =
                         new PrivacySandboxDialogNoticeRestricted(
-                                context, privacySandboxBridge, surfaceType);
+                                context,
+                                privacySandboxBridge,
+                                surfaceType,
+                                sShowMoreButtonForTesting);
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
                 return true;
@@ -180,15 +186,23 @@ public class PrivacySandboxDialogController {
         sOnDialogDismissedRunnable = runnable;
     }
 
-    static Dialog getDialogForTesting() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static Dialog getDialog() {
         return sDialog != null ? sDialog.get() : null;
     }
 
-    static void disableAnimationsForTesting(boolean disable) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static void disableAnimations(boolean disable) {
         sDisableAnimations = disable;
     }
 
-    static void disableEEANoticeForTesting(boolean disable) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static void disableEEANotice(boolean disable) {
         sDisableEEANoticeForTesting = disable;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static void setShowMoreButton(boolean value) {
+        sShowMoreButtonForTesting = value;
     }
 }

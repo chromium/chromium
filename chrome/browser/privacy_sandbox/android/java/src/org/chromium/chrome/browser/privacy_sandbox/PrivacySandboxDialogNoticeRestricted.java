@@ -27,14 +27,17 @@ public class PrivacySandboxDialogNoticeRestricted extends ChromeDialog
     private ScrollView mScrollView;
     private @SurfaceType int mSurfaceType;
     private View.OnClickListener mOnClickListener;
+    private boolean mShowMoreButtonForTesting;
 
     public PrivacySandboxDialogNoticeRestricted(
             Context context,
             PrivacySandboxBridge privacySandboxBridge,
-            @SurfaceType int surfaceType) {
+            @SurfaceType int surfaceType,
+            boolean showMoreButtonForTesting) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         mPrivacySandboxBridge = privacySandboxBridge;
         mSurfaceType = surfaceType;
+        mShowMoreButtonForTesting = showMoreButtonForTesting;
         mContentView =
                 LayoutInflater.from(context)
                         .inflate(R.layout.privacy_sandbox_notice_restricted, null);
@@ -103,6 +106,7 @@ public class PrivacySandboxDialogNoticeRestricted extends ChromeDialog
             SettingsNavigationFactory.createSettingsNavigation()
                     .startSettings(getContext(), AdMeasurementFragment.class);
         } else if (id == R.id.more_button) {
+            if (mShowMoreButtonForTesting) mShowMoreButtonForTesting = false;
             mPrivacySandboxBridge.promptActionOccurred(
                     PromptAction.RESTRICTED_NOTICE_MORE_BUTTON_CLICKED, mSurfaceType);
             if (mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
@@ -123,7 +127,7 @@ public class PrivacySandboxDialogNoticeRestricted extends ChromeDialog
 
     @Override
     public void onShow(DialogInterface dialogInterface) {
-        if (mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
+        if (mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN) || mShowMoreButtonForTesting) {
             mMoreButton.setVisibility(View.VISIBLE);
             mActionButtons.setVisibility(View.GONE);
         } else {

@@ -150,7 +150,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
         Context appContext = getInstrumentation().getTargetContext().getApplicationContext();
         mTestServer = EmbeddedTestServer.createAndStartServer(appContext);
         mTestPage = mTestServer.getURL(TEST_PAGE);
-        PrivacySandboxDialogController.disableAnimationsForTesting(true);
+        PrivacySandboxDialogController.disableAnimations(true);
         mAutomotiveRule.setIsAutomotive(false);
 
         // Explicitly remove the `DISABLE_FIRST_RUN_EXPERIENCE` (set via `TestSurveyComponentRule`)
@@ -163,8 +163,8 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    if (PrivacySandboxDialogController.getDialogForTesting() != null) {
-                        PrivacySandboxDialogController.getDialogForTesting().dismiss();
+                    if (PrivacySandboxDialogController.getDialog() != null) {
+                        PrivacySandboxDialogController.getDialog().dismiss();
                     }
                     if (mCustomTabActivityTestRule.getActivity() == null) return;
                     AppMenuCoordinator coordinator =
