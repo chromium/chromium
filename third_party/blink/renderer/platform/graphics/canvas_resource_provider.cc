@@ -971,8 +971,7 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
         resource_->GetBackBufferClientSharedImage()->GetTextureTarget();
     texture_info.fFormat =
         ContextProviderWrapper()->ContextProvider().GetGrGLTextureFormat(
-            viz::SkColorTypeToSinglePlaneSharedImageFormat(
-                GetSkImageInfo().colorType()));
+            GetSharedImageFormat());
 
     auto backend_texture = GrBackendTextures::MakeGL(
         Size().width(), Size().height(), skgpu::Mipmapped::kNo, texture_info);
