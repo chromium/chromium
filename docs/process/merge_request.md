@@ -181,8 +181,11 @@ you don't merge your cherry-pick soon after approval, it will eventually be
 rejected for merge.
 
 **NOTE:**  Ensure you link to the bug that has merge approval for the relevant
-milestone (Using `Bug=<bug id>` in your commit description). Not linking to a
-bug that has approval can cause delay to your CL landing.
+milestone. Not linking to a bug that has approval can cause delay to your CL
+landing. If the merge request is for a single change, add `Fixed: <bug number>`
+to the change description. If the merge request is for multiple changes, add
+`Fixed: <bug number>` to the final change description, `Bug: <bug number>`
+to all other change descriptions.
 
 Once the cherry-pick has landed, a bot will update the *Merge* field with
 *Merged-###* label and remove *Approved-###* if the commit references the issue.
