@@ -761,6 +761,8 @@ source_set("test_support") {
     "browsertest_util.h",
     "extension_host_test_helper.cc",
     "extension_host_test_helper.h",
+    "extension_registry_test_helper.cc",
+    "extension_registry_test_helper.h",
     "mock_display_info_provider.cc",
     "mock_display_info_provider.h",
     "mock_screen.cc",

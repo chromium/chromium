@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_SWITCH_ACCESS_TEST_UTILS_H_
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_SWITCH_ACCESS_TEST_UTILS_H_
 
+#include <optional>
 #include <set>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 
 class Profile;
 
@@ -45,6 +47,7 @@ class SwitchAccessTestUtils {
 
   raw_ptr<Profile, DanglingUntriaged> profile_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
+  std::optional<ManifestVersion> version_;
 };
 
 }  // namespace ash
