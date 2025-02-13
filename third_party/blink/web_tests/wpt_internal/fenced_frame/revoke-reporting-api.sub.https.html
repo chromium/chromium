@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<title>Test disableUntrustedNetwork() with Reporting API.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+<script src='/reporting/resources/report-helper.js'></script>
+<body>
+<script>
+async function runTest(t, network_disabled = true, expected_success = false) {
+  const endpoint =
+      `https://{{host}}:{{ports[https][0]}}/reporting/resources/report.py`;
+  const report_id = token();
+  const fencedframe = await attachFencedFrameContext({
+    headers: [["Reporting-Endpoints",
+        `default="` + endpoint + `?reportID=` + report_id + `"`]]
+  });
+
+  await fencedframe.execute(async (network_disabled) => {
+    if (network_disabled) {
+      await window.fence.disableUntrustedNetwork();
+    }
+    // Queue a report via the reporting API. In this case, calling a
+    // webkit-prefixed function results in an attempt to queue a deprecation
+    // report.
+    webkitRequestAnimationFrame(() => {});
+  }, [network_disabled]);
+
+  const reports = await pollReports(endpoint, report_id);
+  let was_successful = null;
+  try {
+    const result = checkReportExists(reports, 'deprecation', undefined);
+    was_successful = result;
+  } catch (error) {
+    was_successful = false;
+  }
+  assert_equals(was_successful, expected_success,
+    "The report should " + (expected_success ? "" : "not ") + "be sent.");
+}
+
+promise_test(async(t) => {
+  return runTest(t, true, false);
+}, 'Network cutoff prevents sending reporting API reports.');
+
+promise_test(async(t) => {
+  return runTest(t, false, true);
+}, 'Reports are sent if fenced frame still has network access.');
+
+</script>
+</body>
