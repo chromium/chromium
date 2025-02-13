@@ -36,6 +36,8 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
     WTF::String url;
     WTF::String function_name;
     int char_position = -1;
+    int line_number = -1;
+    int column_number = -1;
   };
 
   ScriptTimingInfo(ExecutionContext* context,
