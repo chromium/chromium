@@ -217,8 +217,11 @@ void ChangeFormSubmissionVerifier::ProcessTree(
       optimization_guide::ModelBasedCapabilityKey::kPasswordChangeSubmission,
       request,
       /*execution_timeout=*/std::nullopt,
-      base::BindOnce(&ChangeFormSubmissionVerifier::OnExecutionResponseCallback,
-                     weak_ptr_factory_.GetWeakPtr()));
+      password_manager::metrics_util::TimeCallback(
+          base::BindOnce(
+              &ChangeFormSubmissionVerifier::OnExecutionResponseCallback,
+              weak_ptr_factory_.GetWeakPtr()),
+          kPasswordChangeVerificationTimeHistogram));
 }
 
 void ChangeFormSubmissionVerifier::OnExecutionResponseCallback(
