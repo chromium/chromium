@@ -28,4 +28,15 @@ client_certificates_pb::PrivateKey::PrivateKeySource ToProtoKeySource(
   }
 }
 
+std::optional<PrivateKeySource> ToPrivateKeySource(int pref_key_source) {
+  switch (pref_key_source) {
+    case 0:
+      return PrivateKeySource::kUnexportableKey;
+    case 1:
+      return PrivateKeySource::kSoftwareKey;
+    default:
+      return std::nullopt;
+  }
+}
+
 }  // namespace client_certificates
