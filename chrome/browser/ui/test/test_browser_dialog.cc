@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/test/views_test_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
@@ -143,6 +144,9 @@ bool TestBrowserDialog::VerifyUi() {
   if (!should_verify_dialog_bounds_) {
     return true;
   }
+
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(dialog_widget);
 
   // Verify that the dialog's dimensions do not exceed the display's work area
   // bounds, which may be smaller than its bounds(), e.g. in the case of the

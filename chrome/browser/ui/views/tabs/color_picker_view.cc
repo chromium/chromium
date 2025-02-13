@@ -253,7 +253,8 @@ ColorPickerView::ColorPickerView(
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetDefault(
           views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+          views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                                   views::MinimumFlexSizeRule::kPreferred,
                                    views::MaximumFlexSizeRule::kUnbounded)
               .WithAlignment(views::LayoutAlignment::kCenter)
               .WithWeight(1));

@@ -15,6 +15,7 @@
 #include "base/test/test_future.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 
@@ -52,6 +53,9 @@ TEST_F(QuickInsertSubmenuControllerTest, ShowsWidgetAlignedWithAnchorLTR) {
 
   controller.Show(anchor_widget->GetContentsView(), {});
 
+  // PickerSubmenuController::Show() will trigger an asynchronous autosize task.
+  views::test::RunScheduledLayout(controller.widget_for_testing());
+
   ASSERT_NE(controller.widget_for_testing(), nullptr);
   const gfx::Rect submenu_bounds =
       controller.widget_for_testing()->GetClientAreaBoundsInScreen();
@@ -73,6 +77,9 @@ TEST_F(QuickInsertSubmenuControllerTest, ShowsWidgetAlignedWithAnchorRTL) {
   anchor_widget->SetBounds(anchor_bounds);
 
   controller.Show(anchor_widget->GetContentsView(), {});
+
+  // PickerSubmenuController::Show() will trigger an asynchronous autosize task.
+  views::test::RunScheduledLayout(controller.widget_for_testing());
 
   ASSERT_NE(controller.widget_for_testing(), nullptr);
   const gfx::Rect submenu_bounds =

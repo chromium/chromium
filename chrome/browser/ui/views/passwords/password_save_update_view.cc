@@ -214,6 +214,9 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
       signin_metrics::AccessPoint::kPasswordBubble,
       PasswordFormUniqueKey(controller_.pending_password()));
   AddChildView(std::move(sign_in_promo));
+  // TODO(crbug.com/41493925) remove this SizeToContents() when the subsequent
+  // code no longer depends on the sync auto-size here.
+  SizeToContents();
 
   // Notify the screen reader that the bubble changed.
   AnnounceBubbleChange();

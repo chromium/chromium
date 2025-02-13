@@ -466,9 +466,14 @@ gfx::Rect AccountSelectionBubbleView::GetBubbleBounds() {
   //       |-------------------------|
   // In the RTL case, the bubble is aligned towards the left side of the screen
   // and the horizontal inset would apply to the left of the bubble.
-  CHECK(owner_->web_contents());
 
   gfx::Rect bubble_bounds = views::BubbleDialogDelegateView::GetBubbleBounds();
+
+  if (!owner_->web_contents()) {
+    // Async autosize tasks may occur after the web_contents_ is destroyed.
+    return bubble_bounds;
+  }
+
   gfx::Rect web_contents_bounds = owner_->web_contents()->GetViewBounds();
   if (base::i18n::IsRTL()) {
     web_contents_bounds.Inset(gfx::Insets::TLBR(

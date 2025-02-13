@@ -27,6 +27,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/views/test/views_test_utils.h"
 
 class TabSearchContainerBrowserTest : public InProcessBrowserTest {
  public:
@@ -274,6 +275,9 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                        DelayedHidesWhenOrganizeButtonTimesOut) {
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(tab_search_container());
+
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
   tab_search_container()
