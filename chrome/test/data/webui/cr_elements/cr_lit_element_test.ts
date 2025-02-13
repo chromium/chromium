@@ -4,9 +4,7 @@
 
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-// <if expr="not is_android">
 import {html as polymerHtml, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// </if>
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertNull, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -171,7 +169,6 @@ suite('CrLitElement', function() {
     assertNotEquals(null, element.shadowRoot);
   });
 
-  // <if expr="not is_android">
   // Called by cr-polymer-wrapper's connectedCallback() below. Exposed as a hook
   // to allow testing different cases.
   let polymerWrapperCallback: (e: CrDummyLitElement) => void = (_e) => {};
@@ -299,7 +296,6 @@ suite('CrLitElement', function() {
     `;
     return whenDone;
   });
-  // </if>
 
   test('DollarSign_ErrorWhenNotConnectedOnce', function() {
     const element = document.createElement('cr-dummy-lit');
@@ -443,7 +439,6 @@ suite('CrLitElement', function() {
     assertDeepEquals({value: true}, event.detail);
   });
 
-  // <if expr="not is_android">
   // Test that a Lit child with 'notify: true' properties works with a Polymer
   // parent that uses 2-way bindings for that property.
   test('PropertiesWithNotifyTwoWayBinding', async function() {
@@ -492,7 +487,6 @@ suite('CrLitElement', function() {
     await whenFired;
     assertFalse(child.prop1);
   });
-  // </if>
 
   test('Fire', async function() {
     const element = document.createElement('cr-dummy-lit');

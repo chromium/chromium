@@ -23,7 +23,6 @@ source_set("browser_tests") {
 
   sources = [
     "chrome_urls/chrome_urls_browsertest.cc",
-    "cr_elements/cr_elements_browsertest.cc",
     "flags/flags_browsertest.cc",
   ]
 
@@ -37,6 +36,7 @@ source_set("browser_tests") {
       "commerce/product_specifications/product_specifications_browsertest.cc",
       "commerce_internals/commerce_internals_browsertest.cc",
       "cr_components/cr_components_browsertest.cc",
+      "cr_elements/cr_elements_browsertest.cc",
       "css/css_browsertest.cc",
       "data_sharing/data_sharing_browsertest.cc",
       "downloads/downloads_browsertest.cc",
@@ -434,7 +434,6 @@ generate_grd("build_grd") {
     ":build_mocha_grdp",
     ":build_ts",
     "chrome_urls:build_grdp",
-    "cr_elements:build_grdp",
     "flags:build_grdp",
   ]
 
@@ -442,7 +441,6 @@ generate_grd("build_grd") {
     "$target_gen_dir/chai_resources.grdp",
     "$target_gen_dir/mocha_resources.grdp",
     "$target_gen_dir/chrome_urls/resources.grdp",
-    "$target_gen_dir/cr_elements/resources.grdp",
     "$target_gen_dir/flags/resources.grdp",
   ]
 
@@ -466,6 +464,7 @@ generate_grd("build_grd") {
       "cr_components/history_embeddings:build_grdp",
       "cr_components/searchbox:build_grdp",
       "cr_components/theme_color_picker:build_grdp",
+      "cr_elements:build_grdp",
       "css:build_grdp",
       "data_sharing:build_grdp",
       "discards:build_grdp",
@@ -520,6 +519,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/cr_components/history_embeddings/resources.grdp",
       "$target_gen_dir/cr_components/searchbox/resources.grdp",
       "$target_gen_dir/cr_components/theme_color_picker/resources.grdp",
+      "$target_gen_dir/cr_elements/resources.grdp",
       "$target_gen_dir/css/resources.grdp",
       "$target_gen_dir/data_sharing/resources.grdp",
       "$target_gen_dir/discards/resources.grdp",
