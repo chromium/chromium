@@ -34,6 +34,19 @@ std::string GetArraySize(const clang::ArrayTypeLoc& array_type_loc,
                          const clang::SourceManager& source_manager,
                          const clang::ASTContext& ast_context);
 
+// For debugging/assertions. Dump the match result to stderr.
+void DumpMatchResult(const MatchFinder::MatchResult& result) {
+  llvm::errs() << "Matched nodes:\n";
+  for (const auto& node : result.Nodes.getMap()) {
+    llvm::errs() << " - " << node.first << ":\n";
+  }
+
+  for (const auto& node : result.Nodes.getMap()) {
+    llvm::errs() << "\nDump for node " << node.first << ":\n";
+    node.second.dump(llvm::errs(), *result.Context);
+  }
+}
+
 // Special keywords:
 constexpr char kEmptyKeyword[] = "<empty>";
 
@@ -300,9 +313,11 @@ clang::SourceRange getExprRange(const clang::Expr* expr,
             call_expr->getRParenLoc().getLocWithOffset(1)};
   }
 
-  return {expr->getBeginLoc(),
-          clang::Lexer::getLocForEndOfToken(expr->getExprLoc(), 0u,
-                                            source_manager, lang_options)};
+  return {
+      expr->getBeginLoc(),
+      clang::Lexer::getLocForEndOfToken(expr->getExprLoc(), 0u, source_manager,
+                                        lang_options),
+  };
 }
 
 std::string GetTypeAsString(const clang::QualType& qual_type,
@@ -351,9 +366,27 @@ static clang::SourceRange getSourceRange(
     return clang::SourceRange(op->getEndLoc().getLocWithOffset(2));
   }
 
-  auto* expr = result.Nodes.getNodeAs<clang::Expr>("rhs_expr");
-  return clang::SourceRange(
-      getExprRange(expr, source_manager, lang_opts).getEnd());
+  if (auto* expr = result.Nodes.getNodeAs<clang::Expr>("rhs_expr")) {
+    return clang::SourceRange(
+        getExprRange(expr, source_manager, lang_opts).getEnd());
+  }
+
+  if (auto* size_expr = result.Nodes.getNodeAs<clang::Expr>("size_node")) {
+    return clang::SourceRange(
+        getExprRange(size_expr, source_manager, lang_opts).getEnd());
+  }
+
+  // Not supposed to get here.
+  llvm::errs() << "\n"
+                  "Error: getSourceRange() encountered an unexpected match.\n"
+                  "Expected one of : \n"
+                  " - unaryOperator\n"
+                  " - binaryOperator\n"
+                  " - raw_ptr_operator++\n"
+                  " - rhs_expr\n"
+                  "\n";
+  DumpMatchResult(result);
+  assert(false && "Unexpected match in getSourceRange()");
 }
 
 static void maybeUpdateSourceRangeIfInMacro(
@@ -1289,7 +1322,16 @@ Node GetLHS(const MatchFinder::MatchResult& result) {
   }
 
   // Not supposed to get here.
-  assert(false);
+  llvm::errs() << "\n"
+                  "Error: getLHS() encountered an unexpected match.\n"
+                  "Expected one of : \n"
+                  "  - lhs_type_loc\n"
+                  "  - lhs_raw_ptr_type_loc\n"
+                  "  - lhs_begin\n"
+                  "  - deref_expr\n"
+                  "\n";
+  DumpMatchResult(result);
+  assert(false && "Unexpected match in getLHS()");
 }
 
 // Extracts the rhs node from the match result.
@@ -1328,7 +1370,17 @@ Node GetRHS(const MatchFinder::MatchResult& result) {
   }
 
   // Not supposed to get here.
-  assert(false);
+  llvm::errs() << "\n"
+                  "Error: getRHS() encountered an unexpected match.\n"
+                  "Expected one of : \n"
+                  "  - rhs_type_loc\n"
+                  "  - rhs_raw_ptr_type_loc\n"
+                  "  - rhs_begin\n"
+                  "  - member_data_call\n"
+                  "  - size_node\n"
+                  "\n";
+  DumpMatchResult(result);
+  assert(false && "Unexpected match in getRHS()");
 }
 
 // Called when it exist a dependency in between `lhs` and `rhs` nodes. To apply
@@ -1417,7 +1469,15 @@ class FunctionSignatureNodes : public MatchFinder::MatchCallback {
     }
 
     // Shouldn't get here.
-    assert(false);
+    llvm::errs() << "\n"
+                    "Error: getNodeFromMatchResult() encountered an unexpected "
+                    "match.\n"
+                    "Expected one of : \n"
+                    "  - rhs_type_loc\n"
+                    "  - rhs_raw_ptr_type_loc\n"
+                    "  - rhs_begin\n"
+                    "\n";
+    assert(false && "Unexpected match in getNodeFromMatchResult()");
   }
 
   void run(const MatchFinder::MatchResult& result) override {
