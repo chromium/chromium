@@ -268,11 +268,11 @@ pub fn build_rule_from_dep(
 
     let unexpected_features: Vec<&str> = {
         let banned_features =
-            extra_config.get_combined_set(&*dep.package_name, |cfg| &cfg.ban_features);
+            extra_config.get_combined_set(&dep.package_name, |cfg| &cfg.ban_features);
         let mut actual_features = HashSet::new();
         actual_features.extend(requested_features_for_normal.iter().map(Deref::deref));
         actual_features.extend(requested_features_for_build.iter().map(Deref::deref));
-        banned_features.intersection(&actual_features).map(|s| *s).sorted_unstable().collect()
+        banned_features.intersection(&actual_features).copied().sorted_unstable().collect()
     };
     if !unexpected_features.is_empty() {
         bail!(
@@ -348,7 +348,7 @@ pub fn build_rule_from_dep(
         // Generate the rules for each dependency kind. We use a stable
         // order instead of the hashmap iteration order.
         for dep_kind in [Normal, Build] {
-            if dep.dependency_kinds.get(&dep_kind).is_none() {
+            if !dep.dependency_kinds.contains_key(&dep_kind) {
                 continue;
             }
 
@@ -369,7 +369,11 @@ pub fn build_rule_from_dep(
             let crate_type = {
                 // The stdlib is a "dylib" crate but we only want rlibs.
                 let t = lib_target.lib_type.to_string();
-                if t == "dylib" { "rlib".to_string() } else { t }
+                if t == "dylib" {
+                    "rlib".to_string()
+                } else {
+                    t
+                }
             };
 
             let mut lib_detail = detail_template.clone();
@@ -405,10 +409,7 @@ pub fn build_rule_from_dep(
 /// If the returned list is non-empty, it will always have a group without a
 /// condition, even if that group is empty. If there are no dependencies, then
 /// the returned list is empty.
-fn group_deps<F: Fn(&DepOfDep) -> PackageId>(deps: &[&DepOfDep], target_name: F) -> Vec<DepGroup>
-where
-    F: Fn(&DepOfDep) -> PackageId,
-{
+fn group_deps(deps: &[&DepOfDep], target_name: impl Fn(&DepOfDep) -> PackageId) -> Vec<DepGroup> {
     let mut groups = HashMap::<Option<Condition>, Vec<_>>::new();
     for dep in deps {
         let cond = dep.platform.as_ref().map(platform_to_condition);
