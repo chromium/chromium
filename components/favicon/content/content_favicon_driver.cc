@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "components/favicon/content/favicon_url_util.h"
-#include "components/favicon/core/favicon_driver_observer.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon/core/favicon_url.h"
 #include "content/public/browser/browser_context.h"
@@ -136,9 +135,7 @@ void ContentFaviconDriver::OnFaviconUpdated(
   DCHECK(entry);
   DCHECK_EQ(entry->GetURL(), page_url);
 
-  if (notification_icon_type == FaviconDriverObserver::NON_TOUCH_16_DIP ||
-      // Task manager on android may use the icon.
-      notification_icon_type == FaviconDriverObserver::NON_TOUCH_LARGEST) {
+  if (notification_icon_type == FaviconDriverObserver::NON_TOUCH_16_DIP) {
     entry->GetFavicon().valid = true;
     entry->GetFavicon().url = icon_url;
     entry->GetFavicon().image = image;

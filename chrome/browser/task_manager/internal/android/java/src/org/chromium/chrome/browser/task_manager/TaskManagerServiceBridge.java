@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.browser.task_manager;
 
-import android.graphics.Bitmap;
-
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -98,10 +94,6 @@ public class TaskManagerServiceBridge {
         return TaskManagerServiceBridgeJni.get().getGpuMemoryUsage(taskId);
     }
 
-    public @Nullable Bitmap getIcon(long taskId) {
-        return TaskManagerServiceBridgeJni.get().getIcon(taskId);
-    }
-
     public boolean isTaskKillable(long taskId) {
         return TaskManagerServiceBridgeJni.get().isTaskKillable(taskId);
     }
@@ -140,9 +132,6 @@ public class TaskManagerServiceBridge {
         long getProcessId(long taskId);
 
         GpuMemoryUsage getGpuMemoryUsage(long taskId);
-
-        @Nullable
-        Bitmap getIcon(long taskId);
 
         boolean isTaskKillable(long taskId);
 
