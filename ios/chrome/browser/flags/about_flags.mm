@@ -2370,6 +2370,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kDeprecateFeedHeader,
                                     kDeprecateFeedHeaderVariations,
                                     "IOSDeprecateFeedHeader")},
+    {"lens-gesture-text-selection-disabled",
+     flag_descriptions::kLensGestureTextSelectionDisabledName,
+     flag_descriptions::kLensGestureTextSelectionDisabledDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensGestureTextSelectionDisabled)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

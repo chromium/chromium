@@ -610,6 +610,10 @@ extern const char kLensClearcutLoggerFastQosEnabledDescription[];
 extern const char kLensFiltersAblationModeEnabledName[];
 extern const char kLensFiltersAblationModeEnabledDescription[];
 
+// Title and description for the flag to disable Lens gesture text selection.
+extern const char kLensGestureTextSelectionDisabledName[];
+extern const char kLensGestureTextSelectionDisabledDescription[];
+
 // Title and description for the flag to disable Lens ink library's multi-sample
 // mode.
 extern const char kLensInkMultiSampleModeDisabledName[];
