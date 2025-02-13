@@ -298,6 +298,14 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
   // a <form> tag. It's unclear whether that's necessary.
   FieldTypeSet permitted_single_field_types_in_form{EMAIL_ADDRESS};
 
+  // `AutofillEnableEmailHeuristicOutsideForms` permits email fields to be
+  // filled even when they are not in a <form> tag.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableEmailHeuristicOutsideForms)) {
+    permitted_single_field_types.insert(EMAIL_ADDRESS);
+    permitted_single_field_types_in_form.erase(EMAIL_ADDRESS);
+  }
+
   // Returns whether a field type may exist as a stand-alone field.
   auto retainable_field_type =
       [&is_form_tag, &permitted_single_field_types_in_form,

@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser_test_api.h"
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
@@ -35,11 +36,11 @@ class FormFieldParserTest : public FormFieldParserTestBase,
   // Parses all added fields using `ParseFormFields`.
   // Returns the number of fields parsed.
   int ParseFormFields(GeoIpCountryCode client_country = GeoIpCountryCode(""),
-                      LanguageCode language = LanguageCode("")) {
+                      LanguageCode language = LanguageCode(""),
+                      bool is_form_tag = true) {
     ParsingContext context(client_country, language,
                            GetActivePatternFile().value());
-    FormFieldParser::ParseFormFields(context, fields_,
-                                     /*is_form_tag=*/true,
+    FormFieldParser::ParseFormFields(context, fields_, is_form_tag,
                                      field_candidates_map_);
     return field_candidates_map_.size();
   }
@@ -233,6 +234,16 @@ TEST_F(FormFieldParserTest, ParseSingleFieldsIban) {
 TEST_F(FormFieldParserTest, ParseStandaloneCVCFields) {
   AddTextFormFieldData("", "CVC", CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
   EXPECT_EQ(1, ParseStandaloneCVCFields());
+  TestClassificationExpectations();
+}
+
+// Test that email fields are parsed even when the field is not in a <form>.
+TEST_F(FormFieldParserTest, ParseStandaloneEmailFieldsOutsiteOfFormTag) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillEnableEmailHeuristicOutsideForms};
+  AddTextFormFieldData("", "Email", EMAIL_ADDRESS);
+  EXPECT_EQ(1, ParseFormFields(GeoIpCountryCode(""), LanguageCode(""),
+                               /*is_form_tag=*/false));
   TestClassificationExpectations();
 }
 
