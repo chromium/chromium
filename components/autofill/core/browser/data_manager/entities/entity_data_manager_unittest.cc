@@ -96,7 +96,7 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, UpdateEntityInstance) {
   ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp));
 
   pp = test::GetPassportEntityInstance(
-      {.name = "Karlsson", .date_modified = test::kJune2017 - base::Days(1)});
+      {.name = u"Karlsson", .date_modified = test::kJune2017 - base::Days(1)});
   entity_data_manager().AddOrUpdateEntityInstance(pp);
   EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(pp));
 }

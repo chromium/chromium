@@ -37,9 +37,8 @@ class AutofillAiSuggestionsTest : public testing::Test {
 std::u16string GetEntityInstanceValueForFieldType(
     const autofill::EntityInstance entity,
     autofill::FieldType type) {
-  return base::UTF8ToUTF16(
-      (entity.attribute(*autofill::AttributeType::FromFieldType(type))
-           ->value()));
+  return entity.attribute(*autofill::AttributeType::FromFieldType(type))
+      ->value();
 }
 
 bool AutofillAiPayloadContainsField(
@@ -112,13 +111,13 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion) {
 
 TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PrefixMatching) {
   autofill::test::PassportEntityOptions passport_prefix_matches_options;
-  passport_prefix_matches_options.name = "Jon Doe";
+  passport_prefix_matches_options.name = u"Jon Doe";
   autofill::EntityInstance passport_prefix_matches =
       autofill::test::GetPassportEntityInstance(
           passport_prefix_matches_options);
 
   autofill::test::PassportEntityOptions passport_prefix_does_not_match_options;
-  passport_prefix_does_not_match_options.name = "Harry Potter";
+  passport_prefix_does_not_match_options.name = u"Harry Potter";
   autofill::EntityInstance passport_prefix_does_not_match =
       autofill::test::GetPassportEntityInstance(
           passport_prefix_does_not_match_options);
@@ -202,12 +201,12 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_DedupeSuggestions) {
   autofill::EntityInstance passport_entity =
       autofill::test::GetPassportEntityInstance();
   autofill::test::PassportEntityOptions passport_a_with_different_expiry_date;
-  passport_a_with_different_expiry_date.expiry_date = "01/12/2001";
+  passport_a_with_different_expiry_date.expiry_date = u"01/12/2001";
   autofill::test::PassportEntityOptions passport_a_without_an_expiry_date;
   passport_a_with_different_expiry_date.expiry_date = nullptr;
   autofill::test::PassportEntityOptions another_persons_passport_options;
-  another_persons_passport_options.name = "Jon doe";
-  another_persons_passport_options.number = "927908CYGAS1";
+  another_persons_passport_options.name = u"Jon doe";
+  another_persons_passport_options.number = u"927908CYGAS1";
   autofill::EntityInstance another_persons_passport =
       autofill::test::GetPassportEntityInstance(
           another_persons_passport_options);

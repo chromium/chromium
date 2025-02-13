@@ -38,7 +38,7 @@ void* GetKey() {
 namespace version {
 constexpr char kTableName[] = "entities_version";
 constexpr char kVersion[] = "version";
-constexpr int kCurrentVersion = 2;
+constexpr int kCurrentVersion = 3;
 }  // namespace version
 
 namespace attributes {
@@ -59,7 +59,7 @@ constexpr char kDateModified[] = "date_modified";
 
 struct AttributeRecord {
   std::string type_name;
-  std::string value;
+  std::u16string value;
   AttributeInstance::Context context;
 };
 
@@ -132,21 +132,21 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
     using enum AttributeTypeName;
     table.AddOrUpdateEntityInstance(EntityInstance(
         EntityType(EntityTypeName::kPassport),
-        {AttributeInstance(AttributeType(kPassportNumber), "123", {}),
-         AttributeInstance(AttributeType(kPassportName), "Pippi Långstrump",
+        {AttributeInstance(AttributeType(kPassportNumber), u"123", {}),
+         AttributeInstance(AttributeType(kPassportName), u"Pippi Långstrump",
                            {}),
-         AttributeInstance(AttributeType(kPassportCountry), "Sweden", {}),
-         AttributeInstance(AttributeType(kPassportExpiryDate), "09/2098", {}),
-         AttributeInstance(AttributeType(kPassportIssueDate), "10/1998", {})},
+         AttributeInstance(AttributeType(kPassportCountry), u"Sweden", {}),
+         AttributeInstance(AttributeType(kPassportExpiryDate), u"09/2098", {}),
+         AttributeInstance(AttributeType(kPassportIssueDate), u"10/1998", {})},
         base::Uuid::ParseLowercase("00000000-0000-4000-8000-000000000000"),
         "Passie", base::Time::Now()));
     table.AddOrUpdateEntityInstance(EntityInstance(
         EntityType(EntityTypeName::kLoyaltyCard),
         {AttributeInstance(AttributeType(kLoyaltyCardProgram),
-                           "Asterisk Alliance", {}),
+                           u"Asterisk Alliance", {}),
          AttributeInstance(AttributeType(kLoyaltyCardProvider),
-                           "Propeller Airways", {}),
-         AttributeInstance(AttributeType(kLoyaltyCardMemberId), "987", {})},
+                           u"Propeller Airways", {}),
+         AttributeInstance(AttributeType(kLoyaltyCardMemberId), u"987", {})},
         base::Uuid::ParseLowercase("11111111-1111-4111-8111-111111111111"),
         "Loyie", base::Time::Now()));
   }
@@ -257,9 +257,9 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
                    attributes::kValueEncrypted, attributes::kContext});
     s.BindString(0, entity.guid().AsLowercaseString());
     s.BindString(1, attribute.type().name_as_string());
-    if (std::optional<std::vector<uint8_t>> encrypted_value =
-            encryptor()->EncryptString(attribute.value())) {
-      s.BindBlob(2, *encrypted_value);
+    std::string encrypted_value;
+    if (encryptor()->EncryptString16(attribute.value(), &encrypted_value)) {
+      s.BindString(2, encrypted_value);
     } else {
       return false;
     }
@@ -355,16 +355,15 @@ std::vector<EntityInstance> EntityTable::GetEntityInstances() const {
     while (s.Step()) {
       base::Uuid entity_guid = base::Uuid::ParseLowercase(s.ColumnString(0));
       std::string type_name = s.ColumnString(1);
-      std::optional<std::string> value =
-          encryptor()->DecryptData(s.ColumnBlob(2));
-      if (!value) {
+      std::u16string decrypted_value;
+      if (!encryptor()->DecryptString16(s.ColumnString(2), &decrypted_value)) {
         continue;
       }
       AttributeInstance::Context context;
       context.format = s.ColumnString(3);
       attribute_records[entity_guid].push_back(
           {.type_name = std::move(type_name),
-           .value = *std::move(value),
+           .value = std::move(decrypted_value),
            .context = std::move(context)});
     }
     if (!s.Succeeded()) {

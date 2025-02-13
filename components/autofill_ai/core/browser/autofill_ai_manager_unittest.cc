@@ -355,7 +355,7 @@ class AutofillAiManagerImportFormTest
     base::optional_ref<const autofill::AttributeInstance> instance =
         entity.attribute(*attribute);
     CHECK(instance);
-    return base::UTF8ToUTF16(instance->value());
+    return instance->value();
   }
 
   std::u16string GetValueFromEntityForAttributeTypeName(
@@ -364,7 +364,7 @@ class AutofillAiManagerImportFormTest
     base::optional_ref<const autofill::AttributeInstance> instance =
         entity.attribute(autofill::AttributeType(type));
     CHECK(instance);
-    return base::UTF8ToUTF16(instance->value());
+    return instance->value();
   }
 };
 
@@ -537,7 +537,7 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
   autofill::test::PassportEntityOptions
       passport_without_issue_date_and_expiry_date;
   passport_without_issue_date_and_expiry_date.issue_date = nullptr;
-  passport_without_issue_date_and_expiry_date.expiry_date = "";
+  passport_without_issue_date_and_expiry_date.expiry_date = u"";
   autofill::EntityInstance existing_entity_without_issue_date =
       autofill::test::GetPassportEntityInstance(
           passport_without_issue_date_and_expiry_date);

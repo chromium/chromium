@@ -67,7 +67,7 @@ TEST_F(EntityTableTest, AddOrUpdateEntityInstance) {
   ASSERT_THAT(table().GetEntityInstances(), UnorderedElementsAre(pp, lc));
 
   pp = test::GetPassportEntityInstance({
-      .name = "Karlsson",
+      .name = u"Karlsson",
       .date_modified = test::kJune2017 - base::Days(1),
   });
   EXPECT_TRUE(table().AddOrUpdateEntityInstance(pp));

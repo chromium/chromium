@@ -38,8 +38,9 @@ constexpr int kHeaderPadding = 20;
 
 constexpr int kBubbleWidth = 320;
 
-std::unique_ptr<views::View> BuildEntityAttributeRow(std::string_view key,
-                                                     std::string_view value) {
+std::unique_ptr<views::View> BuildEntityAttributeRow(
+    std::string_view key,
+    std::u16string_view value) {
   auto row =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
@@ -50,7 +51,7 @@ std::unique_ptr<views::View> BuildEntityAttributeRow(std::string_view key,
                   .SetTextStyle(views::style::STYLE_BODY_4)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT),
               views::Builder<views::Label>()
-                  .SetText(base::UTF8ToUTF16(value))
+                  .SetText(std::u16string(value))
                   .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
                   .SetHorizontalAlignment(
                       gfx::HorizontalAlignment::ALIGN_RIGHT))

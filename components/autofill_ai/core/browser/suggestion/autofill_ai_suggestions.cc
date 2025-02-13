@@ -153,8 +153,7 @@ std::vector<Suggestion> CreateFillingSuggestions(
     if (!attribute_for_triggering_field) {
       continue;
     }
-    const std::u16string main_text =
-        base::UTF8ToUTF16(attribute_for_triggering_field->value());
+    const std::u16string main_text = attribute_for_triggering_field->value();
     std::u16string normalized_main_text =
         autofill::AutofillProfileComparator::NormalizeForComparison(main_text);
     const std::u16string normalized_triggering_field_content =
@@ -198,8 +197,7 @@ std::vector<Suggestion> CreateFillingSuggestions(
         continue;
       }
 
-      values_to_fill.emplace_back(field->global_id(),
-                                  base::UTF8ToUTF16(attribute->value()));
+      values_to_fill.emplace_back(field->global_id(), attribute->value());
     }
     auto payload = Suggestion::AutofillAiPayload(values_to_fill);
     suggestions.back().payload = payload;

@@ -107,7 +107,7 @@ std::vector<autofill::EntityInstance> GetPossibleEntitiesFromSubmittedForm(
 
     section_to_entity_types_attributes[field->section()][field_attribute_type
                                                              ->entity_type()]
-        .emplace_back(*field_attribute_type, base::UTF16ToUTF8(value),
+        .emplace_back(*field_attribute_type, value,
                       autofill::AttributeInstance::Context{});
   }
 

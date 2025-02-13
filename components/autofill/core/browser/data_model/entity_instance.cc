@@ -23,7 +23,7 @@ AttributeInstance::Context& AttributeInstance::Context::operator=(
 AttributeInstance::Context::~Context() = default;
 
 AttributeInstance::AttributeInstance(AttributeType type,
-                                     std::string value,
+                                     std::u16string value,
                                      Context context)
     : type_(type), value_(std::move(value)), context_(std::move(context)) {}
 
@@ -136,11 +136,9 @@ EntityInstance::EntityMergeability EntityInstance::GetEntityMergeability(
     }
 
     const std::u16string attribute_value_1 =
-        AutofillProfileComparator::NormalizeForComparison(
-            base::UTF8ToUTF16(attribute_1->value()));
+        AutofillProfileComparator::NormalizeForComparison(attribute_1->value());
     const std::u16string attribute_value_2 =
-        AutofillProfileComparator::NormalizeForComparison(
-            base::UTF8ToUTF16(attribute_2->value()));
+        AutofillProfileComparator::NormalizeForComparison(attribute_2->value());
 
     // Attribute exists on `newer` but not on `this`.
     if (attribute_value_1.empty() && !attribute_value_2.empty()) {
