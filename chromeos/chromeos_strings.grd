@@ -433,12 +433,6 @@
       <message name="IDS_MAHI_SUMMARIZE_INDICATOR_LABEL" desc="The text label that indicates the result is a summary">
         Summary
       </message>
-      <message name="IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP" desc="The tooltip of summary button.">
-        Click to summarize the webpage/PDF file
-      </message>
-      <message name="IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP_FOR_SELECTION" desc="The tooltip of summary button for selected text.">
-        Click to summarize the selected text
-      </message>
       <message name="IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP_FOR_SELECTION_TOO_SHORT" desc="The tooltip of summary button when selected text is too short.">
         Not enough words to summarize
       </message>
@@ -447,9 +441,6 @@
       </message>
       <message name="IDS_MAHI_SIMPLIFY_INDICATOR_LABEL" desc="The text label that indicates the result is a simplication">
         Simplified text
-      </message>
-      <message name="IDS_MAHI_SIMPLIFY_BUTTON_TOOL_TIP_ENABLED" desc="The tooltip of the simplify button when it's enabled">
-        Click to simplify the selected text
       </message>
       <message name="IDS_MAHI_SIMPLIFY_BUTTON_TOOL_TIP_DISABLED_SELECTION_EMPTY" desc="The tooltip of the simplify button when it's disabled because of no selected text">
         Select some text to simplify

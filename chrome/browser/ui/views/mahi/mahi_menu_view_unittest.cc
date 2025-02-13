@@ -238,8 +238,6 @@ TEST_F(MahiMenuViewTest, SummaryButtonAvailability) {
   auto* menu_view = menu_widget->SetContentsView(
       std::make_unique<MahiMenuView>(button_status));
   EXPECT_TRUE(menu_view->GetViewByID(ViewID::kSummaryButton)->GetEnabled());
-  EXPECT_EQ(menu_view->GetViewByID(ViewID::kSummaryButton)->GetTooltipText(),
-            l10n_util::GetStringUTF16(IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP));
 
   // kTooShort shows the button but disabled.
   button_status.summary_of_selection_eligibility = SelectedTextState::kTooShort;
@@ -255,9 +253,6 @@ TEST_F(MahiMenuViewTest, SummaryButtonAvailability) {
   menu_view = menu_widget->SetContentsView(
       std::make_unique<MahiMenuView>(button_status));
   EXPECT_TRUE(menu_view->GetViewByID(ViewID::kSummaryButton)->GetEnabled());
-  EXPECT_EQ(menu_view->GetViewByID(ViewID::kSummaryButton)->GetTooltipText(),
-            l10n_util::GetStringUTF16(
-                IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP_FOR_SELECTION));
 }
 
 TEST_F(MahiMenuViewTest, ElucidationButtonVisibilityAvailability) {
