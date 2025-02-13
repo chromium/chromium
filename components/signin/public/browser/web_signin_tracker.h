@@ -5,8 +5,12 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_BROWSER_WEB_SIGNIN_TRACKER_H_
 #define COMPONENTS_SIGNIN_PUBLIC_BROWSER_WEB_SIGNIN_TRACKER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -30,12 +34,15 @@ class WebSigninTracker : public IdentityManager::Observer,
     kAuthError = 1,
     // Other error occurred, most likely - the connection timed out.
     kOtherError = 2,
+    // A timeout occurred.
+    kTimeout = 3,
   };
 
   WebSigninTracker(IdentityManager* identity_manager,
                    AccountReconcilor* account_reconcilor,
                    CoreAccountId signin_account,
-                   base::OnceCallback<void(Result)> callback);
+                   base::OnceCallback<void(Result)> callback,
+                   std::optional<base::TimeDelta> timeout = std::nullopt);
 
   WebSigninTracker(const WebSigninTracker&) = delete;
   WebSigninTracker& operator=(const WebSigninTracker&) = delete;
@@ -51,10 +58,17 @@ class WebSigninTracker : public IdentityManager::Observer,
   void OnStateChanged(signin_metrics::AccountReconcilorState state) override;
 
  private:
+  void OnTimeoutReached();
+  void FinishWithResult(WebSigninTracker::Result result);
+
   const raw_ptr<IdentityManager> identity_manager_;
-  const raw_ptr<AccountReconcilor> account_reconcilor_;
   CoreAccountId signin_account_;
   base::OnceCallback<void(Result)> callback_;
+  base::ScopedObservation<IdentityManager, IdentityManager::Observer>
+      identity_manager_observation_{this};
+  base::ScopedObservation<AccountReconcilor, AccountReconcilor::Observer>
+      account_reconcilor_observation_{this};
+  base::OneShotTimer timeout_timer_;
 };
 
 }  // namespace signin

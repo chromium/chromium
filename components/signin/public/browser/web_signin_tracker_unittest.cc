@@ -5,6 +5,7 @@
 #include "components/signin/public/browser/web_signin_tracker.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 
 #include "base/functional/callback_forward.h"
@@ -12,6 +13,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/mirror_account_reconcilor_delegate.h"
 #include "components/signin/public/base/test_signin_client.h"
@@ -53,10 +55,11 @@ class WebSigninTrackerTest : public ::testing::Test {
 
   std::unique_ptr<WebSigninTracker> CreateWebSigninTracker(
       CoreAccountId account,
-      base::OnceCallback<void(WebSigninTracker::Result)> callback) {
+      base::OnceCallback<void(WebSigninTracker::Result)> callback,
+      std::optional<base::TimeDelta> timeout = std::nullopt) {
     return std::make_unique<WebSigninTracker>(
         identity_test_env_.identity_manager(), account_reconcilor_.get(),
-        account, std::move(callback));
+        account, std::move(callback), timeout);
   }
 
   ConsentLevel GetConsentLevel() const {
@@ -68,7 +71,8 @@ class WebSigninTrackerTest : public ::testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   sync_preferences::TestingPrefServiceSyncable prefs_;
   TestSigninClient signin_client_;
   IdentityTestEnvironment identity_test_env_;
@@ -148,6 +152,23 @@ TEST_F(WebSigninTrackerTest,
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR));
+
+  run_loop.Run();
+}
+
+TEST_F(WebSigninTrackerTest, TimeoutResult) {
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("test@gmail.com");
+  base::MockOnceCallback<void(WebSigninTracker::Result)> callback;
+  base::TimeDelta timeout = base::Seconds(30);
+  std::unique_ptr<WebSigninTracker> web_signin_bridge =
+      CreateWebSigninTracker(account.account_id, callback.Get(), timeout);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(callback, Run(WebSigninTracker::Result::kTimeout))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  task_environment_.FastForwardBy(timeout);
 
   run_loop.Run();
 }
