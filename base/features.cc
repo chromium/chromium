@@ -6,6 +6,7 @@
 
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/threading/platform_thread.h"
+#include "build/blink_buildflags.h"
 #include "build/buildflag.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -15,8 +16,12 @@
 #if BUILDFLAG(IS_APPLE)
 #include "base/files/file.h"
 #include "base/message_loop/message_pump_apple.h"
-#include "base/message_loop/message_pump_kqueue.h"
 #include "base/synchronization/condition_variable.h"
+
+#if !BUILDFLAG(IS_IOS) || !BUILDFLAG(USE_BLINK)
+#include "base/message_loop/message_pump_kqueue.h"
+#endif
+
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -132,7 +137,12 @@ void Init(EmitThreadControllerProfilerMetadata
 #if BUILDFLAG(IS_APPLE)
   File::InitializeFeatures();
   MessagePumpCFRunLoopBase::InitializeFeatures();
+
+// Kqueue is not used for ios blink.
+#if !BUILDFLAG(IS_IOS) || !BUILDFLAG(USE_BLINK)
   MessagePumpKqueue::InitializeFeatures();
+#endif
+
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

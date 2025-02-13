@@ -166,7 +166,9 @@ MessagePumpIOSForIOLibdispatch::MessagePumpIOSForIOLibdispatch()
     : queue_(dispatch_queue_create("org.chromium.io_thread.libdispatch_bridge",
                                    DISPATCH_QUEUE_SERIAL)) {}
 
-MessagePumpIOSForIOLibdispatch::~MessagePumpIOSForIOLibdispatch() = default;
+MessagePumpIOSForIOLibdispatch::~MessagePumpIOSForIOLibdispatch() {
+  dispatch_release(queue_);
+}
 
 void MessagePumpIOSForIOLibdispatch::DoRun(Delegate* delegate) {
   io_thread_task_runner_ = SequencedTaskRunner::GetCurrentDefault();
@@ -186,7 +188,7 @@ bool MessagePumpIOSForIOLibdispatch::WatchFileDescriptor(
   DCHECK(watcher);
   DCHECK(mode == WATCH_READ || mode == WATCH_WRITE || mode == WATCH_READ_WRITE);
 
-  controller->Init(io_thread_task_runner_, queue_.get(), fd, persistent, mode,
+  controller->Init(io_thread_task_runner_, queue_, fd, persistent, mode,
                    watcher);
   return true;
 }
@@ -200,7 +202,7 @@ bool MessagePumpIOSForIOLibdispatch::WatchMachReceivePort(
   DCHECK_NE(port, static_cast<mach_port_t>(MACH_PORT_NULL));
   DCHECK(controller);
   DCHECK(watcher);
-  controller->Init(io_thread_task_runner_, queue_.get(), port, watcher);
+  controller->Init(io_thread_task_runner_, queue_, port, watcher);
   return true;
 }
 

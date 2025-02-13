@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "base/apple/dispatch_source.h"
-#include "base/apple/scoped_dispatch_object.h"
 #include "base/base_export.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -139,7 +138,7 @@ class BASE_EXPORT MessagePumpIOSForIOLibdispatch
   friend class MessagePumpIOSForIOLibdispatchFdTest;
 
   scoped_refptr<base::SequencedTaskRunner> io_thread_task_runner_;
-  apple::ScopedDispatchObject<dispatch_queue_t> queue_;
+  dispatch_queue_t queue_;
 };
 
 }  // namespace base
