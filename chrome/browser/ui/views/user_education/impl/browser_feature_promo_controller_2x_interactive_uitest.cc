@@ -323,6 +323,55 @@ IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
       CheckVariable(close_reason, FeaturePromoClosedReason::kAction));
 }
 
+class BrowserFeaturePromoController2xLiveTrackerUiTest
+    : public InteractiveFeaturePromoTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  static const base::Feature& kFeature;
+
+  BrowserFeaturePromoController2xLiveTrackerUiTest()
+      : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos({kFeature}),
+                                    ClockMode::kUseDefaultClock) {}
+
+  ~BrowserFeaturePromoController2xLiveTrackerUiTest() override = default;
+
+  BrowserFeaturePromoController2xLiveTrackerUiTest(
+      const BrowserFeaturePromoController2xLiveTrackerUiTest&) = delete;
+  BrowserFeaturePromoController2xLiveTrackerUiTest& operator=(
+      const BrowserFeaturePromoController2xLiveTrackerUiTest&) = delete;
+
+  void SetUp() override {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          user_education::features::kUserEducationExperienceVersion2Point5);
+    }
+    InteractiveFeaturePromoTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+const base::Feature&
+    BrowserFeaturePromoController2xLiveTrackerUiTest::kFeature =
+        feature_engagement::kIPHBackNavigationMenuFeature;
+
+INSTANTIATE_V2X_TEST(BrowserFeaturePromoController2xLiveTrackerUiTest);
+
+// Regression test with live tracker for https://crbug.com/396344371
+IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xLiveTrackerUiTest,
+                       ShowPromoTwice) {
+  RunTestSequence(WithView(kBrowserViewElementId,
+                           [](BrowserView* browser_view) {
+                             browser_view->MaybeShowFeaturePromo(kFeature);
+                           }),
+                  WithView(kBrowserViewElementId,
+                           [](BrowserView* browser_view) {
+                             browser_view->MaybeShowFeaturePromo(kFeature);
+                           }),
+                  WaitForPromo(kFeature));
+}
+
 // Using the base interactive browser test re-enables window activation
 // checking. This is only 2.0 since activation precondition is tested elsewhere.
 using BrowserFeaturePromoController20ActivationUiTest = InteractiveBrowserTest;

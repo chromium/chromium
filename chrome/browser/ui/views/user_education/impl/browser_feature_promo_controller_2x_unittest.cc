@@ -790,6 +790,36 @@ TEST_P(BrowserFeaturePromoController2xTest, CancelPromoBeforeStartup) {
             controller_->GetPromoStatus(kTestIPHFeature));
 }
 
+// Regression test for https://crbug.com/396344371
+TEST_P(BrowserFeaturePromoController2xTest, ShowPromoTwice) {
+  SetTrackerInitBehavior(true, TrackerCallbackBehavior::kImmediate);
+
+  bool first = true;
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .WillRepeatedly([&first]() {
+        const bool result = first;
+        first = false;
+        return result;
+      });
+
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
+                         callback1);
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
+                         callback2);
+
+  EXPECT_ASYNC_CALLS_IN_SCOPE_2(
+      callback1, Run(FeaturePromoResult::Success()), callback2,
+      Run(testing::Ne(FeaturePromoResult::Success())), {
+        controller_->MaybeShowStartupPromo(
+            MakeParams(kTestIPHFeature, base::DoNothing(), callback1.Get()));
+        controller_->MaybeShowStartupPromo(
+            MakeParams(kTestIPHFeature, base::DoNothing(), callback2.Get()));
+      });
+  EXPECT_EQ(FeaturePromoStatus::kBubbleShowing,
+            controller_->GetPromoStatus(kTestIPHFeature));
+  EXPECT_TRUE(GetPromoBubble());
+}
+
 class BrowserFeaturePromoController2xTrackerInitializedTest
     : public BrowserFeaturePromoController2xTest {
  public:
