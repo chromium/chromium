@@ -233,10 +233,11 @@ class AccountProfileMapper::Assigner
       std::set<GaiaId>& processed_gaia_ids,
       id<SystemIdentity> identity);
   // Fetches the hosted domain for the last entry of
-  // system_identities_to_fetch_.
+  // `system_identities_to_fetch_`.
   void FetchHostedDomainNow();
-  // Fetches the hosted domain for the last entry of system_identities_to_fetch_
-  // asynchronously according to the backoff policy.
+  // Fetches the hosted domain for the last entry of
+  // `system_identities_to_fetch_` asynchronously according to the backoff
+  // policy.
   void FetchHostedDomain();
   // Called when the hosted domain for `identity` has been fetched
   // asynchronously. Triggers the assignment to an appropriate profile.
@@ -282,11 +283,16 @@ class AccountProfileMapper::Assigner
   // the list - AccountProfileMapper won't do any filtering).
   ProfileNameToGaiaIds profile_to_gaia_ids_;
 
-  // The systems identities for wich the hosted domain must be fetched. Last
+  // The system identities for which the hosted domain must be fetched. Last
   // identity of the array is fetched first. If an identity is currently being
   // fetched, it’s the first one.
   NSMutableArray<id<SystemIdentity>>* system_identities_to_fetch_ =
       [NSMutableArray array];
+  // The identities for which fetching the hosted domain has repeatedly failed,
+  // and should not be attempted again until the next browser restart. (As
+  // opposed to `system_identities_to_fetch_`, this stores Gaia IDs instead of
+  // the actual SystemIdentity objects, to avoid retaining them.)
+  NSMutableArray<NSString*>* gaia_ids_failed_fetching_ = [NSMutableArray array];
 
   // Number of time we try to fetch an identity’s hosted domain before stopping
   // all tries.
@@ -461,6 +467,8 @@ void AccountProfileMapper::Assigner::UpdateIdentityProfileMappings() {
           // should be deleted.
           DeleteProfileNamed(profile_name);
         }
+
+        [gaia_ids_failed_fetching_ removeObject:gaia_id.ToNSString()];
       }
     }
   }
@@ -556,7 +564,8 @@ AccountProfileMapper::Assigner::ProcessIdentityForAssignmentToProfile(
     // If the hosted domain is not in the cache yet, this identity can't be
     // assigned to a profile yet. Query it, and assign once available.
 
-    if (![system_identities_to_fetch_ containsObject:identity]) {
+    if (![system_identities_to_fetch_ containsObject:identity] &&
+        ![gaia_ids_failed_fetching_ containsObject:identity.gaiaID]) {
       // If we have not yet planned to fetch this identity, let’s add it to the
       // list of identities to fetch and reset the total number of tries.
       [system_identities_to_fetch_ addObject:identity];
@@ -630,26 +639,26 @@ void AccountProfileMapper::Assigner::HostedDomainedFetched(
     }
     // Each identity has failed to be fetched at least twice.
     // We had kMinimalNumberOfRetry consecutive fetch failures.
-    // Let’s stop trying.
-    // TODO(crbug.com/331783685):
-    // For now, assume an empty hosted domain, which means all identities will
-    // get assigned to the personal profile.
+    // Let’s stop trying (until the next browser restart).
+    // TODO(crbug.com/331783685): Record metrics for how often this happens.
     for (id<SystemIdentity> identity : system_identities_to_fetch_) {
-      AssignIdentityToProfile(identity, /*is_managed_account=*/false);
+      [gaia_ids_failed_fetching_ addObject:identity.gaiaID];
     }
     [system_identities_to_fetch_ removeAllObjects];
-  } else {
-    id<SystemIdentity> identity = [system_identities_to_fetch_ firstObject];
-    [system_identities_to_fetch_ removeObjectAtIndex:0];
-    ResetNumberOfFetchTries();
-    CHECK(hosted_domain);
-    bool is_managed_account = hosted_domain.length > 0;
-    AssignIdentityToProfile(identity, is_managed_account);
-    if ([system_identities_to_fetch_ count] > 0) {
-      // More domains to fetch.
-      FetchHostedDomain();
-    }
+    return;
   }
+
+  id<SystemIdentity> identity = [system_identities_to_fetch_ firstObject];
+  [system_identities_to_fetch_ removeObjectAtIndex:0];
+  ResetNumberOfFetchTries();
+  CHECK(hosted_domain);
+  bool is_managed_account = hosted_domain.length > 0;
+  AssignIdentityToProfile(identity, is_managed_account);
+  if ([system_identities_to_fetch_ count] > 0) {
+    // More domains to fetch.
+    FetchHostedDomain();
+  }
+
   MaybeUpdateCachedMappingAndNotify();
 }
 
