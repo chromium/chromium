@@ -193,17 +193,17 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*sigmoid_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*slice_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
-       /*softmax_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*softmax_input=*/{DataTypeConstraint::kFloat16To32, kNonScalarMaxRank},
        /*softplus_input=*/{},
        /*softsign_input=*/{},
        /*split_input=*/
-       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kNonScalarMaxRank},
        /*tanh_input=*/{},
        /*tile_input=*/{},
        /*transpose_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*triangular_input=*/
-       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, {2, 8}},
        /*where_condition=*/{DataTypeConstraint::kUint8, kMaxRank},
        /*where_value=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank}});
