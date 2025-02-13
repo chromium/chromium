@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "components/prefs/pref_service.h"
+#include "net/base/network_change_notifier.h"
 
 namespace {
 
@@ -65,6 +66,13 @@ ash::LobsterSystemState LobsterSystemStateProvider::GetSystemState(
   if (!profile_->GetPrefs()->GetBoolean(ash::prefs::kLobsterEnabled)) {
     system_state.status = ash::LobsterStatus::kBlocked;
     system_state.failed_checks.Put(ash::LobsterSystemCheck::kSettingsOff);
+  }
+
+  // Performs a network check
+  if (net::NetworkChangeNotifier::IsOffline()) {
+    system_state.status = ash::LobsterStatus::kBlocked;
+    system_state.failed_checks.Put(
+        ash::LobsterSystemCheck::kNoInternetConnection);
   }
 
   ash::LobsterConsentStatus consent_status = GetConsentStatusFromInteger(

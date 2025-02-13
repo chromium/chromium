@@ -40,7 +40,8 @@ enum class ASH_PUBLIC_EXPORT LobsterSystemCheck {
   kInvalidRegion,
   kInvalidInputField,
   kSettingsOff,
-  kMaxValue = kSettingsOff,
+  kNoInternetConnection,
+  kMaxValue = kNoInternetConnection,
 };
 
 enum class ASH_PUBLIC_EXPORT LobsterErrorCode {

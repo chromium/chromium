@@ -53,6 +53,7 @@ static_library("lobster") {
     "//components/manta",
     "//components/variations/service",
     "//content/public/browser",
+    "//net",
     "//net/traffic_annotation:traffic_annotation",
     "//services/data_decoder/public/cpp:cpp",
   ]
@@ -106,6 +107,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/editor_menu/public/cpp:cpp",
     "//chromeos/ash/components/specialized_features",
     "//components/feedback/proto",
+    "//net",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network:network_service",
     "//testing/gmock",
