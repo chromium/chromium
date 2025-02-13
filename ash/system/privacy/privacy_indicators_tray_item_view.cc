@@ -172,6 +172,7 @@ PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
   auto add_icon_to_container = [&container_view]() {
     auto icon = std::make_unique<views::ImageView>();
     icon->SetPaintToLayer();
+    icon->layer()->SetFillsBoundsOpaquely(false);
     icon->SetVisible(false);
     return container_view->AddChildView(std::move(icon));
   };
