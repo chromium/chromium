@@ -271,7 +271,7 @@ TEST_F(AutofillStructuredAddressAddressComponent, TestGetSupportedFieldType) {
 
   // The first name does not have an additional supported field type.
   EXPECT_EQ(first_name_component.GetAdditionalSupportedFieldTypes(),
-            FieldTypeSet({}));
+            FieldTypeSet());
 
   // The middle name supports an initial.
   EXPECT_EQ(middle_name_component.GetAdditionalSupportedFieldTypes(),

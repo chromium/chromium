@@ -11,12 +11,28 @@
 #include "base/compiler_specific.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
+#include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
 
 // A form group that stores name information.
 class NameInfo : public FormGroup {
  public:
+  // See `AutofillProfile::kDatabaseStoredTypes` for a documentation of the
+  // purpose of this constant.
+  static constexpr FieldTypeSet kDatabaseStoredTypes{NAME_HONORIFIC_PREFIX,
+                                                     NAME_FIRST,
+                                                     NAME_MIDDLE,
+                                                     NAME_LAST_FIRST,
+                                                     NAME_LAST_CONJUNCTION,
+                                                     NAME_LAST_SECOND,
+                                                     NAME_LAST_PREFIX,
+                                                     NAME_LAST_CORE,
+                                                     NAME_LAST,
+                                                     NAME_FULL,
+                                                     ALTERNATIVE_FULL_NAME,
+                                                     ALTERNATIVE_GIVEN_NAME,
+                                                     ALTERNATIVE_FAMILY_NAME};
   NameInfo();
   NameInfo(const NameInfo& info);
   NameInfo(std::unique_ptr<NameFull> name,
@@ -97,6 +113,9 @@ class NameInfo : public FormGroup {
 
 class EmailInfo : public FormGroup {
  public:
+  // See `AutofillProfile::kDatabaseStoredTypes` for a documentation of the
+  // purpose of this constant.
+  static constexpr FieldTypeSet kDatabaseStoredTypes{EMAIL_ADDRESS};
   EmailInfo();
   EmailInfo(const EmailInfo& info);
   ~EmailInfo() override;
@@ -129,6 +148,9 @@ class EmailInfo : public FormGroup {
 
 class CompanyInfo : public FormGroup {
  public:
+  // See `AutofillProfile::kDatabaseStoredTypes` for a documentation of the
+  // purpose of this constant.
+  static constexpr FieldTypeSet kDatabaseStoredTypes{COMPANY_NAME};
   CompanyInfo();
   CompanyInfo(const CompanyInfo& info);
   ~CompanyInfo() override;

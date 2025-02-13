@@ -330,7 +330,7 @@ base::android::ScopedJavaLocalRef<jobject> AutofillProfile::CreateJavaObject(
       Java_AutofillProfile_Constructor(
           env, guid(), static_cast<jint>(record_type()), language_code());
 
-  for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
+  for (FieldType type : AutofillProfile::kDatabaseStoredTypes) {
     auto status = static_cast<jint>(GetVerificationStatus(type));
     // TODO(crbug.com/40278253): Reconcile usage of GetInfo and GetRawInfo
     // below.
@@ -610,7 +610,7 @@ bool AutofillProfile::operator==(const AutofillProfile& profile) const {
 bool AutofillProfile::IsSubsetOf(const AutofillProfileComparator& comparator,
                                  const AutofillProfile& profile) const {
   return IsSubsetOfForFieldSet(comparator, profile,
-                               GetDatabaseStoredTypesOfAutofillProfile());
+                               AutofillProfile::kDatabaseStoredTypes);
 }
 
 bool AutofillProfile::IsSubsetOfForFieldSet(
@@ -823,7 +823,7 @@ void AutofillProfile::MergeFormGroupTokenQuality(
   merged_group.GetSupportedTypes(&supported_types);
   for (FieldType type : supported_types) {
     const std::u16string& merged_value = merged_group.GetRawInfo(type);
-    if (!GetDatabaseStoredTypesOfAutofillProfile().contains(type) ||
+    if (!AutofillProfile::kDatabaseStoredTypes.contains(type) ||
         merged_value == GetRawInfo(type)) {
       // Quality information is only tracked for stored types. If the merged
       // value matches the existing value, its token quality is kept.

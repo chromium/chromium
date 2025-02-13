@@ -386,7 +386,7 @@ bool AddProfileMetadataToTable(sql::Database* db,
 // if the write succeeded.
 bool AddProfileTypeTokensToTable(sql::Database* db,
                                  const AutofillProfile& profile) {
-  for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
+  for (FieldType type : AutofillProfile::kDatabaseStoredTypes) {
     std::u16string value = profile.GetRawInfo(type);
     if (!base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel) &&
         type == ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY) {
@@ -445,10 +445,10 @@ bool AddAutofillProfileToTableVersion113(sql::Database* db,
   if (!s.Run()) {
     return false;
   }
-  // Note that `GetDatabaseStoredTypesOfAutofillProfile()` might change in
+  // Note that `AutofillProfile::kDatabaseStoredTypes` might change in
   // future versions. Due to the flexible layout of the type tokens table, this
   // is not a problem.
-  for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
+  for (FieldType type : AutofillProfile::kDatabaseStoredTypes) {
     InsertBuilder(db, s, GetLegacyProfileTypeTokensTable(profile.record_type()),
                   {kGuid, kType, kValue, kVerificationStatus});
     s.BindString(0, profile.guid());
@@ -489,7 +489,7 @@ std::optional<std::vector<FieldTypeData>> ReadProfileTypeTokens(
   // As `SelectByGuid()` already calls `s.Step()`, do-while is used here.
   do {
     FieldType type = ToSafeFieldType(s.ColumnInt(0), UNKNOWN_TYPE);
-    if (!GetDatabaseStoredTypesOfAutofillProfile().contains(type)) {
+    if (!AutofillProfile::kDatabaseStoredTypes.contains(type)) {
       // This is possible in two cases:
       // - The database was tampered with by external means.
       // - The type corresponding to `s.ColumnInt(0)` was deprecated. In this

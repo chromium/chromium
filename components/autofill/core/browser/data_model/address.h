@@ -21,6 +21,35 @@ namespace autofill {
 // A form group that stores address information.
 class Address : public FormGroup {
  public:
+  // See `AutofillProfile::kDatabaseStoredTypes` for a documentation of the
+  // purpose of this constant.
+  static constexpr FieldTypeSet kDatabaseStoredTypes{
+      ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_STREET_NAME,
+      ADDRESS_HOME_STREET_LOCATION,
+      ADDRESS_HOME_HOUSE_NUMBER,
+      ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
+      ADDRESS_HOME_SUBPREMISE,
+      ADDRESS_HOME_DEPENDENT_LOCALITY,
+      ADDRESS_HOME_CITY,
+      ADDRESS_HOME_STATE,
+      ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_SORTING_CODE,
+      ADDRESS_HOME_COUNTRY,
+      ADDRESS_HOME_APT,
+      ADDRESS_HOME_APT_NUM,
+      ADDRESS_HOME_APT_TYPE,
+      ADDRESS_HOME_FLOOR,
+      ADDRESS_HOME_OVERFLOW,
+      ADDRESS_HOME_LANDMARK,
+      ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+      ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+      ADDRESS_HOME_BETWEEN_STREETS,
+      ADDRESS_HOME_BETWEEN_STREETS_1,
+      ADDRESS_HOME_BETWEEN_STREETS_2,
+      ADDRESS_HOME_ADMIN_LEVEL2,
+      ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY};
+
   explicit Address(AddressCountryCode country_code);
   ~Address() override;
 

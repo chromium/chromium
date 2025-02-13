@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 
 namespace autofill {
@@ -43,6 +44,10 @@ class AutofillProfile;
 // countries but the US, where the + is dropped.
 class PhoneNumber : public FormGroup {
  public:
+  // See `AutofillProfile::kDatabaseStoredTypes` for a documentation of the
+  // purpose of this constant.
+  static constexpr FieldTypeSet kDatabaseStoredTypes{PHONE_HOME_WHOLE_NUMBER};
+
   explicit PhoneNumber(const AutofillProfile* profile);
   PhoneNumber(const PhoneNumber& number);
   ~PhoneNumber() override;

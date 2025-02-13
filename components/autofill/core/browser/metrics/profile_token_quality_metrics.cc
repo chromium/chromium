@@ -34,7 +34,7 @@ using ObservationType = ProfileTokenQuality::ObservationType;
 FieldTypeSet GetMetricRelevantTypes(const AutofillProfile& profile) {
   FieldTypeSet relevant_types;
   profile.GetSupportedTypes(&relevant_types);
-  relevant_types.intersect(GetDatabaseStoredTypesOfAutofillProfile());
+  relevant_types.intersect(AutofillProfile::kDatabaseStoredTypes);
   return relevant_types;
 }
 
