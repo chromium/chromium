@@ -642,7 +642,6 @@ void BookmarkMenuDelegate::BookmarkNodeMoved(
   if (node_to_menu != node_to_menu_map_.end()) {
     MenuItemView* moved_menu = node_to_menu->second;
     old_parent_menu = moved_menu->GetParentMenuItem();
-    CHECK(old_parent_menu);
     RemoveBookmarkNode(moved_node.GetIfNonPermanentNode(), moved_menu);
   }
 

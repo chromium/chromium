@@ -736,6 +736,39 @@ TEST_F(BookmarkMenuDelegateTest, MovingBookmarksBetweenNormalFolders) {
   EXPECT_EQ(0u, f2_item->GetSubmenu()->GetMenuItems().size());
 }
 
+// Tests moving a bookmark whose menu doesn't have a parent.
+TEST_F(BookmarkMenuDelegateTest, MoveBookmarkWithoutParentMenu) {
+  const BookmarkNode* const bookmark_bar_node = model()->bookmark_bar_node();
+  ASSERT_EQ(3u, bookmark_bar_node->children().size());
+
+  const BookmarkNode* const f1_node =
+      model()->bookmark_bar_node()->children()[1].get();
+
+  NewDelegate();
+  bookmark_menu_delegate_->SetActiveMenu(
+      BookmarkParentFolder::FromFolderNode(f1_node), 0);
+  // In practice, additional menus created by `SetActiveMenu` are registered as siblings of
+  // the menu runner, which handles deletion.
+  const std::unique_ptr<views::MenuItemView> f1_menu(menu());
+  ASSERT_NE(nullptr, f1_menu);
+  EXPECT_EQ(nullptr, f1_menu->GetParentMenuItem());
+
+  const BookmarkNode* const f2_node =
+      model()->bookmark_bar_node()->children()[2].get();
+
+  // Move f1_node, which doesn't have a parent menu, to f2_node.
+  // f1_node's menu should be a child of f2_node.
+  model()->Move(f1_node, f2_node, 0);
+
+  bookmark_menu_delegate_->SetActiveMenu(
+      BookmarkParentFolder::FromFolderNode(f2_node), 0);
+  ASSERT_NE(nullptr, menu());
+  ASSERT_TRUE(menu()->HasSubmenu());
+  ASSERT_FALSE(menu()->GetSubmenu()->GetMenuItems().empty());
+  EXPECT_EQ(f1_node->GetTitle(),
+            menu()->GetSubmenu()->GetMenuItemAt(0)->title());
+}
+
 // Tests that the bookmarks title is appropriately added and removed when moving
 // bookmarks into/out of the bookmarks bar for an embedded menu.
 TEST_F(BookmarkMenuDelegateTest, MovingBookmarkUpdatesBookmarksTitle) {
