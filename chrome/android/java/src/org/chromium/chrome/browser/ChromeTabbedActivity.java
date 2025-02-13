@@ -253,6 +253,7 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.I
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.chrome.browser.xr.XrLayoutStateObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.components.browser_ui.edge_to_edge.TabbedSystemBarColorHelper;
@@ -282,6 +283,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl;
 import org.chromium.ui.dragdrop.DragDropMetricUtils;
+import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
@@ -470,6 +472,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
     private OneshotSupplierImpl<ModuleRegistry> mModuleRegistrySupplier =
             new OneshotSupplierImpl<>();
+
+    // Layout state change observer for for XR devices.
+    private @Nullable XrLayoutStateObserver mXrLayoutStateObserver;
 
     private CookiesFetcher mIncognitoCookiesFetcher;
     private final IncognitoTabHost mIncognitoTabHost =
@@ -812,13 +817,27 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 new UnwrapObservableSupplier<>(
                         mTabModelSelector.getCurrentTabModelSupplier(),
                         (tabModel) -> tabModel == null ? false : tabModel.isIncognito());
-        return new HubLayoutDependencyHolder(
-                mHubProvider.getHubManagerSupplier(),
-                rootViewSupplier,
-                mRootUiCoordinator.getScrimManager(),
-                rootViewSupplier::get,
-                incognitoSupplier,
-                adaptOnToolbarAlphaChange());
+        HubLayoutDependencyHolder hubLayoutDependencyHolder =
+                new HubLayoutDependencyHolder(
+                        mHubProvider.getHubManagerSupplier(),
+                        rootViewSupplier,
+                        mRootUiCoordinator.getScrimManager(),
+                        rootViewSupplier::get,
+                        incognitoSupplier,
+                        adaptOnToolbarAlphaChange());
+
+        // Set up layout state osberver for transitions between HSM and FSM on an XR device.
+        if (XrUtils.isXrDevice()) {
+            mXrLayoutStateObserver =
+                    new XrLayoutStateObserver(
+                            this,
+                            mLayoutStateProviderSupplier,
+                            mCallbackController,
+                            getCompositorViewHolderSupplier(),
+                            hubLayoutDependencyHolder.getHubRootView());
+        }
+
+        return hubLayoutDependencyHolder;
     }
 
     private void setupCompositorContentForPhone() {
@@ -2241,6 +2260,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
         mDseNewTabUrlManager = new DseNewTabUrlManager(mTabModelProfileSupplier);
 
         initHub();
+
+        XrUtils.getInstance().init(this);
     }
 
     @Override
@@ -3540,6 +3561,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
         if (mDseNewTabUrlManager != null) {
             mDseNewTabUrlManager.destroy();
+        }
+
+        if (mXrLayoutStateObserver != null) {
+            mXrLayoutStateObserver.destroy();
+            mXrLayoutStateObserver = null;
         }
 
         super.onDestroyInternal();

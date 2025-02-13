@@ -61,6 +61,7 @@ public class CompositorView extends FrameLayout
     private CompositorSurfaceManager mCompositorSurfaceManager;
     private boolean mOverlayVideoEnabled;
     private boolean mAlwaysTranslucent;
+    private boolean mIsXrFullSpaceMode;
 
     // Are we waiting to hide the outgoing surface until the foreground has something to display?
     // If == 0, then no.  If > 0, then yes.  We'll hide when it transitions from one to zero.
@@ -421,6 +422,25 @@ public class CompositorView extends FrameLayout
 
     private boolean canUseSurfaceControl() {
         return !mIsInXr && !mSelectionHandlesActive;
+    }
+
+    /**
+     * Enables/disables full space mode on Android XR device, a variant of overlay video mode.
+     *
+     * @param enabled Whether to enter or leave overlay full space mode on XR device.
+     */
+    public void setXrFullSpaceMode(boolean enabled) {
+        if (mIsXrFullSpaceMode != enabled) {
+            mIsXrFullSpaceMode = enabled;
+            // Request the new surface as mode has changed. We'll get a synthetic destroy / create /
+            // changed callback in that case, possibly before this returns.
+            mCompositorSurfaceManager.requestSurface(
+                    mIsXrFullSpaceMode ? PixelFormat.TRANSLUCENT : PixelFormat.OPAQUE);
+            // Set space mode environment.
+            CompositorViewJni.get()
+                    .setOverlayXrFullScreenMode(
+                            mNativeCompositorView, CompositorView.this, enabled);
+        }
     }
 
     @Override
@@ -850,6 +870,9 @@ public class CompositorView extends FrameLayout
         void setOverlayVideoMode(long nativeCompositorView, CompositorView caller, boolean enabled);
 
         void setOverlayImmersiveArMode(
+                long nativeCompositorView, CompositorView caller, boolean enabled);
+
+        void setOverlayXrFullScreenMode(
                 long nativeCompositorView, CompositorView caller, boolean enabled);
 
         void setSceneLayer(long nativeCompositorView, CompositorView caller, SceneLayer sceneLayer);

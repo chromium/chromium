@@ -100,6 +100,10 @@ class CompositorView : public content::CompositorClient,
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& object,
       bool enabled);
+  void SetOverlayXrFullScreenMode(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& object,
+      bool enabled);
   void SetSceneLayer(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& object,
                      const base::android::JavaParamRef<jobject>& jscene_layer);
@@ -155,6 +159,7 @@ class CompositorView : public content::CompositorClient,
   int content_height_;
   bool overlay_video_mode_;
   bool overlay_immersive_ar_mode_;
+  bool overlay_xr_full_screen_mode_;
 
   base::WeakPtrFactory<CompositorView> weak_factory_{this};
 };

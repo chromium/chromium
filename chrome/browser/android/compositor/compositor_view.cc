@@ -289,6 +289,22 @@ void CompositorView::SetOverlayImmersiveArMode(
   compositor_->SetNeedsComposite();
 }
 
+void CompositorView::SetOverlayXrFullScreenMode(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& object,
+    bool enabled) {
+  if (overlay_xr_full_screen_mode_ == enabled) {
+    return;
+  }
+
+  overlay_xr_full_screen_mode_ = enabled;
+
+  // XR full screen mode requires a transparent background.
+  compositor_->SetBackgroundColor(enabled ? SK_ColorTRANSPARENT
+                                          : SK_ColorWHITE);
+  compositor_->SetNeedsComposite();
+}
+
 void CompositorView::SetSceneLayer(JNIEnv* env,
                                    const JavaParamRef<jobject>& object,
                                    const JavaParamRef<jobject>& jscene_layer) {
@@ -311,7 +327,7 @@ void CompositorView::SetSceneLayer(JNIEnv* env,
     root_layer_->InsertChild(scene_layer->layer(), 0);
   }
 
-  if (overlay_immersive_ar_mode_) {
+  if (overlay_xr_full_screen_mode_ || overlay_immersive_ar_mode_) {
     // Suppress the scene background's default background which breaks
     // transparency. TODO(crbug.com/40098084): Remove this workaround
     // once the issue with StaticTabSceneLayer's unexpected background is
