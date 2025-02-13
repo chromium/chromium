@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_AMOUNT_EXTRACTION_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_AMOUNT_EXTRACTION_METRICS_H_
 
+#include "base/time/time.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
 namespace autofill::autofill_metrics {
@@ -27,6 +28,11 @@ enum class AmountExtractionComponentInstallationResult {
 
 void LogAmountExtractionComponentInstallationResult(
     AmountExtractionComponentInstallationResult result);
+
+// Logs the latency from the `AmountExtractionManager`, from the point of amount
+// extraction initiation to when it finishes. Logged once a response from amount
+// extraction is received.
+void LogAmountExtractionLatency(base::TimeDelta latency, bool is_successful);
 
 }  // namespace autofill::autofill_metrics
 

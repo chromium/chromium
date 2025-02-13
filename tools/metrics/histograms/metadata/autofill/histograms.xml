@@ -1061,6 +1061,26 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.AmountExtraction.Latency{AmountExtractionLatencyResult}"
+    units="ms" expires_after="2025-07-01">
+  <owner>yiwenqian@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the latency of amount extraction process. This latency is measured
+    from the moment amount extraction is initiated in the browser process to
+    when a response is received. Logged when the search is finished.
+  </summary>
+  <token key="AmountExtractionLatencyResult">
+    <variant name=".Failure"
+        summary="Labeled amount extraction latency when amount extraction
+                 failed"/>
+    <variant name=".Success"
+        summary="Labeled amount extraction latency when amount extraction
+                 succeeded"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.AndroidAutofillAvailabilityStatus"
     enum="AndroidAutofillAvailabilityStatus" expires_after="2025-07-27">
   <owner>friedrichh@chromium.org</owner>
