@@ -37,23 +37,34 @@ class EntityDataManager : public KeyedService {
 
   // Adds a new entity, updates an existing entity, or removes an entity.
   // Entities are identified by their UUID for update and removal purposes.
-  virtual void AddEntityInstance(const EntityInstance& entity);
-  virtual void UpdateEntityInstance(const EntityInstance& entity);
-  virtual void RemoveEntityInstance(const base::Uuid& guid);
+  void AddEntityInstance(EntityInstance entity);
+  void UpdateEntityInstance(EntityInstance entity);
+  void RemoveEntityInstance(base::Uuid guid);
+  void RemoveEntityInstancesModifiedBetween(base::Time delete_begin,
+                                            base::Time delete_end);
 
-  // Retrieves the valid entity instances from the database and calls `cb`
-  // asynchronously with the result.
+  // Returns the cached valid entity instances from the database.
+  //
+  // The cache is populated asynchronously after the construction of this
+  // EntityDataManager. Returns an empty vector until the population is
+  // finished.
   //
   // See `EntityTable::GetEntityInstances()` for details on what "valid" means.
-  //
-  // It is guaranteed that `cb` is called eventually; if the query is
-  // unsuccessful, `cb` is called with an empty vector.
-  virtual void LoadEntityInstances(LoadCallback cb);
+  const std::vector<EntityInstance>& GetEntityInstances() const;
 
  private:
+  void LoadEntities();
+
   // Non-null except perhaps in TestEntityDataManager, which overrides all
-  // functions that access .
+  // functions that access it.
   const scoped_refptr<AutofillWebDataService> webdata_service_;
+
+  // The ongoing LoadEntities() query.
+  WebDataServiceBase::Handle pending_query_{};
+
+  // The result of the last successful LoadEntities() query.
+  // All entries are identifiable by their EntityInstance::guid().
+  std::vector<EntityInstance> entities_;
 
   base::WeakPtrFactory<EntityDataManager> weak_ptr_factory_{this};
 };

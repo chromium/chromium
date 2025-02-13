@@ -70,7 +70,7 @@ class EntityTable : public WebDatabaseTable {
   bool RemoveEntityInstance(const base::Uuid& guid);
 
   // Removes all stored entities and their attributes that were modified in the
-  // given range.
+  // given range [`delete_begin`, `delete_end`).
   //
   // Prefer this function over iterating over GetEntityInstances() and calling
   // RemoveEntityInstance() because this function also removes invalid entities.
