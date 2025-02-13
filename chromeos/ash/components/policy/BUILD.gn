@@ -12,7 +12,10 @@ component("policy") {
 
   sources = []
 
-  public_deps = [ "restriction_schedule" ]
+  public_deps = [
+    "external_storage",
+    "restriction_schedule",
+  ]
 
   deps = []
 }
