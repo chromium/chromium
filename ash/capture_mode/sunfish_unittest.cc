@@ -3316,8 +3316,11 @@ TEST_F(ScannerTest,
       ActionButtonViewID::kSmartActionsButton));
 }
 
-TEST_F(ScannerTest,
-       SmartActionsButtonNotShownForDetectedTextButWithAccessCheckFailure) {
+TEST_F(
+    ScannerTest,
+    SmartActionsButtonNotShownForDetectedTextButWithAccessCheckFailureWithSunfishEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kSunfishFeature);
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
           CheckFeatureAccess)
