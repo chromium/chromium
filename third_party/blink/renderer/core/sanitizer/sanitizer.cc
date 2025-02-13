@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
+#include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_builtins.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -307,6 +308,17 @@ void Sanitizer::SanitizeElement(Element* element) const {
       element->removeAttribute(name);
     }
   }
+
+  // Recurse into template and (later) shadow root content.
+  // TODO(vogelheim): Also implement shadow root support, once that's settled
+  // down.
+  // TODO(vogelheim): Merge this code with the case in SanitizeUnsafe.
+  if (IsA<HTMLTemplateElement>(element)) {
+    Node* content = To<HTMLTemplateElement>(element)->content();
+    if (content) {
+      SanitizeUnsafe(content);
+    }
+  }
 }
 
 void Sanitizer::SanitizeSafe(Node* root) const {
@@ -320,8 +332,17 @@ void Sanitizer::SanitizeSafe(Node* root) const {
 }
 
 void Sanitizer::SanitizeUnsafe(Node* root) const {
-  enum { kKeep, kKeepElement, kDrop, kReplaceWithChildren } action = kKeep;
+  // Recurse into template and (later) shadow root content.
+  // TODO(vogelheim): Also implement shadow root support, once that's settled
+  // down.
+  if (IsA<HTMLTemplateElement>(root)) {
+    Node* content = To<HTMLTemplateElement>(root)->content();
+    if (content) {
+      SanitizeUnsafe(content);
+    }
+  }
 
+  enum { kKeep, kKeepElement, kDrop, kReplaceWithChildren } action = kKeep;
   Node* node = NodeTraversal::Next(*root);
   while (node) {
     switch (node->getNodeType()) {
