@@ -9,8 +9,6 @@ import {NotificationType} from 'chrome-untrusted://read-anything-side-panel.top-
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createSpeechSynthesisVoice} from './common.js';
-
 suite('LanguageToast', () => {
   let toast: LanguageToastElement;
 
@@ -24,7 +22,7 @@ suite('LanguageToast', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     toast = document.createElement('language-toast');
     document.body.appendChild(toast);
-    toast.availableVoices = [];
+    toast.numAvailableVoices = 0;
     return microtasksFinished();
   });
 
@@ -92,8 +90,7 @@ suite('LanguageToast', () => {
 
   test('no error for no internet with some voices', async () => {
     const lang = 'pt-br';
-    toast.availableVoices =
-        [createSpeechSynthesisVoice({name: 'Odium', lang: lang})];
+    toast.numAvailableVoices = 1;
     toast.showErrors = true;
     toast.notify(lang, NotificationType.NO_INTERNET);
     await microtasksFinished();
@@ -105,8 +102,7 @@ suite('LanguageToast', () => {
       'no error for no internet with some voices in a different lang',
       async () => {
         const lang = 'pt-br';
-        toast.availableVoices =
-            [createSpeechSynthesisVoice({name: 'Edolyn', lang: 'en-au'})];
+        toast.numAvailableVoices = 1;
         toast.showErrors = true;
         toast.notify(lang, NotificationType.NO_INTERNET);
         await microtasksFinished();
@@ -126,8 +122,7 @@ suite('LanguageToast', () => {
 
   test('no error for no space with some voices', async () => {
     const lang = 'pt-br';
-    toast.availableVoices =
-        [createSpeechSynthesisVoice({name: 'Odium', lang: lang})];
+    toast.numAvailableVoices = 1;
     toast.showErrors = true;
     toast.notify(lang, NotificationType.NO_SPACE);
     await microtasksFinished();
@@ -139,8 +134,7 @@ suite('LanguageToast', () => {
       'no error for no space with some voices in a different lang',
       async () => {
         const lang = 'pt-br';
-        toast.availableVoices =
-            [createSpeechSynthesisVoice({name: 'Edolyn', lang: 'en-au'})];
+        toast.numAvailableVoices = 1;
         toast.showErrors = true;
         toast.notify(lang, NotificationType.NO_SPACE);
         await microtasksFinished();
