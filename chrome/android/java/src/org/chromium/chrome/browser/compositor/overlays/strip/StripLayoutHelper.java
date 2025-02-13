@@ -2100,7 +2100,7 @@ public class StripLayoutHelper
      */
     private void updateSharedTabGroup(
             String collaborationId, @NonNull StripLayoutGroupTitle groupTitle) {
-        // Setup bubbler and show all notifications.
+        // Setup tab bubbler used for showing notification bubbles for shared tab groups.
         if (groupTitle.getTabBubbler() == null) {
             TabBubbler tabBubbler =
                     new TabBubbler(
@@ -2108,7 +2108,6 @@ public class StripLayoutHelper
                             this,
                             new ObservableSupplierImpl<>(groupTitle.getTabGroupId()));
             groupTitle.setTabBubbler(tabBubbler);
-            tabBubbler.showAll();
         }
 
         groupTitle.updateSharedTabGroup(
@@ -2131,6 +2130,19 @@ public class StripLayoutHelper
         groupTitle.clearSharedTabGroup();
         mLayerTitleCache.removeSharedGroupAvatar(groupTitle.getRootId());
         updateGroupTextAndSharedState(groupTitle);
+    }
+
+    /**
+     * Displays notification bubbles for all shared tab groups with recent updates from other
+     * collaborators (e.g. tab additions, removals, or changes).
+     */
+    private void showNotificationBubblesForSharedTabGroups() {
+        for (StripLayoutGroupTitle groupTitle : mStripGroupTitles) {
+            TabBubbler tabBubbler = groupTitle.getTabBubbler();
+            if (tabBubbler != null) {
+                tabBubbler.showAll();
+            }
+        }
     }
 
     private void getAnchorRect(StripLayoutGroupTitle groupTitle, RectProvider anchorRectProvider) {
@@ -3612,6 +3624,10 @@ public class StripLayoutHelper
 
         // 9. Update the touchable rect.
         updateTouchableRect();
+
+        // TODO(crbug.com/396213514): Move the show bubble logic somewhere less frequently called.
+        // 10. Trigger show notification bubble for all shared tab groups that have recent updates.
+        showNotificationBubblesForSharedTabGroups();
     }
 
     private float getStartPositionForStripViews() {
