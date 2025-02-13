@@ -12,6 +12,7 @@
 #import "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/browser/omnibox_controller.h"
+#import "components/omnibox/browser/omnibox_edit_model.h"
 #import "components/omnibox/browser/test_omnibox_client.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
@@ -61,6 +62,25 @@ class MockAutocompleteController : public AutocompleteController {
   metrics::OmniboxEventProto::OmniboxPosition omnibox_position;
 };
 
+/// A mock class for OmniboxEditModel.
+class MockOmniboxEditModel : public OmniboxEditModel {
+ public:
+  MockOmniboxEditModel(OmniboxController* controller)
+      : OmniboxEditModel(controller, nullptr),
+        last_opened_selection(OmniboxPopupSelection(UINT_MAX)) {}
+  MockOmniboxEditModel(const MockOmniboxEditModel&) = delete;
+  MockOmniboxEditModel& operator=(const MockOmniboxEditModel&) = delete;
+  ~MockOmniboxEditModel() override = default;
+
+  void OpenSelection(OmniboxPopupSelection selection,
+                     base::TimeTicks timestamp,
+                     WindowOpenDisposition disposition) override {
+    last_opened_selection = selection;
+  }
+
+  OmniboxPopupSelection last_opened_selection;
+};
+
 }  // namespace
 
 class OmniboxAutocompleteControllerTest : public PlatformTest {
@@ -79,6 +99,11 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
     omnibox_controller_->SetAutocompleteControllerForTesting(
         std::move(autocomplete));
 
+    auto edit_model =
+        std::make_unique<MockOmniboxEditModel>(omnibox_controller_.get());
+    omnibox_edit_model_ = edit_model.get();
+    omnibox_controller_->SetEditModelForTesting(std::move(edit_model));
+
     controller_ = [[OmniboxAutocompleteController alloc]
         initWithOmniboxController:omnibox_controller_.get()
                    omniboxViewIOS:nullptr];
@@ -90,6 +115,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
   ~OmniboxAutocompleteControllerTest() override {
     [controller_ disconnect];
     autocomplete_controller_ = nullptr;
+    omnibox_edit_model_ = nullptr;
     omnibox_controller_ = nullptr;
     popup_ = nil;
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
@@ -103,6 +129,12 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
                 /*destination_url=*/"http://this-site-matches.com")};
   }
 
+  /// Returns the match opened by OmniboxEditModel::OpenSelection.
+  const AutocompleteMatch& LastOpenedMatch() {
+    return autocomplete_controller_->result().match_at(
+        omnibox_edit_model_->last_opened_selection.line);
+  }
+
  protected:
   // Message loop for the main test thread.
   base::test::TaskEnvironment environment_;
@@ -111,9 +143,20 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
 
   OmniboxAutocompleteController* controller_;
   raw_ptr<MockAutocompleteController> autocomplete_controller_;
+  raw_ptr<MockOmniboxEditModel> omnibox_edit_model_;
   std::unique_ptr<OmniboxController> omnibox_controller_;
   id popup_;
 };
+
+// Custom matcher for AutocompleteMatch
+MATCHER_P(IsSameAsMatch, expected, "") {
+  return arg.destination_url == expected.destination_url &&
+         arg.fill_into_edit == expected.fill_into_edit &&
+         arg.additional_text == expected.additional_text &&
+         arg.inline_autocompletion == expected.inline_autocompletion &&
+         arg.contents == expected.contents &&
+         arg.description == expected.description;
+}
 
 // Tests that adding fake matches adds them to the results.
 TEST_F(OmniboxAutocompleteControllerTest, AddFakeMatches) {
@@ -121,6 +164,8 @@ TEST_F(OmniboxAutocompleteControllerTest, AddFakeMatches) {
   autocomplete_controller_->SetAutocompleteMatches(sample_matches);
   EXPECT_EQ(autocomplete_controller_->result().size(), sample_matches.size());
 }
+
+#pragma mark - Request suggestion
 
 // Tests requesting result when there are none still calls
 // updateWithSortedResults.
@@ -192,6 +237,8 @@ TEST_F(OmniboxAutocompleteControllerTest, RequestResultPartVisible) {
   EXPECT_OCMOCK_VERIFY(popup_);
 }
 
+#pragma mark - Logging
+
 // Tests that omnibox position update is forwarded to autocompleteController.
 TEST_F(OmniboxAutocompleteControllerTest, OmniboxPositionUpdates) {
   local_state_->SetBoolean(prefs::kBottomOmnibox, true);
@@ -201,4 +248,32 @@ TEST_F(OmniboxAutocompleteControllerTest, OmniboxPositionUpdates) {
   local_state_->SetBoolean(prefs::kBottomOmnibox, false);
   EXPECT_EQ(autocomplete_controller_->omnibox_position,
             metrics::OmniboxEventProto::TOP_POSITION);
+}
+
+#pragma mark - Open match
+
+// Tests opening a match that doesn't exist in autocomplete controller.
+TEST_F(OmniboxAutocompleteControllerTest, OpenCreatedMatch) {
+  autocomplete_controller_->SetAutocompleteMatches(SampleMatches());
+  AutocompleteMatch match = CreateSearchMatch(u"some match");
+
+  // Open match that doesn't come from the autocomplete controller. Row is
+  // higher than autocomplete_controller_->result().size().
+  [controller_ selectMatchForOpening:match
+                               inRow:10
+                              openIn:WindowOpenDisposition::CURRENT_TAB];
+
+  // Expect the match to be opened.
+  EXPECT_THAT(LastOpenedMatch(), IsSameAsMatch(match));
+
+  // Reset the last opened selection.
+  omnibox_edit_model_->last_opened_selection = OmniboxPopupSelection(UINT_MAX);
+
+  // Open match that doesn't come from the autocomplete controller. Row is
+  // smaller than autocomplete_controller_->result().size().
+  [controller_ selectMatchForOpening:match
+                               inRow:1
+                              openIn:WindowOpenDisposition::CURRENT_TAB];
+  // Expect the match to be opened.
+  EXPECT_THAT(LastOpenedMatch(), IsSameAsMatch(match));
 }
