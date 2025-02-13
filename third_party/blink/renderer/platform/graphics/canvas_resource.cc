@@ -309,6 +309,10 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
           {viz::SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
            gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
            "CanvasResourceSharedBitmap"});
+
+  // This class doesn't currently have a way of verifying the sync token at the
+  // time of vending it in GetSyncTokenWithOptionalVerification(), so we
+  // instead ensure that it is verified now.
   sync_token_ = shared_image_interface->GenVerifiedSyncToken();
 }
 
