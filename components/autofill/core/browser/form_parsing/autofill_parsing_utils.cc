@@ -32,6 +32,8 @@ const base::Feature* GetFeatureOfRegexFeature(RegexFeature feature) {
       return &features::kAutofillSupportPhoneticNameForJP;
     case RegexFeature::kAutofillSupportLastNamePrefix:
       return &features::kAutofillSupportLastNamePrefix;
+    case RegexFeature::kAutofillEnableLoyaltyCardsFilling:
+      return &features::kAutofillEnableLoyaltyCardsFilling;
   }
   NOTREACHED();
 }
