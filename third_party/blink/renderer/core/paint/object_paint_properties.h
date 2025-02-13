@@ -8,7 +8,6 @@
 #include <array>
 #include <memory>
 #include <utility>
-#include <variant>
 
 #include "base/dcheck_is_on.h"
 #include "base/functional/function_ref.h"

@@ -185,7 +185,7 @@ class SparseVector :
     // Then count the total population of field IDs lower than that one we
     // are looking for. The target field ID should be located at the index of
     // of the total population.
-    return __builtin_popcountll(fields_bitfield_ & LowerFieldIdsMask(field_id));
+    return std::popcount(fields_bitfield_ & LowerFieldIdsMask(field_id));
   }
 
   BitfieldType fields_bitfield_ = 0;
