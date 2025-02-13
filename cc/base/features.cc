@@ -169,6 +169,10 @@ BASE_FEATURE(kNewContentForCheckerboardedScrolls,
              "NewContentForCheckerboardedScrolls",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAllowLCDTextWithFilter,
+             "AllowLCDTextWithFilter",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // By default, frame rate starts being throttled when 4 consecutive "did not
 // produce frame" are observed. It stops being throttled when there's a drawn
 // frame.
