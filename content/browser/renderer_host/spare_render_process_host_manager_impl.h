@@ -14,6 +14,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/process_allocation_context.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
 #include "third_party/blink/public/common/performance/performance_scenario_observer.h"
@@ -47,15 +48,15 @@ enum class SpareRendererDispatchResult {
 // LINT.IfChange(NoSpareRendererReason)
 enum class NoSpareRendererReason {
   kNotYetCreated = 0,
-  kTakenByPreviousNavigation,
-  kTimeout,
-  kNotEnabled,
-  kProcessLimit,
-  kMemoryPressure,
-  kProcessExited,
-  kProcessHostDestroyed,
-  kNotYetCreatedFirstLaunch,
-  kNotYetCreatedAfterWarmup,
+  kTakenByPreviousNavigation = 1,
+  kTimeout = 2,
+  kNotEnabled = 3,
+  kProcessLimit = 4,
+  kMemoryPressure = 5,
+  kProcessExited = 6,
+  kProcessHostDestroyed = 7,
+  kNotYetCreatedFirstLaunch = 8,
+  kNotYetCreatedAfterWarmup = 9,
   kMaxValue = kNotYetCreatedAfterWarmup
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:NoSpareRendererReason)
@@ -110,8 +111,10 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   // the default StoragePartition will be able to use a spare renderer. The
   // spare renderer will also not be used as a guest renderer (flags_ contains
   // kForGuestsOnly).
-  RenderProcessHost* MaybeTakeSpare(BrowserContext* browser_context,
-                                    SiteInstanceImpl* site_instance);
+  RenderProcessHost* MaybeTakeSpare(
+      BrowserContext* browser_context,
+      SiteInstanceImpl* site_instance,
+      const ProcessAllocationContext& allocation_context);
 
   // Prepares for future requests (with an assumption that a future navigation
   // might require a new process for |browser_context|).
@@ -217,6 +220,9 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   // The reason for there being no spare render process present.
   NoSpareRendererReason no_spare_renderer_reason_ =
       NoSpareRendererReason::kNotYetCreatedFirstLaunch;
+  // The process allocation context for the previous successful
+  // MaybeTakeSpare() function call.
+  std::optional<ProcessAllocationContext> previous_taken_context_;
 
   // Indicates if the browser is not currently loading content.
   bool is_browser_idle_ = true;

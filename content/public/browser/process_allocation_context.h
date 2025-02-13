@@ -13,34 +13,46 @@ namespace content {
 
 // ProcessAllocationSource records the source calling
 // SiteInstance::GetOrCreateProcess().
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ProcessAllocationSource)
 enum class ProcessAllocationSource : uint8_t {
   kRFHInitRoot = 0,
-  kNavigationRequest,
-  kOverrideNavigationParams,
-  kCanRequestURL,
-  kAuctionProcessManager,
-  kServiceWorkerProcessManager,
-  kSharedStorageRenderThreadWorkletDriver,
-  kSharedWorker,
+  kNavigationRequest = 1,
+  kOverrideNavigationParams = 2,
+  kCanRequestURL = 3,
+  kAuctionProcessManager = 4,
+  kServiceWorkerProcessManager = 5,
+  kSharedStorageRenderThreadWorkletDriver = 6,
+  kSharedWorker = 7,
   // For callsites where GetOrCreateProcess is not expected to create a new
   // process.
-  kNoProcessCreationExpected,
-  kTest,
+  kNoProcessCreationExpected = 8,
+  kTest = 9,
   kMaxValue = kTest,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:ProcessAllocationSource)
 
 // ProcessAllocationSource records when a renderer process is created during the
 // navigation. The value is only meaningful when ProcessAllocationSource is
 // kNavigationRequest.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ProcessAllocationNavigationStage)
 enum class ProcessAllocationNavigationStage : uint8_t {
   kNoURLLoader = 0,
-  kBeforeNetworkRequest,
-  kAfterNetworkRequest,
-  kHandlingEarlyHints,
-  kAfterResponse,
-  kAfterFailure,
+  kBeforeNetworkRequest = 1,
+  kAfterNetworkRequest = 2,
+  kHandlingEarlyHints = 3,
+  kAfterResponse = 4,
+  kAfterFailure = 5,
   kMaxValue = kAfterFailure,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:ProcessAllocationNavigationStage)
 
 struct NavigationProcessAllocationContext {
   ProcessAllocationNavigationStage stage;
