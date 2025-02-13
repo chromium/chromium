@@ -13,11 +13,11 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
+#include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/process_allocation_context.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
-#include "third_party/blink/public/common/performance/performance_scenario_observer.h"
 
 namespace content {
 
@@ -64,7 +64,7 @@ enum class NoSpareRendererReason {
 class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
     : public SpareRenderProcessHostManager,
       public RenderProcessHostObserver,
-      public blink::performance_scenarios::PerformanceScenarioObserver {
+      public performance_scenarios::PerformanceScenarioObserver {
  public:
   SpareRenderProcessHostManagerImpl();
   ~SpareRenderProcessHostManagerImpl() override;
@@ -151,11 +151,11 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
                            const ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
-  // blink::performance_scenarios::PerformanceScenarioObserver:
+  // performance_scenarios::PerformanceScenarioObserver:
   void OnLoadingScenarioChanged(
-      blink::performance_scenarios::ScenarioScope scope,
-      blink::performance_scenarios::LoadingScenario old_scenario,
-      blink::performance_scenarios::LoadingScenario new_scenario) override;
+      performance_scenarios::ScenarioScope scope,
+      performance_scenarios::LoadingScenario old_scenario,
+      performance_scenarios::LoadingScenario new_scenario) override;
 
   void SetIsBrowserIdle(bool is_browser_idle);
 

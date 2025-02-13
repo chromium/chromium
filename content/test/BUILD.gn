@@ -3085,6 +3085,7 @@ test("content_unittests") {
     "//components/offline_pages/buildflags",
     "//components/payments/mojom",
     "//components/performance_manager/public/mojom",
+    "//components/performance_manager/scenario_api",
     "//components/permissions:permissions_common",
     "//components/permissions:test_support",
     "//components/services/quarantine/public/mojom",

@@ -33,6 +33,9 @@ include_rules = [
   # components/performance_manager sits between chrome/ and content/, except for
   # the mojo interfaces it exposes to content/ and third_party/blink/.
   "+components/performance_manager/public/mojom",
+  # components/performance_manager/scenario_api is a subcomponent that can
+  # query performance_manager scenarios from content/ and third_party/blink/.
+  "+components/performance_manager/scenario_api",
   "+components/services/filesystem",
   "+components/services/font/public",
   "+components/services/font_data/public",

@@ -16,15 +16,11 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/passage_embeddings/embedder.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
-
-#if BUILDFLAG(USE_BLINK)
-#include "third_party/blink/public/common/performance/performance_scenario_observer.h"
-#include "third_party/blink/public/common/performance/performance_scenarios.h"
-#endif
+#include "components/performance_manager/scenario_api/performance_scenario_observer.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 
 namespace passage_embeddings {
 
@@ -35,12 +31,8 @@ namespace passage_embeddings {
 // changes, all existing passages need their embeddings recomputed, which can
 // take a very long time and should be done at lower priority.
 class SchedulingEmbedder
-    : public Embedder
-#if BUILDFLAG(USE_BLINK)
-    ,
-      public blink::performance_scenarios::PerformanceScenarioObserver
-#endif
-{
+    : public Embedder,
+      public performance_scenarios::PerformanceScenarioObserver {
  public:
   SchedulingEmbedder(std::unique_ptr<Embedder> embedder,
                      size_t max_jobs,
@@ -75,17 +67,15 @@ class SchedulingEmbedder
 
   void SetEmbedderMetadata(EmbedderMetadata metadata) override;
 
-#if BUILDFLAG(USE_BLINK)
   // PerformanceScenarioObserver:
   void OnLoadingScenarioChanged(
-      blink::performance_scenarios::ScenarioScope scope,
-      blink::performance_scenarios::LoadingScenario old_scenario,
-      blink::performance_scenarios::LoadingScenario new_scenario) override;
+      performance_scenarios::ScenarioScope scope,
+      performance_scenarios::LoadingScenario old_scenario,
+      performance_scenarios::LoadingScenario new_scenario) override;
   void OnInputScenarioChanged(
-      blink::performance_scenarios::ScenarioScope scope,
-      blink::performance_scenarios::InputScenario old_scenario,
-      blink::performance_scenarios::InputScenario new_scenario) override;
-#endif
+      performance_scenarios::ScenarioScope scope,
+      performance_scenarios::InputScenario old_scenario,
+      performance_scenarios::InputScenario new_scenario) override;
 
  private:
   // A job consists of multiple passages, and each passage must have its
@@ -174,12 +164,10 @@ class SchedulingEmbedder
   // Whether to block embedding work submission on performance scenario.
   bool use_performance_scenario_;
 
-#if BUILDFLAG(USE_BLINK)
   base::ScopedObservation<
-      blink::performance_scenarios::PerformanceScenarioObserverList,
+      performance_scenarios::PerformanceScenarioObserverList,
       SchedulingEmbedder>
       performance_scenario_observation_{this};
-#endif
 
   base::WeakPtrFactory<SchedulingEmbedder> weak_ptr_factory_{this};
 };

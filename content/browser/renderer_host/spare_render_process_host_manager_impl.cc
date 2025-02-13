@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/features.h"
@@ -20,13 +21,12 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
-#include "third_party/blink/public/common/performance/performance_scenarios.h"
 
 namespace content {
 
-using blink::performance_scenarios::LoadingScenario;
-using blink::performance_scenarios::PerformanceScenarioObserverList;
-using blink::performance_scenarios::ScenarioScope;
+using performance_scenarios::LoadingScenario;
+using performance_scenarios::PerformanceScenarioObserverList;
+using performance_scenarios::ScenarioScope;
 using SpareProcessMaybeTakeAction =
     content::RenderProcessHostImpl::SpareProcessMaybeTakeAction;
 
@@ -286,7 +286,7 @@ SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl()
     performance_scenario_observer_list->AddObserver(this);
 
     is_browser_idle_ =
-        blink::performance_scenarios::GetLoadingScenario(ScenarioScope::kGlobal)
+        performance_scenarios::GetLoadingScenario(ScenarioScope::kGlobal)
             ->load(std::memory_order_relaxed) ==
         LoadingScenario::kNoPageLoading;
   }
