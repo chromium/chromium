@@ -7761,6 +7761,7 @@ test("unit_tests") {
       "../browser/ui/views/webauthn/pin_textfield_unittest.cc",
       "../browser/ui/views/webauthn/ring_progress_bar_unittest.cc",
       "../browser/ui/views/webid/account_selection_bubble_view_unittest.cc",
+      "../browser/ui/views/webid/account_selection_view_base_unittest.cc",
       "../browser/ui/views/webid/fedcm_account_selection_view_desktop_unittest.cc",
       "../browser/ui/views/webid/fedcm_modal_dialog_view_unittest.cc",
       "../browser/ui/webauthn/context_menu_helper_unittest.cc",

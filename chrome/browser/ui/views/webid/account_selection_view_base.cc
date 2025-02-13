@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
@@ -232,10 +233,8 @@ class AccountImageView : public views::ImageView {
   void SetAccountImage(const content::IdentityRequestAccount& account,
                        int image_size) {
     if (account.decoded_picture.IsEmpty()) {
-      std::u16string letter = base::UTF8ToUTF16(account.name);
-      if (letter.length() > 0) {
-        letter = base::i18n::ToUpper(letter.substr(0, 1));
-      }
+      std::u16string letter =
+          AccountSelectionViewBase::GetInitialLetterAsUppercase(account.name);
       avatar_ = gfx::CanvasImageSource::MakeImageSkia<
           LetterCircleCroppedImageSkiaSource>(letter, image_size);
     } else {
@@ -493,6 +492,21 @@ void AccountSelectionViewBase::SetLabelProperties(views::Label* label) {
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
+}
+
+/* static */ std::u16string
+AccountSelectionViewBase::GetInitialLetterAsUppercase(
+    const std::string& utf8_string) {
+  std::u16string letter;
+  base_icu::UChar32 code_point;
+  size_t char_index = 0;
+  if (!utf8_string.empty() &&
+      base::ReadUnicodeCharacter(utf8_string.data(), utf8_string.length(),
+                                 &char_index, &code_point)) {
+    base::WriteUnicodeCharacter(code_point, &letter);
+    letter = base::i18n::ToUpper(letter);
+  }
+  return letter;
 }
 
 std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
