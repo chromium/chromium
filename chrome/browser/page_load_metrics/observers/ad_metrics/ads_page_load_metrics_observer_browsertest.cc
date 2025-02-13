@@ -15,7 +15,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
@@ -372,14 +371,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 // a page's lifecycling by creating a large ad frame, destroying it, and
 // creating a smaller iframe. The ad density recorded is the density with
 // the first larger frame.
-// Flaky on Lacros bots. crbug.com/1338035
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_PageAdDensityRecordsPageMax DISABLED_PageAdDensityRecordsPageMax
-#else
-#define MAYBE_PageAdDensityRecordsPageMax PageAdDensityRecordsPageMax
-#endif
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       MAYBE_PageAdDensityRecordsPageMax) {
+                       PageAdDensityRecordsPageMax) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto waiter = CreatePageLoadMetricsTestWaiter();
@@ -469,15 +462,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       expected_page_density_height);
 }
 
-// TODO(crbug.com/40857704): Flaky on Lacros bots.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_PageAdDensityMultipleFrames DISABLED_PageAdDensityMultipleFrames
-#else
-#define MAYBE_PageAdDensityMultipleFrames PageAdDensityMultipleFrames
-#endif
 // Creates multiple overlapping frames and verifies the page ad density.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       MAYBE_PageAdDensityMultipleFrames) {
+                       PageAdDensityMultipleFrames) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto waiter = CreatePageLoadMetricsTestWaiter();
@@ -2316,8 +2303,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 
 // Test that rAF events are measured as part of the cpu metrics.
 // TODO(crbug.com/40826975): Flaky on multiple platforms.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TwoRAFFramesTriggerCpuUpdates \
   DISABLED_TwoRAFFramesTriggerCpuUpdates
 #else
