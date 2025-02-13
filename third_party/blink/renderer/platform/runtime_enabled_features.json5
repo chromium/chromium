@@ -2635,6 +2635,9 @@
       name: "LayoutImageForceAspectRatioOfOneOnError",
     },
     {
+      name: "LayoutImageRevalidationCheckForSvgImages",
+    },
+    {
       name: "LayoutJustifySelfForBlocks",
       status: "stable",
     },

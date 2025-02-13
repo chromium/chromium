@@ -346,7 +346,9 @@ bool LayoutImage::NodeAtPoint(HitTestResult& result,
 PhysicalNaturalSizingInfo LayoutImage::GetNaturalDimensions() const {
   NOT_DESTROYED();
   PhysicalNaturalSizingInfo natural_dimensions = natural_dimensions_;
-  if (EmbeddedSVGImage()) {
+  if (RuntimeEnabledFeatures::
+          LayoutImageRevalidationCheckForSvgImagesEnabled() &&
+      EmbeddedSVGImage()) {
     // The value returned by LayoutImageResource will be in zoomed CSS
     // pixels, but for the 'scale-down' object-fit value we want "zoomed
     // device pixels", so undo the DPR part here.
