@@ -17,6 +17,8 @@
 
 namespace policy {
 
+const char kBinaryProtobufContentType[] = "application/x-protobuf";
+
 BASE_FEATURE(kUploadRealtimeReportingEventsUsingProto,
              "UploadRealtimeReportingEventsUsingProto",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -66,6 +68,13 @@ std::string RealtimeReportingJobConfiguration::GetPayload() {
     return upload_request_.SerializeAsString();
   }
   return ReportingJobConfigurationBase::GetPayload();
+}
+
+std::string RealtimeReportingJobConfiguration::GetContentType() {
+  if (base::FeatureList::IsEnabled(kUploadRealtimeReportingEventsUsingProto)) {
+    return kBinaryProtobufContentType;
+  }
+  return ReportingJobConfigurationBase::GetContentType();
 }
 
 bool RealtimeReportingJobConfiguration::AddRequest(
