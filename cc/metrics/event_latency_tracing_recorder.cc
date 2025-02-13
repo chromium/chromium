@@ -14,6 +14,7 @@
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace cc {
@@ -26,8 +27,6 @@ bool IsTracingEnabled() {
   TRACE_EVENT_CATEGORY_GROUP_ENABLED(kTracingCategory, &enabled);
   return enabled;
 }
-
-constexpr base::TimeDelta high_latency_threshold = base::Milliseconds(90);
 
 constexpr perfetto::protos::pbzero::EventLatency::EventType ToProtoEnum(
     EventMetrics::EventType event_type) {
@@ -219,31 +218,18 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
     const std::vector<CompositorFrameReporter::StageData>* stage_history,
     const CompositorFrameReporter::ProcessedVizBreakdown* viz_breakdown,
     std::optional<int64_t> display_trace_id) {
+  DCHECK(event_metrics);
+
   // As there are multiple teardown paths for EventMetrics, we want to denote
   // the attempt to trace, even if tracing is currently disabled.
-  if (IsTracingEnabled()) {
-    RecordEventLatencyTraceEventInternal(event_metrics, termination_time, args,
-                                         stage_history, viz_breakdown,
-                                         display_trace_id);
+  absl::Cleanup mark_recorded = [event_metrics] {
+    event_metrics->tracing_recorded();
+  };
+
+  if (!IsTracingEnabled()) {
+    return;
   }
-  event_metrics->tracing_recorded();
-}
 
-// static
-bool EventLatencyTracingRecorder::IsEventLatencyTracingEnabled() {
-  return IsTracingEnabled() ||
-         !base::FeatureList::IsEnabled(
-             ::features::kMetricsTracingCalculationReduction);
-}
-
-void EventLatencyTracingRecorder::RecordEventLatencyTraceEventInternal(
-    const EventMetrics* event_metrics,
-    base::TimeTicks termination_time,
-    const viz::BeginFrameArgs* args,
-    const std::vector<CompositorFrameReporter::StageData>* stage_history,
-    const CompositorFrameReporter::ProcessedVizBreakdown* viz_breakdown,
-    std::optional<int64_t> display_trace_id) {
-  DCHECK(event_metrics);
   DCHECK(event_metrics->should_record_tracing());
 
   const base::TimeTicks generated_timestamp =
@@ -259,8 +245,9 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEventInternal(
             context.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* event_latency = event->set_event_latency();
         event_latency->set_event_type(ToProtoEnum(event_metrics->type()));
+        static constexpr auto kHighLatencyThreshold = base::Milliseconds(90);
         bool has_high_latency =
-            (termination_time - generated_timestamp) > high_latency_threshold;
+            (termination_time - generated_timestamp) > kHighLatencyThreshold;
         event_latency->set_has_high_latency(has_high_latency);
         for (auto stage : event_metrics->GetHighLatencyStages()) {
           // TODO(crbug.com/40228308): Consider changing the high_latency_stage
@@ -424,6 +411,13 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEventInternal(
     TRACE_EVENT_END(kTracingCategory, trace_track, termination_time);
   }
   TRACE_EVENT_END(kTracingCategory, trace_track, termination_time);
+}
+
+// static
+bool EventLatencyTracingRecorder::IsEventLatencyTracingEnabled() {
+  return IsTracingEnabled() ||
+         !base::FeatureList::IsEnabled(
+             ::features::kMetricsTracingCalculationReduction);
 }
 
 }  // namespace cc

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <string>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -209,10 +210,10 @@ void Layer::SetNeedsCommit() {
   layer_tree_host()->SetNeedsCommit();
 }
 
-void Layer::SetDebugName(const std::string& name) {
-  if (name.empty() && !debug_info_.Read(*this))
-    return;
-  EnsureDebugInfo().name = name;
+void Layer::SetDebugName(std::string name) {
+  if (!name.empty() || debug_info_.Read(*this)) {
+    EnsureDebugInfo().name = std::move(name);
+  }
 }
 
 viz::ViewTransitionElementResourceId Layer::ViewTransitionResourceId() const {
