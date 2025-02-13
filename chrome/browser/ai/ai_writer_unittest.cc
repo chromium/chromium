@@ -180,7 +180,7 @@ TEST_F(AIWriterTest, CanCreateDefaultOptions) {
   GetAIManagerInterface()->CanCreateWriter(GetDefaultOptions(), callback.Get());
 }
 
-TEST_F(AIWriterTest, CanCreateSupportedLanguages) {
+TEST_F(AIWriterTest, CanCreateIsLanguagesSupported) {
   SetupMockOptimizationGuideKeyedService();
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               GetOnDeviceModelEligibility(_))
@@ -198,7 +198,7 @@ TEST_F(AIWriterTest, CanCreateSupportedLanguages) {
   GetAIManagerInterface()->CanCreateWriter(std::move(options), callback.Get());
 }
 
-TEST_F(AIWriterTest, CanCreateUnsupportedLanguages) {
+TEST_F(AIWriterTest, CanCreateUnIsLanguagesSupported) {
   SetupMockOptimizationGuideKeyedService();
   auto options = GetDefaultOptions();
   options->output_language = AILanguageCode::New("es-ES");

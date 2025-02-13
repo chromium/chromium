@@ -97,7 +97,9 @@ interface AIManagerCreateSummarizerClient {
 // The manager that could create a new session for the model.
 interface AIManager {
   // Returns language model availability info from the underlying service.
-  CanCreateLanguageModel() => (ModelAvailabilityCheckResult result);
+  CanCreateLanguageModel(
+    AILanguageModelAvailabilityOptions options
+  ) => (ModelAvailabilityCheckResult result);
   // Creates a new language model.
   // Note that this could return nullptr even if the previous
   // `CanCreateLanguageModel()` returns `kReadily`, because some errors can only

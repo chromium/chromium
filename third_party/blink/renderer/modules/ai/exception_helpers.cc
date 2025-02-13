@@ -55,6 +55,8 @@ const char kExceptionMessageSystemPromptIsDefinedMultipleTimes[] =
 const char kExceptionMessageSystemPromptIsNotTheFirst[] =
     "The prompt with 'system' role must be placed at the first entry of "
     "initialPrompts.";
+const char kExceptionMessageUnsupportedLanguages[] =
+    "The specified languages are not supported.";
 
 void ThrowInvalidContextException(ExceptionState& exception_state) {
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,

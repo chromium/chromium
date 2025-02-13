@@ -42,7 +42,9 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
   EchoAIManagerImpl();
 
   // `blink::mojom::AIManager` implementation.
-  void CanCreateLanguageModel(CanCreateLanguageModelCallback callback) override;
+  void CanCreateLanguageModel(
+      blink::mojom::AILanguageModelAvailabilityOptionsPtr options,
+      CanCreateLanguageModelCallback callback) override;
   void CreateLanguageModel(
       mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
           client,

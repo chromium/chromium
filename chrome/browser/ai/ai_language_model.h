@@ -14,12 +14,14 @@
 #include "base/types/expected.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
+#include "chrome/browser/ai/ai_utils.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/blink/public/mojom/ai/ai_common.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-forward.h"
@@ -128,6 +130,7 @@ class AILanguageModel : public AIContextBoundObject,
       mojo::PendingRemote<blink::mojom::AILanguageModel> pending_remote,
       AIContextBoundObjectSet& session_set,
       AIManager& ai_manager,
+      AIUtils::LanguageCodes expected_input_languages,
       const std::optional<const Context>& context = std::nullopt);
   AILanguageModel(const AILanguageModel&) = delete;
   AILanguageModel& operator=(const AILanguageModel&) = delete;
@@ -176,6 +179,10 @@ class AILanguageModel : public AIContextBoundObject,
       CreateLanguageModelCallback callback,
       uint32_t size);
 
+  // Returns the copy of `expected_input_languages_` for the
+  // `AILanguageModelInstanceInfo` or cloning.
+  AIUtils::LanguageCodes GetExpectedInputLanguagesCopy();
+
   // The underlying session provided by optimization guide component.
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
       session_;
@@ -190,6 +197,7 @@ class AILanguageModel : public AIContextBoundObject,
   base::raw_ref<AIContextBoundObjectSet> context_bound_object_set_;
   base::raw_ref<AIManager> ai_manager_;
 
+  AIUtils::LanguageCodes expected_input_languages_;
   bool is_on_device_session_streaming_chunk_by_chunk_;
   // The accumulated current response to simulate the old streaming behavior
   // that always returns all the response generated so far.

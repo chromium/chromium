@@ -23,6 +23,7 @@ extern const char kExceptionMessageUnableToCloneSession[];
 extern const char kExceptionMessageRequestAborted[];
 extern const char kExceptionMessageSystemPromptIsDefinedMultipleTimes[];
 extern const char kExceptionMessageSystemPromptIsNotTheFirst[];
+extern const char kExceptionMessageUnsupportedLanguages[];
 
 void ThrowInvalidContextException(ExceptionState& exception_state);
 void ThrowSessionDestroyedException(ExceptionState& exception_state);

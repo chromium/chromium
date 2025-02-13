@@ -13,6 +13,10 @@ namespace blink {
 Vector<mojom::blink::AILanguageCodePtr> ToMojoLanguageCodes(
     const Vector<String>& language_codes);
 
+// Converts AILanguageCode mojo struct to string language codes.
+Vector<String> ToStringLanguageCodes(
+    const Vector<mojom::blink::AILanguageCodePtr>& language_codes);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_UTILS_H_

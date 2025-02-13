@@ -14,6 +14,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
@@ -95,7 +96,8 @@ void EchoAILanguageModel::Fork(
           blink::mojom::AILanguageModelSamplingParams::New(
               optimization_guide::features::GetOnDeviceModelDefaultTopK(),
               optimization_guide::features::
-                  GetOnDeviceModelDefaultTemperature())));
+                  GetOnDeviceModelDefaultTemperature()),
+          std::nullopt));
 }
 
 void EchoAILanguageModel::Destroy() {
