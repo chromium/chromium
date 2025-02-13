@@ -2068,8 +2068,10 @@ size_t CookieMonster::GarbageCollect(const Time& current,
   size_t num_deleted = 0;
   const Time safe_date(Time::Now() - base::Days(kSafeFromGlobalPurgeDays));
 
+  // For the domain check if legacy mode is active or not.
   const bool obc_behavior_enabled =
-      cookie_util::IsOriginBoundCookiesPartiallyEnabled();
+      cookie_util::IsOriginBoundCookiesPartiallyEnabled() &&
+      CheckAndActivateLegacyScopeBehavior(key) != CookieScopeSemantics::LEGACY;
 
   // Collect garbage for this key, minding cookie priorities.
   if (cookies_.count(key) > kDomainMaxCookies) {
@@ -2268,6 +2270,11 @@ size_t CookieMonster::GarbageCollectPartitionedCookies(
 
     if (bytes_used > kPerPartitionDomainMaxCookieBytes ||
         non_expired_cookie_its.size() > kPerPartitionDomainMaxCookies) {
+      // For the domain check if legacy mode is active or not.
+      const bool obc_behavior_enabled =
+          cookie_util::IsOriginBoundCookiesPartiallyEnabled() &&
+          GetScopeSemanticsForCookieDomain(key) != CookieScopeSemantics::LEGACY;
+
       // TODO(crbug.com/40188414): Log deep garbage collection for partitioned
       // cookies.
       std::sort(non_expired_cookie_its.begin(), non_expired_cookie_its.end(),
@@ -2276,7 +2283,7 @@ size_t CookieMonster::GarbageCollectPartitionedCookies(
       // When OBC behavior is enabled, we need to consider the partitioned
       // cookies that are domain cookies first and delete those, and then we
       // want to delete host cookies.
-      if (cookie_util::IsOriginBoundCookiesPartiallyEnabled()) {
+      if (obc_behavior_enabled) {
         CookieItList cookie_it_list = CookieItList(
             non_expired_cookie_its.begin(), non_expired_cookie_its.end());
         DeletionCookieLists could_be_deleted =
