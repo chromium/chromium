@@ -41,6 +41,10 @@ extern const base::FeatureParam<int> kVisitedDomainsLimit;
 // The amount of time to wait for capturing the page count for a PDF document.
 extern const base::FeatureParam<base::TimeDelta> kPdfPageCountCaptureDelay;
 
+// Whether to enable page content extraction which is needed for processing the
+// count of words client signal.
+extern const base::FeatureParam<bool> kEnablePageContentExtraction;
+
 }  // namespace contextual_cueing
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_FEATURES_H_

@@ -7,6 +7,7 @@
 
 #include "base/scoped_observation.h"
 #include "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/pdf/common/constants.h"
 #include "content/public/browser/page_user_data.h"
 #include "pdf/buildflags.h"
@@ -25,11 +26,14 @@ class ContextualCueingPageData :
 #endif  // BUILDFLAG(ENABLE_PDF)
     public content::PageUserData<ContextualCueingPageData> {
  public:
-  using CueingDecisionCallback = base::OnceCallback<void(const std::string&)>;
+  using CueingDecisionCallback = base::OnceCallback<void(std::string)>;
 
   ContextualCueingPageData(const ContextualCueingPageData&) = delete;
   ContextualCueingPageData& operator=(const ContextualCueingPageData&) = delete;
   ~ContextualCueingPageData() override;
+
+  void OnPageContentExtracted(
+      const optimization_guide::proto::AnnotatedPageContent& page_content);
 
  private:
   friend class content::PageUserData<ContextualCueingPageData>;
@@ -40,6 +44,19 @@ class ContextualCueingPageData :
     kAllowed,
     kDisallowed,
     kNeedsPdfPageCount,
+    kNeedsPageContent,
+  };
+
+  // Holds the info related to word count client signal.
+  struct WordCountInfo {
+    // Maximum word count needed for the cueing conditions. This limits
+    // iterating through the page content more than needed.
+    size_t max_count_needed = 0;
+
+    // Count of words calculated from the page content. This is always less than
+    // or equal to `max_count_needed`. When the page count is more than the
+    // limit, the counting is stopped at the limit.
+    std::optional<size_t> page_contents_words;
   };
 
   ContextualCueingPageData(
@@ -74,6 +91,10 @@ class ContextualCueingPageData :
   // has a PDF renderer, and the page count has been successfully retrieved from
   // it.
   std::optional<size_t> pdf_page_count_;
+
+  // Holds the word count info. Populated only when word count signal is
+  // required for making the cueing decision.
+  std::optional<WordCountInfo> page_content_word_count_info_;
 
   CueingDecisionCallback cueing_decision_callback_;
 

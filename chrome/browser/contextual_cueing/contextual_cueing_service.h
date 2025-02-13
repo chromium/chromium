@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/nudge_cap_tracker.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
@@ -25,9 +26,13 @@ enum class GlicNudgeActivity;
 
 namespace contextual_cueing {
 
-class ContextualCueingService : public KeyedService {
+class ContextualCueingService
+    : public KeyedService,
+      page_content_annotations::PageContentExtractionService::Observer {
  public:
-  ContextualCueingService();
+  explicit ContextualCueingService(
+      page_content_annotations::PageContentExtractionService*
+          page_content_extraction_service);
   ~ContextualCueingService() override;
 
   // Reports a page load happened to `url`, and is used to keep track of quiet
@@ -57,6 +62,12 @@ class ContextualCueingService : public KeyedService {
   }
 
  private:
+  // page_content_annotations::PageContentExtractionService::Observer:
+  void OnPageContentExtracted(
+      content::Page& page,
+      const optimization_guide::proto::AnnotatedPageContent& page_content)
+      override;
+
   // Returns true if nudge should not be shown due to the backoff rule.
   bool IsNudgeBlockedByBackoffRule() const;
 
@@ -77,6 +88,9 @@ class ContextualCueingService : public KeyedService {
 
   // Maintains the recently visited origins along with their nudge cap tracking.
   base::LRUCache<url::Origin, NudgeCapTracker> recent_visited_origins_;
+
+  raw_ptr<page_content_annotations::PageContentExtractionService>
+      page_content_extraction_service_ = nullptr;
 
   base::WeakPtrFactory<ContextualCueingService> weak_ptr_factory_{this};
 };
