@@ -5767,4 +5767,94 @@ IN_PROC_BROWSER_TEST_F(
                     {}, {reason}, {}, FROM_HERE);
 }
 
+#if BUILDFLAG(ENABLE_VR)
+
+class BackForwardCacheBrowserTestWithWebXr
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(features::kWebXr, "", "");
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithWebXr,
+                       DoesCacheIfXrAttributeWasAccessed) {
+  CreateHttpsServer();
+  ASSERT_TRUE(https_server()->Start());
+
+  // 1) Navigate to an empty page.
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("a.com", "/title1.html")));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Access navigator.xr without calling any methods.
+  EXPECT_TRUE(ExecJs(rfh_a.get(), "navigator.xr"));
+
+  // 2) Navigate away.
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("b.com", "/title1.html")));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 3) Go back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  EXPECT_EQ(rfh_a.get(), current_frame_host());
+  ExpectRestored(FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithWebXr,
+                       DoesNotCacheIfXrIsSessionSupportedWasCalled) {
+  CreateHttpsServer();
+  ASSERT_TRUE(https_server()->Start());
+
+  // 1) Navigate to an empty page.
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("a.com", "/title1.html")));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Call isSessionSupported.
+  EXPECT_TRUE(ExecJs(rfh_a.get(), "navigator.xr.isSessionSupported('inline')"));
+
+  // 2) Navigate away.
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("b.com", "/title1.html")));
+
+  // The page called a WebXR method so it should be deleted.
+  EXPECT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  // 3) Go back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {blink::scheduler::WebSchedulerTrackedFeature::kWebXR}, {},
+                    {}, {}, FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithWebXr,
+                       DoesNotCacheIfXrRequestSessionWasCalled) {
+  CreateHttpsServer();
+  ASSERT_TRUE(https_server()->Start());
+
+  // 1) Navigate to an empty page.
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("a.com", "/title1.html")));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Call requestSession.
+  EXPECT_TRUE(ExecJs(rfh_a.get(), "navigator.xr.requestSession('inline')"));
+
+  // 2) Navigate away.
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("b.com", "/title1.html")));
+
+  // The page called a WebXR method so it should be deleted.
+  EXPECT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  // 3) Go back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {blink::scheduler::WebSchedulerTrackedFeature::kWebXR}, {},
+                    {}, {}, FROM_HERE);
+}
+#endif
+
 }  // namespace content
