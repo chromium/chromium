@@ -103,8 +103,7 @@ SaveAutofillAiDataBubbleView::SaveAutofillAiDataBubbleView(
       views::BoxLayout::Orientation::kVertical));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kControl));
-  SetAccessibleTitle(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_TITLE));
+  SetAccessibleTitle(controller_->GetDialogTitle());
 
   const int kVerficalSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_CONTROL_LIST_VERTICAL);
@@ -168,8 +167,7 @@ void SaveAutofillAiDataBubbleView::AddedToWidget() {
       autofill_ai::CreateLargeAutofillAiIconImageView());
   header_container->AddChildView(
       views::Builder<views::Label>()
-          .SetText(l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_TITLE))
+          .SetText(controller_->GetDialogTitle())
           .SetTextStyle(views::style::STYLE_HEADLINE_4)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
           .Build());

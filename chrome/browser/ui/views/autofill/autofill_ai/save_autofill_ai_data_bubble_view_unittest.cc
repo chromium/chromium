@@ -41,6 +41,7 @@ class MockSaveAutofillAiDataController : public SaveAutofillAiDataController {
               (),
               (const override));
   MOCK_METHOD(void, OnSaveButtonClicked, (), (override));
+  MOCK_METHOD(std::u16string, GetDialogTitle, (), (const override));
   MOCK_METHOD(void, OnBubbleClosed, (AutofillAiBubbleClosedReason), (override));
   base::WeakPtr<SaveAutofillAiDataController> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

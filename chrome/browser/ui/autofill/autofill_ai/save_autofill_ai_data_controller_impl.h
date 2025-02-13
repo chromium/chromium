@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_AUTOFILL_AI_DATA_CONTROLLER_IMPL_H_
 
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
@@ -48,6 +49,7 @@ class SaveAutofillAiDataControllerImpl
       const override;
   void OnBubbleClosed(AutofillAiBubbleClosedReason closed_reason) override;
   base::WeakPtr<SaveAutofillAiDataController> GetWeakPtr() override;
+  std::u16string GetDialogTitle() const override;
 
  protected:
   explicit SaveAutofillAiDataControllerImpl(content::WebContents* web_contents);

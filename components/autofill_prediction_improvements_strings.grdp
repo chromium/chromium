@@ -142,4 +142,18 @@
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_GO_TO_SETTINGS" desc="Text displayed in the prediction improvements IPH bubble.">
     Go to settings
   </message>
+
+  <!-- Save dialog-->
+  <message name="IDS_AUTOFILL_AI_SAVE_CAR_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to save car a entity" translateable="false">
+    Save Car?
+  </message>
+  <message name="IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to save a driver's license entity" translateable="false">
+    Save Driver's license?
+  </message>
+  <message name="IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to save a passport entity" translateable="false">
+    Save Passport?
+  </message>
+  <message name="IDS_AUTOFILL_AI_SAVE_LOYALTY_CARD_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to save a loyalty card entity" translateable="false">
+    Save Loyalty card?
+  </message>
 </grit-part>
