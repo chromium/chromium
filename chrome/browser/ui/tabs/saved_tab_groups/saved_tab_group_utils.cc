@@ -71,6 +71,7 @@ void KeepGroups(TabStripModel* model,
 
 namespace tab_groups {
 
+// static
 bool SavedTabGroupUtils::IsEnabledForProfile(Profile* profile) {
   if (!profile) {
     return false;
@@ -375,6 +376,7 @@ void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
                                      std::move(keep_callback));
 }
 
+// static
 void SavedTabGroupUtils::OpenUrlInNewUngroupedTab(Browser* browser,
                                                   const GURL& url) {
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
@@ -383,6 +385,7 @@ void SavedTabGroupUtils::OpenUrlInNewUngroupedTab(Browser* browser,
   Navigate(&params);
 }
 
+// static
 void SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(
     Browser* browser,
     const base::Uuid& saved_group_guid) {
@@ -422,6 +425,7 @@ void SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(
       ->MoveGroupToNewWindow(save_group->local_group_id().value());
 }
 
+// static
 void SavedTabGroupUtils::ToggleGroupPinState(
     Browser* browser,
     const base::Uuid& saved_group_guid) {
@@ -434,6 +438,7 @@ void SavedTabGroupUtils::ToggleGroupPinState(
                                          std::nullopt);
 }
 
+// static
 SavedTabGroupTab SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
     content::WebContents* contents,
     base::Uuid saved_tab_group_id) {
@@ -444,6 +449,7 @@ SavedTabGroupTab SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
   return tab;
 }
 
+// static
 content::NavigationHandle* SavedTabGroupUtils::OpenTabInBrowser(
     const GURL& url,
     Browser* browser,
@@ -479,8 +485,7 @@ Browser* SavedTabGroupUtils::GetBrowserWithTabGroupId(
 TabGroup* SavedTabGroupUtils::GetTabGroupWithId(
     tab_groups::TabGroupId group_id) {
   Browser* browser = GetBrowserWithTabGroupId(group_id);
-  if (!browser || !browser->tab_strip_model() ||
-      !browser->tab_strip_model()->SupportsTabGroups()) {
+  if (!browser) {
     return nullptr;
   }
 
@@ -494,8 +499,7 @@ TabGroup* SavedTabGroupUtils::GetTabGroupWithId(
 std::vector<content::WebContents*> SavedTabGroupUtils::GetWebContentsesInGroup(
     tab_groups::TabGroupId group_id) {
   Browser* browser = GetBrowserWithTabGroupId(group_id);
-  if (!browser || !browser->tab_strip_model() ||
-      !browser->tab_strip_model()->SupportsTabGroups()) {
+  if (!browser) {
     return {};
   }
 
@@ -513,8 +517,7 @@ std::vector<content::WebContents*> SavedTabGroupUtils::GetWebContentsesInGroup(
 std::vector<tabs::TabInterface*> SavedTabGroupUtils::GetTabsInGroup(
     tab_groups::TabGroupId group_id) {
   Browser* browser = GetBrowserWithTabGroupId(group_id);
-  if (!browser || !browser->tab_strip_model() ||
-      !browser->tab_strip_model()->SupportsTabGroups()) {
+  if (!browser) {
     return {};
   }
 
@@ -528,6 +531,7 @@ std::vector<tabs::TabInterface*> SavedTabGroupUtils::GetTabsInGroup(
   return local_tabs;
 }
 
+// static
 SavedTabGroup SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
     const tab_groups::LocalTabGroupID& local_id) {
   Browser* browser = GetBrowserWithTabGroupId(local_id);
@@ -554,6 +558,7 @@ SavedTabGroup SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
   return saved_tab_group;
 }
 
+// static
 std::unordered_set<std::string> SavedTabGroupUtils::GetURLsInSavedTabGroup(
     Profile* profile,
     const base::Uuid& saved_id) {
@@ -573,6 +578,7 @@ std::unordered_set<std::string> SavedTabGroupUtils::GetURLsInSavedTabGroup(
   return saved_urls;
 }
 
+// static
 void SavedTabGroupUtils::MoveGroupToExistingWindow(
     Browser* source_browser,
     Browser* target_browser,
@@ -624,6 +630,7 @@ void SavedTabGroupUtils::MoveGroupToExistingWindow(
       ->SetVisualData(visual_data);
 }
 
+// static
 void SavedTabGroupUtils::FocusFirstTabOrWindowInOpenGroup(
     tab_groups::TabGroupId local_group_id) {
   Browser* browser_for_activation =

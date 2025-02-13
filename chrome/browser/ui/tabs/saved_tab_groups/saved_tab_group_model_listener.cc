@@ -199,7 +199,7 @@ void SavedTabGroupModelListener::OnTabStripModelChanged(
         service_->OnTabSelected(
             /*group_id=*/selection.new_tab->GetGroup(),
             /*tab_id=*/selection.new_tab->GetHandle().raw_value(),
-            /*tab_title=*/selection.new_tab->GetContents()->GetTitle());
+            /*title=*/selection.new_tab->GetContents()->GetTitle());
       }
       return;
     }
