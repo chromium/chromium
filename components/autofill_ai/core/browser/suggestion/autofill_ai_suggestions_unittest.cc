@@ -110,6 +110,39 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion) {
   EXPECT_FALSE(AutofillAiPayloadContainsField(*payload, *form->fields()[2]));
 }
 
+TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PrefixMatching) {
+  autofill::test::PassportEntityOptions passport_prefix_matches_options;
+  passport_prefix_matches_options.name = "Jon Doe";
+  autofill::EntityInstance passport_prefix_matches =
+      autofill::test::GetPassportEntityInstance(
+          passport_prefix_matches_options);
+
+  autofill::test::PassportEntityOptions passport_prefix_does_not_match_options;
+  passport_prefix_does_not_match_options.name = "Harry Potter";
+  autofill::EntityInstance passport_prefix_does_not_match =
+      autofill::test::GetPassportEntityInstance(
+          passport_prefix_does_not_match_options);
+
+  autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
+  std::unique_ptr<autofill::FormStructure> form =
+      CreateFormStructure({triggering_field_type, autofill::PASSPORT_NUMBER,
+                           autofill::PHONE_HOME_WHOLE_NUMBER});
+
+  form->field(0)->set_value(u"J");
+
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(),
+      {passport_prefix_matches, passport_prefix_does_not_match});
+
+  // There should be only one suggestion whose main text matches is a prefix of
+  // the value already existing in the triggering field.
+  // Note that there is one separator and one footer suggestion as well.
+  EXPECT_EQ(suggestions.size(), 3u);
+  EXPECT_EQ(suggestions[0].main_text.value,
+            GetEntityInstanceValueForFieldType(passport_prefix_matches,
+                                               triggering_field_type));
+}
+
 TEST_F(AutofillAiSuggestionsTest,
        GetFillingSuggestion_SkipFieldsThatDoNotMatchTheTriggeringFieldSection) {
   autofill::EntityInstance passport_entity =

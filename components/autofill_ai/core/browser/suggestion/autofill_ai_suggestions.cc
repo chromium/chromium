@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/entity_instance.h"
 #include "components/autofill/core/browser/data_model/entity_type.h"
@@ -152,10 +153,21 @@ std::vector<Suggestion> CreateFillingSuggestions(
     if (!attribute_for_triggering_field) {
       continue;
     }
+    const std::u16string main_text =
+        base::UTF8ToUTF16(attribute_for_triggering_field->value());
+    std::u16string normalized_main_text =
+        autofill::AutofillProfileComparator::NormalizeForComparison(main_text);
+    const std::u16string normalized_triggering_field_content =
+        autofill::AutofillProfileComparator::NormalizeForComparison(
+            autofill_field->value(autofill::ValueSemantics::kCurrent));
+    // TODO(crbug.com/394011769): Do not prefix match data that should be obfuscated.
+    if (!normalized_main_text.starts_with(
+            normalized_triggering_field_content)) {
+      continue;
+    }
+
     // TODO(crbug.com/389629573): Handle label generation.
-    suggestions.emplace_back(
-        base::UTF8ToUTF16(attribute_for_triggering_field->value()),
-        SuggestionType::kFillAutofillAi);
+    suggestions.emplace_back(main_text, SuggestionType::kFillAutofillAi);
 
     std::vector<std::pair<FieldGlobalId, std::u16string>> values_to_fill;
     for (const std::unique_ptr<AutofillField>& field : form.fields()) {
