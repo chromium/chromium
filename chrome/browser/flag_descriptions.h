@@ -2835,9 +2835,6 @@ extern const char kUseHardwareBufferUsageFlagsFromVulkanDescription[];
 extern const char kVideoTutorialsName[];
 extern const char kVideoTutorialsDescription[];
 
-extern const char kWebAuthnAndroidCredManName[];
-extern const char kWebAuthnAndroidCredManDescription[];
-
 extern const char kWebFeedAwarenessName[];
 extern const char kWebFeedAwarenessDescription[];
 

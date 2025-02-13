@@ -4838,12 +4838,6 @@ const char kAdaptiveButtonInTopToolbarCustomizationName[] =
 const char kAdaptiveButtonInTopToolbarCustomizationDescription[] =
     "Enables UI for customizing the adaptive action button in the top toolbar";
 
-const char kWebAuthnAndroidCredManName[] =
-    "Android Credential Management for passkeys";
-const char kWebAuthnAndroidCredManDescription[] =
-    "Use Credential Management API for passkeys. Requires Android 14 or "
-    "higher.";
-
 const char kWebFeedAwarenessName[] = "Web Feed Awareness";
 const char kWebFeedAwarenessDescription[] =
     "Helps the user discover the web feed.";

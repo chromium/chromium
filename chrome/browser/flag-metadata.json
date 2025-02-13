@@ -9230,11 +9230,6 @@
     "expiry_milestone": 132
   },
   {
-    "name": "web-authentication-android-credential-management",
-    "owners": ["kenrb@chromium.org", "agl@chromium.org"],
-    "expiry_milestone": 132
-  },
-  {
     "name": "web-authentication-enclave-authenticator",
     "owners": [ "kenrb@chromium.org", "chrome-webauthn@google.com" ],
     "expiry_milestone": 132
