@@ -14,6 +14,11 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/keyword_id.h"
 
+// TODO(crbug.com/396399734): This is likely entirely dead code as
+// AndroidProviderBackend was removed in 2021. However, it is still required by
+// HistoryDatabase via AndroidURLsDatabase which needs to be disentangled and
+// removed.
+
 namespace sql {
 class Statement;
 }
