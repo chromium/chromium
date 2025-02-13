@@ -484,7 +484,10 @@ void RenderFrameDevToolsAgentHost::DidFinishNavigation(
   // till the end of the function, as we require |this| after the conditional.
   scoped_refptr<RenderFrameDevToolsAgentHost> protect;
   if (request->frame_tree_node() == frame_tree_node_) {
-    navigation_requests_.erase(request);
+    // We didn't suspend for a same-document navigation.
+    if (!request->IsSameDocument()) {
+      navigation_requests_.erase(request);
+    }
     if (request->HasCommitted())
       NotifyNavigated();
 
@@ -550,6 +553,9 @@ void RenderFrameDevToolsAgentHost::DidStartNavigation(
   NavigationRequest* request = NavigationRequest::From(navigation_handle);
   if (request->frame_tree_node() != frame_tree_node_)
     return;
+  if (request->IsSameDocument()) {
+    return;
+  }
   if (navigation_requests_.empty()) {
     for (DevToolsSession* session : sessions())
       session->SuspendSendingMessagesToAgent();
