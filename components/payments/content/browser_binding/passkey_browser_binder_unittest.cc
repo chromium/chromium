@@ -90,7 +90,7 @@ TEST_F(PasskeyBrowserBinderTest, BindsBrowserBoundKey) {
 
   EXPECT_CALL(*mock_web_data_service_,
               SetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
-                                 fake_bbk_id_, /*consumer=*/_));
+                                 fake_bbk_id_, /*consumer=*/NotNull()));
 
   binder->BindKey(std::move(key.value()), fake_credential_id_,
                   fake_relying_party_);

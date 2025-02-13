@@ -86,9 +86,10 @@ void PasskeyBrowserBinder::BindKey(UnboundKey key,
   if (web_data_service_) {
     // TODO(crbug.com/384954763): Delete the browser bound key from the key
     // store if the result was false (not successful).
-    web_data_service_->SetBrowserBoundKey(credential_id, relying_party,
-                                          std::move(key.browser_bound_key_id_),
-                                          /*consumer=*/nullptr);
+    WebDataServiceBase::Handle handle = web_data_service_->SetBrowserBoundKey(
+        credential_id, relying_party, std::move(key.browser_bound_key_id_),
+        /*consumer=*/this);
+    set_browser_bound_key_handlers_[handle] = base::DoNothing();
   }
 }
 
