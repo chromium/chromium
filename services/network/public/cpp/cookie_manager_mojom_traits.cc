@@ -671,72 +671,6 @@ network::mojom::AncestorChainBit EnumTraits<
                     : network::mojom::AncestorChainBit::kSameSite;
 }
 
-namespace {
-
-void ExtractCrashValueFromPartitionKey(
-    network::mojom::CookiePartitionKeyDataView partition_key,
-    std::string& crash_value) {
-  mojo_base::mojom::UnguessableTokenDataView nonce_data_view;
-  partition_key.GetNonceDataView(&nonce_data_view);
-  if (nonce_data_view.is_null()) {
-    crash_value.append("no_nonce");
-  } else {
-    crash_value.append(base::NumberToString(nonce_data_view.high()));
-    crash_value.append(" ");
-    crash_value.append(base::NumberToString(nonce_data_view.low()));
-  }
-
-  network::mojom::SchemefulSiteDataView schemeful_site_data_view;
-  partition_key.GetSiteDataView(&schemeful_site_data_view);
-  if (schemeful_site_data_view.is_null()) {
-    crash_value.append(" no_schemeful_site");
-    return;
-  }
-
-  url::mojom::OriginDataView origin_data_view;
-  schemeful_site_data_view.GetSiteAsOriginDataView(&origin_data_view);
-  if (origin_data_view.is_null()) {
-    crash_value.append(" no_site_as_origin");
-    return;
-  }
-  crash_value.append(" ");
-  crash_value.append(base::NumberToString(origin_data_view.port()));
-
-  mojo::StringDataView host_data_view;
-  origin_data_view.GetHostDataView(&host_data_view);
-  crash_value.append(" ");
-  if (host_data_view.is_null()) {
-    crash_value.append("no_host");
-  } else {
-    crash_value.append("host_len=");
-    crash_value.append(base::NumberToString(host_data_view.value().length()));
-    crash_value.append(" ");
-    crash_value.append(host_data_view.value());
-  }
-
-  mojo::StringDataView scheme_data_view;
-  origin_data_view.GetSchemeDataView(&scheme_data_view);
-  crash_value.append(" ");
-  if (scheme_data_view.is_null()) {
-    crash_value.append("no_scheme");
-  } else {
-    crash_value.append(scheme_data_view.value());
-  }
-
-  mojo_base::mojom::UnguessableTokenDataView nonce_if_opaque_data_view;
-  origin_data_view.GetNonceIfOpaqueDataView(&nonce_if_opaque_data_view);
-  crash_value.append(" ");
-  if (nonce_if_opaque_data_view.is_null()) {
-    crash_value.append("no_nonce_if_opaque");
-  } else {
-    crash_value.append(base::NumberToString(nonce_if_opaque_data_view.high()));
-    crash_value.append(" ");
-    crash_value.append(base::NumberToString(nonce_if_opaque_data_view.low()));
-  }
-}
-
-}  // namespace
-
 bool StructTraits<network::mojom::CookiePartitionKeyDataView,
                   net::CookiePartitionKey>::
     Read(network::mojom::CookiePartitionKeyDataView partition_key,
@@ -752,27 +686,11 @@ bool StructTraits<network::mojom::CookiePartitionKeyDataView,
   }
   net::SchemefulSite site;
   if (!partition_key.ReadSite(&site)) {
-    // TODO(crbug.com/393088777): Remove all debugging helpers once the crashes
-    // have been diagnosed.
-    std::string crash_value;
-    ExtractCrashValueFromPartitionKey(partition_key, crash_value);
-    SCOPED_CRASH_KEY_STRING1024("CookieFilterDeserialization", "site",
-                                crash_value);
-    base::debug::Alias(&partition_key);
-    base::debug::DumpWithoutCrashing();
     return false;
   }
 
   std::optional<base::UnguessableToken> nonce;
   if (!partition_key.ReadNonce(&nonce)) {
-    // TODO(crbug.com/393088777): Remove all debugging helpers once the crashes
-    // have been diagnosed.
-    std::string crash_value;
-    ExtractCrashValueFromPartitionKey(partition_key, crash_value);
-    SCOPED_CRASH_KEY_STRING1024("CookieFilterDeserialization", "nonce",
-                                crash_value);
-    base::debug::Alias(&partition_key);
-    base::debug::DumpWithoutCrashing();
     return false;
   }
 
