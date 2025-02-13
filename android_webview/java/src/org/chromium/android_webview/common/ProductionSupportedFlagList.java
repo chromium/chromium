@@ -608,6 +608,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 ContentFeatures.RENDER_DOCUMENT_COMPOSITOR_REUSE,
                 "If enabled, allows compositor to be reused on cross-RenderFrameHost navigations"),
+        Flag.baseFeature(
+                ContentFeatures.SITE_INSTANCE_GROUPS_FOR_DATA_URLS,
+                "If enabled, puts data: URL subframes in a separate SiteInstance in the same"
+                        + "SiteInstanceGroup and process as its initiator"),
         Flag.baseFeature(GpuFeatures.CONDITIONALLY_SKIP_GPU_CHANNEL_FLUSH),
         Flag.baseFeature(
                 GpuFeatures.SYNC_POINT_GRAPH_VALIDATION,
