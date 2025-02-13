@@ -639,18 +639,23 @@ void CloudOpenTask::OpenAlreadyHostedDriveUrls() {
       drive::DriveIntegrationServiceFactory::FindForProfile(profile_);
   base::FilePath relative_path;
   for (const auto& file_url : file_urls_) {
-    if (integration_service->GetRelativeDrivePath(file_url.path(),
-                                                  &relative_path)) {
+    if (!integration_service->GetRelativeDrivePath(file_url.path(),
+                                                   &relative_path)) {
+      LOG(ERROR) << "Unexpected error obtaining the relative path";
+      LogGoogleDriveOpenResultUMA(
+          OfficeTaskResult::kOpened,
+          OfficeDriveOpenErrors::kCannotGetRelativePath);
+
+    } else if (!integration_service->GetDriveFsInterface()) {
+      LOG(ERROR) << "DriveFs interface not available";
+      LogGoogleDriveOpenResultUMA(OfficeTaskResult::kOpened,
+                                  OfficeDriveOpenErrors::kDriveFsInterface);
+    } else {
       integration_service->GetDriveFsInterface()->GetMetadata(
           relative_path,
           mojo::WrapCallbackWithDefaultInvokeIfNotRun(
               base::BindOnce(&CloudOpenTask::OnGoogleDriveGetMetadata, this),
               drive::FILE_ERROR_SERVICE_UNAVAILABLE, nullptr));
-    } else {
-      LOG(ERROR) << "Unexpected error obtaining the relative path ";
-      LogGoogleDriveOpenResultUMA(
-          OfficeTaskResult::kOpened,
-          OfficeDriveOpenErrors::kCannotGetRelativePath);
     }
   }
 }
