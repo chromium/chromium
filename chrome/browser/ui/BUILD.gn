@@ -1682,7 +1682,6 @@ static_library("ui") {
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/apps/app_service/app_icon:util",
       "//chrome/browser/apps/link_capturing",
-      "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/contextual_cueing",
 
