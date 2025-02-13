@@ -926,6 +926,12 @@ const char kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[] =
     "Clear the preserved window.name property when it's a top-level cross-site "
     "navigation that swaps BrowsingContextGroup.";
 
+const char kClipboardContentsIdName[] = "Clipboard contentsId API";
+const char kClipboardContentsIdDescription[] =
+    "Enables the API for getting a unique token of the system clipboard's "
+    "current state. For details, see "
+    "https://github.com/explainers-by-googlers/clipboard-contents-id";
+
 const char kDevicePostureName[] = "Device Posture API";
 const char kDevicePostureDescription[] =
     "Enables Device Posture API (foldable devices)";
