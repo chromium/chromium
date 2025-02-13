@@ -95,6 +95,8 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
 
   int NumPendingSwaps();
 
+  CALayer* root_ca_layer() { return root_ca_layer_; }
+
  private:
   uint64_t CreateBackpressureFence();
 
