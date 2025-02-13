@@ -712,6 +712,7 @@ TabGroupHeader::EditorBubbleTracker::~EditorBubbleTracker() {
   if (is_open_ && widget_) {
     widget_->RemoveObserver(this);
     widget_->Close();
+    tab_slot_controller_->NotifyTabstripBubbleClosed();
   }
   CHECK(!IsInObserverList());
 }
