@@ -58,6 +58,10 @@ GetVisibleRectAndContentSize(CFDictionaryRef attachment) {
       contentRect.size.width *= scaleFactor;
       contentRect.size.height *= scaleFactor;
       visibleRect.emplace(contentRect);
+      // Make sure the size of the visible rect is even to not cause problems in
+      // later processing (crbug.com/394238799).
+      visibleRect->set_width(visibleRect->width() & ~1);
+      visibleRect->set_height(visibleRect->height() & ~1);
       contentSize.emplace(round(contentRect.size.width / contentScale),
                           round(contentRect.size.height / contentScale));
     }
@@ -92,6 +96,20 @@ bool IsPresenterOverlayLargeActive(CFDictionaryRef attachment) {
     }
   }
   return false;
+}
+
+// Creates a size object with even dimensions by expanding the original size in
+// the case one of its dimension is odd. The rounding upwards is needed to
+// ensure that windows that have odd dimensions are not scaled down, which would
+// cause the capture to be blurry (crbug.com/394238799).
+gfx::Size CreateEvenSize(const gfx::Size& original_size) {
+  int width = original_size.width();
+  int height = original_size.height();
+
+  width += width & 1;
+  height += height & 1;
+
+  return {width, height};
 }
 }  // namespace
 
@@ -166,7 +184,7 @@ API_AVAILABLE(macos(12.3))
   config.pixelFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
   config.destinationRect = destRectInFrame.ToCGRect();
   config.backgroundColor = CGColorGetConstantColor(kCGColorBlack);
-  config.scalesToFit = YES;
+  config.scalesToFit = NO;
   config.showsCursor = YES;
   config.colorSpaceName = kCGColorSpaceSRGB;
   config.minimumFrameInterval =
@@ -280,7 +298,7 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
     gfx::RectF dest_rect_in_frame;
     actual_capture_format_ = capture_params().requested_format;
     actual_capture_format_.pixel_format = media::PIXEL_FORMAT_NV12;
-    ComputeFrameSizeAndDestRect(stream_config_content_size_,
+    ComputeFrameSizeAndDestRect(CreateEvenSize(stream_config_content_size_),
                                 actual_capture_format_.frame_size,
                                 dest_rect_in_frame);
     SCStreamConfiguration* config = [ScreenCaptureKitDeviceHelper
@@ -378,8 +396,8 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
         stream_config_content_size_ = content_size.value();
         gfx::RectF dest_rect_in_frame;
         gfx::Size new_frame_size;
-        ComputeFrameSizeAndDestRect(stream_config_content_size_, new_frame_size,
-                                    dest_rect_in_frame);
+        ComputeFrameSizeAndDestRect(CreateEvenSize(stream_config_content_size_),
+                                    new_frame_size, dest_rect_in_frame);
 
         // There's a small variation in the reported content size when the large
         // presenter overlay is active which may result in updateConfiguration()
