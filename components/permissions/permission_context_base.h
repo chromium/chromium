@@ -220,6 +220,11 @@ class PermissionContextBase : public content_settings::Observer {
   // Implementors can override this method to avoid using automatic embargo.
   virtual bool UsesAutomaticEmbargo() const;
 
+  // Derived classes can use this function to find some particular permission
+  // request.
+  const PermissionRequest* FindPermissionRequest(
+      const PermissionRequestID& id) const;
+
   base::ObserverList<permissions::Observer> permission_observers_;
 
   // Set by subclasses to inform the base class that they will handle adding
