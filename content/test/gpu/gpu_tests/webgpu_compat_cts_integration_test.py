@@ -61,8 +61,8 @@ class WebGpuCompatCtsIntegrationTest(
       return
 
     for arg in browser_options.extra_browser_args:
-      if arg.startswith('--use-dawn-features='):
-        values = arg[len('--use-dawn-features='):]
+      if arg.startswith('--enable-dawn-features='):
+        values = arg[len('--enable-dawn-features='):]
         for feature in values.split(','):
           if feature == 'gl_force_es_31_and_no_extensions':
             cls._use_min_es31 = True
