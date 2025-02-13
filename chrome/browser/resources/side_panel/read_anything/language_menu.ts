@@ -222,6 +222,8 @@ export class LanguageMenuElement extends LanguageMenuElementBase implements
       case NotificationType.NO_SPACE:
         return {isError: true, text: 'allocationError'};
       case NotificationType.DOWNLOADED:
+      case NotificationType.GOOGLE_VOICES_UNAVAILABLE:
+        // TODO (crbug.com/396436665) Show inline error message
       case NotificationType.NONE:
         return {isError: false};
       default:

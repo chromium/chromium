@@ -66,6 +66,9 @@ export class LanguageToastElement extends LanguageToastElementBase implements
       this.notifications_.set(language, type);
     }
     switch (type) {
+      case NotificationType.GOOGLE_VOICES_UNAVAILABLE:
+        this.setErrorTitle_('readingModeLanguageMenuVoicesUnavailable');
+        break;
       case NotificationType.NO_INTERNET:
         // Only show a toast if there are no voices at all.
         if (!this.showErrors || this.numAvailableVoices > 0) {

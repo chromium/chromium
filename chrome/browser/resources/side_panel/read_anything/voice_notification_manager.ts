@@ -58,6 +58,12 @@ export class VoiceNotificationManager {
     }
   }
 
+  onNoEngineConnection() {
+    this.listeners_.forEach(
+        listener =>
+            listener.notify(NotificationType.GOOGLE_VOICES_UNAVAILABLE));
+  }
+
   static getInstance(): VoiceNotificationManager {
     return instance || (instance = new VoiceNotificationManager());
   }

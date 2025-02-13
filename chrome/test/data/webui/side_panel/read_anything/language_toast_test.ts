@@ -78,6 +78,15 @@ suite('LanguageToast', () => {
     assertFalse(toast.$.toast.open);
   });
 
+  test('shows toast for Google Voices Unavailable', async () => {
+    toast.notify(NotificationType.GOOGLE_VOICES_UNAVAILABLE);
+    await microtasksFinished();
+
+    assertTrue(toast.$.toast.open);
+    assertEquals(
+        'Some Google voices may not be available right now', getTitle());
+  });
+
   test('shows error for no internet and no voices', async () => {
     const lang = 'pt-br';
     toast.showErrors = true;
