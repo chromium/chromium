@@ -52,6 +52,9 @@ struct IconMapping {
 
   // The type of icon.
   favicon_base::IconType icon_type = favicon_base::IconType::kInvalid;
+
+  // The page url type of the mapping.
+  PageUrlType page_url_type = PageUrlType::kRegular;
 };
 
 // Defines a favicon bitmap and its associated pixel size.

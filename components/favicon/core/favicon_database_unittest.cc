@@ -90,7 +90,7 @@ void AddAndMapFaviconSimple(FaviconDatabase* db,
   favicon_base::FaviconID favicon_id =
       db->AddFavicon(icon_url, icon_type, data, FaviconBitmapType::ON_VISIT,
                      base::Time::Now(), gfx::Size());
-  db->AddIconMapping(page_url, favicon_id);
+  db->AddIconMapping(page_url, favicon_id, PageUrlType::kRegular);
 }
 
 void VerifyDatabaseEmpty(sql::Database* db) {
@@ -163,11 +163,8 @@ void VerifyDatabaseEmpty(sql::Database* db) {
     return false;
   }
 
-  auto maybe_page_url_type =
-      db->GetFirstPageUrlTypeForTesting(page_url, expected_icon_url);
-  if (!maybe_page_url_type || *maybe_page_url_type != expected_page_url_type) {
-    EXPECT_TRUE(maybe_page_url_type);
-    EXPECT_EQ(expected_page_url_type, *maybe_page_url_type);
+  if (expected_page_url_type != iter->page_url_type) {
+    EXPECT_EQ(expected_page_url_type, iter->page_url_type);
     return false;
   }
 
@@ -249,13 +246,13 @@ TEST_F(FaviconDatabaseTest, AddIconMapping) {
                     FaviconBitmapType::ON_VISIT, time, gfx::Size());
   EXPECT_NE(0, id);
 
-  EXPECT_NE(0, db.AddIconMapping(url, id));
+  EXPECT_NE(0, db.AddIconMapping(url, id, PageUrlType::kRedirect));
   std::vector<IconMapping> icon_mappings;
   EXPECT_TRUE(db.GetIconMappingsForPageURL(url, &icon_mappings));
   EXPECT_EQ(1u, icon_mappings.size());
   EXPECT_EQ(url, icon_mappings.front().page_url);
   EXPECT_EQ(id, icon_mappings.front().icon_id);
-  EXPECT_EQ(PageUrlType::kRegular, *db.GetFirstPageUrlTypeForTesting(url, url));
+  EXPECT_EQ(PageUrlType::kRedirect, icon_mappings.front().page_url_type);
 }
 
 TEST_F(FaviconDatabaseTest, AddOnDemandFaviconBitmapCreatesCorrectTimestamps) {
@@ -462,9 +459,9 @@ TEST_F(FaviconDatabaseTest, GetOldOnDemandFaviconsReturnsOld) {
   ASSERT_NE(0, icon);
   // Associate two different URLs with the icon.
   GURL page_url1("http://google.com/1");
-  ASSERT_NE(0, db.AddIconMapping(page_url1, icon));
+  ASSERT_NE(0, db.AddIconMapping(page_url1, icon, PageUrlType::kRegular));
   GURL page_url2("http://google.com/2");
-  ASSERT_NE(0, db.AddIconMapping(page_url2, icon));
+  ASSERT_NE(0, db.AddIconMapping(page_url2, icon, PageUrlType::kRegular));
 
   base::Time get_older_than = start + base::Seconds(1);
   auto map = db.GetOldOnDemandFavicons(get_older_than);
@@ -496,7 +493,7 @@ TEST_F(FaviconDatabaseTest, GetOldOnDemandFaviconsDoesNotReturnExpired) {
                     FaviconBitmapType::ON_VISIT, start, gfx::Size());
   ASSERT_NE(0, icon);
   GURL page_url("http://google.com/");
-  ASSERT_NE(0, db.AddIconMapping(page_url, icon));
+  ASSERT_NE(0, db.AddIconMapping(page_url, icon, PageUrlType::kRegular));
   ASSERT_TRUE(db.SetFaviconOutOfDate(icon));
 
   base::Time get_older_than = start + base::Seconds(1);
@@ -523,7 +520,8 @@ TEST_F(FaviconDatabaseTest, GetOldOnDemandFaviconsDoesNotReturnFresh) {
       db.AddFavicon(url, favicon_base::IconType::kFavicon, favicon,
                     FaviconBitmapType::ON_DEMAND, start, gfx::Size());
   ASSERT_NE(0, icon);
-  ASSERT_NE(0, db.AddIconMapping(GURL("http://google.com/"), icon));
+  ASSERT_NE(0, db.AddIconMapping(GURL("http://google.com/"), icon,
+                                 PageUrlType::kRegular));
 
   // Touch the icon 3 weeks later.
   base::Time now = start + base::Days(21);
@@ -552,7 +550,8 @@ TEST_F(FaviconDatabaseTest, GetOldOnDemandFaviconsDoesNotDeleteStandard) {
       GURL("http://google.com/favicon.ico"), favicon_base::IconType::kFavicon,
       favicon, FaviconBitmapType::ON_VISIT, start, gfx::Size());
   ASSERT_NE(0, icon);
-  ASSERT_NE(0, db.AddIconMapping(GURL("http://google.com/"), icon));
+  ASSERT_NE(0, db.AddIconMapping(GURL("http://google.com/"), icon,
+                                 PageUrlType::kRegular));
 
   base::Time get_older_than = start + base::Seconds(1);
   auto map = db.GetOldOnDemandFavicons(get_older_than);
@@ -575,11 +574,11 @@ TEST_F(FaviconDatabaseTest, DeleteIconMappings) {
   base::Time time = base::Time::Now();
   db.AddFaviconBitmap(id, favicon, FaviconBitmapType::ON_VISIT, time,
                       gfx::Size());
-  EXPECT_LT(0, db.AddIconMapping(url, id));
+  EXPECT_LT(0, db.AddIconMapping(url, id, PageUrlType::kRegular));
 
   favicon_base::FaviconID id2 =
       db.AddFavicon(url, favicon_base::IconType::kFavicon);
-  EXPECT_LT(0, db.AddIconMapping(url, id2));
+  EXPECT_LT(0, db.AddIconMapping(url, id2, PageUrlType::kRegular));
   ASSERT_NE(id, id2);
 
   std::vector<IconMapping> icon_mapping;
@@ -613,14 +612,14 @@ TEST_F(FaviconDatabaseTest, GetIconMappingsForPageURL) {
                       kSmallSize);
   db.AddFaviconBitmap(id1, favicon, FaviconBitmapType::ON_VISIT, time,
                       kLargeSize);
-  EXPECT_LT(0, db.AddIconMapping(url, id1));
+  EXPECT_LT(0, db.AddIconMapping(url, id1, PageUrlType::kRegular));
 
   favicon_base::FaviconID id2 =
       db.AddFavicon(url, favicon_base::IconType::kFavicon);
   EXPECT_NE(id1, id2);
   db.AddFaviconBitmap(id2, favicon, FaviconBitmapType::ON_VISIT, time,
                       kSmallSize);
-  EXPECT_LT(0, db.AddIconMapping(url, id2));
+  EXPECT_LT(0, db.AddIconMapping(url, id2, PageUrlType::kRegular));
 
   std::vector<IconMapping> icon_mappings;
   EXPECT_TRUE(db.GetIconMappingsForPageURL(url, &icon_mappings));
@@ -657,21 +656,21 @@ TEST_F(FaviconDatabaseTest, RetainDataForPageUrls) {
       db.AddFavicon(kIconUrl1, favicon_base::IconType::kFavicon);
   db.AddFaviconBitmap(kept_id1, favicon1, FaviconBitmapType::ON_VISIT,
                       base::Time::Now(), kLargeSize);
-  db.AddIconMapping(kPageUrl1, kept_id1);
-  db.AddIconMapping(kPageUrl3, kept_id1);
-  db.AddIconMapping(kPageUrl4, kept_id1);
+  db.AddIconMapping(kPageUrl1, kept_id1, PageUrlType::kRegular);
+  db.AddIconMapping(kPageUrl3, kept_id1, PageUrlType::kRegular);
+  db.AddIconMapping(kPageUrl4, kept_id1, PageUrlType::kRegular);
 
   favicon_base::FaviconID unkept_id =
       db.AddFavicon(kIconUrl2, favicon_base::IconType::kFavicon);
   db.AddFaviconBitmap(unkept_id, favicon1, FaviconBitmapType::ON_VISIT,
                       base::Time::Now(), kLargeSize);
-  db.AddIconMapping(kPageUrl2, unkept_id);
+  db.AddIconMapping(kPageUrl2, unkept_id, PageUrlType::kRegular);
 
   favicon_base::FaviconID kept_id2 =
       db.AddFavicon(kIconUrl5, favicon_base::IconType::kFavicon);
   db.AddFaviconBitmap(kept_id2, favicon2, FaviconBitmapType::ON_VISIT,
                       base::Time::Now(), kLargeSize);
-  db.AddIconMapping(kPageUrl5, kept_id2);
+  db.AddIconMapping(kPageUrl5, kept_id2, PageUrlType::kRedirect);
 
   // RetainDataForPageUrls() uses schema manipulations for efficiency.
   // Grab a copy of the schema to make sure the final schema matches.
@@ -692,14 +691,11 @@ TEST_F(FaviconDatabaseTest, RetainDataForPageUrls) {
                                PageUrlType::kRegular));
   EXPECT_TRUE(CheckPageHasIcon(&db, kPageUrl5, favicon_base::IconType::kFavicon,
                                kIconUrl5, kLargeSize, sizeof(kBlob2), kBlob2,
-                               PageUrlType::kRegular));
+                               PageUrlType::kRedirect));
 
   // The ones not retained should be missing.
   EXPECT_FALSE(db.GetIconMappingsForPageURL(kPageUrl2, nullptr));
   EXPECT_FALSE(db.GetIconMappingsForPageURL(kPageUrl4, nullptr));
-
-  EXPECT_FALSE(db.GetFirstPageUrlTypeForTesting(kPageUrl2, kIconUrl2));
-  EXPECT_FALSE(db.GetFirstPageUrlTypeForTesting(kPageUrl4, kIconUrl1));
 
   // Schema should be the same.
   EXPECT_EQ(original_schema, db.db_.GetSchema());
@@ -716,7 +712,7 @@ TEST_F(FaviconDatabaseTest, RetainDataForPageUrlsExpiresRetainedFavicons) {
   favicon_base::FaviconID kept_id = db.AddFavicon(
       kIconUrl1, favicon_base::IconType::kFavicon, favicon1,
       FaviconBitmapType::ON_VISIT, base::Time::Now(), gfx::Size());
-  db.AddIconMapping(kPageUrl1, kept_id);
+  db.AddIconMapping(kPageUrl1, kept_id, PageUrlType::kRegular);
 
   EXPECT_TRUE(db.RetainDataForPageUrls(std::vector<GURL>(1u, kPageUrl1)));
 
@@ -775,7 +771,7 @@ TEST_F(FaviconDatabaseTest, GetIconMappingsForPageURLForReturnOrder) {
   favicon_base::FaviconID id =
       db.AddFavicon(icon_url, favicon_base::IconType::kFavicon, favicon,
                     FaviconBitmapType::ON_VISIT, time, gfx::Size());
-  EXPECT_NE(0, db.AddIconMapping(page_url, id));
+  EXPECT_NE(0, db.AddIconMapping(page_url, id, PageUrlType::kRegular));
   std::vector<IconMapping> icon_mappings;
   EXPECT_TRUE(db.GetIconMappingsForPageURL(page_url, &icon_mappings));
 
@@ -792,7 +788,7 @@ TEST_F(FaviconDatabaseTest, GetIconMappingsForPageURLForReturnOrder) {
   favicon_base::FaviconID id2 =
       db.AddFavicon(icon_url, favicon_base::IconType::kTouchIcon, favicon2,
                     FaviconBitmapType::ON_VISIT, time, gfx::Size());
-  EXPECT_NE(0, db.AddIconMapping(page_url, id2));
+  EXPECT_NE(0, db.AddIconMapping(page_url, id2, PageUrlType::kRegular));
 
   icon_mappings.clear();
   EXPECT_TRUE(db.GetIconMappingsForPageURL(page_url, &icon_mappings));
@@ -810,7 +806,7 @@ TEST_F(FaviconDatabaseTest, GetIconMappingsForPageURLForReturnOrder) {
   favicon_base::FaviconID id3 =
       db.AddFavicon(icon_url, favicon_base::IconType::kTouchPrecomposedIcon,
                     favicon3, FaviconBitmapType::ON_VISIT, time, gfx::Size());
-  EXPECT_NE(0, db.AddIconMapping(page_url, id3));
+  EXPECT_NE(0, db.AddIconMapping(page_url, id3, PageUrlType::kRegular));
 
   icon_mappings.clear();
   EXPECT_TRUE(db.GetIconMappingsForPageURL(page_url, &icon_mappings));
@@ -936,8 +932,8 @@ TEST_F(FaviconDatabaseTest, HasMappingFor) {
 
   // Add 2 icon mapping
   GURL page_url("http://www.google.com");
-  EXPECT_TRUE(db.AddIconMapping(page_url, id1));
-  EXPECT_TRUE(db.AddIconMapping(page_url, id2));
+  EXPECT_TRUE(db.AddIconMapping(page_url, id1, PageUrlType::kRegular));
+  EXPECT_TRUE(db.AddIconMapping(page_url, id2, PageUrlType::kRegular));
 
   EXPECT_TRUE(db.HasMappingFor(id1));
   EXPECT_TRUE(db.HasMappingFor(id2));
@@ -1445,7 +1441,7 @@ TEST_F(FaviconDatabaseTest, GetFaviconIDForFaviconURLOriginFilter) {
   const auto icon_id = db.AddFavicon(
       kIconUrl1, favicon_base::IconType::kFavicon, favicon1,
       FaviconBitmapType::ON_VISIT, base::Time::Now(), gfx::Size());
-  db.AddIconMapping(kPageUrl1, icon_id);
+  db.AddIconMapping(kPageUrl1, icon_id, PageUrlType::kRegular);
   ASSERT_NE(0, icon_id);
 
   // We should be able to find the `icon_id` via the non-filtered function.
@@ -1472,7 +1468,7 @@ TEST_F(FaviconDatabaseTest, GetFaviconIDForFaviconURLOriginFilter) {
   ASSERT_EQ(0, icon_id_found);
 
   // If we map `kPageUrl2` then the situation changes.
-  db.AddIconMapping(kPageUrl2, icon_id);
+  db.AddIconMapping(kPageUrl2, icon_id, PageUrlType::kRegular);
 
   // We should be able to find the `icon_id` via a the origin of `kPageUrl1`.
   icon_id_found =

@@ -9,6 +9,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/time/time.h"
 #include "components/favicon/core/favicon_database.h"
+#include "components/favicon/core/favicon_types.h"
 
 using base::Time;
 
@@ -60,9 +61,13 @@ bool FaviconSQLHandler::Update(const HistoryAndBookmarkRow& row,
       // Keep the old icon for deleting it later if possible.
       favicon_ids.push_back(m->icon_id);
     }
-    // Add the icon mapping.
-    if (!favicon_db_->AddIconMapping(i->url, favicon_id))
+    // Add the icon mapping. Use `PageUrlType::kRegular` as a safe default as
+    // the update is coming from History/Bookmarks and we don't know anymore if
+    // the url was for a redirect or not.
+    if (!favicon_db_->AddIconMapping(i->url, favicon_id,
+                                     favicon::PageUrlType::kRegular)) {
       return false;
+    }
   }
   // As we update the favicon, Let's remove unused favicons if any.
   if (!favicon_ids.empty() && !DeleteUnusedFavicon(favicon_ids))
@@ -110,7 +115,12 @@ bool FaviconSQLHandler::Insert(HistoryAndBookmarkRow* row) {
       favicon::FaviconBitmapType::ON_VISIT, Time::Now(), gfx::Size());
   if (!id)
     return false;
-  return favicon_db_->AddIconMapping(row->url(), id);
+
+  // Add the icon mapping. Use `PageUrlType::kRegular` as a safe default as
+  // the update is coming from History/Bookmarks and we don't know anymore if
+  // the url was for a redirect or not.
+  return favicon_db_->AddIconMapping(row->url(), id,
+                                     favicon::PageUrlType::kRegular);
 }
 
 bool FaviconSQLHandler::DeleteUnusedFavicon(

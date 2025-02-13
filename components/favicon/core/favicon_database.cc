@@ -115,17 +115,6 @@ const int kCurrentVersionNumber = 9;
 const int kCompatibleVersionNumber = 9;
 const int kDeprecatedVersionNumber = 7;  // and earlier.
 
-void FillIconMapping(const GURL& page_url,
-                     sql::Statement& statement,
-                     IconMapping* icon_mapping) {
-  icon_mapping->mapping_id = statement.ColumnInt64(0);
-  icon_mapping->icon_id = statement.ColumnInt64(1);
-  icon_mapping->icon_type =
-      FaviconDatabase::FromPersistedIconType(statement.ColumnInt(2));
-  icon_mapping->icon_url = GURL(statement.ColumnString(3));
-  icon_mapping->page_url = page_url;
-}
-
 // NOTE(shess): Schema modifications must consider initial creation in
 // `InitImpl()` and history pruning in `RetainDataForPageUrls()`.
 bool InitTables(sql::Database* db) {
@@ -721,7 +710,7 @@ bool FaviconDatabase::GetIconMappingsForPageURL(
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE,
       "SELECT icon_mapping.id, icon_mapping.icon_id, favicons.icon_type, "
-      "favicons.url "
+      "favicons.url, icon_mapping.page_url_type "
       "FROM icon_mapping "
       "INNER JOIN favicons "
       "ON icon_mapping.icon_id = favicons.id "
@@ -783,18 +772,19 @@ std::optional<GURL> FaviconDatabase::FindFirstPageURLForHost(
 }
 
 IconMappingID FaviconDatabase::AddIconMapping(const GURL& page_url,
-                                              favicon_base::FaviconID icon_id) {
+                                              favicon_base::FaviconID icon_id,
+                                              PageUrlType page_url_type) {
   static const char kSql[] =
       "INSERT INTO icon_mapping (page_url, icon_id, page_url_type) "
       "VALUES (?, ?, ?)";
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindString(0, database_utils::GurlToDatabaseUrl(page_url));
   statement.BindInt64(1, icon_id);
-  // TODO(crbug.com/40881507): Change page_url_type to be supplied externally.
-  statement.BindInt64(2, ToPersistedPageUrlType(PageUrlType::kRegular));
+  statement.BindInt64(2, ToPersistedPageUrlType(page_url_type));
 
-  if (!statement.Run())
+  if (!statement.Run()) {
     return 0;
+  }
 
   return db_.GetLastInsertRowId();
 }
@@ -1013,26 +1003,6 @@ favicon_base::IconType FaviconDatabase::FromPersistedIconType(int icon_type) {
   return static_cast<favicon_base::IconType>(val);
 }
 
-std::optional<PageUrlType> FaviconDatabase::GetFirstPageUrlTypeForTesting(
-    const GURL& page_url,
-    const GURL& icon_url) {
-  sql::Statement statement(
-      db_.GetCachedStatement(SQL_FROM_HERE,
-                             "SELECT icon_mapping.page_url_type "
-                             "FROM icon_mapping "
-                             "INNER JOIN favicons "
-                             "ON icon_mapping.icon_id = favicons.id "
-                             "WHERE icon_mapping.page_url=? "
-                             "AND favicons.url=?"));
-  statement.BindString(0, database_utils::GurlToDatabaseUrl(page_url));
-  statement.BindString(1, database_utils::GurlToDatabaseUrl(icon_url));
-  if (!statement.Step()) {
-    return std::nullopt;
-  }
-
-  return std::make_optional(FromPersistedPageUrlType(statement.ColumnInt64(0)));
-}
-
 // static
 int FaviconDatabase::ToPersistedPageUrlType(PageUrlType page_url_type) {
   return static_cast<int>(page_url_type);
@@ -1041,6 +1011,19 @@ int FaviconDatabase::ToPersistedPageUrlType(PageUrlType page_url_type) {
 // static
 PageUrlType FaviconDatabase::FromPersistedPageUrlType(int page_url_type) {
   return static_cast<PageUrlType>(page_url_type);
+}
+
+// static
+void FaviconDatabase::FillIconMapping(const GURL& page_url,
+                                      sql::Statement& statement,
+                                      IconMapping* icon_mapping) {
+  icon_mapping->mapping_id = statement.ColumnInt64(0);
+  icon_mapping->icon_id = statement.ColumnInt64(1);
+  icon_mapping->icon_type = FromPersistedIconType(statement.ColumnInt(2));
+  icon_mapping->icon_url = GURL(statement.ColumnString(3));
+  icon_mapping->page_url = page_url;
+  icon_mapping->page_url_type =
+      FromPersistedPageUrlType(statement.ColumnInt64(4));
 }
 
 sql::InitStatus FaviconDatabase::OpenDatabase(sql::Database* db,
