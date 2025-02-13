@@ -1874,6 +1874,11 @@ protocol::Response InspectorDOMAgent::getElementByRelation(
       if (auto* invoker = DynamicTo<HTMLFormControlElement>(node)) {
         element = invoker->popoverTargetElement().popover;
       }
+  } else if (relation == protocol::DOM::GetElementByRelation::RelationEnum::
+                             InterestTarget) {
+    if (auto* invoker = DynamicTo<Element>(node)) {
+      element = invoker->interestTargetElement();
+    }
   }
 
   if (element) {
