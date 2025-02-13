@@ -26,6 +26,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/style/typography.h"
 
 namespace autofill_ai {
 
@@ -38,19 +40,27 @@ constexpr int kBubbleWidth = 320;
 
 std::unique_ptr<views::View> BuildEntityAttributeRow(std::string_view key,
                                                      std::string_view value) {
-  return views::Builder<views::BoxLayoutView>()
-      .SetOrientation(views::BoxLayout::Orientation::kVertical)
-      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-      .AddChildren(
-          views::Builder<views::Label>()
-              .SetText(base::UTF8ToUTF16(value))
-              .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
-              .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT),
-          views::Builder<views::Label>()
-              .SetText(base::UTF8ToUTF16(key))
-              .SetTextStyle(views::style::STYLE_BODY_5)
-              .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT))
-      .Build();
+  auto row =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+          .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+          .AddChildren(
+              views::Builder<views::Label>()
+                  .SetText(base::UTF8ToUTF16(key))
+                  .SetTextStyle(views::style::STYLE_BODY_4)
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT),
+              views::Builder<views::Label>()
+                  .SetText(base::UTF8ToUTF16(value))
+                  .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
+                  .SetHorizontalAlignment(
+                      gfx::HorizontalAlignment::ALIGN_RIGHT))
+          .Build();
+
+  // Set every child to expand with the same ratio.
+  for (auto child : row->children()) {
+    row->SetFlexForView(child, 1);
+  }
+  return row;
 }
 
 SaveAutofillAiDataController::AutofillAiBubbleClosedReason
