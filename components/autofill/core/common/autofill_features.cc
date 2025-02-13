@@ -166,6 +166,12 @@ BASE_FEATURE(kAutofillEnableLabelPrecedenceForTurkishAddresses,
              "AutofillEnableLabelPrecedenceForTurkishAddresses",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Autofill will help users fill in loyalty card details.
+// TODO(crbug.com/395831853): Remove once launched.
+BASE_FEATURE(kAutofillEnableLoyaltyCardsFilling,
+             "AutofillEnableLoyaltyCardsFilling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, focusing on a credit card number field that was traditionally
 // autofilled will yield all credit card suggestions.
 // TODO(crbug.com/354175563): Remove when launched.

@@ -596,6 +596,12 @@ const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[] =
     "all credit card form types and address form events will log to all "
     "address form types.";
 
+const char kAutofillEnableLoyaltyCardsFillingName[] =
+    "Enable Autofill support for filling loyalty cards";
+const char kAutofillEnableLoyaltyCardsFillingDescription[] =
+    "When enabled, Autofill will offer support for filling the user's loyalty "
+    "cards stored in Google Wallet.";
+
 const char kAutofillEnableOffersInClankKeyboardAccessoryName[] =
     "Enable Autofill offers in keyboard accessory";
 const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =

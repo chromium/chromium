@@ -649,6 +649,11 @@
     "expiry_milestone": 136
   },
   {
+    "name": "autofill-enable-loyalty-cards-filling",
+    "owners": [ "vizcay@google.com", "tchudakov@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "autofill-enable-offers-in-clank-keyboard-accessory",
     "owners": [ "siyua@chromium.org", "siashah@google.com" ],
     "expiry_milestone": 116

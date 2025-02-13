@@ -372,6 +372,9 @@ extern const char kAutofillEnableCardProductNameDescription[];
 extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesName[];
 extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[];
 
+extern const char kAutofillEnableLoyaltyCardsFillingName[];
+extern const char kAutofillEnableLoyaltyCardsFillingDescription[];
+
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryName[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
 

@@ -10194,6 +10194,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)},
 
+    {"autofill-enable-loyalty-cards-filling",
+     flag_descriptions::kAutofillEnableLoyaltyCardsFillingName,
+     flag_descriptions::kAutofillEnableLoyaltyCardsFillingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableLoyaltyCardsFilling)},
+
     {"autofill-enable-vcn-enroll-loading-and-confirmation",
      flag_descriptions::kAutofillEnableVcnEnrollLoadingAndConfirmationName,
      flag_descriptions::
