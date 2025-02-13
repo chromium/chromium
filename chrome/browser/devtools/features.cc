@@ -132,6 +132,12 @@ BASE_FEATURE(kDevToolsAnimationStylesInStylesTab,
              "DevToolsAnimationStylesInStylesTab",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether DevTools will attempt to automatically connect Workspace folders.
+// See http://go/chrome-devtools:automatic-workspace-folders-design for details.
+BASE_FEATURE(kDevToolsAutomaticFileSystems,
+             "DevToolsAutomaticFileSystems",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether the new DevTools "Workspaces" features are enabled.
 BASE_FEATURE(kDevToolsImprovedWorkspaces,
              "DevToolsImprovedWorkspaces",

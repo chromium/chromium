@@ -1677,6 +1677,13 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
                       std::move(ai_assistance_file_agent_dict));
   }
 
+  base::Value::Dict devtools_automatic_file_systems_dict;
+  devtools_automatic_file_systems_dict.Set(
+      "enabled",
+      base::FeatureList::IsEnabled(::features::kDevToolsAutomaticFileSystems));
+  response_dict.Set("devToolsAutomaticFileSystems",
+                    std::move(devtools_automatic_file_systems_dict));
+
   base::Value::Dict devtools_improved_workspaces_dict;
   devtools_improved_workspaces_dict.Set(
       "enabled",
