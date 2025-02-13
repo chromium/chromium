@@ -429,6 +429,7 @@ chromium-metrics-reviews@google.com.
       summary="Non personalized page insights hub"/>
   <variant name="PageInsightsHub" summary="Page insights hub"/>
   <variant name="PageNavigation" summary="Page navigation"/>
+  <variant name="ShopCard" summary="Requests for ShopCard"/>
   <variant name="Shopping" summary="Requests for shopping features"/>
 </variants>
 

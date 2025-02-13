@@ -68,6 +68,8 @@ std::string GetStringNameForRequestContext(
       return "NonPersonalizedPageInsightsHub";
     case proto::RequestContext::CONTEXT_SHOPPING:
       return "Shopping";
+    case proto::RequestContext::CONTEXT_SHOP_CARD:
+      return "ShopCard";
   }
   NOTREACHED();
 }
