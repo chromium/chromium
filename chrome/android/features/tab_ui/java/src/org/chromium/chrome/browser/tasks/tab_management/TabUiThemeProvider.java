@@ -410,7 +410,7 @@ public class TabUiThemeProvider {
     public static int getMessageCardActionButtonTextAppearance(boolean isIncognito) {
         return isIncognito
                 ? R.style.TextAppearance_Button_Text_Blue_Dark
-                : R.style.TextAppearance_Button_Text_Blue;
+                : R.style.TextAppearance_ClickableButtonInverse;
     }
 
     /**
