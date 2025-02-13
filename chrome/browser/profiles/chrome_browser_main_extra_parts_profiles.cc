@@ -82,6 +82,7 @@
 #include "chrome/browser/permissions/prediction_model_handler_provider_factory.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
+#include "chrome/browser/search_engines/template_url_prepopulate_data_resolver_factory.h"
 #include "components/services/on_device_translation/buildflags/buildflags.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -1316,6 +1317,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   TabRestoreServiceFactory::GetInstance();
   TemplateURLFetcherFactory::GetInstance();
+  TemplateURLPrepopulateData::ResolverFactory::GetInstance();
   TemplateURLServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   ThemeServiceFactory::GetInstance();

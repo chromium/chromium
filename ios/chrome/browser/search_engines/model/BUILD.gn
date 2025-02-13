@@ -20,6 +20,8 @@ source_set("model") {
     "search_engine_tab_helper_factory.mm",
     "template_url_fetcher_factory.cc",
     "template_url_fetcher_factory.h",
+    "template_url_prepopulate_data_resolver_factory.h",
+    "template_url_prepopulate_data_resolver_factory.mm",
     "template_url_service_client_impl.cc",
     "template_url_service_client_impl.h",
     "template_url_service_factory.h",

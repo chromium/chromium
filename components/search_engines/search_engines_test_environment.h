@@ -18,6 +18,10 @@ namespace regional_capabilities {
 class RegionalCapabilitiesService;
 }
 
+namespace TemplateURLPrepopulateData {
+class Resolver;
+}
+
 namespace search_engines {
 
 // Test helper that makes it easier to create a `TemplateURLService` and a
@@ -75,6 +79,8 @@ class SearchEnginesTestEnvironment {
   regional_capabilities::RegionalCapabilitiesService&
   regional_capabilities_service();
 
+  TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver();
+
   SearchEngineChoiceService& search_engine_choice_service();
 
   // Guaranteed to be non-null unless `ReleaseTemplateURLService` has been
@@ -106,6 +112,8 @@ class SearchEnginesTestEnvironment {
   std::unique_ptr<regional_capabilities::RegionalCapabilitiesService>
       regional_capabilities_service_;
   std::unique_ptr<SearchEngineChoiceService> search_engine_choice_service_;
+  std::unique_ptr<TemplateURLPrepopulateData::Resolver>
+      prepopulate_data_resolver_;
   std::unique_ptr<TemplateURLService> template_url_service_;
   bool released_template_url_service_ = false;
 };
