@@ -655,6 +655,10 @@ const char kNewFeedPositioningExperimentName[] =
 const char kNewFeedPositioningExperimentDescription[] =
     "Positions the most visited tiles based on user frequency.";
 
+const char kNewShareExtensionName[] = "New Share Extension for iOS";
+const char kNewShareExtensionDescription[] =
+    "Update the share extension UI and add new share entries";
+
 const char kNewTabPageFieldTrialName[] =
     "New tab page features that target new users";
 const char kNewTabPageFieldTrialDescription[] =

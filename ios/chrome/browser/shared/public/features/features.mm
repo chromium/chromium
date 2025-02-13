@@ -1257,3 +1257,7 @@ BASE_FEATURE(kRefactorToolbarUI,
 bool IsRefactorToolbarUI() {
   return base::FeatureList::IsEnabled(kRefactorToolbarUI);
 }
+
+BASE_FEATURE(kNewShareExtension,
+             "NewShareExtension",
+             base::FEATURE_DISABLED_BY_DEFAULT);

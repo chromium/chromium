@@ -1042,4 +1042,7 @@ BASE_DECLARE_FEATURE(kRefactorToolbarUI);
 
 bool IsRefactorToolbarUI();
 
+// Feature flag to enable the new share extension UI and entries.
+BASE_DECLARE_FEATURE(kNewShareExtension);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

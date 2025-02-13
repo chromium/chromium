@@ -2442,6 +2442,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensUnaryClientDataHeaderEnabledName,
      flag_descriptions::kLensUnaryClientDataHeaderEnabledDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensUnaryClientDataHeaderEnabled)},
+    {"ios-new-share-extension", flag_descriptions::kNewShareExtensionName,
+     flag_descriptions::kNewShareExtensionDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kNewShareExtension)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
