@@ -712,7 +712,21 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "UseFrameIntervalDecider",
+                        "UseFrameIntervalDecider"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AndroidUseFrameIntervalDeciderNewAndroidFeatures": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
                         "UseFrameIntervalDeciderNewAndroidFeatures"
                     ]
                 }
