@@ -53,6 +53,10 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="Tab group fetched"/>
   <int value="22" label="People group fetched"/>
   <int value="23" label="Success - Promote tab group"/>
+  <int value="24" label="Data sharing service ready when started"/>
+  <int value="25" label="Data sharing service ready observed"/>
+  <int value="26" label="Tab group sync service ready"/>
+  <int value="27" label="All services ready for flow"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/collaboration/internal/metrics.h:CollaborationServiceJoinEvent) -->
@@ -79,6 +83,10 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Failed - Migration"/>
   <int value="17" label="Failed - Read group"/>
   <int value="18" label="Failed - URL creation"/>
+  <int value="19" label="Data sharing service ready when started"/>
+  <int value="20" label="Data sharing service ready observed"/>
+  <int value="21" label="Tab group sync service ready"/>
+  <int value="22" label="All services ready for flow"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/collaboration/internal/metrics.h:CollaborationServiceShareOrManageEvent) -->

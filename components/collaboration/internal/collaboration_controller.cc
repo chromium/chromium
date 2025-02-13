@@ -284,6 +284,14 @@ class WaitingForServicesToInitialize
         controller->data_sharing_service()->IsGroupDataModelLoaded();
     if (!is_data_sharing_ready_) {
       data_sharing_observer_.Observe(controller->data_sharing_service());
+    } else {
+      if (FlowType::kJoin == controller->flow().type) {
+        RecordJoinEvent(
+            CollaborationServiceJoinEvent::kDataSharingReadyWhenStarted);
+      } else if (FlowType::kShareOrManage == controller->flow().type) {
+        RecordShareOrManageEvent(CollaborationServiceShareOrManageEvent::
+                                     kDataSharingReadyWhenStarted);
+      }
     }
     tab_group_sync_observer_.Observe(controller->tab_group_sync_service());
   }
@@ -294,12 +302,26 @@ class WaitingForServicesToInitialize
 
   // TabGroupSyncService::Observer implementation.
   void OnInitialized() override {
+    if (FlowType::kJoin == controller->flow().type) {
+      RecordJoinEvent(CollaborationServiceJoinEvent::kTabGroupServiceReady);
+    } else if (FlowType::kShareOrManage == controller->flow().type) {
+      RecordShareOrManageEvent(
+          CollaborationServiceShareOrManageEvent::kTabGroupServiceReady);
+    }
     is_tab_group_sync_ready_ = true;
     MaybeProceed();
   }
 
   // DataSharingService::Observer implementation.
   void OnGroupDataModelLoaded() override {
+    if (FlowType::kJoin == controller->flow().type) {
+      RecordJoinEvent(
+          CollaborationServiceJoinEvent::kDataSharingServiceReadyObserved);
+    } else if (FlowType::kShareOrManage == controller->flow().type) {
+      RecordShareOrManageEvent(CollaborationServiceShareOrManageEvent::
+                                   kDataSharingServiceReadyObserved);
+    }
+
     is_data_sharing_ready_ = true;
     MaybeProceed();
   }
@@ -307,6 +329,13 @@ class WaitingForServicesToInitialize
  private:
   void MaybeProceed() {
     if (is_tab_group_sync_ready_ && is_data_sharing_ready_) {
+      if (FlowType::kJoin == controller->flow().type) {
+        RecordJoinEvent(
+            CollaborationServiceJoinEvent::kAllServicesReadyForFlow);
+      } else if (FlowType::kShareOrManage == controller->flow().type) {
+        RecordShareOrManageEvent(
+            CollaborationServiceShareOrManageEvent::kAllServicesReadyForFlow);
+      }
       OnProcessingFinishedWithSuccess();
     }
   }

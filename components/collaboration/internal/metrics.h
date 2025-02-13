@@ -36,7 +36,11 @@ enum class CollaborationServiceJoinEvent {
   kTabGroupFetched = 21,
   kPeopleGroupFetched = 22,
   kPromoteTabGroup = 23,
-  kMaxValue = kPromoteTabGroup,
+  kDataSharingReadyWhenStarted = 24,
+  kDataSharingServiceReadyObserved = 25,
+  kTabGroupServiceReady = 26,
+  kAllServicesReadyForFlow = 27,
+  kMaxValue = kAllServicesReadyForFlow,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceJoinEvent)
 
@@ -64,13 +68,16 @@ enum class CollaborationServiceShareOrManageEvent {
   kMigrationFailure = 16,
   kReadGroupFailed = 17,
   kUrlCreationFailed = 18,
-  kMaxValue = kUrlCreationFailed,
+  kDataSharingReadyWhenStarted = 19,
+  kDataSharingServiceReadyObserved = 20,
+  kTabGroupServiceReady = 21,
+  kAllServicesReadyForFlow = 22,
+  kMaxValue = kAllServicesReadyForFlow,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceShareOrManageEvent)
 
 void RecordJoinEvent(CollaborationServiceJoinEvent event);
 void RecordShareOrManageEvent(CollaborationServiceShareOrManageEvent event);
-
 }  // namespace collaboration::metrics
 
 #endif  // COMPONENTS_COLLABORATION_INTERNAL_METRICS_H_
