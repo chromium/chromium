@@ -1126,7 +1126,8 @@ TEST_P(PDFiumEngineTest, DrawTextSelectionsHelloWorld) {
   SetSelection(*engine, /*start_page_index=*/kPageIndex, /*start_char_index=*/1,
                /*end_page_index=*/kPageIndex, /*end_char_index=*/2);
   EXPECT_EQ("e", engine->GetSelectedText());
-  DrawSelectionAndCompare(*engine, kPageIndex, "hello_world_selection_1.png");
+  DrawSelectionAndCompareWithPlatformExpectations(
+      *engine, kPageIndex, "hello_world_selection_1.png");
 
   SetSelection(*engine, /*start_page_index=*/kPageIndex, /*start_char_index=*/0,
                /*end_page_index=*/kPageIndex, /*end_char_index=*/3);
