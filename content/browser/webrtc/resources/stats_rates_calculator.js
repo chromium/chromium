@@ -518,6 +518,9 @@ export class StatsRatesCalculator {
           removedSamplesForAcceleration:
               new RateCalculator('removedSamplesForAcceleration', 'timestamp'),
           qpSum: new RateCalculator('qpSum', 'framesDecoded'),
+          totalCorruptionProbability:
+              new RateCalculator(
+                'totalCorruptionProbability', 'corruptionMeasurements'),
           codecId: new CodecCalculator(),
           totalAudioEnergy: new AudioLevelRmsCalculator(),
           jitterBufferDelay: new RateCalculator(
