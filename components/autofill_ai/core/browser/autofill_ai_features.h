@@ -20,11 +20,6 @@ inline constexpr base::FeatureParam<base::TimeDelta> kExecutionTimeout{
     &kAutofillAi, /*name=*/"execution_timeout",
     /*default_value=*/base::Seconds(10)};
 
-inline constexpr base::FeatureParam<bool> kShowDetailsText{
-    &kAutofillAi,
-    /*name=*/"show_details_text",
-    /*default_value=*/false};
-
 // Feature param to send title and URL of the page the form is in. By default,
 // the origin of the page is sent, with no title.
 inline constexpr base::FeatureParam<bool> kSendTitleURL{
