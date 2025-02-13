@@ -96,7 +96,13 @@ bool EmbedderTabObserver::ScheduleExtraction(
 
 void EmbedderTabObserver::MaybeExtractPassages(
     content::WeakDocumentPtr weak_render_frame_host) {
-  if (resource_coordinator::TabLoadTracker::Get()->GetLoadingTabCount() > 0) {
+  // Do not wait for all tabs when using performance scenario.
+  // SchedulingEmbedder will use performance scenario which takes loading states
+  // into account. By not enforcing this custom non-contention logic, the
+  // performance scenario load state handling can be tuned and the feature
+  // behavior will follow.
+  if (resource_coordinator::TabLoadTracker::Get()->GetLoadingTabCount() > 0 &&
+      !kUsePerformanceScenario.Get()) {
     VLOG(3) << "Extraction to be rescheduled; tabs still loading";
     ScheduleExtraction(weak_render_frame_host);
     return;
