@@ -352,6 +352,13 @@ bool HttpStreamFactory::Job::using_spdy() const {
   return negotiated_protocol_ == NextProto::kProtoHTTP2;
 }
 
+url::SchemeHostPort HttpStreamFactory::Job::SchemeHostPortForSupportsSpdy()
+    const {
+  return url::SchemeHostPort(using_ssl_ ? url::kHttpsScheme : url::kHttpScheme,
+                             spdy_session_key_.host_port_pair().HostForURL(),
+                             spdy_session_key_.host_port_pair().port());
+}
+
 bool HttpStreamFactory::Job::disable_cert_verification_network_fetches() const {
   return !!(request_info_.load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
 }
@@ -1159,18 +1166,9 @@ int HttpStreamFactory::Job::DoCreateStream() {
     return rv;
   }
 
-  url::SchemeHostPort scheme_host_port(
-      using_ssl_ ? url::kHttpsScheme : url::kHttpScheme,
-      spdy_session_key_.host_port_pair().host(),
-      spdy_session_key_.host_port_pair().port());
-
-  HttpServerProperties* http_server_properties =
-      session_->http_server_properties();
-  if (http_server_properties) {
-    http_server_properties->SetSupportsSpdy(
-        scheme_host_port, request_info_.network_anonymization_key,
-        true /* supports_spdy */);
-  }
+  session_->http_server_properties()->SetSupportsSpdy(
+      SchemeHostPortForSupportsSpdy(), request_info_.network_anonymization_key,
+      /*supports_spdy=*/true);
 
   // Create a SpdyHttpStream or a BidirectionalStreamImpl attached to the
   // session.
@@ -1278,13 +1276,9 @@ bool HttpStreamFactory::Job::ShouldThrottleConnectForSpdy() const {
     return false;
   }
 
-  url::SchemeHostPort scheme_host_port(
-      using_ssl_ ? url::kHttpsScheme : url::kHttpScheme,
-      spdy_session_key_.host_port_pair().host(),
-      spdy_session_key_.host_port_pair().port());
   // Only throttle the request if the server is believed to support H2.
   return session_->http_server_properties()->GetSupportsSpdy(
-      scheme_host_port, request_info_.network_anonymization_key);
+      SchemeHostPortForSupportsSpdy(), request_info_.network_anonymization_key);
 }
 
 void HttpStreamFactory::Job::RecordPreconnectHistograms(int result) {
