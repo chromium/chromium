@@ -118,26 +118,6 @@ class MatchableValue {
   base::Value value_;
 };
 
-// Matcher that determines whether a particular value is truthy.
-//
-// Uses an `internal::MatchableValue` because much of the gtest infrastructure
-// expects a value that can be copied, and `base::Value` cannot.
-class IsTruthyMatcher
-    : public testing::MatcherInterface<const internal::MatchableValue&> {
- public:
-  IsTruthyMatcher() = default;
-  IsTruthyMatcher(const IsTruthyMatcher&) = default;
-  IsTruthyMatcher& operator=(const IsTruthyMatcher&) = default;
-  ~IsTruthyMatcher() override = default;
-
-  using is_gtest_matcher = void;
-
-  bool MatchAndExplain(const internal::MatchableValue& x,
-                       testing::MatchResultListener* listener) const override;
-  void DescribeTo(std::ostream* os) const override;
-  void DescribeNegationTo(std::ostream* os) const override;
-};
-
 extern std::ostream& operator<<(std::ostream& out, const MatchableValue& value);
 
 // Helper class that converts am input into a matcher that can match a
@@ -170,14 +150,6 @@ template <typename M>
 auto MakeValueMatcher(M&& m) {
   return MakeValueMatcherHelper<M>::MakeValueMatcher(
       ui::test::internal::UnwrapArgument(std::forward<M>(m)));
-}
-
-// Wraps `m` in a `testing::Matcher` that will match a `base::Value`.
-// Does not work for all possible inputs, but will work for most.
-template <typename M>
-auto MakeConstValueMatcher(const M& m) {
-  return MakeValueMatcherHelper<M>::MakeValueMatcher(
-      ui::test::internal::UnwrapArgument(m));
 }
 
 }  // namespace internal
