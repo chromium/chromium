@@ -71,32 +71,13 @@ namespace {
 using AddressImportRequirement =
     autofill_metrics::AddressProfileImportRequirementMetric;
 
-// Return true if the |field_type| and |value| are valid within the context
+// Return true if the `field_type` and `value` are valid within the context
 // of importing a form.
 bool IsValidFieldTypeAndValue(
     const base::flat_map<FieldType, std::u16string>& observed_types,
     FieldType field_type,
     const std::u16string& value,
     LogBuffer* import_log_buffer) {
-  // Abandon the import if two fields of the same type are encountered.
-  // This indicates ambiguous data or miscategorization of types.
-  // Make an exception for:
-  // - EMAIL_ADDRESS because it is common to see second 'confirm email address'
-  // field;
-  // - phone number components because a form might request several phone
-  // numbers.
-  // TODO(crbug.com/40735892) Clean up when launched.
-  FieldTypeGroup field_type_group = GroupTypeOfFieldType(field_type);
-  if (observed_types.contains(field_type) && field_type != EMAIL_ADDRESS &&
-      (!base::FeatureList::IsEnabled(
-           features::kAutofillEnableImportWhenMultiplePhoneNumbers) ||
-       field_type_group != FieldTypeGroup::kPhone)) {
-    LOG_AF(import_log_buffer)
-        << LogMessage::kImportAddressProfileFromFormFailed
-        << "Multiple fields of type " << FieldTypeToStringView(field_type)
-        << "." << CTag{};
-    return false;
-  }
   // Abandon the import if an email address value shows up in a field that is
   // not an email address.
   if (field_type != EMAIL_ADDRESS && IsValidEmailAddress(value)) {
@@ -107,7 +88,34 @@ bool IsValidFieldTypeAndValue(
     return false;
   }
 
-  return true;
+  // Allow the import if `field_type` wasn't observed before.
+  if (!observed_types.contains(field_type)) {
+    return true;
+  }
+
+  // Allow the import for duplicate EMAIL_ADDRESS fields because it is common to
+  // see a second 'confirm email address' field.
+  if (field_type == EMAIL_ADDRESS) {
+    return true;
+  }
+
+  // Allow the import for duplicate phone number component fields because a form
+  // might request several phone numbers.
+  // TODO(crbug.com/40735892) Clean up when launched.
+  if (GroupTypeOfFieldType(field_type) == FieldTypeGroup::kPhone ||
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableImportWhenMultiplePhoneNumbers)) {
+    return true;
+  }
+
+  // Abandon the import if two fields of the same type are encountered (after
+  // prior exception checks). This indicates ambiguous data or miscategorization
+  // of types.
+  LOG_AF(import_log_buffer)
+      << LogMessage::kImportAddressProfileFromFormFailed
+      << "Multiple fields of type " << FieldTypeToStringView(field_type) << "."
+      << CTag{};
+  return false;
 }
 
 // `extracted_credit_card` refers to the credit card that was most recently
