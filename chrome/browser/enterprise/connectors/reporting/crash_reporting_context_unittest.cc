@@ -7,12 +7,14 @@
 #include "base/files/scoped_temp_dir.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
+#include "chrome/browser/enterprise/connectors/test/mock_realtime_reporting_client.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
+#include "components/enterprise/connectors/core/reporting_test_utils.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/version_info.h"
@@ -57,31 +59,6 @@ constexpr int kDefaultCrashpadPollingIntervalSeconds = 3600;
 #endif
 
 }  // namespace
-
-class MockRealtimeCrashReportingClient : public RealtimeReportingClient {
- public:
-  explicit MockRealtimeCrashReportingClient(content::BrowserContext* context)
-      : RealtimeReportingClient(context) {}
-  MockRealtimeCrashReportingClient(const MockRealtimeCrashReportingClient&) =
-      delete;
-  MockRealtimeCrashReportingClient& operator=(
-      const MockRealtimeCrashReportingClient&) = delete;
-
-  std::optional<ReportingSettings> GetReportingSettings() override {
-    return ReportingSettings();
-  }
-
-  MOCK_METHOD4(ReportPastEvent,
-               void(const std::string& name,
-                    const ReportingSettings& settings,
-                    base::Value::Dict event,
-                    const base::Time& time));
-};
-
-std::unique_ptr<KeyedService> CreateMockRealtimeCrashReportingClient(
-    content::BrowserContext* profile) {
-  return std::make_unique<MockRealtimeCrashReportingClient>(profile);
-}
 
 class CrashReportingContextTest : public testing::Test {
  public:
@@ -133,9 +110,17 @@ TEST_F(CrashReportingContextTest, UploadToReportingServer) {
       profile_manager_.CreateTestingProfile("fake-profile");
   policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("fake-token"));
   RealtimeReportingClientFactory::GetInstance()->SetTestingFactory(
-      profile, base::BindRepeating(&CreateMockRealtimeCrashReportingClient));
-  MockRealtimeCrashReportingClient* reporting_client =
-      static_cast<MockRealtimeCrashReportingClient*>(
+      profile, base::BindRepeating(&test::MockRealtimeReportingClient::
+                                       CreateMockRealtimeReportingClient));
+
+  test::SetOnSecurityEventReporting(
+      profile->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/std::set<std::string>(),
+      /*enabled_opt_in_events=*/
+      std::map<std::string, std::vector<std::string>>());
+
+  test::MockRealtimeReportingClient* reporting_client =
+      static_cast<test::MockRealtimeReportingClient*>(
           RealtimeReportingClientFactory::GetForProfile(profile));
 
   EXPECT_CALL(*reporting_client,

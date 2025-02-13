@@ -6,6 +6,7 @@
 
 #include "base/containers/to_value_list.h"
 #include "base/i18n/time_formatting.h"
+#include "base/logging.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
@@ -165,6 +166,8 @@ void RealtimeReportingClientBase::OnCloudPolicyClientAvailable(
 void RealtimeReportingClientBase::ReportEvent(
     ::chrome::cros::reporting::proto::Event event,
     const ReportingSettings& settings) {
+  DCHECK(base::FeatureList::IsEnabled(
+      policy::kUploadRealtimeReportingEventsUsingProto));
   if (rejected_dm_token_timers_.contains(settings.dm_token)) {
     return;
   }
@@ -178,6 +181,13 @@ void RealtimeReportingClientBase::ReportEvent(
 
   policy::CloudPolicyClient* client =
       settings.per_profile ? profile_client_.get() : browser_client_.get();
+
+  // If the timestamp is not set, it's a realtime event so use current time.
+  if (!event.has_time()) {
+    int64_t timestamp_millis = base::Time::Now().InMillisecondsSinceUnixEpoch();
+    event.mutable_time()->set_seconds(timestamp_millis / 1000);
+    event.mutable_time()->set_nanos((timestamp_millis % 1000) * 1000000);
+  }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   MaybeCollectDeviceSignalsAndReportEvent(std::move(event), client, settings);
@@ -194,6 +204,15 @@ void RealtimeReportingClientBase::ReportEventWithTimestampDeprecated(
     base::Value::Dict event,
     const base::Time& time,
     bool include_profile_user_name) {
+  // TODO(Bug:394403600) - Replace with a DCHECK once all callers are migrated.
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    DLOG(WARNING) << "ReportEventWithTimestampDeprecated called when proto "
+                     "format enabled for event "
+                  << name;
+    return;
+  }
+
   if (rejected_dm_token_timers_.contains(settings.dm_token)) {
     return;
   }

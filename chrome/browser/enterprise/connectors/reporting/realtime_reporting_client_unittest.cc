@@ -25,6 +25,7 @@
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/test_event_router.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -170,6 +171,10 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadSucceeds) {
   }
 #endif
 
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      policy::kUploadRealtimeReportingEventsUsingProto);
+
   is_profile_reporting()
       ? reporting_client_->SetProfileCloudPolicyClientForTesting(client_.get())
       : reporting_client_->SetBrowserCloudPolicyClientForTesting(client_.get());
@@ -240,6 +245,10 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
     return;
   }
 #endif
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      policy::kUploadRealtimeReportingEventsUsingProto);
 
   is_profile_reporting()
       ? reporting_client_->SetProfileCloudPolicyClientForTesting(client_.get())
