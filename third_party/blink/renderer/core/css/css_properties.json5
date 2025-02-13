@@ -1040,7 +1040,7 @@
       },
       separator: ",",
       valid_for_marker: true,
-      runtime_flag: "CSSAnimationTriggerRange",
+      runtime_flag: "AnimationTrigger",
     },
     {
       name: "animation-trigger-range-end",
@@ -1051,7 +1051,7 @@
       },
       separator: ",",
       valid_for_marker: true,
-      runtime_flag: "CSSAnimationTriggerRange",
+      runtime_flag: "AnimationTrigger",
     },
     {
       name: "animation-trigger-exit-range-start",
@@ -1062,7 +1062,7 @@
       },
       separator: ",",
       valid_for_marker: true,
-      runtime_flag: "CSSAnimationTriggerRange",
+      runtime_flag: "AnimationTrigger",
     },
     {
       name: "animation-trigger-exit-range-end",
@@ -1073,7 +1073,7 @@
       },
       separator: ",",
       valid_for_marker: true,
-      runtime_flag: "CSSAnimationTriggerRange",
+      runtime_flag: "AnimationTrigger",
     },
     {
       name: "animation-trigger-timeline",
@@ -1086,7 +1086,7 @@
       typedom_types: ["Keyword"],
       separator: ",",
       valid_for_marker: true,
-      runtime_flag: "CSSAnimationTriggerTimeline",
+      runtime_flag: "AnimationTrigger",
     },
     {
       name: "animation-trigger-type",
@@ -1099,7 +1099,7 @@
       typedom_types: ["Keyword"],
       separator: ",",
       valid_for_marker: true,
-      runtime_flag: "CSSAnimationTriggerType",
+      runtime_flag: "AnimationTrigger",
     },
     {
       name: "transition-delay",
@@ -7986,7 +7986,7 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       supports_incremental_style: false,
       valid_for_keyframe: false,
-      runtime_flag: "CSSAnimationTrigger",
+      runtime_flag: "AnimationTrigger",
     },
     {
       name: "animation-trigger-range",
@@ -7996,7 +7996,7 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       supports_incremental_style: false,
       valid_for_keyframe: false,
-      runtime_flag: "CSSAnimationTriggerRange",
+      runtime_flag: "AnimationTrigger",
     },
     {
       name: "animation-trigger-exit-range",
@@ -8007,7 +8007,7 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       supports_incremental_style: false,
       valid_for_keyframe: false,
-      runtime_flag: "CSSAnimationTriggerRange",
+      runtime_flag: "AnimationTrigger",
     },
     {
       name: "background",

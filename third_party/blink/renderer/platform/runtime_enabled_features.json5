@@ -411,6 +411,11 @@
       status: "stable",
     },
     {
+      // https://drafts.csswg.org/web-animations-2/#triggers
+      name: "AnimationTrigger",
+      status: "test",
+    },
+    {
       name: "AnimationWorklet",
     },
     {
@@ -998,26 +1003,6 @@
       // Support anchor-size() values in inset and margin properties.
       name: "CSSAnchorSizeInsetsMargins",
       status: "stable",
-    },
-    {
-      // https://github.com/w3c/csswg-drafts/issues/8942
-      name: "CSSAnimationTrigger",
-      status: "test",
-    },
-    {
-      name: "CSSAnimationTriggerRange",
-      status: "test",
-      implied_by: ["CSSAnimationTrigger"],
-    },
-    {
-      name: "CSSAnimationTriggerTimeline",
-      status: "test",
-      implied_by: ["CSSAnimationTrigger"],
-    },
-    {
-      name: "CSSAnimationTriggerType",
-      status: "test",
-      implied_by: ["CSSAnimationTrigger"],
     },
     {
       // Support for <string> syntax in @property
