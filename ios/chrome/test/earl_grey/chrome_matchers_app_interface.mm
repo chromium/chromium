@@ -1762,6 +1762,13 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                     grey_interactable(), nil);
 }
 
++ (id<GREYMatcher>)keepSharedConfirmationButton {
+  return grey_allOf(grey_accessibilityID([l10n_util::GetNSString(
+                        IDS_IOS_CONTENT_CONTEXT_KEEPSHAREDGROUP)
+                        stringByAppendingString:@"AlertAction"]),
+                    grey_interactable(), nil);
+}
+
 + (id<GREYMatcher>)fakeShareFlowView {
   return grey_accessibilityID(kFakeShareFlowIdentifier);
 }
