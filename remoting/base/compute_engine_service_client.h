@@ -34,11 +34,7 @@ namespace remoting {
 // does not exist in other contexts.
 class ComputeEngineServiceClient {
  public:
-  // TODO: joedow - Remove the second arg when HttpStatus is updated for
-  // use outside of the Protobuf* classes since that struct already has a
-  // |response_body| field.
-  using ResponseCallback =
-      base::OnceCallback<void(HttpStatus, std::optional<std::string>)>;
+  using ResponseCallback = base::OnceCallback<void(HttpStatus)>;
 
   explicit ComputeEngineServiceClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);

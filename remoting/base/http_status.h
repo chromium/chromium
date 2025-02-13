@@ -49,6 +49,8 @@ class HttpStatus {
   HttpStatus(Code code, const std::string& error_message);
   HttpStatus(const protobufhttpclient::Status& status,
              const std::string& response_body);
+  HttpStatus(net::HttpStatusCode http_status_code,
+             const std::string& response_body);
   ~HttpStatus();
 
   // Indicates whether the http request was successful based on the status code.

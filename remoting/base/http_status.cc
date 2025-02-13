@@ -103,6 +103,12 @@ HttpStatus::HttpStatus(const protobufhttpclient::Status& status,
       error_message_(status.message()),
       response_body_(response_body) {}
 
+HttpStatus::HttpStatus(net::HttpStatusCode http_status_code,
+                       const std::string& response_body)
+    : error_code_(HttpStatusCodeToClientCode(http_status_code)),
+      error_message_(net::GetHttpReasonPhrase(http_status_code)),
+      response_body_(response_body) {}
+
 HttpStatus::~HttpStatus() = default;
 
 bool HttpStatus::ok() const {

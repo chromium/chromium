@@ -230,8 +230,10 @@ void ComputeEngineServiceClient::OnRequestComplete(
         HttpStatus(HttpStatus::Code::INTERNAL,
                    "Failed to get HTTP status from the response header.");
   } else {
-    http_status = HttpStatus(static_cast<net::HttpStatusCode>(
-        url_loader_->ResponseInfo()->headers->response_code()));
+    http_status =
+        HttpStatus(static_cast<net::HttpStatusCode>(
+                       url_loader_->ResponseInfo()->headers->response_code()),
+                   response_body.value_or(std::string()));
   }
 
   if (!http_status.ok()) {
@@ -240,7 +242,7 @@ void ComputeEngineServiceClient::OnRequestComplete(
                << ", Message: " << http_status.error_message();
   }
 
-  std::move(callback).Run(http_status, std::move(response_body));
+  std::move(callback).Run(http_status);
 }
 
 }  // namespace remoting
