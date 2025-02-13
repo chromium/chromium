@@ -68,6 +68,12 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
         },
         {
+            # TODO: crbug.com/396220357 - fix too many remote input files.
+            "name": "android/turbine/b396220357",
+            "action_outs": ["./obj/chrome/test/unit_tests__apk.turbine.jar"],
+            "remote": False,
+        },
+        {
             "name": "android/turbine",
             "command_prefix": "python3 ../../build/android/gyp/turbine.py",
             "handler": "android_turbine",
