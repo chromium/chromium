@@ -350,7 +350,7 @@
         Close group
       </message>
       <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_MANAGE_SHARING" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the manage sharing UI is shown.">
-        Manage sharing
+        Manage access
       </message>
       <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_RECENT_ACTIVITY" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the recent activity UI is shown.">
         Recent activity
