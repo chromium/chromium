@@ -139,7 +139,10 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
     }
   }
 
-  notify(language: string, type: NotificationType) {
+  notify(type: NotificationType, language?: string) {
+    if (!language) {
+      return;
+    }
     this.currentNotifications_ = {
       ...this.currentNotifications_,
       [language]: type,

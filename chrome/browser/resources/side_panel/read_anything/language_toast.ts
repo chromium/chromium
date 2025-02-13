@@ -59,9 +59,12 @@ export class LanguageToastElement extends LanguageToastElementBase implements
   showErrors: boolean;
   numAvailableVoices: number;
 
-  notify(language: string, type: NotificationType) {
-    const previousNotification = this.notifications_.get(language);
-    this.notifications_.set(language, type);
+  notify(type: NotificationType, language?: string) {
+    const previousNotification =
+        language ? this.notifications_.get(language) : undefined;
+    if (language) {
+      this.notifications_.set(language, type);
+    }
     switch (type) {
       case NotificationType.NO_INTERNET:
         // Only show a toast if there are no voices at all.
@@ -86,7 +89,7 @@ export class LanguageToastElement extends LanguageToastElementBase implements
       case NotificationType.DOWNLOADED:
         // <if expr="chromeos_ash">
         // Only show a notification for a newly completed download.
-        if (previousNotification === NotificationType.DOWNLOADING) {
+        if (language && previousNotification === NotificationType.DOWNLOADING) {
           const lang =
               chrome.readingMode.getDisplayNameForLocale(language, language) ||
               language;

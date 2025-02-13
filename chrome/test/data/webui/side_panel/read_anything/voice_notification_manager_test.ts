@@ -17,7 +17,7 @@ suite('VoiceNotificationManager', () => {
     manager = new VoiceNotificationManager();
     notifications = {};
     listener = {
-      notify(lang: string, type: NotificationType): void {
+      notify(type: NotificationType, lang: string): void {
         notifications = {...notifications, [lang]: type};
       },
     };

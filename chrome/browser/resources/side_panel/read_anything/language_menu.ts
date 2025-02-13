@@ -102,7 +102,10 @@ export class LanguageMenuElement extends LanguageMenuElementBase implements
     }
   }
 
-  notify(language: string, type: NotificationType) {
+  notify(type: NotificationType, language?: string) {
+    if (!language) {
+      return;
+    }
     this.currentNotifications_ = {
       ...this.currentNotifications_,
       [language]: type,
