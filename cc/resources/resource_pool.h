@@ -27,6 +27,7 @@
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "ui/gfx/color_space.h"
@@ -35,10 +36,6 @@
 
 namespace base {
 class SingleThreadTaskRunner;
-}
-
-namespace gpu {
-class ClientSharedImage;
 }
 
 namespace viz {
@@ -62,6 +59,10 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
    public:
     Backing();
     virtual ~Backing();
+
+    void set_shared_image(scoped_refptr<gpu::ClientSharedImage> si) {
+      shared_image = std::move(si);
+    }
 
     scoped_refptr<gpu::ClientSharedImage> shared_image;
     gpu::SyncToken mailbox_sync_token;

@@ -70,7 +70,7 @@ OneCopyRasterBufferProvider::RasterBufferImpl::~RasterBufferImpl() {
     // happened if the |after_raster_sync_token_| was set.
     backing_->returned_sync_token = gpu::SyncToken();
   }
-  backing_->shared_image = std::move(shared_image_);
+  backing_->set_shared_image(std::move(shared_image_));
   if (should_destroy_shared_image_ && backing_->shared_image) {
     backing_->shared_image->UpdateDestructionSyncToken(
         before_raster_sync_token_);

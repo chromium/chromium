@@ -1785,10 +1785,10 @@ class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
       bool depends_on_hardware_accelerated_webp_candidates) override {
     if (!resource.backing()) {
       auto backing = std::make_unique<ResourcePool::Backing>();
-      backing->shared_image = sii_->CreateSharedImageForSoftwareCompositor(
+      backing->set_shared_image(sii_->CreateSharedImageForSoftwareCompositor(
           {viz::SinglePlaneFormat::kBGRA_8888, resource.size(),
            gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-           "TextureLayerTest"});
+           "TextureLayerTest"}));
 
       backing->mailbox_sync_token = sii_->GenVerifiedSyncToken();
 
@@ -2359,8 +2359,8 @@ void RunPartialRasterCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
           gfx::ColorSpace::CreateSRGB());
 
   auto backing = std::make_unique<ResourcePool::Backing>();
-  backing->shared_image = gpu::ClientSharedImage::CreateForTesting(
-      viz::SinglePlaneFormat::kBGRA_8888, GL_TEXTURE_2D);
+  backing->set_shared_image(gpu::ClientSharedImage::CreateForTesting(
+      viz::SinglePlaneFormat::kBGRA_8888, GL_TEXTURE_2D));
   backing->mailbox_sync_token.Set(gpu::GPU_IO,
                                   gpu::CommandBufferId::FromUnsafeValue(1), 1);
 
@@ -2620,8 +2620,8 @@ class MockReadyToDrawRasterBufferProviderImpl
       bool depends_on_hardware_accelerated_webp_candidates) override {
     if (!resource.backing()) {
       auto backing = std::make_unique<ResourcePool::Backing>();
-      backing->shared_image = gpu::ClientSharedImage::CreateForTesting(
-          viz::SinglePlaneFormat::kBGRA_8888, GL_TEXTURE_2D);
+      backing->set_shared_image(gpu::ClientSharedImage::CreateForTesting(
+          viz::SinglePlaneFormat::kBGRA_8888, GL_TEXTURE_2D));
       backing->mailbox_sync_token.Set(
           gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1), 1);
       resource.set_backing(std::move(backing));

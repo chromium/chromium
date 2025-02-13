@@ -256,10 +256,10 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       if (backing->overlay_candidate) {
         flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       }
-      backing->shared_image = sii->CreateSharedImage(
+      backing->set_shared_image(sii->CreateSharedImage(
           {pool_resource.format(), pool_resource.size(),
            pool_resource.color_space(), flags, "HeadsUpDisplayLayer"},
-          gpu::kNullSurfaceHandle);
+          gpu::kNullSurfaceHandle));
       CHECK(backing->shared_image);
       auto* ri = raster_context_provider->RasterInterface();
       ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
@@ -283,10 +283,10 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     if (!pool_resource.backing()) {
       auto backing = std::make_unique<ResourcePool::Backing>();
       backing->shared_image_interface = sii;
-      backing->shared_image = sii->CreateSharedImageForSoftwareCompositor(
+      backing->set_shared_image(sii->CreateSharedImageForSoftwareCompositor(
           {pool_resource.format(), pool_resource.size(),
            pool_resource.color_space(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-           "HeadsUpDisplayLayer"});
+           "HeadsUpDisplayLayer"}));
       CHECK(backing->shared_image);
       pool_resource.set_backing(std::move(backing));
     }

@@ -102,11 +102,11 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
   if (!resource.backing()) {
     auto backing = std::make_unique<ResourcePool::Backing>();
     backing->shared_image_interface = shared_image_interface_;
-    backing->shared_image =
+    backing->set_shared_image(
         shared_image_interface_->CreateSharedImageForSoftwareCompositor(
             {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
              gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-             "BitmapRasterBufferProvider"});
+             "BitmapRasterBufferProvider"}));
     CHECK(backing->shared_image);
 
     backing->mailbox_sync_token =
