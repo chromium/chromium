@@ -29,25 +29,34 @@ using autofill::AttributeInstance;
 using autofill::AttributeType;
 using autofill::AutofillField;
 using autofill::FieldGlobalId;
+using autofill::Suggestion;
+using autofill::SuggestionType;
+
+// Returns a suggestion to "Undo" Autofill.
+Suggestion CreateUndoSuggestion() {
+  Suggestion suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM),
+                        SuggestionType::kUndoOrClear);
+  suggestion.icon = Suggestion::Icon::kUndo;
+  suggestion.acceptance_a11y_announcement =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
+  return suggestion;
+}
 
 // Returns suggestions whose set of fields and values to be filled are not
 // subsets of another.
-std::vector<autofill::Suggestion> DedupeFillingSuggestions(
-    std::vector<autofill::Suggestion> suggestions) {
+std::vector<Suggestion> DedupeFillingSuggestions(
+    std::vector<Suggestion> suggestions) {
   // Returns -1 if the filling payload of `suggestion_a` is a proper subset of
   // the one from `suggestion_b`. Returns 0 if the filling payload of
   // `suggestion_a` is identical to the one from `suggestion_b`. Returns 1
   // otherwise.
   auto check_suggestions_filling_payload_subset_status =
-      [](const autofill::Suggestion& suggestion_a,
-         const autofill::Suggestion& suggestion_b) {
-        const autofill::Suggestion::AutofillAiPayload* payload_a =
-            absl::get_if<autofill::Suggestion::AutofillAiPayload>(
-                &suggestion_a.payload);
+      [](const Suggestion& suggestion_a, const Suggestion& suggestion_b) {
+        const Suggestion::AutofillAiPayload* payload_a =
+            absl::get_if<Suggestion::AutofillAiPayload>(&suggestion_a.payload);
         CHECK(payload_a);
-        const autofill::Suggestion::AutofillAiPayload* payload_b =
-            absl::get_if<autofill::Suggestion::AutofillAiPayload>(
-                &suggestion_b.payload);
+        const Suggestion::AutofillAiPayload* payload_b =
+            absl::get_if<Suggestion::AutofillAiPayload>(&suggestion_b.payload);
         CHECK(payload_b);
 
         for (auto& [field_global_id, value_to_fill] :
@@ -65,7 +74,7 @@ std::vector<autofill::Suggestion> DedupeFillingSuggestions(
       };
 
   // Remove those that are subsets of some other suggestion.
-  std::vector<autofill::Suggestion> deduped_filling_suggestions;
+  std::vector<Suggestion> deduped_filling_suggestions;
   std::set<size_t> duplicated_filling_payloads_to_skip;
   for (size_t i = 0; i < suggestions.size(); i++) {
     if (duplicated_filling_payloads_to_skip.contains(i)) {
@@ -95,16 +104,14 @@ std::vector<autofill::Suggestion> DedupeFillingSuggestions(
 
 }  // namespace
 
-std::vector<autofill::Suggestion> CreateLoadingSuggestions() {
-  autofill::Suggestion loading_suggestion(
-      autofill::SuggestionType::kAutofillAiLoadingState);
-  loading_suggestion.trailing_icon = autofill::Suggestion::Icon::kAutofillAi;
-  loading_suggestion.acceptability =
-      autofill::Suggestion::Acceptability::kUnacceptable;
+std::vector<Suggestion> CreateLoadingSuggestions() {
+  Suggestion loading_suggestion(SuggestionType::kAutofillAiLoadingState);
+  loading_suggestion.trailing_icon = Suggestion::Icon::kAutofillAi;
+  loading_suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
   return {loading_suggestion};
 }
 
-std::vector<autofill::Suggestion> CreateFillingSuggestions(
+std::vector<Suggestion> CreateFillingSuggestions(
     const autofill::FormStructure& form,
     FieldGlobalId field_global_id,
     base::span<const autofill::EntityInstance> entities) {
@@ -123,7 +130,7 @@ std::vector<autofill::Suggestion> CreateFillingSuggestions(
   // return a value.
   CHECK(triggering_field_attribute_type);
 
-  std::vector<autofill::Suggestion> suggestions;
+  std::vector<Suggestion> suggestions;
   for (const autofill::EntityInstance& entity : entities) {
     //  Only entities that match the triggering field entity should be used to
     //  generate suggestions.
@@ -139,7 +146,7 @@ std::vector<autofill::Suggestion> CreateFillingSuggestions(
     // TODO(crbug.com/389629573): Handle label generation.
     suggestions.emplace_back(
         base::UTF8ToUTF16(attribute_for_triggering_field->value()),
-        autofill::SuggestionType::kFillAutofillAi);
+        SuggestionType::kFillAutofillAi);
 
     std::vector<std::pair<FieldGlobalId, std::u16string>> values_to_fill;
     for (const std::unique_ptr<AutofillField>& field : form.fields()) {
@@ -173,11 +180,22 @@ std::vector<autofill::Suggestion> CreateFillingSuggestions(
       values_to_fill.emplace_back(field->global_id(),
                                   base::UTF8ToUTF16(attribute->value()));
     }
-    auto payload = autofill::Suggestion::AutofillAiPayload(values_to_fill);
+    auto payload = Suggestion::AutofillAiPayload(values_to_fill);
     suggestions.back().payload = payload;
   }
 
-  return DedupeFillingSuggestions(std::move(suggestions));
+  if (suggestions.empty()) {
+    return {};
+  }
+
+  suggestions = DedupeFillingSuggestions(std::move(suggestions));
+
+  // Footer suggestions.
+  if (autofill_field->is_autofilled()) {
+    suggestions.emplace_back(SuggestionType::kSeparator);
+    suggestions.emplace_back(CreateUndoSuggestion());
+  }
+  return suggestions;
 }
 
 }  // namespace autofill_ai

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -198,6 +199,29 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_DedupeSuggestions) {
   EXPECT_EQ(suggestions[1].main_text.value,
             GetEntityInstanceValueForFieldType(another_persons_passport,
                                                triggering_field_type));
+}
+
+// Tests that an "Undo Autofill" suggestion is appended if the trigger field
+// is autofilled.
+TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestions_Undo) {
+  autofill::EntityInstance passport_entity =
+      autofill::test::GetPassportEntityInstance();
+
+  std::unique_ptr<autofill::FormStructure> form =
+      CreateFormStructure({autofill::PASSPORT_NUMBER});
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(), {passport_entity});
+
+  EXPECT_FALSE(base::Contains(
+      CreateFillingSuggestions(*form, form->fields()[0]->global_id(),
+                               {passport_entity}),
+      autofill::SuggestionType::kUndoOrClear, &autofill::Suggestion::type));
+
+  form->field(0)->set_is_autofilled(true);
+  EXPECT_TRUE(base::Contains(
+      CreateFillingSuggestions(*form, form->fields()[0]->global_id(),
+                               {passport_entity}),
+      autofill::SuggestionType::kUndoOrClear, &autofill::Suggestion::type));
 }
 
 }  // namespace
