@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
@@ -537,6 +538,23 @@ void BrowserActions::InitializeBrowserActions() {
                            kActionShowDownloads, IDS_SHOW_DOWNLOADS,
                            IDS_TOOLTIP_DOWNLOAD_ICON,
                            kDownloadToolbarButtonChromeRefreshIcon)
+              .Build());
+    }
+
+    if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
+      root_action_item_->AddChild(
+          ChromeMenuAction(base::BindRepeating(
+                               [](Browser* browser, actions::ActionItem* item,
+                                  actions::ActionInvocationContext context) {
+                                 chrome::OpenFeedbackDialog(
+                                     browser,
+                                     feedback::kFeedbackSourceDesktopTabGroups);
+                               },
+                               base::Unretained(browser)),
+                           kActionSendSharedTabGroupFeedback,
+                           IDS_DATA_SHARING_SHARED_GROUPS_FEEDBACK,
+                           IDS_DATA_SHARING_SHARED_GROUPS_FEEDBACK,
+                           vector_icons::kFeedbackIcon)
               .Build());
     }
 

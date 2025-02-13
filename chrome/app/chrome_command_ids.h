@@ -139,6 +139,7 @@
 #define IDC_ORGANIZE_TABS               35044
 #define IDC_CREATE_NEW_TAB_GROUP        35045
 #define IDC_DECLUTTER_TABS              35046
+#define IDC_SEND_SHARED_TAB_GROUP_FEEDBACK 35047
 
 // Page-manipulation commands that target a specified tab, which may not be the
 // active one.
