@@ -245,11 +245,7 @@ EnclaveUserVerificationMethod PickEnclaveUserVerificationMethod(
     EnclaveManager::UvKeyState uv_key_state,
     bool platform_has_biometrics,
     bool browser_is_app) {
-#if BUILDFLAG(IS_MAC)
-  constexpr bool kIsMac = true;
-#else
-  constexpr bool kIsMac = false;
-#endif
+  constexpr bool kIsMac = BUILDFLAG(IS_MAC);
 
   if (have_entered_pin_for_recovery) {
     return EnclaveUserVerificationMethod::kImplicit;
