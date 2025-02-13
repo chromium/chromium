@@ -37,10 +37,19 @@ suite('HighlightMenu', () => {
 
   test('highlighting is on by default', () => {
     assertEquals('read-anything:highlight-on', highlightButton.ironIcon);
-    assertStringContains(highlightButton.title, 'highlight');
+    assertStringContains(highlightButton.title, 'Voice');
     assertEquals(0, chrome.readingMode.highlightGranularity);
     assertTrue(chrome.readingMode.isHighlightOn());
   });
+
+  test('preference restore maintains menu highlight state', () => {
+    chrome.readingMode.restoreSettingsFromPrefs();
+    assertEquals('read-anything:highlight-on', highlightButton.ironIcon);
+    assertStringContains(highlightButton.title, 'Voice');
+    assertEquals(0, chrome.readingMode.highlightGranularity);
+    assertTrue(chrome.readingMode.isHighlightOn());
+  });
+
 
   test('click opens menu', () => {
     stubAnimationFrame();

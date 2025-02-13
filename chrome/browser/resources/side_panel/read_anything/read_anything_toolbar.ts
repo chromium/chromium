@@ -444,9 +444,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       this.setCheckMarkForMenu_(
           this.$.rateMenu.getIfExists(), this.rateOptions.indexOf(speechRate));
 
-      const highlightOn = chrome.readingMode.isHighlightOn();
-      this.setHighlightButtonTitle_(highlightOn);
       if (!chrome.readingMode.isPhraseHighlightingEnabled) {
+        const highlightOn = chrome.readingMode.isHighlightOn();
+        this.setHighlightButtonTitle_(highlightOn);
         this.setHighlightButtonIcon_(highlightOn);
       }
     }
