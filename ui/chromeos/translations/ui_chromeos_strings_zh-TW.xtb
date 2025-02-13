@@ -338,7 +338,7 @@
 <translation id="3689865792480713551">取消<ph name="ACTIVITY_DESCRIPTION" />。</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> 個網路中的第 <ph name="NETWORK_INDEX" /> 個，<ph name="NETWORK_NAME" />，未啟用，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，詳細資料</translation>
 <translation id="3691184985318546178">錫蘭文</translation>
-<translation id="3702842351052426940">你的 SIM 卡或 eSIM 卡設定檔可能已停用，建議你更換 SIM 卡或切換 eSIM 卡設定檔。</translation>
+<translation id="3702842351052426940">你的 SIM 卡或 eSIM 設定檔可能已停用，建議你更換 SIM 卡或切換 eSIM 設定檔。</translation>
 <translation id="3722341589402358578">發生錯誤，某些項目可能尚未移至垃圾桶。</translation>
 <translation id="3726463242007121105">這個裝置所用的檔案系統不受支援，因此系統無法開啟這個裝置。</translation>
 <translation id="3727148787322499904">變更這項設定會影響所有共用網路</translation>

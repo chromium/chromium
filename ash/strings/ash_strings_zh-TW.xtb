@@ -1328,7 +1328,7 @@
 <translation id="5512042095225963688">刪除上一個字詞</translation>
 <translation id="5519005148254860683">展開 Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
-<translation id="5520229639206813572">你的管理員已移除所有 eSIM 卡設定檔。如需更多資訊，請向管理員洽詢。</translation>
+<translation id="5520229639206813572">你的管理員已移除所有 eSIM 設定檔。如需更多資訊，請向管理員洽詢。</translation>
 <translation id="5520909879404821039">法文的「你好」</translation>
 <translation id="5523434445161341166">「<ph name="FEATURE_NAME" />」正在連線。</translation>
 <translation id="5529587891732734495">暫停投放</translation>
@@ -1650,7 +1650,7 @@
 <translation id="6559158502366839560">瀏覽更多應用程式和遊戲</translation>
 <translation id="6559976592393364813">詢問系統管理員</translation>
 <translation id="6562447480759345110">結束專注模式</translation>
-<translation id="6565007273808762236">無法建立 eSIM 卡連線</translation>
+<translation id="6565007273808762236">無法建立 eSIM 連線</translation>
 <translation id="6570831796530454248">{0,plural, =1{請在 1 小時內更新裝置}other{請在 # 小時內更新裝置}}</translation>
 <translation id="6570902864550063460">正在透過 USB 充電</translation>
 <translation id="6571006437522772306">搜尋「檔案」</translation>
@@ -1853,7 +1853,7 @@
 <translation id="7303365578352795231">正在透過其他裝置回答問題。</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7311244614769792472">找不到任何結果</translation>
-<translation id="7312210124139670355">管理員正在重設 eSIM 卡，請稍候片刻。</translation>
+<translation id="7312210124139670355">管理員正在重設 eSIM，請稍候片刻。</translation>
 <translation id="7312761820869643657">將裝置復原為先前的版本</translation>
 <translation id="7313193732017069507">展開相機調整大小的按鈕</translation>
 <translation id="73289266812733869">已取消選取</translation>
@@ -2308,7 +2308,7 @@
 <translation id="8849001918648564819">隱藏</translation>
 <translation id="8855885154700222542">全螢幕鍵</translation>
 <translation id="8858369206579825206">隱私權控制項</translation>
-<translation id="8860366331836346216">新增 eSIM 卡</translation>
+<translation id="8860366331836346216">新增 eSIM</translation>
 <translation id="8870509716567206129">這個應用程式不支援分割畫面。</translation>
 <translation id="8873203135446552888">確認要停用內建觸控板</translation>
 <translation id="8874184842967597500">未連線</translation>

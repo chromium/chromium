@@ -1196,7 +1196,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1815097521077272760">Vous avez été invité à tester les commandes au clavier pour ce jeu.</translation>
 <translation id="1815181278146012280">Me demander lorsqu'un site souhaite accéder aux périphériques HID</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> autres…</translation>
-<translation id="1816036116994822943">Vitesse de recherche pour le clavier</translation>
+<translation id="1816036116994822943">Vitesse d'exploration du clavier</translation>
 <translation id="1817871734039893258">Récupération de fichier Microsoft</translation>
 <translation id="1818913467757368489">Importation du journal en cours.</translation>
 <translation id="1819377896744763509">La configuration peut prendre un peu plus de temps…</translation>
@@ -3693,7 +3693,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3586931643579894722">Masquer les détails</translation>
 <translation id="3587279952965197737">Ne doit pas comporter plus de <ph name="MAX_CHARACTER_COUNT" /> caractères</translation>
 <translation id="3587438013689771191">En savoir plus sur : <ph name="SUBPAGE_TITLE" /></translation>
-<translation id="3587482841069643663">Tous</translation>
+<translation id="3587482841069643663">Complète</translation>
 <translation id="3588790464166520201">Autorisé à installer des gestionnaires de paiement</translation>
 <translation id="3589010096969411438">Accordée. Activez le micro à l'aide du bouton physique.</translation>
 <translation id="3589766037099229847">Contenu non sécurisé bloqué</translation>
@@ -4066,7 +4066,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3818662907126913619">Vous devez fournir à votre organisation des informations concernant cet appareil pour pouvoir l'utiliser avec votre profil <ph name="DOMAIN" />.
 
 Cela peut inclure des informations sur les logiciels installés, les fichiers, votre navigateur et le système d'exploitation de l'appareil.</translation>
-<translation id="3819164369574292143">Agrandissez des éléments à l'écran via un zoom avant. Appuyez sur Recherche+Ctrl+M pour activer ou désactiver la loupe. Appuyez sur Ctrl+Alt+Touches fléchées pour vous déplacer après avoir fait un zoom avant.</translation>
+<translation id="3819164369574292143">Zoomez pour agrandir des éléments à l'écran. Appuyez sur Recherche+Ctrl+M pour activer ou désactiver la loupe. Appuyez sur Ctrl+Alt+Touches fléchées pour vous déplacer après avoir zoomé.</translation>
 <translation id="3819257035322786455">Sauvegarder</translation>
 <translation id="3819261658055281761">Échec de l'enregistrement du jeton d'accès aux API à long terme pour cet appareil.</translation>
 <translation id="3819800052061700452">&amp;Plein écran</translation>
@@ -9418,7 +9418,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="769824636077131955">Impossible de vérifier si ce document est sûr, car il est trop volumineux. Vous ne pouvez pas imprimer de documents de plus de 50 Mo.</translation>
 <translation id="7698507637739331665">Certains éléments sont bloqués</translation>
 <translation id="7700516433658473670">Imprimantes et scanners</translation>
-<translation id="7701040980221191251">Aucun</translation>
+<translation id="7701040980221191251">Désactivée</translation>
 <translation id="7701869757853594372">Handles utilisateur</translation>
 <translation id="7702463352133825032">Arrêter de diffuser sur <ph name="DEVICE_NAME" /></translation>
 <translation id="7704305437604973648">Tâche</translation>
