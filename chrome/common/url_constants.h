@@ -436,6 +436,10 @@ inline constexpr char16_t kPayOverTimeLearnMoreUrl[] =
 inline constexpr char16_t kAutofillAiLearnMoreURL[] =
     u"https://support.google.com/chrome?p=autofill_ai";
 
+// "Learn more" URL for the autofill show card benefits setting.
+inline constexpr char16_t kCardBenefitsLearnMoreURL[] =
+    u"https://support.google.com/googlepay?p=card_benefits_chrome";
+
 // "Learn more" URL for the performance intervention notification setting.
 inline constexpr const char16_t kPerformanceInterventionLearnMoreUrl[] =
     u"https://support.google.com/chrome?p=performance_personalization";
