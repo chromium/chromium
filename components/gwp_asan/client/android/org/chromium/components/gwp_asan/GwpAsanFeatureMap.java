@@ -8,12 +8,14 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Java accessor for base::Features listed in components/gwp_asan/client/feature_map.cc.
  * Patterned after example linked from `android_accessing_cpp_features_in_java.md`.
  */
 @JNINamespace("gwp_asan::android")
+@NullMarked
 public class GwpAsanFeatureMap extends FeatureMap {
     private static final GwpAsanFeatureMap sInstance = new GwpAsanFeatureMap();
 

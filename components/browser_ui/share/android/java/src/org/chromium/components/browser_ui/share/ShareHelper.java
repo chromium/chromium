@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.share;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -24,7 +26,6 @@ import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -36,13 +37,17 @@ import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 /** A helper class that helps to start an intent to share titles and URLs. */
+@NullMarked
 public class ShareHelper {
     private static final String TAG = "AndroidShare";
 
@@ -152,6 +157,7 @@ public class ShareHelper {
             // TODO(crbug.com/40256344): Allow startActivity w/o result via
             // WindowAndroid.
             Activity activity = window.getActivity().get();
+            assumeNonNull(activity);
             activity.startActivity(intent);
         }
     }
@@ -161,10 +167,10 @@ public class ShareHelper {
             implements IntentCallback, UnownedUserData {
         private static final UnownedUserDataKey<TargetChosenReceiver> TARGET_CHOSEN_RECEIVER_KEY =
                 new UnownedUserDataKey<>(TargetChosenReceiver.class);
-        @Nullable private TargetChosenCallback mCallback;
+        private @Nullable TargetChosenCallback mCallback;
         private WeakReference<Context> mAttachedContext;
         private WeakReference<WindowAndroid> mAttachedWindow;
-        private String mReceiverAction;
+        private @Nullable String mReceiverAction;
 
         protected TargetChosenReceiver(@Nullable TargetChosenCallback callback) {
             mCallback = callback;
@@ -220,6 +226,7 @@ public class ShareHelper {
         protected Intent getChooserIntent(WindowAndroid window, Intent sharingIntent) {
             Intent intent = createSendBackIntentWithFilteredAction();
             Activity activity = window.getActivity().get();
+            assumeNonNull(activity);
             final PendingIntent pendingIntent =
                     PendingIntent.getBroadcast(
                             activity,
@@ -293,19 +300,20 @@ public class ShareHelper {
         public void onDetachedFromHost(UnownedUserDataHost host) {
             // Remove the weak reference to the context and window when it is removed from the
             // attaching window.
-            if (mAttachedContext.get() != null) {
+            Context attachedContext = mAttachedContext.get();
+            if (attachedContext != null) {
                 Log.i(TAG, "Dispatch cleaning intent to close the share sheet.");
                 // Issue a cleaner intent so the share sheet is cleared. This is a workaround to
                 // close the top ChooserActivity when share isn't completed.
-                Intent cleanerIntent = createCleanupIntent();
-                mAttachedContext.get().startActivity(cleanerIntent);
+                Intent cleanerIntent = createCleanupIntent(attachedContext);
+                attachedContext.startActivity(cleanerIntent);
             }
             cancel();
         }
 
-        protected Intent createCleanupIntent() {
+        private static Intent createCleanupIntent(Context context) {
             Intent cleanerIntent = new Intent();
-            cleanerIntent.setClass(mAttachedContext.get(), mAttachedContext.get().getClass());
+            cleanerIntent.setClass(context, context.getClass());
             cleanerIntent.putExtra(EXTRA_CLEAN_SHARE_SHEET, true);
             cleanerIntent.setFlags(
                     Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -343,8 +351,8 @@ public class ShareHelper {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public static Intent getShareIntent(ShareParams params) {
-        final boolean isFileShare = (params.getFileUris() != null);
-        final boolean isMultipleFileShare = isFileShare && (params.getFileUris().size() > 1);
+        ArrayList<Uri> fileUris = params.getFileUris();
+        final boolean isMultipleFileShare = fileUris != null && fileUris.size() > 1;
         final String action =
                 isMultipleFileShare ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND;
         Intent intent = new Intent(action);
@@ -353,7 +361,8 @@ public class ShareHelper {
                         | Intent.FLAG_ACTIVITY_FORWARD_RESULT
                         | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP
                         | Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(EXTRA_TASK_ID, params.getWindow().getActivity().get().getTaskId());
+        intent.putExtra(
+                EXTRA_TASK_ID, assumeNonNull(params.getWindow().getActivity().get()).getTaskId());
 
         Uri imageUri = params.getImageUriToShare();
         if (imageUri != null && !isMultipleFileShare) {
@@ -374,11 +383,12 @@ public class ShareHelper {
             return intent;
         }
 
-        if (params.getOfflineUri() != null) {
+        Uri offlineUri = params.getOfflineUri();
+        if (offlineUri != null) {
             intent.putExtra(Intent.EXTRA_SUBJECT, params.getTitle());
             intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            intent.putExtra(Intent.EXTRA_STREAM, params.getOfflineUri());
+            intent.putExtra(Intent.EXTRA_STREAM, offlineUri);
             intent.addCategory(Intent.CATEGORY_DEFAULT);
             intent.setType("multipart/related");
         } else {
@@ -387,22 +397,23 @@ public class ShareHelper {
             }
             intent.putExtra(Intent.EXTRA_TEXT, params.getTextAndUrl());
 
-            if (isFileShare) {
+            if (fileUris != null) {
                 intent.setType(params.getFileContentType());
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
                 if (isMultipleFileShare) {
-                    intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, params.getFileUris());
+                    intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, fileUris);
                 } else {
-                    intent.putExtra(Intent.EXTRA_STREAM, params.getFileUris().get(0));
+                    intent.putExtra(Intent.EXTRA_STREAM, fileUris.get(0));
                 }
             } else {
                 intent.setType("text/plain");
                 intent.putExtra(Intent.EXTRA_TITLE, params.getTitle());
                 // For text sharing, only set the preview title when preview image is provided. This
                 // is meant to avoid confusion about the content being shared.
-                if (params.getPreviewImageUri() != null) {
-                    intent.setClipData(ClipData.newRawUri("", params.getPreviewImageUri()));
+                Uri previewImageUri = params.getPreviewImageUri();
+                if (previewImageUri != null) {
+                    intent.setClipData(ClipData.newRawUri("", previewImageUri));
                     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 }
             }

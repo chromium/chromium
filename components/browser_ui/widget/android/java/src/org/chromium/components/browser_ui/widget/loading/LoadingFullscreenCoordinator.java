@@ -9,17 +9,20 @@ import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The class for managing a loading screen on top of a Chrome activity. */
+@NullMarked
 public class LoadingFullscreenCoordinator {
     private final ScrimManager mScrimManager;
     private final Activity mActivity;
     private final ViewGroup mContainer;
-    private PropertyModel mPropertyModel;
+    private @Nullable PropertyModel mPropertyModel;
 
     /**
      * @param activity The {@link Activity} on which the loading shows.
@@ -58,7 +61,9 @@ public class LoadingFullscreenCoordinator {
 
     /** Close the loading screen that's showing. */
     public void closeLoadingScreen() {
-        mScrimManager.hideScrim(mPropertyModel, /* animate= */ true);
+        if (mPropertyModel != null) {
+            mScrimManager.hideScrim(mPropertyModel, /* animate= */ true);
+        }
     }
 
     /** Performs tear down. */

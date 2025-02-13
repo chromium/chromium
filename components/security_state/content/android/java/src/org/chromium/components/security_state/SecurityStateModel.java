@@ -8,9 +8,11 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
 /** Provides a way of accessing helpers for page security state. */
+@NullMarked
 public class SecurityStateModel {
     /**
      * Fetch the security level for a given web contents.
