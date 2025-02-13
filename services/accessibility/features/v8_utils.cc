@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/memory/raw_ptr.h"
 #include "v8-array-buffer.h"
 #include "v8-container.h"
 

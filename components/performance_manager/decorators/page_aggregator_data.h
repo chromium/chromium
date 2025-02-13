@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_DECORATORS_PAGE_AGGREGATOR_DATA_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_DECORATORS_PAGE_AGGREGATOR_DATA_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "components/performance_manager/graph/node_inline_data.h"

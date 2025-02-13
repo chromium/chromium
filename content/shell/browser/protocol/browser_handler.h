@@ -6,6 +6,7 @@
 #define CONTENT_SHELL_BROWSER_PROTOCOL_BROWSER_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "content/shell/browser/protocol/browser.h"
 #include "content/shell/browser/protocol/domain_handler.h"
 

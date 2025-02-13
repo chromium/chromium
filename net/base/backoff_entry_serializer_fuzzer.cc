@@ -12,6 +12,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "net/base/backoff_entry.h"
