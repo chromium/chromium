@@ -468,12 +468,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     AddChildViewAtImpl(view.get(), children_.size());
     return view;
   }
-  template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
-  T* AddChildViewAt(raw_ptr<T, Traits> view, size_t index) {
-    CHECK_CLASS_HAS_METADATA(T)
-    AddChildViewAtImpl(view.get(), index);
-    return view;
-  }
 
   // Moves |view| to the specified |index|. An |index| at least as large as that
   // of the last child moves the view to the end.

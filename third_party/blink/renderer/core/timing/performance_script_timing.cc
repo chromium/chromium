@@ -171,6 +171,14 @@ int32_t PerformanceScriptTiming::sourceCharPosition() const {
   return info_->GetSourceLocation().char_position;
 }
 
+int32_t PerformanceScriptTiming::sourceLine() const {
+  return info_->GetSourceLocation().line_number;
+}
+
+int32_t PerformanceScriptTiming::sourceColumn() const {
+  return info_->GetSourceLocation().column_number;
+}
+
 PerformanceEntryType PerformanceScriptTiming::EntryTypeEnum() const {
   return PerformanceEntry::EntryType::kScript;
 }
@@ -187,6 +195,10 @@ void PerformanceScriptTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddString("sourceURL", sourceURL());
   builder.AddString("sourceFunctionName", sourceFunctionName());
   builder.AddNumber("sourceCharPosition", sourceCharPosition());
+  if (RuntimeEnabledFeatures::LongAnimationFrameSourceLineColumnEnabled()) {
+    builder.AddNumber("sourceLine", sourceLine());
+    builder.AddNumber("sourceColumn", sourceColumn());
+  }
 }
 
 void PerformanceScriptTiming::Trace(Visitor* visitor) const {

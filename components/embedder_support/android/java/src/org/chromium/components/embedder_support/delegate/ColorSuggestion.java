@@ -4,10 +4,13 @@
 
 package org.chromium.components.embedder_support.delegate;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Color suggestion container used to store information for each color button that will be shown in
  * the simple color picker.
  */
+@NullMarked
 public class ColorSuggestion {
     final int mColor;
     final String mLabel;

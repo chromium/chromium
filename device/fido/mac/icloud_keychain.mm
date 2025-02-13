@@ -255,7 +255,8 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
                              ToVector(cred.userHandle), cred.name.UTF8String,
                              /* iCloud Keychain does not store
                                 a displayName for passkeys */
-                             std::nullopt));
+                             std::nullopt),
+                         cred.providerName.UTF8String);
       }
       const auto has_credentials =
           ret.empty() ? FidoRequestHandlerBase::RecognizedCredential::

@@ -841,8 +841,9 @@ inline constexpr char kAccessibilitySelectToSpeakWordHighlight[] =
 inline constexpr char kAccessibilityReducedAnimationsEnabled[] =
     "settings.a11y.reduced_animations.enabled";
 
-// A boolean pref which determines whether overlay scrollbars is enabled.
-inline constexpr char kAccessibilityOverlayScrollbarEnabled[] =
+// A boolean pref which determines whether the always show scrollbars feature is
+// enabled.
+inline constexpr char kAccessibilityAlwaysShowScrollbarsEnabled[] =
     "settings.a11y.overlay_scrollbar.enabled";
 
 // A boolean pref which determines whether FaceGaze is enabled.

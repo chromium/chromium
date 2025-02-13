@@ -329,8 +329,7 @@ void IdentityGetAuthTokenFunction::StartSigninFlow() {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-      !identity_manager->GetAccountsWithRefreshTokens().empty() &&
-      switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+      !identity_manager->GetAccountsWithRefreshTokens().empty()) {
     // The user is signed in on the web but not to Chrome.
     MaybeShowChromeSigninDialog();
     return;

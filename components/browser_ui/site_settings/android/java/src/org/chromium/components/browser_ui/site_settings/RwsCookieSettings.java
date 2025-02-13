@@ -91,10 +91,10 @@ public class RwsCookieSettings extends BaseSiteSettingsFragment
                 int bulletThreeId =
                         R.string.settings_cookies_block_third_party_settings_allow_bullet_three;
                 mBulletOne.setSummary(getContext().getString(bulletOneId));
-                mBulletTwo.setSummary(getContext().getString(bulletThreeId));
+                mBulletTwo.setSummary(getContext().getString(bulletTwoId));
                 mBulletTwo.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.web_24));
                 mBulletThree.setVisible(true);
-                mBulletThree.setSummary(getContext().getString(bulletTwoId));
+                mBulletThree.setSummary(getContext().getString(bulletThreeId));
             } else {
                 mSubtitle.setTitle(
                         R.string

@@ -417,24 +417,43 @@ size_t ParkableStringImpl::CharactersSizeInBytes() const {
   return metadata_->length_ * (is_8bit() ? sizeof(LChar) : sizeof(UChar));
 }
 
-size_t ParkableStringImpl::MemoryFootprintForDump() const {
+namespace {
+void RecordStringImplMemoryUsage(ParkableStringImpl::MemoryUsage* result,
+                                 const String& string) {
+  if (StringImpl* impl = string.Impl()) {
+    result->string_impl = impl;
+    result->string_impl_size = sizeof(*impl) + impl->CharactersSizeInBytes();
+  }
+}
+}  // namespace
+
+ParkableStringImpl::MemoryUsage ParkableStringImpl::MemoryUsageForSnapshot()
+    const {
   AssertOnValidThread();
-  size_t size = sizeof(ParkableStringImpl);
+  MemoryUsage result = {0, nullptr, 0};
+  result.this_size = sizeof(ParkableStringImpl);
 
-  if (!may_be_parked())
-    return size + string_.CharactersSizeInBytes();
+  if (!may_be_parked()) {
+    RecordStringImplMemoryUsage(&result, string_);
+    return result;
+  }
 
-  size += sizeof(ParkableMetadata);
+  result.this_size += sizeof(ParkableMetadata);
 
   base::AutoLock locker(metadata_->lock_);
-  if (!is_parked_no_lock()) {
-    size += string_.CharactersSizeInBytes();
+  if (!is_parked_no_lock() && !is_on_disk_no_lock()) {
+    RecordStringImplMemoryUsage(&result, string_);
   }
 
   if (metadata_->compressed_)
-    size += metadata_->compressed_->size();
+    result.this_size += metadata_->compressed_->size();
 
-  return size;
+  return result;
+}
+
+size_t ParkableStringImpl::MemoryFootprintForDump() const {
+  MemoryUsage usage = MemoryUsageForSnapshot();
+  return usage.this_size + usage.string_impl_size;
 }
 
 ParkableStringImpl::AgeOrParkResult ParkableStringImpl::MaybeAgeOrParkString() {

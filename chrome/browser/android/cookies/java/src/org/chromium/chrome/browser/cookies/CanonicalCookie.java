@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.cookies;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -15,6 +17,7 @@ import java.util.List;
  *
  * Also has static methods serialize Cookies.
  */
+@NullMarked
 class CanonicalCookie {
     private final String mName;
     private final String mValue;

@@ -13,7 +13,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -26,7 +25,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
@@ -48,16 +47,16 @@ namespace {
 
 constexpr char kProfile[] = "Profile";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kArcAppName1[] = "app_name1";
 const char kArcPackageName1[] = "package_name1";
 const char kArcActivityName1[] = "activity_name1";
 const char kArcAppName2[] = "app_name2";
 const char kArcPackageName2[] = "package_name2";
 const char kArcActivityName2[] = "activity_name2";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // We only upload serial number on Windows.
 void VerifySerialNumber(const std::string& serial_number) {
 #if BUILDFLAG(IS_WIN)
@@ -66,7 +65,7 @@ void VerifySerialNumber(const std::string& serial_number) {
   EXPECT_EQ(std::string(), serial_number);
 #endif  // BUILDFLAG(IS_WIN)
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Controls the way of Profile creation which affects report.
 enum ProfileStatus {
@@ -100,7 +99,7 @@ void AddExtensionToProfile(TestingProfile* profile) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 arc::mojom::AppInfoPtr CreateArcApp(const std::string& app_name,
                                     const std::string& package_name,
@@ -154,9 +153,9 @@ class ReportGeneratorTest : public ::testing::Test {
 
     profile_manager_.CreateGuestProfile();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
     profile_manager_.CreateSystemProfile();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   }
 
   // Creates |number| of Profiles. Returns the set of their names. The profile
@@ -335,7 +334,7 @@ TEST_F(ReportGeneratorTest, GenerateBasicReport) {
 
   // In the ChromeOsUserReportRequest for Chrome OS, these fields are not
   // existing. Therefore, they are skipped according to current environment.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_NE(std::string(),
             basic_request->GetDeviceReportRequest().computer_name());
   EXPECT_NE(std::string(),
@@ -355,12 +354,12 @@ TEST_F(ReportGeneratorTest, GenerateBasicReport) {
 #if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(os_report.has_version_type());
 #endif  // BUILDFLAG(IS_WIN)
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   EXPECT_TRUE(basic_request->GetDeviceReportRequest().has_browser_report());
   auto& browser_report =
       basic_request->GetDeviceReportRequest().browser_report();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(browser_report.has_browser_version());
   EXPECT_FALSE(browser_report.has_channel());
 #else
@@ -382,7 +381,7 @@ TEST_F(ReportGeneratorTest, GenerateWithoutProfiles) {
 
   // In the ChromeOsUserReportRequest for Chrome OS, these fields are not
   // existing. Therefore, they are skipped according to current environment.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_NE(std::string(),
             basic_request->GetDeviceReportRequest().computer_name());
   EXPECT_NE(std::string(),
@@ -398,12 +397,12 @@ TEST_F(ReportGeneratorTest, GenerateWithoutProfiles) {
 #if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(os_report.has_version_type());
 #endif  // BUILDFLAG(IS_WIN)
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   EXPECT_TRUE(basic_request->GetDeviceReportRequest().has_browser_report());
   auto& browser_report =
       basic_request->GetDeviceReportRequest().browser_report();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(browser_report.has_browser_version());
   EXPECT_FALSE(browser_report.has_channel());
 #else
@@ -418,7 +417,7 @@ TEST_F(ReportGeneratorTest, GenerateWithoutProfiles) {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ReportGeneratorTest, ReportArcAppInChromeOS) {
   ArcAppTest arc_app_test;
@@ -487,6 +486,6 @@ TEST_F(ReportGeneratorTest, ArcPlayStoreDisabled) {
   arc_app_test.TearDown();
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace enterprise_reporting

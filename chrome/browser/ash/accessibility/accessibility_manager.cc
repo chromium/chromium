@@ -957,21 +957,21 @@ bool AccessibilityManager::IsReducedAnimationsEnabled() const {
              prefs::kAccessibilityReducedAnimationsEnabled);
 }
 
-void AccessibilityManager::EnableOverlayScrollbar(bool enabled) {
+void AccessibilityManager::EnableAlwaysShowScrollbars(bool enabled) {
   if (!::features::IsOverlayScrollbarOSSettingEnabled() || !profile_) {
     return;
   }
 
   PrefService* pref_service = profile_->GetPrefs();
-  pref_service->SetBoolean(prefs::kAccessibilityOverlayScrollbarEnabled,
+  pref_service->SetBoolean(prefs::kAccessibilityAlwaysShowScrollbarsEnabled,
                            enabled);
   pref_service->CommitPendingWrite();
 }
 
-bool AccessibilityManager::IsOverlayScrollbarEnabled() const {
+bool AccessibilityManager::IsAlwaysShowScrollbarsEnabled() const {
   return ::features::IsOverlayScrollbarOSSettingEnabled() && profile_ &&
          profile_->GetPrefs()->GetBoolean(
-             prefs::kAccessibilityOverlayScrollbarEnabled);
+             prefs::kAccessibilityAlwaysShowScrollbarsEnabled);
 }
 
 void AccessibilityManager::OnReducedAnimationsChanged() const {
@@ -2021,7 +2021,7 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
   }
   if (::features::IsOverlayScrollbarOSSettingEnabled()) {
     base::UmaHistogramBoolean("Accessibility.CrosAlwaysShowScrollbar",
-                              IsOverlayScrollbarEnabled());
+                              IsAlwaysShowScrollbarsEnabled());
   }
 }
 

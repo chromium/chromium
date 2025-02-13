@@ -29,6 +29,8 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
 
   void RegisterMessages() override;
 
+  void OnJavascriptDisallowed() override;
+
   void ShowPasswordChangedScreen();
 
   void ReloadGaiaAuthenticator();

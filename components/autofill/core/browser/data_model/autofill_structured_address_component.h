@@ -286,11 +286,11 @@ class AddressComponent {
 
   // Recursively adds the supported types to the set. Calls
   // |GetAdditionalSupportedFieldTypes()| to add field types.
-  void GetSupportedTypes(FieldTypeSet* supported_types) const;
+  FieldTypeSet GetSupportedTypes() const;
 
   // Recursively adds only the storable types to the set. No computed type is
   // ever added (e.g. GetAdditionalSupportedFieldTypes).
-  void GetStorableTypes(FieldTypeSet* supported_types) const;
+  FieldTypeSet GetStorableTypes() const;
 
   // Recursively finds the storable type of `type`:
   // - If `type` is a `storable_type_` of any node, this is simply `type`.
@@ -500,8 +500,7 @@ class AddressComponent {
 
   // Recursively adds the supported types to the set. If `!storable_only`, calls
   // |GetAdditionalSupportedFieldTypes()| to add computed field types.
-  virtual void GetTypes(bool storable_only,
-                        FieldTypeSet* supported_types) const;
+  virtual FieldTypeSet GetTypes(bool storable_only) const;
 
  private:
   friend class AddressComponentTestApi;

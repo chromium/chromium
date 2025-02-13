@@ -126,6 +126,9 @@ extern const char kAuxiliarySearchDonationDescription[];
 extern const char kBackgroundResourceFetchName[];
 extern const char kBackgroundResourceFetchDescription[];
 
+extern const char kByDateHistoryInSidePanelName[];
+extern const char kByDateHistoryInSidePanelDescription[];
+
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kBookmarksTreeViewName[];
 extern const char kBookmarksTreeViewDescription[];
@@ -372,6 +375,9 @@ extern const char kAutofillEnableCardProductNameDescription[];
 extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesName[];
 extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[];
 
+extern const char kAutofillEnableLoyaltyCardsFillingName[];
+extern const char kAutofillEnableLoyaltyCardsFillingDescription[];
+
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryName[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
 
@@ -549,6 +555,9 @@ extern const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[];
 extern const char
     kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[];
 
+extern const char kClipboardContentsIdName[];
+extern const char kClipboardContentsIdDescription[];
+
 extern const char kDisableProcessReuse[];
 extern const char kDisableProcessReuseDescription[];
 
@@ -653,6 +662,9 @@ extern const char kManagedProfileRequiredInterstitialDescription[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kEnterpriseRealTimeUrlCheckOnAndroidName[];
 extern const char kEnterpriseRealTimeUrlCheckOnAndroidDescription[];
+
+extern const char kEnterpriseSecurityEventReportingOnAndroidName[];
+extern const char kEnterpriseSecurityEventReportingOnAndroidDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 extern const char kEnableExperimentalCookieFeaturesName[];
@@ -1874,6 +1886,9 @@ extern const char kSafetyHubMagicStackDescription[];
 extern const char kSafetyHubFollowupName[];
 extern const char kSafetyHubFollowupDescription[];
 
+extern const char kSafetyHubLocalPasswordsModuleName[];
+extern const char kSafetyHubLocalPasswordsModuleDescription[];
+
 extern const char kSafetyHubAndroidSurveyName[];
 extern const char kSafetyHubAndroidSurveyDescription[];
 
@@ -2168,6 +2183,9 @@ extern const char kUnifiedPasswordManagerAndroidReenrollmentDescription[];
 extern const char kUnsafeWebGPUName[];
 extern const char kUnsafeWebGPUDescription[];
 
+extern const char kForceHighPerformanceGPUName[];
+extern const char kForceHighPerformanceGPUDescription[];
+
 extern const char kUiPartialSwapName[];
 extern const char kUiPartialSwapDescription[];
 
@@ -2242,8 +2260,6 @@ extern const char kWallpaperSearchSettingsVisibilityDescription[];
 extern const char kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuName[];
 extern const char
     kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuDescription[];
-extern const char kWebAuthnEnclaveAuthenticatorName[];
-extern const char kWebAuthnEnclaveAuthenticatorDescription[];
 extern const char kWebAuthnPasskeyUpgradeName[];
 extern const char kWebAuthnPasskeyUpgradeDescription[];
 #endif
@@ -2829,9 +2845,6 @@ extern const char kUseHardwareBufferUsageFlagsFromVulkanDescription[];
 extern const char kVideoTutorialsName[];
 extern const char kVideoTutorialsDescription[];
 
-extern const char kWebAuthnAndroidCredManName[];
-extern const char kWebAuthnAndroidCredManDescription[];
-
 extern const char kWebFeedAwarenessName[];
 extern const char kWebFeedAwarenessDescription[];
 
@@ -3068,18 +3081,6 @@ extern const char kSCTAuditingDescription[];
 
 extern const char kSmartCardWebApiName[];
 extern const char kSmartCardWebApiDescription[];
-
-extern const char kTabOrganizationName[];
-extern const char kTabOrganizationDescription[];
-
-extern const char kTabOrganizationSettingsVisibilityName[];
-extern const char kTabOrganizationSettingsVisibilityDescription[];
-
-extern const char kTabstripDeclutterName[];
-extern const char kTabstripDeclutterDescription[];
-
-extern const char kTabstripDedupeName[];
-extern const char kTabstripDedupeDescription[];
 
 extern const char kWebAppSyncGeneratedIconBackgroundFixName[];
 extern const char kWebAppSyncGeneratedIconBackgroundFixDescription[];

@@ -80,6 +80,7 @@
 <translation id="2094648590148273905">ChromeOS Flex-ի օգտագործման պայմաններ</translation>
 <translation id="2094919256425865063">Փակե՞լ Chrome-ը։</translation>
 <translation id="2106831557840787829">ChromeOS Flex-ը ստեղծվել է <ph name="BEGIN_LINK_CROS_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_CROS_OSS" /> հիման վրա, ինչպիսին է <ph name="BEGIN_LINK_LINUX_OSS" />Լինուքսի մշակման միջավայրը<ph name="END_LINK_LINUX_OSS" />։</translation>
+<translation id="2108778574543343055">Անջատել Chrome-ի ֆոնային ռեժիմը հավելվածների համար</translation>
 <translation id="2120620239521071941"><ph name="ITEMS_COUNT" /> տարր ձեր սարքից կջնջվի: Հետագայում ձեր տվյալներն առբերելու համար մուտք գործեք Chrome <ph name="USER_EMAIL" /> հաշվով:</translation>
 <translation id="2121284319307530122">Վերագործարկել՝ &amp;Chrome-ը թարմացնելու համար</translation>
 <translation id="2123055963409958220">Օգնեք կատարելագործել Chrome-ը՝ հաղորդելով <ph name="BEGIN_LINK" />ընթացիկ կարգավորումների<ph name="END_LINK" /> մասին</translation>
@@ -141,6 +142,7 @@
 <translation id="2797864378188255696">Երբ <ph name="USER_EMAIL" /> հաշվի միջոցով մուտք եք գործում Google-ի ծառայություններ, օր․՝ Gmail կամ YouTube, նույն հաշվի միջոցով կարող եք ավտոմատ մուտք գործել Chrome</translation>
 <translation id="2799162042226656283">Ձեր Chrome-ը</translation>
 <translation id="2799223571221894425">Վերագործարկել</translation>
+<translation id="2818684386420968393">Անջատել Chrome-ի ֆոնային ռեժիմը հավելվածների համար</translation>
 <translation id="2825024317344269723">Վտանգավոր կայք։ Chrome-ը հեռացրել է ծանուցումների թույլտվությունը։</translation>
 <translation id="2841525013647267359">Թարգմանվող լեզու</translation>
 <translation id="2846251086934905009">Տեղադրման սխալ. չհաջողվեց ավարտել տեղադրումը։ Գործընթացն ընդհատվել է։</translation>

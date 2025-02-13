@@ -58,6 +58,8 @@ class POLICY_EXPORT RealtimeReportingJobConfiguration
   // ReportingJobConfigurationBase.
   std::string GetPayload() override;
 
+  std::string GetContentType() override;
+
   // Add a new Event proto to the payload.
   bool AddRequest(::chrome::cros::reporting::proto::UploadEventsRequest event);
 

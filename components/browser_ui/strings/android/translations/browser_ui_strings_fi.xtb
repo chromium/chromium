@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Hinnanalennus avoimilla välilehdillä}other{Hinnanalennukset avoimilla välilehdillä}}</translation>
 <translation id="5186036860380548585">Toiminto on käytettävissä näytön yläosassa</translation>
 <translation id="5197729504361054390"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saa valitsemasi yhteystiedot.</translation>
+<translation id="5198930230016462977">"Muuta Uusi välilehti ‑sivua" -alapaneeli suljettu</translation>
 <translation id="5216942107514965959">Viimeksi avattu tänään</translation>
 <translation id="5225463052809312700">Käynnistä kamera</translation>
 <translation id="5234764350956374838">Hylkää</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Käsien seuranta</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> estetty</translation>
 <translation id="5804241973901381774">Luvat</translation>
+<translation id="5822675474983796325">"Muuta Uusi välilehti ‑sivua" -alapaneeli avattu koko näytölle</translation>
 <translation id="5844448279347999754">Kun tämä on päällä, sivustot voivat pyytää leikepöydälle tallennettujen tekstien ja kuvien näkemistä. Kun tämä on pois päältä, sivustot eivät näe leikepöydälle tallennettuja tekstejä tai kuvia.</translation>
 <translation id="5853982612236235577">Kun tämä on päällä, sivustot voivat pyytää lupaa lähettää ilmoituksia. Kun tämä on pois päältä, sivustot eivät voi lähettää ilmoituksia.</translation>
 <translation id="5860033963881614850">Pois päältä</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Laajennettu</translation>
 <translation id="7219254577985949841">Poistetaanko sivustodata?</translation>
 <translation id="723171743924126238">Valitse kuvat</translation>
+<translation id="7243246278722455312">"Muuta Uusi välilehti ‑sivua" -alapaneeli</translation>
 <translation id="7243308994586599757">Asetukset löytyvät näytön alalaidasta.</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> valittu</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> sallittu</translation>

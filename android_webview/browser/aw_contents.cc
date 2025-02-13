@@ -724,13 +724,8 @@ void AwContents::RequestGeolocationPermission(const GURL& origin,
   if (!obj)
     return;
 
-  if (UseLegacyGeolocationPermissionAPI()) {
-    ShowGeolocationPrompt(origin, std::move(callback));
-    return;
-  }
-  permission_request_handler_->SendRequest(
-      std::make_unique<SimplePermissionRequest>(
-          origin, AwPermissionRequest::Geolocation, std::move(callback)));
+  ShowGeolocationPrompt(origin, std::move(callback));
+  return;
 }
 
 void AwContents::CancelGeolocationPermissionRequests(const GURL& origin) {
@@ -739,23 +734,8 @@ void AwContents::CancelGeolocationPermissionRequests(const GURL& origin) {
   if (!obj)
     return;
 
-  if (UseLegacyGeolocationPermissionAPI()) {
-    HideGeolocationPrompt(origin);
-    return;
-  }
-  permission_request_handler_->CancelRequest(origin,
-                                             AwPermissionRequest::Geolocation);
-}
-
-bool AwContents::UseLegacyGeolocationPermissionAPI() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj) {
-    return false;
-  }
-
-  return Java_AwContents_useLegacyGeolocationPermissionAPI(env, obj);
+  HideGeolocationPrompt(origin);
+  return;
 }
 
 void AwContents::RequestMIDISysexPermission(const GURL& origin,

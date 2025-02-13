@@ -626,8 +626,13 @@ crbug.com/40241621 [ android android-sm-a137f no-passthrough ] conformance/glsl/
 crbug.com/40241621 [ android android-sm-a137f no-passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/40241621 [ android android-sm-a137f no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/40241621 [ android android-sm-a137f no-passthrough ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
-crbug.com/396176034 [ android android-sm-a137f no-passthrough ] conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
-crbug.com/396176034 [ android android-sm-a137f no-passthrough ] conformance/offscreencanvas/context-lost-restored.html [ Failure ]
+# These two tests implicitly depend on OES_texture_float, as the context
+# restored check within them checks for the presence of OES_texture_float and
+# OES_vertex_array_object. These tests should start passing once
+# https://github.com/KhronosGroup/WebGL/issues/3715 is fixed and these tests no
+# longer depend on these extensions.
+crbug.com/396176034 [ android android-sm-a137f ] conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
+crbug.com/396176034 [ android android-sm-a137f ] conformance/offscreencanvas/context-lost-restored.html [ Failure ]
 
 crbug.com/1372149 [ android android-sm-a236b no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/40241618 [ android android-sm-s911u1 no-passthrough ] conformance/rendering/blending.html [ Failure ]

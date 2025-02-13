@@ -336,6 +336,10 @@ const DMAuth& JobConfigurationBase::GetAuth() const {
   return auth_data_;
 }
 
+std::string JobConfigurationBase::GetContentType() {
+  return kPostContentType;
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 JobConfigurationBase::GetUrlLoaderFactory() {
   return factory_;
@@ -530,7 +534,8 @@ void DeviceManagementService::JobImpl::CreateUrlLoader() {
   auto rr = config_->GetResourceRequest(bypass_proxy_, last_error_);
   auto annotation = config_->GetTrafficAnnotationTag();
   url_loader_ = network::SimpleURLLoader::Create(std::move(rr), annotation);
-  url_loader_->AttachStringForUpload(config_->GetPayload(), kPostContentType);
+  url_loader_->AttachStringForUpload(config_->GetPayload(),
+                                     config_->GetContentType());
   url_loader_->SetAllowHttpErrorResults(true);
   if (config_->GetTimeoutDuration()) {
     url_loader_->SetTimeoutDuration(config_->GetTimeoutDuration().value());

@@ -4,6 +4,8 @@
 
 package org.chromium.components.sensitive_content;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
 
@@ -30,6 +33,7 @@ import java.util.Optional;
  * set its content sensitivity.
  */
 @JNINamespace("sensitive_content")
+@NullMarked
 public class SensitiveContentClient implements ViewAndroidDelegate.ContainerViewObserver {
     /** Used to update the content sensitivity of the current container view. */
     @VisibleForTesting
@@ -164,7 +168,7 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
      */
     @Override
     public void onUpdateContainerView(ViewGroup view) {
-        assert view == mViewAndroidDelegate.get().getContainerView();
+        assert view == assumeNonNull(mViewAndroidDelegate.get()).getContainerView();
         setContentSensitivity(mContentIsSensitive);
     }
 

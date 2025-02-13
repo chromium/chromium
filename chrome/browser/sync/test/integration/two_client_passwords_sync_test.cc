@@ -88,6 +88,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ENABLED(Add)) {
   ASSERT_EQ(1, GetPasswordCount(1));
 }
 
+// TwoClientPasswordsSyncTest.AddInTransportMode is disabled on CrOS as the
+// signed in, non-syncing state does not exist
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
                        E2E_ENABLED(AddInTransportMode)) {
   ResetSyncForPrimaryAccount();
@@ -98,12 +101,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
     ASSERT_TRUE(GetClient(i)->SignInPrimaryAccount());
     ASSERT_TRUE(GetClient(i)->AwaitSyncTransportActive());
     ASSERT_FALSE(GetSyncService(i)->IsSyncFeatureEnabled());
-    // The PASSWORDS are active only if the signin was explicit.
-    if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-      // Opt in. PASSWORDS should become active.
-      GetSyncService(i)->GetUserSettings()->SetSelectedType(
-          syncer::UserSelectableType::kPasswords, true);
-    }
     PasswordSyncActiveChecker(GetSyncService(i)).Wait();
   }
 
@@ -120,6 +117,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
       SamePasswordFormsChecker(PasswordForm::Store::kAccountStore).Wait());
   EXPECT_EQ(1, GetPasswordCount(1, PasswordForm::Store::kAccountStore));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ENABLED(Race)) {
   ResetSyncForPrimaryAccount();

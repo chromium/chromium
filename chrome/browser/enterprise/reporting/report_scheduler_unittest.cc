@@ -15,7 +15,6 @@
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -160,7 +159,7 @@ class ReportSchedulerTest : public ::testing::Test {
             &report_delegate_factory_);
     profile_request_generator_ = profile_request_generator_ptr_.get();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     SetLastUploadVersion(chrome::kChromeVersion);
 #endif
     Init(true, kDMToken, kClientId);
@@ -170,7 +169,7 @@ class ReportSchedulerTest : public ::testing::Test {
             const std::string& dm_token,
             const std::string& client_id) {
     ToggleCloudReport(policy_enabled);
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     storage_.SetDMToken(dm_token);
     storage_.SetClientId(client_id);
 #endif
@@ -185,7 +184,7 @@ class ReportSchedulerTest : public ::testing::Test {
     scheduler_->SetReportUploaderForTesting(std::move(uploader_ptr_));
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   void CreateSchedulerForProfileReporting(Profile* profile) {
     ReportScheduler::CreateParams params;
     params.client = client_;
@@ -201,7 +200,7 @@ class ReportSchedulerTest : public ::testing::Test {
     scheduler_ = std::make_unique<ReportScheduler>(std::move(params));
     scheduler_->SetReportUploaderForTesting(std::move(uploader_ptr_));
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   void SetLastUploadInHour(base::TimeDelta gap) {
     previous_set_last_upload_timestamp_ = base::Time::Now() - gap;
@@ -218,7 +217,7 @@ class ReportSchedulerTest : public ::testing::Test {
                                        std::make_unique<base::Value>(enabled));
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   void SetLastUploadVersion(const std::string& version) {
     local_state_.Get()->SetString(kLastUploadVersion, version);
   }
@@ -226,7 +225,7 @@ class ReportSchedulerTest : public ::testing::Test {
   void ExpectLastUploadVersion(const std::string& version) {
     EXPECT_EQ(local_state_.Get()->GetString(kLastUploadVersion), version);
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // If lastUploadTimestamp is updated recently, it should be updated as Now().
   // Otherwise, it should be same as previous set timestamp.
@@ -250,7 +249,7 @@ class ReportSchedulerTest : public ::testing::Test {
 
   // Chrome OS needn't setup registration.
   void EXPECT_CALL_SetupRegistration() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     EXPECT_CALL(*client_, SetupRegistration(_, _, _)).Times(0);
 #else
     EXPECT_CALL(*client_, SetupRegistration(kDMToken, kClientId, _))
@@ -274,7 +273,7 @@ class ReportSchedulerTest : public ::testing::Test {
   raw_ptr<MockReportUploader, DanglingUntriaged> uploader_;
   raw_ptr<MockChromeProfileRequestGenerator, DanglingUntriaged>
       profile_request_generator_;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   policy::FakeBrowserDMTokenStorage storage_;
 #endif
   base::Time previous_set_last_upload_timestamp_;
@@ -295,7 +294,7 @@ TEST_F(ReportSchedulerTest, NoReportWithoutPolicy) {
 }
 
 // Chrome OS needn't set dm token and client id in the report scheduler.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ReportSchedulerTest, NoReportWithoutDMToken) {
   Init(true, "", kClientId);
   CreateScheduler();
@@ -330,8 +329,8 @@ TEST_F(ReportSchedulerTest, UploadReportSucceeded) {
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
-// Profile reporting does not support ash.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Profile reporting does not support ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ReportSchedulerTest, UploadReportSucceededForProfileReporting) {
   EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
       .WillOnce(WithArgs<0>(ScheduleProfileRequestGeneratorCallback()));
@@ -356,7 +355,7 @@ TEST_F(ReportSchedulerTest, UploadReportSucceededForProfileReporting) {
   ::testing::Mock::VerifyAndClearExpectations(client_);
   ::testing::Mock::VerifyAndClearExpectations(profile_request_generator_);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ReportSchedulerTest, UploadReportTransientError) {
   EXPECT_CALL_SetupRegistration();
@@ -644,7 +643,7 @@ TEST_F(ReportSchedulerTest, ManualReportWithRegularOneOngoing) {
 }
 
 // Android does not support version updates
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 // Tests that a basic report is generated and uploaded when a browser update is
 // detected.
@@ -821,6 +820,6 @@ TEST_F(ReportSchedulerTest, OnNewVersionRegularReport) {
   histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 1, 1);
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace enterprise_reporting

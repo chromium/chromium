@@ -2600,8 +2600,6 @@ if (!is_android) {
         "//chrome/browser/ash/arc/extensions",
         "//chrome/browser/ash/arc/fileapi",
         "//chrome/browser/ash/arc/intent_helper",
-        "//chrome/browser/ash/arc/keymaster",
-        "//chrome/browser/ash/arc/keymint",
         "//chrome/browser/ash/arc/policy",
         "//chrome/browser/ash/arc/session",
         "//chrome/browser/ash/arc/tracing",
@@ -2981,7 +2979,6 @@ if (!is_android) {
       "../browser/metrics/variations/variations_http_headers_browsertest.cc",
       "../browser/metrics/variations/variations_safe_mode_browsertest.cc",
       "../browser/metrics/variations/variations_safe_mode_end_to_end_browsertest.cc",
-      "../browser/metrics/variations/variations_service_browsertest.cc",
       "../browser/navigation_predictor/anchor_element_preloader_browsertest.cc",
       "../browser/navigation_predictor/navigation_predictor_browsertest.cc",
       "../browser/navigation_predictor/navigation_predictor_preconnect_client_browsertest.cc",
@@ -4647,7 +4644,6 @@ if (!is_android) {
         "../browser/ui/views/media_router/presentation_receiver_window_view_browsertest.cc",
         "../browser/ui/views/omnibox/omnibox_popup_view_views_browsertest.cc",
         "../browser/ui/views/omnibox/omnibox_suggestion_button_row_browsertest.cc",
-        "../browser/ui/views/page_action/pwa_install_view_browsertest.cc",
         "../browser/ui/views/page_action/zoom_view_browsertest.cc",
         "../browser/ui/views/page_info/about_this_site_side_panel_coordinator_browsertest.cc",
         "../browser/ui/views/page_info/merchant_trust_side_panel_coordinator_browsertest.cc",
@@ -4715,6 +4711,7 @@ if (!is_android) {
         "../browser/ui/views/upgrade_notification_controller_browsertest.cc",
         "../browser/ui/views/user_education/help_bubble_factory_views_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_uninstall_dialog_browsertest.cc",
+        "../browser/ui/web_applications/pwa_install_page_action_browsertest.cc",
       ]
       if (enable_dice_support) {
         deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation" ]
@@ -5113,8 +5110,6 @@ if (!is_android) {
         "//chrome/browser/ui/webui/nearby_share:browser_tests",
         "//chrome/browser/ui/webui/signin/ash:browser_tests",
         "//chrome/services/file_util/public/cpp:browser_tests",
-        "//chrome/services/keymaster/public/mojom",
-        "//chrome/services/keymint/public/mojom",
         "//chromeos:test_support",
         "//chromeos/ash/components/assistant:buildflags",
         "//chromeos/ash/components/attestation",
@@ -5183,6 +5178,8 @@ if (!is_android) {
         "//chromeos/ash/services/auth_factor_config",
         "//chromeos/ash/services/cros_healthd/public/cpp:test_support",
         "//chromeos/ash/services/device_sync/public/cpp:test_support",
+        "//chromeos/ash/services/keymaster/public/mojom",
+        "//chromeos/ash/services/keymint/public/mojom",
         "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",
         "//chromeos/ash/services/network_config",
         "//chromeos/ash/services/network_config:in_process_instance",
@@ -7764,6 +7761,7 @@ test("unit_tests") {
       "../browser/ui/views/webauthn/pin_textfield_unittest.cc",
       "../browser/ui/views/webauthn/ring_progress_bar_unittest.cc",
       "../browser/ui/views/webid/account_selection_bubble_view_unittest.cc",
+      "../browser/ui/views/webid/account_selection_view_base_unittest.cc",
       "../browser/ui/views/webid/fedcm_account_selection_view_desktop_unittest.cc",
       "../browser/ui/views/webid/fedcm_modal_dialog_view_unittest.cc",
       "../browser/ui/webauthn/context_menu_helper_unittest.cc",
@@ -9269,7 +9267,10 @@ test("unit_tests") {
       "../browser/policy/developer_tools_policy_handler_unittest.cc",
     ]
 
-    deps += [ "//components/webauthn/core/browser:test_support" ]
+    deps += [
+      "//components/webauthn/core/browser:test_support",
+      "//ui/webui/resources/cr_components/history:mojo_bindings",
+    ]
   }
 
   if (use_gio) {

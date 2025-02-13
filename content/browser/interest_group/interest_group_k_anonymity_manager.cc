@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 
@@ -55,6 +56,10 @@ InterestGroupKAnonymityManager::InProgressQueryState::~InProgressQueryState() =
 void InterestGroupKAnonymityManager::QueryKAnonymityData(
     const blink::InterestGroupKey& interest_group_key,
     const InterestGroupKanonUpdateParameter& k_anon_data) {
+  if (!base::FeatureList::IsEnabled(features::kFledgeQueryKAnonymity)) {
+    return;
+  }
+
   KAnonymityServiceDelegate* k_anonymity_service =
       k_anonymity_service_callback_.Run();
   if (!k_anonymity_service) {

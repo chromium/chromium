@@ -78,6 +78,7 @@
 <translation id="2094648590148273905">Умови використання ОС Chrome Flex</translation>
 <translation id="2094919256425865063">Усе одно вийти з Chrome?</translation>
 <translation id="2106831557840787829">ОС Chrome Flex і <ph name="BEGIN_LINK_LINUX_OSS" />середовище для розробки Linux<ph name="END_LINK_LINUX_OSS" /> працюють завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="2108778574543343055">Вимкнути фоновий режим Chrome для додатків</translation>
 <translation id="2120620239521071941">З цього пристрою буде видалено стільки елементів: <ph name="ITEMS_COUNT" />. Щоб відновити дані пізніше, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Перезапустити, щоб оновити &amp;Chrome</translation>
 <translation id="2123055963409958220">Допоможіть покращити Chrome, надсилаючи звіти про <ph name="BEGIN_LINK" />поточні налаштування<ph name="END_LINK" /></translation>
@@ -139,6 +140,7 @@
 <translation id="2797864378188255696">Коли ви входите на YouTube, у Gmail або інші сервіси Google за допомогою облікового запису <ph name="USER_EMAIL" />, його також можна використовувати для автоматичного входу в Chrome</translation>
 <translation id="2799162042226656283">Ваш вебпереглядач Chrome</translation>
 <translation id="2799223571221894425">Перезапустити</translation>
+<translation id="2818684386420968393">Вимкнути фоновий режим Chrome для додатків</translation>
 <translation id="2825024317344269723">Небезпечний сайт. Вебпереглядач Chrome скасував дозвіл показувати сповіщення.</translation>
 <translation id="2841525013647267359">Перекласти з такої мови:</translation>
 <translation id="2846251086934905009">Сталася помилка. Не вдалося завершити встановлення. Процес було скасовано.</translation>
@@ -348,6 +350,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="5596627076506792578">Інші опції</translation>
 <translation id="5602351063754773347">Chrome радить вилучити його. <ph name="BEGIN_LINK" />Докладніше про підтримувані розширення.<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome додатково захищає вас в Інтернеті</translation>
+<translation id="5649680279845190972">Щоб отримати доступ до своїх розширень і інших даних на всіх комп’ютерах, увійдіть у Chrome</translation>
 <translation id="565744775970812598">Файл <ph name="FILE_NAME" /> може бути небезпечним, тому Chrome заблокував його.</translation>
 <translation id="566568153320186256">Chrome зберігає заряд акумулятора, обмежуючи фонову активність і візуальні ефекти, як-от плавне прокручування й частоту кадрів відео. <ph name="BEGIN_LINK" />Докладніше про режим енергозбереження.<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Очистити дані Chrome у своєму обліковому записі</translation>

@@ -605,7 +605,7 @@ bool IsAccessibilityReducedAnimationsEnabled() {
   return ::features::IsAccessibilityReducedAnimationsEnabled();
 }
 
-bool isAccessibilityOverlayScrollbarEnabled() {
+bool isAccessibilityAlwaysShowScrollbarsEnabled() {
   return ::features::IsOverlayScrollbarOSSettingEnabled();
 }
 
@@ -1047,7 +1047,7 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_ACCESSIBILITY_REDUCED_ANIMATIONS_LABEL},
       {"reducedAnimationsDescription",
        IDS_SETTINGS_ACCESSIBILITY_REDUCED_ANIMATIONS_DESCRIPTION},
-      {"overlayScrollbarLabel",
+      {"alwaysShowScrollbarsLabel",
        IDS_SETTINGS_ACCESSIBILITY_OVERLAY_SCROLLBAR_LABEL},
       {"caretBlinkIntervalLabel", IDS_SETTINGS_CARET_BLINK_INTERVAL_LABEL},
       {"caretBlinkIntervalOff", IDS_SETTINGS_CARET_BLINK_INTERVAL_OFF},
@@ -1601,8 +1601,8 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("isAccessibilityReducedAnimationsEnabled",
                           IsAccessibilityReducedAnimationsEnabled());
 
-  html_source->AddBoolean("isAccessibilityOverlayScrollbarEnabled",
-                          isAccessibilityOverlayScrollbarEnabled());
+  html_source->AddBoolean("isAccessibilityAlwaysShowScrollbarsEnabled",
+                          isAccessibilityAlwaysShowScrollbarsEnabled());
 
   html_source->AddBoolean("isAccessibilityMagnifierFollowsChromeVoxEnabled",
                           IsAccessibilityMagnifierFollowsChromeVoxEnabled());
@@ -1810,9 +1810,9 @@ bool AccessibilitySection::LogMetric(mojom::Setting setting,
           "ChromeOS.Settings.Accessibility.ReducedAnimations.Enabled",
           value.GetBool());
       return true;
-    case mojom::Setting::kOverlayScrollbarEnabled:
+    case mojom::Setting::kAlwaysShowScrollbarsEnabled:
       base::UmaHistogramBoolean(
-          "ChromeOS.Settings.Accessibility.OverlayScrollbar.Enabled",
+          "ChromeOS.Settings.Accessibility.AlwaysShowScrollbars.Enabled",
           value.GetBool());
       return true;
     case mojom::Setting::kOverscrollEnabled:
@@ -1941,7 +1941,7 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kColorCorrectionFilterAmount,
       mojom::Setting::kCaretBlinkInterval,
       mojom::Setting::kReducedAnimationsEnabled,
-      mojom::Setting::kOverlayScrollbarEnabled,
+      mojom::Setting::kAlwaysShowScrollbarsEnabled,
       mojom::Setting::kOverscrollEnabled,
       mojom::Setting::kFlashNotifications,
       mojom::Setting::kFaceGaze,

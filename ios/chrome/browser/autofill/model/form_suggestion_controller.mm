@@ -307,7 +307,11 @@ bool IsStateless() {
       return;
     }
     if (providerIndex == NSNotFound) {
-      [weakSelf onNoSuggestionsAvailable];
+      if (IsStateless() && accessoryViewUpdateBlock) {
+        accessoryViewUpdateBlock(@[], weakSelf);
+      } else if (!IsStateless()) {
+        [weakSelf onNoSuggestionsAvailable];
+      }
       return;
     }
     FormSuggestionController* strongSelf = weakSelf;
@@ -328,6 +332,9 @@ bool IsStateless() {
 }
 
 - (void)onNoSuggestionsAvailable {
+  // Do not call this no suggestions handler when stateless.
+  CHECK(!IsStateless());
+
   // Check the update block hasn't been reset while waiting for suggestions.
   if (!_accessoryViewUpdateBlock) {
     return;
@@ -362,12 +369,14 @@ bool IsStateless() {
     _suggestionState->suggestions = [self copyAndAdjustSuggestions:suggestions];
   }
 
-  if (IsStateless() && completion) {
+  if (IsStateless()) {
     // Use the stateless way for passing suggestions when the feature is
     // enabled.
-    suggestionsCopy =
-        SetParamsAndProviderInSuggestions(suggestionsCopy, params, provider);
-    completion(suggestionsCopy, self);
+    if (completion) {
+      suggestionsCopy =
+          SetParamsAndProviderInSuggestions(suggestionsCopy, params, provider);
+      completion(suggestionsCopy, self);
+    }
   } else {
     // Call the accessory view update block.
     [self updateKeyboard:_suggestionState.get()];
@@ -379,16 +388,8 @@ bool IsStateless() {
   _suggestionState.reset();
 }
 
-- (void)clearSuggestions {
-  // Note that other parts of the suggestionsState are not reset.
-  if (!_suggestionState.get()) {
-    return;
-  }
-  _suggestionState->suggestions = [[NSArray alloc] init];
-  [self updateKeyboard:_suggestionState.get()];
-}
-
 - (void)updateKeyboard:(AutofillSuggestionState*)suggestionState {
+  CHECK(!IsStateless());
   if (!suggestionState) {
     if (_accessoryViewUpdateBlock) {
       _accessoryViewUpdateBlock(nil, self);
@@ -399,6 +400,7 @@ bool IsStateless() {
 }
 
 - (void)updateKeyboardWithSuggestions:(NSArray<FormSuggestion*>*)suggestions {
+  CHECK(!IsStateless());
   if (_accessoryViewUpdateBlock) {
     _accessoryViewUpdateBlock(suggestions, self);
   }

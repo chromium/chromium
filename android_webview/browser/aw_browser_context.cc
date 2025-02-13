@@ -677,7 +677,8 @@ int AwBrowserContext::AllowedPrerenderingCount() const {
   return allowed_prerendering_count_;
 }
 
-void AwBrowserContext::SetAllowedPrerenderingCount(int allowed_count) {
+void AwBrowserContext::SetAllowedPrerenderingCount(JNIEnv* const env,
+                                                   int allowed_count) {
   CHECK_GT(allowed_count, 0);
   allowed_prerendering_count_ = allowed_count;
 }

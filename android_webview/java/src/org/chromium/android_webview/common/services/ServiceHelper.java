@@ -9,7 +9,10 @@ import android.content.Intent;
 import android.content.ReceiverCallNotAllowedException;
 import android.content.ServiceConnection;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Helper methods for working with Services in WebView. */
+@NullMarked
 public class ServiceHelper {
     /**
      * Connects to a Service specified by {@code intent} with {@code flags}. This handles edge cases

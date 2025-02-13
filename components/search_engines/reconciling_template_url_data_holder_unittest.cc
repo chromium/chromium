@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
-#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/search_engines_test_util.h"
@@ -17,9 +16,7 @@
 class ReconcilingTemplateURLDataHolderTest : public testing::Test {
  public:
   ReconcilingTemplateURLDataHolderTest()
-      : holder_(
-            &search_engines_test_environment_.pref_service(),
-            &search_engines_test_environment_.search_engine_choice_service()) {}
+      : holder_(search_engines_test_environment_.prepopulate_data_resolver()) {}
 
   void SetUp() override {
     // Ensure Top Search Engine definitions consistently reported for the US.

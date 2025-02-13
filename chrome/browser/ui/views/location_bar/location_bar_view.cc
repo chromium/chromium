@@ -1352,7 +1352,10 @@ void LocationBarView::RefreshPageActionContainerView() {
   page_actions::PageActionController* controller = nullptr;
   if (browser_) {
     if (tabs::TabInterface* active_tab = browser_->GetActiveTabInterface()) {
-      controller = active_tab->GetTabFeatures()->page_action_controller();
+      // Tab features may be null while the tab is being destroyed.
+      if (tabs::TabFeatures* tab_features = active_tab->GetTabFeatures()) {
+        controller = tab_features->page_action_controller();
+      }
     }
   }
   page_action_container_->SetController(controller);

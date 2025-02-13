@@ -8,17 +8,18 @@
 
 #include "base/check.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/test/test_constants.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_types.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/enterprise/connectors/test/ash/management_context_mixin_ash.h"
 #else
 #include "chrome/browser/enterprise/connectors/test/browser/management_context_mixin_browser.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace enterprise_connectors::test {
 
@@ -27,13 +28,13 @@ std::unique_ptr<ManagementContextMixin> ManagementContextMixin::Create(
     InProcessBrowserTestMixinHost* host,
     InProcessBrowserTest* test_base,
     ManagementContext management_context) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<ManagementContextMixinAsh>(
       host, test_base, std::move(management_context));
 #else
   return std::make_unique<ManagementContextMixinBrowser>(
       host, test_base, std::move(management_context));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 ManagementContextMixin::ManagementContextMixin(

@@ -10,22 +10,16 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/template_url_data.h"
-
-class PrefService;
-namespace search_engines {
-class SearchEngineChoiceService;
-}
+#include "components/search_engines/template_url_prepopulate_data_resolver.h"
 
 // TemplateURLData holder that reconciles (where appropriate) supplied Search
 // Engine definitions with Chrome built-in definitions.
 // Reconciliation aims to fill gaps in partial TemplateURLData definitions.
 class ReconcilingTemplateURLDataHolder {
  public:
-  ReconcilingTemplateURLDataHolder(
-      PrefService* pref_service,
-      search_engines::SearchEngineChoiceService* search_engine_choice_service);
+  explicit ReconcilingTemplateURLDataHolder(
+      TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver);
 
   ~ReconcilingTemplateURLDataHolder();
 
@@ -70,9 +64,7 @@ class ReconcilingTemplateURLDataHolder {
       int prepopulate_id) const;
 
  private:
-  const raw_ptr<PrefService> pref_service_;
-  const raw_ptr<search_engines::SearchEngineChoiceService>
-      search_engine_choice_service_;
+  raw_ref<TemplateURLPrepopulateData::Resolver> prepopulate_data_resolver_;
   std::unique_ptr<TemplateURLData> search_engine_;
 };
 

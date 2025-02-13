@@ -158,9 +158,16 @@ struct SceneStateData {
     return;
   }
 
-  WebStateList* webStateList =
-      sceneState.browserProviderInterface.mainBrowserProvider.browser
-          ->GetWebStateList();
+  Browser* mainBrowser =
+      sceneState.browserProviderInterface.mainBrowserProvider.browser;
+  if (!mainBrowser) {
+    return;
+  }
+
+  WebStateList* webStateList = mainBrowser->GetWebStateList();
+  if (!webStateList) {
+    return;
+  }
 
   web::WebState* activeMainWebState = webStateList->GetActiveWebState();
 

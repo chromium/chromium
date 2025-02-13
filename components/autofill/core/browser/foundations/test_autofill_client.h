@@ -24,7 +24,7 @@
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/test_votes_uploader.h"
-#include "components/autofill/core/browser/data_manager/entities/test_entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/entities/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_quality/addresses/test_address_normalizer.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -136,11 +136,7 @@ class TestAutofillClientTemplate : public T {
   }
 
   EntityDataManager* GetEntityDataManager() override {
-    if (!test_entity_data_manager_ &&
-        base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
-      test_entity_data_manager_ = std::make_unique<TestEntityDataManager>();
-    }
-    return test_entity_data_manager_.get();
+    return entity_data_manager_.get();
   }
 
   MockAutofillOptimizationGuide* GetAutofillOptimizationGuide() const override {
@@ -450,8 +446,8 @@ class TestAutofillClientTemplate : public T {
   }
 
   void set_entity_data_manager(
-      std::unique_ptr<TestEntityDataManager> test_entity_data_manager) {
-    test_entity_data_manager_ = std::move(test_entity_data_manager);
+      std::unique_ptr<EntityDataManager> entity_data_manager) {
+    entity_data_manager_ = std::move(entity_data_manager);
   }
 
   void set_payments_autofill_client(
@@ -572,7 +568,7 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<TestStrikeDatabase> test_strike_database_;
 
   std::unique_ptr<TestPersonalDataManager> test_personal_data_manager_;
-  std::unique_ptr<TestEntityDataManager> test_entity_data_manager_;
+  std::unique_ptr<EntityDataManager> entity_data_manager_;
   // The below objects must be destroyed before `TestPersonalDataManager`
   // because they keep a reference to it.
   std::unique_ptr<payments::TestPaymentsAutofillClient>

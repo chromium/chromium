@@ -1099,12 +1099,13 @@ TEST_P(ParkableStringTest, ReportMemoryDump) {
   EXPECT_THAT(dump->entries(), Contains(Eq(ByRef(overhead))));
 
   MemoryAllocatorDump::Entry metadata("metadata_size", "bytes",
-                                      2 * kActualSize);
+                                      2 * kActualSize + sizeof(StringImpl));
   EXPECT_THAT(dump->entries(), Contains(Eq(ByRef(metadata))));
 
   MemoryAllocatorDump::Entry savings(
       "savings_size", "bytes",
-      2 * kStringSize - (kStringSize + 2 * kCompressedSize + 2 * kActualSize));
+      2 * kStringSize - (kStringSize + 2 * kCompressedSize + 2 * kActualSize +
+                         sizeof(StringImpl)));
   EXPECT_THAT(dump->entries(), Contains(Eq(ByRef(savings))));
 
   MemoryAllocatorDump::Entry on_disk("on_disk_size", "bytes", 0);
@@ -1152,6 +1153,7 @@ TEST_P(ParkableStringTest, MemoryFootprintForDump) {
 
   // Compressed and uncompressed data.
   memory_footprint = kActualSize + parkable1.Impl()->compressed_size() +
+                     sizeof(StringImpl) +
                      parkable1.Impl()->CharactersSizeInBytes();
   EXPECT_EQ(memory_footprint, parkable1.Impl()->MemoryFootprintForDump());
 
@@ -1160,8 +1162,8 @@ TEST_P(ParkableStringTest, MemoryFootprintForDump) {
   EXPECT_EQ(memory_footprint, parkable2.Impl()->MemoryFootprintForDump());
 
   // Short string, no metadata.
-  memory_footprint =
-      sizeof(ParkableStringImpl) + parkable3.Impl()->CharactersSizeInBytes();
+  memory_footprint = sizeof(ParkableStringImpl) + sizeof(StringImpl) +
+                     parkable3.Impl()->CharactersSizeInBytes();
   EXPECT_EQ(memory_footprint, parkable3.Impl()->MemoryFootprintForDump());
 }
 

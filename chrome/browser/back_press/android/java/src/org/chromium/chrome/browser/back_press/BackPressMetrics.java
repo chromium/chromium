@@ -238,6 +238,6 @@ public class BackPressMetrics {
                 ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                         ChromeFeatureList.BACK_FORWARD_TRANSITIONS,
                         "max_fallback_delay_ntp_smooth_transition",
-                        1000);
+                        1500);
     }
 }

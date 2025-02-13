@@ -527,6 +527,7 @@ void ReportViolationForCheckSource(
     case CSPDirectiveName::FrameSrc:
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::ReportURI:
+    case CSPDirectiveName::RequireSRIFor:
     case CSPDirectiveName::RequireTrustedTypesFor:
     case CSPDirectiveName::Sandbox:
     case CSPDirectiveName::TreatAsPublicAddress:

@@ -89,6 +89,20 @@ enum class CancelationReason {
   kFailed,
 };
 
+// Name for `Signin.IOSIdentityAvailableInProfile` histogram.
+const char kIOSIdentityAvailableInProfileHistogram[] =
+    "Signin.IOSIdentityAvailableInProfile";
+
+// Enum for `Signin.IOSIdentityAvailableInProfile` histogram.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class IOSIdentityAvailableInProfile : int {
+  kNotAvailableInProfileMapperNotAvailableInIdentityManager = 0,
+  kNotAvailableInProfileMapperAvailableInIdentityManager = 1,
+  kAvailableInProfileMapperNotAvailableInIdentityManager = 2,
+  kAvailableInProfileMapperAvailableInIdentityManager = 3,
+  kMaxValue = kAvailableInProfileMapperAvailableInIdentityManager,
+};
+
 // Returns `true` if any of the following holds:
 // * we are at the FRE step,
 // * there is already a profile that has been fully initialized for gaia_id, or
@@ -123,6 +137,57 @@ bool IsBrowsingDataMigrationDisabledByPolicy(
           pref_service->GetInteger(
               prefs::kProfileSeparationDataMigrationSettings) ==
               policy::ALWAYS_SEPARATE);
+}
+
+// Returns if `identity` is available by AccountProfileMapper and if it is
+// available by IdentityManager.
+IOSIdentityAvailableInProfile IdentityAvailableInProfileStatus(
+    NSString* gaia_id,
+    signin::IdentityManager* identity_manager,
+    std::string_view profile_name) {
+  bool is_identity_available_in_profile_mapper = false;
+  AccountProfileMapper::IdentityIteratorCallback callback = base::BindRepeating(
+      [](BOOL* isIdentityAvailableInProfileMapper,
+         NSString* signinIdentityGaiaID, id<SystemIdentity> identity) {
+        *isIdentityAvailableInProfileMapper =
+            [identity.gaiaID isEqualToString:signinIdentityGaiaID];
+        return *isIdentityAvailableInProfileMapper
+                   ? AccountProfileMapper::IteratorResult::kInterruptIteration
+                   : AccountProfileMapper::IteratorResult::kContinueIteration;
+      },
+      &is_identity_available_in_profile_mapper, gaia_id);
+  GetApplicationContext()->GetAccountProfileMapper()->IterateOverIdentities(
+      callback, profile_name);
+  std::vector<CoreAccountInfo> accounts_in_profile =
+      identity_manager->GetAccountsWithRefreshTokens();
+  bool is_identity_available_in_identity_manager = base::Contains(
+      accounts_in_profile, GaiaId(gaia_id), &CoreAccountInfo::gaia);
+  if (!is_identity_available_in_profile_mapper &&
+      !is_identity_available_in_identity_manager) {
+    return IOSIdentityAvailableInProfile::
+        kNotAvailableInProfileMapperNotAvailableInIdentityManager;
+  } else if (is_identity_available_in_profile_mapper &&
+             !is_identity_available_in_identity_manager) {
+    return IOSIdentityAvailableInProfile::
+        kAvailableInProfileMapperNotAvailableInIdentityManager;
+  } else if (!is_identity_available_in_profile_mapper &&
+             is_identity_available_in_identity_manager) {
+    return IOSIdentityAvailableInProfile::
+        kNotAvailableInProfileMapperAvailableInIdentityManager;
+  }
+  return IOSIdentityAvailableInProfile::
+      kAvailableInProfileMapperAvailableInIdentityManager;
+}
+
+// Records `Signin.IOSIdentityAvailableInProfile` histogram.
+void RecordIOSIdentityAvailableInProfile(
+    NSString* gaia_id,
+    signin::IdentityManager* identity_manager,
+    std::string_view profile_name) {
+  IOSIdentityAvailableInProfile identity_available =
+      IdentityAvailableInProfileStatus(gaia_id, identity_manager, profile_name);
+  base::UmaHistogramEnumeration(kIOSIdentityAvailableInProfileHistogram,
+                                identity_available);
 }
 
 }  // namespace
@@ -513,13 +578,15 @@ bool IsBrowsingDataMigrationDisabledByPolicy(
 // If the identity is assigned to the current profile this step is a no-op.
 - (void)switchProfileIfNeededStep {
   CHECK(!_didSwitchProfile);
+  ProfileIOS* profile = [self originalProfile];
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(profile);
+  RecordIOSIdentityAvailableInProfile(_identityToSignIn.gaiaID, identityManager,
+                                      profile->GetProfileName());
   if (!AreSeparateProfilesForManagedAccountsEnabled()) {
     [self continueFlow];
     return;
   }
-  ProfileIOS* profile = [self originalProfile];
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(profile);
   std::vector<AccountInfo> accountsOnDevice =
       identityManager->GetAccountsOnDevice();
   BOOL isValidIdentityOnDevice = base::Contains(

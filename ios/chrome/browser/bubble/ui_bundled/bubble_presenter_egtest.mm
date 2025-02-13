@@ -98,6 +98,7 @@ void ReloadFromOmnibox() {
           isRunningTest:@selector
           (testLensOverlayEntrypointTipDismissedWhenOmniboxPositionChanged)]) {
     config.features_enabled.push_back(kEnableLensOverlay);
+    config.features_enabled.push_back(kLensOverlayEnableLocationBarEntrypoint);
   }
 
   return config;

@@ -8,21 +8,21 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import './shared_style.css.js';
 import './history_item.js';
 
+import type {HistoryEntry, HistoryQuery, PageCallbackRouter, PageHandlerRemote, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {BrowserService} from './browser_service.js';
 import {BrowserServiceImpl} from './browser_service.js';
 import {BROWSING_GAP_TIME} from './constants.js';
-import type {HistoryEntry, HistoryQuery, QueryState} from './externs.js';
 import type {HistoryItemElement} from './history_item.js';
 import {getTemplate} from './history_list.html.js';
 
@@ -56,7 +56,7 @@ declare global {
   }
 }
 
-const HistoryListElementBase = WebUiListenerMixin(I18nMixin(PolymerElement));
+const HistoryListElementBase = I18nMixin(PolymerElement);
 
 export class HistoryListElement extends HistoryListElementBase {
   static get is() {
@@ -124,10 +124,15 @@ export class HistoryListElement extends HistoryListElementBase {
   }
 
   private historyData_: HistoryEntry[];
+  private browserService_: BrowserService = BrowserServiceImpl.getInstance();
+  private callbackRouter_: PageCallbackRouter =
+      BrowserServiceImpl.getInstance().callbackRouter;
   private canDeleteHistory_: boolean =
       loadTimeData.getBoolean('allowDeletingHistory');
   private actionMenuModel_: ActionMenuModel|null = null;
   private lastOffsetHeight_: number = 0;
+  private pageHandler_: PageHandlerRemote =
+      BrowserServiceImpl.getInstance().handler;
   private resizeObserver_: ResizeObserver = new ResizeObserver(() => {
     if (this.lastOffsetHeight_ === 0) {
       this.lastOffsetHeight_ = this.scrollTarget.offsetHeight;
@@ -151,11 +156,14 @@ export class HistoryListElement extends HistoryListElementBase {
   queryState: QueryState;
   scrollTarget: HTMLElement = document.documentElement;
   scrollOffset: number = 0;
+  private onHistoryDeletedListenerId_: number|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
     this.setAttribute('aria-roledescription', this.i18n('ariaRoleDescription'));
-    this.addWebUiListener('history-deleted', () => this.onHistoryDeleted_());
+    this.onHistoryDeletedListenerId_ =
+        this.callbackRouter_.onHistoryDeleted.addListener(
+            this.onHistoryDeleted_.bind(this));
   }
 
   override ready() {
@@ -167,6 +175,13 @@ export class HistoryListElement extends HistoryListElementBase {
     this.addEventListener('open-menu', this.onOpenMenu_);
     this.addEventListener(
         'remove-bookmark-stars', e => this.onRemoveBookmarkStars_(e));
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    assert(this.onHistoryDeletedListenerId_);
+    this.callbackRouter_.removeListener(this.onHistoryDeletedListenerId_);
+    this.onHistoryDeletedListenerId_ = null;
   }
 
   private fire_(eventName: string, detail?: any) {
@@ -300,10 +315,9 @@ export class HistoryListElement extends HistoryListElementBase {
       return;
     }
 
-    const browserService = BrowserServiceImpl.getInstance();
-    browserService.recordAction('RemoveSelected');
+    this.browserService_.recordAction('RemoveSelected');
     if (this.queryState.searchTerm !== '') {
-      browserService.recordAction('SearchResultRemove');
+      this.browserService_.recordAction('SearchResultRemove');
     }
     this.$.dialog.get().showModal();
 
@@ -404,7 +418,7 @@ export class HistoryListElement extends HistoryListElementBase {
   // Event listeners:
 
   private onDialogConfirmClick_() {
-    BrowserServiceImpl.getInstance().recordAction('ConfirmRemoveSelected');
+    this.browserService_.recordAction('ConfirmRemoveSelected');
 
     this.deleteSelected_();
     const dialog = this.$.dialog.getIfExists();
@@ -413,7 +427,7 @@ export class HistoryListElement extends HistoryListElementBase {
   }
 
   private onDialogCancelClick_() {
-    BrowserServiceImpl.getInstance().recordAction('CancelRemoveSelected');
+    this.browserService_.recordAction('CancelRemoveSelected');
 
     const dialog = this.$.dialog.getIfExists();
     assert(dialog);
@@ -466,7 +480,7 @@ export class HistoryListElement extends HistoryListElementBase {
   }
 
   private onMoreFromSiteClick_() {
-    BrowserServiceImpl.getInstance().recordAction('EntryMenuShowMoreFromSite');
+    this.browserService_.recordAction('EntryMenuShowMoreFromSite');
 
     assert(this.$.sharedMenu.getIfExists());
     this.fire_(
@@ -482,19 +496,17 @@ export class HistoryListElement extends HistoryListElementBase {
                                   }));
 
     this.pendingDelete = true;
-    return BrowserServiceImpl.getInstance().removeVisits(removalList);
+    return this.pageHandler_.removeVisits(removalList);
   }
 
   private onRemoveBookmarkClick_() {
-    const browserService = BrowserServiceImpl.getInstance();
-    browserService.removeBookmark(this.actionMenuModel_!.item.url);
+    this.pageHandler_.removeBookmark(this.actionMenuModel_!.item.url);
     this.fire_('remove-bookmark-stars', this.actionMenuModel_!.item.url);
     this.closeMenu_();
   }
 
   private onRemoveFromHistoryClick_() {
-    const browserService = BrowserServiceImpl.getInstance();
-    browserService.recordAction('EntryMenuRemoveFromHistory');
+    this.browserService_.recordAction('EntryMenuRemoveFromHistory');
 
     assert(!this.pendingDelete);
     assert(this.$.sharedMenu.getIfExists());

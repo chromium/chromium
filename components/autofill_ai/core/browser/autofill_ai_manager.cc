@@ -107,7 +107,7 @@ std::vector<autofill::EntityInstance> GetPossibleEntitiesFromSubmittedForm(
 
     section_to_entity_types_attributes[field->section()][field_attribute_type
                                                              ->entity_type()]
-        .emplace_back(*field_attribute_type, base::UTF16ToUTF8(value),
+        .emplace_back(*field_attribute_type, value,
                       autofill::AttributeInstance::Context{});
   }
 
@@ -303,18 +303,13 @@ void AutofillAiManager::OnFormSeen(const autofill::FormStructure& form) {
   if (!entity_manager) {
     return;
   }
-  entity_manager->LoadEntityInstances(base::BindOnce(
-      [](base::WeakPtr<AutofillAiManager> self, autofill::FormGlobalId form_id,
-         std::vector<autofill::EntityInstance> entities) {
-        if (!self || entities.empty()) {
-          return;
-        }
-        // TODO(crbug.com/389629573): We should check whether any of `entities`
-        // can actually fill a field in the `form`, not only whether entities
-        // exist.
-        self->logger_.OnFormHasDataToFill(form_id);
-      },
-      GetWeakPtr(), form.global_id()));
+  if (entity_manager->GetEntityInstances().empty()) {
+    return;
+  }
+  // TODO(crbug.com/389629573): We should check whether any of `entities`
+  // can actually fill a field in the `form`, not only whether entities
+  // exist.
+  logger_.OnFormHasDataToFill(form.global_id());
 }
 
 void AutofillAiManager::OnDidFillSuggestion(autofill::FormGlobalId form_id) {
@@ -348,49 +343,31 @@ void AutofillAiManager::MaybeImportForm(
     return;
   }
 
-  entity_manager->LoadEntityInstances(base::BindOnce(
-      [](base::WeakPtr<AutofillAiManager> self,
-         std::unique_ptr<autofill::FormStructure> form,
-         std::vector<autofill::EntityInstance> entity_instances_from_form,
-         base::OnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
-                                 bool autofill_ai_shows_bubble)>
-             autofill_callback,
-         std::vector<autofill::EntityInstance> current_entities) {
-        if (!self) {
-          std::move(autofill_callback).Run(std::move(form), false);
-          return;
-        }
+  std::vector<autofill::EntityInstance> current_entities =
+      entity_manager->GetEntityInstances();
+  std::ranges::sort(entity_instances_from_form,
+                    autofill::EntityInstance::ImportOrder);
 
-        std::ranges::sort(entity_instances_from_form,
-                          autofill::EntityInstance::ImportOrder);
-
-        for (autofill::EntityInstance& entity : entity_instances_from_form) {
-          if (ShouldShowNewEntitySavePrompt(entity, current_entities)) {
-            self->client_->ShowSaveAutofillAiBubble(
-                std::move(entity),
-                BindOnce(&AutofillAiManager::OnSavePromptAcceptance, self,
-                         AutofillAiManager::EntityUpdateType::kSave));
-            std::move(autofill_callback).Run(std::move(form), true);
-            return;
-          } else if (std::optional<autofill::EntityInstance>
-                         maybe_entity_to_update =
-                             MaybeUpdateEntity(entity, current_entities)) {
-            self->client_->ShowSaveAutofillAiBubble(
-                std::move(*maybe_entity_to_update),
-                BindOnce(&AutofillAiManager::OnSavePromptAcceptance, self,
-                         AutofillAiManager::EntityUpdateType::kUpdate));
-            std::move(autofill_callback).Run(std::move(form), true);
-            return;
-          }
-        }
-        std::move(autofill_callback).Run(std::move(form), false);
-      },
-      GetWeakPtr(), std::move(form), std::move(entity_instances_from_form),
-      std::move(autofill_callback)));
+  for (autofill::EntityInstance& entity : entity_instances_from_form) {
+    if (ShouldShowNewEntitySavePrompt(entity, current_entities)) {
+      client_->ShowSaveAutofillAiBubble(
+          std::move(entity),
+          BindOnce(&AutofillAiManager::OnSavePromptAcceptance, GetWeakPtr()));
+      std::move(autofill_callback).Run(std::move(form), true);
+      return;
+    } else if (std::optional<autofill::EntityInstance> maybe_entity_to_update =
+                   MaybeUpdateEntity(entity, current_entities)) {
+      client_->ShowSaveAutofillAiBubble(
+          std::move(*maybe_entity_to_update),
+          BindOnce(&AutofillAiManager::OnSavePromptAcceptance, GetWeakPtr()));
+      std::move(autofill_callback).Run(std::move(form), true);
+      return;
+    }
+  }
+  std::move(autofill_callback).Run(std::move(form), false);
 }
 
 void AutofillAiManager::OnSavePromptAcceptance(
-    AutofillAiManager::EntityUpdateType update_type,
     AutofillAiClient::SavePromptAcceptanceResult result) {
   if (!result.prompt_was_accepted) {
     return;
@@ -401,11 +378,7 @@ void AutofillAiManager::OnSavePromptAcceptance(
     return;
   }
   CHECK(result.entity);
-  if (update_type == AutofillAiManager::EntityUpdateType::kSave) {
-    entity_manager->AddEntityInstance(*result.entity);
-  } else if (update_type == AutofillAiManager::EntityUpdateType::kUpdate) {
-    entity_manager->UpdateEntityInstance(*result.entity);
-  }
+  entity_manager->AddOrUpdateEntityInstance(*result.entity);
 }
 
 void AutofillAiManager::GetSuggestions(autofill::FormGlobalId form_global_id,
@@ -417,47 +390,40 @@ void AutofillAiManager::GetSuggestions(autofill::FormGlobalId form_global_id,
     return std::move(callback).Run({});
   }
 
-  entity_manager->LoadEntityInstances(base::BindOnce(
-      [](base::WeakPtr<AutofillAiManager> self,
-         autofill::FormGlobalId form_global_id,
-         autofill::FieldGlobalId field_global_id, bool is_manual_fallback,
-         GetSuggestionsCallback callback,
-         std::vector<autofill::EntityInstance> entities) {
-        if (!self || entities.empty()) {
-          std::move(callback).Run({});
-          return;
-        }
+  const std::vector<autofill::EntityInstance>& entities =
+      entity_manager->GetEntityInstances();
+  if (entities.empty()) {
+    std::move(callback).Run({});
+    return;
+  }
 
-        autofill::FormStructure* form_structure =
-            self->client_->GetCachedFormStructure(form_global_id);
-        if (!form_structure) {
-          std::move(callback).Run({});
-          return;
-        }
+  autofill::FormStructure* form_structure =
+      client_->GetCachedFormStructure(form_global_id);
+  if (!form_structure) {
+    std::move(callback).Run({});
+    return;
+  }
 
-        const autofill::AutofillField* autofill_field =
-            form_structure->GetFieldById(field_global_id);
-        if (!autofill_field) {
-          std::move(callback).Run({});
-          return;
-        }
+  const autofill::AutofillField* autofill_field =
+      form_structure->GetFieldById(field_global_id);
+  if (!autofill_field) {
+    std::move(callback).Run({});
+    return;
+  }
 
-        if (is_manual_fallback &&
-            !autofill_field->GetAutofillAiServerTypePredictions()) {
-          // TODO(crbug.com/389629573): Store `form`, `field` and trigger LLM.
-          // Once we have LLM responses we need to rebuild the suggestions and
-          // reshow the popup, either via `AutofillClient` or exposing the
-          // update method from `AutofillExternalDelegate.
-          std::move(callback).Run({CreateLoadingSuggestions()});
-          return;
-        }
+  if (is_manual_fallback &&
+      !autofill_field->GetAutofillAiServerTypePredictions()) {
+    // TODO(crbug.com/389629573): Store `form`, `field` and trigger LLM.
+    // Once we have LLM responses we need to rebuild the suggestions and
+    // reshow the popup, either via `AutofillClient` or exposing the
+    // update method from `AutofillExternalDelegate.
+    std::move(callback).Run({CreateLoadingSuggestions()});
+    return;
+  }
 
-        CHECK(autofill_field->GetAutofillAiServerTypePredictions());
-        std::move(callback).Run(CreateFillingSuggestions(
-            *form_structure, field_global_id, entities));
-      },
-      GetWeakPtr(), form_global_id, field_global_id, is_manual_fallback,
-      std::move(callback)));
+  CHECK(autofill_field->GetAutofillAiServerTypePredictions());
+  std::move(callback).Run(
+      CreateFillingSuggestions(*form_structure, field_global_id, entities));
 }
 
 bool AutofillAiManager::ShouldDisplayIph(

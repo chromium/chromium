@@ -81,11 +81,13 @@ void AuthenticatorRequestDialogView::ReplaceCurrentSheetWith(
     std::unique_ptr<AuthenticatorRequestSheetView> new_sheet) {
   DCHECK(new_sheet);
 
-  delete sheet_;
-  DCHECK(children().empty());
+  if (sheet_) {
+    RemoveChildViewT(sheet_);
+  }
+  CHECK(children().empty());
 
   sheet_ = new_sheet.get();
-  AddChildView(new_sheet.release());
+  AddChildView(std::move(new_sheet));
 
   UpdateUIForCurrentSheet();
 }

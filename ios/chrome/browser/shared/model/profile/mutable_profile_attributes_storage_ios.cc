@@ -33,11 +33,6 @@ MutableProfileAttributesStorageIOS::~MutableProfileAttributesStorageIOS() =
 
 void MutableProfileAttributesStorageIOS::AddProfile(
     std::string_view profile_name) {
-  // Inserts the profile name in sorted position.
-  auto iterator = std::ranges::lower_bound(sorted_keys_, profile_name);
-  CHECK(iterator == sorted_keys_.end() || *iterator != profile_name);
-  sorted_keys_.insert(iterator, std::string(profile_name));
-
   // Inserts an empty dictionary for the profile in the preferences.
   {
     ScopedDictPrefUpdate update(prefs_, prefs::kProfileInfoCache);
@@ -46,18 +41,14 @@ void MutableProfileAttributesStorageIOS::AddProfile(
   }
 
   // Update the number of created profile.
-  prefs_->SetInteger(prefs::kNumberOfProfiles, sorted_keys_.size());
+  prefs_->SetInteger(prefs::kNumberOfProfiles,
+                     prefs_->GetDict(prefs::kProfileInfoCache).size());
 }
 
 void MutableProfileAttributesStorageIOS::MarkProfileForDeletion(
     std::string_view profile_name) {
   // The personal profile must always exist, and thus mustn't be deleted.
   DCHECK_NE(profile_name, GetPersonalProfileName());
-
-  // Remove the profile name from the sorted dictionary.
-  auto iterator = std::ranges::find(sorted_keys_, profile_name);
-  CHECK(iterator != sorted_keys_.end() && *iterator == profile_name);
-  sorted_keys_.erase(iterator);
 
   // Detach any scene that may still be referencing this profile.
   {
@@ -73,9 +64,6 @@ void MutableProfileAttributesStorageIOS::MarkProfileForDeletion(
     *update = std::move(dict);
   }
 
-  // Update the number of created profile.
-  prefs_->SetInteger(prefs::kNumberOfProfiles, sorted_keys_.size());
-
   // Remove the information about the profile from the preferences.
   {
     ScopedDictPrefUpdate update(prefs_, prefs::kProfileInfoCache);
@@ -87,6 +75,10 @@ void MutableProfileAttributesStorageIOS::MarkProfileForDeletion(
     ScopedListPrefUpdate update(prefs_, prefs::kProfilesToRemove);
     update->Append(profile_name);
   }
+
+  // Update the number of created profile.
+  prefs_->SetInteger(prefs::kNumberOfProfiles,
+                     prefs_->GetDict(prefs::kProfileInfoCache).size());
 }
 
 void MutableProfileAttributesStorageIOS::ProfileDeletionComplete(

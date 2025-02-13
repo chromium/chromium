@@ -467,7 +467,10 @@ class PLATFORM_EXPORT ResourceFetcher
                                       ResourceRequestBlockedReason,
                                       ResourceClient*);
 
-  Resource* MatchPreload(const FetchParameters& params, ResourceType);
+  Resource* MatchPreload(
+      const FetchParameters& params,
+      ResourceType,
+      HeapHashMap<PreloadKey, Member<Resource>>::iterator it);
   void PrintPreloadMismatch(Resource*, Resource::MatchStatus);
   void InsertAsPreloadIfNecessary(Resource*,
                                   const FetchParameters& params,

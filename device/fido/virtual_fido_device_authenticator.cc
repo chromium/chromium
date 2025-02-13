@@ -41,7 +41,8 @@ void VirtualFidoDeviceAuthenticator::GetPlatformCredentialInfoForRequest(
                              }))) {
       credentials.emplace_back(
           AuthenticatorType::kOther, request.rp_id, registration.first,
-          registration.second.user.value_or(PublicKeyCredentialUserEntity()));
+          registration.second.user.value_or(PublicKeyCredentialUserEntity()),
+          std::nullopt);
     }
   }
   FidoRequestHandlerBase::RecognizedCredential has_credentials =

@@ -3780,6 +3780,21 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    public void testChangingModelClearsTabHoverState() {
+        // Initialize hover card, then hover on a tab.
+        initializeTabHoverTest();
+        mStripLayoutHelper.updateLastHoveredTab(
+                mStripLayoutHelper.getStripLayoutTabsForTesting()[0]);
+
+        // Now switch to a different tab model.
+        mStripLayoutHelper.tabModelSelected(false);
+
+        // Assert that the hover card view is closed and the last hovered tab is null.
+        verify(mTabHoverCardView, times(1)).hide();
+        assertNull(mStripLayoutHelper.getLastHoveredTab());
+    }
+
+    @Test
     public void testFlingLeft() {
         // Arrange
         initializeTest(false, false, 11, 12);

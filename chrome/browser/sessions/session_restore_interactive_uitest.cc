@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -27,10 +26,10 @@
 #include "content/public/test/browser_test_utils.h"
 #include "ui/views/widget/widget_interactive_uitest_utils.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class SessionRestoreInteractiveTest : public InProcessBrowserTest {
  public:
@@ -142,11 +141,9 @@ class SessionRestoreInteractiveTest : public InProcessBrowserTest {
   GURL url1_;
 };
 
-// TODO(https://crbug.com/1152160): Enable FocusOnLaunch on Lacros builds.
 // TODO(crbug.com/40814457): Flaky on Linux ASAN/TSAN builders.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    (BUILDFLAG(IS_LINUX) &&          \
-     (defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)))
+#if BUILDFLAG(IS_LINUX) && \
+    (defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER))
 #define MAYBE_FocusOnLaunch DISABLED_FocusOnLaunch
 #else
 #define MAYBE_FocusOnLaunch FocusOnLaunch
@@ -169,8 +166,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest, MAYBE_FocusOnLaunch) {
                   ->HasFocus());
 }
 
-// TODO(https://crbug.com/1152160): Enable RestoreMinimizedWindow on Lacros
-// builds.
 // TODO(crbug.com/40818881): Flaky failures.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_RestoreMinimizedWindow DISABLED_RestoreMinimizedWindow
@@ -229,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
   QuitMultiWindowBrowserAndRestore(profile);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class SessionRestoreAshInteractiveTest : public SessionRestoreInteractiveTest {
  protected:
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -309,4 +304,4 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreAshInteractiveTest, MultiWindowTabLoad) {
   // "window 1" should be in occluded state after load.
   EXPECT_EQ(content::Visibility::OCCLUDED, contents_window1->GetVisibility());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)

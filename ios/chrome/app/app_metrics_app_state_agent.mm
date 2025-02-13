@@ -38,6 +38,8 @@ NSString* const kDeferredInitializationBlocksComplete =
 
   if (!_firstSceneHasConnected) {
     _firstSceneHasConnected = YES;
+    self.appState.startupInformation.firstSceneConnectionTime =
+        base::TimeTicks::Now();
 
     const AppInitStage initStage = self.appState.initStage;
     if (initStage >= AppInitStage::kBrowserObjectsForBackgroundHandlers) {

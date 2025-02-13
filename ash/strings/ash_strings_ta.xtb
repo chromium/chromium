@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
+<translation id="1000127192436081677">விரைவுப் பகிர்தலை இயக்கும்/முடக்கும். விரைவுப் பகிர்தல் <ph name="QUICK_SHARE_STATE" />.</translation>
 <translation id="1012876632442809908">USB-C சாதனம் (முன்பக்கப் போர்ட்)</translation>
 <translation id="1013923882670373915">புளூடூத் சாதனம் "<ph name="DEVICE_NAME" />", இணைப்பதற்கான அனுமதியை விரும்புகிறது. அந்தச் சாதனத்தில் இந்த PIN குறியீட்டை உள்ளிடவும்: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285"><ph name="APP_NAME" />, ChromeOS மற்றும் இருப்பிட அனுமதி வழங்கப்பட்டுள்ள அனைத்து ஆப்ஸும் இணையதளங்களும் வைஃபை, மொபைல் நெட்வொர்க் ஆகியவற்றின் இருப்பிடத்தைப் பயன்படுத்த இது அனுமதிக்கும்.</translation>
@@ -154,6 +155,7 @@
 <translation id="1469148162491666137">இது <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ஆகிய ஆப்ஸுக்கும், கேமராவையும் மைக்ரோஃபோனையும் பயன்படுத்த அனுமதி உள்ள பிற ஆப்ஸ், இணையதளங்கள் ஆகியவற்றுக்கும் அணுகலை வழங்கும். இணையப் பக்கத்தை ரெஃப்ரெஷ் செய்ய வேண்டியிருக்கலாம் அல்லது ஆப்ஸை மீண்டும் தொடங்க வேண்டியிருக்கலாம்.</translation>
 <translation id="147310119694673958">மொபைல் பேட்டரி <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">ஹாட்ஸ்பாட்டை இயக்கும்/முடக்கும். ஹாட்ஸ்பாட் இயக்கப்பட்டுள்ளது, ஒரு சாதனம் இணைக்கப்பட்டுள்ளது.</translation>
+<translation id="1479685784053141667">தொடர்பை உருவாக்கு</translation>
 <translation id="1479909375538722835">மிதக்கும் அணுகல்தன்மை மெனு</translation>
 <translation id="1483493594462132177">அனுப்பு</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -464,6 +466,7 @@
 <translation id="2598725286293895280">டெஸ்க்கில் ஆதரிக்கப்படாத ஆப்ஸ் உள்ளன</translation>
 <translation id="2607678425161541573">ஆன்லைன் உள்நுழைவு அவசியம்</translation>
 <translation id="2612072250312279703">செயல்பாட்டுக் கண்காணிப்பு</translation>
+<translation id="261210853165551493">வடிவமைப்புடன் நகலெடு</translation>
 <translation id="2612614436418177118">ஆப்ஸ் கட்டக் காட்சியில் ஆப்ஸ் ஐகானை நகர்த்தும்</translation>
 <translation id="2619052155095999743">சேர்</translation>
 <translation id="2619326010008283367">முன்னோட்டத்தின் <ph name="TOTAL_STEPS" /> படிகளில் <ph name="STEP" />வது. தொடக்கியில் உங்கள் சாதன அமைப்புகளைக் கண்டறியலாம். உங்கள் <ph name="PRODUCT_NAME" /> சாதனத்தைப் பிரத்தியேகமாக்க அமைப்புகளுக்குச் சென்று வால்பேப்பரை மாற்றலாம், ஸ்கிரீன் சேவரை அமைக்கலாம்.</translation>
@@ -556,6 +559,7 @@
 <translation id="2932487126591186298">10 நிமிடங்கள் சேர்க்கப்பட்டன. <ph name="REMAINING_TIME" /> மீதமுள்ளது.</translation>
 <translation id="2935225303485967257">சுயவிவரங்களை நிர்வகிக்கலாம்</translation>
 <translation id="2941112035454246133">குறைவு</translation>
+<translation id="2941232201846070406">இணைய இணைப்பைச் சரிபார்த்துவிட்டு மீண்டும் முயலவும்</translation>
 <translation id="2942350706960889382">டாக் செய்யப்பட்ட பெரிதாக்கி</translation>
 <translation id="2942516765047364088">அடுக்கின் நிலை</translation>
 <translation id="2946119680249604491">இணைப்பைச் சேர்</translation>
@@ -640,6 +644,7 @@
 <translation id="3206735939915734551">Caps Lockகை இயக்கு/முடக்கு</translation>
 <translation id="3207953481422525583">பயனர் அமைப்புகள்</translation>
 <translation id="3208321278970793882">ஆப்ஸ்</translation>
+<translation id="3212221635583599601">மேலும் அறிய இணையத்துடன் இணையுங்கள்</translation>
 <translation id="3213571860604332401">இணைப்பை புக்மார்க்காகச் சேமிக்கும்</translation>
 <translation id="3217205077783620295">ஒலியளவு இயக்கத்தில் உள்ளது. நிலைமாற்றினால் அது முடக்கப்படும்.</translation>
 <translation id="3226991577105957773">+மேலும் <ph name="COUNT" /></translation>
@@ -971,6 +976,7 @@
 <translation id="4275663329226226506">ஊடகம்</translation>
 <translation id="4279490309300973883">பிரதிபலிக்கிறது</translation>
 <translation id="4280601795273309128">பாதுகாப்புப் புதுப்பிப்புகள் முடிந்துவிட்டன. சாதனத்தை மேம்படுத்தவும்.</translation>
+<translation id="4281739221820540368">Google Docsஸை உருவாக்கு</translation>
 <translation id="4283888303416325161">கூடுதல் பாதுகாப்பிற்கு, கடவுச்சொல்லை டைப் செய்யுங்கள்</translation>
 <translation id="4285498937028063278">பிரித்தெடு</translation>
 <translation id="428715201724021596">நெட்வொர்க் சுயவிவரத்துடன் இணைக்கிறது. இதற்குச் சில நிமிடங்கள் ஆகலாம்.</translation>
@@ -1043,6 +1049,7 @@
 <translation id="4513044611477939680">விரைவுப் பகிர்தல்</translation>
 <translation id="4513946894732546136">கருத்து</translation>
 <translation id="4518404433291145981">Chromebookகை திறக்க உங்கள் ஃபோனை அன்லாக் செய்க</translation>
+<translation id="4525887279712865285">விரைவுப் பகிர்தல் அமைப்புகளைக் காட்டும்</translation>
 <translation id="4527045527269911712">புளூடூத் சாதனம் "<ph name="DEVICE_NAME" />", இணைப்பதற்கான அனுமதியை விரும்புகிறது.</translation>
 <translation id="4531536770443562276">முழுத்திரை மட்டும்</translation>
 <translation id="4533343294786968049">உங்கள் பேட்டரி சார்ஜ் ஆகிக்கொண்டிருக்கிறது. <ph name="FULLY_CHARGE_TIME" /> மணிக்கு முழுமையாகச் சார்ஜாகும்.</translation>
@@ -1598,6 +1605,7 @@
 <translation id="6274202259872570803">ஸ்க்ரீன்காஸ்ட்</translation>
 <translation id="6276708887952587684">பக்கத்தின் மூலத்தைக் காட்டும்</translation>
 <translation id="6284232397434400372">தெளிவு மாற்றப்பட்டது</translation>
+<translation id="6285871695023807425">Calendarரில் சேர்</translation>
 <translation id="6288235558961782912">பெற்றோரின் அனுமதியுடன் <ph name="USER_EMAIL_ADDRESS" /> பயனரைப் பின்னர் மறுபடியும் சேர்க்கலாம்.</translation>
 <translation id="6291221004442998378">சார்ஜ் ஏறவில்லை</translation>
 <translation id="6298183524022479114">ஆப்ஸில் இந்தச் சாதனத்தைப் பிரத்தியேகமாக்குங்கள்</translation>
@@ -1694,6 +1702,7 @@
 <translation id="6612889377159412215">உட்பணி</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_TOTAL_SIZE" /> மொத்தச் சேமிப்பகத்தில் <ph name="STORAGE_IN_USE_SIZE" /> பயன்படுத்தப்பட்டுள்ளது</translation>
 <translation id="6614169507485700968">தனிப்பட்ட திரை இயக்கப்பட்டுள்ளது</translation>
+<translation id="6618277154885124991">Google Sheetsஸை உருவாக்கு</translation>
 <translation id="6622679827379792051">மொபைலில் உள்ள ஆப்ஸைப் பார்க்கும்படி அமைக்கும்</translation>
 <translation id="662279009180869175">திரைப் பிரிப்பின் அளவை மாற்ற வலது மற்றும் இடது அம்புக்குறிகளைப் பயன்படுத்தவும்</translation>
 <translation id="6624493541160101248">தற்போதைய டெஸ்க்: <ph name="DESK_NAME" />. டெஸ்க் <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
@@ -2249,6 +2258,7 @@
 <translation id="851660987304951246">உள்ளடக்கத்தை விரைவாகச் சுருக்கவோ கேள்விகளைக் கேட்கவோ ‘படிக்க உதவு’ அம்சத்தைப் பயன்படுத்தலாம்</translation>
 <translation id="8517041960877371778">இயக்கப்பட்டிருக்கும் போது உங்கள் <ph name="DEVICE_TYPE" /> இல் சார்ஜ் ஏறாது.</translation>
 <translation id="8535393432370007982">வண்ணத்தின்படி வரிசைப்படுத்தியதைச் செயல்தவிர்க்கும்</translation>
+<translation id="8539803091108018926">கிளிப்போர்டுக்கு வார்த்தைகள் நகலெடுக்கப்பட்டன</translation>
 <translation id="8541078764854166027">கேமரா ஃபிரேமிங்</translation>
 <translation id="8542053257095774575">சேமிக்கப்பட்ட டெஸ்க்குகளோ டெம்ப்ளேட்டுகளோ எதுவுமில்லை</translation>
 <translation id="8546059259582788728">வரிசைப்படுத்துதல் செயல்தவிர்க்கப்பட்டது</translation>

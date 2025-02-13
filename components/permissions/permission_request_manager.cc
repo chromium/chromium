@@ -857,6 +857,10 @@ bool PermissionRequestManager::RecreateView() {
   return true;
 }
 
+const PermissionPrompt* PermissionRequestManager::GetCurrentPrompt() const {
+  return view_.get();
+}
+
 std::optional<gfx::Rect>
 PermissionRequestManager::GetPromptBubbleViewBoundsInScreen() const {
   return view_ ? view_->GetViewBoundsInScreen() : std::nullopt;
@@ -985,15 +989,18 @@ void PermissionRequestManager::ShowPrompt() {
     return;
   }
 
-  if (!ReprioritizeCurrentRequestIfNeeded())
-    return;
-
-  if (requests_.empty()) {
+  // We check `requests_.empty()` after some following calls
+  // (`ReprioritizeCurrentRequestIfNeeded` and `RecreateView`) to prevent
+  // accidentally finalizing the requests, which could be triggered in the
+  // callback chains or error handling (e.g the factory implementation can't
+  // show a permission prompt).
+  if (!ReprioritizeCurrentRequestIfNeeded() || requests_.empty()) {
     return;
   }
 
-  if (!RecreateView())
+  if (!RecreateView() || requests_.empty()) {
     return;
+  }
 
   if (!current_request_already_displayed_) {
     PermissionUmaUtil::PermissionPromptShown(requests_);

@@ -117,25 +117,24 @@ WebDataServiceBase::Handle AutofillWebDataService::GetAutofillProfiles(
       std::move(consumer));
 }
 
-void AutofillWebDataService::AddEntityInstance(const EntityInstance& entity) {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE, base::BindOnce(&AutofillWebDataBackendImpl::AddEntityInstance,
-                                autofill_backend_, entity));
-}
-
-void AutofillWebDataService::UpdateEntityInstance(
-    const EntityInstance& entity) {
+void AutofillWebDataService::AddOrUpdateEntityInstance(
+    EntityInstance entity,
+    base::OnceCallback<void(EntityInstanceChange)> on_success) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
-      base::BindOnce(&AutofillWebDataBackendImpl::UpdateEntityInstance,
-                     autofill_backend_, entity));
+      base::BindOnce(&AutofillWebDataBackendImpl::AddOrUpdateEntityInstance,
+                     autofill_backend_, std::move(entity),
+                     std::move(on_success)));
 }
 
-void AutofillWebDataService::RemoveEntityInstance(const base::Uuid& guid) {
+void AutofillWebDataService::RemoveEntityInstance(
+    base::Uuid guid,
+    base::OnceCallback<void(EntityInstanceChange)> on_success) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::RemoveEntityInstance,
-                     autofill_backend_, guid));
+                     autofill_backend_, std::move(guid),
+                     std::move(on_success)));
 }
 
 void AutofillWebDataService::RemoveEntityInstancesModifiedBetween(

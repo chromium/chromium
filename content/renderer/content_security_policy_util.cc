@@ -123,7 +123,7 @@ network::mojom::ContentSecurityPolicyPtr BuildContentSecurityPolicy(
           policy_in.header.source),
       policy_in.use_reporting_api,
       BuildVectorOfStrings(policy_in.report_endpoints),
-      policy_in.require_trusted_types_for,
+      policy_in.require_sri_for, policy_in.require_trusted_types_for,
       policy_in.trusted_types
           ? network::mojom::CSPTrustedTypes::New(
                 BuildVectorOfStrings(policy_in.trusted_types->list),
@@ -157,6 +157,7 @@ blink::WebContentSecurityPolicy ToWebContentSecurityPolicy(
           ToWebContentSecurityPolicyHeader(std::move(policy_in->header)),
           policy_in->use_reporting_api,
           ToVectorOfWebStrings(std::move(policy_in->report_endpoints)),
+          policy_in->require_sri_for,
           policy_in->require_trusted_types_for,
           ToOptionalWebCSPTrustedTypes(std::move(policy_in->trusted_types)),
           ToVectorOfWebStrings(std::move(policy_in->parsing_errors))};

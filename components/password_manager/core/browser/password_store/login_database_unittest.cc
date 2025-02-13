@@ -2359,7 +2359,8 @@ PasswordForm LoginDatabaseUndecryptableLoginsTest::AddDummyLogin(
 
 TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kSkipUndecryptablePasswords);
+  feature_list.InitWithFeatures({}, {features::kSkipUndecryptablePasswords,
+                                     features::kClearUndecryptablePasswords});
   auto form1 =
       AddDummyLogin("foo1", GURL("https://foo1.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/false);
@@ -2634,7 +2635,8 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
 TEST_F(LoginDatabaseUndecryptableLoginsTest,
        PasswordRecoveryDisabledGetLogins) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kSkipUndecryptablePasswords);
+  feature_list.InitWithFeatures({}, {features::kSkipUndecryptablePasswords,
+                                     features::kClearUndecryptablePasswords});
   AddDummyLogin("foo1", GURL("https://foo1.com/"), false,
                 /*blocklisted=*/false);
   AddDummyLogin("foo2", GURL("https://foo2.com/"), true, /*blocklisted=*/false);

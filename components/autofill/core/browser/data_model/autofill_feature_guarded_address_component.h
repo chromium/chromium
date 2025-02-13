@@ -24,8 +24,7 @@ class FeatureGuardedAddressComponent : public AddressComponent {
 
   // AddressComponent overrides:
   void SetValue(std::u16string value, VerificationStatus status) override;
-  void GetTypes(bool storable_only,
-                FieldTypeSet* supported_types) const override;
+  FieldTypeSet GetTypes(bool storable_only) const override;
 
  private:
   // Feature guarding the rollout of this address component.

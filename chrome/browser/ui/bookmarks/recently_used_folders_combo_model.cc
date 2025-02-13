@@ -250,10 +250,3 @@ void RecentlyUsedFoldersComboModel::MaybeChangeParent(const BookmarkNode* node,
 const BookmarkNode* RecentlyUsedFoldersComboModel::GetNodeAt(size_t index) {
   return (index < items_.size()) ? items_[index].node.get() : nullptr;
 }
-
-void RecentlyUsedFoldersComboModel::RemoveNode(const BookmarkNode* node) {
-  auto it = std::ranges::find(items_, Item(node, Item::TYPE_NODE));
-  if (it != items_.end()) {
-    items_.erase(it);
-  }
-}

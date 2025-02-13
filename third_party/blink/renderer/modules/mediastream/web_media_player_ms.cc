@@ -1410,6 +1410,10 @@ void WebMediaPlayerMS::OnDisplayTypeChanged(DisplayType display_type) {
       break;
     case DisplayType::kPictureInPicture:
       watch_time_reporter_->OnDisplayTypePictureInPicture();
+      break;
+    case DisplayType::kDocumentPictureInPicture:
+      watch_time_reporter_->OnDisplayTypeDocumentPictureInPicture();
+      break;
   }
 }
 
@@ -1531,6 +1535,9 @@ void WebMediaPlayerMS::MaybeCreateWatchTimeReporter() {
         break;
       case DisplayType::kPictureInPicture:
         watch_time_reporter_->OnDisplayTypePictureInPicture();
+        break;
+      case DisplayType::kDocumentPictureInPicture:
+        watch_time_reporter_->OnDisplayTypeDocumentPictureInPicture();
         break;
     }
   }

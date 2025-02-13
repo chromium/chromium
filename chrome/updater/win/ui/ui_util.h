@@ -40,7 +40,8 @@ HRESULT SetWindowIcon(HWND hwnd, WORD icon_id, HICON* hicon);
 
 // Returns a localized installer name for a bundle. If |bundle_name| is empty,
 // the friendly company name is used.
-std::wstring GetInstallerDisplayName(const std::u16string& bundle_name);
+std::wstring GetInstallerDisplayName(const std::u16string& bundle_name,
+                                     const std::wstring& lang = {});
 
 // Gets the text corresponding to a control in a dialog box.
 bool GetDlgItemText(HWND dlg, int item_id, std::wstring* text);

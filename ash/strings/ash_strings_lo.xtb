@@ -193,6 +193,7 @@
 <translation id="1607312127821884567">ປິດການຕັ້ງຄ່າການເບິ່ງແອັບຂອງໂທລະສັບທ່ານໄວ້</translation>
 <translation id="1610778689852195798">"ຍົກເລີກ"</translation>
 <translation id="1611993646327628135">ເປີດ</translation>
+<translation id="1612679292338846734">ເມື່ອທ່ານເປີດຄຸນສົມບັດເຫຼົ່ານີ້, ຂໍ້ຄວາມທີ່ປ້ອນເຂົ້າ, ເນື້ອຫາເອກະສານ ແລະ URL ໜ້າເວັບອາດຈະຖືກສົ່ງໄປຫາເຊີບເວີ Google AI. ຂໍ້ມູນນີ້ຖືກນໍາໃຊ້ເພື່ອສ້າງການແນະນຳການຂຽນ, ສ້າງບົດສະຫຼຸບ, ຕອບຄໍາຖາມ ແລະ ປັບປຸງຜະລິດຕະພັນ, ຂຶ້ນກັບ <ph name="LINK_TO_SERVICE_TERMS" />. ຢ່າລະບຸຂໍ້ມູນໃດກໍຕາມທີ່ສ່ວນຕົວ, ລະອຽດອ່ອນ ຫຼື ເປັນຄວາມລັບ.</translation>
 <translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
 <translation id="1623768535032616219">ຫຍໍ້ Google ຫ້ອງຮຽນລົງ</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> ບໍ່ພ້ອມນຳໃຊ້.</translation>
@@ -565,6 +566,7 @@
 <translation id="2946119680249604491">ເພີ່ມການ​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="2947835478872237115">ລະດັບແບັດເຕີຣີປັດຈຸບັນ <ph name="BATTERY_PERCENTAGE" />%, ອີກ <ph name="TIME" /> ຈຶ່ງຈະເຕັມ</translation>
 <translation id="2949420361496057765">ກົດ <ph name="MODIFIER" /> ແລ້ວຄລິກລິ້ງ</translation>
+<translation id="2957159466053076448">ທ່ານສາມາດປິດຄຸນສົມບັດເຫຼົ່ານີ້ຕອນໃດກໍໄດ້ໃນການຕັ້ງຄ່າ. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">ສຽງຈາກອຸປະກອນ</translation>
 <translation id="2960314608273155470">ໂໝດບັນທຶກ, ຄ່າເລີ່ມຕົ້ນແມ່ນ <ph name="SOURCE" /> <ph name="TYPE" />. ກົດແຖບສຳລັບການນຳທາງແປ້ນພິມ.</translation>
 <translation id="2961963223658824723">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງໃໝ່ໃນອີກສອງສາມວິນາທີ.</translation>
@@ -1905,6 +1907,7 @@
 <translation id="735745346212279324">VPN ຕັດເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="7360036564632145207">ການປ່ຽນການປົກປ້ອງການເຂົ້າເຖິງຂໍ້ມູນຂອງທ່ານສຳລັບການຕັ້ງຄ່າອຸປະກອນຕໍ່ພ່ວງສາມາດປັບປຸງປະສິດທິພາບໃຫ້ເໝາະສົມໄດ້</translation>
 <translation id="736045644501761622">ຕັ້ງຮູບພື້ນຫຼັງ ແລະ ຮູບແບບ</translation>
+<translation id="7368041336688136012">ທ່ານຕ້ອງມີອາຍຸຢ່າງໜ້ອຍ 18 ປີເພື່ອໃຊ້ຊ່ວຍຂ້ອຍອ່ານ, ຊ່ວຍຂ້ອຍຂຽນ ແລະ ສ້າງຮູບດ້ວຍ AI ໄດ້.</translation>
 <translation id="7371404428569700291">ບັນທຶກໜ້າຈໍ</translation>
 <translation id="7372069265635026568">ໜ່ວຍຄວາມຈຳຫວ່າງ <ph name="AVAILABLE_MEMORY" /> ຈາກທັງໝົດ <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">ການດຳເນີນການນີ້ອະນຸຍາດສິດເຂົ້າເຖິງໄມໂຄຣໂຟນໃຫ້ແອັບ ແລະ ເວັບໄຊທັງໝົດທີ່ມີສິດອະນຸຍາດໄມໂຄຣໂຟນ</translation>
@@ -2030,6 +2033,7 @@
 <translation id="7749443890790263709">ຮອດຈຳນວນສູງສຸດຂອງພື້ນທີ່ເຮັດວຽກແລ້ວ</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">ສະ​ແດງ​ທັງ​ຫມົດ</translation>
+<translation id="7762664108390426952">ຂໍ້ກຳນົດບໍລິການ ແລະ ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວຂອງ Google</translation>
 <translation id="7768784765476638775">ເລືອກເພື່ອເວົ້າ</translation>
 <translation id="7769299611924763557">GIF ຂອງທ່ານຈະພ້ອມໃນໄວໆນີ້</translation>
 <translation id="7773536009433685931">ເປີດ Wi-Fi ແທນ</translation>

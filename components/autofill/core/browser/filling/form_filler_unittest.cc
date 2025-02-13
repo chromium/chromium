@@ -164,6 +164,14 @@ class FormFillerTest : public testing::Test {
                                            /*removed_forms=*/{});
   }
 
+  FormData FormSeen(test::FormDescription form_description) {
+    FormData form = test::GetFormData(form_description);
+    browser_autofill_manager_->AddSeenForm(
+        form, test::GetHeuristicTypes(form_description),
+        test::GetServerTypes(form_description));
+    return form;
+  }
+
   FormFiller& form_filler() {
     return test_api(*browser_autofill_manager_).form_filler();
   }
@@ -404,6 +412,31 @@ TEST_F(FormFillerTest, UndoSavesFormFillingData) {
   // Undo early returns if it has no filling history for the trigger field,
   // which is initially empty, therefore calling the driver is proof that data
   // was successfully stored.
+  browser_autofill_manager_->UndoAutofill(mojom::ActionPersistence::kFill, form,
+                                          form.fields().front());
+}
+
+TEST_F(FormFillerTest, UndoSavesFormFillingDataForAutofillAi) {
+  FormData form = FormSeen(
+      {.fields = {{.role = PASSPORT_NAME_TAG, .heuristic_type = NAME_FIRST},
+                  {.role = PASSPORT_NAME_TAG, .heuristic_type = NAME_LAST},
+                  {.role = PASSPORT_NUMBER},
+                  {.role = IBAN_VALUE, .heuristic_type = IBAN_VALUE},
+                  {.role = UNKNOWN_TYPE, .heuristic_type = UNKNOWN_TYPE}}});
+
+  auto safe_fields = base::MakeFlatSet<FieldGlobalId>(
+      form.fields(), {}, &FormFieldData::global_id);
+  EXPECT_CALL(autofill_driver_, ApplyFormAction)
+      .Times(2)
+      .WillRepeatedly(Return(safe_fields));
+
+  AutofillProfile profile = test::GetFullProfile();
+  browser_autofill_manager_->FillOrPreviewFormWithAutofillAiData(
+      mojom::ActionPersistence::kFill, form, form.fields()[0],
+      /*values_to_fill=*/
+      {{form.fields()[0].global_id(), u"John"},
+       {form.fields()[1].global_id(), u"Doe"},
+       {form.fields()[2].global_id(), u"123"}});
   browser_autofill_manager_->UndoAutofill(mojom::ActionPersistence::kFill, form,
                                           form.fields().front());
 }
@@ -1639,17 +1672,12 @@ TEST_F(FormFillerTest, PreFilledCCFieldInAddressFormDoesNotCauseCrash) {
 }
 
 TEST_F(FormFillerTest, FillOrPreviewFormWithAutofillAi) {
-  test::FormDescription form_description = {
-      .fields = {{.role = PASSPORT_NAME_TAG, .heuristic_type = NAME_FIRST},
-                 {.role = PASSPORT_NAME_TAG, .heuristic_type = NAME_LAST},
-                 {.role = PASSPORT_NUMBER},
-                 {.role = IBAN_VALUE, .heuristic_type = IBAN_VALUE},
-                 {.role = UNKNOWN_TYPE, .heuristic_type = UNKNOWN_TYPE}}};
-  FormData form = test::GetFormData(form_description);
-  browser_autofill_manager_->AddSeenForm(
-      form, test::GetHeuristicTypes(form_description),
-      test::GetServerTypes(form_description));
-  FormsSeen({form});
+  FormData form = FormSeen(
+      {.fields = {{.role = PASSPORT_NAME_TAG, .heuristic_type = NAME_FIRST},
+                  {.role = PASSPORT_NAME_TAG, .heuristic_type = NAME_LAST},
+                  {.role = PASSPORT_NUMBER},
+                  {.role = IBAN_VALUE, .heuristic_type = IBAN_VALUE},
+                  {.role = UNKNOWN_TYPE, .heuristic_type = UNKNOWN_TYPE}}});
   base::flat_map<FieldGlobalId, std::u16string> values_to_fill = {
       // Not filled because the value to fill is empty.
       {form.fields()[0].global_id(), u""},

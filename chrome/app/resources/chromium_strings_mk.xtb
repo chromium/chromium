@@ -98,6 +98,7 @@
 <translation id="2343156876103232566">За да испратите број оттука до телефонот со Android, најавете се на Chromium на двата уреда.</translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2361918034042471035">Екстензијата „<ph name="EXTENSION_NAME" />“ сака да се најавите на Chromium</translation>
+<translation id="236943522426971115">Оневозможете Chromium да се извршува во заднина за апликациите</translation>
 <translation id="2374216753258219393">За да ја користите екстензијава како <ph name="USER_EMAIL_ADDRESS" />, најавете се на Chromium.</translation>
 <translation id="2384373936468275798">Chromium OS не може да ги синхронизира податоците бидејќи деталите за најавување на сметката се застарени.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Една или повеќе екстензии за Chromium пристапуваа до 1 HID-уред}=1{Една или повеќе екстензии за Chromium пристапуваат до 1 HID-уред}one{Една или повеќе екстензии за Chromium пристапуваат до # HID-уред}other{Една или повеќе екстензии за Chromium пристапуваат до # HID-уреди}}</translation>
@@ -180,6 +181,7 @@
 <translation id="3406848076815591792">Сакате да се префрлите на постојниот профил на Chromium?</translation>
 <translation id="3412460710772753638">Во Password Manager на уредов</translation>
 <translation id="3430503420100763906">Со профилите на Chromium може да ги одделите сите ваши работи на Chromium. Создајте профили за пријателите и семејството или поделете ги помеѓу работа и забава.</translation>
+<translation id="3451656833730006755">За да ги добиете екстензиите и друго на сите ваши компјутери, најавете се на Chromium</translation>
 <translation id="347328004046849135">Chromium ќе ве извести ако се најавите со компромитирана лозинка</translation>
 <translation id="3474745554856756813">Ова ќе избрише <ph name="ITEMS_COUNT" /> ставки од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chromium како <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Со <ph name="SHORTCUT" /> се менуваат профили на Chromium</translation>
@@ -505,6 +507,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8013436988911883588">Ако Chromium има пристап, тогаш и веб-сајтовите ќе може да ви бараат пристап.</translation>
 <translation id="80471789339884597">Фала за инсталирањето. Мора да ги рестартирате сите ваши прелистувачи пред да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Секогаш прикажувај ја кратенката за „Пребарување со слики“</translation>
+<translation id="8077498902115777962">Оневозможете Chromium да се извршува во заднина за апликациите</translation>
 <translation id="80790299200510644">Пребарување со слики</translation>
 <translation id="8086881907087796310">Инсталацијата не успеа бидејќи вашиот компјутер не ги исполнува минималните барања за хардвер.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome за тестирање</translation>

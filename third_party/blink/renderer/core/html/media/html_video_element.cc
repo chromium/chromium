@@ -705,6 +705,10 @@ DisplayType HTMLVideoElement::GetDisplayType() const {
     return DisplayType::kPictureInPicture;
   }
 
+  if (PictureInPictureController::IsInDocumentPictureInPicture(this)) {
+    return DisplayType::kDocumentPictureInPicture;
+  }
+
   if (is_effectively_fullscreen_)
     return DisplayType::kFullscreen;
 

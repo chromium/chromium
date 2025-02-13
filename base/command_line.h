@@ -197,6 +197,7 @@ class BASE_EXPORT CommandLine {
   // value or isn't present, this method returns the empty string.
   // Switch names must be lowercase.
   std::string GetSwitchValueASCII(std::string_view switch_string) const;
+  std::string GetSwitchValueUTF8(std::string_view switch_string) const;
   FilePath GetSwitchValuePath(std::string_view switch_string) const;
   StringType GetSwitchValueNative(std::string_view switch_string) const;
 
@@ -210,6 +211,7 @@ class BASE_EXPORT CommandLine {
   void AppendSwitchNative(std::string_view switch_string, StringViewType value);
   void AppendSwitchASCII(std::string_view switch_string,
                          std::string_view value);
+  void AppendSwitchUTF8(std::string_view switch_string, std::string_view value);
 
   // Removes the switch that matches |switch_key_without_prefix|, regardless of
   // prefix and value. If no such switch is present, this has no effect.

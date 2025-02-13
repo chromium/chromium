@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller_impl.h"
 
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/types/optional_ref.h"
 #include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
@@ -17,7 +18,9 @@
 #include "components/autofill/core/browser/data_model/entity_type.h"
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill_ai {
 
@@ -77,6 +80,26 @@ void SaveAutofillAiDataControllerImpl::OfferSave(
 
 void SaveAutofillAiDataControllerImpl::OnSaveButtonClicked() {
   OnBubbleClosed(AutofillAiBubbleClosedReason::kAccepted);
+}
+
+std::u16string SaveAutofillAiDataControllerImpl::GetDialogTitle() const {
+  switch (autofill_ai_data_->type().name()) {
+    case autofill::EntityTypeName::kCar:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SAVE_CAR_ENTITY_DIALOG_TITLE);
+    case autofill::EntityTypeName::kPassport:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE);
+
+    case autofill::EntityTypeName::kDriversLicense:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE);
+
+    case autofill::EntityTypeName::kLoyaltyCard:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SAVE_LOYALTY_CARD_ENTITY_DIALOG_TITLE);
+  }
+  NOTREACHED();
 }
 
 void SaveAutofillAiDataControllerImpl::OnBubbleClosed(

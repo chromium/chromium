@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -110,7 +111,15 @@ class PLATFORM_EXPORT ParkableStringImpl
     return metadata_->length_;
   }
   size_t CharactersSizeInBytes() const;
+
   size_t MemoryFootprintForDump() const;
+
+  struct MemoryUsage {
+    size_t this_size;
+    raw_ptr<const void> string_impl;
+    size_t string_impl_size;
+  };
+  MemoryUsage MemoryUsageForSnapshot() const;
 
   // Returns true iff the string can be parked. This does not mean that the
   // string can be parked now, merely that it is eligible to be parked at some

@@ -18,6 +18,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/version.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/pending_extension_info.h"
+#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_constants.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -575,6 +577,7 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
       LOG(WARNING) << "Could not add pending extension for " << id;
       return ThemeSyncState::kFailed;
     }
+    remote_extension_theme_pending_install_ = id;
     extension_service->CheckForUpdatesSoon();
     // Return that the call triggered an extension theme installation.
     return ThemeSyncState::kWaitingForExtensionInstallation;
@@ -901,6 +904,24 @@ bool ThemeSyncableService::ApplySavedLocalThemeIfExistsAndClear() {
       GetSavedLocalTheme();
   if (local_theme_specifics) {
     MaybeSetTheme(GetThemeSpecificsFromCurrentTheme(), *local_theme_specifics);
+    if (remote_extension_theme_pending_install_) {
+      extensions::PendingExtensionManager* pending_extension_manager =
+          extensions::ExtensionSystem::Get(profile_)
+              ->extension_service()
+              ->pending_extension_manager();
+      // If the theme extension is still pending installation, remove from the
+      // queue.
+      if (const extensions::PendingExtensionInfo* extension =
+              pending_extension_manager->GetById(
+                  *remote_extension_theme_pending_install_);
+          extension && extension->is_from_sync()) {
+        pending_extension_manager->Remove(
+            *remote_extension_theme_pending_install_);
+      }
+      // Remove any unused theme extension. This should remove
+      // `remote_extension_theme_pending_install_` if it was installed.
+      theme_service_->RemoveUnusedThemes();
+    }
   }
   profile_->GetPrefs()->ClearPref(prefs::kSavedLocalTheme);
   return local_theme_specifics.has_value();

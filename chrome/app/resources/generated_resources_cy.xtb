@@ -10101,6 +10101,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8155676038687609779">{COUNT,plural, =0{Heb ganfod unrhyw gyfrineiriau sydd wedi'u darganfod}=1{{COUNT} cyfrinair sydd wedi'i ddarganfod}two{{COUNT} gyfrinair sydd wedi'u darganfod}few{{COUNT} chyfrinair sydd wedi'u darganfod}many{{COUNT} chyfrinair sydd wedi'u darganfod}other{{COUNT} cyfrinair sydd wedi'u darganfod}}</translation>
 <translation id="8157248655669507702">Galluogi data symudol i osod proffil eSIM</translation>
 <translation id="8157704005178149728">Wrthi'n gosod goruchwyliaeth</translation>
+<translation id="8157728322324420120">Awgrymir i chi</translation>
 <translation id="8157849462797352650">Mae eich dyfais yn cael y diweddariadau diogelwch, sefydlogrwydd a pherfformiad diweddaraf</translation>
 <translation id="8158117992543756526">Gwnaeth y ddyfais hon stopio cael diweddariadau meddalwedd a diogelwch awtomatig ym <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Cael dirgryniad o gadarnhad ar gyfer camau gweithredu megis hollti'r sgrîn a newid desgiau. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>

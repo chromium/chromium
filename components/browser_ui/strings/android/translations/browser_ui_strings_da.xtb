@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Prisfald på dine åbne faner}one{Prisfald på dine åbne faner}other{Prisfald på dine åbne faner}}</translation>
 <translation id="5186036860380548585">Se valgmuligheden øverst på skærmen</translation>
 <translation id="5197729504361054390">De kontakter, du vælger, deles med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5198930230016462977">Feltet i bunden med tilpasning af siden Ny fane er lukket</translation>
 <translation id="5216942107514965959">Senest besøgt i dag</translation>
 <translation id="5225463052809312700">Slå kamera til</translation>
 <translation id="5234764350956374838">Luk</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Registrering af håndbevægelser</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blev blokeret</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
+<translation id="5822675474983796325">Feltet i bunden med tilpasning af siden Ny fane er åbnet i fuld højde</translation>
 <translation id="5844448279347999754">Når dette er slået til, kan websites anmode om tilladelse at se tekst og billeder, der er gemt i din udklipsholder. Når dette er slået fra, kan websites ikke se tekst eller billeder, der er gemt i din udklipsholder.</translation>
 <translation id="5853982612236235577">Når dette er slået til, kan websites anmode om at sende notifikationer. Når dette er slået fra, kan websites ikke sende notifikationer.</translation>
 <translation id="5860033963881614850">Fra</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Udvidet</translation>
 <translation id="7219254577985949841">Vil du slette websitedata?</translation>
 <translation id="723171743924126238">Vælg billeder</translation>
+<translation id="7243246278722455312">Feltet i bunden med tilpasning af siden Ny fane</translation>
 <translation id="7243308994586599757">Du finder indstillingerne nederst på skærmen</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> er markeret</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> blev tilladt</translation>

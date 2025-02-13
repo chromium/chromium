@@ -269,6 +269,7 @@
 #include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "components/browser_ui/photo_picker/android/features.h"
 #include "components/browsing_data/core/features.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/external_intents/android/external_intents_features.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/messages/android/messages_feature.h"
@@ -1761,20 +1762,6 @@ const FeatureEntry::FeatureVariation kTabScrollingVariations[] = {
      std::size(kMinimumTabWidthSettingLarge), nullptr},
     {" - tabs don't shrink", kMinimumTabWidthSettingFull,
      std::size(kMinimumTabWidthSettingFull), nullptr}};
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-const FeatureEntry::FeatureParam kTabstripDeclutterQuickModeParams[] = {
-    {"stale_threshold_duration", "10s"},
-    {"declutter_timer_interval", "10s"},
-    {"nudge_timer_interval", "30s"},
-};
-
-const FeatureEntry::FeatureVariation kTabstripDeclutterVariations[] = {
-    {"Quick Mode", kTabstripDeclutterQuickModeParams,
-     std::size(kTabstripDeclutterQuickModeParams)},
-};
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -3502,16 +3489,6 @@ const FeatureEntry::FeatureVariation
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kWebAuthnAndroidCredManGpmInCredManParam = {
-    device::kWebAuthnAndroidGpmInCredMan.name, "true"};
-const FeatureEntry::FeatureParam kWebAuthnAndroidCredManGpmNotInCredManParam = {
-    device::kWebAuthnAndroidGpmInCredMan.name, "false"};
-const FeatureEntry::FeatureVariation kWebAuthnAndroidCredManVariations[] = {
-    {"for Google Password Manager and 3rd party passkeys",
-     &kWebAuthnAndroidCredManGpmInCredManParam, 1, nullptr},
-    {"for 3rd party passkeys", &kWebAuthnAndroidCredManGpmNotInCredManParam, 1,
-     nullptr}};
-
 const FeatureEntry::FeatureParam kEdgeToEdgeBottomChinDebugFeatureParams[] = {
     {chrome::android::kEdgeToEdgeBottomChinDebugParam.name, "true"}};
 const FeatureEntry::FeatureVariation kEdgeToEdgeBottomChinVariations[] = {
@@ -3813,14 +3790,6 @@ const FeatureEntry::FeatureVariation kLocationProviderManagerVariations[] = {
     {"Fallback on error", kLocationProviderManagerModeHybridPlatform2,
      std::size(kLocationProviderManagerModeHybridPlatform2), nullptr}};
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-
-#if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kWebAuthnEnclaveAuthenticatorEnabledParam = {
-    device::kWebAuthnGpmPinFeatureParameterName, "true"};
-const FeatureEntry::FeatureVariation kWebAuthnEnclaveAuthenticatorVariations[] =
-    {{"with GPM PIN enabled", &kWebAuthnEnclaveAuthenticatorEnabledParam, 1,
-      nullptr}};
-#endif
 
 const FeatureEntry::FeatureParam kVisitedURLRankingDomainDeduplicationParam[] =
     {{"url_deduplication_include_title", "false"}};
@@ -6761,6 +6730,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSidePanelResizingName,
      flag_descriptions::kSidePanelResizingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSidePanelResizing)},
+
+    {"by-date-history-in-side-panel",
+     flag_descriptions::kByDateHistoryInSidePanelName,
+     flag_descriptions::kByDateHistoryInSidePanelDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kByDateHistoryInSidePanel)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -7967,6 +7941,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-unsafe-webgpu", flag_descriptions::kUnsafeWebGPUName,
      flag_descriptions::kUnsafeWebGPUDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kEnableUnsafeWebGPU)},
+
+    {"force-high-performance-gpu",
+     flag_descriptions::kForceHighPerformanceGPUName,
+     flag_descriptions::kForceHighPerformanceGPUDescription, kOsWin,
+     SINGLE_VALUE_TYPE(switches::kForceHighPerformanceGPU)},
 
     {"enable-webgpu-developer-features",
      flag_descriptions::kWebGpuDeveloperFeaturesName,
@@ -9462,6 +9441,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafetyHubWeakAndReusedPasswordsName,
      flag_descriptions::kSafetyHubWeakAndReusedPasswordsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kSafetyHubWeakAndReusedPasswords)},
+
+    {"safety-hub-local-passwords-module",
+     flag_descriptions::kSafetyHubLocalPasswordsModuleName,
+     flag_descriptions::kSafetyHubLocalPasswordsModuleDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kSafetyHubLocalPasswordsModule)},
 #else
     {"safety-hub-one-off-survey",
      flag_descriptions::kSafetyHubHaTSOneOffSurveyName,
@@ -9744,15 +9728,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-shared-zstd", flag_descriptions::kSharedZstdName,
      flag_descriptions::kSharedZstdDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kSharedZstd)},
-
-#if BUILDFLAG(IS_ANDROID)
-    {"web-authentication-android-credential-management",
-     flag_descriptions::kWebAuthnAndroidCredManName,
-     flag_descriptions::kWebAuthnAndroidCredManDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(device::kWebAuthnAndroidCredMan,
-                                    kWebAuthnAndroidCredManVariations,
-                                    "WebAuthenticationAndroidCredMan")},
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
     {"android-extended-keyboard-shortcuts",
@@ -10194,6 +10169,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)},
 
+    {"autofill-enable-loyalty-cards-filling",
+     flag_descriptions::kAutofillEnableLoyaltyCardsFillingName,
+     flag_descriptions::kAutofillEnableLoyaltyCardsFillingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableLoyaltyCardsFilling)},
+
     {"autofill-enable-vcn-enroll-loading-and-confirmation",
      flag_descriptions::kAutofillEnableVcnEnrollLoadingAndConfirmationName,
      flag_descriptions::
@@ -10634,12 +10615,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(password_manager::features::
                             kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu)},
-    {"web-authentication-enclave-authenticator",
-     flag_descriptions::kWebAuthnEnclaveAuthenticatorName,
-     flag_descriptions::kWebAuthnEnclaveAuthenticatorDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(device::kWebAuthnEnclaveAuthenticator,
-                                    kWebAuthnEnclaveAuthenticatorVariations,
-                                    "WebAuthenticationEnclaveAuthenticator")},
     {"web-authentication-passkey-upgrade",
      flag_descriptions::kWebAuthnPasskeyUpgradeName,
      flag_descriptions::kWebAuthnPasskeyUpgradeDescription, kOsDesktop,
@@ -10844,29 +10819,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"translate-open-settings", flag_descriptions::kTranslateOpenSettingsName,
      flag_descriptions::kTranslateOpenSettingsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(language::kTranslateOpenSettings)},
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-    {"tab-organization", flag_descriptions::kTabOrganizationName,
-     flag_descriptions::kTabOrganizationDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabOrganization)},
-
-    {"tab-organization-settings-visibility",
-     flag_descriptions::kTabOrganizationSettingsVisibilityName,
-     flag_descriptions::kTabOrganizationSettingsVisibilityDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(optimization_guide::features::internal::
-                            kTabOrganizationSettingsVisibility)},
-
-    {"tabstrip-declutter", flag_descriptions::kTabstripDeclutterName,
-     flag_descriptions::kTabstripDeclutterDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabstripDeclutter,
-                                    kTabstripDeclutterVariations,
-                                    "TabstripDeclutter")},
-    {"tabstrip-dedupe", flag_descriptions::kTabstripDedupeName,
-     flag_descriptions::kTabstripDedupeDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabstripDedupe)},
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -11426,6 +11378,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnterpriseRealTimeUrlCheckOnAndroidDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(safe_browsing::kEnterpriseRealTimeUrlCheckOnAndroid)},
+
+    {"enterprise-security-event-reporting-on-android",
+     flag_descriptions::kEnterpriseSecurityEventReportingOnAndroidName,
+     flag_descriptions::kEnterpriseSecurityEventReportingOnAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"service-worker-auto-preload",
@@ -11677,6 +11637,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAXTreeFixingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kAXTreeFixing)},
 #endif  // !BUILDFLAG(IS_ANDROID)
+    {"enable-clipboard-contents-id",
+     flag_descriptions::kClipboardContentsIdName,
+     flag_descriptions::kClipboardContentsIdDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kClipboardContentsId)}
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

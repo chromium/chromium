@@ -445,6 +445,9 @@ ci.thin_tester(
             "webgpu_blink_web_tests_with_backend_validation": targets.remove(
                 reason = "TODO(crbug.com/40238674): Enable once it's shown to work on Android.",
             ),
+            "webgpu_cts_compat_min_es31_tests": targets.remove(
+                reason = "Too many failures.",
+            ),
             "webgpu_cts_shared_worker_tests": targets.remove(
                 reason = [
                     "We only need coverage on one GPU per OS, so remove from lower capacity",
@@ -892,6 +895,9 @@ ci.thin_tester(
             "webgpu_blink_web_tests_with_backend_validation": targets.remove(
                 reason = "TODO(crbug.com/40238674): Enable once it's shown to work on Android.",
             ),
+            "webgpu_cts_compat_min_es31_tests": targets.remove(
+                reason = "Too many failures.",
+            ),
             "webgpu_cts_shared_worker_tests": targets.remove(
                 reason = [
                     "We only need coverage on one GPU per OS, so remove from lower capacity",
@@ -971,6 +977,9 @@ ci.thin_tester(
             ),
             "webgpu_blink_web_tests_with_backend_validation": targets.remove(
                 reason = "TODO(crbug.com/40238674): Enable once it's shown to work on Android.",
+            ),
+            "webgpu_cts_compat_min_es31_tests": targets.remove(
+                reason = "Too many failures.",
             ),
             "webgpu_cts_shared_worker_tests": targets.remove(
                 reason = [

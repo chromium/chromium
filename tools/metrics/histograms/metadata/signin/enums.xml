@@ -458,6 +458,21 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="User signed in before and after iOS device restore"/>
 </enum>
 
+<enum name="IOSIdentityAvailableInProfile">
+  <int value="0"
+      label="The identity is not available in AccountProfileMapper and
+             IdentityManager"/>
+  <int value="1"
+      label="The identity is available in AccountProfileMapper but it is not
+             available in IdentityManager"/>
+  <int value="2"
+      label="The identity is not available in AccountProfileMapper but it is
+             available in IdentityManager"/>
+  <int value="3"
+      label="The identity is available in AccountProfileMapper and
+             IdentityManager"/>
+</enum>
+
 <enum name="LaunchWebAuthFlowResult">
   <int value="0" label="Success"/>
   <int value="1" label="kOffTheRecord"/>
@@ -646,6 +661,7 @@ chromium-metrics-reviews@google.com.
   <int value="72" label="Drive file picker iOS"/>
   <int value="73" label="Share group collaboration authentification"/>
   <int value="74" label="Glic launch button"/>
+  <int value="75" label="History page (Android only)"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

@@ -98,6 +98,7 @@
 <translation id="2343156876103232566">Та эндээс Android утсандаа дугаар илгээхийн тулд хоёр төхөөрөмжийн аль алинаас нь Chromium-д нэвтэрнэ үү.</translation>
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" өргөтгөл таныг Chromium-д нэвтрэхийг хүсэж байна</translation>
+<translation id="236943522426971115">Аппуудын хувьд Chromium-г дэвсгэрт ажиллуулахыг идэвхгүй болгох</translation>
 <translation id="2374216753258219393">Энэ өргөтгөлийг <ph name="USER_EMAIL_ADDRESS" />-р ашиглахын тулд Chromium-д нэвтэрнэ үү.</translation>
 <translation id="2384373936468275798">Таны бүртгэлийн нэвтрэх дэлгэрэнгүй мэдээлэл хуучирсан тул ChromiumOS таны өгөгдлийг синк хийж чадсангүй.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID төхөөрөмжид нэг эсвэл түүнээс олон Chromium-н өргөтгөл хандаж байсан}=1{1 HID төхөөрөмжид нэг эсвэл түүнээс олон Chromium-н өргөтгөл хандаж байна}other{# HID төхөөрөмжид нэг эсвэл түүнээс олон Chromium-н өргөтгөл хандаж байна}}</translation>
@@ -178,6 +179,7 @@
 <translation id="3406848076815591792">Chromium-н одоо байгаа профайл руу сэлгэх үү?</translation>
 <translation id="3412460710772753638">Энэ төхөөрөмж дээрх Нууц үгний менежерт</translation>
 <translation id="3430503420100763906">Та Chromium профайлаар Chromium-н бүх зүйлээ тусгаарлах боломжтой. Найзууд, гэр бүлдээ профайл үүсгэх эсвэл ажил болон дуртай зүйлээ хооронд нь хуваагаарай.</translation>
+<translation id="3451656833730006755">Өргөтгөл болон бусад зүйлээ бүх компьютер дээрээ авахын тулд Chromium-д нэвтэрнэ үү</translation>
 <translation id="347328004046849135">Таныг алдагдсан нууц үгээр нэвтрэх үед Chromium танд мэдэгдэнэ</translation>
 <translation id="3474745554856756813">Энэ нь төхөөрөмжөөс <ph name="ITEMS_COUNT" /> зүйл устгана. Өгөгдлөө дараа сэргээхийн тулд Chromium-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> Chromium-н профайлууд хооронд сэлгэх боломжтой</translation>
@@ -501,6 +503,7 @@
 <translation id="8013436988911883588">Chromium-д хандалт олгосны дараа веб сайтууд таны хандалтыг асуух боломжтой болно.</translation>
 <translation id="80471789339884597">Суулгасанд баярлалаа. Та <ph name="BUNDLE_NAME" />-г ашиглахаасаа өмнө бүх хөтчөө дахин эхлүүлэх ёстой.</translation>
 <translation id="8054112667659782652">Зурган хайлтын товчлолыг үргэлж харуулах</translation>
+<translation id="8077498902115777962">Аппуудын хувьд Chromium-г дэвсгэрт ажиллуулахыг идэвхгүй болгох</translation>
 <translation id="80790299200510644">Зурган хайлт</translation>
 <translation id="8086881907087796310">Таны компьютер техник хангамжийн доод шаардлагад нийцэхгүй байгаа тул суулгалт амжилтгүй болсон.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>

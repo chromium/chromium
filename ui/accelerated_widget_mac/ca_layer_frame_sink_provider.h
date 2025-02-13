@@ -5,6 +5,7 @@
 #ifndef UI_ACCELERATED_WIDGET_MAC_CA_LAYER_FRAME_SINK_PROVIDER_H_
 #define UI_ACCELERATED_WIDGET_MAC_CA_LAYER_FRAME_SINK_PROVIDER_H_
 
+#include <BrowserEngineKit/BrowserEngineKit.h>
 #include <UIKit/UIKit.h>
 
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
@@ -15,9 +16,11 @@ namespace ui {
 class CALayerFrameSink;
 }
 
-@interface CALayerFrameSinkProvider : UIView
+@interface CALayerFrameSinkProvider : BELayerHierarchyHostingView
+- (id)init;
 - (ui::CALayerFrameSink*)frameSink;
-
+- (gfx::AcceleratedWidget)viewHandle;
++ (CALayerFrameSinkProvider*)lookupByHandle:(uint64_t)viewHandle;
 @end
 
 #endif  // UI_ACCELERATED_WIDGET_MAC_CA_LAYER_FRAME_SINK_PROVIDER_H_

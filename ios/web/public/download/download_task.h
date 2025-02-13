@@ -90,6 +90,10 @@ class DownloadTask {
   // differ from the final download URL if there were redirects.
   virtual const GURL& GetOriginalUrl() const = 0;
 
+  // The URL that the download request attempted to fetch after redirection.
+  // This may differ from the Original download URL if there were redirects.
+  virtual const GURL& GetRedirectedUrl() const = 0;
+
   // The host of the frame that initiated the download (if available).
   virtual NSString* GetOriginatingHost() const = 0;
 

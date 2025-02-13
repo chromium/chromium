@@ -8205,8 +8205,20 @@ chromium-metrics-reviews@google.com.
   <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
-    Records the number of thumbnails received. Only recorded if API status code
-    is kOk.
+    Records the number of thumbnails received with a max count of 8. Only
+    recorded if API status code is kOk. This histogram is only used when
+    SeaPenTextInput is not enabled.
+  </summary>
+</histogram>
+
+<histogram name="Ash.SeaPen.Api.Thumbnails.Count2" units="count"
+    expires_after="2026-02-01">
+  <owner>cowmoo@google.com</owner>
+  <owner>cros-p13n-eng@google.com</owner>
+  <summary>
+    Records the number of thumbnails received with a max count of 4. Only
+    recorded if API status code is kOk. This histogram is only used when
+    SeaPenTextInput is enabled.
   </summary>
 </histogram>
 

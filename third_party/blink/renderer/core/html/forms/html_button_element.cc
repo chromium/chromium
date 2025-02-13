@@ -173,9 +173,7 @@ AtomicString HTMLButtonElement::command() const {
 
 CommandEventType HTMLButtonElement::GetCommandEventType(
     const AtomicString& action) const {
-  DCHECK(!action.IsNull());
-
-  if (action.empty()) {
+  if (action.IsNull() || action.empty()) {
     return CommandEventType::kNone;
   }
 

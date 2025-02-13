@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/html/collection_type.h"
 #include "third_party/blink/renderer/core/html/document_all_name_collection.h"
 #include "third_party/blink/renderer/core/html/document_name_collection.h"
+#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_options_collection.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
@@ -69,6 +70,7 @@ static bool ShouldTypeOnlyIncludeDirectChildren(CollectionType type) {
     case kWindowNamedItems:
     case kFormControls:
     case kPopoverInvokers:
+    case kCommandInvokers:
       return false;
     case kNodeChildren:
     case kTRCells:
@@ -119,6 +121,7 @@ static NodeListSearchRoot SearchRootFromCollectionType(
       DCHECK(IsA<HTMLFormElement>(owner));
       return NodeListSearchRoot::kTreeScope;
     case kPopoverInvokers:
+    case kCommandInvokers:
       return NodeListSearchRoot::kTreeScope;
     case kNameNodeListType:
     case kRadioNodeListType:
@@ -169,6 +172,8 @@ static NodeListInvalidationType InvalidationTypeExcludingIdAndNameAttributes(
       return kInvalidateOnClassAttrChange;
     case kPopoverInvokers:
       return kInvalidateOnPopoverInvokerAttrChange;
+    case kCommandInvokers:
+      return kInvalidateOnCommandInvokerAttrChange;
     case kNameNodeListType:
     case kRadioNodeListType:
     case kRadioImgNodeListType:
@@ -264,6 +269,12 @@ static inline bool IsMatchingHTMLElement(const HTMLCollection& html_collection,
       if (auto* invoker = DynamicTo<HTMLFormControlElement>(
               const_cast<HTMLElement&>(element))) {
         return invoker->popoverTargetElement().popover != nullptr;
+      }
+      return false;
+    case kCommandInvokers:
+      if (auto* invoker =
+              DynamicTo<HTMLButtonElement>(const_cast<HTMLElement&>(element))) {
+        return invoker->commandForElement() != nullptr;
       }
       return false;
     case kClassCollectionType:

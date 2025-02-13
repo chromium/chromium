@@ -21,12 +21,17 @@ using IconMappingID = int64_t;    // For page url and icon mapping.
 // The type of a `page_url` added to the database.
 // NOTE: These values are stored in the favicon database, DO NOT REORDER or
 // REUSE values.
+// NOTE: if changing this enum it may also be necessary to update
+// FaviconDatabase::FindBestPageURLForHost().
 enum class PageUrlType {
   // A regular page. This is the default.
   kRegular = 0,
 
   // The `page_url` in the icon mapping is for a redirect.
   kRedirect,
+
+  // Max value to be updated if this enum is changed.
+  kMaxValue = kRedirect,
 };
 
 // Used for the mapping between the page and icon.
@@ -52,6 +57,9 @@ struct IconMapping {
 
   // The type of icon.
   favicon_base::IconType icon_type = favicon_base::IconType::kInvalid;
+
+  // The page url type of the mapping.
+  PageUrlType page_url_type = PageUrlType::kRegular;
 };
 
 // Defines a favicon bitmap and its associated pixel size.

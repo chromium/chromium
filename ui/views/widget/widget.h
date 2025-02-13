@@ -1473,6 +1473,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void HandleWidgetDestroying();
   void HandleWidgetDestroyed();
 
+  // This is called by a task posted by OnRootViewLayoutInvalidated().
+  // Resize the widget to delegate's desired bounds.
+  void ResizeToDelegateDesiredBounds();
+
   static DisableActivationChangeHandlingType
       g_disable_activation_change_handling_;
 
@@ -1655,6 +1659,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
       ax_mode_observation_{this};
 
+  // Indicates whether there is an autosize task in the task queue. Also used to
+  // cancel the autosize task in testing.
+  base::WeakPtrFactory<Widget> autosize_task_factory_{this};
   base::WeakPtrFactory<Widget> weak_ptr_factory_{this};
 };
 

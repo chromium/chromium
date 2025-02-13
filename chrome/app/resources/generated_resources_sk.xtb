@@ -10081,6 +10081,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8155676038687609779">{COUNT,plural, =0{Nenašli sa žiadne odhalené heslá}=1{{COUNT} odhalené heslo}few{{COUNT} odhalené heslá}many{{COUNT} compromised passwords}other{{COUNT} odhalených hesiel}}</translation>
 <translation id="8157248655669507702">Ak chcete nainštalovať profil eSIM, zapnite mobilné dáta</translation>
 <translation id="8157704005178149728">Nastavuje sa dohľad</translation>
+<translation id="8157728322324420120">Navrhnuté pre vás</translation>
 <translation id="8157849462797352650">Vaše zariadenie dostáva najnovšie aktualizácie zabezpečenia, stability a výkonu</translation>
 <translation id="8158117992543756526">Toto zariadenie prestalo v období <ph name="MONTH_AND_YEAR" /> dostávať automatické aktualizácie softvéru a zabezpečenia. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Dostávajte potvrdenie vibráciami v prípade akcií, napríklad pri použití rozdelenej obrazovky a prepnutí plôch. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>

@@ -2071,6 +2071,111 @@ TEST_P(CookieMonsterTestGarbageCollectionObc, SecureCookiesPreferred) {
   EXPECT_EQ(domain_count, 150);
 }
 
+// Test that when OBC is enabled and when a domain is in legacy mode, it will
+// use the legacy garbage collection algorithm.
+TEST_P(CookieMonsterTestGarbageCollectionObc, LegacyModeGarbageCollection) {
+  ASSERT_TRUE(cookie_util::IsOriginBoundCookiesPartiallyEnabled());
+  // This test assumes the following values.
+  ASSERT_EQ(180U, CookieMonster::kDomainMaxCookies);
+  ASSERT_EQ(150U, CookieMonster::kDomainMaxCookies -
+                      CookieMonster::kDomainPurgeCookies);
+
+  auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
+
+  GURL example_with_https_port_value_80 = GURL("https://www.example.com:80/");
+
+  // Switch to legacy mode.
+  std::unique_ptr<TestCookieAccessDelegate> access_delegate =
+      std::make_unique<TestCookieAccessDelegate>();
+  access_delegate->SetExpectationForCookieScope("example.com",
+                                                CookieScopeSemantics::LEGACY);
+  cm->SetCookieAccessDelegate(std::move(access_delegate));
+
+  // When OBC is active domain cookies would be deleted first over host cookies
+  // but since this domain is in legacy mode, the legacy garbage collect
+  // algorithm will be used meaning since host cookies will be least recently
+  // accessed they will be deleted first.
+  for (int i = 0; i < 151; i++) {
+    std::string cookie = "host_" + base::NumberToString(i) + "=foo; Secure";
+    ASSERT_TRUE(SetCookie(cm.get(), example_with_https_port_value_80, cookie));
+  }
+
+  for (int i = 0; i < 30; i++) {
+    std::string cookie = "domain_" + base::NumberToString(i) +
+                         "=foo; Secure; Domain=www.example.com";
+    ASSERT_TRUE(SetCookie(cm.get(), example_with_https_port_value_80, cookie));
+  }
+
+  auto cookie_list =
+      this->GetAllCookiesForURL(cm.get(), example_with_https_port_value_80);
+
+  int host_count = 0;
+  for (const auto& cookie : cookie_list) {
+    if (cookie.IsHostCookie()) {
+      ++host_count;
+    }
+  }
+  EXPECT_EQ(cookie_list.size(), 150UL);
+  // Implies domain count is 30
+  EXPECT_EQ(host_count, 120);
+}
+
+// Test that when OBC is enabled and a domain is in legacy mode the legacy
+// garbage collection algorithm is preferred.
+TEST_P(CookieMonsterTestGarbageCollectionObc,
+       LegacyModeParitionedGarbageCollection) {
+  ASSERT_TRUE(cookie_util::IsOriginBoundCookiesPartiallyEnabled());
+  // This test assumes the following value.
+  ASSERT_EQ(180U, CookieMonster::kPerPartitionDomainMaxCookies);
+
+  auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
+  auto cookie_partition_key =
+      CookiePartitionKey::FromURLForTesting(GURL("https://www.example.com"));
+
+  GURL example_with_https_port_value_80 = GURL("https://www.example.com:80/");
+
+  std::unique_ptr<TestCookieAccessDelegate> access_delegate =
+      std::make_unique<TestCookieAccessDelegate>();
+  access_delegate->SetExpectationForCookieScope("example.com",
+                                                CookieScopeSemantics::LEGACY);
+  cm->SetCookieAccessDelegate(std::move(access_delegate));
+
+  // Insert 150 host cookies.
+  for (int i = 0; i < 150; i++) {
+    std::string cookie =
+        "host_" + base::NumberToString(i) + "=foo; Secure; Partitioned";
+    ASSERT_TRUE(SetCookie(cm.get(), example_with_https_port_value_80, cookie,
+                          cookie_partition_key));
+  }
+
+  // Insert 31 domain cookies.
+  // Since we are in legacy mode the host cookies should be preferred for
+  // deletion as they are LRA.
+  for (int i = 0; i < 31; i++) {
+    std::string cookie = "domain_" + base::NumberToString(i) +
+                         "=foo; Secure; Partitioned; Domain=www.example.com";
+    ASSERT_TRUE(SetCookie(cm.get(), example_with_https_port_value_80, cookie,
+                          cookie_partition_key));
+  }
+
+  auto cookie_list = this->GetAllCookiesForURL(
+      cm.get(), example_with_https_port_value_80,
+      CookiePartitionKeyCollection(cookie_partition_key));
+
+  int host_count = 0;
+  for (const auto& cookie : cookie_list) {
+    ASSERT_TRUE(cookie.IsPartitioned());
+    if (cookie.IsHostCookie()) {
+      ++host_count;
+    }
+  }
+  // Since host cookies are LRA they will be deleted first following the legacy
+  // algorithm.
+  EXPECT_EQ(cookie_list.size(), 180UL);
+  // Implies domain count is 31
+  EXPECT_EQ(host_count, 149);
+}
+
 TEST_F(CookieMonsterTest, TestPartitionedCookiesGarbageCollection_Memory) {
   // Limit should be 10 KB.
   DCHECK_EQ(1024u * 10u, CookieMonster::kPerPartitionDomainMaxCookieBytes);

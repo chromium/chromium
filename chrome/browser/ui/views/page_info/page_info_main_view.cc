@@ -165,6 +165,8 @@ PageInfoMainView::PageInfoMainView(
   extended_site_info_section_ = AddChildView(CreateContainerView());
   extended_site_info_section_->AddChildView(
       PageInfoViewFactory::CreateSeparator(GetSeparatorPadding()));
+  extended_site_info_section_->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_EXTENDED_SITE_INFO_SECTION);
   // Hide until at least one of the children buttons is visible.
   extended_site_info_section_->SetVisible(false);
 
@@ -373,6 +375,7 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
   title_->SetText(presenter_->GetSubjectNameForDisplay());
 
   security_container_view_->RemoveAllChildViews();
+  extended_site_info_section_->SetVisible(false);
   if (security_description->summary_style == SecuritySummaryColor::GREEN) {
     // base::Unretained(navigation_handler_) is safe because navigation_handler_
     // is the bubble view which is the owner of this view and therefore will

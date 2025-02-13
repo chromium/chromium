@@ -26,6 +26,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="SigninPromoAccessPoint">
   <variant name="Bookmarks" summary="bookmark page"/>
+  <variant name="HistoryPage" summary="history page"/>
   <variant name="Ntp" summary="new tab page"/>
   <variant name="RecentTabs" summary="recent tabs page"/>
   <variant name="Settings" summary="settings page"/>
@@ -1804,6 +1805,22 @@ prefs when the profile is loaded.  -->
     authentication cookies and that could be disrupted if an external force
     (e.g. Apple's ITP) were to remove these cookies. This logging is limited to
     once every hour due to performance constraints.
+  </summary>
+</histogram>
+
+<histogram name="Signin.IOSIdentityAvailableInProfile"
+    enum="IOSIdentityAvailableInProfile" expires_after="2026-02-11">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the availability of an identity while the user signs in. Whether it
+    is available for AccountProfileMapper and whether it is available for
+    IdentityManager in the a profile. According to crbug.com/393340481 it is
+    possible for an identity to be available in AccountProfileMapper and not in
+    IdentityManager. This metric can be removed once
+    `kSeparateProfilesForManagedAccounts` is launched and if
+    `AccountProfileMapper` and `IdentityManager` are in sync. This is record
+    only for iOS.
   </summary>
 </histogram>
 

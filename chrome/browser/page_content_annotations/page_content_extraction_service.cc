@@ -29,9 +29,11 @@ bool PageContentExtractionService::ShouldEnablePageContentExtraction() {
 }
 
 void PageContentExtractionService::OnPageContentExtracted(
-    const content::Page& page,
+    content::Page& page,
     const optimization_guide::proto::AnnotatedPageContent& page_content) {
-  observers_.Notify(&Observer::OnPageContentExtracted, page, page_content);
+  for (auto& observer : observers_) {
+    observer.OnPageContentExtracted(page, page_content);
+  }
 }
 
 }  // namespace page_content_annotations

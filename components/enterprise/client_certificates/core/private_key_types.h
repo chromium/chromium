@@ -35,6 +35,9 @@ std::optional<PrivateKeySource> ToPrivateKeySource(
 client_certificates_pb::PrivateKey::PrivateKeySource ToProtoKeySource(
     PrivateKeySource private_key_source);
 
+// Converts a `pref_key_source` from the int values to the C++ enum values.
+std::optional<PrivateKeySource> ToPrivateKeySource(int pref_key_source);
+
 }  // namespace client_certificates
 
 #endif  // COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_PRIVATE_KEY_TYPES_H_

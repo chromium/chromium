@@ -1,0 +1,28 @@
+<!--
+@MAC-ALLOW:AXExpanded
+@WIN-ALLOW:details-roles*
+@WIN-ALLOW:EXPANDED*
+@WIN-ALLOW:HASPOPUP*
+@WIN-ALLOW:haspopup*
+@BLINK-ALLOW:haspopup*
+@BLINK-ALLOW:expanded*
+@AURALINUX-ALLOW:details-roles*
+@AURALINUX-ALLOW:expanded*
+@AURALINUX-ALLOW:haspopup:*
+-->
+
+<!-- Opened dialog as modal -->
+<button commandfor="d1" command="show-modal">d1 button - outside - show-modal</button>
+<button commandfor="d1" command="show-popover">d1 button - outside - unrelated action</button>
+<button commandfor="d1" command="--frobulate">d1 button - outside - custom action</button>
+<button commandfor="d1" command="close">d1 button - outside - close</button>
+<dialog id="d1" popover="manual">
+  <button commandfor="d1" command="show-modal">d1 button - inside - show-modal</button>
+  <button commandfor="d1" command="close">d1 button - inside - close</button>
+  <button commandfor="d1" command="toggle-popover">Button inside popover, with unrelated action</button>
+  <button commandfor="d1" command="--frobulate">d1 button - inside - custom action</button>
+</dialog>
+
+<script>
+  d1.showModal();
+</script>

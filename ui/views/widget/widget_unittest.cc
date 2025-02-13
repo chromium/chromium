@@ -330,10 +330,16 @@ TEST_F(WidgetWithCustomParamsTest, Autosize) {
 
   constexpr gfx::Size kInitialSize(100, 100);
   view->SetPreferredSize(kInitialSize);
+
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(widget.get());
   const gfx::Size starting_size = widget->GetWindowBoundsInScreen().size();
 
   constexpr gfx::Size kDelta(50, 50);
   view->SetPreferredSize(kInitialSize + kDelta);
+
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(widget.get());
   const gfx::Size ending_size = widget->GetWindowBoundsInScreen().size();
 
   EXPECT_EQ(ending_size, starting_size + kDelta);

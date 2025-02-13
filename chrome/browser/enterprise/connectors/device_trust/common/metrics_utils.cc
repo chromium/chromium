@@ -7,17 +7,18 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace enterprise_connectors {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Enrollment status of the device where the Device Trust connector attestation
 // is happening. These values are persisted to logs and should not be
 // renumbered. Please update the DTEnrollmentStatus enum in enums.xml when
@@ -27,7 +28,7 @@ enum class DTEnrollmentStatus {
   kUnmanaged = 1,
   kMaxValue = kUnmanaged,
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 DTHandshakeResult ResponseToResult(const DeviceTrustResponse& response) {
   if (!response.error) {
@@ -112,7 +113,7 @@ void LogDeviceTrustResponse(const DeviceTrustResponse& response,
                                 ResponseToResult(response));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void LogOrigin(DTOrigin origin) {
   static constexpr char kOriginHistogram[] = "Enterprise.DeviceTrust.Origin";
   base::UmaHistogramEnumeration(kOriginHistogram, origin);
@@ -127,6 +128,6 @@ void LogEnrollmentStatus() {
           ? DTEnrollmentStatus::kManaged
           : DTEnrollmentStatus::kUnmanaged);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace enterprise_connectors

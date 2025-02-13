@@ -1109,6 +1109,8 @@ AttributionResolverImpl::GetAllDataKeys() {
 void AttributionResolverImpl::DeleteByDataKey(
     const AttributionDataModel::DataKey& datakey) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(linnan): Consider exposing a more efficient implementation to match
+  // origins directly where appropriate, e.g. for the `os_registrations_` table.
   ClearData(base::Time::Min(), base::Time::Max(),
             base::BindRepeating(std::equal_to<blink::StorageKey>(),
                                 blink::StorageKey::CreateFirstParty(
@@ -1267,6 +1269,12 @@ AttributionResolverImpl::ProcessAggregatableDebugReport(
   }
 
   return make_result(ProcessAggregatableDebugReportStatus::kSuccess);
+}
+
+void AttributionResolverImpl::StoreOsRegistrations(
+    const base::flat_set<url::Origin>& origins) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  storage_.StoreOsRegistrations(origins);
 }
 
 void AttributionResolverImpl::SetDelegate(

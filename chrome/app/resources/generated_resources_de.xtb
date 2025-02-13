@@ -220,6 +220,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="114721135501989771">Mit Google-Anmeldung Chrome besser nutzen</translation>
 <translation id="1147322039136785890">Jetzt ist <ph name="SUPERVISED_USER_NAME" /> an der Reihe</translation>
 <translation id="1147991416141538220">Wenn du Zugriff benötigst, wende dich an den Administrator dieses Geräts.</translation>
+<translation id="1148464196693569530">Nutzerscripts zulassen</translation>
 <translation id="1148624853678088576">Fertig!</translation>
 <translation id="1148669835763563782">Du erhältst das neueste Softwareupdate für erhöhte Sicherheit und die neuesten Chromebook-Funktionen. Dieses Update umfasst eine verbesserte Einrichtung, damit dein Chromebook immer reibungslos gestartet werden kann.</translation>
 <translation id="1149401351239820326">Ablaufmonat</translation>
@@ -6759,6 +6760,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5794414402486823030">Immer mit System Viewer öffnen</translation>
 <translation id="5794700615121138172">Freigegebene Linux-Ordner</translation>
 <translation id="5794786537412027208">Alle Chrome-Apps beenden</translation>
+<translation id="5795422263272161110">Nebeneinander anzeigen</translation>
 <translation id="5796485699458186843">Neuer Inkognito&amp;tab</translation>
 <translation id="5796956053441619942">Die URL des Remote-Geräts wird nicht unterstützt</translation>
 <translation id="5797934230382081317">Erste Schritte mit &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; und &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -7286,6 +7288,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6170498031581934115">Die ADB-Fehlerbehebung konnte nicht aktiviert werden. Öffne die Einstellungen und versuche es noch einmal.</translation>
 <translation id="6170675927290506430">Zu den Benachrichtigungseinstellungen</translation>
 <translation id="6171779718418683144">Bei jedem Besuch fragen</translation>
+<translation id="6172020488605056255">Um „Erstelle einen Überblick für mich“ zu verwenden, klicke mit der rechten Maustaste</translation>
 <translation id="617213288191670920">Keine Sprachen hinzugefügt</translation>
 <translation id="6173623053897475761">PIN noch einmal eingeben</translation>
 <translation id="6174909075810107548">Verwende „5“, um eine Maustaste zu drücken</translation>
@@ -8311,6 +8314,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6910190732484284349">Passkey für Nutzername <ph name="USER_EMAIL" /> löschen</translation>
 <translation id="6910211073230771657">Gelöscht</translation>
 <translation id="6910274140210351823">Dunkel</translation>
+<translation id="691102290537033604">Die Erweiterung kann Code ausführen, der nicht von Google überprüft wurde, und möglicherweise Sicherheitsprobleme enthält. Du solltest diese Option daher nur aktivieren, wenn du dir sicher bist, dass es unbedenklich ist.</translation>
 <translation id="6911734910326569517">Speicherbedarf</translation>
 <translation id="6912007319859991306">PIN für SIM-Karte</translation>
 <translation id="6912380255120084882">Anderes Gerät verwenden</translation>
@@ -9822,6 +9826,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> – Stimme <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">WLAN automatisch von deinem Android-Smartphone übertragen</translation>
 <translation id="7991296728590311172">Einstellungen für Schalterzugriff</translation>
+<translation id="7992080146463834191">Inhalte zusammenfassen, komplexe Sprache vereinfachen oder Fragen stellen.</translation>
 <translation id="7992203134935383159">Sprachsynthese</translation>
 <translation id="799570308305997052">Webansicht</translation>
 <translation id="7997826902155442747">Prozesspriorität</translation>
@@ -10063,6 +10068,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8155676038687609779">{COUNT,plural, =0{Keine kompromittierten Passwörter gefunden}=1{{COUNT} kompromittiertes Passwort}other{{COUNT} kompromittierte Passwörter}}</translation>
 <translation id="8157248655669507702">Damit du ein eSIM-Profil installieren kannst, musst du mobile Daten aktivieren</translation>
 <translation id="8157704005178149728">Elternaufsicht wird eingerichtet</translation>
+<translation id="8157728322324420120">Vorschläge für dich</translation>
 <translation id="8157849462797352650">Dein Gerät erhält die neuesten Sicherheits-, Stabilitäts- und Leistungsupdates</translation>
 <translation id="8158117992543756526">Dieses Gerät erhält seit <ph name="MONTH_AND_YEAR" /> keine automatischen Software- und Sicherheitsupdates mehr. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Wenn diese Option aktiviert ist, vibriert das Gerät, wenn du beispielsweise zwischen Desktops wechselst oder den Splitscreen-Modus aktivierst. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -11079,6 +11085,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8874448314264883207">„<ph name="EXTENSION_NAME" />“ wurde deaktiviert</translation>
 <translation id="8874647982044395866">Organisch</translation>
 <translation id="8874790741333031443">Versuche, Drittanbieter-Cookies vorübergehend zuzulassen. Das bedeutet zwar weniger Schutz beim Surfen, aber dadurch erhöht sich die Wahrscheinlichkeit, dass Websites wie erwartet funktionieren.</translation>
+<translation id="8875221558267407626">Inhalte zusammenfassen, komplexe Sprache vereinfachen oder Fragen stellen</translation>
 <translation id="8875520811099717934">Linux-Upgrade</translation>
 <translation id="8875736897340638404">Sichtbarkeit festlegen</translation>
 <translation id="8876307312329369159">Diese Einstellung kann nicht in einer Demositzung geändert werden.</translation>
@@ -11132,6 +11139,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8915916167043355778">Alle schließen</translation>
 <translation id="8916476537757519021">Inkognito-Subframe: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Ja, bitte</translation>
+<translation id="8917980324687233736">Nebeneinander anzeigen</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> von <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">App wird installiert…</translation>
 <translation id="891931289445130855">Daten und Berechtigungen löschen</translation>

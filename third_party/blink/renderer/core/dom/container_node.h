@@ -478,6 +478,11 @@ class CORE_EXPORT ContainerNode : public Node {
     return EnsureCachedCollection<HTMLCollection>(kPopoverInvokers);
   }
 
+  HTMLCollection* CommandInvokers() {
+    DCHECK(IsTreeScope());
+    return EnsureCachedCollection<HTMLCollection>(kCommandInvokers);
+  }
+
   void ReplaceChildren(const VectorOf<Node>& nodes,
                        ExceptionState& exception_state);
 

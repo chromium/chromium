@@ -286,24 +286,30 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
   }
 
   std::string RunSubresourceTest(const base::FilePath& file_path) {
-    return RunServiceWorkerParamedTest(file_path, "submitXhr()");
+    return RunServiceWorkerParamedTest(file_path, "submitFormDataViaXhr()");
   }
 
   std::string BuildBoundary(const std::string& boundary) {
     return "--" + boundary + "\r\n";
   }
-
   std::string BuildContent(const std::string& name, const std::string& value) {
     return "Content-Disposition: form-data; name=\"" + name + "\"\r\n\r\n" +
            value + "\r\n";
   }
-
   std::string BuildFileContent(const std::string& filename) {
     return "Content-Disposition: form-data; name=\"file\"; "
            "filename=\"" +
            filename + "\"\r\n" +
            "Content-Type: application/octet-stream\r\n\r\n" + kFileContent +
            "\r\n";
+  }
+
+  std::string BuildBlobContent(const std::string& name,
+                               const std::string& content) {
+    return "Content-Disposition: form-data; name=\"" + name +
+           "\"; "
+           "filename=\"blob\"\r\n" +
+           "Content-Type: application/octet-stream\r\n\r\n" + content + "\r\n";
   }
 
   std::string BuildTerminator(const std::string& boundary) {
@@ -492,6 +498,25 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerFileUploadTest,
   const auto [boundary, body] = ExtractBoundaryAndBody(result);
   std::string filename = file_path.BaseName().AsUTF8Unsafe();
   const std::string expected_body = BuildExpectedBodyAsText(boundary, filename);
+  EXPECT_EQ(expected_body, body);
+}
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerFileUploadTest, SubmitXhrFormWithBlob) {
+  const base::FilePath file_path = CreateTemporaryFile();
+  const std::string kBlobName = "blobName";
+  const std::string kBlobData = "blobData";
+  const std::string result = RunServiceWorkerParamedTest(
+      file_path, "submitFormDataWithBlobViaXhr(\"" + kBlobName + "\",\"" +
+                     kBlobData + "\")");
+
+  const auto [boundary, body] = ExtractBoundaryAndBody(result);
+  const std::string filename = file_path.BaseName().MaybeAsASCII();
+  const std::string expected_body =
+      BuildBoundary(boundary) + BuildContent("text1", "textValue1") +
+      BuildBoundary(boundary) + BuildContent("text2", "textValue2") +
+      BuildBoundary(boundary) + BuildFileContent(filename) +
+      BuildBoundary(boundary) + BuildBlobContent(kBlobName, kBlobData) +
+      BuildTerminator(boundary);
   EXPECT_EQ(expected_body, body);
 }
 

@@ -4,6 +4,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
@@ -24,11 +25,13 @@
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #include "components/optimization_guide/proto/icon_view_metadata.pb.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -37,8 +40,13 @@ class FakeGlicNudgeObserver : public GlicNudgeObserver {
  public:
   void OnTriggerGlicNudgeUI(std::string label) override {
     last_nudge_label_ = label;
+    if (!last_nudge_label_.empty()) {
+      future_.SetValue();
+    }
   }
+  void WaitUntilValidNudge() { future_.Get(); }
   std::string last_nudge_label_;
+  base::test::TestFuture<void> future_;
 };
 
 class ContextualCueingHelperBrowserTest : public InProcessBrowserTest {
@@ -52,13 +60,24 @@ class ContextualCueingHelperBrowserTest : public InProcessBrowserTest {
            {"NudgeCapTime", "0h"},
            {"NudgeCapCount", "10"},
            {"MinPageCountBetweenNudges", "0"}}},
+         {page_content_annotations::features::kAnnotatedPageContentExtraction,
+          {}},
          {features::kGlic, {}},
          {features::kTabstripComboButton, {}}},
         /*disabled_features=*/{});
   }
 
+  void SetUp() override {
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.Start());
+
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
             browser()->profile());
@@ -84,9 +103,10 @@ class ContextualCueingHelperBrowserTest : public InProcessBrowserTest {
     optimization_guide::OptimizationMetadata metadata;
     metadata.SetAnyMetadataForTesting(cueing_metadata);
     OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-        ->AddHintForTesting(GURL("https://enabled.com/"),
-                            optimization_guide::proto::GLIC_CONTEXTUAL_CUEING,
-                            metadata);
+        ->AddHintForTesting(
+            https_server_.GetURL("enabled.com",
+                                 "/optimization_guide/hello.html"),
+            optimization_guide::proto::GLIC_CONTEXTUAL_CUEING, metadata);
   }
 
   void EnableSignIn() {
@@ -104,7 +124,7 @@ class ContextualCueingHelperBrowserTest : public InProcessBrowserTest {
     return browser()->browser_window_features()->glic_nudge_controller();
   }
 
- private:
+ protected:
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
@@ -116,6 +136,8 @@ class ContextualCueingHelperBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   base::CallbackListSubscription create_services_subscription_;
+
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
@@ -130,7 +152,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   glic_nudge_controller()->AddObserver(&nudge_observer);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://enabled.com/"),
+      browser(),
+      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_EQ("test label", nudge_observer.last_nudge_label_);
@@ -162,7 +185,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest, TestCueNotAvailable) {
   glic_nudge_controller()->AddObserver(&nudge_observer);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://enabled.com/"),
+      browser(),
+      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_EQ("", nudge_observer.last_nudge_label_);
@@ -194,15 +218,16 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   optimization_guide::OptimizationMetadata metadata;
   metadata.set_any_metadata(optimization_guide::proto::Any());
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->AddHintForTesting(GURL("https://enabled.com/"),
-                          optimization_guide::proto::GLIC_CONTEXTUAL_CUEING,
-                          metadata);
+      ->AddHintForTesting(
+          https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
+          optimization_guide::proto::GLIC_CONTEXTUAL_CUEING, metadata);
 
   FakeGlicNudgeObserver nudge_observer;
   glic_nudge_controller()->AddObserver(&nudge_observer);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://enabled.com/"),
+      browser(),
+      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_EQ("", nudge_observer.last_nudge_label_);
@@ -247,7 +272,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   glic_nudge_controller()->AddObserver(&nudge_observer);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://enabled.com/"),
+      browser(),
+      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_EQ("", nudge_observer.last_nudge_label_);
@@ -294,7 +320,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   glic_nudge_controller()->AddObserver(&nudge_observer);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://enabled.com/"),
+      browser(),
+      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_EQ("test label", nudge_observer.last_nudge_label_);
@@ -323,7 +350,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   glic_nudge_controller()->AddObserver(&nudge_observer);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://enabled.com/"),
+      browser(),
+      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
@@ -343,7 +371,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   glic_nudge_controller()->AddObserver(&nudge_observer);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://enabled.com/"),
+      browser(),
+      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
@@ -362,4 +391,53 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       "ContextualCueing.NudgeInteraction",
       contextual_cueing::NudgeInteraction::kIgnoredTabChange, 1);
 }
-#endif
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
+                       TestCueLabelDisplayedForWordCount) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  EnableSignIn();
+  optimization_guide::proto::GlicContextualCueingMetadata cueing_metadata;
+  auto* cueing_config = cueing_metadata.add_cueing_configurations();
+  cueing_config->set_cue_label("cue label");
+  auto* cond = cueing_config->add_conditions();
+  cond->set_signal(
+      optimization_guide::proto::
+          CONTEXTUAL_CUEING_CLIENT_SIGNAL_CONTENT_LENGTH_WORD_COUNT);
+  cond->set_cueing_operator(
+      optimization_guide::proto::
+          CONTEXTUAL_CUEING_OPERATOR_GREATER_THAN_OR_EQUAL_TO);
+  cond->set_int64_threshold(3);
+
+  SetUpEnabledHints(cueing_metadata);
+
+  FakeGlicNudgeObserver nudge_observer;
+  glic_nudge_controller()->AddObserver(&nudge_observer);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(),
+      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  nudge_observer.WaitUntilValidNudge();
+  EXPECT_EQ("cue label", nudge_observer.last_nudge_label_);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.NudgeDecision.GlicContextualCueing",
+      contextual_cueing::NudgeDecision::kSuccess, 1);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::ContextualCueing_NudgeDecision::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
+  ukm_recorder.ExpectEntryMetric(
+      entry,
+      ukm::builders::ContextualCueing_NudgeDecision::kOptimizationTypeName,
+      static_cast<int64_t>(optimization_guide::proto::GLIC_CONTEXTUAL_CUEING));
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::ContextualCueing_NudgeDecision::kNudgeDecisionName,
+      static_cast<int64_t>(contextual_cueing::NudgeDecision::kSuccess));
+}
+
+#endif  // BUILDFLAG(ENABLE_GLIC)

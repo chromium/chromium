@@ -411,6 +411,11 @@
       status: "stable",
     },
     {
+      // https://drafts.csswg.org/web-animations-2/#triggers
+      name: "AnimationTrigger",
+      status: "test",
+    },
+    {
       name: "AnimationWorklet",
     },
     {
@@ -420,7 +425,7 @@
     {
       name: "AOMAriaRelationshipProperties",
       public: true,
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "AOMAriaRelationshipPropertiesAriaOwns",
@@ -816,6 +821,13 @@
       name: "ClientHintUAHighEntropyValuesPermissionPolicy",
       status: "test",
     },
+    {
+      // Enables the API for getting a unique token of the system clipboard's
+      // current state.
+      // https://chromestatus.com/feature/5124993439236096
+      name: "ClipboardContentsId",
+      status: "test",
+    },
     // This ensures that clipboard event fires on a target node which is
     // focused in case no visible selection is present.
     // crbug.com/40735783
@@ -1000,26 +1012,6 @@
       status: "stable",
     },
     {
-      // https://github.com/w3c/csswg-drafts/issues/8942
-      name: "CSSAnimationTrigger",
-      status: "test",
-    },
-    {
-      name: "CSSAnimationTriggerRange",
-      status: "test",
-      implied_by: ["CSSAnimationTrigger"],
-    },
-    {
-      name: "CSSAnimationTriggerTimeline",
-      status: "test",
-      implied_by: ["CSSAnimationTrigger"],
-    },
-    {
-      name: "CSSAnimationTriggerType",
-      status: "test",
-      implied_by: ["CSSAnimationTrigger"],
-    },
-    {
       // Support for <string> syntax in @property
       // https://drafts.css-houdini.org/css-properties-values-api-1/#syntax-strings
       name: "CSSAtPropertyStringSyntax",
@@ -1117,7 +1109,7 @@
     {
       // Support making elements inert through the interactivity property.
       name: "CSSInert",
-      status: "experimental",
+      status: "stable",
     },
     {
       // CSS if() function for custom properties. Supports only style
@@ -2499,10 +2491,12 @@
     },
     {
       // Makes the HTML parser close <select> tags before inserting <input>
-      // tags to match the old parser behavior in case we have compat issues
-      // launching SelectParserRelaxation. If SelectParserRelaxation stays
-      // stable in M131, then this flag can be removed in M133.
+      // tags to match the old parser behavior. This is shipping with the
+      // initial release of SelectParserRelaxation in order to de-risk it, but
+      // we could consider disabling this in future releases of we want to
+      // support authors who want to put <input>s in <select>s.
       name: "InputClosesSelect",
+      status: "stable",
       depends_on: ["SelectParserRelaxation"],
     },
     {
@@ -2635,6 +2629,9 @@
       name: "LayoutImageForceAspectRatioOfOneOnError",
     },
     {
+      name: "LayoutImageRevalidationCheckForSvgImages",
+    },
+    {
       name: "LayoutJustifySelfForBlocks",
       status: "stable",
     },
@@ -2692,6 +2689,12 @@
       // Enable sourceCharPosition for the invoke-type resolve-promise
       // https://issues.chromium.org/issues/381529126
       name: "LongAnimationFrameSourceCharPosition",
+      status: "experimental",
+    },
+    {
+      // Add sourceLine and sourceColumn to PerformanceScriptTiming
+      // https://issues.chromium.org/issues/391417815
+      name: "LongAnimationFrameSourceLineColumn",
       status: "experimental",
     },
     {
@@ -2923,7 +2926,7 @@
     },
     {
       name: "NavigateEventSourceElement",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "NavigationActivation",

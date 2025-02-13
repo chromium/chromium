@@ -391,7 +391,18 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
 
     /** Get the safe area from the WindowInsets, store it and notify any observers. */
     private void updateCurrentSafeArea() {
-        Rect newSafeArea = new Rect(mDisplayCutoutRect);
+        // When display cutout already included in the system bar insets, do not consider it as safe
+        // area.
+        Insets systemBarInsets =
+                getLastRawWindowInsets() == null
+                        ? Insets.NONE
+                        : getLastRawWindowInsets().getInsets(WindowInsetsCompat.Type.systemBars());
+        Rect newSafeArea =
+                new Rect(
+                        Math.max(0, mDisplayCutoutRect.left - systemBarInsets.left),
+                        Math.max(0, mDisplayCutoutRect.top - systemBarInsets.top),
+                        Math.max(0, mDisplayCutoutRect.right - systemBarInsets.right),
+                        Math.max(0, mDisplayCutoutRect.bottom - systemBarInsets.bottom));
         newSafeArea.bottom += mBottomInsetsForEdgeToEdge;
         // If the safe area has not changed then we should stop now.
         if (newSafeArea.equals(mCurrentSafeArea)) {

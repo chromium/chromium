@@ -120,10 +120,10 @@ id<GREYMatcher> CreditCardManualFillViewTab() {
 }
 
 // Matcher for the overflow menu button shown in the payment method cells.
-id<GREYMatcher> OverflowMenuButton() {
-  return grey_allOf(
-      grey_accessibilityID(manual_fill::kExpandedManualFillOverflowMenuID),
-      grey_interactable(), nullptr);
+id<GREYMatcher> OverflowMenuButton(NSInteger cell_index) {
+  return grey_allOf(grey_accessibilityID([ManualFillUtil
+                        expandedManualFillOverflowMenuID:cell_index]),
+                    grey_interactable(), nullptr);
 }
 
 // Matcher for the "Edit" action made available by the overflow menu button.
@@ -988,10 +988,10 @@ void DismissPaymentBottomSheet() {
   OpenPaymentMethodManualFillView();
 
   if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
-    [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+    [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
         assertWithMatcher:grey_sufficientlyVisible()];
   } else {
-    [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+    [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
         assertWithMatcher:grey_notVisible()];
   }
 }
@@ -1022,7 +1022,7 @@ void DismissPaymentBottomSheet() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // The overflow menu button should not be visible.
-  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
       assertWithMatcher:grey_notVisible()];
 }
 
@@ -1050,7 +1050,7 @@ void DismissPaymentBottomSheet() {
   OpenPaymentMethodManualFillView();
 
   // Tap the overflow menu button and select the "Edit" action.
-  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:OverflowMenuEditAction()]
       performAction:grey_tap()];
@@ -1097,7 +1097,7 @@ void DismissPaymentBottomSheet() {
   OpenPaymentMethodManualFillView();
 
   // Tap the overflow menu button and select the "Edit" action.
-  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:OverflowMenuEditAction()]
       performAction:grey_tap()];
@@ -1136,7 +1136,7 @@ void DismissPaymentBottomSheet() {
   OpenPaymentMethodManualFillView();
 
   // Tap the overflow menu button and select the "Show Details" action.
-  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:OverflowMenuShowDetailsAction()]
       performAction:grey_tap()];

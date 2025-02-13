@@ -68,6 +68,15 @@ const GURL& FakeDownloadTask::GetOriginalUrl() const {
   return original_url_;
 }
 
+const GURL& FakeDownloadTask::GetRedirectedUrl() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Replicate the logic of the download task.
+  if (!redirected_url_.is_empty()) {
+    return redirected_url_;
+  }
+  return GetOriginalUrl();
+}
+
 NSString* FakeDownloadTask::GetOriginatingHost() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return originating_host_;
@@ -224,6 +233,16 @@ void FakeDownloadTask::SetGeneratedFileName(
 void FakeDownloadTask::SetPerformedBackgroundDownload(bool flag) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   has_performed_background_download_ = flag;
+}
+
+void FakeDownloadTask::SetOriginatingHost(NSString* originating_host) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  originating_host_ = [originating_host copy];
+}
+
+void FakeDownloadTask::SetRedirectedURL(const GURL& redirected_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  redirected_url_ = redirected_url;
 }
 
 void FakeDownloadTask::OnDownloadUpdated() {

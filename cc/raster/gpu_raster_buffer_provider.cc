@@ -148,14 +148,14 @@ std::unique_ptr<RasterBuffer> GpuRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
-  if (!resource.gpu_backing()) {
+  if (!resource.backing()) {
     auto backing = std::make_unique<ResourcePool::Backing>();
     backing->overlay_candidate = tile_overlay_candidate_;
     backing->is_using_raw_draw =
         !backing->overlay_candidate && is_using_raw_draw_;
-    resource.set_gpu_backing(std::move(backing));
+    resource.set_backing(std::move(backing));
   }
-  ResourcePool::Backing* backing = resource.gpu_backing();
+  ResourcePool::Backing* backing = resource.backing();
   bool resource_has_previous_content =
       resource_content_id && resource_content_id == previous_content_id;
   return std::make_unique<RasterBufferImpl>(
@@ -180,7 +180,7 @@ bool GpuRasterBufferProvider::IsResourcePremultiplied() const {
 bool GpuRasterBufferProvider::IsResourceReadyToDraw(
     const ResourcePool::InUsePoolResource& resource) {
   FlushIfNeeded();
-  const gpu::SyncToken& sync_token = resource.gpu_backing()->mailbox_sync_token;
+  const gpu::SyncToken& sync_token = resource.backing()->mailbox_sync_token;
   // This SyncToken() should have been set by calling OrderingBarrier() before
   // calling this.
   DCHECK(sync_token.HasData());
@@ -201,8 +201,7 @@ uint64_t GpuRasterBufferProvider::SetReadyToDrawCallback(
   FlushIfNeeded();
   gpu::SyncToken latest_sync_token;
   for (const auto* in_use : resources) {
-    const gpu::SyncToken& sync_token =
-        in_use->gpu_backing()->mailbox_sync_token;
+    const gpu::SyncToken& sync_token = in_use->backing()->mailbox_sync_token;
     if (sync_token.release_count() > latest_sync_token.release_count())
       latest_sync_token = sync_token;
   }
@@ -341,10 +340,10 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
     } else if (client_->is_using_raw_draw_) {
       flags |= gpu::SHARED_IMAGE_USAGE_RAW_DRAW;
     }
-    backing_->shared_image =
+    backing_->set_shared_image(
         sii->CreateSharedImage({shared_image_format_, resource_size_,
                                 color_space_, flags, "GpuRasterTile"},
-                               gpu::kNullSurfaceHandle);
+                               gpu::kNullSurfaceHandle));
     CHECK(backing_->shared_image);
     mailbox_needs_clear = true;
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());

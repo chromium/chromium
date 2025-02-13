@@ -109,7 +109,8 @@ public class BookmarkEditActivity extends SnackbarActivity {
                         /* context= */ this,
                         mModel,
                         getSnackbarManager(),
-                        IdentityServicesProvider.get().getIdentityManager(profile));
+                        IdentityServicesProvider.get()
+                                .getIdentityManager(profile.getOriginalProfile()));
         setContentView(R.layout.bookmark_edit);
         mTitleEditText = findViewById(R.id.title_text);
         mUrlEditText = findViewById(R.id.url_text);

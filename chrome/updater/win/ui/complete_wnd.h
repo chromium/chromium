@@ -45,7 +45,8 @@ class CompleteWnd : public OmahaWnd {
   CompleteWnd(int dialog_id,
               DWORD control_classes,
               WTL::CMessageLoop* message_loop,
-              HWND parent);
+              HWND parent,
+              const std::wstring& lang);
   ~CompleteWnd() override;
 
   // Message and command handlers.

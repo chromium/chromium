@@ -19,7 +19,6 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/native_library.h"
 #include "base/strings/string_util.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -186,7 +185,7 @@ TEST(ElfReaderTestWithCurrentElfImage, ReadElfBuildId) {
   size_t build_id_size = ReadElfBuildId(&__executable_start, true, build_id);
   ASSERT_NE(build_id_size, 0u);
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if defined(OFFICIAL_BUILD)
   constexpr size_t kExpectedBuildIdStringLength = 40;  // SHA1 hash in hex.
 #else
   constexpr size_t kExpectedBuildIdStringLength = 16;  // 64-bit int in hex.

@@ -175,7 +175,7 @@ std::optional<ResourceRequestBlockedReason> PrepareResourceRequest(
                     : ResourceRequestHead::RedirectStatus::kNoRedirect;
   context.CheckCSPForRequest(
       resource_request.GetRequestContext(),
-      resource_request.GetRequestDestination(),
+      resource_request.GetRequestDestination(), resource_request.GetMode(),
       MemoryCache::RemoveFragmentIdentifierIfNeeded(
           bundle_url_for_uuid_resources.IsValid()
               ? bundle_url_for_uuid_resources
@@ -362,7 +362,7 @@ PrepareResourceRequestForCacheAccess(
                     : ResourceRequestHead::RedirectStatus::kNoRedirect;
   context.CheckCSPForRequest(
       resource_request.GetRequestContext(),
-      resource_request.GetRequestDestination(),
+      resource_request.GetRequestDestination(), resource_request.GetMode(),
       MemoryCache::RemoveFragmentIdentifierIfNeeded(
           bundle_url_for_uuid_resources.IsValid()
               ? bundle_url_for_uuid_resources

@@ -496,7 +496,8 @@ bool FrameFetchContext::AllowImage() const {
   return images_enabled;
 }
 
-void FrameFetchContext::ModifyRequestForCSP(ResourceRequest& resource_request) {
+void FrameFetchContext::ModifyRequestForMixedContentUpgrade(
+    ResourceRequest& resource_request) {
   if (GetResourceFetcherProperties().IsDetached())
     return;
 
@@ -837,10 +838,13 @@ void FrameFetchContext::PopulateResourceRequestBeforeCacheAccess(
     probe::SetDevToolsIds(Probe(), request, options.initiator_info);
   }
 
-  // CSP may change the url.
-  ModifyRequestForCSP(request);
-  if (!request.Url().IsValid()) {
-    return;
+  if (!RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled()) {
+    // CSP may change the url, if Upgrade-Insecure-Request is enforced for
+    // mixed content.
+    ModifyRequestForMixedContentUpgrade(request);
+    if (!request.Url().IsValid()) {
+      return;
+    }
   }
   SetFirstPartyCookie(request);
   if (CoreProbeSink::HasAgentsGlobal(CoreProbeSink::kInspectorEmulationAgent |
@@ -869,7 +873,7 @@ void FrameFetchContext::UpgradeResourceRequestForLoader(
     if (!GetResourceFetcherProperties().IsDetached()) {
       probe::SetDevToolsIds(Probe(), request, options.initiator_info);
     }
-    ModifyRequestForCSP(request);
+    ModifyRequestForMixedContentUpgrade(request);
   }
   AddClientHintsIfNecessary(resource_width, request);
   AddReducedAcceptLanguageIfNecessary(request);

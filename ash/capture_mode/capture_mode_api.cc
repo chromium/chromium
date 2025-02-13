@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/scanner/scanner_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/feature_list.h"
@@ -16,13 +17,26 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace ash {
+namespace {
+
+bool ScannerCanShowUi() {
+  if (!Shell::HasInstance()) {
+    return false;
+  }
+
+  auto* scanner_controller = Shell::Get()->scanner_controller();
+  // This check checks if scanner is enabled (while ignoring consent status).
+  return scanner_controller && scanner_controller->CanShowUi();
+}
+
+}  // namespace
 
 void CaptureScreenshotsOfAllDisplays() {
   CaptureModeController::Get()->CaptureScreenshotsOfAllDisplays();
 }
 
 bool IsSunfishSessionAllowed() {
-  if (!features::IsSunfishFeatureEnabled() && !features::IsScannerEnabled()) {
+  if (!features::IsSunfishFeatureEnabled() && !ScannerCanShowUi()) {
     return false;
   }
 

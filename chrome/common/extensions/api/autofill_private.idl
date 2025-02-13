@@ -134,6 +134,16 @@ namespace autofillPrivate {
     LOYALTY_MEMBERSHIP_PROGRAM,
     LOYALTY_MEMBERSHIP_PROVIDER,
     LOYALTY_MEMBERSHIP_ID,
+    VEHICLE_OWNER_TAG,
+    VEHICLE_LICENSE_PLATE,
+    VEHICLE_VIN,
+    VEHICLE_MAKE,
+    VEHICLE_MODEL,
+    DRIVERS_LICENSE_NAME_TAG,
+    DRIVERS_LICENSE_REGION,
+    DRIVERS_LICENSE_NUMBER,
+    DRIVERS_LICENSE_EXPIRATION_DATE_TAG,
+    DRIVERS_LICENSE_ISSUE_DATE_TAG,
     MAX_VALID_FIELD_TYPE
   };
 
@@ -328,7 +338,6 @@ namespace autofillPrivate {
   callback GetUserAnnotationsEntriesCallback = void(UserAnnotationsEntry[] items);
   callback hasUserAnnotationsEntriesCallback = void(boolean hasEntries);
   callback isUserEligibleForAutofillImprovementsCallback = void(boolean eligible);
-  callback annotationsBootstrappingCallback = void(boolean bootstrapped);
 
   interface Functions {
     // Gets currently signed-in user profile info, no value is returned if
@@ -462,10 +471,6 @@ namespace autofillPrivate {
 
     // Notifies autofill client about the prediction improvements pre changing.
     static void predictionImprovementsIphFeatureUsed();
-
-    // Triggers bootstrapping of user annotations. Returns true if
-    // bootstrapping was successful (entries were added), false otherwise.
-    static void triggerAnnotationsBootstrapping(annotationsBootstrappingCallback callback);
   };
 
   interface Events {

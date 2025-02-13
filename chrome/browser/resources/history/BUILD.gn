@@ -46,6 +46,7 @@ build_webui("build") {
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [
+    "history_embeddings_promo.css",
     "shared_style.css",
     "shared_vars.css",
   ]
@@ -68,6 +69,7 @@ build_webui("build") {
   ]
 
   ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/commerce:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",

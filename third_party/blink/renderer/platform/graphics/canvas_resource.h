@@ -250,6 +250,10 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
 
   const gpu::SyncToken GetSyncTokenWithOptionalVerification(
       bool needs_verified_token) final {
+    // This class doesn't currently have a way of verifying the sync token
+    // within this call, so it instead ensures that it is verified at the time
+    // of generation.
+    CHECK(sync_token_.verified_flush());
     return sync_token_;
   }
 

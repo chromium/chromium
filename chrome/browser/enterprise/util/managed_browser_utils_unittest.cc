@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
@@ -28,13 +27,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "base/values.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 using testing::UnorderedElementsAre;
 
@@ -71,7 +70,7 @@ TEST(ManagedBrowserUtils, GetRequestingUrl) {
   EXPECT_EQ(expected, enterprise_util::GetRequestingUrl(host_port_pair));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 class ManagedBrowserUtilsTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -107,7 +106,7 @@ TEST_F(ManagedBrowserUtilsTest, HasMachineLevelPolicies) {
 
   EXPECT_TRUE(enterprise_util::IsBrowserManaged(profile()));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 TEST_F(ManagedBrowserUtilsTest, WorkProfileDefaultLabel) {

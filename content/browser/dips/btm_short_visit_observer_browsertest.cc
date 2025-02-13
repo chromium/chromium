@@ -288,5 +288,40 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
   ukm_recorder.ExpectEntryMetric(entries[0], "NextSiteSame", 1);
 }
 
+IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest, IgnoreAllSameSite) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  const GURL url1a =
+      embedded_https_test_server().GetURL("a.test", "/empty.html?a");
+  const GURL url1b =
+      embedded_https_test_server().GetURL("sub1.a.test", "/empty.html?b");
+  const GURL url1c =
+      embedded_https_test_server().GetURL("sub2.a.test", "/empty.html?c");
+  const GURL url2a =
+      embedded_https_test_server().GetURL("b.test", "/empty.html?a");
+  const GURL url2b =
+      embedded_https_test_server().GetURL("sub1.b.test", "/empty.html?b");
+  const GURL url2c =
+      embedded_https_test_server().GetURL("sub2.b.test", "/empty.html?c");
+  const GURL url3 =
+      embedded_https_test_server().GetURL("c.test", "/empty.html");
+
+  // Visit three pages on a.test.
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1a));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1b));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1c));
+  // Visit three pages on b.test.
+  ASSERT_TRUE(NavigateToURL(web_contents(), url2a));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url2b));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url2c));
+  // Visit c.test.
+  ASSERT_TRUE(NavigateToURL(web_contents(), url3));
+
+  auto entries = ukm_recorder.GetEntriesByName("BTM.ShortVisit");
+  // No visits reported for url1b or url2b, because each is same-site to both of
+  // the pages before/after it.
+  ASSERT_THAT(EntryURLs(ukm_recorder, entries),
+              testing::ElementsAre(url1a, url1c, url2a, url2c));
+}
+
 }  // namespace
 }  // namespace content

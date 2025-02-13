@@ -27,6 +27,7 @@ test("ash_components_unittests") {
     # TODO(crbug.com/386148857): Temporarily refer chromeos/ash/experiences
     # from here for arc directory migration. Fix this later.
     "//chromeos/ash/experiences/arc/intent_helper:unit_tests",
+    "//chromeos/ash/experiences/arc/keymint:unit_tests",
     "//chromeos/ash/experiences/arc/message_center:unit_tests",
     "//chromeos/ash/experiences/arc/process:unit_tests",
     "//chromeos/ash/experiences/arc/session:unit_tests",

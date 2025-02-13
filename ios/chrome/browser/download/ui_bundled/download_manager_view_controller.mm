@@ -157,6 +157,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 @interface DownloadManagerViewController () <FullscreenUIElement> {
   NSString* _fileName;
   NSString* _originatingHost;
+  BOOL _displayOriginatingHost;
   int64_t _countOfBytesReceived;
   int64_t _countOfBytesExpectedToReceive;
   float _progress;
@@ -363,11 +364,14 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   }
 }
 
-- (void)setOriginatingHost:(NSString*)originatingHost {
-  if (![_originatingHost isEqualToString:originatingHost]) {
-    _originatingHost = [originatingHost copy];
-    [self updateViews];
+- (void)setOriginatingHost:(NSString*)originatingHost display:(BOOL)display {
+  if ([_originatingHost isEqualToString:originatingHost] &&
+      _displayOriginatingHost == display) {
+    return;
   }
+  _originatingHost = [originatingHost copy];
+  _displayOriginatingHost = display;
+  [self updateViews];
 }
 
 - (void)setCountOfBytesReceived:(int64_t)value {
@@ -839,10 +843,16 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   self.statusLabel.text = [self localizedFileNameAndSizeWithPeriod:NO];
   // Update detail label text.
   NSMutableArray* details = [NSMutableArray array];
-  if ([_originatingHost length]) {
-    [details addObject:l10n_util::GetNSStringF(
-                           IDS_IOS_DOWNLOAD_MANAGER_ORIGIN_HOST_LABEL,
-                           base::SysNSStringToUTF16(_originatingHost))];
+  if (_displayOriginatingHost) {
+    if ([_originatingHost length]) {
+      [details addObject:l10n_util::GetNSStringF(
+                             IDS_IOS_DOWNLOAD_MANAGER_ORIGIN_HOST_LABEL,
+                             base::SysNSStringToUTF16(_originatingHost))];
+    } else {
+      [details
+          addObject:l10n_util::GetNSString(
+                        IDS_IOS_DOWNLOAD_MANAGER_ORIGIN_HOST_UNKNOWN_LABEL)];
+    }
   }
   if (self.incognito) {
     [details addObject:l10n_util::GetNSString(

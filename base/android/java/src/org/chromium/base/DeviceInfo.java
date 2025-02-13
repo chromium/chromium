@@ -24,10 +24,12 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /** DeviceInfo is a utility class to access the device-related information. */
 @JNINamespace("base::android::device_info")
+@NullMarked
 public final class DeviceInfo {
     private static final String TAG = "DeviceInfo";
 
@@ -58,7 +60,7 @@ public final class DeviceInfo {
     private final int mVulkanDeqpLevel;
 
     @GuardedBy("CREATION_LOCK")
-    private static DeviceInfo sInstance;
+    private static @Nullable DeviceInfo sInstance;
 
     private static final Object CREATION_LOCK = new Object();
 

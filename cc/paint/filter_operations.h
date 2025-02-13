@@ -83,6 +83,10 @@ class CC_PAINT_EXPORT FilterOperations {
     return operations_[index];
   }
 
+  // Returns false if the filter operations can potentially cause visible
+  // color fringing of LCD-text (i.e. subpixel anti-aliased) pixels.
+  bool AllowsLCDText() const;
+
   // If |from| is of the same size as this, where in each position, the filter
   // in |from| is of the same type as the filter in this, and if this doesn't
   // contain any reference filters, returns a FilterOperations formed by

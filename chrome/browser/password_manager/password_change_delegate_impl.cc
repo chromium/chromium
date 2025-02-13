@@ -319,7 +319,6 @@ void PasswordChangeDelegateImpl::Restart() {
   CHECK_EQ(State::kChangePasswordFormNotFound, current_state_);
   CHECK(!submission_verifier_);
 
-  current_state_ = State::kWaitingForChangePasswordForm;
   StartPasswordChange();
 }
 

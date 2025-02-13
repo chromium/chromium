@@ -116,14 +116,15 @@ std::optional<ResourceRequestBlockedReason>
 BaseFetchContext::CheckCSPForRequest(
     mojom::blink::RequestContextType request_context,
     network::mojom::RequestDestination request_destination,
+    network::mojom::RequestMode request_mode,
     const KURL& url,
     const ResourceLoaderOptions& options,
     ReportingDisposition reporting_disposition,
     const KURL& url_before_redirects,
     ResourceRequest::RedirectStatus redirect_status) const {
   return CheckCSPForRequestInternal(
-      request_context, request_destination, url, options, reporting_disposition,
-      url_before_redirects, redirect_status,
+      request_context, request_destination, request_mode, url, options,
+      reporting_disposition, url_before_redirects, redirect_status,
       ContentSecurityPolicy::CheckHeaderType::kCheckReportOnly);
 }
 
@@ -131,14 +132,15 @@ std::optional<ResourceRequestBlockedReason>
 BaseFetchContext::CheckAndEnforceCSPForRequest(
     mojom::blink::RequestContextType request_context,
     network::mojom::RequestDestination request_destination,
+    network::mojom::RequestMode request_mode,
     const KURL& url,
     const ResourceLoaderOptions& options,
     ReportingDisposition reporting_disposition,
     const KURL& url_before_redirects,
     ResourceRequest::RedirectStatus redirect_status) const {
   return CheckCSPForRequestInternal(
-      request_context, request_destination, url, options, reporting_disposition,
-      url_before_redirects, redirect_status,
+      request_context, request_destination, request_mode, url, options,
+      reporting_disposition, url_before_redirects, redirect_status,
       ContentSecurityPolicy::CheckHeaderType::kCheckAll);
 }
 
@@ -146,6 +148,7 @@ std::optional<ResourceRequestBlockedReason>
 BaseFetchContext::CheckCSPForRequestInternal(
     mojom::blink::RequestContextType request_context,
     network::mojom::RequestDestination request_destination,
+    network::mojom::RequestMode request_mode,
     const KURL& url,
     const ResourceLoaderOptions& options,
     ReportingDisposition reporting_disposition,
@@ -160,8 +163,8 @@ BaseFetchContext::CheckCSPForRequestInternal(
   ContentSecurityPolicy* csp =
       GetContentSecurityPolicyForWorld(options.world_for_csp.Get());
   if (csp &&
-      !csp->AllowRequest(request_context, request_destination, url,
-                         options.content_security_policy_nonce,
+      !csp->AllowRequest(request_context, request_destination, request_mode,
+                         url, options.content_security_policy_nonce,
                          options.integrity_metadata, options.parser_disposition,
                          url_before_redirects, redirect_status,
                          reporting_disposition, check_header_type)) {
@@ -247,7 +250,7 @@ BaseFetchContext::CanRequestInternal(
   // populateResourceRequest). We check the enforced headers here to ensure we
   // block things we ought to block.
   if (CheckCSPForRequestInternal(
-          request_context, request_destination, url, options,
+          request_context, request_destination, request_mode, url, options,
           reporting_disposition, url_before_redirects, redirect_status,
           ContentSecurityPolicy::CheckHeaderType::kCheckEnforce) ==
       ResourceRequestBlockedReason::kCSP) {

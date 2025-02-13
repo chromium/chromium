@@ -520,6 +520,7 @@ void ContentSecurityPolicy::ComputeInternalStateForParsedPolicy(
       case CSPDirectiveName::ObjectSrc:
       case CSPDirectiveName::ReportTo:
       case CSPDirectiveName::ReportURI:
+      case CSPDirectiveName::RequireSRIFor:
       case CSPDirectiveName::RequireTrustedTypesFor:
       case CSPDirectiveName::Sandbox:
       case CSPDirectiveName::TreatAsPublicAddress:
@@ -852,12 +853,51 @@ bool AllowResourceHintRequestForPolicy(
              nonce, integrity_metadata, parser_disposition)
       .IsAllowed();
 }
+
+bool CSPDirectiveRequiresSRI(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    network::mojom::RequestDestination request_destination) {
+  return (csp.require_sri_for ==
+              network::mojom::blink::CSPRequireSRIFor::Script &&
+          request_destination ==
+              network::mojom::blink::RequestDestination::kScript);
+}
+
 }  // namespace
+
+bool ContentSecurityPolicy::AllowRequestWithoutIntegrity(
+    mojom::blink::RequestContextType context,
+    network::mojom::RequestDestination request_destination,
+    const KURL& url,
+    ReportingDisposition reporting_disposition,
+    CheckHeaderType check_header_type) {
+  for (const auto& policy : policies_) {
+    if (!CheckHeaderTypeMatches(check_header_type, reporting_disposition,
+                                policy->header->type)) {
+      continue;
+    }
+    if (CSPDirectiveRequiresSRI(*policy, request_destination)) {
+      if (reporting_disposition == ReportingDisposition::kReport) {
+        ReportViolation(GetDirectiveName(CSPDirectiveName::RequireSRIFor),
+                        CSPDirectiveName::RequireSRIFor, String(), url,
+                        policy->report_endpoints, policy->use_reporting_api,
+                        policy->header->header_value, policy->header->type,
+                        ContentSecurityPolicyViolationType::kSRIViolation,
+                        std::unique_ptr<SourceLocation>(),
+                        /*contextFrame=*/nullptr);
+      }
+      return check_header_type ==
+             ContentSecurityPolicy::CheckHeaderType::kCheckReportOnly;
+    }
+  }
+  return true;
+}
 
 // https://w3c.github.io/webappsec-csp/#does-request-violate-policy
 bool ContentSecurityPolicy::AllowRequest(
     mojom::blink::RequestContextType context,
     network::mojom::RequestDestination request_destination,
+    network::mojom::RequestMode request_mode,
     const KURL& url,
     const String& nonce,
     const IntegrityMetadataSet& integrity_metadata,
@@ -883,6 +923,14 @@ bool ContentSecurityPolicy::AllowRequest(
 
   std::optional<CSPDirectiveName> type =
       GetDirectiveTypeFromRequestContextType(context);
+
+  if ((integrity_metadata.empty() ||
+       request_mode == network::mojom::RequestMode::kNoCors) &&
+      !url.ProtocolIsData() && !url.ProtocolIs("blob") &&
+      !AllowRequestWithoutIntegrity(context, request_destination, url,
+                                    reporting_disposition, check_header_type)) {
+    return false;
+  }
 
   if (!type)
     return true;
@@ -1139,6 +1187,7 @@ std::unique_ptr<SourceLocation> GatherSecurityPolicyViolationEventData(
         init->setBlockedURI("wasm-eval");
         break;
       case ContentSecurityPolicyViolationType::kURLViolation:
+      case ContentSecurityPolicyViolationType::kSRIViolation:
         // We pass RedirectStatus::kNoRedirect so that StripURLForUseInReport
         // does not strip path and query from the URL. This is safe since
         // blocked_url at this point is always the original url (before
@@ -1253,7 +1302,8 @@ void ContentSecurityPolicy::ReportViolation(
     const String& source,
     const String& source_prefix,
     std::optional<base::UnguessableToken> issue_id) {
-  DCHECK(violation_type == kURLViolation || blocked_url.IsEmpty());
+  CHECK(violation_type == kURLViolation || blocked_url.IsEmpty() ||
+        violation_type == kSRIViolation);
 
   // TODO(crbug.com/1279745): Remove/clarify what this block is about.
   if (!delegate_ && !context_frame) {
@@ -1434,6 +1484,8 @@ ContentSecurityPolicy::BuildCSPViolationType(
           kTrustedTypesSinkViolation;
     case blink::ContentSecurityPolicyViolationType::kURLViolation:
       return mojom::blink::ContentSecurityPolicyViolationType::kURLViolation;
+    case blink::ContentSecurityPolicyViolationType::kSRIViolation:
+      return mojom::blink::ContentSecurityPolicyViolationType::kSRIViolation;
   }
 }
 
@@ -1521,6 +1573,8 @@ const char* ContentSecurityPolicy::GetDirectiveName(CSPDirectiveName type) {
       return "report-to";
     case CSPDirectiveName::ReportURI:
       return "report-uri";
+    case CSPDirectiveName::RequireSRIFor:
+      return "require-sri-for";
     case CSPDirectiveName::RequireTrustedTypesFor:
       return "require-trusted-types-for";
     case CSPDirectiveName::Sandbox:
@@ -1586,6 +1640,9 @@ CSPDirectiveName ContentSecurityPolicy::GetDirectiveType(const String& name) {
     return CSPDirectiveName::ReportTo;
   if (name == "report-uri")
     return CSPDirectiveName::ReportURI;
+  if (name == "require-sri-for") {
+    return CSPDirectiveName::RequireSRIFor;
+  }
   if (name == "require-trusted-types-for")
     return CSPDirectiveName::RequireTrustedTypesFor;
   if (name == "sandbox")

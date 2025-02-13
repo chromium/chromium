@@ -354,6 +354,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5596627076506792578">Rohkem valikuid</translation>
 <translation id="5602351063754773347">Chrome soovitab selle eemaldada. <ph name="BEGIN_LINK" />Lisateave toetatud laienduste kohta<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome teeb veebis teie turvalisuse tagamiseks rohkem</translation>
+<translation id="5649680279845190972">Oma laiendite ja muu kuvamiseks kõigis oma arvutites logige sisse Chrome'i</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> võib olla ohtlik, mistõttu Chrome blokeeris selle.</translation>
 <translation id="566568153320186256">Chrome säästab akutoidet, piirates taustal toimuvaid tegevusi ja visuaalseid efekte, nagu sujuv kerimine ja video kaadrisagedus. <ph name="BEGIN_LINK" />Lisateave Energiasäästja kohta<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Kustutage oma kontol Chrome'i andmed</translation>

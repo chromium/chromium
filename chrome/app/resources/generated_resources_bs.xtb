@@ -220,7 +220,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="114721135501989771">Preuzmite pametne Google funkcije za Chrome</translation>
 <translation id="1147322039136785890">Sada je na redu <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Da zatražite pristup, kontaktirajte administratora ovog uređaja.</translation>
-<translation id="1148464196693569530">Dopusti korisničke skripte</translation>
+<translation id="1148464196693569530">Dozvoli skripte korisnika</translation>
 <translation id="1148624853678088576">Spremni ste!</translation>
 <translation id="1148669835763563782">Dobijate najnovije ažuriranje softvera za poboljšanu sigurnost i najnovije funkcije Chromebooka. Ovo ažuriranje uključuje poboljšano iskustvo postavljanja koje će vam pomoći da nesmetano započnete raditi sa svojim Chromebookom.</translation>
 <translation id="1149401351239820326">Mjesec isteka</translation>
@@ -6781,7 +6781,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5794414402486823030">Uvijek otvori u prikazivaču sistema</translation>
 <translation id="5794700615121138172">Dijeljeni folderi na Linuxu</translation>
 <translation id="5794786537412027208">Napusti sve Chromeove aplikacije</translation>
-<translation id="5795422263272161110">Prikaži usporedno</translation>
+<translation id="5795422263272161110">Prikaži jednu pored druge</translation>
 <translation id="5796485699458186843">Nova anonimna &amp;kartica</translation>
 <translation id="5796956053441619942">URL s udaljenog uređaja nije podržan</translation>
 <translation id="5797934230382081317">Saznajte kako započeti na &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Androidu&lt;/a&gt; i &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS-u&lt;/a&gt;</translation>
@@ -7310,7 +7310,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6170498031581934115">Omogućavanje otklanjanja grešaka putem ADB-a nije uspjelo. Idite u Postavke i pokušajte ponovo.</translation>
 <translation id="6170675927290506430">Idi u postavke obavještenja</translation>
 <translation id="6171779718418683144">Pitaj prilikom svake posjete</translation>
-<translation id="6172020488605056255">Kliknite desnom tipkom da biste koristili pomoć s čitanjem</translation>
+<translation id="6172020488605056255">Kliknite desnim klikom da koristite Pomoć u čitanju</translation>
 <translation id="617213288191670920">Nijedan jezik nije dodan</translation>
 <translation id="6173623053897475761">Unesite ponovo PIN</translation>
 <translation id="6174909075810107548">Koristite "5" da pritisnete dugme miša</translation>
@@ -8340,7 +8340,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6910190732484284349">Brisanje pristupnog ključa za korisničko ime <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Izbrisano</translation>
 <translation id="6910274140210351823">Tamno</translation>
-<translation id="691102290537033604">Proširenje će moći pokrenuti kôd koji Google nije pregledao. Omogućivanje te značajke možda nije sigurno i trebali biste je omogućiti samo ako znate što radite.</translation>
+<translation id="691102290537033604">Ekstenzija će moći pokretati kôd koji Google nije pregledao. Ovo možda neće biti sigurno, pa omogućite ovu opciju samo ako znate šta radite.</translation>
 <translation id="6911734910326569517">Otisak memorije</translation>
 <translation id="6912007319859991306">PIN SIM kartice za mobilnu mrežu</translation>
 <translation id="6912380255120084882">Pokušajte s drugim uređajem</translation>
@@ -9852,7 +9852,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> glas <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Automatski prenesite WiFi s Android telefona</translation>
 <translation id="7991296728590311172">Postavke Pristupa pomoću prekidača</translation>
-<translation id="7992080146463834191">Sažmite sadržaj, pojednostavite složeni jezik ili postavite pitanja.</translation>
+<translation id="7992080146463834191">Sažimajte sadržaje, pojednostavljujte složene tekstove ili postavljajte pitanja.</translation>
 <translation id="7992203134935383159">Sinteza govora</translation>
 <translation id="799570308305997052">Web prikaz</translation>
 <translation id="7997826902155442747">Prioritet procesa</translation>
@@ -10094,6 +10094,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8155676038687609779">{COUNT,plural, =0{Nisu pronađene ugrožene lozinke}=1{{COUNT} ugrožena lozinka}one{{COUNT} ugrožena lozinka}few{{COUNT} ugrožene lozinke}other{{COUNT} ugroženih lozinki}}</translation>
 <translation id="8157248655669507702">Omogućite prijenos podataka na mobilnoj mreži da instalirate eSIM profil</translation>
 <translation id="8157704005178149728">Postavljanje nadzora</translation>
+<translation id="8157728322324420120">Predloženo za vas</translation>
 <translation id="8157849462797352650">Uređaj prima najnovija ažuriranja za sigurnost, stabilnost i performanse</translation>
 <translation id="8158117992543756526">Ovaj uređaj je prestao primati automatska ažuriranja softvera i sigurnosna ažuriranja (<ph name="MONTH_AND_YEAR" />). <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Primajte potvrdu vibracijom za radnje kao što su podijeljeni ekran i prebacivanje između radnih površina. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
@@ -11112,7 +11113,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8874448314264883207">Ekstenzija "<ph name="EXTENSION_NAME" />" je isključena</translation>
 <translation id="8874647982044395866">Organsko</translation>
 <translation id="8874790741333031443">Pokušajte privremeno dozvoliti kolačiće treće strane, što podrazumijeva manju zaštitu prilikom pregledanja, ali i veću vjerovatnost da će funkcije web lokacije funkcionirati prema očekivanjima.</translation>
-<translation id="8875221558267407626">Sažmite sadržaj, pojednostavite složeni jezik ili postavite pitanja</translation>
+<translation id="8875221558267407626">Sažimajte sadržaje, pojednostavljujte složene tekstove ili postavljajte pitanja</translation>
 <translation id="8875520811099717934">Nadogradnja Linuxa</translation>
 <translation id="8875736897340638404">Odaberite vidljivost</translation>
 <translation id="8876307312329369159">Ovu postavku ne možete promijeniti u demo sesiji.</translation>
@@ -11166,7 +11167,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8915916167043355778">Zatvori sve</translation>
 <translation id="8916476537757519021">Podokvir anonimnog načina: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Pristajem</translation>
-<translation id="8917980324687233736">Prikaži usporedno</translation>
+<translation id="8917980324687233736">Prikaži jednu pored druge</translation>
 <translation id="8918637186205009138">Uređaj <ph name="DEVICE_TYPE" /> koji koristi <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Instaliranje aplikacije…</translation>
 <translation id="891931289445130855">Izbriši podatke i odobrenja</translation>

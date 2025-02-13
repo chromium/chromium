@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.profiles;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -68,8 +70,9 @@ public class ProfileResolver implements PartitionResolver {
         ProfileResolverJni.get().resolveProfileKey(token, callback);
     }
 
+    @VisibleForTesting
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         String tokenizeProfile(@Nullable @JniType("Profile*") Profile profile);
 
         String tokenizeProfileKey(@Nullable ProfileKey profileKey);

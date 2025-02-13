@@ -211,6 +211,7 @@ class MockAutofillClient : public TestAutofillClient {
               OfferPlusAddressCreation,
               (const url::Origin&, bool, PlusAddressCallback),
               (override));
+  MOCK_METHOD(void, ShowAutofillSettings, (SuggestionType), (override));
   MOCK_METHOD(void,
               ShowPlusAddressAffiliationError,
               (std::u16string, std::u16string, base::OnceClosure),
@@ -1210,6 +1211,14 @@ TEST_F(AutofillExternalDelegateTest, FillAutofillAiFillsFullForm) {
       Suggestion::AutofillAiPayload({{field_to_fill, value_to_fill}});
   external_delegate().DidSelectSuggestion(fill_suggestion);
   external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+}
+
+TEST_F(AutofillExternalDelegateTest, AcceptManageAutofillAi) {
+  Suggestion manage_suggestion =
+      Suggestion(u"Manage information", SuggestionType::kManageAutofillAi);
+  EXPECT_CALL(client(),
+              ShowAutofillSettings(SuggestionType::kManageAutofillAi));
+  external_delegate().DidAcceptSuggestion(manage_suggestion, {});
 }
 
 // Tests that the `AutofillAutofillAiDelegate` is notified when the

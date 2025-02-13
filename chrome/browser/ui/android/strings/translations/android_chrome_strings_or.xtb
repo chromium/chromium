@@ -582,6 +582,7 @@
 <translation id="3701167022068948696">ବର୍ତ୍ତମାନ ସମାଧାନ କରନ୍ତୁ</translation>
 <translation id="3701515417135397388">କୌଣସି ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ଯଦି ଏକ ପାସୱାର୍ଡ ଚୋରି ହୋଇଯାଇଛି ତେବେ ଆପଣଙ୍କୁ ଚେତାବନୀ ଦିଏ</translation>
 <translation id="3703166520839776970">ଯଦି ଏହି ସମସ୍ୟା ଲାଗିରୁହେ, ତେବେ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ରୁ ଅଧିକ ସୂଚନା ପାଇବା ପାଇଁ ନିମ୍ନରେ "ଅଧିକ ବିବରଣୀ"କୁ ବାଛନ୍ତୁ।</translation>
+<translation id="3708100450779900829">ଆପଣଙ୍କ ଡିଭାଇସ ଫୋଲ୍ଡ ହେଲେ, ଆପଣ ଏକ ବିକଳ୍ପ ବାଛିପାରିବେ କିମ୍ବା ସ୍ଥିତି ପରିବର୍ତ୍ତନ କରିବାକୁ ଠିକଣା ବାରକୁ ସ୍ପର୍ଶ କରି ଧରି ରଖିପାରିବେ</translation>
 <translation id="3710501561113687889">ଜାରି ରଖିବା ପାଇଁ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ଏହି ସାଇଟ ସହ ଆପଣଙ୍କ <ph name="FIELDS_STRING" />କୁ ସେୟାର କରିବ।</translation>
 <translation id="3710560693796335511">ସହଯୋଗ</translation>
 <translation id="3714981814255182093">ଖୋଜିବା ବାର୍‌ ଖୋଲନ୍ତୁ</translation>
@@ -1281,6 +1282,7 @@
 <translation id="6850830437481525139"><ph name="TAB_COUNT" />ଟି ଟାବ୍ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{ଅଡିଓ ଫାଇଲଗୁଡ଼ିକ, ତାଲିକାରେ 1 ଅଡିଓ ଫାଇଲ}other{ଅଡିଓ ଫାଇଲଗୁଡ଼ିକ, ତାଲିକାରେ # ଅଡିଓ ଫାଇଲ}}</translation>
 <translation id="685850645784703949">Googleର Discover - ବନ୍ଦ ଅଛି</translation>
+<translation id="6861722405755529743">ବୁକମାର୍କ ବାର ଓଭରଫ୍ଲୋ ବଟନ</translation>
 <translation id="686366188661646310">ପାସୱାର୍ଡ ଡିଲିଟ୍ କରିବେ?</translation>
 <translation id="6864459304226931083">ଛବି ଡାଉନ୍‌ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="686490460830618322">ଆପ ଫିଲ୍ଟର ସିଟ</translation>
@@ -1613,6 +1615,7 @@
 <translation id="8236063039629122676">ବର୍ତ୍ତମାନ, ଡାହାଣପଟକୁ ଏକ ସ୍ୱାଇପ ଆପଣ ଭିଜିଟ କରିଥିବା ପୂର୍ବ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଦେଖିବା ପାଇଁ ଆପଣଙ୍କୁ ପଛକୁ ନେଇଯାଏ ଏବଂ ବାମପଟକୁ ଏକ ସ୍ୱାଇପ ଆପଣଙ୍କୁ ଆଗକୁ ମୁଭ କରାଇଥାଏ</translation>
 <translation id="8236097722223016103">ବୁକମାର୍କଗୁଡ଼ିକରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8243077599929149377">ଆପଣଙ୍କ ୟୁଜରନେମ ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="8244387390464017490">ନୂଆ ଟାବ ପୃଷ୍ଠା କଷ୍ଟମାଇଜ କର</translation>
 <translation id="8250920743982581267">ଡକୁମେଣ୍ଟ</translation>
 <translation id="8255617931166444521">କେବଳ ସେମାନଙ୍କ ନିଜ ସାଇଟରେ, ଆପଣଙ୍କ ବ୍ରାଉଜିଂ କାର୍ଯ୍ୟକଳାପକୁ ଦେଖିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକ କେବଳ ଆପଣଙ୍କ କୁକୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବ</translation>
 <translation id="8258999165172757081">ଯୋଗ କରାଯାଇଛି</translation>

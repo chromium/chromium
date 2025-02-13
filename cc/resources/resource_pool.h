@@ -27,6 +27,7 @@
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "ui/gfx/color_space.h"
@@ -35,10 +36,6 @@
 
 namespace base {
 class SingleThreadTaskRunner;
-}
-
-namespace gpu {
-class ClientSharedImage;
 }
 
 namespace viz {
@@ -62,6 +59,10 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
    public:
     Backing();
     virtual ~Backing();
+
+    void set_shared_image(scoped_refptr<gpu::ClientSharedImage> si) {
+      shared_image = std::move(si);
+    }
 
     scoped_refptr<gpu::ClientSharedImage> shared_image;
     gpu::SyncToken mailbox_sync_token;
@@ -123,16 +124,9 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
       return resource_->resource_id();
     }
 
-    // Only valid when the ResourcePool is vending texture-backed resources.
-    Backing* gpu_backing() const { return resource_->backing(); }
-    void set_gpu_backing(std::unique_ptr<Backing> gpu) const {
-      return resource_->set_backing(std::move(gpu));
-    }
-
-    // Only valid when the ResourcePool is vending software-backed resources.
-    Backing* software_backing() const { return resource_->backing(); }
-    void set_software_backing(std::unique_ptr<Backing> software) const {
-      resource_->set_backing(std::move(software));
+    Backing* backing() const { return resource_->backing(); }
+    void set_backing(std::unique_ptr<Backing> backing) const {
+      return resource_->set_backing(std::move(backing));
     }
 
     size_t memory_usage() const {

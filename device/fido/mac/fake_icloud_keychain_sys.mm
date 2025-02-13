@@ -22,6 +22,7 @@ API_AVAILABLE(macos(13.3))
 @property(nonatomic, copy) NSString* name;
 @property(nonatomic, copy) NSString* relyingParty;
 @property(nonatomic, copy) NSData* userHandle;
+@property(nonatomic, copy) NSString* providerName;
 @end
 
 @implementation FakeBrowserPlatformPublicKeyCredential
@@ -29,6 +30,7 @@ API_AVAILABLE(macos(13.3))
 @synthesize name = _name;
 @synthesize relyingParty = _relyingParty;
 @synthesize userHandle = _userHandle;
+@synthesize providerName = _providerName;
 @end
 
 API_AVAILABLE(macos(13.3))
@@ -199,6 +201,8 @@ void FakeSystemInterface::GetPlatformCredentials(
     cred.relyingParty = base::SysUTF8ToNSString(rp_id);
     cred.name = base::SysUTF8ToNSString(cred_values.user.name.value_or(""));
     [ret addObject:cred];
+    cred.providerName = base::SysUTF8ToNSString(
+        cred_values.provider_name.value_or("(Not provided)"));
   }
 
   block(ret);

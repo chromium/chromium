@@ -66,6 +66,14 @@ bool IsAccessibilityTreeForViewsEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityTreeForViews);
 }
 
+BASE_FEATURE(kViewsAccessibilitySerializeOnDataChanged,
+             "ViewsAccessibilitySerializeOnDataChanged",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsViewsAccessibilitySerializeOnDataChangeEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kViewsAccessibilitySerializeOnDataChanged);
+}
+
 BASE_FEATURE(kImageDescriptionsAlternateRouting,
              "ImageDescriptionsAlternateRouting",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -429,6 +437,14 @@ bool IsWasmTtsComponentUpdaterEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingReadAloud) &&
          base::FeatureList::IsEnabled(
              ::features::kWasmTtsComponentUpdaterEnabled);
+}
+
+BASE_FEATURE(kWasmTtsEngineAutoInstallDisabled,
+             "WasmTtsEngineAutoInstallDisabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsWasmTtsEngineAutoInstallDisabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kWasmTtsEngineAutoInstallDisabled);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

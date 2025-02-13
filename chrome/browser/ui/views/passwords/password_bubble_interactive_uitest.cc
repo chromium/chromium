@@ -55,6 +55,7 @@
 #include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 
 using base::Bucket;
@@ -544,6 +545,10 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   ExecuteManagePasswordsCommand();
   ASSERT_TRUE(IsBubbleShowing());
 
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(
+      PasswordBubbleViewBase::manage_password_bubble()->GetWidget());
+
   ClickOnView(PasswordBubbleViewBase::manage_password_bubble()->GetViewByID(
       static_cast<int>(
           password_manager::ManagePasswordsViewIDs::kManagePasswordsButton)));
@@ -569,8 +574,17 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   auto* bubble = PasswordBubbleViewBase::manage_password_bubble();
   static_cast<ManagePasswordsView*>(bubble)->DisplayDetailsOfPasswordForTesting(
       *test_form());
+
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(
+      PasswordBubbleViewBase::manage_password_bubble()->GetWidget());
+
   ClickOnView(bubble->GetViewByID(static_cast<int>(
       password_manager::ManagePasswordsViewIDs::kEditNoteButton)));
+
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(
+      PasswordBubbleViewBase::manage_password_bubble()->GetWidget());
 
   views::View* footnote_view = PasswordBubbleViewBase::manage_password_bubble()
                                    ->GetFootnoteViewForTesting();
@@ -601,6 +615,10 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   static_cast<ManagePasswordsView*>(
       PasswordBubbleViewBase::manage_password_bubble())
       ->DisplayDetailsOfPasswordForTesting(*test_form());
+
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(
+      PasswordBubbleViewBase::manage_password_bubble()->GetWidget());
 
   ClickOnView(PasswordBubbleViewBase::manage_password_bubble()->GetViewByID(
       static_cast<int>(
@@ -647,6 +665,10 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
               password_manager::ManagePasswordsViewIDs::kPasswordLabel)));
   ASSERT_TRUE(password_label->GetObscured());
 
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(
+      PasswordBubbleViewBase::manage_password_bubble()->GetWidget());
+
   ClickOnView(PasswordBubbleViewBase::manage_password_bubble()->GetViewByID(
       static_cast<int>(
           password_manager::ManagePasswordsViewIDs::kRevealPasswordButton)));
@@ -677,6 +699,10 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   test_form()->username_value = u"";
   static_cast<ManagePasswordsView*>(bubble)->DisplayDetailsOfPasswordForTesting(
       *test_form());
+
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(
+      PasswordBubbleViewBase::manage_password_bubble()->GetWidget());
 
   auto* username_label =
       static_cast<views::Label*>(bubble->GetViewByID(static_cast<int>(
@@ -727,6 +753,10 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   auto* bubble = PasswordBubbleViewBase::manage_password_bubble();
   static_cast<ManagePasswordsView*>(bubble)->DisplayDetailsOfPasswordForTesting(
       *test_form());
+
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(
+      PasswordBubbleViewBase::manage_password_bubble()->GetWidget());
 
   auto* note_label = static_cast<views::Label*>(bubble->GetViewByID(
       static_cast<int>(password_manager::ManagePasswordsViewIDs::kNoteLabel)));
@@ -780,6 +810,10 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   static_cast<ManagePasswordsView*>(bubble)->DisplayDetailsOfPasswordForTesting(
       *test_form());
 
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(
+      PasswordBubbleViewBase::manage_password_bubble()->GetWidget());
+
   auto* note_label = static_cast<views::Label*>(bubble->GetViewByID(
       static_cast<int>(password_manager::ManagePasswordsViewIDs::kNoteLabel)));
   auto* note_textarea =
@@ -831,6 +865,10 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   test_form()->SetNoteWithEmptyUniqueDisplayName(u"current note");
   static_cast<ManagePasswordsView*>(bubble)->DisplayDetailsOfPasswordForTesting(
       *test_form());
+
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(
+      PasswordBubbleViewBase::manage_password_bubble()->GetWidget());
 
   auto* note_label = static_cast<views::Label*>(bubble->GetViewByID(
       static_cast<int>(password_manager::ManagePasswordsViewIDs::kNoteLabel)));
@@ -884,6 +922,10 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   static_cast<ManagePasswordsView*>(bubble)->DisplayDetailsOfPasswordForTesting(
       *test_form());
 
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(
+      PasswordBubbleViewBase::manage_password_bubble()->GetWidget());
+
   views::View* note_view = bubble->GetViewByID(
       static_cast<int>(password_manager::ManagePasswordsViewIDs::kNoteLabel));
   note_view->OnKeyPressed(ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_A,
@@ -918,6 +960,10 @@ IN_PROC_BROWSER_TEST_F(
   static_cast<ManagePasswordsView*>(bubble)->DisplayDetailsOfPasswordForTesting(
       *test_form());
 
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(
+      PasswordBubbleViewBase::manage_password_bubble()->GetWidget());
+
   auto* note_label = static_cast<views::Label*>(bubble->GetViewByID(
       static_cast<int>(password_manager::ManagePasswordsViewIDs::kNoteLabel)));
   note_label->ExecuteCommand(views::Label::MenuCommands::kSelectAll,
@@ -950,6 +996,10 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   test_form()->SetNoteWithEmptyUniqueDisplayName(u"current note");
   static_cast<ManagePasswordsView*>(bubble)->DisplayDetailsOfPasswordForTesting(
       *test_form());
+
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(
+      PasswordBubbleViewBase::manage_password_bubble()->GetWidget());
 
   views::View* note_view = bubble->GetViewByID(
       static_cast<int>(password_manager::ManagePasswordsViewIDs::kNoteLabel));
@@ -991,6 +1041,10 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   test_form()->SetNoteWithEmptyUniqueDisplayName(u"current note");
   static_cast<ManagePasswordsView*>(bubble)->DisplayDetailsOfPasswordForTesting(
       *test_form());
+
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(
+      PasswordBubbleViewBase::manage_password_bubble()->GetWidget());
 
   views::View* note_view = bubble->GetViewByID(
       static_cast<int>(password_manager::ManagePasswordsViewIDs::kNoteLabel));
@@ -1105,6 +1159,10 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleWithManagePasswordButtonInteractiveUiTest,
   static_cast<ManagePasswordsView*>(
       PasswordBubbleViewBase::manage_password_bubble())
       ->DisplayDetailsOfPasswordForTesting(*test_form());
+
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(
+      PasswordBubbleViewBase::manage_password_bubble()->GetWidget());
 
   ClickOnView(PasswordBubbleViewBase::manage_password_bubble()->GetViewByID(
       static_cast<int>(

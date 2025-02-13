@@ -10076,6 +10076,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8155676038687609779">{COUNT,plural, =0{No se ha encontrado ninguna contraseña vulnerada}=1{{COUNT} contraseña vulnerada}other{{COUNT} contraseñas vulneradas}}</translation>
 <translation id="8157248655669507702">Habilita los datos móviles para instalar un perfil de eSIM</translation>
 <translation id="8157704005178149728">Configurando la supervisión</translation>
+<translation id="8157728322324420120">Sugerencias para ti</translation>
 <translation id="8157849462797352650">Tu dispositivo obtiene las últimas actualizaciones de seguridad, estabilidad y rendimiento</translation>
 <translation id="8158117992543756526">Este dispositivo dejó de recibir actualizaciones de software y seguridad automáticas en <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Recibe una vibración de confirmación de acciones, como dividir la pantalla y cambiar de escritorio. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>

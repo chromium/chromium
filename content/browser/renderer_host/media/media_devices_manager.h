@@ -414,8 +414,8 @@ class CONTENT_EXPORT MediaDevicesManager
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   void RegisterVideoCaptureDevicesChangedObserver();
-  void OnDisconectVideoSourceProviderTimer();
-  void MaybeScheduleDisconectVideoSourceProviderTimer();
+  void OnDisconnectVideoSourceProviderTimer();
+  void MaybeScheduleDisconnectVideoSourceProviderTimer();
 
   bool is_video_capture_hosts_set_empty_ = true;
   base::OneShotTimer disconnect_video_source_provider_timer_;

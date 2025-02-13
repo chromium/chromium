@@ -87,6 +87,9 @@ class TestDelegateTwoOrigins : public permissions::PermissionPrompt::Delegate {
   void SetPromptShown() override {}
   void SetDecisionTime() override {}
   bool RecreateView() override { return false; }
+  const permissions::PermissionPrompt* GetCurrentPrompt() const override {
+    return nullptr;
+  }
 
   base::WeakPtr<permissions::PermissionPrompt::Delegate> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();

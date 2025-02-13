@@ -285,6 +285,7 @@
 <translation id="2164946989711475905">ចូលគណនី…</translation>
 <translation id="2175927920773552910">កូដ QR</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="219283042927675668">ផ្ទាំង​ជាក្រុម</translation>
 <translation id="2194856509914051091">ចំណុច​ដែលត្រូវ​ពិចារណា</translation>
 <translation id="2196428379625389579">ស្វែងរកលើបណ្ដាញ</translation>
 <translation id="2199562093267256223">ការធ្វើ​បែបនេះ​នឹងលុប​ក្រុមនេះ​ចេញពី​គ្រប់ឧបករណ៍​ដែលបានចូលគណនី <ph name="USER_EMAIL" />។</translation>
@@ -914,6 +915,7 @@
 <translation id="5016420433031926653">ផ្ញើ​ទៅ <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">15 នាទី​ចុងក្រោយ</translation>
 <translation id="5020732097997376541">ចុច "រូប Lens"</translation>
+<translation id="5021500396464456616">សូម​ទាក់ទង​ទៅអ្នកដែលបានផ្ញើ​តំណនេះ</translation>
 <translation id="5024511550058813796">អ្នកនឹងមានប្រវត្តិ​របស់អ្នកនៅលើឧបករណ៍​ដែលបានធ្វើ​សមកាលកម្ម​ទាំងអស់របស់អ្នក ដើម្បីអាចឱ្យអ្នក​បន្តអ្វីដែលអ្នកបានធ្វើ</translation>
 <translation id="5038113048373546701">ទទួលបានការជូនដំណឹងសម្រាប់ព័ត៌មាន កីឡា និងអ្វីៗជាច្រើនទៀតដោយផ្អែកលើចំណាប់អារម្មណ៍របស់អ្នក</translation>
 <translation id="5039804452771397117">អនុញ្ញាត</translation>
@@ -978,7 +980,6 @@
 <translation id="5295239312320826323">លុបគណនី <ph name="USER_EMAIL" /> ឬ?</translation>
 <translation id="5300589172476337783">បង្ហាញ</translation>
 <translation id="5311061401280561833">បានអនុញ្ញាត​ឱ្យចូលប្រើប្រាស់​កាមេរ៉ា និង​មីក្រូហ្វូន</translation>
-<translation id="531209241254508943">ក្រុមផ្ទាំង</translation>
 <translation id="5316356981864168850">ទី <ph name="INDEX" /> នៃ <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5318298563956633672">អ្នកកំពុងតាមដានផលិតផលនេះស្រាប់ហើយ។</translation>
@@ -1941,6 +1942,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="966593914872420832">ស្វែងរក​តាម​សំឡេង</translation>
 <translation id="968653181266955408">ទទួលបានការជូនដំណឹងអំពីខ្លឹមសារ</translation>
 <translation id="973493300226275298">តាមដានតម្លៃផលិតផលនៅលើហាងលើអ៊ីនធឺណិតទាំងអស់។ អ្នកនឹងទទួលបានការជូនដំណឹងនៅពេលតម្លៃធ្លាក់ចុះ។</translation>
+<translation id="973788791897303708">ក្រុមផ្ទាំងនេះ​ពេញហើយ</translation>
 <translation id="976392601789283511">បើកផ្ទាំងដែលបានបិទចុងក្រោយឡើងវិញ</translation>
 <translation id="981498610235328462">ស្ថាប័នរបស់អ្នក​អនុញ្ញាតឱ្យអ្នក​ចូលដោយប្រើ​គណនីជាក់លាក់​តែប៉ុណ្ណោះ។ គណនីដែលមិនមាន​ការអនុញ្ញាត​ត្រូវបានលាក់។</translation>
 <translation id="984275831282074731">វិធី​បង់ប្រាក់</translation>

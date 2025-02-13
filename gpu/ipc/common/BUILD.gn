@@ -158,6 +158,13 @@ source_set("ipc_common_sources") {
     frameworks = [ "IOSurface.framework" ]
   }
 
+  if (is_ios) {
+    sources += [
+      "ios/be_layer_hierarchy_transport.cc",
+      "ios/be_layer_hierarchy_transport.h",
+    ]
+  }
+
   if (!is_nacl && !is_minimal_toolchain) {
     deps += [ "//ui/gfx/ipc/skia" ]
   }

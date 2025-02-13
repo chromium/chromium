@@ -162,6 +162,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   }
 
   template <typename T>
+    requires(!std::is_const_v<T>)
   void Read(std::vector<T>& vec) {
     size_t size = 0;
     ReadSize(&size);
@@ -359,6 +360,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   void DidRead(size_t bytes_read);
 
   template <typename T>
+    requires(!std::is_const_v<T>)
   void ReadVectorContent(size_t size, std::vector<T>& vec) {
     vec.resize(size);
     for (base::span span(vec); !span.empty();

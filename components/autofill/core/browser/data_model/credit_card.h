@@ -13,9 +13,11 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/data_model/usage_history_information.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "url/gurl.h"
 
@@ -216,8 +218,6 @@ class CreditCard : public FormGroup {
   void GetMatchingTypes(const std::u16string& text,
                         const std::string& app_locale,
                         FieldTypeSet* matching_types) const override;
-  std::u16string GetInfo(FieldType type,
-                         const std::string& app_locale) const override;
   std::u16string GetInfo(const AutofillType& type,
                          const std::string& app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
@@ -540,7 +540,7 @@ class CreditCard : public FormGroup {
   FRIEND_TEST_ALL_PREFIXES(CreditCardTest, SetExpirationYearFromString);
 
   // FormGroup:
-  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
+  FieldTypeSet GetSupportedTypes() const override;
 
   // The issuer network of the card to fill in to the page, e.g. 'Mastercard'.
   std::u16string NetworkForFill() const;

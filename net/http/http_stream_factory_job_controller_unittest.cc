@@ -2808,6 +2808,55 @@ TEST_P(HttpStreamFactoryJobControllerTest,
   EXPECT_EQ(origin_port, alternative_host_port_pair.port());
 }
 
+// Regression test for crbug.com/395919017.
+// Test that a Job calls HttpServerProperties::SetSupportsSpdy() for an IPv6
+// host appropriately.
+TEST_P(HttpStreamFactoryJobControllerTest, SupportsSpdyIPv6Destination) {
+  // Make sure there is only one socket connect.
+  MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  tcp_data_ = std::make_unique<SequencedSocketData>(reads, writes);
+  // connect needs to be async, so the H2 session isn't created immediately.
+  tcp_data_->set_connect_data(MockConnect(ASYNC, OK));
+  SSLSocketDataProvider ssl_data(ASYNC, OK);
+  ssl_data.next_proto = NextProto::kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = GURL("https://[2001:db8::1]");
+  Initialize(request_info);
+
+  // Start a request.
+  std::unique_ptr<HttpStreamRequest> stream_request = job_controller_->Start(
+      &request_delegate_, nullptr /* websocket_handshake_create_helper */,
+      NetLogWithSource(), HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _));
+
+  // Wait for an H2 session creation.
+  FastForwardUntilNoTasksRemain();
+
+  stream_request.reset();
+
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+
+  // Check that the SpdySession was created.
+  base::WeakPtr<SpdySession> spdy_session =
+      session_->spdy_session_pool()->FindAvailableSession(
+          SpdySessionKey(HostPortPair::FromURL(request_info.url),
+                         request_info.privacy_mode, ProxyChain::Direct(),
+                         SessionUsage::kDestination, request_info.socket_tag,
+                         request_info.network_anonymization_key,
+                         request_info.secure_dns_policy,
+                         /*disable_cert_verification_network_fetches=*/false),
+          /*enable_ip_based_pooling=*/false, /*is_websocket=*/false,
+          NetLogWithSource());
+  EXPECT_TRUE(spdy_session);
+
+  EXPECT_TRUE(session_->http_server_properties()->GetSupportsSpdy(
+      url::SchemeHostPort(request_info.url),
+      request_info.network_anonymization_key));
+}
+
 void HttpStreamFactoryJobControllerTestBase::
     TestOrphanedJobCompletesControllerDestroyed(bool async_quic_session) {
   SetAsyncQuicSession(async_quic_session);

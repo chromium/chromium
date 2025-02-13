@@ -32,6 +32,26 @@ struct PermissionsPref {
   const std::string profile_name;
 };
 
+// Helper for iteration over all profile attributes when looking for a profile
+// with a given gaia id.
+ProfileAttributesStorageIOS::IterationResult FindProfileWithGaiaId(
+    const GaiaId& gaia_id,
+    std::string& profile_name,
+    const ProfileAttributesIOS& attr) {
+  if (gaia_id == attr.GetGaiaId()) {
+    profile_name = attr.GetProfileName();
+    return ProfileAttributesStorageIOS::IterationResult::kTerminate;
+  }
+  return ProfileAttributesStorageIOS::IterationResult::kContinue;
+}
+
+// Helper to add account to PushNotificationAccountContextManager* for all
+// known profiles during iteration.
+void AddAccountToManager(PushNotificationAccountContextManager* manager,
+                         const ProfileAttributesIOS& attr) {
+  [manager addAccount:attr.GetGaiaId()];
+}
+
 }  // namespace
 
 @implementation PushNotificationAccountContextManager {
@@ -50,11 +70,8 @@ struct PermissionsPref {
     _profileManager = manager;
     ProfileAttributesStorageIOS* storage =
         manager->GetProfileAttributesStorage();
-    const size_t numberOfProfiles = storage->GetNumberOfProfiles();
-    for (size_t i = 0; i < numberOfProfiles; i++) {
-      ProfileAttributesIOS attr = storage->GetAttributesForProfileAtIndex(i);
-      [self addAccount:attr.GetGaiaId()];
-    }
+    storage->IterateOverProfileAttributes(
+        base::BindRepeating(&AddAccountToManager, self));
   }
 
   return self;
@@ -174,12 +191,12 @@ struct PermissionsPref {
   ProfileAttributesStorageIOS* storage =
       _profileManager->GetProfileAttributesStorage();
 
-  const size_t numberOfProfiles = storage->GetNumberOfProfiles();
-  for (size_t i = 0; i < numberOfProfiles; i++) {
-    ProfileAttributesIOS attr = storage->GetAttributesForProfileAtIndex(i);
-    if (gaiaID == attr.GetGaiaId()) {
-      return _profileManager->GetProfileWithName(attr.GetProfileName());
-    }
+  std::string profileName;
+  storage->IterateOverProfileAttributes(base::BindRepeating(
+      &FindProfileWithGaiaId, gaiaID, std::ref(profileName)));
+
+  if (!profileName.empty()) {
+    return _profileManager->GetProfileWithName(profileName);
   }
 
   return nullptr;

@@ -16,7 +16,6 @@
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/trace_event_analyzer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -399,13 +398,7 @@ IN_PROC_BROWSER_TEST_F(PageViewportInLCPTest, DISABLED_FullSizeImageInIframe) {
       *trace_analyzer, "latest_largest_contentful_paint_ms", lcpTime, 5.0);
 }
 
-// TODO(crbug.com/40866505): Flaky on lacros
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_IsAnimatedLCPTest DISABLED_IsAnimatedLCPTest
-#else
-#define MAYBE_IsAnimatedLCPTest IsAnimatedLCPTest
-#endif
-class MAYBE_IsAnimatedLCPTest : public MetricIntegrationTest {
+class IsAnimatedLCPTest : public MetricIntegrationTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
@@ -442,14 +435,13 @@ class MAYBE_IsAnimatedLCPTest : public MetricIntegrationTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(MAYBE_IsAnimatedLCPTest,
-                       LargestContentfulPaint_IsAnimated) {
+IN_PROC_BROWSER_TEST_F(IsAnimatedLCPTest, LargestContentfulPaint_IsAnimated) {
   test_is_animated("/is_animated.html",
                    blink::LargestContentfulPaintType::kAnimatedImage,
                    /*expected=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_IsAnimatedLCPTest,
+IN_PROC_BROWSER_TEST_F(IsAnimatedLCPTest,
                        LargestContentfulPaint_IsNotAnimated) {
   test_is_animated("/non_animated.html",
                    blink::LargestContentfulPaintType::kAnimatedImage,
@@ -457,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_IsAnimatedLCPTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    MAYBE_IsAnimatedLCPTest,
+    IsAnimatedLCPTest,
     LargestContentfulPaint_AnimatedImageWithLargerTextFirst) {
   test_is_animated("/animated_image_with_larger_text_first.html",
                    blink::LargestContentfulPaintType::kAnimatedImage,
@@ -465,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // crbug.com/1373885: This test is unreliable on ChromeOS, Linux and Mac
-IN_PROC_BROWSER_TEST_F(MAYBE_IsAnimatedLCPTest,
+IN_PROC_BROWSER_TEST_F(IsAnimatedLCPTest,
                        DISABLED_LargestContentfulPaint_IsVideo) {
   test_is_animated("/is_video.html", blink::LargestContentfulPaintType::kVideo,
                    /*expected=*/true, /*entries=*/0);
@@ -1044,12 +1036,7 @@ IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, DISABLED_CrossSiteSubframe) {
   // after refresh.
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_MemCacheServedImage DISABLED_MemCacheServedImage
-#else
-#define MAYBE_MemCacheServedImage MemCacheServedImage
-#endif
-IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_MemCacheServedImage) {
+IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MemCacheServedImage) {
   std::string test_url = "/lcp_breakdown_timings_memcache_served_images.html";
   std::string resource = "green.png";
 
@@ -1061,12 +1048,7 @@ IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_MemCacheServedImage) {
   ValidateForMemCacheLoadedImages();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_PreloadedImage DISABLED_PreloadedImage
-#else
-#define MAYBE_PreloadedImage PreloadedImage
-#endif
-IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_PreloadedImage) {
+IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, PreloadedImage) {
   std::string test_url = "/lcp_breakdown_timings_preloaded_images.html";
   std::string resource = "/images/lcp-16x16.png";
   RunTest(test_url, resource, std::nullopt,
@@ -1075,7 +1057,7 @@ IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_PreloadedImage) {
 }
 
 // TODO(crbug.com/333963663): Flaky on multiple platforms.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_PreloadedCacheableImage DISABLED_PreloadedCacheableImage
 #else
 #define MAYBE_PreloadedCacheableImage PreloadedCacheableImage
@@ -1090,7 +1072,7 @@ IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_PreloadedCacheableImage) {
   ValidateForMemCacheLoadedImages();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_NativeLazyLoadingImage DISABLED_NativeLazyLoadingImage
 #else
 #define MAYBE_NativeLazyLoadingImage NativeLazyLoadingImage
@@ -1116,12 +1098,7 @@ IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest,
   Validate();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_CssBackgroundImage DISABLED_CssBackgroundImage
-#else
-#define MAYBE_CssBackgroundImage CssBackgroundImage
-#endif
-IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_CssBackgroundImage) {
+IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, CssBackgroundImage) {
   std::string test_url = "/lcp_breakdown_timings_css_background_images.html";
   std::string resource = "lcp-256x256.png";
   RunTest(test_url, resource, std::nullopt);
@@ -1129,7 +1106,7 @@ IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_CssBackgroundImage) {
 }
 
 // TODO(crbug.com/41495170): Flaky test.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_WrittenAsInnerHtmlImage DISABLED_WrittenAsInnerHtmlImage
 #else
 #define MAYBE_WrittenAsInnerHtmlImage WrittenAsInnerHtmlImage
@@ -1143,7 +1120,7 @@ IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_WrittenAsInnerHtmlImage) {
 }
 
 // TODO(crbug.com/41494085): Flaky on Mac.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WrittenAsOuterHtmlImage DISABLED_WrittenAsOuterHtmlImage
 #else
 #define MAYBE_WrittenAsOuterHtmlImage WrittenAsOuterHtmlImage
@@ -1157,7 +1134,7 @@ IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_WrittenAsOuterHtmlImage) {
 }
 
 // Flaky timeout with ASAN (crbug.com/337012486)
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(ADDRESS_SANITIZER)
+#if defined(ADDRESS_SANITIZER)
 #define MAYBE_DocumentWrittenImage DISABLED_DocumentWrittenImage
 #else
 #define MAYBE_DocumentWrittenImage DocumentWrittenImage
@@ -1170,7 +1147,7 @@ IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_DocumentWrittenImage) {
 }
 
 // Flaky timeout with ASAN (crbug.com/337012486)
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(ADDRESS_SANITIZER)
+#if defined(ADDRESS_SANITIZER)
 #define MAYBE_SrcSetImage DISABLED_SrcSetImage
 #else
 #define MAYBE_SrcSetImage SrcSetImage
@@ -1183,7 +1160,7 @@ IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_SrcSetImage) {
   Validate();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_DomMethodAddedImage DISABLED_DomMethodAddedImage
 #else
 #define MAYBE_DomMethodAddedImage DomMethodAddedImage

@@ -4,13 +4,18 @@
 
 package org.chromium.components.content_capture;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.autofill.AutofillId;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_capture.PlatformSession.PlatformSessionData;
 
 import java.util.List;
 
 /** The base class to process the ContentCaptureData. */
+@NullMarked
 abstract class ProcessContentCaptureDataTask extends NotificationTask {
     private final ContentCaptureFrame mContentCaptureData;
 
@@ -41,6 +46,7 @@ abstract class ProcessContentCaptureDataTask extends NotificationTask {
                 createOrGetSession(parentPlatformSessionData, data);
         if (platformSessionData == null) return false;
         List<ContentCaptureDataBase> children = data.getChildren();
+        assumeNonNull(children);
         for (ContentCaptureDataBase child : children) {
             if (!processCaptureData(platformSessionData, (ContentCaptureData) child)) return false;
         }
@@ -62,6 +68,7 @@ abstract class ProcessContentCaptureDataTask extends NotificationTask {
                             parentPlatformSessionData.contentCaptureSession, autofillId);
 
             List<ContentCaptureDataBase> children = data.getChildren();
+            assumeNonNull(children);
             for (ContentCaptureDataBase child : children) {
                 if (!processCaptureData(platformSessionData, (ContentCaptureData) child)) {
                     return false;
@@ -74,6 +81,6 @@ abstract class ProcessContentCaptureDataTask extends NotificationTask {
         }
     }
 
-    protected abstract AutofillId notifyPlatform(
+    protected abstract @Nullable AutofillId notifyPlatform(
             PlatformSessionData parentPlatformSessionData, ContentCaptureDataBase data);
 }

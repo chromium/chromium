@@ -46,12 +46,12 @@ GlicButtonController::~GlicButtonController() {
 
 void GlicButtonController::PanelStateChanged(
     const mojom::PanelState& panel_state) {
-  if (panel_state.kind == mojom::PanelState_Kind::kHidden) {
-    glic_controller_delegate_->SetIcon(
-        GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON));
-  } else {
+  if (panel_state.kind == mojom::PanelState_Kind::kDetached) {
     glic_controller_delegate_->SetIcon(GlicVectorIconManager::GetVectorIcon(
         IDR_GLIC_ATTACH_BUTTON_VECTOR_ICON));
+  } else {
+    glic_controller_delegate_->SetIcon(
+        GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON));
   }
 }
 

@@ -243,7 +243,7 @@ DirectFromSellerSignalsRequester::LoadSignals(
             AuctionDownloader::MimeType::kJson,
             /*post_body=*/std::nullopt,
             /*content_type=*/std::nullopt,
-            /*is_trusted_bidding_signals_kvv1_download=*/false,
+            /*num_igs_for_trusted_bidding_signals_kvv1=*/std::nullopt,
             AuctionDownloader::ResponseStartedCallback(),
             base::BindOnce(
                 &DirectFromSellerSignalsRequester::OnSignalsDownloaded,

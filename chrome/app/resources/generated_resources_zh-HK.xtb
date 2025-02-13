@@ -10075,6 +10075,7 @@
 <translation id="8155676038687609779">{COUNT,plural, =0{找不到被盜用的密碼}=1{{COUNT} 個被盜用的密碼}other{{COUNT} 個被盜用的密碼}}</translation>
 <translation id="8157248655669507702">啟用流動數據以安裝 eSIM 卡設定檔</translation>
 <translation id="8157704005178149728">正在設定監控功能</translation>
+<translation id="8157728322324420120">為您推薦</translation>
 <translation id="8157849462797352650">裝置可享有最新版的安全性、穩定性和效能更新</translation>
 <translation id="8158117992543756526">此裝置已在 <ph name="MONTH_AND_YEAR" />停止自動更新軟件和安全性。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">接收相關操作 (例如分割螢幕和切換桌面等) 的震動確認。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>

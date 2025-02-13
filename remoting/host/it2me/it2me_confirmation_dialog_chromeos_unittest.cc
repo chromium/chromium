@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/it2me/it2me_confirmation_dialog.h"
+#include "remoting/host/it2me/it2me_confirmation_dialog_chromeos.h"
 
 #include <algorithm>
 #include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
@@ -31,6 +32,10 @@
 #include "ui/message_center/notification_list.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
+#include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/view.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace remoting {
 
@@ -42,7 +47,11 @@ using remoting::features::kEnableCrdSharedSessionToUnattendedDevice;
 
 constexpr char kTestingRemoteEmail[] = "remote@gmail.com";
 constexpr char kModalDialogClassName[] = "MessageBoxView";
+constexpr char kModalDialogContentClassName[] = "Label";
 constexpr char kTestUserEmail[] = "user@test.com";
+const std::vector<std::string> kMessageBoxLabelHierarchy = {
+    "DialogClientView", "MessageBoxView", "ScrollView", "ScrollView::Viewport",
+    "BoxLayoutView"};
 
 // The lock and login screen use the same container for showing the modal
 // dialog.
@@ -83,6 +92,39 @@ gfx::NativeView GetModalDialogInsideParent(ash::ShellWindowId parent) {
 bool DialogVisibleInParentContainer(ash::ShellWindowId parent) {
   auto dialog = GetModalDialogInsideParent(parent);
   return dialog != nullptr && dialog->IsVisible();
+}
+
+views::View* FindChildViewByClassName(views::View* parent,
+                                      const std::string& name) {
+  if (!parent) {
+    return nullptr;
+  }
+
+  for (const auto& child : parent->children()) {
+    if (child->GetClassName() == name) {
+      return child;
+    }
+  }
+
+  return nullptr;
+}
+
+views::View* FindChildViewRecursivelyByClassName(
+    views::View* container,
+    const std::vector<std::string>& hierarchy) {
+  views::View* parent = container;
+
+  for (const auto& className : hierarchy) {
+    views::View* child = FindChildViewByClassName(parent, className);
+
+    if (child == nullptr) {
+      return nullptr;
+    }
+
+    parent = child;
+  }
+
+  return parent;
 }
 
 }  // namespace
@@ -132,19 +174,18 @@ class It2MeConfirmationDialogChromeOSTest
 
   void CreateAndShowDialog(const std::string& remote_user_email,
                            It2MeConfirmationDialog::ResultCallback callback) {
-    dialog_ = CreateDialog(GetParam());
+    dialog_ =
+        std::make_unique<It2MeConfirmationDialogChromeOS>(/*style=*/GetParam());
     dialog_->Show(remote_user_email, std::move(callback));
   }
 
- private:
-  std::unique_ptr<It2MeConfirmationDialog> CreateDialog(
-      DialogStyle dialog_style) {
-    It2MeConfirmationDialogFactory dialog_factory{dialog_style};
-    return dialog_factory.Create();
+  views::DialogDelegate& GetDialogDelegate() {
+    return dialog_->GetDialogDelegateForTest();
   }
 
+ private:
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<It2MeConfirmationDialog> dialog_;
+  std::unique_ptr<It2MeConfirmationDialogChromeOS> dialog_;
 };
 
 class It2MeConfirmationDialogChromeOSTestWithCrdUnattendedDisabled
@@ -290,6 +331,27 @@ class It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled
   void SimulateDeviceOnLoginScreen() {
     BlockUserSession(UserSessionBlockReason::BLOCKED_BY_LOGIN_SCREEN);
   }
+
+  const std::u16string GetDialogTitle() {
+    return GetDialogDelegate().GetWindowTitle();
+  }
+
+  const std::u16string GetDialogMessage() {
+    views::View* parent = GetDialogDelegate().GetBubbleFrameView();
+
+    views::View* label_view_parent =
+        FindChildViewRecursivelyByClassName(parent, kMessageBoxLabelHierarchy);
+
+    views::View* label_view = FindChildViewByClassName(
+        label_view_parent, kModalDialogContentClassName);
+
+    if (label_view) {
+      const auto* content = static_cast<views::Label*>(label_view);
+      return static_cast<std::u16string>(content->GetText());
+    }
+
+    return u"dialog-not-found";
+  }
 };
 
 TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
@@ -377,6 +439,21 @@ TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
 
   ASSERT_FALSE(DialogVisibleInParentContainer(kUserSessionScreen));
   ASSERT_TRUE(DialogVisibleInParentContainer(kLockScreen));
+}
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       ModalDialogShouldHaveTitle) {
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
+
+  ASSERT_EQ(GetDialogTitle(), l10n_util::GetStringUTF16(IDS_MODE_IT2ME));
+}
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       ModalDialogShouldHaveFormattedMessage) {
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
+
+  ASSERT_EQ(GetDialogMessage(),
+            FormatMessage(kTestingRemoteEmail, /*style=*/GetParam()));
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
@@ -20,6 +21,7 @@
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -30,6 +32,14 @@ using ::testing::_;
 using ::testing::ByRef;
 using ::testing::Eq;
 using ::testing::Return;
+
+MATCHER_P(EqualsProto, message, "") {
+  std::string expected_serialized, actual_serialized;
+  message.SerializeToString(&expected_serialized);
+  arg.SerializeToString(&actual_serialized);
+  return expected_serialized == actual_serialized;
+}
+
 namespace enterprise_connectors {
 
 namespace {
@@ -43,15 +53,28 @@ constexpr char kFakeUpdateAction[] = "UPDATE";
 constexpr char kFakeUninstallAction[] = "UNINSTALL";
 constexpr char kFakeExtensionVersion[] = "1";
 constexpr char kFakeExtensionSource[] = "EXTERNAL";
+constexpr auto kFakeExtensionSourceEnum =
+    ::chrome::cros::reporting::proto::BrowserExtensionInstallEvent::
+        ExtensionSource::BrowserExtensionInstallEvent_ExtensionSource_EXTERNAL;
 
 }  // namespace
 
-class ExtensionInstallEventRouterTest : public testing::Test {
+class ExtensionInstallEventRouterTest
+    : public testing::Test,
+      public testing::WithParamInterface<bool> {
  public:
   ExtensionInstallEventRouterTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
   void SetUp() override {
+    if (use_proto_format()) {
+      feature_list_.InitAndEnableFeature(
+          policy::kUploadRealtimeReportingEventsUsingProto);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          policy::kUploadRealtimeReportingEventsUsingProto);
+    }
+
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile(kFakeProfileUsername);
     policy::SetDMTokenForTesting(
@@ -80,8 +103,6 @@ class ExtensionInstallEventRouterTest : public testing::Test {
     mockRealtimeReportingClient_->SetBrowserCloudPolicyClientForTesting(
         client_.get());
 
-    settings.enabled_event_names.insert(kExtensionInstallEvent);
-
     base::Value::Dict manifest;
     manifest.Set(extensions::manifest_keys::kName, kFakeExtensionName);
     manifest.Set(extensions::manifest_keys::kVersion, "1");
@@ -100,6 +121,8 @@ class ExtensionInstallEventRouterTest : public testing::Test {
         nullptr);
   }
 
+  bool use_proto_format() { return GetParam();}
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
@@ -108,64 +131,129 @@ class ExtensionInstallEventRouterTest : public testing::Test {
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
 
   scoped_refptr<extensions::Extension> extension_chrome_;
-  ReportingSettings settings;
   raw_ptr<test::MockRealtimeReportingClient> mockRealtimeReportingClient_;
   std::unique_ptr<ExtensionInstallEventRouter> extensionInstallEventRouter_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(ExtensionInstallEventRouterTest, CheckInstallEventReported) {
+TEST_P(ExtensionInstallEventRouterTest, CheckInstallEventReported) {
+  ::chrome::cros::reporting::proto::Event expectedEventProto;
   base::Value::Dict expectedEvent;
 
-  expectedEvent.Set("id", kFakeExtensionId);
-  expectedEvent.Set("name", kFakeExtensionName);
-  expectedEvent.Set("description", kFakeExtensionDescription);
-  expectedEvent.Set("extension_action_type", kFakeInstallAction);
-  expectedEvent.Set("extension_version", kFakeExtensionVersion);
-  expectedEvent.Set("extension_source", kFakeExtensionSource);
+  if (use_proto_format()) {
+    auto* extension_event =
+        expectedEventProto.mutable_browser_extension_install_event();
 
-  EXPECT_CALL(
-      *mockRealtimeReportingClient_,
-      ReportRealtimeEvent(kExtensionInstallEvent, _, Eq(ByRef(expectedEvent))))
-      .Times(1);
+    extension_event->set_id(kFakeExtensionId);
+    extension_event->set_name(kFakeExtensionName);
+    extension_event->set_description(kFakeExtensionDescription);
+    extension_event->set_extension_action_type(
+        ::chrome::cros::reporting::proto::BrowserExtensionInstallEvent::
+            ExtensionAction::
+                BrowserExtensionInstallEvent_ExtensionAction_INSTALL);
+    extension_event->set_extension_version(kFakeExtensionVersion);
+    extension_event->set_extension_source(kFakeExtensionSourceEnum);
+
+    EXPECT_CALL(*mockRealtimeReportingClient_,
+                ReportEvent(EqualsProto(expectedEventProto), _))
+        .Times(1);
+  } else {
+    expectedEvent.Set("id", kFakeExtensionId);
+    expectedEvent.Set("name", kFakeExtensionName);
+    expectedEvent.Set("description", kFakeExtensionDescription);
+    expectedEvent.Set("extension_action_type", kFakeInstallAction);
+    expectedEvent.Set("extension_version", kFakeExtensionVersion);
+    expectedEvent.Set("extension_source", kFakeExtensionSource);
+
+    EXPECT_CALL(*mockRealtimeReportingClient_,
+                ReportRealtimeEvent(kExtensionInstallEvent, _,
+                                    Eq(ByRef(expectedEvent))))
+        .Times(1);
+  }
   extensionInstallEventRouter_->OnExtensionInstalled(
       nullptr, extension_chrome_.get(), false);
 }
 
-TEST_F(ExtensionInstallEventRouterTest, CheckUpdateEventReported) {
+TEST_P(ExtensionInstallEventRouterTest, CheckUpdateEventReported) {
+  ::chrome::cros::reporting::proto::Event expectedEventProto;
   base::Value::Dict expectedEvent;
 
-  expectedEvent.Set("id", kFakeExtensionId);
-  expectedEvent.Set("name", kFakeExtensionName);
-  expectedEvent.Set("description", kFakeExtensionDescription);
-  expectedEvent.Set("extension_action_type", kFakeUpdateAction);
-  expectedEvent.Set("extension_version", kFakeExtensionVersion);
-  expectedEvent.Set("extension_source", kFakeExtensionSource);
+  if (use_proto_format()) {
+    auto* extension_event =
+        expectedEventProto.mutable_browser_extension_install_event();
 
-  EXPECT_CALL(
-      *mockRealtimeReportingClient_,
-      ReportRealtimeEvent(kExtensionInstallEvent, _, Eq(ByRef(expectedEvent))))
-      .Times(1);
+    extension_event->set_id(kFakeExtensionId);
+    extension_event->set_name(kFakeExtensionName);
+    extension_event->set_description(kFakeExtensionDescription);
+    extension_event->set_extension_action_type(
+        ::chrome::cros::reporting::proto::BrowserExtensionInstallEvent::
+            ExtensionAction::
+                BrowserExtensionInstallEvent_ExtensionAction_UPDATE);
+    extension_event->set_extension_version(kFakeExtensionVersion);
+    extension_event->set_extension_source(kFakeExtensionSourceEnum);
+
+    EXPECT_CALL(*mockRealtimeReportingClient_,
+                ReportEvent(EqualsProto(expectedEventProto), _))
+        .Times(1);
+  } else {
+    expectedEvent.Set("id", kFakeExtensionId);
+    expectedEvent.Set("name", kFakeExtensionName);
+    expectedEvent.Set("description", kFakeExtensionDescription);
+    expectedEvent.Set("extension_action_type", kFakeUpdateAction);
+    expectedEvent.Set("extension_version", kFakeExtensionVersion);
+    expectedEvent.Set("extension_source", kFakeExtensionSource);
+
+    EXPECT_CALL(*mockRealtimeReportingClient_,
+                ReportRealtimeEvent(kExtensionInstallEvent, _,
+                                    Eq(ByRef(expectedEvent))))
+        .Times(1);
+  }
+
   extensionInstallEventRouter_->OnExtensionInstalled(
       nullptr, extension_chrome_.get(), true);
 }
 
-TEST_F(ExtensionInstallEventRouterTest, CheckUninstallEventReported) {
+TEST_P(ExtensionInstallEventRouterTest, CheckUninstallEventReported) {
+  ::chrome::cros::reporting::proto::Event expectedEventProto;
   base::Value::Dict expectedEvent;
 
-  expectedEvent.Set("id", kFakeExtensionId);
-  expectedEvent.Set("name", kFakeExtensionName);
-  expectedEvent.Set("description", kFakeExtensionDescription);
-  expectedEvent.Set("extension_action_type", kFakeUninstallAction);
-  expectedEvent.Set("extension_version", kFakeExtensionVersion);
-  expectedEvent.Set("extension_source", kFakeExtensionSource);
+  if (use_proto_format()) {
+    auto* extension_event =
+        expectedEventProto.mutable_browser_extension_install_event();
 
-  EXPECT_CALL(
-      *mockRealtimeReportingClient_,
-      ReportRealtimeEvent(kExtensionInstallEvent, _, Eq(ByRef(expectedEvent))))
-      .Times(1);
+    extension_event->set_id(kFakeExtensionId);
+    extension_event->set_name(kFakeExtensionName);
+    extension_event->set_description(kFakeExtensionDescription);
+    extension_event->set_extension_action_type(
+        ::chrome::cros::reporting::proto::BrowserExtensionInstallEvent::
+            ExtensionAction::
+                BrowserExtensionInstallEvent_ExtensionAction_UNINSTALL);
+    extension_event->set_extension_version(kFakeExtensionVersion);
+    extension_event->set_extension_source(kFakeExtensionSourceEnum);
+
+    EXPECT_CALL(*mockRealtimeReportingClient_,
+                ReportEvent(EqualsProto(expectedEventProto), _))
+        .Times(1);
+  } else {
+    expectedEvent.Set("id", kFakeExtensionId);
+    expectedEvent.Set("name", kFakeExtensionName);
+    expectedEvent.Set("description", kFakeExtensionDescription);
+    expectedEvent.Set("extension_action_type", kFakeUninstallAction);
+    expectedEvent.Set("extension_version", kFakeExtensionVersion);
+    expectedEvent.Set("extension_source", kFakeExtensionSource);
+
+    EXPECT_CALL(*mockRealtimeReportingClient_,
+                ReportRealtimeEvent(kExtensionInstallEvent, _,
+                                    Eq(ByRef(expectedEvent))))
+        .Times(1);
+  }
   extensionInstallEventRouter_->OnExtensionUninstalled(
       nullptr, extension_chrome_.get(),
       extensions::UNINSTALL_REASON_FOR_TESTING);
 }
+
+INSTANTIATE_TEST_SUITE_P(, ExtensionInstallEventRouterTest, ::testing::Bool());
 
 }  // namespace enterprise_connectors

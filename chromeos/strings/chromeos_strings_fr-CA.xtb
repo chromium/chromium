@@ -554,6 +554,7 @@
 <translation id="3628462041319107639">Téléchargement du modèle de transcription en cours…</translation>
 <translation id="3632040286124154621">Bonne suggestion</translation>
 <translation id="3632579075709132555">Commutateur de l'écran de confidentialité</translation>
+<translation id="3634941468757842845">Choisir un thème</translation>
 <translation id="3639873154908477486">Nom (de A à Z)</translation>
 <translation id="3644695927181369554">Mauvaise suggestion</translation>
 <translation id="3651050199673793219">Sélectionnez une unité de température</translation>
@@ -1540,6 +1541,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8132480444149501833">Demander des compteurs de trafic</translation>
 <translation id="8135609423982943441">Votre Chromebook a été réinitialisé à des paramètres sécuritaires par défaut. Vous pouvez ajuster ces modifications à tout moment dans Paramètres.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8140591278915222789">Créer le vôtre</translation>
 <translation id="8143951647992294073">Sélectionner <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />)</translation>
 <translation id="8151185429379586178">Outils de développement</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>

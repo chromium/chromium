@@ -193,6 +193,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1607312127821884567">Atsisakyti nustatyti telefono programų peržiūrą</translation>
 <translation id="1610778689852195798">„Anuliuoti“</translation>
 <translation id="1611993646327628135">Įjungta</translation>
+<translation id="1612679292338846734">Kai įjungiate šias funkcijas, įvesties tekstas, dokumento turinys ir tinklalapio URL gali būti siunčiami į „Google“ DI serverius. Ši informacija naudojama rašymo pasiūlymams, suvestinėms generuoti, atsakyti į klausimus ir produktui tobulinti, vadovaujantis <ph name="LINK_TO_SERVICE_TERMS" />. Neįtraukite jokios asmens, neskelbtinos ar konfidencialios informacijos.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Sutraukti „Google Classroom“</translation>
 <translation id="163032029566320584">Elementas „<ph name="UNAVAILABLE_DLC" />“ nepasiekiamas.</translation>
@@ -565,6 +566,7 @@ Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po <ph name="TIMEOUT_
 <translation id="2946119680249604491">Pridėti ryšį</translation>
 <translation id="2947835478872237115">Dabartinis akumuliatoriaus įkrovos lygis: <ph name="BATTERY_PERCENTAGE" /> %, <ph name="TIME" /> iki visiško įkrovimo</translation>
 <translation id="2949420361496057765">Paspauskite <ph name="MODIFIER" /> ir spustelėkite nuorodą</translation>
+<translation id="2957159466053076448">Galite bet kada išjungti šias funkcijas skiltyje „Nustatymai“. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Įrenginio garsas</translation>
 <translation id="2960314608273155470">Užfiksavimo režimas, numatytoji parinktis yra <ph name="SOURCE" /> <ph name="TYPE" />. Norėdami naudoti klaviatūrą, paspauskite tabuliavimo klavišą.</translation>
 <translation id="2961963223658824723">Deja, įvyko klaida. Bandykite dar kartą po kelių sekundžių.</translation>
@@ -1905,6 +1907,7 @@ Naujas įdiegimas</translation>
 <translation id="735745346212279324">VPN atjungtas</translation>
 <translation id="7360036564632145207">Našumą gali pavykti optimizuoti pakeičiant duomenų prieigos apsaugos išoriniams įrenginiams nustatymą</translation>
 <translation id="736045644501761622">Nustatyti ekrano foną ir stilių</translation>
+<translation id="7368041336688136012">Kad galėtumėte naudoti funkcijas „Pagalba skaitant“, „Pagalba rašant“ ir kurti vaizdus naudodami DI, turite būti bent aštuoniolikos metų.</translation>
 <translation id="7371404428569700291">Įrašymo langas</translation>
 <translation id="7372069265635026568">Laisvos atminties: <ph name="AVAILABLE_MEMORY" /> iš <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Tai leis pasiekti mikrofoną visoms programoms ir svetainėms, turinčioms mikrofono leidimą</translation>
@@ -2030,6 +2033,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7749443890790263709">Pasiektas didžiausias pultų skaičius.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Rodyti visas</translation>
+<translation id="7762664108390426952">„Google“ paslaugų teikimo sąlygomis ir privatumo politika</translation>
 <translation id="7768784765476638775">Teksto ištarimas</translation>
 <translation id="7769299611924763557">GIF elementas bus netrukus paruoštas</translation>
 <translation id="7773536009433685931">Vietoj to įjungti „Wi-Fi“</translation>

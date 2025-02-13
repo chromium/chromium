@@ -313,6 +313,10 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
   // Show the FRE if not yet completed, and if we have a browser to use.
   if (fre_controller_->ShouldShowFreDialog()) {
     if (!fre_controller_->CanShowFreDialog(new_attached_browser)) {
+      // If the FRE is blocked because it is already showing, we should instead
+      // dismiss it. This allows the glic button to be used to toggle the
+      // presence of the FRE.
+      fre_controller_->DismissFreIfOpenOnActiveTab(new_attached_browser);
       return;
     }
     fre_controller_->ShowFreDialog(new_attached_browser);

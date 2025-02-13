@@ -79,8 +79,6 @@ class OverviewItemViewSchedulerTest : public AshTestBase {
     ash_test_helper()->GetHost()->compositor()->ScheduleFullRedraw();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_{
-      chromeos::features::kOverviewSessionInitOptimizations};
   std::unique_ptr<aura::Window> overview_item_window_;
   std::unique_ptr<views::Widget> overview_item_widget_;
   std::unique_ptr<OverviewUiTaskPool> enter_animation_task_pool_;

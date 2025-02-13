@@ -285,6 +285,7 @@
 <translation id="2164946989711475905">Prihlásiť sa…</translation>
 <translation id="2175927920773552910">QR kód</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="219283042927675668">Karty v skupine</translation>
 <translation id="2194856509914051091">Čo je potrebné zohľadniť</translation>
 <translation id="2196428379625389579">Hľadať na internete</translation>
 <translation id="2199562093267256223">Týmto odstránite skupinu zo všetkých zariadení prihlásených do účtu <ph name="USER_EMAIL" /></translation>
@@ -896,6 +897,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4936354130727646074">Nikdy nepresúvať</translation>
 <translation id="4937410517508563815">Uloženie hesiel v účte</translation>
 <translation id="4938338714234463591">Umožní vám to používať hlas v prípade určitých funkcií na weboch.</translation>
+<translation id="4938560988715301237">Všetko automatické dopĺňanie</translation>
 <translation id="4938716880833771969">Upozornenia sa doručujú bez zvuku</translation>
 <translation id="4941089862236492464">Je nám ľúto, pri zdieľaní položky sa vyskytol problém.</translation>
 <translation id="4944543191714094452">Nájsť na stránke…</translation>
@@ -913,6 +915,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5016420433031926653">Pošlite na <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Posledných 15 minút</translation>
 <translation id="5020732097997376541">Klepnite na ikonu Lens</translation>
+<translation id="5021500396464456616">Kontaktujte osobu, ktorá poslala tento odkaz</translation>
 <translation id="5024511550058813796">Históriu budete mať vo všetkých synchronizovaných zariadeniach, takže budete môcť pokračovať v tom, čo ste robili</translation>
 <translation id="5038113048373546701">Dostávajte upozornenia na správy, šport a ďalšie témy na základe záujmov</translation>
 <translation id="5039804452771397117">Povoliť</translation>
@@ -977,7 +980,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5295239312320826323">Chcete odstrániť účet <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Zobraziť</translation>
 <translation id="5311061401280561833">Prístup ku kamere a mikrofónu je povolený</translation>
-<translation id="531209241254508943">skupina kariet</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> z <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5318298563956633672">Tento výrobok už sledujete.</translation>
@@ -1940,6 +1942,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="966593914872420832">Hlasové vyhľadávanie</translation>
 <translation id="968653181266955408">Dostávajte upozornenia na obsah</translation>
 <translation id="973493300226275298">Sledujte cenu výrobku v internetových obchodoch. Keď klesne, dostanete upozornenie.</translation>
+<translation id="973788791897303708">Táto skupina kariet je plná</translation>
 <translation id="976392601789283511">Opätovné otvorenie naposledy zavretej karty</translation>
 <translation id="981498610235328462">Vaša organizácia vám povoľuje prihlásiť sa iba určitým účtami. Nepovolené účty sú skryté.</translation>
 <translation id="984275831282074731">Spôsoby platby</translation>

@@ -9,16 +9,17 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
 
 /** A container object for passing share parameters to {@link ShareHelper}. */
+@NullMarked
 public class ShareParams {
     /** The window that triggered the share action. */
     private final WindowAndroid mWindow;
@@ -27,61 +28,61 @@ public class ShareParams {
     private final String mTitle;
 
     /** The text to be shared. */
-    private final String mText;
+    private final @Nullable String mText;
 
     /** A format to be used when sharing |mText|. */
-    private final String mTextFormat;
+    private final @Nullable String mTextFormat;
 
     /** The URL of the page to be shared. */
     private String mUrl;
 
     /** The common MIME type of the files to be shared. A wildcard if they have differing types. */
-    private final String mFileContentType;
+    private final @Nullable String mFileContentType;
 
     /** The list of Uris of the files to be shared. */
-    private final ArrayList<Uri> mFileUris;
+    private final @Nullable ArrayList<Uri> mFileUris;
 
     /** The alt-text for the shared files. */
-    private final String mImageAltText;
+    private final @Nullable String mImageAltText;
 
     /** The Uri to the offline MHTML file to be shared. */
-    private final Uri mOfflineUri;
+    private final @Nullable Uri mOfflineUri;
 
     /**
      * The Uri of a single image to be shared. If multiple image are being shared, use {@link
      * #mFileUris}.
      */
-    private final Uri mSingleImageUri;
+    private final @Nullable Uri mSingleImageUri;
 
     /**
      * The Bitmap of the preview image (e.g. a favicon) of the text being shared. Ignored if the
      * {@link mPreviewImageUri} is set.
      */
-    private final Bitmap mPreviewImageBitmap;
+    private final @Nullable Bitmap mPreviewImageBitmap;
 
     /** The Uri of the preview image (e.g. a favicon) of the text being shared. */
-    private Uri mPreviewImageUri;
+    private @Nullable Uri mPreviewImageUri;
 
     /** The boolean result of link to text generation. */
-    private final Boolean mLinkToTextSuccessful;
+    private final @Nullable Boolean mLinkToTextSuccessful;
 
     /** The sharing hub preview text. */
-    private final String mPreviewText;
+    private final @Nullable String mPreviewText;
 
     /** A format to be used when sharing |mPreviewText|. */
-    private final String mPreviewTextFormat;
+    private final @Nullable String mPreviewTextFormat;
 
     /**
      * Optional callback to be called when user makes a choice. Will not be called if receiving a
      * response when the user makes a choice is not supported (on older Android versions).
      */
-    private TargetChosenCallback mCallback;
+    private @Nullable TargetChosenCallback mCallback;
 
     private ShareParams(
             WindowAndroid window,
             String title,
-            String text,
-            String textFormat,
+            @Nullable String text,
+            @Nullable String textFormat,
             String url,
             @Nullable String fileContentType,
             @Nullable ArrayList<Uri> fileUris,
@@ -93,7 +94,7 @@ public class ShareParams {
             @Nullable TargetChosenCallback callback,
             @Nullable Boolean linkToTextSuccessful,
             @Nullable String previewText,
-            String previewTextFormat) {
+            @Nullable String previewTextFormat) {
         mWindow = window;
         mTitle = title;
         mText = text;
@@ -123,7 +124,7 @@ public class ShareParams {
     }
 
     /** @return The text concatenated with the url. */
-    public String getTextAndUrl() {
+    public @Nullable String getTextAndUrl() {
         String text = getText();
         String url = getUrl();
 
@@ -138,12 +139,12 @@ public class ShareParams {
     }
 
     /** @return The text to be shared in the format it is meant to be shared. */
-    public String getText() {
+    public @Nullable String getText() {
         return mTextFormat == null ? mText : String.format(mTextFormat, mText);
     }
 
     /** @return The text to be shared, but without additional formatting. */
-    public String getRawText() {
+    public @Nullable String getRawText() {
         return mText;
     }
 
@@ -158,48 +159,41 @@ public class ShareParams {
     }
 
     /** @return The MIME type to the arbitrary files to be shared. */
-    @Nullable
-    public String getFileContentType() {
+    public @Nullable String getFileContentType() {
         return mFileContentType;
     }
 
     /** @return The Uri to the arbitrary files to be shared. */
-    @Nullable
-    public ArrayList<Uri> getFileUris() {
+    public @Nullable ArrayList<Uri> getFileUris() {
         return mFileUris;
     }
 
     /** @return The alt-texts related to the single image to be shared. */
-    @Nullable
-    public String getImageAltText() {
+    public @Nullable String getImageAltText() {
         return mImageAltText;
     }
 
     /** @return The Uri to the offline MHTML file to be shared. */
-    @Nullable
-    public Uri getOfflineUri() {
+    public @Nullable Uri getOfflineUri() {
         return mOfflineUri;
     }
 
     /** @return The Uri of a single image to be shared. */
-    @Nullable
-    public Uri getSingleImageUri() {
+    public @Nullable Uri getSingleImageUri() {
         return mSingleImageUri;
     }
 
     /**
      * @return The Bitmap of the preview image (e.g. a favicon) of the text being shared.
      */
-    @Nullable
-    public Bitmap getPreviewImageBitmap() {
+    public @Nullable Bitmap getPreviewImageBitmap() {
         return mPreviewImageBitmap;
     }
 
     /**
      * @return The Uri of the preview image (e.g. a favicon) of the text being shared.
      */
-    @Nullable
-    public Uri getPreviewImageUri() {
+    public @Nullable Uri getPreviewImageUri() {
         return mPreviewImageUri;
     }
 
@@ -209,8 +203,7 @@ public class ShareParams {
     }
 
     /** @return The callback to be called when user makes a choice. */
-    @Nullable
-    public TargetChosenCallback getCallback() {
+    public @Nullable TargetChosenCallback getCallback() {
         return mCallback;
     }
 
@@ -220,14 +213,12 @@ public class ShareParams {
     }
 
     /** @return The boolean result of link to text generation. */
-    @Nullable
-    public Boolean getLinkToTextSuccessful() {
+    public @Nullable Boolean getLinkToTextSuccessful() {
         return mLinkToTextSuccessful;
     }
 
     /** @return The text to be shared in the format it is meant to be shared. */
-    @Nullable
-    public String getPreviewText() {
+    public @Nullable String getPreviewText() {
         return mPreviewTextFormat == null
                 ? mPreviewText
                 : String.format(mPreviewTextFormat, mPreviewText);
@@ -237,8 +228,7 @@ public class ShareParams {
      * A helper function returning the image Uri to share if image is passed as image URI, or as a
      * single file.
      */
-    @Nullable
-    public Uri getImageUriToShare() {
+    public @Nullable Uri getImageUriToShare() {
         if (getSingleImageUri() != null) {
             return getSingleImageUri();
         }
@@ -257,50 +247,50 @@ public class ShareParams {
     public static class Builder {
         private WindowAndroid mWindow;
         private String mTitle;
-        private String mText;
-        private String mTextFormat;
+        private @Nullable String mText;
+        private @Nullable String mTextFormat;
         private String mUrl;
-        private String mFileContentType;
-        private ArrayList<Uri> mFileUris;
-        private String mImageAltText;
-        private Uri mOfflineUri;
-        private Uri mSingleImageUri;
-        private Bitmap mPreviewImageBitmap;
-        private Uri mPreviewImageUri;
-        private TargetChosenCallback mCallback;
-        private Boolean mLinkToTextSuccessful;
-        private String mPreviewText;
-        private String mPreviewTextFormat;
+        private @Nullable String mFileContentType;
+        private @Nullable ArrayList<Uri> mFileUris;
+        private @Nullable String mImageAltText;
+        private @Nullable Uri mOfflineUri;
+        private @Nullable Uri mSingleImageUri;
+        private @Nullable Bitmap mPreviewImageBitmap;
+        private @Nullable Uri mPreviewImageUri;
+        private @Nullable TargetChosenCallback mCallback;
+        private @Nullable Boolean mLinkToTextSuccessful;
+        private @Nullable String mPreviewText;
+        private @Nullable String mPreviewTextFormat;
         // TODO(https://crbug/1415082): Remove when DomDistillerUrlUtil is removed from below.
         private boolean mBypassFixingDomDistillerUrl;
 
-        public Builder(@NonNull WindowAndroid window, @NonNull String title, @NonNull String url) {
+        public Builder(WindowAndroid window, String title, String url) {
             mWindow = window;
             mUrl = url;
             mTitle = title;
         }
 
         /** Sets the text to be shared. */
-        public Builder setText(@NonNull String text) {
+        public Builder setText(String text) {
             mText = text;
             return this;
         }
 
         /** Sets the text to be shared and its format to be used before sharing it. */
-        public Builder setText(@NonNull String text, @NonNull String format) {
+        public Builder setText(String text, String format) {
             mTextFormat = format;
             return setText(text);
         }
 
         /** Sets the sharing hub preview text. */
-        public Builder setPreviewText(@NonNull String previewText, @NonNull String format) {
+        public Builder setPreviewText(String previewText, String format) {
             mPreviewTextFormat = format;
             mPreviewText = previewText;
             return this;
         }
 
         /** Sets the MIME type of the arbitrary files to be shared. */
-        public Builder setFileContentType(@NonNull String fileContentType) {
+        public Builder setFileContentType(String fileContentType) {
             mFileContentType = fileContentType;
             return this;
         }

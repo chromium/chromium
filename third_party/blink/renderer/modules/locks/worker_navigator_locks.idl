@@ -8,5 +8,6 @@
     Exposed=Worker,
     ImplementedAs=LockManager
 ] partial interface WorkerNavigator {
+    [RaisesException]
     readonly attribute LockManager locks;
 };

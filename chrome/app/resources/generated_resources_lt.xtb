@@ -196,6 +196,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1129348283834595293">Kiberpankas</translation>
 <translation id="1129420403709586868">Peržiūrėkite telefono nuotraukas ir mediją</translation>
 <translation id="1129850422003387628">Valdyti programas</translation>
+<translation id="1130430615924359526">{0,plural, =1{Uždaryti inkognito režimą}one{Uždaryti inkognito režimą (# langas)}few{Uždaryti inkognito režimą (# langai)}many{Uždaryti inkognito režimą (# lango)}other{Uždaryti inkognito režimą (# langų)}}</translation>
 <translation id="113050636487300043">Pasirinkite pavadinimą ir spalvos temą, kad atskirtumėte profilius</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – priklauso grupei „<ph name="GROUP_NAME" />“</translation>
 <translation id="1130676589211693127">Dešiniosios akumuliatoriaus energijos lygis: <ph name="PERCENTAGE" /> %.</translation>
@@ -1526,6 +1527,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2042279886444479655">Aktyvūs profiliai</translation>
 <translation id="2042427131767688936">Siekdama įsitikinti, kad šį įrenginį galima naudoti saugiai, jūsų organizacija gali peržiūrėti informaciją apie jo operacinę sistemą, naršyklę, nustatymus ir įrenginyje įdiegtą programinę įrangą.</translation>
 <translation id="2044014337866019681">Būtinai patvirtinkite <ph name="ACCOUNT" />, kad atrakintumėte sesiją.</translation>
+<translation id="2044750031738659219">{0,plural, =1{Uždaryti svečio režimą}one{Uždaryti svečio režimą (# langas)}few{Uždaryti svečio režimą (# langai)}many{Uždaryti svečio režimą (# lango)}other{Uždaryti svečio režimą (# langų)}}</translation>
 <translation id="204497730941176055">„Microsoft“ sertifikato šablono pavadinimas</translation>
 <translation id="2045211794962848221">Nebematysite šio konkretaus pranešimo</translation>
 <translation id="2045838962742066664">Spartusis teksto vedimas</translation>
@@ -7375,6 +7377,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6214106213498203737">Akvarelė</translation>
 <translation id="621470880408090483">Neleisti svetainėms prisijungti prie „Bluetooth“ įrenginių</translation>
 <translation id="6215039389782910006">{1,plural, =1{Siekiant apsaugoti slaptažodžius, „<ph name="BRAND" />“ užrakinama, kai vieną minutę neatliekama jokių veiksmų}one{Siekiant apsaugoti slaptažodžius, „<ph name="BRAND" />“ užrakinama, kai # minutę neatliekama jokių veiksmų}few{Siekiant apsaugoti slaptažodžius, „<ph name="BRAND" />“ užrakinama, kai # minutes neatliekama jokių veiksmų}many{Siekiant apsaugoti slaptažodžius, „<ph name="BRAND" />“ užrakinama, kai # minutės neatliekama jokių veiksmų}other{Siekiant apsaugoti slaptažodžius, „<ph name="BRAND" />“ užrakinama, kai # minučių neatliekama jokių veiksmų}}</translation>
+<translation id="6216154119179790291">Slinkti į pirmą skirtuką</translation>
 <translation id="6216239400972191926">Atmestos svetainės ir programos</translation>
 <translation id="6216601812881225442">Negalima pakeisti sudėtinio rodinio dydžio. Jei norite koreguoti, kiek vietos iš anksto priskiriama „Linux“, sukurkite atsarginę kopiją ir atkurkite naujame sudėtiniame rodinyje.</translation>
 <translation id="6216696360484424239">Automatiškai prisijungti</translation>
@@ -7571,6 +7574,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6357305427698525450">Kai kurios palaikomos nuorodos vis tiek bus atidarytos „<ph name="APP_NAME" />“ arba „<ph name="APP_NAME_2" />“.</translation>
 <translation id="6357750620525943720">Kiti stabilūs identifikatoriai (pvz., maišos arba UUID)</translation>
 <translation id="6358884629796491903">Drakonas</translation>
+<translation id="6359640073754977254">Slinkti į paskutinį skirtuką</translation>
 <translation id="6361850914223837199">Išsami klaidos informacija:</translation>
 <translation id="6362853299801475928">&amp;Pateikti ataskaitą apie problemą...</translation>
 <translation id="6363786367719063276">Žr. žurnalus</translation>
@@ -10101,6 +10105,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8155676038687609779">{COUNT,plural, =0{Nerasta pažeistų slaptažodžių}=1{{COUNT} pažeistas slaptažodis}one{{COUNT} pažeistas slaptažodis}few{{COUNT} pažeisti slaptažodžiai}many{{COUNT} pažeisto slaptažodžio}other{{COUNT} pažeistų slaptažodžių}}</translation>
 <translation id="8157248655669507702">Įgalinkite mobiliojo ryšio duomenis, kad įdiegtumėte „eSIM“ kortelės profilį</translation>
 <translation id="8157704005178149728">Priežiūros nustatymas</translation>
+<translation id="8157728322324420120">Siūloma jums</translation>
 <translation id="8157849462797352650">Jūsų įrenginyje teikiami pastarieji saugos, stabilumo ir našumo naujiniai</translation>
 <translation id="8158117992543756526">Šiam įrenginiui nebeteikiami automatiniai programinės įrangos ir saugos naujiniai nuo <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Gaukite patvirtinimą vibruojant atlikę tokius veiksmus kaip ekrano išskaidymas ir darbalaukių perjungimas. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
@@ -10236,6 +10241,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8258027225380843424">Importuota sėkmingai!</translation>
 <translation id="8259048637628995340">„Android“ telefono susiejimas, kad paslaugos būtų teikiamos sklandžiai</translation>
 <translation id="8260177673299865994">Sustiprinkite atsisiuntimo apsaugą</translation>
+<translation id="8260473380156923937">„Chrome“ programų teikimas netrukus bus nutrauktas. Jei reikia alternatyvų, susisiekite su kūrėju arba IT paslaugų kontaktiniu asmeniu.</translation>
 <translation id="8260864402787962391">Pelė</translation>
 <translation id="8261378640211443080">Šio plėtinio nėra „<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />“ sąraše. Jis galėjo būti pridėtas be jūsų žinios.</translation>
 <translation id="8261506727792406068">Ištrinti</translation>

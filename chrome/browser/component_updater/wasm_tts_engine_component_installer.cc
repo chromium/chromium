@@ -71,7 +71,8 @@ void WasmTtsEngineComponentInstallerPolicy::ComponentReady(
           << install_dir.value();
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (features::IsWasmTtsComponentUpdaterEnabled()) {
+  if (features::IsWasmTtsComponentUpdaterEnabled() &&
+      !features::IsWasmTtsEngineAutoInstallDisabled()) {
     EmbeddedA11yExtensionLoader::GetInstance()->Init();
     EmbeddedA11yExtensionLoader::GetInstance()->InstallExtensionWithIdAndPath(
         extension_misc::kComponentUpdaterTTSEngineExtensionId, install_dir,

@@ -193,6 +193,7 @@
 <translation id="1607312127821884567">Одбаците подешавање прегледа апликација на телефону</translation>
 <translation id="1610778689852195798">„Опозови радњу“</translation>
 <translation id="1611993646327628135">Укључено</translation>
+<translation id="1612679292338846734">Када укључите ове функције, текст уноса, садржај документа и URL веб-странице могу да се шаљу серверима Google вештачке интелигенције. Ове информације се користе за генерисање предлога за писање, генерисање резимеа, одговарање на питања и побољшање производа, у складу са <ph name="LINK_TO_SERVICE_TERMS" />. Немојте да наводите никакве личне, осетљиве или поверљиве информације.</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1623768535032616219">Скупи Google учионицу</translation>
 <translation id="163032029566320584">Функција <ph name="UNAVAILABLE_DLC" /> није доступна</translation>
@@ -565,6 +566,7 @@
 <translation id="2946119680249604491">Додај везу</translation>
 <translation id="2947835478872237115">Актуелни ниво батерије је <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> до краја пуњења</translation>
 <translation id="2949420361496057765">Притисните <ph name="MODIFIER" /> и кликните на линк</translation>
+<translation id="2957159466053076448">Те функције можете да искључите у било ком тренутку у Подешавањима. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Звук уређаја</translation>
 <translation id="2960314608273155470">Режим снимања, подразумевана вредност је <ph name="SOURCE" /> <ph name="TYPE" />. Притисните Tab за кретање помоћу тастатуре.</translation>
 <translation id="2961963223658824723">Дошло је до грешке. Пробајте поново за пар секунди.</translation>
@@ -1907,6 +1909,7 @@
 <translation id="735745346212279324">Веза са VPN-ом је прекинута</translation>
 <translation id="7360036564632145207">Ако промените подешавање заштите приступа подацима за периферне уређаје, можете да оптимизујете учинак</translation>
 <translation id="736045644501761622">Подеси позадину и стил</translation>
+<translation id="7368041336688136012">Морате да имате најмање 18 година да бисте користили Помоћ при читању и Помоћ при писању и правили слике помоћу вештачке интелигенције.</translation>
 <translation id="7371404428569700291">Сними прозор</translation>
 <translation id="7372069265635026568">Доступно је <ph name="AVAILABLE_MEMORY" /> меморије од укупно <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Ово дозвољава приступ микрофону за све апликације и веб-сајтове са дозволом за микрофон</translation>
@@ -2032,6 +2035,7 @@
 <translation id="7749443890790263709">Достигли сте максималан број радних површина.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Прикажи све</translation>
+<translation id="7762664108390426952">Google-овим Условима коришћења услуге и Политиком приватности</translation>
 <translation id="7768784765476638775">Изаберите за говор</translation>
 <translation id="7769299611924763557">GIF ће ускоро бити спреман</translation>
 <translation id="7773536009433685931">Укључи WiFi</translation>

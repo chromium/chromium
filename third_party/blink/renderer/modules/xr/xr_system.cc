@@ -9,11 +9,13 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -325,6 +327,13 @@ bool IsImmersiveArAllowedBySettings(LocalDOMWindow* window) {
 
   return window->GetFrame()->GetSettings()->GetWebXRImmersiveArAllowed();
 }
+
+// When enabled, accessing the navigator.xr attribute does not prevent the
+// frame from entering the back forward cache.
+// Kill switch for https://crbug.com/392087591
+BASE_FEATURE(kWebXrAttributeAllowsBackForwardCache,
+             "WebXrAttributeAllowsBackForwardCache",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -792,13 +801,11 @@ XRSystem::XRSystem(Navigator& navigator)
                             ->Loader()
                             ->GetTiming()
                             .NavigationStart()),
-      feature_handle_for_scheduler_(
-          navigator.DomWindow()
-              ->GetFrame()
-              ->GetFrameScheduler()
-              ->RegisterFeature(SchedulingPolicy::Feature::kWebXR,
-                                {SchedulingPolicy::DisableBackForwardCache()})),
-      webxr_internals_renderer_listener_(GetExecutionContext()) {}
+      webxr_internals_renderer_listener_(GetExecutionContext()) {
+  if (!base::FeatureList::IsEnabled(kWebXrAttributeAllowsBackForwardCache)) {
+    DisableBackForwardCache();
+  }
+}
 
 void XRSystem::FocusedFrameChanged() {
   // Tell all sessions that focus changed.
@@ -954,6 +961,8 @@ void XRSystem::InternalIsSessionSupported(ScriptPromiseResolverBase* resolver,
                                       kNavigatorDetachedError);
     return;  // Promise will be rejected by generated bindings
   }
+
+  DisableBackForwardCache();
 
   device::mojom::blink::XRSessionMode session_mode =
       V8EnumToSessionMode(mode.AsEnum());
@@ -1233,6 +1242,8 @@ ScriptPromise<XRSession> XRSystem::requestSession(
     return EmptyPromise();  // Will be rejected by generated
                             // bindings
   }
+
+  DisableBackForwardCache();
 
   device::mojom::blink::XRSessionMode session_mode =
       V8EnumToSessionMode(mode.AsEnum());
@@ -1749,6 +1760,16 @@ bool XRSystem::IsImmersiveArAllowed() {
   DVLOG(2) << __func__ << ": ar_allowed_in_settings=" << ar_allowed_in_settings;
 
   return ar_allowed_in_settings;
+}
+
+void XRSystem::DisableBackForwardCache() {
+  if (feature_handle_for_scheduler_) {
+    return;
+  }
+  feature_handle_for_scheduler_ =
+      DomWindow()->GetFrame()->GetFrameScheduler()->RegisterFeature(
+          SchedulingPolicy::Feature::kWebXR,
+          SchedulingPolicy{SchedulingPolicy::DisableBackForwardCache()});
 }
 
 void XRSystem::Trace(Visitor* visitor) const {

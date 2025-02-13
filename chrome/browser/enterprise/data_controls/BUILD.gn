@@ -77,17 +77,16 @@ source_set("data_controls") {
 
   if (is_chromeos) {
     deps += [
+      "//chrome/browser/ash/policy/dlp",
+      "//components/user_manager",
+
       # Included for allow_circular_includes_from.
       "//chrome/browser/chromeos/policy/dlp",
     ]
-    allow_circular_includes_from += [ "//chrome/browser/chromeos/policy/dlp" ]
-  }
-  if (is_chromeos_ash) {
-    deps += [
+    allow_circular_includes_from += [
       "//chrome/browser/ash/policy/dlp",
-      "//components/user_manager",
+      "//chrome/browser/chromeos/policy/dlp",
     ]
-    allow_circular_includes_from += [ "//chrome/browser/ash/policy/dlp" ]
   }
 }
 
@@ -106,7 +105,7 @@ source_set("test_support") {
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     public_deps += [ "//components/user_manager" ]
   }
   if (!is_android) {

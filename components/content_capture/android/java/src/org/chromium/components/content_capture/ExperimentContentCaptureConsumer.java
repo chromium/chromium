@@ -5,11 +5,13 @@
 package org.chromium.components.content_capture;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * This class is used to trigger ContentCapture unconditionally for the experiment. It doesn't
  * consume any content, but is necessary to keep capturing content.
  */
+@NullMarked
 public class ExperimentContentCaptureConsumer implements ContentCaptureConsumer {
     private static final String TAG = "ContentCapture";
     private static boolean sDump;

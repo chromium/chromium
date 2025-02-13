@@ -1047,62 +1047,6 @@ void AutofillPrivateDeleteUserAnnotationsEntryFunction::OnEntryDeleted() {
   Respond(NoArguments());
 }
 
-// Triggers bootstrapping using `UserAnnotationsService`. On completion if
-// entries were added returns `true` and triggers `maybeShowHelpBubble`,
-// otherwise return `false`.
-ExtensionFunction::ResponseAction
-AutofillPrivateTriggerAnnotationsBootstrappingFunction::Run() {
-  AddressDataManager* adm = address_data_manager();
-  if (!adm || !adm->has_initial_load_finished()) {
-    return RespondNow(Error(kErrorDataUnavailable));
-  }
-
-  std::vector<const autofill::AutofillProfile*> autofill_profiles =
-      adm->GetProfiles(
-          autofill::AddressDataManager::ProfileOrder::kHighestFrecencyDesc);
-  if (autofill_profiles.size() == 0u) {
-    return RespondNow(WithArguments(false));
-  }
-
-  Profile* profile =
-      Profile::FromBrowserContext(GetSenderWebContents()->GetBrowserContext());
-  user_annotations::UserAnnotationsService* user_annotations_service =
-      profile ? UserAnnotationsServiceFactory::GetForProfile(profile) : nullptr;
-  if (!user_annotations_service) {
-    return RespondNow(WithArguments(false));
-  }
-
-  user_annotations_service->SaveAutofillProfile(
-      *autofill_profiles[0],
-      base::BindOnce(&AutofillPrivateTriggerAnnotationsBootstrappingFunction::
-                         OnBootstrappingComplete,
-                     this));
-
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
-
-void AutofillPrivateTriggerAnnotationsBootstrappingFunction::MaybeShowIPH() {
-  if (auto* const interface =
-          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
-              GetSenderWebContents())) {
-    interface->MaybeShowFeaturePromo(
-        feature_engagement::
-            kIPHAutofillPredictionImprovementsBootstrappingFeature);
-  }
-}
-
-void AutofillPrivateTriggerAnnotationsBootstrappingFunction::
-    OnBootstrappingComplete(
-        user_annotations::UserAnnotationsExecutionResult result) {
-  if (result == user_annotations::UserAnnotationsExecutionResult::kSuccess) {
-    // When the new data was added to memories, notify user with the IPH.
-    MaybeShowIPH();
-    Respond(WithArguments(true));
-    return;
-  }
-  Respond(WithArguments(false));
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateHasUserAnnotationsEntriesFunction
 

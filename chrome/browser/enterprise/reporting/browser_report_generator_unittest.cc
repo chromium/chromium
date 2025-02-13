@@ -12,7 +12,6 @@
 #include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -30,11 +29,11 @@
 #include "chrome/browser/upgrade_detector/build_state.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/test/base/scoped_channel_override.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 
@@ -77,11 +76,11 @@ void VerifyBuildState(em::BrowserReport* report, bool with_version_info) {
     EXPECT_EQ(report->installed_browser_version(),
               build_state->installed_version()->GetString());
   }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 }
 
 void VerifyExtendedStableChannel(em::BrowserReport* report) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
   if (chrome::IsExtendedStableChannel()) {
     EXPECT_TRUE(report->has_is_extended_stable_channel());
     EXPECT_TRUE(report->is_extended_stable_channel());
@@ -96,7 +95,7 @@ void VerifyExtendedStableChannel(em::BrowserReport* report) {
 #else
   EXPECT_FALSE(report->has_is_extended_stable_channel());
   EXPECT_EQ(report->channel(), em::Channel::CHANNEL_UNKNOWN);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 }
 
 void VerifyProfile(em::BrowserReport* report) {
@@ -140,13 +139,13 @@ class BrowserReportGeneratorTest : public ::testing::Test {
 
   void InitializeIrregularProfiles() {
     profile_manager_.CreateGuestProfile();
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
     profile_manager_.CreateSystemProfile();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     profile_manager_.CreateTestingProfile(ash::kSigninBrowserContextBaseName);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -167,11 +166,11 @@ class BrowserReportGeneratorTest : public ::testing::Test {
               EXPECT_EQ(
                   base::PathService::CheckedGet(base::DIR_EXE).AsUTF8Unsafe(),
                   report->executable_path());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
               bool with_version_info = false;
 #else
               bool with_version_info = true;
-#endif  // if BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // if BUILDFLAG(IS_CHROMEOS)
               VerifyBrowserVersionAndChannel(report.get(), with_version_info);
               VerifyBuildState(report.get(), with_version_info);
               VerifyExtendedStableChannel(report.get());
@@ -227,16 +226,16 @@ TEST_F(BrowserReportGeneratorTest, GenerateBasicReportForProfileReporting) {
   GenerateProfileReportAndVerify();
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 TEST_F(BrowserReportGeneratorTest, GenerateBasicReportWithUpdate) {
   InitializeUpdate();
   InitializeProfile();
   InitializeIrregularProfiles();
   GenerateAndVerify();
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && \
     BUILDFLAG(GOOGLE_CHROME_BRANDING)
 TEST_F(BrowserReportGeneratorTest, ExtendedStableChannel) {
   chrome::ScopedChannelOverride channel_override(
@@ -247,7 +246,7 @@ TEST_F(BrowserReportGeneratorTest, ExtendedStableChannel) {
   InitializeIrregularProfiles();
   GenerateAndVerify();
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) &&
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) &&
         // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace enterprise_reporting

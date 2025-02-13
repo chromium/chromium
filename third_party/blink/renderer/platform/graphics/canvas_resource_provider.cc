@@ -971,8 +971,7 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
         resource_->GetBackBufferClientSharedImage()->GetTextureTarget();
     texture_info.fFormat =
         ContextProviderWrapper()->ContextProvider().GetGrGLTextureFormat(
-            viz::SkColorTypeToSinglePlaneSharedImageFormat(
-                GetSkImageInfo().colorType()));
+            GetSharedImageFormat());
 
     auto backend_texture = GrBackendTextures::MakeGL(
         Size().width(), Size().height(), skgpu::Mipmapped::kNo, texture_info);
@@ -1593,8 +1592,9 @@ CanvasResourceProvider::GetOrCreateCanvasImageProvider() {
     // Create an ImageDecodeCache for half float images only if the canvas is
     // using half float back storage.
     cc::ImageDecodeCache* cache_f16 = nullptr;
-    if (GetSkImageInfo().colorType() == kRGBA_F16_SkColorType)
+    if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
       cache_f16 = ImageDecodeCacheF16();
+    }
 
     auto raster_mode = cc::PlaybackImageProvider::RasterMode::kSoftware;
     if (UseHardwareDecodeCache()) {
@@ -1706,8 +1706,7 @@ GrDirectContext* CanvasResourceProvider::GetGrContext() const {
 }
 
 SkSurfaceProps CanvasResourceProvider::GetSkSurfaceProps() const {
-  const bool can_use_lcd_text =
-      GetSkImageInfo().alphaType() == kOpaque_SkAlphaType;
+  const bool can_use_lcd_text = GetAlphaType() == kOpaque_SkAlphaType;
   return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
 }
 
@@ -1767,10 +1766,9 @@ void CanvasResourceProvider::RasterRecordOOP(cc::PaintRecord last_recording,
   if (IsGpuContextLost())
     return;
   gpu::raster::RasterInterface* ri = RasterInterface();
-  SkColor4f background_color =
-      GetSkImageInfo().alphaType() == kOpaque_SkAlphaType
-          ? SkColors::kBlack
-          : SkColors::kTransparent;
+  SkColor4f background_color = GetAlphaType() == kOpaque_SkAlphaType
+                                   ? SkColors::kBlack
+                                   : SkColors::kTransparent;
 
   auto list = base::MakeRefCounted<cc::DisplayItemList>();
   list->StartPaint();
@@ -1785,8 +1783,7 @@ void CanvasResourceProvider::RasterRecordOOP(cc::PaintRecord last_recording,
   gfx::Vector2dF post_translate(0.f, 0.f);
   gfx::Vector2dF post_scale(1.f, 1.f);
 
-  const bool can_use_lcd_text =
-      GetSkImageInfo().alphaType() == kOpaque_SkAlphaType;
+  const bool can_use_lcd_text = GetAlphaType() == kOpaque_SkAlphaType;
   ri->BeginRasterCHROMIUM(background_color, needs_clear,
                           /*msaa_sample_count=*/oopr_uses_dmsaa_ ? 1 : 0,
                           oopr_uses_dmsaa_ ? gpu::raster::MsaaMode::kDMSAA

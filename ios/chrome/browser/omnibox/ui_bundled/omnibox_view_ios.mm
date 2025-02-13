@@ -728,19 +728,6 @@ void OmniboxViewIOS::OnSelectedMatchForOpening(
     size_t index) {
   const auto match_selection_timestamp = base::TimeTicks();
 
-  // Sometimes the match provided does not correspond to the autocomplete
-  // result match specified by `index`. Most Visited Tiles, for example,
-  // provide ad hoc matches that are not in the result at all.
-  auto* autocomplete_controller = controller()->autocomplete_controller();
-  if (index >= autocomplete_controller->result().size() ||
-      autocomplete_controller->result().match_at(index).destination_url !=
-          match.destination_url) {
-    OmniboxPopupSelection selection(
-        autocomplete_controller->InjectAdHocMatch(match));
-    model()->OpenSelection(selection, match_selection_timestamp, disposition);
-    return;
-  }
-
   // Fill in clipboard matches if they don't have a destination URL.
   if (match.destination_url.is_empty()) {
     if (match.type == AutocompleteMatchType::CLIPBOARD_URL) {

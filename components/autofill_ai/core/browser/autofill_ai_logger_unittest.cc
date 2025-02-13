@@ -10,7 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/data_manager/entities/test_entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/entities/entity_data_manager.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -19,6 +19,8 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
+#include "components/autofill/core/browser/webdata/entities/entity_table.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager_test_api.h"
@@ -90,21 +92,27 @@ class BaseAutofillAiTest : public testing::Test {
     ON_CALL(client_, GetAutofillClient)
         .WillByDefault(testing::ReturnRef(autofill_client_));
     ON_CALL(client_, GetEntityDataManager)
-        .WillByDefault(testing::Return(&test_entity_data_manager_));
+        .WillByDefault(testing::Return(&entity_data_manager_));
   }
 
   AutofillAiManager& manager() { return *manager_; }
 
+  void AddOrUpdateEntityInstance(autofill::EntityInstance entity) {
+    entity_data_manager_.AddOrUpdateEntityInstance(std::move(entity));
+    webdata_helper_.WaitUntilIdle();
+  }
+
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
-
- protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   autofill::TestAutofillClient autofill_client_;
   testing::NiceMock<MockAutofillAiClient> client_;
   std::unique_ptr<AutofillAiManager> manager_;
   autofill::TestStrikeDatabase strike_database_;
-  autofill::TestEntityDataManager test_entity_data_manager_;
+  autofill::AutofillWebDataServiceTestHelper webdata_helper_{
+      std::make_unique<autofill::EntityTable>()};
+  autofill::EntityDataManager entity_data_manager_{
+      webdata_helper_.autofill_webdata_service()};
 };
 
 // Test that the funnel metrics are logged correctly given different scenarios.
@@ -282,12 +290,9 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
       is_form_eligible() ? CreateEligibleForm() : CreateIneligibleForm();
   // This will dictate whether we consider the form ready to be filled or not.
   if (user_has_data()) {
-    test_entity_data_manager_.AddEntityInstance(
-        autofill::test::GetPassportEntityInstance());
+    AddOrUpdateEntityInstance(autofill::test::GetPassportEntityInstance());
   }
   manager().OnFormSeen(*form);
-  // Unless `EntityDataManager` API is updated, we need to wait until idle.
-  task_environment_.RunUntilIdle();
 
   if (user_saw_suggestions()) {
     manager().OnSuggestionsShown(

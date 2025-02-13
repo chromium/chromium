@@ -85,6 +85,11 @@ bool IsPasswordManagerAvailable(
     const PrefService* prefs,
     std::unique_ptr<PasswordManagerUtilBridgeInterface> util_bridge);
 
+// As above, except the caller already knows whether the internal backend
+// is present, probably because the call originates in Java.
+bool IsPasswordManagerAvailable(const PrefService* prefs,
+                                bool is_internal_backend_present);
+
 // Used to prevent static casting issues with
 // `PasswordsUseUPMLocalAndSeparateStores` pref.
 password_manager::prefs::UseUpmLocalAndSeparateStoresState

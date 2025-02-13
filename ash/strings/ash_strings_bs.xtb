@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
-<translation id="1000127192436081677">Prebacite brzo dijeljenje. Brzo dijeljenje je <ph name="QUICK_SHARE_STATE" /></translation>
+<translation id="1000127192436081677">Uključivanje/isključivanje Quick Sharea. Quick Share je <ph name="QUICK_SHARE_STATE" /></translation>
 <translation id="1012876632442809908">USB-C uređaj (prednji priključak)</translation>
 <translation id="1013923882670373915">Bluetooth uređaj "<ph name="DEVICE_NAME" />" traži odobrenje za uparivanje. Unesite ovaj PIN kôd na taj uređaj: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">Ovo omogućava aplikaciji <ph name="APP_NAME" /> i svim aplikacijama i web lokacijama s odobrenjem za lokaciju te ChromeOS-u da koriste lokacije WiFi-ja i mobilnih mreža.</translation>
@@ -155,7 +155,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1469148162491666137">Ovo dozvoljava pristup kameri i mikrofonu za aplikacije <ph name="APP1_NAME" /> i<ph name="APP2_NAME" /> te sve aplikacije i web lokacije s odobrenjima za njih. Možda ćete morati osvježiti web stranicu ili ponovo pokrenuti aplikaciju.</translation>
 <translation id="147310119694673958">Baterija telefona: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">Uključite/isključite pristupnu tačku. Pristupna tačka je uključena i povezan je 1 uređaj.</translation>
-<translation id="1479685784053141667">Izradite kontakt</translation>
+<translation id="1479685784053141667">Kreiraj kontakt</translation>
 <translation id="1479909375538722835">Plutajući meni za pristupačnost</translation>
 <translation id="1483493594462132177">Pošalji</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -644,7 +644,7 @@ U suprotnom će se ugrađena dodirna podloga ponovo omogućiti za <ph name="TIME
 <translation id="3206735939915734551">Uključivanje/isključivanje Caps Locka</translation>
 <translation id="3207953481422525583">Korisničke postavke</translation>
 <translation id="3208321278970793882">Aplikacija</translation>
-<translation id="3212221635583599601">Povežite se s internetom za više</translation>
+<translation id="3212221635583599601">Povežite se s internetom za više radnji</translation>
 <translation id="3213571860604332401">Pohranjivanje linka kao oznake</translation>
 <translation id="3217205077783620295">Zvuk je uključen. Deaktiviranjem će se isključiti zvuk.</translation>
 <translation id="3226991577105957773">i još <ph name="COUNT" /></translation>
@@ -976,7 +976,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4275663329226226506">Mediji</translation>
 <translation id="4279490309300973883">Preslikavanje</translation>
 <translation id="4280601795273309128">Sigurnosna ažuriranja su se završila. Nadogradite uređaj.</translation>
-<translation id="4281739221820540368">Izradi Google dokument</translation>
+<translation id="4281739221820540368">Kreiraj Google dokument</translation>
 <translation id="4283888303416325161">Unesite lozinku radi veće sigurnosti</translation>
 <translation id="4285498937028063278">Otkači</translation>
 <translation id="428715201724021596">Povezivanje s profilom. To može potrajati nekoliko minuta.</translation>
@@ -1049,7 +1049,7 @@ Povezan je 1 uređaj.</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
 <translation id="4518404433291145981">Da otključate Chromebook, najprije otključajte telefon</translation>
-<translation id="4525887279712865285">Prikaži postavke brzog dijeljenja</translation>
+<translation id="4525887279712865285">Prikaz postavki Quick Sharea</translation>
 <translation id="4527045527269911712">Bluetooth uređaj "<ph name="DEVICE_NAME" />" traži odobrenje za uparivanje.</translation>
 <translation id="4531536770443562276">Dostupan je samo prikaz preko cijelog ekrana</translation>
 <translation id="4533343294786968049">Produžavanje vijeka trajanja baterije. Ona će se potpuno napuniti do <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -1605,7 +1605,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6274202259872570803">Emitiranje na ekranu</translation>
 <translation id="6276708887952587684">Prikaz izvora stranice</translation>
 <translation id="6284232397434400372">Rezolucija se promijenila</translation>
-<translation id="6285871695023807425">Dodaj u Kalendar</translation>
+<translation id="6285871695023807425">Dodaj na Kalendar</translation>
 <translation id="6288235558961782912">Adresu e-pošte <ph name="USER_EMAIL_ADDRESS" /> je moguće ponovo dodati kasnije uz odobrenje roditelja.</translation>
 <translation id="6291221004442998378">Ne puni se</translation>
 <translation id="6298183524022479114">Prilagodite uređaj u aplikaciji</translation>
@@ -1702,7 +1702,7 @@ Nova instalacija</translation>
 <translation id="6612889377159412215">podzadatak</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> pohrane je u upotrebi | Ukupno <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Ekran za privatnost je uključen</translation>
-<translation id="6618277154885124991">Izradi Google tablicu</translation>
+<translation id="6618277154885124991">Kreiraj Google tabelu</translation>
 <translation id="6622679827379792051">Postavljanje pregledanja aplikacija telefona</translation>
 <translation id="662279009180869175">Promjena veličine podijeljenog ekrana pomoću strelica ulijevo i udesno</translation>
 <translation id="6624493541160101248">Trenutna radna površina: <ph name="DESK_NAME" />. Radna površina <ph name="DESK_INDEX" /> od <ph name="DESK_COUNT" />.</translation>
@@ -2258,7 +2258,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="851660987304951246">Koristite Pomoć u čitanju da brzo sažmete sadržaj ili postavite pitanja</translation>
 <translation id="8517041960877371778">Moguće je da se vaš uređaj <ph name="DEVICE_TYPE" /> neće puniti dok je uključen.</translation>
 <translation id="8535393432370007982">Poništavanje načina sortiranja po boji</translation>
-<translation id="8539803091108018926">Tekst je kopiran u međuspremnik</translation>
+<translation id="8539803091108018926">Tekst je kopiran u međumemoriju</translation>
 <translation id="8541078764854166027">Kadriranje kamere</translation>
 <translation id="8542053257095774575">Nema sačuvanih radnih površina ili šablona</translation>
 <translation id="8546059259582788728">Poništavanje sortiranja je uspjelo</translation>

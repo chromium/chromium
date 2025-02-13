@@ -9,7 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
@@ -142,7 +142,7 @@ void ProfileReportGeneratorDelegateBase::GetProfileName(
 policy::CloudPolicyManager*
 ProfileReportGeneratorDelegateBase::GetCloudPolicyManager(
     bool is_machine_scope) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return nullptr;
 #else
   // CBCM report will include CBCM policy fetch information.
@@ -154,7 +154,7 @@ ProfileReportGeneratorDelegateBase::GetCloudPolicyManager(
   // Profile report will include user cloud policy information by default.
   // Or ProfileCloudPolicyManager when it's not managed by gaia account.
   return profile_->GetCloudPolicyManager();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace enterprise_reporting

@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{আপনার খোলা ট্যাবে দাম কমার তথ্য}one{আপনার খোলা ট্যাবে দাম কমার তথ্য}other{আপনার খোলা ট্যাবে দাম কমার তথ্য}}</translation>
 <translation id="5186036860380548585">স্ক্রিনের উপরের দিকে বিকল্পগুলি দেখানো হয়েছে</translation>
 <translation id="5197729504361054390">আপনার বেছে নেওয়া পরিচিতি <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-এর সাথে শেয়ার করা হবে।</translation>
+<translation id="5198930230016462977">আপনার 'নতুন ট্যাব' পৃষ্ঠা কাস্টমাইজ করার জন্য স্ক্রিনের নিচে অ্যাটাচ করা শিট বন্ধ আছে</translation>
 <translation id="5216942107514965959">আজ শেষবার দেখা হয়েছে</translation>
 <translation id="5225463052809312700">ক্যামেরা চালু করুন</translation>
 <translation id="5234764350956374838">খারিজ</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">হ্যান্ড ট্র্যাকিং</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> ব্লক করা হয়েছে</translation>
 <translation id="5804241973901381774">অনুমতিগুলি</translation>
+<translation id="5822675474983796325">আপনার 'নতুন ট্যাব' পৃষ্ঠা কাস্টমাইজ করার জন্য স্ক্রিনের নিচে অ্যাটাচ করা শিট ফুল স্ক্রিনে খোলা আছে</translation>
 <translation id="5844448279347999754">চালু থাকলে, সাইট আপনার ক্লিপবোর্ডে টেক্সট ও ছবি দেখার জন্য অনুমতি চাইতে পারে। চালু থাকলে, সাইট আপনার ক্লিপবোর্ডে টেক্সট ও ছবি দেখতে পারে না।</translation>
 <translation id="5853982612236235577">চালু থাকলে, সাইট বিজ্ঞপ্তি পাঠানোর জন্য অনুমতি চাইতে পারে। চালু থাকলে, সাইট বিজ্ঞপ্তি পাঠাতে পারে না।</translation>
 <translation id="5860033963881614850">বন্ধ করুন</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">প্রসারিত</translation>
 <translation id="7219254577985949841">সাইট ডেটা মুছবেন?</translation>
 <translation id="723171743924126238">ছবি বেছে নিন</translation>
+<translation id="7243246278722455312">আপনার 'নতুন ট্যাব' পৃষ্ঠা কাস্টমাইজ করার জন্য স্ক্রিনের নিচে অ্যাটাচ করা শিট</translation>
 <translation id="7243308994586599757">স্ক্রীনের প্রায় নীচের দিকে বিকল্পগুলি উপলব্ধ</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />টি বেছে নেওয়া হয়েছে</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> ও <ph name="PERMISSION_2" /> ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>

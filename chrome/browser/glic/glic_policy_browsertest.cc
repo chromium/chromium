@@ -131,6 +131,7 @@ class GlicPolicyTest : public PolicyTest {
           profile_manager->GenerateNextProfileDirectoryPath();
       profile_2_ =
           &profiles::testing::CreateProfileSync(profile_manager, new_path);
+      ForceSigninAndModelExecutionCapability(profile_2_);
     }
   }
 

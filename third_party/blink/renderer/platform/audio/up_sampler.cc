@@ -145,8 +145,12 @@ void UpSampler::Process(const float* source_p,
 }
 
 void UpSampler::Reset() {
-  direct_convolver_.reset();
-  simple_fft_convolver_.reset();
+  if (direct_convolver_) {
+    direct_convolver_->Reset();
+  }
+  if (simple_fft_convolver_) {
+    simple_fft_convolver_->Reset();
+  }
   input_buffer_.Zero();
 }
 

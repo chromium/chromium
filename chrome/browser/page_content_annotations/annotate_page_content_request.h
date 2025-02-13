@@ -1,20 +1,30 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #ifndef CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_ANNOTATIONS_ANNOTATE_PAGE_CONTENT_REQUEST_H_
 #define CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_ANNOTATIONS_ANNOTATE_PAGE_CONTENT_REQUEST_H_
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "pdf/buildflags.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/browser/pdf_document_helper.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
+
 namespace page_content_annotations {
 
 // Class for deciding when a page is ready for getting page content, and
 // extracts page content.
-class AnnotatedPageContentRequest {
+class AnnotatedPageContentRequest
+#if BUILDFLAG(ENABLE_PDF)
+    : public pdf::PDFDocumentHelper::Observer
+#endif  // BUILDFLAG(ENABLE_PDF)
+{
  public:
   static std::unique_ptr<AnnotatedPageContentRequest> MaybeCreate(
       content::WebContents* web_contents);
@@ -25,7 +35,11 @@ class AnnotatedPageContentRequest {
   AnnotatedPageContentRequest(const AnnotatedPageContentRequest&) = delete;
   AnnotatedPageContentRequest& operator=(const AnnotatedPageContentRequest&) =
       delete;
+#if BUILDFLAG(ENABLE_PDF)
+  ~AnnotatedPageContentRequest() override;
+#else
   ~AnnotatedPageContentRequest();
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   void PrimaryPageChanged();
 
@@ -53,6 +67,9 @@ class AnnotatedPageContentRequest {
 
 #if BUILDFLAG(ENABLE_PDF)
   void RequestPdfPageCount();
+
+  // pdf::PDFDocumentHelper::Observer:
+  void OnDocumentLoadComplete() override;
 #endif  // BUILDFLAG(ENABLE_PDF)
 
   const raw_ptr<content::WebContents> web_contents_;
@@ -65,6 +82,12 @@ class AnnotatedPageContentRequest {
 
   bool waiting_for_load_ = false;
   bool waiting_for_fcp_ = false;
+
+#if BUILDFLAG(ENABLE_PDF)
+  base::ScopedObservation<pdf::PDFDocumentHelper,
+                          pdf::PDFDocumentHelper::Observer>
+      pdf_load_obseration_{this};
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   base::WeakPtrFactory<AnnotatedPageContentRequest> weak_factory_{this};
 };

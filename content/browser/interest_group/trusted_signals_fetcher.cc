@@ -56,46 +56,6 @@ namespace content {
 
 namespace {
 
-constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("trusted_signals_fetcher", R"(
-        semantics {
-          sender: "TrustedSignalsFetcher"
-          description:
-            "Requests FLEDGE encrypted trusted signals for running an ad "
-            "auction."
-          trigger:
-            "Requested when a website runs a Protected Audiences auction. "
-            "The Protected Audience API allows sites to select content (such "
-            "as personalized ads) to display based on cross-site data in a "
-            "privacy preserving way."
-          data:
-            "HTTPS URL and POST body associated with an interest group or "
-            "seller. POST data has an additional layer of encryption, and "
-            "all data other than the URL is end-to-end encrypted and only "
-            "accessible in a Trusted Execution Environment."
-          destination: WEBSITE
-          user_data: {
-            type: SENSITIVE_URL
-          }
-          internal {
-            contacts {
-              email: "privacy-sandbox-dev@chromium.org"
-            }
-          }
-          last_reviewed: "2024-06-08"
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "Users can disable this via Settings > Privacy and Security > Ads "
-            "privacy > Site-suggested ads."
-          chrome_policy {
-            PrivacySandboxSiteEnabledAdsEnabled {
-              PrivacySandboxSiteEnabledAdsEnabled: false
-            }
-          }
-        })");
-
 // Supported compression formats.
 constexpr std::array<std::string_view, 2> kAcceptCompression = {"none", "gzip"};
 
@@ -387,7 +347,7 @@ void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
     const BiddingAndAuctionServerKey& bidding_and_auction_key,
     std::string plaintext_request_body,
     Callback callback) {
-  DCHECK(!simple_url_loader_);
+  DCHECK(!auction_downloader_);
   DCHECK(!callback_);
   trusted_signals_url_ = trusted_signals_url;
   callback_ = std::move(callback);
@@ -404,16 +364,8 @@ void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
           *maybe_key_config, kRequestMediaType);
   CHECK(maybe_ciphertext_request_body.ok());
 
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->method = net::HttpRequestHeaders::kPostMethod;
-  resource_request->url = trusted_signals_url;
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  resource_request->request_initiator = script_origin;
-  resource_request->mode = network::mojom::RequestMode::kCors;
-  resource_request->redirect_mode = network::mojom::RedirectMode::kError;
-  resource_request->headers.SetHeader("Accept", kResponseMediaType);
-  resource_request->trusted_params =
-      std::make_optional<network::ResourceRequest::TrustedParams>();
+  network::ResourceRequest::TrustedParams trusted_params;
+
   // IsolationInfos usually use main frame origin and frame origin, to separate
   // the disk cache, and prevent frames from spying on each other's cache
   // entries. These requests aren't cached (due to being POSTs), and use their
@@ -427,7 +379,7 @@ void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
   // information about whether there's a pre-existing connection. There's no way
   // for frames to probe in depth connection info more directly, since they
   // can't make network requests directly using the `network_partition_nonce`.
-  resource_request->trusted_params->isolation_info = net::IsolationInfo::Create(
+  trusted_params.isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther,
       /*top_frame_origin=*/main_frame_origin,
       /*frame_origin=*/main_frame_origin, net::SiteForCookies(),
@@ -441,61 +393,33 @@ void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
       DerivePrivateNetworkRequestPolicy(
           ip_address_space, /*is_web_secure_context=*/true,
           PrivateNetworkRequestContext::kSubresource);
-  resource_request->trusted_params->client_security_state =
-      std::move(client_security_state);
+  trusted_params.client_security_state = std::move(client_security_state);
 
-  simple_url_loader_ = network::SimpleURLLoader::Create(
-      std::move(resource_request), kTrafficAnnotation);
-  simple_url_loader_->SetTimeoutDuration(
-      auction_worklet::AuctionDownloader::kRequestTimeout);
-  simple_url_loader_->AttachStringForUpload(
+  auction_downloader_ = std::make_unique<auction_worklet::AuctionDownloader>(
+      url_loader_factory, trusted_signals_url,
+      auction_worklet::AuctionDownloader::DownloadMode::kActualDownload,
+      auction_worklet::AuctionDownloader::MimeType::kAdAuctionTrustedSignals,
       maybe_ciphertext_request_body->EncapsulateAndSerialize(),
-      kRequestMediaType);
-  // ObliviousHttpRequest::Context is a move-only type, with no default
-  // constructor, but ReleaseContext() return by value, so have to somewhat
-  // awkwardly wrap it in a unique_ptr to store it in an already-created
-  // TrustedSignalsFetcher.
+      std::string(kRequestMediaType),
+      /*request_initiator=*/script_origin, std::move(trusted_params),
+      base::BindOnce(&TrustedSignalsFetcher::OnRequestComplete,
+                     base::Unretained(this)),
+      /*network_events_delegate=*/nullptr);
   ohttp_context_ = std::make_unique<quiche::ObliviousHttpRequest::Context>(
       std::move(maybe_ciphertext_request_body).value().ReleaseContext());
-  simple_url_loader_->SetOnResponseStartedCallback(base::BindOnce(
-      &TrustedSignalsFetcher::OnResponseStarted, base::Unretained(this)));
-  simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory,
-      base::BindOnce(&TrustedSignalsFetcher::OnRequestComplete,
-                     base::Unretained(this)));
-}
-
-void TrustedSignalsFetcher::OnResponseStarted(
-    const GURL& final_url,
-    const network::mojom::URLResponseHead& response_head) {
-  network::URLLoaderCompletionStatus status;
-  std::optional<std::string> error =
-      auction_worklet::AuctionDownloader::CheckResponseAllowed(
-          trusted_signals_url_, response_head, status);
-  if (error) {
-    simple_url_loader_.reset();
-    std::move(callback_).Run(base::unexpected(std::move(error).value()));
-  }
 }
 
 void TrustedSignalsFetcher::OnRequestComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::unique_ptr<std::string> response_body,
+    scoped_refptr<net::HttpResponseHeaders> headers,
+    std::optional<std::string> error) {
+  // `auction_downloader_` is no longer needed.
+  auction_downloader_.reset();
+
   if (!response_body) {
-    std::move(callback_).Run(base::unexpected(base::StringPrintf(
-        "Failed to load %s error = %s.", trusted_signals_url_.spec().c_str(),
-        net::ErrorToString(simple_url_loader_->NetError()).c_str())));
+    std::move(callback_).Run(base::unexpected(std::move(error).value()));
     return;
   }
-
-  if (simple_url_loader_->ResponseInfo()->mime_type != kResponseMediaType) {
-    std::move(callback_).Run(base::unexpected(
-        base::StringPrintf("Rejecting load of %s due to unexpected MIME type.",
-                           trusted_signals_url_.spec().c_str())));
-    return;
-  }
-
-  // `simple_url_loader_` is no longer needed.
-  simple_url_loader_.reset();
 
   // The oblivious HTTP code returns an error on empty response bodies, so only
   // try and decrypt if the body is not empty, to give an error about size

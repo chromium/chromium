@@ -25,6 +25,7 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "template_url_prepopulate_data_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "url/gurl.h"
@@ -102,11 +103,15 @@ class DefaultSearchManagerTest : public testing::Test {
     return &search_engines_test_environment_.search_engine_choice_service();
   }
 
+  TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver() {
+    return search_engines_test_environment_.prepopulate_data_resolver();
+  }
+
   std::unique_ptr<DefaultSearchManager> create_manager() {
     return std::make_unique<DefaultSearchManager>(
         pref_service(), search_engine_choice_service(),
-        DefaultSearchManager::ObserverCallback()
-    );
+        search_engines_test_environment_.prepopulate_data_resolver(),
+        DefaultSearchManager::ObserverCallback());
   }
 
  private:
@@ -142,8 +147,7 @@ TEST_F(DefaultSearchManagerTest, ReadAndWritePref) {
 TEST_F(DefaultSearchManagerTest, DefaultSearchSetByUserPref) {
   auto manager = create_manager();
   std::unique_ptr<TemplateURLData> fallback_t_url_data =
-      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
-          pref_service(), search_engine_choice_service());
+      prepopulate_data_resolver().GetFallbackSearch();
   EXPECT_EQ(fallback_t_url_data->keyword(),
             TemplateURLPrepopulateData::google.keyword);
   EXPECT_EQ(fallback_t_url_data->prepopulate_id,
@@ -197,8 +201,7 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByOverrides) {
   auto manager = create_manager();
 
   std::unique_ptr<TemplateURLData> fallback_t_url_data =
-      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
-          pref_service(), search_engine_choice_service());
+      prepopulate_data_resolver().GetFallbackSearch();
   EXPECT_NE(fallback_t_url_data->keyword(),
             TemplateURLPrepopulateData::google.keyword);
   EXPECT_NE(fallback_t_url_data->prepopulate_id,
@@ -212,9 +215,7 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByOverrides) {
 
   // Update the overrides:
   SetOverrides(pref_service(), true);
-  fallback_t_url_data =
-      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
-          pref_service(), search_engine_choice_service());
+  fallback_t_url_data = prepopulate_data_resolver().GetFallbackSearch();
 
   // Make sure DefaultSearchManager updated:
   ExpectSimilar(fallback_t_url_data.get(),
@@ -457,8 +458,7 @@ TEST_F(DefaultSearchManagerTest,
   auto manager = create_manager();
 
   // Find the expected engine. We could fabricate one too, this is easier.
-  auto all_engines = TemplateURLPrepopulateData::GetPrepopulatedEngines(
-      pref_service(), search_engine_choice_service());
+  auto all_engines = prepopulate_data_resolver().GetPrepopulatedEngines();
   const auto& builtin_engine =
       *std::ranges::find_if(all_engines, [](const auto& engine) {
         GURL url(engine->url());

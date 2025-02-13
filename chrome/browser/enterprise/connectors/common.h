@@ -147,11 +147,6 @@ void ReportDataMaskingEvent(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Returns the single main profile, or nullptr if none is found.
-Profile* GetMainProfileLacros();
-#endif
-
 }  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_COMMON_H_

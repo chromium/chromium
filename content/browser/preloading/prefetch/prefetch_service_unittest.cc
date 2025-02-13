@@ -456,13 +456,13 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
         ->AddPrefetchContainer(std::move(prefetch_container));
   }
 
-  void MakePrefetchFromBrowserContext(
+  std::unique_ptr<content::PrefetchHandle> MakePrefetchFromBrowserContext(
       const GURL& url,
       std::optional<net::HttpNoVarySearchData> no_vary_search_data,
       const net::HttpRequestHeaders& additional_headers,
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
       base::TimeDelta ttl_in_sec = base::Seconds(/* 10 minutes */ 60 * 10)) {
-    browser_context()->StartBrowserPrefetchRequest(
+    return browser_context()->StartBrowserPrefetchRequest(
         url, true, no_vary_search_data, additional_headers,
         std::move(request_status_listener), ttl_in_sec);
   }
@@ -1240,9 +1240,10 @@ TEST_P(PrefetchServiceTest, SuccessCase_Browser) {
           std::make_unique<TestablePrefetchRequestStatusListener>(
               probe_listener->GetWeakPtr());
 
-  MakePrefetchFromBrowserContext(GURL("https://example.com?b=1"), std::nullopt,
-                                 request_additional_headers,
-                                 std::move(request_status_listener));
+  std::unique_ptr<content::PrefetchHandle> handle =
+      MakePrefetchFromBrowserContext(GURL("https://example.com?b=1"),
+                                     std::nullopt, request_additional_headers,
+                                     std::move(request_status_listener));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com?b=1"),
@@ -1307,9 +1308,10 @@ TEST_P(PrefetchServiceTest, SuccessCase_Browser_NoVarySearch) {
 
   net::HttpNoVarySearchData nvs_data =
       net::HttpNoVarySearchData::CreateFromNoVaryParams({"a"}, false);
-  MakePrefetchFromBrowserContext(GURL("https://example.com?a=1"), nvs_data,
-                                 request_additional_headers,
-                                 std::move(request_status_listener));
+  std::unique_ptr<content::PrefetchHandle> handle =
+      MakePrefetchFromBrowserContext(GURL("https://example.com?a=1"), nvs_data,
+                                     request_additional_headers,
+                                     std::move(request_status_listener));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com?a=1"),
@@ -1370,8 +1372,10 @@ TEST_P(PrefetchServiceTest, FailureCase_Browser_ServerErrorResponseCode) {
           std::make_unique<TestablePrefetchRequestStatusListener>(
               probe_listener->GetWeakPtr());
 
-  MakePrefetchFromBrowserContext(GURL("https://example.com?b=1"), std::nullopt,
-                                 {}, std::move(request_status_listener));
+  std::unique_ptr<content::PrefetchHandle> handle =
+      MakePrefetchFromBrowserContext(GURL("https://example.com?b=1"),
+                                     std::nullopt, {},
+                                     std::move(request_status_listener));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com?b=1"),
@@ -1428,8 +1432,10 @@ TEST_P(PrefetchServiceTest, FailureCase_Browser_NetError) {
   EXPECT_FALSE(probe_listener->GetPrefetchResponseErrorCalled());
   EXPECT_FALSE(probe_listener->GetPrefetchResponseServerErrorCalled());
 
-  MakePrefetchFromBrowserContext(GURL("https://example.com?c=1"), std::nullopt,
-                                 {}, std::move(request_status_listener));
+  std::unique_ptr<content::PrefetchHandle> handle =
+      MakePrefetchFromBrowserContext(GURL("https://example.com?c=1"),
+                                     std::nullopt, {},
+                                     std::move(request_status_listener));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com?c=1"),
@@ -1471,8 +1477,9 @@ TEST_P(PrefetchServiceTest, FailureCase_Browser_NotEligibleNonHttps) {
   EXPECT_FALSE(probe_listener->GetPrefetchResponseErrorCalled());
   EXPECT_FALSE(probe_listener->GetPrefetchResponseServerErrorCalled());
 
-  MakePrefetchFromBrowserContext(GURL("http://example.com"), std::nullopt, {},
-                                 std::move(request_status_listener));
+  std::unique_ptr<content::PrefetchHandle> handle =
+      MakePrefetchFromBrowserContext(GURL("http://example.com"), std::nullopt,
+                                     {}, std::move(request_status_listener));
   task_environment()->RunUntilIdle();
 
   EXPECT_TRUE(probe_listener->GetPrefetchStartFailedCalled());
@@ -1491,6 +1498,49 @@ TEST_P(PrefetchServiceTest, FailureCase_Browser_NotEligibleNonHttps) {
 
   NavigateInitiatedByBrowser(GURL("http://example.com"));
   EXPECT_FALSE(GetPrefetchToServe(GURL("http://example.com")));
+}
+
+TEST_P(PrefetchServiceTest, BrowserContextPrefetchRespectsTTL) {
+  base::HistogramTester histogram_tester;
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/std::nullopt));
+
+  net::HttpRequestHeaders request_additional_headers = {};
+  request_additional_headers.SetHeader("foo", "bar");
+  request_additional_headers.SetHeader("foo1", "bar1");
+
+  std::unique_ptr<ProbePrefetchRequestStatusListener> probe_listener =
+      std::make_unique<ProbePrefetchRequestStatusListener>();
+
+  std::unique_ptr<content::PrefetchRequestStatusListener>
+      request_status_listener =
+          std::make_unique<TestablePrefetchRequestStatusListener>(
+              probe_listener->GetWeakPtr());
+
+  std::unique_ptr<content::PrefetchHandle> handle =
+      MakePrefetchFromBrowserContext(GURL("https://example.com?b=1"),
+                                     std::nullopt, request_additional_headers,
+                                     std::move(request_status_listener),
+                                     base::Minutes(5));
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestState(GURL("https://example.com?b=1"),
+                           {.use_prefetch_proxy = false,
+                            .additional_headers = request_additional_headers});
+
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/false,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+  NavigateInitiatedByBrowser(GURL("https://example.com?b=1"));
+
+  PrefetchContainer::Reader serveable_reader =
+      GetPrefetchToServe(GURL("https://example.com?b=1"), std::nullopt);
+  EXPECT_EQ(serveable_reader.GetPrefetchContainer()->GetURL(),
+            GURL("https://example.com?b=1"));
+
+  task_environment()->FastForwardBy(base::Minutes(5));
+  EXPECT_FALSE(serveable_reader);
 }
 
 TEST_P(PrefetchServiceTest, PrefetchDoesNotMatchIfDocumentTokenDoesNotMatch) {

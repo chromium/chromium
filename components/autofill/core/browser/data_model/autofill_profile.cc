@@ -330,7 +330,7 @@ base::android::ScopedJavaLocalRef<jobject> AutofillProfile::CreateJavaObject(
       Java_AutofillProfile_Constructor(
           env, guid(), static_cast<jint>(record_type()), language_code());
 
-  for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
+  for (FieldType type : AutofillProfile::kDatabaseStoredTypes) {
     auto status = static_cast<jint>(GetVerificationStatus(type));
     // TODO(crbug.com/40278253): Reconcile usage of GetInfo and GetRawInfo
     // below.
@@ -442,10 +442,12 @@ void AutofillProfile::SetRawInfoWithVerificationStatus(
   }
 }
 
-void AutofillProfile::GetSupportedTypes(FieldTypeSet* supported_types) const {
-  for (const auto* form_group : FormGroups()) {
-    form_group->GetSupportedTypes(supported_types);
+FieldTypeSet AutofillProfile::GetSupportedTypes() const {
+  FieldTypeSet supported_types;
+  for (const FormGroup* form_group : FormGroups()) {
+    supported_types.insert_all(form_group->GetSupportedTypes());
   }
+  return supported_types;
 }
 
 FieldType AutofillProfile::GetStorableTypeOf(FieldType type) const {
@@ -553,7 +555,7 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
 
   // When adding field types, ensure that they don't need to be added here and
   // update the last checked value.
-  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 175,
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 185,
                 "New field type needs to be reviewed for inclusion in the "
                 "profile comparison logic.");
 
@@ -610,7 +612,7 @@ bool AutofillProfile::operator==(const AutofillProfile& profile) const {
 bool AutofillProfile::IsSubsetOf(const AutofillProfileComparator& comparator,
                                  const AutofillProfile& profile) const {
   return IsSubsetOfForFieldSet(comparator, profile,
-                               GetDatabaseStoredTypesOfAutofillProfile());
+                               AutofillProfile::kDatabaseStoredTypes);
 }
 
 bool AutofillProfile::IsSubsetOfForFieldSet(
@@ -819,11 +821,9 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
 void AutofillProfile::MergeFormGroupTokenQuality(
     const FormGroup& merged_group,
     const AutofillProfile& other_profile) {
-  FieldTypeSet supported_types;
-  merged_group.GetSupportedTypes(&supported_types);
-  for (FieldType type : supported_types) {
+  for (FieldType type : merged_group.GetSupportedTypes()) {
     const std::u16string& merged_value = merged_group.GetRawInfo(type);
-    if (!GetDatabaseStoredTypesOfAutofillProfile().contains(type) ||
+    if (!AutofillProfile::kDatabaseStoredTypes.contains(type) ||
         merged_value == GetRawInfo(type)) {
       // Quality information is only tracked for stored types. If the merged
       // value matches the existing value, its token quality is kept.
@@ -1037,11 +1037,6 @@ VerificationStatus AutofillProfile::GetVerificationStatus(
   return form_group->GetVerificationStatus(type);
 }
 
-std::u16string AutofillProfile::GetInfo(FieldType type,
-                                        const std::string& app_locale) const {
-  return GetInfo(AutofillType(type), app_locale);
-}
-
 std::u16string AutofillProfile::GetInfo(const AutofillType& type,
                                         const std::string& app_locale) const {
   const FormGroup* form_group = FormGroupForType(type.GetStorableType());
@@ -1223,17 +1218,10 @@ std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
      << profile.usage_history().use_date() << " " << profile.language_code()
      << std::endl;
 
-  // Lambda to print the value and verification status for |type|.
-  auto print_values_lambda = [&os, &profile](FieldType type) {
+  for (FieldType type : profile.GetSupportedTypes()) {
     os << FieldTypeToStringView(type) << ": " << profile.GetRawInfo(type) << "("
        << profile.GetVerificationStatus(type) << ")" << std::endl;
-  };
-
-  // Use a helper function to print the values of the stored types.
-  FieldTypeSet field_types_to_print;
-  profile.GetSupportedTypes(&field_types_to_print);
-
-  std::ranges::for_each(field_types_to_print, print_values_lambda);
+  }
 
   return os;
 }

@@ -82,6 +82,7 @@
 <translation id="2094648590148273905">ChromeOS Flex-н нөхцөл</translation>
 <translation id="2094919256425865063">Ямар ч байсан Chrome-с гарах уу?</translation>
 <translation id="2106831557840787829">ChromeOS Flex-г <ph name="BEGIN_LINK_LINUX_OSS" />Linux-н хөгжүүлэлтийн орчин <ph name="END_LINK_LINUX_OSS" /> болох нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
+<translation id="2108778574543343055">Аппуудын хувьд Chrome-г дэвсгэрт ажиллуулахыг идэвхгүй болгох</translation>
 <translation id="2120620239521071941">Энэ нь төхөөрөмжөөс <ph name="ITEMS_COUNT" /> зүйлийг устгана. Дараа нь өгөгдлөө сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="2121284319307530122">&amp;Chrome-г шинэчлэхийн тулд дахин ачаалах</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />Одоогийн тохиргоог<ph name="END_LINK" /> мэдэгдэж Chrome-г сайжруулахад тусална уу</translation>
@@ -143,6 +144,7 @@
 <translation id="2797864378188255696"><ph name="USER_EMAIL" />-р Gmail эсвэл YouTube зэрэг Google-н үйлчилгээнд нэвтрэх үед та тухайн бүртгэлээр Chrome-д автоматаар нэвтрэх боломжтой</translation>
 <translation id="2799162042226656283">Таны Chrome</translation>
 <translation id="2799223571221894425">Дахин эхлүүлэх</translation>
+<translation id="2818684386420968393">Аппуудын хувьд Chrome-г дэвсгэрт ажиллуулахыг идэвхгүй болгох</translation>
 <translation id="2825024317344269723">Аюултай сайт. Chrome мэдэгдлүүдийг хассан.</translation>
 <translation id="2841525013647267359">Дараах хэлээс орчуулах</translation>
 <translation id="2846251086934905009">Суулгах үед алдаа гарлаа: Суулгагч дуусгаагүй. Суулгалтыг тасалсан.</translation>
@@ -356,6 +358,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="5596627076506792578">Бусад сонголт</translation>
 <translation id="5602351063754773347">Chrome танд үүнийг хасахыг зөвлөж байна. <ph name="BEGIN_LINK" />Дэмжигдсэн өргөтгөлийн талаар нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome таныг онлайн орчинд аюулгүй байлгахын тулд илүү ихийг хийдэг</translation>
+<translation id="5649680279845190972">Өргөтгөл болон бусад зүйлээ бүх компьютер дээрээ авахын тулд Chrome-д нэвтэрнэ үү</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> аюултай байж болзошгүй тул үүнийг Chrome блок хийсэн.</translation>
 <translation id="566568153320186256">Chrome саадгүй гүйлгэх, видеоны фреймийн хурд зэрэг арын үйл ажиллагаа болон визуал эффектийг хязгаарласнаар батарейн цэнэгийг хэмнэнэ. <ph name="BEGIN_LINK" />Эрчим хүч хэмнэгчийн талаар нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Бүртгэлийнхээ Chrome-н өгөгдлийг арилгана уу</translation>

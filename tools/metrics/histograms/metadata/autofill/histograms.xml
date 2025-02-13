@@ -492,6 +492,11 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="CREDIT_CARD_TYPE"/>
   <variant name="CREDIT_CARD_VERIFICATION_CODE"/>
   <variant name="DELIVERY_INSTRUCTIONS"/>
+  <variant name="DRIVERS_LICENSE_EXPIRATION_DATE_TAG"/>
+  <variant name="DRIVERS_LICENSE_ISSUE_DATE_TAG"/>
+  <variant name="DRIVERS_LICENSE_NAME_TAG"/>
+  <variant name="DRIVERS_LICENSE_NUMBER"/>
+  <variant name="DRIVERS_LICENSE_REGION"/>
   <variant name="EMAIL_ADDRESS"/>
   <variant name="EMPTY_TYPE"/>
   <variant name="FIELD_WITH_DEFAULT_VALUE"/>
@@ -547,6 +552,11 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="UNKNOWN_TYPE"/>
   <variant name="USERNAME"/>
   <variant name="USERNAME_AND_EMAIL_ADDRESS"/>
+  <variant name="VEHICLE_LICENSE_PLATE"/>
+  <variant name="VEHICLE_MAKE"/>
+  <variant name="VEHICLE_MODEL"/>
+  <variant name="VEHICLE_OWNER_TAG"/>
+  <variant name="VEHICLE_VIN"/>
 </variants>
 
 <variants name="AutofillFormType">
@@ -1049,6 +1059,26 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     The result from Amount Extraction Heuristic Regexes component installation.
     This metric is recorded every time when a new regexes version is installed.
   </summary>
+</histogram>
+
+<histogram
+    name="Autofill.AmountExtraction.Latency{AmountExtractionLatencyResult}"
+    units="ms" expires_after="2025-07-01">
+  <owner>yiwenqian@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the latency of amount extraction process. This latency is measured
+    from the moment amount extraction is initiated in the browser process to
+    when a response is received. Logged when the search is finished.
+  </summary>
+  <token key="AmountExtractionLatencyResult">
+    <variant name=".Failure"
+        summary="Labeled amount extraction latency when amount extraction
+                 failed"/>
+    <variant name=".Success"
+        summary="Labeled amount extraction latency when amount extraction
+                 succeeded"/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.AndroidAutofillAvailabilityStatus"

@@ -22,6 +22,7 @@ import './product_specifications_lists.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {HistoryResultType} from 'chrome://resources/cr_components/history/constants.js';
+import type {HistoryEntry, HistoryQuery, PageCallbackRouter, PageHandlerRemote, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {HistoryEmbeddingsBrowserProxyImpl} from 'chrome://resources/cr_components/history_embeddings/browser_proxy.js';
 import type {Suggestion} from 'chrome://resources/cr_components/history_embeddings/filter_chips.js';
 import type {HistoryEmbeddingsMoreActionsClickEvent} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
@@ -45,7 +46,7 @@ import {getTemplate} from './app.html.js';
 import type {BrowserService} from './browser_service.js';
 import {BrowserServiceImpl} from './browser_service.js';
 import {HistoryPageViewHistogram} from './constants.js';
-import type {ForeignSession, QueryResult, QueryState} from './externs.js';
+import type {ForeignSession} from './externs.js';
 import type {HistoryListElement} from './history_list.js';
 import type {HistoryToolbarElement} from './history_toolbar.js';
 import {convertDateToQueryValue} from './query_manager.js';
@@ -140,6 +141,12 @@ export interface HistoryAppElement {
     historyEmbeddingsContainer: HTMLElement,
     historyEmbeddingsDisclaimerLink: HTMLElement,
   };
+}
+
+export interface QueryResult {
+  info?: HistoryQuery;
+  value?: HistoryEntry[];
+  sessionList?: ForeignSession[];
 }
 
 const HistoryAppElementBase = mixinBehaviors(
@@ -290,6 +297,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
   footerInfo: FooterInfo;
   private browserService_: BrowserService = BrowserServiceImpl.getInstance();
+  private callbackRouter_: PageCallbackRouter;
   private enableHistoryEmbeddings_: boolean;
   private eventTracker_: EventTracker = new EventTracker();
   private hasDrawer_: boolean;
@@ -299,6 +307,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private lastSelectedTab_: number;
   private contentPage_: string;
   private tabsContentPage_: string;
+  private pageHandler_: PageHandlerRemote;
   private pendingDelete_: boolean;
   private queryResult_: QueryResult;
   private queryState_: QueryState;
@@ -311,6 +320,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private tabsNames_: string[];
   private toolbarShadow_: boolean;
   private historyClustersViewStartTime_: Date|null = null;
+  private onHasOtherFormsChangedListenerId_: number|null = null;
   private scrollTarget_: HTMLElement;
   private queryStateAfterDate_?: Date;
   private hasHistoryEmbeddingsResults_: boolean;
@@ -325,11 +335,13 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
   constructor() {
     super();
+    this.pageHandler_ = BrowserServiceImpl.getInstance().handler;
+    this.callbackRouter_ = BrowserServiceImpl.getInstance().callbackRouter;
 
     this.queryResult_ = {
       info: undefined,
-      results: undefined,
-      sessionList: undefined,
+      value: [],
+      sessionList: [],
     };
 
     listenForPrivilegedLinkClicks();
@@ -348,10 +360,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
         'sign-in-state-changed',
         (signedIn: boolean) => this.onSignInStateChanged_(signedIn));
     this.addWebUiListener(
-        'has-other-forms-changed',
-        (hasOtherForms: boolean) =>
-            this.onHasOtherFormsChanged_(hasOtherForms));
-    this.addWebUiListener(
         'foreign-sessions-changed',
         (sessionList: ForeignSession[]) =>
             this.setForeignSessions_(sessionList));
@@ -364,6 +372,11 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.eventTracker_.add(
         mediaQuery, 'change',
         (e: MediaQueryListEvent) => this.hasDrawer_ = e.matches);
+
+    this.onHasOtherFormsChangedListenerId_ =
+        this.callbackRouter_.onHasOtherFormsChanged.addListener(
+            (hasOtherForms: boolean) =>
+                this.onHasOtherFormsChanged_(hasOtherForms));
   }
 
   override ready() {
@@ -415,6 +428,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
       this.historyEmbeddingsResizeObserver_.disconnect();
       this.historyEmbeddingsResizeObserver_ = undefined;
     }
+    assert(this.onHasOtherFormsChangedListenerId_);
+    this.callbackRouter_.removeListener(this.onHasOtherFormsChangedListenerId_);
+    this.onHasOtherFormsChangedListenerId_ = null;
   }
 
   private fire_(eventName: string, detail?: any) {
@@ -548,7 +564,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
   private onQueryFinished_() {
     this.$.history.historyResult(
-        this.queryResult_.info!, this.queryResult_.results!);
+        this.queryResult_.info!, this.queryResult_.value!);
     if (document.body.classList.contains('loading')) {
       document.body.classList.remove('loading');
       this.onFirstRender_();
@@ -765,7 +781,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
     if (!this.selectedPage_ || TABBED_PAGES.includes(this.selectedPage_)) {
       this.selectedPage_ = TABBED_PAGES[this.selectedTab_];
     }
-    this.browserService_!.setLastSelectedTab(this.selectedTab_);
+    this.pageHandler_.setLastSelectedTab(this.selectedTab_);
   }
 
   private maybeUpdateSelectedHistoryTab_() {
@@ -918,7 +934,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private onHistoryEmbeddingsItemRemoveClick_(
       e: HistoryEmbeddingsMoreActionsClickEvent) {
     const historyEmbeddingsItem = e.detail;
-    this.browserService_.removeVisits([{
+    this.pageHandler_.removeVisits([{
       url: historyEmbeddingsItem.url.url,
       timestamps: [historyEmbeddingsItem.lastUrlVisitTimestamp],
     }]);

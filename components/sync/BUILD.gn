@@ -12,9 +12,6 @@ group("sync") {
     "//components/sync/nigori",
     "//components/sync/service",
   ]
-  if (is_chromeos) {
-    public_deps += [ "//components/sync/chromeos" ]
-  }
 }
 
 static_library("test_support") {
@@ -257,10 +254,6 @@ source_set("unit_tests") {
     "service/syncable_service_based_data_type_controller_unittest.cc",
     "service/trusted_vault_synthetic_field_trial_unittest.cc",
   ]
-
-  if (is_chromeos) {
-    sources += [ "chromeos/explicit_passphrase_mojo_utils_unittest.cc" ]
-  }
 
   configs += [ "//build/config:precompiled_headers" ]
 

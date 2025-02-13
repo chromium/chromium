@@ -76,6 +76,7 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
+#include "content/browser/attribution_reporting/os_registrations_table.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/sql_queries.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
@@ -561,7 +562,8 @@ AttributionStorageSql::AttributionStorageSql(
           /*tag=*/"Conversions"),
       delegate_(delegate),
       rate_limit_table_(delegate_),
-      aggregatable_debug_rate_limit_table_(delegate_) {
+      aggregatable_debug_rate_limit_table_(delegate_),
+      os_registrations_table_(delegate_) {
   DCHECK(delegate_);
 }
 
@@ -1614,6 +1616,11 @@ void AttributionStorageSql::ClearDataWithFilter(
     return;
   }
 
+  // The deletion of OS-registration data doesn't need to be atomic with respect
+  // to deletion of web-registration data as they're completely independent.
+  os_registrations_table_.ClearDataForOriginsInRange(&db_, delete_begin,
+                                                     delete_end, filter);
+
   // Delete the data in a transaction to avoid cases where the source part
   // of a report is deleted without deleting the associated report, or
   // vice versa.
@@ -1689,6 +1696,10 @@ void AttributionStorageSql::ClearAllDataAllTime(bool delete_rate_limit_data) {
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent)) {
     return;
   }
+
+  // The deletion of OS-registration data doesn't need to be atomic with respect
+  // to deletion of web-registration data as they're completely independent.
+  os_registrations_table_.ClearAllDataAllTime(&db_);
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -2368,6 +2379,10 @@ bool AttributionStorageSql::CreateSchema() {
     return false;
   }
 
+  if (!os_registrations_table_.CreateTable(&db_)) {
+    return false;
+  }
+
   if (sql::MetaTable meta_table;
       !meta_table.Init(&db_, kCurrentVersionNumber, kCompatibleVersionNumber)) {
     return false;
@@ -2889,6 +2904,8 @@ AttributionStorageSql::GetAllDataKeys() {
 
   aggregatable_debug_rate_limit_table_.AppendRateLimitDataKeys(&db_, keys);
 
+  os_registrations_table_.AppendOsRegistrationDataKeys(&db_, keys);
+
   return keys;
 }
 
@@ -2981,11 +2998,23 @@ bool AttributionStorageSql::AdjustForAggregatableDebugReport(
   return transaction.Commit();
 }
 
+void AttributionStorageSql::StoreOsRegistrations(
+    const base::flat_set<url::Origin>& origins) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!LazyInit(DbCreationPolicy::kCreateIfAbsent)) {
+    return;
+  }
+
+  os_registrations_table_.AddOsRegistrations(&db_, origins);
+}
+
 void AttributionStorageSql::SetDelegate(AttributionResolverDelegate* delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate);
   aggregatable_debug_rate_limit_table_.SetDelegate(*delegate);
   rate_limit_table_.SetDelegate(*delegate);
+  os_registrations_table_.SetDelegate(*delegate);
   delegate_ = delegate;
 }
 

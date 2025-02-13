@@ -16,6 +16,7 @@
 using content::BrowserThread;
 
 namespace android_webview {
+
 class AwPrefetchRequestStatusListener
     : public content::PrefetchRequestStatusListener {
  public:
@@ -86,11 +87,22 @@ void AwPrefetchManager::StartPrefetchRequest(
       request_status_listener =
           std::make_unique<AwPrefetchRequestStatusListener>(java_obj_, callback,
                                                             callback_executor);
-  browser_context_->StartBrowserPrefetchRequest(
-      pf_url,
-      GetIsJavaScriptEnabledFromPrefetchParameters(env, prefetch_params),
-      expected_no_vary_search, additional_headers,
-      std::move(request_status_listener), base::Seconds(ttl_in_sec_));
+  // Check if we are trying to exceed the limit.
+  if (all_prefetches_.size() >= static_cast<uint>(max_prefetches_)) {
+    // Now remove the oldest prefetch, making it out of scope should trigger
+    // the destructor which handles the reset needed.
+    all_prefetches_.pop_front();
+  }
+  std::unique_ptr<content::PrefetchHandle> prefetch_handle =
+      browser_context_->StartBrowserPrefetchRequest(
+          pf_url,
+          GetIsJavaScriptEnabledFromPrefetchParameters(env, prefetch_params),
+          expected_no_vary_search, additional_headers,
+          std::move(request_status_listener), base::Seconds(ttl_in_sec_));
+
+  if (prefetch_handle) {
+    all_prefetches_.push_back(std::move(prefetch_handle));
+  }
 }
 
 void AwPrefetchManager::UpdatePrefetchConfiguration(JNIEnv* env,

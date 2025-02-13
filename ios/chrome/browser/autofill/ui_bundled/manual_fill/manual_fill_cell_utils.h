@@ -182,8 +182,8 @@ UIStackView* CreateHeaderView(UIView* icon,
                               UIButton* overflow_menu_button);
 
 // Creates and configures the overflow menu button that's displayed in the
-// cell's header.
-UIButton* CreateOverflowMenuButton();
+// cell's header. 'cell_index' is used as part of the accessibility identifier.
+UIButton* CreateOverflowMenuButton(NSInteger cell_index);
 
 // Creates a gray horizontal line separator. The gray line is added to the given
 // `container` and proper constraints are enabled to keep the line in the

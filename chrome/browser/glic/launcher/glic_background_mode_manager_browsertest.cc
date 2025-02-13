@@ -8,9 +8,11 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/status_icons/status_tray.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -31,6 +33,10 @@ class GlicBackgroundModeManagerBrowserTest : public InProcessBrowserTest {
     feature_list_.InitWithFeatures(
         {features::kGlic, features::kTabstripComboButton}, {});
     InProcessBrowserTest::SetUp();
+  }
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    ForceSigninAndModelExecutionCapability(browser()->profile());
   }
 
   void TearDownOnMainThread() override {

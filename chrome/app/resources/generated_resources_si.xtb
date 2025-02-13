@@ -220,6 +220,7 @@
 <translation id="114721135501989771">Chromeවල Google ස්මාට් ගන්න</translation>
 <translation id="1147322039136785890">දැන් <ph name="SUPERVISED_USER_NAME" />ගේ වාරයයි</translation>
 <translation id="1147991416141538220">ප්‍රවේශය ඉල්ලීමට, මෙම උපාංගයේ පරිපාලකයා සම්බන්ධ කර ගන්න.</translation>
+<translation id="1148464196693569530">පරිශීලක ස්ක්‍රිප්ට් වලට ඉඩ දෙන්න</translation>
 <translation id="1148624853678088576">ඔබ සියල්ල සූදානම්!</translation>
 <translation id="1148669835763563782">ඔබ ඉහළ නැංවූ ආරක්ෂාව සහ නවතම Chromebook විශේෂාංග සඳහා නවතම මෘදුකාංග යාවත්කාලීන ලබා ගනිමින් සිටී. මෙම යාවත්කාලීනයට ඔබට ඔබේ Chromebook හි සුමට ආරම්භයක් ලබා ගැනීමට උදවු කිරීමට ඉහළ නැංවූ පිහිටුවීම් අත්දැකීමක් ඇතුළත් වේ.</translation>
 <translation id="1149401351239820326">කල් ඉකුත් වන මාසය</translation>
@@ -6769,6 +6770,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5794414402486823030">සෑම විටම පද්ධති දර්ශකය සමග විවෘත කරන්න</translation>
 <translation id="5794700615121138172">ලිනක්ස් බෙදාගත් ෆෝල්ඩර</translation>
 <translation id="5794786537412027208">සියලු Chrome යෙදුම්වලින් ඉවත් වන්න</translation>
+<translation id="5795422263272161110">පැත්තෙන් පැත්තට පෙන්වන්න</translation>
 <translation id="5796485699458186843">නව අප්‍රකට &amp;ටැබය</translation>
 <translation id="5796956053441619942">දුරස්ථ උපාංගයෙන් වන URL එකට සහය නොදක්වයි</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; සහ &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; මත පටන් ගන්නා ආකාරය දැන ගන්න</translation>
@@ -7297,6 +7299,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6170498031581934115">ADB නිදොස් කිරීම සබල කළ නොහැකි විය. සැකසුම් වෙත ගොස් ආපසු උත්සාහ කරන්න.</translation>
 <translation id="6170675927290506430">දැනුම්දීම් සැකසීම් වෙත යන්න</translation>
 <translation id="6171779718418683144">සෑම පැමිණීමකම විමසන්න</translation>
+<translation id="6172020488605056255">මට කියවීමට උදවු කරන්න භාවිතා කිරීමට දකුණු-ක්ලික් කරන්න</translation>
 <translation id="617213288191670920">භාෂා එක් කර නැත</translation>
 <translation id="6173623053897475761">ඔබගේ PIN නැවත ටයිප් කරන්න</translation>
 <translation id="6174909075810107548">මූසික බොත්තම එබීමට "5" භාවිත කරන්න</translation>
@@ -8322,6 +8325,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6910190732484284349">පරිශීලක නාමය සඳහා මුරයතුර මකන්න: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">මකාදැමූ</translation>
 <translation id="6910274140210351823">අඳුර</translation>
+<translation id="691102290537033604">දිගුවට Google විසින් සමාලෝචනය කර නොමැති කේතයක් ධාවනය කිරීමට හැකි වනු ඇත. එය අනාරක්ෂිත විය හැකි අතර ඔබ කරන්නේ කුමක් දැයි දන්නේ නම් පමණක් මෙය සබල කළ යුතු ය.</translation>
 <translation id="6911734910326569517">මතක පා සටහන</translation>
 <translation id="6912007319859991306">සෙලියුලර් SIM රහස් අංකය</translation>
 <translation id="6912380255120084882">වෙනත් උපාංගයක් උත්සාහ කරන්න</translation>
@@ -9831,6 +9835,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> කටහඬ <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">ඔබේ Android දුරකථනයෙන් WiFi ස්වයංක්‍රීයව මාරු කරන්න</translation>
 <translation id="7991296728590311172">ප්‍රවේශය මාරු කිරීමේ සැකසීම්</translation>
+<translation id="7992080146463834191">අන්තර්ගතය සාරාංශ කරන්න, සංකීර්ණ භාෂාව සරල කරන්න, නැතහොත් ප්‍රශ්න අසන්න.</translation>
 <translation id="7992203134935383159">කථන සංස්ලේෂණය</translation>
 <translation id="799570308305997052">වෙබ් දසුන</translation>
 <translation id="7997826902155442747">ක්‍රියාවලි ප්‍රමුඛතාව</translation>
@@ -10071,6 +10076,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8155676038687609779">{COUNT,plural, =0{සමථයට පත් වූ මුරපද කිසිවක් නැත}=1{සමථයට පත් වූ {COUNT} මුරපදයක්}one{සමථයට පත් වූ මුරපද {COUNT} ක්}other{සමථයට පත් වූ මුරපද {COUNT} ක්}}</translation>
 <translation id="8157248655669507702">eSIM පැතිකඩක් ස්ථාපනය කිරීමට ජංගම දත්ත සබල කරන්න</translation>
 <translation id="8157704005178149728">අධීක්‍ෂණය සැකසීම</translation>
+<translation id="8157728322324420120">ඔබ වෙනුවෙන් යෝජිත</translation>
 <translation id="8157849462797352650">ඔබේ උපාංගයට නවතම ආරක්‍ෂක, ස්ථායිතා, සහ කාර්යසාධන යාවත්කාලීන ලැබේ</translation>
 <translation id="8158117992543756526">මෙම උපාංගයට <ph name="MONTH_AND_YEAR" /> තුළ ස්වයංක්‍රීය මාදුකාංග සහ ආරක්‍ෂක යාවත්කාලීන ලබා ගැනීම නැවැත්විය. <ph name="LINK_BEGIN" />තවත් දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">බෙදුම් තිරය සහ මේස මාරු කිරීම වැනි ක්‍රියා සඳහා කම්පන තහවුරු කිරීම ලබා ගන්න. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
@@ -11088,6 +11094,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" ක්‍රියාවිරහිත කර ඇත</translation>
 <translation id="8874647982044395866">කාබනික</translation>
 <translation id="8874790741333031443">තෙවන පාර්ශ්ව කුකීස් සඳහා තාවකාලිකව ඉඩ දීමට උත්සාහ කරන්න, ඉන් අදහස් වන්නේ බ්‍රවුස් කිරීමේ ආරක්ෂාව අඩු නමුත් අඩවි විශේෂාංග අපේක්ෂිත පරිදි ක්‍රියා කිරීමට වැඩි ඉඩක් ඇති බවයි.</translation>
+<translation id="8875221558267407626">අන්තර්ගතය සාරාංශ කරන්න, සංකීර්ණ භාෂාව සරල කරන්න, නැතහොත් ප්‍රශ්න අසන්න</translation>
 <translation id="8875520811099717934">ලිනක්ස් උත්ශ්‍රේණිය</translation>
 <translation id="8875736897340638404">ඔබේ දෘශ්‍යතාව තෝරන්න</translation>
 <translation id="8876307312329369159">මෙම සැකසීම ආදර්ශන සැසිය තුළ වෙනස් කළ නොහැක.</translation>
@@ -11141,6 +11148,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8915916167043355778">සියල්ල වසන්න</translation>
 <translation id="8916476537757519021">අප්‍රකට උපරාමුව: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">ඔව්, මම කැමතියි</translation>
+<translation id="8917980324687233736">පැත්තෙන් පැත්තට පෙන්වන්න</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />ගේ <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">යෙදුම ස්ථාපන කෙරේ...</translation>
 <translation id="891931289445130855">දත්ත සහ අවසර මකන්න</translation>

@@ -75,6 +75,7 @@ target(link_target_type, "child") {
     "//components/discardable_memory/public/mojom",
     "//components/metrics",
     "//components/performance_manager/public/mojom",
+    "//components/performance_manager/scenario_api",
     "//components/permissions:permissions_common",
     "//components/tracing:startup_tracing",
     "//components/variations",

@@ -262,6 +262,21 @@ interface AnimationTimeline
     getter duration
     method constructor
     method getCurrentTime
+interface AnimationTrigger
+    attribute @@toStringTag
+    getter exitRangeEnd
+    getter exitRangeStart
+    getter rangeEnd
+    getter rangeStart
+    getter timeline
+    getter type
+    method constructor
+    setter exitRangeEnd
+    setter exitRangeStart
+    setter rangeEnd
+    setter rangeStart
+    setter timeline
+    setter type
 interface AsyncDisposableStack
     attribute @@toStringTag
     getter disposed
@@ -7057,7 +7072,9 @@ interface PerformanceScriptTiming : PerformanceEntry
     getter invokerType
     getter pauseDuration
     getter sourceCharPosition
+    getter sourceColumn
     getter sourceFunctionName
+    getter sourceLine
     getter sourceURL
     getter window
     getter windowAttribution

@@ -325,5 +325,35 @@ TEST_F(AttributionSqlQueryPlanTest, kDeleteAggregatableDebugRateLimitRangeSql) {
       ValueIs(UsesIndex("aggregatable_debug_rate_limits_time_idx")));
 }
 
+TEST_F(AttributionSqlQueryPlanTest, kDeleteExpiredOsRegistrationsSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kDeleteExpiredOsRegistrationsSql),
+              ValueIs(UsesCoveringIndex("os_registrations_time_idx")));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kSelectOsRegistrationsForDeletionSql) {
+  EXPECT_THAT(
+      GetPlan(attribution_queries::kSelectOsRegistrationsForDeletionSql),
+      ValueIs(UsesCoveringIndex("os_registrations_time_idx")));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kDeleteOsRegistrationsRangeSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kDeleteOsRegistrationsRangeSql),
+              ValueIs(UsesCoveringIndex("os_registrations_time_idx")));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kDeleteOsRegistrationSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kDeleteOsRegistrationSql),
+              ValueIs(UsesPrimaryKey()));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kGetOsRegistrationDataKeysSql) {
+  // Based on the output from EXPLAIN, while it is effectively a full scan, it
+  // is doing a streaming deduplication based on the fact that the rows are
+  // already primarily ordered by `registration_origin`.
+  EXPECT_THAT(GetPlan(attribution_queries::kGetOsRegistrationDataKeysSql),
+              base::test::ErrorIs(
+                  SqlQueryPlanExplainer::Error::kMissingFullScanAnnotation));
+}
+
 }  // namespace
 }  // namespace content

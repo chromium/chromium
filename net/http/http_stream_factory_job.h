@@ -357,6 +357,10 @@ class HttpStreamFactory::Job
   // proxy. This differs from `using_ssl_`, which only describes the origin.
   bool using_spdy() const;
 
+  // Calculates SchemeHostPort for HttpServerProperties::{Set,Get}SupportsSpdy()
+  // calls.
+  url::SchemeHostPort SchemeHostPortForSupportsSpdy() const;
+
   bool disable_cert_verification_network_fetches() const;
 
   void RecordPreconnectHistograms(int result);

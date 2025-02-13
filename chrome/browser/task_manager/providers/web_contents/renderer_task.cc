@@ -17,7 +17,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/favicon/core/favicon_driver_observer.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -174,10 +173,8 @@ void RendererTask::OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
                                     const GURL& icon_url,
                                     bool icon_url_changed,
                                     const gfx::Image& image) {
-  if (notification_icon_type == NON_TOUCH_16_DIP ||
-      notification_icon_type == NON_TOUCH_LARGEST) {
+  if (notification_icon_type == NON_TOUCH_16_DIP)
     UpdateFavicon();
-  }
 }
 
 base::WeakPtr<RendererTask> RendererTask::AsWeakPtr() {

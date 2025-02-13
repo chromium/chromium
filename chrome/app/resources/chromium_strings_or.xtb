@@ -97,6 +97,7 @@
 <translation id="2343156876103232566">ଏଠାରୁ ଆପଣଙ୍କ Android ଫୋନକୁ ଏକ ନମ୍ବର ପଠାଇବାକୁ, ଉଭୟ ଡିଭାଇସରେ Chromiumରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
 <translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2361918034042471035">ଆପଣ Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ ବୋଲି "<ph name="EXTENSION_NAME" />" ଏକ୍ସଟେନସନ ଚାହୁଁଛି</translation>
+<translation id="236943522426971115">ଆପ୍ସ ପାଇଁ ବେକଗ୍ରାଉଣ୍ଡରେ ଚାଲୁଥିବା Chromium ଅକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="2374216753258219393"><ph name="USER_EMAIL_ADDRESS" /> ଭାବେ ଏହି ଏକ୍ସଟେନସନ ବ୍ୟବହାର କରିବାକୁ Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="2384373936468275798">ଆପଣଙ୍କ ଆକାଉଣ୍ଟର ସାଇନ-ଇନ ବିବରଣୀ ପୁରୁଣା ହୋଇଯାଇଥିବା ଯୋଗୁଁ ChromiumOS ଆପଣଙ୍କ ଡାଟାକୁ ସିଙ୍କ କରିପାରିଲା ନାହିଁ।</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1ଟି HID ଡିଭାଇସ ଗୋଟିଏ କିମ୍ବା ଏକାଧିକ Chromium ଏକ୍ସଟେନସନ ଦ୍ୱାରା ଆକ୍ସେସ କରାଯାଉଥିଲା}=1{1ଟି HID ଡିଭାଇସ ଗୋଟିଏ କିମ୍ବା ଏକାଧିକ Chromium ଏକ୍ସଟେନସନ ଦ୍ୱାରା ଆକ୍ସେସ କରାଯାଉଛି}other{#ଟି HID ଡିଭାଇସ ଗୋଟିଏ କିମ୍ବା ଏକାଧିକ Chromium ଏକ୍ସଟେନସନ ଦ୍ୱାରା ଆକ୍ସେସ କରାଯାଉଛି}}</translation>
@@ -179,6 +180,7 @@
 <translation id="3406848076815591792">ପୂର୍ବରୁ ଥିବା Chromium ପ୍ରୋଫାଇଲକୁ ସ୍ୱିଚ୍ କରିବେ?</translation>
 <translation id="3412460710772753638">ଏହି ଡିଭାଇସରେ Password Managerରେ</translation>
 <translation id="3430503420100763906">Chromium ପ୍ରୋଫାଇଲ୍ ସାହାଯ୍ୟରେ ଆପଣ ଆପଣଙ୍କ ସମସ୍ତ ସାମଗ୍ରୀକୁ Chromiumରେ ଅଲଗା କରିପାରିବେ। ଆପଣଙ୍କ ସାଙ୍ଗ ଏବଂ ପରିବାର ପାଇଁ ପ୍ରୋଫାଇଲ୍ ତିଆରି କରନ୍ତୁ କିମ୍ବା କାର୍ଯ୍ୟ ଏବଂ ମଜା ମଧ୍ୟରେ ବିଭାଜିତ କରନ୍ତୁ।</translation>
+<translation id="3451656833730006755">ଆପଣଙ୍କର ସମସ୍ତ କମ୍ପ୍ୟୁଟରରେ ଆପଣଙ୍କ ଏକ୍ସଟେନସନ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="347328004046849135">ଆପଣ ଏକ ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ ମାଧ୍ୟମରେ ସାଇନ୍ ଇନ୍ କଲେ Chromium ଆପଣଙ୍କୁ ସୂଚିତ କରିବ</translation>
 <translation id="3474745554856756813">ଏହା, ଏହି ଡିଭାଇସ୍‍ରୁ <ph name="ITEMS_COUNT" />ଟି ଆଇଟମ୍‍କୁ ଡିଲିଟ୍ କରିଦେବ। ପରବର୍ତ୍ତୀ ସମୟରେ ଆପଣଙ୍କର ଡାଟାକୁ ପୁନରୁଦ୍ଧାର କରିବା ପାଇଁ <ph name="USER_EMAIL" /> ଭାବେ Chromium‍ରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> ବ୍ୟବହାର କରି Chromium ପ୍ରୋଫାଇଲଗୁଡ଼ିକ ମଧ୍ୟରେ ସ୍ୱିଚ୍ କରାଯାଇପାରିବ</translation>
@@ -504,6 +506,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="8013436988911883588">ଥରେ Chromiumର ଆକ୍ସେସ୍ ହେବା ପରେ, ୱେବ୍‌ସାଇଟ୍ ଆପଣଙ୍କୁ ଆକ୍ସେସ୍ ପାଇଁ ପଚାରିବାରେ ସକ୍ଷମ ହେବେ।</translation>
 <translation id="80471789339884597">ଇନଷ୍ଟଲ କରିଥିବା ଯୋଗୁଁ ଧନ୍ୟବାଦ । ଆପଣ <ph name="BUNDLE_NAME" /> ବ୍ୟବହାର କରିବା ପୂର୍ବରୁ ଆପଣଙ୍କ ସମସ୍ତ ବ୍ରାଉଜରକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="8054112667659782652">ସର୍ବଦା ଇମେଜ ସର୍ଚ୍ଚ ସର୍ଟକଟ ଦେଖାନ୍ତୁ</translation>
+<translation id="8077498902115777962">ଆପ୍ସ ପାଇଁ ବେକଗ୍ରାଉଣ୍ଡରେ ଚାଲୁଥିବା Chromium ଅକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="80790299200510644">ଇମେଜ ସର୍ଚ୍ଚ</translation>
 <translation id="8086881907087796310">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର ସର୍ବନିମ୍ନ ହାର୍ଡୱେର ଆବଶ୍ୟକତାକୁ ପୂରଣ କରୁନଥିବା ଯୋଗୁଁ ଇନଷ୍ଟଲେସନ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>

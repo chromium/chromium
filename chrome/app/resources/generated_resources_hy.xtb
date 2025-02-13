@@ -220,6 +220,7 @@
 <translation id="114721135501989771">Google-ի տեխնոլոգիաներ Chrome-ում</translation>
 <translation id="1147322039136785890">Այժմ <ph name="SUPERVISED_USER_NAME" />-ի հերթն է</translation>
 <translation id="1147991416141538220">Օգտագործելու թույլտվություն խնդրելու համար կապվեք այս սարքի ադմինիստրատորի հետ:</translation>
+<translation id="1148464196693569530">Թույլատրել օգտատիրոջ սկրիպտները</translation>
 <translation id="1148624853678088576">Պատրա՛ստ է:</translation>
 <translation id="1148669835763563782">Դուք ստանում եք ծրագրի վերջին թարմացումը, որի տեղադրումից հետո Chromebook-ն ավելի պաշտպանված կլինի և նոր գործառույթներ կունենա։ Բացի այդ՝ այն կարգավորելն ավելի հեշտ կլինի։</translation>
 <translation id="1149401351239820326">Ժամկետի սպառման ամիսը</translation>
@@ -6763,6 +6764,7 @@
 <translation id="5794414402486823030">Միշտ բացել համակարգի դիտման ծրագրի միջոցով</translation>
 <translation id="5794700615121138172">Լինուքսի ընդհանուր պանակներ</translation>
 <translation id="5794786537412027208">Դուրս գալ Chrome-ի բոլոր հավելվածներից</translation>
+<translation id="5795422263272161110">Ցույց տալ կողք կողքի</translation>
 <translation id="5796485699458186843">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="5796956053441619942">Հեռակա սարքի URL-ը չի աջակցվում</translation>
 <translation id="5797934230382081317">Իմացեք, թե ինչպես սկսել օգտվել ծառայությունից &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; և &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; սարքերում</translation>
@@ -7290,6 +7292,7 @@
 <translation id="6170498031581934115">Չհաջողվեց միացնել ADB վրիպազերծումը։ Անցեք կարգավորումներ և նորից փորձեք։</translation>
 <translation id="6170675927290506430">Անցնել ծանուցումների կարգավորումներ</translation>
 <translation id="6171779718418683144">Միշտ հարցնել</translation>
+<translation id="6172020488605056255">«Օգնիր կարդալ» գործառույթը միացնելու համար սեղմեք մկնիկի աջ կոճակը</translation>
 <translation id="617213288191670920">Լեզուներ չեն ավելացվել</translation>
 <translation id="6173623053897475761">Նորից մուտքագրեք PIN-ը</translation>
 <translation id="6174909075810107548">Օգտագործեք «5» ստեղնը՝ մկնիկի կոճակը սեղմելու համար</translation>
@@ -8317,6 +8320,7 @@
 <translation id="6910190732484284349">Ջնջել հետևյալ օգտանվան հետ կապված մուտքի բանալին՝ <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Ջնջված</translation>
 <translation id="6910274140210351823">Մուգ</translation>
+<translation id="691102290537033604">Ընդլայնումը կկարողանա գործարկել Google-ի կողմից չստուգված կոդ։ Սա կարող է վտանգավոր լինել, այդ պատճառով միացրեք այս գործառույթը, միայն եթե գիտեք՝ ինչ եք անում։</translation>
 <translation id="6911734910326569517">Օգտագործված հիշողության ծավալ</translation>
 <translation id="6912007319859991306">SIM քարտի PIN կոդ</translation>
 <translation id="6912380255120084882">Այլ սարք փորձեք</translation>
@@ -9826,6 +9830,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Ձայն <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Ավտոմատ տեղափոխել Wi-Fi-ը Android հեռախոսից</translation>
 <translation id="7991296728590311172">Switch Access-ի կարգավորումներ</translation>
+<translation id="7992080146463834191">Ամփոփեք բովանդակությունը, պարզեցրեք բարդ տեքստը կամ հարցեր տվեք։</translation>
 <translation id="7992203134935383159">Խոսքի սինթեզ</translation>
 <translation id="799570308305997052">Վեբ դիտում</translation>
 <translation id="7997826902155442747">Գործընթացների առաջնահերթություն</translation>
@@ -10066,6 +10071,7 @@
 <translation id="8155676038687609779">{COUNT,plural, =0{Կոտրված գաղտնաբառեր չեն գտնվել}=1{{COUNT} կոտրված գաղտնաբառ}one{{COUNT} կոտրված գաղտնաբառ}other{{COUNT} կոտրված գաղտնաբառ}}</translation>
 <translation id="8157248655669507702">eSIM պրոֆիլ տեղադրելու համար միացրեք բջջային ինտերնետը</translation>
 <translation id="8157704005178149728">Ծնողական վերահսկողության կարգավորում</translation>
+<translation id="8157728322324420120">Առաջարկում ենք</translation>
 <translation id="8157849462797352650">Ձեր սարքը ստանում է անվտանգության, կայունության և արտադրողականության վերջին թարմացումները</translation>
 <translation id="8158117992543756526">Այս սարքն այլևս չի ստանում ծրագրակազմի և անվտանգության համակարգի ավտոմատ թարմացումներ (վերջին անգամ՝ <ph name="MONTH_AND_YEAR" />)։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Զգայական արձագանքն օգտագործվում է տարբեր գործողություններ, օրինակ՝ էկրանի տրոհումը և աշխատասեղանների միջև անցումը հաստատելու համար։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
@@ -11083,6 +11089,7 @@
 <translation id="8874448314264883207">«<ph name="EXTENSION_NAME" />» հավելումն անջատվել է</translation>
 <translation id="8874647982044395866">Օրգանական</translation>
 <translation id="8874790741333031443">Փորձեք ժամանակավորապես թույլատրել երրորդ կողմի քուքիները։ Սա կթուլացնի ձեր դիտարկման պաշտպանությունը, սակայն կայքի գործառույթները, ամենայն հավանականությամբ, պատշաճ կերպով կաշխատեն։</translation>
+<translation id="8875221558267407626">Ամփոփեք բովանդակությունը, պարզեցրեք բարդ տեքստը կամ հարցեր տվեք</translation>
 <translation id="8875520811099717934">Լինուքսի նորացում</translation>
 <translation id="8875736897340638404">Ընտրեք տեսանելիության մակարդակը</translation>
 <translation id="8876307312329369159">Այս կարգավորումը հնարավոր չէ փոխել ցուցադրական աշխատաշրջանում:</translation>
@@ -11136,6 +11143,7 @@
 <translation id="8915916167043355778">Փակել բոլորը</translation>
 <translation id="8916476537757519021">Ինկոգնիտո ռեժիմի ենթաշրջանակ՝ <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Եղավ</translation>
+<translation id="8917980324687233736">Ցույց տալ կողք կողքի</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> (<ph name="GIVEN_NAME" />)</translation>
 <translation id="8918900204934259333">Հավելվածը տեղադրվում է…</translation>
 <translation id="891931289445130855">Ջնջել տվյալները և թույլտվությունները</translation>

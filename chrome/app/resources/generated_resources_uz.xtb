@@ -10074,6 +10074,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8155676038687609779">{COUNT,plural, =0{Oshkor etilgan parollar topilmadi}=1{{COUNT} ta parol oshkor etilgan}other{{COUNT} ta parol oshkor etilgan}}</translation>
 <translation id="8157248655669507702">eSIM profilini oʻrnatish uchun mobil internetni yoqing</translation>
 <translation id="8157704005178149728">Nazorat sozlanmoqda</translation>
+<translation id="8157728322324420120">Tavsiya etiladi</translation>
 <translation id="8157849462797352650">Qurilmangiz xavfsizlik, barqarorlik va unumdorlikka oid oxirgi yangilanishlarni oladi</translation>
 <translation id="8158117992543756526">Bu qurilmadagi dasturlar va xavfsizlik sozlamalari <ph name="MONTH_AND_YEAR" /> sanasigacha avtomatik yangilanadi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Ekranni ajratish va ish stollarini almashtirish kabi amallar tebranish bilan tasdiqlansin. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>

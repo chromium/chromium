@@ -13,12 +13,14 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/share_kit/model/test_constants.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_app_interface.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_eg_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/query_title_server_util.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/test/tabs_egtest_util.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -40,6 +42,7 @@ using chrome_test_util::DeleteSharedGroupButton;
 using chrome_test_util::FakeJoinFlowView;
 using chrome_test_util::FakeManageFlowView;
 using chrome_test_util::FakeShareFlowView;
+using chrome_test_util::KeepSharedConfirmationButton;
 using chrome_test_util::LeaveSharedGroupButton;
 using chrome_test_util::LeaveSharedGroupConfirmationButton;
 using chrome_test_util::ManageGroupButton;
@@ -589,6 +592,162 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Checks last tab close alert as owner of the group open a new tab and close
+// the last tab, when "Keep Group" is pressed and delete the group when "Delete
+// Group" is pressed.
+- (void)testLastTabClosedOwnerAlert {
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Create a tab group with an item at 0.
+  CreateTabGroupAtIndex(0, kGroup1Name);
+  [ChromeEarlGrey waitForMainTabCount:1];
+  // Share the first group.
+  LongPressTabGroupCellAtIndex(0);
+  [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
+      performAction:grey_tap()];
+
+  // Verify that this opened the fake Share flow.
+  [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Actually share the group.
+  [[EarlGrey selectElementWithMatcher:NavigationBarSaveButton()]
+      performAction:grey_tap()];
+
+  // Verify that it closes the Share flow.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:FakeShareFlowView()];
+
+  // Open the group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Check that `Tab 1` tab cell is in the group.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Close the tab and check the alert propose to delete and not to leave the
+  // group as the user is an owner.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridCloseButtonForCellAtIndex(0)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:DeleteSharedConfirmationButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:LeaveSharedGroupConfirmationButton()]
+      assertWithMatcher:grey_notVisible()];
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Tap on "Keep Group"
+  [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Verify that the tab group view is still displayed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kTabGroupViewIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  // Check that `Tab 1` tab cell is in not in the group anymore.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_nil()];
+
+  // Wait until the page has finished loading.
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Ensure the new tab is a new tab page.
+  const GURL currentURL = [ChromeEarlGrey webStateVisibleURL];
+  const GURL expectedURL(kChromeUINewTabURL);
+  GREYAssertEqual(expectedURL, currentURL, @"Page navigated unexpectedly to %s",
+                  currentURL.spec().c_str());
+
+  [ChromeEarlGrey waitForMainTabCount:1];
+  // Close the tab and this time, delete the group.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridCloseButtonForCellAtIndex(0)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:DeleteSharedConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Check that the group view is closed and the group deleted.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabGridGroupCellAtIndex(0)];
+  [ChromeEarlGrey waitForMainTabCount:0];
+}
+
+// Ensures the last tab close alert as a member is displayed when the group is
+// shared.
+- (void)testLastTabClosedMemberAlert {
+  [ChromeEarlGrey waitForMainTabCount:1];
+  [TabGroupAppInterface mockSharedEntitiesPreview];
+  GURL joinGroupURL = data_sharing::GetDataSharingUrl(data_sharing::GroupToken(
+      data_sharing::GroupId("resources%2F3be"), "CggHBicxA_slvx"));
+  [ChromeEarlGrey loadURL:joinGroupURL waitForCompletion:NO];
+
+  // Verify that it opened the Join flow.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:FakeJoinFlowView()];
+
+  // Join the group.
+  [[EarlGrey selectElementWithMatcher:NavigationBarSaveButton()]
+      performAction:grey_tap()];
+
+  // Verify that it closed the Join flow.
+  [[EarlGrey selectElementWithMatcher:FakeJoinFlowView()]
+      assertWithMatcher:grey_notVisible()];
+  [ChromeEarlGrey waitForMainTabCount:2];
+  // Open the tab grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Check that the group is loaded.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGridGroupCellAtIndex(1)];
+
+  // Open the group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(1)]
+      performAction:grey_tap()];
+
+  // Ensure the tab is not a new tab page.
+  const GURL newTabPageURL(kChromeUINewTabURL);
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  const GURL tabInGroupURL = [ChromeEarlGrey webStateVisibleURL];
+  GREYAssertNotEqual(newTabPageURL, tabInGroupURL,
+                     @"The tab should not be a new tab page.");
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Close the tab and check the alert propose to leave and not delete the group
+  // as the user is a member.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridCloseButtonForCellAtIndex(0)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:LeaveSharedGroupConfirmationButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:DeleteSharedConfirmationButton()]
+      assertWithMatcher:grey_notVisible()];
+  [ChromeEarlGrey waitForMainTabCount:2];
+
+  // Tap on "Keep Group"
+  [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Verify that the tab group view is still displayed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kTabGroupViewIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  // Wait until the page has finished loading.
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Ensure the new tab is a new tab page.
+  const GURL currentURL = [ChromeEarlGrey webStateVisibleURL];
+  GREYAssertEqual(newTabPageURL, currentURL,
+                  @"Page navigated unexpectedly to %s",
+                  currentURL.spec().c_str());
+
+  [ChromeEarlGrey waitForMainTabCount:2];
 }
 
 @end

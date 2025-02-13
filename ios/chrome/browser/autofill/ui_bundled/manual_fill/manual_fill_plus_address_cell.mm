@@ -282,7 +282,10 @@ CGFloat GetFaviconSize() {
   ];
 
   self.siteNameLabel = CreateLabel();
-  self.overflowMenuButton = CreateOverflowMenuButton();
+  // The cell index provided here is only used to set the
+  // accessibility identifier, which will be overwritten right after this
+  // function call below, so the value doesn't matter.
+  self.overflowMenuButton = CreateOverflowMenuButton(/*cell_index=*/0);
   // In the tests, the overflow menu of the chips for the other data types, can
   // have the same accessibility identifier, therefore, override for the plus
   // address ones to distinguish them.

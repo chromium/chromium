@@ -22,6 +22,23 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<!-- LINT.IfChange(NoSpareRendererReason) -->
+
+<variants name="NoSpareRendererReason">
+  <variant name="MemoryPressure"/>
+  <variant name="NotEnabled"/>
+  <variant name="NotYetCreated"/>
+  <variant name="NotYetCreatedAfterWarmup"/>
+  <variant name="NotYetCreatedFirstLaunch"/>
+  <variant name="ProcessExited"/>
+  <variant name="ProcessHostDestroyed"/>
+  <variant name="ProcessLimit"/>
+  <variant name="TakenByPreviousNavigation"/>
+  <variant name="Timeout"/>
+</variants>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/spare_render_process_host_manager_impl.h:NoSpareRendererReason) -->
+
 <variants name="SidePanelEntry">
   <variant name="AboutThisSite"/>
   <variant name="Assistant"/>
@@ -1243,10 +1260,53 @@ chromium-metrics-reviews@google.com.
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
-    Records the reason for there being no spare renderer present during
-    navigation. The UMA is recorded when kNoSparePresent is recorded in the UMA
+    Records the reason for there being no spare renderer present when calling
+    SpareRenderProcessHostManagerImpl::MaybeTakeSpare. The UMA is recorded when
+    kNoSparePresent is recorded in the UMA
     BrowserRenderProcessHost.SpareProcessMaybeTakeAction.
   </summary>
+</histogram>
+
+<histogram
+    name="BrowserRenderProcessHost.NoSpareRenderer.AllocationSource.{NoSpareRendererReason}"
+    enum="ProcessAllocationSource" expires_after="2025-06-22">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the detailed allocation source of the process when calling
+    SpareRenderProcessHostManagerImpl::MaybeTakeSpare if there is no spare
+    renderer. The UMA is recorded when the corresponding NoSpareRendererReason
+    is recorded in the UMA BrowserRenderProcessHost.NoSparePresentReason2.
+  </summary>
+  <token key="NoSpareRendererReason" variants="NoSpareRendererReason"/>
+</histogram>
+
+<histogram
+    name="BrowserRenderProcessHost.NoSpareRenderer.ForCOOP.{NoSpareRendererReason}"
+    enum="Boolean" expires_after="2025-06-22">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether the process creation is caused by a COOP header when calling
+    SpareRenderProcessHostManagerImpl::MaybeTakeSpare if there is no spare
+    renderer. The UMA is recorded when NavigationRequest is recorded in the UMA
+    BrowserRenderProcessHost.NoSpareRenderer.AllocationSource.{NoSpareRendererReason}.
+  </summary>
+  <token key="NoSpareRendererReason" variants="NoSpareRendererReason"/>
+</histogram>
+
+<histogram
+    name="BrowserRenderProcessHost.NoSpareRenderer.NavigationStage.{NoSpareRendererReason}"
+    enum="ProcessAllocationNavigationStage" expires_after="2025-06-22">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the detailed navigation stage of the process when calling
+    SpareRenderProcessHostManagerImpl::MaybeTakeSpare if there is no spare
+    renderer. The UMA is recorded when NavigationRequest is recorded in the UMA
+    BrowserRenderProcessHost.NoSpareRenderer.AllocationSource.{NoSpareRendererReason}.
+  </summary>
+  <token key="NoSpareRendererReason" variants="NoSpareRendererReason"/>
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.ProcessPerSiteMainFrameLimit"
@@ -1360,6 +1420,84 @@ chromium-metrics-reviews@google.com.
     Records how a spare renderer process is used or destroyed. The UMA is
     recorded when the spare renderer is used by navigation or destroyed because
     of timeout or resource limit.
+  </summary>
+</histogram>
+
+<histogram name="BrowserRenderProcessHost.SpareRendererPreviouslyTaken.ForCOOP"
+    enum="Boolean" expires_after="2025-06-22">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether the process creation is caused by a COOP header in the
+    previous successful call to
+    SpareRenderProcessHostManagerImpl::MaybeTakeSpare when the same function is
+    called and there is no spare renderer. The UMA is recorded when
+    TakenByPreviousNavigation is recorded in the UMA
+    BrowserRenderProcessHost.NoSparePresentReason2 and NavigationRequest is
+    recorded in the UMA
+    BrowserRenderProcessHost.SpareRendererPreviouslyTaken.Source.
+  </summary>
+</histogram>
+
+<histogram name="BrowserRenderProcessHost.SpareRendererPreviouslyTaken.Source"
+    enum="ProcessAllocationSource" expires_after="2025-06-22">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the allocation source of the previous successful call to
+    SpareRenderProcessHostManagerImpl::MaybeTakeSpare when the same function is
+    called and there is no spare renderer. The UMA is recorded when
+    TakenByPreviousNavigation is recorded in the UMA
+    BrowserRenderProcessHost.NoSparePresentReason2.
+  </summary>
+</histogram>
+
+<histogram name="BrowserRenderProcessHost.SpareRendererPreviouslyTaken.Stage"
+    enum="ProcessAllocationNavigationStage" expires_after="2025-06-22">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the navigation stage of the previous successful call to
+    SpareRenderProcessHostManagerImpl::MaybeTakeSpare when the same function is
+    called and there is no spare renderer. The UMA is recorded when
+    TakenByPreviousNavigation is recorded in the UMA
+    BrowserRenderProcessHost.NoSparePresentReason2 and NavigationRequest is
+    recorded in the UMA
+    BrowserRenderProcessHost.SpareRendererPreviouslyTaken.Source.
+  </summary>
+</histogram>
+
+<histogram
+    name="BrowserRenderProcessHost.SpareRendererTakenInSameNavigation.ForCOOP"
+    enum="Boolean" expires_after="2025-06-22">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether the current process allocation is caused by a COOP header if
+    the current allocation fails and the previous allocation takes the spare
+    renderer in the same navigation. The UMA is recorded if both
+    BrowserRenderProcessHost.SpareRendererPreviouslyTaken.Stage and
+    BrowserRenderProcessHost.NoSpareRenderer.NavigationStage.{NoSpareRendererReason}
+    are recorded and the render process allocation happens in the same
+    navigation.
+  </summary>
+</histogram>
+
+<histogram
+    name="BrowserRenderProcessHost.SpareRendererTakenInSameNavigation.StageCombination"
+    enum="ProcessAllocationNavigationStageCombination"
+    expires_after="2025-06-22">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether a combination of the previous and the current navigation
+    stage if the allocation of the spare renderer fails and the previous
+    allocation takes the spare renderer in the same navigation. The value is
+    calculated by { 100 * PREVIOUS_STAGE + CURRENT_STAGE }. The UMA is recorded
+    if both BrowserRenderProcessHost.SpareRendererPreviouslyTaken.Stage and
+    BrowserRenderProcessHost.NoSpareRenderer.NavigationStage.{NoSpareRendererReason}
+    are recorded and the render process allocation happens in the same
+    navigation.
   </summary>
 </histogram>
 

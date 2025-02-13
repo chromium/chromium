@@ -242,6 +242,7 @@ insetBlockStart
 insetInline
 insetInlineEnd
 insetInlineStart
+interactivity
 interpolateSize
 isolation
 item

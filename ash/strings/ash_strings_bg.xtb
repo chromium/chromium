@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
+<translation id="1000127192436081677">Превключване на „Бързо споделяне“. „Бързо споделяне“ е <ph name="QUICK_SHARE_STATE" /></translation>
 <translation id="1012876632442809908">USB-C устройство (предният порт)</translation>
 <translation id="1013923882670373915">Устройството с Bluetooth „<ph name="DEVICE_NAME" />“ иска разрешение за сдвояване. Моля, въведете на него следния ПИН код: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">Това дава възможност на <ph name="APP_NAME" />, всички приложения и уебсайтове с разрешение за достъп до местоположението и ChromeOS да използват местоположението от Wi-Fi и мобилни мрежи.</translation>
@@ -154,6 +155,7 @@
 <translation id="1469148162491666137">Това разрешава достъп на <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> и всички приложения и уебсайтове, които имат разрешения за камерата и микрофона. Може да се наложи да опресните уеб страницата или да рестартирате приложението.</translation>
 <translation id="147310119694673958">Батерия на телефона: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">Превключване на точката за достъп. Тя е включена, има 1 свързано устройство.</translation>
+<translation id="1479685784053141667">Създаване на контакт</translation>
 <translation id="1479909375538722835">Плаващо меню за достъпност</translation>
 <translation id="1483493594462132177">Изпращане</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -464,6 +466,7 @@
 <translation id="2598725286293895280">Работният кът съдържа неподдържани приложения</translation>
 <translation id="2607678425161541573">Изисква се онлайн вход</translation>
 <translation id="2612072250312279703">наблюдение на активността</translation>
+<translation id="261210853165551493">Копиране с форматирането</translation>
 <translation id="2612614436418177118">Преместване на икона на приложение в решетката с приложения</translation>
 <translation id="2619052155095999743">Вмъкване</translation>
 <translation id="2619326010008283367">Стъпка <ph name="STEP" /> от <ph name="TOTAL_STEPS" />. Можете да намерите настройките на устройството си в стартовия панел. Можете да персонализирате своя <ph name="PRODUCT_NAME" /> от настройките, като например да промените тапета или да зададете скрийнсейвър.</translation>
@@ -556,6 +559,7 @@
 <translation id="2932487126591186298">Добавихте 10 минути. Оставащо време: <ph name="REMAINING_TIME" />.</translation>
 <translation id="2935225303485967257">Управление на потребителските профили</translation>
 <translation id="2941112035454246133">Нисък</translation>
+<translation id="2941232201846070406">Проверете връзката си с интернет и опитайте отново</translation>
 <translation id="2942350706960889382">Лупа в прикрепен режим</translation>
 <translation id="2942516765047364088">Позиция на лавицата</translation>
 <translation id="2946119680249604491">Добавяне на връзка</translation>
@@ -972,6 +976,7 @@
 <translation id="4275663329226226506">Медия</translation>
 <translation id="4279490309300973883">Дублиране</translation>
 <translation id="4280601795273309128">Актуализациите за сигурност приключиха. Надстройте устройството си.</translation>
+<translation id="4281739221820540368">Създаване на документ в Google Документи</translation>
 <translation id="4283888303416325161">За по-голяма сигурност въведете парола</translation>
 <translation id="4285498937028063278">Освобождаване</translation>
 <translation id="428715201724021596">Установява се връзка с профил за мобилна мрежа. Това може да отнеме няколко минути.</translation>
@@ -1044,6 +1049,7 @@
 <translation id="4513044611477939680">Бързо споделяне</translation>
 <translation id="4513946894732546136">Отзиви</translation>
 <translation id="4518404433291145981">За да отключите своя Chromebook, първо отключете телефона си</translation>
+<translation id="4525887279712865285">Показване на настройките за „Бързо споделяне“</translation>
 <translation id="4527045527269911712">Устройството с Bluetooth „<ph name="DEVICE_NAME" />“ иска разрешение за сдвояване.</translation>
 <translation id="4531536770443562276">Налице е само цял екран</translation>
 <translation id="4533343294786968049">Удължаване на живота на батерията ви. Батерията ще се зареди напълно до <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -1599,6 +1605,7 @@
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276708887952587684">Преглед на изходния код на страницата</translation>
 <translation id="6284232397434400372">Разделителната способност е променена</translation>
+<translation id="6285871695023807425">Добавяне към Календар</translation>
 <translation id="6288235558961782912">Имейл адресът <ph name="USER_EMAIL_ADDRESS" /> може да бъде добавен отново по-късно с разрешение от родител.</translation>
 <translation id="6291221004442998378">Не се зарежда</translation>
 <translation id="6298183524022479114">Персонализирайте това устройство в приложението</translation>
@@ -1695,6 +1702,7 @@
 <translation id="6612889377159412215">подзадача</translation>
 <translation id="6613765291890844037">Използвано място от хранилището: <ph name="STORAGE_IN_USE_SIZE" /> | Общо: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Екранът за поверителност е включен</translation>
+<translation id="6618277154885124991">Създаване на таблица в Google Таблици</translation>
 <translation id="6622679827379792051">Настройване на прегледа на приложенията на телефона ви</translation>
 <translation id="662279009180869175">Използвайте стрелките за наляво и надясно, за да преоразмерите разделения екран</translation>
 <translation id="6624493541160101248">Текущ работен кът: <ph name="DESK_NAME" />. Работен кът <ph name="DESK_INDEX" /> от <ph name="DESK_COUNT" />.</translation>
@@ -2250,6 +2258,7 @@
 <translation id="851660987304951246">Използвайте функцията за помощ при четене с цел бързо обобщаване на съдържание или задаване на въпроси</translation>
 <translation id="8517041960877371778">Възможно е вашият <ph name="DEVICE_TYPE" /> да не се зарежда, докато е включен.</translation>
 <translation id="8535393432370007982">Отмяна на сортирането по цвят</translation>
+<translation id="8539803091108018926">Текстът е копиран в буферната памет</translation>
 <translation id="8541078764854166027">Центриране</translation>
 <translation id="8542053257095774575">Няма запазени работни кътове или шаблони</translation>
 <translation id="8546059259582788728">Отмяната на сортирането е успешна</translation>

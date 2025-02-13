@@ -219,6 +219,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "ShareGroupCollaboration";
       case AccessPoint::kGlicLaunchButton:
         return "GlicLaunchButton";
+      case AccessPoint::kHistoryPage:
+        return "HistoryPage";
     }
   }
 };

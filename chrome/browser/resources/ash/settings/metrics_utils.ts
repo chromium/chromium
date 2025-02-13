@@ -159,7 +159,7 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     type: PrefType.BOOLEAN,
   },
   'settings.a11y.overlay_scrollbar.enabled': {
-    setting: Setting.kOverlayScrollbarEnabled,
+    setting: Setting.kAlwaysShowScrollbarsEnabled,
     type: PrefType.BOOLEAN,
   },
   'settings.a11y.screen_magnifier': {

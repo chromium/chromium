@@ -2077,6 +2077,7 @@ interface EditContext : EventTarget
 interface Element : Node
     attribute @@toStringTag
     attribute @@unscopables
+    getter ariaActiveDescendantElement
     getter ariaAtomic
     getter ariaAutoComplete
     getter ariaBrailleLabel
@@ -2087,15 +2088,21 @@ interface Element : Node
     getter ariaColIndex
     getter ariaColIndexText
     getter ariaColSpan
+    getter ariaControlsElements
     getter ariaCurrent
+    getter ariaDescribedByElements
     getter ariaDescription
+    getter ariaDetailsElements
     getter ariaDisabled
+    getter ariaErrorMessageElements
     getter ariaExpanded
+    getter ariaFlowToElements
     getter ariaHasPopup
     getter ariaHidden
     getter ariaInvalid
     getter ariaKeyShortcuts
     getter ariaLabel
+    getter ariaLabelledByElements
     getter ariaLevel
     getter ariaLive
     getter ariaModal
@@ -2216,6 +2223,7 @@ interface Element : Node
     method webkitMatchesSelector
     method webkitRequestFullScreen
     method webkitRequestFullscreen
+    setter ariaActiveDescendantElement
     setter ariaAtomic
     setter ariaAutoComplete
     setter ariaBrailleLabel
@@ -2226,15 +2234,21 @@ interface Element : Node
     setter ariaColIndex
     setter ariaColIndexText
     setter ariaColSpan
+    setter ariaControlsElements
     setter ariaCurrent
+    setter ariaDescribedByElements
     setter ariaDescription
+    setter ariaDetailsElements
     setter ariaDisabled
+    setter ariaErrorMessageElements
     setter ariaExpanded
+    setter ariaFlowToElements
     setter ariaHasPopup
     setter ariaHidden
     setter ariaInvalid
     setter ariaKeyShortcuts
     setter ariaLabel
+    setter ariaLabelledByElements
     setter ariaLevel
     setter ariaLive
     setter ariaModal
@@ -2280,6 +2294,7 @@ interface Element : Node
     setter slot
 interface ElementInternals
     attribute @@toStringTag
+    getter ariaActiveDescendantElement
     getter ariaAtomic
     getter ariaAutoComplete
     getter ariaBrailleLabel
@@ -2290,15 +2305,21 @@ interface ElementInternals
     getter ariaColIndex
     getter ariaColIndexText
     getter ariaColSpan
+    getter ariaControlsElements
     getter ariaCurrent
+    getter ariaDescribedByElements
     getter ariaDescription
+    getter ariaDetailsElements
     getter ariaDisabled
+    getter ariaErrorMessageElements
     getter ariaExpanded
+    getter ariaFlowToElements
     getter ariaHasPopup
     getter ariaHidden
     getter ariaInvalid
     getter ariaKeyShortcuts
     getter ariaLabel
+    getter ariaLabelledByElements
     getter ariaLevel
     getter ariaLive
     getter ariaModal
@@ -2336,6 +2357,7 @@ interface ElementInternals
     method reportValidity
     method setFormValue
     method setValidity
+    setter ariaActiveDescendantElement
     setter ariaAtomic
     setter ariaAutoComplete
     setter ariaBrailleLabel
@@ -2346,15 +2368,21 @@ interface ElementInternals
     setter ariaColIndex
     setter ariaColIndexText
     setter ariaColSpan
+    setter ariaControlsElements
     setter ariaCurrent
+    setter ariaDescribedByElements
     setter ariaDescription
+    setter ariaDetailsElements
     setter ariaDisabled
+    setter ariaErrorMessageElements
     setter ariaExpanded
+    setter ariaFlowToElements
     setter ariaHasPopup
     setter ariaHidden
     setter ariaInvalid
     setter ariaKeyShortcuts
     setter ariaLabel
+    setter ariaLabelledByElements
     setter ariaLevel
     setter ariaLive
     setter ariaModal
@@ -5781,6 +5809,7 @@ interface NavigateEvent : Event
     getter info
     getter navigationType
     getter signal
+    getter sourceElement
     getter userInitiated
     method constructor
     method intercept
@@ -11102,7 +11131,6 @@ namespace console
     method moveBy
     method moveTo
     method open
-    method openDatabase
     method postMessage
     method print
     method prompt

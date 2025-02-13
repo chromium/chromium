@@ -116,7 +116,7 @@ class PermissionElementBrowserTestBase : public InProcessBrowserTest {
     observer.Wait();
 
     EXPECT_EQ(
-        permission_request_manager->view_for_testing()->GetPromptPosition(),
+        permission_request_manager->GetCurrentPrompt()->GetPromptPosition(),
         position);
 
     permission_request_manager->Dismiss();

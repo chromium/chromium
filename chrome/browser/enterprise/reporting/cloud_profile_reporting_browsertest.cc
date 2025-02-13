@@ -4,7 +4,6 @@
 
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service.h"
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -23,10 +22,6 @@
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
 namespace enterprise_reporting {
@@ -48,20 +43,6 @@ class CloudProfileReportingServiceTest : public PlatformBrowserTest {
     em::PolicyData policy_data;
     policy_data.set_request_token("dm-token");
     policy_data.set_device_id("device-id");
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    ASSERT_TRUE(profile->IsMainProfile());
-    profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
-    policy::PolicyLoaderLacros::set_main_user_policy_data_for_testing(
-        policy_data);
-
-    // On Lacros, there is no easy way for us to setup management state early
-    // enough. Because the keyed service is created with profile. And changing
-    // management state afterward won't work either as it's not a normal process
-    // for Lacros.
-    // Hence we trigger initial process for the service for testing.
-    CloudProfileReportingServiceFactory::GetForProfile(profile)
-        ->InitForTesting();
-#else
     profile->GetCloudPolicyManager()
         ->core()
         ->store()
@@ -71,7 +52,6 @@ class CloudProfileReportingServiceTest : public PlatformBrowserTest {
         /*service=*/nullptr, /*url_laoder_factory=*/nullptr);
     profile->GetCloudPolicyManager()->core()->ConnectForTesting(
         /*service=*/nullptr, std::move(client));
-#endif
   }
 
   void EnableReportingPolicy(Profile* profile) {

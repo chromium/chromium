@@ -220,6 +220,7 @@
 <translation id="114721135501989771">Chromeలో Google స్మార్ట్‌లను పొందండి</translation>
 <translation id="1147322039136785890">ఇప్పుడు దీనిని <ph name="SUPERVISED_USER_NAME" /> ఉపయోగించవచ్చు</translation>
 <translation id="1147991416141538220">యాక్సెస్‌ను అడగడానికి, ఈ పరికరం యొక్క నిర్వాహకులను సంప్రదించండి.</translation>
+<translation id="1148464196693569530">యూజర్ స్క్రిప్ట్‌లను అనుమతించండి</translation>
 <translation id="1148624853678088576">మీరు అంతా పూర్తి చేశారు!</translation>
 <translation id="1148669835763563782">మీరు మెరుగైన సెక్యూరిటీ, సరికొత్త Chromebook ఫీచర్‌ల కోసం తాజా సాఫ్ట్‌వేర్ అప్‌డేట్‌ను పొందుతున్నారు. ఈ అప్‌డేట్‌లో మీ Chromebookను ఎటువంటి అంతరాయాలు లేకుండా స్మూత్‌గా ప్రారంభించడంలో సహాయపడటానికి మెరుగైన సెటప్ ఉంది.</translation>
 <translation id="1149401351239820326">గడువు ముగింపు నెల</translation>
@@ -6778,6 +6779,7 @@
 <translation id="5794414402486823030">ఎల్లప్పుడూ సిస్టమ్ వ్యూయర్‌తో తెరువు</translation>
 <translation id="5794700615121138172">Linux షేర్ చేసిన ఫోల్డర్‌లు</translation>
 <translation id="5794786537412027208">అన్ని Chrome యాప్‌ల నుండి నిష్క్రమించండి</translation>
+<translation id="5795422263272161110">పక్క పక్కన చూపండి</translation>
 <translation id="5796485699458186843">కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="5796956053441619942">రిమోట్ పరికరం నుండి వచ్చిన URL సపోర్ట్ చేయదు</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt;, &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;‌ను ఎలా ప్రారంభించాలో తెలుసుకోండి</translation>
@@ -7306,6 +7308,7 @@
 <translation id="6170498031581934115">ADB డీబగ్గింగ్‌ను ఎనేబుల్ చేయడం సాధ్యపడలేదు. సెట్టింగ్‌లకు వెళ్లి, ఆపై మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6170675927290506430">నోటిఫికేషన్ సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="6171779718418683144">ప్రతి సందర్శనలో అడగండి</translation>
+<translation id="6172020488605056255">చదవడంలో సహాయం చేయాడాన్ని ఉపయోగించడానికి రైట్‌-క్లిక్ చేయండి</translation>
 <translation id="617213288191670920">భాషలు ఏవీ జోడించబడలేదు</translation>
 <translation id="6173623053897475761">మీ పిన్‌ని మళ్లీ టైప్ చేయండి</translation>
 <translation id="6174909075810107548">మౌస్ బటన్‌ను నొక్కడానికి “5”ను వినియోగించండి</translation>
@@ -8331,6 +8334,7 @@
 <translation id="6910190732484284349">యూజర్‌నేమ్ కోసం పాస్-కీని తొలగించండి: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">తొలగించబడింది</translation>
 <translation id="6910274140210351823">ముదురు రంగు</translation>
+<translation id="691102290537033604">ఈ ఎక్స్‌టెన్షన్ Google రివ్యూ చేయని కోడ్‌ను కూడా రన్ చేయగలదు. ఇది సురక్షితం కాకపోవచ్చు, మీరు ఏమి చేస్తున్నారో మీకు తెలిస్తేనే దీన్ని ఎనేబుల్ చేయాలి.</translation>
 <translation id="6911734910326569517">మెమరీ ఫుట్‌ప్రింట్</translation>
 <translation id="6912007319859991306">సెల్యూలార్ SIM పిన్</translation>
 <translation id="6912380255120084882">వేరొక పరికరాన్ని ట్రై చేయండి</translation>
@@ -9841,6 +9845,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> వాయిస్ <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">మీ Android ఫోన్ నుండి WiFiని ఆటోమేటిక్‌గా బదిలీ చేయండి</translation>
 <translation id="7991296728590311172">Switch Access సెట్టింగ్‌లు</translation>
+<translation id="7992080146463834191">కంటెంట్‌ను సారాంశీకరించండి, క్లిష్టమైన భాషను సులభతరం చేయండి, లేదా ప్రశ్నలను అడగండి.</translation>
 <translation id="7992203134935383159">స్పీచ్ సింథసిస్</translation>
 <translation id="799570308305997052">వెబ్ వీక్షణ</translation>
 <translation id="7997826902155442747">ప్రాసెస్ ప్రాధాన్యత</translation>
@@ -10079,6 +10084,7 @@
 <translation id="8155676038687609779">{COUNT,plural, =0{చోరీకి గురైన పాస్‌వర్డ్‌లు ఏవీ కనుగొనబడలేదు}=1{చోరీకి గురైన {COUNT} పాస్‌వర్డ్}other{చోరీకి గురైన {COUNT} పాస్‌వర్డ్‌లు}}</translation>
 <translation id="8157248655669507702">eSIM ప్రొఫైల్‌ను ఇన్‌స్టాల్ చేయడానికి మొబైల్ డేటాను ఎనేబుల్ చేయండి</translation>
 <translation id="8157704005178149728">పర్యవేక్షణను సెటప్ చేస్తోంది</translation>
+<translation id="8157728322324420120">మీ కోసం సూచించినవి</translation>
 <translation id="8157849462797352650">మీ పరికరం ఇటీవలి సెక్యూరిటీ, స్థిరత్వం, అలాగే పనితీరు అప్‌డేట్‌లను పొందుతుంది</translation>
 <translation id="8158117992543756526">ఈ పరికరానికి <ph name="MONTH_AND_YEAR" />లో ఆటోమేటిక్ సాఫ్ట్‌వేర్ మరియు భద్రతాపరమైన అప్‌డేట్ రావడం ఆగిపోయింది. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">స్ప్లిట్ స్క్రీన్, డెస్క్‌లను మార్చడం వంటి చర్యల కోసం వైబ్రేషన్ నిర్ధారణను అందుకోండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
@@ -11095,6 +11101,7 @@
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" ఆఫ్ చేయబడింది</translation>
 <translation id="8874647982044395866">ఆర్గానిక్</translation>
 <translation id="8874790741333031443">థర్డ్-పార్టీ కుక్కీలను తాత్కాలికంగా అనుమతించడానికి ట్రై చేయండి, అంటే బ్రౌజింగ్ రక్షణ తక్కువగా ఉంటుంది కానీ సైట్ ఫీచర్‌లు ఆశించిన విధంగా పని చేసే అవకాశం ఉంటుంది.</translation>
+<translation id="8875221558267407626">కంటెంట్‌ను సారాంశీకరించండి, క్లిష్టమైన భాషను సులభతరం చేయండి, లేదా ప్రశ్నలను అడగండి</translation>
 <translation id="8875520811099717934">Linux అప్‌గ్రేడ్</translation>
 <translation id="8875736897340638404">మీ విజిబిలిటీని ఎంచుకోండి</translation>
 <translation id="8876307312329369159">ఈ సెట్టింగ్‌ను డెమో సెషన్‌లో మార్చడం సాధ్యపడదు.</translation>
@@ -11148,6 +11155,7 @@
 <translation id="8915916167043355778">అన్నింటినీ మూసివేయండి</translation>
 <translation id="8916476537757519021">అజ్ఞాత సబ్‌ఫ్రేమ్: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">సరే, నాకు సమ్మతమే</translation>
+<translation id="8917980324687233736">పక్క పక్కన చూపండి</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />కు చెందిన <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">యాప్ ఇన్‌స్టాల్ అవుతోంది...</translation>
 <translation id="891931289445130855">డేటాను, అనుమతులను తొలగించండి</translation>

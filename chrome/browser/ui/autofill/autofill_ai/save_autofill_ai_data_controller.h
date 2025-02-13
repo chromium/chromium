@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_AUTOFILL_AI_DATA_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_AUTOFILL_AI_DATA_CONTROLLER_H_
 
+#include <string>
+
 #include "base/memory/weak_ptr.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
@@ -53,6 +55,8 @@ class SaveAutofillAiDataController {
 
   // Called when the user accepts to save Autofill AI data.
   virtual void OnSaveButtonClicked() = 0;
+
+  virtual std::u16string GetDialogTitle() const = 0;
 
   // Returns the Autofill AI data to be displayed in the UI.
   virtual base::optional_ref<const autofill::EntityInstance> GetAutofillAiData()

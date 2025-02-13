@@ -63,7 +63,8 @@ void ReadAnythingService::OnReadAnythingSidePanelEntryShown() {
 // when the Read Aloud flag is enabled.
 #if !BUILDFLAG(IS_CHROMEOS)
   if (features::IsReadAnythingReadAloudEnabled() &&
-      !features::IsWasmTtsComponentUpdaterEnabled()) {
+      !features::IsWasmTtsComponentUpdaterEnabled() &&
+      !features::IsWasmTtsEngineAutoInstallDisabled()) {
     InstallTtsDownloadExtension();
   } else {
     // If the extension was previously installed but now the Read Aloud flag

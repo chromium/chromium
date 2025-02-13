@@ -420,17 +420,6 @@ _CONFIG = [
         ],
     },
     {
-        # Forwarding header importing ::performance_scenarios symbols into
-        # blink::performance_scenarios.
-        'paths': [
-            'third_party/blink/public/common/performance/performance_scenarios.h',
-            'third_party/blink/public/common/performance/performance_scenario_observer.h',
-        ],
-        'allowed': [
-            'performance_scenarios::.+',
-        ],
-    },
-    {
         'paths': [
             'third_party/blink/common/shared_storage/module_script_downloader.cc',
         ],
@@ -1292,6 +1281,7 @@ _CONFIG = [
             # The Blink public API is shared between non-Blink and Blink code
             # and must use the regular variants.
             'mojom::.+',
+            'network::mojom::.+',
             'ui::mojom::WindowShowState',
             'ui::mojom::WindowShowState::.+',
 

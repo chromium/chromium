@@ -49,6 +49,7 @@ enum CollectionType {
   kMapAreas,
   kFormControls,
   kPopoverInvokers,
+  kCommandInvokers,
 
   // Named HTMLCollection types cached in the document.
   kWindowNamedItems,

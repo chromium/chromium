@@ -227,6 +227,7 @@ bool AllowPaymentSwapping(const AutofillField& trigger_field,
 bool ShouldRecordFillingHistory(FillingProduct filling_product) {
   switch (filling_product) {
     case FillingProduct::kAddress:
+    case FillingProduct::kAutofillAi:
     case FillingProduct::kCreditCard:
     case FillingProduct::kPlusAddresses:
       return true;
@@ -236,7 +237,6 @@ bool ShouldRecordFillingHistory(FillingProduct filling_product) {
     case FillingProduct::kAutocomplete:
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
-    case FillingProduct::kAutofillAi:
       return false;
   }
   NOTREACHED();

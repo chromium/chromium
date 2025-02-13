@@ -285,6 +285,7 @@
 <translation id="2164946989711475905">સાઇન ઇન કરો…</translation>
 <translation id="2175927920773552910">QR કોડ</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="219283042927675668">ગ્રૂપમાંના ટૅબ</translation>
 <translation id="2194856509914051091">ધ્યાનમાં લેવા જેવી બાબતો</translation>
 <translation id="2196428379625389579">વેબ પર શોધો</translation>
 <translation id="2199562093267256223">આમ કરવાથી <ph name="USER_EMAIL" />માં સાઇન ઇન કરેલા બધા ડિવાઇસમાંથી આ ગ્રૂપ ડિલીટ થઈ જશે.</translation>
@@ -914,6 +915,7 @@
 <translation id="5016420433031926653"><ph name="USER_EMAIL" /> પર મોકલો</translation>
 <translation id="5017529052065664584">છેલ્લી 15 મિનિટ</translation>
 <translation id="5020732097997376541">"Lens આઇકન" પર ટૅપ કરો</translation>
+<translation id="5021500396464456616">આ લિંક મોકલનારી વ્યક્તિનો સંપર્ક કરો</translation>
 <translation id="5024511550058813796">તમને તમારા સિંક કરેલા તમામ ડિવાઇસ પર તમારો ઇતિહાસ મળશે, જેથી તમે જે કરતા હતા તે ચાલુ રાખી શકો</translation>
 <translation id="5038113048373546701">તમારી રુચિઓના આધારે સમાચાર, રમતગમત અને વધુ માટે નોટિફિકેશન મેળવો</translation>
 <translation id="5039804452771397117">મંજૂરી આપો</translation>
@@ -978,7 +980,6 @@
 <translation id="5295239312320826323">એકાઉન્ટ <ph name="USER_EMAIL" /> કાઢી નાખીએ?</translation>
 <translation id="5300589172476337783">બતાવો</translation>
 <translation id="5311061401280561833">કૅમેરા અને માઇક્રોફોનના ઍક્સેસની મંજૂરી આપવામાં આવી છે</translation>
-<translation id="531209241254508943">ટૅબનું ગ્રૂપ</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />માંથી <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5318298563956633672">તમે આ પ્રોડક્ટને પહેલેથી જ ટ્રૅક કરી રહ્યાં છો.</translation>
@@ -1941,6 +1942,7 @@
 <translation id="966593914872420832">વૉઇસ શોધ</translation>
 <translation id="968653181266955408">કન્ટેન્ટ સંબંધિત નોટિફિકેશન મેળવો</translation>
 <translation id="973493300226275298">તમામ ઑનલાઇન સ્ટોર પર કોઈ પ્રોડક્ટની કિંમત ટ્રૅક કરો. જ્યારે પણ કિંમતમાં ઘટાડો થાય, ત્યારે તમે અલર્ટ મેળવશો.</translation>
+<translation id="973788791897303708">આ ટૅબનું ગ્રૂપ ભરાઈ ગયું છે</translation>
 <translation id="976392601789283511">છેલ્લે બંધ કરેલું ટૅબ ફરીથી ખોલો</translation>
 <translation id="981498610235328462">તમારી સંસ્થા માત્ર અમુક ચોક્કસ એકાઉન્ટ વડે તમને સાઇન ઇન કરવાની મંજૂરી આપે છે. મંજૂરી ન હોય એવા એકાઉન્ટને છુપાવવામાં આવે છે.</translation>
 <translation id="984275831282074731">ચુકવણી પદ્ધતિઓ</translation>

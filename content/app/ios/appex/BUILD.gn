@@ -22,6 +22,7 @@ source_set("child_process_bridge") {
   deps = [
     ":child_process_bridge_header",
     "//base",
+    "//gpu/ipc/common",
   ]
   frameworks = [ "Foundation.framework" ]
 }

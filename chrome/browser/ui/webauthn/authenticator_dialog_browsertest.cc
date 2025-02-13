@@ -20,7 +20,6 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -46,7 +45,6 @@
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -664,23 +662,38 @@ class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
     device::DiscoverableCredentialMetadata gpm_cred(
         device::AuthenticatorType::kEnclave, "example.com", {1},
         device::PublicKeyCredentialUserEntity({1}, "elisa.g.beckett@gmail.com",
-                                              "Elisa Beckett"));
+                                              "Elisa Beckett"),
+        std::nullopt);
     device::DiscoverableCredentialMetadata local_cred1(
         device::AuthenticatorType::kTouchID, "example.com", {1},
         device::PublicKeyCredentialUserEntity({1}, "elisa.g.beckett@gmail.com",
-                                              "Elisa Beckett"));
+                                              "Elisa Beckett"),
+        std::nullopt);
     device::DiscoverableCredentialMetadata local_cred2(
         device::AuthenticatorType::kTouchID, "example.com", {2},
         device::PublicKeyCredentialUserEntity({2}, "elisa.beckett@ink-42.com",
-                                              "Elisa Beckett"));
+                                              "Elisa Beckett"),
+        std::nullopt);
     device::DiscoverableCredentialMetadata phone_cred1(
         device::AuthenticatorType::kPhone, "example.com", {3},
         device::PublicKeyCredentialUserEntity({1}, "elisa.g.beckett@gmail.com",
-                                              "Elisa Beckett"));
+                                              "Elisa Beckett"),
+        std::nullopt);
     device::DiscoverableCredentialMetadata phone_cred2(
         device::AuthenticatorType::kPhone, "example.com", {4},
         device::PublicKeyCredentialUserEntity({2}, "elisa.beckett@ink-42.com",
-                                              "Elisa Beckett"));
+                                              "Elisa Beckett"),
+        std::nullopt);
+    device::DiscoverableCredentialMetadata ick_cred1(
+        device::AuthenticatorType::kICloudKeychain, "example.com", {5},
+        device::PublicKeyCredentialUserEntity({1}, "elisa.beckett@gmail.com",
+                                              "Elisa Beckett"),
+        "Example Passkey Provider");
+    device::DiscoverableCredentialMetadata ick_cred2(
+        device::AuthenticatorType::kICloudKeychain, "example.com", {6},
+        device::PublicKeyCredentialUserEntity({2}, "elisa.beckett@ink-42.com",
+                                              "Elisa Beckett"),
+        "Another Example Passkey Provider");
     model_->user_entity = local_cred1.user;
 
     // Configure a phone from sync.
@@ -822,6 +835,13 @@ class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
     } else if (name == "gpm_locked_pin") {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMLockedPin);
+    } else if (name == "icloud_keychain_cred") {
+      transport_availability.has_empty_allow_list = true;
+      controller_->set_allow_icloud_keychain(true);
+      transport_availability.recognized_credentials = {
+          std::move(ick_cred1),
+          std::move(ick_cred2),
+      };
     } else {
       NOTREACHED();
     }
@@ -835,8 +855,6 @@ class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
  private:
   scoped_refptr<AuthenticatorRequestDialogModel> model_;
   std::unique_ptr<AuthenticatorRequestDialogController> controller_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnEnclaveAuthenticator};
 };
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
@@ -973,6 +991,11 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
   ShowAndVerifyUi();
 }
 
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_icloud_keychain_cred) {
+  ShowAndVerifyUi();
+}
+
 #if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest, InvokeUi_touchid) {
   if (__builtin_available(macos 12, *)) {
@@ -984,12 +1007,6 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest, InvokeUi_touchid) {
 // Tests the UI steps that show a pop-up window.
 class AuthenticatorWindowTest : public InProcessBrowserTest {
  public:
-  AuthenticatorWindowTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnEnclaveAuthenticator},
-        /*disabled_features=*/{});
-  }
-
   void SetUp() override {
     https_server_.RegisterRequestHandler(
         base::BindRepeating(&AuthenticatorWindowTest::HandleNetworkRequest,
@@ -1061,8 +1078,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     return response;
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if !BUILDFLAG(IS_CHROMEOS)

@@ -2132,28 +2132,25 @@ TEST_F(AutocompleteControllerTest,
   auto aggregator_provider = base::MakeRefCounted<FakeAutocompleteProvider>(
       AutocompleteProvider::Type::TYPE_ENTERPRISE_SEARCH_AGGREGATOR);
   controller_.providers_.push_back(aggregator_provider);
+  auto document_provider = base::MakeRefCounted<FakeAutocompleteProvider>(
+      AutocompleteProvider::Type::TYPE_DOCUMENT);
+  controller_.providers_.push_back(document_provider);
   omnibox_feature_configs::ScopedConfigForTesting<
       omnibox_feature_configs::SearchAggregatorProvider>
       scoped_config;
 
   // In unscoped mode (not keyword mode), aggregator is run when
   // `require_shortcut` policy field is false, and is not run when
-  // `require_shortcut` policy field is true.
+  // `require_shortcut` policy field is true. When it is run, the document
+  // provider should not be run and vice versa.
   controller_.input_ = AutocompleteInput(
       u"query", 1u, metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
   EXPECT_TRUE(controller_.ShouldRunProvider(aggregator_provider.get()));
-  controller_.input_.UpdateText(u"site_search_not_featured", 0, {});
-  EXPECT_TRUE(controller_.ShouldRunProvider(aggregator_provider.get()));
-  controller_.input_.UpdateText(u"aggregator_not_featured", 0, {});
-  EXPECT_TRUE(controller_.ShouldRunProvider(aggregator_provider.get()));
+  EXPECT_FALSE(controller_.ShouldRunProvider(document_provider.get()));
 
   scoped_config.Get().require_shortcut = true;
-  controller_.input_.UpdateText(u"query", 0, {});
   EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
-  controller_.input_.UpdateText(u"site_search_not_featured", 0, {});
-  EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
-  controller_.input_.UpdateText(u"aggregator_not_featured", 0, {});
-  EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
+  EXPECT_TRUE(controller_.ShouldRunProvider(document_provider.get()));
 
   // Enter keyword mode.
   controller_.input_.set_keyword_mode_entry_method(

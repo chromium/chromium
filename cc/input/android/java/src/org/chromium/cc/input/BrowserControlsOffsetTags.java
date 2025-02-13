@@ -8,12 +8,16 @@ import com.google.errorprone.annotations.DoNotMock;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Java counterpart to the native cc::BrowserControlsOffsetTags. */
 @DoNotMock("This is a simple value object.")
+@NullMarked
 public final class BrowserControlsOffsetTags {
-    private final OffsetTag mTopControlsOffsetTag;
-    private final OffsetTag mContentOffsetTag;
-    private final OffsetTag mBottomControlsOffsetTag;
+    private final @Nullable OffsetTag mTopControlsOffsetTag;
+    private final @Nullable OffsetTag mContentOffsetTag;
+    private final @Nullable OffsetTag mBottomControlsOffsetTag;
 
     public BrowserControlsOffsetTags() {
         mTopControlsOffsetTag = OffsetTag.createRandom();
@@ -22,7 +26,9 @@ public final class BrowserControlsOffsetTags {
     }
 
     public BrowserControlsOffsetTags(
-            OffsetTag topControls, OffsetTag content, OffsetTag bottomControls) {
+            @Nullable OffsetTag topControls,
+            @Nullable OffsetTag content,
+            @Nullable OffsetTag bottomControls) {
         mTopControlsOffsetTag = topControls;
         mContentOffsetTag = content;
         mBottomControlsOffsetTag = bottomControls;
@@ -41,17 +47,17 @@ public final class BrowserControlsOffsetTags {
     }
 
     @CalledByNative
-    public OffsetTag getBottomControlsOffsetTag() {
+    public @Nullable OffsetTag getBottomControlsOffsetTag() {
         return mBottomControlsOffsetTag;
     }
 
     @CalledByNative
-    public OffsetTag getContentOffsetTag() {
+    public @Nullable OffsetTag getContentOffsetTag() {
         return mContentOffsetTag;
     }
 
     @CalledByNative
-    public OffsetTag getTopControlsOffsetTag() {
+    public @Nullable OffsetTag getTopControlsOffsetTag() {
         return mTopControlsOffsetTag;
     }
 }

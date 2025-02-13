@@ -126,6 +126,7 @@ void LockScreenReauthHandler::HandleStartOnlineAuth(
 
 void LockScreenReauthHandler::HandleAuthenticatorLoaded(
     const base::Value::List& value) {
+  AllowJavascript();
   VLOG(1) << "Authenticator finished loading";
   authenticator_state_ = AuthenticatorState::LOADED;
 
@@ -304,6 +305,7 @@ void LockScreenReauthHandler::CallJavascript(const std::string& function,
 
 void LockScreenReauthHandler::HandleCompleteAuthentication(
     const base::Value::List& params) {
+  AllowJavascript();
   absl::Cleanup run_callback_on_return = [this] {
     auth_flow_auto_reload_manager_.Terminate();
   };
@@ -414,6 +416,7 @@ void LockScreenReauthHandler::CheckCredentials(
 
 void LockScreenReauthHandler::HandleUpdateUserPassword(
     const base::Value::List& value) {
+  AllowJavascript();
   DCHECK(!value.empty());
   std::string old_password = value[0].GetString();
   lock_screen_reauth_manager_->UpdateUserPassword(old_password);
@@ -430,6 +433,7 @@ void LockScreenReauthHandler::ShowSamlConfirmPasswordScreen() {
 
 void LockScreenReauthHandler::HandleOnPasswordTyped(
     const base::Value::List& value) {
+  AllowJavascript();
   OnPasswordTyped(value[0].GetString());
 }
 
@@ -477,6 +481,7 @@ void LockScreenReauthHandler::SamlConfirmPassword(
 }
 
 void LockScreenReauthHandler::HandleWebviewLoadAborted(int error_code) {
+  AllowJavascript();
   if (error_code == net::ERR_BLOCKED_BY_ADMINISTRATOR) {
     // Ignore this error to let the user see the error screen for blocked sites.
     return;
@@ -502,10 +507,7 @@ void LockScreenReauthHandler::HandleWebviewLoadAborted(int error_code) {
 
 void LockScreenReauthHandler::HandleGetDeviceId(
     const std::string& callback_id) {
-  if (!IsJavascriptAllowed()) {
-    return;
-  }
-
+  AllowJavascript();
   user_manager::KnownUser known_user{g_browser_process->local_state()};
   ResolveJavascriptCallback(callback_id, GetDeviceId(known_user));
 }
@@ -518,33 +520,37 @@ void LockScreenReauthHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "startOnlineAuth",
       base::BindRepeating(&LockScreenReauthHandler::HandleStartOnlineAuth,
-                          weak_factory_.GetWeakPtr()));
+                          base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
       "authenticatorLoaded",
       base::BindRepeating(&LockScreenReauthHandler::HandleAuthenticatorLoaded,
-                          weak_factory_.GetWeakPtr()));
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "completeAuthentication",
       base::BindRepeating(
           &LockScreenReauthHandler::HandleCompleteAuthentication,
-          weak_factory_.GetWeakPtr()));
+          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "updateUserPassword",
       base::BindRepeating(&LockScreenReauthHandler::HandleUpdateUserPassword,
-                          weak_factory_.GetWeakPtr()));
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "onPasswordTyped",
       base::BindRepeating(&LockScreenReauthHandler::HandleOnPasswordTyped,
-                          weak_factory_.GetWeakPtr()));
+                          base::Unretained(this)));
   web_ui()->RegisterHandlerCallback(
       "webviewLoadAborted",
       base::BindRepeating(&LockScreenReauthHandler::HandleWebviewLoadAborted,
-                          weak_factory_.GetWeakPtr()));
+                          base::Unretained(this)));
   web_ui()->RegisterHandlerCallback(
       "getDeviceId",
       base::BindRepeating(&LockScreenReauthHandler::HandleGetDeviceId,
-                          weak_factory_.GetWeakPtr()));
+                          base::Unretained(this)));
+}
+
+void LockScreenReauthHandler::OnJavascriptDisallowed() {
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 bool LockScreenReauthHandler::IsAuthenticatorLoaded(

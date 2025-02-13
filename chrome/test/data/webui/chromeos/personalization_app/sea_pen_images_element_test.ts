@@ -14,7 +14,7 @@ import {MantaStatusCode} from 'chrome://resources/ash/common/sea_pen/sea_pen.moj
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertLE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -74,7 +74,7 @@ suite('SeaPenImagesElementTest', function() {
         'zero state message is shown');
   });
 
-  test('displays 8 loading thumbnail placeholders for template', async () => {
+  test('displays loading thumbnail placeholders for template', async () => {
     personalizationStore.data.wallpaper.seaPen.loading.thumbnails = true;
     personalizationStore.data.wallpaper.seaPen.thumbnails =
         seaPenProvider.thumbnails;
@@ -87,11 +87,13 @@ suite('SeaPenImagesElementTest', function() {
         seaPenImagesElement.shadowRoot!
             .querySelectorAll<SparklePlaceholderElement>(
                 'div:not([hidden]) .loading-placeholder > sparkle-placeholder');
-    assertEquals(
-        8, loadingThumbnailPlaceholders!.length,
-        'should be 8 loading placeholders available.');
-    assertTrue(Array.from(loadingThumbnailPlaceholders)
-                   .every(placeholder => !!placeholder.active));
+    assertLE(
+        4, loadingThumbnailPlaceholders!.length,
+        'should be at least 4 loading placeholders available.');
+    assertTrue(
+        Array.from(loadingThumbnailPlaceholders)
+            .every(placeholder => !!placeholder.active),
+        'all placeholders should be active.');
   });
 
   test('displays 4 loading thumbnail placeholders for freeform', async () => {
@@ -433,12 +435,14 @@ suite('SeaPenImagesElementTest', function() {
     const loadingThumbnailPlaceholders =
         seaPenImagesElement.shadowRoot!
             .querySelectorAll<SparklePlaceholderElement>(
-                'div:not([hidden]) sparkle-placeholder');
-    assertEquals(
-        8, loadingThumbnailPlaceholders!.length,
-        'should be 8 loading placeholders available.');
-    assertTrue(Array.from(loadingThumbnailPlaceholders)
-                   .every(placeholder => !!placeholder.active));
+                'div:not([hidden]) .loading-placeholder > sparkle-placeholder');
+    assertLE(
+        4, loadingThumbnailPlaceholders!.length,
+        'should be at least 4 loading placeholders available.');
+    assertTrue(
+        Array.from(loadingThumbnailPlaceholders)
+            .every(placeholder => !!placeholder.active),
+        'all placeholders should be active.');
 
     SeaPenRouterElement.instance().selectSeaPenTemplate(
         SeaPenTemplateId.kGlowscapes);

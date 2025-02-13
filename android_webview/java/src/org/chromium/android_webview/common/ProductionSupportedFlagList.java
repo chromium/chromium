@@ -7,6 +7,7 @@ package org.chromium.android_webview.common;
 import org.chromium.base.BaseFeatures;
 import org.chromium.base.BaseSwitches;
 import org.chromium.blink_public.common.BlinkFeatures;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.base.CcFeatures;
 import org.chromium.cc.base.CcSwitches;
 import org.chromium.components.autofill.AndroidAutofillFeatures;
@@ -44,6 +45,7 @@ import org.chromium.ui.gfx.GfxSwitches;
  * to display) as well as the WebView implementation (so it knows which features/flags are safe to
  * honor).
  */
+@NullMarked
 public final class ProductionSupportedFlagList {
     // Do not instantiate this class.
     private ProductionSupportedFlagList() {}
@@ -274,6 +276,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_OPTIMIZE_FORM_EXTRACTION,
                 "Makes Autofill spend less time on extracting forms."),
+        Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_ENABLE_LOYALTY_CARDS_FILLING,
+                "When enabled, Autofill will offer support for filling the user's loyalty cards"
+                        + " stored in Google Wallet."),
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_PAGE_LANGUAGE_DETECTION,
                 "Enables Autofill to retrieve the page language for form parsing."),
@@ -1051,6 +1057,7 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_PARTITIONED_COOKIES_EXCLUDED,
                 "When enabled, WebView records if a site with partitioned cookies has any cookies"
                     + " excluded due to a different cookie partition key than the current site's."),
+        Flag.baseFeature(BlinkFeatures.FETCH_LATER_API, "Enables FetchLater API."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

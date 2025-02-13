@@ -2379,7 +2379,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
             blink::features::kFledgeSampleDebugReports);
     if (sample_debug_reports) {
       if (seller_decision_logic_url == kSellerUrlDebugReportLockout) {
-        interest_group_manager_->RecordDebugReportLockout(now);
+        interest_group_manager_->RecordDebugReportLockout(
+            now, blink::features::kFledgeDebugReportLockout.Get());
       } else if (seller_decision_logic_url == kSellerUrlDebugReportCooldown) {
         interest_group_manager_->RecordDebugReportCooldown(
             url::Origin::Create(seller_decision_logic_url), now,
@@ -23868,9 +23869,8 @@ TEST_F(AuctionRunnerSampleDebugReportsEnabledTest,
                   testing::UnorderedElementsAre(
                       "https://bidder-debug-win-reporting.com/"));
       // We don't know the exact time, so just checking that there's a
-      // last_report_sent_time in DB after auction.
-      EXPECT_TRUE(new_debug_report_lockout_and_cooldowns.last_report_sent_time
-                      .has_value());
+      // lockout in DB after auction.
+      EXPECT_TRUE(new_debug_report_lockout_and_cooldowns.lockout.has_value());
       histogram_tester_->ExpectUniqueSample(
           "Ads.InterestGroup.Auction."
           "ForDebuggingOnlyReportAllowedAfterSampling",
@@ -24162,8 +24162,7 @@ TEST_F(AuctionRunnerFilterDebugReportsDisabledTest,
             run_loop.Quit();
           }));
   run_loop.Run();
-  EXPECT_TRUE(
-      new_debug_report_lockout_and_cooldowns.last_report_sent_time.has_value());
+  EXPECT_TRUE(new_debug_report_lockout_and_cooldowns.lockout.has_value());
 }
 
 // Disable private aggregation API.

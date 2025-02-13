@@ -134,6 +134,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   virtual std::optional<ResourceRequestBlockedReason> CheckCSPForRequest(
       mojom::blink::RequestContextType,
       network::mojom::RequestDestination request_destination,
+      network::mojom::RequestMode request_mode,
       const KURL&,
       const ResourceLoaderOptions&,
       ReportingDisposition,
@@ -146,6 +147,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   CheckAndEnforceCSPForRequest(
       mojom::blink::RequestContextType,
       network::mojom::RequestDestination request_destination,
+      network::mojom::RequestMode request_mode,
       const KURL&,
       const ResourceLoaderOptions&,
       ReportingDisposition,
@@ -153,6 +155,12 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
       ResourceRequest::RedirectStatus) const {
     return ResourceRequestBlockedReason::kOther;
   }
+
+  // Called from RequestResource() to upgrade insecure ResourceRequests if
+  // necessary and prepare them for checking CSP. A mutable ResourceRequest is
+  // passed as the URL may be modified. After this call returns, it is not
+  // permitted to modify the URL of the ResourceRequest.
+  virtual void ModifyRequestForMixedContentUpgrade(ResourceRequest&) {}
 
   // Populates the ResourceRequest with enough information for a cache lookup.
   // If the resource requires a load, then UpgradeResourceRequestForLoader() is

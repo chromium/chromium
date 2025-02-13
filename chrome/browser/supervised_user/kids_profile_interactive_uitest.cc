@@ -80,8 +80,7 @@ class KidsProfileUiTest
                                      kGoogleVideoHostPattern}) {
     // Enables UNO & Reauth for youtube.
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{{switches::kExplicitBrowserSigninUIOnDesktop,
-                               kForceSupervisedUserReauthenticationForYouTube}},
+        /*enabled_features=*/{{kForceSupervisedUserReauthenticationForYouTube}},
         /*disabled_features=*/{});
   }
 

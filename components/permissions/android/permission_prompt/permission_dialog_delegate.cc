@@ -231,21 +231,31 @@ void PermissionDialogDelegate::Dismissed(JNIEnv* env,
         static_cast<DismissalType>(dismissalType));
   }
 
+  if (!permission_prompt_->IsShowing()) {
+    // This probably happens synchronously when creating the
+    // `PermissionPromptAndroid` fails, and the `view_` of
+    // `PermissionRequestManager` won't be ready yet. It can mess up here, this
+    // prompt will be assigned to the 'view_' of the 'PermissionRequestManager.'
+    // But, all the underlying data associated with it will get wiped.
+    // So, we destroy the Java delegate and use the `IsJavaDelegateDestroyed`
+    // signal as a way to tell if the `PermissionPrompt` creation failed.
+    DestroyJavaDelegate();
+  }
   permission_prompt_->Closing();
 }
 
 void PermissionDialogDelegate::Destroy(JNIEnv* env,
                                        const JavaParamRef<jobject>& obj) {
-  java_delegate_.reset();
+  DestroyJavaDelegate();
 }
 
 void PermissionDialogDelegate::NotifyPermissionAllowed() {
-  CHECK(java_delegate_);
+  CHECK(!IsJavaDelegateDestroyed());
   java_delegate_->NotifyPermissionAllowed();
 }
 
 void PermissionDialogDelegate::UpdateDialog() {
-  CHECK(java_delegate_);
+  CHECK(!IsJavaDelegateDestroyed());
   java_delegate_->UpdateDialog();
 }
 
@@ -258,16 +268,18 @@ PermissionDialogDelegate::PermissionDialogDelegate(
       java_delegate_(std::move(java_delegate)) {
   CHECK(java_delegate_);
 
-  // Create our Java counterpart, which manages our lifetime.
+  // Create our Java counterpart.
   java_delegate_->CreateJavaDelegate(web_contents, this);
   // Open the Permission Dialog.
   java_delegate_->CreateDialog(web_contents);
+  // Note: `java_delegate_` can be destroyed after this line, if Java
+  // counterpart fails to show the dialog.
 }
 
 PermissionDialogDelegate::~PermissionDialogDelegate() {
   // When the owning class is destroyed, ensure that any active java delegate
   // associated with the class is destroyed.
-  if (java_delegate_) {
+  if (!IsJavaDelegateDestroyed()) {
     DismissDialog();
   }
 }
@@ -276,7 +288,7 @@ void PermissionDialogDelegate::DismissDialog() {
   // `java_delegate_` is owned by `this` and will be freed before `this`. During
   // the gap, it's still possible that `this` receives some dismiss signals but
   // should do nothing.
-  if (java_delegate_) {
+  if (!IsJavaDelegateDestroyed()) {
     java_delegate_->DismissDialog();
   }
 }

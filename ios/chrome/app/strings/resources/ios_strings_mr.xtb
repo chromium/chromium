@@ -285,6 +285,7 @@
 <translation id="2164946989711475905">साइन इन करा…</translation>
 <translation id="2175927920773552910">QR कोड</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="219283042927675668">गटामधील टॅब</translation>
 <translation id="2194856509914051091">विचार करण्याच्या गोष्टी</translation>
 <translation id="2196428379625389579">वेबवर शोधा</translation>
 <translation id="2199562093267256223">यामुळे <ph name="USER_EMAIL" /> मध्ये साइन इन केलेल्या सर्व डिव्हासवरून गट हटवला जाईल.</translation>
@@ -896,6 +897,7 @@
 <translation id="4936354130727646074">कधीही हलवू नका</translation>
 <translation id="4937410517508563815">पासवर्ड खात्यामध्ये सेव्ह करा</translation>
 <translation id="4938338714234463591">हे तुम्हाला वेबसाइटवर विशिष्ट वैशिष्ट्यांसह तुमचा आवाज वापरू देईल.</translation>
+<translation id="4938560988715301237">सर्व ऑटोफिल करा</translation>
 <translation id="4938716880833771969">तुमची नोटिफिकेशन शांतपणे डिलिव्हर केली जात आहेत</translation>
 <translation id="4941089862236492464">क्षमस्व, तुमचा आयटम शेअर करताना समस्या आली.</translation>
 <translation id="4944543191714094452">या पेजमध्ये शोधा…</translation>
@@ -913,6 +915,7 @@
 <translation id="5016420433031926653"><ph name="USER_EMAIL" /> ला पाठवा</translation>
 <translation id="5017529052065664584">शेवटची १५ मिनिटे</translation>
 <translation id="5020732097997376541">"Lens आयकन" वर टॅप करा</translation>
+<translation id="5021500396464456616">ही लिंक पाठवणाऱ्या व्यक्तीशी संपर्क साधा</translation>
 <translation id="5024511550058813796">तुमच्याकडे तुमच्या सर्व सिंक केलेल्या डिव्हाइसवर तुमचा इतिहास असेल, जेणेकरून तुम्ही जे करत होता ते पुढे सुरू ठेवू शकता</translation>
 <translation id="5038113048373546701">तुमच्या स्वारस्यांवर आधारित बातम्या, क्रीडा आणि आणखी बऱ्याच गोष्टींसाठी सूचना मिळवा</translation>
 <translation id="5039804452771397117">परवानगी द्या</translation>
@@ -977,7 +980,6 @@
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> हे खाते काढून टाकायचे आहे का?</translation>
 <translation id="5300589172476337783">दर्शवा</translation>
 <translation id="5311061401280561833">कॅमेरा आणि मायक्रोफोन ॲक्सेस करण्याची अनुमती दिली आहे</translation>
-<translation id="531209241254508943">टॅब गट</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> पैकी <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5318298563956633672">तुम्ही आधीच या उत्पादनाचा माग ठेवत आहात.</translation>
@@ -1941,6 +1943,7 @@
 <translation id="966593914872420832">व्हॉइस शोध</translation>
 <translation id="968653181266955408">आशयासंबंधित नोटिफिकेशन मिळवा</translation>
 <translation id="973493300226275298">सर्व ऑनलाइन स्टोअरवर उत्पादनाची किंमत ट्रॅक करा. किमती कमी होतील, तेव्हा तुम्हाला सूचना मिळेल.</translation>
+<translation id="973788791897303708">हा टॅब गट पूर्ण भरला आहे</translation>
 <translation id="976392601789283511">शेवटी बंद केलेला टॅब पुन्हा उघडा</translation>
 <translation id="981498610235328462">तुमची संस्था तुम्हाला फक्त ठरावीक खाती वापरून साइन इन करण्याची अनुमती देते. अनुमती नसलेली खाती लपवली जातात.</translation>
 <translation id="984275831282074731">पेमेंट पद्धती</translation>

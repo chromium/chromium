@@ -11,6 +11,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/prefs/android/pref_service_android.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/android/sync_service_android_bridge.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -19,6 +20,14 @@
 using password_manager::IsGmsCoreUpdateRequired;
 using password_manager::UsesSplitStoresAndUPMForLocal;
 using password_manager_android_util::ShouldUseUpmWiring;
+
+jboolean JNI_PasswordManagerUtilBridge_IsPasswordManagerAvailable(
+    JNIEnv* env,
+    PrefService* pref_service,
+    jboolean is_internal_backend_present) {
+  return password_manager_android_util::IsPasswordManagerAvailable(
+      pref_service, is_internal_backend_present);
+}
 
 jboolean JNI_PasswordManagerUtilBridge_UsesSplitStoresAndUPMForLocal(
     JNIEnv* env,

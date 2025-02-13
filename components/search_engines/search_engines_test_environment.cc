@@ -12,6 +12,7 @@
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_test_util.h"
 
@@ -40,6 +41,7 @@ SearchEnginesTestEnvironment::ServiceFactories CreateDefaultFactories(
         return std::make_unique<TemplateURLService>(
             environment.pref_service(),
             environment.search_engine_choice_service(),
+            environment.prepopulate_data_resolver(),
             deps.template_url_service_initializer);
       });
 
@@ -109,6 +111,16 @@ SearchEnginesTestEnvironment::regional_capabilities_service() {
                   *this);
   }
   return *regional_capabilities_service_;
+}
+
+TemplateURLPrepopulateData::Resolver&
+SearchEnginesTestEnvironment::prepopulate_data_resolver() {
+  if (!prepopulate_data_resolver_) {
+    prepopulate_data_resolver_ =
+        std::make_unique<TemplateURLPrepopulateData::Resolver>(
+            pref_service(), search_engine_choice_service());
+  }
+  return *prepopulate_data_resolver_;
 }
 
 SearchEngineChoiceService&

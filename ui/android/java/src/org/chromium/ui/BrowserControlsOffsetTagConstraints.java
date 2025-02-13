@@ -8,34 +8,38 @@ import com.google.errorprone.annotations.DoNotMock;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Java counterpart to the native ui::android::BrowserControlsOffsetTagConstraints. */
 @DoNotMock("This is a simple value object.")
+@NullMarked
 public final class BrowserControlsOffsetTagConstraints {
-    private final OffsetTagConstraints mTopControlsConstraints;
-    private final OffsetTagConstraints mContentConstraints;
-    private final OffsetTagConstraints mBottomControlsConstraints;
+    private final @Nullable OffsetTagConstraints mTopControlsConstraints;
+    private final @Nullable OffsetTagConstraints mContentConstraints;
+    private final @Nullable OffsetTagConstraints mBottomControlsConstraints;
 
     public BrowserControlsOffsetTagConstraints(
-            OffsetTagConstraints topControlsConstraints,
-            OffsetTagConstraints contentConstraints,
-            OffsetTagConstraints bottomControlsConstraints) {
+            @Nullable OffsetTagConstraints topControlsConstraints,
+            @Nullable OffsetTagConstraints contentConstraints,
+            @Nullable OffsetTagConstraints bottomControlsConstraints) {
         mTopControlsConstraints = topControlsConstraints;
         mContentConstraints = contentConstraints;
         mBottomControlsConstraints = bottomControlsConstraints;
     }
 
     @CalledByNative
-    public OffsetTagConstraints getTopControlsConstraints() {
+    public @Nullable OffsetTagConstraints getTopControlsConstraints() {
         return mTopControlsConstraints;
     }
 
     @CalledByNative
-    public OffsetTagConstraints getContentConstraints() {
+    public @Nullable OffsetTagConstraints getContentConstraints() {
         return mContentConstraints;
     }
 
     @CalledByNative
-    public OffsetTagConstraints getBottomControlsConstraints() {
+    public @Nullable OffsetTagConstraints getBottomControlsConstraints() {
         return mBottomControlsConstraints;
     }
 }

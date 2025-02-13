@@ -10086,6 +10086,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8155676038687609779">{COUNT,plural, =0{Vaarantuneita salasanoja ei löytynyt}=1{{COUNT} vaarantunut salasana}other{{COUNT} vaarantunutta salasanaa}}</translation>
 <translation id="8157248655669507702">Ota mobiilidata käyttöön, niin voit asentaa eSIM-profiilin</translation>
 <translation id="8157704005178149728">Määritetään valvontaa</translation>
+<translation id="8157728322324420120">Sinulle ehdotetut</translation>
 <translation id="8157849462797352650">Laitteesi saa uusimmat tietoturva-, vakaus- ja suorituskykypäivitykset</translation>
 <translation id="8158117992543756526">Tämä laite ei ole saanut automaattisia ohjelmisto- ja tietoturvapäivityksiä <ph name="MONTH_AND_YEAR" /> lähtien. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Saat värinävahvistuksen näytön jakamisesta, työpöydän vaihtamisesta ja muista tapahtumista. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>

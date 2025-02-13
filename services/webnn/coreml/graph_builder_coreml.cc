@@ -131,6 +131,8 @@ constexpr char kOpCumulativeSumTypeName[] = "cumsum";
 constexpr char kOpDequantizeLinearTypeName[] = "dequantize";
 constexpr char kOpDequantizeLinearConstTypeName[] =
     "constexpr_affine_dequantize";
+constexpr char kOpDequantizeLinearConstBlockwiseTypeName[] =
+    "constexpr_blockwise_shift_scale";
 constexpr char kOpEluTypeName[] = "elu";
 constexpr char kOpExpandTypeName[] = "tile";
 constexpr char kOpFillTypeName[] = "fill";
@@ -227,12 +229,14 @@ constexpr char kOpParamMode[] = "mode";
 constexpr char kOpParamPad[] = "pad";
 constexpr char kOpParamReps[] = "reps";
 constexpr char kOpParamScatterModeValue[] = "update";
+constexpr char kOpParamScale[] = "scale";
 constexpr char kOpParamShape[] = "shape";
 constexpr char kOpParamUpdates[] = "updates";
 constexpr char kOpParamValidateIndices[] = "validate_indices";
 constexpr char kOpParamWeight[] = "weight";
 constexpr char kOpParamX[] = "x";
 constexpr char kOpParamY[] = "y";
+constexpr char kOpParamZeroPoint[] = "zero_point";
 // Hard coded path used in the model file to point at the weight path.
 constexpr char kWeightsRelativeFilePath[] = "@model_path/weights/weights.bin";
 
@@ -1327,18 +1331,6 @@ GraphBuilderCoreml::~GraphBuilderCoreml() = default;
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::BuildCoreMLModel() {
-  CHECK_EQ(ml_model_.specificationversion(), 0);
-  // Based on comment in Model.proto
-  //  * 8 : iOS 17, macOS 14, tvOS 17, watchOS 10 (Core ML 7)
-  //  * - iOS 17 ops
-  //  * - Scene print v2
-  //  * - ClassConfidenceThresholding model
-  // use the model specification version supported on macOS 14 which is
-  // version 8. We need to use version 8 because Cast in version 7 does
-  // not support casting to uint8, which is required for logical binary
-  // operators. Logical binary operators return bool tensors in CoreML
-  // they need to be cast to uint8 to match WebNN.
-  ml_model_.set_specificationversion(8);
   ml_model_.set_isupdatable(false);
 
   program_ = ml_model_.mutable_mlprogram();
@@ -1347,9 +1339,29 @@ GraphBuilderCoreml::BuildCoreMLModel() {
   // Creates a Program with a single main function, and a single block within
   // the function. The block contains all the ops right now.
   auto& main_function = (*program_->mutable_functions())["main"];
-  // CoreML7 means specification version 8.
-  main_function.set_opset("CoreML7");
-  auto& block = (*main_function.mutable_block_specializations())["CoreML7"];
+
+  CHECK_EQ(ml_model_.specificationversion(), 0);
+  // Based on comment in Model.proto
+  //  * 8 : iOS 17, macOS 14, tvOS 17, watchOS 10 (Core ML 7)
+  // Use the model specification version supported on macOS 14 which is
+  // version 8. We need to use version 8 because Cast in version 7 does
+  // not support casting to uint8, which is required for logical binary
+  // operators. Logical binary operators return bool tensors in CoreML
+  // they need to be cast to uint8 to match WebNN.
+
+  // Use version 9 on macOS 15 for new op `constexpr_blockwise_shift_scale`.
+  std::string_view coreml_version = "CoreML7";
+  if (__builtin_available(macOS 15, *)) {
+    coreml_version = "CoreML8";
+    support_blockwise_dequantize_ = true;
+    ml_model_.set_specificationversion(9);
+    main_function.set_opset(coreml_version);
+  } else {
+    ml_model_.set_specificationversion(8);
+    main_function.set_opset(coreml_version);
+  }
+  auto& block =
+      (*main_function.mutable_block_specializations())[coreml_version];
 
   for (const auto& [operand_id, _] : graph_info_->id_to_operand_map) {
     UpdateCoreMLInputInfoMap(operand_id);
@@ -2229,6 +2241,29 @@ GraphBuilderCoreml::AddOperationForDequantizeLinear(
   CHECK(context_properties_.data_type_limits.dequantize_linear_scale.Has(
       scale_operand_data_type));
 
+  // TODO(crbug.com/338529226): These params must all be constant tensors.
+  if (!constant_operands_->contains(operation.zero_point_operand_id)) {
+    return NewNotSupportedError(
+        "Unsupported options to dequantizeLinear. 'zero_point' must be "
+        "constant.");
+  }
+
+  if (!constant_operands_->contains(operation.scale_operand_id)) {
+    return NewNotSupportedError(
+        "Unsupported options to dequantizeLinear. 'scale' must be constant.");
+  }
+
+  CHECK_EQ(input_operand_info.mil_data_type,
+           zero_point_operand_info.mil_data_type);
+  CHECK_EQ(scale_operand_info.mil_data_type,
+           GetOperandInfo(operation.output_operand_id).mil_data_type);
+
+  bool is_constant_input =
+      constant_operands_->contains(operation.input_operand_id);
+  if (support_blockwise_dequantize_ && is_constant_input) {
+    return AddOperationForDequantizeLinearConstBlockwise(operation, block);
+  }
+
   // TODO(crbug.com/395920220): Expose these constraints via rankRange.
   if (zero_point_operand_info.dimensions.size() > 1) {
     return NewNotSupportedError(
@@ -2250,24 +2285,8 @@ GraphBuilderCoreml::AddOperationForDequantizeLinear(
         "Unsupported options to dequantizeLinear. The size of 'scale' must be "
         "equal to the size of the input's last dimension.");
   }
-  // TODO(crbug.com/338529226): These params must all be constant tensors.
-  if (!constant_operands_->contains(operation.zero_point_operand_id)) {
-    return NewNotSupportedError(
-        "Unsupported options to dequantizeLinear. 'zero_point' must be "
-        "constant.");
-  }
 
-  if (!constant_operands_->contains(operation.scale_operand_id)) {
-    return NewNotSupportedError(
-        "Unsupported options to dequantizeLinear. 'scale' must be constant.");
-  }
-
-  CHECK_EQ(input_operand_info.mil_data_type,
-           zero_point_operand_info.mil_data_type);
-  CHECK_EQ(scale_operand_info.mil_data_type,
-           GetOperandInfo(operation.output_operand_id).mil_data_type);
-
-  if (constant_operands_->contains(operation.input_operand_id)) {
+  if (is_constant_input) {
     return AddOperationForDequantizeLinearConst(operation, block);
   }
 
@@ -2287,13 +2306,10 @@ GraphBuilderCoreml::AddOperationForDequantizeLinear(
   RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kParamInput,
                                       input_operand_id));
 
-  static constexpr char kParamZeroPoint[] = "zero_point";
-  static constexpr char kParamScale[] = "scale";
-
-  RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kParamZeroPoint,
+  RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamZeroPoint,
                                       operation.zero_point_operand_id));
 
-  RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kParamScale,
+  RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamScale,
                                       operation.scale_operand_id));
 
   // An "axis" must be specified if "scale" is a vector.
@@ -2352,16 +2368,13 @@ GraphBuilderCoreml::AddOperationForDequantizeLinearConst(
   // This op requires all parameters passed as attributes instead of inputs.
   (*op->mutable_attributes())[kParamInput] = std::move(value);
 
-  static constexpr char kParamZeroPoint[] = "zero_point";
-  static constexpr char kParamScale[] = "scale";
-
   ASSIGN_OR_RETURN(
-      (*op->mutable_attributes())[kParamZeroPoint],
+      (*op->mutable_attributes())[kOpParamZeroPoint],
       weights_file_handle_->Write(
           operation.zero_point_operand_id,
           *constant_operands_->at(operation.zero_point_operand_id)))
 
-  ASSIGN_OR_RETURN((*op->mutable_attributes())[kParamScale],
+  ASSIGN_OR_RETURN((*op->mutable_attributes())[kOpParamScale],
                    weights_file_handle_->Write(
                        operation.scale_operand_id,
                        *constant_operands_->at(operation.scale_operand_id)))
@@ -2385,6 +2398,70 @@ GraphBuilderCoreml::AddOperationForDequantizeLinearConst(
   } else {
     PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
   }
+  return base::ok();
+}
+
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForDequantizeLinearConstBlockwise(
+    const mojom::DequantizeLinear& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  const OperandInfo& zero_point_operand_info =
+      GetOperandInfo(operation.zero_point_operand_id);
+  const OperandInfo& scale_operand_info =
+      GetOperandInfo(operation.scale_operand_id);
+
+  CHECK(constant_operands_->contains(operation.input_operand_id));
+  CHECK(constant_operands_->contains(operation.zero_point_operand_id));
+  CHECK(constant_operands_->contains(operation.scale_operand_id));
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpDequantizeLinearConstBlockwiseTypeName);
+
+  bool input_needs_reshape = input_operand_info.dimensions.empty();
+  std::vector<uint32_t> input_shape = input_operand_info.dimensions;
+  std::vector<uint32_t> scale_shape = scale_operand_info.dimensions;
+  CHECK_GE(input_shape.size(), scale_shape.size());
+  CHECK(std::ranges::equal(scale_shape, zero_point_operand_info.dimensions));
+
+  if (input_needs_reshape) {
+    input_shape = {1};
+  }
+
+  // TODO(crbug.com/396176047): Remove this logic after WebNN requires scale and
+  // zero_point's rank match with input.
+  if (scale_shape.size() < input_shape.size()) {
+    std::vector<uint32_t> scale_reshaped(
+        input_shape.size() - scale_shape.size(), 1);
+    scale_reshaped.insert(scale_reshaped.end(), scale_shape.begin(),
+                          scale_shape.end());
+    scale_shape = std::move(scale_reshaped);
+  }
+  static constexpr char kParamOffset[] = "offset";
+  RETURN_IF_ERROR(
+      SetInputFromConstantOperand(*op->mutable_inputs(), kOpParamData,
+                                  operation.input_operand_id, input_shape));
+  RETURN_IF_ERROR(SetInputFromConstantOperand(
+      *op->mutable_inputs(), kParamOffset, operation.zero_point_operand_id,
+      scale_shape));
+  RETURN_IF_ERROR(
+      SetInputFromConstantOperand(*op->mutable_inputs(), kOpParamScale,
+                                  operation.scale_operand_id, scale_shape));
+  if (input_needs_reshape) {
+    ASSIGN_OR_RETURN(
+        uint64_t output_operand_id,
+        GenerateInternalOperandInfo(
+            GetOperandInfo(operation.output_operand_id).mil_data_type,
+            std::array<uint32_t, 1>{1}));
+    PopulateNamedValueType(output_operand_id, *op->add_outputs());
+    RETURN_IF_ERROR(AddOperationForReshape(output_operand_id,
+                                           operation.output_operand_id, block));
+
+  } else {
+    PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  }
+
   return base::ok();
 }
 
@@ -4508,8 +4585,8 @@ GraphBuilderCoreml::AddOperationForResample2d(
   const std::array<size_t, 2> supported_axes = {2, 3};
   CHECK(std::ranges::equal(operation.axes, supported_axes));
 
-  static constexpr char kParamScaleFactorHeight[] = "scale_factor_height";
-  static constexpr char kParamScaleFactorWidth[] = "scale_factor_width";
+  static constexpr char kOpParamScaleFactorHeight[] = "scale_factor_height";
+  static constexpr char kOpParamScaleFactorWidth[] = "scale_factor_width";
   static constexpr char kParamAlignCorners[] = "align_corners";
 
   CoreML::Specification::MILSpec::Operation& op = *block.add_operations();
@@ -4553,8 +4630,8 @@ GraphBuilderCoreml::AddOperationForResample2d(
 
   SetInputsWithValues(
       *op.mutable_inputs(),
-      {{kParamScaleFactorHeight, CreateScalarImmediateValue(scales[0])},
-       {kParamScaleFactorWidth, CreateScalarImmediateValue(scales[1])}});
+      {{kOpParamScaleFactorHeight, CreateScalarImmediateValue(scales[0])},
+       {kOpParamScaleFactorWidth, CreateScalarImmediateValue(scales[1])}});
 
   PopulateNamedValueType(operation.output_operand_id, *op.add_outputs());
   return base::ok();
@@ -5128,10 +5205,25 @@ GraphBuilderCoreml::SetInputFromOperand(
         GetOperandInfo(operand_id).coreml_name);
     return base::ok();
   }
-  ASSIGN_OR_RETURN(CoreML::Specification::MILSpec::Value value,
-                   weights_file_handle_->Write(
-                       operand_id, *constant_operands_->at(operand_id)))
+
+  return SetInputFromConstantOperand(inputs, key, operand_id);
+}
+
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::SetInputFromConstantOperand(
+    google::protobuf::Map<std::string,
+                          CoreML::Specification::MILSpec::Argument>& inputs,
+    std::string_view key,
+    uint64_t constant_operand_id,
+    std::optional<base::span<const uint32_t>> reshaped_dimensions) {
+  CHECK(constant_operands_->contains(constant_operand_id));
+  ASSIGN_OR_RETURN(
+      CoreML::Specification::MILSpec::Value value,
+      weights_file_handle_->Write(constant_operand_id,
+                                  *constant_operands_->at(constant_operand_id),
+                                  reshaped_dimensions))
   SetInputWithValue(inputs, key, value);
+
   return base::ok();
 }
 

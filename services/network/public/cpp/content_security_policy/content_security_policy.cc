@@ -103,6 +103,10 @@ CSPDirectiveName ToCSPDirectiveName(std::string_view name) {
   if (base::EqualsCaseInsensitiveASCII(name, "report-uri")) {
     return CSPDirectiveName::ReportURI;
   }
+  if (base::EqualsCaseInsensitiveASCII(name, "require-sri-for") &&
+      base::FeatureList::IsEnabled(network::features::kCSPRequireSRIFor)) {
+    return CSPDirectiveName::RequireSRIFor;
+  }
   if (base::EqualsCaseInsensitiveASCII(name, "require-trusted-types-for")) {
     return CSPDirectiveName::RequireTrustedTypesFor;
   }
@@ -169,6 +173,7 @@ bool SupportedInReportOnly(CSPDirectiveName directive) {
     case CSPDirectiveName::ObjectSrc:
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::ReportURI:
+    case CSPDirectiveName::RequireSRIFor:
     case CSPDirectiveName::RequireTrustedTypesFor:
     case CSPDirectiveName::ScriptSrc:
     case CSPDirectiveName::ScriptSrcAttr:
@@ -205,6 +210,7 @@ bool SupportedInMeta(CSPDirectiveName directive) {
     case CSPDirectiveName::MediaSrc:
     case CSPDirectiveName::ObjectSrc:
     case CSPDirectiveName::ReportTo:
+    case CSPDirectiveName::RequireSRIFor:
     case CSPDirectiveName::RequireTrustedTypesFor:
     case CSPDirectiveName::ScriptSrc:
     case CSPDirectiveName::ScriptSrcAttr:
@@ -252,6 +258,7 @@ const char* ErrorMessage(CSPDirectiveName directive) {
     case CSPDirectiveName::ObjectSrc:
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::ReportURI:
+    case CSPDirectiveName::RequireSRIFor:
     case CSPDirectiveName::RequireTrustedTypesFor:
     case CSPDirectiveName::Sandbox:
     case CSPDirectiveName::ScriptSrc:
@@ -765,6 +772,37 @@ mojom::CSPSourceListPtr ParseSourceList(
   return directive;
 }
 
+// Parse the 'required-sri-for' directive.
+network::mojom::CSPRequireSRIFor ParseRequireSRIFor(
+    std::string_view value,
+    std::vector<std::string>& parsing_errors) {
+  network::mojom::CSPRequireSRIFor out = network::mojom::CSPRequireSRIFor::None;
+  for (const std::string_view expression : base::SplitStringPiece(
+           value, base::kWhitespaceASCII, base::TRIM_WHITESPACE,
+           base::SPLIT_WANT_NONEMPTY)) {
+    if (expression == "'script'") {
+      out = network::mojom::CSPRequireSRIFor::Script;
+    } else {
+      const char* hint = nullptr;
+      if (expression == "script" || expression == "scripts" ||
+          expression == "'scripts'") {
+        hint = " Did you mean 'script'?";
+      }
+
+      parsing_errors.emplace_back(
+          base::StringPrintf("Invalid expression in 'require-sri-for' "
+                             "Content Security Policy directive: %s.%s\n",
+                             expression, hint));
+    }
+  }
+  if (out == network::mojom::CSPRequireSRIFor::None) {
+    parsing_errors.emplace_back(base::StringPrintf(
+        "'require-sri-for' Content Security Policy "
+        "directive is empty; The directive has no effect.\n"));
+  }
+  return out;
+}
+
 // Parse the 'required-trusted-types-for' directive.
 // https://w3c.github.io/trusted-types/dist/spec/#require-trusted-types-for-csp-directive
 network::mojom::CSPRequireTrustedTypesFor ParseRequireTrustedTypesFor(
@@ -1078,6 +1116,10 @@ void AddContentSecurityPolicyFromHeader(
         out->treat_as_public_address = true;
         WarnIfDirectiveValueNotEmpty(directive, out->parsing_errors);
         break;
+      case CSPDirectiveName::RequireSRIFor:
+        out->require_sri_for =
+            ParseRequireSRIFor(directive.second, out->parsing_errors);
+        break;
       case CSPDirectiveName::RequireTrustedTypesFor:
         out->require_trusted_types_for =
             ParseRequireTrustedTypesFor(directive.second, out->parsing_errors);
@@ -1226,6 +1268,7 @@ CSPDirectiveName CSPFallbackDirective(CSPDirectiveName directive,
     case CSPDirectiveName::FrameAncestors:
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::ReportURI:
+    case CSPDirectiveName::RequireSRIFor:
     case CSPDirectiveName::RequireTrustedTypesFor:
     case CSPDirectiveName::Sandbox:
     case CSPDirectiveName::TreatAsPublicAddress:
@@ -1594,6 +1637,8 @@ std::string ToString(CSPDirectiveName name) {
       return "object-src";
     case CSPDirectiveName::ReportURI:
       return "report-uri";
+    case CSPDirectiveName::RequireSRIFor:
+      return "require-sri-for";
     case CSPDirectiveName::RequireTrustedTypesFor:
       return "require-trusted-types-for";
     case CSPDirectiveName::Sandbox:

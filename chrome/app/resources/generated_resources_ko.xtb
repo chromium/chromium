@@ -10092,6 +10092,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{유출된 비밀번호가 없습니다.}=1{유출된 비밀번호가 {COUNT}개 있습니다.}other{유출된 비밀번호가 {COUNT}개 있습니다.}}</translation>
 <translation id="8157248655669507702">eSIM 프로필을 설치하려면 모바일 데이터 사용 설정</translation>
 <translation id="8157704005178149728">감독 기능 설정 중</translation>
+<translation id="8157728322324420120">추천</translation>
 <translation id="8157849462797352650">기기에서 최신 보안, 안정성, 성능 업데이트를 이용할 수 있습니다.</translation>
 <translation id="8158117992543756526"><ph name="MONTH_AND_YEAR" />부터 이 기기의 자동 소프트웨어 및 보안 업데이트가 중단되었습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">화면 분할, 데스크 전환 등의 작업을 진동으로 확인할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>

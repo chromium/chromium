@@ -142,6 +142,7 @@ using GetCredentialCallback =
     blink::mojom::Authenticator::GetCredentialCallback;
 using ReportCallback = blink::mojom::Authenticator::ReportCallback;
 using UIPresentation = AuthenticatorRequestClientDelegate::UIPresentation;
+using Mediation = blink::mojom::Mediation;
 
 namespace {
 
@@ -275,28 +276,33 @@ base::flat_set<device::FidoTransportProtocol> GetWebAuthnTransports(
     RenderFrameHost* render_frame_host,
     device::FidoDiscoveryFactory* discovery_factory,
     bool uses_discoverable_creds,
-    std::optional<bool> is_uvpaa_override) {
+    std::optional<bool> is_uvpaa_override,
+    bool is_immediate_mediation = false) {
   base::flat_set<device::FidoTransportProtocol> transports;
-  transports.insert(device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
+  if (!is_immediate_mediation) {
+    transports.insert(device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
+    transports.insert(device::FidoTransportProtocol::kHybrid);
+  }
 
   // Only instantiate platform discovery if the embedder hasn't chosen to
   // override IsUserVerifyingPlatformAuthenticatorAvailable() to be false.
   // Chrome disables platform authenticators in Guest modes this way.
-  if (!is_uvpaa_override || *is_uvpaa_override) {
+  if (is_uvpaa_override.value_or(true)) {
     transports.insert(device::FidoTransportProtocol::kInternal);
   }
 
   if (discovery_factory->IsTestOverride()) {
-    // The desktop implementation does not support BLE or NFC, but we emulate
-    // them if the testing API is enabled.
-    transports.insert(device::FidoTransportProtocol::kBluetoothLowEnergy);
-    transports.insert(device::FidoTransportProtocol::kNearFieldCommunication);
+    if (!is_immediate_mediation) {
+      // The desktop implementation does not support BLE or NFC, but we emulate
+      // them if the testing API is enabled.
+      transports.insert(device::FidoTransportProtocol::kBluetoothLowEnergy);
+      transports.insert(device::FidoTransportProtocol::kNearFieldCommunication);
+    }
 
     // Ensure virtual platform authenticators can be instantiated even if they
     // are not-user-verifying, i.e. IsUVPAA() returns false.
     transports.insert(device::FidoTransportProtocol::kInternal);
   }
-  transports.insert(device::FidoTransportProtocol::kHybrid);
   return transports;
 }
 
@@ -789,6 +795,8 @@ struct AuthenticatorCommonImpl::RequestState {
   // A pending remote validation of an RP ID.
   std::unique_ptr<WebAuthRequestSecurityChecker::RemoteValidation>
       remote_rp_id_validation;
+
+  std::optional<Mediation> mediation_;
 };
 
 // static
@@ -929,10 +937,12 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
 #endif
   SetHints(req_state_->request_delegate.get(), req_state_->hints);
 
+  bool is_immediate_mediation =
+      req_state_->mediation_.value_or(Mediation::MODAL) == Mediation::IMMEDIATE;
   base::flat_set<device::FidoTransportProtocol> transports =
       GetWebAuthnTransports(GetRenderFrameHost(), discovery_factory(),
                             UsesDiscoverableCreds(*ctap_get_assertion_request),
-                            is_uvpaa_override_);
+                            is_uvpaa_override_, is_immediate_mediation);
 
   auto platform_discoveries =
       discovery_factory()->IsTestOverride()
@@ -1361,10 +1371,10 @@ void AuthenticatorCommonImpl::GetCredential(
     blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
     blink::mojom::PaymentOptionsPtr payment_options,
     GetCredentialCallback callback) {
-  if (options->mediation == blink::mojom::Mediation::CONDITIONAL) {
+  if (options->mediation == Mediation::CONDITIONAL) {
     base::RecordAction(
         base::UserMetricsAction("WebAuthn.GetAssertion.Conditional.Start"));
-  } else if (options->mediation == blink::mojom::Mediation::MODAL) {
+  } else if (options->mediation == Mediation::MODAL) {
     base::RecordAction(base::UserMetricsAction("WebAuthn.GetAssertion.Start"));
   }
   callback = base::BindOnce(
@@ -1384,14 +1394,14 @@ void AuthenticatorCommonImpl::GetCredential(
   req_state_->response_callback = std::move(callback);
   if (!payment_options.is_null()) {
     req_state_->mode = AuthenticationRequestMode::kPayment;
-  } else if (options->mediation == blink::mojom::Mediation::CONDITIONAL) {
+  } else if (options->mediation == Mediation::CONDITIONAL) {
     req_state_->mode = AuthenticationRequestMode::kConditional;
   } else {
     req_state_->mode = AuthenticationRequestMode::kModalWebAuthn;
   }
   req_state_->hints.insert(options->hints.begin(), options->hints.end());
 
-  if (options->mediation != blink::mojom::Mediation::CONDITIONAL) {
+  if (options->mediation != Mediation::CONDITIONAL) {
     BeginRequestTimeout(options->timeout);
   }
 
@@ -1404,7 +1414,7 @@ void AuthenticatorCommonImpl::GetCredential(
     return;
   }
 
-  if (options->mediation == blink::mojom::Mediation::IMMEDIATE &&
+  if (options->mediation == Mediation::IMMEDIATE &&
       !options->allow_credentials.empty()) {
     mojo::ReportBadMessage(
         "Immediate mediation cannot be used with an allow credential list");
@@ -1413,6 +1423,7 @@ void AuthenticatorCommonImpl::GetCredential(
         blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
     return;
   }
+  req_state_->mediation_ = options->mediation;
 
   if (options->challenge_url.has_value() &&
       !options->challenge_url->is_valid()) {
@@ -1534,7 +1545,7 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
   WebAuthenticationRequestProxy* proxy =
       GetWebAuthnRequestProxyIfActive(caller_origin);
   if (proxy) {
-    if (options->mediation == blink::mojom::Mediation::CONDITIONAL ||
+    if (options->mediation == Mediation::CONDITIONAL ||
         (options->extensions->remote_desktop_client_override)) {
       // Don't allow proxying of an already proxied or conditional request.
       req_state_->request_outcome = GetAssertionOutcome::kOtherFailure;
@@ -1579,9 +1590,9 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
   auto ui_presentation = UIPresentation::kModal;
   if (disable_ui_) {
     ui_presentation = UIPresentation::kDisabled;
-  } else if (options->mediation == blink::mojom::Mediation::CONDITIONAL) {
+  } else if (options->mediation == Mediation::CONDITIONAL) {
     ui_presentation = UIPresentation::kAutofill;
-  } else if (options->mediation == blink::mojom::Mediation::IMMEDIATE) {
+  } else if (options->mediation == Mediation::IMMEDIATE) {
     ui_presentation = UIPresentation::kModalImmediate;
   }
   req_state_->request_delegate->SetUIPresentation(ui_presentation);
@@ -1614,15 +1625,15 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
                        std::move(client_data_json_params)));
   }
 
-  if (options->mediation == blink::mojom::Mediation::CONDITIONAL ||
-      options->mediation == blink::mojom::Mediation::IMMEDIATE) {
+  if (options->mediation == Mediation::CONDITIONAL ||
+      options->mediation == Mediation::IMMEDIATE) {
     req_state_->request_delegate->SetCredentialTypes(
         options->requested_credential_type_flags);
   }
 
   req_state_->request_delegate->SetCredentialIdFilter(
       options->allow_credentials);
-  if (options->mediation == blink::mojom::Mediation::CONDITIONAL) {
+  if (options->mediation == Mediation::CONDITIONAL) {
     // Conditional mediation requests can only be fulfilled by discoverable
     // credentials. The provided allowCredentials list is stripped and will be
     // used to filter returned passkeys

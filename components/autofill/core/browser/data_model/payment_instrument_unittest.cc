@@ -31,7 +31,7 @@ TEST(PaymentInstrumentTest, VerifyFieldValues) {
 TEST(PaymentInstrumentTest, IsSupported_ReturnsFalseForUnsupportedPaymentRail) {
   PaymentInstrument payment_instrument(
       100, u"test_nickname", GURL("http://www.example.com"),
-      DenseSet<PaymentInstrument::PaymentRail>({}));
+      DenseSet<PaymentInstrument::PaymentRail>());
 
   EXPECT_FALSE(
       payment_instrument.IsSupported(PaymentInstrument::PaymentRail::kPix));
@@ -40,7 +40,7 @@ TEST(PaymentInstrumentTest, IsSupported_ReturnsFalseForUnsupportedPaymentRail) {
 TEST(PaymentInstrumentTest, IsFidoEnrolled_ReturnsFalse) {
   PaymentInstrument payment_instrument(
       100, u"test_nickname", GURL("http://www.example.com"),
-      DenseSet<PaymentInstrument::PaymentRail>({}),
+      DenseSet<PaymentInstrument::PaymentRail>(),
       /*is_fido_enrolled=*/false);
 
   EXPECT_FALSE(payment_instrument.is_fido_enrolled());

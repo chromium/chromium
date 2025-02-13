@@ -1378,6 +1378,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                          autofill::payments::GetManageInstrumentsUrl().spec());
   html_source->AddString("addressesAndPaymentMethodsLearnMoreURL",
                          chrome::kAddressesAndPaymentMethodsLearnMoreURL);
+  html_source->AddString("cardBenefitsToggleLearnMoreUrl",
+                         chrome::kCardBenefitsLearnMoreURL);
   html_source->AddString("autofillAiLearnMoreURL",
                          chrome::kAutofillAiLearnMoreURL);
   html_source->AddString(
@@ -1432,6 +1434,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       "cardBenefitsToggleSublabel",
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_SUBLABEL_WITH_LEARN_LINK,
+          chrome::kCardBenefitsLearnMoreURL,
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
 
   ui::Accelerator undo_accelerator(ui::VKEY_Z, ui::EF_PLATFORM_ACCELERATOR);
@@ -1469,10 +1472,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "autofillAiEnabled",
       autofill_ai::IsAutofillAiSupported(profile->GetPrefs()));
-
-  html_source->AddBoolean(
-      "autofillAiBootstrappingEnabled",
-      base::FeatureList::IsEnabled(autofill_ai::kAutofillAiBootstrapping));
 
   html_source->AddString(
       "autofillAiToggleSubLabel",

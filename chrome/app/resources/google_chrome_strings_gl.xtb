@@ -82,6 +82,7 @@
 <translation id="2094648590148273905">Condicións de Chrome OS Flex</translation>
 <translation id="2094919256425865063">Queres saír de Chrome de todas formas?</translation>
 <translation id="2106831557840787829">Chrome OS Flex é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, igual que o <ph name="BEGIN_LINK_LINUX_OSS" />contorno de programación de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2108778574543343055">Desactivar execución de Chrome en segundo plano para as aplicacións</translation>
 <translation id="2120620239521071941">Esta acción eliminará <ph name="ITEMS_COUNT" /> elementos deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="2123055963409958220">Informa da <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para axudar a mellorar Chrome</translation>
@@ -143,6 +144,7 @@
 <translation id="2797864378188255696">Cando accedas aos servizos de Google, como Gmail ou YouTube, con <ph name="USER_EMAIL" />, poderás iniciar sesión automaticamente en Chrome coa mesma conta</translation>
 <translation id="2799162042226656283">O teu Chrome</translation>
 <translation id="2799223571221894425">Iniciar de novo</translation>
+<translation id="2818684386420968393">Desactivar execución de Chrome en segundo plano para as aplicacións</translation>
 <translation id="2825024317344269723">Este sitio é perigoso. Chrome quitou os permisos de notificación.</translation>
 <translation id="2841525013647267359">Idioma de orixe</translation>
 <translation id="2846251086934905009">Erro de instalación: O instalador non completou o proceso. Abortouse a instalación.</translation>
@@ -356,6 +358,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5596627076506792578">Máis opcións</translation>
 <translation id="5602351063754773347">Chrome recomenda que a quites. <ph name="BEGIN_LINK" />Máis información sobre as extensións admitidas<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome dáo todo para protexerte en liña</translation>
+<translation id="5649680279845190972">Para obter as túas extensións e moito máis en todos os teus ordenadores, inicia sesión en Chrome</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> pode ser perigoso, así que Chrome bloqueouno.</translation>
 <translation id="566568153320186256">Chrome limita as actividades en segundo plano e os efectos visuais (o desprazamento suave, os fotogramas por segundo dos vídeos…) para aforrar batería. <ph name="BEGIN_LINK" />Máis información sobre Aforro de enerxía<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Borrar os datos de Chrome da túa conta</translation>

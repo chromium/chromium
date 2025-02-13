@@ -218,6 +218,7 @@
 <translation id="114721135501989771">Chrome मा Google स्मार्ट प्राप्त गर्नुहोस्‌</translation>
 <translation id="1147322039136785890">अब <ph name="SUPERVISED_USER_NAME" /> को पालो</translation>
 <translation id="1147991416141538220">पहुँच माग्न यस डिभाइसका प्रशासकलाई सम्पर्क गर्नुहोस्।</translation>
+<translation id="1148464196693569530">युजर स्क्रिप्ट अन गर्नुहोस्</translation>
 <translation id="1148624853678088576">तपाइँ तैयार हुनुहुन्छ!</translation>
 <translation id="1148669835763563782">तपाईं परिष्कृत सुरक्षा र Chromebook का नयाँ सुविधाहरू समावेश भएको नवीनतम सफ्टवेयर अपडेट प्राप्त गर्दै हुनुहुन्छ। यो अपडेटमा तपाईंलाई आफ्नो Chromebook सहज रूपमा सुरु गर्न सघाउने सुधारिएको सेटअप सुविधा समावेश छ।</translation>
 <translation id="1149401351239820326">म्याद सकिने महिना</translation>
@@ -6763,6 +6764,7 @@
 <translation id="5794414402486823030">प्रणाली दर्शकमार्फत सधैं खोल्नुहोस्</translation>
 <translation id="5794700615121138172">Linux बाट सेयर गरिएका फोल्डरहरू</translation>
 <translation id="5794786537412027208">सबै Chrome एप्स छोड्नुहोस्</translation>
+<translation id="5795422263272161110">सँगसँगै देखाउनुहोस्</translation>
 <translation id="5796485699458186843">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="5796956053441619942">रिमोट डिभाइसको URL प्रयोग गर्न मिल्दैन</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; र &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; मा पासवर्ड म्यानेजर कसरी प्रयोग गर्न थाल्ने भन्ने कुरा सिक्नुहोस्</translation>
@@ -7290,6 +7292,7 @@
 <translation id="6170498031581934115">ADB डिबग प्रक्रिया सक्षम पार्न सकिएन। सेटिङमा गएर फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6170675927290506430">सूचनाका सेटिङमा जानुहोस्</translation>
 <translation id="6171779718418683144">हरेक पटक साइटमा जाँदा सोध्नुहोस्</translation>
+<translation id="6172020488605056255">"मलाई पढ्न मद्दत गर्नुहोस्" प्रयोग गर्न राइट क्लिक गर्नुहोस्</translation>
 <translation id="617213288191670920">कुनै पनि भाषा थपिएको छैन</translation>
 <translation id="6173623053897475761">आफ्नो PIN फेरि टाइप गर्नुहोस्</translation>
 <translation id="6174909075810107548">माउसको कुनै बटन थिच्न “5” प्रयोग गर्नुहोस्</translation>
@@ -8315,6 +8318,7 @@
 <translation id="6910190732484284349">युजरनेमको पासकी मेटाउनुहोस्ः <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">मेटाइएको</translation>
 <translation id="6910274140210351823">अँध्यारो</translation>
+<translation id="691102290537033604">यो एक्स्टेन्सनले Google ले समीक्षा नगरेको कोड रन गर्न सक्ने छ। यो एक्स्टेन्सन असुरक्षित हुन सक्छ र तपाईंलाई आफूले गरिरहेको कार्यका बारेमा थाहा छ भने मात्र तपाईंले यो एक्स्टेन्सन अन गर्नु पर्छ।</translation>
 <translation id="6911734910326569517">मेमोरीको इतिहास</translation>
 <translation id="6912007319859991306">सेलुलर SIM PIN</translation>
 <translation id="6912380255120084882">कुनै अर्को डिभाइसमा दर्ता गरी हेर्नुहोस्</translation>
@@ -9825,6 +9829,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> भाषाको आवाज <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">आफ्नो Android फोनमार्फत Wi-Fi स्वतः ट्रान्स्फर गर्नुहोस्</translation>
 <translation id="7991296728590311172">स्विचमार्फत पहुँच राख्ने सुविधासम्बन्धी सेटिङहरू</translation>
+<translation id="7992080146463834191">सामग्रीको सारांश तयार पार्नुहोस्, जटिल भाषा सरल बनाउनुहोस् वा प्रश्नहरू सोध्नुहोस्।</translation>
 <translation id="7992203134935383159">टेक्स्ट-टू-स्पिच</translation>
 <translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">प्रक्रिया प्राथमिकता</translation>
@@ -10065,6 +10070,7 @@
 <translation id="8155676038687609779">{COUNT,plural, =0{अरूले देखेको कुनै पनि पासवर्ड फेला परेन}=1{अरूले देखेको {COUNT} पासवर्ड फेला पर्‍यो}other{अरूले देखेका {COUNT} पासवर्डहरू फेला परे}}</translation>
 <translation id="8157248655669507702">eSIM प्रोफाइल इन्स्टल गर्न मोबाइल डेटा अन गर्नुहोस्</translation>
 <translation id="8157704005178149728">सुपरिवेक्षण सेटअप गरिँदै</translation>
+<translation id="8157728322324420120">तपाईंका लागि सिफारिस गरिएको</translation>
 <translation id="8157849462797352650">तपाईंको डिभाइसमा सुरक्षा, स्थिरता तथा पर्फर्मेन्ससम्बन्धी नवीनतम अपडेटहरू प्राप्त हुन्छन्</translation>
 <translation id="8158117992543756526">यो डिभाइसले <ph name="MONTH_AND_YEAR" /> देखि सफ्टवेयर र सुरक्षासम्बन्धी अपडेटहरू स्वत: प्राप्त गर्न छाड्यो। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">स्क्रिन स्प्लिट गर्ने र डेस्क परिवर्तन गर्ने जस्ता कारबाही गर्दा ती कारबाही गरिएको जनाउने भाइब्रेसन प्राप्त गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
@@ -11081,6 +11087,7 @@
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" अफ गरिएको छ</translation>
 <translation id="8874647982044395866">जैविक</translation>
 <translation id="8874790741333031443">केही बेरका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिनुहोस्। यसो गर्दा ब्राउजिङको सुरक्षाको स्तर कम हुन्छ तर साइटका सुविधाहरूले गर्नु पर्ने जसरी काम गर्न सक्छन्।</translation>
+<translation id="8875221558267407626">सामग्रीको सारांश तयार पार्नुहोस्, जटिल भाषा सरल बनाउनुहोस् वा प्रश्नहरू सोध्नुहोस्</translation>
 <translation id="8875520811099717934">Linux अपग्रेड गर्नुहोस्</translation>
 <translation id="8875736897340638404">भिजिबिलिटीसम्बन्धी आफ्नो प्राथमिकता छनौट गर्नुहोस्</translation>
 <translation id="8876307312329369159">डेमो सत्रमा यो सेटिङ परिवर्तन गर्न सकिँदैन।</translation>
@@ -11134,6 +11141,7 @@
 <translation id="8915916167043355778">सबै बन्द गर्नुहोस्</translation>
 <translation id="8916476537757519021">इनकगनिटो सबफ्रेम: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">हो, म सहमत छु</translation>
+<translation id="8917980324687233736">सँगसँगै देखाउनुहोस्</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> को <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">एप इन्स्टल गरिँदै छ...</translation>
 <translation id="891931289445130855">डेटा मेटाउनुहोस् तथा अनुमति रद्द गर्नुहोस्</translation>

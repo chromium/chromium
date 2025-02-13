@@ -30,6 +30,7 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="2118649612461486615">Renseignements sur le magasin</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Vos onglets et vos groupes fermés peuvent être rouverts à partir des sections Onglets récents et Groupes d'onglets. Votre onglet de navigation privée ne sera pas accessible.}one{Vos onglets et vos groupes fermés peuvent être rouverts à partir des sections Onglets récents et Groupes d'onglets. # onglet de navigation privée ne sera pas accessible.}other{Vos onglets et vos groupes fermés peuvent être rouverts à partir des sections Onglets récents et Groupes d'onglets. Vos # onglets de navigation privée ne seront pas accessibles.}}</translation>
 <translation id="2162620598375156287">Maintenant <ph name="CURRENT_PRICE" /> sur <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2242907120821295124">Le groupe d'onglets <ph name="TAB_GROUP_NAME" /> n'est plus access.</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Retirer un onglet du groupe}one{Retirer un onglet du groupe}other{Dégrouper des onglets}}</translation>
 <translation id="2271452184061378400">Vos groupes d'onglets sont enregistrés ici</translation>
 <translation id="2277224997687551299">Modifier le nom du groupe</translation>
@@ -87,6 +88,7 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="4783638485675352219">Partagez les titres et les URL des onglets ouverts sur cet appareil avec le système d'exploitation</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> avis)}one{(<ph name="REVIEWS_COUNT_MANY" /> avis)}other{(<ph name="REVIEWS_COUNT_MANY" /> avis)}}</translation>
 <translation id="4850886885716139402">Affichage</translation>
+<translation id="4861611890274104875">Fermer la carte.</translation>
 <translation id="4861953997778766866">Tout le monde peut apporter des modifications à vos groupes d'onglets partagés</translation>
 <translation id="4870911314065352661">Fermer tous les onglets?</translation>
 <translation id="4871719318659334896">Fermer le groupe</translation>

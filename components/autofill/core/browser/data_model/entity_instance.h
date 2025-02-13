@@ -67,7 +67,7 @@ class AttributeInstance final {
   static bool DisambiguationOrder(const AttributeInstance& lhs,
                                   const AttributeInstance& rhs);
 
-  AttributeInstance(AttributeType type, std::string value, Context context);
+  AttributeInstance(AttributeType type, std::u16string value, Context context);
 
   AttributeInstance(const AttributeInstance&);
   AttributeInstance& operator=(const AttributeInstance&);
@@ -78,7 +78,7 @@ class AttributeInstance final {
   const AttributeType& type() const { return type_; }
 
   // Typically a user-entered string, e.g., a date.
-  const std::string& value() const { return value_; }
+  const std::u16string& value() const { return value_; }
 
   // Metadata from the saving moment of the value.
   const Context& context() const { return context_; }
@@ -88,7 +88,7 @@ class AttributeInstance final {
 
  private:
   AttributeType type_;
-  std::string value_;
+  std::u16string value_;
   Context context_;
 };
 

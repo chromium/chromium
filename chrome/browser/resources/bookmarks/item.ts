@@ -61,7 +61,7 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
 
   itemId: string = '';
   ironListTabIndex?: number;
-  protected item_: BookmarkNode = {id: '', title: ''};
+  protected item_?: BookmarkNode;
   private isSelectedItem_: boolean = false;
   private isMultiSelect_: boolean = false;
   private isFolder_: boolean = false;
@@ -99,8 +99,8 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
     if (changedPrivateProperties.has('item_')) {
-      this.isFolder_ = !this.item_.url;
-      this.ariaLabel = this.item_.title || this.item_.url ||
+      this.isFolder_ = !!this.item_ && !this.item_.url;
+      this.ariaLabel = this.item_?.title || this.item_?.url ||
           loadTimeData.getString('folderLabel');
     }
   }
@@ -111,12 +111,12 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
     if (changedPrivateProperties.has('item_')) {
-      this.updateFavicon_(this.item_.url);
+      this.updateFavicon_(this.item_?.url);
     }
   }
 
   override onStateChanged(state: BookmarksPageState) {
-    this.item_ = state.nodes[this.itemId]!;
+    this.item_ = state.nodes[this.itemId];
     this.isSelectedItem_ = state.selection.items.has(this.itemId);
     this.isMultiSelect_ = state.selection.items.size > 1;
   }
@@ -194,7 +194,11 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
   }
 
   protected getItemUrl_(): string {
-    return this.item_.url || '';
+    return this.item_?.url || '';
+  }
+
+  protected getItemTitle_(): string {
+    return this.item_?.title || '';
   }
 
   private onClick_(e: MouseEvent) {

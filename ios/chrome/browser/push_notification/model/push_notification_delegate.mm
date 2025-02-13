@@ -84,52 +84,59 @@ enum class PushNotificationLifecycleEvent {
   kMaxValue = kNotificationInteraction
 };
 
+// Extract the notification information from `attr`, and store them into
+// `mapping`. Will also copy the notification permission from the profile's
+// pref into the `attr` if the profile is loaded.
+void ExtractNotificationInformation(ProfileManagerIOS* manager,
+                                    NSMutableDictionary* mapping,
+                                    ProfileAttributesIOS& attr) {
+  const GaiaId& gaia_id = attr.GetGaiaId();
+  if (gaia_id.empty()) {
+    return;
+  }
+
+  // Get the permissions from `attr` but if they are missing, check if they
+  // can be found in the profile (if it is loaded).
+  const base::Value::Dict* permissions = attr.GetNotificationPermissions();
+  if (!permissions) {
+    ProfileIOS* profile = manager->GetProfileWithName(attr.GetProfileName());
+    if (profile) {
+      const base::Value::Dict& profile_permissions =
+          profile->GetPrefs()->GetDict(
+              prefs::kFeaturePushNotificationPermissions);
+      attr.SetNotificationPermissions(profile_permissions.Clone());
+      permissions = attr.GetNotificationPermissions();
+    }
+  }
+
+  // There is no permissions for the profile in attr (or no permission could
+  // be copied from the profile's pref, possibly because the profile is not
+  // yet loaded).
+  if (!permissions) {
+    return;
+  }
+
+  NSMutableDictionary* permissions_map = [[NSMutableDictionary alloc] init];
+  for (const auto pair : *permissions) {
+    permissions_map[base::SysUTF8ToNSString(pair.first)] =
+        [NSNumber numberWithBool:pair.second.GetBool()];
+  }
+
+  mapping[gaia_id.ToNSString()] = permissions_map;
+}
+
 // This function creates a dictionary that maps signed-in user's GAIA IDs to a
 // map of each user's preferences for each push notification enabled feature.
 GaiaIdToPushNotificationPreferenceMap*
 GaiaIdToPushNotificationPreferenceMapFromCache() {
   ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
   ProfileAttributesStorageIOS* storage = manager->GetProfileAttributesStorage();
-  PushNotificationService* service =
-      GetApplicationContext()->GetPushNotificationService();
-  PushNotificationAccountContextManager* account_context_manager =
-      service->GetAccountContextManager();
+
   NSMutableDictionary* account_preference_map =
       [[NSMutableDictionary alloc] init];
 
-  const size_t number_of_profiles = storage->GetNumberOfProfiles();
-  for (size_t i = 0; i < number_of_profiles; i++) {
-    ProfileAttributesIOS attr = storage->GetAttributesForProfileAtIndex(i);
-    if (attr.GetGaiaId().empty()) {
-      continue;
-    }
-
-    const base::Value::Dict* permissions = attr.GetNotificationPermissions();
-    if (!permissions) {
-      std::string profile_name = attr.GetProfileName();
-      ProfileIOS* profile = manager->GetProfileWithName(profile_name);
-      if (profile) {
-        [account_context_manager setAttributesForProfile:profile_name
-                                               fromPrefs:profile->GetPrefs()];
-        permissions = attr.GetNotificationPermissions();
-      }
-    }
-
-    if (!permissions) {
-      // Either the profile is not loaded, or there was not
-      // permissions in the profile prefs.
-      continue;
-    }
-
-    NSMutableDictionary<NSString*, NSNumber*>* preference_map =
-        [[NSMutableDictionary alloc] init];
-    for (const auto pair : *permissions) {
-      preference_map[base::SysUTF8ToNSString(pair.first)] =
-          [NSNumber numberWithBool:pair.second.GetBool()];
-    }
-
-    account_preference_map[attr.GetGaiaId().ToNSString()] = preference_map;
-  }
+  storage->IterateOverProfileAttributes(base::BindRepeating(
+      &ExtractNotificationInformation, manager, account_preference_map));
 
   return account_preference_map;
 }

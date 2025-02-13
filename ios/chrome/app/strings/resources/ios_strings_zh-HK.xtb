@@ -285,6 +285,7 @@
 <translation id="2164946989711475905">登入…</translation>
 <translation id="2175927920773552910">二維條碼</translation>
 <translation id="2186206192313702726">Google 智能鏡頭</translation>
+<translation id="219283042927675668">群組中的分頁</translation>
 <translation id="2194856509914051091">考慮因素</translation>
 <translation id="2196428379625389579">在網絡上搜尋</translation>
 <translation id="2199562093267256223">此操作會將群組從所有已登入 <ph name="USER_EMAIL" /> 的裝置刪除</translation>
@@ -914,6 +915,7 @@
 <translation id="5016420433031926653">傳送至 <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">過去 15 分鐘</translation>
 <translation id="5020732097997376541">輕按「智能鏡頭」圖示</translation>
+<translation id="5021500396464456616">請與傳送此連結的使用者聯絡</translation>
 <translation id="5024511550058813796">您可在所有已同步的裝置上查看記錄，繼續執行先前的任何工作</translation>
 <translation id="5038113048373546701">接收你感興趣的新聞、體育賽事等通知</translation>
 <translation id="5039804452771397117">允許</translation>
@@ -978,7 +980,6 @@
 <translation id="5295239312320826323">要移除帳戶 <ph name="USER_EMAIL" /> 嗎？</translation>
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5311061401280561833">已允許存取攝錄機和麥克風</translation>
-<translation id="531209241254508943">分頁群組</translation>
 <translation id="5316356981864168850">第 <ph name="INDEX" /> 項，總共有 <ph name="NUM_SUGGESTIONS" /> 項</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5318298563956633672">您已追蹤此產品。</translation>
@@ -1941,6 +1942,7 @@
 <translation id="966593914872420832">語音搜尋</translation>
 <translation id="968653181266955408">取得內容通知</translation>
 <translation id="973493300226275298">追蹤產品在網上商店中的價格。如果產品降價，系統將通知您。</translation>
+<translation id="973788791897303708">此分頁群組已滿</translation>
 <translation id="976392601789283511">重新開啟最近關閉的分頁</translation>
 <translation id="981498610235328462">您的機構只允許您透過特定帳戶登入。系統已隱藏不適用的帳戶。</translation>
 <translation id="984275831282074731">付款方法</translation>

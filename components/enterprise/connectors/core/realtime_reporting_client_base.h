@@ -51,8 +51,9 @@ class RealtimeReportingClientBase : public KeyedService,
   // Report an event to the reporting server. This method will not mutate the
   // event, so it is the caller's responsibility to ensure that all relevant
   // fields have been set on the event.
-  void ReportEvent(::chrome::cros::reporting::proto::Event event,
-                   const ReportingSettings& settings);
+  virtual void ReportEvent(::chrome::cros::reporting::proto::Event event,
+                           const ReportingSettings& settings);
+
  protected:
   // Sub-method called by InitRealtimeReportingClient() to make appropriate
   // verifications and initialize the profile reporting client. Returns a policy

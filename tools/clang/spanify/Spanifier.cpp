@@ -34,6 +34,19 @@ std::string GetArraySize(const clang::ArrayTypeLoc& array_type_loc,
                          const clang::SourceManager& source_manager,
                          const clang::ASTContext& ast_context);
 
+// For debugging/assertions. Dump the match result to stderr.
+void DumpMatchResult(const MatchFinder::MatchResult& result) {
+  llvm::errs() << "Matched nodes:\n";
+  for (const auto& node : result.Nodes.getMap()) {
+    llvm::errs() << " - " << node.first << ":\n";
+  }
+
+  for (const auto& node : result.Nodes.getMap()) {
+    llvm::errs() << "\nDump for node " << node.first << ":\n";
+    node.second.dump(llvm::errs(), *result.Context);
+  }
+}
+
 // Special keywords:
 constexpr char kEmptyKeyword[] = "<empty>";
 
@@ -269,10 +282,18 @@ std::string GetIncludeDirective(const clang::SourceRange replacement_range,
       include_path);
 }
 
-// Clang doesn't seem to be providing correct begin/end locations for
-// clang::MemberExpr and clang::DeclRefExpr. This function handles these cases,
-// otherwise returns expression's begin_loc and end_loc offset by 1.
-clang::SourceRange getExprRange(const clang::Expr* expr) {
+// The semantics of `getBeginLoc()` and `getEndLoc()` are somewhat
+// surprising (e.g. https://stackoverflow.com/a/59718238). This function
+// tries to do the least surprising thing, specializing for
+//
+// *  `clang::MemberExpr`
+// *  `clang::DeclRefExpr`
+// *  `clang::CallExpr`
+//
+// and defaults to returning the range of token `expr`.
+clang::SourceRange getExprRange(const clang::Expr* expr,
+                                const clang::SourceManager& source_manager,
+                                const clang::LangOptions& lang_options) {
   if (const auto* member_expr = clang::dyn_cast<clang::MemberExpr>(expr)) {
     clang::SourceLocation begin_loc = member_expr->getMemberLoc();
     size_t member_name_length = member_expr->getMemberDecl()->getName().size();
@@ -287,7 +308,16 @@ clang::SourceRange getExprRange(const clang::Expr* expr) {
             decl_ref->getEndLoc().getLocWithOffset(name.size())};
   }
 
-  return {expr->getBeginLoc(), expr->getEndLoc().getLocWithOffset(1)};
+  if (const auto* call_expr = clang::dyn_cast<clang::CallExpr>(expr)) {
+    return {call_expr->getBeginLoc(),
+            call_expr->getRParenLoc().getLocWithOffset(1)};
+  }
+
+  return {
+      expr->getBeginLoc(),
+      clang::Lexer::getLocForEndOfToken(expr->getExprLoc(), 0u, source_manager,
+                                        lang_options),
+  };
 }
 
 std::string GetTypeAsString(const clang::QualType& qual_type,
@@ -309,17 +339,20 @@ std::string GetTypeAsString(const clang::QualType& qual_type,
 // follows: type* ptr = reinterpret_cast<type*>(buf.data());
 static clang::SourceRange getSourceRange(
     const MatchFinder::MatchResult& result) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  const clang::LangOptions& lang_opts = result.Context->getLangOpts();
   if (auto* op =
           result.Nodes.getNodeAs<clang::UnaryOperator>("unaryOperator")) {
     if (op->isPostfix()) {
       return {op->getBeginLoc(), op->getEndLoc().getLocWithOffset(2)};
     }
     auto* expr = result.Nodes.getNodeAs<clang::Expr>("rhs_expr");
-    return {op->getBeginLoc(), getExprRange(expr).getEnd()};
+    return {op->getBeginLoc(),
+            getExprRange(expr, source_manager, lang_opts).getEnd()};
   }
   if (auto* op = result.Nodes.getNodeAs<clang::Expr>("binaryOperator")) {
     auto* sub_expr = result.Nodes.getNodeAs<clang::Expr>("bin_op_rhs");
-    auto end_loc = getExprRange(sub_expr).getEnd();
+    auto end_loc = getExprRange(sub_expr, source_manager, lang_opts).getEnd();
     return {op->getBeginLoc(), end_loc};
   }
   if (auto* op = result.Nodes.getNodeAs<clang::CXXOperatorCallExpr>(
@@ -327,13 +360,33 @@ static clang::SourceRange getSourceRange(
     auto* callee = op->getDirectCallee();
     if (callee->getNumParams() == 0) {  // postfix op++ on raw_ptr;
       auto* expr = result.Nodes.getNodeAs<clang::Expr>("rhs_expr");
-      return clang::SourceRange(getExprRange(expr).getEnd());
+      return clang::SourceRange(
+          getExprRange(expr, source_manager, lang_opts).getEnd());
     }
     return clang::SourceRange(op->getEndLoc().getLocWithOffset(2));
   }
 
-  auto* expr = result.Nodes.getNodeAs<clang::Expr>("rhs_expr");
-  return clang::SourceRange(getExprRange(expr).getEnd());
+  if (auto* expr = result.Nodes.getNodeAs<clang::Expr>("rhs_expr")) {
+    return clang::SourceRange(
+        getExprRange(expr, source_manager, lang_opts).getEnd());
+  }
+
+  if (auto* size_expr = result.Nodes.getNodeAs<clang::Expr>("size_node")) {
+    return clang::SourceRange(
+        getExprRange(size_expr, source_manager, lang_opts).getEnd());
+  }
+
+  // Not supposed to get here.
+  llvm::errs() << "\n"
+                  "Error: getSourceRange() encountered an unexpected match.\n"
+                  "Expected one of : \n"
+                  " - unaryOperator\n"
+                  " - binaryOperator\n"
+                  " - raw_ptr_operator++\n"
+                  " - rhs_expr\n"
+                  "\n";
+  DumpMatchResult(result);
+  assert(false && "Unexpected match in getSourceRange()");
 }
 
 static void maybeUpdateSourceRangeIfInMacro(
@@ -1269,7 +1322,16 @@ Node GetLHS(const MatchFinder::MatchResult& result) {
   }
 
   // Not supposed to get here.
-  assert(false);
+  llvm::errs() << "\n"
+                  "Error: getLHS() encountered an unexpected match.\n"
+                  "Expected one of : \n"
+                  "  - lhs_type_loc\n"
+                  "  - lhs_raw_ptr_type_loc\n"
+                  "  - lhs_begin\n"
+                  "  - deref_expr\n"
+                  "\n";
+  DumpMatchResult(result);
+  assert(false && "Unexpected match in getLHS()");
 }
 
 // Extracts the rhs node from the match result.
@@ -1308,7 +1370,17 @@ Node GetRHS(const MatchFinder::MatchResult& result) {
   }
 
   // Not supposed to get here.
-  assert(false);
+  llvm::errs() << "\n"
+                  "Error: getRHS() encountered an unexpected match.\n"
+                  "Expected one of : \n"
+                  "  - rhs_type_loc\n"
+                  "  - rhs_raw_ptr_type_loc\n"
+                  "  - rhs_begin\n"
+                  "  - member_data_call\n"
+                  "  - size_node\n"
+                  "\n";
+  DumpMatchResult(result);
+  assert(false && "Unexpected match in getRHS()");
 }
 
 // Called when it exist a dependency in between `lhs` and `rhs` nodes. To apply
@@ -1397,7 +1469,15 @@ class FunctionSignatureNodes : public MatchFinder::MatchCallback {
     }
 
     // Shouldn't get here.
-    assert(false);
+    llvm::errs() << "\n"
+                    "Error: getNodeFromMatchResult() encountered an unexpected "
+                    "match.\n"
+                    "Expected one of : \n"
+                    "  - rhs_type_loc\n"
+                    "  - rhs_raw_ptr_type_loc\n"
+                    "  - rhs_begin\n"
+                    "\n";
+    assert(false && "Unexpected match in getNodeFromMatchResult()");
   }
 
   void run(const MatchFinder::MatchResult& result) override {

@@ -28,6 +28,13 @@ namespace url {
 
 namespace {
 
+// Struct to hold test cases for StringToUint64WithBase function.
+struct StringToUint64TestCase {
+  std::string_view input;
+  uint8_t base;
+  uint64_t expected;
+};
+
 struct ComponentCase {
   const char* input;
   const char* expected;
@@ -3243,6 +3250,54 @@ TEST_F(URLCanonTest, NonSpecialHostIPv6Address) {
         output, host_info);
     output.Complete();
     IPAddressCaseMatches(out_str, host_info, ip_address_case);
+  }
+}
+
+// Compile-time checks for StringToUint64WithBase function
+static_assert(StringToUint64WithBase("123", 10) == 123u);
+static_assert(StringToUint64WithBase("1A", 16) == 26u);
+
+// Test cases for StringToUint64WithBase function with various bases.
+TEST_F(URLCanonTest, StringToUint64WithBase) {
+  StringToUint64TestCase test_cases[] = {
+      {"1", 10, 1u},
+      {"-1", 10, 0u},
+      {"a", 10, 0u},
+      {"a", 16, 10u},
+      {"123", 10, 123u},
+      {"0", 10, 0u},
+      {"18446744073709551615", 10, 18446744073709551615ULL},  // Max uint64_t
+      {"1A", 16, 26u},
+      {"FF", 16, 255u},
+      {"FFFFFFFFFFFFFFFF", 16, 18446744073709551615ULL},  // Max uint64_t
+      {"10", 8, 8u},
+      {"77", 8, 63u},
+      {"1010", 2, 10u},
+      {"1111", 2, 15u},
+      {"1000000000000000000000000000000000000000000000000000000000000000", 2,
+       9223372036854775808ULL},  // 2^63
+      {"123Z", 10, 123u},        // Stops at 'Z'
+      {"1G", 16, 1u},            // Stops at 'G'
+      {"08", 8, 0u},             // Stops at '8'
+      {"", 10, 0u},              // Empty String
+      {" 1", 10, 0u},            // Doesn't ignore leading spaces.
+      {"+2", 10, 0u},            // Doesn't accept leading '+'.
+      {"0644", 10, 644u},        // Doesn't automatically switch to octal.
+      {"0xFF", 10, 0u},          // Doesn't automatically switch to hex.
+      {"0xFF", 16, 0u},          // Doesn't accept 0x prefix.
+      {"1e10", 10, 1u},          // Doesn't parse floating point.
+      {"eF", 16, 239u},          // Supports mixed case.
+      {"1z", 36, 71u},           // Supports base 36.
+      {"1 001", 10, 1u},         // Stops at spaces.
+      {"1,001", 10, 1u},         // Stops at commas.
+      {"1_001", 10, 1u},         // Stops at underlines.
+      {"1'001", 10, 1u},         // Stops at quote marks.
+      {"1.001", 10, 1u},         // Stops at periods.
+      {"1000000000000000F", 16, 15u}};  // Overflow is discarded.
+
+  for (const auto& test_case : test_cases) {
+    EXPECT_EQ(StringToUint64WithBase(test_case.input, test_case.base),
+              test_case.expected);
   }
 }
 

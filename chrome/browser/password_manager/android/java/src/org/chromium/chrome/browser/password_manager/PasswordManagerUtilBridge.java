@@ -19,6 +19,18 @@ import org.chromium.components.sync.SyncService;
 public class PasswordManagerUtilBridge {
 
     /**
+     * Checks whether all the conditions to communicate with the password storage in GMS Core are
+     * met. The password manager functionality (saving/filling/management) is only available if
+     * those conditions are met.
+     *
+     * @return whether password manager functionality is available.
+     */
+    public static boolean isPasswordManagerAvailable(PrefService prefService) {
+        return PasswordManagerUtilBridgeJni.get()
+                .isPasswordManagerAvailable(prefService, isInternalBackendPresent());
+    }
+
+    /**
      * There are 2 cases when this check returns true: 1) if the user is using UPM and everything
      * works as expected; 2) if the user is eligible for using UPM, but the GMSCore version is too
      * old and doesn't support UPM.
@@ -85,6 +97,9 @@ public class PasswordManagerUtilBridge {
 
     @NativeMethods
     public interface Natives {
+        boolean isPasswordManagerAvailable(
+                @JniType("PrefService*") PrefService prefService, boolean isInternalBackendPresent);
+
         boolean shouldUseUpmWiring(
                 @JniType("syncer::SyncService*") SyncService syncService,
                 @JniType("PrefService*") PrefService prefService);

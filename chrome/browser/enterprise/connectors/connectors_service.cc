@@ -12,7 +12,6 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
@@ -56,23 +55,15 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/components/mgs/managed_guest_session_utils.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/common/constants.h"
 #else
 #include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
-#include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -96,15 +87,10 @@ void PopulateBrowserMetadata(bool include_device_info,
 
 std::string GetClientId(Profile* profile) {
   std::string client_id;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   auto* manager = profile->GetUserCloudPolicyManagerAsh();
   if (manager && manager->core() && manager->core()->client())
     client_id = manager->core()->client()->client_id();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  Profile* main_profile = GetMainProfileLacros();
-  if (main_profile) {
-    client_id = reporting::GetUserClientId(main_profile).value_or("");
-  }
 #else
   client_id = policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
 #endif
@@ -127,7 +113,7 @@ bool IsURLExemptFromAnalysis(const GURL& url) {
   if (url.SchemeIs(content::kChromeUIScheme))
     return true;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (url.SchemeIs(extensions::kExtensionScheme) &&
       extension_misc::IsSystemUIApp(url.host_piece())) {
     return true;
@@ -139,20 +125,11 @@ bool IsURLExemptFromAnalysis(const GURL& url) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 std::optional<std::string> GetDeviceDMToken() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const chromeos::BrowserParamsProxy* init_params =
-      chromeos::BrowserParamsProxy::Get();
-  if (init_params->DeviceProperties()) {
-    return init_params->DeviceProperties()->device_dm_token;
-  }
-  return std::nullopt;
-#else
   const enterprise_management::PolicyData* policy_data =
       ash::DeviceSettingsService::Get()->policy_data();
   if (policy_data && policy_data->has_request_token())
     return policy_data->request_token();
   return std::nullopt;
-#endif
 }
 #endif
 
@@ -251,7 +228,7 @@ std::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
       connectors_manager_->GetAnalysisSettings(url, connector), connector);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url,
@@ -265,7 +242,7 @@ std::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
                                                destination_url, connector),
       connector);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::optional<AnalysisSettings> ConnectorsService::GetCommonAnalysisSettings(
     std::optional<AnalysisSettings> settings,
@@ -394,16 +371,9 @@ std::string ConnectorsService::GetManagementDomain() {
   if (!scope.has_value())
     return std::string();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return GetAccountManagerIdentity(Profile::FromBrowserContext(context_))
       .value_or(std::string());
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // In LaCros it's always managed by main profile policy.
-  const enterprise_management::PolicyData* policy =
-      policy::PolicyLoaderLacros::main_user_policy_data();
-  if (policy && policy->has_managed_by())
-    return policy->managed_by();
-  return std::string();
 #else
   if (scope.value() == policy::PolicyScope::POLICY_SCOPE_USER) {
     return GetAccountManagerIdentity(Profile::FromBrowserContext(context_))
@@ -457,7 +427,7 @@ void ConnectorsService::ObserveTelemetryReporting(
 
 std::optional<ConnectorsService::DmToken> ConnectorsService::GetDmToken(
     const char* scope_pref) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On CrOS the settings from primary profile applies to all profiles.
   auto dm_token = GetBrowserDmToken();
   return dm_token ? std::make_optional<DmToken>(*dm_token,
@@ -465,12 +435,6 @@ std::optional<ConnectorsService::DmToken> ConnectorsService::GetDmToken(
                   : std::nullopt;
 #else
   auto browser_dm_token = GetBrowserDmToken();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  Profile* profile = Profile::FromBrowserContext(context_);
-  if (profile->IsMainProfile() && browser_dm_token) {
-    return DmToken(*browser_dm_token, policy::POLICY_SCOPE_MACHINE);
-  }
-#endif
   policy::PolicyScope scope = GetPolicyScope(scope_pref);
   std::string token_string = scope == policy::POLICY_SCOPE_USER
                                  ? GetProfileDmToken().value_or("")
@@ -636,7 +600,7 @@ content::BrowserContext* ConnectorsServiceFactory::GetBrowserContextToUse(
   // provided |context| is still used.
   if (context && !context->IsOffTheRecord() &&
       !Profile::FromBrowserContext(context)->AsTestingProfile()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     auto* user_manager = user_manager::UserManager::Get();
     if (auto* primary_user = user_manager->GetPrimaryUser()) {
       if (auto* primary_browser_context =

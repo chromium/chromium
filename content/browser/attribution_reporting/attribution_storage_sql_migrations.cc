@@ -634,6 +634,26 @@ bool To67(sql::Database& db) {
   return true;
 }
 
+bool To68(sql::Database& db) {
+  static constexpr char kOsRegistrationsTableSql[] =
+      "CREATE TABLE os_registrations("
+      "registration_origin TEXT NOT NULL,"
+      "time INTEGER NOT NULL,"
+      "PRIMARY KEY(registration_origin,time))WITHOUT ROWID";
+  if (!db.Execute(kOsRegistrationsTableSql)) {
+    return false;
+  }
+
+  static constexpr char kOsRegistrationsTimeIndexSql[] =
+      "CREATE INDEX os_registrations_time_idx "
+      "ON os_registrations(time)";
+  if (!db.Execute(kOsRegistrationsTimeIndexSql)) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
@@ -659,14 +679,15 @@ bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
             MaybeMigrate(db, meta_table, 63, &To64) &&
             MaybeMigrate(db, meta_table, 64, &To65) &&
             MaybeMigrate(db, meta_table, 65, &To66) &&
-            MaybeMigrate(db, meta_table, 66, &To67);
+            MaybeMigrate(db, meta_table, 66, &To67) &&
+            MaybeMigrate(db, meta_table, 67, &To68);
   if (!ok) {
     return false;
   }
 
   DeleteCorruptedReports(storage);
 
-  static_assert(AttributionStorageSql::kCurrentVersionNumber == 67,
+  static_assert(AttributionStorageSql::kCurrentVersionNumber == 68,
                 "Add migration(s) above.");
 
   if (base::ThreadTicks::IsSupported()) {

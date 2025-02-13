@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/data_model/usage_history_information.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
+#include "components/autofill/core/browser/field_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -74,6 +75,31 @@ class AutofillProfile : public FormGroup {
            ADDRESS_HOME_COUNTRY, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER,
            COMPANY_NAME});
 
+  // All FieldTypes stored for an AutofillProfile in the local_addresses or
+  // contact_info table (depending on the profile source) in AutofillTable.
+  // When introducing a new field type that needs to be stored in the database,
+  // it suffices to add it here, and when removing a field type from the types
+  // to be stored, removing it from this list suffices (no additional clean-up
+  // in AutofillTable necessary). This is not reusing
+  // `AutofillProfile::GetSupportedTypes()` for three reasons:
+  // - The supported types are a function of the country. The types stored in
+  //   the table are country-independent and contain all the types relevant to
+  //   any country.
+  // - Due to the table design, the stored types are already ambiguous, so we
+  //   prefer the explicitness here.
+  // - Some supported types (like PHONE_HOME_CITY_CODE) are not stored.
+  // - Some non-supported types are stored (usually types that don't have
+  //   filling support yet).
+  static constexpr FieldTypeSet kDatabaseStoredTypes = [] {
+    FieldTypeSet stored_types;
+    stored_types.insert_all(NameInfo::kDatabaseStoredTypes);
+    stored_types.insert_all(EmailInfo::kDatabaseStoredTypes);
+    stored_types.insert_all(CompanyInfo::kDatabaseStoredTypes);
+    stored_types.insert_all(PhoneNumber::kDatabaseStoredTypes);
+    stored_types.insert_all(Address::kDatabaseStoredTypes);
+    return stored_types;
+  }();
+
   // The values used to represent Autofill in the `initial_creator_id()` and
   // `last_modifier_id()`.
   static constexpr int kInitialCreatorOrModifierChrome = 70073;
@@ -115,8 +141,6 @@ class AutofillProfile : public FormGroup {
   void GetMatchingTypes(const std::u16string& text,
                         const std::string& app_locale,
                         FieldTypeSet* matching_types) const override;
-  std::u16string GetInfo(FieldType type,
-                         const std::string& app_locale) const override;
   std::u16string GetInfo(const AutofillType& type,
                          const std::string& app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
@@ -133,7 +157,7 @@ class AutofillProfile : public FormGroup {
                                      const std::string& app_locale,
                                      VerificationStatus status);
   VerificationStatus GetVerificationStatus(const FieldType type) const override;
-  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
+  FieldTypeSet GetSupportedTypes() const override;
 
   // Calculates the ranking score used for ranking the profile suggestion. If
   // `use_frecency` is true we use the new ranking algorithm.

@@ -16,6 +16,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -84,6 +85,12 @@ NSString* GetSavePasswordsItemTitle() {
   return l10n_util::GetNSString(IOSPasskeysM2Enabled()
                                     ? IDS_IOS_OFFER_TO_SAVE_PASSWORDS_PASSKEYS
                                     : IDS_IOS_OFFER_TO_SAVE_PASSWORDS);
+}
+
+// Whether automatic passkey upgrades feature is enabled.
+BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
+  return base::FeatureList::IsEnabled(
+      kCredentialProviderAutomaticPasskeyUpgrade);
 }
 
 }  // namespace
@@ -278,7 +285,7 @@ NSString* GetSavePasswordsItemTitle() {
   [model addItem:[self passwordsInOtherAppsItem]
       toSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
 
-  if (IOSPasskeysM2Enabled()) {
+  if (AutomaticPasskeyUpgradeFeatureEnabled()) {
     // TODO(crbug.com/358343061): Add item for the policy enforced toggle.
     [model addSectionWithIdentifier:
                SectionIdentifierAutomaticPasskeyUpgradesSwitch];
@@ -1061,8 +1068,9 @@ NSString* GetSavePasswordsItemTitle() {
 // Returns section index for the change GPM Pin button.
 - (NSInteger)computeGPMPinSectionIndex {
   NSInteger previousSection =
-      IOSPasskeysM2Enabled() ? SectionIdentifierAutomaticPasskeyUpgradesSwitch
-                             : SectionIdentifierPasswordsInOtherApps;
+      AutomaticPasskeyUpgradeFeatureEnabled()
+          ? SectionIdentifierAutomaticPasskeyUpgradesSwitch
+          : SectionIdentifierPasswordsInOtherApps;
   return [self.tableViewModel sectionForSectionIdentifier:previousSection] + 1;
 }
 
@@ -1077,7 +1085,7 @@ NSString* GetSavePasswordsItemTitle() {
   if ([tableViewModel hasSectionForSectionIdentifier:
                           SectionIdentifierGooglePasswordManagerPin]) {
     previousSection = SectionIdentifierGooglePasswordManagerPin;
-  } else if (IOSPasskeysM2Enabled()) {
+  } else if (AutomaticPasskeyUpgradeFeatureEnabled()) {
     previousSection = SectionIdentifierAutomaticPasskeyUpgradesSwitch;
   }
 

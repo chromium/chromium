@@ -358,10 +358,7 @@ std::unique_ptr<glic::GlicButton> TabStripActionContainer::CreateGlicButton() {
           l10n_util::GetStringUTF16(IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP));
 
   glic_button->SetProperty(views::kCrossAxisAlignmentKey,
-                           views::LayoutAlignment::kCenter);
-  glic_button->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
+                           views::LayoutAlignment::kEnd);
 
   return glic_button;
 }

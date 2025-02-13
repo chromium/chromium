@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/enum_set.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
@@ -22,6 +23,7 @@
 #include "content/browser/attribution_reporting/aggregatable_debug_rate_limit_table.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
+#include "content/browser/attribution_reporting/os_registrations_table.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
@@ -51,6 +53,10 @@ namespace sql {
 class Statement;
 }  // namespace sql
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
 class AggregatableDebugReport;
@@ -69,11 +75,11 @@ enum class RateLimitResult : int;
 class CONTENT_EXPORT AttributionStorageSql {
  public:
   // Version number of the database.
-  static constexpr int kCurrentVersionNumber = 67;
+  static constexpr int kCurrentVersionNumber = 68;
 
   // Earliest version which can use a `kCurrentVersionNumber` database
   // without failing.
-  static constexpr int kCompatibleVersionNumber = 67;
+  static constexpr int kCompatibleVersionNumber = 68;
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
@@ -228,6 +234,7 @@ class CONTENT_EXPORT AttributionStorageSql {
   [[nodiscard]] bool AdjustForAggregatableDebugReport(
       const AggregatableDebugReport&,
       std::optional<StoredSource::Id>);
+  void StoreOsRegistrations(const base::flat_set<url::Origin>&);
   void SetDelegate(AttributionResolverDelegate*);
 
   // Rate-limiting
@@ -537,6 +544,9 @@ class CONTENT_EXPORT AttributionStorageSql {
   // `aggregatable_rate_limit_table_` references `delegate_` So it must be
   // declared after it.
   AggregatableDebugRateLimitTable aggregatable_debug_rate_limit_table_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  OsRegistrationsTable os_registrations_table_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

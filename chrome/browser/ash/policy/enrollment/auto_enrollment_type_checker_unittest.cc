@@ -631,32 +631,26 @@ class AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP
 };
 
 TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, Default) {
-  if (!fake_statistics_provider_.IsRunningOnVm()) {
-    EXPECT_EQ(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled(),
-              IsOfficialGoogleOS());
-  } else {
-    // No state determination when running ChromeOS in Chrome (unless forced by
-    // flag).
-    EXPECT_FALSE(
-        AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled());
-  }
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+  EXPECT_EQ(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled(),
+            IsOfficialGoogleOS());
+#else
+  // No state determination when running ChromeOS in Chrome (unless forced by
+  // flag).
+  EXPECT_FALSE(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled());
+#endif
 }
 
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
 TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, OfficialBuild) {
   command_line_.GetProcessCommandLine()->AppendSwitchASCII(
       ash::switches::kEnterpriseEnableUnifiedStateDetermination,
       AutoEnrollmentTypeChecker::kUnifiedStateDeterminationOfficialBuild);
 
-  if (!fake_statistics_provider_.IsRunningOnVm()) {
-    EXPECT_EQ(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled(),
-              IsOfficialGoogleOS());
-  } else {
-    // No state determination when running ChromeOS in Chrome (unless forced by
-    // flag).
-    EXPECT_FALSE(
-        AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled());
-  }
+  EXPECT_EQ(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled(),
+            IsOfficialGoogleOS());
 }
+#endif
 
 TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, Never) {
   command_line_.GetProcessCommandLine()->AppendSwitchASCII(

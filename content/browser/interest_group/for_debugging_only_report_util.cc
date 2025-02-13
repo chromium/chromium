@@ -30,10 +30,9 @@ base::Time CeilToNearestNextHour(base::TimeDelta delta) {
       delta.CeilToMultiple(base::Hours(1)));
 }
 
-bool IsInDebugReportLockout(
-    const std::optional<base::Time>& last_report_sent_time,
-    const base::Time now) {
-  if (!last_report_sent_time.has_value()) {
+bool IsInDebugReportLockout(const std::optional<DebugReportLockout>& lockout,
+                            const base::Time now) {
+  if (!lockout.has_value()) {
     return false;
   }
   base::Time filtering_starting_from = base::Time::FromDeltaSinceWindowsEpoch(
@@ -41,10 +40,8 @@ bool IsInDebugReportLockout(
           .CeilToMultiple(base::Hours(1)));
 
   bool is_lockout_before_filtering_starting =
-      *last_report_sent_time < filtering_starting_from;
-  bool is_in_lockout = *last_report_sent_time +
-                           blink::features::kFledgeDebugReportLockout.Get() >=
-                       now;
+      lockout->starting_time < filtering_starting_from;
+  bool is_in_lockout = lockout->starting_time + lockout->duration >= now;
   return !is_lockout_before_filtering_starting && is_in_lockout;
 }
 

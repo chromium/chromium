@@ -325,6 +325,9 @@ protocol::String BuildViolationType(
     case blink::mojom::blink::ContentSecurityPolicyViolationType::kURLViolation:
       return protocol::Audits::ContentSecurityPolicyViolationTypeEnum::
           KURLViolation;
+    case blink::mojom::blink::ContentSecurityPolicyViolationType::kSRIViolation:
+      return protocol::Audits::ContentSecurityPolicyViolationTypeEnum::
+          KSRIViolation;
     case blink::mojom::blink::ContentSecurityPolicyViolationType::
         kTrustedTypesSinkViolation:
       return protocol::Audits::ContentSecurityPolicyViolationTypeEnum::

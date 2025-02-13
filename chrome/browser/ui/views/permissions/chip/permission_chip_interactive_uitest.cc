@@ -1543,7 +1543,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
 
   EXPECT_TRUE(manager->IsRequestInProgress());
   EXPECT_TRUE(observer.request_shown());
-  EXPECT_TRUE(manager->view_for_testing());
+  EXPECT_TRUE(manager->GetCurrentPrompt());
   EXPECT_TRUE(chip_controller->IsPermissionPromptChipVisible());
 
   // At first, we verify that the same document navigation on both, top level

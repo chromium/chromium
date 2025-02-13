@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 
 namespace autofill {
 class AutofillDriver;
@@ -51,14 +52,16 @@ class AmountExtractionManager {
   void SetSearchRequestPendingForTesting(bool search_request_pending);
 
  private:
-  // This function is invoked after the amount extraction process completes.
-  // It provides the extracted amount upon success and an empty string upon
-  // failure.
-  void OnCheckoutAmountReceived(const std::string& extracted_amount);
-
   // Check whether the host of the checkout webpage exists in the amount
   // extraction allowlists.
   bool IsUrlEligibleForAmountExtraction() const;
+
+  // Invoked after the amount extraction process completes.
+  // `extracted_amount` provides the extracted amount upon success and an
+  // empty string upon failure. `search_request_start_timestamp` is the time
+  // when TriggerCheckoutAmountExtraction is called.
+  void OnCheckoutAmountReceived(base::TimeTicks search_request_start_timestamp,
+                                const std::string& extracted_amount);
 
   // Get the driver associated with the main frame as the final checkout amount
   // is on the main frame.

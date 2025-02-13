@@ -15,20 +15,46 @@
 #include "base/apple/bundle_locations.h"
 #include "base/apple/mach_port_rendezvous.h"
 #include "base/check_op.h"
-#include "base/logging.h"
 #include "base/system/sys_info.h"
 #include "content/app/ios/appex/child_process_sandbox.h"
+#include "gpu/ipc/common/ios/be_layer_hierarchy_transport.h"
+
+class GPUProcessTransport;
 
 // Leaked variables for now.
 static size_t g_argc = 0;
 static const char** g_argv = nullptr;
 static pthread_t g_main_thread;
 static id<ChildProcessExtension> g_swift_process;
+static xpc_connection_t g_connection;
+static std::unique_ptr<GPUProcessTransport> g_gpu_transport;
 
 #define IOS_INIT_EXPORT __attribute__((visibility("default")))
 
 // The embedder must implement this.
 extern "C" int ChildProcessMain(int argc, const char** argv);
+
+class GPUProcessTransport : public gpu::BELayerHierarchyTransport {
+ public:
+  GPUProcessTransport() { gpu::BELayerHierarchyTransport::SetInstance(this); }
+  ~GPUProcessTransport() override {
+    gpu::BELayerHierarchyTransport::SetInstance(nullptr);
+  }
+
+  void ForwardBELayerHierarchyToBrowser(
+      gpu::SurfaceHandle surface_handle,
+      xpc_object_t ipc_representation) override {
+    xpc_object_t message = xpc_dictionary_create(nil, nil, 0);
+    xpc_dictionary_set_string(message, "message", "layerHandle");
+    xpc_dictionary_set_value(message, "layer", ipc_representation);
+    xpc_dictionary_set_uint64(message, "handle", surface_handle);
+    xpc_connection_send_message(g_connection, message);
+  }
+};
+
+extern "C" IOS_INIT_EXPORT void GpuProcessInit() {
+  g_gpu_transport = std::make_unique<GPUProcessTransport>();
+}
 
 extern "C" IOS_INIT_EXPORT void ChildProcessInit(
     id<ChildProcessExtension> process) {
@@ -81,6 +107,7 @@ extern "C" IOS_INIT_EXPORT void ChildProcessHandleNewConnection(
     pthread_create(&g_main_thread, NULL, RunMain, NULL);
   });
   xpc_connection_activate(connection);
+  g_connection = connection;
 }
 
 namespace content {

@@ -139,8 +139,22 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
   EXPECT_CALL(*collaboration_service_, GetServiceStatus())
       .WillOnce(Return(status));
   ASSERT_TRUE(status.IsAuthenticationValid());
+  EXPECT_CALL(*delegate_, NotifySignInAndSyncStatusChange());
+
+  // Simulate services initialization.
+  EXPECT_CALL(*data_sharing_service_, IsGroupDataModelLoaded())
+      .WillOnce(Return(true));
+  tab_groups::TabGroupSyncService::Observer* sync_observer;
+  EXPECT_CALL(*tab_group_sync_service_, AddObserver(_))
+      .WillOnce(SaveArg<0>(&sync_observer));
+
+  // 3. Authenticating -> WaitingForServicesToInitialize state.
+  std::move(authentication_ui_calback).Run(Outcome::kSuccess);
+  EXPECT_EQ(controller_->GetStateForTesting(),
+            StateId::kWaitingForServicesToInitialize);
 
   // Simulate that the user is not already in the tab group.
+  EXPECT_CALL(*tab_group_sync_service_, RemoveObserver(sync_observer));
   data_sharing::GroupId group_id(kGroupId);
   const GroupToken& token = GroupToken(group_id, kAccessToken);
   base::OnceCallback<void(
@@ -151,8 +165,8 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
   EXPECT_CALL(*data_sharing_service_, ReadNewGroup(token, IsNotNullCallback()))
       .WillOnce(MoveArg<1>(&group_data_callback));
 
-  // 3. Authenticating -> CheckingFlowRequirements state.
-  std::move(authentication_ui_calback).Run(Outcome::kSuccess);
+  // 4. WaitingForServicesToInitialize -> CheckingFlowRequirementsState state.
+  sync_observer->OnInitialized();
   EXPECT_EQ(controller_->GetStateForTesting(),
             StateId::kCheckingFlowRequirements);
 
@@ -170,7 +184,7 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
   EXPECT_CALL(*delegate_, ShowJoinDialog(_, _, IsNotNullCallback()))
       .WillOnce(MoveArg<2>(&join_ui_callback));
 
-  // 4. CheckingFlowRequirements -> AddingUserToGroup state.
+  // 5. CheckingFlowRequirements -> AddingUserToGroup state.
   std::move(group_data_callback).Run(group_data);
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kAddingUserToGroup);
   data_sharing::SharedDataPreview preview;
@@ -187,7 +201,6 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
   EXPECT_CALL(*tab_group_sync_service_, GetAllGroups())
       .WillRepeatedly(Return(all_tab_groups));
 
-  tab_groups::TabGroupSyncService::Observer* sync_observer;
   data_sharing::DataSharingService::Observer* data_sharing_observer;
   EXPECT_CALL(*sync_service_, TriggerRefresh(_));
   EXPECT_CALL(*tab_group_sync_service_, AddObserver(_))
@@ -195,7 +208,7 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
   EXPECT_CALL(*data_sharing_service_, AddObserver(_))
       .WillOnce(SaveArg<0>(&data_sharing_observer));
 
-  // 5. AddingUserToGroup -> WaitingForSyncAndDataSharingGroup state.
+  // 6. AddingUserToGroup -> WaitingForSyncAndDataSharingGroup state.
   std::move(join_ui_callback).Run(Outcome::kSuccess);
   EXPECT_EQ(controller_->GetStateForTesting(),
             StateId::kWaitingForSyncAndDataSharingGroup);
@@ -217,7 +230,7 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
   EXPECT_CALL(*tab_group_sync_service_, RemoveObserver(sync_observer));
   EXPECT_CALL(*data_sharing_service_, RemoveObserver(data_sharing_observer));
 
-  // 5. WaitingForSyncAndDataSharingGroup -> OpeningLocalTabGroup state.
+  // 7. WaitingForSyncAndDataSharingGroup -> OpeningLocalTabGroup state.
   // TODO(crbug.com/373403973): Remove data sharing observer when sync service
   // starts observing data sharing.
   sync_observer->OnTabGroupAdded(tab_group, tab_groups::TriggerSource::REMOTE);
@@ -454,18 +467,10 @@ TEST_F(CollaborationControllerTest, AuthenticationSuccessObserved) {
   ASSERT_TRUE(update.new_status.IsAuthenticationValid());
   EXPECT_CALL(*delegate_, NotifySignInAndSyncStatusChange());
   EXPECT_CALL(*collaboration_service_, RemoveObserver(observer));
-  EXPECT_CALL(*collaboration_service_,
-              GetCurrentUserRoleForGroup(data_sharing::GroupId(kGroupId)))
-      .WillOnce(Return(data_sharing::MemberRole::kUnknown));
-  EXPECT_CALL(*data_sharing_service_, ReadNewGroup(_, _));
+  EXPECT_CALL(*data_sharing_service_, IsGroupDataModelLoaded());
   observer->OnServiceStatusChanged(update);
   EXPECT_EQ(controller_->GetStateForTesting(),
-            StateId::kCheckingFlowRequirements);
-
-  // Reach time out won't do anything since state already transitionned.
-  task_environment_.FastForwardBy(base::Minutes(30));
-  EXPECT_EQ(controller_->GetStateForTesting(),
-            StateId::kCheckingFlowRequirements);
+            StateId::kWaitingForServicesToInitialize);
 }
 
 TEST_F(CollaborationControllerTest, FullShareFlowAllStates) {

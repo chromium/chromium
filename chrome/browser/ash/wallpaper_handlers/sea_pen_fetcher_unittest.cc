@@ -307,7 +307,63 @@ TEST_F(SeaPenFetcherTest, ThumbnailsCallsSnapperProvider) {
       1);
 }
 
+TEST_F(SeaPenFetcherTest, TemplateRequestsFourImages_withTextInputOn) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {
+          ash::features::kSeaPen,
+          ash::features::kFeatureManagementSeaPen,
+          manta::features::kMantaService,
+          ash::features::kSeaPenTextInput,
+      },
+      {});
+  auto query = MakeTemplateQuery();
+
+  EXPECT_CALL(
+      snapper_provider(),
+      Call(base::test::EqualsProto(CreateMantaRequest(
+               query, /*generation_seed=*/std::nullopt,
+               /*num_outputs=*/SeaPenFetcher::kNumTextThumbnailsRequested,
+               {880, 440}, manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
+           testing::_, testing::_))
+      .WillOnce([](const manta::proto::Request& request,
+                   net::NetworkTrafficAnnotationTag traffic_annotation,
+                   manta::MantaProtoResponseCallback done_callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](manta::MantaProtoResponseCallback delayed_callback) {
+                  std::move(delayed_callback)
+                      .Run(CreateMantaResponse(
+                               SeaPenFetcher::kNumTextThumbnailsRequested),
+                           {.status_code = manta::MantaStatusCode::kOk,
+                            .message = std::string()});
+                },
+                std::move(done_callback)));
+      });
+
+  base::test::TestFuture<std::optional<std::vector<ash::SeaPenImage>>,
+                         manta::MantaStatusCode>
+      fetch_thumbnails_future;
+
+  sea_pen_fetcher()->FetchThumbnails(
+      manta::proto::FeatureName::CHROMEOS_WALLPAPER, query,
+      fetch_thumbnails_future.GetCallback());
+
+  EXPECT_EQ(manta::MantaStatusCode::kOk,
+            fetch_thumbnails_future.Get<manta::MantaStatusCode>());
+}
+
 TEST_F(SeaPenFetcherTest, FreeformThumbnailsCallsSnapperProvider) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {
+          ash::features::kSeaPen,
+          ash::features::kFeatureManagementSeaPen,
+          manta::features::kMantaService,
+          ash::features::kSeaPenTextInput,
+      },
+      {});
   auto query = MakeFreeformQuery();
 
   EXPECT_CALL(
@@ -949,6 +1005,15 @@ TEST_F(SeaPenFetcherTest, WallpaperDropsInvalidJpgBytes) {
 }
 
 TEST_F(SeaPenFetcherTest, FreeformThumbnails_StoresGenerativePrompts) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {
+          ash::features::kSeaPen,
+          ash::features::kFeatureManagementSeaPen,
+          manta::features::kMantaService,
+          ash::features::kSeaPenTextInput,
+      },
+      {});
   auto query = MakeFreeformQuery();
   static std::string generative_prompt = "prompt used to generate images";
 

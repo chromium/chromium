@@ -712,7 +712,21 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "UseFrameIntervalDecider",
+                        "UseFrameIntervalDecider"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AndroidUseFrameIntervalDeciderNewAndroidFeatures": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
                         "UseFrameIntervalDeciderNewAndroidFeatures"
                     ]
                 }
@@ -5138,6 +5152,17 @@
             ],
             "experiments": [
                 {
+                    "name": "Launch",
+                    "enable_features": [
+                        "EnableLensOverlay",
+                        "LensClearcutLoggerFastQosEnabled"
+                    ],
+                    "disable_features": [
+                        "LensOverlayEnableLocationBarEntrypoint",
+                        "LensOverlayEnableLocationBarEntrypointOnSRP"
+                    ]
+                },
+                {
                     "name": "Enabled",
                     "enable_features": [
                         "EnableLensOverlay",
@@ -5462,24 +5487,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ClearGrShaderDiskCacheOnInvalidPrefix"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ClearUndecryptablePasswords": [
-        {
-            "platforms": [
-                "mac",
-                "windows",
-                "linux",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ClearUndecryptablePasswords"
                     ]
                 }
             ]
@@ -9982,9 +9989,6 @@
             "experiments": [
                 {
                     "name": "Enabled_20240112",
-                    "params": {
-                        "send_on_enter_bfcache": "true"
-                    },
                     "enable_features": [
                         "FetchLaterAPI"
                     ]
@@ -11406,22 +11410,6 @@
             ]
         }
     ],
-    "HlsBuiltinPlayer": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BuiltInHlsPlayer"
-                    ]
-                }
-            ]
-        }
-    ],
     "HoldbackRemoveMobileViewportDoubleTap": [
         {
             "platforms": [
@@ -12092,40 +12080,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "LogApplicationStorageSizeMetrics"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSMeasurementExperience": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240419",
-                    "enable_features": [
-                        "EnableMeasurementsExperience"
-                    ]
-                },
-                {
-                    "name": "MeasurementsOnly_20240419",
-                    "enable_features": [
-                        "EnableMeasurementsExperience"
-                    ]
-                },
-                {
-                    "name": "ViewportOnly_20240419",
-                    "enable_features": [
-                        "EnableViewportIntents"
-                    ]
-                },
-                {
-                    "name": "MeasurementsAndViewport_20240419",
-                    "enable_features": [
-                        "EnableMeasurementsExperience",
-                        "EnableViewportIntents"
                     ]
                 }
             ]
@@ -15879,21 +15833,6 @@
             ]
         }
     ],
-    "OverviewSessionInitOptimizations": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OverviewSessionInitOptimizations"
-                    ]
-                }
-            ]
-        }
-    ],
     "OzonePlatformAuto": [
         {
             "platforms": [
@@ -16971,6 +16910,25 @@
                         "PerformanceControlsBatteryPerformanceSurvey",
                         "PerformanceControlsHighEfficiencyOptOutSurvey",
                         "PerformanceControlsPerformanceSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PerformanceObserverSafeSort": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PerformanceObserverSafeSort"
                     ]
                 }
             ]
@@ -18145,6 +18103,24 @@
                     "name": "Enabled_Dogfood",
                     "enable_features": [
                         "PrivacySandboxInternalsDevUI"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PrivacySandboxNoticeActionDebouncingAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "debouncing-time": "100"
+                    },
+                    "enable_features": [
+                        "PrivacySandboxNoticeActionDebouncingAndroid"
                     ]
                 }
             ]
@@ -19728,6 +19704,27 @@
             ]
         }
     ],
+    "RequireSRIFor": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CSPRequireSRIFor",
+                        "SRIMessageSignatureEnforcement"
+                    ]
+                }
+            ]
+        }
+    ],
     "ResamplingScrollEvents": [
         {
             "platforms": [
@@ -20136,25 +20133,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SafetyHubServicesOnStartUp"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SavePasswordHashFromProfilePicker": [
-        {
-            "platforms": [
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SavePasswordHashFromProfilePicker"
                     ]
                 }
             ]
@@ -21078,22 +21056,13 @@
     "ScaleScrollbarAnimationTiming": [
         {
             "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {
                     "name": "Enabled",
                     "params": {
-                        "fade_delay_scaling_factor": "2.0",
-                        "fade_duration_scaling_factor": "0.5"
+                        "fade_duration_scaling_factor": "0.0001"
                     },
                     "enable_features": [
                         "ScaleScrollbarAnimationTiming"
@@ -23664,26 +23633,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ThrottleMainFrameTo60Hz"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ThrottleUnimportantFrameRate": [
-        {
-            "platforms": [
-                "android_webview",
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ThrottleUnimportantFrameRate"
                     ]
                 }
             ]

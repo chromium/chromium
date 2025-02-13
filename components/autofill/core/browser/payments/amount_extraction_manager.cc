@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/metrics/payments/amount_extraction_metrics.h"
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestions_context.h"
@@ -82,7 +83,7 @@ void AmountExtractionManager::TriggerCheckoutAmountExtraction() {
       AmountExtractionHeuristicRegexes::GetInstance()
           .number_of_ancestor_levels_to_search(),
       base::BindOnce(&AmountExtractionManager::OnCheckoutAmountReceived,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
 bool AmountExtractionManager::IsUrlEligibleForAmountExtraction() const {
@@ -106,7 +107,11 @@ void AmountExtractionManager::SetSearchRequestPendingForTesting(
 }
 
 void AmountExtractionManager::OnCheckoutAmountReceived(
+    base::TimeTicks search_request_start_timestamp,
     const std::string& extracted_amount) {
+  autofill_metrics::LogAmountExtractionLatency(
+      base::TimeTicks::Now() - search_request_start_timestamp,
+      !extracted_amount.empty());
   // Set `search_request_pending_` to false once the search is done.
   search_request_pending_ = false;
   // TODO(crbug.com/378517983): Add BNPL flow action logic here.

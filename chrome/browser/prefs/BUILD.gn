@@ -440,6 +440,7 @@ if (!is_android) {
       "//build:chromeos_buildflags",
       "//chrome/browser",
       "//chrome/browser/preloading:prefs",
+      "//chrome/browser/search_engines",
       "//chrome/browser/ui",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common:constants",

@@ -327,6 +327,38 @@ TEST(CommandLineTest, AppendSwitches) {
 #endif
 }
 
+// Test methods for appending valid UTF8 values to a command line.
+TEST(CommandLineTest, UTF8Valid) {
+  std::string ascii_switch = "ascii";
+  std::string ascii_value = "Opdateringkontroleringfout";
+  std::string arabic_switch = "arabic";
+  std::string arabic_value = "خطأ في عملية التحقق من التحديث: 5555.";
+  std::string hindi_switch = "hindi";
+  std::string hindi_value = "अपडेट जांच में यह गड़बड़ी है: 5555.";
+  std::string japanese_switch = "japanese";
+  std::string japanese_value = "更新確認エラー: 5555。";
+
+  CommandLine cl(FilePath(FILE_PATH_LITERAL("Program")));
+
+  cl.AppendSwitchUTF8(ascii_switch, ascii_value);
+  cl.AppendSwitchUTF8(arabic_switch, arabic_value);
+  cl.AppendSwitchUTF8(hindi_switch, hindi_value);
+  cl.AppendSwitchUTF8(japanese_switch, japanese_value);
+
+  EXPECT_TRUE(cl.HasSwitch(ascii_switch));
+  EXPECT_EQ(ascii_value, cl.GetSwitchValueASCII(ascii_switch));
+  EXPECT_EQ(ascii_value, cl.GetSwitchValueUTF8(ascii_switch));
+  EXPECT_TRUE(cl.HasSwitch(arabic_switch));
+  EXPECT_TRUE(cl.GetSwitchValueASCII(arabic_switch).empty());
+  EXPECT_EQ(arabic_value, cl.GetSwitchValueUTF8(arabic_switch));
+  EXPECT_TRUE(cl.HasSwitch(hindi_switch));
+  EXPECT_TRUE(cl.GetSwitchValueASCII(hindi_switch).empty());
+  EXPECT_EQ(hindi_value, cl.GetSwitchValueUTF8(hindi_switch));
+  EXPECT_TRUE(cl.HasSwitch(japanese_switch));
+  EXPECT_TRUE(cl.GetSwitchValueASCII(japanese_switch).empty());
+  EXPECT_EQ(japanese_value, cl.GetSwitchValueUTF8(japanese_switch));
+}
+
 TEST(CommandLineTest, AppendSwitchesDashDash) {
   const CommandLine::CharType* const raw_argv[] = {FILE_PATH_LITERAL("prog"),
                                                    FILE_PATH_LITERAL("--"),

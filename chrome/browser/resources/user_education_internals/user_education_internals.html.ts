@@ -52,6 +52,15 @@ export function getHtml(this: UserEducationInternalsElement) {
       <span id="errorMessage">${this.featurePromoErrorMessage_}</span>
     </cr-toast>
     <div id="content">
+      <div id="warning">
+        <h2>User Education Debug Page</h2>
+        <p>
+          <span class="blurb-warning">NOTICE: DEBUGGING PAGE ONLY!</span>
+          This page is not part of the intended Chrome experience. It is only
+          for testing User Education features and may cause Chrome to behave
+          in ways it was not designed to. Use at your own risk.
+        </p>
+      </div>
       <div id="iph">
         <a name="iph"></a>
         <h2>Feature Promos</h2>

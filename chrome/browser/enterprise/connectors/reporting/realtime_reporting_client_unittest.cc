@@ -13,7 +13,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
@@ -26,12 +25,13 @@
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/test_event_router.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 #include "components/enterprise/browser/enterprise_switches.h"
 #endif
 
@@ -134,7 +134,7 @@ class RealtimeReportingClientUmaTest
 
 TEST_P(RealtimeReportingClientUmaTest, TestDeprecatedUmaEventUploadSucceeds) {
 // Profile reporting is not supported on Ash.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (is_profile_reporting()) {
     return;
   }
@@ -171,6 +171,10 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadSucceeds) {
   }
 #endif
 
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      policy::kUploadRealtimeReportingEventsUsingProto);
+
   is_profile_reporting()
       ? reporting_client_->SetProfileCloudPolicyClientForTesting(client_.get())
       : reporting_client_->SetBrowserCloudPolicyClientForTesting(client_.get());
@@ -205,7 +209,7 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadSucceeds) {
 
 TEST_P(RealtimeReportingClientUmaTest, TestDeprecatedUmaEventUploadFails) {
 // Profile reporting is not supported on Ash.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (is_profile_reporting()) {
     return;
   }
@@ -241,6 +245,10 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
     return;
   }
 #endif
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      policy::kUploadRealtimeReportingEventsUsingProto);
 
   is_profile_reporting()
       ? reporting_client_->SetProfileCloudPolicyClientForTesting(client_.get())

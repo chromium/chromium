@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/chrome_template_url_service_client.h"
+#include "chrome/browser/search_engines/template_url_prepopulate_data_resolver_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -68,6 +69,8 @@ std::unique_ptr<KeyedService> TemplateURLServiceFactory::BuildInstanceFor(
       CHECK_DEREF(
           search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
               profile)),
+      CHECK_DEREF(
+          TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile)),
       std::make_unique<UIThreadSearchTermsData>(),
       WebDataServiceFactory::GetKeywordWebDataForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),

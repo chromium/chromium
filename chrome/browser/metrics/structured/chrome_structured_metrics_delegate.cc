@@ -14,7 +14,7 @@
 #include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/browser_process.h"                       // nogncheck
 #include "chrome/browser/metrics/structured/ash_event_storage.h"  // nogncheck
@@ -26,9 +26,6 @@
 #include "chrome/browser/metrics/structured/oobe_structured_metrics_watcher.h"  // nogncheck
 #include "components/metrics/structured/structured_metrics_recorder.h"  // nogncheck
 #include "components/metrics/structured/structured_metrics_service.h"  // nogncheck
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/task/current_thread.h"
-#include "chrome/browser/metrics/structured/lacros_structured_metrics_delegate.h"  // nogncheck
 #endif
 
 namespace metrics::structured {
@@ -72,16 +69,12 @@ class DefaultDelegate : public RecordingDelegate {
 
 ChromeStructuredMetricsDelegate::ChromeStructuredMetricsDelegate() {
 // TODO(jongahn): Make a static factory class and pass it into ctor.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   delegate_ = std::make_unique<AshStructuredMetricsDelegate>();
-  StructuredMetricsClient::Get()->SetDelegate(this);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  delegate_ = std::make_unique<LacrosStructuredMetricsDelegate>();
-  StructuredMetricsClient::Get()->SetDelegate(this);
 #else
   delegate_ = std::make_unique<DefaultDelegate>();
-  StructuredMetricsClient::Get()->SetDelegate(this);
 #endif
+  StructuredMetricsClient::Get()->SetDelegate(this);
 }
 
 ChromeStructuredMetricsDelegate::~ChromeStructuredMetricsDelegate() = default;
@@ -93,7 +86,7 @@ ChromeStructuredMetricsDelegate* ChromeStructuredMetricsDelegate::Get() {
 }
 
 void ChromeStructuredMetricsDelegate::Initialize() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   auto* ash_recorder =
       static_cast<AshStructuredMetricsDelegate*>(delegate_.get());
   ash_recorder->Initialize();
@@ -117,15 +110,6 @@ void ChromeStructuredMetricsDelegate::Initialize() {
 
   LogInitializationInChromeOSStructuredMetrics(
       StructuredMetricsPlatform::kAshChrome);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* lacros_recorder =
-      static_cast<LacrosStructuredMetricsDelegate*>(delegate_.get());
-
-  // Ensure that the sequence is the ui thread.
-  DCHECK(base::CurrentUIThread::IsSet());
-  lacros_recorder->SetSequence(base::SequencedTaskRunner::GetCurrentDefault());
-  LogInitializationInChromeOSStructuredMetrics(
-      StructuredMetricsPlatform::kLacrosChrome);
 #endif
   // Windows, Mac, and Linux do not have initialization events due to DMA
   // concerns.

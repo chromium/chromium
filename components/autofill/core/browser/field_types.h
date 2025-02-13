@@ -496,6 +496,22 @@ enum FieldType {
   LOYALTY_MEMBERSHIP_PROVIDER = 174,
   // The member ID is represented by LOYALTY_MEMBERSHIP_ID.
 
+  // Types corresponding to the "Car" entity from
+  // components/autofill/core/browser/data_model/entity_schema.json.
+  VEHICLE_OWNER_TAG = 175,
+  VEHICLE_LICENSE_PLATE = 176,
+  VEHICLE_VIN = 177,
+  VEHICLE_MAKE = 178,
+  VEHICLE_MODEL = 179,
+
+  // Types corresponding to the "Drivers license" entity from
+  // components/autofill/core/browser/data_model/entity_schema.json.
+  DRIVERS_LICENSE_NAME_TAG = 180,
+  DRIVERS_LICENSE_REGION = 181,
+  DRIVERS_LICENSE_NUMBER = 182,
+  DRIVERS_LICENSE_EXPIRATION_DATE_TAG = 183,
+  DRIVERS_LICENSE_ISSUE_DATE_TAG = 184,
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
   // This enum must be kept in sync with FieldType from
@@ -506,7 +522,7 @@ enum FieldType {
   // If the newly added type is a storable type of AutofillProfile, update
   // AutofillProfile.StorableTypes in
   // tools/metrics/histograms/metadata/autofill/histograms.xml.
-  MAX_VALID_FIELD_TYPE = 175,
+  MAX_VALID_FIELD_TYPE = 185,
 };
 // LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)
 

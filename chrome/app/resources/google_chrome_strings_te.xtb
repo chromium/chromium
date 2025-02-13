@@ -78,6 +78,7 @@
 <translation id="2094648590148273905">ChromeOS Flex నియమాలు</translation>
 <translation id="2094919256425865063">ఏదేమైనా Chromeని మూసివేయాలా?</translation>
 <translation id="2106831557840787829">ChromeOS Flex అనేది <ph name="BEGIN_LINK_LINUX_OSS" />Linux డెవలప్‌మెంట్ ఎన్విరాన్‌మెంట్<ph name="END_LINK_LINUX_OSS" /> తరహాలోనే, అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
+<translation id="2108778574543343055">యాప్‌లకు సంబంధించి బ్యాక్‌గ్రౌండ్‌లో రన్ అవుతున్న Chromeను డిజేబుల్ చేయండి</translation>
 <translation id="2120620239521071941">ఇది ఈ పరికరం నుండి <ph name="ITEMS_COUNT" /> అంశాలను తొలగిస్తుంది. మీ డేటాను తర్వాత తిరిగి పొందడానికి, Chromeకు <ph name="USER_EMAIL" /> లాగా సైన్ ఇన్ చేయండి.</translation>
 <translation id="2121284319307530122">&amp;Chromeను అప్‌డేట్ చేయడానికి రీ-లాంచ్ చేయండి</translation>
 <translation id="2123055963409958220">Chromeను మెరుగుపరచడంలో సహాయపడటానికి <ph name="BEGIN_LINK" />ప్రస్తుత సెట్టింగ్‌లను<ph name="END_LINK" /> రిపోర్ట్ చేయండి</translation>
@@ -139,6 +140,7 @@
 <translation id="2797864378188255696"><ph name="USER_EMAIL" />‌తో Gmail లేదా YouTube వంటి Google సర్వీస్‌లకు ఆటోమేటిక్‌గా సైన్ ఇన్ చేస్తున్నప్పుడు, మీరు అదే ఖాతాతో Chromeకు సైన్ ఇన్ చేయవచ్చు</translation>
 <translation id="2799162042226656283">మీ Chrome</translation>
 <translation id="2799223571221894425">మళ్లీ ప్రారంభించండి</translation>
+<translation id="2818684386420968393">యాప్‌లకు సంబంధించి బ్యాక్‌గ్రౌండ్‌లో రన్ అవుతున్న Chromeను డిజేబుల్ చేయండి</translation>
 <translation id="2825024317344269723">హానికరమైన సైట్. Chrome నోటిఫికేషన్‌లను తీసివేసింది.</translation>
 <translation id="2841525013647267359">ఈ భాష నుండి అనువదించండి</translation>
 <translation id="2846251086934905009">ఇన్‌స్టాల్ లోపం: ఇన్‌స్టాలర్ ప్రాసెస్‌ను పూర్తి చేయలేదు. ఇన్‌స్టాలేషన్ రద్దు చేయబడింది.</translation>
@@ -348,6 +350,7 @@
 <translation id="5596627076506792578">మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="5602351063754773347">మీరు దాన్ని తీసివేయవలసిందిగా Chrome సిఫార్సు చేస్తోంది. <ph name="BEGIN_LINK" />సపోర్ట్ చేసే ఎక్స్‌టెన్షన్‌ల గురించి మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">మిమ్మల్ని ఆన్‌లైన్‌లో సురక్షితంగా ఉంచడానికి Chrome మరిన్ని చేస్తుంది</translation>
+<translation id="5649680279845190972">మీ అన్ని కంప్యూటర్‌లలో మీ ఎక్స్‌టెన్షన్‌లను, ఇంకా మరిన్నింటిని పొందడానికి Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> హానికరం కావచ్చు, కావున Chrome దాన్ని బ్లాక్ చేసింది.</translation>
 <translation id="566568153320186256">Chrome బ్యాక్‌గ్రౌండ్ యాక్టివిటీని, స్మూత్ స్క్రోలింగ్, వీడియో ఫ్రేమ్ రేట్‌ల వంటి విజువల్ ఎఫెక్ట్‌లను పరిమితం చేయడం ద్వారా బ్యాటరీ పవర్‌ను ఆదా చేస్తుంది. <ph name="BEGIN_LINK" />ఎనర్జీ సేవర్ గురించి మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">మీ ఖాతాలో Chrome డేటాను క్లియర్ చేయండి</translation>

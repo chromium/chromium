@@ -17,6 +17,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
 
@@ -27,10 +29,9 @@ import java.util.List;
 
 /** This class receives captured content from native and forwards to ContentCaptureConsumer. */
 @JNINamespace("content_capture")
+@NullMarked
 public class OnscreenContentProvider {
     private static final String TAG = "ContentCapture";
-    private static Boolean sDump;
-
     private long mNativeOnscreenContentProviderAndroid;
 
     private ArrayList<ContentCaptureConsumer> mContentCaptureConsumers = new ArrayList<>();
@@ -38,9 +39,11 @@ public class OnscreenContentProvider {
     private WeakReference<WebContents> mWebContents;
 
     public OnscreenContentProvider(
-            Context context, View view, ViewStructure structure, WebContents webContents) {
+            Context context,
+            View view,
+            @Nullable ViewStructure structure,
+            WebContents webContents) {
         mWebContents = new WeakReference<>(webContents);
-        if (sDump == null) sDump = ContentCaptureFeatures.isDumpForTestingEnabled();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             ContentCaptureConsumer consumer =
@@ -106,7 +109,9 @@ public class OnscreenContentProvider {
                 consumer.onContentCaptureFlushed(frameSession, data);
             }
         }
-        if (sDump.booleanValue()) Log.i(TAG, "Flushed Capturing Content");
+        if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
+            Log.i(TAG, "Flushed Capturing Content");
+        }
     }
 
     @CalledByNative
@@ -118,7 +123,9 @@ public class OnscreenContentProvider {
                 consumer.onContentCaptured(frameSession, data);
             }
         }
-        if (sDump.booleanValue()) Log.i(TAG, "Captured Content: %s", data);
+        if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
+            Log.i(TAG, "Captured Content: %s", data);
+        }
     }
 
     @CalledByNative
@@ -130,7 +137,9 @@ public class OnscreenContentProvider {
                 consumer.onContentUpdated(frameSession, data);
             }
         }
-        if (sDump.booleanValue()) Log.i(TAG, "Updated Content: %s", data);
+        if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
+            Log.i(TAG, "Updated Content: %s", data);
+        }
     }
 
     @CalledByNative
@@ -142,7 +151,7 @@ public class OnscreenContentProvider {
                 consumer.onContentRemoved(frameSession, data);
             }
         }
-        if (sDump.booleanValue()) {
+        if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
             Log.i(TAG, "Removed Content: %s", frameSession.get(0) + " " + Arrays.toString(data));
         }
     }
@@ -156,7 +165,9 @@ public class OnscreenContentProvider {
                 consumer.onSessionRemoved(frameSession);
             }
         }
-        if (sDump.booleanValue()) Log.i(TAG, "Removed Session: %s", frameSession.get(0));
+        if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
+            Log.i(TAG, "Removed Session: %s", frameSession.get(0));
+        }
     }
 
     @CalledByNative
@@ -167,7 +178,9 @@ public class OnscreenContentProvider {
                 consumer.onTitleUpdated(mainFrame);
             }
         }
-        if (sDump.booleanValue()) Log.i(TAG, "Updated Title: %s", mainFrame.getTitle());
+        if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
+            Log.i(TAG, "Updated Title: %s", mainFrame.getTitle());
+        }
     }
 
     @CalledByNative
@@ -178,7 +191,9 @@ public class OnscreenContentProvider {
                 consumer.onFaviconUpdated(mainFrame);
             }
         }
-        if (sDump.booleanValue()) Log.i(TAG, "Updated Favicon: %s", mainFrame.getFavicon());
+        if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
+            Log.i(TAG, "Updated Favicon: %s", mainFrame.getFavicon());
+        }
     }
 
     @CalledByNative
@@ -201,7 +216,7 @@ public class OnscreenContentProvider {
         return frameSession;
     }
 
-    private String[] buildUrls(FrameSession session, ContentCaptureFrame data) {
+    private String[] buildUrls(@Nullable FrameSession session, @Nullable ContentCaptureFrame data) {
         ArrayList<String> urls = new ArrayList<String>();
         if (session != null) {
             for (ContentCaptureFrame d : session) {
@@ -232,10 +247,10 @@ public class OnscreenContentProvider {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        long init(OnscreenContentProvider caller, WebContents webContents);
+        long init(OnscreenContentProvider caller, @Nullable WebContents webContents);
 
         void onWebContentsChanged(
-                long nativeOnscreenContentProviderAndroid, WebContents webContents);
+                long nativeOnscreenContentProviderAndroid, @Nullable WebContents webContents);
 
         void destroy(long nativeOnscreenContentProviderAndroid);
     }

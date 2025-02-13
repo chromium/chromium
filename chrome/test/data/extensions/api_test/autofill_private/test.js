@@ -887,20 +887,6 @@ var availableTests = [
     chrome.test.succeed();
   },
 
-  function triggerAnnotationsBootstrapping_ExpectTrue() {
-    chrome.autofillPrivate.triggerAnnotationsBootstrapping(function(success) {
-      chrome.test.assertTrue(success, 'Expected bootstrapping to succeed');
-      chrome.test.succeed();
-    });
-  },
-
-  function triggerAnnotationsBootstrapping_ExpectFalse() {
-    chrome.autofillPrivate.triggerAnnotationsBootstrapping(function(success) {
-      chrome.test.assertFalse(success, 'Expected bootstrapping to fail');
-      chrome.test.succeed();
-    });
-  },
-
   function logServerIbanLinkClicked() {
     chrome.autofillPrivate.logServerIbanLinkClicked();
     chrome.test.assertNoLastError();
@@ -961,10 +947,6 @@ var TESTS_FOR_CONFIG = {
   'addVirtualCard': ['addVirtualCard'],
   'removeVirtualCard': ['removeVirtualCard'],
   'setAutofillSyncToggleEnabled': ['setAutofillSyncToggleEnabled'],
-  'TriggerAnnotationsBootstrapping_Success':
-      ['triggerAnnotationsBootstrapping_ExpectTrue'],
-  'TriggerAnnotationsBootstrapping_Failure':
-      ['triggerAnnotationsBootstrapping_ExpectFalse'],
   'logServerIbanLinkClicked': ['logServerIbanLinkClicked'],
 };
 

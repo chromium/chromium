@@ -253,6 +253,7 @@ target(_libcxx_target_type, "libc++") {
     "//third_party/libc++/src/src/hash.cpp",
     "//third_party/libc++/src/src/ios.cpp",
     "//third_party/libc++/src/src/ios.instantiations.cpp",
+    "//third_party/libc++/src/src/iostream.cpp",
     "//third_party/libc++/src/src/locale.cpp",
     "//third_party/libc++/src/src/memory.cpp",
     "//third_party/libc++/src/src/mutex.cpp",
@@ -278,15 +279,6 @@ target(_libcxx_target_type, "libc++") {
     "//third_party/libc++/src/src/vector.cpp",
     "//third_party/libc++/src/src/verbose_abort.cpp",
   ]
-
-  if (!use_explicit_libcxx_modules) {
-    sources += [
-      # TODO(crbug.com/40440396): Have a separate target for this to avoid
-      # compile errors in explicit modules build due to type mismatch of
-      # std::{cerr,cin,clog,cout} between declaration and definition.
-      "//third_party/libc++/src/src/iostream.cpp",
-    ]
-  }
 
   if (is_apple || (!is_asan && !is_tsan && !is_msan)) {
     # In {a,t,m}san configurations, operator new and operator delete will be
@@ -329,6 +321,11 @@ target(_libcxx_target_type, "libc++") {
   configs += configs_to_add
 
   if (use_libcxx_modules) {
+    # TODO(https://github.com/llvm/llvm-project/issues/127012): We don't enable
+    # Clang modules for libc++ as libc++'s iostream.cpp has ODR issue
+    # (https://crbug.com/40440396#comment81). Also we don't take care about the
+    # libc++'s build performance much.
+    # (https://crrev.com/c/6248376/4#message-0ddf8e6a0f3ce1eb1654f7025280d8ed75cf2e81)
     configs -= [ "//build/config/compiler:libcxx_module" ]
   }
   if ((is_android || is_apple) && libcxx_is_shared) {
@@ -374,22 +371,6 @@ target(_libcxx_target_type, "libc++") {
   }
 
   deps = [ "//third_party/llvm-libc:llvm-libc-shared" ]
-
-  if (use_explicit_libcxx_modules) {
-    modulemap = rebase_path("//third_party/libc++/src/include/module.modulemap",
-                            root_build_dir)
-    cflags += [
-      "-fmodules",
-      "-fmodule-map-file=" + modulemap,
-    ]
-
-    deps += [
-      ":std",
-      ":std_config",
-      ":std_core",
-      ":std_stddef_h",
-    ]
-  }
 
   if (!is_win) {
     defines += [ "LIBCXX_BUILDING_LIBCXXABI" ]

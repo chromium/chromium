@@ -7,20 +7,21 @@ package org.chromium.components.embedder_support.delegate;
 import android.graphics.Bitmap;
 import android.view.KeyEvent;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
 
 /** Java peer of the native class of the same name. */
 @JNINamespace("web_contents_delegate_android")
+@NullMarked
 public class WebContentsDelegateAndroid {
     // Equivalent of WebCore::WebConsoleMessage::LevelTip.
     public static final int LOG_LEVEL_TIP = 0;
@@ -252,7 +253,7 @@ public class WebContentsDelegateAndroid {
      *     returns.
      * @return True if a native view such as an NTP is presenting.
      */
-    public boolean maybeCopyContentAreaAsBitmap(Callback<Bitmap> callback) {
+    public boolean maybeCopyContentAreaAsBitmap(Callback<@Nullable Bitmap> callback) {
         return false;
     }
 
@@ -262,9 +263,8 @@ public class WebContentsDelegateAndroid {
      * @return Null if there is no native view corresponding to the currently committed navigation
      *     entry or capture fails; otherwise, a bitmap object.
      */
-    @Nullable
     @CalledByNative
-    public Bitmap maybeCopyContentAreaAsBitmapSync() {
+    public @Nullable Bitmap maybeCopyContentAreaAsBitmapSync() {
         return null;
     }
 
@@ -272,9 +272,8 @@ public class WebContentsDelegateAndroid {
      * @return Null if the embedder fails to provide a privileged internal icon; otherwise, a bitmap
      *     object for the icon.
      */
-    @Nullable
     @CalledByNative
-    public Bitmap getBackForwardTransitionFallbackUXInternalPageIcon() {
+    public @Nullable Bitmap getBackForwardTransitionFallbackUXInternalPageIcon() {
         return null;
     }
 
@@ -296,6 +295,6 @@ public class WebContentsDelegateAndroid {
 
     @NativeMethods
     public interface Natives {
-        void maybeCopyContentAreaAsBitmapOutcome(long callbackPtr, Bitmap bitmap);
+        void maybeCopyContentAreaAsBitmapOutcome(long callbackPtr, @Nullable Bitmap bitmap);
     }
 }

@@ -22,6 +22,10 @@ class PermissionDialog : public PermissionPromptAndroid {
 
   ~PermissionDialog() override;
 
+  static std::unique_ptr<PermissionDialog> Create(
+      content::WebContents* web_contents,
+      Delegate* delegate);
+
   // PermissionPrompt:
   PermissionPromptDisposition GetPromptDisposition() const override;
 

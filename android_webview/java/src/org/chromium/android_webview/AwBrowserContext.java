@@ -385,6 +385,11 @@ public class AwBrowserContext implements BrowserContextHandle {
                 .setServiceWorkerIoThreadClient(mNativeAwBrowserContext, ioThreadClient);
     }
 
+    public void setMaxPrerenders(int maxPrerenders) {
+        AwBrowserContextJni.get()
+                .setAllowedPrerenderingCount(mNativeAwBrowserContext, maxPrerenders);
+    }
+
     private static SharedPreferences createSharedPrefs(String relativePath) {
         return ContextUtils.getApplicationContext()
                 .getSharedPreferences(getSharedPrefsFilename(relativePath), Context.MODE_PRIVATE);
@@ -446,5 +451,7 @@ public class AwBrowserContext implements BrowserContextHandle {
 
         void setServiceWorkerIoThreadClient(
                 long nativeAwBrowserContext, AwContentsIoThreadClient ioThreadClient);
+
+        void setAllowedPrerenderingCount(long nativeAwBrowserContext, int maxPrerenders);
     }
 }

@@ -237,6 +237,16 @@ void SavedTabGroupModelListener::ConnectToLocalTabGroup(
   const tab_groups::TabGroupId local_group_id =
       saved_tab_group.local_group_id().value();
 
+  // in cases like session restore on mac, it may be possible for this saved
+  // group to have connect called on it multiple times. in order to prevent this
+  // from causing check failures verify that the group is listened to correctly,
+  // and early return
+  if (local_tab_group_listeners_.contains(local_group_id)) {
+    CHECK(local_tab_group_listeners_.at(local_group_id).saved_guid() ==
+          saved_tab_group.saved_guid());
+    return;
+  }
+
   // `tab_guid_mapping` should have one entry per tab in the local group. This
   // may not equal the saved group's size, if the saved group contains invalid
   // URLs.

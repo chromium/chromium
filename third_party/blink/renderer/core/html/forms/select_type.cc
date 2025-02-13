@@ -498,25 +498,35 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
     return false;
   }
 
+  // We shouldn't run this code when the base appearance picker is open,
+  // otherwise interactive elements inside it will be unusable.
+  bool base_picker_open = IsAppearanceBasePicker() && PopupIsVisible();
   const auto* mouse_event = DynamicTo<MouseEvent>(event);
   if (event.type() == event_type_names::kMousedown && mouse_event &&
       mouse_event->button() ==
-          static_cast<int16_t>(WebPointerProperties::Button::kLeft)) {
+          static_cast<int16_t>(WebPointerProperties::Button::kLeft) &&
+      !base_picker_open) {
     InputDeviceCapabilities* source_capabilities =
         select_->GetDocument()
             .domWindow()
             ->GetInputDeviceCapabilities()
             ->FiresTouchEvents(mouse_event->FromTouch());
-    select_->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
-                               mojom::blink::FocusType::kMouse,
-                               source_capabilities, FocusOptions::Create(),
-                               FocusTrigger::kUserGesture));
+    if (IsAppearanceBasePicker()) {
+      // Don't focus the select when the picker is in base appearance mode,
+      // otherwise any click inside the picker would focus the button. Calling
+      // SetLastFocusType prevents us from matching :focus-visible when
+      // PopoverElementForAppearanceBase::ShowPopoverInternal focuses an option.
+      select_->GetDocument().SetLastFocusType(mojom::blink::FocusType::kMouse);
+    } else {
+      select_->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
+                                 mojom::blink::FocusType::kMouse,
+                                 source_capabilities, FocusOptions::Create(),
+                                 FocusTrigger::kUserGesture));
+    }
     if (select_->GetLayoutObject() && !will_be_destroyed_ &&
-        !select_->IsDisabledFormControl()) {
+        !select_->IsDisabledFormControl() && !base_picker_open) {
       if (PopupIsVisible()) {
-        if (!IsAppearanceBasePicker()) {
-          HidePopup(SelectPopupHideBehavior::kNormal);
-        }
+        HidePopup(SelectPopupHideBehavior::kNormal);
       } else {
         // Save the selection so it can be compared to the new selection
         // when we call onChange during selectOption, which gets called

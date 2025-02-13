@@ -615,7 +615,7 @@ int WMain(HMODULE module) {
                      GetLocalizedMetainstallerErrorString(
                          result.exit_code, result.windows_error, lang)
                          .c_str(),
-                     ui::GetInstallerDisplayName(bundle_name).c_str(),
+                     ui::GetInstallerDisplayName(bundle_name, lang).c_str(),
                      MB_OK | MB_ICONERROR | MB_SETFOREGROUND, 0);
     }
     if (usage_stats_enable) {

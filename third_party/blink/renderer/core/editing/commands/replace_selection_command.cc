@@ -1267,7 +1267,6 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
     return;
 
   Position insertion_pos = EndingVisibleSelection().Start();
-  Position placeholder = ComputePlaceholderToCollapseAt(insertion_pos);
 
   // We don't want any of the pasted content to end up nested in a Mail
   // blockquote, so first break out of any surrounding Mail blockquotes. Unless
@@ -1298,6 +1297,8 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
   PrepareWhitespaceAtPositionForSplit(insertion_pos);
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+
+  Position placeholder = ComputePlaceholderToCollapseAt(insertion_pos);
 
   // If the downstream node has been removed there's no point in continuing.
   if (!MostForwardCaretPosition(insertion_pos).AnchorNode())

@@ -48,7 +48,7 @@ suite('UpdateVoicePack', () => {
     setup(() => {
       listenerNotified = false;
       listener = {
-        notify(_language: string, _type: NotificationType): void {
+        notify(_type: NotificationType, _language: string): void {
           listenerNotified = true;
         },
       };

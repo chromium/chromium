@@ -33,10 +33,8 @@ enum class ConsumerType {
   kDataOnly,
   // Can have data, file, and blob elements (no data pipes).
   kDataAndEncodedFileOrBlob,
-  // Can have data and data pipe elements (no files and blobs).
-  kDataAndDataPipe,
-  // None of above.
-  kInvalid
+  // Can have all data types.
+  kUniversal,
 };
 
 ConsumerType GetConsumerType(const EncodedFormData* form_data) {
@@ -47,17 +45,10 @@ ConsumerType GetConsumerType(const EncodedFormData* form_data) {
         break;
       case FormDataElement::kEncodedFile:
       case FormDataElement::kEncodedBlob:
-        if (type == ConsumerType::kDataAndDataPipe) {
-          return ConsumerType::kInvalid;
-        }
         type = ConsumerType::kDataAndEncodedFileOrBlob;
         break;
       case FormDataElement::kDataPipe:
-        if (type == ConsumerType::kDataAndEncodedFileOrBlob) {
-          return ConsumerType::kInvalid;
-        }
-        type = ConsumerType::kDataAndDataPipe;
-        break;
+        return ConsumerType::kUniversal;
     }
   }
   return type;
@@ -67,9 +58,7 @@ class DataOnlyBytesConsumer : public BytesConsumer {
  public:
   explicit DataOnlyBytesConsumer(scoped_refptr<EncodedFormData> form_data)
       : form_data_(std::move(form_data)) {
-    // TODO(crbug.com/374124998): we should have this type check.
-    // CHECK_EQ(ConsumerType::kDataOnly,
-    // form_data_->GetType());
+    DCHECK_EQ(ConsumerType::kDataOnly, GetConsumerType(form_data_.get()));
   }
 
   // BytesConsumer implementation
@@ -143,9 +132,9 @@ class DataAndEncodedFileOrBlobBytesConsumer final : public BytesConsumer {
       scoped_refptr<EncodedFormData> form_data,
       BytesConsumer* consumer_for_testing)
       : form_data_(std::move(form_data)) {
-    // TODO(crbug.com/374124998): we should have this type check.
-    // CHECK_EQ(ConsumerType::kDataAndEncodedFileOrBlob,
-    //        form_data_->GetType());
+    DCHECK_EQ(ConsumerType::kDataAndEncodedFileOrBlob,
+              GetConsumerType(form_data_.get()));
+    CHECK(form_data_->Boundary().data());
     if (consumer_for_testing) {
       blob_bytes_consumer_ = consumer_for_testing;
       return;
@@ -332,14 +321,11 @@ class DataPipeGetterConsumer : public BytesConsumer {
   Member<DataPipeBytesConsumer::CompletionNotifier> completion_notifier_;
 };
 
-class DataAndDataPipeBytesConsumer final : public BytesConsumer {
+class UniversalBytesConsumer final : public BytesConsumer {
  public:
-  DataAndDataPipeBytesConsumer(ExecutionContext* execution_context,
-                               EncodedFormData* form_data)
+  UniversalBytesConsumer(ExecutionContext* execution_context,
+                         EncodedFormData* form_data)
       : execution_context_(execution_context) {
-    // TODO(crbug.com/374124998): we should have this type check.
-    // CHECK_EQ(ConsumerType::kDataAndDataPipe,
-    //       form_data->GetType());
     // Make a copy in case |form_data| will mutate while we read it. Copy()
     // works fine; we don't need to DeepCopy() the data and data pipe getter:
     // data is just a Vector<char> and data pipe getter can be shared.
@@ -369,6 +355,16 @@ class DataAndDataPipeBytesConsumer final : public BytesConsumer {
               std::move(simple_data));
           break;
         }
+        case FormDataElement::kEncodedFile:
+        case FormDataElement::kEncodedBlob: {
+          scoped_refptr<EncodedFormData> form_data = EncodedFormData::Create();
+          form_data->SetBoundary(form_data_->Boundary());
+          form_data->MutableElements().push_back(std::move(*iter_));
+          bytes_consumer_ =
+              MakeGarbageCollected<DataAndEncodedFileOrBlobBytesConsumer>(
+                  execution_context_, std::move(form_data), nullptr);
+          break;
+        }
         case FormDataElement::kDataPipe: {
           bytes_consumer_ = DataPipeGetterConsumer::Create(
               execution_context_->GetTaskRunner(TaskType::kNetworking),
@@ -377,11 +373,6 @@ class DataAndDataPipeBytesConsumer final : public BytesConsumer {
             return Result::kError;
           }
           break;
-        }
-        default: {
-          LOG(ERROR) << "Invalid type: " << iter_->type_;
-          base::debug::DumpWithoutCrashing();
-          return Result::kError;
         }
       }
 
@@ -514,24 +505,6 @@ class DataAndDataPipeBytesConsumer final : public BytesConsumer {
   Member<BytesConsumer> bytes_consumer_;
 };
 
-ConsumerType GetDeprecatedType(const EncodedFormData* form_data) {
-  ConsumerType type = ConsumerType::kDataOnly;
-  for (const auto& element : form_data->Elements()) {
-    switch (element.type_) {
-      case FormDataElement::kData:
-        break;
-      case FormDataElement::kEncodedFile:
-      case FormDataElement::kEncodedBlob:
-        type = ConsumerType::kDataAndEncodedFileOrBlob;
-        break;
-      case FormDataElement::kDataPipe:
-        type = ConsumerType::kDataAndDataPipe;
-        break;
-    }
-  }
-  return type;
-}
-
 }  // namespace
 
 FormDataBytesConsumer::FormDataBytesConsumer(const String& string)
@@ -571,32 +544,18 @@ BytesConsumer* FormDataBytesConsumer::GetImpl(
     scoped_refptr<EncodedFormData> form_data,
     BytesConsumer* consumer_for_testing) {
   DCHECK(form_data);
-  ConsumerType consumer_type = GetConsumerType(form_data.get());
-  // TODO(crbug.com/374124998): introduce canonical way not to lose elements.
-  // Also see https://issues.chromium.org/u/1/issues/356183778#comment57
-  if (consumer_type == ConsumerType::kInvalid) {
-    base::debug::DumpWithoutCrashing();
-    consumer_type = GetDeprecatedType(form_data.get());
-    DUMP_WILL_BE_CHECK_NE(ConsumerType::kInvalid, consumer_type);
-  }
+  const ConsumerType consumer_type = GetConsumerType(form_data.get());
   switch (consumer_type) {
     case ConsumerType::kDataOnly:
       return MakeGarbageCollected<DataOnlyBytesConsumer>(std::move(form_data));
     case ConsumerType::kDataAndEncodedFileOrBlob:
       return MakeGarbageCollected<DataAndEncodedFileOrBlobBytesConsumer>(
           execution_context, std::move(form_data), consumer_for_testing);
-    case ConsumerType::kDataAndDataPipe:
-      return MakeGarbageCollected<DataAndDataPipeBytesConsumer>(
-          execution_context, form_data.get());
-    case ConsumerType::kInvalid:
-      DUMP_WILL_BE_NOTREACHED();
+    case ConsumerType::kUniversal:
+      return MakeGarbageCollected<UniversalBytesConsumer>(execution_context,
+                                                          form_data.get());
   }
   return nullptr;
-}
-
-bool FormDataBytesConsumer::IsValidForTesting(
-    const EncodedFormData* form_data) {
-  return GetConsumerType(form_data) != ConsumerType::kInvalid;
 }
 
 }  // namespace blink

@@ -148,6 +148,8 @@ class XRSystem final : public EventTarget,
   void AddWebXrInternalsMessage(const String& message);
 
  private:
+  void DisableBackForwardCache();
+
   enum SensorRequirement {
     kNone,
     kOptional,

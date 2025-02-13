@@ -10058,6 +10058,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8155676038687609779">{COUNT,plural, =0{Nie znaleziono przejętych haseł}=1{{COUNT} przejęte hasło}few{{COUNT} przejęte hasła}many{{COUNT} przejętych haseł}other{{COUNT} przejętego hasła}}</translation>
 <translation id="8157248655669507702">Aby zainstalować profil eSIM, włącz mobilną transmisję danych</translation>
 <translation id="8157704005178149728">Konfiguruję nadzorowanie…</translation>
+<translation id="8157728322324420120">Proponowane dla Ciebie</translation>
 <translation id="8157849462797352650">Twoje urządzenie będzie otrzymywać najnowsze aktualizacje poprawiające bezpieczeństwo, stabilność i wydajność</translation>
 <translation id="8158117992543756526">To urządzenie nie otrzymuje już automatycznych aktualizacji zabezpieczeń i oprogramowania od: <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Otrzymuj potwierdzenia wibracjami w przypadku czynności takich jak dzielenie ekranu lub przełączanie biurek. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>

@@ -13,7 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/data_manager/entities/test_entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/entities/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/entity_instance.h"
 #include "components/autofill/core/browser/data_model/entity_type.h"
 #include "components/autofill/core/browser/data_model/entity_type_names.h"
@@ -25,6 +25,8 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
+#include "components/autofill/core/browser/webdata/entities/entity_table.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
@@ -154,7 +156,7 @@ class AutofillAiManagerTest : public BaseAutofillAiManagerTest {
     ON_CALL(client(), GetUserAnnotationsService)
         .WillByDefault(Return(&user_annotations_service_));
     ON_CALL(client(), GetEntityDataManager)
-        .WillByDefault(Return(&test_entity_data_manager_));
+        .WillByDefault(Return(&entity_data_manager_));
     ON_CALL(client(), IsUserEligible).WillByDefault(Return(true));
   }
 
@@ -180,9 +182,22 @@ class AutofillAiManagerTest : public BaseAutofillAiManagerTest {
     }
   }
 
- protected:
+  void AddOrUpdateEntityInstance(autofill::EntityInstance entity) {
+    entity_data_manager_.AddOrUpdateEntityInstance(std::move(entity));
+    webdata_helper_.WaitUntilIdle();
+  }
+
+  std::vector<autofill::EntityInstance> GetEntityInstances() {
+    webdata_helper_.WaitUntilIdle();
+    return entity_data_manager_.GetEntityInstances();
+  }
+
+ private:
   user_annotations::TestUserAnnotationsService user_annotations_service_;
-  autofill::TestEntityDataManager test_entity_data_manager_;
+  autofill::AutofillWebDataServiceTestHelper webdata_helper_{
+      std::make_unique<autofill::EntityTable>()};
+  autofill::EntityDataManager entity_data_manager_{
+      webdata_helper_.autofill_webdata_service()};
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -241,14 +256,15 @@ TEST_F(AutofillAiManagerTest,
   ON_CALL(client(), GetCachedFormStructure)
       .WillByDefault(Return(&form_structure));
 
-  test_entity_data_manager_.AddEntityInstance(
-      autofill::test::GetPassportEntityInstance());
+  AddOrUpdateEntityInstance(autofill::test::GetPassportEntityInstance());
 
   base::test::TestFuture<std::vector<autofill::Suggestion>> suggestions;
   manager().GetSuggestions(form.global_id(), form.fields().front().global_id(),
                            /*is_manual_fallback=*/false,
                            suggestions.GetCallback());
-  EXPECT_THAT(suggestions.Take(), ElementsAre(HasType(kFillAutofillAi)));
+  EXPECT_THAT(suggestions.Take(),
+              ElementsAre(HasType(kFillAutofillAi), HasType(kSeparator),
+                          HasType(kManageAutofillAi)));
 }
 
 // Tests that the user receives a loading suggestions when using AutofillAi
@@ -265,8 +281,7 @@ TEST_F(
   ON_CALL(client(), GetCachedFormStructure)
       .WillByDefault(Return(&form_structure));
 
-  test_entity_data_manager_.AddEntityInstance(
-      autofill::test::GetPassportEntityInstance());
+  AddOrUpdateEntityInstance(autofill::test::GetPassportEntityInstance());
   base::MockCallback<AutofillAiManager::GetSuggestionsCallback>
       get_suggestions_callback;
 
@@ -294,8 +309,7 @@ TEST_F(
   ON_CALL(client(), GetCachedFormStructure)
       .WillByDefault(Return(&form_structure));
 
-  test_entity_data_manager_.AddEntityInstance(
-      autofill::test::GetPassportEntityInstance());
+  AddOrUpdateEntityInstance(autofill::test::GetPassportEntityInstance());
   base::MockCallback<AutofillAiManager::GetSuggestionsCallback>
       get_suggestions_callback;
 
@@ -303,7 +317,9 @@ TEST_F(
   manager().GetSuggestions(form.global_id(), form.fields().front().global_id(),
                            /*is_manual_fallback=*/true,
                            suggestions.GetCallback());
-  EXPECT_THAT(suggestions.Take(), ElementsAre(HasType(kFillAutofillAi)));
+  EXPECT_THAT(suggestions.Take(),
+              ElementsAre(HasType(kFillAutofillAi), HasType(kSeparator),
+                          HasType(kManageAutofillAi)));
 }
 
 class AutofillAiManagerImportFormTest
@@ -339,7 +355,7 @@ class AutofillAiManagerImportFormTest
     base::optional_ref<const autofill::AttributeInstance> instance =
         entity.attribute(*attribute);
     CHECK(instance);
-    return base::UTF8ToUTF16(instance->value());
+    return instance->value();
   }
 
   std::u16string GetValueFromEntityForAttributeTypeName(
@@ -348,7 +364,7 @@ class AutofillAiManagerImportFormTest
     base::optional_ref<const autofill::AttributeInstance> instance =
         entity.attribute(autofill::AttributeType(type));
     CHECK(instance);
-    return base::UTF8ToUTF16(instance->value());
+    return instance->value();
   }
 };
 
@@ -380,13 +396,8 @@ TEST_F(AutofillAiManagerImportFormTest,
   callback_result.entity = entity;
   std::move(save_callback).Run(callback_result);
   // Tests that the expected entity was saved.
-  base::test::TestFuture<std::vector<autofill::EntityInstance>>
-      saved_instances_callback;
-  test_entity_data_manager_.LoadEntityInstances(
-      saved_instances_callback.GetCallback());
-  std::vector<autofill::EntityInstance> saved_entities =
-      saved_instances_callback.Take();
-  EXPECT_EQ(saved_entities.size(), 1u);
+  std::vector<autofill::EntityInstance> saved_entities = GetEntityInstances();
+  ASSERT_EQ(saved_entities.size(), 1u);
   EXPECT_EQ(saved_entities[0], *entity);
   EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
                 saved_entities[0], autofill::AttributeTypeName::kPassportName),
@@ -421,12 +432,7 @@ TEST_F(AutofillAiManagerImportFormTest,
       .Run(AutofillAiClient::SavePromptAcceptanceResult(
           /*prompt_was_accepted=*/false));
   // Tests that the no entity was saved.
-  base::test::TestFuture<std::vector<autofill::EntityInstance>>
-      saved_instances_callback;
-  test_entity_data_manager_.LoadEntityInstances(
-      saved_instances_callback.GetCallback());
-  std::vector<autofill::EntityInstance> saved_entities =
-      saved_instances_callback.Take();
+  std::vector<autofill::EntityInstance> saved_entities = GetEntityInstances();
   EXPECT_EQ(saved_entities.size(), 0u);
 }
 
@@ -447,12 +453,7 @@ TEST_F(AutofillAiManagerImportFormTest,
   EXPECT_FALSE(autofill_ai_shows_bubble);
 
   // Tests that no entity was saved.
-  base::test::TestFuture<std::vector<autofill::EntityInstance>>
-      saved_instances_callback;
-  test_entity_data_manager_.LoadEntityInstances(
-      saved_instances_callback.GetCallback());
-  std::vector<autofill::EntityInstance> saved_entities =
-      saved_instances_callback.Take();
+  std::vector<autofill::EntityInstance> saved_entities = GetEntityInstances();
   EXPECT_EQ(saved_entities.size(), 0u);
 }
 
@@ -468,7 +469,7 @@ TEST_F(AutofillAiManagerImportFormTest, EntityAlreadyStored_DoNotShowPrompt) {
       GetValueFromEntityForFieldType(entity, autofill::LOYALTY_MEMBERSHIP_ID));
   form->field(1)->set_value(GetValueFromEntityForFieldType(
       entity, autofill::LOYALTY_MEMBERSHIP_PROGRAM));
-  test_entity_data_manager_.AddEntityInstance(entity);
+  AddOrUpdateEntityInstance(entity);
 
   base::test::TestFuture<std::unique_ptr<autofill::FormStructure>, bool>
       autofill_callback;
@@ -479,12 +480,7 @@ TEST_F(AutofillAiManagerImportFormTest, EntityAlreadyStored_DoNotShowPrompt) {
   EXPECT_FALSE(autofill_ai_shows_bubble);
 
   // Tests that no entity was saved.
-  base::test::TestFuture<std::vector<autofill::EntityInstance>>
-      saved_instances_callback;
-  test_entity_data_manager_.LoadEntityInstances(
-      saved_instances_callback.GetCallback());
-  std::vector<autofill::EntityInstance> saved_entities =
-      saved_instances_callback.Take();
+  std::vector<autofill::EntityInstance> saved_entities = GetEntityInstances();
   EXPECT_EQ(saved_entities.size(), 1u);
 }
 
@@ -494,7 +490,7 @@ TEST_F(AutofillAiManagerImportFormTest, NewEntity_ShowPromptAndAccept) {
        autofill::PHONE_HOME_WHOLE_NUMBER});
   autofill::EntityInstance existing_entity =
       autofill::test::GetPassportEntityInstance();
-  test_entity_data_manager_.AddEntityInstance(existing_entity);
+  AddOrUpdateEntityInstance(existing_entity);
   // Set the filled values to be different to the ones already stored.
   form->field(0)->set_value(u"Jon Doe");
   form->field(1)->set_value(u"1234321");
@@ -518,13 +514,8 @@ TEST_F(AutofillAiManagerImportFormTest, NewEntity_ShowPromptAndAccept) {
   callback_result.entity = entity;
   std::move(save_callback).Run(callback_result);
   // Tests that the expected entity was saved.
-  base::test::TestFuture<std::vector<autofill::EntityInstance>>
-      saved_instances_callback;
-  test_entity_data_manager_.LoadEntityInstances(
-      saved_instances_callback.GetCallback());
-  std::vector<autofill::EntityInstance> saved_entities =
-      saved_instances_callback.Take();
-  EXPECT_EQ(saved_entities.size(), 2u);
+  std::vector<autofill::EntityInstance> saved_entities = GetEntityInstances();
+  ASSERT_EQ(saved_entities.size(), 2u);
   EXPECT_EQ(saved_entities[1], *entity);
   EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
                 saved_entities[1], autofill::AttributeTypeName::kPassportName),
@@ -546,12 +537,11 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
   autofill::test::PassportEntityOptions
       passport_without_issue_date_and_expiry_date;
   passport_without_issue_date_and_expiry_date.issue_date = nullptr;
-  passport_without_issue_date_and_expiry_date.expiry_date = "";
+  passport_without_issue_date_and_expiry_date.expiry_date = u"";
   autofill::EntityInstance existing_entity_without_issue_date =
       autofill::test::GetPassportEntityInstance(
           passport_without_issue_date_and_expiry_date);
-  test_entity_data_manager_.AddEntityInstance(
-      existing_entity_without_issue_date);
+  AddOrUpdateEntityInstance(existing_entity_without_issue_date);
 
   // Set the filled values to be the same as the ones already stored in the
   // existing entity, also fill the issue and expiry dates.
@@ -583,15 +573,10 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
   callback_result.entity = entity;
   std::move(save_callback).Run(callback_result);
   // Tests that the expected entity was updated.
-  base::test::TestFuture<std::vector<autofill::EntityInstance>>
-      saved_instances_callback;
-  test_entity_data_manager_.LoadEntityInstances(
-      saved_instances_callback.GetCallback());
-  std::vector<autofill::EntityInstance> saved_entities =
-      saved_instances_callback.Take();
+  std::vector<autofill::EntityInstance> saved_entities = GetEntityInstances();
 
   // Only one entity should exist, as it was updated.
-  EXPECT_EQ(saved_entities.size(), 1u);
+  ASSERT_EQ(saved_entities.size(), 1u);
   EXPECT_EQ(saved_entities[0], *entity);
   EXPECT_EQ(saved_entities[0].guid(),
             existing_entity_without_issue_date.guid());

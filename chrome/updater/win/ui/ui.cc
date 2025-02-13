@@ -54,10 +54,14 @@ void HideWindowChildren(HWND hwnd_parent) {
       0);
 }
 
-OmahaWnd::OmahaWnd(int dialog_id, WTL::CMessageLoop* message_loop, HWND parent)
+OmahaWnd::OmahaWnd(int dialog_id,
+                   WTL::CMessageLoop* message_loop,
+                   HWND parent,
+                   const std::wstring& lang)
     : IDD(dialog_id),
       message_loop_(message_loop),
       parent_(parent),
+      lang_(lang),
       is_complete_(false),
       is_close_enabled_(true),
       events_sink_(nullptr),
@@ -87,7 +91,7 @@ BOOL OmahaWnd::PreTranslateMessage(MSG* msg) {
 }
 
 void OmahaWnd::InitializeDialog() {
-  SetWindowText(GetInstallerDisplayName(bundle_name()).c_str());
+  SetWindowText(GetInstallerDisplayName(bundle_name(), lang()).c_str());
 
   CenterWindow(nullptr);
   ui::SetWindowIcon(m_hWnd, IDI_APP,

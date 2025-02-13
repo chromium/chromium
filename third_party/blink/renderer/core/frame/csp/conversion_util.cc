@@ -60,7 +60,7 @@ network::mojom::blink::ContentSecurityPolicyPtr ConvertToMojoBlink(
           policy_in.header.header_value, policy_in.header.type,
           policy_in.header.source),
       policy_in.use_reporting_api, Vector<String>(policy_in.report_endpoints),
-      policy_in.require_trusted_types_for,
+      policy_in.require_sri_for, policy_in.require_trusted_types_for,
       policy_in.trusted_types
           ? network::mojom::blink::CSPTrustedTypes::New(
                 Vector<String>(policy_in.trusted_types->list),

@@ -1104,21 +1104,24 @@ bool CreditCard::HasRichCardArtImageFromMetadata() const {
          card_art_url().spec() != kCapitalOneCardArtUrl;
 }
 
-void CreditCard::GetSupportedTypes(FieldTypeSet* supported_types) const {
-  supported_types->insert(CREDIT_CARD_NAME_FULL);
-  supported_types->insert(CREDIT_CARD_NAME_FIRST);
-  supported_types->insert(CREDIT_CARD_NAME_LAST);
-  supported_types->insert(CREDIT_CARD_NUMBER);
-  supported_types->insert(CREDIT_CARD_TYPE);
-  supported_types->insert(CREDIT_CARD_EXP_MONTH);
-  supported_types->insert(CREDIT_CARD_EXP_2_DIGIT_YEAR);
-  supported_types->insert(CREDIT_CARD_EXP_4_DIGIT_YEAR);
-  supported_types->insert(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR);
-  supported_types->insert(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
+FieldTypeSet CreditCard::GetSupportedTypes() const {
+  static constexpr FieldTypeSet supported_types{
+      CREDIT_CARD_NAME_FULL,
+      CREDIT_CARD_NAME_FIRST,
+      CREDIT_CARD_NAME_LAST,
+      CREDIT_CARD_NUMBER,
+      CREDIT_CARD_TYPE,
+      CREDIT_CARD_EXP_MONTH,
+      CREDIT_CARD_EXP_2_DIGIT_YEAR,
+      CREDIT_CARD_EXP_4_DIGIT_YEAR,
+      CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+      CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR};
+  return supported_types;
 }
 
-std::u16string CreditCard::GetInfo(FieldType type,
+std::u16string CreditCard::GetInfo(const AutofillType& autofill_type,
                                    const std::string& app_locale) const {
+  FieldType type = autofill_type.GetStorableType();
   if (type == CREDIT_CARD_NUMBER) {
     // Web pages should never actually be filled by a masked server card,
     // but this function is used at the preview stage.
@@ -1128,11 +1131,6 @@ std::u16string CreditCard::GetInfo(FieldType type,
     return StripCardNumberSeparators(number_);
   }
   return GetRawInfo(type);
-}
-
-std::u16string CreditCard::GetInfo(const AutofillType& type,
-                                   const std::string& app_locale) const {
-  return GetInfo(type.GetStorableType(), app_locale);
 }
 
 bool CreditCard::SetInfoWithVerificationStatus(const AutofillType& type,

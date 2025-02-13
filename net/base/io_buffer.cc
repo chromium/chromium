@@ -87,7 +87,7 @@ void DrainableIOBuffer::DidConsume(int bytes) {
 }
 
 int DrainableIOBuffer::BytesRemaining() const {
-  return size_ - used_;
+  return size_;
 }
 
 // Returns the number of consumed bytes.
@@ -97,8 +97,12 @@ int DrainableIOBuffer::BytesConsumed() const {
 
 void DrainableIOBuffer::SetOffset(int bytes) {
   CHECK_GE(bytes, 0);
-  CHECK_LE(bytes, size_);
+  // Length from the start of `base_` to the end of the buffer passed in to the
+  // constructor isn't stored anywhere, so need to calculate it.
+  int length = size_ + used_;
+  CHECK_LE(bytes, length);
   used_ = bytes;
+  size_ = length - bytes;
   data_ = UNSAFE_TODO(base_->data() + used_);
 }
 
@@ -141,7 +145,7 @@ void GrowableIOBuffer::DidConsume(int bytes) {
 }
 
 int GrowableIOBuffer::RemainingCapacity() {
-  return capacity_ - offset_;
+  return size_;
 }
 
 base::span<uint8_t> GrowableIOBuffer::everything() {

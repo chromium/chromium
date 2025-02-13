@@ -28,13 +28,10 @@ static_library("passage_embeddings") {
     "//build:blink_buildflags",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/performance_manager/scenario_api",
     "//mojo/public/cpp/bindings",
     "//services/passage_embeddings/public/mojom",
   ]
-
-  if (use_blink) {
-    deps += [ "//third_party/blink/public/common:headers" ]
-  }
 }
 
 source_set("unit_tests") {

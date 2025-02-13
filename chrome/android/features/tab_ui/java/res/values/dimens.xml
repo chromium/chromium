@@ -135,10 +135,12 @@ found in the LICENSE file.
     <dimen name="archived_tabs_dialog_bottom_button_container_height">92dp</dimen>
 
     <dimen name="message_card_close_button_size">24dp</dimen>
+    <dimen name="message_card_description_vertical_margin">14dp</dimen>
 
     <!-- Dimens for tab strip tooltip. -->
     <dimen name="tab_strip_tooltip_margin">10dp</dimen>
     <dimen name="tab_strip_tooltip_label_horizontal_padding">8dp</dimen>
     <dimen name="tab_strip_tooltip_label_vertical_padding">4dp</dimen>
     <dimen name="tab_strip_tooltip_corner_radius">4dp</dimen>
+
 </resources>

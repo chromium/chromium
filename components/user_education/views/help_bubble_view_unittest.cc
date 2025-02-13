@@ -223,6 +223,9 @@ TEST_F(HelpBubbleViewTest, AnchorToRect) {
 
   HelpBubbleView* const bubble =
       CreateHelpBubbleView(std::move(params), anchor_bounds);
+
+  // CreateHelpBubbleView() will trigger an asynchronous autosize task.
+  views::test::RunScheduledLayout(bubble->GetWidget());
   const auto bubble_bounds = bubble->GetWidget()->GetWindowBoundsInScreen();
 
   // The right side of the bubble should overlap the widget.
@@ -247,6 +250,9 @@ TEST_F(HelpBubbleViewTest, AnchorRectUpdated) {
 
   HelpBubbleView* const bubble =
       CreateHelpBubbleView(std::move(params), anchor_bounds);
+
+  // CreateHelpBubbleView() will trigger an asynchronous autosize task.
+  views::test::RunScheduledLayout(bubble->GetWidget());
   const auto bubble_bounds = bubble->GetWidget()->GetWindowBoundsInScreen();
 
   constexpr gfx::Vector2d kAnchorOffset{9, 13};
@@ -254,6 +260,8 @@ TEST_F(HelpBubbleViewTest, AnchorRectUpdated) {
   bubble->SetForceAnchorRect(anchor_bounds);
   bubble->OnAnchorBoundsChanged();
 
+  // Bubble's anchor change will trigger an asynchronous autosize task.
+  views::test::RunScheduledLayout(bubble->GetWidget());
   gfx::Rect expected = bubble_bounds;
   expected.Offset(kAnchorOffset);
   EXPECT_EQ(expected, bubble->GetWidget()->GetWindowBoundsInScreen());
@@ -339,6 +347,9 @@ class HelpBubbleViewsTest : public HelpBubbleViewTest {
     test_element_->Show();
 
     help_bubble_ = CreateHelpBubble(std::move(params), test_element_.get());
+
+    // CreateHelpBubble() will trigger an asynchronous autosize task.
+    views::test::RunScheduledLayout(help_bubble_->bubble_view());
   }
 
   void TearDown() override {

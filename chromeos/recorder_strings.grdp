@@ -111,7 +111,7 @@
     Download
   </message>
   <message desc="Accessibility label of download button in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_DOWNLOAD_BUTTON_ARIA_LABEL">
-    Select and download <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph> transcription model
+    Download and select <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph> transcription model
   </message>
   <message desc="Accessibility label of error language row in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_DOWNLOAD_ERROR_ARIA_LABEL">
     Can't download <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph> transcription model. Try again or restart your Chromebook
@@ -120,7 +120,7 @@
     Can’t download. Try again or restart your Chromebook.
   </message>
   <message desc="Accessibility label of not downloaded language row in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_NOT_DOWNLOADED_ARIA_LABEL">
-    Select and download <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph> transcription model
+    Download and select <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph> transcription model
   </message>
   <message desc="Accessibility label of not selected language row in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_NOT_SELECTED_ARIA_LABEL">
     Select <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph>
@@ -475,7 +475,7 @@ Download the transcription model (up to 100MB) to get these transcriptions.
     Keep screen on when recording
   </message>
   <message desc="Accessibility label of the chevron-right button to open transcription language subpage in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_LANGUAGE_SUBPAGE_BUTTON_ARIA_LABEL">
-    Open transcription language picker
+    Transcription language picker
   </message>
   <message desc="Description of the speaker label toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SPEAKER_LABEL_DESCRIPTION">
     Currently only available in English (US)

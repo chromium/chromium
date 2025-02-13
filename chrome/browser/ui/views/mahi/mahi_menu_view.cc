@@ -113,9 +113,6 @@ void StyleMenuButton(views::LabelButton* button, const gfx::VectorIcon& icon) {
 
 std::u16string GetSimplifyButtonTooltipText(SelectedTextState text_state) {
   switch (text_state) {
-    case SelectedTextState::kEligible:
-      return l10n_util::GetStringUTF16(
-          IDS_MAHI_SIMPLIFY_BUTTON_TOOL_TIP_ENABLED);
     case SelectedTextState::kTooShort:
       return l10n_util::GetStringUTF16(
           IDS_MAHI_SIMPLIFY_BUTTON_TOOL_TIP_DISABLED_SELECTION_TOO_SHORT);
@@ -125,27 +122,12 @@ std::u16string GetSimplifyButtonTooltipText(SelectedTextState text_state) {
     case SelectedTextState::kEmpty:
       return l10n_util::GetStringUTF16(
           IDS_MAHI_SIMPLIFY_BUTTON_TOOL_TIP_DISABLED_SELECTION_EMPTY);
+    case SelectedTextState::kEligible:
     default:
       break;
   }
 
   return std::u16string();
-}
-
-std::u16string GetSummaryButtonTooltipText(SelectedTextState text_state) {
-  switch (text_state) {
-    case SelectedTextState::kEmpty:
-      return l10n_util::GetStringUTF16(IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP);
-    case SelectedTextState::kEligible:
-      return l10n_util::GetStringUTF16(
-          IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP_FOR_SELECTION);
-    case SelectedTextState::kTooShort:
-      return l10n_util::GetStringUTF16(
-          IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP_FOR_SELECTION_TOO_SHORT);
-    case SelectedTextState::kTooLong:
-    case SelectedTextState::kUnknown:
-      return std::u16string();
-  }
 }
 
 // Custom widget to ensure the MahiMenuView follows the same theme as the
@@ -322,13 +304,16 @@ MahiMenuView::MahiMenuView(ButtonStatus button_status, Surface surface)
 
   std::u16string elucidation_button_tooltip =
       GetSimplifyButtonTooltipText(button_status.elucidation_eligiblity);
-  if (elucidation_button_->GetVisible()) {
-    CHECK(!elucidation_button_tooltip.empty());
+  if (elucidation_button_->GetVisible() &&
+      !elucidation_button_tooltip.empty()) {
     elucidation_button_->SetTooltipText(elucidation_button_tooltip);
   }
 
-  summary_button_->SetTooltipText(GetSummaryButtonTooltipText(
-      button_status.summary_of_selection_eligibility));
+  if (button_status.summary_of_selection_eligibility ==
+      SelectedTextState::kTooShort) {
+    summary_button_->SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP_FOR_SELECTION_TOO_SHORT));
+  }
 
   StyleMenuButton(summary_button_, chromeos::kMahiSummarizeIcon);
   StyleMenuButton(elucidation_button_, chromeos::kMahiSimplifyIcon);

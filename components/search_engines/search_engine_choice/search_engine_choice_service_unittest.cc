@@ -42,6 +42,7 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -114,6 +115,9 @@ class SearchEngineChoiceServiceTest : public ::testing::Test {
   }
   TestingPrefServiceSimple& local_state() {
     return GetOrInitEnvironment().local_state();
+  }
+  TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver() {
+    return GetOrInitEnvironment().prepopulate_data_resolver();
   }
 
   base::HistogramTester histogram_tester_;
@@ -341,6 +345,7 @@ TEST_F(SearchEngineChoiceServiceTest,
                .is_profile_eligible_for_dse_guest_propagation = true});
 
   DefaultSearchManager manager(pref_service(), &search_engine_choice_service(),
+                               prepopulate_data_resolver(),
                                base::NullCallback());
   DefaultSearchManager::Source source;
   EXPECT_EQ(manager.GetDefaultSearchEngine(&source)->prepopulate_id, 1);

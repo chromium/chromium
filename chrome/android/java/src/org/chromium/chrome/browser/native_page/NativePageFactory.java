@@ -284,9 +284,7 @@ public class NativePageFactory {
                             mActivity,
                             () ->
                                     HistoryManagerUtils.showHistoryManager(
-                                            mActivity,
-                                            tab,
-                                            mTabModelSelector.isIncognitoSelected()));
+                                            mActivity, tab, tab.getProfile()));
             return new RecentTabsPage(
                     mActivity,
                     recentTabsManager,

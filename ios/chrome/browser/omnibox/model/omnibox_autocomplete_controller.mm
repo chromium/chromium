@@ -14,6 +14,8 @@
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/omnibox_controller.h"
+#import "components/omnibox/browser/omnibox_edit_model.h"
+#import "components/omnibox/browser/omnibox_popup_selection.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_ios.h"
@@ -35,6 +37,8 @@ using base::UserMetricsAction;
   raw_ptr<AutocompleteController> _autocompleteController;
   /// Controller of the omnibox view.
   raw_ptr<OmniboxViewIOS> _omniboxViewIOS;
+  /// Omnibox edit model. Should only be used for autocomplete interactions.
+  raw_ptr<OmniboxEditModel> _omniboxEditModel;
 
   /// Pref tracking if the bottom omnibox is enabled.
   PrefBackedBoolean* _bottomOmniboxEnabled;
@@ -49,6 +53,7 @@ using base::UserMetricsAction;
     _omniboxController = omniboxController;
     _autocompleteController = omniboxController->autocomplete_controller();
     _omniboxViewIOS = omniboxViewIOS;
+    _omniboxEditModel = omniboxController->edit_model();
 
     _preferredOmniboxPosition = metrics::OmniboxEventProto::UNKNOWN_POSITION;
     _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
@@ -66,6 +71,7 @@ using base::UserMetricsAction;
   [_bottomOmniboxEnabled setObserver:nil];
   _bottomOmniboxEnabled = nil;
   _autocompleteController = nullptr;
+  _omniboxEditModel = nullptr;
   _omniboxController = nullptr;
   _omniboxViewIOS = nullptr;
 }
@@ -138,6 +144,7 @@ using base::UserMetricsAction;
 - (void)selectMatchForOpening:(const AutocompleteMatch&)match
                         inRow:(NSUInteger)row
                        openIn:(WindowOpenDisposition)disposition {
+  const auto matchSelectionTimestamp = base::TimeTicks();
   base::RecordAction(UserMetricsAction("MobileOmniboxUse"));
 
   // OpenMatch() may close the popup, which will clear the result set and, by
@@ -151,6 +158,23 @@ using base::UserMetricsAction;
         "MobileOmnibox.PressedClipboardSuggestionAge",
         ClipboardRecentContent::GetInstance()->GetClipboardContentAge());
   }
+
+  if (!_autocompleteController || !_omniboxEditModel) {
+    return;
+  }
+
+  // Sometimes the match provided does not correspond to the autocomplete
+  // result match specified by `index`. Most Visited Tiles, for example,
+  // provide ad hoc matches that are not in the result at all.
+  if (row >= _autocompleteController->result().size() ||
+      _autocompleteController->result().match_at(row).destination_url !=
+          match.destination_url) {
+    [self openCustomMatch:match
+               disposition:disposition
+        selectionTimestamp:matchSelectionTimestamp];
+    return;
+  }
+
   if (_omniboxViewIOS) {
     _omniboxViewIOS->OnSelectedMatchForOpening(matchCopy, disposition, GURL(),
                                                std::u16string(), row);
@@ -188,6 +212,20 @@ using base::UserMetricsAction;
   if (_omniboxViewIOS) {
     _omniboxViewIOS->OnCallActionTap();
   }
+}
+
+#pragma mark - Private
+
+/// Opens a match created outside of autocomplete controller.
+- (void)openCustomMatch:(AutocompleteMatch)match
+            disposition:(WindowOpenDisposition)disposition
+     selectionTimestamp:(base::TimeTicks)timestamp {
+  if (!_autocompleteController || !_omniboxEditModel) {
+    return;
+  }
+  OmniboxPopupSelection selection(
+      _autocompleteController->InjectAdHocMatch(match));
+  _omniboxEditModel->OpenSelection(selection, timestamp, disposition);
 }
 
 @end

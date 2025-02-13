@@ -23,6 +23,8 @@ source_set("core") {
     "enterprise_interstitial_base.h",
     "enterprise_interstitial_util.cc",
     "enterprise_interstitial_util.h",
+    "features.cc",
+    "features.h",
     "realtime_reporting_client_base.cc",
     "realtime_reporting_client_base.h",
     "reporting_constants.h",

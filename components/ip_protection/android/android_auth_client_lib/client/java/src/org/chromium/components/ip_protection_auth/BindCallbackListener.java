@@ -9,8 +9,11 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** BindCallbackListener uses JNI to notify native code when the IP Protection service is bound. */
 @JNINamespace("ip_protection::android")
+@NullMarked
 final class BindCallbackListener implements IpProtectionAuthServiceCallback {
     private long mNativeListener;
 

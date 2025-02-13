@@ -70,7 +70,7 @@ OneCopyRasterBufferProvider::RasterBufferImpl::~RasterBufferImpl() {
     // happened if the |after_raster_sync_token_| was set.
     backing_->returned_sync_token = gpu::SyncToken();
   }
-  backing_->shared_image = std::move(shared_image_);
+  backing_->set_shared_image(std::move(shared_image_));
   if (should_destroy_shared_image_ && backing_->shared_image) {
     backing_->shared_image->UpdateDestructionSyncToken(
         before_raster_sync_token_);
@@ -146,12 +146,12 @@ OneCopyRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
-  if (!resource.gpu_backing()) {
+  if (!resource.backing()) {
     auto backing = std::make_unique<ResourcePool::Backing>();
     backing->overlay_candidate = tile_overlay_candidate_;
-    resource.set_gpu_backing(std::move(backing));
+    resource.set_backing(std::move(backing));
   }
-  ResourcePool::Backing* backing = resource.gpu_backing();
+  ResourcePool::Backing* backing = resource.backing();
   // TODO(danakj): If resource_content_id != 0, we only need to copy/upload
   // the dirty rect.
   return std::make_unique<RasterBufferImpl>(this, resource, backing,
@@ -187,7 +187,7 @@ bool OneCopyRasterBufferProvider::CanPartialRasterIntoProvidedResource() const {
 bool OneCopyRasterBufferProvider::IsResourceReadyToDraw(
     const ResourcePool::InUsePoolResource& resource) {
   FlushIfNeeded();
-  const gpu::SyncToken& sync_token = resource.gpu_backing()->mailbox_sync_token;
+  const gpu::SyncToken& sync_token = resource.backing()->mailbox_sync_token;
   // This SyncToken() should have been set by calling OrderingBarrier() before
   // calling this.
   DCHECK(sync_token.HasData());
@@ -204,8 +204,7 @@ uint64_t OneCopyRasterBufferProvider::SetReadyToDrawCallback(
   FlushIfNeeded();
   gpu::SyncToken latest_sync_token;
   for (const auto* in_use : resources) {
-    const gpu::SyncToken& sync_token =
-        in_use->gpu_backing()->mailbox_sync_token;
+    const gpu::SyncToken& sync_token = in_use->backing()->mailbox_sync_token;
     if (sync_token.release_count() > latest_sync_token.release_count())
       latest_sync_token = sync_token;
   }

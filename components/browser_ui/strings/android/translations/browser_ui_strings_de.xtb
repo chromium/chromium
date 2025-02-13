@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Preissenkung auf deinen geöffneten Tabs}other{Preissenkungen auf deinen geöffneten Tabs}}</translation>
 <translation id="5186036860380548585">Option ist oben auf dem Bildschirm verfügbar</translation>
 <translation id="5197729504361054390">Die von dir ausgewählten Kontakte werden mit <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> geteilt.</translation>
+<translation id="5198930230016462977">Ansicht am unteren Rand für „Seite ‚Neuer Tab‘ anpassen“ ist geschlossen</translation>
 <translation id="5216942107514965959">Heute zuletzt besucht</translation>
 <translation id="5225463052809312700">Kamera einschalten</translation>
 <translation id="5234764350956374838">Schließen</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Handtracking</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blockiert</translation>
 <translation id="5804241973901381774">Berechtigungen</translation>
+<translation id="5822675474983796325">Ansicht am unteren Rand für „Seite ‚Neuer Tab‘ anpassen“ ist vollständig geöffnet</translation>
 <translation id="5844448279347999754">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie Text und Bilder abrufen dürfen, die in der Zwischenablage gespeichert sind. Wenn er deaktiviert ist, können Websites keine Texte oder Bilder abrufen, die in der Zwischenablage gespeichert sind.</translation>
 <translation id="5853982612236235577">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie Benachrichtigungen senden dürfen. Wenn er deaktiviert ist, können Websites keine Benachrichtigungen senden.</translation>
 <translation id="5860033963881614850">Aus</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Erweitert</translation>
 <translation id="7219254577985949841">Websitedaten löschen?</translation>
 <translation id="723171743924126238">Bilder auswählen</translation>
+<translation id="7243246278722455312">Ansicht am unteren Rand für „Seite ‚Neuer Tab‘ anpassen“</translation>
 <translation id="7243308994586599757">Optionen unten auf dem Bildschirm verfügbar</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ausgewählt</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> und <ph name="PERMISSION_2" /> zugelassen</translation>

@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 
 namespace blink {
 
@@ -39,6 +40,19 @@ bool PictureInPictureController::IsElementInPictureInPicture(
   PictureInPictureController* controller =
       Supplement<Document>::From<PictureInPictureController>(document);
   return controller && controller->IsPictureInPictureElement(element);
+}
+
+// static
+bool PictureInPictureController::IsInDocumentPictureInPicture(
+    const Element* element) {
+  DCHECK(element);
+  Document& document = element->GetDocument();
+
+  if (!document.domWindow()) {
+    return false;
+  }
+
+  return document.domWindow()->IsPictureInPictureWindow();
 }
 
 // static

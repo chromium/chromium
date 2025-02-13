@@ -465,34 +465,29 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAutofillProfiles(
       AUTOFILL_PROFILES_RESULT, std::move(profiles));
 }
 
-WebDatabase::State AutofillWebDataBackendImpl::AddEntityInstance(
-    const EntityInstance& entity,
+WebDatabase::State AutofillWebDataBackendImpl::AddOrUpdateEntityInstance(
+    EntityInstance entity,
+    base::OnceCallback<void(EntityInstanceChange)> on_success,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   EntityTable* table = EntityTable::FromWebDatabase(db);
-  if (!table->AddEntityInstance(entity)) {
-    ReportResult(Result::kAddEntityInstance_Failure);
-    return WebDatabase::COMMIT_NOT_NEEDED;
-  }
-  ReportResult(Result::kAddEntityInstance_Success);
-  return WebDatabase::COMMIT_NEEDED;
-}
-
-WebDatabase::State AutofillWebDataBackendImpl::UpdateEntityInstance(
-    const EntityInstance& entity,
-    WebDatabase* db) {
-  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  EntityTable* table = EntityTable::FromWebDatabase(db);
-  if (!table->UpdateEntityInstance(entity)) {
+  if (!table->AddOrUpdateEntityInstance(entity)) {
     ReportResult(Result::kUpdateEntityInstance_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
+  base::Uuid guid = entity.guid();
+  ui_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(on_success),
+                     EntityInstanceChange(EntityInstanceChange::UPDATE,
+                                          std::move(guid), std::move(entity))));
   ReportResult(Result::kUpdateEntityInstance_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::RemoveEntityInstance(
-    const base::Uuid& guid,
+    base::Uuid guid,
+    base::OnceCallback<void(EntityInstanceChange)> on_success,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   EntityTable* table = EntityTable::FromWebDatabase(db);
@@ -500,6 +495,11 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveEntityInstance(
     ReportResult(Result::kRemoveEntityInstance_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
+  ui_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(on_success),
+                     EntityInstanceChange(EntityInstanceChange::REMOVE,
+                                          std::move(guid), std::nullopt)));
   ReportResult(Result::kRemoveEntityInstance_Success);
   return WebDatabase::COMMIT_NEEDED;
 }

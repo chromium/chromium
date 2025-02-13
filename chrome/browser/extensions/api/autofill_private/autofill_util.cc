@@ -76,7 +76,7 @@ autofill_private::AddressEntry ProfileToAddressEntry(
   address.guid = profile.guid();
 
   std::ranges::transform(
-      autofill::GetDatabaseStoredTypesOfAutofillProfile(),
+      autofill::AutofillProfile::kDatabaseStoredTypes,
       back_inserter(address.fields), [&profile](auto field_type) {
         autofill_private::AddressField field;
         field.type =

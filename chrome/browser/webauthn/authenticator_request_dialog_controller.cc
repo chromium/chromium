@@ -1412,7 +1412,8 @@ void AuthenticatorRequestDialogController::SelectAccount(
   for (const auto& response : ephemeral_state_.responses_) {
     model_->creds.emplace_back(AuthenticatorType::kOther,
                                model_->relying_party_id,
-                               response.credential->id, *response.user_entity);
+                               response.credential->id, *response.user_entity,
+                               /*provider_name=*/std::nullopt);
   }
   selection_callback_ = std::move(callback);
   SetCurrentStep(Step::kSelectAccount);
@@ -1445,11 +1446,9 @@ AuthenticatorType AuthenticatorRequestDialogController::OnAccountPreselected(
     return source;
   }
 
-  const bool use_gpm =
-      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
   // `source` should not be `kPhone` here except in some tests, which don't
   // configure the enclave.
-  if (use_gpm && source != AuthenticatorType::kPhone) {
+  if (source != AuthenticatorType::kPhone) {
     model_->OnGPMPasskeySelected(credential_id);
     return source;
   }
@@ -1584,11 +1583,6 @@ void AuthenticatorRequestDialogController::set_allow_icloud_keychain(
 void AuthenticatorRequestDialogController::set_should_create_in_icloud_keychain(
     bool is_enabled) {
   should_create_in_icloud_keychain_ = is_enabled;
-}
-
-void AuthenticatorRequestDialogController::set_enclave_can_be_default(
-    bool can_be_default) {
-  enclave_can_be_default_ = can_be_default;
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -1963,10 +1957,7 @@ void AuthenticatorRequestDialogController::StartAutofillRequest() {
             credential.user.display_name.value_or("")));
     if (credential.source == AuthenticatorType::kPhone) {
       passkey.SetAuthenticatorLabel(l10n_util::GetStringFUTF16(
-          base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)
-              ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE_NEW
-              : IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE,
-          *priority_phone_name));
+          IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE_NEW, *priority_phone_name));
     }
   }
   ReportConditionalUiPasskeyCount(credentials.size());
@@ -2145,7 +2136,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
               base::Unretained(this), cred.cred_id));
       mechanism.description =
           AuthenticatorRequestDialogModel::GetMechanismDescription(
-              cred.source, model_->priority_phone_name);
+              cred, model_->priority_phone_name);
     }
     for (const auto& password : passwords_) {
       Mechanism mechanism(
@@ -2220,8 +2211,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
     }
   }
 
-  if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
-      !is_get_assertion &&
+  if (!is_get_assertion &&
       enclave_enabled_status_ == EnclaveEnabledStatus::kEnabled &&
       *transport_availability_.make_credential_attachment !=
           device::AuthenticatorAttachment::kCrossPlatform) {
@@ -2491,8 +2481,7 @@ AuthenticatorRequestDialogController::IndexOfMakeCredentialPriorityMechanism() {
     Profile* profile =
         Profile::FromBrowserContext(GetRenderFrameHost()->GetBrowserContext())
             ->GetOriginalProfile();
-    if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
-        CanDefaultToEnclave(profile) &&
+    if (CanDefaultToEnclave(profile) &&
         enclave_enabled_status_ == EnclaveEnabledStatus::kEnabled) {
       priority_list.emplace_back(Mechanism::Enclave());
     }
@@ -2564,10 +2553,6 @@ void AuthenticatorRequestDialogController::
 
 bool AuthenticatorRequestDialogController::CanDefaultToEnclave(
     Profile* profile) {
-  if (!enclave_can_be_default_) {
-    return false;
-  }
-
   const bool enclave_decline_limit_reached =
       profile->GetPrefs()->GetInteger(
           webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount) >=

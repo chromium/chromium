@@ -39,7 +39,6 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -57,7 +56,7 @@ import java.util.Locale;
 
 /** Simple proxy that provides C++ code with an access pathway to the Android clipboard. */
 @JNINamespace("ui")
-@NullMarked
+@NullUnmarked // Hard to annotate due to broad catch handlers.
 public class ClipboardImpl extends Clipboard
         implements ClipboardManager.OnPrimaryClipChangedListener {
     private static final float CONFIDENCE_THRESHOLD_FOR_URL_DETECTION = 0.99f;
@@ -94,7 +93,6 @@ public class ClipboardImpl extends Clipboard
         mClipboardManager.addPrimaryClipChangedListener(this);
     }
 
-    @NullUnmarked
     @Override
     protected @Nullable String getCoercedText() {
         // getPrimaryClip() has been observed to throw unexpected exceptions for some devices (see
@@ -139,7 +137,6 @@ public class ClipboardImpl extends Clipboard
         return false;
     }
 
-    @NullUnmarked
     @Override
     public @Nullable String clipDataToHtmlText(@Nullable ClipData clipData) {
         ClipDescription description = clipData.getDescription();
@@ -180,7 +177,6 @@ public class ClipboardImpl extends Clipboard
                 || description.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML);
     }
 
-    @NullUnmarked
     @Override
     boolean hasUrl() {
         // ClipDescription#getConfidenceScore is only available on Android S+, so before Android S,
@@ -207,7 +203,6 @@ public class ClipboardImpl extends Clipboard
         }
     }
 
-    @NullUnmarked
     @Override
     @Nullable
     String getUrl() {
@@ -296,7 +291,6 @@ public class ClipboardImpl extends Clipboard
         return uri == null ? null : uri.toString();
     }
 
-    @NullUnmarked
     @Override
     public byte @Nullable [] getPng() {
         ThreadUtils.assertOnBackgroundThread();
@@ -368,7 +362,6 @@ public class ClipboardImpl extends Clipboard
         return description.getTimestamp();
     }
 
-    @NullUnmarked
     @Override
     protected String[][] getFilenames() {
         // getPrimaryClip() has been observed to throw unexpected exceptions for some devices (see
@@ -393,7 +386,6 @@ public class ClipboardImpl extends Clipboard
         return uris.toArray(new String[][] {});
     }
 
-    @NullUnmarked
     @Override
     public boolean hasFilenames() {
         // getPrimaryClip() has been observed to throw unexpected exceptions for some devices (see
@@ -553,7 +545,6 @@ public class ClipboardImpl extends Clipboard
         }
     }
 
-    @NullUnmarked
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     boolean setPrimaryClipNoException(@Nullable ClipData clip) {
         final String manufacturer = Build.MANUFACTURER.toLowerCase(Locale.US);
@@ -723,7 +714,6 @@ public class ClipboardImpl extends Clipboard
         }
     }
 
-    @NullUnmarked
     private boolean hasStyledTextOnPreS() {
         CharSequence text;
         try {

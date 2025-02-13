@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -53,6 +54,10 @@ class ExtensionInstallEventRouter
       extension_registry_ = nullptr;
   void ReportExtensionInstallEvent(const extensions::Extension* extension,
                                    const char* extension_action);
+  void ReportExtensionInstallEvent(
+      const extensions::Extension* extension,
+      const ::chrome::cros::reporting::proto::BrowserExtensionInstallEvent::
+          ExtensionAction extension_action);
 };
 
 class ExtensionInstallEventRouterFactory

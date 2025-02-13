@@ -44,12 +44,13 @@ suite('Metrics', function() {
    */
   function finishSetup(
       queryResults: HistoryEntry[], query?: string): Promise<void> {
-    testService.setQueryResult(
-        {info: createHistoryInfo(query), value: queryResults});
+    testService.handler.setResultFor('queryHistory', Promise.resolve({
+      results: {info: createHistoryInfo(query), value: queryResults},
+    }));
     document.body.appendChild(app);
     return Promise
         .all([
-          testService.whenCalled('queryHistory'),
+          testService.handler.whenCalled('queryHistory'),
           ensureLazyLoaded(),
         ])
         .then(function() {
@@ -101,22 +102,25 @@ suite('Metrics', function() {
     items[1].$.link.click();
     assertEquals(1, actionMap['EntryLinkClick']);
 
-    testService.resetResolver('queryHistory');
-    testService.setQueryResult({
-      info: createHistoryInfo('goog'),
-      value: [
-        createHistoryEntry(weekAgo.getTime(), 'http://www.google.com'),
-        createHistoryEntry(weekAgo.getTime(), 'http://www.google.com'),
-        createHistoryEntry(weekAgo.getTime(), 'http://www.google.com'),
-      ],
-    });
+    testService.handler.resetResolver('queryHistory');
+    testService.handler.setResultFor('queryHistory', Promise.resolve({
+      results: {
+        info: createHistoryInfo('goog'),
+        value: [
+          createHistoryEntry(weekAgo.getTime(), 'http://www.google.com'),
+          createHistoryEntry(weekAgo.getTime(), 'http://www.google.com'),
+          createHistoryEntry(weekAgo.getTime(), 'http://www.google.com'),
+        ],
+      },
+    }));
+
     app.dispatchEvent(new CustomEvent(
         'change-query',
         {bubbles: true, composed: true, detail: {search: 'goog'}}));
     assertEquals(1, actionMap['Search']);
     app.set('queryState_.incremental', true);
     await Promise.all([
-      testService.whenCalled('queryHistory'),
+      testService.handler.whenCalled('queryHistory'),
       flushTasks(),
     ]);
 
@@ -143,6 +147,7 @@ suite('Metrics', function() {
     app.$.toolbar.deleteSelectedItems();
     await flushTasks();
 
+    testService.handler.setResultFor('removeVisits', Promise.resolve());
     app.$.history.shadowRoot!.querySelector<HTMLElement>(
                                  '.action-button')!.click();
     assertEquals(1, actionMap['ConfirmRemoveSelected']);
@@ -156,7 +161,7 @@ suite('Metrics', function() {
     app.$.history.shadowRoot!.querySelector<HTMLElement>(
                                  '#menuRemoveButton')!.click();
     await Promise.all([
-      testService.whenCalled('removeVisits'),
+      testService.handler.whenCalled('removeVisits'),
       flushTasks(),
     ]);
   });

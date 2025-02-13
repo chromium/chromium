@@ -1377,7 +1377,9 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kRestoreOnStartup,
      {syncable_prefs_ids::kRestoreOnStartup, syncer::PREFERENCES,
-      sync_preferences::PrefSensitivity::kNone,
+      // This is behind history opt-in to be consistent with the
+      // `kURLsToRestoreOnStartup` pref.
+      sync_preferences::PrefSensitivity::kSensitiveRequiresHistory,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kSearchSuggestEnabled,
      {syncable_prefs_ids::kSearchSuggestEnabled, syncer::PREFERENCES,

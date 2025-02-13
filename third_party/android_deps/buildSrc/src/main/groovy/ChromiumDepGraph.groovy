@@ -243,8 +243,6 @@ class ChromiumDepGraph {
                     resolveVersion: '1.8.1'),
             org_jetbrains_kotlinx_kotlinx_coroutines_android: new PropertyOverride(
                     resolveVersion: '1.8.1'),
-            org_jetbrains_kotlinx_kotlinx_coroutines_guava: new PropertyOverride(
-                    resolveVersion: '1.8.1'),
             org_jetbrains_kotlinx_kotlinx_serialization_core_jvm: new PropertyOverride(
                     resolveVersion: '1.7.2'),
             org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm: new PropertyOverride(
@@ -347,10 +345,6 @@ class ChromiumDepGraph {
         }
 
         (resolvedDeps['compile'] + resolvedDeps['compileLatest']).each { id ->
-            // TODO(https://crbug.com/394878886): Fix this if possible.
-            if (id == 'com_google_guava_guava') {
-                return
-            }
             DependencyDescription dep = dependencies.get(id)
             assert dep: "No dependency collected for artifact ${id}"
             dep.supportsAndroid = true

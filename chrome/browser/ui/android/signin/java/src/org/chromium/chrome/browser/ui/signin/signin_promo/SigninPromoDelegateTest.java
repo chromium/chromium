@@ -188,6 +188,36 @@ public class SigninPromoDelegateTest {
     }
 
     @Test
+    public void testHistoryPagePromoHidden_signedOut() {
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+        setupDelegate(SigninAccessPoint.HISTORY_PAGE, /* visibleAccount= */ null);
+
+        assertFalse(mDelegate.canShowPromo());
+    }
+
+    @Test
+    public void testHistoryPagePromoShown_hasPrimaryAccount_historySyncAvailable() {
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+        doReturn(false).when(mHistorySyncHelper).shouldSuppressHistorySync();
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
+        setupDelegate(SigninAccessPoint.HISTORY_PAGE, TestAccounts.ACCOUNT1);
+
+        assertTrue(mDelegate.canShowPromo());
+    }
+
+    @Test
+    public void testHistoryPagePromoHidden_hasPrimaryAccount_historySyncSuppressed() {
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+        doReturn(true).when(mHistorySyncHelper).shouldSuppressHistorySync();
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
+        setupDelegate(SigninAccessPoint.HISTORY_PAGE, /* visibleAccount= */ null);
+
+        assertFalse(mDelegate.canShowPromo());
+    }
+
+    @Test
     public void testNtpPromoHidden_dismissedBefore() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
         ChromeSharedPreferences.getInstance()
@@ -285,6 +315,8 @@ public class SigninPromoDelegateTest {
                 switch (accessPoint) {
                     case SigninAccessPoint.BOOKMARK_MANAGER -> new BookmarkSigninPromoDelegate(
                             mContext, mProfile, mLauncher, mOnPromoStateChange, mOnOpenSettings);
+                    case SigninAccessPoint.HISTORY_PAGE -> new HistoryPageSigninPromoDelegate(
+                            mContext, mProfile, mLauncher, mOnPromoStateChange);
                     case SigninAccessPoint.NTP_FEED_TOP_PROMO -> new NtpSigninPromoDelegate(
                             mContext, mProfile, mLauncher, mOnPromoStateChange);
                     case SigninAccessPoint.RECENT_TABS -> new RecentTabsSigninPromoDelegate(

@@ -811,8 +811,9 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest, SolidColorDrawQuads) {
   {
     auto render_pass = viz::CompositorRenderPass::Create();
     AppendQuadsData data;
-    scrollbar_layer_impl->AppendQuads({.draw_mode = DRAW_MODE_HARDWARE},
-                                      render_pass.get(), &data);
+    scrollbar_layer_impl->AppendQuads(
+        AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+        &data);
 
     const auto& quads = render_pass->quad_list;
     ASSERT_EQ(1u, quads.size());
@@ -827,8 +828,9 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest, SolidColorDrawQuads) {
   {
     auto render_pass = viz::CompositorRenderPass::Create();
     AppendQuadsData data;
-    scrollbar_layer_impl->AppendQuads({.draw_mode = DRAW_MODE_HARDWARE},
-                                      render_pass.get(), &data);
+    scrollbar_layer_impl->AppendQuads(
+        AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+        &data);
 
     const auto& quads = render_pass->quad_list;
     ASSERT_EQ(1u, quads.size());
@@ -843,8 +845,9 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest, SolidColorDrawQuads) {
   {
     auto render_pass = viz::CompositorRenderPass::Create();
     AppendQuadsData data;
-    scrollbar_layer_impl->AppendQuads({.draw_mode = DRAW_MODE_HARDWARE},
-                                      render_pass.get(), &data);
+    scrollbar_layer_impl->AppendQuads(
+        AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+        &data);
 
     const auto& quads = render_pass->quad_list;
     ASSERT_EQ(1u, quads.size());
@@ -897,8 +900,9 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest, LayerDrivenSolidColorDrawQuads) {
     auto render_pass = viz::CompositorRenderPass::Create();
 
     AppendQuadsData data;
-    scrollbar_layer_impl->AppendQuads({.draw_mode = DRAW_MODE_HARDWARE},
-                                      render_pass.get(), &data);
+    scrollbar_layer_impl->AppendQuads(
+        AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+        &data);
 
     const auto& quads = render_pass->quad_list;
     ASSERT_EQ(1u, quads.size());

@@ -812,7 +812,7 @@ std::pair<gfx::MaskFilterInfo, bool> GetMaskFilterInfoPair(
 
 void UpdateRenderTarget(LayerTreeImpl* layer_tree_impl,
                         EffectTree* effect_tree) {
-  int last_backdrop_filter = kInvalidNodeId;
+  int last_backdrop_filter_disallowing_lcd_text = kInvalidNodeId;
   base::flat_map<viz::ViewTransitionElementResourceId, int> resource_to_node;
 
   for (int i = kContentsRootPropertyNodeId;
@@ -834,10 +834,11 @@ void UpdateRenderTarget(LayerTreeImpl* layer_tree_impl,
     } else {
       node->target_id = effect_tree->parent(node)->target_id;
     }
-    if (!node->backdrop_filters.IsEmpty() ||
-        node->has_potential_backdrop_filter_animation)
-      last_backdrop_filter = node->id;
-    node->affected_by_backdrop_filter = false;
+    if (node->has_potential_backdrop_filter_animation ||
+        !node->backdrop_filters.AllowsLCDText()) {
+      last_backdrop_filter_disallowing_lcd_text = node->id;
+    }
+    node->lcd_text_disallowed_by_backdrop_filter = false;
   }
 
   if (!resource_to_node.empty()) {
@@ -862,23 +863,26 @@ void UpdateRenderTarget(LayerTreeImpl* layer_tree_impl,
     }
   }
 
-  if (last_backdrop_filter == kInvalidNodeId)
+  if (last_backdrop_filter_disallowing_lcd_text == kInvalidNodeId) {
     return;
+  }
 
-  // Update effect nodes for the backdrop filter due to the target id change.
-  int current_target_id = effect_tree->Node(last_backdrop_filter)->target_id;
-  for (int i = last_backdrop_filter - 1; kContentsRootPropertyNodeId <= i;
-       --i) {
+  // Update effect nodes for the backdrop filter disallowing LCD text.
+  int current_target_id =
+      effect_tree->Node(last_backdrop_filter_disallowing_lcd_text)->target_id;
+  for (int i = last_backdrop_filter_disallowing_lcd_text - 1;
+       i >= kContentsRootPropertyNodeId; --i) {
     EffectNode* node = effect_tree->Node(i);
-    node->affected_by_backdrop_filter = current_target_id <= i ? true : false;
+    node->lcd_text_disallowed_by_backdrop_filter = current_target_id <= i;
     if (node->id == current_target_id)
       current_target_id = kInvalidNodeId;
     // While down to kContentsRootNodeId, move |current_target_id| forward if
     // |node| has backdrop filter.
-    if ((!node->backdrop_filters.IsEmpty() ||
-         node->has_potential_backdrop_filter_animation) &&
-        current_target_id == kInvalidNodeId)
+    if (current_target_id == kInvalidNodeId &&
+        (node->has_potential_backdrop_filter_animation ||
+         !node->backdrop_filters.AllowsLCDText())) {
       current_target_id = node->target_id;
+    }
   }
 }
 

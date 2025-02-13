@@ -12,6 +12,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/test/views_test_utils.h"
 
 namespace webid {
 
@@ -190,6 +191,9 @@ void AccountSelectionViewTestBase::CheckHoverableAccountRow(
     bool expect_idp,
     bool is_modal_dialog,
     bool is_disabled) {
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(account);
+
   ASSERT_EQ("HoverButton", account->GetClassName());
   HoverButton* account_row = static_cast<HoverButton*>(account);
   ASSERT_TRUE(account_row);

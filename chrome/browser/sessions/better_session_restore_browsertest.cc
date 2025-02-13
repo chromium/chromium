@@ -15,7 +15,6 @@
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/background/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -61,13 +60,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/scoped_nsautorelease_pool.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
-#include "components/account_manager_core/account.h"
-#include "components/account_manager_core/account_manager_util.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
 #endif
 
 namespace {
@@ -160,22 +152,6 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
 
   BetterSessionRestoreTest(const BetterSessionRestoreTest&) = delete;
   BetterSessionRestoreTest& operator=(const BetterSessionRestoreTest&) = delete;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void CreatedBrowserMainParts(
-      content::BrowserMainParts* browser_main_parts) override {
-    crosapi::mojom::BrowserInitParamsPtr init_params =
-        crosapi::mojom::BrowserInitParams::New();
-    std::string device_account_email = "primaryaccount@gmail.com";
-    account_manager::AccountKey key(
-        signin::GetTestGaiaIdForEmail(device_account_email),
-        ::account_manager::AccountType::kGaia);
-    init_params->device_account =
-        account_manager::ToMojoAccount({key, device_account_email});
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
-  }
-#endif
 
  protected:
   void SetUpOnMainThread() override {
@@ -572,9 +548,10 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
 }
 
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
+
 // ChromeOS does not override the SessionStartupPreference upon controlled
 // system restart.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 class RestartTest : public BetterSessionRestoreTest {
  public:
   RestartTest() = default;

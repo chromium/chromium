@@ -7,6 +7,11 @@
 
 #include "components/history/core/browser/android/android_history_types.h"
 
+// TODO(crbug.com/396399734): This is likely entirely dead code as
+// AndroidProviderBackend was removed in 2021. However, it is still required by
+// HistoryDatabase. This dependency should be removed if possible and this file
+// deleted.
+
 namespace sql {
 class Database;
 }

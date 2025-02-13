@@ -220,6 +220,7 @@
 <translation id="114721135501989771">‏الحصول على ميزات Google الذكية في Chrome</translation>
 <translation id="1147322039136785890">يستطيع <ph name="SUPERVISED_USER_NAME" /> الآن استخدام الجهاز</translation>
 <translation id="1147991416141538220">لطلب إذن الوصول إلى التطبيق، يُرجى التواصل مع مشرف هذا الجهاز.</translation>
+<translation id="1148464196693569530">السماح بالنصوص البرمجية الخاصة بالمستخدم</translation>
 <translation id="1148624853678088576">اكتملت المهمة</translation>
 <translation id="1148669835763563782">‏ستتلقّى آخر تحديثات الأمان المحسّن للبرامج مع أحدث ميزات Chromebook. ويتضمن هذا التحديث تجربة إعداد محسّنة لمساعدتك في بدء استخدام Chromebook بكل سلاسة.</translation>
 <translation id="1149401351239820326">شهر انتهاء الصلاحية</translation>
@@ -6771,6 +6772,7 @@
 <translation id="5794414402486823030">افتح دائمًا باستخدام عرض النظام</translation>
 <translation id="5794700615121138172">‏مجلدات نظام التشغيل Linux التي تمت مشاركتها</translation>
 <translation id="5794786537412027208">‏إنهاء جميع تطبيقات Chrome</translation>
+<translation id="5795422263272161110">عرض علامات التبويب جنبًا إلى جنب</translation>
 <translation id="5796485699458186843">&amp;علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
 <translation id="5796956053441619942">‏عنوان URL من الجهاز البعيد غير متوافق</translation>
 <translation id="5797934230382081317">‏تعرَّف على كيفية بدء الاستخدام على &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; و&lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;.</translation>
@@ -7299,6 +7301,7 @@
 <translation id="6170498031581934115">‏يتعذّر تفعيل خيار "تصحيح الأخطاء عبر ADB". انتقِل إلى "الإعدادات" وأعِد المحاولة.</translation>
 <translation id="6170675927290506430">الانتقال إلى إعدادات الإشعارات</translation>
 <translation id="6171779718418683144">السؤال عند كل زيارة للموقع الإلكتروني</translation>
+<translation id="6172020488605056255">انقر بزر الماوس الأيمن لاستخدام ميزة "ما الخلاصة؟"</translation>
 <translation id="617213288191670920">لم تتمّ إضافة أيّ لغة.</translation>
 <translation id="6173623053897475761">كتابة رقم التعريف الشخصي مرة أخرى</translation>
 <translation id="6174909075810107548">للضغط على زر الماوس، يجب استخدام مفتاح "5"</translation>
@@ -8332,6 +8335,7 @@
 <translation id="6910190732484284349">حذف مفتاح المرور لاسم المستخدم <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">تم الحذف</translation>
 <translation id="6910274140210351823">داكن</translation>
+<translation id="691102290537033604">‏ستتمكن الإضافة من تشغيل رمز برمجي لم يراجعه فريق Google. وقد يكون هذا الإجراء غير آمن، ويجب تفعيله فقط إذا كنت على دراية بما تفعله.</translation>
 <translation id="6911734910326569517">الذاكرة المستخدَمة</translation>
 <translation id="6912007319859991306">‏رقم التعريف الشخصي لشريحة SIM الخاصة بشبكة الجوّال</translation>
 <translation id="6912380255120084882">تجربة استخدام جهاز آخر</translation>
@@ -9843,6 +9847,7 @@
 <translation id="7990863024647916394">صوت <ph name="DISPLAY_NAME" /> <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">‏نقل بيانات شبكة Wi-Fi تلقائيًا من هاتف Android</translation>
 <translation id="7991296728590311172">إعدادات الوصول عبر مفتاح تحكّم</translation>
+<translation id="7992080146463834191">تساعدك هذه الميزة في تلخيص المحتوى أو تبسيط المصطلحات المعقدة أو طرح أسئلة.</translation>
 <translation id="7992203134935383159">تركيب الكلام</translation>
 <translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">أولوية المعالجة</translation>
@@ -10084,6 +10089,7 @@
 <translation id="8155676038687609779">{COUNT,plural, =0{ما مِن كلمات مرور محتمَل تعرّضها للاختراق}=1{كلمة مرور واحدة ({COUNT}) محتمَل تعرّضها للاختراق}two{كلمتا مرور ({COUNT}) محتمَل تعرّضهما للاختراق}few{{COUNT} كلمات مرور محتمَل تعرّضها للاختراق}many{{COUNT} كلمة مرور محتمَل تعرّضها للاختراق}other{{COUNT} كلمة مرور محتمَل تعرّضها للاختراق}}</translation>
 <translation id="8157248655669507702">‏يُرجى تفعيل بيانات الجوّال لتثبيت الملف الشخصي لبطاقة eSIM.</translation>
 <translation id="8157704005178149728">جارٍ إعداد الإشراف</translation>
+<translation id="8157728322324420120">نتائج مقترَحة لك</translation>
 <translation id="8157849462797352650">يحصل جهازك على آخر التحديثات المتعلّقة بالأمان والثبات والأداء</translation>
 <translation id="8158117992543756526">لقد توقف هذا الجهاز عن تلقّي تحديثات تلقائية للبرنامج والأمان في <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">يمكنك ضبط لوحة اللمس بحيث تصدر اهتزازات لتأكيد إجراءات مثل تقسيم الشاشة وتبديل أسطح المكتب. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
@@ -11105,6 +11111,7 @@
 <translation id="8874448314264883207">تم إيقاف "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8874647982044395866">حيوي</translation>
 <translation id="8874790741333031443">جرِّب السماح مؤقتًا باستخدام ملفات تعريف الارتباط التابعة لجهات خارجية. هذا يعني أنّك ستحظى بمستوى حماية أقل أثناء التصفّح، غير أنّ ميزات الموقع الإلكتروني ستعمل غالبًا على النحو المتوقَّع.</translation>
+<translation id="8875221558267407626">تلخيص المحتوى أو تبسيط المصطلحات المعقدة أو طرح الأسئلة</translation>
 <translation id="8875520811099717934">‏ترقية نظام التشغيل Linux</translation>
 <translation id="8875736897340638404">اختَر مستوى الظهور.</translation>
 <translation id="8876307312329369159">لا يمكن تغيير هذا الإعداد في جلسة تجريبية.</translation>
@@ -11158,6 +11165,7 @@
 <translation id="8915916167043355778">إغلاق الكل</translation>
 <translation id="8916476537757519021">الإطار الفرعي للتصفح المتخفي: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">نعم، أوافق</translation>
+<translation id="8917980324687233736">عرض علامات التبويب جنبًا إلى جنب</translation>
 <translation id="8918637186205009138">جهاز <ph name="DEVICE_TYPE" /> الخاص بـ <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">جارٍ تثبيت التطبيق...</translation>
 <translation id="891931289445130855">حذف البيانات والأذونات</translation>

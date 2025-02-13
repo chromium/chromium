@@ -619,7 +619,7 @@ uint32_t MediaDevicesManager::SubscribeDeviceChangeNotifications(
                           std::move(media_devices_listener)));
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(kReleaseVideoSourceProviderIfNotInUse)) {
-    MaybeScheduleDisconectVideoSourceProviderTimer();
+    MaybeScheduleDisconnectVideoSourceProviderTimer();
   }
 #endif
 
@@ -654,7 +654,7 @@ void MediaDevicesManager::UnsubscribeDeviceChangeNotifications(
   subscriptions_.erase(subscription_id);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(kReleaseVideoSourceProviderIfNotInUse)) {
-    MaybeScheduleDisconectVideoSourceProviderTimer();
+    MaybeScheduleDisconnectVideoSourceProviderTimer();
   }
 #endif
 }
@@ -771,8 +771,12 @@ void MediaDevicesManager::StopMonitoring(
   }
 
   if (video_device_monitoring_mode && monitoring_started_for_video_) {
-    // TODO(crbug.com/391672291): Stop video device changed observer like
-    // `audio_service_device_listener_.reset()`.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    if (base::FeatureList::IsEnabled(kReleaseVideoSourceProviderIfNotInUse)) {
+      disconnect_video_source_provider_timer_.Stop();
+    }
+#endif
+    video_capture_service_device_changed_observer_.reset();
     *monitoring_started_for_video_ = false;
     SetCachePolicy(MediaDeviceType::kMediaVideoInput, CachePolicy::NO_CACHE);
   }
@@ -1516,7 +1520,7 @@ void MediaDevicesManager::RegisterVideoCaptureDevicesChangedObserver() {
   video_capture_service_device_changed_observer_->EnsureConnectedToService();
 }
 
-void MediaDevicesManager::OnDisconectVideoSourceProviderTimer() {
+void MediaDevicesManager::OnDisconnectVideoSourceProviderTimer() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   CHECK(video_capture_service_device_changed_observer_);
   if (is_video_capture_hosts_set_empty_ && subscriptions_.empty()) {
@@ -1526,7 +1530,7 @@ void MediaDevicesManager::OnDisconectVideoSourceProviderTimer() {
   }
 }
 
-void MediaDevicesManager::MaybeScheduleDisconectVideoSourceProviderTimer() {
+void MediaDevicesManager::MaybeScheduleDisconnectVideoSourceProviderTimer() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!video_capture_service_device_changed_observer_) {
     return;
@@ -1538,7 +1542,7 @@ void MediaDevicesManager::MaybeScheduleDisconectVideoSourceProviderTimer() {
       disconnect_video_source_provider_timer_.Start(
           FROM_HERE, kReleaseVideoSourceProviderTimeout.Get(),
           base::BindOnce(
-              &MediaDevicesManager::OnDisconectVideoSourceProviderTimer,
+              &MediaDevicesManager::OnDisconnectVideoSourceProviderTimer,
               base::Unretained(this)));
     }
   } else {
@@ -1553,7 +1557,7 @@ void MediaDevicesManager::MaybeScheduleDisconectVideoSourceProviderTimer() {
 void MediaDevicesManager::UpdateVideoCaptureHostsEmptyState(bool empty) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   is_video_capture_hosts_set_empty_ = empty;
-  MaybeScheduleDisconectVideoSourceProviderTimer();
+  MaybeScheduleDisconnectVideoSourceProviderTimer();
 }
 #endif
 

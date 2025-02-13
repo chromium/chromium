@@ -133,6 +133,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     feature: {SettingType}
   </summary>
   <token key="SettingType">
+    <variant name="AlwaysShowScrollbars"/>
     <variant name="Autoclick"/>
     <variant name="CaretBrowsing"/>
     <variant name="CaretHighlight"/>
@@ -153,7 +154,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="MonoAudio"/>
     <variant name="OnScreenKeyboard"/>
     <variant name="OOBEStartupSound"/>
-    <variant name="OverlayScrollbar"/>
     <variant name="ReducedAnimations"/>
     <variant name="SelectToSpeak"/>
     <variant name="SpokenFeedback" summary="ChromeVox Spoken Feedback"/>

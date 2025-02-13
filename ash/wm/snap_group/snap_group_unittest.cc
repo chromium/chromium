@@ -2090,12 +2090,9 @@ class SnapGroupTest : public SnapGroupTestBase {
   template <typename... TaskEnvironmentTraits>
   explicit SnapGroupTest(TaskEnvironmentTraits&&... traits)
       : SnapGroupTestBase(std::forward<TaskEnvironmentTraits>(traits)...) {
-    scoped_feature_list_
-        .InitWithFeatures(/*enabled_features=*/
-                          {features::kSameAppWindowCycle,
-                           chromeos::features::
-                               kOverviewSessionInitOptimizations},
-                          /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeatures(/*enabled_features=*/
+                                          {features::kSameAppWindowCycle},
+                                          /*disabled_features=*/{});
   }
   SnapGroupTest(const SnapGroupTest&) = delete;
   SnapGroupTest& operator=(const SnapGroupTest&) = delete;

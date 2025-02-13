@@ -39,6 +39,15 @@ message AutofillAiTypeRequest {
   // The form to predict values for. It is expected that the values for each
   // field are empty.
   FormData form_data = 2;
+
+  // A screenshot of the form.
+  // This is optional and may be used by the model to improve predictions.
+  FormMedia media = 3;
+}
+
+message FormMedia {
+  // Screenshots in base64-encoded PNG format
+  repeated bytes screenshots = 1;
 }
 
 message AutofillAiTypeResponse {

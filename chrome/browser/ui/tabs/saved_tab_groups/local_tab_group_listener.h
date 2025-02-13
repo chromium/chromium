@@ -79,6 +79,8 @@ class LocalTabGroupListener {
   // Returns whether the local group still exists after this update.
   [[nodiscard]] Liveness UpdateFromSync();
 
+  const base::Uuid& saved_guid() { return saved_guid_; }
+
  private:
   // Updates `tab` to match `saved_tab`, and ensures it is at
   // `target_index_in_tab_strip` in `tab_strip_model`.

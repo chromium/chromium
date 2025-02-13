@@ -4738,15 +4738,6 @@ public class AwContents implements SmartClipProvider {
         }
     }
 
-    // Return true if the GeolocationPermissionAPI should be used.
-    @CalledByNative
-    private boolean useLegacyGeolocationPermissionAPI() {
-        // Always return true since we are not ready to swap the geolocation yet.
-        // TODO: If we decide not to migrate the geolocation, there are some unreachable
-        // code need to remove. http://crbug.com/396184.
-        return true;
-    }
-
     @NativeMethods
     interface Natives {
         long init(long browserContextPointer);

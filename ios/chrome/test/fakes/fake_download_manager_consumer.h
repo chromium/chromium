@@ -31,6 +31,12 @@
 @property(nonatomic, getter=isInstallDriveButtonVisible)
     BOOL installDriveButtonVisible;
 
+// The host that triggered the download.
+@property(nonatomic) NSString* originatingHost;
+
+// Whether the originating host is displayed.
+@property(nonatomic) BOOL originatingHostDisplayed;
+
 @end
 
 #endif  // IOS_CHROME_TEST_FAKES_FAKE_DOWNLOAD_MANAGER_CONSUMER_H_

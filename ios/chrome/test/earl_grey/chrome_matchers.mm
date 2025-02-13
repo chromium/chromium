@@ -1079,6 +1079,10 @@ id<GREYMatcher> DeleteSharedConfirmationButton() {
   return [ChromeMatchersAppInterface deleteSharedConfirmationButton];
 }
 
+id<GREYMatcher> KeepSharedConfirmationButton() {
+  return [ChromeMatchersAppInterface keepSharedConfirmationButton];
+}
+
 id<GREYMatcher> FakeShareFlowView() {
   return [ChromeMatchersAppInterface fakeShareFlowView];
 }

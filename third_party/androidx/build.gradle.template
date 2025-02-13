@@ -80,7 +80,6 @@ dependencies {
     compile 'androidx.privacysandbox.ads:ads-adservices:1.1.0-beta11'
     compile 'androidx.privacysandbox.ads:ads-adservices-java:1.1.0-beta11'
     compileLatest 'androidx.recyclerview:recyclerview:+'
-    compileLatest 'androidx.room:room-guava:+'
     // TODO(https://crbug.com/359896493): Remove the following dep once rolls
     // succeed again. Deps on it will need to be removed first.
     compileLatest 'androidx.savedstate:savedstate:+'

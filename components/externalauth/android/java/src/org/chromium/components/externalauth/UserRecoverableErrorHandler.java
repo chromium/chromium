@@ -13,6 +13,8 @@ import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -39,6 +41,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * If none of these behaviors is suitable, a new behavior can be defined by
  * subclassing this class.
  */
+@NullMarked
 public abstract class UserRecoverableErrorHandler {
     /**
      * Handles the specified error code from Google Play Services.
@@ -138,7 +141,7 @@ public abstract class UserRecoverableErrorHandler {
         private final Activity mActivity;
 
         /** The modal dialog that is shown to the user. */
-        private Dialog mDialog;
+        private @Nullable Dialog mDialog;
 
         /** Whether the dialog can be canceled by the user. */
         private final boolean mCancelable;
@@ -173,18 +176,21 @@ public abstract class UserRecoverableErrorHandler {
             if (mErrorCode != errorCode) {
                 cancelDialog();
             }
-            if (mDialog == null) {
-                mDialog =
+            Dialog dialog = mDialog;
+            if (dialog == null) {
+                dialog =
                         GoogleApiAvailability.getInstance()
                                 .getErrorDialog(mActivity, errorCode, NO_RESPONSE_REQUIRED);
+                assert dialog != null : "code was " + errorCode;
+                mDialog = dialog;
                 mErrorCode = errorCode;
 
-                DialogUserActionRecorder.createAndAttachToDialog(mDialog);
+                DialogUserActionRecorder.createAndAttachToDialog(dialog);
             }
             // This can happen if |errorCode| is ConnectionResult.SERVICE_INVALID.
-            if (mDialog != null && !mDialog.isShowing()) {
-                mDialog.setCancelable(mCancelable);
-                mDialog.show();
+            if (!dialog.isShowing()) {
+                dialog.setCancelable(mCancelable);
+                dialog.show();
                 RecordUserAction.record("Signin_Android_GmsUserRecoverableDialogShown");
             }
         }

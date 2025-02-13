@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -30,14 +31,19 @@ ContextualCueingServiceFactory::ContextualCueingServiceFactory()
           "ContextualCueingService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .Build()) {
+  DependsOn(page_content_annotations::PageContentExtractionServiceFactory::
+                GetInstance());
+}
 
 ContextualCueingServiceFactory::~ContextualCueingServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 ContextualCueingServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<ContextualCueingService>();
+  return std::make_unique<ContextualCueingService>(
+      page_content_annotations::PageContentExtractionServiceFactory::
+          GetForProfile(Profile::FromBrowserContext(context)));
 }
 
 }  // namespace contextual_cueing

@@ -7,6 +7,7 @@ package org.chromium.components.embedder_support.contextmenu;
 import android.util.Pair;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -17,6 +18,7 @@ import java.util.List;
  * A representation of the ContextMenu UI. Given a list of items it should populate and display a
  * context menu.
  */
+@NullMarked
 public interface ContextMenuUi {
     /**
      * Shows the Context Menu.

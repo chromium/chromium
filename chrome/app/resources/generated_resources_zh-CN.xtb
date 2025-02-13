@@ -220,6 +220,7 @@
 <translation id="114721135501989771">在 Chrome 中畅享 Google 的智能技术</translation>
 <translation id="1147322039136785890">现在轮到<ph name="SUPERVISED_USER_NAME" />使用了</translation>
 <translation id="1147991416141538220">要申请访问权限，请与此设备的管理员联系。</translation>
+<translation id="1148464196693569530">允许运行用户脚本</translation>
 <translation id="1148624853678088576">搞定了！</translation>
 <translation id="1148669835763563782">您正在获得可增强安全性的最新软件更新，以及最新的 Chromebook 功能。此次更新旨在改进设置体验，以帮助您顺利上手使用 Chromebook。</translation>
 <translation id="1149401351239820326">到期月份</translation>
@@ -6753,6 +6754,7 @@
 <translation id="5794414402486823030">始终使用系统查看器打开</translation>
 <translation id="5794700615121138172">Linux 共享文件夹</translation>
 <translation id="5794786537412027208">退出所有Chrome应用</translation>
+<translation id="5795422263272161110">并排显示</translation>
 <translation id="5796485699458186843">打开新的无痕式标签页(&amp;T)</translation>
 <translation id="5796956053441619942">远程设备的网址不受支持</translation>
 <translation id="5797934230382081317">了解如何开始在 &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; 和 &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; 设备上使用</translation>
@@ -7280,6 +7282,7 @@
 <translation id="6170498031581934115">无法启用 ADB 调试。请转到“设置”，然后重试。</translation>
 <translation id="6170675927290506430">前往通知设置页面</translation>
 <translation id="6171779718418683144">每次访问时都询问</translation>
+<translation id="6172020488605056255">右键点击即可使用“帮我读”功能</translation>
 <translation id="617213288191670920">未添加任何语言</translation>
 <translation id="6173623053897475761">再次输入您的 PIN 码</translation>
 <translation id="6174909075810107548">按下“5”键表示按下鼠标按键</translation>
@@ -8305,6 +8308,7 @@
 <translation id="6910190732484284349">删除以下用户名的通行密钥：<ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">已删除</translation>
 <translation id="6910274140210351823">忧郁</translation>
+<translation id="691102290537033604">此扩展程序将能够运行未经 Google 审核的代码。这可能不安全，仅在您清楚了解相关风险并确认操作安全的情况下，才应启用此功能。</translation>
 <translation id="6911734910326569517">内存占用空间</translation>
 <translation id="6912007319859991306">移动网络 SIM 卡 PIN 码</translation>
 <translation id="6912380255120084882">尝试改用其他设备</translation>
@@ -9816,6 +9820,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />语音 <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">从您的 Android 手机自动传输 Wi-Fi 凭据</translation>
 <translation id="7991296728590311172">开关控制设置</translation>
+<translation id="7992080146463834191">总结内容、简化复杂语言或提问。</translation>
 <translation id="7992203134935383159">语音合成</translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">进程优先级</translation>
@@ -10057,6 +10062,7 @@
 <translation id="8155676038687609779">{COUNT,plural, =0{未发现任何已泄露的密码}=1{有 {COUNT} 个密码已遭泄露}other{有 {COUNT} 个密码已遭泄露}}</translation>
 <translation id="8157248655669507702">请启用移动数据以安装 eSIM 卡配置文件</translation>
 <translation id="8157704005178149728">正在设置监管功能</translation>
+<translation id="8157728322324420120">为您推荐</translation>
 <translation id="8157849462797352650">您的设备将获得最新的安全性、稳定性和性能更新</translation>
 <translation id="8158117992543756526">自 <ph name="MONTH_AND_YEAR" />起，此设备已无法再自动获取软件更新和安全更新。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">接收与分屏和切换桌面等操作有关的振动确认。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -11073,6 +11079,7 @@
 <translation id="8874448314264883207">“<ph name="EXTENSION_NAME" />”已关闭</translation>
 <translation id="8874647982044395866">有机</translation>
 <translation id="8874790741333031443">尝试暂时允许使用第三方 Cookie，这意味着您将采用较低级别的浏览保护措施，但网站功能更有可能会按预期运行。</translation>
+<translation id="8875221558267407626">总结内容、简化复杂语言或提问</translation>
 <translation id="8875520811099717934">Linux 升级</translation>
 <translation id="8875736897340638404">选择您的公开范围</translation>
 <translation id="8876307312329369159">在演示会话中，此设置无法更改。</translation>
@@ -11126,6 +11133,7 @@
 <translation id="8915916167043355778">全部关闭</translation>
 <translation id="8916476537757519021">隐身辅助框架：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">立即开启</translation>
+<translation id="8917980324687233736">并排显示</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">正在安装应用…</translation>
 <translation id="891931289445130855">删除数据和权限</translation>

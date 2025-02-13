@@ -18,8 +18,8 @@
         ?open="${this.isSelectedFolder_}"
         ?no-children="${!this.hasChildFolder_}">
     </div>
-    <div class="menu-label" title="${this.item_.title}">
-      ${this.item_.title}
+    <div class="menu-label" title="${this.getItemTitle_()}">
+      ${this.getItemTitle_()}
     </div>
     <cr-ripple></cr-ripple>
   </div>

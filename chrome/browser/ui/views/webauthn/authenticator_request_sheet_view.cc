@@ -86,7 +86,7 @@ void AuthenticatorRequestSheetView::ReInitChildViews() {
     activity_indicator->SizeToPreferredSize();
     // The indicator is positioned absolutely at the top of the dialog.
     activity_indicator->SetProperty(views::kViewIgnoredByLayoutKey, true);
-    AddChildView(activity_indicator.release());
+    AddChildView(std::move(activity_indicator));
   }
 
   // No need to add further spacing between the upper and lower half. The image
@@ -98,8 +98,8 @@ void AuthenticatorRequestSheetView::ReInitChildViews() {
 
   std::unique_ptr<views::View> upper_half = CreateIllustrationWithOverlays();
   std::unique_ptr<views::View> lower_half = CreateContentsBelowIllustration();
-  AddChildView(upper_half.release());
-  AddChildView(lower_half.release());
+  AddChildView(std::move(upper_half));
+  AddChildView(std::move(lower_half));
   InvalidateLayout();
 }
 
@@ -143,7 +143,7 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
   // The actual illustration image is set in `UpdateIconImageFromModel`, below,
   // because it's not until that point that we know whether the light or dark
   // illustration should be used.
-  View* illustration;
+  std::unique_ptr<View> illustration;
   if (model()->lottie_illustrations()) {
     auto animation = std::make_unique<views::AnimatedImageView>();
     // `AnimatedImageView` will horizontally center if the width is larger than
@@ -152,12 +152,12 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
     animation->SetPreferredSize(gfx::Size(dialog_width, 9999));
     ConfigureHeaderIllustration(animation.get(), header_size);
     child_views_.step_illustration_animation_ = animation.get();
-    illustration = animation.release();
+    illustration = std::move(animation);
   } else if (model()->vector_illustrations()) {
     auto image_view = std::make_unique<NonAccessibleImageView>();
     ConfigureHeaderIllustration(image_view.get(), header_size);
     child_views_.step_illustration_image_ = image_view.get();
-    illustration = image_view.release();
+    illustration = std::move(image_view);
   } else {
     return std::make_unique<views::View>();
   }
@@ -166,7 +166,7 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
   // match the size of the header, and all overlays are absolutely positioned.
   auto header_view = std::make_unique<views::View>();
   header_view->SetPreferredSize(header_size);
-  header_view->AddChildView(illustration);
+  header_view->AddChildView(std::move(illustration));
 
   if (GetWidget()) {
     UpdateIconImageFromModel();
@@ -191,7 +191,7 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
   std::unique_ptr<views::View> step_specific_header = BuildStepSpecificHeader();
   if (step_specific_header) {
     child_views_.step_specific_header_ =
-        contents->AddChildView(step_specific_header.release());
+        contents->AddChildView(std::move(step_specific_header));
 
     if (model()->lottie_illustrations() || model()->vector_illustrations()) {
       auto insets = contents->GetBorder()->GetInsets();
@@ -228,7 +228,7 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
       title_label->SetFocusBehavior(FocusBehavior::ALWAYS);
     }
     child_views_.title_label_ =
-        label_container->AddChildView(title_label.release());
+        label_container->AddChildView(std::move(title_label));
   }
 
   std::u16string description = model()->GetStepDescription();
@@ -238,7 +238,7 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
     description_label->SetMultiLine(true);
     description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     description_label->SetAllowCharacterBreak(true);
-    label_container->AddChildView(description_label.release());
+    label_container->AddChildView(std::move(description_label));
   }
 
   for (const std::u16string& msg : model()->GetAdditionalDescriptions()) {
@@ -250,10 +250,10 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
     label->SetMultiLine(true);
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     label->SetAllowCharacterBreak(true);
-    label_container->AddChildView(label.release());
+    label_container->AddChildView(std::move(label));
   }
 
-  contents->AddChildView(label_container.release());
+  contents->AddChildView(std::move(label_container));
 
   auto content_error_and_hint_view = std::make_unique<views::View>();
   BoxLayout* content_error_and_hint_layout =
@@ -265,7 +265,7 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
   if (step_specific_content) {
     child_views_.step_specific_content_ =
         content_error_and_hint_view->AddChildView(
-            step_specific_content.release());
+            std::move(step_specific_content));
     content_error_and_hint_layout->SetFlexForView(
         child_views_.step_specific_content_, 1);
   }
@@ -289,7 +289,7 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
         content_error_and_hint_view->AddChildView(std::move(hint_label));
   }
 
-  contents->AddChildView(content_error_and_hint_view.release());
+  contents->AddChildView(std::move(content_error_and_hint_view));
   return contents;
 }
 

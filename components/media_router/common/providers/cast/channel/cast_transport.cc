@@ -200,7 +200,8 @@ int CastTransportImpl::DoWrite() {
   DCHECK(!write_queue_.empty());
   net::DrainableIOBuffer* io_buffer = write_queue_.front().io_buffer.get();
 
-  VLOG_WITH_CONNECTION(2) << "WriteData byte_count = " << io_buffer->size()
+  VLOG_WITH_CONNECTION(2) << "WriteData byte_count = "
+                          << (io_buffer->BytesConsumed() + io_buffer->size())
                           << " bytes_written " << io_buffer->BytesConsumed();
 
   SetWriteState(WriteState::WRITE_COMPLETE);

@@ -14,6 +14,10 @@
 
 // Returns whether the lens overlay is allowed by policy.
 bool IsLensOverlayAllowedByPolicy() {
+  // Local state can be null in tests.
+  if (!GetApplicationContext()->GetLocalState()) {
+    return true;
+  }
   int policyRawValue = GetApplicationContext()->GetLocalState()->GetInteger(
       lens::prefs::kLensOverlaySettings);
   return policyRawValue ==

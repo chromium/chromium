@@ -4,6 +4,8 @@
 
 package org.chromium.components.ip_protection_auth;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -14,8 +16,6 @@ import android.os.RemoteException;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeForTesting;
@@ -25,6 +25,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.ip_protection_auth.common.IErrorCode;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionAuthAndSignCallback;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionAuthService;
@@ -38,6 +40,7 @@ import java.util.Set;
 
 /** Client interface for the IP Protection Auth service. */
 @JNINamespace("ip_protection::android")
+@NullMarked
 public final class IpProtectionAuthClient implements AutoCloseable {
     private static final String TAG = "IppAuthClient";
 
@@ -45,10 +48,10 @@ public final class IpProtectionAuthClient implements AutoCloseable {
             "android.net.http.IpProtectionAuthService";
 
     // mService being null signifies that the object has been closed by calling close().
-    @Nullable private IIpProtectionAuthService mService;
+    private @Nullable IIpProtectionAuthService mService;
     // We need to store this to unbind from the service.
-    @Nullable private ConnectionSetup mConnection;
-    @NonNull final CallbackTracker mCallbackTracker;
+    private @Nullable ConnectionSetup mConnection;
+    final CallbackTracker mCallbackTracker;
 
     // These values must be kept in sync with AuthRequestError in
     // ip_protection_auth_client_interface.h
@@ -78,13 +81,12 @@ public final class IpProtectionAuthClient implements AutoCloseable {
 
     /** This class must be used exclusively from the main thread. */
     private static final class ConnectionSetup implements ServiceConnection {
-        @NonNull private final Context mContext;
-        @Nullable private IpProtectionAuthServiceCallback mCallback;
-        @Nullable private IpProtectionAuthClient mIpProtectionClient;
+        private final Context mContext;
+        private @Nullable IpProtectionAuthServiceCallback mCallback;
+        private @Nullable IpProtectionAuthClient mIpProtectionClient;
         private boolean mBound;
 
-        ConnectionSetup(
-                @NonNull Context context, @NonNull IpProtectionAuthServiceCallback callback) {
+        ConnectionSetup(Context context, IpProtectionAuthServiceCallback callback) {
             mContext = context;
             mCallback = callback;
             mIpProtectionClient = null;
@@ -162,10 +164,9 @@ public final class IpProtectionAuthClient implements AutoCloseable {
      */
     static final class CallbackTracker {
         // Callbacks must never be run from code holding this lock.
-        @NonNull private final Object mUnresolvedCallbacksLock;
+        private final Object mUnresolvedCallbacksLock;
 
         @GuardedBy("mUnresolvedCallbacksLock")
-        @NonNull
         final Set<IpProtectionByteArrayCallback> mUnresolvedCallbacks;
 
         /**
@@ -176,10 +177,10 @@ public final class IpProtectionAuthClient implements AutoCloseable {
          * not enforce any thread-safety for the underlying callback's logic.
          */
         public final class TrackedCallback implements IpProtectionByteArrayCallback {
-            @NonNull private final IpProtectionByteArrayCallback mInner;
+            private final IpProtectionByteArrayCallback mInner;
 
             // See CallbackTracker.wrapCallback.
-            public TrackedCallback(@NonNull IpProtectionByteArrayCallback inner) {
+            public TrackedCallback(IpProtectionByteArrayCallback inner) {
                 mInner = inner;
                 synchronized (mUnresolvedCallbacksLock) {
                     mUnresolvedCallbacks.add(inner);
@@ -187,7 +188,7 @@ public final class IpProtectionAuthClient implements AutoCloseable {
             }
 
             @Override
-            public void onResult(@NonNull byte[] result) {
+            public void onResult(byte[] result) {
                 IpProtectionByteArrayCallback callback = unwrap();
                 if (callback != null) {
                     callback.onResult(result);
@@ -213,8 +214,7 @@ public final class IpProtectionAuthClient implements AutoCloseable {
              *     resolved/rejected due to some other mechanism first, perhaps on a competing
              *     thread.
              */
-            @Nullable
-            public IpProtectionByteArrayCallback unwrap() {
+            public @Nullable IpProtectionByteArrayCallback unwrap() {
                 final boolean isUnresolved;
                 synchronized (mUnresolvedCallbacksLock) {
                     isUnresolved = mUnresolvedCallbacks.remove(mInner);
@@ -238,8 +238,7 @@ public final class IpProtectionAuthClient implements AutoCloseable {
          * <p>The wrapped callback should be considered owned by the callback tracker and thus only
          * be used via the wrapper or the callback tracker.
          */
-        @NonNull
-        public TrackedCallback wrapCallback(@NonNull IpProtectionByteArrayCallback callback) {
+        public TrackedCallback wrapCallback(IpProtectionByteArrayCallback callback) {
             return new TrackedCallback(callback);
         }
 
@@ -337,8 +336,7 @@ public final class IpProtectionAuthClient implements AutoCloseable {
     }
 
     IpProtectionAuthClient(
-            @NonNull ConnectionSetup connectionSetup,
-            @NonNull IIpProtectionAuthService ipProtectionAuthService) {
+            ConnectionSetup connectionSetup, IIpProtectionAuthService ipProtectionAuthService) {
         mConnection = connectionSetup;
         mService = ipProtectionAuthService;
         mCallbackTracker = new CallbackTracker();
@@ -346,16 +344,16 @@ public final class IpProtectionAuthClient implements AutoCloseable {
 
     @CalledByNativeForTesting
     public static void createConnectedInstanceForTesting(
-            @NonNull String mockServicePackageName,
-            @NonNull String mockServiceClassName,
-            @NonNull IpProtectionAuthServiceCallback callback) {
+            String mockServicePackageName,
+            String mockServiceClassName,
+            IpProtectionAuthServiceCallback callback) {
         Intent intent = new Intent(IP_PROTECTION_AUTH_ACTION);
         intent.setClassName(mockServicePackageName, mockServiceClassName);
         createConnectedInstanceCommon(intent, PackageManager.MATCH_DISABLED_COMPONENTS, callback);
     }
 
     @CalledByNative
-    public static void createConnectedInstance(@NonNull IpProtectionAuthServiceCallback callback) {
+    public static void createConnectedInstance(IpProtectionAuthServiceCallback callback) {
         // Use IP_PROTECTION_AUTH_ACTION to resolve system service that satisfies
         // the intent, going from implicit to explicit intent in createConnectedInstanceCommon.
         var intent = new Intent(IP_PROTECTION_AUTH_ACTION);
@@ -370,9 +368,7 @@ public final class IpProtectionAuthClient implements AutoCloseable {
      * string.
      */
     private static void createConnectedInstanceCommon(
-            @NonNull Intent intent,
-            int resolveFlags,
-            @NonNull IpProtectionAuthServiceCallback callback) {
+            Intent intent, int resolveFlags, IpProtectionAuthServiceCallback callback) {
         var context = ContextUtils.getApplicationContext();
         var packageManager = context.getPackageManager();
         // When Chromium moves to API level 33 as minimum-supported version,
@@ -425,11 +421,7 @@ public final class IpProtectionAuthClient implements AutoCloseable {
     public void getInitialData(byte[] request, IpProtectionByteArrayCallback callback) {
         try (TraceEvent event =
                 TraceEvent.scoped("IpProtectionAuthClient.Request.GetInitialData")) {
-            if (mService == null) {
-                // This denotes a coding error by the caller so it makes sense to throw an
-                // unchecked exception.
-                throw new IllegalStateException("Already closed");
-            }
+            assert mService != null;
             CallbackTracker.TrackedCallback trackedCallback =
                     mCallbackTracker.wrapCallback(callback);
             IIpProtectionGetInitialDataCallbackStub callbackStub =
@@ -447,11 +439,7 @@ public final class IpProtectionAuthClient implements AutoCloseable {
     @CalledByNative
     public void authAndSign(byte[] request, IpProtectionByteArrayCallback callback) {
         try (TraceEvent event = TraceEvent.scoped("IpProtectionAuthClient.Request.AuthAndSign")) {
-            if (mService == null) {
-                // This denotes a coding error by the caller so it makes sense to throw an
-                // unchecked exception.
-                throw new IllegalStateException("Already closed");
-            }
+            assert mService != null;
             CallbackTracker.TrackedCallback trackedCallback =
                     mCallbackTracker.wrapCallback(callback);
             IIpProtectionAuthAndSignCallbackStub callbackStub =
@@ -470,11 +458,7 @@ public final class IpProtectionAuthClient implements AutoCloseable {
     public void getProxyConfig(byte[] request, IpProtectionByteArrayCallback callback) {
         try (TraceEvent event =
                 TraceEvent.scoped("IpProtectionAuthClient.Request.GetProxyConfig")) {
-            if (mService == null) {
-                // This denotes a coding error by the caller so it makes sense to throw an
-                // unchecked exception.
-                throw new IllegalStateException("Already closed");
-            }
+            assert mService != null;
             CallbackTracker.TrackedCallback trackedCallback =
                     mCallbackTracker.wrapCallback(callback);
             IIpProtectionGetProxyConfigCallbackStub callbackStub =
@@ -494,6 +478,7 @@ public final class IpProtectionAuthClient implements AutoCloseable {
         if (mService == null) {
             return;
         }
+        assumeNonNull(mConnection);
         ThreadUtils.runOnUiThread(mConnection::unbindIfBound);
         mConnection = null;
         mService = null;

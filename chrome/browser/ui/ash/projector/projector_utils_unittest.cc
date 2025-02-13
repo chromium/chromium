@@ -10,7 +10,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/fake_gaia_mixin.h"

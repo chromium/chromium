@@ -321,6 +321,9 @@ BASE_DECLARE_FEATURE(kLensOverlayEnableIPadCompatibility);
 // Feature to allow landscape support of lens overlay.
 BASE_DECLARE_FEATURE(kLensOverlayEnableLandscapeCompatibility);
 
+// Feature to enable LVF escape hatch in the overflow menu in Lens overlay.
+BASE_DECLARE_FEATURE(kLensOverlayEnableLVFEscapeHatch);
+
 // Feature to open lens overlay navigation in the same tab.
 BASE_DECLARE_FEATURE(kLensOverlayEnableSameTabNavigation);
 
@@ -1041,5 +1044,8 @@ BASE_DECLARE_FEATURE(kFullscreenTransition);
 BASE_DECLARE_FEATURE(kRefactorToolbarUI);
 
 bool IsRefactorToolbarUI();
+
+// Feature flag to enable the new share extension UI and entries.
+BASE_DECLARE_FEATURE(kNewShareExtension);
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

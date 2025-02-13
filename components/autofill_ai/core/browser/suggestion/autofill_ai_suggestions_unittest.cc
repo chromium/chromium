@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -20,7 +21,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill_ai {
+
 namespace {
+
+using autofill::Suggestion;
+using autofill::SuggestionType;
+using ::testing::Ge;
+using ::testing::SizeIs;
 
 class AutofillAiSuggestionsTest : public testing::Test {
  private:
@@ -30,19 +37,18 @@ class AutofillAiSuggestionsTest : public testing::Test {
 std::u16string GetEntityInstanceValueForFieldType(
     const autofill::EntityInstance entity,
     autofill::FieldType type) {
-  return base::UTF8ToUTF16(
-      (entity.attribute(*autofill::AttributeType::FromFieldType(type))
-           ->value()));
+  return entity.attribute(*autofill::AttributeType::FromFieldType(type))
+      ->value();
 }
 
 bool AutofillAiPayloadContainsField(
-    const autofill::Suggestion::AutofillAiPayload& payload,
+    const Suggestion::AutofillAiPayload& payload,
     const autofill::AutofillField& field) {
   return payload.values_to_fill.contains(field.global_id());
 }
 
 std::u16string AutofillAiPayloadValueForField(
-    const autofill::Suggestion::AutofillAiPayload& payload,
+    const Suggestion::AutofillAiPayload& payload,
     const autofill::AutofillField& field) {
   return payload.values_to_fill.at(field.global_id());
 }
@@ -79,14 +85,15 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion) {
 
   // There should be only one suggestion whose main text matches the entity
   // value for the `triggering_field_type`.
-  EXPECT_EQ(suggestions.size(), 1u);
+  EXPECT_EQ(suggestions.size(), 3u);
   EXPECT_EQ(suggestions[0].main_text.value,
             GetEntityInstanceValueForFieldType(passport_entity,
                                                triggering_field_type));
+  EXPECT_EQ(suggestions[1].type, SuggestionType::kSeparator);
+  EXPECT_EQ(suggestions[2].type, SuggestionType::kManageAutofillAi);
 
-  const autofill::Suggestion::AutofillAiPayload* payload =
-      absl::get_if<autofill::Suggestion::AutofillAiPayload>(
-          &suggestions[0].payload);
+  const Suggestion::AutofillAiPayload* payload =
+      absl::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
   ASSERT_TRUE(payload);
   // The triggering/first field is of AutofillAi Type.
   EXPECT_TRUE(AutofillAiPayloadContainsField(*payload, *form->fields()[0]));
@@ -100,6 +107,39 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion) {
                                                autofill::PASSPORT_NUMBER));
   // The third field is not of AutofillAi type.
   EXPECT_FALSE(AutofillAiPayloadContainsField(*payload, *form->fields()[2]));
+}
+
+TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PrefixMatching) {
+  autofill::test::PassportEntityOptions passport_prefix_matches_options;
+  passport_prefix_matches_options.name = u"Jon Doe";
+  autofill::EntityInstance passport_prefix_matches =
+      autofill::test::GetPassportEntityInstance(
+          passport_prefix_matches_options);
+
+  autofill::test::PassportEntityOptions passport_prefix_does_not_match_options;
+  passport_prefix_does_not_match_options.name = u"Harry Potter";
+  autofill::EntityInstance passport_prefix_does_not_match =
+      autofill::test::GetPassportEntityInstance(
+          passport_prefix_does_not_match_options);
+
+  autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
+  std::unique_ptr<autofill::FormStructure> form =
+      CreateFormStructure({triggering_field_type, autofill::PASSPORT_NUMBER,
+                           autofill::PHONE_HOME_WHOLE_NUMBER});
+
+  form->field(0)->set_value(u"J");
+
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(),
+      {passport_prefix_matches, passport_prefix_does_not_match});
+
+  // There should be only one suggestion whose main text matches is a prefix of
+  // the value already existing in the triggering field.
+  // Note that there is one separator and one footer suggestion as well.
+  EXPECT_EQ(suggestions.size(), 3u);
+  EXPECT_EQ(suggestions[0].main_text.value,
+            GetEntityInstanceValueForFieldType(passport_prefix_matches,
+                                               triggering_field_type));
 }
 
 TEST_F(AutofillAiSuggestionsTest,
@@ -123,14 +163,13 @@ TEST_F(AutofillAiSuggestionsTest,
 
   // There should be only one suggestion whose main text matches the entity
   // value for the `triggering_field_type`.
-  EXPECT_EQ(suggestions.size(), 1u);
+  EXPECT_THAT(suggestions, SizeIs(Ge(1)));
   EXPECT_EQ(suggestions[0].main_text.value,
             GetEntityInstanceValueForFieldType(passport_entity,
                                                triggering_field_type));
 
-  const autofill::Suggestion::AutofillAiPayload* payload =
-      absl::get_if<autofill::Suggestion::AutofillAiPayload>(
-          &suggestions[0].payload);
+  const Suggestion::AutofillAiPayload* payload =
+      absl::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
   ASSERT_TRUE(payload);
   // The triggering/first field is of AutofillAi Type.
   EXPECT_TRUE(AutofillAiPayloadContainsField(*payload, *form->fields()[0]));
@@ -162,12 +201,12 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_DedupeSuggestions) {
   autofill::EntityInstance passport_entity =
       autofill::test::GetPassportEntityInstance();
   autofill::test::PassportEntityOptions passport_a_with_different_expiry_date;
-  passport_a_with_different_expiry_date.expiry_date = "01/12/2001";
+  passport_a_with_different_expiry_date.expiry_date = u"01/12/2001";
   autofill::test::PassportEntityOptions passport_a_without_an_expiry_date;
   passport_a_with_different_expiry_date.expiry_date = nullptr;
   autofill::test::PassportEntityOptions another_persons_passport_options;
-  another_persons_passport_options.name = "Jon doe";
-  another_persons_passport_options.number = "927908CYGAS1";
+  another_persons_passport_options.name = u"Jon doe";
+  another_persons_passport_options.number = u"927908CYGAS1";
   autofill::EntityInstance another_persons_passport =
       autofill::test::GetPassportEntityInstance(
           another_persons_passport_options);
@@ -191,13 +230,36 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_DedupeSuggestions) {
   // makes it identical to `passport_entity`. The passport with
   // passport_a_without_an_expiry_date should be deduped because it is a
   // proper subset of `passport_entity`.
-  EXPECT_EQ(suggestions.size(), 2u);
+  EXPECT_THAT(suggestions, SizeIs(Ge(2)));
   EXPECT_EQ(suggestions[0].main_text.value,
             GetEntityInstanceValueForFieldType(passport_entity,
                                                triggering_field_type));
   EXPECT_EQ(suggestions[1].main_text.value,
             GetEntityInstanceValueForFieldType(another_persons_passport,
                                                triggering_field_type));
+}
+
+// Tests that an "Undo Autofill" suggestion is appended if the trigger field
+// is autofilled.
+TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestions_Undo) {
+  autofill::EntityInstance passport_entity =
+      autofill::test::GetPassportEntityInstance();
+
+  std::unique_ptr<autofill::FormStructure> form =
+      CreateFormStructure({autofill::PASSPORT_NUMBER});
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(), {passport_entity});
+
+  EXPECT_FALSE(base::Contains(
+      CreateFillingSuggestions(*form, form->fields()[0]->global_id(),
+                               {passport_entity}),
+      SuggestionType::kUndoOrClear, &Suggestion::type));
+
+  form->field(0)->set_is_autofilled(true);
+  EXPECT_TRUE(base::Contains(
+      CreateFillingSuggestions(*form, form->fields()[0]->global_id(),
+                               {passport_entity}),
+      SuggestionType::kUndoOrClear, &Suggestion::type));
 }
 
 }  // namespace

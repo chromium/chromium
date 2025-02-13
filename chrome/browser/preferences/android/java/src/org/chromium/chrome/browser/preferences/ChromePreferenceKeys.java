@@ -747,13 +747,6 @@ public final class ChromePreferenceKeys {
     public static final String SIGNIN_ACCOUNT_RENAME_EVENT_INDEX =
             "prefs_sync_account_rename_event_index";
 
-    /** SyncPromo Show Count preference. */
-    public static final KeyPrefix SYNC_PROMO_SHOW_COUNT =
-            new KeyPrefix("Chrome.SyncPromo.ShowCount.*");
-
-    /** SyncPromo total shown count preference across all access points. */
-    public static final String SYNC_PROMO_TOTAL_SHOW_COUNT = "Chrome.SyncPromo.TotalShowCount";
-
     public static final String SIGNIN_PROMO_LAST_SHOWN_ACCOUNT_NAMES =
             "signin_promo_last_shown_account_names";
     public static final String SIGNIN_PROMO_LAST_SHOWN_MAJOR_VERSION =
@@ -775,6 +768,17 @@ public final class ChromePreferenceKeys {
 
     /** Personalized signin promo preference. */
     public static final String SIGNIN_PROMO_BOOKMARKS_DECLINED = "signin_promo_bookmarks_declined";
+
+    /** Preferece recording whether the signin promo in the History page has been dismissed. */
+    public static final String SIGNIN_PROMO_HISTORY_PAGE_DECLINED =
+            "Chrome.SigninPromoHistoryPage.Declined";
+
+    /** SyncPromo Show Count preference. */
+    public static final KeyPrefix SYNC_PROMO_SHOW_COUNT =
+            new KeyPrefix("Chrome.SyncPromo.ShowCount.*");
+
+    /** SyncPromo total shown count preference across all access points. */
+    public static final String SYNC_PROMO_TOTAL_SHOW_COUNT = "Chrome.SyncPromo.TotalShowCount";
 
     // TODO(crbug.com/40697988): Remove this after migrating the legacy code that uses
     //                                  the primary account before the native is loaded.
@@ -1050,6 +1054,7 @@ public final class ChromePreferenceKeys {
                 SHARING_LAST_SHARED_COMPONENT_NAME,
                 SHARING_TABS_WITH_OS,
                 SYNC_PROMO_SHOW_COUNT.pattern(),
+                SIGNIN_PROMO_HISTORY_PAGE_DECLINED,
                 SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME,
                 SIGNIN_PROMO_NTP_LAST_SHOWN_TIME,
                 SYNC_PROMO_TOTAL_SHOW_COUNT,

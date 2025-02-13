@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/base_switches.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/search_engines/template_url_prepopulate_data_resolver_factory.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_constants.h"
@@ -626,6 +628,8 @@ class PrefHashBrowserTestUntrustedInitialized : public PrefHashBrowserTestBase {
         profile()->GetPrefs(),
         search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
             profile()),
+        CHECK_DEREF(TemplateURLPrepopulateData::ResolverFactory::GetForProfile(
+            profile())),
         DefaultSearchManager::ObserverCallback()
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
             ,
@@ -714,6 +718,8 @@ class PrefHashBrowserTestUntrustedInitialized : public PrefHashBrowserTestBase {
         profile()->GetPrefs(),
         search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
             profile()),
+        CHECK_DEREF(TemplateURLPrepopulateData::ResolverFactory::GetForProfile(
+            profile())),
         DefaultSearchManager::ObserverCallback()
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
             ,
@@ -1188,6 +1194,8 @@ class PrefHashBrowserTestDefaultSearch : public PrefHashBrowserTestBase {
         profile()->GetPrefs(),
         search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
             profile()),
+        CHECK_DEREF(TemplateURLPrepopulateData::ResolverFactory::GetForProfile(
+            profile())),
         DefaultSearchManager::ObserverCallback()
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
             ,
@@ -1261,6 +1269,8 @@ class PrefHashBrowserTestDefaultSearch : public PrefHashBrowserTestBase {
         profile()->GetPrefs(),
         search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
             profile()),
+        CHECK_DEREF(TemplateURLPrepopulateData::ResolverFactory::GetForProfile(
+            profile())),
         DefaultSearchManager::ObserverCallback()
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
             ,

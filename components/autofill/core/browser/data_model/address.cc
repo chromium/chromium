@@ -187,13 +187,8 @@ void Address::GetMatchingTypes(const std::u16string& text,
   }
 }
 
-void Address::GetSupportedTypes(FieldTypeSet* supported_types) const {
-  GetRoot().GetSupportedTypes(supported_types);
-}
-
-std::u16string Address::GetInfo(FieldType type,
-                                const std::string& app_locale) const {
-  return GetInfo(AutofillType(type), app_locale);
+FieldTypeSet Address::GetSupportedTypes() const {
+  return GetRoot().GetSupportedTypes();
 }
 
 std::u16string Address::GetInfo(const AutofillType& type,
@@ -301,8 +296,7 @@ void Address::SetAddressCountryCode(const std::u16string& country_code,
   // Transfer the content from the old model into the new one. Note that it
   // is possible that some nodes are not present in the updated model. Those
   // will be ignored.
-  FieldTypeSet prev_supported_types;
-  Root()->GetStorableTypes(&prev_supported_types);
+  FieldTypeSet prev_supported_types = Root()->GetStorableTypes();
   prev_supported_types.erase(ADDRESS_HOME_COUNTRY);
 
   for (FieldType type : prev_supported_types) {

@@ -24,7 +24,6 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/enterprise/common/proto/upload_request_response.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -33,6 +32,10 @@
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+
+namespace chrome::cros::reporting::proto {
+class UploadEventsRequest;
+}
 
 namespace network {
 class SharedURLLoaderFactory;

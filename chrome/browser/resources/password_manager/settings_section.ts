@@ -141,13 +141,6 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         value: false,
       },
 
-      isDeleteAllPasswordManagerDataRowAvailable_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableWebAuthnGpmPin');
-        },
-      },
-
       localPasswordCount_: {
         type: Number,
         value: 0,
@@ -175,7 +168,6 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   private isDisconnectCloudAuthenticatorInProgress_: boolean = false;
   private toastMessage_: string = '';
   private showDisconnectCloudAuthenticatorDialog_: boolean = false;
-  private isDeleteAllPasswordManagerDataRowAvailable_: boolean;
   // This variable depend on the sync service API, which the Batch Upload Dialog
   // uses.
   private localPasswordCount_: number = 0;

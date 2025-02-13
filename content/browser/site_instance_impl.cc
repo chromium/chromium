@@ -467,8 +467,13 @@ RenderProcessHost* SiteInstanceImpl::GetOrCreateProcess(
     } else if (process_reuse_policy_ == ProcessReusePolicy::PROCESS_PER_SITE) {
       process_reuse_policy_ = ProcessReusePolicy::DEFAULT;
     }
-    SetProcessInternal(
-        RenderProcessHostImpl::GetProcessHostForSiteInstance(this, context));
+    ProcessAllocationContext allocation_context = context;
+    if (allocation_context.navigation_context.has_value()) {
+      allocation_context.navigation_context->requires_new_process_for_coop =
+          coop_reuse_process_failed_;
+    }
+    SetProcessInternal(RenderProcessHostImpl::GetProcessHostForSiteInstance(
+        this, allocation_context));
   }
   DCHECK(site_instance_group_);
 

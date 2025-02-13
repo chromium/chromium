@@ -9,7 +9,7 @@
 #include "base/json/values_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -50,12 +50,12 @@ std::unique_ptr<ExtensionsWorkflowEvent> GenerateReport(
   } else {
     report->set_removed(true);
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   report->set_client_type(ExtensionsWorkflowEvent::CHROME_OS_USER);
 #else
   report->set_client_type(ExtensionsWorkflowEvent::BROWSER_DEVICE);
   report->set_device_name(policy::GetMachineName());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return report;
 }
 

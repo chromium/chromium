@@ -2180,7 +2180,8 @@ public class AwSettingsTest {
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
     @RequiresRestart("setDatabaseEnabled is ignored after the first use of WebView in the process")
-    @CommandLineFlags.Add({"enable-features=kWebSQLAccess"})
+    @CommandLineFlags.Add({"enable-features=WebSQLWebViewAccess"})
+    // TODO(crbug.com/395838064): Cleanup test with WebSQLWebViewAccess flag removal.
     public void testDatabaseInitialValue() throws Throwable {
         TestAwContentsClient client = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
@@ -2194,7 +2195,8 @@ public class AwSettingsTest {
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
     @RequiresRestart("setDatabaseEnabled is ignored after the first use of WebView in the process")
-    @CommandLineFlags.Add({"enable-features=kWebSQLAccess"})
+    @CommandLineFlags.Add({"enable-features=WebSQLWebViewAccess"})
+    // TODO(crbug.com/395838064): Cleanup test with WebSQLWebViewAccess flag removal.
     public void testDatabaseEnabled() throws Throwable {
         TestAwContentsClient client = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
@@ -2209,7 +2211,8 @@ public class AwSettingsTest {
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
     @RequiresRestart("setDatabaseEnabled is ignored after the first use of WebView in the process")
-    @CommandLineFlags.Add({"enable-features=kWebSQLAccess"})
+    @CommandLineFlags.Add({"enable-features=WebSQLWebViewAccess"})
+    // TODO(crbug.com/395838064): Cleanup test with WebSQLWebViewAccess flag removal.
     public void testDatabaseDisabled() throws Throwable {
         TestAwContentsClient client = new TestAwContentsClient();
         final AwTestContainerView testContainerView =

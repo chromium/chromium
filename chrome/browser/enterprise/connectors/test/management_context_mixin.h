@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -19,11 +19,11 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace ash {
 class ScopedDevicePolicyUpdate;
 }  // namespace ash
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace enterprise_connectors::test {
 
@@ -61,7 +61,7 @@ class ManagementContextMixin : public InProcessBrowserTestMixin {
   void SetCloudUserPolicies(
       base::flat_map<std::string, std::optional<base::Value>> policy_entries);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns a scoped object which can be used to set device policies. When that
   // object goes out of scope, the policy update will be applied.
   virtual std::unique_ptr<ash::ScopedDevicePolicyUpdate>

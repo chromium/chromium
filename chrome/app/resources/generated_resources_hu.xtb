@@ -10089,6 +10089,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8155676038687609779">{COUNT,plural, =0{Nincs nyilvánosságra került jelszó}=1{{COUNT} nyilvánosságra került jelszó}other{{COUNT} nyilvánosságra került jelszó}}</translation>
 <translation id="8157248655669507702">Engedélyezze a mobiladat-kapcsolatot az eSIM-profil telepítéséhez</translation>
 <translation id="8157704005178149728">A felügyelet beállítása folyamatban van</translation>
+<translation id="8157728322324420120">Önnek javasolt</translation>
 <translation id="8157849462797352650">Eszköze megkapja a legújabb biztonsági, stabilitási és teljesítményfrissítéseket</translation>
 <translation id="8158117992543756526">Ez az eszköz a következő időpont óta nem kap automatikus szoftver- és rendszerfrissítéseket: <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="8159652640256729753">Rezgő visszajelzést kap olyan műveletek esetén, mint az osztott képernyő vagy az asztalok közötti váltás. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>

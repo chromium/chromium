@@ -35,6 +35,7 @@
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -989,11 +990,17 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
     // UpdateWindowTitle() will lead to an invalidation if the title's string or
     // visibility changes.
     GetWidget()->UpdateWindowTitle();
+
+    // UpdateWindowTitle() will trigger an asynchronous autosize task.
+    views::test::RunScheduledLayout(GetWidget());
   }
 
   void ChangeSubtitle(const std::u16string& subtitle) {
     subtitle_ = subtitle;
     GetBubbleFrameView()->UpdateSubtitle();
+
+    // UpdateSubtitle() will trigger an asynchronous autosize task.
+    views::test::RunScheduledLayout(GetWidget());
   }
 
   // BubbleDialogDelegateView:
@@ -1157,6 +1164,8 @@ TEST_F(BubbleFrameViewTest, LayoutEdgeCases) {
   // after SetSnappedDialogWidth() in the test code.
   delegate->InvalidateLayout();
 
+  // InvalidateLayout() will trigger an asynchronous autosize task.
+  views::test::RunScheduledLayout(bubble);
   // Height should go back to |min_bubble_height| since the window is wider:
   // word wrapping should no longer happen.
   EXPECT_EQ(min_bubble_height, bubble->GetWindowBoundsInScreen().height());
@@ -1232,6 +1241,8 @@ TEST_F(BubbleFrameViewTest, LayoutEdgeCasesWithHeader) {
   frame->SetHeaderView(
       std::make_unique<StaticSizedView>(gfx::Size(10, close_margin)));
 
+  // SetHeaderView() will trigger an asynchronous autosize task.
+  views::test::RunScheduledLayout(bubble);
   // Height should go back to |min_bubble_height| + 1 since the window is wider:
   // word wrapping should no longer happen, the 1 dip extra height is caused by
   // growing the header view.
@@ -1293,6 +1304,10 @@ TEST_F(BubbleFrameViewTest, LayoutSubtitleEdgeCases) {
   // Turn off character breaks and confirm the height has returned to the single
   // line height.
   delegate->SetSubtitleAllowCharacterBreak(false);
+
+  // SetSubtitleAllowCharacterBreak() will trigger an asynchronous autosize
+  // task.
+  views::test::RunScheduledLayout(bubble);
   EXPECT_EQ(bubble->GetWindowBoundsInScreen().height(), min_bubble_height);
 }
 
@@ -1361,6 +1376,8 @@ TEST_F(BubbleFrameViewTest, NoElideTitle) {
   title_label->SetElideBehavior(gfx::NO_ELIDE);
   title_label->SetMultiLine(false);
 
+  // SetMultiLine() will trigger an asynchronous autosize task.
+  views::test::RunScheduledLayout(bubble);
   // The title/bubble should now be bigger than in multiline tail-eliding mode.
   EXPECT_LT(empty_bubble_width, title_label->width());
   EXPECT_LT(empty_bubble_width, bubble->GetClientAreaBoundsInScreen().width());

@@ -7,6 +7,9 @@ package org.chromium.components.autofill;
 import android.os.IBinder;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.components.autofill_public.IAutofillHintsService;
 import org.chromium.components.autofill_public.IViewTypeCallback;
 import org.chromium.components.autofill_public.ViewType;
@@ -14,6 +17,7 @@ import org.chromium.components.autofill_public.ViewType;
 import java.util.List;
 
 /** This class is used to talk to autofill service about the view type. */
+@NullMarked
 public class AutofillHintsService {
     private static final String TAG = "AutofillHintsService";
 
@@ -41,6 +45,7 @@ public class AutofillHintsService {
         invokeOnViewTypeAvailable();
     }
 
+    @RequiresNonNull("mCallback")
     private void invokeOnViewTypeAvailable() {
         try {
             mCallback.onViewTypeAvailable(mUnsentViewTypes);
@@ -50,6 +55,6 @@ public class AutofillHintsService {
     }
 
     private IAutofillHintsService.Stub mBinder;
-    private IViewTypeCallback mCallback;
-    private List<ViewType> mUnsentViewTypes;
+    private @Nullable IViewTypeCallback mCallback;
+    private @Nullable List<ViewType> mUnsentViewTypes;
 }

@@ -255,6 +255,7 @@ Widget::~Widget() {
   // DestroyRootView() will cause InvalidateLayout() to ScheduleLayout() which
   // is unnecessary.
   widget_closed_ = true;
+  autosize_task_factory_.InvalidateWeakPtrs();
 
   // The following Notification order is preserved here:
   //   1. WidgetObserver::OnWidgetDestroying
@@ -1354,14 +1355,13 @@ void Widget::OnRootViewLayoutInvalidated() {
     return;
   }
 
-  // Check if the widget needs to be auto resized based on its content's size.
-  if (is_autosized() && IsNativeWidgetInitialized() && GetContentsView() &&
-      widget_delegate_) {
-    if (gfx::Rect desired_bounds = widget_delegate_->GetDesiredWidgetBounds();
-        !desired_bounds.IsEmpty() &&
-        desired_bounds != GetWindowBoundsInScreen()) {
-      SetBounds(desired_bounds);
-      return;
+  if (is_autosized()) {
+    // There is no need to post another async auto-resize task when there is
+    // already one.
+    if (!autosize_task_factory_.HasWeakPtrs()) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&Widget::ResizeToDelegateDesiredBounds,
+                                    autosize_task_factory_.GetWeakPtr()));
     }
   }
 
@@ -2285,6 +2285,13 @@ bool Widget::ShouldDescendIntoChildForEventHandling(
 }
 
 void Widget::LayoutRootViewIfNecessary() {
+  if (is_autosized() && autosize_task_factory_.HasWeakPtrs()) {
+    // If there is an autosize task in the task queue, consume it before layout.
+    // Otherwise this layout may be incorrect.
+    autosize_task_factory_.InvalidateWeakPtrs();
+    ResizeToDelegateDesiredBounds();
+  }
+
   if (root_view_ && root_view_->needs_layout()) {
     // Widget name is only collected in local traces.
     TRACE_EVENT1("ui", "Widget::LayoutRootViewIfNecessary", "widget name",
@@ -2706,6 +2713,20 @@ void Widget::OnChildAdded(Widget* child_widget) {
 
 void Widget::OnChildRemoved(Widget* child_widget) {
   observers_.Notify(&WidgetObserver::OnWidgetChildRemoved, this, child_widget);
+}
+
+void Widget::ResizeToDelegateDesiredBounds() {
+  if (!IsNativeWidgetInitialized() || !widget_delegate_ || !GetContentsView()) {
+    return;
+  }
+
+  gfx::Rect desired_bounds = widget_delegate_->GetDesiredWidgetBounds();
+  if (desired_bounds.IsEmpty() || desired_bounds == GetWindowBoundsInScreen()) {
+    return;
+  }
+
+  // Size to contents view.
+  SetBounds(desired_bounds);
 }
 
 BEGIN_METADATA_BASE(Widget)

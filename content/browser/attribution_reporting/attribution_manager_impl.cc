@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <cmath>
 #include <functional>
 #include <optional>
@@ -1546,6 +1545,9 @@ void AttributionManagerImpl::HandleOsRegistration(OsRegistration registration) {
 
   std::vector<bool> debug_allowed;
 
+  std::vector<url::Origin> origins;
+  origins.reserve(registration.registration_items.size());
+
   std::erase_if(
       registration.registration_items,
       [&, now = base::Time::Now()](const OsRegistrationItem& item) {
@@ -1573,9 +1575,11 @@ void AttributionManagerImpl::HandleOsRegistration(OsRegistration registration) {
             return true;
           case BrowserPolicy::kAllowedWithDebug:
             debug_allowed.push_back(true);
+            origins.push_back(std::move(registration_origin));
             return false;
           case BrowserPolicy::kAllowedWithoutDebug:
             debug_allowed.push_back(false);
+            origins.push_back(std::move(registration_origin));
             return false;
         }
 
@@ -1585,6 +1589,9 @@ void AttributionManagerImpl::HandleOsRegistration(OsRegistration registration) {
   if (registration.registration_items.empty()) {
     return;
   }
+
+  attribution_resolver_.AsyncCall(&AttributionResolver::StoreOsRegistrations)
+      .WithArgs(std::move(origins));
 
   os_level_manager_->Register(
       std::move(registration), debug_allowed,

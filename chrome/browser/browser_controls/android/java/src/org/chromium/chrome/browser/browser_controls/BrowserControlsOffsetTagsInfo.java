@@ -6,17 +6,20 @@ package org.chromium.chrome.browser.browser_controls;
 
 import com.google.errorprone.annotations.DoNotMock;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsOffsetTags;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.ui.BrowserControlsOffsetTagConstraints;
 import org.chromium.ui.OffsetTagConstraints;
 
 @DoNotMock("This is a simple value object.")
+@NullMarked
 public final class BrowserControlsOffsetTagsInfo {
     private final BrowserControlsOffsetTags mTags;
-    public OffsetTagConstraints mTopControlsConstraints;
-    public OffsetTagConstraints mContentConstraints;
-    public OffsetTagConstraints mBottomControlsConstraints;
+    public @Nullable OffsetTagConstraints mTopControlsConstraints;
+    public @Nullable OffsetTagConstraints mContentConstraints;
+    public @Nullable OffsetTagConstraints mBottomControlsConstraints;
     public int mTopControlsAdditionalHeight;
     public int mBottomControlsAdditionalHeight;
 
@@ -57,15 +60,15 @@ public final class BrowserControlsOffsetTagsInfo {
                 mTopControlsConstraints, mContentConstraints, mBottomControlsConstraints);
     }
 
-    public OffsetTag getTopControlsOffsetTag() {
+    public @Nullable OffsetTag getTopControlsOffsetTag() {
         return mTags.getTopControlsOffsetTag();
     }
 
-    public OffsetTag getContentOffsetTag() {
+    public @Nullable OffsetTag getContentOffsetTag() {
         return mTags.getContentOffsetTag();
     }
 
-    public OffsetTag getBottomControlsOffsetTag() {
+    public @Nullable OffsetTag getBottomControlsOffsetTag() {
         return mTags.getBottomControlsOffsetTag();
     }
 

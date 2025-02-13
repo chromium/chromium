@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
@@ -27,7 +26,7 @@
 #include "components/version_info/version_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/upgrade_detector/build_state.h"
 #endif
 
@@ -35,16 +34,9 @@
 #include "components/variations/android/variations_seed_bridge.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/check_is_test.h"
-#include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
-#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -56,11 +48,11 @@ ChromeVariationsServiceClient::ChromeVariationsServiceClient() = default;
 ChromeVariationsServiceClient::~ChromeVariationsServiceClient() = default;
 
 base::Version ChromeVariationsServiceClient::GetVersionForSimulation() {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   const auto* build_state = g_browser_process->GetBuildState();
   if (build_state->installed_version().has_value())
     return *build_state->installed_version();
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
   // TODO(asvitkine): Get the version that will be used on restart instead of
   // the current version on Android, iOS and ChromeOS.
@@ -80,32 +72,9 @@ ChromeVariationsServiceClient::GetNetworkTimeTracker() {
 
 bool ChromeVariationsServiceClient::OverridesRestrictParameter(
     std::string* parameter) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::CrosSettings::Get()->GetString(ash::kVariationsRestrictParameter,
                                       parameter);
-  return true;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The device settings is passed from Ash to Lacros via
-  // crosapi::mojom::BrowserInitParams. However, crosapi is disabled for Lacros
-  // browser_tests, there is no valid device settings in this situation.
-  // Note: This code path is invoked when browser test starts the browser for
-  // branded Lacros build, see crbug.com/1474764.
-  if (!g_browser_process->browser_policy_connector()->GetDeviceSettings()) {
-    CHECK_IS_TEST();  // IN-TEST
-    CHECK(chromeos::BrowserParamsProxy::
-              IsCrosapiDisabledForTesting());  // IN-TEST
-    return false;
-  }
-
-  const std::optional<std::string>& policy_value =
-      g_browser_process->browser_policy_connector()
-          ->GetDeviceSettings()
-          ->device_variations_restrict_parameter;
-  if (!policy_value) {
-    return false;
-  }
-
-  *parameter = *policy_value;
   return true;
 #else
   return false;
@@ -133,7 +102,7 @@ ChromeVariationsServiceClient::TakeSeedFromNativeVariationsSeedStore() {
 bool ChromeVariationsServiceClient::IsEnterprise() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return base::IsEnterpriseDevice();
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   return ash::InstallAttributes::Get()->IsEnterpriseManaged();
 #else
   return false;

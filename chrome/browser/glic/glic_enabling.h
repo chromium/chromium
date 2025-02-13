@@ -47,6 +47,12 @@ class GlicEnabling {
   // value can change at runtime.
   static bool IsEnabledForProfile(const Profile* profile);
 
+  // Returns true if the given profile has Glic enabled and has completed the
+  // FRE. True implies that IsEnabledByFlags(), IsProfileEligible(profile), and
+  // IsEnabledForProfile(profile) are also true. This value can change at
+  // runtime.
+  static bool IsEnabledAndConsentForProfile(const Profile* profile);
+
   // Whether or not the profile is currently ready for Glic. This means no
   // additional steps must be taken before opening Glic.
   static bool IsReadyForProfile(Profile* profile);

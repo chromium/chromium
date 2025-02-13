@@ -232,6 +232,11 @@ class AccountSelectionViewBase {
   // Gets the title of the dialog.
   virtual std::string GetDialogTitle() const = 0;
 
+  // Gets the initial letter from the given string and returns it as
+  // a UTF-16 string. Correctly handles non-BMP characters.
+  static std::u16string GetInitialLetterAsUppercase(
+      const std::string& utf8_string);
+
  protected:
   void SetLabelProperties(views::Label* label);
 

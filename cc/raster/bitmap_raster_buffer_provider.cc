@@ -99,22 +99,22 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
 
   const gfx::Size& size = resource.size();
   const gfx::ColorSpace& color_space = resource.color_space();
-  if (!resource.software_backing()) {
+  if (!resource.backing()) {
     auto backing = std::make_unique<ResourcePool::Backing>();
     backing->shared_image_interface = shared_image_interface_;
-    backing->shared_image =
+    backing->set_shared_image(
         shared_image_interface_->CreateSharedImageForSoftwareCompositor(
             {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
              gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-             "BitmapRasterBufferProvider"});
+             "BitmapRasterBufferProvider"}));
     CHECK(backing->shared_image);
 
     backing->mailbox_sync_token =
         shared_image_interface_->GenVerifiedSyncToken();
 
-    resource.set_software_backing(std::move(backing));
+    resource.set_backing(std::move(backing));
   }
-  ResourcePool::Backing* backing = resource.software_backing();
+  ResourcePool::Backing* backing = resource.backing();
 
   return std::make_unique<BitmapRasterBufferImpl>(
       size, color_space, backing, resource_content_id, previous_content_id);

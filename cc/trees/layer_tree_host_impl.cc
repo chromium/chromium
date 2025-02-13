@@ -1416,7 +1416,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // texture suddenly appearing in the future.
   DrawResult draw_result = DrawResult::kSuccess;
 
-  const AppendQuadsContext context = {.draw_mode = GetDrawMode()};
+  const AppendQuadsContext context = {GetDrawMode(), {}, false};
 
   int num_missing_tiles = 0;
   CHECK(!frame->checkerboarded_needs_raster);

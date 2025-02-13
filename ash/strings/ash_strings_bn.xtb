@@ -644,6 +644,7 @@
 <translation id="3206735939915734551">ক্যাপস লক চালু/বন্ধ করুন</translation>
 <translation id="3207953481422525583">ব্যবহারকারী সংক্রান্ত সেটিংস</translation>
 <translation id="3208321278970793882">অ্যাপ</translation>
+<translation id="3212221635583599601">আরও অ্যাকশনের জন্য ইন্টারনেটের সাথে কানেক্ট করুন</translation>
 <translation id="3213571860604332401">বুকমার্ক হিসেবে লিঙ্ক সেভ করুন</translation>
 <translation id="3217205077783620295">ভলিউম চালু আছে, টগল করলে অডিও মিউট হয়ে যাবে।</translation>
 <translation id="3226991577105957773">+ আরও <ph name="COUNT" />টি</translation>
@@ -1711,7 +1712,7 @@
 <translation id="6637729079642709226">ব্যবহারের মোট সময় পরিবর্তন করা</translation>
 <translation id="6641720045729354415">লাইভ ক্যাপশন টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">নাম অনুযায়ী বেছে নেওয়া সেটিং থেকে বেরিয়ে আগের অবস্থায় ফেরানো হয়েছে</translation>
-<translation id="664793810957802384">সাজেস্ট করা গ্রুপে আইটেম</translation>
+<translation id="664793810957802384">সাজেস্ট করা গ্রুপে থাকা আইটেম</translation>
 <translation id="6649641931981131786">নিজেকে ফ্রেমের কেন্দ্রে রাখতে ক্যামেরা অ্যাডজাস্ট করুন।</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> আপনার পরিচয় যাচাই করতে চায়</translation>
 <translation id="6650742588569439432">আইটেম লোড করা যায়নি।</translation>

@@ -558,7 +558,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="357465026686164600">Utiliser le téléphone comme clé de sécurité</translation>
 <translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="3577558748185201054">Gérez vos centres d'intérêt et préférences</translation>
-<translation id="3587482841069643663">Tous</translation>
+<translation id="3587482841069643663">Complète</translation>
 <translation id="3602290021589620013">Aperçu</translation>
 <translation id="3614126103057878858">Tendances des prix</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -1282,6 +1282,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> onglets ont été fermés.</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Fichiers audio, un fichier audio dans la liste}one{Fichiers audio, # fichier audio dans la liste}other{Fichiers audio, # fichiers audio dans la liste}}</translation>
 <translation id="685850645784703949">Discover de Google : désactivé</translation>
+<translation id="6861722405755529743">Bouton à développer de la barre de favoris</translation>
 <translation id="686366188661646310">Supprimer le mot de passe ?</translation>
 <translation id="6864459304226931083">Télécharger l'image</translation>
 <translation id="686490460830618322">Feuille de filtrage des applis</translation>

@@ -20,6 +20,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kAddressFieldByFieldFilling";
     case SuggestionType::kManageAddress:
       return "kManageAddress";
+    case SuggestionType::kManageAutofillAi:
+      return "kManageAutofillAi";
     case SuggestionType::kManageCreditCard:
       return "kManageCreditCard";
     case SuggestionType::kManageIban:

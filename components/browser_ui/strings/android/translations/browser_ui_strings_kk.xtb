@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Ашық қойындыларда бағаның төмендеуі туралы хабарландыру}other{Ашық қойындыларда бағаның төмендеуі туралы хабарландырулар}}</translation>
 <translation id="5186036860380548585">Опциялар экранның жоғарғы жағында тұрады</translation>
 <translation id="5197729504361054390">Сіз таңдаған контактілер <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтымен бөлісіледі.</translation>
+<translation id="5198930230016462977">"Жаңа қойынды бетін бейімдеу" төменгі парақшасы жабылды.</translation>
 <translation id="5216942107514965959">Соңғы кіру: бүгін</translation>
 <translation id="5225463052809312700">Камераны қосу</translation>
 <translation id="5234764350956374838">Жабу</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Қолды бақылау</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> үшін тыйым салынған.</translation>
 <translation id="5804241973901381774">Рұқсаттар</translation>
+<translation id="5822675474983796325">"Жаңа қойынды бетін бейімдеу" төменгі парақшасы толық ашылды.</translation>
 <translation id="5844448279347999754">Қосылса, сайттар буферге сақталған мәтін мен суреттерді көруге рұқсат сұрай алады. Өшірілсе, көре алмайды.</translation>
 <translation id="5853982612236235577">Қосылса, сайттар хабарландыру жіберуге рұқсат сұрай алады. Өшірілсе, жібере алмайды.</translation>
 <translation id="5860033963881614850">Өшірулі</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Кеңейтілген</translation>
 <translation id="7219254577985949841">Сайт деректерін жою керек пе?</translation>
 <translation id="723171743924126238">Кескіндерді таңдау</translation>
+<translation id="7243246278722455312">"Жаңа қойынды бетін бейімдеу" төменгі парақшасы</translation>
 <translation id="7243308994586599757">Опциялар экранның төменгі жағында тұрады</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> таңдалды</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> және <ph name="PERMISSION_2" /> үшін рұқсат етілген.</translation>

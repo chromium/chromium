@@ -146,6 +146,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kSafetyHubAndroidSurvey,
     &features::kSafetyHubAndroidSurveyV2,
     &features::kSafetyHubFollowup,
+    &features::kSafetyHubLocalPasswordsModule,
     &features::kSafetyHubMagicStack,
     &features::kSafetyHubWeakAndReusedPasswords,
     &features::kTaskManagerClank,
@@ -383,6 +384,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &privacy_sandbox::kIpProtectionV1,
     &privacy_sandbox::kIpProtectionUx,
     &privacy_sandbox::kPrivacySandboxActivityTypeStorage,
+    &privacy_sandbox::kPrivacySandboxNoticeActionDebouncingAndroid,
     &privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements,
     &privacy_sandbox::kPrivacySandboxAdsNoticeCCT,
     &privacy_sandbox::kPrivacySandboxEqualizedPromptButtons,
@@ -853,7 +855,7 @@ BASE_FEATURE(kFullscreenInsetsApiMigrationOnAutomotive,
 
 BASE_FEATURE(kGroupNewTabWithParent,
              "GroupNewTabWithParent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHistoryPaneAndroid,
              "HistoryPaneAndroid",

@@ -808,6 +808,44 @@ Called by update_autofill_enums.py.-->
              edited"/>
   <int value="11137"
       label="LOYALTY_MEMBERSHIP_PROVIDER: Autofilled value accepted"/>
+  <int value="11200"
+      label="VEHICLE_OWNER_TAG: Not autofilled or autofilled value edited"/>
+  <int value="11201" label="VEHICLE_OWNER_TAG: Autofilled value accepted"/>
+  <int value="11264"
+      label="VEHICLE_LICENSE_PLATE: Not autofilled or autofilled value edited"/>
+  <int value="11265" label="VEHICLE_LICENSE_PLATE: Autofilled value accepted"/>
+  <int value="11328"
+      label="VEHICLE_VIN: Not autofilled or autofilled value edited"/>
+  <int value="11329" label="VEHICLE_VIN: Autofilled value accepted"/>
+  <int value="11392"
+      label="VEHICLE_MAKE: Not autofilled or autofilled value edited"/>
+  <int value="11393" label="VEHICLE_MAKE: Autofilled value accepted"/>
+  <int value="11456"
+      label="VEHICLE_MODEL: Not autofilled or autofilled value edited"/>
+  <int value="11457" label="VEHICLE_MODEL: Autofilled value accepted"/>
+  <int value="11520"
+      label="DRIVERS_LICENSE_NAME_TAG: Not autofilled or autofilled value
+             edited"/>
+  <int value="11521"
+      label="DRIVERS_LICENSE_NAME_TAG: Autofilled value accepted"/>
+  <int value="11584"
+      label="DRIVERS_LICENSE_REGION: Not autofilled or autofilled value
+             edited"/>
+  <int value="11585" label="DRIVERS_LICENSE_REGION: Autofilled value accepted"/>
+  <int value="11648"
+      label="DRIVERS_LICENSE_NUMBER: Not autofilled or autofilled value
+             edited"/>
+  <int value="11649" label="DRIVERS_LICENSE_NUMBER: Autofilled value accepted"/>
+  <int value="11712"
+      label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG: Not autofilled or
+             autofilled value edited"/>
+  <int value="11713"
+      label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG: Autofilled value accepted"/>
+  <int value="11776"
+      label="DRIVERS_LICENSE_ISSUE_DATE_TAG: Not autofilled or autofilled
+             value edited"/>
+  <int value="11777"
+      label="DRIVERS_LICENSE_ISSUE_DATE_TAG: Autofilled value accepted"/>
 </enum>
 
 <enum name="AutofillDeveloperEngagement">
@@ -1093,6 +1131,26 @@ Called by update_autofill_enums.py.-->
   <int value="2769" label="LOYALTY_MEMBERSHIP_PROGRAM: accepted"/>
   <int value="2784" label="LOYALTY_MEMBERSHIP_PROVIDER: edited"/>
   <int value="2785" label="LOYALTY_MEMBERSHIP_PROVIDER: accepted"/>
+  <int value="2800" label="VEHICLE_OWNER_TAG: edited"/>
+  <int value="2801" label="VEHICLE_OWNER_TAG: accepted"/>
+  <int value="2816" label="VEHICLE_LICENSE_PLATE: edited"/>
+  <int value="2817" label="VEHICLE_LICENSE_PLATE: accepted"/>
+  <int value="2832" label="VEHICLE_VIN: edited"/>
+  <int value="2833" label="VEHICLE_VIN: accepted"/>
+  <int value="2848" label="VEHICLE_MAKE: edited"/>
+  <int value="2849" label="VEHICLE_MAKE: accepted"/>
+  <int value="2864" label="VEHICLE_MODEL: edited"/>
+  <int value="2865" label="VEHICLE_MODEL: accepted"/>
+  <int value="2880" label="DRIVERS_LICENSE_NAME_TAG: edited"/>
+  <int value="2881" label="DRIVERS_LICENSE_NAME_TAG: accepted"/>
+  <int value="2896" label="DRIVERS_LICENSE_REGION: edited"/>
+  <int value="2897" label="DRIVERS_LICENSE_REGION: accepted"/>
+  <int value="2912" label="DRIVERS_LICENSE_NUMBER: edited"/>
+  <int value="2913" label="DRIVERS_LICENSE_NUMBER: accepted"/>
+  <int value="2928" label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG: edited"/>
+  <int value="2929" label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG: accepted"/>
+  <int value="2944" label="DRIVERS_LICENSE_ISSUE_DATE_TAG: edited"/>
+  <int value="2945" label="DRIVERS_LICENSE_ISSUE_DATE_TAG: accepted"/>
 </enum>
 
 <enum name="AutofillErrorDialogType">
@@ -1914,6 +1972,16 @@ Called by update_autofill_enums.py.-->
   <int value="172" label="PASSPORT_ISSUE_DATE_TAG"/>
   <int value="173" label="LOYALTY_MEMBERSHIP_PROGRAM"/>
   <int value="174" label="LOYALTY_MEMBERSHIP_PROVIDER"/>
+  <int value="175" label="VEHICLE_OWNER_TAG"/>
+  <int value="176" label="VEHICLE_LICENSE_PLATE"/>
+  <int value="177" label="VEHICLE_VIN"/>
+  <int value="178" label="VEHICLE_MAKE"/>
+  <int value="179" label="VEHICLE_MODEL"/>
+  <int value="180" label="DRIVERS_LICENSE_NAME_TAG"/>
+  <int value="181" label="DRIVERS_LICENSE_REGION"/>
+  <int value="182" label="DRIVERS_LICENSE_NUMBER"/>
+  <int value="183" label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG"/>
+  <int value="184" label="DRIVERS_LICENSE_ISSUE_DATE_TAG"/>
 </enum>
 
 <enum name="AutofillFilledCardInformationBubbleFieldClicked">
@@ -4147,6 +4215,165 @@ Called by update_autofill_enums.py.-->
   <int value="1050"
       label="LOYALTY_MEMBERSHIP_PROVIDER - Predictions different - Value
              agrees with both predictions"/>
+  <int value="1051"
+      label="VEHICLE_OWNER_TAG - Predictions equal - Value agrees"/>
+  <int value="1052"
+      label="VEHICLE_OWNER_TAG - Predictions equal - Value disagrees"/>
+  <int value="1053"
+      label="VEHICLE_OWNER_TAG - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="1054"
+      label="VEHICLE_OWNER_TAG - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="1055"
+      label="VEHICLE_OWNER_TAG - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="1056"
+      label="VEHICLE_OWNER_TAG - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="1057"
+      label="VEHICLE_LICENSE_PLATE - Predictions equal - Value agrees"/>
+  <int value="1058"
+      label="VEHICLE_LICENSE_PLATE - Predictions equal - Value disagrees"/>
+  <int value="1059"
+      label="VEHICLE_LICENSE_PLATE - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="1060"
+      label="VEHICLE_LICENSE_PLATE - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="1061"
+      label="VEHICLE_LICENSE_PLATE - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="1062"
+      label="VEHICLE_LICENSE_PLATE - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="1063" label="VEHICLE_VIN - Predictions equal - Value agrees"/>
+  <int value="1064" label="VEHICLE_VIN - Predictions equal - Value disagrees"/>
+  <int value="1065"
+      label="VEHICLE_VIN - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="1066"
+      label="VEHICLE_VIN - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="1067"
+      label="VEHICLE_VIN - Predictions different - Value agrees with neither
+             prediction"/>
+  <int value="1068"
+      label="VEHICLE_VIN - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="1069" label="VEHICLE_MAKE - Predictions equal - Value agrees"/>
+  <int value="1070" label="VEHICLE_MAKE - Predictions equal - Value disagrees"/>
+  <int value="1071"
+      label="VEHICLE_MAKE - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="1072"
+      label="VEHICLE_MAKE - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="1073"
+      label="VEHICLE_MAKE - Predictions different - Value agrees with neither
+             prediction"/>
+  <int value="1074"
+      label="VEHICLE_MAKE - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="1075" label="VEHICLE_MODEL - Predictions equal - Value agrees"/>
+  <int value="1076"
+      label="VEHICLE_MODEL - Predictions equal - Value disagrees"/>
+  <int value="1077"
+      label="VEHICLE_MODEL - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="1078"
+      label="VEHICLE_MODEL - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="1079"
+      label="VEHICLE_MODEL - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="1080"
+      label="VEHICLE_MODEL - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="1081"
+      label="DRIVERS_LICENSE_NAME_TAG - Predictions equal - Value agrees"/>
+  <int value="1082"
+      label="DRIVERS_LICENSE_NAME_TAG - Predictions equal - Value disagrees"/>
+  <int value="1083"
+      label="DRIVERS_LICENSE_NAME_TAG - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="1084"
+      label="DRIVERS_LICENSE_NAME_TAG - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="1085"
+      label="DRIVERS_LICENSE_NAME_TAG - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="1086"
+      label="DRIVERS_LICENSE_NAME_TAG - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="1087"
+      label="DRIVERS_LICENSE_REGION - Predictions equal - Value agrees"/>
+  <int value="1088"
+      label="DRIVERS_LICENSE_REGION - Predictions equal - Value disagrees"/>
+  <int value="1089"
+      label="DRIVERS_LICENSE_REGION - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="1090"
+      label="DRIVERS_LICENSE_REGION - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="1091"
+      label="DRIVERS_LICENSE_REGION - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="1092"
+      label="DRIVERS_LICENSE_REGION - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="1093"
+      label="DRIVERS_LICENSE_NUMBER - Predictions equal - Value agrees"/>
+  <int value="1094"
+      label="DRIVERS_LICENSE_NUMBER - Predictions equal - Value disagrees"/>
+  <int value="1095"
+      label="DRIVERS_LICENSE_NUMBER - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="1096"
+      label="DRIVERS_LICENSE_NUMBER - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="1097"
+      label="DRIVERS_LICENSE_NUMBER - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="1098"
+      label="DRIVERS_LICENSE_NUMBER - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="1099"
+      label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG - Predictions equal - Value
+             agrees"/>
+  <int value="1100"
+      label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG - Predictions equal - Value
+             disagrees"/>
+  <int value="1101"
+      label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG - Predictions different -
+             Value agrees with old prediction"/>
+  <int value="1102"
+      label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG - Predictions different -
+             Value agrees with new prediction"/>
+  <int value="1103"
+      label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG - Predictions different -
+             Value agrees with neither prediction"/>
+  <int value="1104"
+      label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG - Predictions different -
+             Value agrees with both predictions"/>
+  <int value="1105"
+      label="DRIVERS_LICENSE_ISSUE_DATE_TAG - Predictions equal - Value
+             agrees"/>
+  <int value="1106"
+      label="DRIVERS_LICENSE_ISSUE_DATE_TAG - Predictions equal - Value
+             disagrees"/>
+  <int value="1107"
+      label="DRIVERS_LICENSE_ISSUE_DATE_TAG - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="1108"
+      label="DRIVERS_LICENSE_ISSUE_DATE_TAG - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="1109"
+      label="DRIVERS_LICENSE_ISSUE_DATE_TAG - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="1110"
+      label="DRIVERS_LICENSE_ISSUE_DATE_TAG - Predictions different - Value
+             agrees with both predictions"/>
 </enum>
 
 <enum name="AutofillPredictionSource">
@@ -4460,6 +4687,29 @@ Called by update_autofill_enums.py.-->
   <int value="2784"
       label="LOYALTY_MEMBERSHIP_PROVIDER: Pre-filled on page load"/>
   <int value="2785" label="LOYALTY_MEMBERSHIP_PROVIDER: Empty on page load"/>
+  <int value="2800" label="VEHICLE_OWNER_TAG: Pre-filled on page load"/>
+  <int value="2801" label="VEHICLE_OWNER_TAG: Empty on page load"/>
+  <int value="2816" label="VEHICLE_LICENSE_PLATE: Pre-filled on page load"/>
+  <int value="2817" label="VEHICLE_LICENSE_PLATE: Empty on page load"/>
+  <int value="2832" label="VEHICLE_VIN: Pre-filled on page load"/>
+  <int value="2833" label="VEHICLE_VIN: Empty on page load"/>
+  <int value="2848" label="VEHICLE_MAKE: Pre-filled on page load"/>
+  <int value="2849" label="VEHICLE_MAKE: Empty on page load"/>
+  <int value="2864" label="VEHICLE_MODEL: Pre-filled on page load"/>
+  <int value="2865" label="VEHICLE_MODEL: Empty on page load"/>
+  <int value="2880" label="DRIVERS_LICENSE_NAME_TAG: Pre-filled on page load"/>
+  <int value="2881" label="DRIVERS_LICENSE_NAME_TAG: Empty on page load"/>
+  <int value="2896" label="DRIVERS_LICENSE_REGION: Pre-filled on page load"/>
+  <int value="2897" label="DRIVERS_LICENSE_REGION: Empty on page load"/>
+  <int value="2912" label="DRIVERS_LICENSE_NUMBER: Pre-filled on page load"/>
+  <int value="2913" label="DRIVERS_LICENSE_NUMBER: Empty on page load"/>
+  <int value="2928"
+      label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG: Pre-filled on page load"/>
+  <int value="2929"
+      label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG: Empty on page load"/>
+  <int value="2944"
+      label="DRIVERS_LICENSE_ISSUE_DATE_TAG: Pre-filled on page load"/>
+  <int value="2945" label="DRIVERS_LICENSE_ISSUE_DATE_TAG: Empty on page load"/>
 </enum>
 
 <enum name="AutofillProfileImportDecision">
@@ -5506,6 +5756,26 @@ Called by update_autofill_enums.py.-->
   <int value="693" label="LOYALTY_MEMBERSHIP_PROGRAM: Accepted"/>
   <int value="696" label="LOYALTY_MEMBERSHIP_PROVIDER: Ignored"/>
   <int value="697" label="LOYALTY_MEMBERSHIP_PROVIDER: Accepted"/>
+  <int value="700" label="VEHICLE_OWNER_TAG: Ignored"/>
+  <int value="701" label="VEHICLE_OWNER_TAG: Accepted"/>
+  <int value="704" label="VEHICLE_LICENSE_PLATE: Ignored"/>
+  <int value="705" label="VEHICLE_LICENSE_PLATE: Accepted"/>
+  <int value="708" label="VEHICLE_VIN: Ignored"/>
+  <int value="709" label="VEHICLE_VIN: Accepted"/>
+  <int value="712" label="VEHICLE_MAKE: Ignored"/>
+  <int value="713" label="VEHICLE_MAKE: Accepted"/>
+  <int value="716" label="VEHICLE_MODEL: Ignored"/>
+  <int value="717" label="VEHICLE_MODEL: Accepted"/>
+  <int value="720" label="DRIVERS_LICENSE_NAME_TAG: Ignored"/>
+  <int value="721" label="DRIVERS_LICENSE_NAME_TAG: Accepted"/>
+  <int value="724" label="DRIVERS_LICENSE_REGION: Ignored"/>
+  <int value="725" label="DRIVERS_LICENSE_REGION: Accepted"/>
+  <int value="728" label="DRIVERS_LICENSE_NUMBER: Ignored"/>
+  <int value="729" label="DRIVERS_LICENSE_NUMBER: Accepted"/>
+  <int value="732" label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG: Ignored"/>
+  <int value="733" label="DRIVERS_LICENSE_EXPIRATION_DATE_TAG: Accepted"/>
+  <int value="736" label="DRIVERS_LICENSE_ISSUE_DATE_TAG: Ignored"/>
+  <int value="737" label="DRIVERS_LICENSE_ISSUE_DATE_TAG: Accepted"/>
 </enum>
 
 <enum name="IbanCountry">

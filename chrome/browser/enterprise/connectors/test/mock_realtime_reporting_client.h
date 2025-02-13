@@ -24,6 +24,16 @@ class MockRealtimeReportingClient : public RealtimeReportingClient {
                     const ReportingSettings& settings,
                     base::Value::Dict event));
 
+  MOCK_METHOD2(ReportEvent,
+               void(::chrome::cros::reporting::proto::Event event,
+                    const ReportingSettings& settings));
+
+  MOCK_METHOD4(ReportPastEvent,
+               void(const std::string& name,
+                    const ReportingSettings& settings,
+                    base::Value::Dict event,
+                    const base::Time& time));
+
   static std::unique_ptr<KeyedService> CreateMockRealtimeReportingClient(
       content::BrowserContext* context);
 };

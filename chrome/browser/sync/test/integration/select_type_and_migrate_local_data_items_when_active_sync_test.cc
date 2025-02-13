@@ -56,8 +56,7 @@ class SelectTypeAndMigrateLocalDataItemsWhenActiveTest : public SyncTest {
         address_(autofill::test::GetFullProfile()),
         password_(CreateTestPasswordForm(0)) {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop,
-                              switches::kImprovedSigninUIOnDesktop},
+        /*enabled_features=*/{switches::kImprovedSigninUIOnDesktop},
         /*disabled_features=*/{
             syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers});
   }
@@ -416,8 +415,7 @@ class
   SelectTypeAndMigrateLocalDataItemsWhenActiveWithContactInfoForCustomPassphraseUsersTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {switches::kExplicitBrowserSigninUIOnDesktop,
-         switches::kImprovedSigninUIOnDesktop,
+        {switches::kImprovedSigninUIOnDesktop,
          syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers},
         /*disabled_features=*/{});
   }

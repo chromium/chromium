@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{آپ کے کھلے ٹیبز پر قیمت میں کمی}other{آپ کے کھلے ٹیبز پر قیمت میں کمی}}</translation>
 <translation id="5186036860380548585">اسکرین کے اوپری حصہ کے قریب اختیار دستیاب ہے</translation>
 <translation id="5197729504361054390">آپ کے منتخب کردہ رابطوں کا <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> کے ساتھ اشتراک کیا جائے گا۔</translation>
+<translation id="5198930230016462977">اپنے نئے ٹیب کے صفحہ کے نیچے کی شیٹ کو حسب ضرورت بنائیں بند ہے</translation>
 <translation id="5216942107514965959">آخری بار آج ملاحظہ کیا گیا</translation>
 <translation id="5225463052809312700">کیمرا آن کریں</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">ہاتھ کی ٹریکنگ</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> مسدود ہو گیا</translation>
 <translation id="5804241973901381774">اجازتیں</translation>
+<translation id="5822675474983796325">اپنے نئے ٹیب کے صفحہ کے نیچے کی شیٹ کو حسب ضرورت بنائیں پورا کھلا ہے</translation>
 <translation id="5844448279347999754">آن ہونے پر، سائٹس آپ کے کلپ بورڈ میں محفوظ کردہ ٹیکسٹ اور تصاویر دیکھنے کے لیے پوچھ سکتی ہیں۔ آف ہونے پر، سائٹس آپ کے کلپ بورڈ میں محفوظ کردہ ٹیکسٹ یا تصاویر نہیں دیکھ سکتی ہیں۔</translation>
 <translation id="5853982612236235577">آن ہونے پر، سائٹس اطلاعات بھیجنے کے لیے پوچھ سکتی ہیں۔ آف ہونے پر، سائٹس اطلاعات نہیں بھیج سکتیں۔</translation>
 <translation id="5860033963881614850">آف</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">توسیع کردہ</translation>
 <translation id="7219254577985949841">سائٹ ڈیٹا کو حذف کریں؟</translation>
 <translation id="723171743924126238">تصاویر منتخب کریں</translation>
+<translation id="7243246278722455312">اپنے نئے ٹیب کے صفحہ کے نیچے کی شیٹ کو حسب ضرورت بنائیں</translation>
 <translation id="7243308994586599757">اسکرین کے نچلے حصہ کے قریب اختیارات دستیاب ہیں</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> منتخب ہو گئے</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> اور <ph name="PERMISSION_2" /> کی اجازت دی گئی</translation>

@@ -483,7 +483,7 @@ ParkableStringManager::Statistics ParkableStringManager::ComputeStatistics()
     size_t size = str->CharactersSizeInBytes();
     stats.original_size += size;
     stats.uncompressed_size += size;
-    stats.metadata_size += kParkableStringImplActualSize;
+    stats.metadata_size += kParkableStringImplActualSize + sizeof(StringImpl);
 
     if (str->has_compressed_data())
       stats.overhead_size += str->compressed_size();
@@ -497,7 +497,7 @@ ParkableStringManager::Statistics ParkableStringManager::ComputeStatistics()
     // computations to be consistent, hence the DCHECK().
     size_t memory_footprint =
         (str->has_compressed_data() ? str->compressed_size() : 0) + size +
-        kParkableStringImplActualSize;
+        kParkableStringImplActualSize + sizeof(StringImpl);
     DCHECK_EQ(memory_footprint, str->MemoryFootprintForDump());
   }
 

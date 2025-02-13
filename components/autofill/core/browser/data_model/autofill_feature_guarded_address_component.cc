@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_model/autofill_feature_guarded_address_component.h"
 
 #include "base/feature_list.h"
+#include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
 
@@ -24,13 +25,12 @@ void FeatureGuardedAddressComponent::SetValue(std::u16string value,
   AddressComponent::SetValue(std::move(value), status);
 }
 
-void FeatureGuardedAddressComponent::GetTypes(
-    bool storable_only,
-    FieldTypeSet* supported_types) const {
+FieldTypeSet FeatureGuardedAddressComponent::GetTypes(
+    bool storable_only) const {
   if (!base::FeatureList::IsEnabled(*feature_)) {
-    return;
+    return {};
   }
-  AddressComponent::GetTypes(storable_only, supported_types);
+  return AddressComponent::GetTypes(storable_only);
 }
 
 }  // namespace autofill

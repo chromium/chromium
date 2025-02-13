@@ -1318,6 +1318,7 @@ public class StripLayoutHelper
         if (selected) {
             bringSelectedTabToVisibleArea(0, false);
         } else {
+            clearLastHoveredTab();
             mTabMenu.dismiss();
         }
     }

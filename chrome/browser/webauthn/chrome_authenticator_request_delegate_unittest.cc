@@ -651,7 +651,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, FilterGoogleComPasskeys) {
           device::AuthenticatorType::kOther, test.rp_id,
           std::vector<uint8_t>{0},
           device::PublicKeyCredentialUserEntity(
-              std::vector<uint8_t>(user_id.begin(), user_id.end())));
+              std::vector<uint8_t>(user_id.begin(), user_id.end())),
+          /*provider_name=*/std::nullopt);
     }
     data.has_platform_authenticator_credential = test.recognized_credential;
 
@@ -659,7 +660,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, FilterGoogleComPasskeys) {
     // affect setting the recognized credentials flag.
     data.recognized_credentials.emplace_back(
         device::AuthenticatorType::kICloudKeychain, test.rp_id,
-        std::vector<uint8_t>{0}, device::PublicKeyCredentialUserEntity({1}));
+        std::vector<uint8_t>{0}, device::PublicKeyCredentialUserEntity({1}),
+        /*provider_name=*/std::nullopt);
     data.has_icloud_keychain_credential = device::FidoRequestHandlerBase::
         RecognizedCredential::kHasRecognizedCredential;
 
@@ -708,7 +710,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
   data.recognized_credentials.emplace_back(
       device::AuthenticatorType::kOther, kGoogleRpId, std::vector<uint8_t>{0},
       device::PublicKeyCredentialUserEntity(
-          std::vector<uint8_t>(user_id.begin(), user_id.end())));
+          std::vector<uint8_t>(user_id.begin(), user_id.end())),
+      /*provider_name=*/std::nullopt);
   data.has_platform_authenticator_credential = device::FidoRequestHandlerBase::
       RecognizedCredential::kHasRecognizedCredential;
 
@@ -751,28 +754,21 @@ TEST_F(EnclaveAuthenticatorRequestDelegateTest,
   signin::MakePrimaryAccountAvailable(identity_manager, "hikari@example.com",
                                       signin::ConsentLevel::kSignin);
   struct {
-    bool is_flag_enabled;
     bool is_syncing_passwords;
     bool has_unexportable_keys;
     bool expected_passkeys_available;
   } kTestCases[] = {
-      // flag sync  unexp result
-      {true, true, true, true},
-      {false, true, true, false},
-      {true, false, true, false},
-      {true, true, false, false},
+      // sync unexp result
+      {true, true, true},
+      {false, true, false},
+      {true, false, false},
   };
   for (const auto& test : kTestCases) {
-    SCOPED_TRACE(testing::Message()
-                 << "is_flag_enabled=" << test.is_flag_enabled);
     SCOPED_TRACE(testing::Message()
                  << "is_syncing_passwords=" << test.is_syncing_passwords);
     SCOPED_TRACE(testing::Message()
                  << "has_unexportable_keys=" << test.has_unexportable_keys);
     ChromeWebAuthenticationDelegate delegate;
-    base::test::ScopedFeatureList scoped_feature_list_;
-    scoped_feature_list_.InitWithFeatureState(
-        device::kWebAuthnEnclaveAuthenticator, test.is_flag_enabled);
 
     auto* test_sync_service = static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetInstance()->GetForProfile(profile()));
@@ -1010,7 +1006,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateWithPasswordsTest,
   transports_info.recognized_credentials = {
       device::DiscoverableCredentialMetadata(
           device::AuthenticatorType::kEnclave, kRpId, {},
-          device::PublicKeyCredentialUserEntity())};
+          device::PublicKeyCredentialUserEntity(),
+          /*provider_name=*/std::nullopt)};
 
   // still waiting for passwords.
   EXPECT_CALL(mock_closure, Run).Times(0);

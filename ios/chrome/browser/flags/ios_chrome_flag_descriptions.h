@@ -566,6 +566,11 @@ extern const char kIOSSaveToPhotosImprovementsDescription[];
 extern const char kNewFeedPositioningExperimentName[];
 extern const char kNewFeedPositioningExperimentDescription[];
 
+// Title and description for the flag to enable the new share extension
+// experiment on iOS.
+extern const char kNewShareExtensionName[];
+extern const char kNewShareExtensionDescription[];
+
 // Title and description of the flag to enable client side new tab page
 // experiments aimed at improving user retention.
 extern const char kNewTabPageFieldTrialName[];
@@ -656,6 +661,11 @@ extern const char kLensOverlayEnableIPadCompatibilityDescription[];
 // Title and description for the flag to allow lens overlay in landscape.
 extern const char kLensOverlayEnableLandscapeCompatibilityName[];
 extern const char kLensOverlayEnableLandscapeCompatibilityDescription[];
+
+// Title and description for the flag to allow the LVF escape hatch in lens
+// overlay overflow menu.
+extern const char kLensOverlayEnableLVFEscapeHatchName[];
+extern const char kLensOverlayEnableLVFEscapeHatchDescription[];
 
 // Title and description for the flag to enable the Lens overlay location bar
 // entrypoint.

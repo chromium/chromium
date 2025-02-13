@@ -92,15 +92,12 @@ RenderWidgetHostViewIOS::RenderWidgetHostViewIOS(RenderWidgetHost* widget)
   ui_view_->view_ =
       [[RenderWidgetUIView alloc] initWithWidget:weak_factory_.GetWeakPtr()];
 
-  display_tree_ =
-      std::make_unique<ui::DisplayCALayerTree>([ui_view_->view_ layer]);
-
   auto* screen = display::Screen::GetScreen();
   screen_infos_ =
       screen->GetScreenInfosNearestDisplay(screen->GetPrimaryDisplay().id());
 
   browser_compositor_ = std::make_unique<BrowserCompositorIOS>(
-      (uint64_t)(__bridge void*)ui_view_->view_, this, host()->is_hidden(),
+      [ui_view_->view_ viewHandle], this, host()->is_hidden(),
       host()->GetFrameSinkId());
 
   if (IsTesting()) {
@@ -407,10 +404,7 @@ void RenderWidgetHostViewIOS::OnSynchronizedDisplayPropertiesChanged(
 }
 
 void RenderWidgetHostViewIOS::UpdateCALayerTree(
-    const gfx::CALayerParams& ca_layer_params) {
-  DCHECK(display_tree_);
-  display_tree_->UpdateCALayerTree(ca_layer_params);
-}
+    const gfx::CALayerParams& ca_layer_params) {}
 
 void RenderWidgetHostViewIOS::OnOldViewDidNavigatePreCommit() {
   CHECK(browser_compositor_) << "Shouldn't be called during destruction!";

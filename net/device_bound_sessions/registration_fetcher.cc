@@ -12,7 +12,6 @@
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/io_buffer.h"
-#include "net/base/url_util.h"
 #include "net/device_bound_sessions/registration_request_param.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
@@ -137,8 +136,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   void OnReceivedRedirect(URLRequest* request,
                           const RedirectInfo& redirect_info,
                           bool* defer_redirect) override {
-    if (!redirect_info.new_url.SchemeIsCryptographic() &&
-        !IsLocalhost(redirect_info.new_url)) {
+    if (!IsSecure(redirect_info.new_url)) {
       request->Cancel();
       OnResponseCompleted();
       // *this is deleted here
@@ -297,8 +295,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   }
 
   std::unique_ptr<net::URLRequest> CreateBaseRequest() {
-    CHECK(fetcher_endpoint_.SchemeIsCryptographic() ||
-          IsLocalhost(fetcher_endpoint_));
+    CHECK(IsSecure(fetcher_endpoint_));
 
     std::unique_ptr<net::URLRequest> request = context_->CreateRequest(
         fetcher_endpoint_, IDLE, this, kRegistrationTrafficAnnotation,

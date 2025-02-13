@@ -41,17 +41,6 @@ class EventLatencyTracingRecorder {
       std::optional<int64_t> display_trace_id);
 
   static bool IsEventLatencyTracingEnabled();
-
- private:
-  // We do not want the emitting of traces to have any side-effects, so the
-  // actual emitting uses `const EventMetrics*`.
-  static void RecordEventLatencyTraceEventInternal(
-      const EventMetrics* event_metrics,
-      base::TimeTicks termination_time,
-      const viz::BeginFrameArgs* args,
-      const std::vector<CompositorFrameReporter::StageData>* stage_history,
-      const CompositorFrameReporter::ProcessedVizBreakdown* viz_breakdown,
-      std::optional<int64_t> display_trace_id);
 };
 
 }  // namespace cc

@@ -357,7 +357,8 @@ void EmbeddedPermissionPromptBaseView::AddButton(
 }
 
 gfx::Rect EmbeddedPermissionPromptBaseView::GetBubbleBounds() {
-  if (GetPromptPosition() == PermissionElementPromptPosition::kLegacyPrompt) {
+  if (GetPromptPosition() == PermissionElementPromptPosition::kLegacyPrompt ||
+      !delegate_) {
     return views::BubbleDialogDelegateView::GetBubbleBounds();
   }
 

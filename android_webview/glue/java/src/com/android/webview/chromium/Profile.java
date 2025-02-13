@@ -168,5 +168,8 @@ public class Profile {
                 .updatePrefetchConfiguration(
                         speculativeLoadingConfig.prefetchTTLSeconds,
                         speculativeLoadingConfig.maxPrefetches);
+        if (speculativeLoadingConfig.maxPrerenders > 0) {
+            mBrowserContext.setMaxPrerenders(speculativeLoadingConfig.maxPrerenders);
+        }
     }
 }

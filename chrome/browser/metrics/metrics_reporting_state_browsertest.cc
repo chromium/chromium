@@ -19,7 +19,7 @@
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
@@ -37,7 +37,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -316,7 +316,7 @@ INSTANTIATE_TEST_SUITE_P(
          ChangeMetricsReportingStateCalledFrom::kSessionCrashedDialog,
          ChangeMetricsReportingStateCalledFrom::kCrosMetricsSettingsChange}));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Used to verify that managed/unmanged devices returns correct values based on
 // management state.
 class MetricsReportingStateManagedTest

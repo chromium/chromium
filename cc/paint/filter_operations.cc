@@ -253,6 +253,54 @@ FilterOperations FilterOperations::Blend(const FilterOperations& from,
   return blended_filters;
 }
 
+bool FilterOperations::AllowsLCDText() const {
+  if (operations_.empty()) {
+    return true;
+  }
+  if (!base::FeatureList::IsEnabled(features::kAllowLCDTextWithFilter)) {
+    return false;
+  }
+  // Assumes any complex filter can cause color fringing of LCD-text pixels.
+  if (operations_.size() > 1) {
+    return false;
+  }
+  switch (operations_[0].type()) {
+    // These filters reduce or don't change the color difference between
+    // LCD-text pixels and text pixels.
+    case FilterOperation::GRAYSCALE:
+    case FilterOperation::SEPIA:
+    case FilterOperation::OPACITY:
+    case FilterOperation::BRIGHTNESS:
+    // A blur filter may change color, but it's very common, and the color
+    // change of LCD-text pixels is not obvious.
+    case FilterOperation::BLUR:
+    // A drop shadow draws over the original pixels.
+    case FilterOperation::DROP_SHADOW:
+      return true;
+
+    // These filters are good for LCD text if they reduce or don't change
+    // contrast/saturation.
+    case FilterOperation::CONTRAST:
+    case FilterOperation::SATURATE:
+      return operations_[0].amount() <= 1;
+
+    // Invert<=50% is like combined grayscale and contrast<100%.
+    case FilterOperation::INVERT:
+      return operations_[0].amount() <= 0.5;
+
+    // Other filters may change colors of pixels dramatically, or are not or
+    // rarely used in web.
+    case FilterOperation::COLOR_MATRIX:
+    case FilterOperation::HUE_ROTATE:
+    case FilterOperation::ZOOM:
+    case FilterOperation::REFERENCE:
+    case FilterOperation::SATURATING_BRIGHTNESS:
+    case FilterOperation::ALPHA_THRESHOLD:
+    case FilterOperation::OFFSET:
+      return false;
+  }
+}
+
 void FilterOperations::AsValueInto(
     base::trace_event::TracedValue* value) const {
   for (size_t i = 0; i < operations_.size(); ++i) {

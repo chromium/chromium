@@ -26,6 +26,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/style/typography.h"
 
 namespace autofill_ai {
 
@@ -36,21 +38,30 @@ constexpr int kHeaderPadding = 20;
 
 constexpr int kBubbleWidth = 320;
 
-std::unique_ptr<views::View> BuildEntityAttributeRow(std::string_view key,
-                                                     std::string_view value) {
-  return views::Builder<views::BoxLayoutView>()
-      .SetOrientation(views::BoxLayout::Orientation::kVertical)
-      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-      .AddChildren(
-          views::Builder<views::Label>()
-              .SetText(base::UTF8ToUTF16(value))
-              .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
-              .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT),
-          views::Builder<views::Label>()
-              .SetText(base::UTF8ToUTF16(key))
-              .SetTextStyle(views::style::STYLE_BODY_5)
-              .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT))
-      .Build();
+std::unique_ptr<views::View> BuildEntityAttributeRow(
+    std::string_view key,
+    std::u16string_view value) {
+  auto row =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+          .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+          .AddChildren(
+              views::Builder<views::Label>()
+                  .SetText(base::UTF8ToUTF16(key))
+                  .SetTextStyle(views::style::STYLE_BODY_4)
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT),
+              views::Builder<views::Label>()
+                  .SetText(std::u16string(value))
+                  .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
+                  .SetHorizontalAlignment(
+                      gfx::HorizontalAlignment::ALIGN_RIGHT))
+          .Build();
+
+  // Set every child to expand with the same ratio.
+  for (auto child : row->children()) {
+    row->SetFlexForView(child, 1);
+  }
+  return row;
 }
 
 SaveAutofillAiDataController::AutofillAiBubbleClosedReason
@@ -93,8 +104,7 @@ SaveAutofillAiDataBubbleView::SaveAutofillAiDataBubbleView(
       views::BoxLayout::Orientation::kVertical));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kControl));
-  SetAccessibleTitle(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_TITLE));
+  SetAccessibleTitle(controller_->GetDialogTitle());
 
   const int kVerficalSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_CONTROL_LIST_VERTICAL);
@@ -158,8 +168,7 @@ void SaveAutofillAiDataBubbleView::AddedToWidget() {
       autofill_ai::CreateLargeAutofillAiIconImageView());
   header_container->AddChildView(
       views::Builder<views::Label>()
-          .SetText(l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_TITLE))
+          .SetText(controller_->GetDialogTitle())
           .SetTextStyle(views::style::STYLE_HEADLINE_4)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
           .Build());

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.base;
 import android.content.Context;
 import android.os.SystemClock;
 
-import androidx.annotation.Nullable;
 import androidx.collection.SimpleArrayMap;
 
 import org.chromium.base.BundleUtils;
@@ -15,12 +14,15 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Handles preloading split Contexts on a background thread. Loading a new isolated split Context
  * can be expensive since the ClassLoader may need to be created. See crbug.com/1150600 for more
  * info.
  */
+@NullMarked
 public class SplitPreloader {
     private final SimpleArrayMap<String, PreloadTask> mPreloadTasks = new SimpleArrayMap<>();
     private final Context mContext;

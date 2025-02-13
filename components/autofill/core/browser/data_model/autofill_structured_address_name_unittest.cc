@@ -600,8 +600,7 @@ TEST(AutofillStructuredName, GetNameMiddleInitial) {
 
 TEST(AutofillStructuredName, TestGetSupportedTypes_FullName) {
   NameFull full_name;
-  FieldTypeSet supported_types;
-  full_name.GetSupportedTypes(&supported_types);
+  FieldTypeSet supported_types = full_name.GetSupportedTypes();
   EXPECT_EQ(FieldTypeSet({NAME_FULL, NAME_FIRST, NAME_MIDDLE,
                           NAME_MIDDLE_INITIAL, NAME_LAST, NAME_LAST_FIRST,
                           NAME_LAST_CONJUNCTION, NAME_LAST_SECOND}),

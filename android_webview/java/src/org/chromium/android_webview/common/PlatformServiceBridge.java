@@ -8,22 +8,22 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * This class manages platform-specific services. (i.e. Google Services) The platform should extend
  * this class and use this base class to fetch their specialized version.
  */
+@NullMarked
 public abstract class PlatformServiceBridge {
-    private static PlatformServiceBridge sInstance;
+    private static @Nullable PlatformServiceBridge sInstance;
     private static final Object sInstanceLock = new Object();
 
-    private static HandlerThread sHandlerThread;
-    private static Handler sHandler;
+    private static @Nullable HandlerThread sHandlerThread;
+    private static @Nullable Handler sHandler;
     private static final Object sHandlerLock = new Object();
 
     protected PlatformServiceBridge() {}
@@ -74,7 +74,7 @@ public abstract class PlatformServiceBridge {
     }
 
     // Overriding implementations may call "callback" asynchronously, on any thread.
-    public void querySafeBrowsingUserConsent(@NonNull final Callback<Boolean> callback) {
+    public void querySafeBrowsingUserConsent(final Callback<Boolean> callback) {
         // User opt-in preference depends on a SafetyNet API. In purely upstream builds (which don't
         // communicate with GMS), assume the user has not opted in.
         callback.onResult(false);
@@ -95,7 +95,7 @@ public abstract class PlatformServiceBridge {
         // We don't have this specialized service.
     }
 
-    public void warmUpSafeBrowsing(Context context, @NonNull final Callback<Boolean> callback) {
+    public void warmUpSafeBrowsing(Context context, final Callback<Boolean> callback) {
         callback.onResult(false);
     }
 

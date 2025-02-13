@@ -107,12 +107,14 @@ HRESULT SetWindowIcon(HWND hwnd, WORD icon_id, HICON* hicon) {
   return S_OK;
 }
 
-std::wstring GetInstallerDisplayName(const std::u16string& bundle_name) {
+std::wstring GetInstallerDisplayName(const std::u16string& bundle_name,
+                                     const std::wstring& lang) {
   std::wstring display_name = base::AsWString(bundle_name);
   if (display_name.empty()) {
-    display_name = GetLocalizedString(IDS_FRIENDLY_COMPANY_NAME_BASE);
+    display_name = GetLocalizedString(IDS_FRIENDLY_COMPANY_NAME_BASE, lang);
   }
-  return GetLocalizedStringF(IDS_INSTALLER_DISPLAY_NAME_BASE, display_name);
+  return GetLocalizedStringF(IDS_INSTALLER_DISPLAY_NAME_BASE, display_name,
+                             lang);
 }
 
 bool GetDlgItemText(HWND dlg, int item_id, std::wstring* text) {

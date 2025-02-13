@@ -485,29 +485,6 @@ class AutofillPrivateHasUserAnnotationsEntriesFunction
   void OnEntriesRetrieved(user_annotations::UserAnnotationsEntries results);
 };
 
-class AutofillPrivateTriggerAnnotationsBootstrappingFunction
-    : public AutofillPrivateExtensionFunction {
- public:
-  AutofillPrivateTriggerAnnotationsBootstrappingFunction() = default;
-  AutofillPrivateTriggerAnnotationsBootstrappingFunction(
-      const AutofillPrivateTriggerAnnotationsBootstrappingFunction&) = delete;
-  AutofillPrivateTriggerAnnotationsBootstrappingFunction& operator=(
-      const AutofillPrivateTriggerAnnotationsBootstrappingFunction&) = delete;
-  DECLARE_EXTENSION_FUNCTION("autofillPrivate.triggerAnnotationsBootstrapping",
-                             AUTOFILLPRIVATE_TRIGGERANNOTATIONSBOOTSTRAPPING)
-
- protected:
-  ~AutofillPrivateTriggerAnnotationsBootstrappingFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-
- private:
-  void OnBootstrappingComplete(
-      user_annotations::UserAnnotationsExecutionResult result);
-  void MaybeShowIPH();
-};
-
 class AutofillPrivateIsUserEligibleForAutofillImprovementsFunction
     : public AutofillPrivateExtensionFunction {
  public:

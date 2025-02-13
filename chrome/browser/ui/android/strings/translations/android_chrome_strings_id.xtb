@@ -582,6 +582,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3701167022068948696">Perbaiki sekarang</translation>
 <translation id="3701515417135397388">Berikan peringatan jika sandi telah dibobol saat terjadi pelanggaran data</translation>
 <translation id="3703166520839776970">Jika masalah ini terus terjadi, pilih "Detail selengkapnya" di bawah untuk mendapatkan informasi selengkapnya dari <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="3708100450779900829">Saat perangkat dilipat, Anda dapat memilih opsi atau menyentuh lama kolom URL untuk mengubah posisi</translation>
 <translation id="3710501561113687889">Untuk melanjutkan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan membagikan <ph name="FIELDS_STRING" /> Anda ke situs ini.</translation>
 <translation id="3710560693796335511">Kolaborasi</translation>
 <translation id="3714981814255182093">Membuka Bilah Cari</translation>
@@ -1614,6 +1615,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8236063039629122676">Sekarang, bergeser ke kanan akan membawa Anda kembali untuk melihat halaman sebelumnya yang telah Anda buka, sedangkan bergeser ke kiri akan membuka halaman berikutnya</translation>
 <translation id="8236097722223016103">Tambahkan ke bookmark</translation>
 <translation id="8243077599929149377">Tambahkan nama pengguna Anda</translation>
+<translation id="8244387390464017490">Sesuaikan halaman tab baru</translation>
 <translation id="8250920743982581267">Dokumen</translation>
 <translation id="8255617931166444521">Situs hanya dapat menggunakan cookie Anda untuk melihat aktivitas penjelajahan Anda di situs itu sendiri</translation>
 <translation id="8258999165172757081">Ditambahkan</translation>

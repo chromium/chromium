@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
+#include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_attr_type.h"
 #include "third_party/blink/renderer/core/css/css_cyclic_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
@@ -195,6 +196,37 @@ std::optional<const CSSValue*> FindOrNullopt(
     return std::nullopt;
   }
   return it->value.Get();
+}
+
+bool EvaluateContainerQuery(Element& element,
+                            PseudoId pseudo_id,
+                            const ContainerQuery& query,
+                            TreeScope& tree_scope,
+                            Element* nearest_size_container,
+                            MatchResult& match_result) {
+  const ContainerSelector& selector = query.Selector();
+  if (!selector.SelectsAnyContainer()) {
+    return false;
+  }
+  // TODO(crbug.com/394500600): Calling SetDependencyFlags here works,
+  // but it's arguably a bit late when considering that MatchResult
+  // is supposed to be the output of ElementRuleCollector.
+  // Consider refactoring.
+  ContainerQueryEvaluator::SetDependencyFlags(query, match_result);
+
+  Element* starting_element = ContainerQueryEvaluator::DetermineStartingElement(
+      element, pseudo_id, selector, nearest_size_container);
+  Element* container = ContainerQueryEvaluator::FindContainer(
+      starting_element, selector, &tree_scope);
+  if (!container) {
+    return false;
+  }
+  ContainerQueryEvaluator& evaluator =
+      container->EnsureContainerQueryEvaluator();
+  using Change = ContainerQueryEvaluator::Change;
+  Change change = starting_element == container ? Change::kNearestContainer
+                                                : Change::kDescendantContainers;
+  return evaluator.EvalAndAdd(query, change, match_result);
 }
 
 }  // namespace
@@ -1824,8 +1856,21 @@ void StyleCascade::FlattenFunctionBody(
               *media_rule->MediaQueries())) {
         FlattenFunctionBody(*media_rule, result, locals);
       }
+    } else if (auto* container_rule =
+                   DynamicTo<StyleRuleContainer>(child.Get())) {
+      // TODO(crbug.com/394353319): Rename this flag to accommodate any
+      // CQ-dependent value.
+      state_.StyleBuilder().SetHasContainerRelativeUnits();
+      // TODO(crbug.com/394500599): This is the wrong tree-scope; we should use
+      // the tree scope of the current declaration.
+      TreeScope& tree_scope = state_.GetElement().GetTreeScope();
+      if (EvaluateContainerQuery(state_.GetElement(), state_.GetPseudoId(),
+                                 container_rule->GetContainerQuery(),
+                                 tree_scope, state_.NearestSizeContainer(),
+                                 match_result_)) {
+        FlattenFunctionBody(*container_rule, result, locals);
+      }
     }
-    // TODO(crbug.com/325504770): Support @container.
   }
 }
 

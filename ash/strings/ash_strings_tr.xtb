@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
+<translation id="1000127192436081677">Quick Share'i açın/kapatın. Quick Share <ph name="QUICK_SHARE_STATE" /></translation>
 <translation id="1012876632442809908">USB-C cihaz (ön bağlantı noktası)</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" adlı Bluetooth cihaz eşleme izni istiyor. Lütfen söz konusu cihazda şu PIN kodunu girin: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">Bu işlem, <ph name="APP_NAME" /> uygulaması, konum iznine sahip tüm uygulama ve web siteleri, ayrıca ChromeOS'in kablosuz ve mobil ağların konumunu kullanmasına izin verir.</translation>
@@ -154,6 +155,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1469148162491666137">Bu işlem, <ph name="APP1_NAME" /> ve <ph name="APP2_NAME" /> uygulamasının yanı sıra kamera ve mikrofon izni olan tüm uygulamaların ve web sitelerinin erişmesine izin verir. Web sayfasını yenilemeniz veya uygulamayı yeniden başlatmanız gerekebilir.</translation>
 <translation id="147310119694673958">Telefon pili %<ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="1475340220124222168">Hotspot'u aç/kapat. Hotspot açık, 1 cihaz bağlı.</translation>
+<translation id="1479685784053141667">Kişi oluşturun</translation>
 <translation id="1479909375538722835">Kayan erişilebilirlik menüsü</translation>
 <translation id="1483493594462132177">Gönder</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -464,6 +466,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2598725286293895280">Masada desteklenmeyen uygulamalar</translation>
 <translation id="2607678425161541573">Online oturum açma gerekli</translation>
 <translation id="2612072250312279703">etkinlik izleme</translation>
+<translation id="261210853165551493">Biçimlendirmeyle kopyala</translation>
 <translation id="2612614436418177118">Uygulama simgesini uygulama tablosu içinde taşıyın</translation>
 <translation id="2619052155095999743">Ekle</translation>
 <translation id="2619326010008283367">Tur adımı <ph name="STEP" />/<ph name="TOTAL_STEPS" />. Cihazınızın ayarlarını Başlatıcı'da bulabilirsiniz. Ayarlar'dan <ph name="PRODUCT_NAME" /> cihazınızı özelleştirmeyi deneyin. Örneğin duvar kağıdınızı değiştirebilir veya ekran koruyucu ayarlayabilirsiniz.</translation>
@@ -556,6 +559,7 @@ Aksi takdirde yerleşik dokunmatik alan <ph name="TIMEOUT_SECONDS" /> sonra yeni
 <translation id="2932487126591186298">10 dakika eklendi. <ph name="REMAINING_TIME" /> kaldı.</translation>
 <translation id="2935225303485967257">Profilleri yönet</translation>
 <translation id="2941112035454246133">Düşük</translation>
+<translation id="2941232201846070406">İnternet bağlantınızı kontrol edip tekrar deneyin</translation>
 <translation id="2942350706960889382">Yerleştirilmiş Büyüteç</translation>
 <translation id="2942516765047364088">Raf konumu</translation>
 <translation id="2946119680249604491">Bağlantı ekle</translation>
@@ -640,6 +644,7 @@ Aksi takdirde yerleşik dokunmatik alan <ph name="TIMEOUT_SECONDS" /> sonra yeni
 <translation id="3206735939915734551">Büyük/küçük harf özelliğini aç/kapat</translation>
 <translation id="3207953481422525583">Kullanıcı Ayarları</translation>
 <translation id="3208321278970793882">Uygulama</translation>
+<translation id="3212221635583599601">Diğer işlemler için internete bağlanın</translation>
 <translation id="3213571860604332401">Bağlantıyı yer işareti olarak kaydet</translation>
 <translation id="3217205077783620295">Ses açık, düğmeye basılırsa ses kapatılacak.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> öğe daha</translation>
@@ -971,6 +976,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4275663329226226506">Medya</translation>
 <translation id="4279490309300973883">Yansıtılıyor</translation>
 <translation id="4280601795273309128">Artık güvenlik güncellemeleri alınmayacak. Cihazınızı yeni sürüme geçirin.</translation>
+<translation id="4281739221820540368">Google Dokümanı oluştur</translation>
 <translation id="4283888303416325161">Daha fazla güvenlik için şifre girin</translation>
 <translation id="4285498937028063278">Sabitlemeyi kaldır</translation>
 <translation id="428715201724021596">Profile bağlanılıyor. Bu işlem birkaç dakika sürebilir.</translation>
@@ -1043,6 +1049,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Geri Bildirim</translation>
 <translation id="4518404433291145981">Chromebook'unuzun kilidini açmak için önce telefonunuzun kilidini açın</translation>
+<translation id="4525887279712865285">Quick Share ayarlarını göster</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" adlı Bluetooth cihaz eşleme izni istiyor.</translation>
 <translation id="4531536770443562276">Yalnızca tam ekran kullanılabilir</translation>
 <translation id="4533343294786968049">Pil ömrünüz uzatılıyor. Pilinizin tamamen şarj olacağı saat: <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -1598,6 +1605,7 @@ Bağlı cihaz yok.</translation>
 <translation id="6274202259872570803">Ekran video kaydı</translation>
 <translation id="6276708887952587684">Sayfa kaynağını görüntüler</translation>
 <translation id="6284232397434400372">Çözünürlük değiştirildi</translation>
+<translation id="6285871695023807425">Takvim'e Ekle</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" />, bir ebeveynin izniyle daha sonra yeniden eklenebilir.</translation>
 <translation id="6291221004442998378">Şarj olmuyor</translation>
 <translation id="6298183524022479114">Bu cihazı uygulamada özelleştirin</translation>
@@ -1694,6 +1702,7 @@ Yeni yüklenmiş</translation>
 <translation id="6612889377159412215">alt görev</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> depolama alanı kullanılıyor | Toplam <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Gizlilik ekranı açık</translation>
+<translation id="6618277154885124991">Google E-Tablosu oluştur</translation>
 <translation id="6622679827379792051">Telefonunuzdaki uygulamaları görme seçeneğini ayarlayın</translation>
 <translation id="662279009180869175">Bölünmüş ekranı yeniden boyutlandırmak için sol ve sağ okları kullanın</translation>
 <translation id="6624493541160101248">Geçerli masa: <ph name="DESK_NAME" />. Masa <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
@@ -2249,6 +2258,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="851660987304951246">İçerikleri hızlıca özetlemek veya soru sormak için "Okumama yardım et"i kullanın</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> cihazınız açıkken şarj olmayabilir.</translation>
 <translation id="8535393432370007982">Renge göre sıralama ölçütünü geri al</translation>
+<translation id="8539803091108018926">Metin panoya kopyalandı</translation>
 <translation id="8541078764854166027">Kamera çerçevelemesi</translation>
 <translation id="8542053257095774575">Kayıtlı masa veya şablon yok</translation>
 <translation id="8546059259582788728">Sıralama işlemi başarıyla geri alındı</translation>

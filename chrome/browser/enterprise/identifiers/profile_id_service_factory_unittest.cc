@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_delegate_impl.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -22,25 +23,21 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) &&               \
-    !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "base/win/wmi.h"
-#endif  // BUILDFLAG(IS_WIN)
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_ANDROID)
+#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #else
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/system/fake_statistics_provider.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_ANDROID)  || BUILDFLAG(IS_CHROMEOS) &&
-        // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif
 
 namespace enterprise {
 
@@ -107,7 +104,7 @@ class ProfileIdServiceFactoryTest : public testing::Test,
 
 // TODO(b/341267441): Enable this test for chrome os ash when
 // `OnProfileCreationStarted` is fixed for `FakeProfileManager`.
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   Profile* CreateNewProfileWithPresetGuid(std::string preset_guid) {
     Profile* new_profile = nullptr;
     // Making sure no two profiles have duplicate names/paths.
@@ -129,7 +126,7 @@ class ProfileIdServiceFactoryTest : public testing::Test,
     run_loop.Run();
     return new_profile;
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
@@ -140,19 +137,15 @@ class ProfileIdServiceFactoryTest : public testing::Test,
       profile_manager_observer_{this};
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_ANDROID) ||                                         \
-    BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_ASH) &&         \
-        !BUILDFLAG(IS_CHROMEOS_LACROS)
+    BUILDFLAG(IS_ANDROID)
   policy::FakeBrowserDMTokenStorage storage_;
 #else
   policy::MockCloudPolicyStore store_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #endif
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_ANDROID)  ||
-        // BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_ASH) &&
-        // !BUILDFLAG(IS_CHROMEOS_LACROS)
+        // BUILDFLAG(IS_ANDROID)
 };
 
 // Tests multiple calls to get the profile identifier for the same profile has
@@ -199,7 +192,7 @@ TEST_F(ProfileIdServiceFactoryTest, GetProfileId_Incognito_Profile) {
   EXPECT_FALSE(service_);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(ProfileIdServiceFactoryTest, GetProfileIdWithPresetGuid) {
   std::string random_guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string device_id = kFakeDeviceID;
@@ -239,6 +232,6 @@ TEST_F(ProfileIdServiceFactoryTest, PresetGuidDataIsOneOff) {
 
   EXPECT_NE(service_->GetProfileId(), preset_guid_profile_id);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace enterprise

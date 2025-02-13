@@ -85,6 +85,10 @@
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_ALL_MAIN_TEXT" desc="Suggestion shown on the second level menu of Autofill with AI, used to fill all fields.">
     Fill fields with AI
   </message>
+  <!-- Manage suggestion -->
+  <message name="IDS_AUTOFILL_AI_MANAGE_SUGGESTION_MAIN_TEXT" desc="Main text for the suggestion that opens the Autofill AI section in settings" translateable="false">
+    Manage information
+  </message>
 
   <!-- Save prompt -->
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_TITLE" desc="Text displayed on the top of the save autofill with AI dialog.">
@@ -142,10 +146,18 @@
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_GO_TO_SETTINGS" desc="Text displayed in the prediction improvements IPH bubble.">
     Go to settings
   </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_BOOTSTRAPPING_IPH" desc="Body of the in Product Help when user has successfully imported their autofill data.">
-    This feature uses information you've already saved with autofill, such as your address
+
+  <!-- Save dialog-->
+  <message name="IDS_AUTOFILL_AI_SAVE_CAR_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to save car a entity" translateable="false">
+    Save Car?
   </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_BOOTSTRAPPING_IPH_SCREENREADER" desc="The a11y announcement after user has enabled autofill prediction improvements which successfully imported their autofill data.">
-    This feature uses information you've already saved with autofill, such as your address. You can review and manage this data on this page.
+  <message name="IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to save a driver's license entity" translateable="false">
+    Save Driver's license?
+  </message>
+  <message name="IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to save a passport entity" translateable="false">
+    Save Passport?
+  </message>
+  <message name="IDS_AUTOFILL_AI_SAVE_LOYALTY_CARD_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to save a loyalty card entity" translateable="false">
+    Save Loyalty card?
   </message>
 </grit-part>

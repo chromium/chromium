@@ -220,6 +220,7 @@
 <translation id="114721135501989771">Chrome с интелекта на Google</translation>
 <translation id="1147322039136785890">Сега е ред на <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">За да поискате достъп, обърнете се към администратора на това устройство.</translation>
+<translation id="1148464196693569530">Разрешаване на потребителски скриптове</translation>
 <translation id="1148624853678088576">Готови сте!</translation>
 <translation id="1148669835763563782">Получавате най-новата софтуерна актуализация, включваща подобрения в сигурността и най-новите функции на Chromebook. Актуализацията подобрява процеса на настройване, за да улесни първите ви стъпки с вашия Chromebook.</translation>
 <translation id="1149401351239820326">Месец на валидност</translation>
@@ -6779,6 +6780,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5794414402486823030">Отваряне винаги със системния визуализатор</translation>
 <translation id="5794700615121138172">Споделяне на папки в Linux</translation>
 <translation id="5794786537412027208">Затваряне на всички приложения в Chrome</translation>
+<translation id="5795422263272161110">Показване един до друг</translation>
 <translation id="5796485699458186843">Нов &amp;раздел „инкогнито“</translation>
 <translation id="5796956053441619942">URL адресът от отдалеченото устройство не се поддържа</translation>
 <translation id="5797934230382081317">Научете как да започнете да използвате &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; и &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -7307,6 +7309,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6170498031581934115">Отстраняването на грешки през ADB не бе активирано. Отворете настройките и опитайте отново.</translation>
 <translation id="6170675927290506430">Към настройките за известия</translation>
 <translation id="6171779718418683144">Извеждане на запитване при всяко посещение</translation>
+<translation id="6172020488605056255">Кликнете с десния бутон, за да използвате „Помогни с четенето“</translation>
 <translation id="617213288191670920">Няма добавени езици</translation>
 <translation id="6173623053897475761">Въведете отново ПИН кода си</translation>
 <translation id="6174909075810107548">Използвайте клавиша 5, за да натиснете бутон на мишката</translation>
@@ -8332,6 +8335,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6910190732484284349">Изтриване на ключа за достъп за потребителското име <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Изтрито</translation>
 <translation id="6910274140210351823">Мрачно</translation>
+<translation id="691102290537033604">Разширението ще може да изпълнява код, който не е прегледан от Google. Това може да е опасно и трябва да активирате тази настройка само ако знаете какво правите.</translation>
 <translation id="6911734910326569517">Използвана памет</translation>
 <translation id="6912007319859991306">ПИН за SIM картата за мобилна мрежа</translation>
 <translation id="6912380255120084882">Опитайте с друго устройство</translation>
@@ -8669,6 +8673,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7160911207516219534">Странични панели</translation>
 <translation id="716210145227921528">Ключът за достъп е изтрит</translation>
 <translation id="7165263843655074092">Разполагате със стандартно ниво на защита на това устройство</translation>
+<translation id="7166017546802325772">За тази група няма актуализации</translation>
 <translation id="716640248772308851"><ph name="EXTENSION" /> може да чете изображения, видео- и звукови файлове в местоположенията с отметка.</translation>
 <translation id="7166815366658507447">Точката за достъп е активирана</translation>
 <translation id="7167327771183668296">Автоматични кликвания</translation>
@@ -9843,6 +9848,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> глас <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Автоматично прехвърляне на Wi-Fi от телефона ви с Android</translation>
 <translation id="7991296728590311172">Настройки на „Достъп с превключване“</translation>
+<translation id="7992080146463834191">Обобщавайте съдържание, опростявайте сложен изказ или задавайте въпроси.</translation>
 <translation id="7992203134935383159">Синтезиран говор</translation>
 <translation id="799570308305997052">Изглед в мрежата</translation>
 <translation id="7997826902155442747">Приоритет на процесите</translation>
@@ -10084,6 +10090,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8155676038687609779">{COUNT,plural, =0{Няма намерени компрометирани пароли}=1{Открита е {COUNT} компрометирана парола}other{Открити са {COUNT} компрометирани пароли}}</translation>
 <translation id="8157248655669507702">Активирайте мобилните данни, за да инсталирате профил на електронната SIM карта</translation>
 <translation id="8157704005178149728">Контролирането се настройва</translation>
+<translation id="8157728322324420120">Предложени за вас</translation>
 <translation id="8157849462797352650">Устройството ви получава най-новите актуализации за сигурност, стабилност и ефективност</translation>
 <translation id="8158117992543756526">Това устройство не получава автоматични актуализации на софтуера и сигурността от <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Получавайте потвърждение с вибриране за действия като разделяне на екрана и преминаване от един работен кът към друг. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
@@ -11100,6 +11107,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8874448314264883207">Разширението <ph name="EXTENSION_NAME" /> бе изключено</translation>
 <translation id="8874647982044395866">Органичен</translation>
 <translation id="8874790741333031443">Опитайте временно да разрешите „бисквитките“ на трети страни. Това ще понижи нивото на защита при сърфиране, но е по-вероятно функциите на сайта да работят по очаквания начин.</translation>
+<translation id="8875221558267407626">Обобщавайте съдържание, опростявайте сложен изказ или задавайте въпроси</translation>
 <translation id="8875520811099717934">Надстройване на Linux</translation>
 <translation id="8875736897340638404">Избиране на настройка за видимостта</translation>
 <translation id="8876307312329369159">Тази настройка не може да бъде променена по време на демонстрационна сесия.</translation>
@@ -11153,6 +11161,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8915916167043355778">Затваряне на всички</translation>
 <translation id="8916476537757519021">Подрамка в режим „инкогнито“: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Да, ще участвам</translation>
+<translation id="8917980324687233736">Показване един до друг</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> на <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Приложението се инсталира...</translation>
 <translation id="891931289445130855">Изтриване на данните и разрешенията</translation>

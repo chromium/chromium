@@ -85,10 +85,10 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 }
 
 // Matcher for the overflow menu button shown in the password cells.
-id<GREYMatcher> OverflowMenuButton() {
-  return grey_allOf(
-      grey_accessibilityID(manual_fill::kExpandedManualFillOverflowMenuID),
-      grey_interactable(), nullptr);
+id<GREYMatcher> OverflowMenuButton(NSInteger cell_index) {
+  return grey_allOf(grey_accessibilityID([ManualFillUtil
+                        expandedManualFillOverflowMenuID:cell_index]),
+                    grey_interactable(), nullptr);
 }
 
 // Matcher for the "Edit" action made available by the overflow menu button.
@@ -1155,10 +1155,10 @@ void CheckKeyboardIsUpAndNotCovered() {
   OpenPasswordManualFillView(/*has_suggestions=*/true);
 
   if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
-    [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+    [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
         assertWithMatcher:grey_sufficientlyVisible()];
   } else {
-    [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+    [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
         assertWithMatcher:grey_notVisible()];
   }
 }
@@ -1191,7 +1191,7 @@ void CheckKeyboardIsUpAndNotCovered() {
   OpenPasswordManualFillView(/*has_suggestions=*/true);
 
   // Tap the overflow menu button and select the "Edit" action.
-  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:OverflowMenuEditAction()]
       performAction:grey_tap()];
@@ -1226,7 +1226,7 @@ void CheckKeyboardIsUpAndNotCovered() {
   [self openOtherPasswords];
 
   // Tap the overflow menu button and select the "Edit" action.
-  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:OverflowMenuEditAction()]
       performAction:grey_tap()];

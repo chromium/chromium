@@ -185,6 +185,7 @@ class PermissionRequestManager
   base::WeakPtr<PermissionPrompt::Delegate> GetWeakPtr() override;
   content::WebContents* GetAssociatedWebContents() override;
   bool RecreateView() override;
+  const PermissionPrompt* GetCurrentPrompt() const override;
 
   // Returns the bounds of the active permission prompt view if we're
   // displaying one.
@@ -228,8 +229,6 @@ class PermissionRequestManager
   void set_view_factory_for_testing(PermissionPrompt::Factory view_factory) {
     view_factory_ = std::move(view_factory);
   }
-
-  PermissionPrompt* view_for_testing() const { return view_.get(); }
 
   void set_current_request_first_display_time_for_testing(base::Time time) {
     current_request_first_display_time_ = time;

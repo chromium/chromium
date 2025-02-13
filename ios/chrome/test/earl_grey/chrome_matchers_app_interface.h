@@ -863,6 +863,10 @@
 // shared tab group.
 + (id<GREYMatcher>)deleteSharedConfirmationButton;
 
+// Returns the matcher for `Keep Group` button in the confirmation dialog of a
+// shared tab group.
++ (id<GREYMatcher>)keepSharedConfirmationButton;
+
 // Returns the matcher for the shared tab group Share flow view.
 + (id<GREYMatcher>)fakeShareFlowView;
 

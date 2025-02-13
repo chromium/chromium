@@ -691,6 +691,7 @@ experimental domain Audits
       kInlineViolation
       kEvalViolation
       kURLViolation
+      kSRIViolation
       kTrustedTypesSinkViolation
       kTrustedTypesPolicyViolation
       kWasmEvalViolation
@@ -3388,6 +3389,8 @@ domain DOM
         # Get the popover target for a given element. In this case, this given
         # element can only be an HTMLFormControlElement (<input>, <button>).
         PopoverTarget
+        # Get the interest target for a given element.
+        InterestTarget
     returns
       # NodeId of the element matching the queried relation.
       NodeId nodeId

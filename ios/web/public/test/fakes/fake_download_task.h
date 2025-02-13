@@ -35,6 +35,7 @@ class FakeDownloadTask final : public DownloadTask {
   const base::FilePath& GetResponsePath() const final;
   NSString* GetIdentifier() const final;
   const GURL& GetOriginalUrl() const final;
+  const GURL& GetRedirectedUrl() const final;
   NSString* GetOriginatingHost() const final;
   NSString* GetHttpMethod() const final;
   bool IsDone() const final;
@@ -65,6 +66,8 @@ class FakeDownloadTask final : public DownloadTask {
   void SetResponseData(NSData* response_data);
   void SetGeneratedFileName(const base::FilePath& generated_file_name);
   void SetPerformedBackgroundDownload(bool flag);
+  void SetOriginatingHost(NSString* originating_host);
+  void SetRedirectedURL(const GURL& redirected_url);
 
  private:
   // Called when download task was updated.
@@ -76,6 +79,7 @@ class FakeDownloadTask final : public DownloadTask {
   raw_ptr<WebState> web_state_ = nullptr;
   State state_ = State::kNotStarted;
   GURL original_url_;
+  GURL redirected_url_;
   NSString* originating_host_;
   int error_code_ = 0;
   int http_code_ = -1;

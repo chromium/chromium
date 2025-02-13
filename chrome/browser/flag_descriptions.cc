@@ -174,6 +174,10 @@ const char kBackgroundResourceFetchName[] = "Background Resource Fetch";
 const char kBackgroundResourceFetchDescription[] =
     "Process resource requests in a background thread inside Blink.";
 
+const char kByDateHistoryInSidePanelName[] = "By Date History in Side Panel";
+const char kByDateHistoryInSidePanelDescription[] =
+    "If enabled, shows the 'By Date' History in Side Panel";
+
 #if BUILDFLAG(IS_ANDROID)
 const char kBiometricAuthIdentityCheckName[] =
     "Enables android identity check for eligible features";
@@ -596,6 +600,12 @@ const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[] =
     "all credit card form types and address form events will log to all "
     "address form types.";
 
+const char kAutofillEnableLoyaltyCardsFillingName[] =
+    "Enable Autofill support for filling loyalty cards";
+const char kAutofillEnableLoyaltyCardsFillingDescription[] =
+    "When enabled, Autofill will offer support for filling the user's loyalty "
+    "cards stored in Google Wallet.";
+
 const char kAutofillEnableOffersInClankKeyboardAccessoryName[] =
     "Enable Autofill offers in keyboard accessory";
 const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =
@@ -920,6 +930,12 @@ const char kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[] =
     "Clear the preserved window.name property when it's a top-level cross-site "
     "navigation that swaps BrowsingContextGroup.";
 
+const char kClipboardContentsIdName[] = "Clipboard contentsId API";
+const char kClipboardContentsIdDescription[] =
+    "Enables the API for getting a unique token of the system clipboard's "
+    "current state. For details, see "
+    "https://github.com/explainers-by-googlers/clipboard-contents-id";
+
 const char kDevicePostureName[] = "Device Posture API";
 const char kDevicePostureDescription[] =
     "Enables Device Posture API (foldable devices)";
@@ -1163,6 +1179,12 @@ const char kEnterpriseRealTimeUrlCheckOnAndroidName[] =
 const char kEnterpriseRealTimeUrlCheckOnAndroidDescription[] =
     "Enables enterprise real-time URL checks if the "
     "EnterpriseRealTimeUrlCheckMode policy is set.";
+
+const char kEnterpriseSecurityEventReportingOnAndroidName[] =
+    "Allow enterprise security event reporting";
+const char kEnterpriseSecurityEventReportingOnAndroidDescription[] =
+    "Enables enterprise security event reporting when the "
+    "OnSecurityEventEnterpriseConnector policy is turned on ";
 #endif
 
 const char kEnableExperimentalCookieFeaturesName[] =
@@ -3250,6 +3272,11 @@ const char kSafetyHubFollowupDescription[] =
     "enhancements to the passwords module on the Safety Check page and "
     "enabling the password card on magic stack.";
 
+const char kSafetyHubLocalPasswordsModuleName[] =
+    "Enables the local passwords module in Safety Hub";
+const char kSafetyHubLocalPasswordsModuleDescription[] =
+    "Enables showing the local passwords module in Safety Hub.";
+
 const char kSafetyHubAndroidSurveyName[] =
     "HaTS for Safety Check v2 on Android";
 const char kSafetyHubAndroidSurveyDescription[] =
@@ -3683,6 +3710,11 @@ const char kUnsafeWebGPUDescription[] =
     "expose security issues to websites so only use it for your own "
     "development.";
 
+const char kForceHighPerformanceGPUName[] = "Force High Performance GPU";
+const char kForceHighPerformanceGPUDescription[] =
+    "Forces use of high performance GPU if available. Warning: this flag may "
+    "increase power consumption leading to shorter battery time.";
+
 const char kUiPartialSwapName[] = "Partial swap";
 const char kUiPartialSwapDescription[] = "Sets partial swap behavior.";
 
@@ -3832,11 +3864,6 @@ const char kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuName[] =
 const char kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuDescription[] =
     "Hides the \"Use a passkey\" entry from the autofill popup for conditional "
     "WebAuthn requests. Moves the entry point to the context menu.";
-const char kWebAuthnEnclaveAuthenticatorName[] =
-    "Enable the cloud enclave authenticator for GPM passkeys";
-const char kWebAuthnEnclaveAuthenticatorDescription[] =
-    "Allow users to create and use Google Password Manager passkeys using a "
-    "cloud-based authenticator service.";
 const char kWebAuthnPasskeyUpgradeName[] =
     "Enable automatic passkey upgrades in Google Password Manager";
 const char kWebAuthnPasskeyUpgradeDescription[] =
@@ -4826,12 +4853,6 @@ const char kAdaptiveButtonInTopToolbarCustomizationName[] =
 const char kAdaptiveButtonInTopToolbarCustomizationDescription[] =
     "Enables UI for customizing the adaptive action button in the top toolbar";
 
-const char kWebAuthnAndroidCredManName[] =
-    "Android Credential Management for passkeys";
-const char kWebAuthnAndroidCredManDescription[] =
-    "Use Credential Management API for passkeys. Requires Android 14 or "
-    "higher.";
-
 const char kWebFeedAwarenessName[] = "Web Feed Awareness";
 const char kWebFeedAwarenessDescription[] =
     "Helps the user discover the web feed.";
@@ -5234,26 +5255,6 @@ const char kSmartCardWebApiName[] = "Smart Card API";
 const char kSmartCardWebApiDescription[] =
     "Enable access to the Smart Card API. See "
     "https://github.com/WICG/web-smart-card#readme for more information.";
-
-const char kTabOrganizationName[] = "Tab Organization";
-const char kTabOrganizationDescription[] =
-    "Enables the Auto Tab Groups feature, which can be found within the Tab "
-    "Search bubble.";
-
-const char kTabOrganizationSettingsVisibilityName[] =
-    "Tab Organization Settings Visibility";
-const char kTabOrganizationSettingsVisibilityDescription[] =
-    "Shows Tab Organization in the settings UI";
-
-const char kTabstripDeclutterName[] = "Tab Declutter";
-const char kTabstripDeclutterDescription[] =
-    "Enables the Tab Declutter feature, which can be found within the Tab "
-    "Search bubble.";
-
-const char kTabstripDedupeName[] = "Tab Deduplication";
-const char kTabstripDedupeDescription[] =
-    "Enables the Tab Deduplication feature, which can be found within the Tab "
-    "Search bubble.";
 
 const char kWebAppSyncGeneratedIconBackgroundFixName[] =
     "Web App Sync Generated Icon Background Fix";

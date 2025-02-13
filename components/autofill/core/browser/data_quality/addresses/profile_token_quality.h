@@ -243,8 +243,8 @@ class ProfileTokenQuality {
   // The profile for which observations are collected.
   raw_ref<AutofillProfile> profile_;
 
-  // Maps from `AutofillTable::GetDatabaseStoredTypesOfAutofillProfile()` to the
-  // observations for this stored type. The following invariants hold for the
+  // Maps from `AutofillProfile::kDatabaseStoredTypes` to the observations
+  // for this stored type. The following invariants hold for the
   // `circular_deque`:
   // - The observations are ordered from oldest (`front()`) to newest
   //   (`back()`).

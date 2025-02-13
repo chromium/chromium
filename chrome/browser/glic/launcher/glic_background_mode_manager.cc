@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
 #include "chrome/browser/glic/launcher/glic_status_icon.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -24,7 +25,10 @@ namespace {
 bool IsEnabledInAnyLoadedProfile() {
   return std::ranges::any_of(
       g_browser_process->profile_manager()->GetLoadedProfiles(),
-      GlicEnabling::IsEnabledForProfile);
+      [](Profile* profile) {
+        return !IsProfileDirectoryMarkedForDeletion(profile->GetPath()) &&
+               GlicEnabling::IsEnabledAndConsentForProfile(profile);
+      });
 }
 }  // namespace
 
@@ -84,6 +88,15 @@ void GlicBackgroundModeManager::OnProfileAdded(Profile* profile) {
   // entered.
   if (!status_icon_) {
     CHECK(!keep_alive_);
+    UpdateState();
+  }
+}
+
+void GlicBackgroundModeManager::OnProfileMarkedForPermanentDeletion(
+    Profile* profile) {
+  // If a profile is removed while in background mode, check if it must now be
+  // exited.
+  if (status_icon_) {
     UpdateState();
   }
 }

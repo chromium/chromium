@@ -89,6 +89,7 @@
 <translation id="1358106883354237005">Управљани налог</translation>
 <translation id="1358214951266274152">Посетите линк који сте копирали</translation>
 <translation id="1360432990279830238">Одјављујете се и искључујете синхрониз?</translation>
+<translation id="1362192716574455663">Постојећи подаци прегледања неће бити пренети на пословни налог. И даље можете да им приступате тако што ћете се одјавити или додати лични налог.</translation>
 <translation id="1363028406613469049">Песма</translation>
 <translation id="1364367057792633742">Нова картица</translation>
 <translation id="1365106417372288489">Садржај iPhone-а је недавно враћен, због чега је подразумевани прегледач можда промењен.</translation>
@@ -285,6 +286,7 @@
 <translation id="2164946989711475905">Пријави ме…</translation>
 <translation id="2175927920773552910">QR кôд</translation>
 <translation id="2186206192313702726">Google објектив</translation>
+<translation id="219283042927675668">Картице у групи</translation>
 <translation id="2194856509914051091">Шта треба имати у виду</translation>
 <translation id="2196428379625389579">Претражите на вебу</translation>
 <translation id="2199562093267256223">Овим ћете избрисати групу са свих уређаја пријављених на <ph name="USER_EMAIL" /></translation>
@@ -914,6 +916,7 @@
 <translation id="5016420433031926653">Пошаљите на <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Последњих 15 минута</translation>
 <translation id="5020732097997376541">Додирните икону Објектива</translation>
+<translation id="5021500396464456616">Обратите се особи која је послала овај линк</translation>
 <translation id="5024511550058813796">Имаћете историју на свим синхронизованим уређајима, па можете да наставите оно што сте радили</translation>
 <translation id="5038113048373546701">Примајте обавештења о вестима, спорту и другим темама на основу интересовања</translation>
 <translation id="5039804452771397117">Дозволи</translation>
@@ -978,7 +981,6 @@
 <translation id="5295239312320826323">Желите да уклоните налог <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5311061401280561833">Приступ камери и микрофону је дозвољен</translation>
-<translation id="531209241254508943">група картица</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Сачувај</translation>
 <translation id="5318298563956633672">Већ пратите овај производ.</translation>
@@ -1941,6 +1943,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="966593914872420832">Гласовна претрага</translation>
 <translation id="968653181266955408">Добијајте обавештења о садржају</translation>
 <translation id="973493300226275298">Пратите цену производа у различитим онлајн продавницама. Добијаћете обавештења када цена падне.</translation>
+<translation id="973788791897303708">Ова група картица је пуна</translation>
 <translation id="976392601789283511">Поновно отварање последње затворене картице</translation>
 <translation id="981498610235328462">Организација вам дозвољава да се пријавите само помоћу одређених налога. Налози који нису дозвољени су скривени.</translation>
 <translation id="984275831282074731">Начини плаћања</translation>

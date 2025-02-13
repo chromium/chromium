@@ -40,7 +40,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -68,9 +67,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/sync/service/sync_service.h"
-#include "components/sync_device_info/device_info.h"
-#include "components/sync_device_info/device_info_sync_service.h"
-#include "components/sync_device_info/device_info_tracker.h"
 #include "components/trusted_vault/frontend_trusted_vault_connection.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/webauthn/core/browser/passkey_model.h"
@@ -109,7 +105,6 @@
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate_mac.h"
 #include "device/fido/mac/credential_metadata.h"
-#include "device/fido/mac/icloud_keychain.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/views/widget/widget.h"
 #endif
@@ -222,88 +217,6 @@ class CableLinkingEventHandler : public ProfileObserver {
  private:
   raw_ptr<Profile> profile_;
 };
-
-#if BUILDFLAG(IS_MAC)
-
-bool UserDeniedICloudKeychainPermission() {
-  const std::optional<bool> has_permission =
-      device::fido::icloud_keychain::HasPermission();
-  return has_permission && has_permission.value() == false;
-}
-
-bool AccountHasPasskeys(Profile* profile) {
-  webauthn::PasskeyModel* passkey_model =
-      PasskeyModelFactory::GetInstance()->GetForProfile(profile);
-  CHECK(passkey_model);
-  return !passkey_model->IsEmpty();
-}
-
-bool AccountHasNonAppleDevice(Profile* profile) {
-  syncer::DeviceInfoSyncService* const sync_service =
-      DeviceInfoSyncServiceFactory::GetForProfile(profile);
-  if (!sync_service) {
-    return false;
-  }
-
-  syncer::DeviceInfoTracker* const tracker =
-      sync_service->GetDeviceInfoTracker();
-  const std::vector<const syncer::DeviceInfo*> devices =
-      tracker->GetAllDeviceInfo();
-
-  return std::ranges::any_of(devices, [](const auto* device) {
-    switch (device->os_type()) {
-      case syncer::DeviceInfo::OsType::kIOS:
-      case syncer::DeviceInfo::OsType::kMac:
-        return false;
-      default:
-        return true;
-    }
-  });
-}
-
-bool EnclaveCanBeDefault(Profile* profile) {
-  if (AccountHasPasskeys(profile)) {
-    FIDO_LOG(EVENT)
-        << "Enclave can be default because account already has passkeys.";
-    return true;
-  }
-
-  if (AccountHasNonAppleDevice(profile)) {
-    FIDO_LOG(EVENT)
-        << "Enclave can be default because non-Apple device found in Sync.";
-    return true;
-  }
-
-  if (!device::fido::icloud_keychain::IsSupported()) {
-    FIDO_LOG(EVENT)
-        << "Enclave can be default because iCloud Keychain isn't supported.";
-    return true;
-  }
-
-  if (!IsICloudDriveEnabled()) {
-    FIDO_LOG(EVENT)
-        << "Enclave can be default because iCloud Drive isn't enabled.";
-    return true;
-  }
-
-  if (UserDeniedICloudKeychainPermission()) {
-    FIDO_LOG(EVENT) << "Enclave can be default because iCloud Keychain "
-                       "permission is denied.";
-    return true;
-  }
-
-  FIDO_LOG(EVENT) << "Enclave cannot be the default for this request. No "
-                     "enabling conditions apply.";
-  return false;
-}
-
-#else
-
-bool EnclaveCanBeDefault(Profile* profile) {
-  return true;
-}
-
-#endif
 
 bool SkipGpmPasskeyCreationForOwnAccount(
     device::FidoRequestType request_type,
@@ -1087,12 +1000,6 @@ void ChromeAuthenticatorRequestDelegate::MaybeShowUI(
     return;
   }
 
-  // At the time of writing we don't support GPM passkeys on iOS, so we want to
-  // avoid defaulting to GPM for macOS users who likely have an iPhone. But on
-  // all other platforms, GPM should be the default.
-  dialog_controller_->set_enclave_can_be_default(
-      EnclaveCanBeDefault(profile()));
-
   dialog_controller_->SetCredentialTypes(credential_types_);
 
   dialog_controller_->StartFlow(std::move(tai), std::move(passwords));
@@ -1171,7 +1078,8 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
         device::PublicKeyCredentialUserEntity(
             std::vector<uint8_t>(passkey.user_id().begin(),
                                  passkey.user_id().end()),
-            passkey.user_name(), passkey.user_display_name()));
+            passkey.user_name(), passkey.user_display_name()),
+        /*provider_name=*/std::nullopt);
   }
 }
 

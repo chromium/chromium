@@ -312,6 +312,10 @@ class GraphBuilderCoreml {
       const mojom::DequantizeLinear& operation,
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddOperationForDequantizeLinearConstBlockwise(
+      const mojom::DequantizeLinear& operation,
+      CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddOperationForElementwiseBinary(
       std::variant<uint64_t, CoreML::Specification::MILSpec::Value> lhs_operand,
       std::variant<uint64_t, CoreML::Specification::MILSpec::Value> rhs_operand,
@@ -551,6 +555,14 @@ class GraphBuilderCoreml {
                             CoreML::Specification::MILSpec::Argument>& inputs,
       std::string_view key,
       uint64_t operand_id);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  SetInputFromConstantOperand(
+      google::protobuf::Map<std::string,
+                            CoreML::Specification::MILSpec::Argument>& inputs,
+      std::string_view key,
+      uint64_t constant_operand_id,
+      std::optional<base::span<const uint32_t>> reshaped_dimensions =
+          std::nullopt);
 
   // Helper function to return input[index] using squeeze(slice(input)).
   base::expected<uint64_t, mojom::ErrorPtr> SliceFirstDimension(
@@ -607,6 +619,7 @@ class GraphBuilderCoreml {
 
   CoreML::Specification::Model ml_model_;
   raw_ptr<CoreML::Specification::MILSpec::Program> program_;
+  bool support_blockwise_dequantize_ = false;
 
   std::unique_ptr<WeightsFileHandle> weights_file_handle_;
 

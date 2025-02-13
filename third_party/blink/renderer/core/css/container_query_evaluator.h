@@ -37,7 +37,14 @@ class CORE_EXPORT ContainerQueryEvaluator final
   static Element* FindContainer(Element* starting_element,
                                 const ContainerSelector&,
                                 const TreeScope* selector_tree_scope);
-  static bool EvalAndAdd(Element* style_container_candidate,
+  // The starting element is an element in the (exclusive) ancestor chain
+  // of `element where we should begin our search for a suitable container.
+  static Element* DetermineStartingElement(Element& element,
+                                           PseudoId,
+                                           const ContainerSelector&,
+                                           Element* nearest_size_container);
+
+  static bool EvalAndAdd(Element* starting_element,
                          const StyleRecalcContext&,
                          const ContainerQuery&,
                          ContainerSelectorCache&,
@@ -75,6 +82,23 @@ class CORE_EXPORT ContainerQueryEvaluator final
     // descendant containers.
     kDescendantContainers,
   };
+
+  // Evaluate and add a dependent query to this evaluator. During calls to
+  // SizeContainerChanged/StyleChanged, all dependent queries are checked to see
+  // if the new size/axis or computed style information causes a change in the
+  // evaluation result.
+  bool EvalAndAdd(const ContainerQuery& query,
+                  Change change,
+                  MatchResult& match_result);
+
+  // The affected ComputedStyle is marked with various flags to aid
+  // invalidation, e.g. DependsOnSizeContainerQueries. We usually want to set
+  // these flags even when there is currently no container to carry out the
+  // actual evaluation of the query, since a container may appear later.
+  //
+  // The flags are transported on MatchResult, but ultimately end up on
+  // ComputedStyle.
+  static void SetDependencyFlags(const ContainerQuery& query, MatchResult&);
 
   // Update the size/axis information of the evaluator.
   //
@@ -197,14 +221,6 @@ class CORE_EXPORT ContainerQueryEvaluator final
   };
 
   Result Eval(const ContainerQuery&) const;
-
-  // Evaluate and add a dependent query to this evaluator. During calls to
-  // SizeContainerChanged/StyleChanged, all dependent queries are checked to see
-  // if the new size/axis or computed style information causes a change in the
-  // evaluation result.
-  bool EvalAndAdd(const ContainerQuery& query,
-                  Change change,
-                  MatchResult& match_result);
 
   Member<MediaQueryEvaluator> media_query_evaluator_;
   PhysicalSize size_;

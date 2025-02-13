@@ -337,7 +337,7 @@ enum Setting {
   kMagnifierFollowsChromeVox = 1549,
   kMainNodeAnnotationsEnabled = 1550,
   kFlashNotifications = 1551,
-  kOverlayScrollbarEnabled = 1552,
+  kAlwaysShowScrollbarsEnabled = 1552,
   kFaceGaze = 1553,
   kBounceKeys = 1554,
   kSlowKeys = 1555,

@@ -2521,7 +2521,7 @@ TEST_F(LayerTreeImplTest, CheckRenderSurfaceIsFastRoundedCorner) {
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData append_quads_data;
 
-  render_surface->AppendQuads({.draw_mode = DRAW_MODE_HARDWARE},
+  render_surface->AppendQuads(AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false},
                               render_pass.get(), &append_quads_data);
 
   ASSERT_EQ(1u, render_pass->shared_quad_state_list.size());

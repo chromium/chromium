@@ -80,11 +80,10 @@ suite('<history-item> integration test', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);
-
     const app = document.createElement('history-app');
     document.body.appendChild(app);
     element = app.$.history;
-    return testService.whenCalled('queryHistory');
+    return testService.handler.whenCalled('queryHistory');
   });
 
   function getHistoryData() {

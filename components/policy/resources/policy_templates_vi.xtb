@@ -8823,6 +8823,7 @@ Lưu ý quan trọng: Lịch biểu do chính sách này đặt có thể không
 
       Khi bạn không đặt chính sách này, chính sách <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> sẽ được áp dụng. Tuy nhiên, người dùng có thể thay đổi chế độ cài đặt này.</translation>
 <translation id="7238335422094660594">Bật trình cung cấp <ph name="UIA_NAME" />.</translation>
+<translation id="7242191282517459095">YouTube (được hỗ trợ kể từ phiên bản 135)</translation>
 <translation id="7244600351241637530">Nếu chế độ cài đặt này được bật, người dùng đã chọn tham gia Trung tâm điều khiển điện thoại sẽ xem và tải được ảnh cũng như video mới chụp/quay trên điện thoại của họ trên ChromeOS.
 
       Nếu chế độ cài đặt này đang tắt, người dùng sẽ không được phép sử dụng tính năng này. Nếu chính sách <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> bị vô hiệu hoá, người dùng cũng sẽ không được phép sử dụng tính năng này.
@@ -9964,6 +9965,7 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 
       Xem thêm về dịch vụ Duyệt web an toàn (https://developers.google.com/safe-browsing).</translation>
 <translation id="8199823751103472868">Nếu bạn đặt chính sách này thì hệ thống sẽ bật bố cục Hindi Inscript trên <ph name="PRODUCT_OS_NAME" />. Nếu bạn đặt chính sách này thành sai hoặc không đặt thì bố cục này sẽ không được áp dụng.</translation>
+<translation id="8202566089100454374">Google Maps (được hỗ trợ kể từ phiên bản 135)</translation>
 <translation id="8202834945144737726">Bật quy trình chứng thực <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> cho một danh sách URL trên màn hình đăng nhập</translation>
 <translation id="8210117014924235250">Chính sách này cung cấp một cách ghi đè danh sách các bộ mà trình duyệt dùng cho các tính năng của Bộ trang web có liên quan.
 

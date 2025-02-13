@@ -105,7 +105,8 @@ ProgressWnd::ProgressWnd(WTL::CMessageLoop* message_loop, HWND parent)
     : CompleteWnd(IDD_PROGRESS,
                   ICC_STANDARD_CLASSES | ICC_PROGRESS_CLASS,
                   message_loop,
-                  parent) {}
+                  parent,
+                  base::UTF8ToWide(GetTagLanguage())) {}
 
 ProgressWnd::~ProgressWnd() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -129,7 +130,7 @@ LRESULT ProgressWnd::OnInitDialog(UINT message,
   SetMarqueeMode(true);
 
   SetDlgItemText(IDC_INSTALLER_STATE_TEXT,
-                 GetLocalizedString(IDS_INITIALIZING_BASE).c_str());
+                 GetLocalizedString(IDS_INITIALIZING_BASE, lang()).c_str());
   ChangeControlState();
 
   handled = true;
@@ -159,18 +160,20 @@ bool ProgressWnd::MaybeCloseWindow() {
     HWND hwnd = install_stopped_wnd_->Create(*this);
     if (hwnd) {
       install_stopped_wnd_->SetWindowText(
-          GetLocalizedString(IDS_INSTALLATION_STOPPED_WINDOW_TITLE_BASE)
+          GetLocalizedString(IDS_INSTALLATION_STOPPED_WINDOW_TITLE_BASE, lang())
               .c_str());
 
       install_stopped_wnd_->SetDlgItemText(
-          IDOK, GetLocalizedString(IDS_RESUME_INSTALLATION_BASE).c_str());
+          IDOK,
+          GetLocalizedString(IDS_RESUME_INSTALLATION_BASE, lang()).c_str());
 
       install_stopped_wnd_->SetDlgItemText(
-          IDCANCEL, GetLocalizedString(IDS_CANCEL_INSTALLATION_BASE).c_str());
+          IDCANCEL,
+          GetLocalizedString(IDS_CANCEL_INSTALLATION_BASE, lang()).c_str());
 
       install_stopped_wnd_->SetDlgItemText(
           IDC_INSTALL_STOPPED_TEXT,
-          GetLocalizedString(IDS_INSTALL_STOPPED_BASE).c_str());
+          GetLocalizedString(IDS_INSTALL_STOPPED_BASE, lang()).c_str());
 
       install_stopped_wnd_->CenterWindow(*this);
       install_stopped_wnd_->ShowWindow(SW_SHOWDEFAULT);
@@ -258,7 +261,7 @@ LRESULT ProgressWnd::OnInstallStopped(UINT msg,
 
 void ProgressWnd::HandleCancelRequest() {
   SetDlgItemText(IDC_INSTALLER_STATE_TEXT,
-                 GetLocalizedString(IDS_CANCELING_BASE).c_str());
+                 GetLocalizedString(IDS_CANCELING_BASE, lang()).c_str());
 
   if (is_canceled_) {
     return;
@@ -277,8 +280,9 @@ void ProgressWnd::OnCheckingForUpdate() {
 
   cur_state_ = States::STATE_CHECKING_FOR_UPDATE;
 
-  SetDlgItemText(IDC_INSTALLER_STATE_TEXT,
-                 GetLocalizedString(IDS_WAITING_TO_CONNECT_BASE).c_str());
+  SetDlgItemText(
+      IDC_INSTALLER_STATE_TEXT,
+      GetLocalizedString(IDS_WAITING_TO_CONNECT_BASE, lang()).c_str());
 
   ChangeControlState();
 }
@@ -318,22 +322,25 @@ void ProgressWnd::OnDownloading(
   std::wstring s;
 
   if (is_canceled_) {
-    s = GetLocalizedString(IDS_CANCELING_BASE);
+    s = GetLocalizedString(IDS_CANCELING_BASE, lang());
   } else if (!time_remaining) {
-    s = GetLocalizedString(IDS_DOWNLOADING_BASE);
+    s = GetLocalizedString(IDS_DOWNLOADING_BASE, lang());
   } else if (!time_remaining->InSeconds()) {
-    s = GetLocalizedString(IDS_DOWNLOADING_COMPLETED_BASE);
+    s = GetLocalizedString(IDS_DOWNLOADING_COMPLETED_BASE, lang());
   } else if (!time_remaining->InMinutes()) {
     // Less than one minute remaining.
     s = GetLocalizedStringF(IDS_DOWNLOADING_SHORT_BASE,
-                            base::NumberToWString(time_remaining->InSeconds()));
+                            base::NumberToWString(time_remaining->InSeconds()),
+                            lang());
   } else if (!time_remaining->InHours()) {
     // Less than one hour remaining.
     s = GetLocalizedStringF(IDS_DOWNLOADING_LONG_BASE,
-                            base::NumberToWString(time_remaining->InMinutes()));
+                            base::NumberToWString(time_remaining->InMinutes()),
+                            lang());
   } else {
     s = GetLocalizedStringF(IDS_DOWNLOADING_VERY_LONG_BASE,
-                            base::NumberToWString(time_remaining->InHours()));
+                            base::NumberToWString(time_remaining->InHours()),
+                            lang());
   }
 
   // Reduces flicker by only updating the control if the text has changed.
@@ -373,8 +380,9 @@ void ProgressWnd::OnWaitingToInstall(const std::string& app_id,
 
   if (States::STATE_WAITING_TO_INSTALL != cur_state_) {
     cur_state_ = States::STATE_WAITING_TO_INSTALL;
-    SetDlgItemText(IDC_INSTALLER_STATE_TEXT,
-                   GetLocalizedString(IDS_WAITING_TO_INSTALL_BASE).c_str());
+    SetDlgItemText(
+        IDC_INSTALLER_STATE_TEXT,
+        GetLocalizedString(IDS_WAITING_TO_INSTALL_BASE, lang()).c_str());
     ChangeControlState();
   }
 }
@@ -393,7 +401,7 @@ void ProgressWnd::OnInstalling(
   if (States::STATE_INSTALLING != cur_state_) {
     cur_state_ = States::STATE_INSTALLING;
     SetDlgItemText(IDC_INSTALLER_STATE_TEXT,
-                   GetLocalizedString(IDS_INSTALLING_BASE).c_str());
+                   GetLocalizedString(IDS_INSTALLING_BASE, lang()).c_str());
     ChangeControlState();
   }
 
@@ -504,44 +512,50 @@ void ProgressWnd::OnComplete(const ObserverCompletionInfo& observer_info) {
     case CompletionCodes::COMPLETION_CODE_RESTART_ALL_BROWSERS:
       cur_state_ = States::STATE_COMPLETE_RESTART_ALL_BROWSERS;
       SetDlgItemText(IDC_BUTTON1,
-                     GetLocalizedString(IDS_RESTART_NOW_BASE).c_str());
-      SetDlgItemText(IDC_BUTTON2,
-                     GetLocalizedString(IDS_RESTART_LATER_BASE).c_str());
-      SetDlgItemText(IDC_COMPLETE_TEXT,
-                     GetLocalizedStringF(IDS_TEXT_RESTART_ALL_BROWSERS_BASE,
-                                         base::UTF16ToWide(bundle_name()))
-                         .c_str());
+                     GetLocalizedString(IDS_RESTART_NOW_BASE, lang()).c_str());
+      SetDlgItemText(
+          IDC_BUTTON2,
+          GetLocalizedString(IDS_RESTART_LATER_BASE, lang()).c_str());
+      SetDlgItemText(
+          IDC_COMPLETE_TEXT,
+          GetLocalizedStringF(IDS_TEXT_RESTART_ALL_BROWSERS_BASE,
+                              base::UTF16ToWide(bundle_name()), lang())
+              .c_str());
       DeterminePostInstallUrls(observer_info);
       break;
     case CompletionCodes::COMPLETION_CODE_RESTART_BROWSER:
       cur_state_ = States::STATE_COMPLETE_RESTART_BROWSER;
       SetDlgItemText(IDC_BUTTON1,
-                     GetLocalizedString(IDS_RESTART_NOW_BASE).c_str());
-      SetDlgItemText(IDC_BUTTON2,
-                     GetLocalizedString(IDS_RESTART_LATER_BASE).c_str());
-      SetDlgItemText(IDC_COMPLETE_TEXT,
-                     GetLocalizedStringF(IDS_TEXT_RESTART_BROWSER_BASE,
-                                         base::UTF16ToWide(bundle_name()))
-                         .c_str());
+                     GetLocalizedString(IDS_RESTART_NOW_BASE, lang()).c_str());
+      SetDlgItemText(
+          IDC_BUTTON2,
+          GetLocalizedString(IDS_RESTART_LATER_BASE, lang()).c_str());
+      SetDlgItemText(
+          IDC_COMPLETE_TEXT,
+          GetLocalizedStringF(IDS_TEXT_RESTART_BROWSER_BASE,
+                              base::UTF16ToWide(bundle_name()), lang())
+              .c_str());
       DeterminePostInstallUrls(observer_info);
       break;
     case CompletionCodes::COMPLETION_CODE_REBOOT:
       cur_state_ = States::STATE_COMPLETE_REBOOT;
       SetDlgItemText(IDC_BUTTON1,
-                     GetLocalizedString(IDS_RESTART_NOW_BASE).c_str());
-      SetDlgItemText(IDC_BUTTON2,
-                     GetLocalizedString(IDS_RESTART_LATER_BASE).c_str());
-      SetDlgItemText(IDC_COMPLETE_TEXT,
-                     GetLocalizedStringF(IDS_TEXT_RESTART_COMPUTER_BASE,
-                                         base::UTF16ToWide(bundle_name()))
-                         .c_str());
+                     GetLocalizedString(IDS_RESTART_NOW_BASE, lang()).c_str());
+      SetDlgItemText(
+          IDC_BUTTON2,
+          GetLocalizedString(IDS_RESTART_LATER_BASE, lang()).c_str());
+      SetDlgItemText(
+          IDC_COMPLETE_TEXT,
+          GetLocalizedStringF(IDS_TEXT_RESTART_COMPUTER_BASE,
+                              base::UTF16ToWide(bundle_name()), lang())
+              .c_str());
       break;
     case CompletionCodes::COMPLETION_CODE_RESTART_ALL_BROWSERS_NOTICE_ONLY:
       cur_state_ = States::STATE_COMPLETE_SUCCESS;
       CompleteWnd::DisplayCompletionDialog(
           true,
           GetLocalizedStringF(IDS_TEXT_RESTART_ALL_BROWSERS_BASE,
-                              base::UTF16ToWide(bundle_name())),
+                              base::UTF16ToWide(bundle_name()), lang()),
           observer_info.help_url.possibly_invalid_spec());
       break;
     case CompletionCodes::COMPLETION_CODE_REBOOT_NOTICE_ONLY:
@@ -549,7 +563,7 @@ void ProgressWnd::OnComplete(const ObserverCompletionInfo& observer_info) {
       CompleteWnd::DisplayCompletionDialog(
           true,
           GetLocalizedStringF(IDS_TEXT_RESTART_COMPUTER_BASE,
-                              base::UTF16ToWide(bundle_name())),
+                              base::UTF16ToWide(bundle_name()), lang()),
           observer_info.help_url.possibly_invalid_spec());
       break;
     case CompletionCodes::COMPLETION_CODE_RESTART_BROWSER_NOTICE_ONLY:
@@ -557,7 +571,7 @@ void ProgressWnd::OnComplete(const ObserverCompletionInfo& observer_info) {
       CompleteWnd::DisplayCompletionDialog(
           true,
           GetLocalizedStringF(IDS_TEXT_RESTART_BROWSER_BASE,
-                              base::UTF16ToWide(bundle_name())),
+                              base::UTF16ToWide(bundle_name()), lang()),
           observer_info.help_url.possibly_invalid_spec());
       break;
     case CompletionCodes::COMPLETION_CODE_EXIT_SILENTLY_ON_LAUNCH_COMMAND:

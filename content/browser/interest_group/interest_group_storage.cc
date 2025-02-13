@@ -31,7 +31,6 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/types/pass_key.h"
@@ -200,6 +199,8 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 28 - 2024/06 - crrev.com/c/5647523
 // Version 29 - 2024/06 - crrev.com/c/5753049
 // Version 30 - 2024/08 - crrev.com/c/5707491
+// Version 31 - 2025/01 - crrev.com/c/6084483
+// Version 32 - 2025/02 - crrev.com/c/6239846
 //
 // Version 1 adds a table for interest groups.
 // Version 2 adds a column for rate limiting interest group updates.
@@ -241,12 +242,14 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 30 compresses the AdsProto field using Snappy compression and runs a
 // VACUUM command.
 // Version 31 adds creative_scanning_metadata field to ad object.
+// Version 32 adds duration column to the debug report lockout table, and rename
+//  its last_report_sent_time column to starting_time.
 
-const int kCurrentVersionNumber = 31;
+const int kCurrentVersionNumber = 32;
 
 // Earliest version of the code which can use a |kCurrentVersionNumber| database
 // without failing.
-const int kCompatibleVersionNumber = 30;
+const int kCompatibleVersionNumber = 32;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -1156,7 +1159,8 @@ bool CreateCurrentSchema(sql::Database& db) {
       // clang-format off
       "CREATE TABLE lockout_debugging_only_report("
         "id INTEGER NOT NULL,"
-        "last_report_sent_time INTEGER NOT NULL,"
+        "starting_time INTEGER NOT NULL,"
+        "duration INTEGER NOT NULL,"
       "PRIMARY KEY(id))";
   // clang-format on
   if (!db.Execute(kLockoutDebugReportTableSql)) {
@@ -1199,6 +1203,54 @@ bool VacuumDB(sql::Database& db) {
   return db.Execute(kVacuum);
 }
 
+bool UpgradeV31SchemaToV32(sql::Database& db, sql::MetaTable& meta_table) {
+  // Adds duration column to the debug report lockout table, and rename its
+  // last_report_sent_time column to starting_time.
+  static const char kLockoutTableSql[] =
+      // clang-format off
+    "CREATE TABLE new_lockout_debugging_only_report("
+        "id INTEGER NOT NULL,"
+        "starting_time INTEGER NOT NULL,"
+        "duration INTEGER NOT NULL,"
+      "PRIMARY KEY(id))";
+  // clang-format on
+  if (!db.Execute(kLockoutTableSql)) {
+    return false;
+  }
+
+  // Copy over the existing columns, and set the new duration column's value
+  // which was always kFledgeDebugReportLockout before.
+  // clang-format off
+  sql::Statement copy_lockout_table_sql(
+      db.GetCachedStatement(SQL_FROM_HERE,
+      "INSERT INTO new_lockout_debugging_only_report "
+      "SELECT id,"
+      "last_report_sent_time,"
+      "? "
+      "FROM lockout_debugging_only_report"));
+  // clang-format on
+
+  copy_lockout_table_sql.BindTimeDelta(
+      0, blink::features::kFledgeDebugReportLockout.Get());
+
+  if (!copy_lockout_table_sql.Run()) {
+    return false;
+  }
+
+  static const char kDropLockoutTableSql[] =
+      "DROP TABLE lockout_debugging_only_report";
+  if (!db.Execute(kDropLockoutTableSql)) {
+    return false;
+  }
+
+  static const char kRenameLockoutTableSql[] =
+      // clang-format off
+    "ALTER TABLE new_lockout_debugging_only_report "
+    "RENAME TO lockout_debugging_only_report";
+  // clang-format on
+  return db.Execute(kRenameLockoutTableSql);
+}
+
 bool UpgradeV29SchemaToV30(sql::Database& db, sql::MetaTable& meta_table) {
   // There are no new columns, but the `ads_pb` and `ad_components_pb` columns
   // get compressed with Snappy.
@@ -1211,7 +1263,7 @@ bool UpgradeV29SchemaToV30(sql::Database& db, sql::MetaTable& meta_table) {
       "ads_pb,"
       "ad_components_pb "
       "FROM interest_groups"));
-      //  clang-format-on
+  // clang-format on
   if (!select_prev_groups.is_valid()) {
     return false;
   }
@@ -3053,9 +3105,15 @@ bool UpgradeDB(sql::Database& db,
         if (!UpgradeV29SchemaToV30(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 30:
         // Conversion is a no-op, just bookkeeping for a proto change.
+        [[fallthrough]];
+      case 31:
+        vacuum_db_post_upgrade = true;
+        if (!UpgradeV31SchemaToV32(db, meta_table)) {
+          return false;
+        }
         if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {
           return false;
         }
@@ -4078,22 +4136,23 @@ bool DoRecordInterestGroupWin(sql::Database& db,
 }
 
 bool DoRecordDebugReportLockout(sql::Database& db,
-                                base::Time last_debug_report_sent_time) {
+                                base::Time starting_time,
+                                base::TimeDelta duration) {
   sql::Statement debug_lockout(db.GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT OR REPLACE "
-      "INTO lockout_debugging_only_report(id, last_report_sent_time) "
-      "VALUES(1, ?)"));
+      "INTO lockout_debugging_only_report(id, starting_time, duration) "
+      "VALUES(1, ?, ?)"));
   if (!debug_lockout.is_valid()) {
     return false;
   }
 
   debug_lockout.Reset(true);
   // Ceil to nearest hour to be stored in DB.
-  debug_lockout.BindInt64(0,
-                          last_debug_report_sent_time.ToDeltaSinceWindowsEpoch()
-                              .CeilToMultiple(base::Hours(1))
-                              .InMicroseconds());
+  debug_lockout.BindInt64(0, starting_time.ToDeltaSinceWindowsEpoch()
+                                 .CeilToMultiple(base::Hours(1))
+                                 .InMicroseconds());
+  debug_lockout.BindTimeDelta(1, duration);
   return debug_lockout.Run();
 }
 
@@ -4472,22 +4531,23 @@ bool GetBidCount(sql::Database& db,
   return bid_count.Succeeded();
 }
 
-std::optional<base::Time> DoGetDebugReportLockout(
+std::optional<DebugReportLockout> DoGetDebugReportLockout(
     sql::Database& db,
     std::optional<base::Time> ignore_before) {
-  sql::Statement sent_time(
+  sql::Statement lockout(
       db.GetCachedStatement(SQL_FROM_HERE,
-                            "SELECT last_report_sent_time "
+                            "SELECT starting_time, duration "
                             "FROM lockout_debugging_only_report "
-                            "WHERE last_report_sent_time > ?"));
-  if (!sent_time.is_valid()) {
-    DLOG(ERROR) << "GetLastDebugReportSentDate SQL statement did not compile: "
+                            "WHERE starting_time > ?"));
+  if (!lockout.is_valid()) {
+    DLOG(ERROR) << "GetDebugReportLockout SQL statement did not compile: "
                 << db.GetErrorMessage();
     return std::nullopt;
   }
-  sent_time.BindTime(0, ignore_before.value_or(base::Time::Min()));
-  if (sent_time.Step()) {
-    return sent_time.ColumnTime(0);
+  lockout.BindTime(0, ignore_before.value_or(base::Time::Min()));
+  if (lockout.Step()) {
+    return DebugReportLockout(lockout.ColumnTime(0),
+                              lockout.ColumnTimeDelta(1));
   }
   return std::nullopt;
 }
@@ -5732,7 +5792,8 @@ std::vector<std::string> InterestGroupStorage::ClearOriginJoinedInterestGroups(
   return std::move(left_interest_groups.value());
 }
 
-std::optional<base::Time> InterestGroupStorage::GetDebugReportLockout() {
+std::optional<DebugReportLockout>
+InterestGroupStorage::GetDebugReportLockout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
     return std::nullopt;
@@ -5752,7 +5813,7 @@ InterestGroupStorage::GetDebugReportLockoutAndCooldowns(
   // Ignore lockout and cooldowns whose start time is before
   // kFledgeEnableFilteringDebugReportStartingFrom.
   std::optional<base::Time> ignore_before = GetSampleDebugReportStartingFrom();
-  debug_report_lockout_and_cooldowns.last_report_sent_time =
+  debug_report_lockout_and_cooldowns.lockout =
       DoGetDebugReportLockout(*db_, ignore_before);
   DoGetDebugReportCooldowns(*db_, std::move(origins), ignore_before,
                             debug_report_lockout_and_cooldowns);
@@ -5836,15 +5897,15 @@ void InterestGroupStorage::RecordInterestGroupWin(
   }
 }
 
-void InterestGroupStorage::RecordDebugReportLockout(
-    base::Time last_report_sent_time) {
+void InterestGroupStorage::RecordDebugReportLockout(base::Time starting_time,
+                                                    base::TimeDelta duration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
     return;
   }
 
-  if (!DoRecordDebugReportLockout(*db_, last_report_sent_time)) {
-    DLOG(ERROR) << "Could not record last debugging only report sent time: "
+  if (!DoRecordDebugReportLockout(*db_, starting_time, duration)) {
+    DLOG(ERROR) << "Could not record debugging only report lockout: "
                 << db_->GetErrorMessage();
   }
 }

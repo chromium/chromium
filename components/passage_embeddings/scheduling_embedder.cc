@@ -22,11 +22,9 @@ namespace passage_embeddings {
 
 namespace {
 
-#if BUILDFLAG(USE_BLINK)
-using ScenarioScope = blink::performance_scenarios::ScenarioScope;
-using LoadingScenario = blink::performance_scenarios::LoadingScenario;
-using InputScenario = blink::performance_scenarios::InputScenario;
-#endif
+using ScenarioScope = performance_scenarios::ScenarioScope;
+using LoadingScenario = performance_scenarios::LoadingScenario;
+using InputScenario = performance_scenarios::InputScenario;
 
 std::string PassagePriorityToString(PassagePriority priority) {
   switch (priority) {
@@ -100,17 +98,12 @@ SchedulingEmbedder::SchedulingEmbedder(std::unique_ptr<Embedder> embedder,
       max_jobs_(max_jobs),
       max_batch_size_(max_batch_size),
       use_performance_scenario_(use_performance_scenario) {
-#if BUILDFLAG(USE_BLINK)
   if (use_performance_scenario_) {
     performance_scenario_observation_.Observe(
-        blink::performance_scenarios::PerformanceScenarioObserverList::
-            GetForScope(ScenarioScope::kGlobal)
-                .get());
+        performance_scenarios::PerformanceScenarioObserverList::GetForScope(
+            ScenarioScope::kGlobal)
+            .get());
   }
-#else
-  // Performance scenario is not supported on some builds (e.g. iOS by default).
-  use_performance_scenario_ = false;
-#endif
 }
 
 SchedulingEmbedder::~SchedulingEmbedder() = default;
@@ -215,7 +208,6 @@ void SchedulingEmbedder::SubmitWorkToEmbedder() {
 }
 
 bool SchedulingEmbedder::IsPerformanceScenarioReady() {
-#if BUILDFLAG(USE_BLINK)
   if (!jobs_.empty() &&
       jobs_.front().priority == PassagePriority::kUserInitiated) {
     // Do not block on performance scenario if user initiated a query.
@@ -223,17 +215,14 @@ bool SchedulingEmbedder::IsPerformanceScenarioReady() {
   }
 
   LoadingScenario loading_scenario =
-      blink::performance_scenarios::GetLoadingScenario(ScenarioScope::kGlobal)
+      performance_scenarios::GetLoadingScenario(ScenarioScope::kGlobal)
           ->load(std::memory_order_relaxed);
   InputScenario input_scenario =
-      blink::performance_scenarios::GetInputScenario(ScenarioScope::kGlobal)
+      performance_scenarios::GetInputScenario(ScenarioScope::kGlobal)
           ->load(std::memory_order_relaxed);
   return (loading_scenario == LoadingScenario::kNoPageLoading ||
           loading_scenario == LoadingScenario::kBackgroundPageLoading) &&
          input_scenario == InputScenario::kNoInput;
-#else
-  return true;
-#endif
 }
 
 void SchedulingEmbedder::SetOnEmbedderReadyCallback(
@@ -270,7 +259,6 @@ void SchedulingEmbedder::SetEmbedderMetadata(EmbedderMetadata metadata) {
   SubmitWorkToEmbedder();
 }
 
-#if BUILDFLAG(USE_BLINK)
 void SchedulingEmbedder::OnLoadingScenarioChanged(
     ScenarioScope scope,
     LoadingScenario old_scenario,
@@ -287,7 +275,6 @@ void SchedulingEmbedder::OnInputScenarioChanged(ScenarioScope scope,
           << static_cast<int>(new_scenario);
   SubmitWorkToEmbedder();
 }
-#endif
 
 void SchedulingEmbedder::OnEmbeddingsComputed(std::vector<std::string> passages,
                                               std::vector<Embedding> embeddings,

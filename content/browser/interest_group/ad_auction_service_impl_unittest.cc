@@ -11557,7 +11557,8 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobDebugReportingInLockout) {
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
-  manager_->RecordDebugReportLockout(base::Time::Now());
+  manager_->RecordDebugReportLockout(
+      base::Time::Now(), blink::features::kFledgeDebugReportLockout.Get());
   task_environment()->FastForwardBy(base::Seconds(1));
 
   std::vector<uint8_t> msg;
@@ -12459,7 +12460,8 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayloadWithDebugReportLockout) {
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
-  manager_->RecordDebugReportLockout(base::Time::Now());
+  manager_->RecordDebugReportLockout(
+      base::Time::Now(), blink::features::kFledgeDebugReportLockout.Get());
   task_environment()->FastForwardBy(base::Seconds(1));
 
   std::optional<AdAuctionDataAndId> result =
@@ -14884,8 +14886,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
             run_loop.Quit();
           }));
   run_loop.Run();
-  EXPECT_TRUE(
-      new_debug_report_lockout_and_cooldowns.last_report_sent_time.has_value());
+  EXPECT_TRUE(new_debug_report_lockout_and_cooldowns.lockout.has_value());
   EXPECT_TRUE(
       new_debug_report_lockout_and_cooldowns.debug_report_cooldown_map.contains(
           kOriginB));
@@ -15000,8 +15001,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
             run_loop.Quit();
           }));
   run_loop.Run();
-  EXPECT_FALSE(
-      new_debug_report_lockout_and_cooldowns.last_report_sent_time.has_value());
+  EXPECT_FALSE(new_debug_report_lockout_and_cooldowns.lockout.has_value());
   EXPECT_TRUE(
       new_debug_report_lockout_and_cooldowns.debug_report_cooldown_map.contains(
           kOriginA));
@@ -15033,7 +15033,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
   task_environment()->FastForwardBy(base::Seconds(1));
   // Lockout is after `fledge_enable_filtering_debug_report_starting_from`, so
   // will take effect.
-  manager_->RecordDebugReportLockout(base::Time::Now());
+  manager_->RecordDebugReportLockout(
+      base::Time::Now(), blink::features::kFledgeDebugReportLockout.Get());
   task_environment()->FastForwardBy(base::Seconds(1));
 
   std::optional<AdAuctionDataAndId> auction_data =

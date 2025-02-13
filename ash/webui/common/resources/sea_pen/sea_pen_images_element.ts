@@ -36,7 +36,7 @@ import {WithSeaPenStore} from './sea_pen_store.js';
 import {isNonEmptyArray, isPersonalizationApp, isSeaPenImageId} from './sea_pen_utils.js';
 
 const kFreeformLoadingPlaceholderCount = 4;
-const kTemplateLoadingPlaceholderCount = 8;
+const kTemplateLoadingPlaceholderCount = isSeaPenTextInputEnabled() ? 4 : 8;
 
 export class SeaPenHistoryPromptSelectedEvent extends CustomEvent<string> {
   static readonly EVENT_NAME = 'sea-pen-history-prompt-selected';

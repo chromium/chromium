@@ -1,4 +1,0 @@
-include_rules = [
-  "+chromeos/crosapi/mojom",
-  "+components/sync/engine",
-]

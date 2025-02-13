@@ -27,6 +27,10 @@
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 
+#if BUILDFLAG(IS_IOS)
+#include "gpu/ipc/common/ios/be_layer_hierarchy_transport.h"
+#endif
+
 // From ANGLE's EGL/eglext_angle.h. This should be included instead of being
 // redefined here.
 #ifndef EGL_ANGLE_device_metal
@@ -64,6 +68,7 @@ void RecordVSyncCallbackDelay(base::TimeDelta delay) {
 }  // namespace
 
 ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
+    SurfaceHandle surface_handle,
     DawnContextProvider* dawn_context_provider)
     : dawn_context_provider_(dawn_context_provider), weak_ptr_factory_(this) {
   static bool av_disabled_at_command_line =
@@ -75,10 +80,36 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
 
   ca_layer_tree_coordinator_ = std::make_unique<ui::CALayerTreeCoordinator>(
       !av_disabled_at_command_line, std::move(buffer_presented_callback));
+
+#if BUILDFLAG(IS_IOS)
+  // The BELayerHierarchy needs to be created on a thread that supports
+  // libdispatch, so we proxy over to the main dispatch queue to do that.
+  CALayer* root_ca_layer = ca_layer_tree_coordinator_->root_ca_layer();
+  __block xpc_object_t ipc_representation;
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    NSError* error = nullptr;
+    layer_hierarchy_ = [BELayerHierarchy layerHierarchyWithError:&error];
+    layer_hierarchy_.layer = root_ca_layer;
+    ipc_representation = [layer_hierarchy_.handle createXPCRepresentation];
+  });
+
+  BELayerHierarchyTransport* transport =
+      BELayerHierarchyTransport::GetInstance();
+  CHECK(transport);
+  transport->ForwardBELayerHierarchyToBrowser(surface_handle,
+                                              ipc_representation);
+#endif
 }
 
 ImageTransportSurfaceOverlayMacEGL::~ImageTransportSurfaceOverlayMacEGL() {
   ca_layer_tree_coordinator_.reset();
+
+#if BUILDFLAG(IS_IOS)
+  BELayerHierarchy* layer_hierarchy = std::move(layer_hierarchy_);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [layer_hierarchy invalidate];
+  });
+#endif
 }
 
 void ImageTransportSurfaceOverlayMacEGL::BufferPresented(

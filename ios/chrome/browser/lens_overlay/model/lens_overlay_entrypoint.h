@@ -23,6 +23,12 @@ enum class LensOverlayEntrypoint {
 
 namespace lens {
 
+/// Whether the entrypoint corresponds to an LVF session.
+bool IsLVFEntrypoint(LensOverlayEntrypoint entrypoint);
+
+/// Whether the entrypoint corresponds to a context menu session.
+bool IsImageContextMenuEntrypoint(LensOverlayEntrypoint entrypoint);
+
 /// Returns the LensOverlayInvocationSource equivalent of the
 /// LensOverlayEntrypoint.
 LensOverlayInvocationSource InvocationSourceFromEntrypoint(

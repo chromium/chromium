@@ -16,7 +16,6 @@
 #include "base/strings/escape.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -40,13 +39,10 @@
 #include "extensions/browser/event_router.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/components/mgs/managed_guest_session_utils.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #else
@@ -110,7 +106,7 @@ void RealtimeReportingClient::SetIdentityManagerForTesting(
   identity_manager_ = identity_manager;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 std::pair<std::string, policy::CloudPolicyClient*>
 RealtimeReportingClient::InitProfileReportingClient(
     const std::string& dm_token) {
@@ -133,7 +129,7 @@ RealtimeReportingClient::InitProfileReportingClient(
 
   return {GetProfilePolicyClientDescription(), client};
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 std::optional<ReportingSettings>
 RealtimeReportingClient::GetReportingSettings() {
@@ -226,7 +222,7 @@ std::string RealtimeReportingClient::GetProfileIdentifier() {
 
 std::string RealtimeReportingClient::GetBrowserClientId() {
   std::string client_id;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   Profile* profile = nullptr;
   const user_manager::User* user = GetChromeOSUser();
   if (user) {
@@ -245,12 +241,6 @@ std::string RealtimeReportingClient::GetBrowserClientId() {
     client_id = reporting::GetMGSUserClientId().value_or("");
   } else {
     client_id = reporting::GetUserClientId(profile).value_or("");
-  }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  Profile* main_profile = GetMainProfileLacros();
-  if (main_profile) {
-    // Prefer the user client id if available.
-    client_id = reporting::GetUserClientId(main_profile).value_or(client_id);
   }
 #else
   client_id = policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
@@ -338,8 +328,8 @@ void RealtimeReportingClient::UploadCallbackDeprecated(
   // TODO(crbug.com/256553070): Do not crash if the client is unregistered.
   CHECK(!upload_result.IsClientNotRegisteredError());
 
-// Device DM token is already set on Ash by reporting::GetContext(...)
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Device DM token is already set on ChromeOS by reporting::GetContext(...)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (!per_profile && client) {
     event_wrapper.SetByDottedPath(
         "context.device",
@@ -395,7 +385,7 @@ RealtimeReportingClient::CreateUploadEventsRequest() {
       Profile::FromBrowserContext(context_));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 const user_manager::User* RealtimeReportingClient::GetChromeOSUser() {
   return user_manager::UserManager::IsInitialized()

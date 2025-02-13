@@ -68,9 +68,8 @@ bool IsSyncingExtensionsInTransportMode(Profile* profile) {
 bool IsExtensionsExplicitSigninEnabled() {
   // Explicit sign ins for extensions are enabled if extensions can be synced if
   // the user signs into transport mode.
-  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
-         base::FeatureList::IsEnabled(
-             syncer::kSyncEnableExtensionsInTransportMode);
+  return base::FeatureList::IsEnabled(
+      syncer::kSyncEnableExtensionsInTransportMode);
 }
 
 }  // namespace extensions::sync_util

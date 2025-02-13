@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 
 import androidx.annotation.NonNull;
@@ -30,6 +31,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
+import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDrawable;
@@ -39,10 +41,12 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.components.bookmarks.BookmarkItem;
+import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.Objects;
+import java.util.function.BiConsumer;
 
 /** Unit tests for {@link BookmarkBarUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -54,7 +58,7 @@ public class BookmarkBarUtilsTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Callback<BookmarkItem> mClickCallback;
+    @Mock private BiConsumer<BookmarkItem, Integer> mClickCallback;
     @Mock private Drawable mFavicon;
     @Mock private BookmarkImageFetcher mImageFetcher;
     @Mock private BookmarkItem mItem;
@@ -131,6 +135,8 @@ public class BookmarkBarUtilsTest {
 
                             // Bind list item to view.
                             final var view = inflateBookmarkBarButton(activity);
+                            activity.setContentView(view);
+                            Robolectric.flushForegroundThreadScheduler();
                             PropertyModelChangeProcessor.create(
                                     listItem.model, view, BookmarkBarButtonViewBinder::bind);
 
@@ -140,9 +146,10 @@ public class BookmarkBarUtilsTest {
                             assertEquals(title, view.getTitleForTesting());
 
                             // Verify expected event propagation.
-                            verify(mClickCallback, never()).onResult(any());
-                            view.performClick();
-                            verify(mClickCallback).onResult(mItem);
+                            verify(mClickCallback, never()).accept(any(), any());
+                            TouchCommon.singleClickView(view, KeyEvent.META_CTRL_ON);
+                            Robolectric.flushForegroundThreadScheduler();
+                            verify(mClickCallback).accept(mItem, KeyEvent.META_CTRL_ON);
                         });
     }
 }

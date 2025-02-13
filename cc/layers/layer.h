@@ -869,7 +869,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // in PropertyTreeManager when handling scroll offsets.
   void SetNeedsCommit();
 
-  void SetDebugName(const std::string& name);
+  void SetDebugName(std::string name);
 
   // If the content of this layer is provided by a cached or live render
   // surface, returns the ID of that resource.

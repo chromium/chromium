@@ -88,7 +88,7 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica "<ph name="TITLE
 <translation id="4783638485675352219">Dijelite titlove i URL-ove otvorenih kartica s ovog uređaja s operativnim sistemom</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenzija)}one{(<ph name="REVIEWS_COUNT_MANY" /> recenzija)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenzije)}other{(<ph name="REVIEWS_COUNT_MANY" /> recenzija)}}</translation>
 <translation id="4850886885716139402">Prikaz</translation>
-<translation id="4861611890274104875">Odbacite karticu.</translation>
+<translation id="4861611890274104875">Odbacivanje kartice.</translation>
 <translation id="4861953997778766866">Svako može unositi promjene u vezi s dijeljenim grupama kartica</translation>
 <translation id="4870911314065352661">Zatvoriti sve kartice?</translation>
 <translation id="4871719318659334896">Zatvori grupu</translation>

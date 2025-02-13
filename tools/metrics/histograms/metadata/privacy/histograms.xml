@@ -1514,6 +1514,23 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   <token key="Profile" variants="Profile"/>
 </histogram>
 
+<histogram name="PrivacySandbox.Notice.ClickIgnored.{PSNotice}"
+    enum="PrivacySandboxClickEvent" expires_after="2025-06-11">
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>Records the clicks ignored on a notice {PSNotice}.</summary>
+  <token key="PSNotice" variants="PSNotice"/>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.Notice.DurationSinceLastRegisteredAction.{PSNotice}"
+    units="ms" expires_after="2025-09-30">
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>Records the time between clicks on all notices.</summary>
+  <token key="PSNotice" variants="PSNotice"/>
+</histogram>
+
 <histogram
     name="PrivacySandbox.Notice.FirstShownToInteractedDuration.{PSNotice}_{PSNoticeAction}"
     units="ms" expires_after="2025-08-10">

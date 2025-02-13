@@ -37,6 +37,7 @@ void GlicProfileConfiguration::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       prefs::kGlicSettingsPolicy,
       static_cast<int>(prefs::SettingsPolicyState::kEnabled));
+  registry->RegisterBooleanPref(prefs::kGlicPinnedToTabstrip, true);
   registry->RegisterBooleanPref(prefs::kGlicMicrophoneEnabled, false);
   registry->RegisterBooleanPref(prefs::kGlicGeolocationEnabled, false);
   registry->RegisterBooleanPref(prefs::kGlicTabContextEnabled, false);

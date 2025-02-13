@@ -10,7 +10,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -115,7 +115,7 @@ std::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
       url, GetDataRegion(connector));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
     content::BrowserContext* context,
     const storage::FileSystemURL& source_url,
@@ -138,7 +138,7 @@ std::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
   return analysis_connector_settings_[connector][0].GetAnalysisSettings(
       context, source_url, destination_url, GetDataRegion(connector));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 void ConnectorsManager::OnBrowserAdded(Browser* browser) {
@@ -344,7 +344,7 @@ void ConnectorsManager::StartObservingPrefs(PrefService* pref_service) {
   StartObservingPref(AnalysisConnector::FILE_DOWNLOADED);
   StartObservingPref(AnalysisConnector::BULK_DATA_ENTRY);
   StartObservingPref(AnalysisConnector::PRINT);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   StartObservingPref(AnalysisConnector::FILE_TRANSFER);
 #endif
   ConnectorsManagerBase::StartObservingPref();

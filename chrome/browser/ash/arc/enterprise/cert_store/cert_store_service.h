@@ -15,7 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/arc_cert_installer.h"
-#include "chrome/services/keymanagement/public/mojom/cert_store_types.mojom.h"
+#include "chromeos/ash/services/keymanagement/public/mojom/cert_store_types.mojom.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"

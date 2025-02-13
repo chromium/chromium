@@ -114,29 +114,6 @@ export class SettingsAutofillAiSectionElement extends
 
   private onPrefToggleChanged_() {
     this.userAnnotationsManager_.predictionImprovementsIphFeatureUsed();
-
-    this.maybeTriggerBootstrapping_();
-  }
-
-  private async maybeTriggerBootstrapping_() {
-    const bootstrappingDisabled =
-        !loadTimeData.getBoolean('autofillAiBootstrappingEnabled');
-    const toggleDisabled = !this.$.prefToggle.checked;
-    const hasEntries = await this.userAnnotationsManager_.hasEntries();
-    // Only trigger bootstrapping if the pref was just enabled and there are no
-    // entries yet.
-    if (bootstrappingDisabled || this.disabled || toggleDisabled ||
-        hasEntries) {
-      return;
-    }
-
-    const entriesAdded =
-        await this.userAnnotationsManager_.triggerBootstrapping();
-    // Refresh the list if bootstrapping resulted in new entries being added.
-    if (entriesAdded) {
-      this.userAnnotationsEntries_ =
-          await this.userAnnotationsManager_.getEntries();
-    }
   }
 
   private onDeleteEntryCick_(e: DomRepeatEvent<UserAnnotationsEntry>): void {

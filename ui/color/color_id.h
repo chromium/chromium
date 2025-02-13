@@ -620,7 +620,8 @@
   E_CPONLY(kColorCrosSystemHighlightBorder1) \
   \
   E_CPONLY(kColorCrosSysPositive) \
-  E_CPONLY(kColorCrosSysComplementVariant)
+  E_CPONLY(kColorCrosSysComplementVariant) \
+  E_CPONLY(kColorCrosSysInputFieldOnBase)
 #elif BUILDFLAG(IS_LINUX)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
   E_CPONLY(kColorNativeButtonBorder)\

@@ -156,20 +156,6 @@ syncer::DeviceInfo CreateDeviceInfo() {
       /*floating_workspace_last_signin_timestamp=*/base::Time::Now());
 }
 
-std::u16string ExpectedPasskeyLabel() {
-  if (device::kWebAuthnGpmPin.Get()) {
-    // In this case GPM should be enabled by default.
-    return l10n_util::GetStringUTF16(
-        IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER_NEW);
-  }
-  // Otherwise the label will mention the priority phone.
-  return l10n_util::GetStringFUTF16(
-      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)
-          ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE_NEW
-          : IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE,
-      kPhoneName);
-}
-
 // Autofill integration tests. This file contains end-to-end tests for
 // integration between WebAuthn and Autofill. These tests are sensitive to focus
 // changes, so they are interactive UI tests.
@@ -631,7 +617,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
   ASSERT_EQ(webauthn_entry_count, 1u);
   ASSERT_LT(suggestion_index, suggestions.size()) << "WebAuthn entry not found";
   EXPECT_EQ(webauthn_entry.main_text.value, u"flandre");
-  EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value, ExpectedPasskeyLabel());
+  EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value,
+            l10n_util::GetStringUTF16(
+                IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER_NEW));
   EXPECT_EQ(webauthn_entry.icon, autofill::Suggestion::Icon::kGlobe);
 
   // Click the credential.
@@ -686,9 +674,7 @@ class WebAuthnWindowsAutofillIntegrationTest
 
   std::u16string GetDeviceString() override {
     return l10n_util::GetStringUTF16(
-        base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)
-            ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO_NEW
-            : IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO);
+        IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO_NEW);
   }
 
  protected:

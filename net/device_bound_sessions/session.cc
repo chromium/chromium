@@ -9,7 +9,6 @@
 #include "base/strings/escape.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
@@ -17,6 +16,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/device_bound_sessions/cookie_craving.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
+#include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/device_bound_sessions/session_inclusion_rules.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -78,8 +78,7 @@ std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params,
           base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
   GURL candidate_refresh_endpoint = fetcher_url.Resolve(unescaped_path);
   if (!candidate_refresh_endpoint.is_valid() ||
-      (!candidate_refresh_endpoint.SchemeIsCryptographic() &&
-       !IsLocalhost(candidate_refresh_endpoint)) ||
+      !IsSecure(candidate_refresh_endpoint) ||
       net::SchemefulSite(candidate_refresh_endpoint) !=
           net::SchemefulSite(fetcher_url)) {
     return nullptr;

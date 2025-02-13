@@ -7,7 +7,7 @@ import 'chrome://apps/app_item.js';
 import 'chrome://apps/deprecated_apps_link.js';
 
 import type {AppInfo, PageRemote} from 'chrome://apps/app_home.mojom-webui.js';
-import {RunOnOsLoginMode} from 'chrome://apps/app_home.mojom-webui.js';
+import {AppType, RunOnOsLoginMode} from 'chrome://apps/app_home.mojom-webui.js';
 import type {AppHomeEmptyPageElement} from 'chrome://apps/app_home_empty_page.js';
 import {AppHomeUserAction} from 'chrome://apps/app_home_utils.js';
 import type {AppListElement} from 'chrome://apps/app_list.js';
@@ -47,12 +47,14 @@ suite('AppListTest', () => {
   let callbackRouterRemote: PageRemote;
   let testAppInfo: AppInfo;
   let deprecatedAppInfo: AppInfo;
+  let isolatedWebAppInfo: AppInfo;
   let metricsPrivateMock: MetricsPrivateMock;
 
   setup(async () => {
     apps = {
       appList: [
         {
+          appType: AppType.kWebApp,
           id: 'ahfgeienlihckogmohjhadlkjgocpleb',
           startUrl: {url: 'https://test.google.com/testapp1'},
           name: 'Test App 1',
@@ -65,10 +67,10 @@ suite('AppListTest', () => {
           isLocallyInstalled: true,
           mayUninstall: true,
           openInWindow: false,
-          isDeprecatedApp: false,
           storePageUrl: null,
         },
         {
+          appType: AppType.kWebApp,
           id: 'ahfgeienlihckogmotestdlkjgocpleb',
           startUrl: {url: 'https://test.google.com/testapp2'},
           name: 'Test App 2',
@@ -81,13 +83,13 @@ suite('AppListTest', () => {
           isLocallyInstalled: false,
           mayUninstall: false,
           openInWindow: false,
-          isDeprecatedApp: false,
           storePageUrl: null,
         },
       ],
     };
 
     testAppInfo = {
+      appType: AppType.kWebApp,
       id: 'mmfbcljfglbokpmkimbfghdkjmjhdgbg',
       startUrl: {url: 'https://test.google.com/testapp3'},
       name: 'A Test App 3',
@@ -100,10 +102,10 @@ suite('AppListTest', () => {
       isLocallyInstalled: true,
       openInWindow: false,
       mayUninstall: true,
-      isDeprecatedApp: false,
       storePageUrl: null,
     };
     deprecatedAppInfo = {
+      appType: AppType.kDeprecatedChromeApp,
       id: 'mplpmdejoamenolpcojgegminhcnmibo',
       startUrl: {url: 'https://test.google.com/deprecated_app'},
       name: 'Deprecated App',
@@ -116,10 +118,25 @@ suite('AppListTest', () => {
       isLocallyInstalled: true,
       openInWindow: true,
       mayUninstall: true,
-      isDeprecatedApp: true,
       storePageUrl: {
         url: '',
       },
+    };
+    isolatedWebAppInfo = {
+      appType: AppType.kIsolatedWebApp,
+      id: 'bfeileggdikbmggaogebloieaiejgdie',
+      startUrl: {url: 'isolated-app://amoiebz32b7o24tilu257xne2yf3nkblkploanxzm7ebeglseqpfeaacai'},
+      name: 'IWA',
+      iconUrl: {
+        url: 'chrome://app-icon/bfeileggdikbmggaogebloieaiejgdie/128/1',
+      },
+      mayShowRunOnOsLoginMode: true,
+      mayToggleRunOnOsLoginMode: true,
+      runOnOsLoginMode: RunOnOsLoginMode.kNotRun,
+      isLocallyInstalled: true,
+      openInWindow: true,
+      mayUninstall: true,
+      storePageUrl: null,
     };
     metricsPrivateMock = new MetricsPrivateMock();
     chrome.metricsPrivate =
@@ -781,5 +798,24 @@ suite('AppListTest', () => {
     const contextMenu = appItem.shadowRoot.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
     assertFalse(contextMenu.hidden);
+  });
+
+  test('open in window not shown for IWA', async () => {
+    callbackRouterRemote.addApp(isolatedWebAppInfo);
+    await callbackRouterRemote.$.flushForTesting();
+
+    const appItem =
+        appListElement.shadowRoot!.querySelector('#' + isolatedWebAppInfo.id)!;
+    assertTrue(!!appItem, 'No apps.');
+
+    const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!contextMenu);
+    assertFalse(contextMenu.open);
+
+    appItem.dispatchEvent(new CustomEvent('contextmenu'));
+    const openInWindow =
+        contextMenu.querySelector<CrCheckboxElement>('#openInWindow');
+    assertTrue(!!openInWindow);
+    assertEquals(openInWindow.hidden, true);
   });
 });

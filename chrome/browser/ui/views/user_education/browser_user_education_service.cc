@@ -662,21 +662,6 @@ void MaybeRegisterChromeFeaturePromos(
                     .SetBubbleIcon(kLightbulbOutlineIcon)
                     .SetBubbleArrow(HelpBubbleArrow::kTopRight)));
 
-  // kIPHAutofillPredictionImprovementsBootstrappingFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForToastPromo(
-          feature_engagement::
-              kIPHAutofillPredictionImprovementsBootstrappingFeature,
-          settings::SettingsUI::kAutofillPredictionImprovementsHeaderElementId,
-          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_BOOTSTRAPPING_IPH,
-          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_BOOTSTRAPPING_IPH_SCREENREADER,
-          FeaturePromoSpecification::AcceleratorInfo())
-          .SetInAnyContext(true)
-          .SetBubbleArrow(HelpBubbleArrow::kBottomCenter)
-          .SetMetadata(131, "brunobraga@google.com",
-                       "Triggered after autofill predections are bootstrapped "
-                       "from current autofill data.")));
-
   // kIPHPowerBookmarksSidePanelFeature:
   registry.RegisterFeature(
       std::move(FeaturePromoSpecification::CreateForSnoozePromo(

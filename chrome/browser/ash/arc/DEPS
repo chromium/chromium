@@ -84,9 +84,9 @@ include_rules = [
   "+chrome/test/views",
 
   # Dependencies outside of //chrome:
-  "+chrome/services/keymanagement/public",
-  "+chrome/services/keymaster/public",
-  "+chrome/services/keymint/public",
+  "+chromeos/ash/services/keymanagement/public",
+  "+chromeos/ash/services/keymaster/public",
+  "+chromeos/ash/services/keymint/public",
   "+services/tracing/public",
   "+third_party/boringssl/src/pki",
 

@@ -320,7 +320,7 @@ CGFloat GPayIconTopAnchorOffset() {
   // Create the UIViews, add them to the contentView.
   self.cardLabel = CreateLabel();
   self.cardIcon = [self createCardIcon];
-  self.overflowMenuButton = CreateOverflowMenuButton();
+  self.overflowMenuButton = CreateOverflowMenuButton(_cellIndex);
   self.headerView =
       CreateHeaderView(self.cardIcon, self.cardLabel, self.overflowMenuButton);
   [self.contentView addSubview:self.headerView];

@@ -76,6 +76,7 @@ WebContentSecurityPolicy ConvertToPublic(
            policy->header->source},
           policy->use_reporting_api,
           base::ToVector(policy->report_endpoints, ToWebString),
+          policy->require_sri_for,
           policy->require_trusted_types_for,
           ConvertTrustedTypes(policy->trusted_types),
           base::ToVector(policy->parsing_errors, ToWebString)};

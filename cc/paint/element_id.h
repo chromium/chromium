@@ -24,39 +24,11 @@ class TracedValue;
 
 namespace cc {
 
-const int kElementIdNamespaceBitCount = 5;
+// This number of bits is reserved for cc internal use.
+const int kElementIdReservedBitCount = 1;
 
-enum class ElementIdNamespace {
-  kPrimary,
-  kUniqueObjectId,
-  kScroll,
-  kStickyTranslation,
-  kAnchorPositionScrollTranslation,
-  kPrimaryEffect,
-  kPrimaryTransform,
-  kEffectFilter,
-  kEffectMask,
-  kEffectClipPath,
-  kScaleTransform,
-  kRotateTransform,
-  kTranslateTransform,
-  kVerticalScrollbar,
-  kHorizontalScrollbar,
-  kScrollCorner,
-  kViewTransitionSubframeRoot,
-  kViewTransitionElement,
-  kElementCapture,
-  kPlaceElement,
-  kDOMNodeId,
-  // The following values are for internal usage only.
-  kMax = kDOMNodeId,
-  // A sentinel to indicate the maximum representable namespace id
-  // (the maximum is one less than this value).
-  kMaxRepresentable = 1 << kElementIdNamespaceBitCount,
-};
-
-// Eletment ids are chosen by cc's clients and can be used as a stable
-// identifier across updates.
+// Element ids are chosen by cc's clients and can be used as a stable identifier
+// across updates.
 //
 // Historically, the layer tree stored all compositing data but this has been
 // refactored over time into auxilliary structures such as property trees.
@@ -122,6 +94,8 @@ struct CC_PAINT_EXPORT ElementId {
 };
 
 ElementId CC_PAINT_EXPORT LayerIdToElementIdForTesting(int layer_id);
+
+ElementId CC_PAINT_EXPORT RemapElementIdToCcNamespace(ElementId element_id);
 
 struct CC_PAINT_EXPORT ElementIdHash {
   size_t operator()(ElementId key) const;

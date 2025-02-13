@@ -11,12 +11,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/metrics_services_manager/metrics_services_manager_client.h"
 #include "components/variations/synthetic_trial_registry.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/settings/stats_reporting_controller.h"  // nogncheck
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #endif
 
 class PrefService;
@@ -70,7 +69,7 @@ class ChromeMetricsServicesManagerClient
   // eligible for sampling.
   static bool GetSamplingRatePerMille(int* rate);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void OnCrosSettingsCreated();
 #endif
 
@@ -109,7 +108,7 @@ class ChromeMetricsServicesManagerClient
   // Weak pointer to the local state prefs store.
   const raw_ptr<PrefService> local_state_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   base::CallbackListSubscription reporting_setting_subscription_;
 #endif
 };

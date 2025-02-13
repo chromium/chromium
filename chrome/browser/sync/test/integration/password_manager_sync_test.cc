@@ -168,8 +168,7 @@ class PasswordManagerSyncTest : public SyncTest {
     // all Javascript changes to it are discarded, and thus any tests that cover
     // updating a password become flaky.
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{password_manager::features::kFillOnAccountSelect,
-                              switches::kExplicitBrowserSigninUIOnDesktop},
+        /*enabled_features=*/{password_manager::features::kFillOnAccountSelect},
         /*disabled_features=*/{});
   }
 

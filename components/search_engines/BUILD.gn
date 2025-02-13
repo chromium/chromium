@@ -47,6 +47,8 @@ static_library("search_engines") {
     "template_url_parser.h",
     "template_url_prepopulate_data.cc",
     "template_url_prepopulate_data.h",
+    "template_url_prepopulate_data_resolver.cc",
+    "template_url_prepopulate_data_resolver.h",
     "template_url_service.cc",
     "template_url_service.h",
     "template_url_service_client.h",

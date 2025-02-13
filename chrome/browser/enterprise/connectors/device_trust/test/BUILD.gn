@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 source_set("test_support") {
   testonly = true
 
@@ -32,7 +30,7 @@ source_set("test_support") {
     "//components/prefs",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chrome/browser/ash/login/test:test_support" ]
   }
 

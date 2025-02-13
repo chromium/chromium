@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_status_provider.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -38,7 +38,7 @@ GetManagementStatusProviders(Profile* profile) {
       std::make_unique<LocalTestPolicyUserManagementProvider>(profile));
   providers.emplace_back(
       std::make_unique<LocalTestPolicyBrowserManagementProvider>(profile));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   providers.emplace_back(std::make_unique<DeviceManagementStatusProvider>());
 #endif
   return providers;

@@ -11,7 +11,6 @@
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
-#import "components/sync/base/passphrase_enums.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -235,19 +234,6 @@ struct PasswordManagerActiveWidgetPromoData
   }
   return [[NSMutableAttributedString alloc] initWithString:message
                                                 attributes:textAttributes];
-}
-
-// Returns the on-device encryption state according to the sync service.
-- (OnDeviceEncryptionState)onDeviceEncryptionState {
-  if (ShouldOfferTrustedVaultOptIn(_syncService)) {
-    return OnDeviceEncryptionStateOfferOptIn;
-  }
-  syncer::SyncUserSettings* syncUserSettings = _syncService->GetUserSettings();
-  if (syncUserSettings->GetPassphraseType() ==
-      syncer::PassphraseType::kTrustedVaultPassphrase) {
-    return OnDeviceEncryptionStateOptedIn;
-  }
-  return OnDeviceEncryptionStateNotShown;
 }
 
 - (BOOL)shouldShowLocalOnlyIconForGroup:

@@ -44,7 +44,7 @@ export class LanguageToastElement extends LanguageToastElementBase implements
       toastTitle_: {type: String},
       toastMessage_: {type: String},
       showErrors: {type: Boolean},
-      availableVoices: {type: Array},
+      numAvailableVoices: {type: Number},
     };
   }
 
@@ -53,25 +53,32 @@ export class LanguageToastElement extends LanguageToastElementBase implements
   protected toastTitle_: string;
   protected toastMessage_: string;
 
-  // We don't want to show error toasts when the language menu is open, so this
-  // is set from the parent via one-way binding.
+  // Some parent components don't want certain error notifications shown (e.g.
+  // the language menu), so we let the parent control whether errors are shown
+  // via data binding.
   showErrors: boolean;
-  availableVoices: SpeechSynthesisVoice[];
+  numAvailableVoices: number;
 
-  notify(language: string, type: NotificationType) {
-    const previousNotification = this.notifications_.get(language);
-    this.notifications_.set(language, type);
+  notify(type: NotificationType, language?: string) {
+    const previousNotification =
+        language ? this.notifications_.get(language) : undefined;
+    if (language) {
+      this.notifications_.set(language, type);
+    }
     switch (type) {
+      case NotificationType.GOOGLE_VOICES_UNAVAILABLE:
+        this.setErrorTitle_('readingModeLanguageMenuVoicesUnavailable');
+        break;
       case NotificationType.NO_INTERNET:
         // Only show a toast if there are no voices at all.
-        if (!this.showErrors || this.availableVoices.length) {
+        if (!this.showErrors || this.numAvailableVoices > 0) {
           return;
         }
         this.setErrorTitle_('cantUseReadAloud');
         break;
       case NotificationType.NO_SPACE:
         // Only show a toast if there are no voices at all.
-        if (!this.showErrors || this.availableVoices.length) {
+        if (!this.showErrors || this.numAvailableVoices > 0) {
           return;
         }
         this.setErrorTitle_('allocationErrorNoVoices');
@@ -83,10 +90,9 @@ export class LanguageToastElement extends LanguageToastElementBase implements
         this.setErrorTitle_('allocationErrorHighQuality');
         break;
       case NotificationType.DOWNLOADED:
-        // TODO(crbug.com/325962407): replace toast with system notification.
         // <if expr="chromeos_ash">
         // Only show a notification for a newly completed download.
-        if (previousNotification === NotificationType.DOWNLOADING) {
+        if (language && previousNotification === NotificationType.DOWNLOADING) {
           const lang =
               chrome.readingMode.getDisplayNameForLocale(language, language) ||
               language;

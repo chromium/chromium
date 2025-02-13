@@ -3127,6 +3127,17 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
     DCHECK(frame_tree_node_->IsMainFrame());
     new_instance->ReuseExistingProcessIfPossible(process_to_reuse);
   }
+  if (!new_instance->HasProcess() &&
+      (should_swap_result->type() == BrowsingContextGroupSwapType::kCoopSwap ||
+       should_swap_result->type() ==
+           BrowsingContextGroupSwapType::kRelatedCoopSwap)) {
+    // Mark the coop_reuse_process_failed_ field in SiteInstance.
+    // This may happen in the navigation between non-COOP and COOP
+    // sites.
+    // The field will be passed to the ProcessAllocationContext when the
+    // new_instance tries to create a renderer process.
+    new_instance->SetCOOPReuseProcessFailed();
+  }
 
   // We want fenced frame BrowsingInstances to share the same default
   // process with their embedding BrowsingInstance. The code below forces

@@ -9,7 +9,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "content/browser/compute_pressure/pressure_client_impl.h"

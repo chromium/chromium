@@ -76,7 +76,8 @@ void NinePatchLayerLayoutTest(const gfx::Size& bitmap_size,
 
   AppendQuadsData data;
   host_impl.active_tree()->root_layer()->AppendQuads(
-      {.draw_mode = DRAW_MODE_HARDWARE}, render_pass.get(), &data);
+      AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+      &data);
 
   // Verify quad rects
   const auto& quads = render_pass->quad_list;
@@ -189,7 +190,8 @@ void NinePatchLayerLayoutTestWithOcclusion(const gfx::Size& bitmap_size,
 
   AppendQuadsData data;
   host_impl.active_tree()->root_layer()->AppendQuads(
-      {.draw_mode = DRAW_MODE_HARDWARE}, render_pass.get(), &data);
+      AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+      &data);
 
   // Verify quad rects
   const auto& quads = render_pass->quad_list;

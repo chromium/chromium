@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/crosapi/arc_ash.h"
 #include "chrome/browser/ash/crosapi/audio_service_ash.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/cec_private_ash.h"
 #include "chrome/browser/ash/crosapi/cert_database_ash.h"
 #include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
 #include "chrome/browser/ash/crosapi/chaps_service_ash.h"
@@ -36,7 +35,6 @@
 #include "chrome/browser/ash/crosapi/drive_integration_service_ash.h"
 #include "chrome/browser/ash/crosapi/echo_private_ash.h"
 #include "chrome/browser/ash/crosapi/embedded_accessibility_helper_client_ash.h"
-#include "chrome/browser/ash/crosapi/emoji_picker_ash.h"
 #include "chrome/browser/ash/crosapi/extension_info_private_ash.h"
 #include "chrome/browser/ash/crosapi/file_change_service_bridge_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
@@ -103,7 +101,6 @@
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
 #include "chromeos/crosapi/mojom/file_change_service_bridge.mojom.h"
-#include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
 #include "chromeos/crosapi/mojom/image_writer.mojom.h"
 #include "chromeos/crosapi/mojom/kerberos_in_browser.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
@@ -111,7 +108,6 @@
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
-#include "chromeos/crosapi/mojom/passkeys.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
@@ -163,7 +159,6 @@ Profile* GetAshProfile() {
 CrosapiAsh::CrosapiAsh()
     : arc_ash_(std::make_unique<ArcAsh>()),
       audio_service_ash_(std::make_unique<AudioServiceAsh>()),
-      cec_private_ash_(std::make_unique<CecPrivateAsh>()),
       cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
       cert_provisioning_ash_(std::make_unique<CertProvisioningAsh>()),
       chaps_service_ash_(std::make_unique<ChapsServiceAsh>()),
@@ -189,7 +184,6 @@ CrosapiAsh::CrosapiAsh()
       echo_private_ash_(std::make_unique<EchoPrivateAsh>()),
       embedded_accessibility_helper_client_ash_(
           std::make_unique<EmbeddedAccessibilityHelperClientAsh>()),
-      emoji_picker_ash_(std::make_unique<EmojiPickerAsh>()),
       extension_info_private_ash_(std::make_unique<ExtensionInfoPrivateAsh>()),
       file_system_access_cloud_identifier_provider_ash_(
           std::make_unique<FileSystemAccessCloudIdentifierProviderAsh>()),
@@ -292,11 +286,6 @@ void CrosapiAsh::BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) {
   if (auto r = receiver.As<chromeos::cdm::mojom::BrowserCdmFactory>()) {
     chromeos::CdmFactoryDaemonProxyAsh::Create(std::move(r));
   }
-}
-
-void CrosapiAsh::BindCecPrivate(
-    mojo::PendingReceiver<mojom::CecPrivate> receiver) {
-  cec_private_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindCertDatabase(
@@ -406,11 +395,6 @@ void CrosapiAsh::BindEmbeddedAccessibilityHelperClientFactory(
   embedded_accessibility_helper_client_ash_
       ->BindEmbeddedAccessibilityHelperClientFactoryReceiver(
           std::move(receiver));
-}
-
-void CrosapiAsh::BindEmojiPicker(
-    mojo::PendingReceiver<mojom::EmojiPicker> receiver) {
-  emoji_picker_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindExtensionInfoPrivate(
@@ -598,11 +582,6 @@ void CrosapiAsh::BindParentAccess(
   parent_access_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindPasskeyAuthenticatorDeprecated(
-    mojo::PendingReceiver<mojom::PasskeyAuthenticator> receiver) {
-  NOTIMPLEMENTED();
-}
-
 void CrosapiAsh::BindPaymentAppInstance(
     mojo::PendingReceiver<chromeos::payments::mojom::PaymentAppInstance>
         receiver) {
@@ -691,11 +670,6 @@ void CrosapiAsh::BindSuggestionService(
   suggestion_service_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindSyncService(
-    mojo::PendingReceiver<mojom::SyncService> receiver) {
-  // Can be safely removed from Crosapi.
-}
-
 void CrosapiAsh::BindTelemetryDiagnosticRoutinesService(
     mojo::PendingReceiver<mojom::TelemetryDiagnosticRoutinesService> receiver) {
   telemetry_diagnostic_routine_service_ash_->BindReceiver(std::move(receiver));
@@ -721,21 +695,6 @@ void CrosapiAsh::BindTimeZoneService(
   time_zone_service_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindTrustedVaultBackend(
-    mojo::PendingReceiver<mojom::TrustedVaultBackend> receiver) {
-  // Can be safely removed from Crosapi.
-}
-
-void CrosapiAsh::BindTrustedVaultBackendService(
-    mojo::PendingReceiver<mojom::TrustedVaultBackendService> receiver) {
-  // Can be safely removed from Crosapi.
-}
-
-void CrosapiAsh::BindUrlHandler(
-    mojo::PendingReceiver<mojom::UrlHandler> receiver) {
-  NOTREACHED();
-}
-
 void CrosapiAsh::BindVideoCaptureDeviceFactory(
     mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver) {
   content::GetVideoCaptureService().BindVideoCaptureDeviceFactory(
@@ -757,11 +716,6 @@ void CrosapiAsh::BindVolumeManager(
   volume_manager_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindVpnExtensionObserver(
-    mojo::PendingReceiver<crosapi::mojom::VpnExtensionObserver> receiver) {
-  NOTIMPLEMENTED();
-}
-
 void CrosapiAsh::BindVpnService(
     mojo::PendingReceiver<mojom::VpnService> receiver) {
   vpn_service_ash_->BindReceiver(std::move(receiver));
@@ -775,22 +729,6 @@ void CrosapiAsh::BindWebKioskService(
 void CrosapiAsh::BindGuestOsSkForwarderFactory(
     mojo::PendingReceiver<mojom::GuestOsSkForwarderFactory> receiver) {
   NOTREACHED();
-}
-
-void CrosapiAsh::REMOVED_29(
-    mojo::PendingReceiver<mojom::SystemDisplayDeprecated> receiver) {
-  NOTIMPLEMENTED();
-}
-
-void CrosapiAsh::REMOVED_105(
-    mojo::PendingReceiver<crosapi::mojom::FirewallHoleServiceDeprecated>
-        receiver) {
-  NOTIMPLEMENTED();
-}
-
-void CrosapiAsh::REMOVED_62(
-    mojo::PendingReceiver<crosapi::mojom::AuthenticationDeprecated> receiver) {
-  NOTIMPLEMENTED();
 }
 
 void CrosapiAsh::OnDisconnected() {

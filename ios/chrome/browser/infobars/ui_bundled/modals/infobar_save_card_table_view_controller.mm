@@ -509,7 +509,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (UIImage*)logoIconImage {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kGooglePaySymbol, kGooglePayIconHeight));
+      CustomSymbolWithPointSize(kGooglePaySymbol, kGooglePayLogoHeight));
 #endif
   return self.logoIcon;
 }

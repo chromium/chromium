@@ -41,9 +41,11 @@ enum class DownloadFileDestination {
 // Sets visible state to Install Google Drive button.
 - (void)setInstallDriveButtonVisible:(BOOL)visible animated:(BOOL)animated;
 
-// Sets the originating host for the consumer. Setting to nil or @'' will hide
-// it.
-- (void)setOriginatingHost:(NSString*)originatingHost;
+// Sets the originating host for the consumer.
+// If `display` is false, then the string is not displayed to the user.
+// If `display` is true, the host is displayed in the details of the download,
+// with a special string if the host is actually empty.
+- (void)setOriginatingHost:(NSString*)originatingHost display:(BOOL)display;
 
 @optional
 

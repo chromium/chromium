@@ -11,12 +11,28 @@
 #include "base/compiler_specific.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
+#include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
 
 // A form group that stores name information.
 class NameInfo : public FormGroup {
  public:
+  // See `AutofillProfile::kDatabaseStoredTypes` for a documentation of the
+  // purpose of this constant.
+  static constexpr FieldTypeSet kDatabaseStoredTypes{NAME_HONORIFIC_PREFIX,
+                                                     NAME_FIRST,
+                                                     NAME_MIDDLE,
+                                                     NAME_LAST_FIRST,
+                                                     NAME_LAST_CONJUNCTION,
+                                                     NAME_LAST_SECOND,
+                                                     NAME_LAST_PREFIX,
+                                                     NAME_LAST_CORE,
+                                                     NAME_LAST,
+                                                     NAME_FULL,
+                                                     ALTERNATIVE_FULL_NAME,
+                                                     ALTERNATIVE_GIVEN_NAME,
+                                                     ALTERNATIVE_FAMILY_NAME};
   NameInfo();
   NameInfo(const NameInfo& info);
   NameInfo(std::unique_ptr<NameFull> name,
@@ -27,8 +43,6 @@ class NameInfo : public FormGroup {
   bool operator==(const NameInfo& other) const;
 
   // FormGroup:
-  std::u16string GetInfo(FieldType type,
-                         const std::string& app_locale) const override;
   std::u16string GetInfo(const AutofillType& type,
                          const std::string& app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
@@ -82,7 +96,7 @@ class NameInfo : public FormGroup {
 
  private:
   // FormGroup:
-  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
+  FieldTypeSet GetSupportedTypes() const override;
 
   // Returns the root node of either `name_` or `alternative_name_`
   // depending on the `type`.
@@ -97,6 +111,9 @@ class NameInfo : public FormGroup {
 
 class EmailInfo : public FormGroup {
  public:
+  // See `AutofillProfile::kDatabaseStoredTypes` for a documentation of the
+  // purpose of this constant.
+  static constexpr FieldTypeSet kDatabaseStoredTypes{EMAIL_ADDRESS};
   EmailInfo();
   EmailInfo(const EmailInfo& info);
   ~EmailInfo() override;
@@ -106,8 +123,6 @@ class EmailInfo : public FormGroup {
   bool operator!=(const EmailInfo& other) const { return !operator==(other); }
 
   // FormGroup:
-  std::u16string GetInfo(FieldType type,
-                         const std::string& app_locale) const override;
   std::u16string GetInfo(const AutofillType& type,
                          const std::string& app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
@@ -122,13 +137,16 @@ class EmailInfo : public FormGroup {
 
  private:
   // FormGroup:
-  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
+  FieldTypeSet GetSupportedTypes() const override;
 
   std::u16string email_;
 };
 
 class CompanyInfo : public FormGroup {
  public:
+  // See `AutofillProfile::kDatabaseStoredTypes` for a documentation of the
+  // purpose of this constant.
+  static constexpr FieldTypeSet kDatabaseStoredTypes{COMPANY_NAME};
   CompanyInfo();
   CompanyInfo(const CompanyInfo& info);
   ~CompanyInfo() override;
@@ -137,8 +155,6 @@ class CompanyInfo : public FormGroup {
   bool operator!=(const CompanyInfo& other) const { return !operator==(other); }
 
   // FormGroup:
-  std::u16string GetInfo(FieldType type,
-                         const std::string& app_locale) const override;
   std::u16string GetInfo(const AutofillType& type,
                          const std::string& app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
@@ -158,7 +174,7 @@ class CompanyInfo : public FormGroup {
 
  private:
   // FormGroup:
-  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
+  FieldTypeSet GetSupportedTypes() const override;
   void GetMatchingTypes(const std::u16string& text,
                         const std::string& app_locale,
                         FieldTypeSet* matching_types) const override;

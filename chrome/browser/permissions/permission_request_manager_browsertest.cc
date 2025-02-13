@@ -770,7 +770,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   std::optional<permissions::PermissionPromptDisposition> disposition =
       manager->current_request_prompt_disposition_for_testing();
   auto disposition_from_prompt_bubble =
-      manager->view_for_testing()->GetPromptDisposition();
+      manager->GetCurrentPrompt()->GetPromptDisposition();
 
   manager->Dismiss();
   base::RunLoop().RunUntilIdle();
@@ -798,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   bubble_factory()->WaitForPermissionBubble();
   auto* manager = GetPermissionRequestManager();
   auto disposition_from_prompt_bubble =
-      manager->view_for_testing()->GetPromptDisposition();
+      manager->GetCurrentPrompt()->GetPromptDisposition();
 
   // There will be no instance of PermissionPromptImpl after a new tab is opened
   // and existing tab marked as HIDDEN.

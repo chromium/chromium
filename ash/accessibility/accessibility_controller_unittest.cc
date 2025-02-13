@@ -354,8 +354,8 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs()->FindPreference(prefs::kAccessibilityFlashNotificationsEnabled));
   EXPECT_TRUE(
       prefs()->FindPreference(prefs::kAccessibilityFlashNotificationsColor));
-  EXPECT_TRUE(
-      prefs()->FindPreference(prefs::kAccessibilityOverlayScrollbarEnabled));
+  EXPECT_TRUE(prefs()->FindPreference(
+      prefs::kAccessibilityAlwaysShowScrollbarsEnabled));
 }
 
 TEST_F(AccessibilityControllerTest, SetAlwaysShowScrollbarEnabled) {

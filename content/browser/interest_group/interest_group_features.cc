@@ -61,6 +61,16 @@ BASE_FEATURE(kFledgeFacilitatedTestingSignalsHeaders,
              "FledgeFacilitatedTestingSignalsHeaders",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Turning on kFledgeQueryKAnonymity loads k-anonymity status at interest group
+// join and update time. kFledgeQueryKAnonymity is enabled by default. It may
+// be reasonable to disable kFledgeQueryKAnonymity on clients on which
+// k-anonymity is not enforced (see related features kFledgeConsiderKAnonymity
+// and kFledgeEnforceKAnonymity in third_party/blink/public/common/features.h),
+// as k-anonymity status isn't used in those auctions.
+BASE_FEATURE(kFledgeQueryKAnonymity,
+             "FledgeQueryKAnonymity",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables starting worklet processes at auction start time in anticipation
 // of needing them for future worklets.
 BASE_FEATURE(kFledgeStartAnticipatoryProcesses,

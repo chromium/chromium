@@ -8,7 +8,6 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 export class TestUserAnnotationsManagerProxyImpl extends TestBrowserProxy
     implements UserAnnotationsManagerProxy {
   private entries_: chrome.autofillPrivate.UserAnnotationsEntry[] = [];
-  private entriesBootstrapped_: boolean = false;
   private eligible_: boolean = true;
 
   constructor() {
@@ -16,7 +15,6 @@ export class TestUserAnnotationsManagerProxyImpl extends TestBrowserProxy
       'getEntries',
       'deleteEntry',
       'deleteAllEntries',
-      'triggerBootstrapping',
       'hasEntries',
       'isUserEligible',
       'predictionImprovementsIphFeatureUsed',
@@ -25,10 +23,6 @@ export class TestUserAnnotationsManagerProxyImpl extends TestBrowserProxy
 
   setEntries(entries: chrome.autofillPrivate.UserAnnotationsEntry[]): void {
     this.entries_ = entries;
-  }
-
-  setEntriesBootstrapped(entriesBootstrapped: boolean): void {
-    this.entriesBootstrapped_ = entriesBootstrapped;
   }
 
   setEligibility(isEligible: boolean): void {
@@ -46,11 +40,6 @@ export class TestUserAnnotationsManagerProxyImpl extends TestBrowserProxy
 
   deleteAllEntries(): void {
     this.methodCalled('deleteAllEntries');
-  }
-
-  triggerBootstrapping(): Promise<boolean> {
-    this.methodCalled('triggerBootstrapping');
-    return Promise.resolve(this.entriesBootstrapped_);
   }
 
   hasEntries(): Promise<boolean> {

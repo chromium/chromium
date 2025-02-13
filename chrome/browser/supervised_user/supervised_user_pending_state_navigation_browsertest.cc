@@ -198,10 +198,7 @@ class SupervisedUserPendingStateNavigationTest
       mixin_host_,
       this,
       embedded_test_server(),
-      {// Syncing is a requirement for getting into pending mode pre-Uno.
-       // Once the Uno feature `ExplicitBrowserSigninUIOnDesktop` is fully
-       // released this can be set to Sign-in.
-       .consent_level = signin::ConsentLevel::kSync,
+      {.consent_level = signin::ConsentLevel::kSignin,
        .sign_in_mode =
            supervised_user::SupervisionMixin::SignInMode::kSupervised,
        .embedded_test_server_options = {.resolver_rules_map_host_list =

@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/profiles/reporting_util.h"
@@ -33,7 +33,7 @@ namespace {
 // TODO(crbug.com/40703888): Get rid of this function after Chrome OS reporting
 // logic has been split to its own delegates.
 constexpr bool ShouldReportUpdates() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return false;
 #else
   return true;
@@ -52,8 +52,7 @@ ReportSchedulerDesktop::ReportSchedulerDesktop()
 ReportSchedulerDesktop::ReportSchedulerDesktop(Profile* profile)
     : profile_(profile), prefs_(profile->GetPrefs()) {
   if (profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Profile reporting is on LaCrOs instead of Ash.
+#if BUILDFLAG(IS_CHROMEOS)
     NOTREACHED();
 #endif
   }

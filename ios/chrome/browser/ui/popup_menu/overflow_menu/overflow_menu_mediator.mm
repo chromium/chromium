@@ -768,6 +768,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 }
 
 - (OverflowMenuAction*)openLensOverlayAction {
+  NSString* hideItemText =
+      l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_LENS_OVERLAY);
   __weak __typeof(self) weakSelf = self;
   return [self
       createOverflowMenuActionWithNameID:IDS_IOS_CONTENT_CONTEXT_OPENLENSOVERLAY
@@ -776,7 +778,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                             systemSymbol:NO
                         monochromeSymbol:NO
                          accessibilityID:kToolsMenuOpenLensOverlay
-                            hideItemText:nil
+                            hideItemText:hideItemText
                                  handler:^{
                                    [weakSelf startLensOverlay];
                                  }];

@@ -582,6 +582,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3701167022068948696">Corrixir agora</translation>
 <translation id="3701515417135397388">Avisarte se un contrasinal está en risco debido a unha violación da seguranza dos datos</translation>
 <translation id="3703166520839776970">Se o problema persiste, selecciona a opción Máis detalles que se mostra abaixo para obter máis información de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="3708100450779900829">Cando o dispositivo está pregado, podes escoller unha opción ou manter premida a barra de enderezos para cambiar a posición</translation>
 <translation id="3710501561113687889">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá con este sitio os seguintes datos: <ph name="FIELDS_STRING" />.</translation>
 <translation id="3710560693796335511">Colaboración</translation>
 <translation id="3714981814255182093">Abrir a barra de busca</translation>
@@ -1281,6 +1282,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> pestanas pechadas</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Ficheiros de audio, 1 ficheiro de audio na lista}other{Ficheiros de audio, # ficheiros de audio na lista}}</translation>
 <translation id="685850645784703949">Discover (de Google): desactivado</translation>
+<translation id="6861722405755529743">Botón de menú adicional da barra de marcadores</translation>
 <translation id="686366188661646310">Queres eliminar o contrasinal?</translation>
 <translation id="6864459304226931083">Descargar imaxe</translation>
 <translation id="686490460830618322">Folla para filtrar por aplicación</translation>
@@ -1613,6 +1615,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8236063039629122676">Agora podes pasar o dedo cara á dereita para retroceder e ver as páxinas xa visitadas, e cara á esquerda para avanzar</translation>
 <translation id="8236097722223016103">Engadir aos marcadores</translation>
 <translation id="8243077599929149377">Engade un nome de usuario</translation>
+<translation id="8244387390464017490">Personalizar Nova pestana</translation>
 <translation id="8250920743982581267">Documentos</translation>
 <translation id="8255617931166444521">Os distintos sitios só poden utilizar as túas cookies para consultar a actividade de navegación que levaches a cabo no seu propio sitio</translation>
 <translation id="8258999165172757081">Engadiuse</translation>

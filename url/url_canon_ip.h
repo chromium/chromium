@@ -21,7 +21,7 @@ namespace internal {
 
 // Converts one of the character types that represent a numerical base to the
 // corresponding base.
-constexpr int BaseForType(SharedCharTypes type) {
+constexpr uint8_t BaseForType(SharedCharTypes type) {
   switch (type) {
     case CHAR_HEX:
       return 16;
@@ -92,7 +92,7 @@ constexpr CanonHostInfo::Family IPv4ComponentToNumber(
 
     // We know the input is 7-bit, so convert to narrow (if this is the wide
     // version of the template) by casting.
-    char input = static_cast<char>(spec[i]);
+    auto input = static_cast<unsigned char>(spec[i]);
 
     // Validate that this character is OK for the given base.
     if (!IsCharOfType(input, base)) {
@@ -108,7 +108,7 @@ constexpr CanonHostInfo::Family IPv4ComponentToNumber(
     // Fill the buffer, if there's space remaining. This check allows us to
     // verify that all characters are numeric, even those that don't fit.
     if (dest_i < kMaxComponentLen) {
-      buf[dest_i++] = input;
+      buf[dest_i++] = static_cast<char>(input);
     }
   }
 
@@ -118,9 +118,9 @@ constexpr CanonHostInfo::Family IPv4ComponentToNumber(
 
   buf[dest_i] = '\0';
 
-  // Use the 64-bit strtoi so we get a big number (no hex, decimal, or octal
-  // number can overflow a 64-bit number in <= 16 characters).
-  uint64_t num = _strtoui64(buf, NULL, BaseForType(base));
+  // Use the 64-bit StringToUint64WithBase so we get a big number (no hex,
+  // decimal, or octal number can overflow a 64-bit number in <= 16 characters).
+  uint64_t num = StringToUint64WithBase(buf, BaseForType(base));
 
   // Check for 32-bit overflow.
   if (num > std::numeric_limits<uint32_t>::max()) {
@@ -443,7 +443,7 @@ constexpr uint16_t IPv6HexComponentToNumber(const CHAR* spec,
 
   // Convert it to a number (overflow is not possible, since with 4 hex
   // characters we can at most have a 16 bit number).
-  return static_cast<uint16_t>(_strtoui64(buf, NULL, 16));
+  return static_cast<uint16_t>(StringToUint64WithBase(buf, 16));
 }
 
 // Converts an IPv6 address to a 128-bit number (network byte order), returning

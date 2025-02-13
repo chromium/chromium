@@ -242,34 +242,31 @@ bool AddressComponent::IsValueReadOnly() const {
   return false;
 }
 
-void AddressComponent::GetSupportedTypes(FieldTypeSet* supported_types) const {
-  return AddressComponent::GetTypes(/*storable_only=*/false, supported_types);
+FieldTypeSet AddressComponent::GetSupportedTypes() const {
+  return AddressComponent::GetTypes(/*storable_only=*/false);
 }
 
-void AddressComponent::GetStorableTypes(FieldTypeSet* supported_types) const {
-  return AddressComponent::GetTypes(/*storable_only=*/true, supported_types);
+FieldTypeSet AddressComponent::GetStorableTypes() const {
+  return AddressComponent::GetTypes(/*storable_only=*/true);
 }
 
-void AddressComponent::GetTypes(bool storable_only,
-                                FieldTypeSet* supported_types) const {
-  // A proper AddressComponent tree contains every type only once.
-  CHECK(supported_types->find(storage_type_) == supported_types->end())
-      << "The AddressComponent already contains a node that supports this "
-         "type: "
-      << storage_type_;
-  supported_types->insert(storage_type_);
+FieldTypeSet AddressComponent::GetTypes(bool storable_only) const {
+  FieldTypeSet types{storage_type_};
+
   if (!storable_only) {
-    supported_types->insert_all(GetAdditionalSupportedFieldTypes());
+    types.insert_all(GetAdditionalSupportedFieldTypes());
     // Include synthesized types in the list of supported (not storable) types.
     for (const AddressComponent* synthesized_node :
          synthesized_subcomponents_) {
-      supported_types->insert(synthesized_node->GetStorageType());
+      types.insert(synthesized_node->GetStorageType());
     }
   }
 
   for (AddressComponent* subcomponent : subcomponents_) {
-    subcomponent->GetTypes(storable_only, supported_types);
+    types.insert_all(subcomponent->GetTypes(storable_only));
   }
+
+  return types;
 }
 
 std::optional<FieldType> AddressComponent::GetStorableTypeOf(

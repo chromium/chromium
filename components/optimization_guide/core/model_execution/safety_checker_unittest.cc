@@ -13,7 +13,6 @@
 #include "base/files/scoped_temp_file.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
 #include "base/test/test_future.h"

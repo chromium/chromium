@@ -1522,6 +1522,13 @@ void NetworkContext::QueueReportInternal(
     return;
   }
 
+  // Reporting is disallowed if network access is disabled for the nonce.
+  if (network_anonymization_key.GetNonce().has_value() &&
+      !IsNetworkForNonceAndUrlAllowed(
+          network_anonymization_key.GetNonce().value(), url)) {
+    return;
+  }
+
   std::string reported_user_agent = "";
   if (request_context->http_user_agent_settings() != nullptr) {
     reported_user_agent =

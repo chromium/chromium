@@ -27,7 +27,7 @@ TEST(ContentSecurityPolicyConversionUtilTest, BackAndForthConversion) {
       ContentSecurityPolicyHeader::New(
           "my-csp", network::mojom::blink::ContentSecurityPolicyType::kEnforce,
           network::mojom::blink::ContentSecurityPolicySource::kHTTP),
-      false, Vector<String>(),
+      false, Vector<String>(), network::mojom::blink::CSPRequireSRIFor::None,
       network::mojom::blink::CSPRequireTrustedTypesFor::None, nullptr,
       Vector<String>());
 
@@ -108,7 +108,7 @@ TEST(ContentSecurityPolicyConversionUtilTest,
       network::mojom::blink::ContentSecurityPolicyHeader::New(
           "my-csp", network::mojom::blink::ContentSecurityPolicyType::kEnforce,
           network::mojom::blink::ContentSecurityPolicySource::kHTTP),
-      false, Vector<String>(),
+      false, Vector<String>(), network::mojom::blink::CSPRequireSRIFor::None,
       network::mojom::blink::CSPRequireTrustedTypesFor::None, nullptr,
       Vector<String>());
 

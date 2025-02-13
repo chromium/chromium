@@ -721,6 +721,19 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="UrtUnsafeAndHprtUnsafe"/>
 </enum>
 
+<!-- LINT.IfChange(V4HashPrefixMapWriteError) -->
+
+<enum name="V4HashPrefixMapWriteError">
+  <int value="0" label="Error writing file to disk"/>
+  <int value="1" label="File size not a multiple of prefix size"/>
+  <int value="2" label="File not found"/>
+  <int value="3" label="File size does not match metadata"/>
+  <int value="4" label="Failed to memory map file"/>
+  <int value="5" label="Memory mapped region has wrong size"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/hash_prefix_map.cc:WriteError) -->
+
 </enums>
 
 </histogram-configuration>

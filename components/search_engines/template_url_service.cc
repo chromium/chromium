@@ -57,6 +57,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_service_client.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
@@ -189,19 +190,19 @@ bool ShouldMergeEnterpriseSearchEngines(const TemplateURL& existing_turl,
 // Creates a new `TemplateURL` that copies updates fields from `new_values` into
 // `existing_turl`. Only fields set by policy are copied from `new_values`, all
 // other fields are copied unchanged from `existing_turl`.
-TemplateURL MergeEnterpriseSearchEngines(const TemplateURL& existing_turl,
-                                         const TemplateURL& new_values) {
-  CHECK_EQ(existing_turl.keyword(), new_values.keyword());
+TemplateURLData MergeEnterpriseSearchEngines(TemplateURLData existing_data,
+                                             const TemplateURL& new_values) {
+  CHECK_EQ(existing_data.keyword(), new_values.keyword());
 
-  TemplateURLData merged_data(existing_turl.data());
+  TemplateURLData merged_data(existing_data);
   merged_data.SetShortName(new_values.short_name());
   merged_data.SetURL(new_values.url());
   merged_data.featured_by_policy = new_values.featured_by_policy();
-  if (existing_turl.policy_origin() ==
+  if (existing_data.policy_origin ==
       TemplateURLData::PolicyOrigin::kSearchAggregator) {
     merged_data.favicon_url = new_values.favicon_url();
   }
-  return TemplateURL(merged_data);
+  return merged_data;
 }
 
 std::unique_ptr<TemplateURL> UpdateExistingURLWithAccountData(
@@ -222,16 +223,14 @@ std::unique_ptr<TemplateURL> UpdateExistingURLWithAccountData(
 // a prepopulated URL are not modified.
 TemplateURLData UpdateTemplateURLDataIfPrepopulated(
     const TemplateURLData& data,
-    PrefService* prefs,
-    search_engines::SearchEngineChoiceService* search_engine_choice_service) {
+    const TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver) {
   int prepopulate_id = data.prepopulate_id;
   if (data.prepopulate_id == 0) {
     return data;
   }
 
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          prefs, search_engine_choice_service);
+      prepopulate_data_resolver.GetPrepopulatedEngines();
 
   TemplateURL turl(data);
   for (const auto& url : prepopulated_urls) {
@@ -426,12 +425,14 @@ class TemplateURLService::PreLoadingProviders {
 TemplateURLService::TemplateURLService(
     PrefService& prefs,
     search_engines::SearchEngineChoiceService& search_engine_choice_service,
+    TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
     std::unique_ptr<SearchTermsData> search_terms_data,
     const scoped_refptr<KeywordWebDataService>& web_data_service,
     std::unique_ptr<TemplateURLServiceClient> client,
     const base::RepeatingClosure& dsp_change_callback)
     : prefs_(prefs),
       search_engine_choice_service_(search_engine_choice_service),
+      prepopulate_data_resolver_(prepopulate_data_resolver),
       search_terms_data_(std::move(search_terms_data)),
       web_data_service_(web_data_service),
       client_(std::move(client)),
@@ -440,6 +441,7 @@ TemplateURLService::TemplateURLService(
       default_search_manager_(
           &prefs,
           &search_engine_choice_service,
+          prepopulate_data_resolver_.get(),
           base::BindRepeating(&TemplateURLService::ApplyDefaultSearchChange,
                               base::Unretained(this))),
       enterprise_search_manager_(GetEnterpriseSearchManager(&prefs)) {
@@ -450,10 +452,12 @@ TemplateURLService::TemplateURLService(
 TemplateURLService::TemplateURLService(
     PrefService& prefs,
     search_engines::SearchEngineChoiceService& search_engine_choice_service,
+    TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
     base::span<const TemplateURLService::Initializer> initializers)
     : TemplateURLService(
           prefs,
           search_engine_choice_service,
+          prepopulate_data_resolver,
           /*search_terms_data=*/std::make_unique<SearchTermsData>(),
           /*web_data_service=*/nullptr,
           /*client=*/nullptr,
@@ -875,8 +879,7 @@ TemplateURLService::GetChoiceScreenData() {
   // Changing this will cause issues in the icon generation behavior that's
   // handled by `generate_search_engine_icons.py`.
   std::vector<std::unique_ptr<TemplateURLData>> engines =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          &prefs_.get(), &search_engine_choice_service_.get());
+      prepopulate_data_resolver_->GetPrepopulatedEngines();
   for (const auto& engine : engines) {
     owned_template_urls.push_back(std::make_unique<TemplateURL>(*engine));
   }
@@ -1296,8 +1299,7 @@ void TemplateURLService::RepairPrepopulatedSearchEngines() {
   }
 
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          &prefs_.get(), &search_engine_choice_service_.get());
+      prepopulate_data_resolver_->GetPrepopulatedEngines();
   DCHECK(!prepopulated_urls.empty());
   ActionsFromCurrentData actions(CreateActionsFromCurrentPrepopulateData(
       &prepopulated_urls, template_urls_, default_search_provider_));
@@ -1459,7 +1461,8 @@ void TemplateURLService::OnWebDataServiceRequestDone(
         keyword_result.metadata.builtin_keyword_country;
     GetSearchProvidersUsingKeywordResult(
         keyword_result, web_data_service_.get(), &prefs_.get(),
-        &search_engine_choice_service_.get(), template_urls.get(),
+        &search_engine_choice_service_.get(), prepopulate_data_resolver_.get(),
+        template_urls.get(),
         (default_search_provider_source_ == DefaultSearchManager::FROM_USER)
             ? pre_loading_providers_->default_search_provider()
             : nullptr,
@@ -1644,7 +1647,7 @@ std::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
         iter->sync_data().GetSpecifics().search_engine().sync_guid());
     std::unique_ptr<TemplateURL> turl =
         CreateTemplateURLFromTemplateURLAndSyncData(
-            client_.get(), &prefs_.get(), &search_engine_choice_service_.get(),
+            client_.get(), prepopulate_data_resolver_.get(),
             search_terms_data(), existing_turl, iter->sync_data(),
             &new_changes);
     if (!turl) {
@@ -1777,7 +1780,7 @@ std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
     TemplateURL* local_turl = GetTemplateURLForGUID(iter->first);
     std::unique_ptr<TemplateURL> sync_turl(
         CreateTemplateURLFromTemplateURLAndSyncData(
-            client_.get(), &prefs_.get(), &search_engine_choice_service_.get(),
+            client_.get(), prepopulate_data_resolver_.get(),
             search_terms_data(), local_turl, iter->second, &new_changes));
     if (!sync_turl) {
       continue;
@@ -2035,8 +2038,7 @@ syncer::SyncData TemplateURLService::CreateSyncDataFromTemplateURLData(
 std::unique_ptr<TemplateURL>
 TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
     TemplateURLServiceClient* client,
-    PrefService* prefs,
-    search_engines::SearchEngineChoiceService* search_engine_choice_service,
+    const TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
     const SearchTermsData& search_terms_data,
     const TemplateURL* existing_turl,
     const syncer::SyncData& sync_data,
@@ -2109,8 +2111,7 @@ TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
   // If this TemplateURL matches a built-in prepopulated template URL, it's
   // possible that sync is trying to modify fields that should not be touched.
   // Revert these fields to the built-in values.
-  data = UpdateTemplateURLDataIfPrepopulated(data, prefs,
-                                             search_engine_choice_service);
+  data = UpdateTemplateURLDataIfPrepopulated(data, prepopulate_data_resolver);
 
   // If the flag is set, `data` is written to a separate account data. Else it
   // is written to the local data.
@@ -2734,9 +2735,8 @@ void TemplateURLService::ApplyEnterpriseSearchChanges(
                    /*new_values=*/*search_engine)) {
       UpdateData(/*existing_turl=*/it->second,
                  /*new_data=*/MergeEnterpriseSearchEngines(
-                     /*existing_turl=*/*it->second,
-                     /*new_values=*/*search_engine)
-                     .data());
+                     /*existing_data=*/it->second->data(),
+                     /*new_values=*/*search_engine));
     }
   }
 }

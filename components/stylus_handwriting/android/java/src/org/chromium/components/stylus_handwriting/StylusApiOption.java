@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
 import java.lang.annotation.Retention;
@@ -23,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
  * {@link org.chromium.content_public.browser.StylusWritingHandler}, because content_public should
  * only contain functionality calling between the contents and the embedder.
  */
+@NullMarked
 public interface StylusApiOption {
     // This should be kept in sync with the definition |StylusHandwritingApi|
     // in tools/metrics/histograms/enums.xml.

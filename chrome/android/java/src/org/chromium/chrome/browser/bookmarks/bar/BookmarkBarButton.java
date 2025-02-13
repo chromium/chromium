@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -23,12 +26,15 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.chrome.R;
 
+import java.util.function.IntConsumer;
+
 /**
  * View for a button in the bookmark bar which provides users with bookmark access from top chrome.
  */
 class BookmarkBarButton extends LinearLayout {
 
     private ImageView mIcon;
+    private int mLastEventMetaState;
     private TextView mTitle;
 
     private @Nullable CallbackController mIconCallbackController;
@@ -48,6 +54,31 @@ class BookmarkBarButton extends LinearLayout {
         super.onFinishInflate();
         mIcon = findViewById(R.id.bookmark_bar_button_icon);
         mTitle = findViewById(R.id.bookmark_bar_button_title);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
+        // NOTE: Update `mLastEventMetaState` in anticipation of a potential click.
+        mLastEventMetaState = event.getMetaState();
+        return super.onKeyUp(keyCode, event);
+    }
+
+    @Override
+    @SuppressLint("ClickableViewAccessibility")
+    public boolean onTouchEvent(@NonNull MotionEvent event) {
+        // NOTE: Update `mLastEventMetaState` in anticipation of a potential click.
+        mLastEventMetaState = event.getMetaState();
+        return super.onTouchEvent(event);
+    }
+
+    /**
+     * Sets the callback to notify of bookmark bar button click events. The callback is provided the
+     * meta state of the most recent key/touch event.
+     *
+     * @param callback the callback to notify.
+     */
+    public void setClickCallback(@Nullable IntConsumer callback) {
+        setOnClickListener(callback != null ? (v) -> callback.accept(mLastEventMetaState) : null);
     }
 
     /**

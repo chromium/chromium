@@ -21,9 +21,10 @@ import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.WebContents;
@@ -46,6 +47,7 @@ import java.lang.annotation.RetentionPolicy;
  * the View will be snapped back into the center of the screen or entirely off of the screen, based
  * on how much of the View is visible, or where the user is currently located on the page.
  */
+@NullMarked
 public abstract class SwipableOverlayView extends FrameLayout {
     private static final float FULL_THRESHOLD = 0.5f;
     private static final float VERTICAL_FLING_SHOW_THRESHOLD = 0.2f;
@@ -62,7 +64,7 @@ public abstract class SwipableOverlayView extends FrameLayout {
     private static final long ANIMATION_DURATION_MS = 250;
 
     /** Detects when the user is dragging the WebContents. */
-    @Nullable protected final GestureStateListener mGestureStateListener;
+    protected final @Nullable GestureStateListener mGestureStateListener;
 
     /** Listens for changes in the layout. */
     private final View.OnLayoutChangeListener mLayoutChangeListener;
@@ -74,7 +76,7 @@ public abstract class SwipableOverlayView extends FrameLayout {
     private @Gesture int mGestureState;
 
     /** Animation currently being used to translate the View. */
-    private Animator mCurrentAnimation;
+    private @Nullable Animator mCurrentAnimation;
 
     /** Used to determine when the layout has changed and the Viewport must be updated. */
     private int mParentHeight;
@@ -89,7 +91,7 @@ public abstract class SwipableOverlayView extends FrameLayout {
     private boolean mIsBeingDisplayedForFirstTime;
 
     /** The WebContents to which the overlay is added. */
-    private WebContents mWebContents;
+    private @Nullable WebContents mWebContents;
 
     /**
      * Creates a SwipableOverlayView.
@@ -120,7 +122,7 @@ public abstract class SwipableOverlayView extends FrameLayout {
 
     /** Set the given WebContents for scrolling changes. */
     public void setWebContents(WebContents webContents) {
-        if (mWebContents != null) {
+        if (mWebContents != null && mGestureStateListener != null) {
             assumeNonNull(GestureListenerManager.fromWebContents(mWebContents))
                     .removeListener(mGestureStateListener);
         }
@@ -128,12 +130,13 @@ public abstract class SwipableOverlayView extends FrameLayout {
         mWebContents = webContents;
         // See comment in onLayout() as to why the listener is only attached if mTotalHeight is > 0.
         if (webContents != null && mTotalHeight > 0) {
+            assert mGestureStateListener != null;
             assumeNonNull(GestureListenerManager.fromWebContents(webContents))
                     .addListener(mGestureStateListener, ALL_UPDATES);
         }
     }
 
-    public WebContents getWebContents() {
+    public @Nullable WebContents getWebContents() {
         return mWebContents;
     }
 

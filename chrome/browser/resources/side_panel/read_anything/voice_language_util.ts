@@ -9,6 +9,10 @@ const STATUS_SUCCESS = 'Successful response';
 const STATUS_FAILURE = 'Unsuccessful response';
 const PARSING_ERROR = 'Cannot parse LanguagePackManager response';
 
+// Expect to hear responses from the extension within 6 seconds. Otherwise,
+// infer it probably wasn't installed.
+export const EXTENSION_RESPONSE_TIMEOUT_MS = 6000;
+
 // Representation of server-side LanguagePackManager state
 interface VoicePackServerResponseSuccess {
   id: 'Successful response';
@@ -75,9 +79,11 @@ export enum VoiceClientSideStatusCode {
 }
 
 export enum NotificationType {
-  NONE,         // No notification needed.
-  DOWNLOADING,  // Language is downloading.
-  DOWNLOADED,   // Language is downloaded.
+  NONE,                       // No notification needed.
+  DOWNLOADING,                // Language is downloading.
+  DOWNLOADED,                 // Language is downloaded.
+  GOOGLE_VOICES_UNAVAILABLE,  // Google voices are not available due to not
+                              // accessing the extension.
   NO_INTERNET,  // No available voices for this language due to no internet.
   NO_SPACE,     // No available voices for this language due to no space.
   NO_SPACE_HQ,  // No high-quality voices for this language due to no space.

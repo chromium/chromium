@@ -11,8 +11,6 @@ This is a testharness.js-based test.
   assert_equals: expected "<button><div></div></button>" but got ""
 [FAIL] Divs and imgs should be allowed as direct children of select and within options without a datalist
   assert_equals: expected "<div><option><img>option</option></div>" but got "<option>option</option>"
-[FAIL] Input tags should parse inside select instead of closing the select
-  assert_equals: expected "<input>" but got ""
 [FAIL] textarea tags should parse inside select instead of closing the select
   assert_equals: expected "<textarea></textarea>" but got ""
 Harness: the test ran to completion.

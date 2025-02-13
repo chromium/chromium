@@ -43,9 +43,6 @@ import type {PaymentsManagerProxy} from './payments_manager_proxy.js';
 import {PaymentsManagerImpl} from './payments_manager_proxy.js';
 import {getTemplate} from './payments_section.html.js';
 
-export const GOOGLE_PAY_HELP_URL =
-    'https://support.google.com/googlepay?p=card_benefits_chrome';
-
 type DotsCardMenuiClickEvent = CustomEvent<{
   creditCard: chrome.autofillPrivate.CreditCardEntry,
   anchorElement: HTMLElement,
@@ -692,7 +689,8 @@ export class SettingsPaymentsSectionElement extends
    * sublabel link is clicked.
    */
   private onCardBenefitsSublabelLinkClick_() {
-    OpenWindowProxyImpl.getInstance().openUrl(GOOGLE_PAY_HELP_URL);
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('cardBenefitsToggleLearnMoreUrl'));
   }
 
   /**

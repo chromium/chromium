@@ -65,7 +65,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
   depth: number = -1;
   isOpen: boolean = false;
   itemId: string = '';
-  protected item_: BookmarkNode = {id: '', title: ''};
+  protected item_?: BookmarkNode;
   private openState_: boolean|null = null;
   private selectedFolder_: string = '';
   private searchActive_: boolean = false;
@@ -147,6 +147,10 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
     return this.isSelectedFolder_ ? 'selected' : '';
   }
 
+  protected getItemTitle_(): string {
+    return this.item_?.title || '';
+  }
+
   getFocusTarget(): HTMLElement {
     return this.$.container;
   }
@@ -204,7 +208,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
       // otherwise.
       if (this.hasChildFolder_) {
         if (!this.isOpen) {
-          this.dispatch(changeFolderOpen(this.item_.id, true));
+          this.dispatch(changeFolderOpen(this.item_!.id, true));
         } else {
           yDirection = 1;
         }
@@ -213,7 +217,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
       // The left arrow closes a folder if open and goes to the parent
       // otherwise.
       if (this.hasChildFolder_ && this.isOpen) {
-        this.dispatch(changeFolderOpen(this.item_.id, false));
+        this.dispatch(changeFolderOpen(this.item_!.id, false));
       } else {
         const parentFolderNode = this.getParentFolderNode();
         if (parentFolderNode!.itemId !== ROOT_NODE_ID) {
@@ -344,7 +348,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
   }
 
   protected getFolderChildren_(): string[] {
-    return !this.item_.children ?
+    return !this.item_?.children ?
         [] :
         this.item_.children.filter(
             itemId => !this.getState().nodes[itemId]!.url);

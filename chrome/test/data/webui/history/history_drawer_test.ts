@@ -22,7 +22,7 @@ suite('drawer-test', function() {
     app = document.createElement('history-app');
     document.body.appendChild(app);
     return Promise.all([
-      testService.whenCalled('queryHistory'),
+      testService.handler.whenCalled('queryHistory'),
       ensureLazyLoaded(),
     ]);
   });

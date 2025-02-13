@@ -4,7 +4,10 @@
 
 package org.chromium.android_webview.common;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Constants for filing bugs in the chromium bug tracker. */
+@NullMarked
 public final class BugTrackerConstants {
     public static final String COMPONENT_MOBILE_WEBVIEW = "1456456";
     public static final String DEFAULT_WEBVIEW_TEMPLATE = "1923373";

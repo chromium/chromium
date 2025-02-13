@@ -460,19 +460,31 @@ IN_PROC_BROWSER_TEST_P(ParameterizedWebAccessibleResourcesBrowserTest,
 #if !BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/390687767): Port to desktop Android. Currently the redirect
 // doesn't happen.
-class WebAccessibleResourcesBrowserRedirectTest
+
+// Class for testing browser process initiated redirection.
+class WebAccessibleResourcesBrowserProcessRedirectTest
     : public WebAccessibleResourcesBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
-  WebAccessibleResourcesBrowserRedirectTest() {
+  WebAccessibleResourcesBrowserProcessRedirectTest() {
     feature_list_.InitWithFeatureState(
         extensions_features::kExtensionWARForRedirect, GetParam());
   }
 
- protected:
-  void TestBrowserRedirect(const char* kManifest,
-                           const char* kHistogramName,
-                           bool is_war_for_redirect_enabled) {
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(ServerRedirect,
+                         WebAccessibleResourcesBrowserProcessRedirectTest,
+                         testing::Bool());
+
+// Test server redirect to a web accessible or extension resource.
+IN_PROC_BROWSER_TEST_P(WebAccessibleResourcesBrowserProcessRedirectTest,
+                       Manifests) {
+  auto TestBrowserRedirect = [&](const char* kManifest,
+                                 const char* kHistogramName,
+                                 bool is_war_for_redirect_enabled) {
     // Load extension.
     TestExtensionDir test_dir;
     test_dir.WriteManifest(kManifest);
@@ -508,9 +520,9 @@ class WebAccessibleResourcesBrowserRedirectTest
     server_redirect(
         is_war_for_redirect_enabled ? net::ERR_BLOCKED_BY_CLIENT : net::OK,
         "resource.html", false);
-  }
+  };
 
-  void TestBrowserRedirectMV2(bool is_war_for_redirect_enabled) {
+  auto TestBrowserRedirectMV2 = [&](bool is_war_for_redirect_enabled) {
     TestBrowserRedirect(
         R"({
           "name": "Test browser redirect",
@@ -519,9 +531,9 @@ class WebAccessibleResourcesBrowserRedirectTest
           "web_accessible_resources": ["web_accessible_resource.html"]
         })",
         "Extensions.WAR.XOriginWebAccessible.MV2", is_war_for_redirect_enabled);
-  }
+  };
 
-  void TestBrowserRedirectMV3(bool is_war_for_redirect_enabled) {
+  auto TestBrowserRedirectMV3 = [&](bool is_war_for_redirect_enabled) {
     TestBrowserRedirect(
         R"({
           "name": "Redirect Test",
@@ -535,18 +547,8 @@ class WebAccessibleResourcesBrowserRedirectTest
           ]
         })",
         "Extensions.WAR.XOriginWebAccessible.MV3", is_war_for_redirect_enabled);
-  }
+  };
 
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebAccessibleResourcesBrowserRedirectTest,
-                         testing::Bool());
-
-// Test server redirect to a web accessible or extension resource.
-IN_PROC_BROWSER_TEST_P(WebAccessibleResourcesBrowserRedirectTest, Manifests) {
   bool is_war_for_redirect_enabled = GetParam();
   TestBrowserRedirectMV2(is_war_for_redirect_enabled);
   TestBrowserRedirectMV3(is_war_for_redirect_enabled);

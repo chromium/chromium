@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.task_manager.ui;
 
-import android.graphics.Bitmap;
-
 import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.task_manager.TaskManagerServiceBridge.GpuMemoryUsage;
@@ -16,7 +14,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableLongPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableTransformingObjectPropertyKey;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -74,10 +71,6 @@ class TaskManagerProperties {
 
     /** Property key for whether the task is killable. */
     static final ReadableBooleanPropertyKey IS_KILLABLE = new ReadableBooleanPropertyKey();
-
-    /** Property key for the icon. */
-    static final WritableTransformingObjectPropertyKey<Long, Bitmap> ICON =
-            new WritableTransformingObjectPropertyKey<>();
 
     /** Property key for task name. */
     static final WritableObjectPropertyKey<String> TASK_NAME = new WritableObjectPropertyKey<>();
