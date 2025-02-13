@@ -19,6 +19,7 @@ public class DataSharingManageUiConfig {
     // --- Manage Usage Config ---
     private ManageCallback mManageCallback;
     private GURL mLearnAboutBlockedAccounts;
+    private GURL mActivityLogsUrl;
     private DataSharingUiConfig mCommonConfig;
 
     /** Callback interface for data sharing Manage UI events. */
@@ -55,6 +56,7 @@ public class DataSharingManageUiConfig {
     private DataSharingManageUiConfig(Builder builder) {
         this.mGroupToken = builder.mGroupToken;
         this.mLearnAboutBlockedAccounts = builder.mLearnAboutBlockedAccounts;
+        this.mActivityLogsUrl = builder.mActivityLogsUrl;
         this.mManageCallback = builder.mManageCallback;
         this.mCommonConfig = builder.mCommonConfig;
     }
@@ -71,6 +73,10 @@ public class DataSharingManageUiConfig {
         return mLearnAboutBlockedAccounts;
     }
 
+    public GURL getActivityLogsUrl() {
+        return mActivityLogsUrl;
+    }
+
     public DataSharingUiConfig getCommonConfig() {
         return mCommonConfig;
     }
@@ -79,6 +85,7 @@ public class DataSharingManageUiConfig {
     public static class Builder {
         private GroupToken mGroupToken;
         private GURL mLearnAboutBlockedAccounts;
+        private GURL mActivityLogsUrl;
         private ManageCallback mManageCallback;
         private DataSharingUiConfig mCommonConfig;
 
@@ -109,6 +116,16 @@ public class DataSharingManageUiConfig {
          */
         public Builder setLearnAboutBlockedAccounts(GURL learnAboutBlockedAccounts) {
             this.mLearnAboutBlockedAccounts = learnAboutBlockedAccounts;
+            return this;
+        }
+
+        /**
+         * Sets the hyperlink for viewing activity logs.
+         *
+         * @param activityLogsUrl The hyperlink for viewing activity logs.
+         */
+        public Builder setActivityLogsUrl(GURL activityLogsUrl) {
+            this.mActivityLogsUrl = activityLogsUrl;
             return this;
         }
 

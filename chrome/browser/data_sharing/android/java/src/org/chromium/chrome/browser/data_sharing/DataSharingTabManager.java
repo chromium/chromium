@@ -88,6 +88,8 @@ public class DataSharingTabManager {
             "https://support.google.com/chrome/?p=chrome_collaboration";
     private static final String LEARN_ABOUT_BLOCKED_ACCOUNTS_URL =
             "https://support.google.com/accounts/answer/6388749";
+    private static final String ACTIVITY_LOGS_URL =
+            "https://myactivity.google.com/product/chrome_shared_tab_group_activity?utm_source=chrome_collab";
 
     // Separator for description and link in share sheet.
     private static final String SHARED_TEXT_SEPARATOR = "";
@@ -341,6 +343,10 @@ public class DataSharingTabManager {
 
     private GURL getLearnAboutBlockedAccountsUrl() {
         return new GURL(LEARN_ABOUT_BLOCKED_ACCOUNTS_URL);
+    }
+
+    private GURL getActivityLogsUrl() {
+        return new GURL(ACTIVITY_LOGS_URL);
     }
 
     private void initiateJoinFlowWithProfile(
@@ -1037,6 +1043,7 @@ public class DataSharingTabManager {
                         .setGroupToken(new GroupToken(collaborationId, null))
                         .setManageCallback(manageCallback)
                         .setLearnAboutBlockedAccounts(getLearnAboutBlockedAccountsUrl())
+                        .setActivityLogsUrl(getActivityLogsUrl())
                         .setCommonConfig(getCommonConfig(activity, tabGroupName, stringConfig))
                         .build();
         return uiDelegate.showManageFlow(manageConfig);
