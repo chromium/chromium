@@ -185,4 +185,48 @@ class MessageCardView extends LinearLayout {
                 mActionButton, isIncognito, /* isLargeMessageCard= */ false);
         MessageCardViewUtils.setCloseButtonTint(mCloseButton, isIncognito);
     }
+
+    /**
+     * Set left margin of the message card.
+     *
+     * @param leftMarginDp Left margin of the card in dp.
+     */
+    void setLeftMargin(int leftMarginDp) {
+        MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
+        params.leftMargin = leftMarginDp;
+        setLayoutParams(params);
+    }
+
+    /**
+     * Set top margin of the message card.
+     *
+     * @param topMarginDp Top margin of the card in dp.
+     */
+    void setTopMargin(int topMarginDp) {
+        MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
+        params.topMargin = topMarginDp;
+        setLayoutParams(params);
+    }
+
+    /**
+     * Set right margin of the message card.
+     *
+     * @param rightMarginDp Right margin of the card in dp.
+     */
+    void setRightMargin(int rightMarginDp) {
+        MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
+        params.rightMargin = rightMarginDp;
+        setLayoutParams(params);
+    }
+
+    /**
+     * Set bottom margin of the message card.
+     *
+     * @param bottomMarginDp Bottom margin of the card in dp.
+     */
+    void setBottomMargin(int bottomMarginDp) {
+        MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
+        params.bottomMargin = bottomMarginDp;
+        setLayoutParams(params);
+    }
 }

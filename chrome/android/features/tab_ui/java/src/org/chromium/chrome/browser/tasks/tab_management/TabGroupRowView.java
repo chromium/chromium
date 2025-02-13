@@ -8,9 +8,11 @@ import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.b
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -60,6 +62,8 @@ public class TabGroupRowView extends LinearLayout {
         mImageTilesContainer = findViewById(R.id.image_tiles_container);
         mListMenuButton = findViewById(R.id.more);
         mTimeAgoResolver = new TabGroupTimeAgoResolver(getResources(), Clock.systemUTC());
+
+        setTouchDelegate(getListMenuItemTouchDelegate());
     }
 
     void updateCornersForClusterData(ClusterData clusterData) {
@@ -84,6 +88,26 @@ public class TabGroupRowView extends LinearLayout {
         // children.
         mTitleTextView.setContentDescription(
                 resources.getString(R.string.tab_group_row_accessibility_text, title));
+    }
+
+    private TouchDelegate getListMenuItemTouchDelegate() {
+        Rect rect = new Rect();
+        mListMenuButton.getHitRect(rect);
+
+        int touchSize =
+                mListMenuButton
+                        .getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.min_touch_target_size);
+        int halfWidthDelta = Math.max((touchSize - mListMenuButton.getWidth()) / 2, 0);
+        int halfHeightDelta = Math.max((touchSize - mListMenuButton.getHeight()) / 2, 0);
+
+        rect.left -= halfWidthDelta;
+        rect.right += halfWidthDelta;
+        rect.top -= halfHeightDelta;
+        rect.bottom += halfHeightDelta;
+
+        return new TouchDelegate(rect, mListMenuButton);
     }
 
     void setCreationMillis(long creationMillis) {
