@@ -195,8 +195,7 @@ class PasswordsPrivateDelegate
   // local/profile storage).
   virtual bool IsAccountStorageEnabled() = 0;
 
-  // Enables/disables use of the Google account storage for passwords. If
-  // ExplicitBrowserSigninUIOnDesktop is off, enabling triggers a reauth flow.
+  // Enables/disables use of the Google account storage for passwords
   virtual void SetAccountStorageEnabled(bool enabled,
                                         content::WebContents* web_contents) = 0;
 

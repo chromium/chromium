@@ -814,8 +814,7 @@ class ModelExecutionEnabledBrowserTestWithExplicitBrowserSignin
  public:
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeatures(
-        {::switches::kExplicitBrowserSigninUIOnDesktop,
-         features::internal::kHistorySearchSettingsVisibility},
+        {features::internal::kHistorySearchSettingsVisibility},
         {features::internal::kTabOrganizationGraduated});
   }
 };
@@ -979,8 +978,6 @@ class ModelExecutionNewFeaturesEnabledAutomaticallyTest
       disabled_features.push_back(
           features::internal::kHistorySearchSettingsVisibility);
     }
-    enabled_features.push_back(
-        {::switches::kExplicitBrowserSigninUIOnDesktop, {}});
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);

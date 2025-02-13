@@ -263,8 +263,7 @@ class SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest
   SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest() {
     override_features_.InitWithFeatures(
         /*enabled_features=*/
-        {switches::kExplicitBrowserSigninUIOnDesktop,
-         syncer::kEnablePreferencesAccountStorage,
+        {syncer::kEnablePreferencesAccountStorage,
          syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
          syncer::kReplaceSyncPromosWithSignInPromos,
          syncer::kSyncAutofillWalletCredentialData},
@@ -285,6 +284,9 @@ class SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest
   base::test::ScopedFeatureList override_features_;
 };
 
+// This test is disabled on CrOS as the signed in, non-syncing state does not
+// exist.
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(
     SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest,
     DataTypesEnabledInTransportMode) {
@@ -327,6 +329,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::AUTOFILL_WALLET_CREDENTIAL));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // TODO(crbug.com/40200835): Android currently doesn't support PRE_ tests.
 #if !BUILDFLAG(IS_ANDROID)
@@ -474,9 +477,11 @@ IN_PROC_BROWSER_TEST_F(
       syncer::PRIORITY_PREFERENCES));
 }
 
+// SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest is
+// disabled on CrOS as the signed in, non-syncing state does not exist.
 // TODO(crbug.com/40145099): Android currently doesn't support PRE_ tests and
 // all of these are.
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 // A test fixture to cover migration behavior: In PRE_ tests, the
 // kReplaceSyncPromosWithSignInPromos is *dis*abled, in non-PRE_ tests it is
 // *en*abled.
@@ -488,8 +493,7 @@ class SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest
     // mode are unconditionally enabled.
     default_features_.InitWithFeatures(
         /*enabled_features=*/
-        {switches::kExplicitBrowserSigninUIOnDesktop,
-         syncer::kReadingListEnableSyncTransportModeUponSignIn,
+        {syncer::kReadingListEnableSyncTransportModeUponSignIn,
          syncer::kSyncEnableBookmarksInTransportMode,
          syncer::kEnablePreferencesAccountStorage},
         /*disabled_features=*/{});
@@ -614,6 +618,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPayments));
 }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)  && !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

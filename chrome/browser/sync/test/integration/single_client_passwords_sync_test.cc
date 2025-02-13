@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/base64.h"
-#include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -310,8 +309,6 @@ class SingleClientPasswordsWithAccountStorageSyncTest : public SyncTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-
   base::CallbackListSubscription test_signin_client_subscription_;
 };
 
@@ -535,17 +532,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 }
 
-class SingleClientPasswordsWithAccountStorageExplicitSigninSyncTest
-    : public SingleClientPasswordsWithAccountStorageSyncTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
-};
-
 // In pending state, account storage is deleted and re-downloaded on reauth.
-IN_PROC_BROWSER_TEST_F(
-    SingleClientPasswordsWithAccountStorageExplicitSigninSyncTest,
-    PendingState) {
+IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
+                       PendingState) {
   AddTestPasswordToFakeServer();
 
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
@@ -590,9 +579,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SingleClientPasswordsWithAccountStorageExplicitSigninSyncTest,
-    SyncPaused) {
+IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
+                       SyncPaused) {
   // Setup Sync with 2 passwords.
   ASSERT_TRUE(SetupClients());
   PasswordForm form0 = CreateTestPasswordForm(0);

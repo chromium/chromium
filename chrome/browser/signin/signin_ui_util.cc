@@ -406,7 +406,7 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
   // The Turn On Sync flow might fail before setting an account as primary. If
   // enabling Sync is optional, do not rely on its result to sign the web-only
   // account in the profile.
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() && is_sync_promo &&
+  if (is_sync_promo &&
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
         account.account_id, signin::ConsentLevel::kSignin, access_point);

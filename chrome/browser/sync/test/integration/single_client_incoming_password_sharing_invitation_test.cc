@@ -191,10 +191,9 @@ class SingleClientIncomingPasswordSharingInvitationTest : public SyncTest {
 #if !BUILDFLAG(IS_ANDROID)
     // Explicitly opt out of account storage when signin is explicit.
     // TODO(crbug.com/375024026): Revisit.
-    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-      GetSyncService(0)->GetUserSettings()->SetSelectedType(
-          syncer::UserSelectableType::kPasswords, false);
-    }
+    GetSyncService(0)->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kPasswords, false);
+
 #endif
 
     return true;

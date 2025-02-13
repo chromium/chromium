@@ -1118,19 +1118,11 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::AUTOFILL_WALLET_OFFER);
   }
 
-  bool allow_passwords = true;
-#if !BUILDFLAG(IS_ANDROID)
-  // This is an approximation because passwords are only enabled if the signin
-  // is explicit (they are not enabled for users who signed in through Dice).
-  allow_passwords &= switches::IsExplicitBrowserSigninUIOnDesktopEnabled();
-#endif
+  allowed_types.Put(syncer::PASSWORDS);
+  allowed_types.Put(syncer::WEBAUTHN_CREDENTIAL);
+  allowed_types.Put(syncer::INCOMING_PASSWORD_SHARING_INVITATION);
+  allowed_types.Put(syncer::OUTGOING_PASSWORD_SHARING_INVITATION);
 
-  if (allow_passwords) {
-    allowed_types.Put(syncer::PASSWORDS);
-    allowed_types.Put(syncer::WEBAUTHN_CREDENTIAL);
-    allowed_types.Put(syncer::INCOMING_PASSWORD_SHARING_INVITATION);
-    allowed_types.Put(syncer::OUTGOING_PASSWORD_SHARING_INVITATION);
-  }
   if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage) &&
       base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {

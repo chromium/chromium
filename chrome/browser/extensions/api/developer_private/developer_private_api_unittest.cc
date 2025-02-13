@@ -3475,8 +3475,7 @@ class DeveloperPrivateApiTransportModeUnitTest
  public:
   DeveloperPrivateApiTransportModeUnitTest() {
     scoped_feature_list_.InitWithFeatures(
-        {switches::kExplicitBrowserSigninUIOnDesktop,
-         syncer::kSyncEnableExtensionsInTransportMode},
+        {syncer::kSyncEnableExtensionsInTransportMode},
         /*disabled_features=*/{});
   }
 

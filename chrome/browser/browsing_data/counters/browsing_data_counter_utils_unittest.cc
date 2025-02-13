@@ -487,34 +487,8 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
   }
 };
 
-TEST_F(CookieBrowsingDataCounterUtilsTest,
-       CookieCounterResultExplicitSigninDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(
-      switches::kExplicitBrowserSigninUIOnDesktop);
-  // This test assumes that the strings are served exactly as defined,
-  // i.e. that the locale is set to the default "en".
-  ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
-
-  // Test the output for various forms of cookie results. Some signin states do
-  // not exist when explicit signin is off.
-  const struct TestCase kTestCases[] = {
-      {.signin_state = SigninState::kSignedOut,
-       .expects_exception_text = false},
-      {.signin_state = SigninState::kImplicitSignin,
-       .expects_exception_text = false},
-      {.signin_state = SigninState::kSyncing, .expects_exception_text = true},
-      {.signin_state = SigninState::kSyncPaused,
-       .expects_exception_text = false},
-  };
-
-  for (const TestCase& test_case : kTestCases) {
-    VerifyTestCase(test_case);
-  }
-}
 
 TEST_F(CookieBrowsingDataCounterUtilsTest, CookieCounterResult) {
-  scoped_feature_list_.InitAndEnableFeature(
-      switches::kExplicitBrowserSigninUIOnDesktop);
   // This test assumes that the strings are served exactly as defined,
   // i.e. that the locale is set to the default "en".
   ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());

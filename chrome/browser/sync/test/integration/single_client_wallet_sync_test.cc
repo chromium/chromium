@@ -224,12 +224,11 @@ class SingleClientWalletWithImprovedSigninUISyncTest
   SingleClientWalletWithImprovedSigninUISyncTest() {
     if (GetParam()) {
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop,
-                                switches::kImprovedSigninUIOnDesktop},
+          /*enabled_features=*/{switches::kImprovedSigninUIOnDesktop},
           /*disabled_features=*/{});
     } else {
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop},
+          /*enabled_features=*/{},
           /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop});
     }
 
