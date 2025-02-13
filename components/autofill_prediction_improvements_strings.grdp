@@ -142,10 +142,4 @@
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_GO_TO_SETTINGS" desc="Text displayed in the prediction improvements IPH bubble.">
     Go to settings
   </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_BOOTSTRAPPING_IPH" desc="Body of the in Product Help when user has successfully imported their autofill data.">
-    This feature uses information you've already saved with autofill, such as your address
-  </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_BOOTSTRAPPING_IPH_SCREENREADER" desc="The a11y announcement after user has enabled autofill prediction improvements which successfully imported their autofill data.">
-    This feature uses information you've already saved with autofill, such as your address. You can review and manage this data on this page.
-  </message>
 </grit-part>
