@@ -80,6 +80,7 @@ public class CollaborationControllerDelegateImplUnitTest {
     @Mock private SigninManager mSigninManager;
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private Callback<Runnable> mSwitchToTabSwitcherCallback;
 
     @Mock
     private CollaborationControllerDelegateImpl.Natives
@@ -119,11 +120,37 @@ public class CollaborationControllerDelegateImplUnitTest {
                         mDataSharingTabManager,
                         mSigninAndHistorySyncActivityLauncher,
                         mLoadingFullscreenCoordinator,
-                        /* switchToTabSwitcherRunnable= */ null);
+                        mSwitchToTabSwitcherCallback);
 
         if (type == FlowType.JOIN) {
             verify(mLoadingFullscreenCoordinator).startLoading(any());
         }
+    }
+
+    @Test
+    public void testWaitForTabSwitcher() {
+        mCollaborationControllerDelegateImpl =
+                new CollaborationControllerDelegateImpl(
+                        mActivity,
+                        FlowType.JOIN,
+                        mDataSharingTabManager,
+                        mSigninAndHistorySyncActivityLauncher,
+                        mLoadingFullscreenCoordinator,
+                        mSwitchToTabSwitcherCallback);
+        verify(mLoadingFullscreenCoordinator).startLoading(any());
+
+        long resultCallback = 1;
+        long exitCallback = 2;
+        ArgumentCaptor<Runnable> onTabSwitcherShownRunnableCaptor =
+                ArgumentCaptor.forClass(Runnable.class);
+        mCollaborationControllerDelegateImpl.prepareFlowUI(exitCallback, resultCallback);
+        verify(mSwitchToTabSwitcherCallback).onResult(onTabSwitcherShownRunnableCaptor.capture());
+        verify(mCollaborationControllerDelegateImplNativeMock, never())
+                .runResultCallback(anyInt(), eq(resultCallback));
+
+        onTabSwitcherShownRunnableCaptor.getValue().run();
+        verify(mCollaborationControllerDelegateImplNativeMock)
+                .runResultCallback(eq(Outcome.SUCCESS), eq(resultCallback));
     }
 
     @Test

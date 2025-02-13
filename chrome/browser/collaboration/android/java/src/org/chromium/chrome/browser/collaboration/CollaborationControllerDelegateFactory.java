@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.collaboration;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.Callback;
 import org.chromium.components.collaboration.CollaborationControllerDelegate;
 import org.chromium.components.collaboration.FlowType;
 
@@ -16,9 +17,9 @@ public interface CollaborationControllerDelegateFactory {
      * Returns a {@link CollaborationControllerDelegate}.
      *
      * @param type The flow type of the new flow.
-     * @param switchToTabSwitcherRunnable The runnable to switch to tab switcher view.
+     * @param switchToTabSwitcherCallback The callback to switch to tab switcher view.
      */
     @NonNull
     CollaborationControllerDelegate create(
-            @FlowType int type, Runnable switchToTabSwitcherRunnable);
+            @FlowType int type, Callback<Runnable> switchToTabSwitcherCallback);
 }

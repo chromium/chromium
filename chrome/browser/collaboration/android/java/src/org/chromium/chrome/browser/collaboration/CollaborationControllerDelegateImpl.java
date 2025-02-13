@@ -59,16 +59,29 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     private long mNativePtr;
     private @Nullable LoadingFullscreenCoordinator mLoadingFullscreenCoordinator;
 
+    // Will become null once used in the prepareFlowUI().
+    private @Nullable Callback<Runnable> mSwitchToTabSwitcherCallback;
+
     // Stores the runnable to close the current showing UI. Is null when there's no UI showing.
     private Runnable mCloseScreenRunnable;
 
+    /**
+     * Constructor for a new {@link CollaborationControllerDelegateImpl} object.
+     *
+     * @param activity The current tabbed activity.
+     * @param type The flow type of the delegate.
+     * @param tabManager Handle communication with ShareKit UI.
+     * @param signinAndHistorySyncActivityLauncher The launcher of signin UI.
+     * @param loadingFullscreenCoordinator Used to start a loading screen.
+     * @param switchToTabSwitcherCallback Callback used to show the tab switcher view.
+     */
     public CollaborationControllerDelegateImpl(
             Activity activity,
             @FlowType int type,
             DataSharingTabManager tabManager,
             SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
             LoadingFullscreenCoordinator loadingFullscreenCoordinator,
-            @Nullable Runnable switchToTabSwitcherRunnable) {
+            @Nullable Callback<Runnable> switchToTabSwitcherCallback) {
         mNativePtr = CollaborationControllerDelegateImplJni.get().createNativeObject(this);
 
         mActivity = activity;
@@ -76,15 +89,13 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         mDataSharingTabManager = tabManager;
         mSigninAndHistorySyncActivityLauncher = signinAndHistorySyncActivityLauncher;
         mLoadingFullscreenCoordinator = loadingFullscreenCoordinator;
+        mSwitchToTabSwitcherCallback = switchToTabSwitcherCallback;
 
         if (mFlowType == FlowType.JOIN) {
             loadingFullscreenCoordinator.startLoading(
                     () -> {
                         destroy();
                     });
-            if (switchToTabSwitcherRunnable != null) {
-                switchToTabSwitcherRunnable.run();
-            }
         }
     }
 
@@ -101,8 +112,20 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     @CalledByNative
     void prepareFlowUI(long exitCallback, long resultCallback) {
         mExitCallback = exitCallback;
-        CollaborationControllerDelegateImplJni.get()
-                .runResultCallback(Outcome.SUCCESS, resultCallback);
+        Runnable onTabSwitcherShownRunnable =
+                () -> {
+                    CollaborationControllerDelegateImplJni.get()
+                            .runResultCallback(Outcome.SUCCESS, resultCallback);
+                };
+        if (mFlowType == FlowType.JOIN) {
+            // Wait for tab switcher to be shown before launching the join flow. This is to ensure
+            // that all necessary tab UI are ready.
+            assert mSwitchToTabSwitcherCallback != null;
+            mSwitchToTabSwitcherCallback.onResult(onTabSwitcherShownRunnable);
+            mSwitchToTabSwitcherCallback = null;
+        } else {
+            onTabSwitcherShownRunnable.run();
+        }
     }
 
     /**

@@ -260,7 +260,7 @@ public class DataSharingTabManager {
      * @param dataSharingUrl The URL associated with the join invitation.
      */
     public void initiateJoinFlow(Activity activity, GURL dataSharingUrl) {
-        initiateJoinFlow(activity, dataSharingUrl, /* switchToTabSwitcherRunnable= */ null);
+        initiateJoinFlow(activity, dataSharingUrl, /* switchToTabSwitcherCallback= */ null);
     }
 
     /**
@@ -268,21 +268,23 @@ public class DataSharingTabManager {
      *
      * @param activity The current tabbed activity.
      * @param dataSharingUrl The URL associated with the join invitation.
-     * @param switchToTabSwitcherRunnable The runnable to allow to switch to tab switcher view.
+     * @param switchToTabSwitcherCallback The callback to allow to switch to tab switcher view.
      */
     public void initiateJoinFlow(
-            Activity activity, GURL dataSharingUrl, Runnable switchToTabSwitcherRunnable) {
+            Activity activity,
+            GURL dataSharingUrl,
+            Callback<Runnable> switchToTabSwitcherCallback) {
         DataSharingMetrics.recordJoinActionFlowState(
                 DataSharingMetrics.JoinActionStateAndroid.JOIN_TRIGGERED);
         if (mProfile != null) {
-            initiateJoinFlowWithProfile(activity, dataSharingUrl, switchToTabSwitcherRunnable);
+            initiateJoinFlowWithProfile(activity, dataSharingUrl, switchToTabSwitcherCallback);
             return;
         }
 
         mTasksToRunOnProfileAvailable.addLast(
                 () -> {
                     initiateJoinFlowWithProfile(
-                            activity, dataSharingUrl, switchToTabSwitcherRunnable);
+                            activity, dataSharingUrl, switchToTabSwitcherCallback);
                 });
     }
 
@@ -350,7 +352,9 @@ public class DataSharingTabManager {
     }
 
     private void initiateJoinFlowWithProfile(
-            Activity activity, GURL dataSharingUrl, Runnable switchToTabSwitcherRunnable) {
+            Activity activity,
+            GURL dataSharingUrl,
+            Callback<Runnable> switchToTabSwitcherCallback) {
         DataSharingMetrics.recordJoinActionFlowState(
                 DataSharingMetrics.JoinActionStateAndroid.PROFILE_AVAILABLE);
         if (!mCollaborationService.getServiceStatus().isAllowedToJoin()) {
@@ -362,7 +366,7 @@ public class DataSharingTabManager {
             assert mCollaborationService != null;
             mCurrentDelegate =
                     mCollaborationControllerDelegateFactory.create(
-                            FlowType.JOIN, switchToTabSwitcherRunnable);
+                            FlowType.JOIN, switchToTabSwitcherCallback);
             mCollaborationService.startJoinFlow(mCurrentDelegate, dataSharingUrl);
             return;
         }
@@ -755,7 +759,7 @@ public class DataSharingTabManager {
             // finished.
             mCurrentDelegate =
                     mCollaborationControllerDelegateFactory.create(
-                            FlowType.SHARE_OR_MANAGE, /* switchToTabSwitcherRunnable= */ null);
+                            FlowType.SHARE_OR_MANAGE, /* switchToTabSwitcherCallback= */ null);
             mCollaborationService.startShareOrManageFlow(mCurrentDelegate, existingGroup.syncId);
             return;
         }
