@@ -1493,6 +1493,47 @@ TEST_P(PrefetchServiceTest, FailureCase_Browser_NotEligibleNonHttps) {
   EXPECT_FALSE(GetPrefetchToServe(GURL("http://example.com")));
 }
 
+TEST_P(PrefetchServiceTest, BrowserContextPrefetchRespectsTTL) {
+  base::HistogramTester histogram_tester;
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/std::nullopt));
+
+  net::HttpRequestHeaders request_additional_headers = {};
+  request_additional_headers.SetHeader("foo", "bar");
+  request_additional_headers.SetHeader("foo1", "bar1");
+
+  std::unique_ptr<ProbePrefetchRequestStatusListener> probe_listener =
+      std::make_unique<ProbePrefetchRequestStatusListener>();
+
+  std::unique_ptr<content::PrefetchRequestStatusListener>
+      request_status_listener =
+          std::make_unique<TestablePrefetchRequestStatusListener>(
+              probe_listener->GetWeakPtr());
+
+  MakePrefetchFromBrowserContext(
+      GURL("https://example.com?b=1"), std::nullopt, request_additional_headers,
+      std::move(request_status_listener), base::Minutes(5));
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestState(GURL("https://example.com?b=1"),
+                           {.use_prefetch_proxy = false,
+                            .additional_headers = request_additional_headers});
+
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/false,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+  NavigateInitiatedByBrowser(GURL("https://example.com?b=1"));
+
+  PrefetchContainer::Reader serveable_reader =
+      GetPrefetchToServe(GURL("https://example.com?b=1"), std::nullopt);
+  EXPECT_EQ(serveable_reader.GetPrefetchContainer()->GetURL(),
+            GURL("https://example.com?b=1"));
+
+  task_environment()->FastForwardBy(base::Minutes(5));
+  EXPECT_FALSE(serveable_reader);
+}
+
 TEST_P(PrefetchServiceTest, PrefetchDoesNotMatchIfDocumentTokenDoesNotMatch) {
   base::HistogramTester histogram_tester;
 

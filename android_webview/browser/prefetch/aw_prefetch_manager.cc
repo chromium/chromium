@@ -16,6 +16,7 @@
 using content::BrowserThread;
 
 namespace android_webview {
+
 class AwPrefetchRequestStatusListener
     : public content::PrefetchRequestStatusListener {
  public:

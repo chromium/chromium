@@ -15,6 +15,14 @@
 
 namespace android_webview {
 
+// The default TTL value in `//content` is 10 minutes which is too long for most
+// of WebView cases. This value here can change in the future and that shouldn't
+// affect the `//content` TTL default value.
+inline constexpr int DEFAULT_TTL_IN_SEC = 60;
+// The MaxPrefetches number is not present in the `//content` layer, so it is
+// specific to WebView.
+inline constexpr int DEFAULT_MAX_PREFETCHES = 10;
+
 // Manages prefetch operations for this Profile.
 // Lifetime: Profile
 class AwPrefetchManager {
@@ -57,9 +65,9 @@ class AwPrefetchManager {
  private:
   raw_ref<content::BrowserContext> browser_context_;
 
-  int ttl_in_sec_;
+  int ttl_in_sec_ = DEFAULT_TTL_IN_SEC;
 
-  int max_prefetches_;
+  int max_prefetches_ = DEFAULT_MAX_PREFETCHES;
 
   // Java object reference.
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
