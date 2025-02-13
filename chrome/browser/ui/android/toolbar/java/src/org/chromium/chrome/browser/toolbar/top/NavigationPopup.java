@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -64,11 +63,10 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
     public interface HistoryDelegate {
         /**
          * Show navigation history.
-         * @param activity The Activity that owns the associated history manager.
+         *
          * @param tab The tab whose navigation history is to used.
-         * @param isIncognitoSelected Whether the incognito tab model is selected.
          */
-        void show(Activity activity, Tab tab, boolean isIncognitoSelected);
+        void show(Tab tab);
     }
 
     private final Profile mProfile;
@@ -288,10 +286,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         if (entry.getIndex() == FULL_HISTORY_ENTRY_INDEX) {
             RecordUserAction.record(buildComputedAction("ShowFullHistory"));
             Tab currentTab = mCurrentTabSupplier.get();
-            mHistoryDelegate.show(
-                    currentTab.getWindowAndroid().getActivity().get(),
-                    currentTab,
-                    /* isIncognitoSelected= */ currentTab != null && currentTab.isIncognito());
+            mHistoryDelegate.show(currentTab);
         } else {
             // 1-based index to keep in line with Desktop implementation.
             RecordUserAction.record(buildComputedAction("HistoryClick" + (position + 1)));

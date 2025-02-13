@@ -304,7 +304,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             assert HistoryManager.isAppSpecificHistoryEnabled();
             HistoryManagerUtils.showAppSpecificHistoryManager(
                     this,
-                    getTabModelSelector().isIncognitoSelected(),
+                    getTabModelSelector().getCurrentModel().getProfile(),
                     getIntentDataProvider().getClientPackageNameIdentitySharing());
 
             CustomTabHistoryIphController historyIph =

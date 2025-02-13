@@ -2155,12 +2155,16 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
         boolean shouldLaunchHistory =
                 IntentUtils.safeGetBooleanExtra(
                         getIntent(), IntentHandler.EXTRA_OPEN_HISTORY, false);
-        if (shouldLaunchHistory) {
-            // History page is always empty if the current tab is incognito. Ensure the profile
-            // flips to the regular one when showing the history page.
-            HistoryManagerUtils.showHistoryManager(
-                    this, getActivityTab(), /* isIncognitoSelected= */ false);
-        }
+        if (!shouldLaunchHistory) return;
+
+        getProfileProviderSupplier()
+                .runSyncOrOnAvailable(
+                        (provider) -> {
+                            // History page is always empty if the current tab is incognito. Ensure
+                            // the profile flips to the regular one when showing the history page.
+                            HistoryManagerUtils.showHistoryManager(
+                                    this, getActivityTab(), provider.getOriginalProfile());
+                        });
     }
 
     private boolean maybeLaunchDraggedTabInWindow(Intent intent) {
