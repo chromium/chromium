@@ -631,6 +631,9 @@ class TemplateURLService final : public WebDataServiceConsumer,
   FRIEND_TEST_ALL_PREFIXES(TemplateURLServiceUnitTest, SessionToken);
   FRIEND_TEST_ALL_PREFIXES(
       TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+      ShouldNotSendUpdateToSyncIfAccountDataIsUnchanged);
+  FRIEND_TEST_ALL_PREFIXES(
+      TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
       ShouldNotDualWriteUponUpdateTemplateURLVisitTime);
 
   friend class InstantUnitTestBase;
