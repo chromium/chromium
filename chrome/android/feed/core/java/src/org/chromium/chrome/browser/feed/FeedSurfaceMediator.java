@@ -640,6 +640,9 @@ public class FeedSurfaceMediator
 
         mStreamScrollListener =
                 new RecyclerView.OnScrollListener() {
+                    private RecyclerViewAnimationFinishDetector mAnimationFinishDetector =
+                            new RecyclerViewAnimationFinishDetector();
+
                     @Override
                     public void onScrollStateChanged(
                             @NonNull RecyclerView recyclerView, int newState) {
@@ -650,40 +653,57 @@ public class FeedSurfaceMediator
 
                     @Override
                     public void onScrolled(RecyclerView v, int dx, int dy) {
-                        mCoordinator
-                                .getView()
-                                .postOnAnimation(
-                                        () -> {
-                                            if (mSnapScrollHelper != null) {
-                                                mSnapScrollHelper.handleScroll();
-                                            }
-                                            for (ScrollListener listener : mScrollListeners) {
-                                                listener.onScrolled(dx, dy);
-                                            }
-
-                                            // Null if the stream has not been binded yet.
-                                            if (mCoordinator.getHybridListRenderer() != null
-                                                    && mCoordinator
-                                                                    .getHybridListRenderer()
-                                                                    .getListLayoutHelper()
-                                                            != null
-                                                    && mPositionToRestore
-                                                            != RecyclerView.NO_POSITION
-                                                    && mGetRestoringStateSupplier.get()
-                                                            == RestoringState.WAITING_TO_RESTORE) {
-                                                final boolean restored =
+                        final Runnable callback =
+                                () -> {
+                                    if (mSnapScrollHelper != null) {
+                                        mSnapScrollHelper.handleScroll();
+                                    }
+                                    for (ScrollListener listener : mScrollListeners) {
+                                        listener.onScrolled(dx, dy);
+                                    }
+                                    // Null if the stream has not been binded yet.
+                                    if (ChromeFeatureList.isEnabled(
+                                                    ChromeFeatureList.BACK_FORWARD_TRANSITIONS)
+                                            && mCoordinator.getHybridListRenderer() != null
+                                            && mCoordinator
+                                                            .getHybridListRenderer()
+                                                            .getListLayoutHelper()
+                                                    != null
+                                            && mPositionToRestore != RecyclerView.NO_POSITION
+                                            && mGetRestoringStateSupplier.get()
+                                                    == RestoringState.WAITING_TO_RESTORE) {
+                                        final boolean restored =
+                                                mCoordinator
+                                                                .getHybridListRenderer()
+                                                                .getListLayoutHelper()
+                                                                .findFirstVisibleItemPosition()
+                                                        >= mPositionToRestore;
+                                        if (restored) {
+                                            mPositionToRestore = RecyclerView.NO_POSITION;
+                                            final var originalAnimator =
+                                                    mCoordinator
+                                                            .getRecyclerView()
+                                                            .getItemAnimator();
+                                            mCoordinator
+                                                    .getRecyclerView()
+                                                    .setItemAnimator(
+                                                            new ItemAnimatorWithoutAnimation());
+                                            final Runnable onComplete =
+                                                    () -> {
+                                                        mGetRestoringStateSupplier.set(
+                                                                RestoringState.RESTORED);
                                                         mCoordinator
-                                                                        .getHybridListRenderer()
-                                                                        .getListLayoutHelper()
-                                                                        .findFirstVisibleItemPosition()
-                                                                >= mPositionToRestore;
-                                                if (restored) {
-                                                    mGetRestoringStateSupplier.set(
-                                                            RestoringState.RESTORED);
-                                                    mPositionToRestore = RecyclerView.NO_POSITION;
-                                                }
-                                            }
-                                        });
+                                                                .getRecyclerView()
+                                                                .setItemAnimator(originalAnimator);
+                                                        mAnimationFinishDetector
+                                                                .runWhenAnimationComplete(null);
+                                                    };
+                                            mAnimationFinishDetector.runWhenAnimationComplete(
+                                                    onComplete);
+                                        }
+                                    }
+                                };
+                        mCoordinator.getView().postOnAnimation(callback);
                     }
                 };
         mCoordinator.getRecyclerView().addOnScrollListener(mStreamScrollListener);
@@ -1400,7 +1420,7 @@ public class FeedSurfaceMediator
     // https://stackoverflow.com/questions/33710605/detect-animation-finish-in-androids-recyclerview
     private class RecyclerViewAnimationFinishDetector
             implements RecyclerView.ItemAnimator.ItemAnimatorFinishedListener {
-        private Runnable mFinishedCallback;
+        private @Nullable Runnable mFinishedCallback;
 
         /**
          * Asynchronously waits for the animation to finish. If there's already a callback waiting,
@@ -1416,11 +1436,7 @@ public class FeedSurfaceMediator
 
             // The RecyclerView has not started animating yet, so post a message to the
             // message queue that will be run after the RecyclerView has started animating.
-            new Handler()
-                    .post(
-                            () -> {
-                                checkFinish();
-                            });
+            new Handler().post(this::checkFinish);
         }
 
         private void checkFinish() {
@@ -1446,11 +1462,58 @@ public class FeedSurfaceMediator
         @Override
         public void onAnimationsFinished() {
             // There might still be more items that will be animated after this one.
-            new Handler()
-                    .post(
-                            () -> {
-                                checkFinish();
-                            });
+            new Handler().post(this::checkFinish);
+        }
+    }
+
+    // Force RecyclerView to skip all animations.
+    private static class ItemAnimatorWithoutAnimation extends RecyclerView.ItemAnimator {
+
+        @Override
+        public boolean animateDisappearance(
+                RecyclerView.ViewHolder viewHolder,
+                ItemHolderInfo itemHolderInfo,
+                ItemHolderInfo itemHolderInfo1) {
+            return false;
+        }
+
+        @Override
+        public boolean animateAppearance(
+                RecyclerView.ViewHolder viewHolder,
+                ItemHolderInfo itemHolderInfo,
+                ItemHolderInfo itemHolderInfo1) {
+            return false;
+        }
+
+        @Override
+        public boolean animatePersistence(
+                RecyclerView.ViewHolder viewHolder,
+                ItemHolderInfo itemHolderInfo,
+                ItemHolderInfo itemHolderInfo1) {
+            return false;
+        }
+
+        @Override
+        public boolean animateChange(
+                RecyclerView.ViewHolder viewHolder,
+                RecyclerView.ViewHolder viewHolder1,
+                ItemHolderInfo itemHolderInfo,
+                ItemHolderInfo itemHolderInfo1) {
+            return false;
+        }
+
+        @Override
+        public void runPendingAnimations() {}
+
+        @Override
+        public void endAnimation(RecyclerView.ViewHolder viewHolder) {}
+
+        @Override
+        public void endAnimations() {}
+
+        @Override
+        public boolean isRunning() {
+            return false;
         }
     }
 
