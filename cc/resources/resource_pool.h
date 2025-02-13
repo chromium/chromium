@@ -123,16 +123,9 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
       return resource_->resource_id();
     }
 
-    // Only valid when the ResourcePool is vending texture-backed resources.
-    Backing* gpu_backing() const { return resource_->backing(); }
-    void set_gpu_backing(std::unique_ptr<Backing> gpu) const {
-      return resource_->set_backing(std::move(gpu));
-    }
-
-    // Only valid when the ResourcePool is vending software-backed resources.
-    Backing* software_backing() const { return resource_->backing(); }
-    void set_software_backing(std::unique_ptr<Backing> software) const {
-      resource_->set_backing(std::move(software));
+    Backing* backing() const { return resource_->backing(); }
+    void set_backing(std::unique_ptr<Backing> backing) const {
+      return resource_->set_backing(std::move(backing));
     }
 
     size_t memory_usage() const {

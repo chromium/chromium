@@ -141,7 +141,7 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
-  if (!resource.gpu_backing()) {
+  if (!resource.backing()) {
     auto backing = std::make_unique<ResourcePool::Backing>();
     backing->overlay_candidate = true;
     // This RasterBufferProvider will modify the resource outside of the
@@ -149,9 +149,9 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
     // until they are not in use by the gpu anymore, which a fence is used
     // to determine.
     backing->wait_on_fence_required = true;
-    resource.set_gpu_backing(std::move(backing));
+    resource.set_backing(std::move(backing));
   }
-  ResourcePool::Backing* backing = resource.gpu_backing();
+  ResourcePool::Backing* backing = resource.backing();
 
   return std::make_unique<ZeroCopyRasterBufferImpl>(
       shutdown_event_, resource, backing,

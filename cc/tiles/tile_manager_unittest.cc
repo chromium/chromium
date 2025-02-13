@@ -1602,7 +1602,7 @@ TEST_F(TileManagerTilePriorityQueueTest,
       host_impl()->resource_pool()->AcquireResource(
           gfx::Size(256, 256), viz::SinglePlaneFormat::kRGBA_8888,
           gfx::ColorSpace());
-  resource.set_gpu_backing(std::make_unique<ResourcePool::Backing>());
+  resource.set_backing(std::make_unique<ResourcePool::Backing>());
 
   host_impl()->tile_manager()->CheckIfMoreTilesNeedToBePreparedForTesting();
   EXPECT_FALSE(host_impl()->is_likely_to_require_a_draw());
@@ -1783,7 +1783,7 @@ class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
       bool depends_on_at_raster_decodes,
       bool depends_on_hardware_accelerated_jpeg_candidates,
       bool depends_on_hardware_accelerated_webp_candidates) override {
-    if (!resource.software_backing()) {
+    if (!resource.backing()) {
       auto backing = std::make_unique<ResourcePool::Backing>();
       backing->shared_image = sii_->CreateSharedImageForSoftwareCompositor(
           {viz::SinglePlaneFormat::kBGRA_8888, resource.size(),
@@ -1792,11 +1792,11 @@ class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
 
       backing->mailbox_sync_token = sii_->GenVerifiedSyncToken();
 
-      resource.set_software_backing(std::move(backing));
+      resource.set_backing(std::move(backing));
       is_software_ = true;
     }
     return std::make_unique<TestRasterBuffer>(resource.size(),
-                                              resource.software_backing());
+                                              resource.backing());
   }
 
  private:
@@ -2152,7 +2152,7 @@ TEST_F(PixelInspectTileManagerTest, LowResHasNoImage) {
                                   ct, kPremul_SkAlphaType);
     // CreateLayerTreeFrameSink() sets up a software compositing, so the
     // tile resource will be a bitmap.
-    auto* backing = tile->draw_info().GetResource().software_backing();
+    auto* backing = tile->draw_info().GetResource().backing();
     SkBitmap bitmap;
     auto mapping = backing->shared_image->Map();
     void* pixels = mapping->GetMemoryForPlane(0).data();
@@ -2364,7 +2364,7 @@ void RunPartialRasterCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
   backing->mailbox_sync_token.Set(gpu::GPU_IO,
                                   gpu::CommandBufferId::FromUnsafeValue(1), 1);
 
-  resource.set_software_backing(std::move(backing));
+  resource.set_backing(std::move(backing));
   raster_buffer_provider.is_software_ = true;
   host_impl->resource_pool()->PrepareForExport(
       resource, viz::TransferableResource::ResourceSource::kTest);
@@ -2541,10 +2541,10 @@ class InvalidResourceRasterBufferProvider
       bool depends_on_at_raster_decodes,
       bool depends_on_hardware_accelerated_jpeg_candidates,
       bool depends_on_hardware_accelerated_webp_candidates) override {
-    if (!resource.gpu_backing()) {
+    if (!resource.backing()) {
       auto backing = std::make_unique<ResourcePool::Backing>();
       // Don't set a mailbox to signal invalid resource.
-      resource.set_gpu_backing(std::move(backing));
+      resource.set_backing(std::move(backing));
     }
     return std::make_unique<FakeRasterBuffer>();
   }
@@ -2618,13 +2618,13 @@ class MockReadyToDrawRasterBufferProviderImpl
       bool depends_on_at_raster_decodes,
       bool depends_on_hardware_accelerated_jpeg_candidates,
       bool depends_on_hardware_accelerated_webp_candidates) override {
-    if (!resource.software_backing()) {
+    if (!resource.backing()) {
       auto backing = std::make_unique<ResourcePool::Backing>();
       backing->shared_image = gpu::ClientSharedImage::CreateForTesting(
           viz::SinglePlaneFormat::kBGRA_8888, GL_TEXTURE_2D);
       backing->mailbox_sync_token.Set(
           gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1), 1);
-      resource.set_software_backing(std::move(backing));
+      resource.set_backing(std::move(backing));
       is_software_ = true;
     }
     return std::make_unique<FakeRasterBuffer>(expected_hdr_headroom_);

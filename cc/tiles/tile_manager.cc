@@ -767,10 +767,10 @@ void TileManager::InitializeTilesWithResourcesForTesting(
         /*depends_on_hardware_accelerated_webp_candidates=*/false);
     // The raster here never really happened, cuz tests. So just add an
     // arbitrary sync token.
-    if (resource.gpu_backing()) {
-      resource.gpu_backing()->shared_image =
+    if (resource.backing()) {
+      resource.backing()->shared_image =
           gpu::ClientSharedImage::CreateForTesting();
-      resource.gpu_backing()->mailbox_sync_token.Set(
+      resource.backing()->mailbox_sync_token.Set(
           gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1), 1);
     }
     bool exported = resource_pool_->PrepareForExport(
