@@ -30,7 +30,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -98,30 +97,21 @@ std::u16string AuthenticatorRequestDialogModel::GetMechanismDescription(
     return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SOURCE_PHONE,
                                       base::UTF8ToUTF16(*phone_name));
   }
-  const bool gpm_enabled =
-      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
   if (cred.provider_name) {
-    return gpm_enabled ? base::UTF8ToUTF16(*cred.provider_name)
-                       : l10n_util::GetStringFUTF16(
-                             IDS_WEBAUTHN_SOURCE_CUSTOM_VENDOR,
-                             base::UTF8ToUTF16(*cred.provider_name));
+    return base::UTF8ToUTF16(*cred.provider_name);
   }
   int message;
   switch (cred.source) {
     case device::AuthenticatorType::kWinNative:
-      message = gpm_enabled ? IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO_NEW
-                            : IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO;
+      message = IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO_NEW;
       break;
     case device::AuthenticatorType::kTouchID:
-      message = gpm_enabled ? IDS_WEBAUTHN_SOURCE_CHROME_PROFILE_NEW
-                            : IDS_WEBAUTHN_SOURCE_CHROME_PROFILE;
+      message = IDS_WEBAUTHN_SOURCE_CHROME_PROFILE_NEW;
       break;
     case device::AuthenticatorType::kICloudKeychain:
-      message = gpm_enabled ? IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN_NEW
-                            : IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN;
+      message = IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN_NEW;
       break;
     case device::AuthenticatorType::kEnclave:
-      CHECK(gpm_enabled);
       message = IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER;
       break;
     case device::AuthenticatorType::kOther:

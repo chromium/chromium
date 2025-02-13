@@ -19,7 +19,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -34,7 +33,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
@@ -58,7 +56,6 @@
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -419,9 +416,6 @@ class AuthenticatorRequestDialogControllerTest
       const AuthenticatorRequestDialogControllerTest&) = delete;
   AuthenticatorRequestDialogControllerTest& operator=(
       const AuthenticatorRequestDialogControllerTest&) = delete;
-
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnEnclaveAuthenticator};
 };
 
 constexpr bool kIsMac = BUILDFLAG(IS_MAC);
@@ -2969,11 +2963,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     EXPECT_EQ(passkey.username(), kPhoneCred1.user.name);
     EXPECT_EQ(
         passkey.GetAuthenticatorLabel(),
-        l10n_util::GetStringFUTF16(
-            base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)
-                ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE_NEW
-                : IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE,
-            u"Phone from sync"));
+        l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE_NEW,
+                                   u"Phone from sync"));
     EXPECT_EQ(passkey.user_id(), kPhoneCred1.user.id);
     EXPECT_EQ(passkey.rp_id(), kPhoneCred1.rp_id);
     EXPECT_EQ(passkey.source(),
@@ -3068,11 +3059,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest, MechanismsFromUserAccounts) {
   result = account_preselected_callback.WaitForResult();
   EXPECT_EQ(result.cred_id, kPhoneCred1.cred_id);
   EXPECT_EQ(result.source, device::AuthenticatorType::kPhone);
-  // In enclave mode there's no enclave controller and so the final action
-  // doesn't happen.
-  if (!base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
-    EXPECT_TRUE(contact_phone_callback.WaitForResult());
-  }
 }
 
 #if BUILDFLAG(IS_WIN)

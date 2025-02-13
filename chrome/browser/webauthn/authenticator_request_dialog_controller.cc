@@ -1446,11 +1446,9 @@ AuthenticatorType AuthenticatorRequestDialogController::OnAccountPreselected(
     return source;
   }
 
-  const bool use_gpm =
-      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
   // `source` should not be `kPhone` here except in some tests, which don't
   // configure the enclave.
-  if (use_gpm && source != AuthenticatorType::kPhone) {
+  if (source != AuthenticatorType::kPhone) {
     model_->OnGPMPasskeySelected(credential_id);
     return source;
   }
@@ -1964,10 +1962,7 @@ void AuthenticatorRequestDialogController::StartAutofillRequest() {
             credential.user.display_name.value_or("")));
     if (credential.source == AuthenticatorType::kPhone) {
       passkey.SetAuthenticatorLabel(l10n_util::GetStringFUTF16(
-          base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)
-              ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE_NEW
-              : IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE,
-          *priority_phone_name));
+          IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE_NEW, *priority_phone_name));
     }
   }
   ReportConditionalUiPasskeyCount(credentials.size());
@@ -2221,8 +2216,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
     }
   }
 
-  if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
-      !is_get_assertion &&
+  if (!is_get_assertion &&
       enclave_enabled_status_ == EnclaveEnabledStatus::kEnabled &&
       *transport_availability_.make_credential_attachment !=
           device::AuthenticatorAttachment::kCrossPlatform) {
@@ -2492,8 +2486,7 @@ AuthenticatorRequestDialogController::IndexOfMakeCredentialPriorityMechanism() {
     Profile* profile =
         Profile::FromBrowserContext(GetRenderFrameHost()->GetBrowserContext())
             ->GetOriginalProfile();
-    if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
-        CanDefaultToEnclave(profile) &&
+    if (CanDefaultToEnclave(profile) &&
         enclave_enabled_status_ == EnclaveEnabledStatus::kEnabled) {
       priority_list.emplace_back(Mechanism::Enclave());
     }

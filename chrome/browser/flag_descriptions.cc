@@ -3849,11 +3849,6 @@ const char kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuName[] =
 const char kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuDescription[] =
     "Hides the \"Use a passkey\" entry from the autofill popup for conditional "
     "WebAuthn requests. Moves the entry point to the context menu.";
-const char kWebAuthnEnclaveAuthenticatorName[] =
-    "Enable the cloud enclave authenticator for GPM passkeys";
-const char kWebAuthnEnclaveAuthenticatorDescription[] =
-    "Allow users to create and use Google Password Manager passkeys using a "
-    "cloud-based authenticator service.";
 const char kWebAuthnPasskeyUpgradeName[] =
     "Enable automatic passkey upgrades in Google Password Manager";
 const char kWebAuthnPasskeyUpgradeDescription[] =

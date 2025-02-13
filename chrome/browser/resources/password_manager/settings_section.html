@@ -153,12 +153,9 @@
       </cr-link-row>
     </template>
   </if>
-  <template is="dom-if"
-      if="[[isDeleteAllPasswordManagerDataRowAvailable_]]" restamp>
-    <full-data-reset is-account-store-user="[[isAccountStoreUser]]"
-        is-syncing-passwords="[[isSyncingPasswords]]">
-    </full-data-reset>
-  </template>
+  <full-data-reset is-account-store-user="[[isAccountStoreUser]]"
+      is-syncing-passwords="[[isSyncingPasswords]]">
+  </full-data-reset>
 </div>
 <div hidden="[[!blockedSites_.length]]">
   <h3 id="blockedSitesTitle" class="page-title">$i18n{blockedSitesTitle}</h3>

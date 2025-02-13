@@ -28,7 +28,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents.h"
-#include "device/fido/features.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -215,10 +214,8 @@ void TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(
 
   EnclaveManager* enclave_manager = nullptr;
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
-    enclave_manager =
-        EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile);
-  }
+  enclave_manager =
+      EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile);
 #endif
 
   web_contents->SetUserData(

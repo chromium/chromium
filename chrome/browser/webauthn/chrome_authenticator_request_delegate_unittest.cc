@@ -754,28 +754,21 @@ TEST_F(EnclaveAuthenticatorRequestDelegateTest,
   signin::MakePrimaryAccountAvailable(identity_manager, "hikari@example.com",
                                       signin::ConsentLevel::kSignin);
   struct {
-    bool is_flag_enabled;
     bool is_syncing_passwords;
     bool has_unexportable_keys;
     bool expected_passkeys_available;
   } kTestCases[] = {
-      // flag sync  unexp result
-      {true, true, true, true},
-      {false, true, true, false},
-      {true, false, true, false},
-      {true, true, false, false},
+      // sync unexp result
+      {true, true, true},
+      {false, true, false},
+      {true, false, false},
   };
   for (const auto& test : kTestCases) {
-    SCOPED_TRACE(testing::Message()
-                 << "is_flag_enabled=" << test.is_flag_enabled);
     SCOPED_TRACE(testing::Message()
                  << "is_syncing_passwords=" << test.is_syncing_passwords);
     SCOPED_TRACE(testing::Message()
                  << "has_unexportable_keys=" << test.has_unexportable_keys);
     ChromeWebAuthenticationDelegate delegate;
-    base::test::ScopedFeatureList scoped_feature_list_;
-    scoped_feature_list_.InitWithFeatureState(
-        device::kWebAuthnEnclaveAuthenticator, test.is_flag_enabled);
 
     auto* test_sync_service = static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetInstance()->GetForProfile(profile()));

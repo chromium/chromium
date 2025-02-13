@@ -20,7 +20,6 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -46,7 +45,6 @@
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -857,8 +855,6 @@ class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
  private:
   scoped_refptr<AuthenticatorRequestDialogModel> model_;
   std::unique_ptr<AuthenticatorRequestDialogController> controller_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnEnclaveAuthenticator};
 };
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
@@ -1011,12 +1007,6 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest, InvokeUi_touchid) {
 // Tests the UI steps that show a pop-up window.
 class AuthenticatorWindowTest : public InProcessBrowserTest {
  public:
-  AuthenticatorWindowTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnEnclaveAuthenticator},
-        /*disabled_features=*/{});
-  }
-
   void SetUp() override {
     https_server_.RegisterRequestHandler(
         base::BindRepeating(&AuthenticatorWindowTest::HandleNetworkRequest,
@@ -1088,8 +1078,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     return response;
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if !BUILDFLAG(IS_CHROMEOS)

@@ -61,15 +61,6 @@ BASE_DECLARE_FEATURE(kWebAuthnICloudKeychainForInactiveWithDrive);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnICloudKeychainForInactiveWithoutDrive);
 
-// Enable use of a cloud enclave authenticator service.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticator);
-
-// Enable use of Google Password Manager PIN.
-const char kWebAuthnGpmPinFeatureParameterName[] = "WebAuthenticationGpmPin";
-COMPONENT_EXPORT(DEVICE_FIDO)
-extern const base::FeatureParam<bool> kWebAuthnGpmPin;
-
 // Use insecure software unexportable keys to authenticate to the enclave.
 // For development purposes only.
 COMPONENT_EXPORT(DEVICE_FIDO)

@@ -28,7 +28,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
-#include "device/fido/features.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -346,12 +345,6 @@ class TrustedVaultEncryptionKeysTabHelperBrowserTest
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
-class TrustedVaultEncryptionKeysTabHelperWithEnclaveBrowserTest
-    : public TrustedVaultEncryptionKeysTabHelperBrowserTest {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnEnclaveAuthenticator};
-};
-
 // Tests that chrome.setSyncEncryptionKeys() works in the main frame, except on
 // Android. On Android, this particular Javascript API isn't defined.
 #if BUILDFLAG(IS_ANDROID)
@@ -555,9 +548,8 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(
-    TrustedVaultEncryptionKeysTabHelperWithEnclaveBrowserTest,
-    SetPasskeysKeyInEnclaveManager) {
+IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
+                       SetPasskeysKeyInEnclaveManager) {
   const GURL initial_url =
       https_server()->GetURL("accounts.google.com", "/title1.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));

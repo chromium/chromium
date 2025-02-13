@@ -1105,25 +1105,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       device::kWebAuthnNoAccountTimeout};
 };
 
-class EnclaveAuthenticatorWithPinBrowserTest
-    : public EnclaveAuthenticatorBrowserTest {
- public:
-  EnclaveAuthenticatorWithPinBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{
-             device::kWebAuthnEnclaveAuthenticator,
-             {{device::kWebAuthnGpmPin.name, "true"}},
-         }},
-        /*disabled_features=*/{
-            device::kWebAuthnUseInsecureSoftwareUnexportableKeys});
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class EnclaveAuthenticatorWithTimeout
-    : public EnclaveAuthenticatorWithPinBrowserTest {
+class EnclaveAuthenticatorWithTimeout : public EnclaveAuthenticatorBrowserTest {
  public:
   EnclaveAuthenticatorWithTimeout() {
     scoped_feature_list_.InitAndDisableFeature(
@@ -1193,7 +1175,7 @@ std::optional<std::vector<uint8_t>> ParseCredentialId(
                                base::Base64UrlDecodePolicy::IGNORE_PADDING);
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        RegisterDeviceWithGpmPin_MakeCredential_Success) {
   /* Test script:
    *  - Prerequisites:
@@ -1236,8 +1218,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
-                       NonWebauthnRequest) {
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, NonWebauthnRequest) {
   if (!base::FeatureList::IsEnabled(features::kSecurePaymentConfirmation)) {
     // SPC is not enabled in this configuration and so the `payment` extension
     // in the Javascript will be ignored.
@@ -1265,7 +1246,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
 #if BUILDFLAG(IS_MAC)
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        RegisterICloudDriveEnabled_NoGPMDefault) {
   if (__builtin_available(macOS 13.5, *)) {
     // Override iCloud Drive to appear enabled. Because of this GPM should not
@@ -1292,7 +1273,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    EnclaveAuthenticatorWithPinBrowserTest,
+    EnclaveAuthenticatorBrowserTest,
     RegisterICloudDriveEnabledButAlsoPasskeyPresent_GPMDefault) {
   if (__builtin_available(macOS 13.5, *)) {
     // Override iCloud Drive to appear enabled, but also add a passkey to the
@@ -1320,7 +1301,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    EnclaveAuthenticatorWithPinBrowserTest,
+    EnclaveAuthenticatorBrowserTest,
     RegisterICloudDriveEnabledButPermissionDenied_GPMDefault) {
   // Override iCloud Drive to appear enabled, but override the iCloud Keychain
   // permission to appear as if the user denied Chrome permission. That should
@@ -1350,7 +1331,7 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        MacOs13_4_OrLess_GPMDefault) {
   if (__builtin_available(macOS 13.5, *)) {
     // __builtin_available cannot be negated thus an `else` block has to be
@@ -1382,8 +1363,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
 #endif
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
-                       MakeCredentialWithPrf) {
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, MakeCredentialWithPrf) {
   /* Test script:
    *  - Prerequisites:
    *       Enclave not registered
@@ -1457,8 +1437,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(second, "none");
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
-                       GetAssertionWithPrf) {
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, GetAssertionWithPrf) {
   /* Test script:
    *  - Prerequisites:
    *       Enclave not registered
@@ -1528,7 +1507,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(second, "zx7riv8qxdelsyWdRRSZSrzFji35j4fZFnr30gKf8r8=");
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        RegisterDeviceWithGpmPin_MakeCredentialWithUV_Success) {
   /* Test script:
    *  - Prerequisites:
@@ -1573,7 +1552,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        MakeCredential_RecoverWithGPMPIN_Success) {
   /* Test script:
    *  - Prerequisites:
@@ -1632,7 +1611,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        MakeCredential_RecoverWithLSKF_Success) {
   /* Test script:
    *  - Prerequisites:
@@ -1692,7 +1671,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        CreatingDuplicateGivesInvalidStateError) {
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
       registration_state_result;
@@ -1757,7 +1736,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_THAT(script_result, testing::HasSubstr("InvalidStateError"));
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        RecoverWithLSKF_GetAssertion_Success) {
   /* Test script:
    *  - Prerequisites:
@@ -1850,7 +1829,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
             10);
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        RegisterDeviceWithGpmPin_UVRequestsWithWrongPIN) {
   /* Test script:
    *  - Prerequisites:
@@ -1961,7 +1940,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
             0);
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        GpmPinRegistrationPersistAcrossRestart) {
   /* Test script:
    *  - Prerequisites:
@@ -2024,7 +2003,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                           ->account_state_for_testing()));
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest, UserCancelsUV) {
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, UserCancelsUV) {
   EnableUVKeySupport();
 
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
@@ -2089,7 +2068,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest, UserCancelsUV) {
 // Tests that if the enclave is still loading when the user taps a passkey from
 // autofill, Chrome does not jump to the modal loading UI as autofill can
 // display that instead. Regression test for crbug.com/343480031.
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        ConditionalMediationLoading) {
   // Set up a trusted vault connection that lets us control the time it
   // resolves.
@@ -2147,7 +2126,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   model_observer()->WaitForStep();
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        ConditionalAssertionWhileFullySetUp) {
   // This test reproduces crbug.com/374366241. It performs a conditional request
   // to generate an assertion and then triggers another conditional UI request.
@@ -2259,8 +2238,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithTimeout,
   model_observer()->WaitForStep();
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
-                       GpmEnclaveNeedsReauth) {
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, GpmEnclaveNeedsReauth) {
   // Set the account state to a recoverable signin error.
   auto* const identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->profile());
@@ -2312,7 +2290,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
 // Tests that if the enclave is the default, but loading takes too long, the
 // user is sent to the mechanism selection screen instead.
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        EnclaveIsDefaultButTakesTooLong) {
   // Set up a trusted vault connection that lets us control the time it
   // resolves.
@@ -2373,7 +2351,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   model_observer()->WaitForStep();
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        GpmEnclaveNeedsReauthOnGoogleCom) {
   // Set the account state to a recoverable signin error.
   auto* const identity_manager =
@@ -2407,7 +2385,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   ASSERT_EQ(sign_in_again_mech, dialog_model()->mechanisms.end());
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        UserResetsSecurityDomain) {
   EnableUVKeySupport();
 
@@ -2626,8 +2604,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithTimeout,
 }
 
 #if BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
-                       BiometricsInPWA) {
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, BiometricsInPWA) {
   // When requesting biometrics in a PWA, Touch ID should never be used.
 
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
@@ -2691,128 +2668,15 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 }
 #endif
 
-class EnclaveAuthenticatorWithoutPinBrowserTest
-    : public EnclaveAuthenticatorBrowserTest {
- public:
-  EnclaveAuthenticatorWithoutPinBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{device::kWebAuthnEnclaveAuthenticator,
-          {{device::kWebAuthnGpmPin.name, "false"}}}},
-        /*disabled_features=*/{
-            device::kWebAuthnUseInsecureSoftwareUnexportableKeys});
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Without a Windows-on-ARM device we've been unable to debug why these
 // tests fail in that that context.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_NotAvailableWithoutUV DISABLED_NotAvailableWithoutUV
-#else
-#define MAYBE_NotAvailableWithoutUV NotAvailableWithoutUV
-#endif
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
-                       MAYBE_NotAvailableWithoutUV) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::DOMMessageQueue message_queue(web_contents);
-  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
-  delegate_observer()->WaitForUI();
-
-  EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMError);
-}
-
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_GpmErrorForEmptyAccounts DISABLED_GpmErrorForEmptyAccounts
-#else
-#define MAYBE_GpmErrorForEmptyAccounts GpmErrorForEmptyAccounts
-#endif
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
-                       MAYBE_GpmErrorForEmptyAccounts) {
-  EnableUVKeySupport();
-  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
-      registration_state_result;
-  registration_state_result.state = trusted_vault::
-      DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
-  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::DOMMessageQueue message_queue(web_contents);
-  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
-  delegate_observer()->WaitForUI();
-
-  EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMError);
-}
-
-// Tests that if a device cannot be enrolled, GPM passkeys are still presented
-// on the UI. Tapping a GPM passkey will result in an error.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_GpmErrorIfDeviceCannotBeEnrolled \
-  DISABLED_GpmErrorIfDeviceCannotBeEnrolled
-#else
-#define MAYBE_GpmErrorIfDeviceCannotBeEnrolled GpmErrorIfDeviceCannotBeEnrolled
-#endif
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
-                       MAYBE_GpmErrorIfDeviceCannotBeEnrolled) {
-  AddTestPasskeyToModel();
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::DOMMessageQueue message_queue(web_contents);
-  content::ExecuteScriptAsync(web_contents, kGetAssertionUvDiscouraged);
-  delegate_observer()->WaitForUI();
-
-  EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
-  EXPECT_EQ(absl::get<AuthenticatorRequestDialogModel::Mechanism::Credential>(
-                dialog_model()
-                    ->mechanisms[*dialog_model()->priority_mechanism_index]
-                    .type)
-                ->source,
-            device::AuthenticatorType::kEnclave);
-  model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogModel::Step::kGPMError);
-  dialog_model()->OnUserConfirmedPriorityMechanism();
-  model_observer()->WaitForStep();
-}
-
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_NotAvailableIfLskfsAreTooOld DISABLED_NotAvailableIfLskfsAreTooOld
-#else
-#define MAYBE_NotAvailableIfLskfsAreTooOld NotAvailableIfLskfsAreTooOld
-#endif
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
-                       MAYBE_NotAvailableIfLskfsAreTooOld) {
-  EnableUVKeySupport();
-  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
-      registration_state_result;
-  registration_state_result.state = trusted_vault::
-      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
-  registration_state_result.lskf_expiries = {base::Time::Now() + base::Days(1)};
-  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::DOMMessageQueue message_queue(web_contents);
-  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
-  delegate_observer()->WaitForUI();
-
-  EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMError);
-}
-
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
 #define MAYBE_NoGpmForCrossPlatformAttachment \
   DISABLED_NoGpmForCrossPlatformAttachment
 #else
 #define MAYBE_NoGpmForCrossPlatformAttachment NoGpmForCrossPlatformAttachment
 #endif
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        MAYBE_NoGpmForCrossPlatformAttachment) {
   EnableUVKeySupport();
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
@@ -2843,7 +2707,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
 #define MAYBE_NoGpmCreationIfPasswordManagerDisabled \
   NoGpmCreationIfPasswordManagerDisabled
 #endif
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        MAYBE_NoGpmCreationIfPasswordManagerDisabled) {
   EnableUVKeySupport();
   CheckRegistrationStateNotRequested();
@@ -2872,7 +2736,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
 #define MAYBE_NoGpmCreationIfPasswordManagerPasskeysDisabled \
   NoGpmCreationIfPasswordManagerPasskeysDisabled
 #endif
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        MAYBE_NoGpmCreationIfPasswordManagerPasskeysDisabled) {
   EnableUVKeySupport();
   CheckRegistrationStateNotRequested();
@@ -2894,8 +2758,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   EXPECT_FALSE(request_delegate()->enclave_controller_for_testing());
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
-                       EnrollAndCreate) {
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, EnrollAndCreate) {
   EnableUVKeySupport();
   security_domain_service_->pretend_there_are_members();
 
@@ -2931,7 +2794,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        GetAssertionWithPlatformUV) {
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
       registration_state_result;
@@ -2974,7 +2837,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        NotForSameGoogleAccount) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("accounts.google.com", "/title1.html")));
@@ -3059,7 +2922,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
 }
 
 // Tests that an allow list filters the available GPM credentials.
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        GetAssertionWithAllowList) {
   const std::vector<uint8_t> kCredId1 = {1, 2,  3,  4,  5,  6,  7,  8,
                                          9, 10, 11, 12, 13, 14, 15, 16};
@@ -3118,7 +2981,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(found, dialog_model()->priority_mechanism_index);
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        IncognitoModeMakeCredential) {
   Browser* otr_browser = OpenURLOffTheRecord(
       browser()->profile(),
@@ -3195,7 +3058,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        IncognitoModeGetAssertion) {
   Browser* otr_browser = OpenURLOffTheRecord(
       browser()->profile(),
@@ -3255,7 +3118,7 @@ bool MacBiometricApisAvailable() {
   return false;
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        BiometricsDisabledDuringRequest) {
   if (!MacBiometricApisAvailable()) {
     GTEST_SKIP() << "Need macOS >= 12";
@@ -3323,8 +3186,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 constexpr char kICloudKeychainRecoveryKeyAccessGroup[] =
     MAC_TEAM_IDENTIFIER_STRING ".com.google.common.folsom";
 
-class EnclaveICloudRecoveryKeyTest
-    : public EnclaveAuthenticatorWithPinBrowserTest {
+class EnclaveICloudRecoveryKeyTest : public EnclaveAuthenticatorBrowserTest {
  protected:
   crypto::ScopedFakeAppleKeychainV2 scoped_fake_apple_keychain_{
       kICloudKeychainRecoveryKeyAccessGroup};
@@ -3606,7 +3468,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, DISABLED_Recovery) {
 #define MAYBE_MakeCredentialDeclineGPM MakeCredentialDeclineGPM
 #endif
 // TODO(crbug.com/345308672): Failing on various Mac bots.
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        MAYBE_MakeCredentialDeclineGPM) {
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
       registration_state_result;
@@ -3674,7 +3536,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 }
 
 class EnclaveAuthenticatorIncognitoBrowserTest
-    : public EnclaveAuthenticatorWithPinBrowserTest,
+    : public EnclaveAuthenticatorBrowserTest,
       public testing::WithParamInterface<bool> {};
 
 // Attempt a GetAssertion multiple times with GPM passkey bootstrapping
@@ -3795,7 +3657,7 @@ INSTANTIATE_TEST_SUITE_P(Incognito,
                          EnclaveAuthenticatorIncognitoBrowserTest,
                          testing::Values(false, true));
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        ChangedPINDetectedWhenDoingUV) {
   // Set up an account with a GPM PIN and create a credential. Then create a
   // second `EnclaveManager` to change the PIN. Lastly, assert that credential
@@ -3891,20 +3753,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 // These tests are run on Linux because Linux has no platform authenticator
 // that can effect whether IsUVPAA returns true or not.
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest, IsUVPAA) {
-  // We don't know, at IsUVPAA time, whether there's an Android LSKF on the
-  // account and, without GPM PIN support, that means that we have to assume
-  // that the enclave authenticator isn't available.
-  EXPECT_FALSE(IsUVPAA());
-}
-
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest, IsUVPAA) {
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, IsUVPAA) {
   // With the enclave authenticator in place, IsUVPAA should return true.
   EXPECT_TRUE(IsUVPAA());
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
-                       IsUVPAA_GoogleSite) {
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, IsUVPAA_GoogleSite) {
   // With the enclave authenticator in place, IsUVPAA should return false for
   // google.com sites because we won't create a credential for an account in
   // that same account. But since we don't know the user.id value at IsUVPAA
@@ -3914,7 +3768,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_FALSE(IsUVPAA());
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        IsUVPAA_NoUnexportableKeys) {
   // Without support for unexportable keys, IsUVPAA should return false because
   // the enclave cannot be used.
@@ -3927,7 +3781,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
 // Verify that GPM will do UV on a uv=preferred request if and only if
 // biometrics are available.
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        UserVerificationPolicy) {
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
       registration_state_result;
@@ -4007,7 +3861,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest, Bug_354083161) {
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, Bug_354083161) {
   // Reproduces the crash from b/354083161
 
   // Do an assertion to set up the enclave.
@@ -4072,8 +3926,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest, Bug_354083161) {
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
-                       NoSilentOperations) {
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, NoSilentOperations) {
   // Check that the enclave doesn't allow silent operations.
 
   // Do an assertion to set up the enclave.
@@ -4216,8 +4069,7 @@ BlockingUnexportableKeyProviderFactory() {
   return std::make_unique<BlockingUnexportableKeyProvider>();
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
-                       CancelRacesTPMCheck) {
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CancelRacesTPMCheck) {
   // https://crbug.com/352532554
 
   // Set the UnexportableKeyProvider to one that will block inside
@@ -4250,7 +4102,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 }
 
 class EnclaveAuthenticatorConditionalCreateBrowserTest
-    : public EnclaveAuthenticatorWithPinBrowserTest,
+    : public EnclaveAuthenticatorBrowserTest,
       public testing::WithParamInterface<bool> {
  protected:
   EnclaveAuthenticatorConditionalCreateBrowserTest() {
@@ -4258,7 +4110,6 @@ class EnclaveAuthenticatorConditionalCreateBrowserTest
 
     scoped_feature_list_.InitAndEnableFeature(device::kWebAuthnPasskeyUpgrade);
     CHECK(base::FeatureList::IsEnabled(device::kWebAuthnPasskeyUpgrade));
-    CHECK(base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator));
   }
 
   bool use_account_password_store() { return !sync_feature_enabled_; }
