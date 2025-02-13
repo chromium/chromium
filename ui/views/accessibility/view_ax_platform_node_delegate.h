@@ -73,7 +73,6 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   // Also in |ViewAccessibility|.
   bool IsChildOfLeaf() const override;
   const ui::AXSelection GetUnignoredSelection() const override;
-  const ui::AXSelection GetHypertextSelection() const override;
   ui::AXNodePosition::AXPositionInstance CreatePositionAt(
       int offset,
       ax::mojom::TextAffinity affinity) const override;

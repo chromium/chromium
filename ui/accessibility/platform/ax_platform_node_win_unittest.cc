@@ -3178,7 +3178,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTextGetNCharacters) {
 
   AXNodeData node;
   node.id = 2;
-  node.role = ax::mojom::Role::kParagraph;
+  node.role = ax::mojom::Role::kStaticText;
   node.SetName("Name");
   root.child_ids.push_back(node.id);
 
@@ -3202,20 +3202,19 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTextGetOffsetAtPoint) {
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
   root.relative_bounds.bounds = gfx::RectF(0, 0, 300, 200);
-  root.child_ids = {2};
+  root.child_ids = {2, 3};
 
   AXNodeData button;
   button.id = 2;
   button.role = ax::mojom::Role::kButton;
   button.SetName("button");
-  button.relative_bounds.bounds = gfx::RectF(0, 0, 30, 30);
-  button.child_ids = {3};
+  button.relative_bounds.bounds = gfx::RectF(20, 0, 10, 10);
 
   AXNodeData static_text1;
   static_text1.id = 3;
   static_text1.role = ax::mojom::Role::kStaticText;
   static_text1.SetName("line 1");
-  static_text1.relative_bounds.bounds = gfx::RectF(0, 0, 30, 30);
+  static_text1.relative_bounds.bounds = gfx::RectF(0, 20, 30, 10);
   static_text1.child_ids = {4};
 
   AXNodeData inline_box1;
@@ -3256,11 +3255,18 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTextGetOffsetAtPoint) {
                          &offset_result));
   EXPECT_EQ(-1, offset_result);
 
-  // Test point(225, 5) retrieved from IAccessibleText of the root web area is
+  // Test point(0, 0) retrieved from IAccessibleText of the root web area is
+  // outside of any text. Expected result: S_FALSE.
+  EXPECT_EQ(S_FALSE, root_text->get_offsetAtPoint(
+                         0, 0, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE,
+                         &offset_result));
+  EXPECT_EQ(-1, offset_result);
+
+  // Test point(25, 5) retrieved from IAccessibleText of the root web area is
   // on button, and outside of any text. Expected result: S_FALSE.
   EXPECT_EQ(S_FALSE,
             root_text->get_offsetAtPoint(
-                225, 5, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE,
+                25, 5, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE,
                 &offset_result));
   EXPECT_EQ(-1, offset_result);
 
@@ -3271,13 +3277,13 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTextGetOffsetAtPoint) {
                       &offset_result));
   EXPECT_EQ(0, offset_result);
 
-  AXNode* button_node = GetRoot()->children()[0];
-  ComPtr<IAccessible> button1_iaccessible(IAccessibleFromNode(button_node));
-  ASSERT_NE(nullptr, button1_iaccessible.Get());
+  AXNode* static_text1_node = GetRoot()->children()[1];
+  ComPtr<IAccessible> text1_iaccessible(IAccessibleFromNode(static_text1_node));
+  ASSERT_NE(nullptr, text1_iaccessible.Get());
 
-  ComPtr<IAccessibleText> button_text;
-  button1_iaccessible.As(&button_text);
-  ASSERT_NE(nullptr, button_text.Get());
+  ComPtr<IAccessibleText> text1;
+  text1_iaccessible.As(&text1);
+  ASSERT_NE(nullptr, text1.Get());
 
   // "l" 4 points of bounds {(0, 20), (5, 20), (0, 30), (5, 30)}
   // "i" 4 points of bounds {(5, 20), (10, 20), (5, 30), (10, 30)}
@@ -3287,53 +3293,53 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTextGetOffsetAtPoint) {
   // "1" 4 points of bounds {(25, 20), (30, 20), (25, 30), (30, 30)}
 
   // Test point(0, 0) outside of any character bounds and text.
-  EXPECT_EQ(S_OK, button_text->get_offsetAtPoint(
-                      0, 0, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE,
-                      &offset_result));
+  EXPECT_EQ(S_FALSE, text1->get_offsetAtPoint(
+                         0, 0, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE,
+                         &offset_result));
   EXPECT_EQ(-1, offset_result);
 
   // Test point(30, 30) outside of any character bounds but on the text.
-  EXPECT_EQ(S_OK, button_text->get_offsetAtPoint(
+  EXPECT_EQ(S_OK, text1->get_offsetAtPoint(
                       30, 30, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE,
                       &offset_result));
   EXPECT_EQ(-1, offset_result);
 
   // Test point(0, 20) inside bounds of "l", text offset=0
   // character bounds={(0, 20), (5, 20), (0, 30), (5, 30)}
-  EXPECT_HRESULT_SUCCEEDED(button_text->get_offsetAtPoint(
+  EXPECT_HRESULT_SUCCEEDED(text1->get_offsetAtPoint(
       0, 20, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE, &offset_result));
   EXPECT_EQ(0, offset_result);
 
   // Test point(9, 20) inside bounds of "i", text offset=1
   // character bounds={(5, 20), (10, 20), (5, 30), (10, 30)}
-  EXPECT_HRESULT_SUCCEEDED(button_text->get_offsetAtPoint(
+  EXPECT_HRESULT_SUCCEEDED(text1->get_offsetAtPoint(
       9, 20, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE, &offset_result));
   EXPECT_EQ(1, offset_result);
 
   // Test point(10, 30) inside bounds of "n", text offset=2
   // character bounds={(10, 20), (15, 20), (10, 30), (15, 30)}
-  EXPECT_HRESULT_SUCCEEDED(button_text->get_offsetAtPoint(
+  EXPECT_HRESULT_SUCCEEDED(text1->get_offsetAtPoint(
       10, 29, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE,
       &offset_result));
   EXPECT_EQ(2, offset_result);
 
   // Test point(19, 29) inside bounds of "e", text offset=3
   // character bounds={(15, 20), (20, 20), (15, 30), (20, 30)
-  EXPECT_HRESULT_SUCCEEDED(button_text->get_offsetAtPoint(
+  EXPECT_HRESULT_SUCCEEDED(text1->get_offsetAtPoint(
       19, 29, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE,
       &offset_result));
   EXPECT_EQ(3, offset_result);
 
   // Test point(23, 25) inside bounds of " ", text offset=4
   // character bounds={(20, 20), (25, 20), (20, 30), (25, 30)}
-  EXPECT_HRESULT_SUCCEEDED(button_text->get_offsetAtPoint(
+  EXPECT_HRESULT_SUCCEEDED(text1->get_offsetAtPoint(
       23, 25, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE,
       &offset_result));
   EXPECT_EQ(4, offset_result);
 
   // Test point(25, 20) inside bounds of "1", text offset=5
   // character bounds={(25, 20), (30, 20), (25, 30), (30, 30)}
-  EXPECT_HRESULT_SUCCEEDED(button_text->get_offsetAtPoint(
+  EXPECT_HRESULT_SUCCEEDED(text1->get_offsetAtPoint(
       25, 20, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE,
       &offset_result));
   EXPECT_EQ(5, offset_result);
