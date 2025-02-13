@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ARC_KEYMASTER_ARC_KEYMASTER_BRIDGE_H_
-#define CHROME_BROWSER_ASH_ARC_KEYMASTER_ARC_KEYMASTER_BRIDGE_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_KEYMASTER_ARC_KEYMASTER_BRIDGE_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_KEYMASTER_ARC_KEYMASTER_BRIDGE_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/arc/keymaster/cert_store_bridge.h"
+#include "chromeos/ash/experiences/arc/keymaster/cert_store_bridge.h"
 #include "chromeos/ash/experiences/arc/mojom/keymaster.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -90,4 +90,4 @@ class ArcKeymasterBridge : public KeyedService, public mojom::KeymasterHost {
 
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_ASH_ARC_KEYMASTER_ARC_KEYMASTER_BRIDGE_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_KEYMASTER_ARC_KEYMASTER_BRIDGE_H_

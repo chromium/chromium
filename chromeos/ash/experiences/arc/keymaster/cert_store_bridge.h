@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ARC_KEYMASTER_CERT_STORE_BRIDGE_H_
-#define CHROME_BROWSER_ASH_ARC_KEYMASTER_CERT_STORE_BRIDGE_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_KEYMASTER_CERT_STORE_BRIDGE_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_KEYMASTER_CERT_STORE_BRIDGE_H_
 
 #include <memory>
 
@@ -47,4 +47,4 @@ class CertStoreBridge {
 
 }  // namespace arc::keymaster
 
-#endif  // CHROME_BROWSER_ASH_ARC_KEYMASTER_CERT_STORE_BRIDGE_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_KEYMASTER_CERT_STORE_BRIDGE_H_
