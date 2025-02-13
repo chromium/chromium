@@ -151,7 +151,7 @@ struct FeatureDialogData {
 // A static array describing each feature.
 const FeatureData kFeatures[] = {
     {FeatureType::kAlwaysShowScrollbar,
-     prefs::kAccessibilityOverlayScrollbarEnabled, nullptr, 0,
+     prefs::kAccessibilityAlwaysShowScrollbarsEnabled, nullptr, 0,
      /*toggleable_in_quicksettings=*/false},
     {FeatureType::kAutoclick, prefs::kAccessibilityAutoclickEnabled,
      &kSystemMenuAccessibilityAutoClickIcon,
@@ -298,7 +298,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityFaceGazeEnabled,
     prefs::kAccessibilityMonoAudioEnabled,
     prefs::kAccessibilityReducedAnimationsEnabled,
-    prefs::kAccessibilityOverlayScrollbarEnabled,
+    prefs::kAccessibilityAlwaysShowScrollbarsEnabled,
     prefs::kAccessibilityMouseKeysEnabled,
     prefs::kAccessibilityMouseKeysAcceleration,
     prefs::kAccessibilityMouseKeysMaxSpeed,
@@ -1590,8 +1590,8 @@ void AccessibilityController::RegisterProfilePrefs(
                                   kDefaultFlashNotificationsColor);
   }
 
-  registry->RegisterBooleanPref(prefs::kAccessibilityOverlayScrollbarEnabled,
-                                false);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityAlwaysShowScrollbarsEnabled, false);
 }
 
 void AccessibilityController::Shutdown() {

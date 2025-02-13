@@ -223,12 +223,12 @@ bool IsReducedAnimationsEnabled() {
   return AccessibilityManager::Get()->IsReducedAnimationsEnabled();
 }
 
-bool IsOverlayScrollbarEnabled() {
-  return AccessibilityManager::Get()->IsOverlayScrollbarEnabled();
+bool IsAlwaysShowScrollbarsEnabled() {
+  return AccessibilityManager::Get()->IsAlwaysShowScrollbarsEnabled();
 }
 
-void SetOverlayScrollbarEnabled(bool enabled) {
-  AccessibilityManager::Get()->EnableOverlayScrollbar(enabled);
+void SetAlwaysShowScrollbarsEnabled(bool enabled) {
+  AccessibilityManager::Get()->EnableAlwaysShowScrollbars(enabled);
 }
 
 void SetMouseKeysEnabled(bool enabled) {
@@ -339,9 +339,9 @@ void SetReducedAnimationsEnabledPref(bool enabled) {
       prefs::kAccessibilityReducedAnimationsEnabled, enabled);
 }
 
-void SetOverlayScrollbarEnabledPref(bool enabled) {
-  GetActiveUserPrefs()->SetBoolean(prefs::kAccessibilityOverlayScrollbarEnabled,
-                                   enabled);
+void SetAlwaysShowScrollbarsEnabledPref(bool enabled) {
+  GetActiveUserPrefs()->SetBoolean(
+      prefs::kAccessibilityAlwaysShowScrollbarsEnabled, enabled);
 }
 
 void SetMouseKeysEnabledPref(bool enabled) {
@@ -603,7 +603,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TypePref) {
   EXPECT_FALSE(IsHighContrastEnabled());
   EXPECT_FALSE(IsAutoclickEnabled());
   EXPECT_FALSE(IsReducedAnimationsEnabled());
-  EXPECT_FALSE(IsOverlayScrollbarEnabled());
+  EXPECT_FALSE(IsAlwaysShowScrollbarsEnabled());
   EXPECT_FALSE(IsMouseKeysEnabled());
   EXPECT_EQ(default_autoclick_delay_, GetAutoclickDelay());
   EXPECT_FALSE(IsVirtualKeyboardEnabled());
@@ -629,8 +629,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TypePref) {
   SetReducedAnimationsEnabledPref(true);
   EXPECT_TRUE(IsReducedAnimationsEnabled());
 
-  SetOverlayScrollbarEnabledPref(true);
-  EXPECT_TRUE(IsOverlayScrollbarEnabled());
+  SetAlwaysShowScrollbarsEnabledPref(true);
+  EXPECT_TRUE(IsAlwaysShowScrollbarsEnabled());
 
   SetMouseKeysEnabledPref(true);
   EXPECT_TRUE(IsMouseKeysEnabled());
@@ -668,8 +668,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TypePref) {
   SetReducedAnimationsEnabledPref(false);
   EXPECT_FALSE(IsReducedAnimationsEnabled());
 
-  SetOverlayScrollbarEnabledPref(false);
-  EXPECT_FALSE(IsOverlayScrollbarEnabled());
+  SetAlwaysShowScrollbarsEnabledPref(false);
+  EXPECT_FALSE(IsAlwaysShowScrollbarsEnabled());
 
   SetMouseKeysEnabledPref(false);
   EXPECT_FALSE(IsMouseKeysEnabled());
@@ -1878,7 +1878,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, Login) {
   EXPECT_FALSE(IsLargeCursorEnabled());
   EXPECT_FALSE(IsMonoAudioEnabled());
   EXPECT_FALSE(IsMouseKeysEnabled());
-  EXPECT_FALSE(IsOverlayScrollbarEnabled());
+  EXPECT_FALSE(IsAlwaysShowScrollbarsEnabled());
   EXPECT_FALSE(IsReducedAnimationsEnabled());
   EXPECT_FALSE(IsSpokenFeedbackEnabled());
   EXPECT_FALSE(IsVirtualKeyboardEnabled());
@@ -1892,7 +1892,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, Login) {
   EXPECT_FALSE(IsLargeCursorEnabled());
   EXPECT_FALSE(IsMonoAudioEnabled());
   EXPECT_FALSE(IsMouseKeysEnabled());
-  EXPECT_FALSE(IsOverlayScrollbarEnabled());
+  EXPECT_FALSE(IsAlwaysShowScrollbarsEnabled());
   EXPECT_FALSE(IsReducedAnimationsEnabled());
   EXPECT_FALSE(IsSpokenFeedbackEnabled());
   EXPECT_FALSE(IsVirtualKeyboardEnabled());
@@ -1906,7 +1906,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, Login) {
   EXPECT_FALSE(IsLargeCursorEnabled());
   EXPECT_FALSE(IsMonoAudioEnabled());
   EXPECT_FALSE(IsMouseKeysEnabled());
-  EXPECT_FALSE(IsOverlayScrollbarEnabled());
+  EXPECT_FALSE(IsAlwaysShowScrollbarsEnabled());
   EXPECT_FALSE(IsReducedAnimationsEnabled());
   EXPECT_FALSE(IsSpokenFeedbackEnabled());
   EXPECT_FALSE(IsVirtualKeyboardEnabled());
@@ -1930,8 +1930,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, Login) {
   SetMouseKeysEnabled(true);
   EXPECT_TRUE(IsMouseKeysEnabled());
 
-  SetOverlayScrollbarEnabled(true);
-  EXPECT_TRUE(IsOverlayScrollbarEnabled());
+  SetAlwaysShowScrollbarsEnabled(true);
+  EXPECT_TRUE(IsAlwaysShowScrollbarsEnabled());
 
   SetReducedAnimationsEnabled(true);
   EXPECT_TRUE(IsReducedAnimationsEnabled());
