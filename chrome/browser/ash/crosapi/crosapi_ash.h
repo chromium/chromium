@@ -14,7 +14,6 @@
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/emoji_picker.mojom-forward.h"
-#include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom-forward.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "chromeos/crosapi/mojom/print_preview_cros.mojom-forward.h"
@@ -91,7 +90,6 @@ class NetworkingAttributesAsh;
 class NetworkingPrivateAsh;
 class OneDriveNotificationServiceAsh;
 class OneDriveIntegrationServiceAsh;
-class PasskeyAuthenticator;
 class ParentAccessAsh;
 class PaymentAppInstanceAsh;
 class PolicyServiceAsh;
@@ -253,8 +251,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindOneDriveIntegrationService(
       mojo::PendingReceiver<mojom::OneDriveIntegrationService> receiver)
       override;
-  void BindPasskeyAuthenticatorDeprecated(
-      mojo::PendingReceiver<mojom::PasskeyAuthenticator> receiver) override;
   void BindParentAccess(
       mojo::PendingReceiver<mojom::ParentAccess> receiver) override;
   void BindPaymentAppInstance(
@@ -287,8 +283,6 @@ class CrosapiAsh : public mojom::Crosapi {
           receiver) override;
   void BindSuggestionService(
       mojo::PendingReceiver<mojom::SuggestionService> receiver) override;
-  void BindSyncService(
-      mojo::PendingReceiver<mojom::SyncService> receiver) override;
   void BindTelemetryDiagnosticRoutinesService(
       mojo::PendingReceiver<mojom::TelemetryDiagnosticRoutinesService> receiver)
       override;
@@ -301,13 +295,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::TelemetryProbeService> receiver) override;
   void BindTimeZoneService(
       mojo::PendingReceiver<mojom::TimeZoneService> receiver) override;
-  void BindTrustedVaultBackend(
-      mojo::PendingReceiver<mojom::TrustedVaultBackend> receiver) override;
-  void BindTrustedVaultBackendService(
-      mojo::PendingReceiver<mojom::TrustedVaultBackendService> receiver)
-      override;
-  void BindUrlHandler(
-      mojo::PendingReceiver<mojom::UrlHandler> receiver) override;
   void BindVideoCaptureDeviceFactory(
       mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver)
       override;
@@ -315,9 +302,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::VirtualKeyboard> receiver) override;
   void BindVolumeManager(
       mojo::PendingReceiver<mojom::VolumeManager> receiver) override;
-  void BindVpnExtensionObserver(
-      mojo::PendingReceiver<crosapi::mojom::VpnExtensionObserver> receiver)
-      override;
   void BindVpnService(
       mojo::PendingReceiver<mojom::VpnService> receiver) override;
   void BindWebKioskService(
@@ -325,12 +309,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindGuestOsSkForwarderFactory(
       mojo::PendingReceiver<mojom::GuestOsSkForwarderFactory> receiver)
       override;
-  void REMOVED_29(
-      mojo::PendingReceiver<mojom::SystemDisplayDeprecated> receiver) override;
-  void REMOVED_105(mojo::PendingReceiver<mojom::FirewallHoleServiceDeprecated>
-                       receiver) override;
-  void REMOVED_62(
-      mojo::PendingReceiver<mojom::AuthenticationDeprecated> receiver) override;
 
   CertDatabaseAsh* cert_database_ash() { return cert_database_ash_.get(); }
 
