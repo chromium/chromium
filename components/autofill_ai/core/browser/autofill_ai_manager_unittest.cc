@@ -182,8 +182,8 @@ class AutofillAiManagerTest : public BaseAutofillAiManagerTest {
     }
   }
 
-  void AddEntityInstance(autofill::EntityInstance entity) {
-    entity_data_manager_.AddEntityInstance(std::move(entity));
+  void AddOrUpdateEntityInstance(autofill::EntityInstance entity) {
+    entity_data_manager_.AddOrUpdateEntityInstance(std::move(entity));
     webdata_helper_.WaitUntilIdle();
   }
 
@@ -256,7 +256,7 @@ TEST_F(AutofillAiManagerTest,
   ON_CALL(client(), GetCachedFormStructure)
       .WillByDefault(Return(&form_structure));
 
-  AddEntityInstance(autofill::test::GetPassportEntityInstance());
+  AddOrUpdateEntityInstance(autofill::test::GetPassportEntityInstance());
 
   base::test::TestFuture<std::vector<autofill::Suggestion>> suggestions;
   manager().GetSuggestions(form.global_id(), form.fields().front().global_id(),
@@ -281,7 +281,7 @@ TEST_F(
   ON_CALL(client(), GetCachedFormStructure)
       .WillByDefault(Return(&form_structure));
 
-  AddEntityInstance(autofill::test::GetPassportEntityInstance());
+  AddOrUpdateEntityInstance(autofill::test::GetPassportEntityInstance());
   base::MockCallback<AutofillAiManager::GetSuggestionsCallback>
       get_suggestions_callback;
 
@@ -309,7 +309,7 @@ TEST_F(
   ON_CALL(client(), GetCachedFormStructure)
       .WillByDefault(Return(&form_structure));
 
-  AddEntityInstance(autofill::test::GetPassportEntityInstance());
+  AddOrUpdateEntityInstance(autofill::test::GetPassportEntityInstance());
   base::MockCallback<AutofillAiManager::GetSuggestionsCallback>
       get_suggestions_callback;
 
@@ -469,7 +469,7 @@ TEST_F(AutofillAiManagerImportFormTest, EntityAlreadyStored_DoNotShowPrompt) {
       GetValueFromEntityForFieldType(entity, autofill::LOYALTY_MEMBERSHIP_ID));
   form->field(1)->set_value(GetValueFromEntityForFieldType(
       entity, autofill::LOYALTY_MEMBERSHIP_PROGRAM));
-  AddEntityInstance(entity);
+  AddOrUpdateEntityInstance(entity);
 
   base::test::TestFuture<std::unique_ptr<autofill::FormStructure>, bool>
       autofill_callback;
@@ -490,7 +490,7 @@ TEST_F(AutofillAiManagerImportFormTest, NewEntity_ShowPromptAndAccept) {
        autofill::PHONE_HOME_WHOLE_NUMBER});
   autofill::EntityInstance existing_entity =
       autofill::test::GetPassportEntityInstance();
-  AddEntityInstance(existing_entity);
+  AddOrUpdateEntityInstance(existing_entity);
   // Set the filled values to be different to the ones already stored.
   form->field(0)->set_value(u"Jon Doe");
   form->field(1)->set_value(u"1234321");
@@ -541,7 +541,7 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
   autofill::EntityInstance existing_entity_without_issue_date =
       autofill::test::GetPassportEntityInstance(
           passport_without_issue_date_and_expiry_date);
-  AddEntityInstance(existing_entity_without_issue_date);
+  AddOrUpdateEntityInstance(existing_entity_without_issue_date);
 
   // Set the filled values to be the same as the ones already stored in the
   // existing entity, also fill the issue and expiry dates.

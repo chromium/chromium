@@ -35,11 +35,17 @@ class EntityDataManager : public KeyedService {
   EntityDataManager& operator=(const EntityDataManager&) = delete;
   ~EntityDataManager() override;
 
-  // Adds a new entity, updates an existing entity, or removes an entity.
-  // Entities are identified by their UUID for update and removal purposes.
-  void AddEntityInstance(EntityInstance entity);
-  void UpdateEntityInstance(EntityInstance entity);
+  // Adds an entity if it doesn't exist in the database yet; otherwise updates
+  // it.
+  void AddOrUpdateEntityInstance(EntityInstance entity);
+
+  // Removes an entity if it exists in the database; otherwise it's a no-op.
   void RemoveEntityInstance(base::Uuid guid);
+
+  // Removes all entities in the database whose EntityInstance::date_modified()
+  // is in the range.
+  // Prefer this function over iterating over GetEntityInstances() and calling
+  // RemoveEntityInstance() because this function also removes invalid entities.
   void RemoveEntityInstancesModifiedBetween(base::Time delete_begin,
                                             base::Time delete_end);
 

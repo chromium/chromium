@@ -51,8 +51,10 @@ TEST_F(EntityDataManagerTest, InitialPopulation) {
   EntityInstance pp = test::GetPassportEntityInstance();
   EntityInstance lc = test::GetLoyaltyCardEntityInstance();
 
-  helper().autofill_webdata_service()->AddEntityInstance(pp, base::DoNothing());
-  helper().autofill_webdata_service()->AddEntityInstance(lc, base::DoNothing());
+  helper().autofill_webdata_service()->AddOrUpdateEntityInstance(
+      pp, base::DoNothing());
+  helper().autofill_webdata_service()->AddOrUpdateEntityInstance(
+      lc, base::DoNothing());
   helper().WaitUntilIdle();
 
   EntityDataManager entity_data_manager(helper().autofill_webdata_service());
@@ -77,60 +79,34 @@ class EntityDataManagerTest_InitiallyEmpty : public EntityDataManagerTest {
   EntityDataManager entity_data_manager_{helper().autofill_webdata_service()};
 };
 
-// Tests that AddEntityInstance() asynchronously adds entities.
+// Tests that AddOrUpdateEntityInstance() asynchronously adds entities.
 TEST_F(EntityDataManagerTest_InitiallyEmpty, AddEntityInstance) {
   EntityInstance pp = test::GetPassportEntityInstance();
   EntityInstance lc = test::GetLoyaltyCardEntityInstance();
-  entity_data_manager().AddEntityInstance(pp);
-  entity_data_manager().AddEntityInstance(lc);
+  entity_data_manager().AddOrUpdateEntityInstance(pp);
+  entity_data_manager().AddOrUpdateEntityInstance(lc);
   EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, lc));
 }
 
-// Test that adding different entities ignores the second entity.
-// That is, the database is not corrupted.
-TEST_F(EntityDataManagerTest_InitiallyEmpty, AddEntityInstance_Conflict) {
-  EntityInstance pp = test::GetPassportEntityInstance();
-  EntityInstance lc = test::GetLoyaltyCardEntityInstance(
-      {.guid = pp.guid().AsLowercaseString()});
-  ASSERT_EQ(pp.guid(), lc.guid());
-  entity_data_manager().AddEntityInstance(pp);
-  ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp));
-
-  entity_data_manager().AddEntityInstance(lc);  // No-op.
-  EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(pp));
-}
-
-// Tests that UpdateEntityInstance() asynchronously updates entities.
+// Tests that AddOrUpdateEntityInstance() asynchronously updates entities.
 TEST_F(EntityDataManagerTest_InitiallyEmpty, UpdateEntityInstance) {
   EntityInstance pp = test::GetPassportEntityInstance(
       {.date_modified = test::kJune2017 - base::Days(3)});
-  entity_data_manager().AddEntityInstance(pp);
+  entity_data_manager().AddOrUpdateEntityInstance(pp);
   ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp));
 
   pp = test::GetPassportEntityInstance(
       {.name = "Karlsson", .date_modified = test::kJune2017 - base::Days(1)});
-  entity_data_manager().UpdateEntityInstance(pp);
+  entity_data_manager().AddOrUpdateEntityInstance(pp);
   EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(pp));
-}
-
-// Tests that updating a non-existing entity is **not** a  no-op: since update =
-// delete + insert, it reduces to inserting a new entry.
-TEST_F(EntityDataManagerTest_InitiallyEmpty, UpdateEntityInstance_NonExisting) {
-  EntityInstance pp = test::GetPassportEntityInstance();
-  EntityInstance lc = test::GetLoyaltyCardEntityInstance();
-  entity_data_manager().AddEntityInstance(pp);
-  ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp));
-
-  entity_data_manager().UpdateEntityInstance(lc);  // No no-op!
-  EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, lc));
 }
 
 // Tests that RemoveEntityInstance() asynchronously removes entities.
 TEST_F(EntityDataManagerTest_InitiallyEmpty, RemoveEntityInstance) {
   EntityInstance pp = test::GetPassportEntityInstance();
   EntityInstance lc = test::GetLoyaltyCardEntityInstance();
-  entity_data_manager().AddEntityInstance(pp);
-  entity_data_manager().AddEntityInstance(lc);
+  entity_data_manager().AddOrUpdateEntityInstance(pp);
+  entity_data_manager().AddOrUpdateEntityInstance(lc);
   ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, lc));
 
   entity_data_manager().RemoveEntityInstance(pp.guid());
@@ -141,8 +117,8 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, RemoveEntityInstance) {
 TEST_F(EntityDataManagerTest_InitiallyEmpty, RemoveEntityInstance_NonExisting) {
   EntityInstance pp = test::GetPassportEntityInstance();
   EntityInstance lc = test::GetLoyaltyCardEntityInstance();
-  entity_data_manager().AddEntityInstance(pp);
-  entity_data_manager().AddEntityInstance(lc);
+  entity_data_manager().AddOrUpdateEntityInstance(pp);
+  entity_data_manager().AddOrUpdateEntityInstance(lc);
   ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, lc));
 
   entity_data_manager().RemoveEntityInstance(pp.guid());
@@ -158,8 +134,8 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty,
       {.date_modified = test::kJune2017 - base::Days(1)});
   EntityInstance lc = test::GetLoyaltyCardEntityInstance(
       {.date_modified = test::kJune2017 + base::Days(1)});
-  entity_data_manager().AddEntityInstance(pp);
-  entity_data_manager().AddEntityInstance(lc);
+  entity_data_manager().AddOrUpdateEntityInstance(pp);
+  entity_data_manager().AddOrUpdateEntityInstance(lc);
   ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, lc));
 
   entity_data_manager().RemoveEntityInstancesModifiedBetween(

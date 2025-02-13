@@ -57,13 +57,8 @@ class EntityTable : public WebDatabaseTable {
   bool CreateTablesIfNecessary() override;
   bool MigrateToVersion(int version, bool* update_compatible_version) override;
 
-  // Returns true if adding the entity succeeded.
-  // It does not validate the entity itself, but it does check that no such
-  // entity with the same GUID exists.
-  bool AddEntityInstance(const EntityInstance& entity);
-
   // Returns true if removing the entity and then re-adding it is successful.
-  bool UpdateEntityInstance(const EntityInstance& entity);
+  bool AddOrUpdateEntityInstance(const EntityInstance& entity);
 
   // Returns true if removing the entity succeeded, even if there were zero or
   // multiple matches.
@@ -88,6 +83,11 @@ class EntityTable : public WebDatabaseTable {
   std::vector<EntityInstance> GetEntityInstances() const;
 
  private:
+  // Returns true if adding the entity succeeded.
+  // It does not validate the entity itself, but it does check that no such
+  // entity with the same GUID exists.
+  bool AddEntityInstance(const EntityInstance& entity);
+
   friend class EntityTableTestApi;
 };
 

@@ -54,43 +54,23 @@ class EntityTableTest : public testing::Test {
   WebDatabase db_;
 };
 
-// Tests adding entity instances.
-TEST_F(EntityTableTest, AddEntityInstance) {
-  EntityInstance pp = test::GetPassportEntityInstance();
-  EntityInstance lc = test::GetLoyaltyCardEntityInstance();
-  ASSERT_THAT(table().GetEntityInstances(), IsEmpty());
-
-  // Added elements are in the table.
-  EXPECT_TRUE(table().AddEntityInstance(pp));
-  EXPECT_THAT(table().GetEntityInstances(), ElementsAre(pp));
-  EXPECT_TRUE(table().AddEntityInstance(lc));
-  EXPECT_THAT(table().GetEntityInstances(), UnorderedElementsAre(pp, lc));
-
-  // Adding a conflicting entity fails because of the primary-key violation.
-  // Nonetheless it leaves the database in a bad state: some attributes may
-  // be added before the failure, so reading the entity afterwards may obtain a
-  // union of the two conflicting entities.
-  EXPECT_FALSE(table().AddEntityInstance(pp));
-  EXPECT_THAT(table().GetEntityInstances(), UnorderedElementsAre(pp, lc));
-}
-
 // Tests updating entity instances.
-TEST_F(EntityTableTest, UpdateEntityInstance) {
+TEST_F(EntityTableTest, AddOrUpdateEntityInstance) {
   EntityInstance pp = test::GetPassportEntityInstance(
       {.date_modified = test::kJune2017 - base::Days(3)});
   EntityInstance lc = test::GetLoyaltyCardEntityInstance();
-  ASSERT_TRUE(table().AddEntityInstance(pp));
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(pp));
   ASSERT_THAT(table().GetEntityInstances(), ElementsAre(pp));
 
   // Updating a non-existing instance adds it.
-  EXPECT_TRUE(table().UpdateEntityInstance(lc));
+  EXPECT_TRUE(table().AddOrUpdateEntityInstance(lc));
   ASSERT_THAT(table().GetEntityInstances(), UnorderedElementsAre(pp, lc));
 
   pp = test::GetPassportEntityInstance({
       .name = "Karlsson",
       .date_modified = test::kJune2017 - base::Days(1),
   });
-  EXPECT_TRUE(table().UpdateEntityInstance(pp));
+  EXPECT_TRUE(table().AddOrUpdateEntityInstance(pp));
   ASSERT_THAT(table().GetEntityInstances(), UnorderedElementsAre(pp, lc));
 }
 
@@ -98,8 +78,8 @@ TEST_F(EntityTableTest, UpdateEntityInstance) {
 TEST_F(EntityTableTest, RemoveEntityInstance) {
   EntityInstance pp = test::GetPassportEntityInstance();
   EntityInstance lc = test::GetLoyaltyCardEntityInstance();
-  ASSERT_TRUE(table().AddEntityInstance(pp));
-  ASSERT_TRUE(table().AddEntityInstance(lc));
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(pp));
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(lc));
 
   // Removing an element once removes it.
   // Removing it a second time succeeds but has no effect.
@@ -123,8 +103,8 @@ TEST_F(EntityTableTest, RemoveEntityInstancesModifiedBetween) {
                      {.date_modified = test::kJune2017 - base::Days(11)}),
                  test::GetLoyaltyCardEntityInstance(
                      {.date_modified = test::kJune2017 - base::Days(10)})};
-  ASSERT_TRUE(table().AddEntityInstance(instances[0]));
-  ASSERT_TRUE(table().AddEntityInstance(instances[1]));
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(instances[0]));
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(instances[1]));
   ASSERT_THAT(table().GetEntityInstances(),
               UnorderedElementsAreArray(instances));
 
@@ -156,8 +136,8 @@ TEST_F(EntityTableTest, GetEntityInstancesSkipsEmptyInstances) {
   EntityInstance lc = test::GetLoyaltyCardEntityInstance();
   ASSERT_THAT(table().GetEntityInstances(), IsEmpty());
 
-  EXPECT_TRUE(table().AddEntityInstance(pp));
-  EXPECT_TRUE(table().AddEntityInstance(lc));
+  EXPECT_TRUE(table().AddOrUpdateEntityInstance(pp));
+  EXPECT_TRUE(table().AddOrUpdateEntityInstance(lc));
   EXPECT_THAT(table().GetEntityInstances(), UnorderedElementsAre(pp, lc));
 
   // Manipulate the attribute instances: changing their type simulates a change

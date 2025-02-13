@@ -352,16 +352,14 @@ void AutofillAiManager::MaybeImportForm(
     if (ShouldShowNewEntitySavePrompt(entity, current_entities)) {
       client_->ShowSaveAutofillAiBubble(
           std::move(entity),
-          BindOnce(&AutofillAiManager::OnSavePromptAcceptance, GetWeakPtr(),
-                   AutofillAiManager::EntityUpdateType::kSave));
+          BindOnce(&AutofillAiManager::OnSavePromptAcceptance, GetWeakPtr()));
       std::move(autofill_callback).Run(std::move(form), true);
       return;
     } else if (std::optional<autofill::EntityInstance> maybe_entity_to_update =
                    MaybeUpdateEntity(entity, current_entities)) {
       client_->ShowSaveAutofillAiBubble(
           std::move(*maybe_entity_to_update),
-          BindOnce(&AutofillAiManager::OnSavePromptAcceptance, GetWeakPtr(),
-                   AutofillAiManager::EntityUpdateType::kUpdate));
+          BindOnce(&AutofillAiManager::OnSavePromptAcceptance, GetWeakPtr()));
       std::move(autofill_callback).Run(std::move(form), true);
       return;
     }
@@ -370,7 +368,6 @@ void AutofillAiManager::MaybeImportForm(
 }
 
 void AutofillAiManager::OnSavePromptAcceptance(
-    AutofillAiManager::EntityUpdateType update_type,
     AutofillAiClient::SavePromptAcceptanceResult result) {
   if (!result.prompt_was_accepted) {
     return;
@@ -381,11 +378,7 @@ void AutofillAiManager::OnSavePromptAcceptance(
     return;
   }
   CHECK(result.entity);
-  if (update_type == AutofillAiManager::EntityUpdateType::kSave) {
-    entity_manager->AddEntityInstance(*result.entity);
-  } else if (update_type == AutofillAiManager::EntityUpdateType::kUpdate) {
-    entity_manager->UpdateEntityInstance(*result.entity);
-  }
+  entity_manager->AddOrUpdateEntityInstance(*result.entity);
 }
 
 void AutofillAiManager::GetSuggestions(autofill::FormGlobalId form_global_id,

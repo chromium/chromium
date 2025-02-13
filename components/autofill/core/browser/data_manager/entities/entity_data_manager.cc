@@ -42,24 +42,8 @@ void EntityDataManager::LoadEntities() {
       weak_ptr_factory_.GetWeakPtr()));
 }
 
-void EntityDataManager::AddEntityInstance(EntityInstance entity) {
-  webdata_service_->AddEntityInstance(
-      std::move(entity),
-      base::BindOnce(
-          [](base::WeakPtr<EntityDataManager> self, EntityInstanceChange eic) {
-            if (!self) {
-              return;
-            }
-            CHECK_EQ(eic.type(), EntityInstanceChange::ADD);
-            DCHECK(!base::Contains(self->entities_, eic.key(),
-                                   &EntityInstance::guid));
-            self->entities_.push_back(*std::move(eic).data_model());
-          },
-          weak_ptr_factory_.GetWeakPtr()));
-}
-
-void EntityDataManager::UpdateEntityInstance(EntityInstance entity) {
-  webdata_service_->UpdateEntityInstance(
+void EntityDataManager::AddOrUpdateEntityInstance(EntityInstance entity) {
+  webdata_service_->AddOrUpdateEntityInstance(
       std::move(entity),
       base::BindOnce(
           [](base::WeakPtr<EntityDataManager> self, EntityInstanceChange eic) {

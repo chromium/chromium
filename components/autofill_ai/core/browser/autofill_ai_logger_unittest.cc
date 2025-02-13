@@ -97,8 +97,8 @@ class BaseAutofillAiTest : public testing::Test {
 
   AutofillAiManager& manager() { return *manager_; }
 
-  void AddEntityInstance(autofill::EntityInstance entity) {
-    entity_data_manager_.AddEntityInstance(std::move(entity));
+  void AddOrUpdateEntityInstance(autofill::EntityInstance entity) {
+    entity_data_manager_.AddOrUpdateEntityInstance(std::move(entity));
     webdata_helper_.WaitUntilIdle();
   }
 
@@ -290,7 +290,7 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
       is_form_eligible() ? CreateEligibleForm() : CreateIneligibleForm();
   // This will dictate whether we consider the form ready to be filled or not.
   if (user_has_data()) {
-    AddEntityInstance(autofill::test::GetPassportEntityInstance());
+    AddOrUpdateEntityInstance(autofill::test::GetPassportEntityInstance());
   }
   manager().OnFormSeen(*form);
 

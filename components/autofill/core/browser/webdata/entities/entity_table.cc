@@ -130,7 +130,7 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
 
   if (add) {
     using enum AttributeTypeName;
-    table.AddEntityInstance(EntityInstance(
+    table.AddOrUpdateEntityInstance(EntityInstance(
         EntityType(EntityTypeName::kPassport),
         {AttributeInstance(AttributeType(kPassportNumber), "123", {}),
          AttributeInstance(AttributeType(kPassportName), "Pippi Långstrump",
@@ -140,7 +140,7 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
          AttributeInstance(AttributeType(kPassportIssueDate), "10/1998", {})},
         base::Uuid::ParseLowercase("00000000-0000-4000-8000-000000000000"),
         "Passie", base::Time::Now()));
-    table.AddEntityInstance(EntityInstance(
+    table.AddOrUpdateEntityInstance(EntityInstance(
         EntityType(EntityTypeName::kLoyaltyCard),
         {AttributeInstance(AttributeType(kLoyaltyCardProgram),
                            "Asterisk Alliance", {}),
@@ -229,7 +229,7 @@ bool EntityTable::CreateTablesIfNecessary() {
 // the pattern
 //   for (const EntityInstance& old_e : GetEntityInstances()) {
 //     EntityInstance new_ = migrate(old_e);
-//     UpdateEntityInstance(new_e);
+//     AddOrUpdateEntityInstance(new_e);
 //   }
 // where migrate() maps the old to a new EntityInstance. To delete attributes,
 // the identity function suffices because GetEntityInstances() skips unknown
@@ -284,7 +284,7 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
   return transaction.Commit();
 }
 
-bool EntityTable::UpdateEntityInstance(const EntityInstance& entity) {
+bool EntityTable::AddOrUpdateEntityInstance(const EntityInstance& entity) {
   HandleTestSwitchesIfNeeded(db(), *this);
 
   sql::Transaction transaction(db());

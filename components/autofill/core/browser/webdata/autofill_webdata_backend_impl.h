@@ -144,11 +144,7 @@ class AutofillWebDataBackendImpl
   // Adds, updates, removes, or retrieves EntityInstances.
   // See the identically named functions in `EntityTable`, especially on why
   // RemoveEntityInstancesModifiedBetween() exists.
-  WebDatabase::State AddEntityInstance(
-      EntityInstance entity,
-      base::OnceCallback<void(EntityInstanceChange)> on_success,
-      WebDatabase* db);
-  WebDatabase::State UpdateEntityInstance(
+  WebDatabase::State AddOrUpdateEntityInstance(
       EntityInstance entity,
       base::OnceCallback<void(EntityInstanceChange)> on_success,
       WebDatabase* db);

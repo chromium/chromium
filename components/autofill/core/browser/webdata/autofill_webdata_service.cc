@@ -117,21 +117,12 @@ WebDataServiceBase::Handle AutofillWebDataService::GetAutofillProfiles(
       std::move(consumer));
 }
 
-void AutofillWebDataService::AddEntityInstance(
-    EntityInstance entity,
-    base::OnceCallback<void(EntityInstanceChange)> on_success) {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE, base::BindOnce(&AutofillWebDataBackendImpl::AddEntityInstance,
-                                autofill_backend_, std::move(entity),
-                                std::move(on_success)));
-}
-
-void AutofillWebDataService::UpdateEntityInstance(
+void AutofillWebDataService::AddOrUpdateEntityInstance(
     EntityInstance entity,
     base::OnceCallback<void(EntityInstanceChange)> on_success) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
-      base::BindOnce(&AutofillWebDataBackendImpl::UpdateEntityInstance,
+      base::BindOnce(&AutofillWebDataBackendImpl::AddOrUpdateEntityInstance,
                      autofill_backend_, std::move(entity),
                      std::move(on_success)));
 }

@@ -92,13 +92,10 @@ class AutofillWebDataService : public WebDataServiceBase {
   WebDataServiceBase::Handle GetAutofillProfiles(
       WebDataServiceRequestCallback consumer);
 
-  // Asynchronously adds, updates, removes, or retrieves EntityInstances.
-  // See the identically named functions in `EntityTable`, especially on why
-  // RemoveEntityInstancesModifiedBetween() exists.
-  void AddEntityInstance(
-      EntityInstance entity,
-      base::OnceCallback<void(EntityInstanceChange)> on_success);
-  void UpdateEntityInstance(
+  // See the identically named functions in EntityDataManager or EntityTable for
+  // details.
+  // `on_success` is called only if the operation has been completed.
+  void AddOrUpdateEntityInstance(
       EntityInstance entity,
       base::OnceCallback<void(EntityInstanceChange)> on_success);
   void RemoveEntityInstance(
