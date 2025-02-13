@@ -63,8 +63,6 @@ class FormDataBytesConsumer final : public BytesConsumer {
     BytesConsumer::Trace(visitor);
   }
 
-  CORE_EXPORT static bool IsValidForTesting(const EncodedFormData* form_data);
-
  private:
   static BytesConsumer* GetImpl(ExecutionContext*,
                                 scoped_refptr<EncodedFormData>,
