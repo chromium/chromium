@@ -7668,6 +7668,15 @@
     "expiry_milestone": 135
   },
   {
+    "name": "safety-hub-local-passwords-module",
+    "owners": [
+      "fsenra@google.com",
+      "sideyilmaz@chromium.org",
+      "chrome-browser-privacy-team@google.com"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "safety-hub-magic-stack",
     "owners": [
       "rubindl@chromium.org",
@@ -7700,7 +7709,7 @@
       "sideyilmaz@chromium.org",
       "chrome-browser-privacy-team@google.com"
     ],
-    "expiry_milestone": 136
+    "expiry_milestone": 140
   },
   {
     "name": "sanitizer-api",

@@ -3262,6 +3262,11 @@ const char kSafetyHubFollowupDescription[] =
     "enhancements to the passwords module on the Safety Check page and "
     "enabling the password card on magic stack.";
 
+const char kSafetyHubLocalPasswordsModuleName[] =
+    "Enables the local passwords module in Safety Hub";
+const char kSafetyHubLocalPasswordsModuleDescription[] =
+    "Enables showing the local passwords module in Safety Hub.";
+
 const char kSafetyHubAndroidSurveyName[] =
     "HaTS for Safety Check v2 on Android";
 const char kSafetyHubAndroidSurveyDescription[] =

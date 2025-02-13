@@ -1050,6 +1050,11 @@ BASE_FEATURE(kSafetyHubAndroidSurveyV2,
 BASE_FEATURE(kSafetyHubWeakAndReusedPasswords,
              "SafetyHubWeakAndReusedPasswords",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the local passwords module in Safety Hub.
+BASE_FEATURE(kSafetyHubLocalPasswordsModule,
+             "SafetyHubLocalPasswordsModule",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -483,6 +483,7 @@ public abstract class ChromeFeatureList {
     public static final String SAFETY_HUB_ANDROID_SURVEY = "SafetyHubAndroidSurvey";
     public static final String SAFETY_HUB_ANDROID_SURVEY_V2 = "SafetyHubAndroidSurveyV2";
     public static final String SAFETY_HUB_FOLLOWUP = "SafetyHubFollowup";
+    public static final String SAFETY_HUB_LOCAL_PASSWORDS_MODULE = "SafetyHubLocalPasswordsModule";
     public static final String SAFETY_HUB_MAGIC_STACK = "SafetyHubMagicStack";
     public static final String SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS =
             "SafetyHubWeakAndReusedPasswords";

@@ -13550,6 +13550,7 @@ from previous Chrome versions.
   <int value="-232769318" label="EventBasedLogUpload:disabled"/>
   <int value="-231967261" label="AutofillUpdatedCardUnmaskPromptUi:disabled"/>
   <int value="-231922000" label="enable-renderer-mojo-channel"/>
+  <int value="-231699759" label="SafetyHubLocalPasswordsModule:disabled"/>
   <int value="-231642350" label="EnableWindowsGamingInputDataFetcher:disabled"/>
   <int value="-231426350" label="AutofillEnableToolbarStatusChip:enabled"/>
   <int value="-230824955" label="NTPMostLikelyFaviconsFromServer:enabled"/>
@@ -16648,6 +16649,7 @@ from previous Chrome versions.
   <int value="1004788743" label="ArcIdleManager:disabled"/>
   <int value="1004909189"
       label="ContentSuggestionsThumbnailDominantColor:disabled"/>
+  <int value="1004938507" label="SafetyHubLocalPasswordsModule:enabled"/>
   <int value="1004988656" label="TrackingProtection3pcd:disabled"/>
   <int value="1005684777" label="PictureInPicture:disabled"/>
   <int value="1006080779" label="ForcePreferredIntervalForVideo:disabled"/>

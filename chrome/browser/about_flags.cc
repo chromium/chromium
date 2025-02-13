@@ -9453,6 +9453,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafetyHubWeakAndReusedPasswordsName,
      flag_descriptions::kSafetyHubWeakAndReusedPasswordsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kSafetyHubWeakAndReusedPasswords)},
+
+    {"safety-hub-local-passwords-module",
+     flag_descriptions::kSafetyHubLocalPasswordsModuleName,
+     flag_descriptions::kSafetyHubLocalPasswordsModuleDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kSafetyHubLocalPasswordsModule)},
 #else
     {"safety-hub-one-off-survey",
      flag_descriptions::kSafetyHubHaTSOneOffSurveyName,
