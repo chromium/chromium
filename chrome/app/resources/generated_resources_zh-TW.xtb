@@ -107,7 +107,7 @@
 <translation id="106814709658156573">如要設定指紋，請讓孩子輕觸鍵盤左下角的指紋感應器。孩子的指紋資料會安全地儲存在這部「<ph name="DEVICE_TYPE" />」上，絕不會外洩。</translation>
 <translation id="106855837688344862">觸控事件</translation>
 <translation id="1069104208554708737">這個密碼金鑰只會儲存在這部裝置中</translation>
-<translation id="1069355737714877171">移除名為「<ph name="PROFILE_NAME" />」的 eSIM 卡設定檔</translation>
+<translation id="1069355737714877171">移除名為「<ph name="PROFILE_NAME" />」的 eSIM 設定檔</translation>
 <translation id="1069778954840159202">自動從 Android 手機取得帳戶資訊</translation>
 <translation id="1069814191880976658">選擇其他畫面</translation>
 <translation id="107022587824771715">目前無法使用分頁群組建議。你可以<ph name="BEGIN_LINK" />立即重新整理<ph name="END_LINK" />或稍後再試</translation>
@@ -794,7 +794,7 @@
 <translation id="1546280085599573572">這個擴充功能已變更您點選 [首頁] 按鈕時所顯示的網頁。</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> 要求安裝具有下列功能的<ph name="EXTENSION_TYPE" />：</translation>
 <translation id="1547123415014299762">已允許第三方 Cookie</translation>
-<translation id="1547808936554660006">我瞭解執行 Powerwash 將不會移除已安裝的 eSIM 卡設定檔</translation>
+<translation id="1547808936554660006">我瞭解執行 Powerwash 將不會移除已安裝的 eSIM 設定檔</translation>
 <translation id="1547936895218027488">按一下側邊面板圖示即可開啟</translation>
 <translation id="1549275686094429035">已啟用 ARC</translation>
 <translation id="1549788673239553762">「<ph name="APP_NAME" />」要求存取 <ph name="VOLUME_NAME" />。您的檔案可能會遭到修改或刪除。</translation>
@@ -1535,7 +1535,7 @@
 <translation id="205560151218727633">Google 助理標誌</translation>
 <translation id="2058456167109518507">偵測到裝置</translation>
 <translation id="2059913712424898428">時區</translation>
-<translation id="2060375639911876205">移除 eSIM 卡設定檔</translation>
+<translation id="2060375639911876205">移除 eSIM 設定檔</translation>
 <translation id="2061366302742593739">沒有可顯示的內容</translation>
 <translation id="2062354623176996748">如果不希望系統在你使用網路時儲存你的瀏覽記錄，請使用無痕視窗</translation>
 <translation id="206308717637808771">在關閉所有視窗後刪除資料。資料的處理方式與目前瀏覽的網站相同</translation>
@@ -2023,7 +2023,7 @@
 <translation id="2393313392064891208">Google ChromeOS Flex 條款內容</translation>
 <translation id="2395616325548404795">你的 <ph name="DEVICE_TYPE" /> 已成功註冊企業管理服務，但無法傳送資產和位置資訊。請前往管理控制台，為這個裝置手動輸入這些資訊。</translation>
 <translation id="2396783860772170191">輸入 4 位數 PIN 碼 (0000-9999)</translation>
-<translation id="2398546389094871088">在裝置上執行 Powerwash 並不會移除 eSIM 卡設定檔。請前往<ph name="LINK_BEGIN" />行動設定<ph name="LINK_END" />手動移除這些設定檔。</translation>
+<translation id="2398546389094871088">在裝置上執行 Powerwash 並不會移除 eSIM 設定檔。請前往<ph name="LINK_BEGIN" />行動設定<ph name="LINK_END" />手動移除這些設定檔。</translation>
 <translation id="2399699884460174994">已開啟通知功能</translation>
 <translation id="2399939490305346086">安全金鑰登入資料</translation>
 <translation id="240006516586367791">媒體控制項</translation>
@@ -2264,7 +2264,7 @@
 <translation id="2546302722632337735">禁止網站使用 ID 來播放受保護的內容</translation>
 <translation id="2546991196809436099">放大畫面上的項目。使用搜尋鍵 + Ctrl + M 鍵即可開啟或關閉放大鏡。</translation>
 <translation id="2548347166720081527">已允許使用<ph name="PERMISSION" /></translation>
-<translation id="2548545707296594436">重設 eSIM 卡設定檔快取</translation>
+<translation id="2548545707296594436">重設 eSIM 設定檔快取</translation>
 <translation id="2549985041256363841">開始錄影</translation>
 <translation id="2550212893339833758">交換的記憶體</translation>
 <translation id="2550596535588364872">要允許「<ph name="EXTENSION_NAME" />」開啟「<ph name="FILE_NAME" />」嗎？</translation>
@@ -2416,7 +2416,7 @@
 <translation id="2661315027005813059">往返快取頁面：<ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="2661714428027871023">使用精簡模式來加快瀏覽速度，同時減少數據用量。按一下即可瞭解詳情。</translation>
 <translation id="2662876636500006917">Chrome 線上應用程式商店</translation>
-<translation id="2663253180579749458">正在新增 eSIM 卡設定檔。請稍候片刻。</translation>
+<translation id="2663253180579749458">正在新增 eSIM 設定檔。請稍候片刻。</translation>
 <translation id="2663302507110284145">語言</translation>
 <translation id="2665394472441560184">新增字詞</translation>
 <translation id="2665647207431876759">已過期</translation>
@@ -2614,7 +2614,7 @@
 <translation id="2791952154587244007">發生錯誤，系統無法在這個裝置上自動啟動 Kiosk 應用程式。</translation>
 <translation id="2792465461386711506">開啟 Chrome 同步功能即可查看最近透過手機開啟的 Chrome 分頁</translation>
 <translation id="2792697226874849938">限制圖片</translation>
-<translation id="2794522004398861033">如要設定 eSIM 卡，請連上 Wi-Fi 或乙太網路</translation>
+<translation id="2794522004398861033">如要設定 eSIM，請連上 Wi-Fi 或乙太網路</translation>
 <translation id="2794977172822818797">新增目前網站</translation>
 <translation id="2795716239552913152">網站通常會使用你的位置資訊，以提供地方新聞或附近商家等相關功能或資訊</translation>
 <translation id="2798347533012571708">保留更新</translation>
@@ -2808,7 +2808,7 @@
 <translation id="2933632078076743449">上次更新時間</translation>
 <translation id="2934225044529065415">無法存取攝影機</translation>
 <translation id="2935225303485967257">管理個人資料</translation>
-<translation id="2935314715123552088">停用使用中的 eSIM 卡設定檔</translation>
+<translation id="2935314715123552088">停用使用中的 eSIM 設定檔</translation>
 <translation id="2935654492420446828">稍後再新增學校帳戶</translation>
 <translation id="2936851848721175671">備份與還原</translation>
 <translation id="2938981087412273365">不允許讀取及變更這個網站</translation>
@@ -4504,7 +4504,7 @@
 <translation id="413193092008917129">日常網路診斷項目</translation>
 <translation id="4132137475637520539">允許知道連結的使用者加入</translation>
 <translation id="4132183752438206707">在 Google Play 商店中尋找應用程式</translation>
-<translation id="4132364317545104286">重新命名 eSIM 卡設定檔</translation>
+<translation id="4132364317545104286">重新命名 eSIM 設定檔</translation>
 <translation id="4132969033912447558">繼續下載 <ph name="FILE_NAME" /></translation>
 <translation id="4133076602192971179">開啟應用程式以變更密碼</translation>
 <translation id="4134838386867070505">步驟 4 之 1：說明問題</translation>
@@ -4670,7 +4670,7 @@
 <translation id="4263470758446311292">取得最大記憶體節省量。分頁會在較短時段過後進入閒置狀態。</translation>
 <translation id="4263824086525632">北極光</translation>
 <translation id="4265096510956307240">驗證身分</translation>
-<translation id="4265301768135164545">你也可以<ph name="BEGIN_LINK" />手動<ph name="END_LINK" />設定 eSIM 卡設定檔</translation>
+<translation id="4265301768135164545">你也可以<ph name="BEGIN_LINK" />手動<ph name="END_LINK" />設定 eSIM 設定檔</translation>
 <translation id="426564820080660648">如要檢查更新，請使用 Wi-Fi 或行動數據。</translation>
 <translation id="426652736638196239">這個 IBAN 只會儲存在這部裝置上</translation>
 <translation id="4266679478228765574">移除資料夾會停止與他人共用檔案，但不會刪除檔案。</translation>
@@ -4694,7 +4694,7 @@
 <translation id="4278390842282768270">允許</translation>
 <translation id="4278498748067682896">你將使用「資訊站或看板升級」授權，這項授權只允許裝置在資訊站或看板模式下運作。如果希望使用者登入裝置，請返回上一個畫面，然後使用「Chrome Enterprise 升級版」進行註冊。</translation>
 <translation id="4278779213160967034">這項程序可能需要幾分鐘才能完成。正在下載檔案。</translation>
-<translation id="4279129444466079448">你最多可以在這部裝置上安裝 <ph name="PROFILE_LIMIT" /> 個 eSIM 卡設定檔。如要新增其他設定檔，請先移除現有的設定檔。</translation>
+<translation id="4279129444466079448">你最多可以在這部裝置上安裝 <ph name="PROFILE_LIMIT" /> 個 eSIM 設定檔。如要新增其他設定檔，請先移除現有的設定檔。</translation>
 <translation id="4280325816108262082">裝置關閉或處於閒置狀態時，會自動中斷連線</translation>
 <translation id="4281412694055934031">網站可以要求在裝置上安裝網頁應用程式</translation>
 <translation id="4281789858103154731">建立</translation>
@@ -5378,7 +5378,7 @@
 <translation id="4778653490315793244">目前還沒有內容</translation>
 <translation id="4779083564647765204">縮放</translation>
 <translation id="4779136857077979611">飯糰</translation>
-<translation id="4779766576531456629">重新命名 eSIM 卡的行動網路</translation>
+<translation id="4779766576531456629">重新命名 eSIM 的行動網路</translation>
 <translation id="4779855924282373274"><ph name="URL" /> • 1 個重複的分頁</translation>
 <translation id="4780321648949301421">另存網頁...</translation>
 <translation id="4780558987886269159">工作</translation>
@@ -5654,7 +5654,7 @@
 <translation id="4966972803217407697">目前為無痕模式</translation>
 <translation id="4967227914555989138">新增附註</translation>
 <translation id="4967360192915400530">下載危險的檔案</translation>
-<translation id="496742804571665842">停用 eSIM 卡設定檔</translation>
+<translation id="496742804571665842">停用 eSIM 設定檔</translation>
 <translation id="4967571733817147990">自訂滑鼠按鈕</translation>
 <translation id="4967852842111017386"><ph name="FEATURE_NAME" />裝置名稱</translation>
 <translation id="4971412780836297815">完成後開啟</translation>
@@ -7066,7 +7066,7 @@
 <translation id="6002122790816966947">你的裝置</translation>
 <translation id="6002210667729577411">將群組移到新視窗</translation>
 <translation id="6002458620803359783">聲音偏好</translation>
-<translation id="6003143259071779217">移除 eSIM 卡的行動網路</translation>
+<translation id="6003143259071779217">移除 eSIM 的行動網路</translation>
 <translation id="6003479444341796444">正在顯示標題列</translation>
 <translation id="6003582434972667631">主題採用貴機構的設定</translation>
 <translation id="6005045517426700202">磚造建築</translation>
@@ -7378,7 +7378,7 @@
 <translation id="6233154960150021497">預設使用語音，而不使用鍵盤</translation>
 <translation id="6234108445915742946">Chrome《服務條款》將於 3 月 31 日變更</translation>
 <translation id="6234474535228214774">等待安裝中</translation>
-<translation id="6235208551686043831">已開啟裝置攝影機。請將攝影機鏡頭對準 eSIM 卡的 QR 圖碼。</translation>
+<translation id="6235208551686043831">已開啟裝置攝影機。請將攝影機鏡頭對準 eSIM 的 QR 圖碼。</translation>
 <translation id="6237474966939441970">觸控筆做筆記應用程式</translation>
 <translation id="6237481151388361546">請變更網際網路連線並選擇「再試一次」。你也可以選擇「在基本編輯器中開啟」，使用功能有限的檢視和編輯選項。</translation>
 <translation id="623755660902014047">閱讀模式</translation>
@@ -7489,7 +7489,7 @@
 <translation id="6308937455967653460">另存連結為(&amp;K)...</translation>
 <translation id="6309443618838462258">系統管理員不允許這個輸入法</translation>
 <translation id="6309510305002439352">麥克風已關閉</translation>
-<translation id="6310141306111263820">無法安裝 eSIM 卡設定檔。如需協助，請與你的電信業者聯絡。</translation>
+<translation id="6310141306111263820">無法安裝 eSIM 設定檔。如需協助，請與你的電信業者聯絡。</translation>
 <translation id="6311220991371174222">開啟你的設定檔時發生錯誤，因此無法啟動 Chrome，請嘗試重新啟動。</translation>
 <translation id="6313950457058510656">關閉即時網路共用</translation>
 <translation id="6314819609899340042">你已成功在 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置上啟用偵錯功能。</translation>
@@ -7880,7 +7880,7 @@
 <translation id="6606671997164410857">你似乎已在其他裝置上設定 Google 助理。只要在這部裝置上開啟 [畫面內容] 設定，就能運用 Google 助理的更多功能。</translation>
 <translation id="6607831829715835317">更多工具(&amp;L)</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> 已由 <ph name="DOMAIN" /> 管理。如要以其他 Google 帳戶使用家長監護功能，請在設定完成後登出帳戶，然後在登入畫面上選取 [新增使用者]。</translation>
-<translation id="6608166463665411119">重設 eSIM 卡</translation>
+<translation id="6608166463665411119">重設 eSIM</translation>
 <translation id="660846213831377756">滑鼠按鍵</translation>
 <translation id="6608773371844092260">如要設定指紋，請讓孩子輕觸這部「<ph name="DEVICE_TYPE" />」右側的指紋感應器。孩子的指紋資料會安全地儲存在這部「<ph name="DEVICE_TYPE" />」上，絕不會外洩。</translation>
 <translation id="6609478180749378879">系統會在無痕模式結束後將登入資料儲存在這部裝置上。你可以再次透過這部裝置登入這個網站。</translation>
@@ -8185,7 +8185,7 @@
 <translation id="6815376457351236663">仍要開啟</translation>
 <translation id="6815787852028615386">這是欺騙性檔案，可能會造成裝置非預期的變更</translation>
 <translation id="6816097980753839617">藍 - 黃 (藍色弱視)</translation>
-<translation id="6816443526270499804">正在尋找可用的 eSIM 卡設定檔</translation>
+<translation id="6816443526270499804">正在尋找可用的 eSIM 設定檔</translation>
 <translation id="6818198425579322765">要翻譯的網頁語言</translation>
 <translation id="6818547713623251698">查看手機上的相片、媒體、通知和應用程式</translation>
 <translation id="6818802132960437751">內建防毒機制</translation>
@@ -8251,7 +8251,7 @@
 <translation id="6855892664589459354">Crostini 備份與還原</translation>
 <translation id="6856348640027512653">不得使用虛擬實境裝置或資料</translation>
 <translation id="6856623341093082836">設定及調整觸控螢幕精確度</translation>
-<translation id="6857145580237920905">在執行 Powerwash 前移除 eSIM 卡設定檔</translation>
+<translation id="6857145580237920905">在執行 Powerwash 前移除 eSIM 設定檔</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="6860097299815761905">Proxy 設定...</translation>
 <translation id="68601584151169673">儲存並分享(&amp;S)</translation>
@@ -8850,7 +8850,7 @@
 <translation id="7311005168897771689">在離線狀態下存取 Google 雲端硬碟檔案</translation>
 <translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7312040805247765153">無法安裝應用程式</translation>
-<translation id="7312210124139670355">管理員正在重設 eSIM 卡，請稍候片刻。</translation>
+<translation id="7312210124139670355">管理員正在重設 eSIM，請稍候片刻。</translation>
 <translation id="7313539585802573958">鍵盤背光顏色</translation>
 <translation id="7314989823816739632">浪漫</translation>
 <translation id="7317342082064136423">驗證帳戶</translation>
@@ -9088,7 +9088,7 @@
 <translation id="7475742997309661417">ChromeVox 是 ChromeOS 上的螢幕閱讀器，主要供失明和低視能人士使用，可協助他們透過語音合成器或點字顯示器閱讀螢幕上顯示的文字。同時按住音量調高鍵和調低鍵五秒，即可啟用 ChromeVox。ChromeVox 啟動後，系統會提供快速導覽。</translation>
 <translation id="7476454130948140105">電量過低，無法進行更新 (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">已自動封鎖：<ph name="PERMISSION" />和另外 <ph name="COUNT" /> 項</translation>
-<translation id="7477460499687558352">選擇要下載的 eSIM 卡設定檔</translation>
+<translation id="7477460499687558352">選擇要下載的 eSIM 設定檔</translation>
 <translation id="7477599578899108080">高記憶體用量：<ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">為這個頁面建立 QR 圖碼</translation>
 <translation id="7477793887173910789">控管你的音樂、影片等項目</translation>
@@ -9343,7 +9343,7 @@
 <translation id="7662283695561029522">輕觸即可進行設定</translation>
 <translation id="7663719505383602579">接收端：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">可以使用鍵盤快速鍵</translation>
-<translation id="7663859337051362114">新增 eSIM 卡設定檔</translation>
+<translation id="7663859337051362114">新增 eSIM 設定檔</translation>
 <translation id="76641554187607347">未連接任何鍵盤</translation>
 <translation id="7664442418269614729">在 iPhone 使用這張卡片</translation>
 <translation id="7665082356120621510">預留大小</translation>
@@ -9669,7 +9669,7 @@
 <translation id="7883792253546618164">你隨時可以取消訂閱。</translation>
 <translation id="788453346724465748">正在載入帳戶資訊...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{1 個項目}other{# 個項目}}</translation>
-<translation id="7886605625338676841">eSIM 卡</translation>
+<translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">觀看導覽內容，瞭解最重要的隱私權和安全性控制項。如要查看更多選項，請前往個別設定。</translation>
 <translation id="7887334752153342268">複製</translation>
 <translation id="7887864092952184874">已配對藍牙滑鼠</translation>
@@ -10002,7 +10002,7 @@
 <translation id="8101987792947961127">必須在下次重新啟動時執行 Powerwash</translation>
 <translation id="8102139037507939978">移除 system_logs.txt 中的個人識別資訊。</translation>
 <translation id="810362914482827094">搜尋密碼金鑰</translation>
-<translation id="8104088837833760645">下載 eSIM 卡設定檔</translation>
+<translation id="8104088837833760645">下載 eSIM 設定檔</translation>
 <translation id="8105273883928376822">如要繼續進行，請登入帳戶。</translation>
 <translation id="8106114112474206597">按下「i」鍵表示按下滑鼠按鍵</translation>
 <translation id="8107015733319732394">正在為 <ph name="DEVICE_TYPE" /> 安裝 Google Play 商店。這可能需要幾分鐘時間。</translation>
@@ -10021,7 +10021,7 @@
 <translation id="8118860139461251237">管理下載內容</translation>
 <translation id="8119438628456698432">正在產生記錄檔...</translation>
 <translation id="811994229154425014">按兩下空格鍵可輸入句號</translation>
-<translation id="8120505434908124087">安裝 eSIM 卡設定檔</translation>
+<translation id="8120505434908124087">安裝 eSIM 設定檔</translation>
 <translation id="8121537075864592453">已停用全螢幕模式</translation>
 <translation id="8121750884985440809">你目前正在投放螢幕畫面</translation>
 <translation id="8122898034710982882">Phone Hub、<ph name="FEATURE_NAME" /></translation>
@@ -10073,7 +10073,7 @@
 <translation id="815491593104042026">糟糕！由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致驗證失敗。請與你的管理員聯絡。</translation>
 <translation id="8155214519979960765">如要再次在這部裝置上使用密碼金鑰登入，請驗證身分。你也可以改用其他方式 (例如密碼) 登入帳戶。</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{沒有任何密碼外洩}=1{{COUNT} 組密碼外洩}other{{COUNT} 組密碼外洩}}</translation>
-<translation id="8157248655669507702">如要安裝 eSIM 卡設定檔，請啟用行動數據</translation>
+<translation id="8157248655669507702">如要安裝 eSIM 設定檔，請啟用行動數據</translation>
 <translation id="8157704005178149728">正在設定監護功能</translation>
 <translation id="8157849462797352650">裝置可享最新版的安全性、穩定性和效能更新</translation>
 <translation id="8158117992543756526">這部裝置已在 <ph name="MONTH_AND_YEAR" />停止自動更新軟體和安全性。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -10576,7 +10576,7 @@
 <translation id="8514746246728959655">請改用其他安全金鑰</translation>
 <translation id="8514828975162859845">蛋糕棒棒糖</translation>
 <translation id="8514955299594277296">不允許網站在裝置上儲存資料 (不建議)</translation>
-<translation id="8515580632187889788">選擇繼續，即表示你允許第三方可在這個網路上驗證這部裝置的識別資訊。如果不想讓第三方存取裝置資訊，可以<ph name="BEGIN_LINK" />手動<ph name="END_LINK" />設定 eSIM 卡設定檔。</translation>
+<translation id="8515580632187889788">選擇繼續，即表示你允許第三方可在這個網路上驗證這部裝置的識別資訊。如果不想讓第三方存取裝置資訊，可以<ph name="BEGIN_LINK" />手動<ph name="END_LINK" />設定 eSIM 設定檔。</translation>
 <translation id="8516472100141530292">在群組上按一下滑鼠右鍵</translation>
 <translation id="8517759303731677493">編輯…</translation>
 <translation id="8518942514525208851">隱藏不雅用語</translation>
@@ -11044,11 +11044,11 @@
 <translation id="8842594465773264717">刪除這個指紋</translation>
 <translation id="8845001906332463065">尋求協助</translation>
 <translation id="8846132060409673887">閱讀這部電腦的製造商和型號資訊</translation>
-<translation id="8846163936679269230">重設 eSIM 卡設定檔</translation>
+<translation id="8846163936679269230">重設 eSIM 設定檔</translation>
 <translation id="8846239054091760429">單聲道音訊、啟動、即時字幕等</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">隱藏</translation>
-<translation id="8849219423513870962">取消移除名為「<ph name="PROFILE_NAME" />」的 eSIM 卡設定檔</translation>
+<translation id="8849219423513870962">取消移除名為「<ph name="PROFILE_NAME" />」的 eSIM 設定檔</translation>
 <translation id="8849262417389398097">第 <ph name="CHECKED" /> 個，共 <ph name="CHECKING" /> 個</translation>
 <translation id="8850251000316748990">顯示更多...</translation>
 <translation id="885246833287407341">API 函式引數</translation>
@@ -11271,7 +11271,7 @@
 <translation id="9000185763019430629">請輕觸「<ph name="DEVICE_TYPE" />」右側的指紋感應器。你的指紋資料會安全地儲存在「<ph name="DEVICE_TYPE" />」上，絕不會外洩。</translation>
 <translation id="9003031149571024583">請輸入 6 位數 PIN 碼的第 <ph name="NUM_DIGIT" /> 碼，並使用 Backspace 鍵或 Delete 鍵移除最後一個數字。</translation>
 <translation id="9003185744423389627">連線至裝置管理工具伺服器失敗，狀態顯示為「<ph name="STATUS_TEXT" />」在「<ph name="FAILURE_TIME" />」的時候</translation>
-<translation id="90033698482696970">要自動掃描可用的 eSIM 卡設定檔嗎？</translation>
+<translation id="90033698482696970">要自動掃描可用的 eSIM 設定檔嗎？</translation>
 <translation id="9003647077635673607">允許在所有網站上執行</translation>
 <translation id="9007688236643268728">重新登入(&amp;S)</translation>
 <translation id="9008201768610948239">略過</translation>

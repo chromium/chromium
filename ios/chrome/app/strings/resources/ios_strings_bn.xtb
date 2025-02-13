@@ -527,7 +527,7 @@
 <translation id="3244271242291266297">মিমি</translation>
 <translation id="3245429137663807393">আপনি Chrome ব্যবহারের রিপোর্ট শেয়ার করলেও, আপনার দেখা URL তার মধ্যে অন্তর্ভুক্ত থাকে</translation>
 <translation id="3245744387817103524">আপনার পরিবর্তন সেভ করা যায়নি।</translation>
-<translation id="3254806613790954367">আপনার সব ডিভাইস জুড়ে খোলা শেষ ট্যাব</translation>
+<translation id="3254806613790954367">আপনার সব ডিভাইস জুড়ে শেষ যে ট্যাবটি খুলেছেন</translation>
 <translation id="3272527697863656322">বাতিল করুন</translation>
 <translation id="3273510436356991673">আপনার হোম স্ক্রিন কাস্টমাইজ করুন</translation>
 <translation id="3277021493514034324">সাইটের ঠিকানা কপি করা হয়েছে</translation>
@@ -1164,7 +1164,7 @@
 <translation id="6096965253650248286"><ph name="COUNT" />টি ট্যাব পাওয়া গেছে</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করেছেন। সেটিংস খোলে।</translation>
 <translation id="6103540626693881831">অন-ডিভাইস এনক্রিপশন</translation>
-<translation id="611361228753138223">এই ডিভাইসে দেরিতে দেখেছেন এমন সাইট</translation>
+<translation id="611361228753138223">এই ডিভাইসে সম্প্রতি দেখেছেন এমন সাইট</translation>
 <translation id="6122191549521593678">অনলাইন</translation>
 <translation id="6122831415929794347">Safe Browsing বন্ধ করতে চান?</translation>
 <translation id="6123514585040403489">আপনার ট্যাব বন্ধ হয়ে যাবে</translation>

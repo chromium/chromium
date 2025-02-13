@@ -30,6 +30,7 @@ Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i sk
 <translation id="2118649612461486615">Informacione për dyqanin</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Skedat dhe grupet e tua të mbyllura mund të hapen përsëri nga seksioni "Skedat e fundit" dhe seksioni "Grupet e skedave". Skeda "e fshehtë" nuk do të ofrohet.}other{Skedat dhe grupet e tua të mbyllura mund të hapen përsëri nga seksioni "Skedat e fundit" dhe seksioni "Grupet e skedave". # skedat "e fshehta" nuk do të ofrohen.}}</translation>
 <translation id="2162620598375156287">Tani <ph name="CURRENT_PRICE" /> te <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2242907120821295124"><ph name="TAB_GROUP_NAME" /> grup skedash nuk ofrohet më</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Anulo grupimin e skedës}other{Anulo grupimin e skedave}}</translation>
 <translation id="2271452184061378400">Grupet e skedave ruhen këtu</translation>
 <translation id="2277224997687551299">Redakto emrin e grupit</translation>
@@ -87,6 +88,7 @@ Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i sk
 <translation id="4783638485675352219">Ndaj titujt dhe URL-të e skedave të hapura nga kjo pajisje me sistemin operativ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> koment)}other{(<ph name="REVIEWS_COUNT_MANY" /> komente)}}</translation>
 <translation id="4850886885716139402">Pamja</translation>
+<translation id="4861611890274104875">Hiq kartën.</translation>
 <translation id="4861953997778766866">Të gjithë mund të bëjnë ndryshime te grupet e skedave të ndara</translation>
 <translation id="4870911314065352661">Të mbyllen të gjitha skedat?</translation>
 <translation id="4871719318659334896">Mbyll grupin</translation>
