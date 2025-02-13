@@ -81,15 +81,15 @@ SafeBrowsingState GetSafeBrowsingState(const PrefService& prefs) {
   }
 }
 
-void SetSafeBrowsingSettingSetLocallyPref(PrefService* prefs, bool value) {
-  // Explicitly set the kSafeBrowsingSyncedEnhancedProtectionSetLocally
+void EnableSafeBrowsingSettingSetLocallyPref(PrefService* prefs) {
+  // Explicitly set the kSafeBrowsingSyncedEnhancedProtectionSetLocally to true
   // after the user manually sets the safe browsing state using the settings UI.
   // Setting this value in this API makes sure we do not show multiple Synced
   // Enhanced Protection notifications or show it on the device where the user
   // modified the setting.
   if (base::FeatureList::IsEnabled(safe_browsing::kEsbAsASyncedSetting)) {
     prefs->SetBoolean(prefs::kSafeBrowsingSyncedEnhancedProtectionSetLocally,
-                      value);
+                      true);
   }
 }
 

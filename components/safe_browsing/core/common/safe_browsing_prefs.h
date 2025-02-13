@@ -417,7 +417,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 // Records whether the user has changed the Safe Browsing setting on this
 // device.
-void SetSafeBrowsingSettingSetLocallyPref(PrefService* prefs, bool value);
+void EnableSafeBrowsingSettingSetLocallyPref(PrefService* prefs);
 
 // Sets the currently active Safe Browsing Extended Reporting preference to the
 // specified value. The |location| indicates the UI where the change was
