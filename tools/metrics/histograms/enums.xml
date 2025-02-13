@@ -13037,6 +13037,8 @@ from previous Chrome versions.
   <int value="-428064763" label="CCTNestedSecurityIcon:enabled"/>
   <int value="-427835676" label="FullscreenInsetsApiMigration:enabled"/>
   <int value="-427163069" label="isolation-by-default"/>
+  <int value="-427087289"
+      label="EnterpriseSecurityEventReportingOnAndroid:disabled"/>
   <int value="-426815606" label="HomepageTile:enabled"/>
   <int value="-426514080" label="EnableBuiltInAIAPI:enabled"/>
   <int value="-425754211" label="FirstPartyVietnameseInput:disabled"/>
@@ -13618,6 +13620,8 @@ from previous Chrome versions.
   <int value="-200160012" label="RelatedSearchesUi:disabled"/>
   <int value="-199690952" label="PageInfoV2:enabled"/>
   <int value="-198725896" label="AlmanacGameMigration:enabled"/>
+  <int value="-198595821"
+      label="EnterpriseSecurityEventReportingOnAndroid:enabled"/>
   <int value="-198388861" label="ArcNearbyShareFuseBox:disabled"/>
   <int value="-198266781" label="FedCmWithoutWellKnownEnforcement:disabled"/>
   <int value="-198011028" label="AndroidAppIntegrationModule:enabled"/>

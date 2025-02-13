@@ -1169,6 +1169,12 @@ const char kEnterpriseRealTimeUrlCheckOnAndroidName[] =
 const char kEnterpriseRealTimeUrlCheckOnAndroidDescription[] =
     "Enables enterprise real-time URL checks if the "
     "EnterpriseRealTimeUrlCheckMode policy is set.";
+
+const char kEnterpriseSecurityEventReportingOnAndroidName[] =
+    "Allow enterprise security event reporting";
+const char kEnterpriseSecurityEventReportingOnAndroidDescription[] =
+    "Enables enterprise security event reporting when the "
+    "OnSecurityEventEnterpriseConnector policy is turned on ";
 #endif
 
 const char kEnableExperimentalCookieFeaturesName[] =

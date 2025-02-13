@@ -269,6 +269,7 @@
 #include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "components/browser_ui/photo_picker/android/features.h"
 #include "components/browsing_data/core/features.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/external_intents/android/external_intents_features.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/messages/android/messages_feature.h"
@@ -11432,6 +11433,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnterpriseRealTimeUrlCheckOnAndroidDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(safe_browsing::kEnterpriseRealTimeUrlCheckOnAndroid)},
+
+    {"enterprise-security-event-reporting-on-android",
+     flag_descriptions::kEnterpriseSecurityEventReportingOnAndroidName,
+     flag_descriptions::kEnterpriseSecurityEventReportingOnAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"service-worker-auto-preload",
