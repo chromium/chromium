@@ -7060,12 +7060,12 @@
   {
     "name": "print-with-postscript-type42-fonts",
     "owners": [ "thestig@chromium.org" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 140
   },
   {
     "name": "print-with-reduced-rasterization",
     "owners": [ "thestig@chromium.org" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 140
   },
   {
     "name": "printing-ppd-channel",
