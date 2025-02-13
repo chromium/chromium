@@ -587,8 +587,16 @@ RealTimeUrlLookupServiceBase::GetResourceRequest() {
   resource_request->url = GetRealTimeLookupUrl();
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
   resource_request->method = "POST";
-  if (!ShouldIncludeCredentials())
+  // If we want to include cookies in the request when third-party cookie
+  // blocking is active, we must set the request's SiteForCookies to be
+  // first-party. This is a browser initiated request so there is no privacy
+  // concern in doing so.
+  if (ShouldIncludeCredentials()) {
+    resource_request->site_for_cookies =
+        net::SiteForCookies::FromUrl(resource_request->url);
+  } else {
     resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  }
   return resource_request;
 }
 
