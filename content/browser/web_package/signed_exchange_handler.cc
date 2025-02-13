@@ -408,12 +408,12 @@ SignedExchangeHandler::ParseHeadersAndFetchCertificate() {
 
   DCHECK(version_.has_value());
 
-  std::string_view data(header_buf_->data(), header_read_buf_->size());
-  std::string_view signature_header_field = data.substr(
-      0, prologue_fallback_url_and_after_.signature_header_field_length());
-  base::span<const uint8_t> cbor_header = base::as_byte_span(data.substr(
+  base::span<const uint8_t> data = header_buf_->span();
+  std::string_view signature_header_field = base::as_string_view(data.first(
+      prologue_fallback_url_and_after_.signature_header_field_length()));
+  base::span<const uint8_t> cbor_header = data.subspan(
       prologue_fallback_url_and_after_.signature_header_field_length(),
-      prologue_fallback_url_and_after_.cbor_header_length()));
+      prologue_fallback_url_and_after_.cbor_header_length());
   envelope_ = SignedExchangeEnvelope::Parse(
       *version_, prologue_fallback_url_and_after_.fallback_url(),
       signature_header_field, cbor_header, devtools_proxy_.get());

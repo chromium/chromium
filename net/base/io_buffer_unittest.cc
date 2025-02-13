@@ -88,6 +88,130 @@ TEST(IOBufferTest, StringIOBuffer) {
   EXPECT_NE(buffer->data(), data.data());
 }
 
+TEST(IOBufferTest, DrainableIOBuffer_DidConsume) {
+  // Include values greater than 0x7F to make sure signed/unsigned is handled
+  // appropriately.
+  std::vector<uint8_t> data{0, 0xFF, 1, 0xFE, 2, 0xFD, 3, 0xFC,
+                            4, 0xFB, 5, 0xFA, 6, 0xF9, 7, 0x80};
+  auto data_buffer = base::MakeRefCounted<VectorIOBuffer>(data);
+
+  // Test both the case the entire nested IOBuffer is included in the
+  // DrainableIOBuffer, and the case where the last value is excluded.
+  for (size_t size : {data.size(), data.size() - 1}) {
+    auto buffer = base::MakeRefCounted<DrainableIOBuffer>(data_buffer, size);
+    auto span = base::span<uint8_t>(data).subspan(0u, size);
+    CompareIOBufferToSpan(*buffer, span);
+    EXPECT_EQ(buffer->BytesConsumed(), 0);
+    EXPECT_EQ(buffer->BytesRemaining(), base::checked_cast<int>(size));
+
+    buffer->DidConsume(1);
+    CompareIOBufferToSpan(*buffer, span.subspan(1u));
+    EXPECT_EQ(buffer->BytesConsumed(), 1);
+    EXPECT_EQ(buffer->BytesRemaining(), base::checked_cast<int>(size - 1));
+
+    buffer->DidConsume(3);
+    CompareIOBufferToSpan(*buffer, span.subspan(4u));
+    EXPECT_EQ(buffer->BytesConsumed(), 4);
+    EXPECT_EQ(buffer->BytesRemaining(), base::checked_cast<int>(size - 4));
+
+    buffer->DidConsume(buffer->size() - 1);
+    CompareIOBufferToSpan(*buffer, span.subspan(size - 1));
+    EXPECT_EQ(buffer->BytesConsumed(), base::checked_cast<int>(size - 1));
+    EXPECT_EQ(buffer->BytesRemaining(), 1);
+
+    buffer->DidConsume(1);
+    CompareIOBufferToSpan(*buffer, base::span<uint8_t>());
+    EXPECT_EQ(buffer->BytesConsumed(), base::checked_cast<int>(size));
+    EXPECT_EQ(buffer->BytesRemaining(), 0);
+  }
+}
+
+TEST(IOBufferTest, DrainableIOBuffer_SetOffset) {
+  // Include values greater than 0x7F to make sure signed/unsigned is handled
+  // appropriately.
+  std::vector<uint8_t> data{0, 0xFF, 1, 0xFE, 2, 0xFD, 3, 0xFC,
+                            4, 0xFB, 5, 0xFA, 6, 0xF9, 7, 0x80};
+  auto data_buffer = base::MakeRefCounted<VectorIOBuffer>(data);
+
+  // Test both the case the entire nested IOBuffer is included in the
+  // DrainableIOBuffer, and the case where the last value is excluded.
+  for (size_t size : {data.size(), data.size() - 1}) {
+    auto buffer = base::MakeRefCounted<DrainableIOBuffer>(data_buffer, size);
+    auto span = base::span<uint8_t>(data).subspan(0u, size);
+    CompareIOBufferToSpan(*buffer, span);
+    EXPECT_EQ(buffer->BytesConsumed(), 0);
+    EXPECT_EQ(buffer->BytesRemaining(), base::checked_cast<int>(size));
+
+    buffer->SetOffset(size - 1);
+    CompareIOBufferToSpan(*buffer, span.subspan(size - 1));
+    EXPECT_EQ(buffer->BytesConsumed(), base::checked_cast<int>(size - 1));
+    EXPECT_EQ(buffer->BytesRemaining(), 1);
+
+    buffer->SetOffset(1);
+    CompareIOBufferToSpan(*buffer, span.subspan(1u));
+    EXPECT_EQ(buffer->BytesConsumed(), 1);
+    EXPECT_EQ(buffer->BytesRemaining(), base::checked_cast<int>(size - 1));
+
+    buffer->SetOffset(size);
+    CompareIOBufferToSpan(*buffer, base::span<uint8_t>());
+    EXPECT_EQ(buffer->BytesConsumed(), base::checked_cast<int>(size));
+    EXPECT_EQ(buffer->BytesRemaining(), 0);
+
+    buffer->SetOffset(0);
+    CompareIOBufferToSpan(*buffer, span);
+    EXPECT_EQ(buffer->BytesConsumed(), 0);
+    EXPECT_EQ(buffer->BytesRemaining(), base::checked_cast<int>(size));
+
+    buffer->SetOffset(4);
+    CompareIOBufferToSpan(*buffer, span.subspan(4u));
+    EXPECT_EQ(buffer->BytesConsumed(), 4);
+    EXPECT_EQ(buffer->BytesRemaining(), base::checked_cast<int>(size - 4));
+  }
+}
+
+TEST(IOBufferTest, DrainableIOBuffer_DidConsumerAndSetOffset) {
+  // Include values greater than 0x7F to make sure signed/unsigned is handled
+  // appropriately.
+  std::vector<uint8_t> data{0, 0xFF, 1, 0xFE, 2, 0xFD, 3, 0xFC,
+                            4, 0xFB, 5, 0xFA, 6, 0xF9, 7, 0x80};
+  auto data_buffer = base::MakeRefCounted<VectorIOBuffer>(data);
+
+  // Test both the case the entire nested IOBuffer is included in the
+  // DrainableIOBuffer, and the case where the last value is excluded.
+  for (size_t size : {data.size(), data.size() - 1}) {
+    auto buffer = base::MakeRefCounted<DrainableIOBuffer>(data_buffer, size);
+    auto span = base::span<uint8_t>(data).subspan(0u, size);
+    CompareIOBufferToSpan(*buffer, span);
+    EXPECT_EQ(buffer->BytesConsumed(), 0);
+    EXPECT_EQ(buffer->BytesRemaining(), base::checked_cast<int>(size));
+
+    buffer->DidConsume(size);
+    CompareIOBufferToSpan(*buffer, base::span<uint8_t>());
+    EXPECT_EQ(buffer->BytesConsumed(), base::checked_cast<int>(size));
+    EXPECT_EQ(buffer->BytesRemaining(), 0);
+
+    buffer->SetOffset(1);
+    CompareIOBufferToSpan(*buffer, span.subspan(1u));
+    EXPECT_EQ(buffer->BytesConsumed(), 1);
+    EXPECT_EQ(buffer->BytesRemaining(), base::checked_cast<int>(size - 1));
+
+    buffer->DidConsume(3);
+    CompareIOBufferToSpan(*buffer, span.subspan(4u));
+    EXPECT_EQ(buffer->BytesConsumed(), 4);
+    EXPECT_EQ(buffer->BytesRemaining(), base::checked_cast<int>(size - 4));
+
+    buffer->SetOffset(0);
+    CompareIOBufferToSpan(*buffer, span);
+    EXPECT_EQ(buffer->BytesConsumed(), 0);
+    EXPECT_EQ(buffer->BytesRemaining(), base::checked_cast<int>(size));
+
+    buffer->DidConsume(4);
+    CompareIOBufferToSpan(*buffer, span.subspan(4u));
+    EXPECT_EQ(buffer->BytesConsumed(), 4);
+    EXPECT_EQ(buffer->BytesRemaining(), base::checked_cast<int>(size - 4));
+  }
+}
+
 TEST(IOBufferTest, GrowableIOBuffer_SpanBeforeOffset) {
   auto buffer = base::MakeRefCounted<GrowableIOBuffer>();
   buffer->SetCapacity(100);
