@@ -16,9 +16,6 @@ namespace autofill_ai {
 // TODO(crbug.com/395555410): Remove.
 BASE_DECLARE_FEATURE(kAutofillAi);
 
-// TODO(crbug.com/395555410): Remove.
-BASE_DECLARE_FEATURE(kAutofillAiBootstrapping);
-
 inline constexpr base::FeatureParam<base::TimeDelta> kExecutionTimeout{
     &kAutofillAi, /*name=*/"execution_timeout",
     /*default_value=*/base::Seconds(10)};

@@ -18,11 +18,6 @@ namespace autofill_ai {
 // predicted.
 BASE_FEATURE(kAutofillAi, "AutofillAi", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Bootstrap autofill prediction while opt-ing in for improvements.
-BASE_FEATURE(kAutofillAiBootstrapping,
-             "AutofillAiBootstrapping",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsAutofillAiSupported(const PrefService* prefs) {
   constexpr bool is_supported_platform = BUILDFLAG(IS_CHROMEOS) ||
                                          BUILDFLAG(IS_LINUX) ||

@@ -1470,10 +1470,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       "autofillAiEnabled",
       autofill_ai::IsAutofillAiSupported(profile->GetPrefs()));
 
-  html_source->AddBoolean(
-      "autofillAiBootstrappingEnabled",
-      base::FeatureList::IsEnabled(autofill_ai::kAutofillAiBootstrapping));
-
   html_source->AddString(
       "autofillAiToggleSubLabel",
       l10n_util::GetStringFUTF16(
