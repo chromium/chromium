@@ -23,6 +23,7 @@
 #include "base/hash/hash.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
@@ -544,7 +545,7 @@ scoped_refptr<EntryImpl> BackendImpl::CreateEntryImpl(const std::string& key) {
     DCHECK(!error);
     if (!parent && data_->table[hash & mask_]) {
       // We should have corrected the problem.
-      DUMP_WILL_BE_NOTREACHED();
+      DLOG(WARNING) << "Unable to correct hash collision";
       return nullptr;
     }
   }
