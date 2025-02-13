@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/sync/base/features.h"
+#import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_consumer.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -29,7 +30,10 @@ namespace {
 // displayed on top. This differs based on the addition of the automatic passkey
 // upgrades toggle. Should be cleaned up after the feature is launched.
 int ExpectedSectionAfterAlwaysVisibleTopSections() {
-  return IOSPasskeysM2Enabled() ? 3 : 2;
+  return base::FeatureList::IsEnabled(
+             kCredentialProviderAutomaticPasskeyUpgrade)
+             ? 3
+             : 2;
 }
 
 // Helper method that returns the expected title for the managed and unmanaged
@@ -141,7 +145,8 @@ TEST_F(PasswordSettingsViewControllerTest,
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kIOSPasskeysM2);
+  scoped_feature_list.InitAndEnableFeature(
+      kCredentialProviderAutomaticPasskeyUpgrade);
 
   // Re-create the controller so that the enabled flag is picked up.
   CreateController();
