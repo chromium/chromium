@@ -119,6 +119,85 @@ static void LogDav1dMessage(void* cookie, const char* format, va_list ap) {
   DLOG(ERROR) << log;
 }
 
+// Dynamically allocated Dav1dPicture opaque data.
+struct FrameBufferData {
+  FrameBufferData(void* fb, scoped_refptr<FrameBufferPool> pool)
+      : fb_priv(fb), frame_pool(std::move(pool)) {
+    CHECK(fb_priv);
+    CHECK(frame_pool);
+  }
+
+  // FrameBufferPool key that we'll free when the Dav1dPicture is unused.
+  raw_ptr<void> fb_priv = nullptr;
+
+  // Pool which owns `fb_priv`.
+  scoped_refptr<FrameBufferPool> frame_pool;
+};
+
+static int AllocPicture(Dav1dPicture* p, void* frame_pool_opaque) {
+  // Copy of dav1d_default_picture_alloc() dav1d 1.5.1 but uses FrameBufferPool.
+  const int hbd = p->p.bpc > 8;
+  const int aligned_w = (p->p.w + 127) & ~127;
+  const int aligned_h = (p->p.h + 127) & ~127;
+  const int has_chroma = p->p.layout != DAV1D_PIXEL_LAYOUT_I400;
+  const int ss_ver = p->p.layout == DAV1D_PIXEL_LAYOUT_I420;
+  const int ss_hor = p->p.layout != DAV1D_PIXEL_LAYOUT_I444;
+  ptrdiff_t y_stride = aligned_w << hbd;
+  ptrdiff_t uv_stride = has_chroma ? y_stride >> ss_hor : 0;
+  /* Due to how mapping of addresses to sets works in most L1 and L2 cache
+   * implementations, strides of multiples of certain power-of-two numbers
+   * may cause multiple rows of the same superblock to map to the same set,
+   * causing evictions of previous rows resulting in a reduction in cache
+   * hit rate. Avoid that by slightly padding the stride when necessary. */
+  if (!(y_stride & 1023)) {
+    y_stride += DAV1D_PICTURE_ALIGNMENT;
+  }
+  if (!(uv_stride & 1023) && has_chroma) {
+    uv_stride += DAV1D_PICTURE_ALIGNMENT;
+  }
+  p->stride[0] = y_stride;
+  p->stride[1] = uv_stride;
+  const size_t y_sz = y_stride * aligned_h;
+  const size_t uv_sz = uv_stride * (aligned_h >> ss_ver);
+  const size_t pic_size = y_sz + 2 * uv_sz;
+
+  // Note: Subsequent code diverges from dav1d_default_picture_alloc().
+  auto frame_pool =
+      base::WrapRefCounted(static_cast<FrameBufferPool*>(frame_pool_opaque));
+
+  // FrameBufferPool doesn't provide alignment and it's not easy to add, so we
+  // over-allocate by the alignment and adjust accordingly. Over-allocating by
+  // 2*DAV1D_PICTURE_ALIGNMENT ensures this is safe to do and satisfies the
+  // requirement that data is padded _AND_ aligned by DAV1D_PICTURE_ALIGNMENT.
+  const size_t alloc_size = pic_size + DAV1D_PICTURE_ALIGNMENT * 2;
+  void* fb_priv = nullptr;
+  auto span = frame_pool->GetFrameBuffer(alloc_size, &fb_priv);
+  if (span.empty()) {
+    return DAV1D_ERR(ENOMEM);
+  }
+
+  p->allocator_data = new FrameBufferData(fb_priv, frame_pool);
+
+  // Safe due to over-allocation by DAV1D_PICTURE_ALIGNMENT * 2 above.
+  uint8_t* const data =
+      base::bits::AlignUp(span.data(), DAV1D_PICTURE_ALIGNMENT);
+  p->data[0] = data;
+  p->data[1] = has_chroma ? data + y_sz : nullptr;
+  p->data[2] = has_chroma ? data + y_sz + uv_sz : nullptr;
+  return 0;
+}
+
+static void ReleasePicture(Dav1dPicture* p, void*) {
+  if (!p || !p->allocator_data) {
+    return;
+  }
+
+  auto* opaque_data =
+      static_cast<FrameBufferData*>(std::move(p->allocator_data));
+  opaque_data->frame_pool->ReleaseFrameBuffer(std::move(opaque_data->fb_priv));
+  delete opaque_data;
+}
+
 // std::unique_ptr release helpers. We need to release both the containing
 // structs as well as refs held within the structures.
 struct ScopedDav1dDataFree {
@@ -157,6 +236,9 @@ Dav1dVideoDecoder::Dav1dVideoDecoder(std::unique_ptr<MediaLog> media_log,
 Dav1dVideoDecoder::~Dav1dVideoDecoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CloseDecoder();
+  if (frame_pool_) {
+    frame_pool_->Shutdown();
+  }
 }
 
 VideoDecoderType Dav1dVideoDecoder::GetDecoderType() const {
@@ -188,11 +270,20 @@ void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
+  if (!frame_pool_) {
+    frame_pool_ = base::MakeRefCounted<FrameBufferPool>();
+  }
+
   // Clear any previously initialized decoder.
   CloseDecoder();
 
   Dav1dSettings s;
   dav1d_default_settings(&s);
+
+  // Setup a custom allocator so OOM failures error out instead of crashing.
+  s.allocator.cookie = frame_pool_.get();
+  s.allocator.alloc_picture_callback = &AllocPicture;
+  s.allocator.release_picture_callback = &ReleasePicture;
 
   // Compute the ideal thread count values. We'll then clamp these based on the
   // maximum number of recommended threads (using number of processors, etc).
@@ -387,9 +478,11 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
     frame->metadata().power_efficient = false;
     frame->set_hdr_metadata(config_.hdr_metadata());
 
-    // When we use bind mode, our image data is dependent on the Dav1dPicture,
-    // so we must ensure it stays alive along enough.
-    frame->AddDestructionObserver(base::DoNothingWithBoundArgs(std::move(p)));
+    FrameBufferData* opaque_data =
+        static_cast<FrameBufferData*>(p->allocator_data);
+    frame->AddDestructionObserver(
+        frame_pool_->CreateFrameCallback(opaque_data->fb_priv));
+
     output_cb_.Run(std::move(frame));
   }
 

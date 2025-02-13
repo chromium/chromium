@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/sequence_checker.h"
+#include "media/base/frame_buffer_pool.h"
 #include "media/base/media_log.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder.h"
@@ -88,6 +89,10 @@ class MEDIA_EXPORT Dav1dVideoDecoder : public OffloadableVideoDecoder {
   // The configuration passed to Initialize(), saved since some fields are
   // needed to annotate video frames after decoding.
   VideoDecoderConfig config_;
+
+  // Picture allocation pool. Used instead of the default allocator so that OOM
+  // failures can return an error instead of crashing the tab.
+  scoped_refptr<FrameBufferPool> frame_pool_;
 
   // The allocated decoder; null before Initialize() and anytime after
   // CloseDecoder().
