@@ -191,7 +191,8 @@ StoragePartition* BrowserContext::GetDefaultStoragePartition() {
   return GetStoragePartition(StoragePartitionConfig::CreateDefault(this));
 }
 
-void BrowserContext::StartBrowserPrefetchRequest(
+std::unique_ptr<content::PrefetchHandle>
+BrowserContext::StartBrowserPrefetchRequest(
     const GURL& url,
     bool javascript_enabled,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
@@ -207,7 +208,7 @@ void BrowserContext::StartBrowserPrefetchRequest(
     if (request_status_listener) {
       request_status_listener->OnPrefetchStartFailed();
     }
-    return;
+    return nullptr;
   }
 
   PrefetchType prefetch_type(PreloadingTriggerType::kEmbedder,
@@ -217,7 +218,7 @@ void BrowserContext::StartBrowserPrefetchRequest(
       /*referring_origin=*/std::nullopt, std::move(no_vary_search_hint),
       /*attempt=*/nullptr, additional_headers,
       std::move(request_status_listener), ttl_in_sec);
-  prefetch_service->AddPrefetchContainer(std::move(container));
+  return prefetch_service->AddPrefetchContainerWithHandle(std::move(container));
 }
 
 void BrowserContext::UpdatePrefetchServiceDelegateAcceptLanguageHeader(

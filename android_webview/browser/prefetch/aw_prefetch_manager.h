@@ -5,9 +5,11 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_PREFETCH_AW_PREFETCH_MANAGER_H_
 #define ANDROID_WEBVIEW_BROWSER_PREFETCH_AW_PREFETCH_MANAGER_H_
 
+#include "base/containers/circular_deque.h"
 #include "base/memory/raw_ref.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/prefetch_handle.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_headers.h"
@@ -60,6 +62,15 @@ class AwPrefetchManager {
   // Returns the maximum number of allowed prefetches in cache.
   int GetMaxPrefetches() const { return max_prefetches_; }
 
+  std::vector<content::PrefetchHandle*> GetAllPrefetchesForTesting() const {
+    std::vector<content::PrefetchHandle*> raw_prefetches;
+    raw_prefetches.reserve(all_prefetches_.size());
+    for (const auto& prefetch : all_prefetches_) {
+      raw_prefetches.push_back(prefetch.get());
+    }
+    return raw_prefetches;
+  }
+
   base::android::ScopedJavaLocalRef<jobject> GetJavaPrefetchManager();
 
  private:
@@ -68,6 +79,9 @@ class AwPrefetchManager {
   int ttl_in_sec_ = DEFAULT_TTL_IN_SEC;
 
   int max_prefetches_ = DEFAULT_MAX_PREFETCHES;
+
+  base::circular_deque<std::unique_ptr<content::PrefetchHandle>>
+      all_prefetches_;
 
   // Java object reference.
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
