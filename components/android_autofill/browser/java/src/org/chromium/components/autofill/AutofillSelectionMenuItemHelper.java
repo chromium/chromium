@@ -9,6 +9,7 @@ import android.os.Build;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.SelectionMenuItem;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.List;
  * The class to provide autofill selection context menu items. To match the Android native view
  * behavior, the autofill context menu only appears when there is no text selected.
  */
+@NullMarked
 public class AutofillSelectionMenuItemHelper {
     private final AutofillProvider mAutofillProvider;
     private final int mAutofillMenuItemTitle;

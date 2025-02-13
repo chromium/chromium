@@ -30,6 +30,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.version_info.VersionConstants;
+import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.components.autofill.AutofillRequest.FocusField;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
@@ -51,6 +52,7 @@ import org.chromium.ui.display.DisplayAndroid;
  * AwContents.java in //android_webview), and AndroidAutofillProvider is owned by the
  * embedder-specific C++ WebContents wrapper (e.g., native AwContents in //android_webview).
  */
+@NullUnmarked
 @JNINamespace("autofill")
 public class AutofillProvider {
     /**
