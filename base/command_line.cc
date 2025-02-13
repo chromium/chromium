@@ -378,6 +378,23 @@ std::string CommandLine::GetSwitchValueASCII(
 #endif
 }
 
+std::string CommandLine::GetSwitchValueUTF8(
+    std::string_view switch_string) const {
+  StringType value = GetSwitchValueNative(switch_string);
+
+#if BUILDFLAG(IS_WIN)
+  const std::string maybe_utf8_value = WideToUTF8(value);
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  const std::string maybe_utf8_value = value;
+#endif
+
+  if (!IsStringUTF8(maybe_utf8_value)) {
+    DLOG(WARNING) << "Value of switch (" << switch_string << ") is not UTF8.";
+    return {};
+  }
+  return maybe_utf8_value;
+}
+
 FilePath CommandLine::GetSwitchValuePath(std::string_view switch_string) const {
   return FilePath(GetSwitchValueNative(switch_string));
 }
@@ -435,6 +452,11 @@ void CommandLine::AppendSwitchNative(std::string_view switch_string,
 
 void CommandLine::AppendSwitchASCII(std::string_view switch_string,
                                     std::string_view value_string) {
+  AppendSwitchUTF8(switch_string, value_string);
+}
+
+void CommandLine::AppendSwitchUTF8(std::string_view switch_string,
+                                   std::string_view value_string) {
 #if BUILDFLAG(IS_WIN)
   AppendSwitchNative(switch_string, UTF8ToWide(value_string));
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
