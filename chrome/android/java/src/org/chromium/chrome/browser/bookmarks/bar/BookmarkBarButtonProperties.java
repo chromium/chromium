@@ -11,14 +11,19 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
+import java.util.function.IntConsumer;
+
 /**
  * Properties for a button in the bookmark bar which provides users with bookmark access from top
  * chrome.
  */
 class BookmarkBarButtonProperties {
 
-    /** The callback to notify of bookmark bar button click events. */
-    public static final WritableObjectPropertyKey<Runnable> CLICK_CALLBACK =
+    /**
+     * The callback to notify of bookmark bar button click events. The callback is provided the meta
+     * state of the most recent key/touch event.
+     */
+    public static final WritableObjectPropertyKey<IntConsumer> CLICK_CALLBACK =
             new WritableObjectPropertyKey<>();
 
     /** The supplier for the icon to render in the bookmark bar button. */

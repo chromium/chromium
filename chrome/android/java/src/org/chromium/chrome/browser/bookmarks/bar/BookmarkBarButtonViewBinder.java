@@ -29,8 +29,7 @@ class BookmarkBarButtonViewBinder {
             @NonNull BookmarkBarButton view,
             @NonNull PropertyKey key) {
         if (key == BookmarkBarButtonProperties.CLICK_CALLBACK) {
-            final var callback = model.get(BookmarkBarButtonProperties.CLICK_CALLBACK);
-            view.setOnClickListener(callback != null ? (v) -> callback.run() : null);
+            view.setClickCallback(model.get(BookmarkBarButtonProperties.CLICK_CALLBACK));
         } else if (key == BookmarkBarButtonProperties.ICON_SUPPLIER) {
             view.setIconSupplier(model.get(BookmarkBarButtonProperties.ICON_SUPPLIER));
         } else if (key == BookmarkBarButtonProperties.ICON_TINT_LIST_ID) {

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.bookmarks.bar;
 
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
@@ -15,14 +16,18 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.view.KeyEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
@@ -50,6 +55,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
@@ -113,7 +119,10 @@ public class BookmarkBarTest {
     }
 
     private @NonNull Matcher<View> bookmarkBarItemWithText(@NonNull String text) {
-        return allOf(isDescendantOfA(withClassName(endsWith("BookmarkBar"))), withText(text));
+        return allOf(
+                isDescendantOfA(withClassName(endsWith("BookmarkBar"))),
+                withClassName(endsWith("BookmarkBarButton")),
+                hasDescendant(withText(text)));
     }
 
     private @NonNull Matcher<View> bookmarkBarOverflowButton() {
@@ -124,6 +133,29 @@ public class BookmarkBarTest {
 
     private @NonNull Matcher<View> bookmarkManagerToolbarWithText(@NonNull String text) {
         return allOf(isDescendantOfA(withClassName(endsWith("BookmarkToolbar"))), withText(text));
+    }
+
+    private @NonNull ViewAction clickWith(int metaState) {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return isDisplayed();
+            }
+
+            @Override
+            public String getDescription() {
+                return String.format("clickWith(metaState=%d)", metaState);
+            }
+
+            @Override
+            public void perform(@NonNull UiController uiController, @NonNull View view) {
+                TouchCommon.singleClickView(view, metaState);
+            }
+        };
+    }
+
+    private @Nullable Tab getActivityTab() {
+        return sActivityTestRule.getActivity().getActivityTab();
     }
 
     private @NonNull GURL getTestServerUrl(@NonNull String relativeUrl) {
@@ -157,16 +189,36 @@ public class BookmarkBarTest {
     @Test
     @MediumTest
     public void testOnBookmarkItemClick() throws ExecutionException {
+        final Tab originalTab = getActivityTab();
         final String title = "Google";
         final GURL url = getTestServerUrl("/chrome/test/data/android/google.html");
         mItemIds = List.of(addBookmark(/* index= */ 0, title, url));
         onViewWaiting(bookmarkBarItemWithText(title)).perform(click());
         CriteriaHelper.pollUiThread(
                 () -> {
-                    final Tab activityTab = sActivityTestRule.getActivity().getActivityTab();
-                    Criteria.checkThat(activityTab, notNullValue());
-                    Criteria.checkThat(activityTab.getUrl(), notNullValue());
-                    Criteria.checkThat(activityTab.getUrl(), is(url));
+                    final Tab currentTab = getActivityTab();
+                    Criteria.checkThat(currentTab, is(originalTab));
+                    Criteria.checkThat(currentTab, notNullValue());
+                    Criteria.checkThat(currentTab.getUrl(), notNullValue());
+                    Criteria.checkThat(currentTab.getUrl(), is(url));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testOnBookmarkItemControlClick() throws ExecutionException {
+        final Tab originalTab = getActivityTab();
+        final String title = "Google";
+        final GURL url = getTestServerUrl("/chrome/test/data/android/google.html");
+        mItemIds = List.of(addBookmark(/* index= */ 0, title, url));
+        onViewWaiting(bookmarkBarItemWithText(title)).perform(clickWith(KeyEvent.META_CTRL_ON));
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    final Tab currentTab = getActivityTab();
+                    Criteria.checkThat(currentTab, is(not(originalTab)));
+                    Criteria.checkThat(currentTab, notNullValue());
+                    Criteria.checkThat(currentTab.getUrl(), notNullValue());
+                    Criteria.checkThat(currentTab.getUrl(), is(url));
                 });
     }
 

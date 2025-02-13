@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks.bar;
 
 import android.app.Activity;
+import android.view.KeyEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -229,7 +230,8 @@ class BookmarkBarMediator
 
     // Private methods.
 
-    private void onAllBookmarksButtonClick() {
+    // TODO(crbug.com/394614779): Open in popup window instead of bookmark manager.
+    private void onAllBookmarksButtonClick(int metaState) {
         // Open the manager iff the active profile and model are unchanged to prevent accidentally
         // opening the manager for the wrong profile/model.
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
@@ -239,22 +241,31 @@ class BookmarkBarMediator
                 });
     }
 
-    // TODO(crbug.com/394614604): Handle control-click to open in new tab.
     // TODO(crbug.com/394614166): Handle shift-click to open in new window.
-    private void onBookmarkItemClick(@NonNull BookmarkItem item) {
+    private void onBookmarkItemClick(@NonNull BookmarkItem item, int metaState) {
         final Profile profile = mProfileSupplier.get();
 
+        // TODO(crbug.com/394614779): Open in popup window instead of bookmark manager.
         if (item.isFolder()) {
             BookmarkUtils.showBookmarkManager(mActivity, item.getId(), profile);
             return;
         }
 
-        new BookmarkOpener(
+        final var opener =
+                new BookmarkOpener(
                         BookmarkModel.getForProfile(profile),
                         mActivity,
                         mActivity.getComponentName(),
-                        /* bookmarkOpenedCallback= */ null)
-                .openBookmarkInCurrentTab(item.getId(), profile.isOffTheRecord());
+                        /* bookmarkOpenedCallback= */ null);
+
+        // TODO(crbug.com/394614604): Open in new background tab rather than foreground.
+        final boolean isCtrlPressed = (metaState & KeyEvent.META_CTRL_ON) != 0;
+        if (isCtrlPressed) {
+            opener.openBookmarksInNewTabs(List.of(item.getId()), profile.isOffTheRecord());
+            return;
+        }
+
+        opener.openBookmarkInCurrentTab(item.getId(), profile.isOffTheRecord());
     }
 
     private void onItemsOverflowChange(boolean itemsOverflow) {

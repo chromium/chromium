@@ -12,7 +12,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.chrome.R;
@@ -23,6 +22,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.BiConsumer;
 
 /** Utilities for the bookmark bar which provides users with bookmark access from top chrome. */
 class BookmarkBarUtils {
@@ -46,7 +46,7 @@ class BookmarkBarUtils {
      * @return the created list item to render in the bookmark bar.
      */
     public static @NonNull ListItem createListItemFor(
-            @NonNull Callback<BookmarkItem> clickCallback,
+            @NonNull BiConsumer<BookmarkItem, Integer> clickCallback,
             @NonNull Context context,
             @NonNull BookmarkImageFetcher imageFetcher,
             @NonNull BookmarkItem item) {
@@ -55,7 +55,7 @@ class BookmarkBarUtils {
                 new PropertyModel.Builder(BookmarkBarButtonProperties.ALL_KEYS)
                         .with(
                                 BookmarkBarButtonProperties.CLICK_CALLBACK,
-                                () -> clickCallback.onResult(item))
+                                (metaState) -> clickCallback.accept(item, metaState))
                         .with(
                                 BookmarkBarButtonProperties.ICON_SUPPLIER,
                                 createIconSupplierFor(context, imageFetcher, item))
