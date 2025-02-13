@@ -1051,6 +1051,7 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_PARTITIONED_COOKIES_EXCLUDED,
                 "When enabled, WebView records if a site with partitioned cookies has any cookies"
                     + " excluded due to a different cookie partition key than the current site's."),
+        Flag.baseFeature(BlinkFeatures.FETCH_LATER_API, "Enables FetchLater API."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
