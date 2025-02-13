@@ -438,6 +438,8 @@ public abstract class ChromeFeatureList {
     public static final String PRICE_INSIGHTS = "PriceInsights";
     public static final String PRIVACY_SANDBOX_ACTIVITY_TYPE_STORAGE =
             "PrivacySandboxActivityTypeStorage";
+    public static final String PRIVACY_SANDBOX_NOTICE_ACTION_DEBOUNCING_ANDROID =
+            "PrivacySandboxNoticeActionDebouncingAndroid";
     public static final String PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS =
             "PrivacySandboxAdsApiUxEnhancements";
     public static final String PRIVACY_SANDBOX_ADS_NOTICE_CCT = "PrivacySandboxAdsNoticeCCT";

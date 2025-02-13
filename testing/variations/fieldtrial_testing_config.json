@@ -18110,6 +18110,24 @@
             ]
         }
     ],
+    "PrivacySandboxNoticeActionDebouncingAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "debouncing-time": "100"
+                    },
+                    "enable_features": [
+                        "PrivacySandboxNoticeActionDebouncingAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacySandboxNoticeQueue": [
         {
             "platforms": [

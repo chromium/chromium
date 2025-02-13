@@ -307,6 +307,15 @@ COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<int>
     kPrivacySandboxCctAdsNoticeSurveyDelaysMilliseconds;
 
+// If true, enables debouncing for button clicks on all Android notices.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxNoticeActionDebouncingAndroid);
+
+// The delay in milliseconds between the first click and the next accepted
+// click.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<int> kPrivacySandboxDebouncingDelayMilliseconds;
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // If true, displays the Ads APIs UX Enancements.

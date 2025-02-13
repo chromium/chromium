@@ -37,7 +37,7 @@ import org.chromium.url.GURL;
  * the Ads API UX Enhancement.
  */
 public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
-        implements View.OnClickListener, DialogInterface.OnShowListener {
+        implements DialogInterface.OnShowListener {
     private final PrivacySandboxBridge mPrivacySandboxBridge;
     private View mContentView;
 
@@ -65,6 +65,7 @@ public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
     private long mPrivacyPolicyClickedTimestamp;
     private final ActivityWindowAndroid mActivityWindowAndroid;
     private boolean mIsPrivacyPageLoaded;
+    private View.OnClickListener mOnClickListener;
 
     public PrivacySandboxDialogNoticeEeaV2(
             Context context,
@@ -81,11 +82,12 @@ public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
         mContentView =
                 LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_notice_eea_v2, null);
         setContentView(mContentView);
+        mOnClickListener = getOnClickListener();
 
         ButtonCompat ackButton = mContentView.findViewById(R.id.ack_button);
-        ackButton.setOnClickListener(this);
+        ackButton.setOnClickListener(mOnClickListener);
         ButtonCompat ackButtonEqualized = mContentView.findViewById(R.id.ack_button_equalized);
-        ackButtonEqualized.setOnClickListener(this);
+        ackButtonEqualized.setOnClickListener(mOnClickListener);
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.PRIVACY_SANDBOX_EQUALIZED_PROMPT_BUTTONS)) {
             ackButton.setVisibility(View.GONE);
@@ -93,7 +95,7 @@ public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
             ackButtonEqualized.setVisibility(View.GONE);
         }
         ButtonCompat settingsButton = mContentView.findViewById(R.id.settings_button);
-        settingsButton.setOnClickListener(this);
+        settingsButton.setOnClickListener(mOnClickListener);
 
         mMoreButton = mContentView.findViewById(R.id.more_button);
         mActionButtons = mContentView.findViewById(R.id.action_buttons);
@@ -102,7 +104,7 @@ public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
         // Controls for the Site Suggested Ads expanding section.
         mSiteSuggestedAdsDropdownElement =
                 mContentView.findViewById(R.id.site_suggested_ads_dropdown_element);
-        mSiteSuggestedAdsDropdownElement.setOnClickListener(this);
+        mSiteSuggestedAdsDropdownElement.setOnClickListener(mOnClickListener);
         mSiteSuggestedAdsDropdownContainer =
                 mContentView.findViewById(R.id.site_suggested_ads_dropdown_container);
         mSiteSuggestedAdsExpandArrowView =
@@ -114,7 +116,7 @@ public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
         // Controls for the Ad Measurement expanding section.
         mAdMeasurementDropdownElement =
                 mContentView.findViewById(R.id.ad_measurement_dropdown_element);
-        mAdMeasurementDropdownElement.setOnClickListener(this);
+        mAdMeasurementDropdownElement.setOnClickListener(mOnClickListener);
         mAdMeasurementDropdownContainer =
                 mContentView.findViewById(R.id.ad_measurement_dropdown_container);
         mAdMeasurementExpandArrowView = mContentView.findViewById(R.id.ad_measurement_expand_arrow);
@@ -126,10 +128,10 @@ public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
         mPrivacyPolicyView = mContentView.findViewById(R.id.privacy_policy_view);
         mPrivacyPolicyContent = mContentView.findViewById(R.id.privacy_policy_content);
         mPrivacyPolicyBackButton = mContentView.findViewById(R.id.privacy_policy_back_button);
-        mPrivacyPolicyBackButton.setOnClickListener(this);
+        mPrivacyPolicyBackButton.setOnClickListener(mOnClickListener);
         mIsPrivacyPageLoaded = false;
 
-        mMoreButton.setOnClickListener(this);
+        mMoreButton.setOnClickListener(mOnClickListener);
         setOnShowListener(this);
         setCancelable(false);
 
@@ -146,6 +148,17 @@ public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
                                         });
                             }
                         });
+    }
+
+    private View.OnClickListener getOnClickListener() {
+        return new PrivacySandboxDebouncedOnClick(
+                "ProtectedAudienceMeasurementNoticeModal"
+                        + PrivacySandboxDialogUtils.getSurfaceTypeAsString(mSurfaceType)) {
+            @Override
+            public void processClick(View v) {
+                processClickImpl(v);
+            }
+        };
     }
 
     @Override
@@ -261,9 +274,7 @@ public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
         mNoticeViewContainer.setVisibility(View.VISIBLE);
     }
 
-    // OnClickListener:
-    @Override
-    public void onClick(View view) {
+    public void processClickImpl(View view) {
         int id = view.getId();
         if (id == R.id.ack_button || id == R.id.ack_button_equalized) {
             handleAckButtonClick();

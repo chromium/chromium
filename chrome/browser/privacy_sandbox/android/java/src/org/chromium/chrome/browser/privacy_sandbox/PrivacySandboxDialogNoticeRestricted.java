@@ -18,7 +18,7 @@ import org.chromium.ui.widget.ButtonCompat;
 
 /** Dialog in the form of a notice shown for the Privacy Sandbox. */
 public class PrivacySandboxDialogNoticeRestricted extends ChromeDialog
-        implements View.OnClickListener, DialogInterface.OnShowListener {
+        implements DialogInterface.OnShowListener {
     private final PrivacySandboxBridge mPrivacySandboxBridge;
     private View mContentView;
 
@@ -26,6 +26,7 @@ public class PrivacySandboxDialogNoticeRestricted extends ChromeDialog
     private LinearLayout mActionButtons;
     private ScrollView mScrollView;
     private @SurfaceType int mSurfaceType;
+    private View.OnClickListener mOnClickListener;
 
     public PrivacySandboxDialogNoticeRestricted(
             Context context,
@@ -38,17 +39,18 @@ public class PrivacySandboxDialogNoticeRestricted extends ChromeDialog
                 LayoutInflater.from(context)
                         .inflate(R.layout.privacy_sandbox_notice_restricted, null);
         setContentView(mContentView);
+        mOnClickListener = getOnClickListener();
 
         ButtonCompat ackButton = mContentView.findViewById(R.id.ack_button);
-        ackButton.setOnClickListener(this);
+        ackButton.setOnClickListener(mOnClickListener);
         ButtonCompat settingsButton = mContentView.findViewById(R.id.settings_button);
-        settingsButton.setOnClickListener(this);
+        settingsButton.setOnClickListener(mOnClickListener);
 
         mMoreButton = mContentView.findViewById(R.id.more_button);
         mActionButtons = mContentView.findViewById(R.id.action_buttons);
         mScrollView = mContentView.findViewById(R.id.privacy_sandbox_dialog_scroll_view);
 
-        mMoreButton.setOnClickListener(this);
+        mMoreButton.setOnClickListener(mOnClickListener);
         setOnShowListener(this);
         setCancelable(false);
 
@@ -67,6 +69,17 @@ public class PrivacySandboxDialogNoticeRestricted extends ChromeDialog
                         });
     }
 
+    private View.OnClickListener getOnClickListener() {
+        return new PrivacySandboxDebouncedOnClick(
+                "MeasurementNoticeModal"
+                        + PrivacySandboxDialogUtils.getSurfaceTypeAsString(mSurfaceType)) {
+            @Override
+            public void processClick(View v) {
+                processClickImpl(v);
+            }
+        };
+    }
+
     @Override
     public void show() {
         mPrivacySandboxBridge.promptActionOccurred(
@@ -74,9 +87,7 @@ public class PrivacySandboxDialogNoticeRestricted extends ChromeDialog
         super.show();
     }
 
-    // OnClickListener:
-    @Override
-    public void onClick(View view) {
+    public void processClickImpl(View view) {
         int id = view.getId();
         if (id == R.id.ack_button) {
             RecordUserAction.record("Settings.PrivacySandbox.RestrictedNoticeDialog.AckClicked");

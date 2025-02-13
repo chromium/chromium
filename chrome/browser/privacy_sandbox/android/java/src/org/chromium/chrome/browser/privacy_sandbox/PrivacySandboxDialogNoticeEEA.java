@@ -19,7 +19,7 @@ import org.chromium.ui.widget.CheckableImageView;
 
 /** Dialog in the form of a notice shown for the Privacy Sandbox. */
 public class PrivacySandboxDialogNoticeEEA extends ChromeDialog
-        implements View.OnClickListener, DialogInterface.OnShowListener {
+        implements DialogInterface.OnShowListener {
     private final PrivacySandboxBridge mPrivacySandboxBridge;
     private View mContentView;
 
@@ -31,6 +31,7 @@ public class PrivacySandboxDialogNoticeEEA extends ChromeDialog
     private final CheckableImageView mExpandArrowView;
     private LinearLayout mDropdownContainer;
     private @SurfaceType int mSurfaceType;
+    private View.OnClickListener mOnClickListener;
 
     public PrivacySandboxDialogNoticeEEA(
             Context context,
@@ -43,11 +44,12 @@ public class PrivacySandboxDialogNoticeEEA extends ChromeDialog
         mContentView =
                 LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_notice_eea, null);
         setContentView(mContentView);
+        mOnClickListener = getOnClickListener();
 
         ButtonCompat ackButton = mContentView.findViewById(R.id.ack_button);
-        ackButton.setOnClickListener(this);
+        ackButton.setOnClickListener(mOnClickListener);
         ButtonCompat ackButtonEqualized = mContentView.findViewById(R.id.ack_button_equalized);
-        ackButtonEqualized.setOnClickListener(this);
+        ackButtonEqualized.setOnClickListener(mOnClickListener);
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.PRIVACY_SANDBOX_EQUALIZED_PROMPT_BUTTONS)) {
             ackButton.setVisibility(View.GONE);
@@ -55,7 +57,7 @@ public class PrivacySandboxDialogNoticeEEA extends ChromeDialog
             ackButtonEqualized.setVisibility(View.GONE);
         }
         ButtonCompat settingsButton = mContentView.findViewById(R.id.settings_button);
-        settingsButton.setOnClickListener(this);
+        settingsButton.setOnClickListener(mOnClickListener);
 
         mMoreButton = mContentView.findViewById(R.id.more_button);
         mActionButtons = mContentView.findViewById(R.id.action_buttons);
@@ -63,7 +65,7 @@ public class PrivacySandboxDialogNoticeEEA extends ChromeDialog
 
         // Controls for the expanding section.
         mDropdownElement = mContentView.findViewById(R.id.dropdown_element);
-        mDropdownElement.setOnClickListener(this);
+        mDropdownElement.setOnClickListener(mOnClickListener);
         mDropdownContainer = mContentView.findViewById(R.id.dropdown_container);
         mExpandArrowView = mContentView.findViewById(R.id.expand_arrow);
         mExpandArrowView.setImageDrawable(PrivacySandboxDialogUtils.createExpandDrawable(context));
@@ -71,7 +73,7 @@ public class PrivacySandboxDialogNoticeEEA extends ChromeDialog
 
         setBulletsDescription();
 
-        mMoreButton.setOnClickListener(this);
+        mMoreButton.setOnClickListener(mOnClickListener);
         setOnShowListener(this);
         setCancelable(false);
 
@@ -90,15 +92,24 @@ public class PrivacySandboxDialogNoticeEEA extends ChromeDialog
                         });
     }
 
+    private View.OnClickListener getOnClickListener() {
+        return new PrivacySandboxDebouncedOnClick(
+                "ProtectedAudienceMeasurementNoticeModal"
+                        + PrivacySandboxDialogUtils.getSurfaceTypeAsString(mSurfaceType)) {
+            @Override
+            public void processClick(View v) {
+                processClickImpl(v);
+            }
+        };
+    }
+
     @Override
     public void show() {
         mPrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_SHOWN, mSurfaceType);
         super.show();
     }
 
-    // OnClickListener:
-    @Override
-    public void onClick(View view) {
+    public void processClickImpl(View view) {
         int id = view.getId();
         if (id == R.id.ack_button || id == R.id.ack_button_equalized) {
             RecordUserAction.record("Settings.PrivacySandbox.NoticeEeaDialog.AckClicked");
