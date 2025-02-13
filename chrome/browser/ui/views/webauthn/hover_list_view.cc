@@ -73,9 +73,8 @@ HoverListView::HoverListView(std::unique_ptr<HoverListModel> model)
                        model_->IsButtonEnabled(item_tag), item_tag);
   }
 
-  scroll_view_ = new views::ScrollView();
+  scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->SetContents(std::move(item_container));
-  AddChildView(scroll_view_.get());
   scroll_view_->ClipHeightTo(GetPreferredViewHeight(),
                              GetPreferredViewHeight());
 }
