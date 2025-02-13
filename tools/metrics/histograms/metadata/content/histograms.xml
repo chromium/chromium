@@ -23,17 +23,17 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="ContentAllProviderTypes">
-  <variant name="default"/>
-  <variant name="extension"/>
-  <variant name="installed_webapp_provider"/>
-  <variant name="notification_android"/>
-  <variant name="one_time"/>
-  <variant name="policy"/>
-  <variant name="preference"/>
-  <variant name="supervised_user"/>
-  <variant name="tests"/>
-  <variant name="tests_other"/>
-  <variant name="webui_allowlist"/>
+  <variant name="CustomExtensionProvider"/>
+  <variant name="DefaultProvider"/>
+  <variant name="InstalledWebappProvider"/>
+  <variant name="NotificationAndroidProvider"/>
+  <variant name="OneTimePermissionProvider"/>
+  <variant name="OtherProviderForTests"/>
+  <variant name="PolicyProvider"/>
+  <variant name="PrefProvider"/>
+  <variant name="ProviderForTests"/>
+  <variant name="SupervisedProvider"/>
+  <variant name="WebuiAllowlistProvider"/>
 </variants>
 
 <variants name="FeedNetworkRequestType">
