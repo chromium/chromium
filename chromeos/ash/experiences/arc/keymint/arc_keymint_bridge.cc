@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/keymint/arc_keymint_bridge.h"
+#include "chromeos/ash/experiences/arc/keymint/arc_keymint_bridge.h"
 
 #include "base/memory/singleton.h"
-#include "chrome/browser/ash/arc/keymint/cert_store_bridge_keymint.h"
 #include "chromeos/ash/components/dbus/arc/arc_keymint_client.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "chromeos/ash/experiences/arc/keymint/cert_store_bridge_keymint.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "mojo/core/configuration.h"
 #include "mojo/core/embedder/embedder.h"

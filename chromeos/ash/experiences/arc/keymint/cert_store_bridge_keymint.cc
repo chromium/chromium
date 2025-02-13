@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/keymint/cert_store_bridge_keymint.h"
+#include "chromeos/ash/experiences/arc/keymint/cert_store_bridge_keymint.h"
 
 #include <cstdint>
 #include <utility>

@@ -2601,7 +2601,6 @@ if (!is_android) {
         "//chrome/browser/ash/arc/fileapi",
         "//chrome/browser/ash/arc/intent_helper",
         "//chrome/browser/ash/arc/keymaster",
-        "//chrome/browser/ash/arc/keymint",
         "//chrome/browser/ash/arc/policy",
         "//chrome/browser/ash/arc/session",
         "//chrome/browser/ash/arc/tracing",

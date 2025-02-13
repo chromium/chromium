@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ARC_KEYMINT_ARC_KEYMINT_BRIDGE_H_
-#define CHROME_BROWSER_ASH_ARC_KEYMINT_ARC_KEYMINT_BRIDGE_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_KEYMINT_ARC_KEYMINT_BRIDGE_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_KEYMINT_ARC_KEYMINT_BRIDGE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/arc/keymint/cert_store_bridge_keymint.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/mojom/keymint.mojom.h"
+#include "chromeos/ash/experiences/arc/keymint/cert_store_bridge_keymint.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -97,4 +97,4 @@ class ArcKeyMintBridge : public KeyedService,
 
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_ASH_ARC_KEYMINT_ARC_KEYMINT_BRIDGE_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_KEYMINT_ARC_KEYMINT_BRIDGE_H_
