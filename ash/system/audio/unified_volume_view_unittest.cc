@@ -40,14 +40,14 @@ class UnifiedVolumeViewTest : public AshTestBase {
 
   // Checks `level` corresponds to the expected icon.
   void CheckSliderIcon(float level) {
-    const gfx::VectorIcon& icon = GetIcon(level);
+    const gfx::VectorIcon* icon = &GetIcon(level);
 
     if (level <= 0.0) {
-      EXPECT_STREQ(icon.name, UnifiedVolumeView::kQsVolumeLevelIcons[0]->name);
+      EXPECT_EQ(icon, UnifiedVolumeView::kQsVolumeLevelIcons[0]);
     } else if (level <= 0.5) {
-      EXPECT_STREQ(icon.name, UnifiedVolumeView::kQsVolumeLevelIcons[1]->name);
+      EXPECT_EQ(icon, UnifiedVolumeView::kQsVolumeLevelIcons[1]);
     } else {
-      EXPECT_STREQ(icon.name, UnifiedVolumeView::kQsVolumeLevelIcons[2]->name);
+      EXPECT_EQ(icon, UnifiedVolumeView::kQsVolumeLevelIcons[2]);
     }
   }
 

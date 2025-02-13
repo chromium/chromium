@@ -187,14 +187,14 @@ TEST_F(UnifiedBrightnessViewTest, SliderIcon) {
     const gfx::VectorIcon& icon = GetIcon(std::max(level, kMinBrightnessLevel));
 
     if (level <= 0.0) {
-      EXPECT_STREQ(icon.name,
-                   UnifiedBrightnessView::kBrightnessLevelIcons[1]->name);
+      EXPECT_EQ(icon.name,
+                UnifiedBrightnessView::kBrightnessLevelIcons[1]->name);
     } else if (level <= 0.5) {
-      EXPECT_STREQ(icon.name,
-                   UnifiedBrightnessView::kBrightnessLevelIcons[1]->name);
+      EXPECT_EQ(icon.name,
+                UnifiedBrightnessView::kBrightnessLevelIcons[1]->name);
     } else {
-      EXPECT_STREQ(icon.name,
-                   UnifiedBrightnessView::kBrightnessLevelIcons[2]->name);
+      EXPECT_EQ(icon.name,
+                UnifiedBrightnessView::kBrightnessLevelIcons[2]->name);
     }
   }
 }
