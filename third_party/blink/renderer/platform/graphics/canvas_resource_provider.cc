@@ -1706,8 +1706,7 @@ GrDirectContext* CanvasResourceProvider::GetGrContext() const {
 }
 
 SkSurfaceProps CanvasResourceProvider::GetSkSurfaceProps() const {
-  const bool can_use_lcd_text =
-      GetSkImageInfo().alphaType() == kOpaque_SkAlphaType;
+  const bool can_use_lcd_text = GetAlphaType() == kOpaque_SkAlphaType;
   return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
 }
 
