@@ -8,6 +8,7 @@ import "cc/mojom/element_id.mojom";
 import "cc/mojom/layer_type.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "services/viz/public/mojom/compositing/copy_output_request.mojom";
 import "ui/gfx/mojom/transform.mojom";
 
 // Details about a cc::LayerImpl that has been added to a tree or modified in
@@ -225,6 +226,18 @@ struct EffectNode {
   // The index of the ancestor EffectNode which induces a render surface. Must
   // be a valid index in the same effect tree.
   int32 target_id;
+
+  // The CopyOutputRequests that have been made for this node.
+  array<CopyOutputRequest> copy_output_requests;
+
+  // State related to copy output requests.
+  // TODO(crbug.com/396060177): Stop passing this state over the wire once it is
+  // updated on EffectNodes via EffectTree::AddCopyRequest(), as it will then be
+  // properly updated on the Viz side by LayerContextImpl's handling of the
+  // `copy_output_requests` that are passed over the wire for each node.
+  bool has_copy_request;
+  bool subtree_has_copy_request;
+  int32 closest_ancestor_with_copy_request_id;
 };
 
 // Details about a new or updated node within a scroll property tree.

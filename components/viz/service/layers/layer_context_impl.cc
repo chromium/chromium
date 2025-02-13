@@ -190,6 +190,12 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   }
   node.blend_mode = static_cast<SkBlendMode>(wire.blend_mode);
   node.target_id = wire.target_id;
+
+  node.has_copy_request = wire.has_copy_request;
+  node.subtree_has_copy_request = wire.subtree_has_copy_request;
+  node.closest_ancestor_with_copy_request_id =
+      wire.closest_ancestor_with_copy_request_id;
+
   return base::ok();
 }
 
@@ -1094,6 +1100,14 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       const bool scroll_nodes_changed,
       UpdatePropertyTree(property_trees, property_trees.scroll_tree_mutable(),
                          update->scroll_nodes));
+
+  // Pull any copy output requests that came in over the wire.
+  for (const auto& wire : update->effect_nodes) {
+    for (auto&& copy_request : wire->copy_output_requests) {
+      property_trees.effect_tree_mutable().AddCopyRequest(
+          wire->id, std::move(copy_request));
+    }
+  }
 
   RETURN_IF_ERROR(
       CreateOrUpdateLayers(*this, update->layers, update->layer_order, layers));
