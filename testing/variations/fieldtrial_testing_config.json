@@ -21059,22 +21059,13 @@
     "ScaleScrollbarAnimationTiming": [
         {
             "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {
                     "name": "Enabled",
                     "params": {
-                        "fade_delay_scaling_factor": "2.0",
-                        "fade_duration_scaling_factor": "0.5"
+                        "fade_duration_scaling_factor": "0.0001"
                     },
                     "enable_features": [
                         "ScaleScrollbarAnimationTiming"
