@@ -12,7 +12,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "net/base/schemeful_site.h"
-#include "net/base/url_util.h"
+#include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/http/structured_headers.h"
 
 namespace {
@@ -100,10 +100,7 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
       GURL candidate_registration_endpoint =
           request_url.Resolve(unescaped_path);
       if (candidate_registration_endpoint.is_valid() &&
-          // TODO(crbug.com/389746381) [Also TODO(thefrog)]: Likely extract
-          // "cryptographic or localhost" check to helper function.
-          (candidate_registration_endpoint.SchemeIsCryptographic() ||
-           IsLocalhost(candidate_registration_endpoint)) &&
+          IsSecure(candidate_registration_endpoint) &&
           net::SchemefulSite(candidate_registration_endpoint) ==
               net::SchemefulSite(request_url)) {
         registration_endpoint = std::move(candidate_registration_endpoint);

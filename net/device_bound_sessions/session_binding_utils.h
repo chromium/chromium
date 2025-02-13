@@ -37,6 +37,10 @@ std::optional<std::string> NET_EXPORT AppendSignatureToHeaderAndPayload(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> signature);
 
+// Returns true if `url`'s scheme is cryptographic or if it's localhost. This
+// uses the same definition of secure connections that cookies use.
+bool NET_EXPORT IsSecure(const GURL& url);
+
 }  // namespace net::device_bound_sessions
 
 #endif  // NET_DEVICE_BOUND_SESSIONS_SESSION_BINDING_UTILS_H_
