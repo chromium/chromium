@@ -15876,21 +15876,6 @@
             ]
         }
     ],
-    "OverviewSessionInitOptimizations": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OverviewSessionInitOptimizations"
-                    ]
-                }
-            ]
-        }
-    ],
     "OzonePlatformAuto": [
         {
             "platforms": [

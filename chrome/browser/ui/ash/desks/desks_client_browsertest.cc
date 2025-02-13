@@ -514,8 +514,7 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
  public:
   DesksClientTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        ash::features::kDesksTemplates,
-        chromeos::features::kOverviewSessionInitOptimizations};
+        ash::features::kDesksTemplates};
     std::vector<base::test::FeatureRef> disabled_features = {
         ash::features::kDeskTemplateSync};
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);

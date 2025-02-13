@@ -43,9 +43,7 @@ class WmPixelDiffTest : public AshTestBase {
  public:
   WmPixelDiffTest() {
     scoped_features_.InitWithFeatures(
-        {features::kForestFeature, features::kSavedDeskUiRevamp,
-         chromeos::features::kOverviewSessionInitOptimizations},
-        {});
+        {features::kForestFeature, features::kSavedDeskUiRevamp}, {});
   }
 
   // AshTestBase:

@@ -93,8 +93,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::FeatureParam<std::string>
     kMicrosoft365ScopeExtensionsDomains;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-BASE_DECLARE_FEATURE(kOverviewSessionInitOptimizations);
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kPlatformKeysChangesWave1);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kQuickAnswersMaterialNextUI);
@@ -190,8 +188,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsFeatureManagementHistoryEmbeddingEnabled();
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-bool AreOverviewSessionInitOptimizationsEnabled();
 
 }  // namespace features
 }  // namespace chromeos

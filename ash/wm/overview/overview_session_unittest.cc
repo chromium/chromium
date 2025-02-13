@@ -7143,12 +7143,7 @@ TEST_F(TabletModeOverviewSessionTest, AvoidUaFOnCompleteDrag) {
 // Test the split view and overview functionalities in tablet mode.
 class SplitViewOverviewSessionTest : public OverviewTestBase {
  public:
-  SplitViewOverviewSessionTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::
-                                  kOverviewSessionInitOptimizations},
-        /*disabled_features=*/{});
-  }
+  SplitViewOverviewSessionTest() = default;
 
   SplitViewOverviewSessionTest(const SplitViewOverviewSessionTest&) = delete;
   SplitViewOverviewSessionTest& operator=(const SplitViewOverviewSessionTest&) =
@@ -7335,9 +7330,6 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
   void DragWindowTo(OverviewItemBase* item, const gfx::PointF& end_location) {
     DragWindowTo(item, end_location, SelectorItemLocation::CENTER, true);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that dragging an overview item to the edge of the screen snaps the

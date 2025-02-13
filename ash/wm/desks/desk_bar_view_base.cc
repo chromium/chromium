@@ -770,11 +770,7 @@ DeskBarViewBase::DeskBarViewBase(
 
   MaybeSetupBackgroundView(this);
 
-  if (chromeos::features::AreOverviewSessionInitOptimizationsEnabled()) {
-    contents_view_ = AddChildView(std::make_unique<views::View>());
-  } else {
-    InitScrolling();
-  }
+  contents_view_ = AddChildView(std::make_unique<views::View>());
 
   default_desk_button_ =
       contents_view_->AddChildView(std::make_unique<DefaultDeskButton>(this));
@@ -957,11 +953,6 @@ void DeskBarViewBase::Layout(PassKey) {
   // needed here.
   scroll_bounds.Inset(gfx::Insets::VH(0, horizontal_padding));
   GetTopLevelViewWithContents().SetBoundsRect(scroll_bounds);
-  if (!chromeos::features::AreOverviewSessionInitOptimizationsEnabled()) {
-    // When the bar reaches its max possible size, it's size does not change,
-    // but we still need to layout child UIs to their right positions.
-    GetTopLevelViewWithContents().DeprecatedLayoutImmediately();
-  }
 
   if (IsScrollingInitialized()) {
     UpdateScrollButtonsVisibility();
@@ -1153,10 +1144,7 @@ void DeskBarViewBase::UpdateLibraryButtonVisibility() {
     new_library_button_state = DeskIconButton::State::kExpanded;
   }
 
-  // Lazy initialization will be the default when
-  // `kOverviewSessionInitOptimizations` is launched.
-  if (!chromeos::features::AreOverviewSessionInitOptimizationsEnabled() ||
-      should_show_library_button) {
+  if (should_show_library_button) {
     GetOrCreateLibraryButton();
   }
 
@@ -1191,14 +1179,10 @@ void DeskBarViewBase::UpdateNewDeskButtonLabelVisibility(
     bool layout_if_changed) {
   const bool current_visibility =
       new_desk_button_label_ && new_desk_button_label_->GetVisible();
-  if (chromeos::features::AreOverviewSessionInitOptimizationsEnabled()) {
-    if (new_visibility) {
-      GetOrCreateNewDeskButtonLabel().SetVisible(true);
-    } else if (new_desk_button_label_) {
-      new_desk_button_label_->SetVisible(false);
-    }
-  } else {
-    GetOrCreateNewDeskButtonLabel().SetVisible(new_visibility);
+  if (new_visibility) {
+    GetOrCreateNewDeskButtonLabel().SetVisible(true);
+  } else if (new_desk_button_label_) {
+    new_desk_button_label_->SetVisible(false);
   }
 
   if (new_visibility != current_visibility && layout_if_changed) {

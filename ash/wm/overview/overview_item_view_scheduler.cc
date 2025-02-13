@@ -133,8 +133,7 @@ void ScheduleOverviewItemViewInitialization(
       // Minimized windows are immediately visible in the first overview frame
       // and contain a mirror of the overview item's layer tree.
       window_util::IsMinimizedOrTucked(&overview_item_window) ||
-      should_enter_without_animations ||
-      !chromeos::features::AreOverviewSessionInitOptimizationsEnabled();
+      should_enter_without_animations;
   if (should_immediately_init_view) {
     std::move(initialize_item_view_cb).Run();
     return;

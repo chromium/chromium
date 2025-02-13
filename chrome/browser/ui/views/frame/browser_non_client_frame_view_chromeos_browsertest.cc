@@ -139,15 +139,8 @@ bool WaitForPaintAsActive(bool expected, views::FrameCaptionButton* button) {
 
 }  // namespace
 
-class BrowserNonClientFrameViewChromeOSTest
-    : public TopChromeMdParamTest<ChromeOSBrowserUITest> {
- protected:
-  BrowserNonClientFrameViewChromeOSTest()
-      : scoped_features_(
-            chromeos::features::kOverviewSessionInitOptimizations) {}
-
-  base::test::ScopedFeatureList scoped_features_;
-};
+using BrowserNonClientFrameViewChromeOSTest =
+    TopChromeMdParamTest<ChromeOSBrowserUITest>;
 
 using BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip =
     WebUiTabStripOverrideTest<false, BrowserNonClientFrameViewChromeOSTest>;

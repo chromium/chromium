@@ -413,9 +413,7 @@ class FullRestoreAppLaunchHandlerBrowserTest
  public:
   FullRestoreAppLaunchHandlerBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kDesksTemplates,
-                              chromeos::features::
-                                  kOverviewSessionInitOptimizations},
+        /*enabled_features=*/{features::kDesksTemplates},
         /*disabled_features=*/{features::kDeskTemplateSync});
   }
   ~FullRestoreAppLaunchHandlerBrowserTest() override = default;
