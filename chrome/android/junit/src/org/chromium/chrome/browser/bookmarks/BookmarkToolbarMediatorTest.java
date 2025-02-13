@@ -49,6 +49,8 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayP
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileResolver;
+import org.chromium.chrome.browser.profiles.ProfileResolverJni;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
@@ -89,6 +91,7 @@ public class BookmarkToolbarMediatorTest {
     @Mock private Runnable mEndSearchRunnable;
     @Mock private BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
     @Mock private Profile mProfile;
+    @Mock private ProfileResolver.Natives mProfileResolverNatives;
 
     @Spy private Context mContext;
 
@@ -114,6 +117,8 @@ public class BookmarkToolbarMediatorTest {
 
         mIncognitoEnabledSupplier = () -> mIncognitoEnabled;
 
+        ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
+
         initModelAndMediator();
     }
 
@@ -132,6 +137,7 @@ public class BookmarkToolbarMediatorTest {
         mMediator =
                 new BookmarkToolbarMediator(
                         mContext,
+                        mProfile,
                         mModel,
                         mDragReorderableRecyclerViewAdapter,
                         mBookmarkDelegateSupplier,
@@ -166,6 +172,7 @@ public class BookmarkToolbarMediatorTest {
         mMediator =
                 new BookmarkToolbarMediator(
                         mContext,
+                        mProfile,
                         mModel,
                         mDragReorderableRecyclerViewAdapter,
                         mBookmarkDelegateSupplier,

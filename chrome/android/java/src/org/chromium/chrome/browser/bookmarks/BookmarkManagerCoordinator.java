@@ -203,6 +203,7 @@ public class BookmarkManagerCoordinator
         mBookmarkToolbarCoordinator =
                 new BookmarkToolbarCoordinator(
                         context,
+                        mProfile,
                         mSelectableListLayout,
                         mSelectionDelegate,
                         /* searchDelegate= */ this,

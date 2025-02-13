@@ -9,6 +9,7 @@ import android.content.Context;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
@@ -27,6 +28,7 @@ public class BookmarkToolbarCoordinator {
 
     BookmarkToolbarCoordinator(
             Context context,
+            Profile profile,
             SelectableListLayout<BookmarkId> selectableListLayout,
             SelectionDelegate<BookmarkId> selectionDelegate,
             SearchDelegate searchDelegate,
@@ -60,6 +62,7 @@ public class BookmarkToolbarCoordinator {
         mModel.set(BookmarkToolbarProperties.DRAG_ENABLED, false);
         new BookmarkToolbarMediator(
                 context,
+                profile,
                 mModel,
                 dragReorderableRecyclerViewAdapter,
                 bookmarkDelegateSupplier,

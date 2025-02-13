@@ -358,7 +358,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
 
     private void onEditClicked(View v) {
         RecordUserAction.record("MobileBookmark.SaveFlow.EditBookmark");
-        BookmarkUtils.startEditActivity(mContext, mBookmarkId);
+        BookmarkUtils.startEditActivity(mContext, mProfile, mBookmarkId);
         mCloseRunnable.run();
     }
 

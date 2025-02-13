@@ -83,6 +83,8 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileResolver;
+import org.chromium.chrome.browser.profiles.ProfileResolverJni;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -167,6 +169,7 @@ public class BookmarkManagerMediatorTest {
     @Mock private RecyclerView mRecyclerView;
     @Mock private BookmarkUiObserver mBookmarkUiObserver;
     @Mock private Profile mProfile;
+    @Mock private ProfileResolver.Natives mProfileResolverNatives;
     @Mock private SyncService mSyncService;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private SigninManager mSigninManager;
@@ -372,6 +375,7 @@ public class BookmarkManagerMediatorTest {
 
         // Setup Profile
         doReturn(mProfile).when(mProfile).getOriginalProfile();
+        ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
 
         // Setup ShoppingServiceFactory
         doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());

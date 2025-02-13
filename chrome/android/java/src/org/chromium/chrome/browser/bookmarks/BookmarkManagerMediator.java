@@ -1472,7 +1472,7 @@ class BookmarkManagerMediator
                         }
                     } else if (textId == R.string.bookmark_item_edit) {
                         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-                        BookmarkUtils.startEditActivity(mContext, bookmarkItem.getId());
+                        BookmarkUtils.startEditActivity(mContext, mProfile, bookmarkItem.getId());
                     } else if (textId == R.string.reading_list_mark_as_read) {
                         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
                         mBookmarkModel.setReadStatusForReadingList(

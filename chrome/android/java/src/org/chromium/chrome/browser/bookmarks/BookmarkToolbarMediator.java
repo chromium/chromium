@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayP
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.Observer;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -68,6 +69,7 @@ class BookmarkToolbarMediator
             };
 
     private final Context mContext;
+    private final Profile mProfile;
     private final PropertyModel mModel;
     private final DragReorderableRecyclerViewAdapter mDragReorderableRecyclerViewAdapter;
     private final SelectionDelegate mSelectionDelegate;
@@ -87,6 +89,7 @@ class BookmarkToolbarMediator
 
     BookmarkToolbarMediator(
             Context context,
+            Profile profile,
             PropertyModel model,
             DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter,
             OneshotSupplier<BookmarkDelegate> bookmarkDelegateSupplier,
@@ -99,6 +102,7 @@ class BookmarkToolbarMediator
             BookmarkMoveSnackbarManager bookmarkMoveSnackbarManager,
             BooleanSupplier incognitoEnabledSupplier) {
         mContext = context;
+        mProfile = profile;
         mModel = model;
 
         mModel.set(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION, this::onMenuIdClick);
@@ -183,7 +187,7 @@ class BookmarkToolbarMediator
             mModel.set(BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID, id);
             return true;
         } else if (id == R.id.edit_menu_id) {
-            BookmarkUtils.startEditActivity(mContext, mCurrentFolder);
+            BookmarkUtils.startEditActivity(mContext, mProfile, mCurrentFolder);
             return true;
         } else if (id == R.id.close_menu_id) {
             BookmarkUtils.finishActivityOnPhone(mContext);
@@ -192,7 +196,7 @@ class BookmarkToolbarMediator
             List<BookmarkId> list = mSelectionDelegate.getSelectedItemsAsList();
             assert list.size() == 1;
             BookmarkItem item = mBookmarkModel.getBookmarkById(list.get(0));
-            BookmarkUtils.startEditActivity(mContext, item.getId());
+            BookmarkUtils.startEditActivity(mContext, mProfile, item.getId());
             return true;
         } else if (id == R.id.selection_mode_move_menu_id) {
             List<BookmarkId> list = mSelectionDelegate.getSelectedItemsAsList();
