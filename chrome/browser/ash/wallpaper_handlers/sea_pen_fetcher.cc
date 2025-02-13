@@ -278,7 +278,9 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
                        fetch_thumbnails_weak_ptr_factory_.GetWeakPtr(),
                        query->which()));
 
-    const int num_outputs = query->is_text_query()
+    // TODO: crbug.com/393600484 - Combine into one number when text input is
+    // launched.
+    const int num_outputs = ash::features::IsSeaPenTextInputEnabled()
                                 ? kNumTextThumbnailsRequested
                                 : kNumTemplateThumbnailsRequested;
     manta::proto::Request request = CreateMantaRequest(
