@@ -5478,24 +5478,6 @@
             ]
         }
     ],
-    "ClearUndecryptablePasswords": [
-        {
-            "platforms": [
-                "mac",
-                "windows",
-                "linux",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ClearUndecryptablePasswords"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClickToCapturedPointer": [
         {
             "platforms": [
