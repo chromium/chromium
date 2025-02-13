@@ -224,8 +224,8 @@ export class TraceReportElement extends CrLitElement {
   }
 
   protected getTokenAsUuidString_(): string {
-    const highHex = this.trace.uuid.high.toString(16);
-    const lowHex = this.trace.uuid.low.toString(16);
+    const highHex = this.trace.uuid.high.toString(16).padStart(16, '0');
+    const lowHex = this.trace.uuid.low.toString(16).padStart(16, '0');
     return `${lowHex.slice(0, 8)}-${lowHex.slice(8, 12)}-${
         lowHex.slice(12, 16)}-${highHex.slice(0, 4)}-${highHex.slice(4)}`;
   }
