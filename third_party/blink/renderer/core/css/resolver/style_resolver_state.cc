@@ -70,10 +70,7 @@ StyleResolverState::StyleResolverState(
       element_style_resources_(
           GetStyledElement() ? *GetStyledElement() : GetElement(),
           document.DevicePixelRatio()),
-      element_type_(style_request.IsPseudoStyleRequest() ||
-                            element.IsPseudoElement()
-                        ? ElementType::kPseudoElement
-                        : ElementType::kElement),
+      pseudo_id_(style_request.pseudo_id),
       originating_element_style_(style_request.originating_element_style),
       is_for_highlight_(IsHighlightPseudoElement(style_request.pseudo_id)),
       uses_highlight_pseudo_inheritance_(
@@ -119,7 +116,7 @@ EInsideLink StyleResolverState::InsideLink() const {
   } else {
     inside_link_ = EInsideLink::kNotInsideLink;
   }
-  if (element_type_ != ElementType::kPseudoElement && GetElement().IsLink()) {
+  if (!IsForPseudoElement() && GetElement().IsLink()) {
     inside_link_ = ElementLinkState();
   } else if (uses_highlight_pseudo_inheritance_) {
     // Highlight pseudo-elements acquire the link status of the originating

@@ -51,8 +51,6 @@ class PseudoElement;
 class CORE_EXPORT StyleResolverState {
   STACK_ALLOCATED();
 
-  enum class ElementType { kElement, kPseudoElement };
-
  public:
   StyleResolverState(Document&,
                      Element&,
@@ -63,7 +61,7 @@ class CORE_EXPORT StyleResolverState {
   ~StyleResolverState();
 
   bool IsForPseudoElement() const {
-    return element_type_ == ElementType::kPseudoElement;
+    return pseudo_id_ != kPseudoIdNone || element_context_.GetPseudoElement();
   }
   bool IsInheritedForUnset(const CSSProperty& property) const;
 
@@ -254,7 +252,7 @@ class CORE_EXPORT StyleResolverState {
 
   float TextAutosizingMultiplier() const {
     const ComputedStyle* old_style = GetElement().GetComputedStyle();
-    if (element_type_ != ElementType::kPseudoElement && old_style) {
+    if (!IsForPseudoElement() && old_style) {
       return old_style->TextAutosizingMultiplier();
     } else {
       return 1.0f;
@@ -312,7 +310,8 @@ class CORE_EXPORT StyleResolverState {
   Element* styled_element_;
 
   ElementStyleResources element_style_resources_;
-  ElementType element_type_;
+  // See StyleRequest.pseudo_id.
+  PseudoId pseudo_id_ = kPseudoIdNone;
 
   // Whether this element is inside a link or not. Note that this is different
   // from ElementLinkState() if the element is not a link itself but is inside
