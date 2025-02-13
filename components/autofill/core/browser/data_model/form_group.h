@@ -95,7 +95,7 @@ class FormGroup {
 
   // Returns a set of server field types for which this FormGroup can store
   // data. This method is additive on |supported_types|.
-  virtual void GetSupportedTypes(FieldTypeSet* supported_types) const = 0;
+  virtual FieldTypeSet GetSupportedTypes() const = 0;
 };
 
 }  // namespace autofill

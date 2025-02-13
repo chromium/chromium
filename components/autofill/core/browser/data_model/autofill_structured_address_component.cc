@@ -242,8 +242,10 @@ bool AddressComponent::IsValueReadOnly() const {
   return false;
 }
 
-void AddressComponent::GetSupportedTypes(FieldTypeSet* supported_types) const {
-  return AddressComponent::GetTypes(/*storable_only=*/false, supported_types);
+FieldTypeSet AddressComponent::GetSupportedTypes() const {
+  FieldTypeSet supported_types;
+  AddressComponent::GetTypes(/*storable_only=*/false, &supported_types);
+  return supported_types;
 }
 
 void AddressComponent::GetStorableTypes(FieldTypeSet* supported_types) const {

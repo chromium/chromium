@@ -286,7 +286,7 @@ class AddressComponent {
 
   // Recursively adds the supported types to the set. Calls
   // |GetAdditionalSupportedFieldTypes()| to add field types.
-  void GetSupportedTypes(FieldTypeSet* supported_types) const;
+  FieldTypeSet GetSupportedTypes() const;
 
   // Recursively adds only the storable types to the set. No computed type is
   // ever added (e.g. GetAdditionalSupportedFieldTypes).

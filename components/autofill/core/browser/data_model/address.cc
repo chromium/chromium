@@ -187,8 +187,8 @@ void Address::GetMatchingTypes(const std::u16string& text,
   }
 }
 
-void Address::GetSupportedTypes(FieldTypeSet* supported_types) const {
-  GetRoot().GetSupportedTypes(supported_types);
+FieldTypeSet Address::GetSupportedTypes() const {
+  return GetRoot().GetSupportedTypes();
 }
 
 std::u16string Address::GetInfo(FieldType type,

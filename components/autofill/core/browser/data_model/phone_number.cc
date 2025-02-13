@@ -67,16 +67,18 @@ bool PhoneNumber::operator==(const PhoneNumber& other) const {
   return number_ == other.number_ && profile_ == other.profile_;
 }
 
-void PhoneNumber::GetSupportedTypes(FieldTypeSet* supported_types) const {
-  supported_types->insert(PHONE_HOME_WHOLE_NUMBER);
-  supported_types->insert(PHONE_HOME_NUMBER);
-  supported_types->insert(PHONE_HOME_NUMBER_PREFIX);
-  supported_types->insert(PHONE_HOME_NUMBER_SUFFIX);
-  supported_types->insert(PHONE_HOME_CITY_CODE);
-  supported_types->insert(PHONE_HOME_CITY_AND_NUMBER);
-  supported_types->insert(PHONE_HOME_COUNTRY_CODE);
-  supported_types->insert(PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX);
-  supported_types->insert(PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX);
+FieldTypeSet PhoneNumber::GetSupportedTypes() const {
+  static constexpr FieldTypeSet supported_types{
+      PHONE_HOME_WHOLE_NUMBER,
+      PHONE_HOME_NUMBER,
+      PHONE_HOME_NUMBER_PREFIX,
+      PHONE_HOME_NUMBER_SUFFIX,
+      PHONE_HOME_CITY_CODE,
+      PHONE_HOME_CITY_AND_NUMBER,
+      PHONE_HOME_COUNTRY_CODE,
+      PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX,
+      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX};
+  return supported_types;
 }
 
 std::u16string PhoneNumber::GetRawInfo(FieldType type) const {

@@ -32,8 +32,7 @@ using ObservationType = ProfileTokenQuality::ObservationType;
 // metrics. This excludes additional supported types, since no observations
 // are tracked for them.
 FieldTypeSet GetMetricRelevantTypes(const AutofillProfile& profile) {
-  FieldTypeSet relevant_types;
-  profile.GetSupportedTypes(&relevant_types);
+  FieldTypeSet relevant_types = profile.GetSupportedTypes();
   relevant_types.intersect(AutofillProfile::kDatabaseStoredTypes);
   return relevant_types;
 }

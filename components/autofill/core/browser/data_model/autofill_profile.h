@@ -159,7 +159,7 @@ class AutofillProfile : public FormGroup {
                                      const std::string& app_locale,
                                      VerificationStatus status);
   VerificationStatus GetVerificationStatus(const FieldType type) const override;
-  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
+  FieldTypeSet GetSupportedTypes() const override;
 
   // Calculates the ranking score used for ranking the profile suggestion. If
   // `use_frecency` is true we use the new ranking algorithm.

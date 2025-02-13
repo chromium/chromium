@@ -98,7 +98,7 @@ class NameInfo : public FormGroup {
 
  private:
   // FormGroup:
-  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
+  FieldTypeSet GetSupportedTypes() const override;
 
   // Returns the root node of either `name_` or `alternative_name_`
   // depending on the `type`.
@@ -141,7 +141,7 @@ class EmailInfo : public FormGroup {
 
  private:
   // FormGroup:
-  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
+  FieldTypeSet GetSupportedTypes() const override;
 
   std::u16string email_;
 };
@@ -180,7 +180,7 @@ class CompanyInfo : public FormGroup {
 
  private:
   // FormGroup:
-  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
+  FieldTypeSet GetSupportedTypes() const override;
   void GetMatchingTypes(const std::u16string& text,
                         const std::string& app_locale,
                         FieldTypeSet* matching_types) const override;

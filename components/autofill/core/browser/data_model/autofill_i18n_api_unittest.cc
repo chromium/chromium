@@ -73,8 +73,7 @@ TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnsNonEmptyModel) {
     AddressComponentsStore model =
         CreateAddressComponentModel(AddressCountryCode(country_code));
 
-    FieldTypeSet field_type_set;
-    model.Root()->GetSupportedTypes(&field_type_set);
+    FieldTypeSet field_type_set = model.Root()->GetSupportedTypes();
     EXPECT_FALSE(field_type_set.empty());
     EXPECT_FALSE(field_type_set.contains_any(
         {NO_SERVER_DATA, UNKNOWN_TYPE, EMPTY_TYPE}));
@@ -235,10 +234,8 @@ TEST_F(AutofillI18nApiTest, SynthesizedTypesAreSupportedButNotStorable) {
   EXPECT_FALSE(
       field_type_set.contains(ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK));
 
-  field_type_set.clear();
-  store.Root()->GetSupportedTypes(&field_type_set);
-  EXPECT_TRUE(
-      field_type_set.contains(ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK));
+  EXPECT_TRUE(store.Root()->GetSupportedTypes().contains(
+      ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK));
 }
 
 TEST_F(AutofillI18nApiTest, SynthesizedTypesDoNotSupportSetValueForType) {

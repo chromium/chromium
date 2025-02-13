@@ -285,8 +285,7 @@ TEST_F(ProfileTokenQualityTest,
 TEST_F(ProfileTokenQualityTest,
        LoadSerializedObservationsForStoredType_InvalidData) {
   AutofillProfile profile = test::GetFullProfile();
-  FieldTypeSet supported_types;
-  profile.GetSupportedTypes(&supported_types);
+  FieldTypeSet supported_types = profile.GetSupportedTypes();
 
   // Attempt loading observations for an unsupported type.
   ASSERT_FALSE(supported_types.contains(ADDRESS_HOME_LANDMARK));

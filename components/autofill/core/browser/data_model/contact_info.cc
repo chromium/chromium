@@ -145,12 +145,13 @@ void NameInfo::SetRawInfoWithVerificationStatus(FieldType type,
   GetRootForType(type)->SetValueForType(type, value, status);
 }
 
-void NameInfo::GetSupportedTypes(FieldTypeSet* supported_types) const {
-  name_->GetSupportedTypes(supported_types);
+FieldTypeSet NameInfo::GetSupportedTypes() const {
+  FieldTypeSet supported_types = name_->GetSupportedTypes();
   if (base::FeatureList::IsEnabled(
           features::kAutofillSupportPhoneticNameForJP)) {
-    alternative_name_->GetSupportedTypes(supported_types);
+    supported_types.insert_all(alternative_name_->GetSupportedTypes());
   }
+  return supported_types;
 }
 
 std::u16string NameInfo::GetInfo(FieldType type,
@@ -226,8 +227,9 @@ bool EmailInfo::operator==(const EmailInfo& other) const {
   return this == &other || email_ == other.email_;
 }
 
-void EmailInfo::GetSupportedTypes(FieldTypeSet* supported_types) const {
-  supported_types->insert(EMAIL_ADDRESS);
+FieldTypeSet EmailInfo::GetSupportedTypes() const {
+  static constexpr FieldTypeSet supported_types{EMAIL_ADDRESS};
+  return supported_types;
 }
 
 std::u16string EmailInfo::GetInfo(FieldType type,
@@ -277,8 +279,9 @@ bool CompanyInfo::operator==(const CompanyInfo& other) const {
          GetRawInfo(COMPANY_NAME) == other.GetRawInfo(COMPANY_NAME);
 }
 
-void CompanyInfo::GetSupportedTypes(FieldTypeSet* supported_types) const {
-  supported_types->insert(COMPANY_NAME);
+FieldTypeSet CompanyInfo::GetSupportedTypes() const {
+  static constexpr FieldTypeSet supported_types{COMPANY_NAME};
+  return supported_types;
 }
 
 void CompanyInfo::GetMatchingTypes(const std::u16string& text,

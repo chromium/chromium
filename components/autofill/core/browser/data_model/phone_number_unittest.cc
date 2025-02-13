@@ -300,8 +300,7 @@ TEST(PhoneNumberTest, HelperSetsAllPhoneFieldTypes) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   PhoneNumber phone_number(&profile);
 
-  FieldTypeSet types;
-  profile.GetSupportedTypes(&types);
+  FieldTypeSet types = profile.GetSupportedTypes();
   std::vector<FieldType> fields{types.begin(), types.end()};
   std::erase_if(fields, [](FieldType type) {
     return GroupTypeOfFieldType(type) != FieldTypeGroup::kPhone;

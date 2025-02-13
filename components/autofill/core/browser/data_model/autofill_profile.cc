@@ -442,10 +442,12 @@ void AutofillProfile::SetRawInfoWithVerificationStatus(
   }
 }
 
-void AutofillProfile::GetSupportedTypes(FieldTypeSet* supported_types) const {
-  for (const auto* form_group : FormGroups()) {
-    form_group->GetSupportedTypes(supported_types);
+FieldTypeSet AutofillProfile::GetSupportedTypes() const {
+  FieldTypeSet supported_types;
+  for (const FormGroup* form_group : FormGroups()) {
+    supported_types.insert_all(form_group->GetSupportedTypes());
   }
+  return supported_types;
 }
 
 FieldType AutofillProfile::GetStorableTypeOf(FieldType type) const {
@@ -819,9 +821,7 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
 void AutofillProfile::MergeFormGroupTokenQuality(
     const FormGroup& merged_group,
     const AutofillProfile& other_profile) {
-  FieldTypeSet supported_types;
-  merged_group.GetSupportedTypes(&supported_types);
-  for (FieldType type : supported_types) {
+  for (FieldType type : merged_group.GetSupportedTypes()) {
     const std::u16string& merged_value = merged_group.GetRawInfo(type);
     if (!AutofillProfile::kDatabaseStoredTypes.contains(type) ||
         merged_value == GetRawInfo(type)) {
@@ -1223,17 +1223,10 @@ std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
      << profile.usage_history().use_date() << " " << profile.language_code()
      << std::endl;
 
-  // Lambda to print the value and verification status for |type|.
-  auto print_values_lambda = [&os, &profile](FieldType type) {
+  for (FieldType type : profile.GetSupportedTypes()) {
     os << FieldTypeToStringView(type) << ": " << profile.GetRawInfo(type) << "("
        << profile.GetVerificationStatus(type) << ")" << std::endl;
-  };
-
-  // Use a helper function to print the values of the stored types.
-  FieldTypeSet field_types_to_print;
-  profile.GetSupportedTypes(&field_types_to_print);
-
-  std::ranges::for_each(field_types_to_print, print_values_lambda);
+  }
 
   return os;
 }

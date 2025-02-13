@@ -32,12 +32,6 @@ namespace {
 
 using ObservationType = ProfileTokenQuality::ObservationType;
 
-FieldTypeSet GetSupportedTypes(const AutofillProfile& profile) {
-  FieldTypeSet types;
-  profile.GetSupportedTypes(&types);
-  return types;
-}
-
 // Computes the `ObservationType` if a field of the given `type` was autofilled
 // with the `profile`, but the autofilled value was edited to `edited_value`
 // after filling.
@@ -72,7 +66,7 @@ ObservationType GetObservationTypeForEditedField(
 
   // Returns all supported types of the `profile` except for `type`.
   auto other_types = [&](const AutofillProfile& profile) {
-    FieldTypeSet other_types = GetSupportedTypes(profile);
+    FieldTypeSet other_types = profile.GetSupportedTypes();
     other_types.erase(type);
     return other_types;
   };
@@ -134,7 +128,7 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
     return p->guid() == profile_->guid();
   });
 
-  const FieldTypeSet supported_types = GetSupportedTypes(*profile_);
+  const FieldTypeSet supported_types = profile_->GetSupportedTypes();
   std::vector<std::pair<FieldType, Observation>> possible_observations;
   for (size_t i = 0; i < form_structure.field_count(); i++) {
     const AutofillField& field = *form_structure.field(i);
@@ -305,7 +299,7 @@ std::vector<uint8_t> ProfileTokenQuality::SerializeObservationsForStoredType(
 void ProfileTokenQuality::LoadSerializedObservationsForStoredType(
     FieldType type,
     base::span<const uint8_t> serialized_data) {
-  if (!GetSupportedTypes(*profile_).contains(type)) {
+  if (!profile_->GetSupportedTypes().contains(type)) {
     // Observations only get stored for supported types. However, due to changes
     // in the data model, it is possible for types to become unsupported.
     return;

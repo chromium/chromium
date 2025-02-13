@@ -120,7 +120,7 @@ class Address : public FormGroup {
 
  private:
   // FormGroup:
-  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
+  FieldTypeSet GetSupportedTypes() const override;
 
   // Updates the address' country, builds the hierarchy model corresponding to
   // `country_code` and transfers the content of the old data model into the new
