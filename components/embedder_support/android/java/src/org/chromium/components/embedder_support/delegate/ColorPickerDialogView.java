@@ -6,6 +6,8 @@ package org.chromium.components.embedder_support.delegate;
 
 import static android.view.accessibility.AccessibilityNodeInfo.CollectionInfo.SELECTION_MODE_SINGLE;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
@@ -17,6 +19,8 @@ import android.widget.ListView;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.widget.ButtonCompat;
@@ -26,12 +30,13 @@ import org.chromium.ui.widget.ButtonCompat;
  * It sets the color and columns and also handles the button difference between the simple and
  * advanced views.
  */
+@NullMarked
 public class ColorPickerDialogView extends AlertDialog implements OnColorChangedListener {
     // Callbacks to handle user interactions (picking a color, switching views, and closing dialog).
-    private Callback<Integer> mCustomColorPickedCallback;
-    private Callback<Void> mViewSwitchedCallback;
-    private Callback<Boolean> mMakeChoiceCallback;
-    private Callback<Integer> mDialogDismissedCallback;
+    @Nullable private Callback<Integer> mCustomColorPickedCallback;
+    @Nullable private Callback<@Nullable Void> mViewSwitchedCallback;
+    @Nullable private Callback<Boolean> mMakeChoiceCallback;
+    @Nullable private Callback<Integer> mDialogDismissedCallback;
 
     // GridView of the suggested colors from the web dev (or the default list if empty).
     private ColorPickerSuggestionsView mSuggestionsView;
@@ -66,25 +71,26 @@ public class ColorPickerDialogView extends AlertDialog implements OnColorChanged
 
         mViewSwitcher =
                 (ButtonCompat) mDialogContent.findViewById(R.id.color_picker_view_switcher_button);
-        mViewSwitcher.setOnClickListener(v -> mViewSwitchedCallback.onResult(null));
+        mViewSwitcher.setOnClickListener(v -> assumeNonNull(mViewSwitchedCallback).onResult(null));
 
         // Create a positive and negative button to cancel/set.
         setButton(
                 BUTTON_POSITIVE,
                 context.getString(R.string.color_picker_button_set),
                 (dialog, which) -> {
-                    mMakeChoiceCallback.onResult(true);
+                    assumeNonNull(mMakeChoiceCallback).onResult(true);
                 });
         setButton(
                 BUTTON_NEGATIVE,
                 context.getString(R.string.color_picker_button_cancel),
                 (dialog, which) -> {
-                    mMakeChoiceCallback.onResult(false);
+                    assumeNonNull(mMakeChoiceCallback).onResult(false);
                 });
         setOnCancelListener(
                 dialog ->
-                        mDialogDismissedCallback.onResult(
-                                ((ColorDrawable) mChosenColor.getBackground()).getColor()));
+                        assumeNonNull(mDialogDismissedCallback)
+                                .onResult(
+                                        ((ColorDrawable) mChosenColor.getBackground()).getColor()));
     }
 
     void setDialogDismissedCallback(Callback<Integer> dialogDismissedCallback) {
@@ -137,7 +143,7 @@ public class ColorPickerDialogView extends AlertDialog implements OnColorChanged
         mCustomColorPickedCallback = callback;
     }
 
-    void setViewSwitchedCallback(Callback<Void> callback) {
+    void setViewSwitchedCallback(Callback<@Nullable Void> callback) {
         mViewSwitchedCallback = callback;
     }
 
@@ -147,6 +153,7 @@ public class ColorPickerDialogView extends AlertDialog implements OnColorChanged
 
     @Override
     public void onColorChanged(int color) {
+        assumeNonNull(mCustomColorPickedCallback);
         mCustomColorPickedCallback.onResult(color);
     }
 

@@ -8,9 +8,11 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.RenderFrameHost;
 
 /** Interface to handle context menu actions in native. */
+@NullMarked
 public interface ContextMenuNativeDelegate {
     /** Called when this {@link ContextMenuNativeDelegate} is being destroyed. */
     void destroy();

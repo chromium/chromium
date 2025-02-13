@@ -8,6 +8,7 @@ import android.net.Uri;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -15,6 +16,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** A delegate responsible for taking actions based on context menu selections. */
+@NullMarked
 public interface ContextMenuItemDelegate {
     // The type of the data to save to the clipboard.
     @IntDef({ClipboardType.LINK_URL, ClipboardType.LINK_TEXT, ClipboardType.IMAGE_URL})

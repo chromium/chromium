@@ -7,6 +7,7 @@ package org.chromium.components.embedder_support.delegate;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -14,6 +15,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** This class is to store everything needed for the suggestion view */
+@NullMarked
 public class ColorPickerSuggestionProperties {
     @IntDef({ListItemType.DEFAULT})
     @Retention(RetentionPolicy.SOURCE)

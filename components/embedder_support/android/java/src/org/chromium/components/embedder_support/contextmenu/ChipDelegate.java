@@ -5,8 +5,10 @@
 package org.chromium.components.embedder_support.contextmenu;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 
 /** Interface to handle chip data and actions. */
+@NullMarked
 public interface ChipDelegate {
     /**
      * Determines whether the chip delegate is able to support a chip in the chosen context.
