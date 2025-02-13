@@ -13,6 +13,7 @@ import {constants} from '/common/constants.js';
 import {CursorUnit} from '/common/cursors/cursor.js';
 import {CursorRange} from '/common/cursors/range.js';
 import {EventGenerator} from '/common/event_generator.js';
+import {FlagName, Flags} from '/common/flags.js';
 import {KeyCode} from '/common/key_code.js';
 import {LocalStorage} from '/common/local_storage.js';
 import {RectUtil} from '/common/rect_util.js';
@@ -220,6 +221,13 @@ export class CommandHandler implements CommandHandlerInterface {
       case Command.TOGGLE_DICTATION:
         EventGenerator.sendKeyPress(KeyCode.D, {search: true});
         return false;
+      case Command.TOGGLE_CAPTIONS:
+        if (Flags.isEnabled(FlagName.CAPTIONS_ON_BRAILLE)) {
+          // Placeholder behavior while feature is under development.
+          console.log('Keyboard shortcut to open captions pressed.');
+          return false;
+        }
+        return true;  // Don't consume the key events.
       case Command.OPEN_KEYBOARD_SHORTCUTS:
         EventGenerator.sendKeyPress(KeyCode.S, {search: true, ctrl: true});
         return false;
