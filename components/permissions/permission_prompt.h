@@ -134,6 +134,8 @@ class PermissionPrompt {
     // Recreate the UI view because the UI flavor needs to change. Returns true
     // iff successful.
     virtual bool RecreateView() = 0;
+
+    virtual const PermissionPrompt* GetCurrentPrompt() const = 0;
   };
 
   typedef base::RepeatingCallback<

@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
   EXPECT_TRUE(manager->IsRequestInProgress());
   EXPECT_FALSE(observer.request_shown());
   EXPECT_TRUE(observer.is_view_recreate_failed());
-  EXPECT_FALSE(manager->view_for_testing());
+  EXPECT_FALSE(manager->GetCurrentPrompt());
 
   EXPECT_FALSE(content::EvalJs(main_rfh, kCheckMicrophone,
                                content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1)

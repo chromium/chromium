@@ -30,6 +30,10 @@ class EmbeddedPermissionPromptAndroid : public PermissionPromptAndroid {
 
   ~EmbeddedPermissionPromptAndroid() override;
 
+  static std::unique_ptr<EmbeddedPermissionPromptAndroid> Create(
+      content::WebContents* web_contents,
+      Delegate* delegate);
+
   // PermissionPrompt:
   PermissionPromptDisposition GetPromptDisposition() const override;
   bool ShouldFinalizeRequestAfterDecided() const override;

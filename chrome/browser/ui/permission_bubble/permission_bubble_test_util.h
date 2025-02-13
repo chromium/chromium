@@ -58,6 +58,7 @@ class TestPermissionBubbleViewDelegate
   void SetPromptShown() override {}
   void SetDecisionTime() override {}
   bool RecreateView() override;
+  const permissions::PermissionPrompt* GetCurrentPrompt() const override;
   content::WebContents* GetAssociatedWebContents() override;
 
   base::WeakPtr<permissions::PermissionPrompt::Delegate> GetWeakPtr() override;

@@ -158,8 +158,6 @@ public class PermissionDialogController {
         // so act as though the user dismissed it.
         if (context == null) {
             notifyObservers(ContentSettingValues.DEFAULT);
-            // TODO(timloh): This probably doesn't work, as this happens synchronously when creating
-            // the PermissionPromptAndroid, so the PermissionRequestManager won't be ready yet.
             mDialogDelegate.onDismiss(DismissalType.AUTODISMISS_NO_CONTEXT);
             return;
         }

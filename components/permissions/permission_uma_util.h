@@ -598,8 +598,13 @@ enum class DismissalType {
   // quietly dismissed.
   kAutodismissOsDenied = 4,
 
+  // It's possible that the modal dialog manager is null when showing a dialog,
+  // for example if the tab has been navigated/closed or the layout might not be
+  // inflated in some embedders (e.g WebEngine).
+  kAutodismissNoDialogManager = 5,
+
   // Always keep this at the end.
-  kMaxValue = kAutodismissOsDenied,
+  kMaxValue = kAutodismissNoDialogManager,
 };
 
 // Provides a convenient way of logging UMA for permission related operations.

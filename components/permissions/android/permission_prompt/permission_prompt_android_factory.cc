@@ -19,8 +19,10 @@ std::unique_ptr<PermissionPrompt> PermissionPrompt::Create(
     Delegate* delegate) {
   if (permissions::PermissionUtil::
           ShouldCurrentRequestUsePermissionElementSecondaryUI(delegate)) {
-    return std::make_unique<EmbeddedPermissionPromptAndroid>(web_contents,
-                                                             delegate);
+    if (auto embedded_prompt =
+            EmbeddedPermissionPromptAndroid::Create(web_contents, delegate)) {
+      return embedded_prompt;
+    }
   }
   // Quiet UI (non-modal, less intrusive) is preferred over loud one, if
   // necessary conditions are met. The message UI is preferred over the infobar
@@ -35,7 +37,7 @@ std::unique_ptr<PermissionPrompt> PermissionPrompt::Create(
     return infobar;
   }
 
-  return std::make_unique<PermissionDialog>(web_contents, delegate);
+  return PermissionDialog::Create(web_contents, delegate);
 }
 
 }  // namespace permissions
