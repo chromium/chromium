@@ -45,6 +45,7 @@ enum class LoadingScenario {
 enum class InputScenario {
   // TODO(crbug.com/365586676): Add additional scenarios.
   kNoInput = 0,
+  kTyping,
 };
 
 // The scope that a scenario covers.

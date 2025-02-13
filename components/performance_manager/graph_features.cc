@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "components/performance_manager/decorators/frame_input_state_decorator.h"
 #include "components/performance_manager/decorators/frame_visibility_decorator.h"
 #include "components/performance_manager/decorators/important_frame_decorator.h"
 #include "components/performance_manager/decorators/page_aggregator.h"
@@ -23,6 +24,7 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/metrics/metrics_collector.h"
 #include "components/performance_manager/resource_attribution/query_scheduler.h"
+#include "components/performance_manager/scenarios/input_scenario_observer.h"
 #include "components/performance_manager/scenarios/loading_scenario_observer.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
 
@@ -77,6 +79,8 @@ void GraphFeatures::ConfigureGraph(Graph* graph) const {
   }
   if (flags_.performance_scenarios) {
     Install<LoadingScenarioObserver>(graph);
+    Install<FrameInputStateDecorator>(graph);
+    Install<InputScenarioObserver>(graph);
   }
   if (flags_.resource_attribution_scheduler) {
     Install<resource_attribution::internal::QueryScheduler>(graph);

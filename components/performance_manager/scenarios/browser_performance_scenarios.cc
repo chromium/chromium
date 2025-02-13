@@ -119,6 +119,9 @@ struct ScenarioTraits<InputScenario> {
       case InputScenario::kNoInput:
         // No trace event.
         return;
+      case InputScenario::kTyping:
+        TRACE_EVENT_BEGIN("input", "Typing", *state_ptr->input_tracing_track());
+        return;
     }
     NOTREACHED();
   }
@@ -130,6 +133,9 @@ struct ScenarioTraits<InputScenario> {
     switch (scenario) {
       case InputScenario::kNoInput:
         // No trace event.
+        return;
+      case InputScenario::kTyping:
+        TRACE_EVENT_END("input", *state_ptr->input_tracing_track());
         return;
     }
     NOTREACHED();
