@@ -83,7 +83,7 @@ PseudoElement* PseudoElement::Create(Element* parent,
                                      PseudoId pseudo_id,
                                      const AtomicString& view_transition_name) {
   if (pseudo_id == kPseudoIdCheckMark) {
-    CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
+    CHECK(HTMLSelectElement::CustomizableSelectEnabled(parent));
 
     if (!IsA<HTMLOptionElement>(parent)) {
       // The `::checkmark` pseudo element should only be created for option
@@ -93,7 +93,7 @@ PseudoElement* PseudoElement::Create(Element* parent,
   }
 
   if (pseudo_id == kPseudoIdPickerIcon) {
-    CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
+    CHECK(HTMLSelectElement::CustomizableSelectEnabled(parent));
 
     if (!IsA<HTMLSelectElement>(parent)) {
       // The `::picker-icon` pseudo element should only be created for select

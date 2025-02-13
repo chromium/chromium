@@ -103,8 +103,9 @@ bool CanAssignToSelectSlot(const Node& node) {
 }
 
 bool CanAssignToCustomizableSelectSlot(const Node& node) {
-  if (RuntimeEnabledFeatures::SelectListBoxSlotAnythingEnabled()) {
-    DCHECK(RuntimeEnabledFeatures::SelectParserRelaxationEnabled());
+  if (RuntimeEnabledFeatures::SelectListBoxSlotAnythingEnabled() &&
+      HTMLSelectElement::SelectParserRelaxationEnabled(&node)) {
+    DCHECK(HTMLSelectElement::SelectParserRelaxationEnabled(&node));
     return IsA<Element>(node) && !IsA<HTMLFormControlElement>(node);
   }
   // Elements which are valid in <select>'s new content model as proposed for
@@ -126,7 +127,7 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
  public:
   explicit PopoverElementForAppearanceBase(Document& document)
       : HTMLDivElement(document) {
-    CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
+    CHECK(HTMLSelectElement::CustomizableSelectEnabled(&document));
     SetHasCustomStyleCallbacks();
   }
 
@@ -633,7 +634,7 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
   option_slot_->SetIdAttribute(shadow_element_names::kSelectOptions);
   root.appendChild(option_slot_);
 
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+  if (HTMLSelectElement::CustomizableSelectEnabled(select_)) {
     button_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
     button_slot_->SetIdAttribute(shadow_element_names::kSelectButton);
     root.appendChild(button_slot_);
@@ -699,7 +700,7 @@ void MenuListSelectType::ManuallyAssignSlots() {
   }
 
   CHECK(option_slot_);
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+  if (HTMLSelectElement::CustomizableSelectEnabled(select_)) {
     CHECK(button_slot_);
     button_slot_->Assign(first_button);
     // The IsInTopLayer check here is needed in order to support the case that a
@@ -734,7 +735,7 @@ void MenuListSelectType::ManuallyAssignSlots() {
 }
 
 HTMLButtonElement* MenuListSelectType::SlottedButton() const {
-  if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+  if (!HTMLSelectElement::CustomizableSelectEnabled(select_)) {
     return nullptr;
   }
   // This code may be called while slot recalc is forbidden, so instead of
@@ -744,13 +745,13 @@ HTMLButtonElement* MenuListSelectType::SlottedButton() const {
 }
 
 HTMLElement* MenuListSelectType::PopoverForAppearanceBase() const {
-  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled() || !popover_);
+  CHECK(HTMLSelectElement::CustomizableSelectEnabled(select_) || !popover_);
   return popover_;
 }
 
 bool MenuListSelectType::IsAppearanceBaseButton(
     HTMLSelectElement::StyleUpdateBehavior update_behavior) const {
-  if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+  if (!HTMLSelectElement::CustomizableSelectEnabled(select_)) {
     return false;
   }
   DCHECK(select_);
@@ -771,7 +772,7 @@ bool MenuListSelectType::IsAppearanceBasePicker() const {
     // before the ::picker is allowed to have appearance:base-select.
     return false;
   }
-  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
+  CHECK(HTMLSelectElement::CustomizableSelectEnabled(select_));
   DCHECK(popover_);
   if (auto* style = popover_->EnsureComputedStyle()) {
     return style->EffectiveAppearance() == AppearanceValue::kBaseSelect;
@@ -861,7 +862,7 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
 }
 
 void MenuListSelectType::HidePopup(SelectPopupHideBehavior behavior) {
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() && popover_ &&
+  if (HTMLSelectElement::CustomizableSelectEnabled(select_) && popover_ &&
       popover_->popoverOpen()) {
     bool normal_behavior = behavior == SelectPopupHideBehavior::kNormal;
     popover_->HidePopoverInternal(
@@ -886,7 +887,7 @@ void MenuListSelectType::PopupDidHide() {
 }
 
 bool MenuListSelectType::PopupIsVisible() const {
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+  if (HTMLSelectElement::CustomizableSelectEnabled(select_)) {
     // This is called during style recalc, so we can't check
     // IsAppearanceBasePicker to determine which picker to look at.
     bool popover_open = popover_->popoverOpen();
@@ -1951,14 +1952,14 @@ void ListBoxSelectType::ManuallyAssignSlots() {
   for (Node& child : NodeTraversal::ChildrenOf(*select_)) {
     if (child.IsSlotable() &&
         (CanAssignToSelectSlot(child) ||
-         (RuntimeEnabledFeatures::SelectParserRelaxationEnabled() &&
+         (HTMLSelectElement::SelectParserRelaxationEnabled(select_) &&
           CanAssignToCustomizableSelectSlot(child)))) {
       option_nodes.push_back(child);
     }
   }
   CHECK(option_slot_);
   option_slot_->Assign(option_nodes);
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+  if (HTMLSelectElement::CustomizableSelectEnabled(select_)) {
     select_->GetShadowRoot()->SetDelegatesFocus(false);
   }
 }

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Test that slotted-in selected-value part is updated to value of select
+  Cannot read properties of null (reading 'innerText')
+[FAIL] Test that option parts in a slotted-in listbox are reflected in the value property
+  Cannot read properties of null (reading 'innerText')
+Harness: the test ran to completion.
+

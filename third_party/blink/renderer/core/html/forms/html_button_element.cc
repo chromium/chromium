@@ -429,7 +429,7 @@ void HTMLButtonElement::DispatchBlurEvent(
 }
 
 HTMLSelectElement* HTMLButtonElement::OwnerSelect() const {
-  if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+  if (!HTMLSelectElement::CustomizableSelectEnabled(this)) {
     return nullptr;
   }
   if (auto* select = DynamicTo<HTMLSelectElement>(parentNode())) {

@@ -3900,7 +3900,7 @@
       // to arbitrary <selectedcontent> elements.
       // https://github.com/openui/open-ui/issues/1063
       name: "SelectedcontentelementAttribute",
-      status: "experimental",
+      status: "test",
       depends_on: ["CustomizableSelect"],
     },
     {
@@ -3944,6 +3944,19 @@
       // https://github.com/whatwg/html/issues/10310
       name: "SelectParserRelaxation",
       status: "experimental",
+      public: true,
+    },
+    {
+      // This is a feature used *only* for deprecation origin trial participants
+      // to opt *out* of the SelectParserRelaxation new behavior. If this
+      // feature is enabled, then SelectParserRelaxation will be disabled,
+      // regardless of the state of that flag. This deprecation trial is
+      // supported through M140, so this flag can be removed in M141+.
+      name: "SelectParserRelaxationOptOut",
+      origin_trial_feature_name: "SelectParserRelaxationOptOut",
+      origin_trial_type: "deprecation",
+      origin_trial_allows_third_party: true,
+      origin_trial_allows_insecure: true,
       public: true,
     },
     {

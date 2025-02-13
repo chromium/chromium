@@ -20,7 +20,7 @@ void OptionListIterator::Advance(HTMLOptionElement* previous) {
 
   Element* current;
   if (previous) {
-    if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled() &&
+    if (HTMLSelectElement::SelectParserRelaxationEnabled(&select_) &&
         !previous->OwnerSelectElement(/*skip_check=*/true)) {
       // In some cases, an OptionList is created and used for a select element
       // before its descendant option elements had InsertedInto called on
@@ -41,14 +41,14 @@ void OptionListIterator::Advance(HTMLOptionElement* previous) {
       current_ = option;
       return;
     }
-    if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+    if (HTMLSelectElement::SelectParserRelaxationEnabled(&select_)) {
       if (IsA<HTMLSelectElement>(current)) {
         current = ElementTraversal::NextSkippingChildren(*current, &select_);
       } else {
         current = ElementTraversal::Next(*current, &select_);
       }
     } else {
-      DCHECK(!RuntimeEnabledFeatures::CustomizableSelectEnabled());
+      DCHECK(!HTMLSelectElement::CustomizableSelectEnabled(&select_));
       if (IsA<HTMLOptGroupElement>(current) &&
           current->parentNode() == &select_) {
         if ((current_ = Traversal<HTMLOptionElement>::FirstChild(*current))) {
@@ -81,7 +81,7 @@ void OptionListIterator::Retreat(HTMLOptionElement* next) {
       return;
     }
 
-    if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+    if (HTMLSelectElement::SelectParserRelaxationEnabled(&select_)) {
       if (current == select_) {
         current = nullptr;
       } else if (IsA<HTMLSelectElement>(current)) {
@@ -90,7 +90,7 @@ void OptionListIterator::Retreat(HTMLOptionElement* next) {
         current = ElementTraversal::Previous(*current, &select_);
       }
     } else {
-      DCHECK(!RuntimeEnabledFeatures::CustomizableSelectEnabled());
+      DCHECK(!HTMLSelectElement::CustomizableSelectEnabled(&select_));
       if (IsA<HTMLOptGroupElement>(current) &&
           current->parentNode() == &select_) {
         if ((current_ = Traversal<HTMLOptionElement>::LastChild(*current))) {

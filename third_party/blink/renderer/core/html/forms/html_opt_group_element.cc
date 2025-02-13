@@ -142,10 +142,10 @@ Node::InsertionNotificationRequest HTMLOptGroupElement::InsertedInto(
     // TODO(crbug.com/1511354): This UsesMenuList check doesn't account for
     // the case when the select's rendering is changed after insertion.
     customizable_select_rendering_ =
-        RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
+        HTMLSelectElement::CustomizableSelectEnabled(this) &&
         select->UsesMenuList();
   }
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+  if (HTMLSelectElement::CustomizableSelectEnabled(this)) {
     UpdateGroupLabel();
   }
   return kInsertionDone;
@@ -161,7 +161,7 @@ void HTMLOptGroupElement::RemovedFrom(ContainerNode& insertion_point) {
 
 String HTMLOptGroupElement::GroupLabelText() const {
   String label_attribute_text = LabelAttributeText();
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
+  if (HTMLSelectElement::CustomizableSelectEnabled(this) &&
       label_attribute_text.ContainsOnlyWhitespaceOrEmpty()) {
     if (auto* legend = FirstChildLegend(*this)) {
       return legend->textContent();
@@ -183,7 +183,7 @@ String HTMLOptGroupElement::LabelAttributeText() const {
 }
 
 HTMLSelectElement* HTMLOptGroupElement::OwnerSelectElement() const {
-  if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+  if (HTMLSelectElement::SelectParserRelaxationEnabled(this)) {
     // TODO(crbug.com/351990825): Cache the owner select ancestor on insertion
     // rather than doing a tree traversal here every time OwnerSelectElement is
     // called, which may be a lot.
