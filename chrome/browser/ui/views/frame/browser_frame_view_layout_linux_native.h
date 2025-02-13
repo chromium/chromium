@@ -18,15 +18,12 @@ class BrowserFrameViewLayoutLinuxNative : public BrowserFrameViewLayoutLinux {
   using FrameProviderGetter =
       base::RepeatingCallback<ui::WindowFrameProvider*(bool /*tiled*/)>;
 
-  explicit BrowserFrameViewLayoutLinuxNative(
-      ui::NavButtonProvider* nav_button_provider,
-      FrameProviderGetter frame_provider_getter);
-
+  BrowserFrameViewLayoutLinuxNative(ui::NavButtonProvider* nav_button_provider,
+                                    FrameProviderGetter frame_provider_getter);
   BrowserFrameViewLayoutLinuxNative(const BrowserFrameViewLayoutLinuxNative&) =
       delete;
   BrowserFrameViewLayoutLinuxNative& operator=(
       const BrowserFrameViewLayoutLinuxNative&) = delete;
-
   ~BrowserFrameViewLayoutLinuxNative() override;
 
   ui::WindowFrameProvider* GetFrameProvider() const;
