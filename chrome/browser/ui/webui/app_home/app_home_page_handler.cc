@@ -381,9 +381,10 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
                              blink::mojom::DisplayMode::kBrowser;
 
   app_info->store_page_url = std::nullopt;
-  app_info->may_uninstall =
-      web_app_provider_->registrar_unsafe().CanUserUninstallWebApp(app_id);
-  app_info->is_deprecated_app = false;
+  app_info->may_uninstall = registrar.CanUserUninstallWebApp(app_id);
+  app_info->app_type = registrar.IsIsolated(app_id)
+                           ? app_home::mojom::AppType::kIsolatedWebApp
+                           : app_home::mojom::AppType::kWebApp;
   return app_info;
 }
 
@@ -402,10 +403,14 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromExtension(
       extensions::IsExtensionUnsupportedDeprecatedApp(context, extension->id());
 
   if (deprecated_app) {
+    app_info->app_type = app_home::mojom::AppType::kDeprecatedChromeApp;
     app_info->name =
         l10n_util::GetStringFUTF8(IDS_APPS_PAGE_DEPRECATED_APP_TITLE,
                                   base::UTF8ToUTF16(extension->name()));
   } else {
+    // Chrome Apps with explicit deprecation exception are treated as web apps
+    // for simplicity.
+    app_info->app_type = app_home::mojom::AppType::kWebApp;
     app_info->name = extension->name();
   }
 
@@ -426,7 +431,6 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromExtension(
     DCHECK(store_url.is_valid());
     app_info->store_page_url = store_url;
   }
-  app_info->is_deprecated_app = deprecated_app;
   app_info->may_uninstall =
       extension_system_->management_policy()->UserMayModifySettings(extension,
                                                                     nullptr);
