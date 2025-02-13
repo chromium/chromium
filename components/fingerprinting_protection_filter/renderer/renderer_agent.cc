@@ -164,8 +164,12 @@ void RendererAgent::DidCreateNewDocument() {
     notified_disallow_ = false;
     auto new_origin = url::Origin::Create(new_document_url);
     auto current_origin = url::Origin::Create(current_document_url_);
-    // Could be same origin for refreshes, etc.
-    if (!new_origin.IsSameOriginWith(current_origin)) {
+    // Reset the filter handle and re-initialize to get a new activation state
+    // if:
+    //   1. The origin has changed, meaning this is not just a refresh, or
+    //   2. The activation state has already been reset i.e. by a call to
+    //      `DidFailProvisionalLoad`.
+    if (!new_origin.IsSameOriginWith(current_origin) || pending_activation_) {
       filter_.reset();
       Initialize();
     }
