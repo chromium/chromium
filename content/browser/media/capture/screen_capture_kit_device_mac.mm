@@ -55,6 +55,8 @@ GetVisibleRectAndContentSize(CFDictionaryRef attachment) {
     succeed &=
         CFNumberGetValue(contentScaleValue, kCFNumberFloatType, &contentScale);
     if (succeed) {
+      contentRect.origin.x *= scaleFactor;
+      contentRect.origin.y *= scaleFactor;
       contentRect.size.width *= scaleFactor;
       contentRect.size.height *= scaleFactor;
       visibleRect.emplace(contentRect);
