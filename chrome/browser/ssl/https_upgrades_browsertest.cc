@@ -165,9 +165,9 @@ struct ExpectedInterstitialReasons {
 };
 
 // A very low site engagement score.
-constexpr int kLowSiteEngagementScore = 2;
+constexpr int kLowSiteEngagementScore = 1;
 // A very high site engagement score.
-constexpr int kHighSiteEnagementScore = 95;
+constexpr int kHighSiteEnagementScore = 99;
 
 // Tests for HTTPS-Upgrades and the v2 implementation of HTTPS-First Mode.
 class HttpsUpgradesBrowserTest

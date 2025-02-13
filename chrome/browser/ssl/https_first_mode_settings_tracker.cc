@@ -38,18 +38,18 @@
 
 // Minimum score of an HTTPS origin to enable HFM on its hostname.
 const base::FeatureParam<int> kHttpsAddThreshold{
-    &features::kHttpsFirstModeV2ForEngagedSites, "https-add-threshold", 40};
+    &features::kHttpsFirstModeV2ForEngagedSites, "https-add-threshold", 80};
 
 // Maximum score of an HTTP origin to enable HFM on its hostname.
 const base::FeatureParam<int> kHttpsRemoveThreshold{
-    &features::kHttpsFirstModeV2ForEngagedSites, "https-remove-threshold", 30};
+    &features::kHttpsFirstModeV2ForEngagedSites, "https-remove-threshold", 75};
 
 // If HTTPS score goes below kHttpsRemoveThreshold or HTTP score goes above
 // kHttpRemoveThreshold, disable HFM on this hostname.
 const base::FeatureParam<int> kHttpAddThreshold{
-    &features::kHttpsFirstModeV2ForEngagedSites, "http-add-threshold", 5};
+    &features::kHttpsFirstModeV2ForEngagedSites, "http-add-threshold", 1};
 const base::FeatureParam<int> kHttpRemoveThreshold{
-    &features::kHttpsFirstModeV2ForEngagedSites, "http-remove-threshold", 10};
+    &features::kHttpsFirstModeV2ForEngagedSites, "http-remove-threshold", 5};
 
 // Parameters for Typically Secure User heuristic:
 
