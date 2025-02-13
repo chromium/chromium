@@ -241,13 +241,11 @@ void BeginMemoryExperimentationAfterDelay() {
 }
 
 // Inserts `session_ids` into the set of discarded sessions for `attrs`.
-ProfileAttributesIOS InsertDiscardedSessions(
-    const std::set<std::string>& session_ids,
-    ProfileAttributesIOS attrs) {
+void InsertDiscardedSessions(const std::set<std::string>& session_ids,
+                             ProfileAttributesIOS& attrs) {
   auto discarded_sessions = attrs.GetDiscardedSessions();
   discarded_sessions.insert(session_ids.begin(), session_ids.end());
   attrs.SetDiscardedSessions(discarded_sessions);
-  return attrs;
 }
 
 // Mark all `sessions` as discarded sessions for all profiles.
@@ -275,11 +273,8 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
     sessionIDs.insert(base::SysNSStringToUTF8(session.persistentIdentifier));
   }
 
-  const size_t profiles_count = storage->GetNumberOfProfiles();
-  for (size_t index = 0; index < profiles_count; ++index) {
-    storage->UpdateAttributesForProfileAtIndex(
-        index, base::BindOnce(&InsertDiscardedSessions, sessionIDs));
-  }
+  storage->IterateOverProfileAttributes(
+      base::BindRepeating(&InsertDiscardedSessions, sessionIDs));
 
   sessions_storage_util::ResetDiscardedSessions();
 }

@@ -65,6 +65,19 @@ constexpr char kTestProfile2[] = "Profile2";
 constexpr char kTestSceneId1[] = "scene-id1";
 constexpr char kTestSceneId2[] = "scene-id2";
 
+// Updates `attr` with information from `account`.
+ProfileAttributesIOS UpdateAttributesFromTestAccount(
+    const TestAccount& account,
+    ProfileAttributesIOS attr) {
+  CHECK_EQ(account.name, attr.GetProfileName());
+  attr.SetLastActiveTime(account.last_active_time);
+  attr.SetAuthenticationInfo(GaiaId(std::string(account.gaia)), account.email);
+  ProfileAttributesIOS::GaiaIdSet gaia_ids;
+  gaia_ids.insert(GaiaId(std::string(account.gaia)));
+  attr.SetAttachedGaiaIds(gaia_ids);
+  return attr;
+}
+
 }  // namespace
 
 class MutableProfileAttributesStorageIOSTest : public PlatformTest {
@@ -180,17 +193,7 @@ TEST_F(MutableProfileAttributesStorageIOSTest,
 
       storage.UpdateAttributesForProfileWithName(
           account.name,
-          base::BindOnce(
-              [](const TestAccount& account, ProfileAttributesIOS attr) {
-                attr.SetLastActiveTime(account.last_active_time);
-                attr.SetAuthenticationInfo(GaiaId(std::string(account.gaia)),
-                                           account.email);
-                ProfileAttributesIOS::GaiaIdSet gaia_ids;
-                gaia_ids.insert(GaiaId(std::string(account.gaia)));
-                attr.SetAttachedGaiaIds(gaia_ids);
-                return attr;
-              },
-              account));
+          base::BindOnce(&UpdateAttributesFromTestAccount, account));
     }
   }
 
@@ -213,7 +216,6 @@ TEST_F(MutableProfileAttributesStorageIOSTest,
 }
 
 // Tests that GetAttributesForProfileWithName(...) works as expected.
-// Note that this implicitly tests GetAttributesForProfileAtIndex(...).
 TEST_F(MutableProfileAttributesStorageIOSTest,
        GetAttributesForProfileWithName) {
   MutableProfileAttributesStorageIOS storage(pref_service());
@@ -239,15 +241,8 @@ TEST_F(MutableProfileAttributesStorageIOSTest,
   MutableProfileAttributesStorageIOS storage(pref_service());
   storage.AddProfile(kDeletedAccount.name);
   storage.UpdateAttributesForProfileWithName(
-      kDeletedAccount.name, base::BindOnce([](ProfileAttributesIOS attr) {
-        attr.SetLastActiveTime(kDeletedAccount.last_active_time);
-        attr.SetAuthenticationInfo(GaiaId(std::string(kDeletedAccount.gaia)),
-                                   kDeletedAccount.email);
-        ProfileAttributesIOS::GaiaIdSet gaia_ids;
-        gaia_ids.insert(GaiaId(std::string(kDeletedAccount.gaia)));
-        attr.SetAttachedGaiaIds(gaia_ids);
-        return attr;
-      }));
+      kDeletedAccount.name,
+      base::BindOnce(&UpdateAttributesFromTestAccount, kDeletedAccount));
 
   ProfileAttributesIOS attr =
       storage.GetAttributesForProfileWithName(kDeletedAccount.name);
@@ -279,15 +274,8 @@ TEST_F(MutableProfileAttributesStorageIOSTest,
   ASSERT_TRUE(storage.IsProfileMarkedForDeletion(kDeletedAccount.name));
 
   storage.UpdateAttributesForProfileWithName(
-      kDeletedAccount.name, base::BindOnce([](ProfileAttributesIOS attr) {
-        attr.SetLastActiveTime(kDeletedAccount.last_active_time);
-        attr.SetAuthenticationInfo(GaiaId(std::string(kDeletedAccount.gaia)),
-                                   kDeletedAccount.email);
-        ProfileAttributesIOS::GaiaIdSet gaia_ids;
-        gaia_ids.insert(GaiaId(std::string(kDeletedAccount.gaia)));
-        attr.SetAttachedGaiaIds(gaia_ids);
-        return attr;
-      }));
+      kDeletedAccount.name,
+      base::BindOnce(&UpdateAttributesFromTestAccount, kDeletedAccount));
 
   ProfileAttributesIOS attr =
       storage.GetAttributesForProfileWithName(kDeletedAccount.name);
@@ -295,6 +283,166 @@ TEST_F(MutableProfileAttributesStorageIOSTest,
   EXPECT_TRUE(attr.IsDeletedProfile());
   EXPECT_EQ(attr.GetGaiaId(), GaiaId());
   EXPECT_TRUE(attr.GetAttachedGaiaIds().empty());
+}
+
+// Tests that calling IterateOverProfileAttributes(...) with an iterator
+// callback returning IterationResult can stops the iteration early and
+// that mutations are reflected in the storage.
+TEST_F(MutableProfileAttributesStorageIOSTest,
+       IterateOverProfileAttributes_Iterator) {
+  MutableProfileAttributesStorageIOS storage(pref_service());
+  for (const TestAccount& account : kTestAccounts) {
+    storage.AddProfile(account.name);
+    storage.UpdateAttributesForProfileWithName(
+        account.name,
+        base::BindOnce(&UpdateAttributesFromTestAccount, account));
+  }
+
+  // Add a profile and mark it as deleted, to check that the iteration
+  // does not iterate over deleted profiles.
+  storage.AddProfile(kDeletedAccount.name);
+  storage.UpdateAttributesForProfileWithName(
+      kDeletedAccount.name,
+      base::BindOnce(&UpdateAttributesFromTestAccount, kDeletedAccount));
+  storage.MarkProfileForDeletion(kDeletedAccount.name);
+
+  ASSERT_TRUE(storage.IsProfileMarkedForDeletion(kDeletedAccount.name));
+  ASSERT_EQ(storage.GetNumberOfProfiles(), std::size(kTestAccounts));
+  ASSERT_GT(storage.GetNumberOfProfiles(), 1u);
+
+  std::string modified;
+  const base::Time timestamp = base::Time::Now();
+  storage.IterateOverProfileAttributes(base::BindRepeating(
+      [](std::string& name, base::Time timestamp, ProfileAttributesIOS& attr) {
+        EXPECT_NE(attr.GetProfileName(), kDeletedAccount.name);
+        name = attr.GetProfileName();
+        attr.SetLastActiveTime(timestamp);
+        return ProfileAttributesStorageIOS::IterationResult::kTerminate;
+      },
+      std::ref(modified), timestamp));
+
+  // The iterator should have been called at least once.
+  ASSERT_FALSE(modified.empty());
+  ASSERT_NE(modified, kDeletedAccount.name);
+
+  for (const TestAccount& account : kTestAccounts) {
+    const auto attr = storage.GetAttributesForProfileWithName(account.name);
+    if (attr.GetProfileName() == modified) {
+      EXPECT_EQ(attr.GetLastActiveTime(), timestamp);
+    } else {
+      EXPECT_NE(attr.GetLastActiveTime(), timestamp);
+    }
+  }
+}
+
+// Tests that calling IterateOverProfileAttributes(...) with an iterator
+// callback returning void will iterate over all items and that mutations
+// are reflected in the storage.
+TEST_F(MutableProfileAttributesStorageIOSTest,
+       IterateOverProfileAttributes_CompleteIterator) {
+  MutableProfileAttributesStorageIOS storage(pref_service());
+  for (const TestAccount& account : kTestAccounts) {
+    storage.AddProfile(account.name);
+    storage.UpdateAttributesForProfileWithName(
+        account.name,
+        base::BindOnce(&UpdateAttributesFromTestAccount, account));
+  }
+
+  // Add a profile and mark it as deleted, to check that the iteration
+  // does not iterate over deleted profiles.
+  storage.AddProfile(kDeletedAccount.name);
+  storage.UpdateAttributesForProfileWithName(
+      kDeletedAccount.name,
+      base::BindOnce(&UpdateAttributesFromTestAccount, kDeletedAccount));
+  storage.MarkProfileForDeletion(kDeletedAccount.name);
+
+  ASSERT_TRUE(storage.IsProfileMarkedForDeletion(kDeletedAccount.name));
+  ASSERT_EQ(storage.GetNumberOfProfiles(), std::size(kTestAccounts));
+  ASSERT_GT(storage.GetNumberOfProfiles(), 1u);
+
+  const base::Time timestamp = base::Time::Now();
+  storage.IterateOverProfileAttributes(base::BindRepeating(
+      [](base::Time timestamp, ProfileAttributesIOS& attr) {
+        EXPECT_NE(attr.GetProfileName(), kDeletedAccount.name);
+        attr.SetLastActiveTime(timestamp);
+      },
+      timestamp));
+
+  for (const TestAccount& account : kTestAccounts) {
+    const auto attr = storage.GetAttributesForProfileWithName(account.name);
+    EXPECT_EQ(attr.GetLastActiveTime(), timestamp);
+  }
+}
+
+// Tests that calling IterateOverProfileAttributes(...) with an iterator
+// callback returning IterationResult can stops the iteration early.
+TEST_F(MutableProfileAttributesStorageIOSTest,
+       IterateOverProfileAttributes_ConstIterator) {
+  MutableProfileAttributesStorageIOS storage(pref_service());
+  for (const TestAccount& account : kTestAccounts) {
+    storage.AddProfile(account.name);
+    storage.UpdateAttributesForProfileWithName(
+        account.name,
+        base::BindOnce(&UpdateAttributesFromTestAccount, account));
+  }
+
+  // Add a profile and mark it as deleted, to check that the iteration
+  // does not iterate over deleted profiles.
+  storage.AddProfile(kDeletedAccount.name);
+  storage.UpdateAttributesForProfileWithName(
+      kDeletedAccount.name,
+      base::BindOnce(&UpdateAttributesFromTestAccount, kDeletedAccount));
+  storage.MarkProfileForDeletion(kDeletedAccount.name);
+
+  ASSERT_TRUE(storage.IsProfileMarkedForDeletion(kDeletedAccount.name));
+  ASSERT_EQ(storage.GetNumberOfProfiles(), std::size(kTestAccounts));
+  ASSERT_GT(storage.GetNumberOfProfiles(), 1u);
+
+  size_t counter = 0;
+  storage.IterateOverProfileAttributes(base::BindRepeating(
+      [](size_t& counter, const ProfileAttributesIOS& attr) {
+        EXPECT_NE(attr.GetProfileName(), kDeletedAccount.name);
+        ++counter;
+        return ProfileAttributesStorageIOS::IterationResult::kTerminate;
+      },
+      std::ref(counter)));
+  EXPECT_EQ(counter, 1u);
+}
+
+// Tests that calling IterateOverProfileAttributes(...) with an iterator
+// callback returning void will iterate over all items.
+TEST_F(MutableProfileAttributesStorageIOSTest,
+       IterateOverProfileAttributes_ConstCompleteIterator) {
+  MutableProfileAttributesStorageIOS storage(pref_service());
+  for (const TestAccount& account : kTestAccounts) {
+    storage.AddProfile(account.name);
+    storage.UpdateAttributesForProfileWithName(
+        account.name,
+        base::BindOnce(&UpdateAttributesFromTestAccount, account));
+  }
+
+  // Add a profile and mark it as deleted, to check that the iteration
+  // does not iterate over deleted profiles.
+  storage.AddProfile(kDeletedAccount.name);
+  storage.UpdateAttributesForProfileWithName(
+      kDeletedAccount.name,
+      base::BindOnce(&UpdateAttributesFromTestAccount, kDeletedAccount));
+  storage.MarkProfileForDeletion(kDeletedAccount.name);
+
+  ASSERT_TRUE(storage.IsProfileMarkedForDeletion(kDeletedAccount.name));
+  ASSERT_EQ(storage.GetNumberOfProfiles(), std::size(kTestAccounts));
+  ASSERT_GT(storage.GetNumberOfProfiles(), 1u);
+
+  // Test that calling IterateOverProfileAttributes(...) with an iterator
+  // callback returning void will iterate over all items.
+  size_t counter = 0;
+  storage.IterateOverProfileAttributes(base::BindRepeating(
+      [](size_t& counter, const ProfileAttributesIOS& attr) {
+        EXPECT_NE(attr.GetProfileName(), kDeletedAccount.name);
+        ++counter;
+      },
+      std::ref(counter)));
+  EXPECT_EQ(counter, storage.GetNumberOfProfiles());
 }
 
 TEST_F(MutableProfileAttributesStorageIOSTest, FixInvalidPersonalProfileName) {

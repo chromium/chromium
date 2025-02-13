@@ -88,6 +88,20 @@ FakeSystemIdentity* google_identity =
 FakeSystemIdentity* chromium_identity =
     [FakeSystemIdentity identityWithEmail:@"foo4@chromium.com"];
 
+// Helper for implementing FindCreatedProfileName(...). Stops iteration and
+// store the profile name to `profile_name` when finding a profile that is
+// not present in `known_profile_names`.
+ProfileAttributesStorageIOS::IterationResult FindCreatedProfileNameHelper(
+    std::string& profile_name,
+    const base::flat_set<std::string>& known_profile_names,
+    const ProfileAttributesIOS& attr) {
+  if (!known_profile_names.contains(attr.GetProfileName())) {
+    profile_name = attr.GetProfileName();
+    return ProfileAttributesStorageIOS::IterationResult::kTerminate;
+  }
+  return ProfileAttributesStorageIOS::IterationResult::kContinue;
+}
+
 class MockObserver : public AccountProfileMapper::Observer {
  public:
   MockObserver() = default;
@@ -307,14 +321,14 @@ class AccountProfileMapperTest : public PlatformTest {
       const base::flat_set<std::string>& known_profile_names) {
     const ProfileAttributesStorageIOS* storage = profile_attributes_storage();
     EXPECT_EQ(storage->GetNumberOfProfiles(), known_profile_names.size() + 1);
-    for (size_t i = 0; i < storage->GetNumberOfProfiles(); i++) {
-      std::string profile_name =
-          storage->GetAttributesForProfileAtIndex(i).GetProfileName();
-      if (!known_profile_names.contains(profile_name)) {
-        return profile_name;
-      }
-    }
-    NOTREACHED();
+
+    std::string profile_name;
+    storage->IterateOverProfileAttributes(
+        base::BindRepeating(&FindCreatedProfileNameHelper,
+                            std::ref(profile_name), known_profile_names));
+
+    CHECK(!profile_name.empty());
+    return profile_name;
   }
 
   ProfileAttributesStorageIOS* profile_attributes_storage() {

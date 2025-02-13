@@ -62,6 +62,12 @@ constexpr char kPersonalProfileNameForTesting[] =
 using ProfileNameToGaiaIds =
     std::map<std::string, std::set<GaiaId, std::less<>>, std::less<>>;
 
+// Stores attached gaia ids from `attr` into `mapping`.
+void ExtractAttachedGaiaIds(ProfileNameToGaiaIds& mapping,
+                            const ProfileAttributesIOS& attr) {
+  mapping[attr.GetProfileName()] = attr.GetAttachedGaiaIds();
+}
+
 // Returns a map from each profile name to the set of attached Gaia IDs.
 ProfileNameToGaiaIds GetMappingFromProfileAttributes(
     SystemIdentityManager* system_identity_manager,
@@ -85,12 +91,10 @@ ProfileNameToGaiaIds GetMappingFromProfileAttributes(
     CHECK_IS_TEST();
     return result;
   }
-  for (size_t index = 0;
-       index < profile_attributes_storage->GetNumberOfProfiles(); index++) {
-    ProfileAttributesIOS attr =
-        profile_attributes_storage->GetAttributesForProfileAtIndex(index);
-    result[attr.GetProfileName()] = attr.GetAttachedGaiaIds();
-  }
+
+  profile_attributes_storage->IterateOverProfileAttributes(
+      base::BindRepeating(&ExtractAttachedGaiaIds, std::ref(result)));
+
   return result;
 }
 
