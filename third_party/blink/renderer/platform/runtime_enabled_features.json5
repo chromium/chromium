@@ -425,7 +425,7 @@
     {
       name: "AOMAriaRelationshipProperties",
       public: true,
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "AOMAriaRelationshipPropertiesAriaOwns",
