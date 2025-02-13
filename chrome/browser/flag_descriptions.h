@@ -2177,6 +2177,9 @@ extern const char kUnifiedPasswordManagerAndroidReenrollmentDescription[];
 extern const char kUnsafeWebGPUName[];
 extern const char kUnsafeWebGPUDescription[];
 
+extern const char kForceHighPerformanceGPUName[];
+extern const char kForceHighPerformanceGPUDescription[];
+
 extern const char kUiPartialSwapName[];
 extern const char kUiPartialSwapDescription[];
 

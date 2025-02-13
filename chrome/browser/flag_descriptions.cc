@@ -3700,6 +3700,11 @@ const char kUnsafeWebGPUDescription[] =
     "expose security issues to websites so only use it for your own "
     "development.";
 
+const char kForceHighPerformanceGPUName[] = "Force High Performance GPU";
+const char kForceHighPerformanceGPUDescription[] =
+    "Forces use of high performance GPU if available. Warning: this flag may "
+    "increase power consumption leading to shorter battery time.";
+
 const char kUiPartialSwapName[] = "Partial swap";
 const char kUiPartialSwapDescription[] = "Sets partial swap behavior.";
 

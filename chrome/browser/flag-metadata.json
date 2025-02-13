@@ -4697,6 +4697,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "force-high-performance-gpu",
+    "owners": [ "petermcneeley@google.com", "fbeaufort@google.com"],
+    "expiry_milestone": 165
+  },
+  {
      "name": "force-list-tab-switcher",
      "owners": ["ckitagawa@chromium.org", "skym@chromium.org"],
      "expiry_milestone": 136

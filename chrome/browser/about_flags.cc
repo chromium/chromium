@@ -7951,6 +7951,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUnsafeWebGPUDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kEnableUnsafeWebGPU)},
 
+    {"force-high-performance-gpu",
+     flag_descriptions::kForceHighPerformanceGPUName,
+     flag_descriptions::kForceHighPerformanceGPUDescription, kOsWin,
+     SINGLE_VALUE_TYPE(switches::kForceHighPerformanceGPU)},
+
     {"enable-webgpu-developer-features",
      flag_descriptions::kWebGpuDeveloperFeaturesName,
      flag_descriptions::kWebGpuDeveloperFeaturesDescription, kOsAll,
