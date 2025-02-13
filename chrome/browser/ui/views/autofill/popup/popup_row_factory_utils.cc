@@ -89,10 +89,10 @@ constexpr int kRefreshInkDropRadius = 12;
 constexpr auto kPopupItemTypesUsingLeadingIcons =
     base::MakeFixedFlatSet<SuggestionType>(
         {SuggestionType::kAllSavedPasswordsEntry,
-         SuggestionType::kManageAddress, SuggestionType::kManageCreditCard,
-         SuggestionType::kManageIban, SuggestionType::kManagePlusAddress,
-         SuggestionType::kShowAccountCards, SuggestionType::kUndoOrClear,
-         SuggestionType::kViewPasswordDetails,
+         SuggestionType::kManageAddress, SuggestionType::kManageAutofillAi,
+         SuggestionType::kManageCreditCard, SuggestionType::kManageIban,
+         SuggestionType::kManagePlusAddress, SuggestionType::kShowAccountCards,
+         SuggestionType::kUndoOrClear, SuggestionType::kViewPasswordDetails,
          SuggestionType::kRetrieveAutofillAi});
 
 // Max width for the username and masked password.

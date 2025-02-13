@@ -450,56 +450,57 @@ bool IsExpandableSuggestionType(SuggestionType type) {
   switch (type) {
     case SuggestionType::kAddressEntry:
     case SuggestionType::kAddressFieldByFieldFilling:
-    case SuggestionType::kCreditCardEntry:
-    case SuggestionType::kComposeProactiveNudge:
-    case SuggestionType::kDevtoolsTestAddresses:
-    case SuggestionType::kPasswordEntry:
-    case SuggestionType::kFillAutofillAi:
     case SuggestionType::kAutofillAiError:
+    case SuggestionType::kComposeProactiveNudge:
+    case SuggestionType::kCreditCardEntry:
+    case SuggestionType::kDevtoolsTestAddresses:
+    case SuggestionType::kFillAutofillAi:
+    case SuggestionType::kPasswordEntry:
       return true;
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kAllSavedPasswordsEntry:
     case SuggestionType::kAutocompleteEntry:
-    case SuggestionType::kManageAddress:
-    case SuggestionType::kManageCreditCard:
-    case SuggestionType::kManageIban:
-    case SuggestionType::kManagePlusAddress:
-    case SuggestionType::kUndoOrClear:
-    case SuggestionType::kComposeResumeNudge:
+    case SuggestionType::kAutofillAiFeedback:
+    case SuggestionType::kAutofillAiLoadingState:
+    case SuggestionType::kBnplEntry:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
+    case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeSavedStateNotification:
     case SuggestionType::kCreateNewPlusAddress:
     case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
+    case SuggestionType::kEditAutofillAiData:
     case SuggestionType::kFillExistingPlusAddress:
     case SuggestionType::kFillPassword:
     case SuggestionType::kGeneratePasswordEntry:
     case SuggestionType::kIbanEntry:
-    case SuggestionType::kBnplEntry:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
+    case SuggestionType::kManageAddress:
+    case SuggestionType::kManageAutofillAi:
+    case SuggestionType::kManageCreditCard:
+    case SuggestionType::kManageIban:
+    case SuggestionType::kManagePlusAddress:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kMixedFormMessage:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPlusAddressError:
-    case SuggestionType::kAutofillAiFeedback:
+    case SuggestionType::kRetrieveAutofillAi:
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kSeparator:
     case SuggestionType::kShowAccountCards:
     case SuggestionType::kTitle:
+    case SuggestionType::kUndoOrClear:
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
-    case SuggestionType::kRetrieveAutofillAi:
-    case SuggestionType::kEditAutofillAiData:
-    case SuggestionType::kAutofillAiLoadingState:
       return false;
   }
 }

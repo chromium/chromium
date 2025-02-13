@@ -21,7 +21,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill_ai {
+
 namespace {
+
+using autofill::Suggestion;
+using autofill::SuggestionType;
+using ::testing::Ge;
+using ::testing::SizeIs;
 
 class AutofillAiSuggestionsTest : public testing::Test {
  private:
@@ -37,13 +43,13 @@ std::u16string GetEntityInstanceValueForFieldType(
 }
 
 bool AutofillAiPayloadContainsField(
-    const autofill::Suggestion::AutofillAiPayload& payload,
+    const Suggestion::AutofillAiPayload& payload,
     const autofill::AutofillField& field) {
   return payload.values_to_fill.contains(field.global_id());
 }
 
 std::u16string AutofillAiPayloadValueForField(
-    const autofill::Suggestion::AutofillAiPayload& payload,
+    const Suggestion::AutofillAiPayload& payload,
     const autofill::AutofillField& field) {
   return payload.values_to_fill.at(field.global_id());
 }
@@ -80,14 +86,15 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion) {
 
   // There should be only one suggestion whose main text matches the entity
   // value for the `triggering_field_type`.
-  EXPECT_EQ(suggestions.size(), 1u);
+  EXPECT_EQ(suggestions.size(), 3u);
   EXPECT_EQ(suggestions[0].main_text.value,
             GetEntityInstanceValueForFieldType(passport_entity,
                                                triggering_field_type));
+  EXPECT_EQ(suggestions[1].type, SuggestionType::kSeparator);
+  EXPECT_EQ(suggestions[2].type, SuggestionType::kManageAutofillAi);
 
-  const autofill::Suggestion::AutofillAiPayload* payload =
-      absl::get_if<autofill::Suggestion::AutofillAiPayload>(
-          &suggestions[0].payload);
+  const Suggestion::AutofillAiPayload* payload =
+      absl::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
   ASSERT_TRUE(payload);
   // The triggering/first field is of AutofillAi Type.
   EXPECT_TRUE(AutofillAiPayloadContainsField(*payload, *form->fields()[0]));
@@ -124,14 +131,13 @@ TEST_F(AutofillAiSuggestionsTest,
 
   // There should be only one suggestion whose main text matches the entity
   // value for the `triggering_field_type`.
-  EXPECT_EQ(suggestions.size(), 1u);
+  EXPECT_THAT(suggestions, SizeIs(Ge(1)));
   EXPECT_EQ(suggestions[0].main_text.value,
             GetEntityInstanceValueForFieldType(passport_entity,
                                                triggering_field_type));
 
-  const autofill::Suggestion::AutofillAiPayload* payload =
-      absl::get_if<autofill::Suggestion::AutofillAiPayload>(
-          &suggestions[0].payload);
+  const Suggestion::AutofillAiPayload* payload =
+      absl::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
   ASSERT_TRUE(payload);
   // The triggering/first field is of AutofillAi Type.
   EXPECT_TRUE(AutofillAiPayloadContainsField(*payload, *form->fields()[0]));
@@ -192,7 +198,7 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_DedupeSuggestions) {
   // makes it identical to `passport_entity`. The passport with
   // passport_a_without_an_expiry_date should be deduped because it is a
   // proper subset of `passport_entity`.
-  EXPECT_EQ(suggestions.size(), 2u);
+  EXPECT_THAT(suggestions, SizeIs(Ge(2)));
   EXPECT_EQ(suggestions[0].main_text.value,
             GetEntityInstanceValueForFieldType(passport_entity,
                                                triggering_field_type));
@@ -215,13 +221,13 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestions_Undo) {
   EXPECT_FALSE(base::Contains(
       CreateFillingSuggestions(*form, form->fields()[0]->global_id(),
                                {passport_entity}),
-      autofill::SuggestionType::kUndoOrClear, &autofill::Suggestion::type));
+      SuggestionType::kUndoOrClear, &Suggestion::type));
 
   form->field(0)->set_is_autofilled(true);
   EXPECT_TRUE(base::Contains(
       CreateFillingSuggestions(*form, form->fields()[0]->global_id(),
                                {passport_entity}),
-      autofill::SuggestionType::kUndoOrClear, &autofill::Suggestion::type));
+      SuggestionType::kUndoOrClear, &Suggestion::type));
 }
 
 }  // namespace

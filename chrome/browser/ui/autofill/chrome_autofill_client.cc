@@ -63,6 +63,7 @@
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -663,6 +664,9 @@ void ChromeAutofillClient::ShowAutofillSettings(
     switch (suggestion_type) {
       case SuggestionType::kManageAddress:
         chrome::ShowSettingsSubPage(browser, chrome::kAddressesSubPage);
+        return;
+      case SuggestionType::kManageAutofillAi:
+        chrome::ShowSettingsSubPage(browser, chrome::kAutofillAiSubPage);
         return;
       case SuggestionType::kManagePlusAddress:
         CHECK(base::FeatureList::IsEnabled(

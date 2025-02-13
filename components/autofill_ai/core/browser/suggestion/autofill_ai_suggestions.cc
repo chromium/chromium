@@ -32,6 +32,15 @@ using autofill::FieldGlobalId;
 using autofill::Suggestion;
 using autofill::SuggestionType;
 
+// Returns a suggestion to manage AutofillAi data.
+Suggestion CreateManageSuggestion() {
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_MANAGE_SUGGESTION_MAIN_TEXT),
+      SuggestionType::kManageAutofillAi);
+  suggestion.icon = Suggestion::Icon::kSettings;
+  return suggestion;
+}
+
 // Returns a suggestion to "Undo" Autofill.
 Suggestion CreateUndoSuggestion() {
   Suggestion suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM),
@@ -191,10 +200,11 @@ std::vector<Suggestion> CreateFillingSuggestions(
   suggestions = DedupeFillingSuggestions(std::move(suggestions));
 
   // Footer suggestions.
+  suggestions.emplace_back(SuggestionType::kSeparator);
   if (autofill_field->is_autofilled()) {
-    suggestions.emplace_back(SuggestionType::kSeparator);
     suggestions.emplace_back(CreateUndoSuggestion());
   }
+  suggestions.emplace_back(CreateManageSuggestion());
   return suggestions;
 }
 

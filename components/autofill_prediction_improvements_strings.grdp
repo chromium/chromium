@@ -85,6 +85,10 @@
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_ALL_MAIN_TEXT" desc="Suggestion shown on the second level menu of Autofill with AI, used to fill all fields.">
     Fill fields with AI
   </message>
+  <!-- Manage suggestion -->
+  <message name="IDS_AUTOFILL_AI_MANAGE_SUGGESTION_MAIN_TEXT" desc="Main text for the suggestion that opens the Autofill AI section in settings" translateable="false">
+    Manage information
+  </message>
 
   <!-- Save prompt -->
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_TITLE" desc="Text displayed on the top of the save autofill with AI dialog.">

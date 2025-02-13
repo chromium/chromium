@@ -262,7 +262,9 @@ TEST_F(AutofillAiManagerTest,
   manager().GetSuggestions(form.global_id(), form.fields().front().global_id(),
                            /*is_manual_fallback=*/false,
                            suggestions.GetCallback());
-  EXPECT_THAT(suggestions.Take(), ElementsAre(HasType(kFillAutofillAi)));
+  EXPECT_THAT(suggestions.Take(),
+              ElementsAre(HasType(kFillAutofillAi), HasType(kSeparator),
+                          HasType(kManageAutofillAi)));
 }
 
 // Tests that the user receives a loading suggestions when using AutofillAi
@@ -315,7 +317,9 @@ TEST_F(
   manager().GetSuggestions(form.global_id(), form.fields().front().global_id(),
                            /*is_manual_fallback=*/true,
                            suggestions.GetCallback());
-  EXPECT_THAT(suggestions.Take(), ElementsAre(HasType(kFillAutofillAi)));
+  EXPECT_THAT(suggestions.Take(),
+              ElementsAre(HasType(kFillAutofillAi), HasType(kSeparator),
+                          HasType(kManageAutofillAi)));
 }
 
 class AutofillAiManagerImportFormTest

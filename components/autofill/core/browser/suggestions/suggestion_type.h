@@ -43,6 +43,7 @@ enum class SuggestionType {
   kAddressEntryOnTyping = 63,
 
   kManageAddress = 10,
+  kManageAutofillAi = 64,
   kManageCreditCard = 11,
   kManageIban = 12,
   kManagePlusAddress = 13,
@@ -150,7 +151,7 @@ enum class SuggestionType {
   // Suggestion for editing Autofill AI information.
   kEditAutofillAiData = 60,
 
-  kMaxValue = kAddressEntryOnTyping
+  kMaxValue = kManageAutofillAi
 };
 
 std::string_view SuggestionTypeToStringView(SuggestionType type);

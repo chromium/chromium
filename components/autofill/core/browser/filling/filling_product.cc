@@ -49,13 +49,13 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kDevtoolsTestAddressEntry:
     case SuggestionType::kManageAddress:
       return FillingProduct::kAddress;
+    case SuggestionType::kBnplEntry:
     case SuggestionType::kCreditCardEntry:
-    case SuggestionType::kVirtualCreditCardEntry:
+    case SuggestionType::kManageCreditCard:
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kShowAccountCards:
-    case SuggestionType::kManageCreditCard:
-    case SuggestionType::kBnplEntry:
+    case SuggestionType::kVirtualCreditCardEntry:
       return FillingProduct::kCreditCard;
     case SuggestionType::kMerchantPromoCodeEntry:
       return FillingProduct::kMerchantPromoCode;
@@ -64,21 +64,21 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
       return FillingProduct::kIban;
     case SuggestionType::kAutocompleteEntry:
       return FillingProduct::kAutocomplete;
-    case SuggestionType::kPasswordEntry:
-    case SuggestionType::kAllSavedPasswordsEntry:
-    case SuggestionType::kGeneratePasswordEntry:
     case SuggestionType::kAccountStoragePasswordEntry:
+    case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kFillPassword:
+    case SuggestionType::kGeneratePasswordEntry:
+    case SuggestionType::kPasswordEntry:
+    case SuggestionType::kPasswordFieldByFieldFilling:
+    case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
-    case SuggestionType::kPasswordFieldByFieldFilling:
-    case SuggestionType::kFillPassword:
-    case SuggestionType::kViewPasswordDetails:
       return FillingProduct::kPassword;
-    case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
     case SuggestionType::kComposeProactiveNudge:
+    case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeSavedStateNotification:
       return FillingProduct::kCompose;
     case SuggestionType::kCreateNewPlusAddress:
@@ -89,19 +89,20 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
       return FillingProduct::kPlusAddresses;
     case SuggestionType::kAutofillAiFeedback:
       return FillingProduct::kAutofillAi;
-    case SuggestionType::kSeePromoCodeDetails:
-    case SuggestionType::kTitle:
-    case SuggestionType::kSeparator:
-    case SuggestionType::kUndoOrClear:
     case SuggestionType::kDatalistEntry:
-    case SuggestionType::kMixedFormMessage:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
+    case SuggestionType::kMixedFormMessage:
+    case SuggestionType::kSeePromoCodeDetails:
+    case SuggestionType::kSeparator:
+    case SuggestionType::kTitle:
+    case SuggestionType::kUndoOrClear:
       return FillingProduct::kNone;
-    case SuggestionType::kRetrieveAutofillAi:
-    case SuggestionType::kAutofillAiLoadingState:
-    case SuggestionType::kFillAutofillAi:
     case SuggestionType::kAutofillAiError:
+    case SuggestionType::kAutofillAiLoadingState:
     case SuggestionType::kEditAutofillAiData:
+    case SuggestionType::kFillAutofillAi:
+    case SuggestionType::kManageAutofillAi:
+    case SuggestionType::kRetrieveAutofillAi:
       return FillingProduct::kAutofillAi;
   }
   NOTREACHED();
