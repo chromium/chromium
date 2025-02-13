@@ -316,8 +316,13 @@ base::stack<gfx::NativeViewAccessible> AXPlatformNodeBase::GetAncestors() {
   base::stack<gfx::NativeViewAccessible> ancestors;
   gfx::NativeViewAccessible current_node = GetNativeViewAccessible();
   while (current_node) {
+    AXPlatformNodeBase* current_platform_node =
+        FromNativeViewAccessible(current_node);
+    if (!current_platform_node) {
+      break;
+    }
     ancestors.push(current_node);
-    current_node = FromNativeViewAccessible(current_node)->GetParent();
+    current_node = current_platform_node->GetParent();
   }
 
   return ancestors;
