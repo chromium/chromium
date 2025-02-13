@@ -521,6 +521,8 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // still within the same BrowsingInstance.
   size_t GetActiveDocumentCount(const SiteInfo& url_derived_site_info);
 
+  void SetCOOPReuseProcessFailed() { coop_reuse_process_failed_ = true; }
+
   // Set a callback to be run from this SiteInstance's destructor. Used only in
   // tests.
   void set_destruction_callback_for_testing(base::OnceClosure callback) {
@@ -671,6 +673,10 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // fully implemented, as at that point the SiteInstance's SiteInfo will be the
   // same as the URL-derived SiteInfo.
   std::map<SiteInfo, size_t> active_document_counts_;
+
+  // Tracks whether the site instance failed to reuse an existing process if the
+  // site instance is created because of a COOP swap.
+  bool coop_reuse_process_failed_ = false;
 
   // Test-only callback to run when this SiteInstance is destroyed.
   base::OnceClosure destruction_callback_for_testing_;

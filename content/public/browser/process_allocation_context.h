@@ -46,6 +46,10 @@ struct NavigationProcessAllocationContext {
   ProcessAllocationNavigationStage stage;
   // The navigation ID that triggered the process allocation.
   int64_t navigation_id;
+  // Whether the process allocation is caused by a COOP header.
+  // TODO(crbug.com/394732486): The field is added to investigate
+  // the process reuse failure when navigating to COOP sites.
+  bool requires_new_process_for_coop;
 };
 
 struct ProcessAllocationContext {
