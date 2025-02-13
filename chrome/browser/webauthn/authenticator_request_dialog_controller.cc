@@ -1585,11 +1585,6 @@ void AuthenticatorRequestDialogController::set_should_create_in_icloud_keychain(
   should_create_in_icloud_keychain_ = is_enabled;
 }
 
-void AuthenticatorRequestDialogController::set_enclave_can_be_default(
-    bool can_be_default) {
-  enclave_can_be_default_ = can_be_default;
-}
-
 #if BUILDFLAG(IS_MAC)
 
 // This enum is used in a histogram. Never change assigned values and only add
@@ -2558,10 +2553,6 @@ void AuthenticatorRequestDialogController::
 
 bool AuthenticatorRequestDialogController::CanDefaultToEnclave(
     Profile* profile) {
-  if (!enclave_can_be_default_) {
-    return false;
-  }
-
   const bool enclave_decline_limit_reached =
       profile->GetPrefs()->GetInteger(
           webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount) >=
