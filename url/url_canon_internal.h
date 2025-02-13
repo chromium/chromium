@@ -16,7 +16,6 @@
 // functions.
 
 #include <stddef.h>
-#include <stdlib.h>
 
 #include <string>
 
@@ -176,19 +175,19 @@ inline constexpr uint8_t kSharedCharTypeTable[0x100] = {
 // clang-format on
 
 // More readable wrappers around the character type lookup table.
-inline bool IsCharOfType(unsigned char c, SharedCharTypes type) {
+constexpr bool IsCharOfType(unsigned char c, SharedCharTypes type) {
   return !!(kSharedCharTypeTable[c] & type);
 }
-inline bool IsQueryChar(unsigned char c) {
+constexpr bool IsQueryChar(unsigned char c) {
   return IsCharOfType(c, CHAR_QUERY);
 }
-inline bool IsIPv4Char(unsigned char c) {
+constexpr bool IsIPv4Char(unsigned char c) {
   return IsCharOfType(c, CHAR_IPV4);
 }
-inline bool IsHexChar(unsigned char c) {
+constexpr bool IsHexChar(unsigned char c) {
   return IsCharOfType(c, CHAR_HEX);
 }
-inline bool IsComponentChar(unsigned char c) {
+constexpr bool IsComponentChar(unsigned char c) {
   return IsCharOfType(c, CHAR_COMPONENT);
 }
 
@@ -554,6 +553,35 @@ int FindWindowsDriveLetter(const char* spec, int begin, int end);
 COMPONENT_EXPORT(URL)
 int FindWindowsDriveLetter(const char16_t* spec, int begin, int end);
 
+// StringToUint64WithBase is implemented separately because std::strtoull (and
+// its variants like _stroui64 on Windows) are not guaranteed to be constexpr,
+// preventing their direct use in constant expressions.  This custom
+// implementation provides a constexpr-friendly alternative for use in contexts
+// where constant evaluation is required.
+constexpr uint64_t StringToUint64WithBase(std::string_view str, uint8_t base) {
+  uint64_t result = 0;
+
+  for (const char digit : str) {
+    int value = -1;
+
+    if (digit >= '0' && digit <= '9') {
+      value = digit - '0';
+    } else if (digit >= 'A' && digit <= 'Z') {
+      value = digit - 'A' + 10;
+    } else if (digit >= 'a' && digit <= 'z') {
+      value = digit - 'a' + 10;
+    }
+
+    if (value < 0 || value >= base) {
+      break;  // Invalid character for the given base.
+    }
+
+    result = result * base + static_cast<uint64_t>(value);
+  }
+
+  return result;
+}
+
 #ifndef WIN32
 
 // Implementations of Windows' int-to-string conversions
@@ -571,13 +599,6 @@ inline int _itoa_s(int value, char (&buffer)[N], int radix) {
 template <size_t N>
 inline int _itow_s(int value, char16_t (&buffer)[N], int radix) {
   return _itow_s(value, buffer, N, radix);
-}
-
-// _strtoui64 and strtoull behave the same
-inline unsigned long long _strtoui64(const char* nptr,
-                                     char** endptr,
-                                     int base) {
-  return strtoull(nptr, endptr, base);
 }
 
 #endif  // WIN32

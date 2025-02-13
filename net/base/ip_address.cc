@@ -17,14 +17,12 @@
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/values.h"
 #include "net/base/parse_number.h"
 #include "url/gurl.h"
-#include "url/url_canon_ip.h"
 
 namespace net {
 namespace {
@@ -159,32 +157,7 @@ bool IsPubliclyRoutableIPv6(const IPAddressBytes& ip_address) {
   return false;
 }
 
-bool ParseIPLiteralToBytes(std::string_view ip_literal, IPAddressBytes* bytes) {
-  // |ip_literal| could be either an IPv4 or an IPv6 literal. If it contains
-  // a colon however, it must be an IPv6 address.
-  if (ip_literal.find(':') != std::string_view::npos) {
-    // GURL expects IPv6 hostnames to be surrounded with brackets.
-    std::string host_brackets = base::StrCat({"[", ip_literal, "]"});
-    url::Component host_comp(0, host_brackets.size());
-
-    // Try parsing the hostname as an IPv6 literal.
-    bytes->Resize(16);  // 128 bits.
-    return url::IPv6AddressToNumber(host_brackets.data(), host_comp,
-                                    bytes->data());
-  }
-
-  // Otherwise the string is an IPv4 address.
-  bytes->Resize(4);  // 32 bits.
-  url::Component host_comp(0, ip_literal.size());
-  int num_components;
-  url::CanonHostInfo::Family family = url::IPv4AddressToNumber(
-      ip_literal.data(), host_comp, bytes->data(), &num_components);
-  return family == url::CanonHostInfo::IPV4;
-}
-
 }  // namespace
-
-IPAddressBytes::~IPAddressBytes() = default;
 
 bool IPAddressBytes::operator<(const IPAddressBytes& other) const {
   if (size_ == other.size_)
@@ -228,21 +201,6 @@ std::optional<IPAddress> IPAddress::FromIPLiteral(std::string_view ip_literal) {
   }
   DCHECK(address.IsValid());
   return address;
-}
-
-
-IPAddress::~IPAddress() = default;
-
-bool IPAddress::IsIPv4() const {
-  return ip_address_.size() == kIPv4AddressSize;
-}
-
-bool IPAddress::IsIPv6() const {
-  return ip_address_.size() == kIPv6AddressSize;
-}
-
-bool IPAddress::IsValid() const {
-  return IsIPv4() || IsIPv6();
 }
 
 bool IPAddress::IsPubliclyRoutable() const {
@@ -303,13 +261,6 @@ bool IPAddress::IsLinkLocal() const {
 bool IPAddress::IsUniqueLocalIPv6() const {
   // [fc00::]/7
   return IsIPv6() && ((ip_address_[0] & 0xFE) == 0xFC);
-}
-
-bool IPAddress::AssignFromIPLiteral(std::string_view ip_literal) {
-  bool success = ParseIPLiteralToBytes(ip_literal, &ip_address_);
-  if (!success)
-    ip_address_.Resize(0);
-  return success;
 }
 
 std::vector<uint8_t> IPAddress::CopyBytesToVector() const {
