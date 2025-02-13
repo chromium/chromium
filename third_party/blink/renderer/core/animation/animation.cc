@@ -673,31 +673,25 @@ bool Animation::PreCommit(
     return false;
   }
 
+  bool soft_change =
+      compositor_state_ &&
+      (Paused() || compositor_state_->playback_rate != EffectivePlaybackRate());
+  bool hard_change =
+      compositor_state_ && (compositor_state_->effect_changed ||
+                            !compositor_state_->start_time || !start_time_ ||
+                            compositor_state_->start_time != start_time_);
+
   bool compositor_property_animations_had_no_effect =
       compositor_property_animations_have_no_effect_;
   compositor_property_animations_have_no_effect_ = false;
   animation_has_no_effect_ = false;
 
-  bool needs_timing_update = false;
-  bool missing_start_time = false;
-  bool effect_changed = false;
-  if (compositor_state_) {
-    // If timing characteristics changed, we need to restart the animation
-    // and recompute a fresh start time.
-    needs_timing_update =
-        (EffectivePlaybackRate() != compositor_state_->playback_rate) ||
-        (start_time_ != compositor_state_->start_time) ||
-        (hold_time_ != compositor_state_->hold_time);
-    missing_start_time = !compositor_state_->start_time;
-    effect_changed = compositor_state_->effect_changed;
-  }
-  // We also need to restart the animation if the effect changed in order to
-  // have updated keyframes, but unless we need a fresh start time, we can
-  // use the existing compositor animation ID in order to avoid computing a
-  // new start time.
-  bool needs_restart = effect_changed || needs_timing_update;
-  bool should_cancel = (!Playing() && compositor_state_) || needs_restart;
-  bool should_start = Playing() && (!compositor_state_ || needs_restart);
+  // FIXME: softChange && !hardChange should generate a Pause/ThenStart,
+  // not a Cancel, but we can't communicate these to the compositor yet.
+
+  bool changed = soft_change || hard_change;
+  bool should_cancel = (!Playing() && compositor_state_) || changed;
+  bool should_start = Playing() && (!compositor_state_ || changed);
 
   // If the property nodes were removed for this animation we must
   // cancel it. It may be running even though blink has not been
@@ -710,19 +704,21 @@ bool Animation::PreCommit(
     return false;
   }
 
-  if (missing_start_time && !needs_restart && !should_cancel) {
-    // Waiting on start time, but starting animation is still valid.
-    return false;
-  }
-
   std::optional<int> replaced_cc_animation_id;
   if (should_cancel) {
-    if (should_start && GetCompositorAnimation() && !needs_timing_update) {
-      // The animation might already be in the process of starting on the
-      // compositor, and the main thread simply hasn't received the ack.
-      // Unless a new start time is required, preserve the CC animation's ID
-      // and the compositor group to avoid a fresh restart on the compositor.
+    // TODO(https://crbug.com/41496930): This code currently avoids preserving
+    // the id and compositor group of the cc animation on playback rate and
+    // state changes (i.e. "soft changes") due to the linked bug. That's
+    // because these soft changes use a time offset that assumes the start_time
+    // is reset. A more complete fix should account for the fact that the start
+    // time may be preserved when computing the offset.
+    if (should_start && GetCompositorAnimation() && !soft_change) {
+      // If the animation is being canceled and restarted, pass the replaced
+      // cc::Animation's id along so the compositor can recreate the
+      // cc::Animation with the same id, ensuring continuity in the animation.
       replaced_cc_animation_id = GetCompositorAnimation()->CcAnimationId();
+      // Preserve the compositor group for a restarted Animation so that
+      // animation events are routed correctly.
       compositor_group = compositor_group_;
     }
     CancelAnimationOnCompositor();
@@ -744,9 +740,8 @@ bool Animation::PreCommit(
         // a previous cancel failed due to not having a layout object at the
         // time of the cancel operation. The start and stop of an animation
         // for a marquee element does not depend on having a layout object.
-        if (HasActiveAnimationsOnCompositor()) {
+        if (HasActiveAnimationsOnCompositor())
           CancelAnimationOnCompositor();
-        }
         CreateCompositorAnimation(replaced_cc_animation_id);
         StartAnimationOnCompositor(paint_artifact_compositor);
         compositor_state_ = std::make_unique<CompositorState>(*this);
