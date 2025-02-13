@@ -2802,7 +2802,7 @@ BASE_FEATURE(kWebSQLAccess, "kWebSQLAccess", base::FEATURE_DISABLED_BY_DEFAULT);
 // Allow access to WebSQL on Android WebView.
 BASE_FEATURE(kWebSQLWebViewAccess,
              "WebSQLWebViewAccess",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Kill switch for https://crbug.com/338955051.
 BASE_FEATURE(kWebUSBTransferSizeLimit,
