@@ -4563,6 +4563,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.WasPasswordChangeNewTabFocused" enum="Boolean"
+    expires_after="2025-11-30">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records whether the new tab, that was opened automatically to run the
+    password change flow, was focused by the user or not. The metric is recorded
+    when the flow is finished.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.WeakCheck.CheckedPasswords" units="passwords"
     expires_after="2025-07-06">
   <owner>kazinova@google.com</owner>

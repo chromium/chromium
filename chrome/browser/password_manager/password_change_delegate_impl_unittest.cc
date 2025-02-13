@@ -10,6 +10,8 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -162,4 +164,21 @@ TEST_F(PasswordChangeDelegateImplTest,
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
       PasswordChangeDelegate::State::kWaitingForChangePasswordForm, 1);
+}
+
+TEST_F(PasswordChangeDelegateImplTest,
+       MetricsReportedWasPasswordChangeNewTabFocused) {
+  prefs()->SetBoolean(
+      password_manager::prefs::kPasswordChangeFlowNoticeAgreement, true);
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<content::WebContents> test_web_contents = CreateWebContents();
+  std::unique_ptr<PasswordChangeDelegateImpl> delegate =
+      CreateDelegate(test_web_contents.get());
+  static_cast<PasswordChangeDelegate*>(delegate.get())
+      ->StartPasswordChangeFlow();
+  static_cast<content::WebContentsObserver*>(delegate.get())
+      ->OnVisibilityChanged(content::Visibility::VISIBLE);
+  delegate.reset();
+  histogram_tester.ExpectUniqueSample(
+      PasswordChangeDelegateImpl::kWasPasswordChangeNewTabFocused, true, 1);
 }
