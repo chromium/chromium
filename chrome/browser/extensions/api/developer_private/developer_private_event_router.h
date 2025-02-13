@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_EVENT_ROUTER_H_
 
 #include "chrome/browser/extensions/account_extension_tracker.h"
+#include "chrome/browser/extensions/api/developer_private/developer_private_event_router_shared.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
@@ -24,8 +25,7 @@
 
 namespace extensions {
 
-class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
-                                    public ErrorConsole::Observer,
+class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
                                     public ProcessManagerObserver,
                                     public AppWindowRegistry::Observer,
                                     public CommandService::Observer,
@@ -51,32 +51,7 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
 
   ~DeveloperPrivateEventRouter() override;
 
-  // Add or remove an ID to the list of extensions subscribed to events.
-  void AddExtensionId(const ExtensionId& extension_id);
-  void RemoveExtensionId(const ExtensionId& extension_id);
-
-  // Called when the configuration (such as user preferences) for an extension
-  // has changed in a way that may affect the chrome://extensions UI.
-  void OnExtensionConfigurationChanged(const ExtensionId& extension_id);
-
  private:
-  // ExtensionRegistryObserver:
-  void OnExtensionLoaded(content::BrowserContext* browser_context,
-                         const Extension* extension) override;
-  void OnExtensionUnloaded(content::BrowserContext* browser_context,
-                           const Extension* extension,
-                           UnloadedExtensionReason reason) override;
-  void OnExtensionInstalled(content::BrowserContext* browser_context,
-                            const Extension* extension,
-                            bool is_update) override;
-  void OnExtensionUninstalled(content::BrowserContext* browser_context,
-                              const Extension* extension,
-                              extensions::UninstallReason reason) override;
-
-  // ErrorConsole::Observer:
-  void OnErrorAdded(const ExtensionError* error) override;
-  void OnErrorsRemoved(const std::set<ExtensionId>& extension_ids) override;
-
   // ProcessManagerObserver:
   void OnExtensionFrameRegistered(
       const ExtensionId& extension_id,
@@ -143,17 +118,13 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
 
   // Broadcasts an event to all listeners.
   void BroadcastItemStateChanged(api::developer_private::EventType event_type,
-                                 const ExtensionId& id);
+                                 const ExtensionId& id) override;
   void BroadcastItemStateChangedHelper(
       api::developer_private::EventType event_type,
       const ExtensionId& extension_id,
       std::unique_ptr<ExtensionInfoGenerator> info_generator,
       std::vector<api::developer_private::ExtensionInfo> infos);
 
-  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observation_{this};
-  base::ScopedObservation<ErrorConsole, ErrorConsole::Observer>
-      error_console_observation_{this};
   base::ScopedObservation<ProcessManager, ProcessManagerObserver>
       process_manager_observation_{this};
   base::ScopedObservation<AppWindowRegistry, AppWindowRegistry::Observer>
@@ -175,20 +146,6 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
   base::ScopedObservation<AccountExtensionTracker,
                           AccountExtensionTracker::Observer>
       account_extension_tracker_observation_{this};
-
-  raw_ptr<Profile> profile_;
-
-  raw_ptr<EventRouter> event_router_;
-
-  // The set of IDs of the Extensions that have subscribed to DeveloperPrivate
-  // events. Since the only consumer of the DeveloperPrivate API is currently
-  // the Apps Developer Tool (which replaces the chrome://extensions page), we
-  // don't want to send information about the subscribing extension in an
-  // update. In particular, we want to avoid entering a loop, which could happen
-  // when, e.g., the Apps Developer Tool throws an error.
-  std::set<ExtensionId> extension_ids_;
-
-  PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<DeveloperPrivateEventRouter> weak_factory_{this};
 };

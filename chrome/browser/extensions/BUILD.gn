@@ -45,6 +45,9 @@ source_set("extensions") {
     "activity_log/database_string_table.h",
     "activity_log/fullstream_ui_policy.cc",
     "activity_log/fullstream_ui_policy.h",
+    "api/developer_private/developer_private_event_router_shared.cc",
+    "api/developer_private/developer_private_event_router_shared.h",
+    "api/developer_private/developer_private_functions.h",
     "api/tabs/windows_util.cc",
     "api/tabs/windows_util.h",
     "chrome_extensions_browser_api_provider.cc",
@@ -102,6 +105,12 @@ source_set("extensions") {
   ]
   defines = []
 
+  if (is_android) {
+    sources += [
+      "api/developer_private/developer_private_functions_android.cc",
+      "api/developer_private/developer_private_functions_android.h",
+    ]
+  }
   if (enable_extensions) {
     sources += [
       "account_extension_tracker.cc",
@@ -154,8 +163,8 @@ source_set("extensions") {
       "api/developer_private/developer_private_api.h",
       "api/developer_private/developer_private_event_router.cc",
       "api/developer_private/developer_private_event_router.h",
-      "api/developer_private/developer_private_functions.cc",
-      "api/developer_private/developer_private_functions.h",
+      "api/developer_private/developer_private_functions_desktop.cc",
+      "api/developer_private/developer_private_functions_desktop.h",
       "api/developer_private/extension_info_generator.cc",
       "api/developer_private/extension_info_generator.h",
       "api/developer_private/inspectable_views_finder.cc",
