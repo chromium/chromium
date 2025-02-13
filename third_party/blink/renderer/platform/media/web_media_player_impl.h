@@ -697,10 +697,10 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void RecordEncryptionScheme(const std::string& stream_name,
                               media::EncryptionScheme encryption_scheme);
 
-  // Returns whether the player is currently displayed in Picture-in-Picture.
-  // It will return true even if the player is in AutoPIP mode.
-  // The player MUST have a `client_` when this call happen.
-  bool IsInPictureInPicture() const;
+  // Returns whether the player is currently displayed in video
+  // Picture-in-Picture. It will return true even if the player is in AutoPIP
+  // (Android) mode. The player MUST have a `client_` when this call happen.
+  bool IsInVideoPictureInPicture() const;
 
   // Sets the UKM container name if needed.
   void MaybeSetContainerNameForMetrics();

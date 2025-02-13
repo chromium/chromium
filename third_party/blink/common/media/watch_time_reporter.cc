@@ -304,6 +304,10 @@ void WatchTimeReporter::OnDisplayTypePictureInPicture() {
   OnDisplayTypeChanged(DisplayType::kPictureInPicture);
 }
 
+void WatchTimeReporter::OnDisplayTypeDocumentPictureInPicture() {
+  OnDisplayTypeChanged(DisplayType::kDocumentPictureInPicture);
+}
+
 void WatchTimeReporter::UpdateSecondaryProperties(
     media::mojom::SecondaryPlaybackPropertiesPtr secondary_properties) {
   // Flush any unrecorded watch time before updating the secondary properties to
@@ -697,6 +701,7 @@ media::WatchTimeKey WatchTimeReporter::GetDisplayTypeKey(
     case DisplayType::kFullscreen:
       return DISPLAY_TYPE_KEY(DisplayFullscreen);
     case DisplayType::kPictureInPicture:
+    case DisplayType::kDocumentPictureInPicture:
       return DISPLAY_TYPE_KEY(DisplayPictureInPicture);
   }
 }

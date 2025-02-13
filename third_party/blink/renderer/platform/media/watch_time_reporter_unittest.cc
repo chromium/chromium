@@ -1884,6 +1884,24 @@ TEST_P(WatchTimeReporterTest, WatchTimeCategoryMapping) {
   EXPECT_WATCH_TIME_IF_VIDEO(DisplayPictureInPicture, kWatchTime);
   EXPECT_WATCH_TIME_FINALIZED();
   wtr_.reset();
+
+  // Verify ac, all, src, native controls, display picture-in-picture (with
+  // display type changed using `kDocumentPictureInPicture`).
+  EXPECT_CALL(*this, GetCurrentMediaTime())
+      .WillOnce(testing::Return(base::TimeDelta()))
+      .WillOnce(testing::Return(kWatchTime));
+  Initialize(false, false, kSizeJustRight);
+  OnNativeControlsEnabled(true);
+  OnDisplayTypeChanged(DisplayType::kDocumentPictureInPicture);
+  wtr_->OnPlaying();
+  EXPECT_TRUE(IsMonitoring());
+  EXPECT_WATCH_TIME(Ac, kWatchTime);
+  EXPECT_WATCH_TIME(All, kWatchTime);
+  EXPECT_WATCH_TIME(Src, kWatchTime);
+  EXPECT_WATCH_TIME(NativeControlsOn, kWatchTime);
+  EXPECT_WATCH_TIME_IF_VIDEO(DisplayPictureInPicture, kWatchTime);
+  EXPECT_WATCH_TIME_FINALIZED();
+  wtr_.reset();
 }
 
 TEST_P(WatchTimeReporterTest, PlayPauseHysteresisContinuation) {

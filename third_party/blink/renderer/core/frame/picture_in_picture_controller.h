@@ -40,6 +40,10 @@ class CORE_EXPORT PictureInPictureController
   // returns false if PictureInPictureController is not attached to a document.
   static bool IsElementInPictureInPicture(const Element*);
 
+  // Returns whether the given element is currently in a document
+  // Picture-in-Picture window.
+  static bool IsInDocumentPictureInPicture(const Element* element);
+
   // Returns the document picture-in-picture window opened by the Document. It
   // returns null if there is no open document picture-in-picture window for the
   // Document or if PictureInPictureController is not attached to the Document.

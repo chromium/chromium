@@ -138,6 +138,7 @@ class BLINK_COMMON_EXPORT WatchTimeReporter : base::PowerStateObserver {
   void OnDisplayTypeInline();
   void OnDisplayTypeFullscreen();
   void OnDisplayTypePictureInPicture();
+  void OnDisplayTypeDocumentPictureInPicture();
 
   // Mutates various properties that may change over the lifetime of a playback
   // but for which we don't want to interrupt reporting for. UMA watch time will

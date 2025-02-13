@@ -229,6 +229,7 @@ TEST_F(WatchTimeComponentTest, WithValueToKeyCB) {
           case DisplayType::kFullscreen:
             return media::WatchTimeKey::kAudioVideoDisplayFullscreen;
           case DisplayType::kPictureInPicture:
+          case DisplayType::kDocumentPictureInPicture:
             return media::WatchTimeKey::kAudioVideoDisplayPictureInPicture;
         }
       }));

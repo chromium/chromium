@@ -888,6 +888,9 @@ void WebMediaPlayerImpl::OnDisplayTypeChanged(DisplayType display_type) {
       case DisplayType::kPictureInPicture:
         watch_time_reporter_->OnDisplayTypePictureInPicture();
         break;
+      case DisplayType::kDocumentPictureInPicture:
+        watch_time_reporter_->OnDisplayTypeDocumentPictureInPicture();
+        break;
     }
   }
 
@@ -2185,19 +2188,20 @@ void WebMediaPlayerImpl::ActivateSurfaceLayerForVideo() {
           &VideoFrameCompositor::EnableSubmission,
           CrossThreadUnretained(compositor_.get()), bridge_->GetSurfaceId(),
           pipeline_metadata_.video_decoder_config.video_transformation(),
-          IsInPictureInPicture()));
+          IsInVideoPictureInPicture()));
   bridge_->SetContentsOpaque(opaque_);
 
-  // If the element is already in Picture-in-Picture mode, it means that it
-  // was set in this mode prior to this load, with a different
+  // If the element is already in video Picture-in-Picture mode, it means that
+  // it was set in this mode prior to this load, with a different
   // WebMediaPlayerImpl. The new player needs to send its id, size and
   // surface id to the browser process to make sure the states are properly
   // updated.
   // TODO(872056): the surface should be activated but for some reasons, it
   // does not. It is possible that this will no longer be needed after 872056
   // is fixed.
-  if (IsInPictureInPicture())
+  if (IsInVideoPictureInPicture()) {
     OnSurfaceIdUpdated(bridge_->GetSurfaceId());
+  }
 }
 
 void WebMediaPlayerImpl::OnBufferingStateChange(
@@ -3161,7 +3165,7 @@ void WebMediaPlayerImpl::UpdatePlayState() {
   bool is_backgrounded = IsBackgroundSuspendEnabled(this) && IsPageHidden();
   PlayState state = UpdatePlayState_ComputePlayState(
       is_flinging_, can_auto_suspend, is_suspended, is_backgrounded,
-      IsInPictureInPicture());
+      IsInVideoPictureInPicture());
   SetDelegateState(state.delegate_state, state.is_idle);
   SetMemoryReportingState(state.is_memory_reporting_enabled);
   SetSuspendState(state.is_suspended || pending_suspend_resume_cycle_);
@@ -3596,6 +3600,9 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
     case DisplayType::kPictureInPicture:
       watch_time_reporter_->OnDisplayTypePictureInPicture();
       break;
+    case DisplayType::kDocumentPictureInPicture:
+      watch_time_reporter_->OnDisplayTypeDocumentPictureInPicture();
+      break;
   }
 
   UpdateSecondaryProperties();
@@ -3751,9 +3758,10 @@ bool WebMediaPlayerImpl::ShouldPausePlaybackWhenHidden() const {
     return false;
   }
 
-  // PiP is the only exception when background video playback is disabled.
-  if (HasVideo() && IsInPictureInPicture())
+  // Video PiP is the only exception when background video playback is disabled.
+  if (HasVideo() && IsInVideoPictureInPicture()) {
     return false;
+  }
 
   // This takes precedent over every restriction except PiP.
   if (!is_background_video_playback_enabled_)
@@ -3795,7 +3803,7 @@ bool WebMediaPlayerImpl::ShouldDisableVideoWhenHidden() const {
   }
 
   // In these cases something external needs the frames.
-  if (IsInPictureInPicture() || IsVideoBeingCaptured() || is_flinging_) {
+  if (IsInVideoPictureInPicture() || IsVideoBeingCaptured() || is_flinging_) {
     return false;
   }
 
@@ -4087,7 +4095,7 @@ void WebMediaPlayerImpl::RecordEncryptionScheme(
       EncryptionSchemeUMA::kCount);
 }
 
-bool WebMediaPlayerImpl::IsInPictureInPicture() const {
+bool WebMediaPlayerImpl::IsInVideoPictureInPicture() const {
   DCHECK(client_);
   return client_->GetDisplayType() == DisplayType::kPictureInPicture;
 }
