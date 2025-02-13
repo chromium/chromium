@@ -240,12 +240,14 @@ IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_PermanentException) {
+  set_baseline("6229914");
   protections_on_ = false;
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_TemporaryException) {
+  set_baseline("6229914");
   protections_on_ = false;
   days_to_expiration_ = 90;
   ShowAndVerifyUi();
