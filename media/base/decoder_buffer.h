@@ -220,6 +220,10 @@ class MEDIA_EXPORT DecoderBuffer
     return external_memory_ ? external_memory_->Span().first(count)
                             : data_.first(count);
   }
+  auto subspan(size_t offset, size_t count) const {
+    return external_memory_ ? external_memory_->Span().subspan(offset, count)
+                            : data_.subspan(offset, count);
+  }
 
   // TODO(crbug.com/365814210): Change the return type to std::optional.
   DiscardPadding discard_padding() const {
