@@ -65,6 +65,8 @@ from update_rust import (RUST_REVISION, RUST_TOOLCHAIN_OUT_DIR,
                          GetRustClangRevision)
 
 EXCLUDED_TESTS = [
+    # Temporarily disabled due to https://crbug.com/396424971
+    os.path.join('tests', 'codegen', 'common_prim_int_ptr.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
     # Temporarily disabled due to https://crbug.com/379308086
