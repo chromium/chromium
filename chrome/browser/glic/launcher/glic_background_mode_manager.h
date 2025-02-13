@@ -49,6 +49,7 @@ class GlicBackgroundModeManager
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
+  void OnProfileMarkedForPermanentDeletion(Profile* profile) override;
 
   // Called when the enterprise policy-linked pref has changed for any profile.
   void OnPolicyChanged();

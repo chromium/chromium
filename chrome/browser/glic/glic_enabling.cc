@@ -34,8 +34,15 @@ bool GlicEnabling::IsEnabledForProfile(const Profile* profile) {
          static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled);
 }
 
-bool GlicEnabling::IsReadyForProfile(Profile* profile) {
+bool GlicEnabling::IsEnabledAndConsentForProfile(const Profile* profile) {
   if (!IsEnabledForProfile(profile)) {
+    return false;
+  }
+  return profile->GetPrefs()->GetBoolean(glic::prefs::kGlicCompletedFre);
+}
+
+bool GlicEnabling::IsReadyForProfile(Profile* profile) {
+  if (!IsEnabledAndConsentForProfile(profile)) {
     return false;
   }
 
@@ -45,12 +52,7 @@ bool GlicEnabling::IsReadyForProfile(Profile* profile) {
   // Check that profile is not currently paused.
   CoreAccountInfo core_account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  if (core_account_info.IsEmpty() ||
-      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-          core_account_info.account_id)) {
-    return false;
-  }
-
-  // The profile must have completed the FRE to be considered Ready.
-  return profile->GetPrefs()->GetBoolean(glic::prefs::kGlicCompletedFre);
+  return !core_account_info.IsEmpty() &&
+         !identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+             core_account_info.account_id);
 }
