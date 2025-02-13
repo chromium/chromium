@@ -64,6 +64,10 @@ class AttributeType final {
   // Maps this AttributeType to the corresponding Autofill AI `FieldType`.
   constexpr FieldType field_type() const;
 
+  // Returns whether the corresponding type has a non-trivial structure (e.g.
+  // Name, Address) or whether the structure is trivial.
+  constexpr bool is_structured_type() const;
+
   // The string representation of the name. This is unique among all attribute
   // types of the associated entity type. (It is not globally unique!)
   //
@@ -122,6 +126,34 @@ constexpr FieldType AttributeType::field_type() const {
     case AttributeTypeName::kDriversLicenseIssueDate:
       return DRIVERS_LICENSE_ISSUE_DATE_TAG;
       return UNKNOWN_TYPE;
+  }
+  NOTREACHED();
+}
+
+constexpr bool AttributeType::is_structured_type() const {
+  switch (name_) {
+    case AttributeTypeName::kPassportName:
+    case AttributeTypeName::kDriversLicenseName:
+    case AttributeTypeName::kPassportCountry:
+    case AttributeTypeName::kDriversLicenseRegion:
+      return true;
+    case AttributeTypeName::kPassportExpiryDate:
+    case AttributeTypeName::kPassportIssueDate:
+    case AttributeTypeName::kDriversLicenseExpirationDate:
+    case AttributeTypeName::kDriversLicenseIssueDate:
+      // TODO(crbug.com/389625753): Add special support for date types.
+      return false;
+    case AttributeTypeName::kPassportNumber:
+    case AttributeTypeName::kLoyaltyCardProgram:
+    case AttributeTypeName::kLoyaltyCardProvider:
+    case AttributeTypeName::kLoyaltyCardMemberId:
+    case AttributeTypeName::kCarOwner:
+    case AttributeTypeName::kCarLicensePlate:
+    case AttributeTypeName::kCarRegistration:
+    case AttributeTypeName::kCarMake:
+    case AttributeTypeName::kCarModel:
+    case AttributeTypeName::kDriversLicenseNumber:
+      return false;
   }
   NOTREACHED();
 }
