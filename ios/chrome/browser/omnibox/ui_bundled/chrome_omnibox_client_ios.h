@@ -59,8 +59,7 @@ class ChromeOmniboxClientIOS final : public OmniboxClient,
   bool ShouldDefaultTypedNavigationsToHttps() const override;
   int GetHttpsPortForTesting() const override;
   bool IsUsingFakeHttpsForHttpsUpgradeTesting() const override;
-  gfx::Image GetIconIfExtensionMatch(
-      const AutocompleteMatch& match) const override;
+  gfx::Image GetExtensionIcon(const TemplateURL* template_url) const override;
   std::u16string GetFormattedFullURL() const override;
   std::u16string GetURLForDisplay() const override;
   GURL GetNavigationEntryURL() const override;

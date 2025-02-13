@@ -226,6 +226,11 @@ UnscopedExtensionProviderDelegateImpl::CreateAutocompleteMatch(
     }
   }
 
+  if (suggestion.icon_url.has_value()) {
+    GURL icon_url = GURL(suggestion.icon_url.value());
+    match.image_url = icon_url.is_valid() ? icon_url : GURL();
+  }
+
   return match;
 }
 

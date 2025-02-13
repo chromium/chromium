@@ -65,8 +65,12 @@ bool OmniboxClient::IsUsingFakeHttpsForHttpsUpgradeTesting() const {
   return false;
 }
 
-gfx::Image OmniboxClient::GetIconIfExtensionMatch(
-    const AutocompleteMatch& match) const {
+gfx::Image OmniboxClient::GetExtensionIcon(
+    const TemplateURL* template_url) const {
+  return gfx::Image();
+}
+
+gfx::Image OmniboxClient::GetSizedIcon(const SkBitmap* bitmap) const {
   return gfx::Image();
 }
 

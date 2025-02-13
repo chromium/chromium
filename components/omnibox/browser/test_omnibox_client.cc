@@ -12,6 +12,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
+#include "components/omnibox/browser/mock_unscoped_extension_provider_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -43,6 +44,13 @@ TestOmniboxClient::CreateAutocompleteProviderClient() {
 
   provider_client->set_template_url_service(
       search_engines_test_environment_.template_url_service());
+
+  // The `UnscopedExtensionProviderDelegate` should be set. It will be called
+  // when `AutocompleteController::Stop()` is called on destruction.
+  std::unique_ptr<MockUnscopedExtensionProviderDelegate> mock_delegate =
+      std::make_unique<MockUnscopedExtensionProviderDelegate>();
+  provider_client->set_unscoped_extension_provider_delegate(
+      std::move(mock_delegate));
   return std::move(provider_client);
 }
 
@@ -83,6 +91,10 @@ int TestOmniboxClient::GetHttpsPortForTesting() const {
 
 bool TestOmniboxClient::IsUsingFakeHttpsForHttpsUpgradeTesting() const {
   return false;
+}
+
+gfx::Image TestOmniboxClient::GetSizedIcon(const SkBitmap* bitmap) const {
+  return gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
 }
 
 gfx::Image TestOmniboxClient::GetSizedIcon(

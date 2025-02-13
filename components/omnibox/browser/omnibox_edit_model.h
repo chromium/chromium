@@ -383,6 +383,9 @@ class OmniboxEditModel {
   // Gets the icon for the given `match`.
   gfx::Image GetMatchIcon(const AutocompleteMatch& match,
                           SkColor vector_icon_color) const;
+  // Gets the icon for the given `match` if the match was provided by an omnibox
+  // API extension, otherwise returns empty image.
+  gfx::Image GetMatchIconIfExtension(const AutocompleteMatch& match) const;
 #endif
 
   // Returns true if the popup exists and is open. Virtual for testing.
@@ -448,6 +451,12 @@ class OmniboxEditModel {
   // unknown.  Returns nullptr if not found.
   const SkBitmap* GetPopupRichSuggestionBitmap(
       const std::u16string& keyword) const;
+
+  // Lookup the bitmap for `match` based on the image URL.  Similar to above,
+  // but Used to fetch bitmap where the `result_index` is unknown and where
+  // there are possibly multiple suggestions with the same `keyword` but not the
+  // `image_url` being looked up. Returns nullptr if not found.
+  const SkBitmap* GetPopupRichSuggestionBitmap(const GURL& image_url) const;
 
   // Stores the image in a local data member and schedules a repaint.
   void SetPopupRichSuggestionBitmap(int result_index, const SkBitmap& bitmap);
@@ -619,8 +628,8 @@ class OmniboxEditModel {
   // changes.
   void OnFaviconFetched(const GURL& page_url, const gfx::Image& icon) const;
 
-  // Returns view text if there is a view. Until the model is made the primary
-  // data source, this should not be called when there's no view.
+  // Returns view text if there is a view. Until the model is made the
+  // primary data source, this should not be called when there's no view.
   std::u16string GetText() const;
 
   // Owns this.

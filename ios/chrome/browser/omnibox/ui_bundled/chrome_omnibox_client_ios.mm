@@ -134,8 +134,8 @@ bool ChromeOmniboxClientIOS::IsUsingFakeHttpsForHttpsUpgradeTesting() const {
       ->IsUsingFakeHttpsForTesting();
 }
 
-gfx::Image ChromeOmniboxClientIOS::GetIconIfExtensionMatch(
-    const AutocompleteMatch& match) const {
+gfx::Image ChromeOmniboxClientIOS::GetExtensionIcon(
+    const TemplateURL* template_url) const {
   // Extensions are not supported on iOS.
   return gfx::Image();
 }

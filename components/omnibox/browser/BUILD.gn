@@ -707,6 +707,8 @@ static_library("test_support") {
     "mock_autocomplete_provider_client.h",
     "mock_tab_matcher.cc",
     "mock_tab_matcher.h",
+    "mock_unscoped_extension_provider_delegate.cc",
+    "mock_unscoped_extension_provider_delegate.h",
     "shortcuts_provider_test_util.cc",
     "shortcuts_provider_test_util.h",
     "test_location_bar_model.cc",
@@ -945,6 +947,10 @@ source_set("unit_tests") {
 
   if (is_chromeos) {
     deps += [ "//chromeos/constants:constants" ]
+  }
+
+  if (enable_extensions) {
+    deps += [ "//extensions/common:extension_features" ]
   }
 
   if (use_blink) {

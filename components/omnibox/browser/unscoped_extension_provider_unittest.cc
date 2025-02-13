@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
+#include "components/omnibox/browser/mock_unscoped_extension_provider_delegate.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_environment.h"
@@ -32,29 +33,6 @@ using base::ASCIIToUTF16;
 using ::testing::_;
 
 class UnscopedExtensionProviderTest : public testing::Test {
- public:
-  class MockUnscopedExtensionProviderDelegate
-      : public UnscopedExtensionProviderDelegate {
-   public:
-    MockUnscopedExtensionProviderDelegate() = default;
-    MockUnscopedExtensionProviderDelegate(
-        const MockUnscopedExtensionProviderDelegate&) = delete;
-    MockUnscopedExtensionProviderDelegate& operator=(
-        const MockUnscopedExtensionProviderDelegate&) = delete;
-
-    ~MockUnscopedExtensionProviderDelegate() override = default;
-
-    MOCK_METHOD(void,
-                Start,
-                (const AutocompleteInput&, bool, std::set<std::string>),
-                (override));
-    MOCK_METHOD(void, Stop, (bool clear_cached_suggestions), (override));
-    MOCK_METHOD(void,
-                DeleteSuggestion,
-                (const TemplateURL*, const std::u16string&),
-                (override));
-  };
-
  protected:
   UnscopedExtensionProviderTest() = default;
   void SetUp() override;
