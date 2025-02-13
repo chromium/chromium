@@ -40,8 +40,12 @@ VideoCaptureDevice::Client::ReserveResult AllocateNV12SharedImage(
   // windows. Note that the usage should be part of supported usages in
   // D3DImageBackingFactory.
   const auto si_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  auto multiplanar_si_format = viz::MultiPlaneFormat::kNV12;
+#if BUILDFLAG(IS_OZONE)
+  multiplanar_si_format.SetPrefersExternalSampler();
+#endif
   *out_shared_image = sii->CreateSharedImage(
-      {viz::MultiPlaneFormat::kNV12, buffer_size, gfx::ColorSpace(),
+      {multiplanar_si_format, buffer_size, gfx::ColorSpace(),
        gpu::SharedImageUsageSet(si_usage), "AllocatedNV12SharedImage"},
       gpu::kNullSurfaceHandle,
       gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
