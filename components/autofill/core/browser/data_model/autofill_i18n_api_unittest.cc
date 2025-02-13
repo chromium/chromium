@@ -229,10 +229,8 @@ TEST_F(AutofillI18nApiTest, SynthesizedTypesAreSupportedButNotStorable) {
   AddressComponentsStore store =
       CreateAddressComponentModel(AddressCountryCode("IN"));
 
-  FieldTypeSet field_type_set;
-  store.Root()->GetStorableTypes(&field_type_set);
-  EXPECT_FALSE(
-      field_type_set.contains(ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK));
+  EXPECT_FALSE(store.Root()->GetStorableTypes().contains(
+      ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK));
 
   EXPECT_TRUE(store.Root()->GetSupportedTypes().contains(
       ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK));

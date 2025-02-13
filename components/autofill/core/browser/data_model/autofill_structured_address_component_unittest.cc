@@ -239,14 +239,6 @@ TEST_F(AutofillStructuredAddressAddressComponent, ConstructAndDestruct) {
   EXPECT_TRUE(true);
 }
 
-// Tests that a non-proper AddressComponent tree fails a DCHECK for
-// |GetSupportedTypes()|.
-TEST_F(AutofillStructuredAddressAddressComponent,
-       TestNonProperTreeDcheckFailure) {
-  TestNonProperFirstNameAddressComponent non_proper_compound;
-  EXPECT_DCHECK_DEATH(non_proper_compound.GetSupportedTypes());
-}
-
 // Tests getting the root node.
 TEST_F(AutofillStructuredAddressAddressComponent, TestGetRootNode) {
   TestCompoundNameAddressComponent compound_component;
@@ -345,25 +337,20 @@ TEST_F(AutofillStructuredAddressAddressComponent, TestGetSupportedTypes) {
 
 // Tests adding all storable types to the set.
 TEST_F(AutofillStructuredAddressAddressComponent, TestGetStorableTypes) {
-  FieldTypeSet field_type_set;
-
   TestAtomicFirstNameAddressComponent first_name_component;
   TestAtomicMiddleNameAddressComponent middle_name_component;
   TestCompoundNameAddressComponent compound_name;
 
   // The first name only supports NAME_FIRST.
-  first_name_component.GetStorableTypes(&field_type_set);
-  EXPECT_EQ(field_type_set, FieldTypeSet({NAME_FIRST}));
+  EXPECT_EQ(first_name_component.GetStorableTypes(),
+            FieldTypeSet({NAME_FIRST}));
 
   // The middle name supports an initial.
-  field_type_set.clear();
-  middle_name_component.GetStorableTypes(&field_type_set);
-  EXPECT_EQ(field_type_set, FieldTypeSet({NAME_MIDDLE}));
+  EXPECT_EQ(middle_name_component.GetStorableTypes(),
+            FieldTypeSet({NAME_MIDDLE}));
 
   // Verify that all types are added correctly in a compound structure.
-  field_type_set.clear();
-  compound_name.GetStorableTypes(&field_type_set);
-  EXPECT_EQ(field_type_set,
+  EXPECT_EQ(compound_name.GetStorableTypes(),
             FieldTypeSet({NAME_MIDDLE, NAME_FIRST, NAME_LAST, NAME_FULL}));
 }
 

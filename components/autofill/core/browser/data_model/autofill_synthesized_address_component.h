@@ -22,8 +22,7 @@ class SynthesizedAddressComponent : public AddressComponent {
                               unsigned int merge_mode);
 
   // AddressComponent overrides:
-  void GetTypes(bool storable_only,
-                FieldTypeSet* supported_types) const override;
+  FieldTypeSet GetTypes(bool storable_only) const override;
 
   bool IsValueReadOnly() const override;
 };

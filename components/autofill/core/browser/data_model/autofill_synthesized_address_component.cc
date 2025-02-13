@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/data_model/autofill_synthesized_address_component.h"
 
+#include "components/autofill/core/browser/field_types.h"
+
 namespace autofill {
 
 SynthesizedAddressComponent::SynthesizedAddressComponent(
@@ -16,13 +18,8 @@ SynthesizedAddressComponent::SynthesizedAddressComponent(
   }
 }
 
-void SynthesizedAddressComponent::GetTypes(
-    bool storable_only,
-    FieldTypeSet* supported_types) const {
-  if (storable_only) {
-    return;
-  }
-  supported_types->insert(GetStorageType());
+FieldTypeSet SynthesizedAddressComponent::GetTypes(bool storable_only) const {
+  return storable_only ? FieldTypeSet{} : FieldTypeSet{GetStorageType()};
 }
 
 bool SynthesizedAddressComponent::IsValueReadOnly() const {

@@ -301,8 +301,7 @@ void Address::SetAddressCountryCode(const std::u16string& country_code,
   // Transfer the content from the old model into the new one. Note that it
   // is possible that some nodes are not present in the updated model. Those
   // will be ignored.
-  FieldTypeSet prev_supported_types;
-  Root()->GetStorableTypes(&prev_supported_types);
+  FieldTypeSet prev_supported_types = Root()->GetStorableTypes();
   prev_supported_types.erase(ADDRESS_HOME_COUNTRY);
 
   for (FieldType type : prev_supported_types) {
