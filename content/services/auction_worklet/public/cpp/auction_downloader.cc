@@ -236,7 +236,7 @@ AuctionDownloader::AuctionDownloader(
     MimeType mime_type,
     std::optional<std::string> post_body,
     std::optional<std::string> content_type,
-    bool is_trusted_bidding_signals_kvv1_download,
+    std::optional<size_t> num_igs_for_trusted_bidding_signals_kvv1,
     ResponseStartedCallback response_started_callback,
     AuctionDownloaderCallback auction_downloader_callback,
     std::unique_ptr<NetworkEventsDelegate> network_events_delegate)
@@ -246,7 +246,7 @@ AuctionDownloader::AuctionDownloader(
                         mime_type,
                         std::move(post_body),
                         std::move(content_type),
-                        is_trusted_bidding_signals_kvv1_download,
+                        num_igs_for_trusted_bidding_signals_kvv1,
                         /*request_initiator=*/std::nullopt,
                         /*trusted_params=*/std::nullopt,
                         std::move(response_started_callback),
@@ -264,18 +264,19 @@ AuctionDownloader::AuctionDownloader(
     network::ResourceRequest::TrustedParams trusted_params,
     AuctionDownloaderCallback auction_downloader_callback,
     std::unique_ptr<NetworkEventsDelegate> network_events_delegate)
-    : AuctionDownloader(url_loader_factory,
-                        source_url,
-                        download_mode,
-                        mime_type,
-                        std::move(post_body),
-                        std::move(content_type),
-                        /*is_trusted_bidding_signals_kvv1_download=*/false,
-                        request_initiator,
-                        std::move(trusted_params),
-                        ResponseStartedCallback(),
-                        std::move(auction_downloader_callback),
-                        std::move(network_events_delegate)) {}
+    : AuctionDownloader(
+          url_loader_factory,
+          source_url,
+          download_mode,
+          mime_type,
+          std::move(post_body),
+          std::move(content_type),
+          /*num_igs_for_trusted_bidding_signals_kvv1=*/std::nullopt,
+          request_initiator,
+          std::move(trusted_params),
+          ResponseStartedCallback(),
+          std::move(auction_downloader_callback),
+          std::move(network_events_delegate)) {}
 
 AuctionDownloader::NetworkEventsDelegate::~NetworkEventsDelegate() = default;
 AuctionDownloader::~AuctionDownloader() = default;
@@ -287,7 +288,7 @@ AuctionDownloader::AuctionDownloader(
     MimeType mime_type,
     std::optional<std::string> post_body,
     std::optional<std::string> content_type,
-    bool is_trusted_bidding_signals_kvv1_download,
+    std::optional<size_t> num_igs_for_trusted_bidding_signals_kvv1,
     base::optional_ref<const url::Origin> request_initiator,
     std::optional<network::ResourceRequest::TrustedParams> trusted_params,
     ResponseStartedCallback response_started_callback,
@@ -296,8 +297,8 @@ AuctionDownloader::AuctionDownloader(
     : url_loader_factory_(*url_loader_factory),
       source_url_(source_url),
       mime_type_(mime_type),
-      is_trusted_bidding_signals_kvv1_download_(
-          is_trusted_bidding_signals_kvv1_download),
+      num_igs_for_trusted_bidding_signals_kvv1_(
+          num_igs_for_trusted_bidding_signals_kvv1),
       request_id_(base::UnguessableToken::Create().ToString()),
       response_started_callback_(std::move(response_started_callback)),
       auction_downloader_callback_(std::move(auction_downloader_callback)),
@@ -402,6 +403,22 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
                     TruncateUrlIfNeededForError(source_url_).c_str(),
                     net::ErrorToString(simple_url_loader->NetError()).c_str()));
     return;
+  }
+
+  if (num_igs_for_trusted_bidding_signals_kvv1_ && response_started_time_) {
+    base::TimeDelta elapsed_time =
+        base::TimeTicks::Now() - response_started_time_.value();
+    base::UmaHistogramTimes(
+        "Ads.InterestGroup.Auction.BiddingSignalsResponseDownloadTime",
+        elapsed_time);
+    base::UmaHistogramTimes(
+        "Ads.InterestGroup.Auction.BiddingSignalsResponseDownloadTimePerIG",
+        elapsed_time / num_igs_for_trusted_bidding_signals_kvv1_.value());
+    base::UmaHistogramTimes(
+        "Ads.InterestGroup.Auction."
+        "BiddingSignalsResponseDownloadTimeAfterOneDownloadTimePerIG",
+        elapsed_time -
+            elapsed_time / num_igs_for_trusted_bidding_signals_kvv1_.value());
   }
 
   if (simple_url_loader->ResponseInfo()->async_revalidation_requested) {
@@ -591,13 +608,15 @@ void AuctionDownloader::OnResponseStarted(
   }
 
   // Record the cached response's age if there was an entry in the cache.
-  if (is_trusted_bidding_signals_kvv1_download_ &&
+  if (num_igs_for_trusted_bidding_signals_kvv1_ &&
       response_head.was_fetched_via_cache &&
       response_head.original_response_time < request_time) {
     base::UmaHistogramTimes(
         "Ads.InterestGroup.Auction.HttpCachedTrustedBiddingSignalsAge2",
         request_time - response_head.original_response_time);
   }
+
+  response_started_time_ = base::TimeTicks::Now();
 
   if (response_started_callback_) {
     std::move(response_started_callback_).Run(response_head);

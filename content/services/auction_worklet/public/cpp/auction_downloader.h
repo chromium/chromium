@@ -13,6 +13,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
@@ -117,7 +118,7 @@ class CONTENT_EXPORT AuctionDownloader {
       MimeType mime_type,
       std::optional<std::string> post_body,
       std::optional<std::string> content_type,
-      bool is_trusted_bidding_signals_kvv1_download,
+      std::optional<size_t> num_igs_for_trusted_bidding_signals_kvv1,
       ResponseStartedCallback response_started_callback,
       AuctionDownloaderCallback auction_downloader_callback,
       std::unique_ptr<NetworkEventsDelegate> network_events_delegate);
@@ -165,7 +166,7 @@ class CONTENT_EXPORT AuctionDownloader {
       MimeType mime_type,
       std::optional<std::string> post_body,
       std::optional<std::string> content_type,
-      bool is_trusted_bidding_signals_kvv1_download,
+      std::optional<size_t> num_igs_for_trusted_bidding_signals_kvv1,
       base::optional_ref<const url::Origin> request_initiator,
       std::optional<network::ResourceRequest::TrustedParams> trusted_params,
       ResponseStartedCallback response_started_callback,
@@ -202,9 +203,12 @@ class CONTENT_EXPORT AuctionDownloader {
   const raw_ref<network::mojom::URLLoaderFactory> url_loader_factory_;
   const GURL source_url_;
   const MimeType mime_type_;
-  const bool is_trusted_bidding_signals_kvv1_download_;
+  const std::optional<size_t> num_igs_for_trusted_bidding_signals_kvv1_;
   // A UnguessableToken string to be used in devtools.
   std::string request_id_;
+
+  // The time the response started, used for UMA.
+  std::optional<base::TimeTicks> response_started_time_;
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   ResponseStartedCallback response_started_callback_;

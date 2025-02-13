@@ -583,6 +583,53 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.BiddingSignalsResponseDownloadTime"
+    units="ms" expires_after="2025-08-13">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The elapsed time between the start of receiving the trusted bidding signals
+    response and when we finish receiving the response. Only recorded if we
+    successfully receive the body of the response.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ads.InterestGroup.Auction.BiddingSignalsResponseDownloadTimeAfterOneDownloadTimePerIG"
+    units="ms" expires_after="2025-08-13">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The difference between BiddingSignalsResponseDownloadTime and
+    BiddingSignalsResponseDownloadTimePerIG. This difference represents the
+    potential speed up we'd gain by streaming the bidding signals response,
+    which would allow us to start bidding in parallel to downloading the
+    response. Only recorded if we successfully receive the body of the response.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ads.InterestGroup.Auction.BiddingSignalsResponseDownloadTimePerIG"
+    units="ms" expires_after="2025-08-13">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The elapsed time between the start of receiving the trusted bidding signals
+    response and when we finish receiving the response, divided by the number of
+    interest groups for which we are reqeusting bidding signals. Only recorded
+    if we successfully receive the body of the response.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.BidFiltered" enum="Boolean"
     expires_after="2025-07-06">
   <owner>pauljensen@chromium.org</owner>

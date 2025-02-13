@@ -49,6 +49,16 @@ const char kUtf8Charset[] = "utf-8";
 const char kCachedTrustedBiddingSignalsAge[] =
     "Ads.InterestGroup.Auction.HttpCachedTrustedBiddingSignalsAge2";
 
+const char kBiddingSignalsResponseDownloadTime[] =
+    "Ads.InterestGroup.Auction.BiddingSignalsResponseDownloadTime";
+
+const char kBiddingSignalsResponseDownloadTimePerIG[] =
+    "Ads.InterestGroup.Auction.BiddingSignalsResponseDownloadTimePerIG";
+
+const char kBiddingSignalsResponseDownloadTimeAfterFirstDownloadTimePerIG[] =
+    "Ads.InterestGroup.Auction."
+    "BiddingSignalsResponseDownloadTimeAfterOneDownloadTimePerIG";
+
 // Creates a URLResponseHeadPtr that the AuctionDownloader will accept as a
 // valid set of headers for a response.
 network::mojom::URLResponseHeadPtr CreateResponseHead() {
@@ -192,7 +202,7 @@ class AuctionDownloaderTest
       downloader = std::make_unique<AuctionDownloader>(
           &url_loader_factory_, url_, download_mode(), mime_type_,
           std::move(post_body), std::move(content_type),
-          is_trusted_bidding_signals_kvv1_download_, response_started_callback_,
+          num_igs_for_trusted_bidding_signals_kvv1_, response_started_callback_,
           base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
                          base::Unretained(this)),
           std::move(test_network_events_delegate));
@@ -200,7 +210,7 @@ class AuctionDownloaderTest
       // This constructor doesn't take a ResponseStarted callback, or take
       // `is_trusted_bidding_signals_kvv1_download_`.
       CHECK(!response_started_callback_);
-      CHECK(!is_trusted_bidding_signals_kvv1_download_);
+      CHECK(!num_igs_for_trusted_bidding_signals_kvv1_);
       downloader = std::make_unique<AuctionDownloader>(
           &url_loader_factory_, url_, download_mode(), mime_type_,
           std::move(post_body), std::move(content_type), RequestInitiator(),
@@ -270,7 +280,7 @@ class AuctionDownloaderTest
   base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>
       response_started_callback_;
 
-  bool is_trusted_bidding_signals_kvv1_download_ = false;
+  std::optional<size_t> num_igs_for_trusted_bidding_signals_kvv1_;
 };
 
 TEST_P(AuctionDownloaderTest, NetworkError) {
@@ -338,7 +348,7 @@ TEST_P(AuctionDownloaderTest, Timeout) {
   AuctionDownloader downloader(
       &url_loader_factory_, url_, download_mode(), mime_type_,
       /*post_body=*/std::nullopt, /*content_type=*/std::nullopt,
-      is_trusted_bidding_signals_kvv1_download_, response_started_callback_,
+      num_igs_for_trusted_bidding_signals_kvv1_, response_started_callback_,
       base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
                      base::Unretained(this)),
       /*test_network_events_delegate=*/nullptr);
@@ -946,7 +956,7 @@ TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge2_Cached) {
     return;
   }
   network::URLLoaderCompletionStatus status;
-  is_trusted_bidding_signals_kvv1_download_ = true;
+  num_igs_for_trusted_bidding_signals_kvv1_ = 1;
 
   base::HistogramTester histogram_tester;
   auto response_head = CreateResponseHead();
@@ -957,6 +967,11 @@ TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge2_Cached) {
   std::unique_ptr<std::string> body = RunRequest();
   histogram_tester.ExpectUniqueSample(kCachedTrustedBiddingSignalsAge,
                                       base::Minutes(2).InMilliseconds(), 1);
+  histogram_tester.ExpectTotalCount(kBiddingSignalsResponseDownloadTime, 1);
+  histogram_tester.ExpectTotalCount(kBiddingSignalsResponseDownloadTimePerIG,
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      kBiddingSignalsResponseDownloadTimeAfterFirstDownloadTimePerIG, 1);
 }
 
 TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge2_NotCached) {
@@ -966,7 +981,7 @@ TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge2_NotCached) {
     return;
   }
   network::URLLoaderCompletionStatus status;
-  is_trusted_bidding_signals_kvv1_download_ = true;
+  num_igs_for_trusted_bidding_signals_kvv1_ = 2;
 
   base::HistogramTester histogram_tester;
   auto response_head = CreateResponseHead();
@@ -974,11 +989,16 @@ TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge2_NotCached) {
                                   kAsciiResponseBody, status);
   std::unique_ptr<std::string> body = RunRequest();
   histogram_tester.ExpectTotalCount(kCachedTrustedBiddingSignalsAge, 0);
+  histogram_tester.ExpectTotalCount(kBiddingSignalsResponseDownloadTime, 1);
+  histogram_tester.ExpectTotalCount(kBiddingSignalsResponseDownloadTimePerIG,
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      kBiddingSignalsResponseDownloadTimeAfterFirstDownloadTimePerIG, 1);
 }
 
 TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge2_NotKVV1) {
   network::URLLoaderCompletionStatus status;
-  is_trusted_bidding_signals_kvv1_download_ = false;
+  num_igs_for_trusted_bidding_signals_kvv1_ = std::nullopt;
 
   base::HistogramTester histogram_tester;
   auto response_head = CreateResponseHead();
@@ -988,6 +1008,11 @@ TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge2_NotKVV1) {
                                   kAsciiResponseBody, status);
   std::unique_ptr<std::string> body = RunRequest();
   histogram_tester.ExpectTotalCount(kCachedTrustedBiddingSignalsAge, 0);
+  histogram_tester.ExpectTotalCount(kBiddingSignalsResponseDownloadTime, 0);
+  histogram_tester.ExpectTotalCount(kBiddingSignalsResponseDownloadTimePerIG,
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      kBiddingSignalsResponseDownloadTimeAfterFirstDownloadTimePerIG, 0);
 }
 
 TEST_P(AuctionDownloaderTest, StaleWhileRevalidate) {
@@ -1011,7 +1036,7 @@ TEST_P(AuctionDownloaderTest, StaleWhileRevalidate) {
   AuctionDownloader downloader(
       &url_loader_factory_, url_, download_mode(), mime_type_,
       /*post_body=*/std::nullopt, /*content_type=*/std::nullopt,
-      is_trusted_bidding_signals_kvv1_download_, response_started_callback_,
+      num_igs_for_trusted_bidding_signals_kvv1_, response_started_callback_,
       base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
                      base::Unretained(this)),
       /*test_network_events_delegate=*/nullptr);
@@ -1056,7 +1081,7 @@ TEST_P(AuctionDownloaderTest, DoNotSupportRevalidateOnPostRequest) {
   AuctionDownloader downloader(
       &url_loader_factory_, url_, download_mode(), mime_type_,
       /*post_body=*/"post_body", /*content_type=*/"text/javascript",
-      is_trusted_bidding_signals_kvv1_download_, response_started_callback_,
+      num_igs_for_trusted_bidding_signals_kvv1_, response_started_callback_,
       base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
                      base::Unretained(this)),
       /*test_network_events_delegate=*/nullptr);
@@ -1083,7 +1108,7 @@ TEST_P(AuctionDownloaderTest, DoNotSupportStaleWhileRevalidateWhenDisabled) {
   AuctionDownloader downloader(
       &url_loader_factory_, url_, download_mode(), mime_type_,
       /*post_body=*/std::nullopt, /*content_type=*/std::nullopt,
-      is_trusted_bidding_signals_kvv1_download_, response_started_callback_,
+      num_igs_for_trusted_bidding_signals_kvv1_, response_started_callback_,
       base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
                      base::Unretained(this)),
       /*test_network_events_delegate=*/nullptr);

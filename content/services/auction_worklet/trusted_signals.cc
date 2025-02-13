@@ -715,8 +715,9 @@ void TrustedSignals::StartDownload(
       AuctionDownloader::DownloadMode::kActualDownload,
       AuctionDownloader::MimeType::kJson,
       /*post_body=*/std::nullopt, /*content_type=*/std::nullopt,
-      /*is_trusted_bidding_signals_kvv1_download=*/
-      interest_group_names_.has_value(),
+      /*num_igs_for_trusted_bidding_signals_kvv1=*/
+      interest_group_names_.has_value() ? interest_group_names_->size()
+                                        : std::optional<size_t>(),
       AuctionDownloader::ResponseStartedCallback(),
       base::BindOnce(&TrustedSignals::OnDownloadComplete,
                      base::Unretained(this)),
