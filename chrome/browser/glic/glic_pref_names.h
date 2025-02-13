@@ -32,6 +32,9 @@ enum class SettingsPolicyState {
   kMaxValue = kDisabled
 };
 
+// Boolean pref that determines if the glic button in tabstrip is pinned.
+inline constexpr char kGlicPinnedToTabstrip[] = "glic.pinned_to_tabstrip";
+
 // Boolean pref that enables or disables geolocation access for Glic.
 inline constexpr char kGlicGeolocationEnabled[] = "glic.geolocation_enabled";
 // Boolean pref that enables or disables microphone access for Glic.
