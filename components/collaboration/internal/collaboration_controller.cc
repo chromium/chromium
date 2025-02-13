@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "components/collaboration/internal/metrics.h"
 #include "components/collaboration/public/collaboration_flow_type.h"
 #include "components/collaboration/public/collaboration_service.h"
@@ -40,6 +41,8 @@ std::string GetStateIdString(StateId state) {
       return "Pending";
     case StateId::kAuthenticating:
       return "Authenticating";
+    case StateId::kWaitingForServicesToInitialize:
+      return "WaitingForServicesToInitialize";
     case StateId::kCheckingFlowRequirements:
       return "CheckingFlowRequirements";
     case StateId::kAddingUserToGroup:
@@ -164,7 +167,7 @@ class PendingState : public ControllerState {
       return;
     }
 
-    controller->TransitionTo(StateId::kCheckingFlowRequirements);
+    controller->TransitionTo(StateId::kWaitingForServicesToInitialize);
   }
 
  private:
@@ -209,6 +212,11 @@ class AuthenticatingState : public ControllerState,
         controller->collaboration_service()->GetServiceStatus();
     if (!status.IsAuthenticationValid()) {
       // Set up the timeout exit task.
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&AuthenticatingState::HandleError,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::Minutes(30));
       collaboration_service_observer_.Observe(
           controller->collaboration_service());
       if (FlowType::kJoin == controller->flow().type) {
@@ -218,11 +226,6 @@ class AuthenticatingState : public ControllerState,
         RecordShareOrManageEvent(
             CollaborationServiceShareOrManageEvent::kSigninVerificationFailed);
       }
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&AuthenticatingState::HandleError,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::Minutes(30));
       return;
     }
 
@@ -234,7 +237,7 @@ class AuthenticatingState : public ControllerState,
     }
     // TODO(crbug.com/380957996): Handle signin/sync changes during a flow.
     controller->delegate()->NotifySignInAndSyncStatusChange();
-    controller->TransitionTo(StateId::kCheckingFlowRequirements);
+    controller->TransitionTo(StateId::kWaitingForServicesToInitialize);
   }
 
   // CollaborationService::Observer implementation.
@@ -248,7 +251,7 @@ class AuthenticatingState : public ControllerState,
             CollaborationServiceShareOrManageEvent::kSigninVerifiedInObserver);
       }
       controller->delegate()->NotifySignInAndSyncStatusChange();
-      controller->TransitionTo(StateId::kCheckingFlowRequirements);
+      controller->TransitionTo(StateId::kWaitingForServicesToInitialize);
     }
   }
 
@@ -257,6 +260,65 @@ class AuthenticatingState : public ControllerState,
       collaboration_service_observer_{this};
 
   base::WeakPtrFactory<AuthenticatingState> local_weak_ptr_factory_{this};
+};
+
+class WaitingForServicesToInitialize
+    : public ControllerState,
+      public tab_groups::TabGroupSyncService::Observer,
+      public data_sharing::DataSharingService::Observer {
+ public:
+  WaitingForServicesToInitialize(StateId id,
+                                 CollaborationController* controller)
+      : ControllerState(id, controller) {}
+
+  // ControllerState implementation.
+  void OnEnter(const ErrorInfo& error) override {
+    // Timeout waiting.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&WaitingForServicesToInitialize::HandleError,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::Seconds(5));
+    // TODO(crbug.com/392791204): Wait for tab group sync to be ready.
+    is_data_sharing_ready_ =
+        controller->data_sharing_service()->IsGroupDataModelLoaded();
+    if (!is_data_sharing_ready_) {
+      data_sharing_observer_.Observe(controller->data_sharing_service());
+    }
+    tab_group_sync_observer_.Observe(controller->tab_group_sync_service());
+  }
+
+  void OnProcessingFinishedWithSuccess() override {
+    controller->TransitionTo(StateId::kCheckingFlowRequirements);
+  }
+
+  // TabGroupSyncService::Observer implementation.
+  void OnInitialized() override {
+    is_tab_group_sync_ready_ = true;
+    MaybeProceed();
+  }
+
+  // DataSharingService::Observer implementation.
+  void OnGroupDataModelLoaded() override {
+    is_data_sharing_ready_ = true;
+    MaybeProceed();
+  }
+
+ private:
+  void MaybeProceed() {
+    if (is_tab_group_sync_ready_ && is_data_sharing_ready_) {
+      OnProcessingFinishedWithSuccess();
+    }
+  }
+
+  bool is_tab_group_sync_ready_{false};
+  bool is_data_sharing_ready_{false};
+  base::ScopedObservation<tab_groups::TabGroupSyncService,
+                          tab_groups::TabGroupSyncService::Observer>
+      tab_group_sync_observer_{this};
+  base::ScopedObservation<data_sharing::DataSharingService,
+                          data_sharing::DataSharingService::Observer>
+      data_sharing_observer_{this};
 };
 
 class CheckingFlowRequirementsState : public ControllerState {
@@ -795,6 +857,8 @@ std::unique_ptr<ControllerState> CollaborationController::CreateStateObject(
       return std::make_unique<PendingState>(state, this, base::DoNothing());
     case StateId::kAuthenticating:
       return std::make_unique<AuthenticatingState>(state, this);
+    case StateId::kWaitingForServicesToInitialize:
+      return std::make_unique<WaitingForServicesToInitialize>(state, this);
     case StateId::kCheckingFlowRequirements:
       return std::make_unique<CheckingFlowRequirementsState>(state, this);
     case StateId::kAddingUserToGroup:
