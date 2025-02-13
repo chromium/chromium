@@ -3079,18 +3079,6 @@ extern const char kSCTAuditingDescription[];
 extern const char kSmartCardWebApiName[];
 extern const char kSmartCardWebApiDescription[];
 
-extern const char kTabOrganizationName[];
-extern const char kTabOrganizationDescription[];
-
-extern const char kTabOrganizationSettingsVisibilityName[];
-extern const char kTabOrganizationSettingsVisibilityDescription[];
-
-extern const char kTabstripDeclutterName[];
-extern const char kTabstripDeclutterDescription[];
-
-extern const char kTabstripDedupeName[];
-extern const char kTabstripDedupeDescription[];
-
 extern const char kWebAppSyncGeneratedIconBackgroundFixName[];
 extern const char kWebAppSyncGeneratedIconBackgroundFixDescription[];
 

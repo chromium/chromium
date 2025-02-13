@@ -1764,20 +1764,6 @@ const FeatureEntry::FeatureVariation kTabScrollingVariations[] = {
      std::size(kMinimumTabWidthSettingFull), nullptr}};
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-const FeatureEntry::FeatureParam kTabstripDeclutterQuickModeParams[] = {
-    {"stale_threshold_duration", "10s"},
-    {"declutter_timer_interval", "10s"},
-    {"nudge_timer_interval", "30s"},
-};
-
-const FeatureEntry::FeatureVariation kTabstripDeclutterVariations[] = {
-    {"Quick Mode", kTabstripDeclutterQuickModeParams,
-     std::size(kTabstripDeclutterQuickModeParams)},
-};
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kTabstripComboButtonBackground[] = {
@@ -10828,29 +10814,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"translate-open-settings", flag_descriptions::kTranslateOpenSettingsName,
      flag_descriptions::kTranslateOpenSettingsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(language::kTranslateOpenSettings)},
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-    {"tab-organization", flag_descriptions::kTabOrganizationName,
-     flag_descriptions::kTabOrganizationDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabOrganization)},
-
-    {"tab-organization-settings-visibility",
-     flag_descriptions::kTabOrganizationSettingsVisibilityName,
-     flag_descriptions::kTabOrganizationSettingsVisibilityDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(optimization_guide::features::internal::
-                            kTabOrganizationSettingsVisibility)},
-
-    {"tabstrip-declutter", flag_descriptions::kTabstripDeclutterName,
-     flag_descriptions::kTabstripDeclutterDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabstripDeclutter,
-                                    kTabstripDeclutterVariations,
-                                    "TabstripDeclutter")},
-    {"tabstrip-dedupe", flag_descriptions::kTabstripDedupeName,
-     flag_descriptions::kTabstripDedupeDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabstripDedupe)},
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
