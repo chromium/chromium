@@ -442,6 +442,8 @@ static_library("test_support") {
     "mock_render_input_router.h",
     "mock_render_widget_host_delegate.cc",
     "mock_render_widget_host_delegate.h",
+    "mock_speech_recognition_event_listener.cc",
+    "mock_speech_recognition_event_listener.h",
     "mock_ssl_host_state_delegate.cc",
     "mock_ssl_host_state_delegate.h",
     "mock_widget.cc",

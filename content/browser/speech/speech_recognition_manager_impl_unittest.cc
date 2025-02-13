@@ -10,6 +10,7 @@
 #include "content/browser/speech/fake_speech_recognition_manager_delegate.h"
 #include "content/public/browser/speech_recognition_audio_forwarder_config.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/test/mock_speech_recognition_event_listener.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,6 +24,7 @@ namespace content {
 
 using testing::_;
 using testing::InvokeWithoutArgs;
+using testing::NiceMock;
 
 class SpeechRecognitionManagerImplTest
     : public testing::Test,
@@ -30,26 +32,6 @@ class SpeechRecognitionManagerImplTest
  public:
   SpeechRecognitionManagerImplTest() = default;
   ~SpeechRecognitionManagerImplTest() override = default;
-
-  void SetUp() override {
-    // Set up the SODA on device speech recognition feature flags.
-    scoped_feature_list_.InitWithFeatures(
-        {
-            media::kOnDeviceWebSpeech,
-#if BUILDFLAG(IS_CHROMEOS)
-            ash::features::kOnDeviceSpeechRecognition,
-#endif  // BUILDFLAG(IS_CHROMEOS)
-        },
-        {});
-
-    on_device_speech_recognition_supported_ =
-        speech::IsOnDeviceSpeechRecognitionSupported();
-
-    manager_ =
-        absl::WrapUnique(new SpeechRecognitionManagerImpl(nullptr, nullptr));
-  }
-
-  void TearDown() override { manager_.reset(); }
 
   // media::mojom::SpeechRecognitionSessionClient:
   void ResultRetrieved(std::vector<media::mojom::WebSpeechRecognitionResultPtr>
@@ -64,18 +46,26 @@ class SpeechRecognitionManagerImplTest
   void AudioEnded() override {}
   void Ended() override { ended_ = true; }
 
+ private:
+  // Set up the SODA on device speech recognition feature flags.
+  base::test::ScopedFeatureList feature_1_{media::kOnDeviceWebSpeech};
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList feature_2_{
+      ash::features::kOnDeviceSpeechRecognition};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  BrowserTaskEnvironment environment_;
+
  protected:
   MockSodaInstaller mock_soda_installer_;
-  bool on_device_speech_recognition_supported_;
-  std::unique_ptr<SpeechRecognitionManagerImpl> manager_;
+  bool on_device_speech_recognition_supported_ =
+      speech::IsOnDeviceSpeechRecognitionSupported();
+  std::unique_ptr<SpeechRecognitionManagerImpl> manager_ =
+      absl::WrapUnique(new SpeechRecognitionManagerImpl(nullptr, nullptr));
   mojo::Receiver<media::mojom::SpeechRecognitionSessionClient> receiver_{this};
+  NiceMock<MockSpeechRecognitionEventListener> listener_;
   media::mojom::SpeechRecognitionErrorCode error_ =
       media::mojom::SpeechRecognitionErrorCode::kNone;
   bool ended_ = false;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  BrowserTaskEnvironment environment_;
 };
 
 TEST_F(SpeechRecognitionManagerImplTest, SodaNotInstalled) {
@@ -206,6 +196,24 @@ TEST_F(SpeechRecognitionManagerImplTest, RecognitionContextNotSupportedError) {
                          kRecognitionContextNotSupported &&
            ended_;
   }));
+}
+
+TEST_F(SpeechRecognitionManagerImplTest, ConfigEventListenerThrowsError) {
+  SpeechRecognitionSessionConfig config;
+  config.on_device = false;
+  config.language = "en-US";
+  config.recognition_context = media::SpeechRecognitionRecognitionContext();
+  config.event_listener = listener_.GetWeakPtr();
+
+  EXPECT_CALL(
+      listener_,
+      OnRecognitionError(_, media::mojom::SpeechRecognitionError(
+                                media::mojom::SpeechRecognitionErrorCode::
+                                    kRecognitionContextNotSupported,
+                                media::mojom::SpeechAudioErrorDetails::kNone)));
+  EXPECT_CALL(listener_, OnRecognitionEnd(_));
+  manager_->CreateSession(config, mojo::NullReceiver(), mojo::NullRemote(),
+                          std::nullopt);
 }
 
 }  // namespace content
