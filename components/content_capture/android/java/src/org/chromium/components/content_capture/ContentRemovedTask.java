@@ -4,9 +4,11 @@
 
 package org.chromium.components.content_capture;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.content_capture.PlatformSession.PlatformSessionData;
 
 /** The task to remove the captured content from the platform. */
+@NullMarked
 class ContentRemovedTask extends NotificationTask {
     private final long[] mRemovedIds;
 

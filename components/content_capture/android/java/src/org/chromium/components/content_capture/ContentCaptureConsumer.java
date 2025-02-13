@@ -4,12 +4,15 @@
 
 package org.chromium.components.content_capture;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * This interface is for consumer to consume the captured content.
  *
  * The consumer shall call OnscreenContentProvider.addConsumer() to get the content and
  * removeConsumer if the content is no longer needed.
  */
+@NullMarked
 public interface ContentCaptureConsumer {
 
     /**

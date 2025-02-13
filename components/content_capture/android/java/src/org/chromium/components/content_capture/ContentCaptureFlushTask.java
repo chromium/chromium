@@ -8,10 +8,12 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.content_capture.PlatformSession.PlatformSessionData;
 
 /** The task to notify platform of flushing the captured content */
 @RequiresApi(Build.VERSION_CODES.Q)
+@NullMarked
 class ContentCaptureFlushTask extends NotificationTask {
     private final ContentCaptureFrame mContentCaptureData;
 
