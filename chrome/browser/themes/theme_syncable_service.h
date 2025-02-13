@@ -160,6 +160,9 @@ class ThemeSyncableService final : public syncer::SyncableService,
   // Captures the state of theme sync after initial data merge.
   std::optional<ThemeSyncState> startup_state_;
 
+  // Holds the id of the remote extension theme, if any, pending installation.
+  std::optional<std::string> remote_extension_theme_pending_install_;
+
   base::ThreadChecker thread_checker_;
 
   PrefChangeRegistrar pref_change_registrar_;
