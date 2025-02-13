@@ -2,6 +2,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "chrome/browser/ui/tabs/saved_tab_groups/shared_tab_group_feedback_controller.h"
 
 #include "base/check.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
@@ -115,7 +117,12 @@ void SharedTabGroupFeedbackController::MaybeShowIPH(
     return;
   }
 
-  // TODO: Trigger the IPH.
+  BrowserUserEducationInterface* browser_user_education_interface =
+      browser_window_interface->GetUserEducationInterface();
+  CHECK(browser_user_education_interface);
+
+  browser_user_education_interface->MaybeShowFeaturePromo(
+      feature_engagement::kIPHTabGroupsSharedTabFeedbackFeature);
 }
 
 void SharedTabGroupFeedbackController::OnInitialized() {

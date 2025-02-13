@@ -47911,6 +47911,8 @@ should be able to be added at any place in this file.
       label="For the intro of tab groups that default to saved."/>
   <suffix name="TabGroupsSharedTabChanged"
       label="For the first time changing a shared tab group."/>
+  <suffix name="TabGroupsSharedTabFeedback"
+      label="For the first time a shared tab becomes the active tab."/>
   <suffix name="TabGroupsSurface" label="For tab group surface."/>
   <suffix name="TabGroupsSurfaceOnHide"
       label="For tab group surface after hiding a tab group while on the GTS."/>
