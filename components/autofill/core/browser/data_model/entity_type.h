@@ -102,15 +102,15 @@ constexpr FieldType AttributeType::field_type() const {
     case AttributeTypeName::kLoyaltyCardMemberId:
       return LOYALTY_MEMBERSHIP_ID;
     case AttributeTypeName::kCarOwner:
-      return CAR_OWNER_TAG;
+      return VEHICLE_OWNER_TAG;
     case AttributeTypeName::kCarLicensePlate:
-      return CAR_LICENSE_PLATE;
+      return VEHICLE_LICENSE_PLATE;
     case AttributeTypeName::kCarRegistration:
-      return CAR_REGISTRATION;
+      return VEHICLE_VIN;
     case AttributeTypeName::kCarMake:
-      return CAR_MAKE;
+      return VEHICLE_MAKE;
     case AttributeTypeName::kCarModel:
-      return CAR_MODEL;
+      return VEHICLE_MODEL;
     case AttributeTypeName::kDriversLicenseName:
       return DRIVERS_LICENSE_NAME_TAG;
     case AttributeTypeName::kDriversLicenseRegion:

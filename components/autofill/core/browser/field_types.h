@@ -498,11 +498,11 @@ enum FieldType {
 
   // Types corresponding to the "Car" entity from
   // components/autofill/core/browser/data_model/entity_schema.json.
-  CAR_OWNER_TAG = 175,
-  CAR_LICENSE_PLATE = 176,
-  CAR_REGISTRATION = 177,
-  CAR_MAKE = 178,
-  CAR_MODEL = 179,
+  VEHICLE_OWNER_TAG = 175,
+  VEHICLE_LICENSE_PLATE = 176,
+  VEHICLE_VIN = 177,
+  VEHICLE_MAKE = 178,
+  VEHICLE_MODEL = 179,
 
   // Types corresponding to the "Drivers license" entity from
   // components/autofill/core/browser/data_model/entity_schema.json.

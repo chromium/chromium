@@ -214,11 +214,11 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case LOYALTY_MEMBERSHIP_PROGRAM:
     case LOYALTY_MEMBERSHIP_PROVIDER:
     case LOYALTY_MEMBERSHIP_ID:
-    case CAR_OWNER_TAG:
-    case CAR_LICENSE_PLATE:
-    case CAR_REGISTRATION:
-    case CAR_MAKE:
-    case CAR_MODEL:
+    case VEHICLE_OWNER_TAG:
+    case VEHICLE_LICENSE_PLATE:
+    case VEHICLE_VIN:
+    case VEHICLE_MAKE:
+    case VEHICLE_MODEL:
     case DRIVERS_LICENSE_NAME_TAG:
     case DRIVERS_LICENSE_REGION:
     case DRIVERS_LICENSE_NUMBER:
