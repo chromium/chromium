@@ -213,12 +213,14 @@ class FaviconDatabase {
                                  std::vector<IconMapping>* mapping_data);
 
   // Given `url`, returns the `page_url` page mapped to an icon with
-  // `required_icon_types`, where `page_url` has host = url.host(). This allows
-  // for icons to be retrieved when a full URL is not available. For example,
+  // `required_icon_types`, where `page_url` has host = url.host(). The search
+  // prioritizes `PageUrlType::kRegular` over `PageUrlType::kRedirect` on the
+  // assumption that `url` is not a cross-host redirect. This enables icons
+  // to be retrieved when a full URL is not available. For example,
   // `url` = http://www.google.com would match
-  // `page_url` = https://www.google.com/search. The returned optional will be
-  // empty if no such `page_url` exists.
-  std::optional<GURL> FindFirstPageURLForHost(
+  // `page_url` = https://www.google.com/search.
+  // The returned optional will be empty if no such `page_url` exists.
+  std::optional<GURL> FindBestPageURLForHost(
       const GURL& url,
       const favicon_base::IconTypeSet& required_icon_types);
 

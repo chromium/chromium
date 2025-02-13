@@ -731,14 +731,16 @@ bool FaviconDatabase::GetIconMappingsForPageURL(
   return result;
 }
 
-std::optional<GURL> FaviconDatabase::FindFirstPageURLForHost(
+std::optional<GURL> FaviconDatabase::FindBestPageURLForHost(
     const GURL& url,
     const favicon_base::IconTypeSet& required_icon_types) {
   if (url.host().empty())
     return std::nullopt;
 
-  // TODO(crbug.com/40881507): Change this to leverage page_url_type in a
-  // multi-part order. ORDER BY page_url_type ASC, favicons.icon_type DESC.
+  // This query prioritizes PageUrlType::kRegular over PageUrlType::kRedirect.
+  // If PageUrlType is ever changed the ORDER BY clause for page_url_type may
+  // need to be revised.
+  CHECK_EQ(PageUrlType::kRedirect, PageUrlType::kMaxValue);
   sql::Statement statement(
       db_.GetCachedStatement(SQL_FROM_HERE,
                              "SELECT icon_mapping.page_url, favicons.icon_type "
@@ -747,7 +749,8 @@ std::optional<GURL> FaviconDatabase::FindFirstPageURLForHost(
                              "ON icon_mapping.icon_id = favicons.id "
                              "WHERE (page_url >= ? AND page_url < ?) "
                              "OR (page_url >= ? AND page_url < ?) "
-                             "ORDER BY favicons.icon_type DESC"));
+                             "ORDER BY icon_mapping.page_url_type ASC, "
+                             "favicons.icon_type DESC"));
 
   // This is an optimization to avoid using the LIKE operator which can be
   // expensive. This statement finds all rows where page_url starts from either

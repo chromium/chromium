@@ -686,7 +686,7 @@ FaviconBackend::GetFaviconsFromDB(const GURL& page_url,
     // that is known to exist and matches the host of `page_url`. Do this only
     // if we have a HTTP/HTTPS url.
     std::optional<GURL> fallback_page_url =
-        db_->FindFirstPageURLForHost(page_url, icon_types);
+        db_->FindBestPageURLForHost(page_url, icon_types);
 
     if (fallback_page_url) {
       db_->GetIconMappingsForPageURL(fallback_page_url.value(), icon_types,
