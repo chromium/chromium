@@ -2926,7 +2926,7 @@
     },
     {
       name: "NavigateEventSourceElement",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "NavigationActivation",

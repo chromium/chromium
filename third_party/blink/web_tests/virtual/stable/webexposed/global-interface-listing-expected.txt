@@ -5988,6 +5988,7 @@ interface NavigateEvent : Event
     getter info
     getter navigationType
     getter signal
+    getter sourceElement
     getter userInitiated
     method constructor
     method intercept
