@@ -35,18 +35,12 @@
 #include <optional>
 
 #include "base/check_op.h"
-#include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
-#include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/bindings/v8_value_cache.h"
-#include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "v8/include/v8.h"
@@ -66,18 +60,7 @@ class ExceptionState;
 class ExecutionContext;
 class LocalDOMWindow;
 class LocalFrame;
-class XPathNSResolver;
 class ScriptState;
-
-// Determines how a V8 -> C++ union conversion should be performed: when the
-// JavaScript value being converted is either undefined or null, kNullable will
-// stop the conversion attempt and the union's IsNull() method will return true.
-// If kNotNullable is used, the other conversion steps listed in
-// https://webidl.spec.whatwg.org/#es-union will continue being attempted.
-enum class UnionTypeConversionMode {
-  kNullable,
-  kNotNullable,
-};
 
 // Embedder enum set in v8 to let the V8 Profiler surface back in samples the
 // type of work performed by the embedder during a trace.
@@ -96,38 +79,6 @@ enum class BlinkState : uint8_t {
       ToV8ContextMaybeEmpty(frame, DOMWrapperWorld::MainWorld(isolate)); \
   v8::EmbedderStateScope embedder_state(                                 \
       isolate, v8_context, static_cast<v8::EmbedderStateTag>(state));
-
-template <typename CallbackInfo, typename T>
-inline void V8SetReturnValue(const CallbackInfo& callbackInfo,
-                             NotShared<T> notShared) {
-  V8SetReturnValue(callbackInfo, notShared.View());
-}
-
-template <typename CallbackInfo, typename T>
-inline void V8SetReturnValueFast(const CallbackInfo& callbackInfo,
-                                 NotShared<T> notShared,
-                                 const ScriptWrappable* wrappable) {
-  V8SetReturnValueFast(callbackInfo, notShared.View(), wrappable);
-}
-
-template <typename CallbackInfo, typename T>
-inline void V8SetReturnValue(const CallbackInfo& callback_info,
-                             MaybeShared<T> maybe_shared) {
-  V8SetReturnValue(callback_info, maybe_shared.View());
-}
-
-template <typename CallbackInfo, typename T>
-inline void V8SetReturnValueFast(const CallbackInfo& callback_info,
-                                 MaybeShared<T> maybe_shared,
-                                 const ScriptWrappable* wrappable) {
-  V8SetReturnValueFast(callback_info, maybe_shared.View(), wrappable);
-}
-
-// Specialized overload, used by interface indexed property handlers in their
-// descriptor callbacks, which need an actual V8 Object with the properties of
-// a property descriptor.
-CORE_EXPORT void V8SetReturnValue(const v8::PropertyCallbackInfo<v8::Value>&,
-                                  const v8::PropertyDescriptor&);
 
 // Conversion flags, used in toIntXX/toUIntXX.
 enum IntegerConversionConfiguration {
@@ -368,89 +319,6 @@ inline ScriptObject ToV8FromDate(ScriptState* script_state,
 // USVString conversion helper.
 CORE_EXPORT String ReplaceUnmatchedSurrogates(String);
 
-// FIXME: Remove the special casing for XPathNSResolver.
-XPathNSResolver* ToXPathNSResolver(ScriptState*, v8::Local<v8::Value>);
-
-template <typename IDLType>
-VectorOf<typename NativeValueTraits<IDLType>::ImplType> ToImplArguments(
-    const v8::FunctionCallbackInfo<v8::Value>& info,
-    int start_index,
-    ExceptionState& exception_state) {
-  using TraitsType = NativeValueTraits<IDLType>;
-  using VectorType = VectorOf<typename TraitsType::ImplType>;
-
-  int length = info.Length();
-  VectorType result;
-  if (start_index < length) {
-    if (static_cast<size_t>(length - start_index) > VectorType::MaxCapacity()) {
-      exception_state.ThrowRangeError("Array length exceeds supported limit.");
-      return VectorType();
-    }
-    result.ReserveInitialCapacity(length - start_index);
-    for (int i = start_index; i < length; ++i) {
-      result.UncheckedAppend(
-          TraitsType::NativeValue(info.GetIsolate(), info[i], exception_state));
-      if (exception_state.HadException())
-        return VectorType();
-    }
-  }
-  return result;
-}
-
-template <typename IDLType>
-VectorOf<typename NativeValueTraits<IDLType>::ImplType> ToImplArguments(
-    const v8::FunctionCallbackInfo<v8::Value>& info,
-    int start_index,
-    ExceptionState& exception_state,
-    ExecutionContext* execution_context) {
-  using TraitsType = NativeValueTraits<IDLType>;
-  using VectorType = VectorOf<typename TraitsType::ImplType>;
-
-  int length = info.Length();
-  VectorType result;
-  if (start_index < length) {
-    if (static_cast<size_t>(length - start_index) > VectorType::MaxCapacity()) {
-      exception_state.ThrowRangeError("Array length exceeds supported limit.");
-      return VectorType();
-    }
-    result.ReserveInitialCapacity(length - start_index);
-    for (int i = start_index; i < length; ++i) {
-      result.UncheckedAppend(TraitsType::NativeValue(
-          info.GetIsolate(), info[i], exception_state, execution_context));
-      if (exception_state.HadException())
-        return VectorType();
-    }
-  }
-  return result;
-}
-
-// The functions below implement low-level abstract ES operations for dealing
-// with iterators. Most code should use ScriptIterator instead.
-//
-// Retrieves an ES object's @@iterator method by calling
-//     ? GetMethod(V, @@iterator)
-// per https://tc39.es/ecma262/#sec-getmethod
-// Returns the iterator method for an object, or an empty v8::Local if the
-// method is null or undefined.
-CORE_EXPORT v8::Local<v8::Function> GetEsIteratorMethod(v8::Isolate*,
-                                                        v8::Local<v8::Object>,
-                                                        ExceptionState&);
-// Retrieves an iterator object from a given ES object whose @@iterator method
-// has been retrieved via GetEsIteratorMethod(). It essentially calls
-//     ? GetIterator(iterable, sync, method)
-// per https://tc39.es/ecma262/#sec-getiterator
-CORE_EXPORT v8::Local<v8::Object> GetEsIteratorWithMethod(
-    v8::Isolate*,
-    v8::Local<v8::Function>,
-    v8::Local<v8::Object>,
-    ExceptionState&);
-// Wrapper around GetEsIteratorMethod(). It returns true if a given ES value is
-// an object that has a valid @@iterator property (i.e. the property exists and
-// is callable).
-CORE_EXPORT bool HasCallableIteratorSymbol(v8::Isolate*,
-                                           v8::Local<v8::Value>,
-                                           ExceptionState&);
-
 CORE_EXPORT v8::Isolate* ToIsolate(const LocalFrame*);
 
 CORE_EXPORT LocalDOMWindow* ToLocalDOMWindow(const ScriptState*);
@@ -461,8 +329,6 @@ CORE_EXPORT LocalDOMWindow* EnteredDOMWindow(v8::Isolate*);
 LocalDOMWindow* IncumbentDOMWindow(v8::Isolate*);
 CORE_EXPORT LocalDOMWindow* CurrentDOMWindow(v8::Isolate*);
 CORE_EXPORT ExecutionContext* ToExecutionContext(v8::Local<v8::Context>);
-CORE_EXPORT void RegisterToExecutionContextForModules(ExecutionContext* (
-    *to_execution_context_for_modules)(v8::Local<v8::Context>));
 CORE_EXPORT ExecutionContext* CurrentExecutionContext(v8::Isolate*);
 
 // Returns a V8 context associated with a ExecutionContext and a
@@ -497,36 +363,6 @@ CORE_EXPORT LocalFrame* ToLocalFrameIfNotDetached(v8::Local<v8::Context>);
 
 CORE_EXPORT v8::Local<v8::Value> FromJSONString(ScriptState* script_state,
                                                 const String& stringified_json);
-
-// Ensure that a typed array value is not backed by a SharedArrayBuffer. If it
-// is, an exception will be thrown. The return value will use the NotShared
-// wrapper type.
-template <typename NotSharedType>
-NotSharedType ToNotShared(v8::Isolate* isolate,
-                          v8::Local<v8::Value> value,
-                          ExceptionState& exception_state) {
-  using DOMTypedArray = typename NotSharedType::TypedArrayType;
-  DOMTypedArray* dom_typed_array =
-      V8TypeOf<DOMTypedArray>::Type::ToWrappable(isolate, value);
-  if (dom_typed_array && dom_typed_array->IsShared()) {
-    exception_state.ThrowTypeError(
-        "The provided ArrayBufferView value must not be shared.");
-    return NotSharedType();
-  }
-  return NotSharedType(dom_typed_array);
-}
-
-// Wrap a typed array value in MaybeShared<>, to signify that it may be backed
-// by a SharedArrayBuffer.
-template <typename MaybeSharedType>
-MaybeSharedType ToMaybeShared(v8::Isolate* isolate,
-                              v8::Local<v8::Value> value,
-                              ExceptionState& exception_state) {
-  using DOMTypedArray = typename MaybeSharedType::TypedArrayType;
-  DOMTypedArray* dom_typed_array =
-      V8TypeOf<DOMTypedArray>::Type::ToWrappable(isolate, value);
-  return MaybeSharedType(dom_typed_array);
-}
 
 CORE_EXPORT Vector<String> GetOwnPropertyNames(v8::Isolate*,
                                                const v8::Local<v8::Object>&,

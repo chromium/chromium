@@ -38,9 +38,6 @@ class ScriptPromise;
 // operation, whose `kind` argument is either ASYNC or SYNC, directing the
 // operation as to which iterator type to try and obtain from the ES object.
 //
-// In general, this class should be preferred over using the
-// GetEsIteratorMethod() and GetEsIteratorWithMethod() functions directly.
-//
 // [1]: https://tc39.es/ecma262/#sec-iterator-records
 // [2]: https://tc39.es/ecma262/#table-async-iterator-required
 // [3]: https://tc39.es/ecma262/#sec-getiterator
