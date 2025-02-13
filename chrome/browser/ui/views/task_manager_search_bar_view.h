@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TASK_MANAGER_SEARCH_BAR_VIEW_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
@@ -24,14 +25,11 @@ class TaskManagerSearchBarView : public views::View,
   METADATA_HEADER(TaskManagerSearchBarView, views::View)
 
  public:
-  using OnInputChangedCallback =
-      base::RepeatingCallback<void(const std::u16string&)>;
-
   class Delegate {
    public:
     // Called when text in the textfield changes. Calls are throttled with
     // a delay of kInputChangeCallbackDelay to avoid excessive triggering.
-    virtual void SearchBarOnInputChanged(const std::u16string& text) = 0;
+    virtual void SearchBarOnInputChanged(std::u16string_view text) = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -40,7 +38,7 @@ class TaskManagerSearchBarView : public views::View,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInputField);
 
   // The delay between the textfield text change and triggering
-  // the `OnInputChangedCallback`, used to throttle fast user input.
+  // `SearchBarOnInputChanged`, used to throttle fast user input.
   static constexpr base::TimeDelta kInputChangeCallbackDelay =
       base::Milliseconds(50);
 

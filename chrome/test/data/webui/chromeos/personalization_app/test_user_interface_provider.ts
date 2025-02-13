@@ -64,7 +64,7 @@ export class TestUserProvider extends TestBrowserProxy implements
     this.methodCalled('selectDefaultImage', index);
   }
 
-  async selectProfileImage() {
+  selectProfileImage() {
     this.methodCalled('selectProfileImage');
     this.profileImage = {
       url: 'data://updated_test_url',

@@ -18,7 +18,8 @@ extern NSString* const kLegalMessagesPrefKey;
 extern NSString* const kCurrentCardSaveAcceptedPrefKey;
 extern NSString* const kSupportsEditingPrefKey;
 extern NSString* const kDisplayedTargetAccountEmailPrefKey;
-extern NSString* const kDisplayedTargetAccountAvatarPrefKey;
+extern NSString* const kLogoIconPrefKey;
+extern NSString* const kLogoIconDescriptionPrefKey;
 
 // Consumer for model to push configurations to the SaveCard UI.
 @protocol InfobarSaveCardModalConsumer <NSObject>

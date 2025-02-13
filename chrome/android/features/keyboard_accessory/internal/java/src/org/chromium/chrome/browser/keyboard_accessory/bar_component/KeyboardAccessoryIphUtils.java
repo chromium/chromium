@@ -244,6 +244,8 @@ class KeyboardAccessoryIphUtils {
                         .autofill_iph_external_account_profile_suggestion;
             case FeatureConstants.KEYBOARD_ACCESSORY_VIRTUAL_CARD_CVC_FILL_FEATURE:
                 return R.string.iph_keyboard_accessory_virtual_card_cvc_fill_feature;
+            case FeatureConstants.KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION:
+                return R.string.plus_address_create_suggestion_iph_android;
         }
         assert false : "Unknown help text for feature: " + feature;
         return 0;

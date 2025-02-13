@@ -300,7 +300,7 @@ class FocusModeDetailedView::TimerTextfieldController
         // `RestoreText()`, uses `SetText()`, which does not invoke
         // `ContentsChanged()`. Call `ContentsChanged()` directly, so the text
         // change gets handled by controller overrides.
-        ContentsChanged(sender, sender->GetText());
+        ContentsChanged(sender, std::u16string(sender->GetText()));
         textfield_->SetActive(false);
       }
 

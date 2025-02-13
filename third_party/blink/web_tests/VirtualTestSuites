@@ -1059,6 +1059,16 @@
     "owners": ["shuuran@chromium.org", "dylancutler@google.com"]
   },
   {
+    "prefix": "sandbox-allow-same-site-none-cookies-3PC-blocked",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/cookies/samesite/sandbox-allow-same-site-none-cookies-value.tentative.https.html"
+    ],
+    "args": ["--enable-features=AllowSameSiteNoneCookiesInSandbox,ForceThirdPartyCookieBlockingEnabled"],
+    "expires": "Dec 1, 2025",
+    "owners": ["anushamuley@chromium.org", "dylancutler@google.com"]
+  },
+  {
     "prefix": "third-party-storage-partitioning",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
@@ -1460,11 +1470,12 @@
       "qingxinwu@google.com"
     ],
     "bases": [
+      "external/wpt/fledge/tentative/private-aggregation.https.window.js",
       "external/wpt/fledge/tentative/server-response-private-aggregation.https.window.js"
     ],
     "args": [
       "--private-aggregation-developer-mode",
-      "--enable-features=EnableBandAPrivateAggregation,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fweb-platform.test%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}"
+      "--enable-features=EnableBandAPrivateAggregation,AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform.test%3A8444,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fweb-platform.test%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}"
     ],
     "expires": "Jul 14, 2025"
   },
@@ -3288,6 +3299,21 @@
              "--disable-features=CustomizableSelect"],
     "expires": "Aug 1, 2025",
     "owners": ["jarhar@chromium.org", "dom-dev@google.com"]
+  },
+  "This verifies that the origin trial opt-out for select-parser-relaxation",
+  "works, even when other flags are explicitly enabled. Note that there are a",
+  "number of other flags that have `depends_on` SelectParserRelaxation. All",
+  "should be manually enabled in this virtual suite.",
+  {
+    "prefix": "select-parser-relaxation-opt-out",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/html/semantics/forms/the-select-element",
+      "external/wpt/html/syntax/parsing"
+    ],
+    "args": ["--enable-features=SelectParserRelaxationOptOut,SelectParserRelaxation,CustomizableSelect,SelectListBoxSlotAnything,InputClosesSelect"],
+    "expires": "Jun 1, 2025",
+    "owners": ["masonf@chromium.org", "dom-dev@google.com"]
   },
   {
     "prefix": "customizable-select-disabled",

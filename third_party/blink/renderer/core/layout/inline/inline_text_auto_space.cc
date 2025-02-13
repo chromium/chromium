@@ -128,7 +128,8 @@ void InlineTextAutoSpace::Initialize(const InlineItemsData& data) {
   // packed in `InlineItemSegments` to save memory.
   const String& text = data.text_content;
   if (!data.segments) {
-    for (const InlineItem& item : items) {
+    for (const Member<InlineItem>& item_ptr : items) {
+      const InlineItem& item = *item_ptr;
       if (item.Type() != InlineItem::kText) {
         // Only `kText` has the data, see `InlineItem::SetSegmentData`.
         continue;
@@ -170,7 +171,8 @@ void InlineTextAutoSpace::Apply(InlineItemsData& data,
   // whether to add spacing into the bound of two items.
   TextDirection last_direction = TextDirection::kLtr;
   SpacingApplier applier;
-  for (const InlineItem& item : data.items) {
+  for (const Member<InlineItem>& item_ptr : data.items) {
+    const InlineItem& item = *item_ptr;
     if (item.Type() != InlineItem::kText) {
       if (item.Length()) {
         // If `item` has a length, e.g., inline-block, set the `last_type`.

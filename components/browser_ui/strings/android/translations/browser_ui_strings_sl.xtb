@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Znižanje cene na odprtih zavihkih}one{Znižanja cen na odprtih zavihkih}two{Znižanja cen na odprtih zavihkih}few{Znižanja cen na odprtih zavihkih}other{Znižanja cen na odprtih zavihkih}}</translation>
 <translation id="5186036860380548585">Možnosti so na voljo blizu vrha zaslona</translation>
 <translation id="5197729504361054390">Izbrani stiki bodo v skupni rabi s spletnim mestom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5198930230016462977">Razdelek na dnu zaslona za prilagajanje strani »Nov zavihek« je zaprt</translation>
 <translation id="5216942107514965959">Nazadnje obiskano danes</translation>
 <translation id="5225463052809312700">Vklopi kamero</translation>
 <translation id="5234764350956374838">Opusti</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Sledenje potezam dlani</translation>
 <translation id="5771720122942595109">Blokirano: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Dovoljenja</translation>
+<translation id="5822675474983796325">Razdelek na dnu zaslona za prilagajanje strani »Nov zavihek« je odprt pri polni višini</translation>
 <translation id="5844448279347999754">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo ogled besedila in slik, shranjenih v odložišču. Če je ta možnost izklopljena, si spletna mesta ne smejo ogledati besedila ali slik, shranjenih v odložišču.</translation>
 <translation id="5853982612236235577">Če je ta možnost vklopljena, spletna mesta lahko vprašajo, ali želite, da vam pošiljajo obvestila. Če je ta možnost izklopljena, spletna mesta ne smejo pošiljati obvestil.</translation>
 <translation id="5860033963881614850">Izklopljeno</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Razširjeno</translation>
 <translation id="7219254577985949841">Želite izbrisati podatke spletnega mesta?</translation>
 <translation id="723171743924126238">Izberite slike</translation>
+<translation id="7243246278722455312">Prilagajanje razdelka na dnu zaslona strani »Nov zavihek«</translation>
 <translation id="7243308994586599757">Možnosti so na voljo pri dnu zaslona</translation>
 <translation id="7250468141469952378">Št. izbranih: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Dovoljeno: <ph name="PERMISSION_1" /> in <ph name="PERMISSION_2" /></translation>

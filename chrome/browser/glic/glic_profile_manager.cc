@@ -4,6 +4,9 @@
 
 #include "chrome/browser/glic/glic_profile_manager.h"
 
+#include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
@@ -11,7 +14,10 @@
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 
 namespace {
 Profile* g_forced_profile_for_launch_ = nullptr;
@@ -20,12 +26,47 @@ base::MemoryPressureMonitor::MemoryPressureLevel*
 }  // namespace
 
 namespace glic {
+namespace {
+
+void AutoOpenGlicPanel(bool attached) {
+  Profile* profile = GlicProfileManager::GetInstance()->GetProfileForLaunch();
+  if (!profile) {
+    return;
+  }
+
+  // TODO(379166075): Remove after updating GetProfileForLaunch.
+  if (!GlicEnabling::IsEnabledForProfile(profile)) {
+    return;
+  }
+
+  Browser* browser = nullptr;
+  InvocationSource pretend_source = InvocationSource::kOsButton;
+  if (attached) {
+    // Attachment is best effort; FindLastActiveWithProfile() may return null
+    // here.
+    browser = chrome::FindLastActiveWithProfile(profile);
+    pretend_source = InvocationSource::kTopChromeButton;
+  }
+  GlicKeyedServiceFactory::GetGlicKeyedService(profile)->ToggleUI(
+      browser, /*prevent_close=*/true, pretend_source);
+}
+
+}  // namespace
 
 GlicProfileManager* GlicProfileManager::GetInstance() {
   return g_browser_process->GetFeatures()->glic_profile_manager();
 }
 
-GlicProfileManager::GlicProfileManager() = default;
+GlicProfileManager::GlicProfileManager() {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(::switches::kGlicOpenOnStartup)) {
+    std::string mode =
+        command_line->GetSwitchValueASCII(::switches::kGlicOpenOnStartup);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AutoOpenGlicPanel, /*attached=*/mode == "attached"));
+  }
+}
 
 GlicProfileManager::~GlicProfileManager() = default;
 

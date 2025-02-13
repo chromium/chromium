@@ -1847,7 +1847,7 @@ TEST_F(ChromeDownloadManagerDelegateTest,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ChromeDownloadManagerDelegateTest, ScheduleCancelForEphemeralWarning) {
   std::unique_ptr<download::MockDownloadItem> download_item =
       CreateActiveDownloadItem(0);
@@ -1876,7 +1876,7 @@ TEST_F(ChromeDownloadManagerDelegateTest,
   EXPECT_CALL(*download_item, Cancel(false)).Times(0);
   task_environment()->FastForwardBy(base::Hours(1));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ChromeDownloadManagerDelegateTest, CancelAllEphemeralWarnings) {
   std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> items;
@@ -1897,7 +1897,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, CancelAllEphemeralWarnings) {
   EXPECT_CALL(*download_manager(), GetAllDownloads(_))
       .WillRepeatedly(SetArgPointee<0>(items));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // No cancels should go through for Ash.
   EXPECT_CALL(*safe_item, Cancel(false)).Times(0);
   EXPECT_CALL(*dangerous_item, Cancel(false)).Times(0);
@@ -2324,7 +2324,7 @@ TEST_P(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
 }
 
 // Auto cancel is only available on platforms with download bubble.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
        AutoCanceledReport_Sent) {
   safe_browsing::SetSafeBrowsingState(
@@ -2365,7 +2365,7 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
   EXPECT_FALSE(
       safe_browsing_service()->GetActualSentDidProceedValue().has_value());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
        CanceledReportAtShutdown_Persisted) {

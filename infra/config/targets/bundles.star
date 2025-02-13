@@ -3756,6 +3756,7 @@ targets.bundle(
     name = "gpu_dawn_webgpu_compat_cts",
     targets = [
         "webgpu_cts_compat_tests",
+        "webgpu_cts_compat_min_es31_tests",
     ],
     per_test_modifications = {
         # Worker versions of compat tests intentionally omitted since it is
@@ -3764,6 +3765,27 @@ targets.bundle(
             targets.mixin(
                 args = [
                     "--extra-browser-args=--enable-features=WebGPUExperimentalFeatures --use-webgpu-adapter=opengles",
+                ],
+                android_args = [
+                    "--extra-browser-args=--use-angle=gles --disable-features=Vulkan",
+                ],
+                linux_args = [
+                    "--extra-browser-args=--use-angle=gl",
+                ],
+                swarming = targets.swarming(
+                    shards = 14,
+                ),
+                android_swarming = targets.swarming(
+                    shards = 36,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+            "webgpu_telemetry_cts",
+        ],
+        "webgpu_cts_compat_min_es31_tests": [
+            targets.mixin(
+                args = [
+                    "--extra-browser-args=--enable-features=WebGPUExperimentalFeatures --use-webgpu-adapter=opengles --enable-dawn-features=gl_force_es_31_and_no_extensions",
                 ],
                 android_args = [
                     "--extra-browser-args=--use-angle=gles --disable-features=Vulkan",

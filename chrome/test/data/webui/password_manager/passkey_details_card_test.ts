@@ -40,7 +40,7 @@ suite('PasskeyDetailsCardTest', function() {
     await flushTasks();
   });
 
-  test('Content displayed properly', async function() {
+  test('Content displayed properly', function() {
     assertEquals(passkey.username, card.$.usernameValue.value);
     assertEquals(passkey.displayName, card.$.displayNameValue.value);
     assertEquals(

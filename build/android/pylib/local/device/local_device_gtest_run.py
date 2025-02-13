@@ -550,7 +550,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
 
         def deploy_openxr_runtime(dev):
           apk_path = dev.GetApplicationPaths(
-              self._test_instance.apk_helper.GetPackageName())
+              'org.chromium.device.vr.openxr_test_support')
           apk_dir = os.path.dirname(apk_path[0])
 
           abi = device.product_cpu_abi

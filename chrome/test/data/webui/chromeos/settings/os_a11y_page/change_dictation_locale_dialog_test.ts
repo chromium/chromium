@@ -63,7 +63,7 @@ suite('<os-settings-change-dictation-locale-dialog>', () => {
     assertEquals('en-US', pref.value);
   });
 
-  test('Shows recommended and all options', async () => {
+  test('Shows recommended and all options', () => {
     const recommendedList = dialog.$.recommendedLocalesList;
     assertTrue(!!recommendedList);
     // Two possible recommended items.
@@ -79,7 +79,7 @@ suite('<os-settings-change-dictation-locale-dialog>', () => {
     assertEquals(null, allList.selectedItem);
   });
 
-  test('Selects recommended option and saves', async () => {
+  test('Selects recommended option and saves', () => {
     const recommendedList = dialog.$.recommendedLocalesList;
     const allList = dialog.$.allLocalesList;
     assertTrue(!!recommendedList);
@@ -103,7 +103,7 @@ suite('<os-settings-change-dictation-locale-dialog>', () => {
     assertEquals('en-GB', pref.value);
   });
 
-  test('Selects from all options', async () => {
+  test('Selects from all options', () => {
     const recommendedList = dialog.$.recommendedLocalesList;
     const allList = dialog.$.allLocalesList;
     assertTrue(!!recommendedList);

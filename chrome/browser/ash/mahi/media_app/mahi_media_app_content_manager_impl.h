@@ -46,7 +46,7 @@ class MahiMediaAppContentManagerImpl
                   chromeos::GetMediaAppContentCallback callback) override;
   void OnMahiContextMenuClicked(int64_t display_id,
                                 chromeos::mahi::ButtonType button_type,
-                                const std::u16string& question,
+                                std::u16string_view question,
                                 const gfx::Rect& mahi_menu_bounds) override;
   void AddClient(base::UnguessableToken client_id,
                  MahiMediaAppClient* client) override;

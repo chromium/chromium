@@ -757,6 +757,7 @@ absl_cc_library(
     absl::core_headers
     absl::dynamic_annotations
     absl::endian
+    absl::function_ref
     absl::hash
     absl::hash_function_defaults
     absl::hash_policy_traits
@@ -1028,5 +1029,6 @@ absl_cc_test(
     absl::flat_hash_set
     absl::node_hash_map
     absl::node_hash_set
+    absl::hashtablez_sampler
     GTest::gmock_main
 )

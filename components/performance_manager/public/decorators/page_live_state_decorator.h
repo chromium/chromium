@@ -53,8 +53,12 @@ class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
   static void OnIsCapturingDisplayChanged(content::WebContents* contents,
                                           bool is_capturing_display);
 
-  // Set the auto discardable property. This indicates whether or not the page
-  // can be discarded during an intervention.
+  // Set the auto discardable property. This defaults to true, and can be set
+  // to false by the chrome.tabs.autoDiscardable extension API to prevent a
+  // tab from being discarded during an intervention. The tab can still be
+  // discarded manually by extensions. Technically this is a property of the
+  // tab, not the WebContents, so if discarding changes the WebContents for the
+  // tab the value is copied to the new WebContents.
   static void SetIsAutoDiscardable(content::WebContents* contents,
                                    bool is_auto_discardable);
 
@@ -70,6 +74,24 @@ class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
   static void SetIsDevToolsOpen(content::WebContents* contents,
                                 bool is_dev_tools_open);
 
+  // Convenience functions to look up the given properties from the
+  // PageLiveStateDecorator::Data for the given `contents`.
+  static bool IsConnectedToUSBDevice(content::WebContents* contents);
+  static bool IsConnectedToBluetoothDevice(content::WebContents* contents);
+  static bool IsConnectedToHidDevice(content::WebContents* contents);
+  static bool IsConnectedToSerialPort(content::WebContents* contents);
+  static bool IsCapturingVideo(content::WebContents* contents);
+  static bool IsCapturingAudio(content::WebContents* contents);
+  static bool IsBeingMirrored(content::WebContents* contents);
+  static bool IsCapturingWindow(content::WebContents* contents);
+  static bool IsCapturingDisplay(content::WebContents* contents);
+  static bool IsAutoDiscardable(content::WebContents* contents);
+  static bool WasDiscarded(content::WebContents* contents);
+  static bool IsActiveTab(content::WebContents* contents);
+  static bool IsPinnedTab(content::WebContents* contents);
+  static bool IsDevToolsOpen(content::WebContents* contents);
+  static bool UpdatedTitleOrFaviconInBackground(content::WebContents* contents);
+
  private:
   friend class PageLiveStateDecoratorTest;
 
@@ -83,6 +105,8 @@ class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
   // PageNodeObserver implementation:
   void OnTitleUpdated(const PageNode* page_node) override;
   void OnFaviconUpdated(const PageNode* page_node) override;
+  void OnAboutToBeDiscarded(const PageNode* page_node,
+                            const PageNode* new_page_node) override;
 
   base::WeakPtrFactory<PageLiveStateDecorator> weak_factory_{this};
 };

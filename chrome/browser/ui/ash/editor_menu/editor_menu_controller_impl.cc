@@ -58,13 +58,6 @@ ui::TextInputClient* GetCurrentTextInputClient() {
   return input_method != nullptr ? input_method->GetTextInputClient() : nullptr;
 }
 
-gfx::Rect CalculateCaretBounds() {
-  ui::TextInputClient* text_input_client = GetCurrentTextInputClient();
-
-  return text_input_client != nullptr ? text_input_client->GetCaretBounds()
-                                      : gfx::Rect();
-}
-
 std::unique_ptr<LobsterManager> CreateLobsterManager() {
   ash::LobsterController* lobster_controller =
       ash::Shell::Get()->lobster_controller();
@@ -73,14 +66,9 @@ std::unique_ptr<LobsterManager> CreateLobsterManager() {
     return nullptr;
   }
 
-  ui::TextInputClient* current_text_input_client = GetCurrentTextInputClient();
-
   std::unique_ptr<ash::LobsterController::Trigger> lobster_trigger =
-      lobster_controller->CreateTrigger(
-          ash::LobsterEntryPoint::kRightClickMenu,
-          /*can_support_image_insertion=*/current_text_input_client != nullptr &&
-              current_text_input_client->CanInsertImage(),
-          CalculateCaretBounds());
+      lobster_controller->CreateTrigger(ash::LobsterEntryPoint::kRightClickMenu,
+                                        GetCurrentTextInputClient());
 
   if (!lobster_trigger) {
     return nullptr;

@@ -115,6 +115,7 @@ ToastView::ToastView(
       image_override_(image_override),
       render_toast_over_web_contents_(render_toast_over_web_contents),
       toast_close_callback_(std::move(toast_close_callback)) {
+  set_background_color(ui::kColorToastBackgroundProminent);
   SetPaintClientToLayer(true);
   SetShowCloseButton(false);
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
@@ -422,7 +423,6 @@ gfx::Rect ToastView::GetBubbleBounds() {
 void ToastView::OnThemeChanged() {
   BubbleDialogDelegateView::OnThemeChanged();
   const auto* color_provider = GetColorProvider();
-  set_color(color_provider->GetColor(ui::kColorToastBackgroundProminent));
   if (image_override_ != nullptr && IsCompatibleImageSize(image_override_)) {
     icon_view_->SetImage(*image_override_);
   } else {

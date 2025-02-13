@@ -577,11 +577,19 @@ void FlexLayoutAlgorithm::SetReadingFlowNodes(
       reading_flow != EReadingFlow::kFlexFlow) {
     return;
   }
-  HeapVector<Member<blink::Node>> reading_flow_nodes;
-  // Add flex item if it is a DOM node
+  bool should_sort_by_reading_order = false;
+  Vector<const BlockNode*, 16> reordered_flex_nodes;
+  reordered_flex_nodes.ReserveInitialCapacity(flex_items_.size());
   auto AddItemIfNeeded = [&](const wtf_size_t item_index) {
-    if (blink::Node* node = flex_items_[item_index].block_node.GetDOMNode()) {
-      reading_flow_nodes.push_back(node);
+    const BlockNode& block_node = flex_items_[item_index].block_node;
+    // Add flex item if it is a DOM node.
+    if (block_node.GetDOMNode()) {
+      reordered_flex_nodes.emplace_back(&block_node);
+      // We optimize to only sort by reading-order if at least one flex item's
+      // reading-order value is not the default (0).
+      if (block_node.Style().ReadingOrder() != 0) {
+        should_sort_by_reading_order = true;
+      }
     }
   };
   // Given CSS reading-flow, flex-flow, flex-direction; read values
@@ -605,6 +613,22 @@ void FlexLayoutAlgorithm::SetReadingFlowNodes(
     for (const auto& line : flex_lines) {
       AddFlexItems(line);
     }
+  }
+
+  // A flex reading flow container's items should be further sorted by the
+  // reading-order property (default to 0).
+  if (should_sort_by_reading_order) {
+    auto CompareFlexItemsForReadingOrder = [](const auto& lhs,
+                                              const auto& rhs) {
+      return lhs->Style().ReadingOrder() < rhs->Style().ReadingOrder();
+    };
+    std::stable_sort(reordered_flex_nodes.begin(), reordered_flex_nodes.end(),
+                     CompareFlexItemsForReadingOrder);
+  }
+  HeapVector<Member<blink::Node>> reading_flow_nodes;
+  reading_flow_nodes.ReserveInitialCapacity(reordered_flex_nodes.size());
+  for (const BlockNode* flex_block_node : reordered_flex_nodes) {
+    reading_flow_nodes.push_back(flex_block_node->GetDOMNode());
   }
   container_builder_.SetReadingFlowNodes(std::move(reading_flow_nodes));
 }

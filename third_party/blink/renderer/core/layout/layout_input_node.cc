@@ -66,7 +66,8 @@ void AppendNodeToString(const LayoutInputNode& node,
   } else if (auto* inline_node = DynamicTo<InlineNode>(node)) {
     const auto& items = inline_node->ItemsData(false).items;
     indent += 2;
-    for (const InlineItem& inline_item : items) {
+    for (const Member<InlineItem>& inline_item_ptr : items) {
+      const InlineItem& inline_item = *inline_item_ptr;
       BlockNode child_node(nullptr);
       if (auto* box = DynamicTo<LayoutBox>(inline_item.GetLayoutObject())) {
         child_node = BlockNode(box);

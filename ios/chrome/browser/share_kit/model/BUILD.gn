@@ -20,6 +20,8 @@ source_set("model") {
     "share_kit_lookup_gaia_id_configuration.mm",
     "share_kit_manage_configuration.h",
     "share_kit_manage_configuration.mm",
+    "share_kit_preview_item.h",
+    "share_kit_preview_item.mm",
     "share_kit_read_configuration.h",
     "share_kit_read_configuration.mm",
     "share_kit_service.h",

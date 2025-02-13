@@ -31,7 +31,7 @@ suite('<settings-multidevice-combined-setup-item>', () => {
     combinedSetupItem.remove();
   });
 
-  test('Setup button is disabled when PhoneHub is disabled.', async () => {
+  test('Setup button is disabled when PhoneHub is disabled.', () => {
     let button = combinedSetupItem.shadowRoot!.querySelector<CrButtonElement>(
         'cr-button[slot=feature-controller]');
     assert(button);
@@ -50,7 +50,7 @@ suite('<settings-multidevice-combined-setup-item>', () => {
 
   test(
       'Correct strings are shown for camera roll, notifications and apps.',
-      async () => {
+      () => {
         combinedSetupItem.setProperties({
           cameraRoll: true,
           notifications: true,
@@ -69,8 +69,7 @@ suite('<settings-multidevice-combined-setup-item>', () => {
       });
 
   test(
-      'Correct strings are shown for camera roll and notifications.',
-      async () => {
+      'Correct strings are shown for camera roll and notifications.', () => {
         combinedSetupItem.setProperties({
           cameraRoll: true,
           notifications: true,
@@ -87,7 +86,7 @@ suite('<settings-multidevice-combined-setup-item>', () => {
             combinedSetupItem.get('setupSummary_'));
       });
 
-  test('Correct strings are shown for camera roll and apps.', async () => {
+  test('Correct strings are shown for camera roll and apps.', () => {
     combinedSetupItem.setProperties({
       cameraRoll: true,
       appStreaming: true,
@@ -103,7 +102,7 @@ suite('<settings-multidevice-combined-setup-item>', () => {
         combinedSetupItem.get('setupSummary_'));
   });
 
-  test('Correct strings are shown for notifications and apps.', async () => {
+  test('Correct strings are shown for notifications and apps.', () => {
     combinedSetupItem.setProperties({
       notifications: true,
       appStreaming: true,

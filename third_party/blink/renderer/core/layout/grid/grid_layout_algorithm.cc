@@ -3432,9 +3432,19 @@ void GridLayoutAlgorithm::PlaceGridItems(
       Style().HasColumnRule()) {
     GapFragmentData::GapGeometry* gap_geometry =
         MakeGarbageCollected<GapFragmentData::GapGeometry>();
-    BuildGapGeometry(kForColumns, layout_data, gap_geometry);
-    BuildGapGeometry(kForRows, layout_data, gap_geometry);
-    container_builder_.SetGapGeometry(gap_geometry);
+    HeapVector<LayoutUnit> inline_intersection_points;
+    BuildGapGeometry(kForColumns, layout_data, inline_intersection_points,
+                     gap_geometry);
+
+    HeapVector<LayoutUnit> block_intersection_points;
+    BuildGapGeometry(kForRows, layout_data, block_intersection_points,
+                     gap_geometry);
+
+    PopulateGapIntersectionPoints(block_intersection_points,
+                                  gap_geometry->GetGapBoundaries(kForColumns));
+    PopulateGapIntersectionPoints(inline_intersection_points,
+                                  gap_geometry->GetGapBoundaries(kForRows));
+    container_builder_.SetGapGeometry(std::move(gap_geometry));
   }
 
   // Propagate the baselines.
@@ -3921,17 +3931,31 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 void GridLayoutAlgorithm::BuildGapGeometry(
     GridTrackSizingDirection track_direction,
     const GridLayoutData& layout_data,
+    HeapVector<LayoutUnit>& intersection_points,
     GapFragmentData::GapGeometry* gap_geometry) const {
   const auto tracks =
       LayoutGrid::ComputeExpandedPositions(&layout_data, track_direction);
   const auto& gutter_size = track_direction == kForColumns
                                 ? layout_data.Columns().GutterSize()
                                 : layout_data.Rows().GutterSize();
+
+  intersection_points.push_back(tracks[0]);
   for (wtf_size_t i = 1; i < tracks.size() - 1; ++i) {
-    GapFragmentData::GapBoundary gap_boundary(
-        /*index=*/i, /*start_offset=*/tracks[i] - gutter_size,
-        /*end_offset=*/tracks[i]);
+    const auto start_offset = tracks[i] - gutter_size;
+    const auto end_offset = tracks[i];
+    GapFragmentData::GapBoundary gap_boundary(/*index=*/i, start_offset,
+                                              end_offset);
+    intersection_points.push_back((start_offset + end_offset) / 2.0f);
     gap_geometry->AddGapBoundary(track_direction, gap_boundary);
+  }
+  intersection_points.push_back(tracks[tracks.size() - 1]);
+}
+
+void GridLayoutAlgorithm::PopulateGapIntersectionPoints(
+    const HeapVector<LayoutUnit>& intersection_points,
+    GapFragmentData::GapBoundaries& gap_boundaries) const {
+  for (auto& gap : gap_boundaries) {
+    gap.intersection_points = intersection_points;
   }
 }
 
@@ -4032,13 +4056,20 @@ void GridLayoutAlgorithm::SetReadingFlowNodes(
     }
   };
 
+  Vector<const GridItemData*, 16> reordered_grid_items;
+  reordered_grid_items.ReserveInitialCapacity(grid_items.Size());
+  bool should_sort_by_reading_order = false;
+  for (const auto& grid_item : grid_items) {
+    reordered_grid_items.emplace_back(&grid_item);
+    // We optimize to only sort by reading-order if at least one item's value is
+    // not the default (0).
+    if (grid_item.node.Style().ReadingOrder() != 0) {
+      should_sort_by_reading_order = true;
+    }
+  }
+
   if (reading_flow == EReadingFlow::kGridRows ||
       reading_flow == EReadingFlow::kGridColumns) {
-    Vector<const GridItemData*, 16> reordered_grid_items;
-    reordered_grid_items.ReserveInitialCapacity(grid_items.Size());
-    for (const auto& grid_item : grid_items) {
-      reordered_grid_items.emplace_back(&grid_item);
-    }
     // We reorder grid items by their row/column indices.
     // If reading-flow is grid-rows, we should sort by row, then column.
     // If reading-flow is grid-columns, we should sort by column, then
@@ -4062,13 +4093,20 @@ void GridLayoutAlgorithm::SetReadingFlowNodes(
         };
     std::stable_sort(reordered_grid_items.begin(), reordered_grid_items.end(),
                      CompareGridItemsForReadingFlow);
-    for (const auto& grid_item : reordered_grid_items) {
-      AddItemIfNeeded(*grid_item);
-    }
-  } else {
-    for (const auto& grid_item : grid_items) {
-      AddItemIfNeeded(grid_item);
-    }
+  }
+  // After reading-flow ordering, items should still be sorted by reading-order.
+  if (should_sort_by_reading_order) {
+    auto CompareGridItemsForReadingOrder = [](const auto& lhs,
+                                              const auto& rhs) {
+      return lhs->node.Style().ReadingOrder() <
+             rhs->node.Style().ReadingOrder();
+    };
+    std::stable_sort(reordered_grid_items.begin(), reordered_grid_items.end(),
+                     CompareGridItemsForReadingOrder);
+  }
+
+  for (const auto& grid_item : reordered_grid_items) {
+    AddItemIfNeeded(*grid_item);
   }
   container_builder_.SetReadingFlowNodes(std::move(reading_flow_nodes));
 }

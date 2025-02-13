@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/protocol/audits.h"
 #include "third_party/blink/renderer/core/inspector/protocol/network.h"
@@ -825,7 +826,7 @@ void AuditsIssue::ReportSelectElementAccessibilityIssue(
     DOMNodeId node_id,
     SelectElementAccessibilityIssueReason issue_reason,
     bool has_disallowed_attributes) {
-  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
+  CHECK(HTMLSelectElement::CustomizableSelectEnabled(document));
   CHECK(RuntimeEnabledFeatures::
             CustomizableSelectElementAccessibilityIssuesEnabled());
 

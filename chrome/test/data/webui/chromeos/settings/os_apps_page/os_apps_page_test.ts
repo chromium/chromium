@@ -324,7 +324,7 @@ suite('AppsPageTests', () => {
       await flushTasks();
     }
 
-    test('App notification row displays helpful description', async () => {
+    test('App notification row displays helpful description', () => {
       const rowLink = queryAppNotificationsRow();
       assertTrue(!!rowLink);
       assertTrue(isVisible(rowLink));

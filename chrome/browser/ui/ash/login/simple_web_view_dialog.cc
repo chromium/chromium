@@ -12,7 +12,6 @@
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/ash/login/captive_portal_window_proxy.h"
@@ -25,6 +24,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/password_manager/core/browser/password_manager.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_controller.h"
@@ -46,6 +46,10 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
+#endif
 
 namespace ash {
 namespace {
@@ -155,8 +159,10 @@ void SimpleWebViewDialog::StartLoad(const GURL& url) {
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
   ChromePasswordManagerClient::CreateForWebContents(web_contents);
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // Create the password reuse detection manager for simple web view dialog.
   ChromePasswordReuseDetectionManagerClient::CreateForWebContents(web_contents);
+#endif
 
   // Set this as the web modal delegate so that web dialog can appear.
   web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);

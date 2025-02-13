@@ -717,6 +717,9 @@
   <message name="IDS_COMPARE_UNDO_TABLE_DELETION" desc="Label for the undo button displayed after deleting one or more comparison tables.">
     Undo
   </message>
+  <message name="IDS_COMPARE_DESCRIPTION_NOT_AVAILABLE" desc="The tooltip displayed when a description or value is not available for an attribute for a product.">
+    Not available
+  </message>
   <!-- For Compare Disclosure -->
   <message name="IDS_COMPARE_DISCLOSURE_TITLE" desc="The text for the title of the Compare first-run experience disclosure bubble.">
     Compare similar products side-by-side

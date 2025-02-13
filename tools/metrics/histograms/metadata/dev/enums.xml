@@ -1721,19 +1721,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="12" label="Sources - Snippets"/>
 </enum>
 
-<enum name="DevToolsStyleTextCopied">
-  <int value="1" label="Declaration from changed line"/>
-  <int value="2" label="All changes from Styles pane"/>
-  <int value="3" label="Declaration from context menu"/>
-  <int value="4" label="Property from context menu"/>
-  <int value="5" label="Value from context menu"/>
-  <int value="6" label="Declaration as JS from context menu"/>
-  <int value="7" label="Rule from context menu"/>
-  <int value="8" label="All declarations from context menu"/>
-  <int value="9" label="All declarations as JS from context menu"/>
-  <int value="10" label="Selector from context menu"/>
-</enum>
-
 <enum name="DevToolsSwatchActivated">
   <int value="0" label="Variable link"/>
   <int value="1" label="Animation name link"/>

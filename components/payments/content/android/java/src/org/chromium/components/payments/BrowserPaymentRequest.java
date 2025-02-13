@@ -235,9 +235,7 @@ public interface BrowserPaymentRequest {
     byte[][] getCertificateChain();
 
     /**
-     * @return The string resource ID of the error string to be shown if activity is paused before
-     *     intent results from the Android payment app, or null if no message is required.
+     * @return The launcher for Android intent-based payment app.
      */
-    @Nullable
-    Integer getPayIntentErrorStringId();
+    AndroidIntentLauncher getAndroidIntentLauncher();
 }

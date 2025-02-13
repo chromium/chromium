@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{開啟的分頁中有商品降價}other{開啟的分頁中有商品降價}}</translation>
 <translation id="5186036860380548585">選項位於畫面頂端</translation>
 <translation id="5197729504361054390">系統會將你選取的聯絡人資訊提供給 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />。</translation>
+<translation id="5198930230016462977">自訂新分頁底部功能表已關閉</translation>
 <translation id="5216942107514965959">上次造訪日期：今天</translation>
 <translation id="5225463052809312700">開啟攝影機</translation>
 <translation id="5234764350956374838">關閉</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">手勢追蹤</translation>
 <translation id="5771720122942595109">已封鎖「<ph name="PERMISSION_1" />」</translation>
 <translation id="5804241973901381774">權限</translation>
+<translation id="5822675474983796325">自訂新分頁底部功能表已開啟，並顯示在整個畫面</translation>
 <translation id="5844448279347999754">如果啟用，網站就可以要求查看已儲存到剪貼簿的文字和圖片。如果停用，網站將無法查看已儲存到剪貼簿的文字或圖片。</translation>
 <translation id="5853982612236235577">如果啟用，網站就可以要求傳送通知。如果停用，網站將無法傳送通知。</translation>
 <translation id="5860033963881614850">關閉</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">已展開</translation>
 <translation id="7219254577985949841">要刪除網站資料嗎？</translation>
 <translation id="723171743924126238">選取圖片</translation>
+<translation id="7243246278722455312">自訂新分頁底部功能表</translation>
 <translation id="7243308994586599757">選項在接近畫面底部的位置</translation>
 <translation id="7250468141469952378">已選取 <ph name="ITEM_COUNT" /> 個項目</translation>
 <translation id="7260727271532453612">已允許「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」</translation>

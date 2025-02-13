@@ -532,6 +532,15 @@ TEST_F(StoreMetricsReporterTest, ReportAccountsPerSiteHiResMetricsTest) {
       "WithoutCustomPassphrase",
       2, 2);
 
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.ProfileStore.AccountsPerSiteHiRes3."
+      "Overall",
+      1, 7);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.ProfileStore.AccountsPerSiteHiRes3."
+      "Overall",
+      2, 2);
+
   // In this test both profile and account store contained the same 10 test
   // credentials.
   EXPECT_EQ(
@@ -947,6 +956,15 @@ TEST_F(StoreMetricsReporterTest,
       "PasswordManager.AccountStore.AccountsPerSiteHiRes3."
       "Overall."
       "WithoutCustomPassphrase",
+      2, 2);
+
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.AccountStore.AccountsPerSiteHiRes3."
+      "Overall",
+      1, 7);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.AccountStore.AccountsPerSiteHiRes3."
+      "Overall",
       2, 2);
 
   // In this test both profile and account store contained the same 11 test

@@ -311,6 +311,8 @@ bool ShouldContextResponsePopulateHintCache(
       return false;
     case proto::RequestContext::CONTEXT_SHOPPING:
       return false;
+    case proto::RequestContext::CONTEXT_SHOP_CARD:
+      return false;
   }
   NOTREACHED();
 }

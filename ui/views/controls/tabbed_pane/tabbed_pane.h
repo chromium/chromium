@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/callback_list.h"
@@ -184,8 +185,8 @@ class VIEWS_EXPORT TabbedPaneTab : public View {
   bool selected() const { return selected_; }
   void SetSelected(bool selected);
 
-  const std::u16string& GetTitleText() const;
-  void SetTitleText(const std::u16string& text);
+  std::u16string_view GetTitleText() const;
+  void SetTitleText(std::u16string_view text);
 
   void SetTitleMargin(const gfx::Insets& margin);
   void SetIconMargin(const gfx::Insets& margin);

@@ -241,6 +241,11 @@ HashtablezInfoHandle ForcedTrySample(size_t inline_element_size,
                                      size_t key_size, size_t value_size,
                                      uint16_t soo_capacity);
 
+// In case sampling needs to be disabled and re-enabled in tests, this function
+// can be used to reset the sampling state for the current thread.
+// It is useful to avoid sampling attempts and sampling delays in tests.
+void TestOnlyRefreshSamplingStateForCurrentThread();
+
 // Returns a sampling handle.
 inline HashtablezInfoHandle Sample(size_t inline_element_size, size_t key_size,
                                    size_t value_size, uint16_t soo_capacity) {

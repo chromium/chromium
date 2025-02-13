@@ -15,9 +15,18 @@ namespace blink {
 // FakeBlob instance with the correct uuid.
 class FakeBlobRegistry : public mojom::blink::BlobRegistry {
  public:
-  FakeBlobRegistry();
+  explicit FakeBlobRegistry(bool support_binary_blob_bodies = false);
   ~FakeBlobRegistry() override;
 
+  struct Registration {
+    String uuid;
+    String content_type;
+    String content_disposition;
+    Vector<mojom::blink::DataElementPtr> elements;
+  };
+  Vector<Registration> registrations;
+
+ private:
   void Register(mojo::PendingReceiver<mojom::blink::Blob>,
                 const String& uuid,
                 const String& content_type,
@@ -32,19 +41,6 @@ class FakeBlobRegistry : public mojom::blink::BlobRegistry {
       mojo::ScopedDataPipeConsumerHandle,
       mojo::PendingAssociatedRemote<mojom::blink::ProgressClient>,
       RegisterFromStreamCallback) override;
-
-  struct Registration {
-    String uuid;
-    String content_type;
-    String content_disposition;
-    Vector<mojom::blink::DataElementPtr> elements;
-  };
-  Vector<Registration> registrations;
-
-  struct OwnedReceiver {
-    String uuid;
-  };
-  Vector<OwnedReceiver> owned_receivers;
 
   class DataPipeDrainerClient;
   std::unique_ptr<DataPipeDrainerClient> drainer_client_;

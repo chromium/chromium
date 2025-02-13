@@ -5,6 +5,7 @@
 #include "ash/game_dashboard/game_dashboard_context_test_api.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/game_dashboard/game_dashboard_battery_view.h"
@@ -120,7 +121,7 @@ FeatureTile* GameDashboardContextTestApi::GetMainMenuScreenshotTile() {
       GetMainMenuViewById(VIEW_ID_GD_SCREENSHOT_TILE));
 }
 
-const std::u16string&
+std::u16string_view
 GameDashboardContextTestApi::GetMainMenuScreenSizeSubtitle() {
   auto* main_menu_view = GetMainMenuView();
   CHECK(main_menu_view);

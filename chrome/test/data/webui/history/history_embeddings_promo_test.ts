@@ -37,7 +37,7 @@ suite('HistoryEmbeddingsPromoTest', function() {
     assertFalse(isVisible(newPromo.$.promo));
   });
 
-  test('DismissesAnswererPromo', async () => {
+  test('DismissesAnswererPromo', () => {
     loadTimeData.overrideValues({enableHistoryEmbeddingsAnswers: true});
     assertFalse(Boolean(window.localStorage.getItem(
         HISTORY_EMBEDDINGS_ANSWERS_PROMO_SHOWN_KEY)));

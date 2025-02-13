@@ -30,14 +30,14 @@ suite('BottomNavContentTest', function() {
     contentElement = null;
   });
 
-  test('KeyboardSettingsLink', async () => {
+  test('KeyboardSettingsLink', () => {
     contentElement = initBottomNavContentElement();
     const linkElement = strictQuery(
         'a#keyboardSettingsLink', contentElement.shadowRoot, HTMLAnchorElement);
     assertTrue(!!linkElement);
   });
 
-  test('RestoreAllButtonNotHidden', async () => {
+  test('RestoreAllButtonNotHidden', () => {
     loadTimeData.overrideValues({isCustomizationAllowed: true});
     contentElement = initBottomNavContentElement();
     contentElement.restoreAllButtonHidden = false;
@@ -47,7 +47,7 @@ suite('BottomNavContentTest', function() {
     assertFalse(!!restoreAllButton?.hidden);
   });
 
-  test('RestoreAllButtonHidden', async () => {
+  test('RestoreAllButtonHidden', () => {
     loadTimeData.overrideValues({isCustomizationAllowed: true});
     contentElement = initBottomNavContentElement();
     contentElement.restoreAllButtonHidden = true;
@@ -57,7 +57,7 @@ suite('BottomNavContentTest', function() {
     assertTrue(!!restoreAllButton?.hidden);
   });
 
-  test('RestoreAllButtonShownWhenCustomizationDisabled', async () => {
+  test('RestoreAllButtonShownWhenCustomizationDisabled', () => {
     // Even if customization is disabled, if the property
     // `restoreAllButtonHidden` is false, the button will be shown. It's up to
     // the parent element to check if customization is enabled.

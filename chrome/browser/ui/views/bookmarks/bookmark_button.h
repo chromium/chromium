@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_BUTTON_H_
 
+#include <string_view>
+
 #include "base/timer/timer.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "content/public/browser/prerender_handle.h"
@@ -22,7 +24,7 @@ class BookmarkButtonBase : public views::LabelButton {
   METADATA_HEADER(BookmarkButtonBase, views::LabelButton)
 
  public:
-  BookmarkButtonBase(PressedCallback callback, const std::u16string& title);
+  BookmarkButtonBase(PressedCallback callback, std::u16string_view title);
   BookmarkButtonBase(const BookmarkButtonBase&) = delete;
   BookmarkButtonBase& operator=(const BookmarkButtonBase&) = delete;
   ~BookmarkButtonBase() override;
@@ -46,7 +48,7 @@ class BookmarkButton : public BookmarkButtonBase, public views::WidgetObserver {
  public:
   BookmarkButton(PressedCallback callback,
                  const GURL& url,
-                 const std::u16string& title,
+                 std::u16string_view title,
                  const raw_ptr<Browser> browser);
   BookmarkButton(const BookmarkButton&) = delete;
   BookmarkButton& operator=(const BookmarkButton&) = delete;
@@ -62,7 +64,7 @@ class BookmarkButton : public BookmarkButtonBase, public views::WidgetObserver {
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void AdjustAccessibleName(std::u16string& new_name,
                             ax::mojom::NameFrom& name_from) override;
-  void SetText(const std::u16string& text) override;
+  void SetText(std::u16string_view text) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;

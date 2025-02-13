@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/cancelable_callback.h"
@@ -1020,7 +1021,7 @@ void SidePanelCoordinator::SetNoDelaysForTesting(bool no_delays_for_testing) {
 
 void SidePanelCoordinator::UpdatePanelIconAndTitle(
     const ui::ImageModel& icon,
-    const std::u16string& text,
+    std::u16string_view text,
     const bool should_show_title_text,
     const bool is_extension) {
   if (is_extension) {
@@ -1033,7 +1034,7 @@ void SidePanelCoordinator::UpdatePanelIconAndTitle(
     panel_icon_->SetImage(updated_icon);
   }
   panel_icon_->SetVisible(is_extension);
-  panel_title_->SetText(should_show_title_text ? text : std::u16string());
+  panel_title_->SetText(should_show_title_text ? text : std::u16string_view());
 }
 
 void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,

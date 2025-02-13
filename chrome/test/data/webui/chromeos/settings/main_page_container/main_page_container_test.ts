@@ -56,7 +56,7 @@ suite('<main-page-container>', () => {
   }
 
   suite('Page availability', () => {
-    suiteSetup(async () => {
+    suiteSetup(() => {
       Router.getInstance().navigateTo(routes.BASIC);
       mainPageContainer = init();
     });

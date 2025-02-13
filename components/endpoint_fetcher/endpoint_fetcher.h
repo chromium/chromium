@@ -56,6 +56,24 @@ enum class FetchErrorType {
   kResultParseError = 2,
 };
 
+enum class HttpMethod {
+  kUndefined = -1,
+  kGet = 0,
+  kPost = 1,
+  kDelete = 2,
+};
+
+enum AuthType {
+  // Unique identifier to access various server side APIs Chrome uses.
+  CHROME_API_KEY,
+
+  // Authorization protocol to access an API based on account permissions.
+  OAUTH,
+
+  // No authentization used.
+  NO_AUTH
+};
+
 struct EndpointResponse {
   std::string response;
   int http_status_code{-1};
@@ -87,10 +105,44 @@ class EndpointFetcher {
   // centralized struct as adding additional parameters to the EndpointFetcher
   // constructor does/will not scale. New parameters will be added here and
   // existing parameters will be migrated (crbug.com/357567879).
-  struct RequestParams {
-    RequestParams();
+  class RequestParams {
+   public:
+    RequestParams(const HttpMethod& method,
+                  const net::NetworkTrafficAnnotationTag& annotation_tag);
     RequestParams(const EndpointFetcher::RequestParams& other);
     ~RequestParams();
+
+    struct Header {
+      std::string key;
+      std::string value;
+
+      Header(const std::string& key, const std::string& value) {
+        this->key = key;
+        this->value = value;
+      }
+    };
+
+    const AuthType& auth_type() const { return auth_type_; }
+
+    const GURL& url() const { return url_; }
+
+    const HttpMethod& http_method() const { return http_method_; }
+
+    const base::TimeDelta& timeout() const { return timeout_; }
+
+    const std::optional<std::string>& post_data() const { return post_data_; }
+
+    const std::vector<Header>& headers() const { return headers_; }
+
+    const std::vector<Header>& cors_exempt_headers() const {
+      return cors_exempt_headers_;
+    }
+
+    const net::NetworkTrafficAnnotationTag annotation_tag() const {
+      return annotation_tag_;
+    }
+
+    const std::string& content_type() const { return content_type_; }
 
     std::optional<CredentialsMode> credentials_mode;
     std::optional<int> max_retries;
@@ -99,7 +151,10 @@ class EndpointFetcher {
 
     class Builder final {
      public:
-      Builder();
+      Builder(const HttpMethod& method,
+              const net::NetworkTrafficAnnotationTag& annotation_tag);
+
+      explicit Builder(const EndpointFetcher::RequestParams& other);
 
       Builder(const Builder&) = delete;
       Builder& operator=(const Builder&) = delete;
@@ -107,6 +162,16 @@ class EndpointFetcher {
       ~Builder();
 
       RequestParams Build();
+
+      Builder& SetUrl(const GURL& url) {
+        request_params_->url_ = url;
+        return *this;
+      }
+
+      Builder& SetTimeout(const base::TimeDelta& timeout) {
+        request_params_->timeout_ = timeout;
+        return *this;
+      }
 
       Builder& SetCredentialsMode(const CredentialsMode& mode) {
         request_params_->credentials_mode = mode;
@@ -129,9 +194,75 @@ class EndpointFetcher {
         return *this;
       }
 
+      Builder& SetPostData(const std::string& post_data) {
+        request_params_->post_data_ = post_data;
+        return *this;
+      }
+
+      Builder& SetHeaders(const std::vector<Header>& headers) {
+        request_params_->headers_ = std::move(headers);
+        return *this;
+      }
+
+      // Only use for legacy setting of Headers. Please use
+      // SetCorsExemptHeaders(const std::vector<Header... for any new usage of
+      // the EndpointFetcher.
+      Builder& SetHeaders(const std::vector<std::string>& headers) {
+        // The key and value alternate in this vector, so there is an
+        // expectation the vector is of even length.
+        DCHECK_EQ(headers.size() % 2, 0UL);
+        for (size_t i = 0; i + 1 < headers.size(); i += 2) {
+          request_params_->headers_.emplace_back(headers[i], headers[i + 1]);
+        }
+        return *this;
+      }
+
+      Builder& SetCorsExemptHeaders(
+          const std::vector<Header>& cors_exempt_headers) {
+        request_params_->cors_exempt_headers_ = std::move(cors_exempt_headers);
+        return *this;
+      }
+
+      // Only use for legacy setting of Cors Exempt Headers. Please use
+      // SetCorsExemptHeaders(const std::vector<Header... for any new usage of
+      // the EndpointFetcher.
+      Builder& SetCorsExemptHeaders(
+          const std::vector<std::string>& cors_exempt_headers) {
+        // The key and value alternate in this vector, so there is an
+        // expectation the vector is of even length.
+        DCHECK_EQ(cors_exempt_headers.size() % 2, 0UL);
+        for (size_t i = 0; i + 1 < cors_exempt_headers.size(); i += 2) {
+          request_params_->headers_.emplace_back(cors_exempt_headers[i],
+                                                 cors_exempt_headers[i + 1]);
+        }
+        return *this;
+      }
+
+      Builder& SetAuthType(const AuthType auth_type) {
+        request_params_->auth_type_ = auth_type;
+        return *this;
+      }
+
+      Builder& SetContentType(const std::string& content_type) {
+        request_params_->content_type_ = content_type;
+        return *this;
+      }
+
      private:
       std::unique_ptr<RequestParams> request_params_;
     };
+
+   private:
+    friend class EndpointFetcher::RequestParams::Builder;
+    GURL url_;
+    HttpMethod http_method_{HttpMethod::kUndefined};
+    base::TimeDelta timeout_;
+    AuthType auth_type_;
+    std::string content_type_;
+    std::optional<std::string> post_data_;
+    std::vector<Header> headers_;
+    std::vector<Header> cors_exempt_headers_;
+    net::NetworkTrafficAnnotationTag annotation_tag_;
   };
 
   // Preferred constructor - forms identity_manager and url_loader_factory.
@@ -159,15 +290,13 @@ class EndpointFetcher {
   EndpointFetcher(
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
       const GURL& url,
-      const std::string& http_method,
       const std::string& content_type,
       const base::TimeDelta& timeout,
       const std::string& post_data,
       const std::vector<std::string>& headers,
       const std::vector<std::string>& cors_exempt_headers,
-      const net::NetworkTrafficAnnotationTag& annotation_tag,
       version_info::Channel channel,
-      const std::optional<RequestParams> request_params = std::nullopt);
+      const RequestParams request_params);
 
   // Constructor if no authentication is needed.
   EndpointFetcher(
@@ -232,25 +361,14 @@ class EndpointFetcher {
                             EndpointFetcherCallback endpoint_fetcher_callback,
                             data_decoder::JsonSanitizer::Result result);
 
-  network::mojom::CredentialsMode GetCredentialsMode();
-  int GetMaxRetries();
-  bool GetSetSiteForCookies();
-  UploadProgressCallback GetUploadProgressCallback();
-
-  enum AuthType { CHROME_API_KEY, OAUTH, NO_AUTH };
-  AuthType auth_type_;
+  network::mojom::CredentialsMode GetCredentialsMode() const;
+  int GetMaxRetries() const;
+  bool GetSetSiteForCookies() const;
+  UploadProgressCallback GetUploadProgressCallback() const;
 
   // Members set in constructor to be passed to network::ResourceRequest or
   // network::SimpleURLLoader.
   const std::string oauth_consumer_name_;
-  const GURL url_;
-  const std::string http_method_;
-  const std::string content_type_;
-  base::TimeDelta timeout_;
-  const std::string post_data_;
-  const std::vector<std::string> headers_;
-  const std::vector<std::string> cors_exempt_headers_;
-  const net::NetworkTrafficAnnotationTag annotation_tag_;
   signin::ScopeSet oauth_scopes_;
 
   // Members set in constructor
@@ -263,7 +381,7 @@ class EndpointFetcher {
   const std::optional<signin::ConsentLevel> consent_level_;
   bool sanitize_response_;
   version_info::Channel channel_;
-  const std::optional<RequestParams> request_params_;
+  const RequestParams request_params_;
 
   // Members set in Fetch
   std::unique_ptr<const signin::PrimaryAccountAccessTokenFetcher>

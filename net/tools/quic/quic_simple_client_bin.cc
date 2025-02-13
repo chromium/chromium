@@ -68,7 +68,7 @@ class QuicSimpleClientFactory : public quic::QuicToyClient::ClientFactory {
       std::unique_ptr<quic::ProofVerifier> verifier,
       std::unique_ptr<quic::SessionCache> /*session_cache*/) override {
     // Determine IP address to connect to from supplied hostname.
-    quic::QuicIpAddress ip_addr;
+    quiche::QuicheIpAddress ip_addr;
     if (!ip_addr.FromString(host_for_lookup)) {
       net::AddressList addresses;
       // TODO(crbug.com/40216365) Let the caller pass in the scheme
@@ -98,7 +98,7 @@ class QuicSimpleClientFactory : public quic::QuicToyClient::ClientFactory {
       }
       // Arbitrarily select the first result with a matching address family,
       // ignoring any subsequent matches.
-      ip_addr = net::ToQuicIpAddress(endpoint->address());
+      ip_addr = net::ToQuicheIpAddress(endpoint->address());
       port = endpoint->port();
     }
 

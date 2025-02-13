@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/message_center_types.h"
@@ -175,7 +176,7 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   virtual void ClickOnNotificationButtonWithReply(
       const std::string& id,
       int button_index,
-      const std::u16string& reply) = 0;
+      std::u16string_view reply) = 0;
 
   // Called by the UI classes when the settings buttons is clicked
   // to trigger the notification's delegate and update the message

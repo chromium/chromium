@@ -158,7 +158,7 @@ export class CategoriesElement extends CategoriesElementBase {
   }
 
   private onCollectionsRendered_() {
-    const collections = this.shadowRoot!.querySelectorAll('.collection');
+    const collections = this.shadowRoot.querySelectorAll('.collection');
     if (collections.length >= 5) {
       this.registerHelpBubble(
           CHROME_THEME_COLLECTION_ELEMENT_ID, collections[4]!);

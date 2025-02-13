@@ -10,10 +10,10 @@
 #include "base/logging.h"
 #include "remoting/base/corp_auth_util.h"
 #include "remoting/base/corp_logging_service_client.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/internal_headers.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter_proxy.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/credentials_type.h"
@@ -114,7 +114,7 @@ void CorpHostStatusLogger::OnSessionStateChange(
             : local_session_policies_provider_->get_local_policies();
   };
   service_client_->ReportSessionDisconnected(
-      request, base::BindOnce([](const ProtobufHttpStatus& status) {
+      request, base::BindOnce([](const HttpStatus& status) {
         if (status.ok()) {
           HOST_LOG << "Disconnect event logged.";
         } else {

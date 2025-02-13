@@ -4,6 +4,8 @@
 
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 
+#include <string_view>
+
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,7 +40,7 @@ PasteClipboardItemByIdImpl& GetPasteClipboardItemByIdImpl() {
 
 }  // namespace
 
-bool IsUrl(const std::u16string& text) {
+bool IsUrl(std::u16string_view text) {
   return GURL(text).is_valid();
 }
 

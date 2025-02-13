@@ -61,7 +61,8 @@ class EnterpriseSearchAggregatorSuggestionsService : public KeyedService {
       const GURL& suggest_url,
       CreationCallback creation_callback,
       StartCallback start_callback,
-      CompletionCallback completion_callback);
+      CompletionCallback completion_callback,
+      bool in_keyword_mode);
 
  private:
   // Called when an access token request completes (successfully or not).

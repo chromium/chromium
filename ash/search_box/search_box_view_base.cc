@@ -222,10 +222,9 @@ class SearchBoxTextfield : public views::Textfield {
       const views::SizeBounds& available_size) const override {
     // Overridden so the BoxLayoutView 'text_container_' can properly layout
     // the search box and ghost text.
-    const std::u16string& text = GetText();
     int width = 0;
     int height = 0;
-    gfx::Canvas::SizeStringInt(text, GetFontList(), &width, &height, 0,
+    gfx::Canvas::SizeStringInt(GetText(), GetFontList(), &width, &height, 0,
                                gfx::Canvas::NO_ELLIPSIS);
     gfx::Size size{width + GetCaretBounds().width(), height};
     const auto insets = GetInsets();

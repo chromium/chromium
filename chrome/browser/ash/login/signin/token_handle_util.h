@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/public/cpp/token_handle_store.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -24,14 +25,14 @@ namespace ash {
 // Handle is an extra token associated with OAuth refresh token that have
 // exactly same lifetime. It is not secure, and it's only purpose is checking
 // validity of corresponding refresh token in the insecure environment.
-class TokenHandleUtil {
+class TokenHandleUtil : public TokenHandleStore {
  public:
   TokenHandleUtil();
 
   TokenHandleUtil(const TokenHandleUtil&) = delete;
   TokenHandleUtil& operator=(const TokenHandleUtil&) = delete;
 
-  ~TokenHandleUtil();
+  ~TokenHandleUtil() override;
 
   // Status of the token handle.
   enum class Status {
@@ -52,31 +53,21 @@ class TokenHandleUtil {
                               const std::string& token,
                               bool reauth_required)>;
 
-  // Returns true if UserManager has token handle associated with `account_id`.
-  static bool HasToken(const AccountId& account_id);
-
-  // Returns true if the token status for `account_id` was checked recently
-  // (within kCacheStatusTime).
-  static bool IsRecentlyChecked(const AccountId& account_id);
-
-  // Indicates if token handle for `account_id` is missing or marked as invalid.
-  static bool ShouldObtainHandle(const AccountId& account_id);
-
-  // Performs token handle check for `account_id`. Will call `callback` with
-  // corresponding result. See `TokenValidationCallback` for details.
+  // TokenHandleStore:
+  bool HasToken(const AccountId& account_id) const override;
+  bool IsRecentlyChecked(const AccountId& account_id) const override;
+  bool ShouldObtainHandle(const AccountId& account_id) const override;
   void IsReauthRequired(
       const AccountId& account_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      TokenValidationCallback callback);
+      TokenValidationCallback callback) override;
+  void StoreTokenHandle(const AccountId& account_id,
+                        const std::string& handle) override;
 
-  // Given the token `handle` store it for `account_id`.
-  static void StoreTokenHandle(const AccountId& account_id,
-                               const std::string& handle);
+  void SetInvalidTokenForTesting(const char* token) override;
 
-  static void SetInvalidTokenForTesting(const char* token);
-
-  static void SetLastCheckedPrefForTesting(const AccountId& account_id,
-                                           base::Time time);
+  void SetLastCheckedPrefForTesting(const AccountId& account_id,
+                                    base::Time time) override;
 
  private:
   // Associates GaiaOAuthClient::Delegate with User ID and Token.

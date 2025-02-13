@@ -196,6 +196,12 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   config.features_disabled.push_back(
       segmentation_platform::features::kSegmentationPlatformTipsEphemeralCard);
 
+  if ([self isRunningTest:@selector(testLargeFakeboxFocus)]) {
+    config.features_enabled.push_back(kDeprecateFeedHeader);
+    config.additional_args.push_back("--top-padding=32");
+    config.additional_args.push_back("--enlarge-logo-n-fakebox=true");
+  }
+
   if ([self isRunningTest:@selector(DISABLED_testCollectionShortcuts)]) {
     // This ensures that the test will not fail when What's New is updated.
     config.additional_args.push_back(base::StringPrintf(
@@ -1385,6 +1391,20 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // Background and foreground the app, then check that the focused omnibox
   // still contains the text.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxContainingText(
+                            base::SysNSStringToUTF8(omniboxText))];
+}
+
+// Test that the Large Fakebox can be focused and text can be entered.
+- (void)testLargeFakeboxFocus {
+  // Focus the omnibox and type some text into it.
+  [self focusFakebox];
+  NSString* omniboxText = @"Some text";
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_replaceText(omniboxText)];
+
+  // Check that the omnibox contains the inputted text.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxContainingText(
                             base::SysNSStringToUTF8(omniboxText))];

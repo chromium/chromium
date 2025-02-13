@@ -32,7 +32,6 @@
 
 #include <algorithm>
 
-#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
@@ -60,6 +59,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -160,44 +160,51 @@ void SpeechRecognition::updateContext(SpeechRecognitionContext* context,
   session_->UpdateRecognitionContext(std::move(recognition_context));
 }
 
-ScriptPromise<IDLBoolean> SpeechRecognition::onDeviceWebSpeechAvailable(
+// Returns a promise that resolves to a boolean indicating whether on-device
+// speech recognition is available for a given BCP-47 language code.
+ScriptPromise<IDLBoolean> SpeechRecognition::availableOnDevice(
     ScriptState* script_state,
     const String& lang,
     ExceptionState& exception_state) {
-  if (!controller_ || !GetExecutionContext()) {
+  LocalDOMWindow& window = *LocalDOMWindow::From(script_state);
+  auto* controller = SpeechRecognitionController::From(window);
+
+  if (!controller) {
     return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
       script_state, exception_state.GetContext());
   auto result = resolver->Promise();
-
-  controller_->OnDeviceWebSpeechAvailable(
-      lang, WTF::BindOnce([](SpeechRecognition*,
-                             ScriptPromiseResolver<IDLBoolean>* resolver,
+  controller->OnDeviceWebSpeechAvailable(
+      lang, WTF::BindOnce([](ScriptPromiseResolver<IDLBoolean>* resolver,
                              bool available) { resolver->Resolve(available); },
-                          WrapPersistent(this), WrapPersistent(resolver)));
+                          WrapPersistent(resolver)));
 
   return result;
 }
 
-ScriptPromise<IDLBoolean> SpeechRecognition::installOnDeviceSpeechRecognition(
+// Returns a promise that resolves to a boolean indicating whether the
+// installation of an on-device speech recognition language pack for a given
+// BCP-47 language code was initiated successfully.
+ScriptPromise<IDLBoolean> SpeechRecognition::installOnDevice(
     ScriptState* script_state,
     const String& lang,
     ExceptionState& exception_state) {
-  if (!controller_ || !GetExecutionContext()) {
+  LocalDOMWindow& window = *LocalDOMWindow::From(script_state);
+  auto* controller = SpeechRecognitionController::From(window);
+
+  if (!controller) {
     return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
       script_state, exception_state.GetContext());
   auto result = resolver->Promise();
-
-  controller_->InstallOnDeviceSpeechRecognition(
-      lang, WTF::BindOnce([](SpeechRecognition*,
-                             ScriptPromiseResolver<IDLBoolean>* resolver,
+  controller->InstallOnDeviceSpeechRecognition(
+      lang, WTF::BindOnce([](ScriptPromiseResolver<IDLBoolean>* resolver,
                              bool success) { resolver->Resolve(success); },
-                          WrapPersistent(this), WrapPersistent(resolver)));
+                          WrapPersistent(resolver)));
 
   return result;
 }
@@ -336,23 +343,21 @@ void SpeechRecognition::StartInternal(ExceptionState* exception_state) {
   }
   final_results_.clear();
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kMediaStreamTrackWebSpeech) &&
+  auto task_runner =
+      GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
+  if (RuntimeEnabledFeatures::MediaStreamTrackWebSpeechEnabled() &&
       stream_track_) {
     SpeechRecognitionMediaStreamAudioSink* sink =
         MakeGarbageCollected<SpeechRecognitionMediaStreamAudioSink>(
             GetExecutionContext(),
             WTF::BindOnce(&SpeechRecognition::StartController,
                           WrapPersistent(this),
-                          session_.BindNewPipeAndPassReceiver(
-                              GetExecutionContext()->GetTaskRunner(
-                                  TaskType::kMiscPlatformAPI))));
+                          session_.BindNewPipeAndPassReceiver(task_runner)));
     WebMediaStreamAudioSink::AddToAudioTrack(
         sink, WebMediaStreamTrack(stream_track_->Component()));
     stream_track_->RegisterSink(sink);
   } else {
-    StartController(session_.BindNewPipeAndPassReceiver(
-        GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+    StartController(session_.BindNewPipeAndPassReceiver(task_runner));
   }
 
   started_ = true;

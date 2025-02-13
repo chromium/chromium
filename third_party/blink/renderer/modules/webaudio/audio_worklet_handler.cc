@@ -262,7 +262,9 @@ void AudioWorkletHandler::FinishProcessorOnRenderThread() {
   // If the user-supplied code is not runnable (i.e. threw an exception)
   // anymore after the process() call above. Invoke error on the main thread.
   AudioWorkletProcessorErrorState error_state = processor_->GetErrorState();
-  if (error_state == AudioWorkletProcessorErrorState::kProcessError) {
+  if (error_state == AudioWorkletProcessorErrorState::kProcessError ||
+      error_state ==
+          AudioWorkletProcessorErrorState::kProcessMethodUndefinedError) {
     PostCrossThreadTask(
         *main_thread_task_runner_, FROM_HERE,
         CrossThreadBindOnce(&AudioWorkletHandler::NotifyProcessorError,

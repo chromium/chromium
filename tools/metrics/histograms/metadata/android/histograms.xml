@@ -5089,8 +5089,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true"
-    name="Android.TabContentManager.CaptureThumbnail.Duration" units="ms"
-    expires_after="2025-12-20">
+    name="Android.TabContentManager.CaptureThumbnail.{PageType}.Duration"
+    units="ms" expires_after="2025-12-20">
   <owner>acondor@chromium.org</owner>
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-performance-team@google.com</owner>
@@ -5098,6 +5098,10 @@ chromium-metrics-reviews@google.com.
     This histogram records the time taken to screenshot the contents of a tab to
     use as a thumbnail. Recorded once per capture.
   </summary>
+  <token key="PageType">
+    <variant name="NativePage" summary="Pages based on Android Views"/>
+    <variant name="WebContent" summary="Web content"/>
+  </token>
 </histogram>
 
 <histogram name="Android.TabGroupParity.TabGroupColorChangeActionType"

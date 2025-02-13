@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/observer_list.h"
@@ -277,7 +278,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   void SetDefaultButton(int button);
   void SetButtons(int buttons);
   void SetButtonLabel(ui::mojom::DialogButton dialog_button,
-                      std::u16string label);
+                      std::u16string_view label);
   void SetButtonStyle(ui::mojom::DialogButton button,
                       std::optional<ui::ButtonStyle> style);
   void SetButtonEnabled(ui::mojom::DialogButton dialog_button, bool enabled);

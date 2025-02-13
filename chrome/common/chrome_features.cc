@@ -36,6 +36,19 @@ BASE_FEATURE(kAppPreloadService,
 BASE_FEATURE(kAppSpecificNotifications,
              "AppSpecificNotifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, invokes `SetProcessPriorityBoost` to disable priority boosting
+// when a thread is taken out of the wait state. The default Windows behavior is
+// to boost when taking a thread out of waking state. On other platforms, the
+// default is not to boost and implementing boosting regresses input and page
+// load metrics. Therefore, we experiment on Windows to determine if operating
+// without boosting improves these metrics. This is a field-sampling experiment
+// and is not intended to be shipped as is regardless of the outcome but rather
+// to gather data before the design phase of enhanced cross-platform scheduling
+// primitives.
+BASE_FEATURE(kDisableBoostPriority,
+             "DisableBoostPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)

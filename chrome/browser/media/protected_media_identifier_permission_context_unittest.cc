@@ -12,11 +12,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/dbus/constants/dbus_switches.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
+#include "chromeos/dbus/constants/dbus_switches.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
@@ -32,9 +29,6 @@ class ProtectedMediaIdentifierPermissionContextTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     profile_testing_helper_.SetUp();
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    attestation_enabled_ = true;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
   bool IsOriginAllowed(const GURL& origin) {
@@ -45,13 +39,6 @@ class ProtectedMediaIdentifierPermissionContextTest : public testing::Test {
     return ProtectedMediaIdentifierPermissionContext::
         IsProtectedMediaIdentifierEnabled(profile);
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnAttestationEnabledChanged(base::Value value) {
-    return ProtectedMediaIdentifierPermissionContext::
-        OnAttestationEnabledChanged(value);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   GURL requesting_origin_;
   GURL requesting_sub_domain_origin_;
@@ -130,9 +117,7 @@ TEST_F(ProtectedMediaIdentifierPermissionContextTest,
   ASSERT_FALSE(IsProtectedMediaIdentifierEnabled(
       profile_testing_helper_.regular_profile()));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ProtectedMediaIdentifierPermissionContextTest,
        ProtectedMediaIdentifierEnabledOnDevModeWithAshSwitch) {
   command_line_->AppendSwitch(chromeos::switches::kSystemDevMode);
@@ -143,19 +128,4 @@ TEST_F(ProtectedMediaIdentifierPermissionContextTest,
   ASSERT_TRUE(IsProtectedMediaIdentifierEnabled(
       profile_testing_helper_.regular_profile()));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_F(ProtectedMediaIdentifierPermissionContextTest,
-       ProtectedMediaIdentifierEnterprisePolicyChanges) {
-  // As long as `kAllowRAInDevMode` is appended, then even if system is on dev
-  // mode, the protected media identifier should be enabled.
-  ASSERT_TRUE(IsProtectedMediaIdentifierEnabled(
-      profile_testing_helper_.regular_profile()));
-
-  OnAttestationEnabledChanged(base::Value(false));
-
-  ASSERT_FALSE(IsProtectedMediaIdentifierEnabled(
-      profile_testing_helper_.regular_profile()));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)

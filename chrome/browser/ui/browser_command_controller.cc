@@ -25,6 +25,7 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/feedback/public/feedback_source.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -685,6 +686,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
     case IDC_DECLUTTER_TABS:
       ShowTabDeclutter(browser_);
+      break;
+    case IDC_SEND_SHARED_TAB_GROUP_FEEDBACK:
+      OpenFeedbackDialog(browser_, feedback::kFeedbackSourceDesktopTabGroups);
       break;
     case IDC_SHOW_TRANSLATE:
       ShowTranslateBubble(browser_);

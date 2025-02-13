@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -56,8 +57,8 @@ class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) OSExchangeDataProvider {
   virtual void MarkAsFromPrivileged() = 0;
   virtual bool IsFromPrivileged() const = 0;
 
-  virtual void SetString(const std::u16string& data) = 0;
-  virtual void SetURL(const GURL& url, const std::u16string& title) = 0;
+  virtual void SetString(std::u16string_view data) = 0;
+  virtual void SetURL(const GURL& url, std::u16string_view title) = 0;
   virtual void SetFilename(const base::FilePath& path) = 0;
   virtual void SetFilenames(const std::vector<FileInfo>& file_names) = 0;
   virtual void SetPickledData(const ClipboardFormatType& format,

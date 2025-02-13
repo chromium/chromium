@@ -31,7 +31,7 @@ suite('<account-manager-settings-card>', () => {
     organization: 'Family Link',
   };
 
-  suiteSetup(async () => {
+  suiteSetup(() => {
     loadTimeData.overrideValues({isDeviceAccountManaged: true});
   });
 

@@ -101,10 +101,9 @@ fn supported_cfg_expr(e: &CfgExpr) -> bool {
 // If a Cfg option is always true/false in Chromium, or needs to be conditional
 // in the build file's rules.
 fn supported_cfg_value(cfg: &Cfg) -> ExprValidity {
-    if supported_os_cfgs().iter().any(|c| c == cfg) {
-        ExprValidity::Valid // OS is always conditional, as we support more than one.
-    } else if supported_arch_cfgs().iter().any(|c| c == cfg) {
-        ExprValidity::Valid // Arch is always conditional, as we support more than one.
+    if supported_os_cfgs().contains(cfg) || supported_arch_cfgs().contains(cfg) {
+        // OS and Arch are always conditional, as we support more than one.
+        ExprValidity::Valid
     } else {
         // Other configs may resolve to AlwaysTrue or AlwaysFalse. If it's
         // unknown, we treat it as AlwaysFalse since we don't know how to

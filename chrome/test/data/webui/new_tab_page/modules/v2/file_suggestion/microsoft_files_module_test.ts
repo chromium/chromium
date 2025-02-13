@@ -20,7 +20,7 @@ suite('MicrosoftFilesModule', () => {
   let handler: TestMock<MicrosoftFilesPageHandlerRemote>;
   const modulesMicrosoftFilesName = 'SharePoint and OneDrive files';
 
-  setup(async () => {
+  setup(() => {
     loadTimeData.overrideValues(
         {modulesMicrosoftFilesName: modulesMicrosoftFilesName});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

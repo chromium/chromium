@@ -130,7 +130,8 @@ class FakeBlobRegistry::DataPipeDrainerClient
   uint64_t length_ = 0;
 };
 
-FakeBlobRegistry::FakeBlobRegistry() = default;
+FakeBlobRegistry::FakeBlobRegistry(bool support_binary_blob_bodies)
+    : support_binary_blob_bodies_(support_binary_blob_bodies) {}
 FakeBlobRegistry::~FakeBlobRegistry() = default;
 
 void FakeBlobRegistry::Register(mojo::PendingReceiver<mojom::blink::Blob> blob,

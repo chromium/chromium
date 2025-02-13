@@ -59,16 +59,16 @@ class InlineNodeForTest : public InlineNode {
     InlineNodeData* data = MutableData();
     unsigned start = data->text_content.length();
     data->text_content = data->text_content + text;
-    data->items.push_back(InlineItem(InlineItem::kText, start,
-                                     start + text.length(), layout_object));
+    data->items.push_back(MakeGarbageCollected<InlineItem>(
+        InlineItem::kText, start, start + text.length(), layout_object));
   }
 
   void Append(UChar character) {
     InlineNodeData* data = MutableData();
     data->text_content = data->text_content + character;
     unsigned end = data->text_content.length();
-    data->items.push_back(
-        InlineItem(InlineItem::kBidiControl, end - 1, end, nullptr));
+    data->items.push_back(MakeGarbageCollected<InlineItem>(
+        InlineItem::kBidiControl, end - 1, end, nullptr));
     data->is_bidi_enabled_ = true;
   }
 
@@ -180,20 +180,20 @@ class InlineNodeTest : public RenderingTest {
 };
 
 #define TEST_ITEM_TYPE_OFFSET(item, type, start, end) \
-  EXPECT_EQ(InlineItem::type, item.Type());           \
-  EXPECT_EQ(start, item.StartOffset());               \
-  EXPECT_EQ(end, item.EndOffset())
+  EXPECT_EQ(InlineItem::type, (item)->Type());        \
+  EXPECT_EQ(start, (item)->StartOffset());            \
+  EXPECT_EQ(end, (item)->EndOffset())
 
 #define TEST_ITEM_TYPE_OFFSET_LEVEL(item, type, start, end, level) \
-  EXPECT_EQ(InlineItem::type, item.Type());                        \
-  EXPECT_EQ(start, item.StartOffset());                            \
-  EXPECT_EQ(end, item.EndOffset());                                \
-  EXPECT_EQ(level, item.BidiLevel())
+  EXPECT_EQ(InlineItem::type, (item)->Type());                     \
+  EXPECT_EQ(start, (item)->StartOffset());                         \
+  EXPECT_EQ(end, (item)->EndOffset());                             \
+  EXPECT_EQ(level, (item)->BidiLevel())
 
 #define TEST_ITEM_OFFSET_DIR(item, start, end, direction) \
-  EXPECT_EQ(start, item.StartOffset());                   \
-  EXPECT_EQ(end, item.EndOffset());                       \
-  EXPECT_EQ(direction, item.Direction())
+  EXPECT_EQ(start, (item)->StartOffset());                \
+  EXPECT_EQ(end, (item)->EndOffset());                    \
+  EXPECT_EQ(direction, (item)->Direction())
 
 TEST_F(InlineNodeTest, CollectInlinesText) {
   SetupHtml("t", "<div id=t>Hello <span>inline</span> world.</div>");
@@ -373,7 +373,7 @@ TEST_F(InlineNodeTest, CollectInlinesTextCombineListItemMarker) {
   InlineItems& items = node.Items();
   ASSERT_EQ(1u, items.size());
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 1u);
-  EXPECT_TRUE(items[0].IsSymbolMarker());
+  EXPECT_TRUE(items[0]->IsSymbolMarker());
 }
 
 TEST_F(InlineNodeTest, CollectInlinesTextCombineNewline) {
@@ -638,16 +638,16 @@ TEST_F(InlineNodeTest, AssociatedItemsWithControlItem) {
   auto* const layout_text =
       To<LayoutText>(GetElementById("t")->firstChild()->GetLayoutObject());
   ASSERT_TRUE(layout_text->HasValidInlineItems());
-  Vector<const InlineItem*> items;
-  for (const InlineItem& item : layout_text->InlineItems()) {
-    items.push_back(&item);
+  InlineItems items;
+  for (const Member<InlineItem>& item : layout_text->InlineItems()) {
+    items.push_back(item);
   }
   ASSERT_EQ(5u, items.size());
-  TEST_ITEM_TYPE_OFFSET((*items[0]), kText, 1u, 3u);
-  TEST_ITEM_TYPE_OFFSET((*items[1]), kBidiControl, 3u, 4u);
-  TEST_ITEM_TYPE_OFFSET((*items[2]), kControl, 4u, 5u);
-  TEST_ITEM_TYPE_OFFSET((*items[3]), kBidiControl, 5u, 6u);
-  TEST_ITEM_TYPE_OFFSET((*items[4]), kText, 6u, 8u);
+  TEST_ITEM_TYPE_OFFSET(items[0], kText, 1u, 3u);
+  TEST_ITEM_TYPE_OFFSET(items[1], kBidiControl, 3u, 4u);
+  TEST_ITEM_TYPE_OFFSET(items[2], kControl, 4u, 5u);
+  TEST_ITEM_TYPE_OFFSET(items[3], kBidiControl, 5u, 6u);
+  TEST_ITEM_TYPE_OFFSET(items[4], kText, 6u, 8u);
 }
 
 TEST_F(InlineNodeTest, NeedsCollectInlinesOnSetText) {
@@ -1533,7 +1533,7 @@ TEST_F(InlineNodeTest, ReuseFirstNonSafe) {
   // We shape "AV" together, which usually has kerning between "A" and "V", then
   // split the |ShapeResult| to two |InlineItem|s. The |InlineItem| for "V"
   // is not safe to reuse even if its style does not change.
-  const InlineItem& item_v = items[3];
+  const InlineItem& item_v = *items[3];
   EXPECT_EQ(item_v.Type(), InlineItem::kText);
   EXPECT_EQ(
       StringView(data->text_content, item_v.StartOffset(), item_v.Length()),
@@ -1558,7 +1558,7 @@ TEST_F(InlineNodeTest, ReuseFirstNonSafeRtl) {
   const InlineNodeData* data = block_flow->GetInlineNodeData();
   ASSERT_TRUE(data);
   const auto& items = data->items;
-  const InlineItem& item_v = items[4];
+  const InlineItem& item_v = *items[4];
   EXPECT_EQ(item_v.Type(), InlineItem::kText);
   EXPECT_EQ(
       StringView(data->text_content, item_v.StartOffset(), item_v.Length()),
@@ -1577,13 +1577,13 @@ TEST_F(InlineNodeTest, ShouldNotResueLigature) {
   const LayoutText& layout_text =
       *To<Text>(sample.firstChild())->GetLayoutObject();
   const ShapeResult& shape_result_before =
-      *layout_text.InlineItems().begin()->TextShapeResult();
+      *layout_text.InlineItems().front().TextShapeResult();
   ASSERT_EQ(3u, shape_result_before.NumGlyphs());
 
   const LayoutText& layout_text_i =
       *To<Text>(sample.lastChild()->firstChild())->GetLayoutObject();
   const ShapeResult& shape_result_i =
-      *layout_text_i.InlineItems().begin()->TextShapeResult();
+      *layout_text_i.InlineItems().front().TextShapeResult();
   ASSERT_EQ(0u, shape_result_i.NumGlyphs());
 
   // To <div id=sample>abf</div>
@@ -1591,7 +1591,7 @@ TEST_F(InlineNodeTest, ShouldNotResueLigature) {
   UpdateAllLifecyclePhasesForTest();
 
   const ShapeResult& shape_result_after =
-      *layout_text.InlineItems().begin()->TextShapeResult();
+      *layout_text.InlineItems().front().TextShapeResult();
   EXPECT_NE(&shape_result_before, &shape_result_after);
 }
 
@@ -1612,7 +1612,7 @@ TEST_F(InlineNodeTest, InitialLetter) {
   EXPECT_TRUE(initial_letter_box.GetPhysicalFragment(0)->IsInitialLetterBox());
 
   const InlineNodeData& data = *block_flow.GetInlineNodeData();
-  const InlineItem& initial_letter_item = data.items[0];
+  const InlineItem& initial_letter_item = *data.items[0];
   EXPECT_EQ(InlineItem::kInitialLetterBox, initial_letter_item.Type());
 }
 

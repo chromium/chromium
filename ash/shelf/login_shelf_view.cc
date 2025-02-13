@@ -582,7 +582,7 @@ void LoginShelfView::OnEnterpriseAccountDomainChanged() {}
 void LoginShelfView::HandleLocaleChange() {
   for (LoginShelfButton* button : login_shelf_buttons_) {
     button->SetText(l10n_util::GetStringUTF16(button->text_resource_id()));
-    button->GetViewAccessibility().SetName(button->GetText());
+    button->GetViewAccessibility().SetName(std::u16string(button->GetText()));
   }
 }
 

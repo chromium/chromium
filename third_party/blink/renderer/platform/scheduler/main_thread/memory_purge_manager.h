@@ -90,6 +90,9 @@ class PLATFORM_EXPORT MemoryPurgeManager {
   static constexpr base::TimeDelta kFreezePurgeDelay =
       base::TimeDelta(base::Seconds(1));
 
+  // Recorded a metric with whether or not all pages are currently frozen.
+  void RecordAreAllPagesFrozenMetric(std::string_view name);
+
  private:
   // Starts |purge_timer_| to trigger a delayed memory purge. If the timer is
   // already running, starts the timer with the smaller of the requested delay

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -246,12 +247,11 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
 
-  if (app_name_view_->GetText().empty()) {
+  if (const std::u16string name(app_name_view_->GetText()); name.empty()) {
     GetViewAccessibility().SetName(
-        app_name_view_->GetText(),
-        ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+        name, ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   } else {
-    GetViewAccessibility().SetName(app_name_view_->GetText());
+    GetViewAccessibility().SetName(name);
   }
 
   OnTextChanged();
@@ -436,7 +436,7 @@ void NotificationHeaderView::SetIsInGroupChildNotification(
   UpdateSummaryTextAndTimestampVisibility();
 }
 
-const std::u16string& NotificationHeaderView::app_name_for_testing() const {
+std::u16string_view NotificationHeaderView::app_name_for_testing() const {
   return app_name_view_->GetText();
 }
 
@@ -504,8 +504,8 @@ void NotificationHeaderView::UpdateExpandedCollapsedAccessibleState() const {
 }
 
 void NotificationHeaderView::OnTextChanged() {
-  GetViewAccessibility().SetDescription(summary_text_view_->GetText() + u" " +
-                                        timestamp_view_->GetText());
+  GetViewAccessibility().SetDescription(base::StrCat(
+      {summary_text_view_->GetText(), u" ", timestamp_view_->GetText()}));
 }
 
 BEGIN_METADATA(NotificationHeaderView)

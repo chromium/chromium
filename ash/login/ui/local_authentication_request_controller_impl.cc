@@ -310,7 +310,7 @@ void LocalAuthenticationWithPinControllerImpl::MoveToTheCenter() {
 }
 
 void LocalAuthenticationWithPinControllerImpl::OnPasswordSubmit(
-    const std::u16string& password) {
+    std::u16string_view password) {
   if (IsSucceedState()) {
     return;
   }
@@ -342,7 +342,7 @@ void LocalAuthenticationWithPinControllerImpl::OnPasswordSubmit(
 }
 
 void LocalAuthenticationWithPinControllerImpl::OnPinSubmit(
-    const std::u16string& pin) {
+    std::u16string_view pin) {
   if (IsSucceedState()) {
     return;
   }

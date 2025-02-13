@@ -6,6 +6,7 @@
 
 #include <climits>
 #include <memory>
+#include <string_view>
 
 #include "ash/calendar/calendar_client.h"
 #include "ash/calendar/calendar_controller.h"
@@ -215,18 +216,18 @@ class CalendarViewTest : public AshTestBase {
            next_label()->GetPreferredSize().height();
   }
 
-  std::u16string GetPreviousLabelText() {
+  std::u16string_view GetPreviousLabelText() {
     return static_cast<views::Label*>(previous_label()->children()[0])
         ->GetText();
   }
-  std::u16string GetCurrentLabelText() {
+  std::u16string_view GetCurrentLabelText() {
     return static_cast<views::Label*>(current_label()->children()[0])
         ->GetText();
   }
-  std::u16string GetNextLabelText() {
+  std::u16string_view GetNextLabelText() {
     return static_cast<views::Label*>(next_label()->children()[0])->GetText();
   }
-  std::u16string GetNextNextLabelText() {
+  std::u16string_view GetNextNextLabelText() {
     return static_cast<views::Label*>(next_next_label()->children()[0])
         ->GetText();
   }

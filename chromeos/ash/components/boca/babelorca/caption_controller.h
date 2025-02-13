@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/live_caption/caption_controller_base.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 
 class PrefService;
 
@@ -46,8 +47,8 @@ class CaptionController : public ::captions::CaptionControllerBase {
   // transcription result was routed successfully.
   bool DispatchTranscription(const media::SpeechRecognitionResult& result);
 
-  // Alerts the CaptionBubbleController that the audio stream has ended.
-  void OnAudioStreamEnd();
+  void OnLanguageIdentificationEvent(
+      const media::mojom::LanguageIdentificationEventPtr& event);
 
   void StartLiveCaption();
 

@@ -142,7 +142,7 @@ suite('TextSelection', function() {
         .getHighlightedNodesForTesting();
   }
 
-  test('verify that text renders on the page', async () => {
+  test('verify that text renders on the page', () => {
     const wordsOnPage = getRenderedWords();
 
     assertEquals(9, wordsOnPage.length);

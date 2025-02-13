@@ -9,6 +9,7 @@
 #include <cstring>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "media/base/vector_math.h"
 
 namespace {
@@ -24,7 +25,9 @@ struct FMACTraits {
                               float volume,
                               int frames,
                               float* dest) {
-    ::media::vector_math::FMAC(src, volume, frames, dest);
+    const size_t size = static_cast<size_t>(frames);
+    ::media::vector_math::FMAC(base::span(src, size), volume,
+                               base::span(dest, size));
   }
 
   static void ProcessSingleDatum(const float* src, float volume, float* dest) {
@@ -43,7 +46,9 @@ struct FMULTraits {
                               float volume,
                               int frames,
                               float* dest) {
-    ::media::vector_math::FMUL(src, volume, frames, dest);
+    const size_t size = static_cast<size_t>(frames);
+    ::media::vector_math::FMUL(base::span(src, size), volume,
+                               base::span(dest, size));
   }
 
   static void ProcessSingleDatum(const float* src, float volume, float* dest) {

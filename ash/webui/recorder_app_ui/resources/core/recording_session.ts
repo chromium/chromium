@@ -158,8 +158,10 @@ export class RecordingSession {
         const power = Math.sqrt(
           samples.map((v) => v * v).reduce((x, y) => x + y, 0) / samples.length,
         );
+        // Takes another `sqrt` to apply non-linear distortion, making small
+        // gain easier to be seen.
         const scaledPower = clamp(
-          Math.floor(power * POWER_SCALE_FACTOR),
+          Math.floor(Math.sqrt(power) * POWER_SCALE_FACTOR),
           0,
           POWER_SCALE_FACTOR - 1,
         );

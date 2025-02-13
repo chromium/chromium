@@ -853,8 +853,9 @@ bool ChromeAutofillClient::IsAutocompleteEnabled() const {
 bool ChromeAutofillClient::IsPasswordManagerEnabled() const {
   password_manager::PasswordManagerSettingsService* settings_service =
       PasswordManagerSettingsServiceFactory::GetForProfile(GetProfile());
-  return settings_service->IsSettingEnabled(
-      password_manager::PasswordManagerSetting::kOfferToSavePasswords);
+  return settings_service &&
+         settings_service->IsSettingEnabled(
+             password_manager::PasswordManagerSetting::kOfferToSavePasswords);
 }
 
 void ChromeAutofillClient::DidFillForm(AutofillTriggerSource trigger_source,

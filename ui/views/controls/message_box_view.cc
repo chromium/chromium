@@ -8,11 +8,13 @@
 
 #include <memory>
 #include <numeric>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -172,9 +174,9 @@ views::Textfield* MessageBoxView::GetVisiblePromptField() {
                                                       : nullptr;
 }
 
-std::u16string MessageBoxView::GetInputText() {
+std::u16string_view MessageBoxView::GetInputText() {
   return prompt_field_ && prompt_field_->GetVisible() ? prompt_field_->GetText()
-                                                      : std::u16string();
+                                                      : std::u16string_view();
 }
 
 bool MessageBoxView::HasVisibleCheckBox() const {
@@ -290,7 +292,7 @@ bool MessageBoxView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   scw.WriteText(std::accumulate(message_labels_.cbegin(),
                                 message_labels_.cend(), std::u16string(),
                                 [](const std::u16string& left, Label* right) {
-                                  return left + right->GetText();
+                                  return base::StrCat({left, right->GetText()});
                                 }));
   return true;
 }

@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
 #include "chrome/browser/omnibox/omnibox_input_watcher_factory.h"
@@ -27,7 +28,9 @@
 
 namespace {
 // Max number of unscoped extension suggestions to send per extension.
-constexpr int kMaxSuggestionsPerExtension = 4;
+// LINT.IfChange
+constexpr size_t kMaxSuggestionsPerExtension = 4;
+// LINT.ThenChange(//components/omnibox/browser/autocomplete_grouper_sections.cc)
 
 constexpr auto kReservedGroupIdMap =
     base::MakeFixedFlatMap<size_t, omnibox::GroupId>(
@@ -179,7 +182,12 @@ UnscopedExtensionProviderDelegateImpl::CreateAutocompleteMatch(
   AutocompleteMatch match(provider_.get(), relevance,
                           suggestion.deletable.value_or(false),
                           AutocompleteMatchType::SEARCH_OTHER_ENGINE);
-  match.fill_into_edit = base::UTF8ToUTF16(suggestion.content);
+  std::u16string trimmed_suggestion_content;
+  // Prevents DCHECK in `SplitKeywordFromInput` in AutocompleteInput which
+  // assumes leading whitespace is trimmed.
+  base::TrimWhitespace(base::UTF8ToUTF16(suggestion.content),
+                       base::TRIM_LEADING, &trimmed_suggestion_content);
+  match.fill_into_edit = trimmed_suggestion_content;
   match.contents = base::UTF8ToUTF16(suggestion.description);
   match.contents_class.emplace_back(0, ACMatchClassification::DIM);
   match.transition = ui::PAGE_TRANSITION_GENERATED;

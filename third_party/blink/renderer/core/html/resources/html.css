@@ -1855,8 +1855,7 @@ dialog:where(:modal) {
     display: contents;
   }
   /* Render the label attribute when it is set. This should be kept in sync
-   * with the logic in HTMLOptionElement::DisplayLabel once an interoperable
-   * decision has been made here: https://github.com/whatwg/html/issues/10955 */
+   * with the logic in HTMLOptionElement::DisplayLabel. */
   select:not(:-internal-list-box):not([multiple])
   option[label]:not([label=""])::-internal-option-label-container {
     display: contents;

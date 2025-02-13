@@ -8507,6 +8507,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_MICROSOFT_FILES_DISABLE_BUTTON_TEXT" desc="Text shown on the disable button of a NTP Microsoft files card.">
         Don't show SharePoint and OneDrive files
       </message>
+      <message name="IDS_NTP_MODULES_MICROSOFT_FILES_TRENDING_JUSTIFICATION_TEXT" desc="Text shown on the NTP Microsoft files card.">
+        Suggested for you
+      </message>
       <message name="IDS_NTP_MODULES_DISMISS_FOR_HOURS_BUTTON_TEXT" desc="Text shown on the dismiss button of an NTP module that specifies length of time in hours.">
         Hide for <ph name="MODULE_TITLE">$1<ex>5</ex></ph> hours
       </message>
@@ -12364,6 +12367,15 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <!-- User Education -->
         <message name="IDS_DATA_SHARING_USER_ED_FIRST_TAB_CHANGE" desc="A description of how shared tabs work in a shared group for user education.">
           Changes made are seen by everyone in the group
+        </message>
+        <message name="IDS_DATA_SHARING_SHARED_GROUPS_FEEDBACK" desc="The title for the shared tab group feed back button visible in the toolbar.">
+          Shared tab groups feedback
+        </message>
+        <message name="IDS_DATA_SHARING_SHARED_GROUPS_FEEDBACK_IPH" desc="The body text describing how to send feedback for the shared tab groups feature.">
+          Send your feedback about shared tab groups here
+        </message>
+        <message name="IDS_DATA_SHARING_SHARED_GROUPS_FEEDBACK_IPH_SCREENREADER" desc="The screen reader text describing how to send feedback for the shared tab groups feature." is_accessibility_with_no_ui="true">
+          Select the feedback button to send feedback regarding the shared tab groups feature
         </message>
       <!-- /User Education -->
 

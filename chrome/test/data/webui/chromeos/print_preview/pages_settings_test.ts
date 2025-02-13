@@ -124,7 +124,7 @@ suite('PagesSettingsTest', function() {
 
   // Tests that the odd-only and even-only options are hidden when the document
   // has only one page.
-  test('NoParityOptions', async () => {
+  test('NoParityOptions', () => {
     pagesSection.pageCount = 1;
 
     const oddOption = pagesSection.shadowRoot!.querySelector<HTMLOptionElement>(

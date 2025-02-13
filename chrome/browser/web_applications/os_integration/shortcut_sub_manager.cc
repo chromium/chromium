@@ -93,7 +93,7 @@ void ShortcutSubManager::Execute(
       synchronize_options.has_value() &&
       synchronize_options.value().force_update_shortcuts;
 
-  const bool force_create_shortcuts =
+  bool force_create_shortcuts =
       synchronize_options.has_value() &&
       synchronize_options.value().force_create_shortcuts;
 
@@ -105,6 +105,14 @@ void ShortcutSubManager::Execute(
   }
 
   CHECK_OS_INTEGRATION_ALLOWED();
+
+#if BUILDFLAG(IS_MAC)
+  // On Mac, sometimes the AppShimRegistry and the `current_state` get out of
+  // sync. If so, force the shortcut creation.
+  force_create_shortcuts |= current_state.has_shortcut() &&
+                            !AppShimRegistry::Get()->IsAppInstalledInProfile(
+                                app_id, profile_->GetPath());
+#endif
 
   // Second, handle shortcut creation if either one of the following conditions
   // match:

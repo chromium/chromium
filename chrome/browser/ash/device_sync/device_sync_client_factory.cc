@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/attestation/soft_bind_attestation_flow_impl.h"
 #include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service.h"
 #include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service_factory.h"
-#include "chrome/browser/ash/cryptauth/gcm_device_info_provider_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
@@ -84,7 +83,7 @@ class DeviceSyncClientHolder : public KeyedService {
         gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver(),
         instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
             ->driver(),
-        profile->GetPrefs(), GcmDeviceInfoProviderImpl::GetInstance(),
+        profile->GetPrefs(),
         ClientAppMetadataProviderServiceFactory::GetForProfile(profile),
         profile->GetURLLoaderFactory(), std::make_unique<base::OneShotTimer>(),
         base::BindRepeating(&DeviceSyncClientHolder::GetAttestationCertificates,

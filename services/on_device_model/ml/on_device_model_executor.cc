@@ -307,23 +307,21 @@ SessionImpl::SessionImpl(const ChromeML& chrome_ml,
 SessionImpl::~SessionImpl() = default;
 
 DISABLE_CFI_DLSYM
-void SessionImpl::AddContext(
-    on_device_model::mojom::InputOptionsPtr input,
+void SessionImpl::Append(
+    on_device_model::mojom::AppendOptionsPtr options,
     mojo::PendingRemote<on_device_model::mojom::ContextClient> client,
     base::OnceClosure on_complete) {
   auto context_holder = std::make_unique<ContextHolder>(
       std::move(client),
       base::BindOnce(&SessionImpl::RemoveContext, base::Unretained(this)),
       std::move(on_complete));
-  if (input->max_tokens == 0 || input->max_tokens > max_tokens_) {
-    input->max_tokens = max_tokens_;
+  if (options->max_tokens == 0 || options->max_tokens > max_tokens_) {
+    options->max_tokens = max_tokens_;
   }
-  input->top_k = GetTopK(input->top_k);
-  input->temperature = GetTemperature(input->temperature);
   ChromeMLContextSavedFn context_saved_fn =
       context_holder->CreateContextSavedFn();
   *context_holder->GetCancelFn() =
-      session_->Execute(std::move(input), nullptr, context_saved_fn);
+      session_->Append(std::move(options), context_saved_fn);
   context_holders_.insert(std::move(context_holder));
 }
 
@@ -346,6 +344,22 @@ void SessionImpl::Execute(
   ChromeMLContextSavedFn context_saved_fn = responder_->CreateContextSavedFn();
   *responder_->GetCancelFn() =
       cloned_raw->Execute(std::move(input), output_fn, context_saved_fn);
+}
+
+DISABLE_CFI_DLSYM
+void SessionImpl::Generate(
+    on_device_model::mojom::GenerateOptionsPtr options,
+    mojo::PendingRemote<on_device_model::mojom::StreamingResponder> response,
+    base::OnceClosure on_complete) {
+  auto cloned = session_->Clone();
+  auto cloned_raw = cloned.get();  // For Generate after std::move
+  responder_ = std::make_unique<Responder>(
+      std::move(response), std::move(on_complete), std::move(cloned));
+  ChromeMLExecutionOutputFn output_fn = responder_->CreateOutputFn();
+  options->top_k = GetTopK(options->top_k);
+  options->temperature = GetTemperature(options->temperature);
+  *responder_->GetCancelFn() =
+      cloned_raw->Generate(std::move(options), output_fn);
 }
 
 DISABLE_CFI_DLSYM

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -103,7 +104,7 @@ class CaptureModeMenuHeader
     box_layout->SetFlexForView(label_view_, 1);
 
     GetViewAccessibility().SetRole(ax::mojom::Role::kHeader);
-    GetViewAccessibility().SetName(GetHeaderLabel());
+    GetViewAccessibility().SetName(std::u16string(GetHeaderLabel()));
   }
 
   CaptureModeMenuHeader(const CaptureModeMenuHeader&) = delete;
@@ -112,9 +113,7 @@ class CaptureModeMenuHeader
 
   bool is_managed_by_policy() const { return !!managed_icon_view_; }
 
-  const std::u16string& GetHeaderLabel() const {
-    return label_view_->GetText();
-  }
+  std::u16string_view GetHeaderLabel() const { return label_view_->GetText(); }
 
   // CaptureModeSessionFocusCycler::HighlightableView:
   views::View* GetView() override { return this; }
@@ -158,7 +157,7 @@ class CaptureModeMenuItem
     capture_mode_util::CreateAndInitBoxLayoutForView(this);
     SetInkDropForButton(this);
     GetViewAccessibility().SetIsLeaf(true);
-    GetViewAccessibility().SetName(label_view_->GetText());
+    GetViewAccessibility().SetName(std::u16string(label_view_->GetText()));
     SetEnabled(enabled);
   }
 
@@ -219,7 +218,7 @@ class CaptureModeOption
     box_layout->SetFlexForView(label_view_, 1);
     SetInkDropForButton(this);
     GetViewAccessibility().SetIsLeaf(true);
-    GetViewAccessibility().SetName(GetOptionLabel());
+    GetViewAccessibility().SetName(std::u16string(GetOptionLabel()));
     GetViewAccessibility().SetRole(ax::mojom::Role::kRadioButton);
 
     SetEnabled(enabled);
@@ -231,9 +230,7 @@ class CaptureModeOption
 
   int id() const { return id_; }
 
-  const std::u16string& GetOptionLabel() const {
-    return label_view_->GetText();
-  }
+  std::u16string_view GetOptionLabel() const { return label_view_->GetText(); }
 
   // If `icon` is `nullptr`, removes the `option_icon_view_` (if any).
   // Otherwise, a new image view will be created for the `option_icon_view_` (if
@@ -468,7 +465,7 @@ views::View* CaptureModeMenuGroup::GetSelectFolderMenuItemForTesting() {
   return menu_items_[0];
 }
 
-std::u16string CaptureModeMenuGroup::GetOptionLabelForTesting(
+std::u16string_view CaptureModeMenuGroup::GetOptionLabelForTesting(
     int option_id) const {
   auto* option = GetOptionById(option_id);
   DCHECK(option);

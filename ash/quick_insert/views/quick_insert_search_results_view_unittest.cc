@@ -53,6 +53,7 @@ namespace {
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::IsNull;
 using ::testing::Not;
@@ -92,7 +93,9 @@ auto MatchesResultSection(QuickInsertSectionType section_type, int num_items) {
       Property(
           &QuickInsertSectionView::title_label_for_testing,
           Property(&views::Label::GetText,
-                   GetSectionTitleForQuickInsertSectionType(section_type))),
+                   // NOTE: Eq() here serves to store the underlying
+                   // std::u16string and prevent it from dangling.
+                   Eq(GetSectionTitleForQuickInsertSectionType(section_type)))),
       Property(&QuickInsertSectionView::item_views_for_testing,
                SizeIs(num_items)));
 }
@@ -104,7 +107,9 @@ auto MatchesResultSectionWithOneItem(QuickInsertSectionType section_type,
       Property(
           &QuickInsertSectionView::title_label_for_testing,
           Property(&views::Label::GetText,
-                   GetSectionTitleForQuickInsertSectionType(section_type))),
+                   // NOTE: Eq() here serves to store the underlying
+                   // std::u16string and prevent it from dangling.
+                   Eq(GetSectionTitleForQuickInsertSectionType(section_type)))),
       Property(&QuickInsertSectionView::item_views_for_testing,
                ElementsAre(item_matcher)));
 }

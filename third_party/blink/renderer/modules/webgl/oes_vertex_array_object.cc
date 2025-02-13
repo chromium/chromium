@@ -45,8 +45,8 @@ WebGLExtensionName OESVertexArrayObject::GetName() const {
 
 WebGLVertexArrayObjectOES* OESVertexArrayObject::createVertexArrayOES() {
   WebGLExtensionScopedContext scoped(this);
-  if (scoped.IsLost())
-    return nullptr;
+
+  // Object creation must be infallible even if the context is lost.
 
   return MakeGarbageCollected<WebGLVertexArrayObjectOES>(
       scoped.Context(), WebGLVertexArrayObjectOES::kVaoTypeUser);

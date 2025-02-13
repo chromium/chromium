@@ -212,7 +212,7 @@ suite('DestinationManager', () => {
   test(
       `${DESTINATION_MANAGER_DESTINATIONS_CHANGED} triggered not from ` +
           'onDestinationsChanged when destinations is empty',
-      async () => {
+      () => {
         const dispatchFn =
             mockController.createFunctionMock(instance, 'dispatchEvent');
         // Set destinations returned to empty array to verify dispatch is not
@@ -398,7 +398,7 @@ suite('DestinationManager', () => {
   test(
       `onPrintTicketChanged handler called when ${
           PRINT_TICKET_MANAGER_TICKET_CHANGED} emitted`,
-      async () => {
+      () => {
         // Initialize session to add event listener.
         instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
         const onPrintTicketChangedFn =

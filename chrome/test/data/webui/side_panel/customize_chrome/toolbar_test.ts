@@ -22,19 +22,17 @@ suite('CustomizerToolbarTest', () => {
   let toolbarElement: ToolbarElement;
   let windowProxy: TestMock<WindowProxy>;
 
-  async function createToolbarElement(
-      actions: Action[] = [],
-      categories: Category[] = []): Promise<ToolbarElement> {
+  function createToolbarElement(
+      actions: Action[] = [], categories: Category[] = []) {
     handler.setResultFor('listActions', Promise.resolve({actions}));
     handler.setResultFor('listCategories', Promise.resolve({categories}));
     handler.setResultFor(
         'getIsCustomized', Promise.resolve({customized: false}));
     toolbarElement = document.createElement('customize-chrome-toolbar');
     document.body.appendChild(toolbarElement);
-    return toolbarElement;
   }
 
-  async function createToolbarElementWithBasicData() {
+  function createToolbarElementWithBasicData() {
     createToolbarElement(
         [
           {
@@ -58,7 +56,7 @@ suite('CustomizerToolbarTest', () => {
         ]);
   }
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('onLine', true);

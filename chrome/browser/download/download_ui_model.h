@@ -339,7 +339,7 @@ class DownloadUIModel {
   // ShouldPreferOpeningInBrowser().
   virtual void OpenUsingPlatformHandler();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns the Media App action (open or edit) we should show for the item if
   // one should be shown.
   virtual std::optional<DownloadCommands::Command> MaybeGetMediaAppAction()

@@ -30,11 +30,13 @@
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_bubble_controller.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
@@ -245,6 +247,25 @@ void BrowserActions::InitializeBrowserActions() {
       SidePanelAction(SidePanelEntryId::kLens, IDS_LENS_DEFAULT_TITLE,
                       IDS_LENS_DEFAULT_TITLE, vector_icons::kImageSearchIcon,
                       kActionSidePanelShowLens, browser, false)
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                auto* bubble_controller =
+                    browser->browser_window_features()
+                        ->memory_saver_bubble_controller();
+                bubble_controller->InvokeAction(browser, item);
+              },
+              base::Unretained(browser)))
+          .SetActionId(kActionShowMemorySaverChip)
+          // Text properties aren't needed here; they are set dynamically.
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              kPerformanceSpeedometerIcon, ui::kColorIcon,
+              ui::SimpleMenuModel::kDefaultIconSize))
+          .SetEnabled(true)
           .Build());
 
   //------- Chrome Menu Actions --------//
@@ -517,6 +538,23 @@ void BrowserActions::InitializeBrowserActions() {
                            kActionShowDownloads, IDS_SHOW_DOWNLOADS,
                            IDS_TOOLTIP_DOWNLOAD_ICON,
                            kDownloadToolbarButtonChromeRefreshIcon)
+              .Build());
+    }
+
+    if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
+      root_action_item_->AddChild(
+          ChromeMenuAction(base::BindRepeating(
+                               [](Browser* browser, actions::ActionItem* item,
+                                  actions::ActionInvocationContext context) {
+                                 chrome::OpenFeedbackDialog(
+                                     browser,
+                                     feedback::kFeedbackSourceDesktopTabGroups);
+                               },
+                               base::Unretained(browser)),
+                           kActionSendSharedTabGroupFeedback,
+                           IDS_DATA_SHARING_SHARED_GROUPS_FEEDBACK,
+                           IDS_DATA_SHARING_SHARED_GROUPS_FEEDBACK,
+                           vector_icons::kFeedbackIcon)
               .Build());
     }
 

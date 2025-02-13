@@ -86,7 +86,7 @@ static_library("discovery") {
     sources += [ "discovery_network_list_wifi_linux.cc" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/ash/components/network" ]
   }
 

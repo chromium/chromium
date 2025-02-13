@@ -480,9 +480,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   }
 
   void RunOfflineInstallOsNotSupported(bool is_legacy_install,
-                                       bool is_silent_install) override {
+                                       bool is_silent_install,
+                                       const std::string& language) override {
     updater::test::RunOfflineInstallOsNotSupported(
-        updater_scope_, is_legacy_install, is_silent_install);
+        updater_scope_, is_legacy_install, is_silent_install, language);
   }
 
   void DMPushEnrollmentToken(const std::string& enrollment_token) override {

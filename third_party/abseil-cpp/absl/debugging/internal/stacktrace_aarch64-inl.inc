@@ -188,7 +188,9 @@ inline void* ClearPacBits(void* ptr) {
   // compatibility with ARM platforms that do not support pointer
   // authentication, we use the hint space instruction XPACLRI instead. Hint
   // space instructions behave as NOPs on unsupported platforms.
-  asm("xpaclri" : "+r"(x30));
+#define ABSL_XPACLRI_HINT "hint #0x7;"
+  asm(ABSL_XPACLRI_HINT : "+r"(x30));  // asm("xpaclri" : "+r"(x30));
+#undef ABSL_XPACLRI_HINT
   return x30;
 }
 

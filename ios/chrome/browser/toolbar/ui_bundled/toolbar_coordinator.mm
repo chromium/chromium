@@ -458,9 +458,6 @@
     return;
   }
   [self updateToolbarsLayout];
-
-  [self.primaryToolbarCoordinator
-      viewControllerTraitCollectionDidChange:previousTraitCollection];
 }
 
 - (void)close {
@@ -469,6 +466,15 @@
         self.browser->GetCommandDispatcher(), ApplicationCommands);
     [applicationCommandsHandler dismissModalDialogsWithCompletion:nil];
   }
+}
+
+- (void)locationBarExpandedInViewController:
+    (PrimaryToolbarViewController*)viewController {
+  // Do nothing.
+}
+- (void)locationBarContractedInViewController:
+    (PrimaryToolbarViewController*)viewController {
+  // Do nothing.
 }
 
 #pragma mark - SideSwipeToolbarInteracting

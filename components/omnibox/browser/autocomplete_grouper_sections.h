@@ -160,6 +160,17 @@ class DesktopNTPZpsSection : public ZpsSection {
                                 size_t limit);
 };
 
+// Section expressing the Desktop ZPS limits and grouping for unscoped
+// extensions.
+// - Up to 8 unscoped extension suggestions total.
+//  - Up to 4 from the first extension.
+//  - Up to 4 from the second extension.
+class DesktopZpsUnscopedExtensionSection : public ZpsSection {
+ public:
+  explicit DesktopZpsUnscopedExtensionSection(
+      omnibox::GroupConfigMap& group_configs);
+};
+
 // Section expressing the Desktop ZPS limits and grouping for the IPH suggestion
 // on the NTP.
 // - Up to 1 IPH suggestion total

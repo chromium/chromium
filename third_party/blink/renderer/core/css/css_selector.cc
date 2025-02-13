@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -791,7 +792,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   }
 
   if (match->type == CSSSelector::kPseudoPicker &&
-      !RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+      !HTMLSelectElement::CustomizableSelectEnabled(document)) {
     return CSSSelector::kPseudoUnknown;
   }
 

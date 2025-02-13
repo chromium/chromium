@@ -24,7 +24,8 @@ namespace {
 bool IsWebUIInternal(const std::string& host) {
   return host == commerce::kChromeUICommerceInternalsHost ||
          host == optimization_guide_internals::
-                     kChromeUIOptimizationGuideInternalsHost;
+                     kChromeUIOptimizationGuideInternalsHost ||
+         host == kChromeUIInterstitialsHost;
 }
 }  // namespace
 

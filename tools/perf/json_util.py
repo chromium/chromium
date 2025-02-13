@@ -29,14 +29,17 @@ def calculate_stats(values):
   Returns:
     A tuple of the mean, std dev, count, max, min, and sum of the values.
   """
-  n = len(values)
+  filtered_values = [value for value in values if value is not None]
+  n = len(filtered_values)
   if n == 0:
     return 0, 0, 0, 0, 0, 0
 
-  average = sum(values) / n
+  average = sum(filtered_values) / n
   # If there is only one value, the standard deviation is 0.
-  std_dev = statistics.stdev(values) if len(values) > 1 else 0.0
-  return average, std_dev, n, max(values), min(values), sum(values)
+  std_dev = (statistics.stdev(filtered_values)
+             if len(filtered_values) > 1 else 0.0)
+  return (average, std_dev, n, max(filtered_values), min(filtered_values),
+          sum(filtered_values))
 
 
 def extract_subtest_from_stories_tags(stories: List[str],

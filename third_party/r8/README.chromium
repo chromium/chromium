@@ -47,7 +47,7 @@ cp out/Debug/obj/third_party/r8/custom_d8_java.javac.jar third_party/r8/custom_d
   * R8 is built daily and uploaded to CIPD.
   * New instances are uploaded by the packager bot:
     https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
-  * The bot autoruns every 6 hours. Ping a trooper or a clank build core dev to
+  * The bot autoruns every 6 hours. Ping a trooper or a Clank Commons dev to
     trigger it if you need it sooner:
     https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
   * The autoroller runs automatically when a new cipd instance is uploaded.

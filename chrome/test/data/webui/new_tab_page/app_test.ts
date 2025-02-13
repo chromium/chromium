@@ -34,7 +34,7 @@ suite('NewTabPageAppTest', () => {
   const url: URL = new URL(location.href);
   const backgroundImageLoadTime: number = 123;
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     windowProxy = installMock(WindowProxy);
@@ -74,10 +74,11 @@ suite('NewTabPageAppTest', () => {
 
     app = document.createElement('ntp-app');
     document.body.appendChild(app);
+    return microtasksFinished();
   });
 
   suite('Misc', () => {
-    test('logs height', async () => {
+    test('logs height', () => {
       // Assert.
       assertEquals(1, metrics.count('NewTabPage.Height'));
       assertEquals(
@@ -85,7 +86,7 @@ suite('NewTabPageAppTest', () => {
           metrics.count('NewTabPage.Height', Math.floor(window.innerHeight)));
     });
 
-    test('logs width', async () => {
+    test('logs width', () => {
       // Assert.
       assertEquals(1, metrics.count('NewTabPage.Width'));
       assertEquals(
@@ -152,7 +153,7 @@ suite('NewTabPageAppTest', () => {
       });
     }
 
-    test('help bubble can correctly find anchor elements', async () => {
+    test('help bubble can correctly find anchor elements', () => {
       assertDeepEquals(
           app.getSortedAnchorStatusesForTesting(),
           [
@@ -574,7 +575,7 @@ suite('NewTabPageAppTest', () => {
           loadTimeData.overrideValues({backgroundImageUrl: 'https://foo.com'});
         });
 
-        test('background image load time is logged', async () => {
+        test('background image load time is logged', () => {
           // Assert.
           assertEquals(
               1, metrics.count('NewTabPage.Images.ShownTime.BackgroundImage'));
@@ -742,7 +743,7 @@ suite('NewTabPageAppTest', () => {
       });
     });
 
-    test('container is hidden', async () => {
+    test('container is hidden', () => {
       const modules = $$(app, 'ntp-modules-v2')!;
       assertTrue(!!modules);
       assertStyle(modules, 'display', 'none');
@@ -767,7 +768,7 @@ suite('NewTabPageAppTest', () => {
       });
     });
 
-    test('container is hidden', async () => {
+    test('container is hidden', () => {
       const modules = $$(app, 'ntp-modules-v2')!;
       assertTrue(!!modules);
       assertStyle(modules, 'display', 'none');
@@ -886,7 +887,7 @@ suite('NewTabPageAppTest', () => {
         });
       });
 
-      test('modules can open side panel', async () => {
+      test('modules can open side panel', () => {
         // Act.
         $$(app, '#modules')!.dispatchEvent(new Event('customize-module'));
 

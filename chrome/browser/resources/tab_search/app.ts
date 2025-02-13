@@ -108,7 +108,7 @@ export class TabSearchAppElement extends CrLitElement {
     this.selectedTabSection_ = section;
     if (section === TabSearchSection.kOrganize) {
       const organizationSelector =
-          this.shadowRoot!.querySelector('tab-organization-selector');
+          this.shadowRoot.querySelector('tab-organization-selector');
       if (organizationSelector) {
         organizationSelector.maybeLogFeatureShow();
       }
@@ -150,7 +150,7 @@ export class TabSearchAppElement extends CrLitElement {
     if (this.selectedTabSection_ === TabSearchSection.kOrganize &&
         !this.declutterEnabled_) {
       const autoTabGroupsPage =
-          this.shadowRoot!.querySelector('auto-tab-groups-page')!;
+          this.shadowRoot.querySelector('auto-tab-groups-page')!;
       autoTabGroupsPage.classList.toggle('changed-state', false);
     }
   }

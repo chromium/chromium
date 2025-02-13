@@ -67,10 +67,15 @@ void PressureObserverManager::AddObserver(V8PressureSource::Enum source,
   const PressureClientImpl::State state = client->state();
   if (state == PressureClientImpl::State::kUninitialized) {
     client->set_state(PressureClientImpl::State::kInitializing);
-    EnsureConnection();
+
     // Not connected to the browser side for `source` yet. Make the binding.
+    auto task_runner =
+        GetExecutionContext()->GetTaskRunner(TaskType::kUserInteraction);
+    EnsureConnection(task_runner);
+
     pressure_manager_->AddClient(
         V8PressureSourceToPressureSource(source),
+        client->BindNewEndpointAndPassRemote(task_runner),
         WTF::BindOnce(&PressureObserverManager::DidAddClient,
                       WrapWeakPersistent(this), source));
   } else if (state == PressureClientImpl::State::kInitialized) {
@@ -82,9 +87,6 @@ void PressureObserverManager::RemoveObserver(V8PressureSource::Enum source,
                                              PressureObserver* observer) {
   PressureClientImpl* client = source_to_client_.at(source);
   client->RemoveObserver(observer);
-  if (client->state() == PressureClientImpl::State::kUninitialized) {
-    ResetPressureManagerIfNeeded();
-  }
 }
 
 void PressureObserverManager::RemoveObserverFromAllSources(
@@ -111,19 +113,16 @@ void PressureObserverManager::Trace(Visitor* visitor) const {
   Supplement<ExecutionContext>::Trace(visitor);
 }
 
-void PressureObserverManager::EnsureConnection() {
+void PressureObserverManager::EnsureConnection(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   CHECK(GetExecutionContext());
 
-  if (pressure_manager_.is_bound()) {
-    return;
+  if (!pressure_manager_.is_bound()) {
+    GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
+        pressure_manager_.BindNewPipeAndPassReceiver(task_runner));
+    pressure_manager_.set_disconnect_handler(WTF::BindOnce(
+        &PressureObserverManager::OnConnectionError, WrapWeakPersistent(this)));
   }
-
-  auto task_runner =
-      GetExecutionContext()->GetTaskRunner(TaskType::kUserInteraction);
-  GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
-      pressure_manager_.BindNewPipeAndPassReceiver(task_runner));
-  pressure_manager_.set_disconnect_handler(WTF::BindOnce(
-      &PressureObserverManager::OnConnectionError, WrapWeakPersistent(this)));
 }
 
 void PressureObserverManager::OnConnectionError() {
@@ -137,15 +136,6 @@ void PressureObserverManager::OnConnectionError() {
   Reset();
 }
 
-void PressureObserverManager::ResetPressureManagerIfNeeded() {
-  if (std::ranges::all_of(
-          source_to_client_.Values(), [](const PressureClientImpl* client) {
-            return client->state() == PressureClientImpl::State::kUninitialized;
-          })) {
-    pressure_manager_.reset();
-  }
-}
-
 void PressureObserverManager::Reset() {
   for (PressureClientImpl* client : source_to_client_.Values()) {
     client->Reset();
@@ -155,7 +145,7 @@ void PressureObserverManager::Reset() {
 
 void PressureObserverManager::DidAddClient(
     V8PressureSource::Enum source,
-    device::mojom::blink::PressureManagerAddClientResultPtr result) {
+    device::mojom::blink::PressureManagerAddClientResult result) {
   PressureClientImpl* client = source_to_client_.at(source);
   // PressureClientImpl may be reset by PressureObserver's
   // unobserve()/disconnect() before this function is called.
@@ -166,27 +156,19 @@ void PressureObserverManager::DidAddClient(
 
   // Take a snapshot so as to safely iterate.
   HeapVector<Member<PressureObserver>> observers(client->observers());
-  switch (result->which()) {
-    case device::mojom::blink::PressureManagerAddClientResult::Tag::
-        kPressureClient: {
+  switch (result) {
+    case device::mojom::blink::PressureManagerAddClientResult::kOk: {
       client->set_state(PressureClientImpl::State::kInitialized);
-      client->BindPressureClient(std::move(result->get_pressure_client()));
       for (const auto& observer : observers) {
         observer->OnBindingSucceeded(source);
       }
       break;
     }
-    case device::mojom::blink::PressureManagerAddClientResult::Tag::kError: {
-      switch (result->get_error()) {
-        case device::mojom::blink::PressureManagerAddClientError::kNotSupported:
-          client->Reset();
-          ResetPressureManagerIfNeeded();
-          for (const auto& observer : observers) {
-            observer->OnBindingFailed(source,
-                                      DOMExceptionCode::kNotSupportedError);
-          }
-          break;
+    case device::mojom::blink::PressureManagerAddClientResult::kNotSupported: {
+      for (const auto& observer : observers) {
+        observer->OnBindingFailed(source, DOMExceptionCode::kNotSupportedError);
       }
+      client->Reset();
       break;
     }
   }

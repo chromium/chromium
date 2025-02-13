@@ -331,9 +331,12 @@ static_library("test_support") {
 
   if (enable_extensions_core) {
     sources += [
+      "../browser/extensions/extension_with_management_policy_apitest.cc",
+      "../browser/extensions/extension_with_management_policy_apitest.h",
       "../common/extensions/manifest_tests/chrome_manifest_test.cc",
       "../common/extensions/manifest_tests/chrome_manifest_test.h",
     ]
+    public_deps += [ "//chrome/browser/extensions:test_support" ]
   }
 
   if (enable_extensions) {
@@ -358,8 +361,6 @@ static_library("test_support") {
       "../browser/extensions/extension_service_test_with_install.h",
       "../browser/extensions/extension_service_user_test_base.cc",
       "../browser/extensions/extension_service_user_test_base.h",
-      "../browser/extensions/extension_with_management_policy_apitest.cc",
-      "../browser/extensions/extension_with_management_policy_apitest.h",
       "../browser/extensions/mixin_based_extension_apitest.cc",
       "../browser/extensions/mixin_based_extension_apitest.h",
       "../browser/extensions/permissions/permissions_test_util.cc",
@@ -1487,6 +1488,7 @@ source_set("platform_browser_tests") {
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/extensions",
+      "//chrome/browser/extensions:test_support",
       "//chrome/browser/sync",
       "//components/embedder_support",
       "//components/privacy_sandbox:privacy_sandbox_settings_headers",
@@ -1831,11 +1833,7 @@ if (is_android) {
 
       extra_args += [ "--deploy-mock-openxr-runtime" ]
 
-      loadable_module_deps = [ "//device/vr:openxr_mock" ]
-      loadable_modules =
-          [ "$root_out_dir/libmock_vr_clients/bin/openxr/libopenxrruntime.so" ]
-      library_always_compress =
-          [ "libmock_vr_clients/bin/openxr/libopenxrruntime.so" ]
+      additional_apks = [ "//device/vr:openxr_test_support_apk" ]
     }
 
     if (dfmify_dev_ui) {
@@ -9437,6 +9435,7 @@ test("unit_tests") {
     sources += [
       "../browser/component_updater/real_time_url_checks_allowlist_component_installer_unittest.cc",
       "../browser/safe_browsing/android/password_reuse_controller_android_unittest.cc",
+      "../browser/safe_browsing/safe_browsing_pref_change_handler_android_unittest.cc",
       "../browser/safe_browsing/tailored_security/chrome_tailored_security_service_android_unittest.cc",
       "../browser/safe_browsing/tailored_security/consented_message_android_unittest.cc",
       "../browser/safe_browsing/telemetry/android/android_telemetry_service_unittest.cc",
@@ -9493,6 +9492,10 @@ test("unit_tests") {
         "//chromeos/components/mgs",
       ]
     }
+  }
+
+  if (enterprise_client_certificates) {
+    deps += [ "../browser/enterprise/client_certificates:unit_tests" ]
   }
 
   if (is_linux || is_chromeos || is_mac || is_win) {
@@ -10623,7 +10626,6 @@ if (!is_android && !is_chromeos_device) {
 
     sources = [
       "../browser/about_flags_browsertest.cc",
-      "../browser/autofill_ai/autofill_ai_browsertest.cc",
       "../browser/browser_keyevents_browsertest.cc",
       "../browser/chrome_render_widget_host_browsertests.cc",
       "../browser/contextual_cueing/contextual_cueing_helper_interactive_uitest.cc",
@@ -10665,6 +10667,7 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/fullscreen_keyboard_browsertest_base.cc",
       "../browser/ui/fullscreen_keyboard_browsertest_base.h",
       "../browser/ui/keyboard_lock_interactive_browsertest.cc",
+      "../browser/ui/omnibox/omnibox_metrics_browsertest.cc",
       "../browser/ui/omnibox/omnibox_view_browsertest.cc",
       "../browser/ui/passwords/manage_passwords_test.cc",
       "../browser/ui/passwords/manage_passwords_test.h",
@@ -10851,7 +10854,6 @@ if (!is_android && !is_chromeos_device) {
       "//components/accessibility:reading",
       "//components/autofill/content/browser:test_support",
       "//components/autofill/core/common:credit_card_number_validation",
-      "//components/autofill_ai/core/browser:browser",
       "//components/back_forward_cache",
       "//components/blocked_content",
       "//components/bookmarks/browser",

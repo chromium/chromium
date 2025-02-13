@@ -51,8 +51,7 @@ suite('emoji-picker-offline-gif', () => {
   });
 
   test(
-      'There exists emoji-error component in the Emoji Category.',
-      async () => {
+      'There exists emoji-error component in the Emoji Category.', () => {
         const categoryButton =
             emojiSearch.shadowRoot!
                 .querySelectorAll('emoji-category-button')[categoryIndex]!

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/auth/views/auth_input_row_view.h"
 #include "ash/auth/views/auth_view_utils.h"
@@ -249,7 +250,7 @@ void ActiveSessionAuthView::SetPinStatus(
   auth_container_->SetPinStatus(std::move(pin_status));
 }
 
-const std::u16string& ActiveSessionAuthView::GetPinStatusMessage() const {
+std::u16string_view ActiveSessionAuthView::GetPinStatusMessage() const {
   return auth_container_->GetPinStatusMessage();
 }
 
@@ -260,13 +261,13 @@ void ActiveSessionAuthView::SetInputEnabled(bool enabled) {
   }
 }
 
-void ActiveSessionAuthView::OnPinSubmit(const std::u16string& pin) {
+void ActiveSessionAuthView::OnPinSubmit(std::u16string_view pin) {
   for (auto& observer : observers_) {
     observer.OnPinSubmit(pin);
   }
 }
 
-void ActiveSessionAuthView::OnPasswordSubmit(const std::u16string& password) {
+void ActiveSessionAuthView::OnPasswordSubmit(std::u16string_view password) {
   for (auto& observer : observers_) {
     observer.OnPasswordSubmit(password);
   }

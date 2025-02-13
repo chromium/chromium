@@ -10,9 +10,9 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_consumer.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -111,12 +111,12 @@ TEST_F(PasswordSettingsViewControllerTest,
       base::apple::ObjCCast<PasswordSettingsViewController>(controller());
   [consumer setPasswordsInOtherAppsEnabled:NO];
 
-  TableViewDetailIconItem* passwordsInOtherAppsItem =
-      static_cast<TableViewDetailIconItem*>(
+  TableViewMultiDetailTextItem* passwordsInOtherAppsItem =
+      static_cast<TableViewMultiDetailTextItem*>(
           GetTableViewItem(/*section=*/1, /*item=*/0));
   EXPECT_NSEQ(passwordsInOtherAppsItem.text,
               l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS));
-  EXPECT_NSEQ(passwordsInOtherAppsItem.detailText,
+  EXPECT_NSEQ(passwordsInOtherAppsItem.trailingDetailText,
               l10n_util::GetNSString(IDS_IOS_SETTING_OFF));
 }
 
@@ -125,12 +125,12 @@ TEST_F(PasswordSettingsViewControllerTest, DisplaysPasswordInOtherAppsEnabled) {
       base::apple::ObjCCast<PasswordSettingsViewController>(controller());
   [consumer setPasswordsInOtherAppsEnabled:YES];
 
-  TableViewDetailIconItem* passwordsInOtherAppsItem =
-      static_cast<TableViewDetailIconItem*>(
+  TableViewMultiDetailTextItem* passwordsInOtherAppsItem =
+      static_cast<TableViewMultiDetailTextItem*>(
           GetTableViewItem(/*section=*/1, /*item=*/0));
   EXPECT_NSEQ(passwordsInOtherAppsItem.text,
               l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS));
-  EXPECT_NSEQ(passwordsInOtherAppsItem.detailText,
+  EXPECT_NSEQ(passwordsInOtherAppsItem.trailingDetailText,
               l10n_util::GetNSString(IDS_IOS_SETTING_ON));
 }
 

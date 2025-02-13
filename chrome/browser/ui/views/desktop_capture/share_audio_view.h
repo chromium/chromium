@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_SHARE_AUDIO_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_SHARE_AUDIO_VIEW_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -27,7 +29,7 @@ class ShareAudioView : public views::View {
 
   // Returns the text in the audio label if an audio label exists;
   // returns the empty string otherwise.
-  std::u16string GetAudioLabelText() const;
+  std::u16string_view GetAudioLabelText() const;
 
  private:
   raw_ptr<views::Label> audio_toggle_label_ = nullptr;

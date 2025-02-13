@@ -144,7 +144,16 @@ const AXSelection TestAXNodeWrapper::GetUnignoredSelection() const {
     // gone.
     return AXSelection();
   }
-  return tree_->GetUnignoredSelection();
+  return tree_->GetUnignoredSelection(/*for_hypertext*/ false);
+}
+
+const AXSelection TestAXNodeWrapper::GetHypertextSelection() const {
+  if (!node_) {
+    // If node is not set, this means this is being shut down and the tree is
+    // gone.
+    return AXSelection();
+  }
+  return tree_->GetUnignoredSelection(/*for_hypertext*/ true);
 }
 
 AXNodePosition::AXPositionInstance TestAXNodeWrapper::CreatePositionAt(

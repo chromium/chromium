@@ -169,9 +169,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
             case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
                 // Desktop Android always requests desktop sites, so hide the category.
                 return !BuildConfig.IS_DESKTOP_ANDROID;
-            case SiteSettingsCategory.Type.ZOOM:
-                return ContentFeatureMap.isEnabled(
-                        ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS);
             default:
                 return true;
         }

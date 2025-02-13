@@ -117,29 +117,27 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                 });
 
         Preference zoomInfo = findPreference(PREF_ZOOM_INFO);
-        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS)) {
-            zoomInfo.setVisible(true);
-            zoomInfo.setOnPreferenceClickListener(
-                    preference -> {
-                        Bundle initialArguments = new Bundle();
-                        initialArguments.putString(
-                                SingleCategorySettings.EXTRA_CATEGORY,
-                                SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.ZOOM));
-                        mDelegate
-                                .getSiteSettingsNavigation()
-                                .startSettings(
-                                        ContextUtils.getApplicationContext(),
-                                        AllSiteSettings.class,
-                                        initialArguments);
-                        return true;
-                    });
+        zoomInfo.setVisible(true);
+        zoomInfo.setOnPreferenceClickListener(
+                preference -> {
+                    Bundle initialArguments = new Bundle();
+                    initialArguments.putString(
+                            SingleCategorySettings.EXTRA_CATEGORY,
+                            SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.ZOOM));
+                    mDelegate
+                            .getSiteSettingsNavigation()
+                            .startSettings(
+                                    ContextUtils.getApplicationContext(),
+                                    AllSiteSettings.class,
+                                    initialArguments);
+                    return true;
+                });
 
-            // When Accessibility Page Zoom v2 is also enabled, show additional controls.
-            mPageZoomIncludeOSAdjustment.setVisible(
-                    ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2));
+        // When Accessibility Page Zoom v2 is enabled, show additional controls.
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2)) {
+            mPageZoomIncludeOSAdjustment.setVisible(true);
             mPageZoomIncludeOSAdjustment.setOnPreferenceChangeListener(this);
         } else {
-            zoomInfo.setVisible(false);
             mPageZoomIncludeOSAdjustment.setVisible(false);
         }
 

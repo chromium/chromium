@@ -35,3 +35,6 @@ crbug.com/803276 inspector-protocol/memory/sampling-native-snapshot.js [ Skip ]
 
 # Gardener 2024-11-12
 crbug.com/378566920 [ Linux ] external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html* [ Failure Pass ]
+
+# Gardener 2025-02-12
+crbug.com/396104415 [ Linux ] virtual/gpu-rasterization/images/yuv-decode-eligible/color-profile-image.html [ Slow ]

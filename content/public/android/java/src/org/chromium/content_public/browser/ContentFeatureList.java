@@ -21,9 +21,6 @@ public class ContentFeatureList {
     public static final String ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION =
             "AccessibilityIncludeLongClickAction";
 
-    public static final String ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS =
-            "AccessibilityPageZoomEnhancements";
-
     public static final String ACCESSIBILITY_PAGE_ZOOM_V2 = "AccessibilityPageZoomV2";
 
     public static final String ACCESSIBILITY_UNIFIED_SNAPSHOTS = "AccessibilityUnifiedSnapshots";

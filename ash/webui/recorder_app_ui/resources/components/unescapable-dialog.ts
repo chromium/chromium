@@ -26,10 +26,14 @@ export class UnescapableDialog extends ReactiveLitElement {
       height: fit-content;
       max-height: 600px;
       max-width: 512px;
+      min-width: 296px;
+      width: fit-content;
 
       /* From CrOS dialog style. Min width for Recorder App is 480px. */
-      min-width: 360px;
-      width: fit-content;
+      @media (width < 520px) {
+        /* Want at least 32px left/right margin. */
+        max-width: min(512px, 100vw - 64px);
+      }
     }
 
     #dialog {
@@ -50,6 +54,14 @@ export class UnescapableDialog extends ReactiveLitElement {
       &::backdrop {
         background: var(--cros-sys-scrim);
         pointer-events: none;
+      }
+
+      /**
+       * Turn off display when dialog is not open, this ensures dialog is
+       * invisible regardless of its stacked order. (crbug.com/391018463)
+       */
+      &:not(:popover-open) {
+        display: none;
       }
     }
 

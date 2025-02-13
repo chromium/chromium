@@ -1061,9 +1061,4 @@ ExtensionManagementFactory::BuildServiceInstanceForBrowserContext(
       Profile::FromBrowserContext(context));
 }
 
-void ExtensionManagementFactory::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* user_prefs) {
-  user_prefs->RegisterDictionaryPref(pref_names::kExtensionManagement);
-}
-
 }  // namespace extensions

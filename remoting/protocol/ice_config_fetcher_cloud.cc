@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/numerics/checked_math.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/proto/google/internal/remoting/cloud/v1alpha/network_traversal_service.pb.h"
 #include "remoting/protocol/ice_config.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -36,7 +36,7 @@ void IceConfigFetcherCloud::GetIceConfig(OnIceConfigCallback callback) {
 
 void IceConfigFetcherCloud::OnResponse(
     OnIceConfigCallback callback,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<GenerateIceConfigResponse> response) {
   if (!status.ok()) {
     LOG(ERROR) << "GenerateIceConfig request failed.  Error code: "

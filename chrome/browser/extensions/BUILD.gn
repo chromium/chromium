@@ -45,6 +45,9 @@ source_set("extensions") {
     "activity_log/database_string_table.h",
     "activity_log/fullstream_ui_policy.cc",
     "activity_log/fullstream_ui_policy.h",
+    "api/developer_private/developer_private_event_router_shared.cc",
+    "api/developer_private/developer_private_event_router_shared.h",
+    "api/developer_private/developer_private_functions.h",
     "api/tabs/windows_util.cc",
     "api/tabs/windows_util.h",
     "chrome_extensions_browser_api_provider.cc",
@@ -53,6 +56,8 @@ source_set("extensions") {
     "error_console/error_console.h",
     "error_console/error_console_factory.cc",
     "error_console/error_console_factory.h",
+    "extension_management_constants.cc",
+    "extension_management_constants.h",
     "extension_special_storage_policy.cc",
     "extension_special_storage_policy.h",
     "extension_tab_util.cc",
@@ -67,6 +72,8 @@ source_set("extensions") {
     "extension_webkit_preferences.h",
     "load_error_reporter.cc",
     "load_error_reporter.h",
+    "policy_handlers.cc",
+    "policy_handlers.h",
     "window_controller.cc",
     "window_controller.h",
     "window_controller_list.cc",
@@ -87,6 +94,7 @@ source_set("extensions") {
     "//components/content_settings/core/browser:cookie_settings",
     "//components/crx_file",
     "//components/no_state_prefetch/browser",
+    "//components/policy/core/browser",
     "//components/pref_registry",
     "//content/public/browser",
     "//extensions/browser",
@@ -97,6 +105,12 @@ source_set("extensions") {
   ]
   defines = []
 
+  if (is_android) {
+    sources += [
+      "api/developer_private/developer_private_functions_android.cc",
+      "api/developer_private/developer_private_functions_android.h",
+    ]
+  }
   if (enable_extensions) {
     sources += [
       "account_extension_tracker.cc",
@@ -149,8 +163,8 @@ source_set("extensions") {
       "api/developer_private/developer_private_api.h",
       "api/developer_private/developer_private_event_router.cc",
       "api/developer_private/developer_private_event_router.h",
-      "api/developer_private/developer_private_functions.cc",
-      "api/developer_private/developer_private_functions.h",
+      "api/developer_private/developer_private_functions_desktop.cc",
+      "api/developer_private/developer_private_functions_desktop.h",
       "api/developer_private/extension_info_generator.cc",
       "api/developer_private/extension_info_generator.h",
       "api/developer_private/inspectable_views_finder.cc",
@@ -437,6 +451,8 @@ source_set("extensions") {
       "cws_info_service_factory.h",
       "data_deleter.cc",
       "data_deleter.h",
+      "delayed_install_manager.cc",
+      "delayed_install_manager.h",
       "device_permissions_dialog_controller.cc",
       "device_permissions_dialog_controller.h",
       "devtools_util.cc",
@@ -482,8 +498,6 @@ source_set("extensions") {
       "extension_keybinding_registry.h",
       "extension_management.cc",
       "extension_management.h",
-      "extension_management_constants.cc",
-      "extension_management_constants.h",
       "extension_management_internal.cc",
       "extension_management_internal.h",
       "extension_menu_icon_loader.cc",
@@ -594,8 +608,6 @@ source_set("extensions") {
       "permissions_based_management_policy_provider.h",
       "permissions_url_constants.cc",
       "permissions_url_constants.h",
-      "policy_handlers.cc",
-      "policy_handlers.h",
       "pref_mapping.cc",
       "pref_mapping.h",
       "pref_transformer_interface.h",
@@ -1456,6 +1468,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "extension_management_test_util.cc",
+    "extension_management_test_util.h",
     "mock_extension_special_storage_policy.cc",
     "mock_extension_special_storage_policy.h",
   ]
@@ -1464,6 +1478,9 @@ static_library("test_support") {
     "//base",
     "//chrome/browser",
     "//chrome/browser/extensions",
+    "//components/crx_file",
+    "//components/policy/core/common:test_support",
+    "//testing/gmock",
   ]
 
   if (enable_extensions) {
@@ -1478,8 +1495,6 @@ static_library("test_support") {
       "chrome_test_extension_loader.h",
       "extension_action_test_util.cc",
       "extension_action_test_util.h",
-      "extension_management_test_util.cc",
-      "extension_management_test_util.h",
       "external_testing_loader.cc",
       "external_testing_loader.h",
       "fake_crx_installer.cc",
@@ -1514,7 +1529,6 @@ static_library("test_support") {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common/safe_browsing:proto",
       "//components/crx_file",
-      "//components/policy/core/common:test_support",
       "//components/safe_browsing/core/browser/db:database_manager",
       "//components/safe_browsing/core/browser/db:v4_test_util",
       "//components/services/unzip:in_process",

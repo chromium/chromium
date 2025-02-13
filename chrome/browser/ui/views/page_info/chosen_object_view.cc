@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/page_info/chosen_object_view.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -123,7 +124,7 @@ void ChosenObjectView::UpdateIconImage(bool is_deleted) const {
       PageInfoViewFactory::GetChosenObjectIcon(*info_, is_deleted));
 }
 
-const std::u16string& ChosenObjectView::GetObjectNameForTesting() const {
+std::u16string_view ChosenObjectView::GetObjectNameForTesting() const {
   return row_view_->GetTitleForTesting();  // IN-TEST
 }
 

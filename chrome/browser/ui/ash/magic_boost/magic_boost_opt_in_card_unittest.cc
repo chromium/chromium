@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_opt_in_card.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/magic_boost/mock_magic_boost_state.h"
@@ -39,14 +40,14 @@ views::View* GetSecondaryButton(views::Widget* opt_in_widget) {
       magic_boost::ViewId::OptInCardSecondaryButton);
 }
 
-const std::u16string& GetTitleText(views::Widget* opt_in_widget) {
+std::u16string_view GetTitleText(views::Widget* opt_in_widget) {
   return views::AsViewClass<views::Label>(
              opt_in_widget->GetContentsView()->GetViewByID(
                  magic_boost::ViewId::OptInCardTitleLabel))
       ->GetText();
 }
 
-const std::u16string& GetBodyText(views::Widget* opt_in_widget) {
+std::u16string_view GetBodyText(views::Widget* opt_in_widget) {
   return views::AsViewClass<views::Label>(
              opt_in_widget->GetContentsView()->GetViewByID(
                  magic_boost::ViewId::OptInCardBodyLabel))

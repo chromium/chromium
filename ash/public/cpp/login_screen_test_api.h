@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_LOGIN_SCREEN_TEST_API_H_
 
 #include <string>
+#include <string_view>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/login_types.h"
@@ -54,7 +55,8 @@ class ASH_PUBLIC_EXPORT LoginScreenTestApi {
                              const std::string& password,
                              bool check_if_submittable);
   static void SubmitPin(const AccountId& account_id, const std::string& pin);
-  static std::u16string GetChallengeResponseLabel(const AccountId& account_id);
+  static std::u16string_view GetChallengeResponseLabel(
+      const AccountId& account_id);
   static bool IsChallengeResponseButtonClickable(const AccountId& account_id);
   static void ClickChallengeResponseButton(const AccountId& account_id);
   static int64_t GetUiUpdateCount();
@@ -75,8 +77,9 @@ class ASH_PUBLIC_EXPORT LoginScreenTestApi {
   static bool RemoveUser(const AccountId& account_id);
 
   static std::string GetDisplayedName(const AccountId& account_id);
-  static std::u16string GetDisabledAuthMessage(const AccountId& account_id);
-  static std::u16string GetManagementDisclosureText(
+  static std::u16string_view GetDisabledAuthMessage(
+      const AccountId& account_id);
+  static std::u16string_view GetManagementDisclosureText(
       const AccountId& account_id);
 
   static bool ExpandPublicSessionPod(const AccountId& account_id);
@@ -95,14 +98,14 @@ class ASH_PUBLIC_EXPORT LoginScreenTestApi {
   static std::string GetExpandedPublicSessionSelectedKeyboard();
 
   static bool IsOobeDialogVisible();
-  static std::u16string GetShutDownButtonLabel();
+  static std::u16string_view GetShutDownButtonLabel();
   static gfx::Rect GetShutDownButtonTargetBounds();
   static gfx::Rect GetShutDownButtonMirroredBounds();
   static std::string GetAppsButtonClassName();
 
   static void SetPinRequestWidgetShownCallback(
       base::RepeatingClosure on_pin_request_widget_shown);
-  static std::u16string GetPinRequestWidgetTitle();
+  static std::u16string_view GetPinRequestWidgetTitle();
   static void SubmitPinRequestWidget(const std::string& pin);
   static void CancelPinRequestWidget();
 

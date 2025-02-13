@@ -124,19 +124,15 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     }
 
     // Only valid when the ResourcePool is vending texture-backed resources.
-    Backing* gpu_backing() const {
-      return resource_->gpu_backing();
-    }
+    Backing* gpu_backing() const { return resource_->backing(); }
     void set_gpu_backing(std::unique_ptr<Backing> gpu) const {
-      return resource_->set_gpu_backing(std::move(gpu));
+      return resource_->set_backing(std::move(gpu));
     }
 
     // Only valid when the ResourcePool is vending software-backed resources.
-    Backing* software_backing() const {
-      return resource_->software_backing();
-    }
+    Backing* software_backing() const { return resource_->backing(); }
     void set_software_backing(std::unique_ptr<Backing> software) const {
-      resource_->set_software_backing(std::move(software));
+      resource_->set_backing(std::move(software));
     }
 
     size_t memory_usage() const {
@@ -270,21 +266,11 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     const viz::ResourceId& resource_id() const { return resource_id_; }
     void set_resource_id(viz::ResourceId id) { resource_id_ = id; }
 
-    Backing* gpu_backing() const { return gpu_backing_.get(); }
-    void set_gpu_backing(std::unique_ptr<Backing> gpu) {
-      DCHECK(gpu);
-      DCHECK(!gpu_backing_);
-      DCHECK(!software_backing_);
-      gpu_backing_ = std::move(gpu);
-      resource_pool_->OnBackingAllocated(this);
-    }
-
-    Backing* software_backing() const { return software_backing_.get(); }
-    void set_software_backing(std::unique_ptr<Backing> software) {
-      DCHECK(software);
-      DCHECK(!gpu_backing_);
-      DCHECK(!software_backing_);
-      software_backing_ = std::move(software);
+    Backing* backing() const { return backing_.get(); }
+    void set_backing(std::unique_ptr<Backing> backing) {
+      DCHECK(backing);
+      DCHECK(!backing_);
+      backing_ = std::move(backing);
       resource_pool_->OnBackingAllocated(this);
     }
 
@@ -333,8 +319,9 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     void set_state(State state) { state_ = state; }
 
     size_t memory_usage() const {
-      if (!gpu_backing_ && !software_backing_)
+      if (!backing_) {
         return 0;
+      }
 
       size_t memory_usage = format().EstimatedSizeInBytes(size());
 
@@ -342,7 +329,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
       // 50%, so we consider a raw draw backing uses 50% of a normal backing
       // in average.
       // TODO(crbug.com/40214331): use accurate size for raw draw backings.
-      if (gpu_backing_ && gpu_backing_->is_using_raw_draw) {
+      if (backing_->is_using_raw_draw) {
         memory_usage = memory_usage / 2;
       }
 
@@ -367,15 +354,10 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     // An id used to name the backing for transfer to the display compositor.
     viz::ResourceId resource_id_ = viz::kInvalidResourceId;
 
-    // The backing for gpu resources. Initially null for resources given
+    // The backing for this resource. Initially null for resources given
     // out by ResourcePool, to be filled in by the client. Is destroyed on the
     // compositor thread.
-    std::unique_ptr<Backing> gpu_backing_;
-
-    // The backing for software resources. Initially null for resources given
-    // out by ResourcePool, to be filled in by the client. Is destroyed on the
-    // compositor thread.
-    std::unique_ptr<Backing> software_backing_;
+    std::unique_ptr<Backing> backing_;
 
     // Used for debugging and tracing.
     std::string debug_name_;

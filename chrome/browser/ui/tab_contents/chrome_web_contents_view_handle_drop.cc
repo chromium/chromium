@@ -13,9 +13,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/files_scan_data.h"
+#include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_view_delegate.h"
@@ -23,13 +23,13 @@
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/clipboard/file_info.h"
 
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
+    BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 
 namespace {
 
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 void CompletionCallback(
     content::DropData drop_data,
     std::unique_ptr<enterprise_connectors::FilesScanData> files_scan_data,
@@ -139,9 +139,10 @@ class HandleDropScanData : public content::WebContentsObserver {
 
   base::WeakPtrFactory<HandleDropScanData> weakptr_factory_{this};
 };
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 }  // namespace
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) &&
+        // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 void HandleOnPerformingDrop(
     content::WebContents* web_contents,
@@ -152,7 +153,8 @@ void HandleOnPerformingDrop(
     std::move(callback).Run(std::move(drop_data));
   };
 
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
+    BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   enterprise_connectors::ContentAnalysisDelegate::Data data;
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -217,5 +219,6 @@ void HandleOnPerformingDrop(
   // forces a default action.
   drop_data.document_is_handling_drag = true;
   return;
-#endif  // !BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#endif  // !BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) ||
+        // !BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 }

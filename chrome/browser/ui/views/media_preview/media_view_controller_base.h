@@ -9,6 +9,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
@@ -72,7 +73,7 @@ class MediaViewControllerBase {
 
   void UpdateDeviceNameLabel();
 
-  void AnnounceDynamicChangeIfNeeded(std::u16string announcement);
+  void AnnounceDynamicChangeIfNeeded(std::u16string_view announcement);
 
   const raw_ref<MediaView> base_view_;
   const raw_ref<MediaView> live_feed_container_;

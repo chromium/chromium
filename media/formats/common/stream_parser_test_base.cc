@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "media/base/media_log.h"
 #include "media/base/media_track.h"
@@ -69,7 +70,7 @@ std::string StreamParserTestBase::ParseFile(const std::string& filename,
     // Attempt to incrementally parse each appended chunk to test out the
     // parser's internal management of input queue and pending data bytes.
     EXPECT_TRUE(AppendAllDataThenParseInPieces(
-        buffer->AsSpan().subspan(start, chunk_size),
+        base::as_byte_span(*buffer).subspan(start, chunk_size),
         (chunk_size > 7) ? (chunk_size - 7) : chunk_size));
     start += chunk_size;
   } while (start < end);

@@ -20,16 +20,14 @@ namespace blink {
 
 class LayoutObject;
 
-using InlineItems = HeapVector<InlineItem>;
+using InlineItems = HeapVector<Member<InlineItem>>;
 
 // Class representing a single text node or styled inline element with text
 // content segmented by style, text direction, sideways rotation, font fallback
 // priority (text, symbol, emoji, etc), and script (but not by font).
 // In this representation TextNodes are merged up into their parent inline
 // element where possible.
-class CORE_EXPORT InlineItem {
-  DISALLOW_NEW();
-
+class CORE_EXPORT InlineItem final : public GarbageCollected<InlineItem> {
  public:
   enum InlineItemType {
     kText,
@@ -99,6 +97,12 @@ class CORE_EXPORT InlineItem {
            TextType() == TextItemType::kSymbolMarker);
     SetTextType(TextItemType::kSymbolMarker);
   }
+
+  // The index in `InlineItems`. The value is valid only after `UpdateIndex()`
+  // was run.
+  wtf_size_t Index() const { return index_; }
+  // Same as `Index()`. Use this variant if before `UpdateIndex()` was run.
+  wtf_size_t Index(base::span<const Member<InlineItem>>) const;
 
   const ShapeResult* TextShapeResult() const { return shape_result_.Get(); }
   ShapeResult* CloneTextShapeResult() {
@@ -267,6 +271,9 @@ class CORE_EXPORT InlineItem {
                                unsigned end_offset,
                                UBiDiLevel);
 
+  // Update `InlineItem::Index()` for the given list.
+  static void UpdateIndex(base::span<Member<InlineItem>> items);
+
   void AssertOffset(unsigned offset) const { DCHECK(IsValidOffset(offset)); }
   void AssertEndOffset(unsigned offset) const;
 
@@ -282,6 +289,7 @@ class CORE_EXPORT InlineItem {
   Member<const ShapeResult> shape_result_{
       nullptr, Member<const ShapeResult>::AtomicInitializerTag{}};
   Member<LayoutObject> layout_object_;
+  wtf_size_t index_ = 0;
 
   InlineItemType type_;
   unsigned text_type_ : 3 = static_cast<unsigned>(TextItemType::kNormal);

@@ -52,7 +52,7 @@ enum SpeechRecognitionMode {
     attribute boolean continuous;
     attribute boolean interimResults;
     attribute unsigned long maxAlternatives;
-    [RuntimeEnabled=MediaStreamTrackWebSpeech] attribute SpeechRecognitionMode mode;
+    [RuntimeEnabled=OnDeviceWebSpeechAvailable] attribute SpeechRecognitionMode mode;
     [RuntimeEnabled=WebSpeechRecognitionContext] attribute SpeechRecognitionContext context;
 
     // methods to drive the speech interaction
@@ -68,12 +68,12 @@ enum SpeechRecognitionMode {
         CallWith=ScriptState,
         RaisesException,
         RuntimeEnabled=OnDeviceWebSpeechAvailable
-    ] Promise<boolean> onDeviceWebSpeechAvailable(DOMString lang);
+    ] static Promise<boolean> availableOnDevice(DOMString lang);
     [
         CallWith=ScriptState,
         RaisesException,
         RuntimeEnabled=InstallOnDeviceSpeechRecognition
-    ] Promise<boolean> installOnDeviceSpeechRecognition(DOMString lang);
+    ] static Promise<boolean> installOnDevice(DOMString lang);
 
     // event methods
     attribute EventHandler onaudiostart;

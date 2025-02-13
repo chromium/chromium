@@ -7,3 +7,4 @@ per-file bruschetta*=file://chrome/browser/ash/guest_os/OWNERS
 per-file crostini*=file://chrome/browser/ash/guest_os/OWNERS
 per-file guest_os*=file://chrome/browser/ash/guest_os/OWNERS
 per-file plugin_vm*=file://chrome/browser/ash/guest_os/OWNERS
+per-file chrome_app_deprecation*=file://apps/DEPRECATION_OWNERS

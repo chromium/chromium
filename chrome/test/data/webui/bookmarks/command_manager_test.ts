@@ -511,6 +511,8 @@ suite('<bookmarks-item> CommandManager integration', function() {
 
     items = list.shadowRoot!.querySelectorAll<BookmarksItemElement>(
         'bookmarks-item');
+    // Wait for the flushed properties to propagate to the item elements' DOMs.
+    return microtasksFinished();
   });
 
   function simulateDoubleClick(element: HTMLElement, config?: MouseEventInit) {

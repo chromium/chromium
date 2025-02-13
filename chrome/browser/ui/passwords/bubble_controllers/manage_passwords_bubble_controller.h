@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_MANAGE_PASSWORDS_BUBBLE_CONTROLLER_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
@@ -100,7 +101,7 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
 
   // Returns whether any of the available credentials matching the current site
   // has the same username value as `username`.
-  bool UsernameExists(const std::u16string& username);
+  bool UsernameExists(std::u16string_view username);
 
   // Returns whether user can currently use account storage.
   bool IsAccountStorageEnabled() const;

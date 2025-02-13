@@ -106,7 +106,6 @@ include_rules = [
   "+chrome/browser/ui/tabs",
   "+chrome/browser/ui/toolbar",
   "+chrome/browser/ui/view_ids.h",
-  "+chrome/browser/ui/views/frame",
   "+chrome/browser/ui/webui/ash",
   "+chrome/browser/ui/webui/chrome_web_contents_handler.h",
   "+chrome/browser/ui/webui/feedback",

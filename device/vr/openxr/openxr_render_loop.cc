@@ -625,6 +625,12 @@ void OpenXrRenderLoop::SendFrameData(
   } else {
     auto empty_frame_data = mojom::XRFrameData::New();
     empty_frame_data->render_info = mojom::XRRenderInfo::New();
+    if (frame_data->render_info) {
+      // Ensure that the frame_id is accurate, even if the rest of the frame
+      // data has been suppressed.
+      empty_frame_data->render_info->frame_id =
+          frame_data->render_info->frame_id;
+    }
     std::move(callback).Run(std::move(empty_frame_data));
   }
 }

@@ -770,6 +770,11 @@ Grit (generate_grd()) related params:
 resource_path_prefix: See |resource_path_prefix| in generate_grd(). Optional
                       parameter. Only specify it for targets residing outside of
                       //chrome/test/data/webui.
+
+Other params
+enable_type_aware_eslint_checks: Defaults to "true". Turns on additional
+                                 type-aware ESLint checks. See
+                                 eslint_ts() for more details.
 ```
 
 #### **Example**

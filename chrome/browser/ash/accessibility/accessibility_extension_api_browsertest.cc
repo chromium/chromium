@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -75,7 +77,7 @@ class AccessibilityPrivateApiTest
     return dictation_bubble_test_helper_.get();
   }
 
-  const std::u16string& GetFaceGazeBubbleText() {
+  std::u16string_view GetFaceGazeBubbleText() {
     FaceGazeBubbleController* controller =
         Shell::Get()
             ->accessibility_controller()

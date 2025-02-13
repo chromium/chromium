@@ -12,6 +12,8 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -133,6 +135,12 @@ class WebContentsInteractionTestUtil : protected content::WebContentsObserver {
       kDoesNotExist
     };
 
+    // If you want to specify something other than "the return value is truthy",
+    // use this callback. The value passed in will be null (`NONE`) if `where`
+    // is specified, you are waiting for the element to exist, and the element
+    // does not yet exist.
+    using CheckCallback = base::RepeatingCallback<bool(const base::Value&)>;
+
     // By default the type of state change is inferred from the other
     // parameters. This may be set explicitly, but it should only be required
     // for `kDoesNotExist` as there is no way to infer that option.
@@ -178,6 +186,10 @@ class WebContentsInteractionTestUtil : protected content::WebContentsObserver {
     // The event to fire if `timeout` is hit before `test_script` returns a
     // truthy value. If not specified, generates an error on timeout.
     ui::CustomElementEventType timeout_event;
+
+    // If set, will be used to evaluate the result of `test_function` instead of
+    // just checking it is truthy.
+    CheckCallback check_callback = base::NullCallback();
   };
 
   ~WebContentsInteractionTestUtil() override;

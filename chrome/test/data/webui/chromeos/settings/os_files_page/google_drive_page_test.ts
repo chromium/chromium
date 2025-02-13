@@ -127,13 +127,13 @@ suite('<settings-google-drive-subpage>', function() {
   });
 
   suite('with bulk pinning disabled', () => {
-    suiteSetup(async () => {
+    suiteSetup(() => {
       loadTimeData.overrideValues({
         enableDriveFsBulkPinning: false,
       });
     });
 
-    test('file sync should not show when bulk pinning disabled', async () => {
+    test('file sync should not show when bulk pinning disabled', () => {
       assertEquals(bulkPinningToggle, null);
     });
 
@@ -264,7 +264,7 @@ suite('<settings-google-drive-subpage>', function() {
   });
 
   suite('with bulk pinning enabled', () => {
-    suiteSetup(async () => {
+    suiteSetup(() => {
       loadTimeData.overrideValues({
         enableDriveFsBulkPinning: true,
       });

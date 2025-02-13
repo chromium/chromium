@@ -39,7 +39,7 @@ suite('NewColumnSelectorTest', () => {
         Promise.resolve({urlInfos: recentlyViewedTabs}));
   }
 
-  setup(async () => {
+  setup(() => {
     shoppingServiceApi.reset();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);

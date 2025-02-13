@@ -26,23 +26,21 @@ struct NetworkTrafficAnnotationTag;
 
 namespace remoting {
 
+class HttpStatus;
 class OAuthTokenGetter;
-class ProtobufHttpStatus;
 
 // A helper class that communicates with backend services using the Corp API.
 class CorpServiceClient {
  public:
   using ProvisionCorpMachineCallback = base::OnceCallback<void(
-      const ProtobufHttpStatus&,
+      const HttpStatus&,
       std::unique_ptr<internal::ProvisionCorpMachineResponse>)>;
   using ReportProvisioningErrorCallback =
-      base::OnceCallback<void(const ProtobufHttpStatus&,
-                              std::unique_ptr<Empty>)>;
+      base::OnceCallback<void(const HttpStatus&, std::unique_ptr<Empty>)>;
   using SendHeartbeatCallback =
-      base::OnceCallback<void(const ProtobufHttpStatus&,
-                              std::unique_ptr<Empty>)>;
+      base::OnceCallback<void(const HttpStatus&, std::unique_ptr<Empty>)>;
   using UpdateRemoteAccessHostCallback = base::OnceCallback<void(
-      const ProtobufHttpStatus&,
+      const HttpStatus&,
       std::unique_ptr<internal::RemoteAccessHostV1Proto>)>;
 
   // C'tor to use for unauthenticated service requests.

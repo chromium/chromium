@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -175,17 +176,17 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
   // Returns the window count in avatar button text, if it exists.
   std::optional<int> GetWindowCountInAvatarButtonText(
       AvatarToolbarButton* avatar_button) {
-    std::u16string button_text = avatar_button->GetText();
+    const std::u16string_view button_text = avatar_button->GetText();
 
     size_t before_number = button_text.find('(');
-    if (before_number == std::string::npos) {
+    if (before_number == std::u16string_view::npos) {
       return std::optional<int>();
     }
 
     size_t after_number = button_text.find(')');
-    EXPECT_NE(std::string::npos, after_number);
+    EXPECT_NE(std::u16string_view::npos, after_number);
 
-    std::u16string number_text =
+    const std::u16string_view number_text =
         button_text.substr(before_number + 1, after_number - before_number - 1);
     int window_count;
     return base::StringToInt(number_text, &window_count)

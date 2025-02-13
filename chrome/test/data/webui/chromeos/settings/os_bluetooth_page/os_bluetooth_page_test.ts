@@ -100,7 +100,7 @@ suite('<os-settings-bluetooth-page>', () => {
     assertTrue(!!getBluetoothPairingUi());
   });
 
-  suite('back button on the landing page', async () => {
+  suite('back button on the landing page', () => {
     let backButton: CrIconButtonElement;
     let bluetoothSubpage: OsSettingsSubpageElement;
 

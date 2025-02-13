@@ -55,7 +55,6 @@ class RealtimeReportingClient : public RealtimeReportingClientBase {
   ~RealtimeReportingClient() override;
 
   // RealtimeReportingClientBase overrides:
-  bool ShouldInitRealtimeReportingClient() override;
   std::string GetProfileUserName() override;
   base::WeakPtr<RealtimeReportingClientBase> AsWeakPtr() override;
 

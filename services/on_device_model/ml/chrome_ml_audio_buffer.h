@@ -5,6 +5,8 @@
 #ifndef SERVICES_ON_DEVICE_MODEL_ML_CHROME_ML_AUDIO_BUFFER_H_
 #define SERVICES_ON_DEVICE_MODEL_ML_CHROME_ML_AUDIO_BUFFER_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <variant>
 #include <vector>

@@ -117,7 +117,8 @@ unsigned MismatchFromEnd(StringView old_text, StringView new_text) {
 float CalculateWidthForTextCombine(const InlineItemsData& data) {
   return std::accumulate(
       data.items.begin(), data.items.end(), 0.0f,
-      [](float sum, const InlineItem& item) {
+      [](float sum, const Member<InlineItem>& item_ptr) {
+        const InlineItem& item = *item_ptr;
         DCHECK(item.Type() == InlineItem::kText ||
                item.Type() == InlineItem::kBidiControl ||
                item.Type() == InlineItem::kControl)
@@ -246,23 +247,29 @@ class ReusingTextShaper final {
     HeapVector<Member<const ShapeResult>> shape_results;
     if (!reusable_items_)
       return shape_results;
-    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-    for (auto item = std::lower_bound(
-             reusable_items_->begin(), reusable_items_->end(), start_offset,
-             [](const InlineItem& item, unsigned offset) {
-               return item.EndOffset() <= offset;
-             });
-         item != reusable_items_->end(); UNSAFE_TODO(++item)) {
-      if (end_offset <= item->StartOffset())
+    const auto start_item_iter = std::lower_bound(
+        reusable_items_->begin(), reusable_items_->end(), start_offset,
+        [](const Member<InlineItem>& item, unsigned offset) {
+          return item->EndOffset() <= offset;
+        });
+    const wtf_size_t start_item_index =
+        std::distance(reusable_items_->begin(), start_item_iter);
+    for (const Member<InlineItem>& item_ptr :
+         base::span{*reusable_items_}.subspan(start_item_index)) {
+      const InlineItem& item = *item_ptr;
+      if (end_offset <= item.StartOffset()) {
         break;
-      if (item->EndOffset() < start_offset)
+      }
+      if (item.EndOffset() < start_offset) {
         continue;
+      }
       // This is trying to reuse `ShapeResult` only by the string match. Check
       // if it's reusable for the given style. crbug.com/40879986
-      const ShapeResult* const shape_result = item->TextShapeResult();
-      if (!shape_result || item->Direction() != direction)
+      const ShapeResult* const shape_result = item.TextShapeResult();
+      if (!shape_result || item.Direction() != direction) {
         continue;
-      if (*item->Style()->GetFont() != font) {
+      }
+      if (*item.Style()->GetFont() != font) {
         continue;
       }
       if (shape_result->IsAppliedSpacing())
@@ -280,8 +287,8 @@ class ReusingTextShaper final {
     const TextDirection direction = start_item.Direction();
     if (data_.segments) {
       return data_.segments->ShapeText(&shaper_, &font, direction, start_offset,
-                                       end_offset,
-                                       data_.ToItemIndex(start_item), options_);
+                                       end_offset, start_item.Index(),
+                                       options_);
     }
     RunSegmenter::RunSegmenterRange range =
         start_item.CreateRunSegmenterRange();
@@ -710,8 +717,8 @@ class InlineNodeDataEditor final {
     items.ReserveInitialCapacity(data_->items.size() + 3);
 
     // Copy items before replaced range
-    base::span<InlineItem> old_items{data_->items};
-    for (; !old_items.empty() && old_items.front().end_offset_ < start_offset;
+    base::span<Member<InlineItem>> old_items{data_->items};
+    for (; !old_items.empty() && old_items.front()->end_offset_ < start_offset;
          old_items = old_items.subspan<1>()) {
       items.push_back(old_items.front());
     }
@@ -719,19 +726,20 @@ class InlineNodeDataEditor final {
     while (!old_items.empty()) {
       // Copy part of item before replaced range.
       {
-        const InlineItem& old_item = old_items.front();
+        const InlineItem& old_item = *old_items.front();
         if (old_item.start_offset_ < start_offset) {
-          const InlineItem& new_item = CopyItemBefore(old_item, start_offset);
-          items.push_back(new_item);
+          InlineItem& new_item = CopyItemBefore(old_item, start_offset);
+          items.push_back(&new_item);
           if (new_item.EndOffset() < start_offset) {
-            items.push_back(InlineItem(old_item, new_item.EndOffset(),
-                                       start_offset, nullptr));
+            items.push_back(MakeGarbageCollected<InlineItem>(
+                old_item, new_item.EndOffset(), start_offset, nullptr));
           }
         }
       }
 
       // Skip items in replaced range.
-      while (!old_items.empty() && old_items.front().end_offset_ < end_offset) {
+      while (!old_items.empty() &&
+             old_items.front()->end_offset_ < end_offset) {
         old_items = old_items.subspan<1>();
       }
 
@@ -743,41 +751,43 @@ class InlineNodeDataEditor final {
       const int diff = new_length - old_length;
       {
         const unsigned inserted_end = AdjustOffset(end_offset, diff);
-        const InlineItem& old_item = old_items.front();
+        const InlineItem& old_item = *old_items.front();
         if (start_offset < inserted_end) {
-          items.push_back(
-              InlineItem(old_item, start_offset, inserted_end, nullptr));
+          items.push_back(MakeGarbageCollected<InlineItem>(
+              old_item, start_offset, inserted_end, nullptr));
         }
 
         // Copy part of item after replaced range.
         if (end_offset < old_item.end_offset_) {
-          const InlineItem& new_item = CopyItemAfter(old_item, end_offset);
+          InlineItem& new_item = CopyItemAfter(old_item, end_offset);
           if (end_offset < new_item.StartOffset()) {
-            items.push_back(InlineItem(old_item, end_offset,
-                                       new_item.StartOffset(), nullptr));
-            ShiftItem(&items.back(), diff);
+            items.push_back(MakeGarbageCollected<InlineItem>(
+                old_item, end_offset, new_item.StartOffset(), nullptr));
+            ShiftItem(items.back(), diff);
           }
-          items.push_back(new_item);
-          ShiftItem(&items.back(), diff);
+          items.push_back(&new_item);
+          ShiftItem(items.back(), diff);
         }
       }
 
       // Copy items after replaced range
       old_items = old_items.subspan<1>();
-      for (const InlineItem& old_item : old_items) {
-        DCHECK_LE(end_offset, old_item.start_offset_);
-        items.push_back(old_item);
-        ShiftItem(&items.back(), diff);
+      for (const Member<InlineItem>& old_item : old_items) {
+        DCHECK_LE(end_offset, old_item->start_offset_);
+        InlineItem* copy = MakeGarbageCollected<InlineItem>(*old_item);
+        items.push_back(copy);
+        ShiftItem(copy, diff);
       }
       break;
     }
 
     if (items.empty()) {
-      items.push_back(InlineItem(data_->items.front(), 0,
-                                 new_data.text_content.length(), nullptr));
-    } else if (items.back().end_offset_ < new_data.text_content.length()) {
-      items.push_back(InlineItem(data_->items.back(), items.back().end_offset_,
-                                 new_data.text_content.length(), nullptr));
+      items.push_back(MakeGarbageCollected<InlineItem>(
+          *data_->items.front(), 0, new_data.text_content.length(), nullptr));
+    } else if (items.back()->end_offset_ < new_data.text_content.length()) {
+      items.push_back(MakeGarbageCollected<InlineItem>(
+          *data_->items.back(), items.back()->end_offset_,
+          new_data.text_content.length(), nullptr));
     }
 
     VerifyItems(items);
@@ -815,36 +825,41 @@ class InlineNodeDataEditor final {
   }
 
   // Returns copy of |item| after |start_offset| (inclusive).
-  InlineItem CopyItemAfter(const InlineItem& item,
-                           unsigned start_offset) const {
+  InlineItem& CopyItemAfter(const InlineItem& item,
+                            unsigned start_offset) const {
     DCHECK_LE(item.start_offset_, start_offset);
     DCHECK_LT(start_offset, item.end_offset_);
     const unsigned safe_start_offset = GetFirstSafeToReuse(item, start_offset);
     const unsigned end_offset = item.end_offset_;
-    if (end_offset == safe_start_offset)
-      return InlineItem(item, start_offset, end_offset, nullptr);
+    if (end_offset == safe_start_offset) {
+      return *MakeGarbageCollected<InlineItem>(item, start_offset, end_offset,
+                                               nullptr);
+    }
     // To handle kerning, e.g. inserting "A" before "V", and joining in Arabic,
     // we should not reuse first glyph.
     // See http://crbug.com/1199331
     DCHECK_LT(safe_start_offset, item.end_offset_);
-    return InlineItem(
+    return *MakeGarbageCollected<InlineItem>(
         item, safe_start_offset, end_offset,
         item.shape_result_->SubRange(safe_start_offset, end_offset));
   }
 
   // Returns copy of |item| before |end_offset| (exclusive).
-  InlineItem CopyItemBefore(const InlineItem& item, unsigned end_offset) const {
+  InlineItem& CopyItemBefore(const InlineItem& item,
+                             unsigned end_offset) const {
     DCHECK_LT(item.start_offset_, end_offset);
     DCHECK_LE(end_offset, item.end_offset_);
     const unsigned safe_end_offset = GetLastSafeToReuse(item, end_offset);
     const unsigned start_offset = item.start_offset_;
     // Nothing to reuse if no characters are safe to reuse.
-    if (safe_end_offset <= start_offset)
-      return InlineItem(item, start_offset, end_offset, nullptr);
+    if (safe_end_offset <= start_offset) {
+      return *MakeGarbageCollected<InlineItem>(item, start_offset, end_offset,
+                                               nullptr);
+    }
     // To handle kerning, e.g. "AV", we should not reuse last glyph.
     // See http://crbug.com/1129710
     DCHECK_LT(safe_end_offset, item.end_offset_);
-    return InlineItem(
+    return *MakeGarbageCollected<InlineItem>(
         item, start_offset, safe_end_offset,
         item.shape_result_->SubRange(start_offset, safe_end_offset));
   }
@@ -905,8 +920,9 @@ class InlineNodeDataEditor final {
 #if DCHECK_IS_ON()
     if (items.empty())
       return;
-    unsigned last_offset = items.front().start_offset_;
-    for (const InlineItem& item : items) {
+    unsigned last_offset = items.front()->start_offset_;
+    for (const Member<InlineItem>& item_ptr : items) {
+      const InlineItem& item = *item_ptr;
       DCHECK_LE(item.start_offset_, item.end_offset_);
       DCHECK_EQ(last_offset, item.start_offset_);
       last_offset = item.end_offset_;
@@ -1172,10 +1188,11 @@ void InlineNode::SegmentScriptRuns(InlineNodeData* data,
     if (!previous_data->segments) {
       const auto it = std::ranges::find_if(
           previous_data->items,
-          [](const auto& item) { return item.Type() == InlineItem::kText; });
+          [](const auto& item) { return item->Type() == InlineItem::kText; });
       if (it != previous_data->items.end()) {
-        unsigned previous_packed_segment = it->segment_data_;
-        for (auto& item : data->items) {
+        unsigned previous_packed_segment = (*it)->segment_data_;
+        for (auto& item_ptr : data->items) {
+          InlineItem& item = *item_ptr;
           if (item.Type() == InlineItem::kText) {
             item.segment_data_ = previous_packed_segment;
           }
@@ -1249,7 +1266,8 @@ void InlineNode::SegmentFontOrientation(InlineNodeData* data) const {
   }
   unsigned segment_index = 0;
 
-  for (const InlineItem& item : items) {
+  for (const Member<InlineItem>& item_ptr : items) {
+    InlineItem& item = *item_ptr;
     if (item.Type() == InlineItem::kText && item.Length() &&
         item.Style()->GetFont()->GetFontDescription().Orientation() ==
             FontOrientation::kVerticalMixed) {
@@ -1296,7 +1314,7 @@ void InlineNode::SegmentBidiRuns(InlineNodeData* data) const {
   for (unsigned start = 0; start < data->text_content.length();) {
     UBiDiLevel level;
     unsigned end = bidi.GetLogicalRun(start, &level);
-    DCHECK_EQ(items[item_index].start_offset_, start);
+    DCHECK_EQ(items[item_index]->start_offset_, start);
     item_index = InlineItem::SetBidiLevel(items, item_index, end, level);
     start = end;
   }
@@ -1305,8 +1323,9 @@ void InlineNode::SegmentBidiRuns(InlineNodeData* data) const {
   // Items that do not create break opportunities such as kOutOfFlowPositioned
   // do not have corresponding characters, and that they do not have bidi level
   // assigned.
-  while (item_index < items.size() && !items[item_index].Length())
+  while (item_index < items.size() && !items[item_index]->Length()) {
     item_index++;
+  }
   DCHECK_EQ(item_index, items.size());
 #endif
 }
@@ -1334,7 +1353,7 @@ bool InlineNode::IsNGShapeCacheAllowed(
   if (text_content.length() > NGShapeCache::kMaxTextLengthOfEntries) {
     return false;
   }
-  const InlineItem& single_item = items[0];
+  const InlineItem& single_item = *items[0];
   if (!(single_item.Type() == InlineItem::kText &&
         single_item.StartOffset() == 0 &&
         single_item.EndOffset() == text_content.length())) {
@@ -1387,7 +1406,7 @@ void InlineNode::ShapeText(InlineItemsData* data,
          data->segments->EndOffset() == text_content.length());
 
   for (unsigned index = 0; index < items->size();) {
-    InlineItem& start_item = (*items)[index];
+    InlineItem& start_item = *(*items)[index];
     if (start_item.Type() != InlineItem::kText || !start_item.Length()) {
       index++;
       is_next_start_of_paragraph = start_item.IsForcedLineBreak();
@@ -1441,7 +1460,7 @@ void InlineNode::ShapeText(InlineItemsData* data,
     // possible as this is required for accurate cross-element shaping.
     unsigned num_text_items = 1;
     for (; end_index < items->size(); end_index++) {
-      const InlineItem& item = (*items)[end_index];
+      const InlineItem& item = *(*items)[end_index];
 
       if (item.Type() == InlineItem::kControl) {
         // Do not shape across control characters (line breaks, zero width
@@ -1496,7 +1515,7 @@ void InlineNode::ShapeText(InlineItemsData* data,
     if (previous_text) {
       bool has_valid_shape_results = true;
       for (unsigned item_index = index; item_index < end_index; item_index++) {
-        if (NeedsShaping((*items)[item_index])) {
+        if (NeedsShaping(*(*items)[item_index])) {
           has_valid_shape_results = false;
           break;
         }
@@ -1556,7 +1575,7 @@ void InlineNode::ShapeText(InlineItemsData* data,
       shape_result->EnsurePositionData();
     }
     for (; index < end_index; index++) {
-      InlineItem& item = (*items)[index];
+      InlineItem& item = *(*items)[index];
       if (item.Type() != InlineItem::kText || !item.Length()) {
         continue;
       }
@@ -1587,7 +1606,8 @@ void InlineNode::ShapeText(InlineItemsData* data,
   auto_space.ApplyIfNeeded(*data);
 
 #if DCHECK_IS_ON()
-  for (const InlineItem& item : *items) {
+  for (const Member<InlineItem>& item_ptr : *items) {
+    const InlineItem& item = *item_ptr;
     if (item.Type() == InlineItem::kText && item.Length()) {
       DCHECK(item.TextShapeResult());
       DCHECK_EQ(item.TextShapeResult()->StartIndex(), item.StartOffset());
@@ -1631,9 +1651,12 @@ void InlineNode::ShapeTextForFirstLineIfNeeded(InlineNodeData* data) const {
   }
   first_line_items->text_content = text_content;
 
-  first_line_items->items.AppendVector(data->items);
-  for (auto& item : first_line_items->items) {
-    item.SetStyleVariant(StyleVariant::kFirstLine);
+  // Copy `InlineItems` and update their properties.
+  first_line_items->items.reserve(data->items.size());
+  for (const Member<InlineItem>& item : data->items) {
+    InlineItem* first_line_item = MakeGarbageCollected<InlineItem>(*item);
+    first_line_item->SetStyleVariant(StyleVariant::kFirstLine);
+    first_line_items->items.push_back(first_line_item);
   }
   if (data->segments) {
     first_line_items->segments = data->segments->Clone();
@@ -1653,6 +1676,7 @@ void InlineNode::ShapeTextIncludingFirstLine(
     InlineNodeData* data,
     const String* previous_text,
     const InlineItems* previous_items) const {
+  InlineItem::UpdateIndex(data->items);
   ShapeText(data, previous_text, previous_items);
   ShapeTextForFirstLineIfNeeded(data);
 }
@@ -1664,7 +1688,7 @@ void InlineNode::AssociateItemsWithInlines(InlineNodeData* data) const {
   InlineItems& items = data->items;
   WTF::wtf_size_t size = items.size();
   for (WTF::wtf_size_t i = 0; i != size;) {
-    LayoutObject* object = items[i].GetLayoutObject();
+    LayoutObject* object = items[i]->GetLayoutObject();
     auto* layout_text = DynamicTo<LayoutText>(object);
     if (layout_text && !layout_text->IsBR()) {
 #if DCHECK_IS_ON()
@@ -1675,7 +1699,7 @@ void InlineNode::AssociateItemsWithInlines(InlineNodeData* data) const {
       bool has_bidi_control = false;
       WTF::wtf_size_t begin = i;
       for (++i; i != size; ++i) {
-        auto& item = items[i];
+        const InlineItem& item = *items[i];
         if (item.GetLayoutObject() != object)
           break;
         if (item.Type() == InlineItem::kBidiControl) {
@@ -1710,11 +1734,12 @@ template <typename CharType>
 String CreateTextContentForStickyImagesQuirk(
     const CharType* text,
     unsigned length,
-    base::span<const InlineItem> items) {
+    base::span<const Member<InlineItem>> items) {
   StringBuffer<CharType> buffer(length);
   CharType* characters = buffer.Characters();
   memcpy(characters, text, length * sizeof(CharType));
-  for (const InlineItem& item : items) {
+  for (const Member<InlineItem>& item_ptr : items) {
+    const InlineItem& item = *item_ptr;
     if (item.Type() == InlineItem::kAtomicInline && item.IsImage()) {
       // TODO(crbug.com/351564777): Resolve a buffer safety issue.
       DCHECK_EQ(UNSAFE_TODO(characters[item.StartOffset()]),
@@ -1737,7 +1762,7 @@ String InlineNode::TextContentForStickyImagesQuirk(
     const InlineItemsData& items_data) {
   const String& text_content = items_data.text_content;
   for (unsigned i = 0; i < items_data.items.size(); ++i) {
-    const InlineItem& item = items_data.items[i];
+    const InlineItem& item = *items_data.items[i];
     if (item.Type() == InlineItem::kAtomicInline && item.IsImage()) {
       auto item_span = base::span(items_data.items).subspan(i);
       if (text_content.Is8Bit()) {
@@ -1860,11 +1885,13 @@ static LayoutUnit ComputeContentSize(InlineNode node,
     // may break text into multiple lines, and may remove trailing spaces. For
     // max size, use the original text widths from InlineItem instead.
     void AddTextUntil(wtf_size_t end_item_index) {
-      const base::span<const InlineItem> items = base::span{items_data.items}
-                                                     .first(end_item_index)
-                                                     .subspan(next_item_index);
+      const base::span<const Member<InlineItem>> items =
+          base::span{items_data.items}
+              .first(end_item_index)
+              .subspan(next_item_index);
       next_item_index = end_item_index;
-      for (const InlineItem& item : items) {
+      for (const Member<InlineItem>& item_ptr : items) {
+        const InlineItem& item = *item_ptr;
         if (item.Type() == InlineItem::kOpenTag &&
             item.GetLayoutObject()->IsInlineRubyText()) {
           ++annotation_nesting_level;
@@ -1893,7 +1920,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
 
     void AddTabulationCharacters(const InlineItem& item, unsigned length) {
       DCHECK_GE(length, 1u);
-      AddTextUntil(items_data.ToItemIndex(item));
+      AddTextUntil(item.Index());
       DCHECK(item.Style());
       const ComputedStyle& style = *item.Style();
       const Font* font = style.GetFont();
@@ -1951,7 +1978,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
         if (item.Type() == InlineItem::kAtomicInline ||
             item.Type() == InlineItem::kBlockInInline) {
           // The max-size for atomic inlines are cached in |max_size_cache|.
-          unsigned item_index = items_data.ToItemIndex(item);
+          unsigned item_index = item.Index();
           position += max_size_cache[item_index];
           continue;
         }
@@ -2125,7 +2152,8 @@ bool InlineNode::UseFirstLineStyle() const {
 void InlineNode::CheckConsistency() const {
 #if DCHECK_IS_ON()
   const InlineItems& items = Data().items;
-  for (const InlineItem& item : items) {
+  for (const Member<InlineItem>& item_ptr : items) {
+    const InlineItem& item = *item_ptr;
     DCHECK(!item.GetLayoutObject() || !item.Style() ||
            item.Style() == item.GetLayoutObject()->Style());
   }

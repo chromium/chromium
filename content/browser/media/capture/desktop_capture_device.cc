@@ -860,13 +860,8 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
   // the captured frame in combination with DXGI; hence most cursors will be
   // added separately by a desktop and cursor composer even if this option is
   // set to true. GDI does not use this option.
-  // TODO(crbug.com/40259358): Possibly remove this flag. Keeping for now to
-  // force non embedded cursor for all capture APIs on Windows.
-  static BASE_FEATURE(kAllowWinCursorEmbedded, "AllowWinCursorEmbedded",
-                      base::FEATURE_ENABLED_BY_DEFAULT);
-  if (base::FeatureList::IsEnabled(kAllowWinCursorEmbedded)) {
-    options.set_prefer_cursor_embedded(true);
-  }
+  options.set_prefer_cursor_embedded(true);
+
   if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenCapturer)) {
     options.set_allow_wgc_screen_capturer(true);
 

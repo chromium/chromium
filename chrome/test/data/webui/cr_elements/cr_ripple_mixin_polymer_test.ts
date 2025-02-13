@@ -78,7 +78,7 @@ suite('CrRippleMixin', function() {
         element.shadowRoot!.querySelector('#container'), ripple.parentNode);
   });
 
-  test('noink', async function() {
+  test('noink', function() {
     assertFalse(element.noink);
     assertFalse(element.hasRipple());
     element.ensureRipple();

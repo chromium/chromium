@@ -20,20 +20,4 @@ public class ContentViewStatics {
     public static void setWebKitSharedTimersSuspended(boolean suspend) {
         ContentViewStaticsImpl.setWebKitSharedTimersSuspended(suspend);
     }
-
-    /**
-     * Enables platform notifications of data state and proxy changes.
-     * Notifications are enabled by default.
-     */
-    public static void enablePlatformNotifications() {
-        ContentViewStaticsImpl.enablePlatformNotifications();
-    }
-
-    /**
-     * Disables platform notifications of data state and proxy changes.
-     * Notifications are enabled by default.
-     */
-    public static void disablePlatformNotifications() {
-        ContentViewStaticsImpl.disablePlatformNotifications();
-    }
 }

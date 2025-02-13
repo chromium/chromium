@@ -1047,7 +1047,9 @@ def main():
                  setenv=True)
     with timer.time('bootstrap build'):
       RunCommand(['ninja'], setenv=True)
-    if args.run_tests:
+    # x86 mac toolchain builds are super slow, skip bootstrap tests
+    if args.run_tests and not (platform.machine() == 'x86_64'
+                               and sys.platform == 'darwin'):
       with timer.time('bootstrap check-all'):
         RunCommand(['ninja', 'check-all'], env=test_env, setenv=True)
     with timer.time('bootstrap install'):

@@ -8,25 +8,25 @@
           anchor-name: --carousel;
 
           &::scroll-button(right),
-          &::scroll-button(left) {
+          &::scroll-button(left),
+          &::scroll-marker-group {
             position: fixed;
             position-anchor: --carousel;
           }
 
           &::scroll-button(right) {
-            --_inner: center span-inline-start;
-            --_outer: inline-end center;
-
-            position-area: var(--_outer);
+            position-area: inline-end center;
             content: '->';
           }
 
           &::scroll-button(left) {
-            --_inner: center span-inline-end;
-            --_outer: inline-start center;
-
-            position-area: var(--_outer);
+            position-area: inline-start center;
             content: '<-';
+          }
+
+          &::scroll-marker-group {
+            position-area: block-end;
+            display: grid;
           }
 
           scroll-marker-group: after;
@@ -42,10 +42,10 @@
 
             &::column::scroll-marker {
               content: ' ';
+            }
 
-              &:target-current {
-                background: blue;
-              }
+            &::column::scroll-marker:target-current {
+              background: blue;
             }
           }
 
@@ -111,13 +111,19 @@
   testRunner.log('Carousel DOM tree:');
   dumpDom(carousel, nodeMap);
 
-  const scrollMarker = carousel.pseudoElements.at(-1).pseudoElements.at(-1);
-  assert(
-      'Nested scroll marker is present', scrollMarker.pseudoType,
-      'scroll-marker');
+  testRunner.log('Verify that styles can be queried for pseudo elements');
 
-  testRunner.log('Scroll marker styles:');
-  await dumpStyles(scrollMarker);
+  for (const pseudoElement of carousel.pseudoElements) {
+    testRunner.log(`Style for ${pseudoElement.nodeName}:`);
+    await dumpStyles(pseudoElement);
+    if (pseudoElement.pseudoElements && pseudoElement.pseudoElements.length > 0) {
+      testRunner.log(`Style for nested ${pseudoElement.pseudoElements[0].nodeName}:`);
+      await dumpStyles(pseudoElement.pseudoElements[0]);
+    }
+  }
+
+  testRunner.log('Verify that pseudo element styles are returned for the root element');
+  await dumpStyles(carousel);
 
   testRunner.log('Changing carousel class');
 
@@ -176,17 +182,25 @@
 
   async function dumpStyles(node) {
     const styles = await dp.CSS.getMatchedStylesForNode({nodeId: node.nodeId});
-    for (const style of styles.result.matchedCSSRules) {
-      for (const matcher of style.rule.selectorList.selectors) {
-        testRunner.log(matcher.text);
+    for (const pseudoElementMatch of [null, ...(styles.result.pseudoElements ?? [])]) {
+      if (pseudoElementMatch) {
+        testRunner.log(`Included style for nested ::${pseudoElementMatch.pseudoType}:`);
       }
-      testRunner.log('{');
-      for (const property of style.rule.style.cssProperties) {
-        if (property.text) {
-          testRunner.log('  ' + property.text);
+      for (const style of (pseudoElementMatch ? pseudoElementMatch.matches : styles.result.matchedCSSRules)) {
+        if (style.rule.origin !== 'regular') {
+          continue;
         }
+        for (const matcher of style.rule.selectorList.selectors) {
+          testRunner.log(matcher.text);
+        }
+        testRunner.log('{');
+        for (const property of style.rule.style.cssProperties) {
+          if (property.text) {
+            testRunner.log('  ' + property.text);
+          }
+        }
+        testRunner.log('}');
       }
-      testRunner.log('}');
     }
   }
 

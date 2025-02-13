@@ -9,7 +9,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/ash/boca/babelorca/babel_orca_speech_recognizer_impl.h"
 #include "chrome/browser/ash/boca/babelorca/caption_bubble_context_boca.h"
 #include "chrome/browser/ash/boca/on_task/on_task_extensions_manager_impl.h"
@@ -34,7 +33,6 @@
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
-#include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/translation_dispatcher.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
@@ -76,10 +74,9 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
           profile, global_prefs, application_locale);
   return boca::BabelOrcaManager::CreateAsProducer(
       IdentityManagerFactory::GetForProfile(profile),
-      profile->GetURLLoaderFactory(),
-      ::captions::LiveCaptionControllerFactory::GetForProfile(profile),
-      std::move(caption_bubble_context), std::move(speech_recognizer),
-      std::move(babel_orca_translator), profile->GetPrefs());
+      profile->GetURLLoaderFactory(), std::move(caption_bubble_context),
+      std::move(speech_recognizer), std::move(babel_orca_translator),
+      profile->GetPrefs(), application_locale);
 }
 
 }  // namespace

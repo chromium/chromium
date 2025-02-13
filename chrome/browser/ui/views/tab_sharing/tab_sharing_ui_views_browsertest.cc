@@ -6,6 +6,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -83,7 +84,7 @@ TabSharingInfoBarDelegate* GetDelegate(Browser* browser, int tab) {
       GetInfoBar(browser, tab)->delegate());
 }
 
-std::u16string GetInfobarMessageText(Browser* browser, int tab) {
+std::u16string_view GetInfobarMessageText(Browser* browser, int tab) {
   return GetInfoBar(browser, tab)->label_for_testing()->GetText();
 }
 

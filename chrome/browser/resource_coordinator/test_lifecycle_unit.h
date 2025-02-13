@@ -14,13 +14,11 @@ namespace resource_coordinator {
 
 class TestLifecycleUnit : public LifecycleUnitBase {
  public:
-  using LifecycleUnitBase::OnLifecycleUnitVisibilityChanged;
   using LifecycleUnitBase::SetState;
 
   explicit TestLifecycleUnit(
       base::TimeTicks last_focused_time = base::TimeTicks(),
       bool can_discard = true);
-  explicit TestLifecycleUnit(content::Visibility visibility);
   explicit TestLifecycleUnit(LifecycleUnitSourceBase* source);
 
   TestLifecycleUnit(const TestLifecycleUnit&) = delete;

@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -73,7 +74,7 @@ class TaskManagerTester {
   // Updates the category and search terms against the real model. It is used to
   // test Task Manager's tab switching / searching functionality.
   bool UpdateModel(const DisplayCategory display_category,
-                   const std::u16string& search_term);
+                   std::u16string_view search_term);
 
  private:
   explicit TaskManagerTester(const base::RepeatingClosure& on_resource_change);

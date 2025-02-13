@@ -535,7 +535,6 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::HISTORY_URL:
     case Type::HISTORY_TITLE:
     case Type::HISTORY_BODY:
-    case Type::HISTORY_KEYWORD:
     case Type::NAVSUGGEST:
     case Type::BOOKMARK_TITLE:
     case Type::NAVSUGGEST_PERSONALIZED:
@@ -656,7 +655,10 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
       return omnibox::kProductChromeRefreshIcon;
 
     case Type::NUM_TYPES:
-      NOTREACHED();
+      NOTREACHED() << "Unexpected AutocompleteMatchType value: "
+                   << static_cast<int>(type);
+    default:
+      return omnibox::kPageChromeRefreshIcon;
   }
 }
 #endif
@@ -1407,8 +1409,6 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
       return OmniboxEventProto::Suggestion::HISTORY_TITLE;
     case AutocompleteMatchType::HISTORY_BODY:
       return OmniboxEventProto::Suggestion::HISTORY_BODY;
-    case AutocompleteMatchType::HISTORY_KEYWORD:
-      return OmniboxEventProto::Suggestion::HISTORY_KEYWORD;
     case AutocompleteMatchType::NAVSUGGEST:
       return OmniboxEventProto::Suggestion::NAVSUGGEST;
     case AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED:
@@ -1472,6 +1472,7 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
     case AutocompleteMatchType::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
     case AutocompleteMatchType::TAB_SEARCH_DEPRECATED:
     case AutocompleteMatchType::NUM_TYPES:
+    default:
       break;
   }
   DUMP_WILL_BE_NOTREACHED() << "Unknown AutocompleteMatchType: " << type;

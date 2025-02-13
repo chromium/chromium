@@ -44,6 +44,15 @@
   <message name="IDS_COLLABORATION_LINK_FAILED_BODY" desc="The body for the link failed dialog.">
     Contact the sender to ask for a new link
   </message>
+  <message name="IDS_COLLABORATION_SIGNED_OUT_HEADER" desc="The title for the signed out dialog." formatter_data="android_java">
+    You're signed out
+  </message>
+  <message name="IDS_COLLABORATION_SIGNED_OUT_BODY" desc="The body for the signed out dialog." formatter_data="android_java">
+    To share, join, and collaborate in tab groups, open settings and turn on Allow Chrome sign-in
+  </message>
+  <message name="IDS_COLLABORATION_SIGNED_OUT_POSITIVE_BUTTON" desc="The positive button text for the signed out dialog." formatter_data="android_java">
+    Settings
+  </message>
   <!-- Error Messages -->
   <!-- /Collaboration -->
 

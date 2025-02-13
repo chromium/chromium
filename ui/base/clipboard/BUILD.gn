@@ -134,6 +134,10 @@ component("clipboard") {
     ]
   }
 
+  if (is_tvos) {
+    sources += [ "clipboard_tvos.mm" ]
+  }
+
   if (is_win) {
     sources += [
       "clipboard_util_win.cc",

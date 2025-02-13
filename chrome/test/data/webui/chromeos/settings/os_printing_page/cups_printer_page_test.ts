@@ -174,7 +174,7 @@ suite('<settings-cups-printers>', () => {
   /**
    * Test that available printers section is hidden when offline.
    */
-  test('OfflineHideAvailablePrinters', async () => {
+  test('OfflineHideAvailablePrinters', () => {
     assertFalse(isVisible(
         page.shadowRoot!.querySelector('#noConnectivityContentContainer')));
 

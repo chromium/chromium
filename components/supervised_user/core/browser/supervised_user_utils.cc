@@ -148,9 +148,9 @@ std::optional<ToggleState> GetExtensionsToggleStateForHistogram(
 }
 
 // Returns the text that will be shown as the PACP widget subtitle, containing
-// information about the blocked url and the blocking reason.
+// information about the blocked hostname and the blocking reason.
 std::string GetBlockingReasonSubtitle(
-    const std::string blocked_url,
+    const std::u16string blocked_hostname,
     supervised_user::FilteringBehaviorReason filtering_reason) {
   int message_id = 0;
   switch (filtering_reason) {
@@ -164,18 +164,18 @@ std::string GetBlockingReasonSubtitle(
       message_id = IDS_PARENT_WEBSITE_APPROVAL_MANUAL_URL;
       break;
   }
-  return l10n_util::GetStringFUTF8(message_id, base::UTF8ToUTF16(blocked_url));
+  return l10n_util::GetStringFUTF8(message_id, blocked_hostname);
 }
 
 // Returns a base64-encoded `TransactionData` proto message that encapsulates
 // the blocked url so that PACP can consume it.
 std::string GetBase64EncodedInTransactionalDataForPayload(
-    const std::string blocked_url,
+    const std::u16string blocked_hostname,
     supervised_user::FilteringBehaviorReason filtering_reason) {
-  CHECK(!blocked_url.empty());
+  CHECK(!blocked_hostname.empty());
   kids::platform::parentaccess::proto::LocalApprovalPayload approval_url;
   approval_url.set_url_approval_context(
-      GetBlockingReasonSubtitle(blocked_url, filtering_reason));
+      GetBlockingReasonSubtitle(blocked_hostname, filtering_reason));
 
   kids::platform::parentaccess::proto::TransactionData transaction_data;
   transaction_data.mutable_payload()->set_value(
@@ -197,9 +197,16 @@ GURL GetParentAccessURL(
   if (base::FeatureList::IsEnabled(
           kLocalWebApprovalsWidgetSupportsUrlPayload) &&
       blocked_url.has_value() && !blocked_url.value().host().empty()) {
-    query += base::StrCat({"&transaction-data=",
-                           GetBase64EncodedInTransactionalDataForPayload(
-                               blocked_url.value().host(), filtering_reason)});
+    // Prepare blocked URL hostname for user-friendly display, including internationalized
+    // domain name (IDN) conversion if necessary.
+    std::u16string blocked_hostname = url_formatter::FormatUrl(
+        blocked_url.value(),
+        url_formatter::kFormatUrlOmitHTTP | url_formatter::kFormatUrlOmitHTTPS |
+            url_formatter::kFormatUrlOmitDefaults,
+        base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+    query += base::StrCat(
+        {"&transaction-data=", GetBase64EncodedInTransactionalDataForPayload(
+                                   blocked_hostname, filtering_reason)});
   }
   replacements.SetQueryStr(query);
   return url.ReplaceComponents(replacements);

@@ -27,7 +27,7 @@ suite('SitePermissionsEditUrlDialog', function() {
   });
 
   test('valid input', async function() {
-    const input = element.shadowRoot!.querySelector('cr-input');
+    const input = element.shadowRoot.querySelector('cr-input');
     assertTrue(!!input);
     const site = 'http://www.example.com';
     input.value = site;
@@ -49,7 +49,7 @@ suite('SitePermissionsEditUrlDialog', function() {
   test('invalid input', async () => {
     // Initially the action button should be disabled, but the error warning
     // should not be shown for an empty input.
-    const input = element.shadowRoot!.querySelector('cr-input');
+    const input = element.shadowRoot.querySelector('cr-input');
     assertTrue(!!input);
     assertFalse(input.invalid);
     const submit = element.$.submit;
@@ -89,7 +89,7 @@ suite('SitePermissionsEditUrlDialog', function() {
     const newSite = 'https://www.google.com';
     element.siteToEdit = oldSite;
 
-    const input = element.shadowRoot!.querySelector('cr-input');
+    const input = element.shadowRoot.querySelector('cr-input');
     assertTrue(!!input);
     input.value = newSite;
     await microtasksFinished();

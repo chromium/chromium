@@ -30,6 +30,7 @@
 <translation id="2118649612461486615">اطلاعات فروشگاه</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{می‌توانید برگه‌ها و گروه‌های بسته‌شده را از بخش «برگه‌های اخیر» و بخش «گروه‌های برگه» مجدداً باز کنید. «برگه ناشناس» دردسترس نخواهد بود.}one{می‌توانید برگه‌ها و گروه‌های بسته‌شده را از بخش «برگه‌های اخیر» و بخش «گروه‌های برگه» مجدداً باز کنید. ‫# «برگه ناشناس» دردسترس نخواهد بود.}other{می‌توانید برگه‌ها و گروه‌های بسته‌شده را از بخش «برگه‌های اخیر» و بخش «گروه‌های برگه» مجدداً باز کنید. ‫# «برگه ناشناس» دردسترس نخواهد بود.}}</translation>
 <translation id="2162620598375156287">اکنون با قیمت <ph name="CURRENT_PRICE" /> در <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2242907120821295124">گروه برگه «<ph name="TAB_GROUP_NAME" />» دیگر دردسترس نیست</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{لغو گروه‌بندی برگه}one{لغو گروه‌بندی برگه}other{لغو گروه‌بندی برگه‌ها}}</translation>
 <translation id="2271452184061378400">گروه‌های برگه شما اینجا ذخیره می‌شود</translation>
 <translation id="2277224997687551299">ویرایش نام گروه</translation>
@@ -87,6 +88,7 @@
 <translation id="4783638485675352219">عنوان‌ها و نشانی‌های وب برگه‌های باز این دستگاه با سیستم‌عامل هم‌رسانی شود</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> مرور)}one{(<ph name="REVIEWS_COUNT_MANY" /> مرور)}other{(<ph name="REVIEWS_COUNT_MANY" /> مرور)}}</translation>
 <translation id="4850886885716139402">نما</translation>
+<translation id="4861611890274104875">بستن کارت.</translation>
 <translation id="4861953997778766866">همه می‌توانند در گروه‌های برگه هم‌رسانی‌شده شما تغییراتی ایجاد کنند</translation>
 <translation id="4870911314065352661">همه برگه‌ها بسته شود؟</translation>
 <translation id="4871719318659334896">بستن گروه</translation>

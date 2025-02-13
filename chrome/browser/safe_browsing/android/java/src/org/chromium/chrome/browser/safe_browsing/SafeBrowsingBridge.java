@@ -50,6 +50,13 @@ public final class SafeBrowsingBridge {
     }
 
     /**
+     * @param value Whether the Safe Browsing setting was set locally.
+     */
+    public void setSafeBrowsingSettingSetLocallyPref(boolean value) {
+        SafeBrowsingBridgeJni.get().setSafeBrowsingSettingSetLocallyPref(mProfile, value);
+    }
+
+    /**
      * @return Whether Safe Browsing Extended Reporting is managed
      */
     public boolean isSafeBrowsingExtendedReportingManaged() {
@@ -134,6 +141,8 @@ public final class SafeBrowsingBridge {
         int getSafeBrowsingState(Profile profile);
 
         void setSafeBrowsingState(Profile profile, @SafeBrowsingState int state);
+
+        void setSafeBrowsingSettingSetLocallyPref(Profile profile, boolean value);
 
         boolean isSafeBrowsingManaged(Profile profile);
 

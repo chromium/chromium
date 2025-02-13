@@ -126,7 +126,9 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
        RiskBasedMaskedServerCardUnmasking_RetrievalError) {
   base::HistogramTester histogram_tester;
   const CreditCard* masked_server_card =
-      CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
+      CreateServerCard(kTestGUID, kTestNumber, kTestServerId, kTestCvc16,
+                       CreditCard::RecordType::kMaskedServerCard,
+                       /*is_card_info_retrieval_enrolled=*/true);
 
   FetchCreditCard(masked_server_card);
 
@@ -152,6 +154,11 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.ServerCard.Result.RiskBased",
       autofill_metrics::ServerCardUnmaskResult::kAuthenticationError, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardInfoRetrievalEnrolled.Result",
+      autofill_metrics::CardInfoRetrievalEnrolledUnmaskResult::
+          kAuthenticationError,
+      1);
 }
 
 // Ensures that the masked server card risk-based unmasking response is
@@ -160,7 +167,9 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
        RiskBasedMaskedServerCardUnmasking_FlowCancelled) {
   base::HistogramTester histogram_tester;
   const CreditCard* masked_server_card =
-      CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
+      CreateServerCard(kTestGUID, kTestNumber, kTestServerId, kTestCvc16,
+                       CreditCard::RecordType::kMaskedServerCard,
+                       /*is_card_info_retrieval_enrolled=*/true);
 
   FetchCreditCard(masked_server_card);
 
@@ -182,6 +191,10 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.ServerCard.Result.RiskBased",
       autofill_metrics::ServerCardUnmaskResult::kFlowCancelled, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardInfoRetrievalEnrolled.Result",
+      autofill_metrics::CardInfoRetrievalEnrolledUnmaskResult::kFlowCancelled,
+      1);
 }
 
 // Ensures that the masked server card risk-based authentication is not invoked

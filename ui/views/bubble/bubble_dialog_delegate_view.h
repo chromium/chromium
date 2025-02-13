@@ -272,7 +272,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // be a good fit for the UI you are building.
 
   ui::ColorVariant background_color() const { return color_; }
-  void set_color(ui::ColorVariant color) { color_ = color; }
+  void set_background_color(ui::ColorVariant color) { color_ = color; }
 
   void set_force_create_contents_background(
       bool force_create_contents_background) {

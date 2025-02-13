@@ -482,14 +482,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.StyleTextCopied" enum="DevToolsStyleTextCopied"
-    expires_after="2025-03-23">
-  <owner>changhaohan@google.com</owner>
-  <owner>bmeurer@google.com</owner>
-  <owner>yangguo@google.com</owner>
-  <summary>Recorded when certain style text is copied in DevTools.</summary>
-</histogram>
-
 <histogram name="DevTools.SwatchActivated" enum="DevToolsSwatchActivated"
     expires_after="2025-07-13">
   <owner>ergunsh@google.com</owner>

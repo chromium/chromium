@@ -49,8 +49,12 @@ public class AiAssistantService {
 
     /** Creates an instance of AiAssistantService. */
     public AiAssistantService() {
-        var provider = ServiceLoaderUtil.maybeCreate(SystemAiProvider.class);
-        mSystemAiProvider = provider != null ? provider : new SystemAiProviderUpstreamImpl();
+        var providerFactory = ServiceLoaderUtil.maybeCreate(SystemAiProviderFactory.class);
+        if (providerFactory != null) {
+            mSystemAiProvider = providerFactory.createSystemAiProvider();
+        } else {
+            mSystemAiProvider = new SystemAiProviderUpstreamImpl();
+        }
     }
 
     /**
@@ -119,10 +123,11 @@ public class AiAssistantService {
                     context,
                     getLaunchRequestForAnalyzeAttachment(pdfPage),
                     isSystemAiProviderAvailable);
-        } else if (isTabWebPage(tab) && tab.getWebContents() != null && isSummarizeUrlAvailable) {
-            var mainFrame = tab.getWebContents().getMainFrame();
+        } else if (isTabWebPage(tab) && isSummarizeUrlAvailable) {
             ThreadUtils.postOnUiThread(
                     () -> {
+                        if (tab.getWebContents() == null || tab.isDestroyed()) return;
+                        var mainFrame = tab.getWebContents().getMainFrame();
                         InnerTextBridge.getInnerText(
                                 mainFrame,
                                 innerText -> {

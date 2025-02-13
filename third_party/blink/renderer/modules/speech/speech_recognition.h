@@ -100,12 +100,12 @@ class MODULES_EXPORT SpeechRecognition final
   void stopFunction();
   void abort();
   void updateContext(SpeechRecognitionContext*, ExceptionState&);
-  ScriptPromise<IDLBoolean> onDeviceWebSpeechAvailable(ScriptState*,
-                                                       const String& lang,
-                                                       ExceptionState&);
-  ScriptPromise<IDLBoolean> installOnDeviceSpeechRecognition(ScriptState*,
-                                                             const String& lang,
-                                                             ExceptionState&);
+  static ScriptPromise<IDLBoolean> availableOnDevice(ScriptState*,
+                                                     const String& lang,
+                                                     ExceptionState&);
+  static ScriptPromise<IDLBoolean> installOnDevice(ScriptState*,
+                                                   const String& lang,
+                                                   ExceptionState&);
 
   // media::mojom::blink::SpeechRecognitionSessionClient
   void ResultRetrieved(

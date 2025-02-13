@@ -19,8 +19,12 @@ WebGLFenceSync::WebGLFenceSync(WebGL2RenderingContextBase* ctx,
 }
 
 GLuint WebGLFenceSync::insertQuery(WebGL2RenderingContextBase* ctx) {
-  auto* gl = ctx->ContextGL();
   GLuint query = 0;
+  auto* gl = ctx->ContextGL();
+  if (!gl) {
+    // Context has been lost.
+    return query;
+  }
   gl->GenQueriesEXT(1, &query);
   gl->BeginQueryEXT(GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM, query);
   // This query is used like a fence. There doesn't need to be anything inside.

@@ -61,6 +61,9 @@ class AILanguageModel final : public EventTarget,
 
   uint32_t topK() const { return top_k_; }
   float temperature() const { return temperature_; }
+  std::optional<WTF::Vector<WTF::String>> expectedInputLanguages() const {
+    return expected_input_languages_;
+  }
 
   ScriptPromise<AILanguageModel> clone(
       ScriptState* script_state,
@@ -81,6 +84,7 @@ class AILanguageModel final : public EventTarget,
   uint64_t max_tokens_ = 0;
   uint32_t top_k_ = 0;
   float temperature_ = 0.0;
+  std::optional<WTF::Vector<WTF::String>> expected_input_languages_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::AILanguageModel> language_model_remote_;

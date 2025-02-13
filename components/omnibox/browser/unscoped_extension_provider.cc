@@ -12,6 +12,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/unscoped_extension_provider_delegate.h"
+#include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/search_engines/template_url_service.h"
 
 UnscopedExtensionProvider::UnscopedExtensionProvider(
@@ -45,9 +46,15 @@ void UnscopedExtensionProvider::Start(const AutocompleteInput& input,
     return;
   }
 
-  // Extension suggestions are not allowed for zero-suggest or empty inputs.
-  if (input.IsZeroSuggest() ||
-      input.type() == metrics::OmniboxInputType::EMPTY) {
+  // See if zero suggest provider is eligible for zero suggest suggestions.
+  // This prevents only unscoped extension suggestions from appearing when
+  // other zps suggestions are not available.
+  auto [_, eligible] =
+      ZeroSuggestProvider::GetResultTypeAndEligibility(client_, input);
+
+  if ((input.IsZeroSuggest() ||
+       input.type() == metrics::OmniboxInputType::EMPTY) &&
+      !eligible) {
     return;
   }
 

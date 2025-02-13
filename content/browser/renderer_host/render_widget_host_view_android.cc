@@ -35,6 +35,7 @@
 #include "components/input/utils.h"
 #include "components/input/web_input_event_builders_android.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
@@ -1729,7 +1730,8 @@ void RenderWidgetHostViewAndroid::CopyFromSurface(
             std::move(callback).Run(bitmap);
           },
           std::move(callback)),
-      /*capture_exact_surface_id=*/false);
+      /*capture_exact_surface_id=*/false,
+      viz::CopyOutputRequest::IpcPriority::kDefault);
 }
 
 void RenderWidgetHostViewAndroid::CopyFromExactSurface(
@@ -1748,7 +1750,8 @@ void RenderWidgetHostViewAndroid::CopyFromExactSurface(
           [](base::OnceCallback<void(const SkBitmap&)> callback,
              const SkBitmap& bitmap) { std::move(callback).Run(bitmap); },
           std::move(callback)),
-      /*capture_exact_surface_id=*/true);
+      /*capture_exact_surface_id=*/true,
+      viz::CopyOutputRequest::IpcPriority::kDefault);
 }
 
 void RenderWidgetHostViewAndroid::EnsureSurfaceSynchronizedForWebTest() {

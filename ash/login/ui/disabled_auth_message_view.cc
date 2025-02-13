@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/public/cpp/login_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -146,7 +147,7 @@ DisabledAuthMessageView::TestApi::TestApi(DisabledAuthMessageView* view)
 
 DisabledAuthMessageView::TestApi::~TestApi() = default;
 
-const std::u16string&
+std::u16string_view
 DisabledAuthMessageView::TestApi::GetDisabledAuthMessageContent() const {
   return view_->message_contents_->GetText();
 }
@@ -256,7 +257,7 @@ void DisabledAuthMessageView::UpdateAccessibleName() {
     GetViewAccessibility().SetName(
         std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   } else {
-    GetViewAccessibility().SetName(message_title_->GetText());
+    GetViewAccessibility().SetName(std::u16string(message_title_->GetText()));
   }
 }
 

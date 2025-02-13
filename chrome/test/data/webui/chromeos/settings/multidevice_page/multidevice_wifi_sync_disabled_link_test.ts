@@ -24,7 +24,7 @@ suite('<settings-multidevice-wifi-sync-disabled-link>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('Contains 2 links with aria-labels', async () => {
+  test('Contains 2 links with aria-labels', () => {
     const chromeSyncLink =
         localizedLink.shadowRoot!.querySelector('#chromeSyncLink');
     assertTrue(!!chromeSyncLink);
@@ -35,14 +35,14 @@ suite('<settings-multidevice-wifi-sync-disabled-link>', () => {
     assertTrue(learnMoreLink.hasAttribute('aria-label'));
   });
 
-  test('Spans are aria-hidden', async () => {
+  test('Spans are aria-hidden', () => {
     const spans = localizedLink.shadowRoot!.querySelectorAll('span');
     spans.forEach((span) => {
       assertTrue(span.hasAttribute('aria-hidden'));
     });
   });
 
-  test('ChromeSyncLink navigates to appropriate route', async () => {
+  test('ChromeSyncLink navigates to appropriate route', () => {
     const chromeSyncLink =
         localizedLink.shadowRoot!.querySelector<HTMLAnchorElement>(
             '#chromeSyncLink');

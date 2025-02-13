@@ -220,6 +220,7 @@
 <translation id="114721135501989771">Chrome တွင် Google ကို ပို၍အဆင့်မြင့်လာအောင် ပြုလုပ်ခြင်း</translation>
 <translation id="1147322039136785890">ယခု <ph name="SUPERVISED_USER_NAME" /> ၏ အလှည့်ပါ</translation>
 <translation id="1147991416141538220">ဝင်ကြည့်ခွင့်တောင်းရန် ဤစက်၏ စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။</translation>
+<translation id="1148464196693569530">အသုံးပြုသူဆိုင်ရာ Script များကို ခွင့်ပြုရန်</translation>
 <translation id="1148624853678088576">အဆင်သင့်ဖြစ်ပြီ!</translation>
 <translation id="1148669835763563782">အဆင့်မြှင့်ထားသော လုံခြုံရေးနှင့် နောက်ဆုံးထွက် Chromebook တူးလ်များအတွက် နောက်ဆုံးထွက် ဆော့ဖ်ဝဲအပ်ဒိတ်များကို သင်ရရှိပါမည်။ Chromebook ကို လွယ်ကူစွာ စတင်သုံးနိုင်ရန်အတွက် ဤအပ်ဒိတ်တွင် ပိုကောင်းအောင်လုပ်ထားသော စနစ်ထည့်သွင်းမှု ပါဝင်သည်။</translation>
 <translation id="1149401351239820326">သက်တမ်းကုန်ဆုံးမည့်လ</translation>
@@ -6780,6 +6781,7 @@
 <translation id="5794414402486823030">အမြဲတမ်း စနစ် ကြည့်ရှုသူဖြင့် ဖွင့်ပါ</translation>
 <translation id="5794700615121138172">Linux မျှဝေထားသော ဖိုင်တွဲများ</translation>
 <translation id="5794786537412027208">Chrome အက်ပ်များ အားလုံး ရပ်တန့်ရန်</translation>
+<translation id="5795422263272161110">ဘေးချင်းယှဉ်လျက် ပြပါ</translation>
 <translation id="5796485699458186843">ရုပ်ဖျက်တဘ် အသစ်</translation>
 <translation id="5796956053441619942">အဝေးထိန်းစက်မှ URL ကို ပံ့ပိုးမထားပါ</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; နှင့် &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; တွင် စတင်နည်းကို လေ့လာပါ</translation>
@@ -7306,6 +7308,7 @@
 <translation id="6170498031581934115">ADB အမှားရှာပြင်ခြင်းကို ဖွင့်၍မရပါ။ 'ဆက်တင်များ' သို့ သွားပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="6170675927290506430">အကြောင်းကြားချက် ဆက်တင်များသို့ သွားရန်</translation>
 <translation id="6171779718418683144">ဝင်ကြည့်တိုင်း ခွင့်တောင်းရန်</translation>
+<translation id="6172020488605056255">‘ကူဖတ်ပေးပါ’ သုံးရန် ညာဘက်ခလုတ်ကို နှိပ်ပါ</translation>
 <translation id="617213288191670920">ဘာသာစကား ထည့်မထားပါ</translation>
 <translation id="6173623053897475761">သင်၏ 'ပင်နံပါတ်' ကို ထပ်မံထည့်သွင်းပါ</translation>
 <translation id="6174909075810107548">မောက်စ်ခလုတ် နှိပ်ရန် “5” ကိုသုံးပါ</translation>
@@ -8330,6 +8333,7 @@
 <translation id="6910190732484284349">အသုံးပြုသူအမည် <ph name="USER_EMAIL" /> အတွက် လျှို့ဝှက်ကီး ဖျက်ရန်</translation>
 <translation id="6910211073230771657">ဖျက်ပြီး</translation>
 <translation id="6910274140210351823">မှောင်သော</translation>
+<translation id="691102290537033604">နောက်ဆက်တွဲသည် Google က စိစစ်မထားသောကုဒ်ကို လုပ်ဆောင်နိုင်မည်။ ၎င်းသည် မလုံခြုံနိုင်သဖြင့် သင်လုပ်နေသည်များကို သိမှသာ ဤအရာကို ဖွင့်ရမည်။</translation>
 <translation id="6911734910326569517">ဖြစ်စဉ်တွင် မှတ်ဉာဏ်အသုံးပြုမှု</translation>
 <translation id="6912007319859991306">ဆယ်လူလာဆင်းမ် ပင်နံပါတ်</translation>
 <translation id="6912380255120084882">အခြားစက်နှင့် စမ်းကြည့်ပါ</translation>
@@ -9840,6 +9844,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> အသံ <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">သင့် Android ဖုန်းမှ WiFi ကို အလိုအလျောက် လွှဲပြောင်းရန်</translation>
 <translation id="7991296728590311172">ခလုတ်သုံးခြင်း ဆက်တင်များ</translation>
+<translation id="7992080146463834191">အကြောင်းအရာ အနှစ်ချုပ်ခြင်း၊ ရှုပ်ထွေးသော ဘာသာစကားကို ရှင်းလင်းအောင်လုပ်ခြင်း (သို့) မေးခွန်းမေးခြင်း လုပ်ဆောင်နိုင်သည်။</translation>
 <translation id="7992203134935383159">စကားသံပေါင်းစပ်စနစ်</translation>
 <translation id="799570308305997052">ဝဘ်မြင်ကွင်း</translation>
 <translation id="7997826902155442747">စီမံဆောင်ရွက်မှု ဦးစားပေးမှု</translation>
@@ -11096,6 +11101,7 @@
 <translation id="8874448314264883207">“<ph name="EXTENSION_NAME" />” ကို ပိတ်ထားသည်</translation>
 <translation id="8874647982044395866">အော်ဂဲနစ်</translation>
 <translation id="8874790741333031443">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ယာယီ ခွင့်ပြုကြည့်ပါ။ ဘရောက်စ်လုပ်ရာတွင် ကာကွယ်မှု လျော့နည်းသွားသော်လည်း ဝဘ်ဆိုက်အင်္ဂါရပ်များ မျှော်လင့်ထားသည့်အတိုင်း ပိုမိုလုပ်ဆောင်နိုင်ပါမည်။</translation>
+<translation id="8875221558267407626">အကြောင်းအရာ အနှစ်ချုပ်ခြင်း၊ ရှုပ်ထွေးသော ဘာသာစကားကို ရှင်းလင်းအောင်လုပ်ခြင်း (သို့) မေးခွန်းမေးခြင်း</translation>
 <translation id="8875520811099717934">Linux အဆင့်မြှင့်ရန်</translation>
 <translation id="8875736897340638404">မြင်နိုင်မှု သတ်မှတ်ချက် ရွေးရန်</translation>
 <translation id="8876307312329369159">အစမ်းသုံးချိန်အတွင်း ဤဆက်တင်ကို ပြောင်း၍မရနိုင်ပါ။</translation>
@@ -11149,6 +11155,7 @@
 <translation id="8915916167043355778">အားလုံးပိတ်ရန်</translation>
 <translation id="8916476537757519021">ရုပ်ဖျက် ဘောင်ငယ် : <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">သဘောတူပါသည်</translation>
+<translation id="8917980324687233736">ဘေးချင်းယှဉ်လျက် ပြပါ</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> ၏ <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">အက်ပ်ကို ထည့်သွင်းနေသည်…</translation>
 <translation id="891931289445130855">ဒေတာနှင့် ခွင့်ပြုချက်များ ဖျက်ရန်</translation>

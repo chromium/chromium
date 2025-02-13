@@ -4,6 +4,8 @@
 
 #include "ash/app_menu/notification_menu_view_test_api.h"
 
+#include <string_view>
+
 #include "ash/app_menu/notification_item_view.h"
 #include "ash/app_menu/notification_menu_header_view.h"
 #include "ash/app_menu/notification_menu_view.h"
@@ -19,7 +21,8 @@ NotificationMenuViewTestAPI::NotificationMenuViewTestAPI(
 
 NotificationMenuViewTestAPI::~NotificationMenuViewTestAPI() = default;
 
-std::u16string NotificationMenuViewTestAPI::GetCounterViewContents() const {
+std::u16string_view NotificationMenuViewTestAPI::GetCounterViewContents()
+    const {
   return notification_menu_view_->header_view_->counter_->GetText();
 }
 

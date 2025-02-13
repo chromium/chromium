@@ -259,21 +259,16 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProvider,
 
  private:
   scoped_refptr<CanvasResource> CreateResource() final {
-    SkImageInfo info = GetSkImageInfo();
-    if (!viz::SkColorTypeToSinglePlaneSharedImageFormat(info.colorType())
-             .IsBitmapFormatSupported()) {
+    auto format = GetSharedImageFormat();
+    if (!format.IsBitmapFormatSupported()) {
       // If the rendering format is not supported, downgrade to 8-bits.
       // TODO(junov): Should we try 12-12-12-12 and 10-10-10-2?
-      info = info.makeColorType(kN32_SkColorType);
+      format = GetN32FormatForCanvas();
     }
 
-    return CanvasResourceSharedBitmap::Create(
-        gfx::Size(info.width(), info.height()),
-        viz::SkColorTypeToSinglePlaneSharedImageFormat(
-            info.colorInfo().colorType()),
-        info.colorInfo().alphaType(),
-        SkColorSpaceToGfxColorSpace(info.colorInfo().refColorSpace()),
-        CreateWeakPtr(), shared_image_interface_provider_);
+    return CanvasResourceSharedBitmap::Create(Size(), format, GetAlphaType(),
+                                              GetColorSpace(), CreateWeakPtr(),
+                                              shared_image_interface_provider_);
   }
 
   scoped_refptr<CanvasResource> ProduceCanvasResource(
@@ -436,13 +431,8 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     if (IsGpuContextLost())
       return nullptr;
 
-    const SkImageInfo& info = GetSkImageInfo();
     return CanvasResourceSharedImage::Create(
-        gfx::Size(info.width(), info.height()),
-        viz::SkColorTypeToSinglePlaneSharedImageFormat(
-            info.colorInfo().colorType()),
-        info.colorInfo().alphaType(),
-        SkColorSpaceToGfxColorSpace(info.colorInfo().refColorSpace()),
+        Size(), GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
         ContextProviderWrapper(), CreateWeakPtr(), is_accelerated_,
         shared_image_usage_flags_);
   }
@@ -1468,7 +1458,9 @@ CanvasResourceProvider::CanvasResourceProvider(
                               viz::ToClosestSkColorType(format),
                               alpha_type,
                               color_space.ToSkColorSpace())),
+      size_(size),
       format_(format),
+      alpha_type_(alpha_type),
       color_space_(color_space),
       resource_host_(resource_host),
       recorder_(std::make_unique<MemoryManagedPaintRecorder>(Size(), this)),
@@ -1713,18 +1705,10 @@ GrDirectContext* CanvasResourceProvider::GetGrContext() const {
   return context_provider_wrapper_->ContextProvider().GetGrContext();
 }
 
-gfx::Size CanvasResourceProvider::Size() const {
-  return gfx::Size(info_.width(), info_.height());
-}
-
 SkSurfaceProps CanvasResourceProvider::GetSkSurfaceProps() const {
   const bool can_use_lcd_text =
       GetSkImageInfo().alphaType() == kOpaque_SkAlphaType;
   return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
-}
-
-SkAlphaType CanvasResourceProvider::GetAlphaType() const {
-  return GetSkImageInfo().alphaType();
 }
 
 std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
@@ -2050,13 +2034,6 @@ void CanvasResourceProvider::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   if (!surface_)
     return;
-
-  for (const auto& resource : canvas_resources_) {
-    // Don't report, to avoid double-counting.
-    if (resource.resource->HasDetailedMemoryDumpProvider()) {
-      return;
-    }
-  }
 
   std::string dump_name =
       base::StringPrintf("canvas/ResourceProvider/SkSurface/0x%" PRIXPTR,

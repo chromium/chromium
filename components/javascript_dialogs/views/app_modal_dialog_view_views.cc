@@ -48,7 +48,7 @@ AppModalDialogViewViews::AppModalDialogViewViews(
   DialogDelegate::SetAcceptCallback(base::BindOnce(
       [](AppModalDialogViewViews* dialog) {
         dialog->controller_->OnAccept(
-            dialog->message_box_view_->GetInputText(),
+            std::u16string(dialog->message_box_view_->GetInputText()),
             dialog->message_box_view_->IsCheckBoxSelected());
       },
       base::Unretained(this)));

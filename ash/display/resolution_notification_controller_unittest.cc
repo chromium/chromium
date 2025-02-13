@@ -4,6 +4,8 @@
 
 #include "ash/display/resolution_notification_controller.h"
 
+#include <string_view>
+
 #include "ash/display/display_change_dialog.h"
 #include "ash/display/display_util.h"
 #include "ash/screen_util.h"
@@ -155,7 +157,7 @@ class ResolutionNotificationControllerTest
         new_is_native, source);
   }
 
-  static std::u16string GetNotificationMessage() {
+  static std::u16string_view GetNotificationMessage() {
     return controller()->dialog_for_testing()->label_->GetText();
   }
 

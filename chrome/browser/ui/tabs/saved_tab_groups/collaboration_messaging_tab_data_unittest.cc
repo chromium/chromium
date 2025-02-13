@@ -11,6 +11,7 @@
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/test_support/mock_data_sharing_service.h"
+#include "components/signin/public/base/avatar_icon_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,6 +25,8 @@ using data_sharing::GroupMember;
 using testing::_;
 
 namespace {
+const int kAvatarSize = signin::kAccountInfoImageSize;
+
 PersistentMessage CreateMessage(std::string given_name,
                                 std::string avatar_url,
                                 CollaborationEvent event) {
@@ -97,7 +100,7 @@ TEST_F(CollaborationMessagingTabDataTest, CanSetAndClearData) {
     EXPECT_CALL(*sharing_service(), GetAvatarImageForURL)
         .WillOnce([&](GURL url, int size, auto load_callback, auto fetcher) {
           EXPECT_EQ(url, GURL(message.attribution.triggering_user->avatar_url));
-          EXPECT_EQ(size, 20);
+          EXPECT_EQ(size, kAvatarSize);
 
           // Trigger callback with a mock avatar.
           std::move(load_callback).Run(favicon::GetDefaultFavicon());
@@ -130,7 +133,7 @@ TEST_F(CollaborationMessagingTabDataTest, CanSetAndClearData) {
         .WillOnce([&](GURL url, int size, auto load_callback, auto fetcher) {
           EXPECT_EQ(url,
                     GURL(message2.attribution.triggering_user->avatar_url));
-          EXPECT_EQ(size, 20);
+          EXPECT_EQ(size, kAvatarSize);
 
           // Trigger callback with empty image.
           std::move(load_callback).Run(gfx::Image());
@@ -161,7 +164,7 @@ TEST_F(CollaborationMessagingTabDataTest, IgnoresRequestsWhenMessageIsCleared) {
 
   // Service will be triggered to request the image.
   EXPECT_CALL(*sharing_service(),
-              GetAvatarImageForURL(GURL(avatar_url), 20, _, _))
+              GetAvatarImageForURL(GURL(avatar_url), kAvatarSize, _, _))
       .Times(1);
 
   // Set the message. This will trigger the avatar request, but will not
@@ -189,7 +192,7 @@ TEST_F(CollaborationMessagingTabDataTest, IgnoresRequestsWhenMessageIsChanged) {
 
   // Service will be triggered to request the image.
   EXPECT_CALL(*sharing_service(),
-              GetAvatarImageForURL(GURL(avatar_url), 20, _, _))
+              GetAvatarImageForURL(GURL(avatar_url), kAvatarSize, _, _))
       .Times(1);
 
   // Set the message. This will trigger the avatar request, but will not
@@ -203,7 +206,7 @@ TEST_F(CollaborationMessagingTabDataTest, IgnoresRequestsWhenMessageIsChanged) {
 
   // Service will be triggered to request the image.
   EXPECT_CALL(*sharing_service(),
-              GetAvatarImageForURL(GURL(avatar_url2), 20, _, _))
+              GetAvatarImageForURL(GURL(avatar_url2), kAvatarSize, _, _))
       .Times(1);
 
   // Set a new message. This will cause the following Commit to be rejected.
@@ -232,7 +235,7 @@ TEST_F(CollaborationMessagingTabDataTest, IgnoresMessageWithoutUser) {
 
   // Service will be triggered to request the image.
   EXPECT_CALL(*sharing_service(),
-              GetAvatarImageForURL(GURL(avatar_url), 20, _, _))
+              GetAvatarImageForURL(GURL(avatar_url), kAvatarSize, _, _))
       .Times(0);
 
   // Set the message. This will trigger the avatar request, but will not

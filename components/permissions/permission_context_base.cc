@@ -256,6 +256,17 @@ bool PermissionContextBase::UsesAutomaticEmbargo() const {
   return true;
 }
 
+const PermissionRequest* PermissionContextBase::FindPermissionRequest(
+    const PermissionRequestID& id) const {
+  const auto request = pending_requests_.find(id.ToString());
+
+  if (request == pending_requests_.end()) {
+    return nullptr;
+  }
+
+  return request->second.first.get();
+}
+
 content::PermissionResult PermissionContextBase::GetPermissionStatus(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,

@@ -68,7 +68,7 @@ suite('CategoriesTest', () => {
     await handler.whenCalled('getBackgroundCollections');
   }
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     windowProxy = installMock(WindowProxy);
     handler = installMock(

@@ -13,13 +13,9 @@ namespace autofill_ai {
 AutofillAiClient::SavePromptAcceptanceResult::SavePromptAcceptanceResult(
     bool prompt_was_accepted,
     bool did_user_interact,
-    bool did_thumbs_up_triggered,
-    bool did_thumbs_down_triggered,
     std::optional<autofill::EntityInstance> entity)
     : prompt_was_accepted(prompt_was_accepted),
       did_user_interact(did_user_interact),
-      did_thumbs_up_triggered(did_thumbs_up_triggered),
-      did_thumbs_down_triggered(did_thumbs_down_triggered),
       entity(std::move(entity)) {}
 
 AutofillAiClient::SavePromptAcceptanceResult::SavePromptAcceptanceResult(

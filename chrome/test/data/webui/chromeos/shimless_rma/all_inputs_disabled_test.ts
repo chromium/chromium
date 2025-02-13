@@ -28,7 +28,7 @@ suite('allInputsDisabledTest', function() {
 
   // Test that the set of inputs specified in |INPUT_TYPES| are disabled on each
   // page when |allButtonsDisabled| is set.
-  test('AllInputsDisabled', async () => {
+  test('AllInputsDisabled', () => {
     Object.entries(StateComponentMapping).forEach(([_state, pageInfo]) => {
       const component = document.createElement(pageInfo.componentIs) as
           ShimlessCustomElementType;

@@ -353,10 +353,6 @@ inline constexpr char kManage3pcHelpCenterURL[] =
 inline constexpr char kTabGroupsLearnMoreURL[] =
     "https://support.google.com/chrome?p=desktop_tab_groups";
 
-// The URL for the collaboration help center page.
-inline constexpr char kCollaborationLearnMoreURL[] =
-    "https://support.google.com/chrome?p=chrome_collaboration";
-
 // The URL for the Learn More page about policies and enterprise enrollment.
 inline constexpr char16_t kManagedUiLearnMoreUrl[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)

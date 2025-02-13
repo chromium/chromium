@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
@@ -136,7 +137,7 @@ void ErrorMessageToast::UpdateBoundsToContainer(
   SetBoundsRect(preferred_bounds);
 }
 
-std::u16string ErrorMessageToast::GetMessageForTest() const {
+std::u16string_view ErrorMessageToast::GetMessageForTest() const {
   return error_message_label_->GetText();
 }
 

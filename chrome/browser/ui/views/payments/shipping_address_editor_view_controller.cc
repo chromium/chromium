@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/payments/shipping_address_editor_view_controller.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
@@ -238,15 +240,14 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
 
 std::u16string
 ShippingAddressEditorViewController::ShippingAddressValidationDelegate::Format(
-    const std::u16string& text) {
+    std::u16string_view text) {
   if (controller_ &&
       controller_->chosen_country_index_ < controller_->countries_.size()) {
     return base::UTF8ToUTF16(autofill::i18n::FormatPhoneForDisplay(
         base::UTF16ToUTF8(text),
         controller_->countries_[controller_->chosen_country_index_].first));
-  } else {
-    return text;
   }
+  return std::u16string(text);
 }
 
 bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
@@ -297,7 +298,7 @@ void ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
 }
 
 bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
-    ValidateValue(const std::u16string& value, std::u16string* error_message) {
+    ValidateValue(std::u16string_view value, std::u16string* error_message) {
   if (!controller_ || !controller_->spec()) {
     return false;
   }
@@ -536,8 +537,8 @@ bool ShippingAddressEditorViewController::SaveFieldsToProfile(
   for (const auto& field : text_fields()) {
     // ValidatingTextfield* is the key, EditorField is the value.
     if (field.first->IsValid()) {
-      success =
-          profile->SetInfo(field.second.type, field.first->GetText(), locale);
+      success = profile->SetInfo(
+          field.second.type, std::u16string(field.first->GetText()), locale);
     } else {
       success = false;
     }

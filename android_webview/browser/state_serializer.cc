@@ -4,7 +4,6 @@
 
 #include "android_webview/browser/state_serializer.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -36,7 +35,7 @@ namespace android_webview {
 
 namespace {
 
-const uint32_t AW_STATE_VERSION = internal::AW_STATE_VERSION_REVERSE_ENTRIES;
+const uint32_t AW_STATE_VERSION = internal::AW_STATE_VERSION_DATA_URL;
 
 // The production implementation of NavigationHistory and NavigationHistorySink,
 // backed by a NavigationController.
@@ -87,15 +86,9 @@ bool RestoreFromPickle(base::PickleIterator* iterator,
 namespace internal {
 
 void WriteToPickle(NavigationHistory& history, base::Pickle* pickle) {
-  WriteToPickle(AW_STATE_VERSION, history, pickle);
-}
-
-void WriteToPickle(uint32_t state_version,
-                   NavigationHistory& history,
-                   base::Pickle* pickle) {
   DCHECK(pickle);
 
-  internal::WriteHeaderToPickle(state_version, pickle);
+  internal::WriteHeaderToPickle(pickle);
 
   const int entry_count = history.GetEntryCount();
   const int selected_entry = history.GetCurrentEntry();
@@ -107,18 +100,8 @@ void WriteToPickle(uint32_t state_version,
 
   pickle->WriteInt(entry_count);
   pickle->WriteInt(selected_entry);
-
   for (int i = 0; i < entry_count; ++i) {
-    // Since AW_STATE_VERSION_REVERSE_ENTRIES, entries are written in reverse
-    // order. This allows (in an upcoming change, see
-    // http://crbug.com/389076708) us to easily drop the earlier navigation
-    // entries if the state is getting too big.
-    int index = state_version < AW_STATE_VERSION_REVERSE_ENTRIES
-                    ? i
-                    : (entry_count - i - 1);
-
-    internal::WriteNavigationEntryToPickle(
-        state_version, *history.GetEntryAtIndex(index), pickle);
+    internal::WriteNavigationEntryToPickle(*history.GetEntryAtIndex(i), pickle);
   }
 
   // Please update AW_STATE_VERSION and IsSupportedVersion() if serialization
@@ -149,8 +132,7 @@ uint32_t RestoreHeaderFromPickle(base::PickleIterator* iterator) {
 
 bool IsSupportedVersion(uint32_t state_version) {
   return state_version == internal::AW_STATE_VERSION_INITIAL ||
-         state_version == internal::AW_STATE_VERSION_DATA_URL ||
-         state_version == internal::AW_STATE_VERSION_REVERSE_ENTRIES;
+         state_version == internal::AW_STATE_VERSION_DATA_URL;
 }
 
 void WriteNavigationEntryToPickle(content::NavigationEntry& entry,
@@ -237,10 +219,6 @@ bool RestoreFromPickle(base::PickleIterator* iterator,
             state_version, iterator, entries[i].get(), context.get())) {
       return false;
     }
-  }
-
-  if (state_version >= AW_STATE_VERSION_REVERSE_ENTRIES) {
-    std::reverse(entries.begin(), entries.end());
   }
 
   // |web_contents| takes ownership of these entries after this call.

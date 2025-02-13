@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_TEST_APP_LIST_TEST_API_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -67,7 +68,7 @@ class ASH_EXPORT AppListTestApi {
   bool HasApp(const std::string& app_id);
 
   // Returns the name displayed in the launcher for the provided app list item.
-  std::u16string GetAppListItemViewName(const std::string& item_id);
+  std::u16string_view GetAppListItemViewName(const std::string& item_id);
 
   // Returns the top level item view specified by `item_id`.
   AppListItemView* GetTopLevelItemViewFromId(const std::string& item_id);

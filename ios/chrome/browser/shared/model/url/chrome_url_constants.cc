@@ -19,7 +19,7 @@ const char kChromeUICreditsURL[] = "chrome://credits/";
 const char kChromeUIFlagsURL[] = "chrome://flags/";
 const char kChromeUIHistoryURL[] = "chrome://history/";
 const char kChromeUIInspectURL[] = "chrome://inspect/";
-const char kChromeUIIntersitialsURL[] = "chrome://interstitials";
+const char kChromeUIInterstitialsURL[] = "chrome://interstitials";
 const char kChromeUIManagementURL[] = "chrome://management";
 const char kChromeUINewTabURL[] = "chrome://newtab/";
 const char kChromeUINTPTilesInternalsURL[] = "chrome://ntp-tiles-internals/";
@@ -45,7 +45,7 @@ const char kChromeUIGCMInternalsHost[] = "gcm-internals";
 const char kChromeUIHistogramHost[] = "histograms";
 const char kChromeUIHistoryHost[] = "history";
 const char kChromeUIInspectHost[] = "inspect";
-const char kChromeUIIntersitialsHost[] = "interstitials";
+const char kChromeUIInterstitialsHost[] = "interstitials";
 const char kChromeUILocalStateHost[] = "local-state";
 const char kChromeUIManagementHost[] = "management";
 const char kChromeUINetExportHost[] = "net-export";
@@ -77,6 +77,7 @@ const char* const kChromeHostURLs[] = {
     kChromeUIFlagsHost,
     kChromeUIHistogramHost,
     kChromeUIInspectHost,
+    kChromeUIInterstitialsHost,
     kChromeUIManagementHost,
     kChromeUINetExportHost,
     kChromeUINewTabHost,

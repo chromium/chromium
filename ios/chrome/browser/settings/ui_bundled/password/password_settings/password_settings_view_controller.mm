@@ -20,11 +20,11 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -162,7 +162,7 @@ NSString* GetSavePasswordsItemTitle() {
 // The item showing the current status of Passwords in Other Apps (i.e.,
 // credential provider).
 @property(nonatomic, readonly)
-    TableViewDetailIconItem* passwordsInOtherAppsItem;
+    TableViewMultiDetailTextItem* passwordsInOtherAppsItem;
 
 // The item related to the switch for the automatic passkey upgrades setting.
 @property(nonatomic, readonly)
@@ -512,12 +512,12 @@ NSString* GetSavePasswordsItemTitle() {
   return _bulkMovePasswordsToAccountButtonItem;
 }
 
-- (TableViewDetailIconItem*)passwordsInOtherAppsItem {
+- (TableViewMultiDetailTextItem*)passwordsInOtherAppsItem {
   if (_passwordsInOtherAppsItem) {
     return _passwordsInOtherAppsItem;
   }
 
-  _passwordsInOtherAppsItem = [[TableViewDetailIconItem alloc]
+  _passwordsInOtherAppsItem = [[TableViewMultiDetailTextItem alloc]
       initWithType:ItemTypePasswordsInOtherApps];
   _passwordsInOtherAppsItem.text = l10n_util::GetNSString(
       IOSPasskeysM2Enabled() ? IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS
@@ -963,7 +963,7 @@ NSString* GetSavePasswordsItemTitle() {
 // current state of `_passwordsInOtherAppsEnabled`.
 - (void)updatePasswordsInOtherAppsItem {
   if (_passwordsInOtherAppsEnabled.has_value()) {
-    self.passwordsInOtherAppsItem.detailText =
+    self.passwordsInOtherAppsItem.trailingDetailText =
         _passwordsInOtherAppsEnabled.value()
             ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
             : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);

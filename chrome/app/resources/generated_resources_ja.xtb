@@ -220,6 +220,7 @@
 <translation id="114721135501989771">Chrome で Google の最先端技術を活用</translation>
 <translation id="1147322039136785890">お待たせしました、<ph name="SUPERVISED_USER_NAME" /> さん</translation>
 <translation id="1147991416141538220">アクセスをリクエストするには、このデバイスの管理者にご連絡ください。</translation>
+<translation id="1148464196693569530">ユーザー スクリプトを許可する</translation>
 <translation id="1148624853678088576">設定完了。</translation>
 <translation id="1148669835763563782">セキュリティが強化され、Chromebook の最新機能を利用できるソフトウェア アップデートをダウンロードしています。このアップデートでは、Chromebook をスムーズに開始できるようセットアップ プロセスが改善されています。</translation>
 <translation id="1149401351239820326">有効期限（月）</translation>
@@ -6752,6 +6753,7 @@
 <translation id="5794414402486823030">常にシステム ビューアで開く</translation>
 <translation id="5794700615121138172">Linux の共有フォルダ</translation>
 <translation id="5794786537412027208">すべての Chrome アプリを終了</translation>
+<translation id="5795422263272161110">並べて表示</translation>
 <translation id="5796485699458186843">新しいシークレット タブ(&amp;T)</translation>
 <translation id="5796956053441619942">リモート デバイスからの URL はサポートされていません</translation>
 <translation id="5797934230382081317">使用方法については、&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt;、&lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; をご覧ください</translation>
@@ -7280,6 +7282,7 @@
 <translation id="6170498031581934115">ADB デバッグを有効にできませんでした。設定に移動して、もう一度お試しください。</translation>
 <translation id="6170675927290506430">通知設定に移動</translation>
 <translation id="6171779718418683144">毎回確認する</translation>
+<translation id="6172020488605056255">文書読解サポートを使用するには右クリックします</translation>
 <translation id="617213288191670920">言語が追加されていません</translation>
 <translation id="6173623053897475761">もう一度 PIN を入力してください</translation>
 <translation id="6174909075810107548">5 キーを使用してマウスボタンを押す</translation>
@@ -8303,6 +8306,7 @@
 <translation id="6910190732484284349">ユーザー名 <ph name="USER_EMAIL" /> のパスキーを削除</translation>
 <translation id="6910211073230771657">削除済み</translation>
 <translation id="6910274140210351823">ダーク</translation>
+<translation id="691102290537033604">Google による審査を受けていないコードを拡張機能で実行できるようになります。安全でない可能性があるため、意図的に行う場合にのみ有効にしてください。</translation>
 <translation id="6911734910326569517">メモリ使用量</translation>
 <translation id="6912007319859991306">モバイル SIM PIN</translation>
 <translation id="6912380255120084882">別のデバイスを試す</translation>
@@ -9813,6 +9817,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> 音声 <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Android スマートフォンから Wi-Fi を自動的に移行</translation>
 <translation id="7991296728590311172">スイッチ アクセスの設定</translation>
+<translation id="7992080146463834191">コンテンツを要約したり、複雑な表現をわかりやすくしたり、質問したりできます。</translation>
 <translation id="7992203134935383159">音声合成</translation>
 <translation id="799570308305997052">ウェブ表示</translation>
 <translation id="7997826902155442747">プロセスの優先値</translation>
@@ -11070,6 +11075,7 @@
 <translation id="8874448314264883207">「<ph name="EXTENSION_NAME" />」をオフにしました</translation>
 <translation id="8874647982044395866">オーガニック</translation>
 <translation id="8874790741333031443">サードパーティ Cookie を一時的に許可してみてください。ブラウジング保護の強度は低下しますが、サイトの機能が想定どおりに動作する可能性が高くなります。</translation>
+<translation id="8875221558267407626">コンテンツを要約したり、複雑な表現をわかりやすくしたり、質問したりできます</translation>
 <translation id="8875520811099717934">Linux のアップグレード</translation>
 <translation id="8875736897340638404">公開設定を選択します</translation>
 <translation id="8876307312329369159">この設定はデモセッションでは変更できません。</translation>
@@ -11123,6 +11129,7 @@
 <translation id="8915916167043355778">すべて閉じる</translation>
 <translation id="8916476537757519021">シークレット サブフレーム: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">オンにする</translation>
+<translation id="8917980324687233736">並べて表示</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> さんの <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">アプリをインストールしています...</translation>
 <translation id="891931289445130855">データと権限を削除</translation>

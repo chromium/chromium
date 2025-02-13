@@ -4,6 +4,7 @@
 
 #include "ui/base/clipboard/clipboard_util.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/threading/thread_restrictions.h"
@@ -37,7 +38,7 @@ std::vector<uint8_t> EncodeBitmapToPngAcceptJank(const SkBitmap& bitmap) {
   return EncodeBitmapToPngImpl(bitmap);
 }
 
-bool ShouldSkipBookmark(const std::u16string& title, const std::string& url) {
+bool ShouldSkipBookmark(std::u16string_view title, std::string_view url) {
   return url.empty() ||
          (!base::FeatureList::IsEnabled(features::kWriteBookmarkWithoutTitle) &&
           title.empty());

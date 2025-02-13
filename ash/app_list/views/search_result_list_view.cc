@@ -199,7 +199,7 @@ void SearchResultListView::SetListType(SearchResultListType list_type) {
   GetViewAccessibility().SetName(
       l10n_util::GetStringFUTF16(
           IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_ACCESSIBLE_NAME,
-          title_label_->GetText()),
+          std::u16string(title_label_->GetText())),
       ax::mojom::NameFrom::kAttribute);
 
 #if DCHECK_IS_ON()

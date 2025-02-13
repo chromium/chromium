@@ -256,7 +256,7 @@ void PasswordAuthView::OnDisplayPasswordButtonPressed() {
       std::nullopt});
 }
 
-void PasswordAuthView::OnContentsChanged(const std::u16string& new_contents) {
+void PasswordAuthView::OnContentsChanged(std::u16string_view new_contents) {
   // TODO(b/288692954): switch to variant-based implementation of event objects.
   dispatcher_->DispatchEvent(AuthPanelEventDispatcher::UserAction{
       AuthPanelEventDispatcher::UserAction::Type::

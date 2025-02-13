@@ -25,7 +25,7 @@ if [[ -z ${ABSEIL_ROOT:-} ]]; then
 fi
 
 if [[ -z ${STD:-} ]]; then
-  STD="c++14 c++17"
+  STD="c++17 c++20"
 fi
 
 if [[ -z ${COMPILATION_MODE:-} ]]; then

@@ -531,8 +531,7 @@ std::unique_ptr<views::View> ManagePasswordsDetailsView::CreateTitleView(
 ManagePasswordsDetailsView::ManagePasswordsDetailsView(
     password_manager::PasswordForm password_form,
     bool allow_empty_username_edit,
-    base::RepeatingCallback<bool(const std::u16string&)>
-        username_exists_callback,
+    base::RepeatingCallback<bool(std::u16string_view)> username_exists_callback,
     base::RepeatingClosure switched_to_edit_mode_callback,
     base::RepeatingClosure on_activity_callback,
     base::RepeatingCallback<void(bool)> on_input_validation_callback,
@@ -549,7 +548,7 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
       static_cast<int>(ManagePasswordsViewIDs::kUsernameLabel));
   username_label->GetViewAccessibility().SetName(
       l10n_util::GetStringFUTF16(IDS_MANAGE_PASSWORDS_USERNAME_ACCESSIBLE_NAME,
-                                 username_label->GetText()));
+                                 std::u16string(username_label->GetText())));
   if (!password_form.username_value.empty()) {
     auto copy_username_button_callback =
         base::BindRepeating(&WriteToClipboard, password_form.username_value,
@@ -674,18 +673,16 @@ void ManagePasswordsDetailsView::SwitchToReadingMode() {
 
 std::optional<std::u16string>
 ManagePasswordsDetailsView::GetUserEnteredUsernameValue() const {
-  if (username_textfield_) {
-    return username_textfield_->GetText();
-  }
-  return std::nullopt;
+  return username_textfield_ ? std::make_optional(std::u16string(
+                                   username_textfield_->GetText()))
+                             : std::nullopt;
 }
 
 std::optional<std::u16string>
 ManagePasswordsDetailsView::GetUserEnteredPasswordNoteValue() const {
-  if (note_textarea_) {
-    return note_textarea_->GetText();
-  }
-  return std::nullopt;
+  return note_textarea_
+             ? std::make_optional(std::u16string(note_textarea_->GetText()))
+             : std::nullopt;
 }
 
 void ManagePasswordsDetailsView::SwitchToEditUsernameMode() {

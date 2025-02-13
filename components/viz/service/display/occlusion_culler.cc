@@ -28,25 +28,9 @@ namespace {
 
 constexpr float kEpsilon = std::numeric_limits<float>::epsilon();
 
-bool IsRightAngledRotationOrPositiveScaleOrTranslation(
+bool Is2dAndRightAngledRotationOrPositiveScaleOrTranslation(
     const gfx::Transform& transform) {
-  if (transform.IsPositiveScaleOrTranslation()) {
-    return true;
-  }
-
-  const bool is_2d_and_has_no_perspective =
-      cc::MathUtil::IsWithinEpsilon(transform.rc(3, 0), 0.0) &&
-      cc::MathUtil::IsWithinEpsilon(transform.rc(3, 1), 0.0) &&
-      cc::MathUtil::IsWithinEpsilon(transform.rc(3, 2), 0.0) &&
-      cc::MathUtil::IsWithinEpsilon(transform.rc(3, 3), 1.0) &&  // 4th row
-      cc::MathUtil::IsWithinEpsilon(transform.rc(2, 0), 0.0) &&
-      cc::MathUtil::IsWithinEpsilon(transform.rc(2, 1), 0.0) &&
-      cc::MathUtil::IsWithinEpsilon(transform.rc(2, 2), 1.0) &&
-      cc::MathUtil::IsWithinEpsilon(transform.rc(2, 3), 0.0) &&  // 3rd row
-      cc::MathUtil::IsWithinEpsilon(transform.rc(0, 2), 0.0) &&
-      cc::MathUtil::IsWithinEpsilon(transform.rc(1, 2), 0.0);
-
-  if (!is_2d_and_has_no_perspective ||
+  if (!transform.Is2dTransform() ||
       !transform.NonDegeneratePreserves2dAxisAlignment()) {
     return false;
   }
@@ -67,11 +51,10 @@ bool IsRightAngledRotationOrPositiveScaleOrTranslation(
   const bool has_270_rotation_with_positive_scaling =
       transform.rc(0, 1) > kEpsilon && transform.rc(1, 0) < kEpsilon;
 
-  return is_2d_and_has_no_perspective &&
-         (has_translation || has_0_rotation_with_positive_scaling ||
-          has_90_rotation_with_positive_scaling ||
-          has_180_rotation_with_positive_scaling ||
-          has_270_rotation_with_positive_scaling);
+  return has_translation || has_0_rotation_with_positive_scaling ||
+         has_90_rotation_with_positive_scaling ||
+         has_180_rotation_with_positive_scaling ||
+         has_270_rotation_with_positive_scaling;
 }
 
 // SkRegion uses INT_MAX as a sentinel. Reduce gfx::Rect values when they are
@@ -317,11 +300,11 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
         current_sqs_intersects_occlusion =
             occlusion_in_target_space.Intersects(current_sqs_in_target_space);
 
-        // Compute the occlusion region in the quad content space for scale,
-        // rotation(90, 180, 270) and translation transforms. Note that 0 scale
-        // transform will fail the positive scale check.
+        // Compute the occlusion region in the quad content space for 2d-scale,
+        // rotation(90, 180, 270) and 2d-translation transforms. Note that 0
+        // scale transform will fail the positive scale check.
         if (current_sqs_intersects_occlusion &&
-            IsRightAngledRotationOrPositiveScaleOrTranslation(transform)) {
+            Is2dAndRightAngledRotationOrPositiveScaleOrTranslation(transform)) {
           // Given:
           // * Scale transform can be inverted by multiplying 1/scale.
           //  (given scale > 0)

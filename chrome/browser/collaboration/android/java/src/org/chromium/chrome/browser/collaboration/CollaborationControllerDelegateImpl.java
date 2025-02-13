@@ -16,6 +16,10 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.data_sharing.DataSharingMetrics;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
@@ -23,6 +27,7 @@ import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfi
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.widget.loading.LoadingFullscreenCoordinator;
 import org.chromium.components.collaboration.CollaborationControllerDelegate;
 import org.chromium.components.collaboration.FlowType;
@@ -54,16 +59,29 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     private long mNativePtr;
     private @Nullable LoadingFullscreenCoordinator mLoadingFullscreenCoordinator;
 
+    // Will become null once used in the prepareFlowUI().
+    private @Nullable Callback<Runnable> mSwitchToTabSwitcherCallback;
+
     // Stores the runnable to close the current showing UI. Is null when there's no UI showing.
     private Runnable mCloseScreenRunnable;
 
+    /**
+     * Constructor for a new {@link CollaborationControllerDelegateImpl} object.
+     *
+     * @param activity The current tabbed activity.
+     * @param type The flow type of the delegate.
+     * @param tabManager Handle communication with ShareKit UI.
+     * @param signinAndHistorySyncActivityLauncher The launcher of signin UI.
+     * @param loadingFullscreenCoordinator Used to start a loading screen.
+     * @param switchToTabSwitcherCallback Callback used to show the tab switcher view.
+     */
     public CollaborationControllerDelegateImpl(
             Activity activity,
             @FlowType int type,
             DataSharingTabManager tabManager,
             SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
             LoadingFullscreenCoordinator loadingFullscreenCoordinator,
-            @Nullable Runnable switchToTabSwitcherRunnable) {
+            @Nullable Callback<Runnable> switchToTabSwitcherCallback) {
         mNativePtr = CollaborationControllerDelegateImplJni.get().createNativeObject(this);
 
         mActivity = activity;
@@ -71,15 +89,13 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         mDataSharingTabManager = tabManager;
         mSigninAndHistorySyncActivityLauncher = signinAndHistorySyncActivityLauncher;
         mLoadingFullscreenCoordinator = loadingFullscreenCoordinator;
+        mSwitchToTabSwitcherCallback = switchToTabSwitcherCallback;
 
         if (mFlowType == FlowType.JOIN) {
             loadingFullscreenCoordinator.startLoading(
                     () -> {
                         destroy();
                     });
-            if (switchToTabSwitcherRunnable != null) {
-                switchToTabSwitcherRunnable.run();
-            }
         }
     }
 
@@ -96,8 +112,20 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     @CalledByNative
     void prepareFlowUI(long exitCallback, long resultCallback) {
         mExitCallback = exitCallback;
-        CollaborationControllerDelegateImplJni.get()
-                .runResultCallback(Outcome.SUCCESS, resultCallback);
+        Runnable onTabSwitcherShownRunnable =
+                () -> {
+                    CollaborationControllerDelegateImplJni.get()
+                            .runResultCallback(Outcome.SUCCESS, resultCallback);
+                };
+        if (mFlowType == FlowType.JOIN) {
+            // Wait for tab switcher to be shown before launching the join flow. This is to ensure
+            // that all necessary tab UI are ready.
+            assert mSwitchToTabSwitcherCallback != null;
+            mSwitchToTabSwitcherCallback.onResult(onTabSwitcherShownRunnable);
+            mSwitchToTabSwitcherCallback = null;
+        } else {
+            onTabSwitcherShownRunnable.run();
+        }
     }
 
     /**
@@ -172,52 +200,24 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
      */
     @CalledByNative
     void showAuthenticationUi(long resultCallback) {
-        assert mDataSharingTabManager.getProfile() != null;
+        Profile profile = mDataSharingTabManager.getProfile();
+        assert profile != null;
+
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
+
+        if (!signinManager.isSigninAllowed()) {
+            // The signin option is disabled manually by the user in settings.
+            openSigninSettingsModel(resultCallback);
+            return;
+        }
 
         Intent intent = null;
         switch (mFlowType) {
             case FlowType.JOIN:
-                // TODO(haileywang): Add the correct logo: .signinLogoId(R.drawable.signin_logo).
-                FullscreenSigninAndHistorySyncConfig fullscreenConfig =
-                        new FullscreenSigninAndHistorySyncConfig.Builder()
-                                .historyOptInMode(HistorySyncConfig.OptInMode.REQUIRED)
-                                .signinTitleId(R.string.collaboration_signin_title)
-                                .signinSubtitleId(R.string.collaboration_signin_description)
-                                .signinDismissTextId(R.string.collaboration_signin_sync_dismiss)
-                                .historySyncTitleId(R.string.collaboration_sync_title)
-                                .historySyncSubtitleId(R.string.collaboration_sync_description)
-                                .build();
-
-                intent =
-                        mSigninAndHistorySyncActivityLauncher
-                                .createFullscreenSigninIntentOrShowError(
-                                        mActivity,
-                                        mDataSharingTabManager.getProfile(),
-                                        fullscreenConfig,
-                                        SigninAccessPoint.COLLABORATION_TAB_GROUP);
+                intent = createFullscreenSigninIntent();
                 break;
             case FlowType.SHARE_OR_MANAGE:
-                AccountPickerBottomSheetStrings strings =
-                        new AccountPickerBottomSheetStrings.Builder(
-                                        R.string.collaboration_signin_bottom_sheet_title)
-                                .setSubtitleStringId(
-                                        R.string.collaboration_signin_bottom_sheet_description)
-                                .build();
-
-                BottomSheetSigninAndHistorySyncConfig bottomSheetConfig =
-                        new BottomSheetSigninAndHistorySyncConfig.Builder(
-                                        strings,
-                                        NoAccountSigninMode.BOTTOM_SHEET,
-                                        WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                        HistorySyncConfig.OptInMode.REQUIRED)
-                                .build();
-                intent =
-                        mSigninAndHistorySyncActivityLauncher
-                                .createBottomSheetSigninIntentOrShowError(
-                                        mActivity,
-                                        mDataSharingTabManager.getProfile(),
-                                        bottomSheetConfig,
-                                        SigninAccessPoint.COLLABORATION_TAB_GROUP);
+                intent = createBottomSheetSigninIntent();
                 break;
             default:
                 assert false;
@@ -225,7 +225,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
 
         if (intent == null) {
             CollaborationControllerDelegateImplJni.get()
-                    .runResultCallback(Outcome.FAILURE, resultCallback);
+                    .runResultCallback(Outcome.CANCEL, resultCallback);
             return;
         }
         int requestCode =
@@ -240,6 +240,111 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                 () -> {
                     mDataSharingTabManager.getWindowAndroid().cancelIntent(requestCode);
                 };
+    }
+
+    private void openSigninSettingsModel(long resultCallback) {
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+
+        @Nullable
+        ModalDialogManager modalDialogManager =
+                mDataSharingTabManager.getWindowAndroid().getModalDialogManager();
+        assert modalDialogManager != null;
+
+        ModalDialogProperties.Controller controller =
+                new ModalDialogProperties.Controller() {
+                    @Override
+                    public void onClick(PropertyModel model, @ButtonType int buttonType) {
+                        switch (buttonType) {
+                            case ModalDialogProperties.ButtonType.POSITIVE:
+                                settingsNavigation.startSettings(
+                                        mActivity,
+                                        SettingsNavigation.SettingsFragment.GOOGLE_SERVICES);
+                                modalDialogManager.dismissDialog(
+                                        model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                                break;
+                            default:
+                                modalDialogManager.dismissDialog(
+                                        model, DialogDismissalCause.UNKNOWN);
+                        }
+                    }
+
+                    @Override
+                    public void onDismiss(
+                            PropertyModel model, @DialogDismissalCause int dismissalCause) {
+                        CollaborationControllerDelegateImplJni.get()
+                                .runResultCallback(Outcome.CANCEL, resultCallback);
+                    }
+                };
+        PropertyModel model =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, controller)
+                        .with(
+                                ModalDialogProperties.TITLE,
+                                mActivity.getString(R.string.collaboration_signed_out_header))
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                mActivity.getString(R.string.collaboration_signed_out_body))
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                mActivity.getString(
+                                        R.string.collaboration_signed_out_positive_button))
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                mActivity.getString(R.string.collaboration_signin_sync_dismiss))
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .build();
+
+        closeLoadingIfNeeded();
+        modalDialogManager.showDialog(model, ModalDialogType.APP);
+
+        mCloseScreenRunnable =
+                () -> {
+                    modalDialogManager.dismissDialog(model, DialogDismissalCause.NAVIGATE);
+                };
+    }
+
+    private Intent createBottomSheetSigninIntent() {
+        AccountPickerBottomSheetStrings strings =
+                new AccountPickerBottomSheetStrings.Builder(
+                                R.string.collaboration_signin_bottom_sheet_title)
+                        .setSubtitleStringId(R.string.collaboration_signin_bottom_sheet_description)
+                        .build();
+
+        BottomSheetSigninAndHistorySyncConfig bottomSheetConfig =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                strings,
+                                NoAccountSigninMode.BOTTOM_SHEET,
+                                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                HistorySyncConfig.OptInMode.REQUIRED)
+                        .build();
+        return mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
+                mActivity,
+                mDataSharingTabManager.getProfile(),
+                bottomSheetConfig,
+                SigninAccessPoint.COLLABORATION_TAB_GROUP);
+    }
+
+    private Intent createFullscreenSigninIntent() {
+        // TODO(haileywang): Add the correct logo: .signinLogoId(R.drawable.signin_logo).
+        FullscreenSigninAndHistorySyncConfig fullscreenConfig =
+                new FullscreenSigninAndHistorySyncConfig.Builder()
+                        .historyOptInMode(HistorySyncConfig.OptInMode.REQUIRED)
+                        .signinTitleId(R.string.collaboration_signin_title)
+                        .signinSubtitleId(R.string.collaboration_signin_description)
+                        .signinDismissTextId(R.string.collaboration_signin_sync_dismiss)
+                        .historySyncTitleId(R.string.collaboration_sync_title)
+                        .historySyncSubtitleId(R.string.collaboration_sync_description)
+                        .build();
+
+        return mSigninAndHistorySyncActivityLauncher.createFullscreenSigninIntentOrShowError(
+                mActivity,
+                mDataSharingTabManager.getProfile(),
+                fullscreenConfig,
+                SigninAccessPoint.COLLABORATION_TAB_GROUP);
     }
 
     private void onSigninResult(int resultCode, long resultCallback) {

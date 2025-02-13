@@ -51,7 +51,7 @@ TEST_F(LobsterImageProviderFromSnapperTest,
           base::test::EqualsProto(CreateTestMantaRequest(
               /*query=*/"a lovely cake", /*seed=*/std::nullopt, /*size=*/
               gfx::Size(kPreviewImageDimensionSize, kPreviewImageDimensionSize),
-              /*num_outputs=*/2)),
+              /*num_outputs=*/2, /*use_query_rewriter=*/false)),
           testing::_, testing::_))
       .WillOnce(testing::Invoke(
           [](const manta::proto::Request& request,
@@ -105,7 +105,7 @@ TEST_F(LobsterImageProviderFromSnapperTest,
                /*query=*/"a lovely cake",
                /*seed=*/kFakeBaseGenerationSeed, /*size=*/
                gfx::Size(kFullImageDimensionSize, kFullImageDimensionSize),
-               /*num_outputs=*/1)),
+               /*num_outputs=*/1, /*use_query_rewriter=*/false)),
            testing::_, testing::_))
       .WillOnce(testing::Invoke(
           [](const manta::proto::Request& request,
@@ -151,7 +151,7 @@ TEST_F(
           base::test::EqualsProto(CreateTestMantaRequest(
               /*query=*/"a sweet candy", /*seed=*/std::nullopt, /*size=*/
               gfx::Size(kPreviewImageDimensionSize, kPreviewImageDimensionSize),
-              /*num_outputs=*/2)),
+              /*num_outputs=*/2, /*use_query_rewriter=*/false)),
           testing::_, testing::_))
       .WillOnce(testing::Invoke(
           [](const manta::proto::Request& request,

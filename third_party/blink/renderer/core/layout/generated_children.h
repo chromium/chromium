@@ -20,7 +20,7 @@ static bool CanHaveGeneratedChildren(const LayoutObject& layout_object) {
   // allowed so we can't support generated content.
   if (layout_object.IsMedia() || layout_object.IsTextControl() ||
       layout_object.IsMenuList() || layout_object.IsInputButton()) {
-    if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
+    if (HTMLSelectElement::CustomizableSelectEnabled(layout_object.GetNode()) &&
         layout_object.IsMenuList() &&
         To<HTMLSelectElement>(layout_object.GetNode())
             ->IsAppearanceBaseButton(

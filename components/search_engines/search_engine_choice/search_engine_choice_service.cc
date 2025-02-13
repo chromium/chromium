@@ -318,7 +318,6 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
     // prepopulated data (it has a "normal"-looking ID), but it has since been
     // removed. Follow what we do for custom search engines, don't show the
     // choice screen.
-    RecordUnexpectedSearchProvider(default_search_engine->data());
     return SearchEngineChoiceScreenConditions::
         kHasRemovedPrepopulatedSearchEngine;
   }

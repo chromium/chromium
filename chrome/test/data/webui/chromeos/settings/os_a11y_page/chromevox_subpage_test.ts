@@ -282,8 +282,8 @@ suite('<settings-chromevox-subpage>', () => {
   test('connect button works', async function() {
     // Mock chrome.bluetooth.getDevice using `display` as the backing source.
     const displays = [{name: 'VarioUltra', address: 'abcd1234', paired: true}];
-    chrome.bluetooth.getDevice = async address =>
-        displays.find(display => display.address === address)!;
+    chrome.bluetooth.getDevice = address =>
+        Promise.resolve(displays.find(display => display.address === address)!);
 
     // Get Bluetooth Braille Display UI element.
     const bluetoothBrailleDisplayUi =
@@ -313,7 +313,7 @@ suite('<settings-chromevox-subpage>', () => {
     await bluetoothBrailleDisplayUi.onDisplayListChanged(displays);
   });
 
-  test('no custom dropdown item shown', async function() {
+  test('no custom dropdown item shown', function() {
     // Get Bluetooth Braille Display UI element.
     const bluetoothBrailleDisplayUi =
         page.shadowRoot!.querySelector('bluetooth-braille-display-ui');
@@ -336,8 +336,8 @@ suite('<settings-chromevox-subpage>', () => {
   test('braille display shown', async function() {
     // Mock chrome.bluetooth.getDevice using `display` as the backing source.
     const displays = [{name: 'VarioUltra', address: 'abcd1234', paired: true}];
-    chrome.bluetooth.getDevice = async address =>
-        displays.find(display => display.address === address)!;
+    chrome.bluetooth.getDevice = address =>
+        Promise.resolve(displays.find(display => display.address === address)!);
 
     // Get Bluetooth Braille Display UI element.
     const bluetoothBrailleDisplayUi =

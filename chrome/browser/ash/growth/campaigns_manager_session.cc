@@ -27,7 +27,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/ash/components/growth/action_performer.h"
 #include "chromeos/ash/components/growth/campaigns_constants.h"
@@ -273,21 +272,6 @@ std::optional<apps::AppType> GetAppType(const std::string& app_id) {
   return cache->GetAppType(app_id);
 }
 
-// Returns current active browser. If there's no active browser, return nullptr.
-Browser* GetActiveBrowser() {
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (browser->profile()->IsOffTheRecord() ||
-        !browser->window()->IsVisible()) {
-      continue;
-    }
-
-    if (browser->window()->IsActive()) {
-      return browser;
-    }
-  }
-  return nullptr;
-}
-
 bool IsSystemWebApp(Profile* profile, const webapps::AppId& app_id) {
   ash::SystemWebAppManager* swa_manager =
       ash::SystemWebAppManager::Get(profile);
@@ -299,24 +283,26 @@ bool IsSystemWebApp(Profile* profile, const webapps::AppId& app_id) {
 }
 
 bool HasValidPwaBrowserForAppId(const std::string& app_id) {
-  auto* browser = GetActiveBrowser();
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
+    if (browser->profile()->IsOffTheRecord() || !browser->IsActive()) {
+      continue;
+    }
 
-  if (!browser) {
-    CAMPAIGNS_LOG(ERROR) << "No browser window";
-    return false;
+    if (browser->type() != Browser::TYPE_APP) {
+      CAMPAIGNS_LOG(ERROR) << "Not pwa browser type";
+      return false;
+    }
+
+    if (!web_app::AppBrowserController::IsForWebApp(browser, app_id)) {
+      CAMPAIGNS_LOG(ERROR) << "Browser belongs to a different app";
+      return false;
+    }
+
+    return true;
   }
 
-  if (browser->type() != Browser::TYPE_APP) {
-    CAMPAIGNS_LOG(ERROR) << "Not pwa browser type";
-    return false;
-  }
-
-  if (!web_app::AppBrowserController::IsForWebApp(browser, app_id)) {
-    CAMPAIGNS_LOG(ERROR) << "Browser belongs to a different app";
-    return false;
-  }
-
-  return true;
+  CAMPAIGNS_LOG(ERROR) << "No browser window";
+  return false;
 }
 
 void SetCampaignManagerPrefService(Profile* profile) {

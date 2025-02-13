@@ -19,34 +19,9 @@ BASE_DECLARE_FEATURE(kAutofillAi);
 // TODO(crbug.com/395555410): Remove.
 BASE_DECLARE_FEATURE(kAutofillAiBootstrapping);
 
-inline constexpr base::FeatureParam<bool> kSkipAllowlist{
-    &kAutofillAi, /*name=*/"skip_allowlist",
-    /*default_value=*/false};
-
-inline constexpr base::FeatureParam<int>
-    kMinimumNumberOfEligibleFieldsForFilling{
-        &kAutofillAi,
-        /*name=*/"minimum_number_of_eligible_fields_for_filling",
-        /*default_value=*/1};
-
-inline constexpr base::FeatureParam<int>
-    kMinimumNumberOfEligibleFieldsForImport{
-        &kAutofillAi,
-        /*name=*/"minimum_number_of_eligible_fields_for_import",
-        /*default_value=*/1};
-
-inline constexpr base::FeatureParam<bool> kTriggerAutomatically{
-    &kAutofillAi, /*name=*/"trigger_automatically",
-    /*default_value=*/false};
-
 inline constexpr base::FeatureParam<base::TimeDelta> kExecutionTimeout{
     &kAutofillAi, /*name=*/"execution_timeout",
     /*default_value=*/base::Seconds(10)};
-
-inline constexpr base::FeatureParam<bool> kExtractAXTreeForPredictions{
-    &kAutofillAi,
-    /*name=*/"extract_ax_tree_for_predictions",
-    /*default_value=*/false};
 
 inline constexpr base::FeatureParam<bool> kShowDetailsText{
     &kAutofillAi,

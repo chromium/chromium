@@ -759,6 +759,9 @@ CREATE PERFETTO TABLE chrome_scroll_update_info(
   is_first_scroll_update_in_scroll BOOL,
   -- Whether this is the first input that was presented in the frame.
   is_first_scroll_update_in_frame BOOL,
+  -- Duration from the start of the browser process to the first
+  -- input generation timestamp.
+  browser_uptime_dur DURATION,
   -- Input generation timestamp (from the Android system).
   generation_ts TIMESTAMP,
   -- Duration from the generation timestamp fo the previous input to
@@ -887,6 +890,8 @@ SELECT
   input.is_inertial,
   input.is_first_scroll_update_in_scroll,
   input.is_first_scroll_update_in_frame,
+  generation_ts - browser_process.start_ts
+    AS browser_uptime_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   -- No applicable utid (duration between two threads).
   -- No applicable slice id (duration between two threads).
@@ -999,8 +1004,11 @@ SELECT
   frame.presentation_timestamp
 FROM chrome_scroll_update_input_pipeline AS input
 LEFT JOIN chrome_scroll_update_frame_pipeline AS frame
-ON input.presented_in_frame_id = frame.id;
-
+ON input.presented_in_frame_id = frame.id
+LEFT JOIN thread AS browser_main_thread
+ON browser_utid = browser_main_thread.utid
+LEFT JOIN process AS browser_process
+ON browser_process.upid = browser_main_thread.upid;
 
 -- Helper macro to compute the stage delta.
 -- Should be used only as a part of `chrome_scroll_frame_info`.
@@ -1034,6 +1042,9 @@ CREATE PERFETTO TABLE chrome_scroll_frame_info(
   -- Presented delta (change in page offset) for the given frame.
   -- This delta is computed by Chrome (based on the input events).
   presented_scrolled_delta_y DOUBLE,
+  -- Duration from the start of the browser process to the first
+  -- input generation timestamp.
+  browser_uptime_dur DURATION,
   -- Input generation timestamp (from the Android system) for the first input.
   first_input_generation_ts TIMESTAMP,
   -- Duration from the previous input (last input that wasn't part of this frame)
@@ -1153,6 +1164,7 @@ SELECT
     WHERE update_info.frame_display_id = info.frame_display_id
   ) as total_input_delta_y,
   delta.delta_y as presented_scrolled_delta_y,
+  browser_uptime_dur,
   info.generation_ts AS first_input_generation_ts,
   info.since_previous_generation_dur AS previous_last_input_to_first_input_generation_dur,
   info.browser_utid,

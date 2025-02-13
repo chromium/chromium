@@ -932,9 +932,6 @@ extern const char kExperimentalRgbKeyboardPatternsDescription[];
 extern const char kRetailCouponsName[];
 extern const char kRetailCouponsDescription[];
 
-extern const char kDropInputEventsBeforeFirstPaintName[];
-extern const char kDropInputEventsBeforeFirstPaintDescription[];
-
 extern const char kBoundaryEventDispatchTracksNodeRemovalName[];
 extern const char kBoundaryEventDispatchTracksNodeRemovalDescription[];
 
@@ -1830,6 +1827,9 @@ extern const char kSensitiveContentWhileSwitchingTabsDescription[];
 extern const char kSettingsAppNotificationSettingsName[];
 extern const char kSettingsAppNotificationSettingsDescription[];
 
+extern const char kSyncPointGraphValidationName[];
+extern const char kSyncPointGraphValidationDescription[];
+
 extern const char kReadLaterFlagId[];
 extern const char kReadLaterName[];
 extern const char kReadLaterDescription[];
@@ -2393,8 +2393,6 @@ extern const char kAccessibilityDeprecateTypeAnnounceName[];
 extern const char kAccessibilityDeprecateTypeAnnounceDescription[];
 extern const char kAccessibilityIncludeLongClickActionName[];
 extern const char kAccessibilityIncludeLongClickActionDescription[];
-extern const char kAccessibilityPageZoomEnhancementsName[];
-extern const char kAccessibilityPageZoomEnhancementsDescription[];
 extern const char kAccessibilityUnifiedSnapshotsName[];
 extern const char kAccessibilityUnifiedSnapshotsDescription[];
 extern const char kAccessibilityManageBroadcastReceiverOnBackgroundName[];
@@ -2564,6 +2562,9 @@ extern const char kEdgeToEdgeSafeAreaConstraintDescription[];
 
 extern const char kEdgeToEdgeWebOptInName[];
 extern const char kEdgeToEdgeWebOptInDescription[];
+
+extern const char kEducationalTipDefaultBrowserPromoCardName[];
+extern const char kEducationalTipDefaultBrowserPromoCardDescription[];
 
 extern const char kEducationalTipModuleName[];
 extern const char kEducationalTipModuleDescription[];
@@ -2774,6 +2775,9 @@ extern const char kTabGroupSyncAndroidDescription[];
 
 extern const char kTabGroupSyncDisableNetworkLayerName[];
 extern const char kTabGroupSyncDisableNetworkLayerDescription[];
+
+extern const char kTabStripContextMenuAndroidName[];
+extern const char kTabStripContextMenuAndroidDescription[];
 
 extern const char kTabStripGroupCollapseAndroidName[];
 extern const char kTabStripGroupCollapseAndroidDescription[];
@@ -3837,9 +3841,6 @@ extern const char kFileTransferEnterpriseConnectorUIDescription[];
 
 extern const char kFilesConflictDialogName[];
 extern const char kFilesConflictDialogDescription[];
-
-extern const char kFilesKernelDriversName[];
-extern const char kFilesKernelDriversDescription[];
 
 extern const char kFilesExtractArchiveName[];
 extern const char kFilesExtractArchiveDescription[];

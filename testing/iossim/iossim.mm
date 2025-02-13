@@ -12,30 +12,36 @@ namespace {
 void PrintUsage() {
   fprintf(
       stderr,
-      "Usage: iossim [-d device] [-s sdk_version] <app_path> <xctest_path>\n"
+      "Usage: iossim [options] <app_path> <xctest_path>\n"
       "  where <app_path> is the path to the .app directory and <xctest_path> "
-      "is the path to an optional xctest bundle.\n"
+      "is the path to an optional xctest bundle. The -i option is disallowed.\n"
+      "Simplified usage: iossim -i [options] <app_path>\n"
+      "  where <app_path> is the path to the .app directory. The -t option is "
+      "disallowed.\n"
       "Options:\n"
+      "  -h  Print this help message and exit.\n"
+      "  -l  Print list of supported devices and runtimes and exit.\n"
+      "  -p  Print the device's home directory and exit.\n"
+      "  -w  Wipe the device's contents and settings and exit.\n"
+      "\n"
+      "  -v  Be more verbose, showing all the xcrun commands we call.\n"
+      "  -i  Use iossim instead of xcodebuild (disables all xctest "
+      "features). This is incompatible with -t.\n"
+      "  -t  Specifies a test or test suite that should be included in the "
+      "test run. All other tests will be excluded from this run. This is "
+      "incompatible with -i.\n"
+      "  -e  Specifies an environment key=value pair that will be"
+      " set in the simulated application's environment.\n"
+      "  -c  Specifies command line flags to pass to application.\n"
+      "  -k  When to kill the iOS Simulator : before, after, both, never "
+      "(default: both)\n"
+      "\n"
       "  -u  Specifies the device udid to use. Will use -d, -s values to get "
       "devices if not specified.\n"
       "  -d  Specifies the device (must be one of the values from the iOS "
       "Simulator's Hardware -> Device menu. Defaults to 'iPhone 6s'.\n"
-      "  -w  Wipe the device's contents and settings before running the "
-      "test.\n"
-      "  -e  Specifies an environment key=value pair that will be"
-      " set in the simulated application's environment.\n"
-      "  -t  Specifies a test or test suite that should be included in the "
-      "test run. All other tests will be excluded from this run. This is "
-      "incompatible with -i.\n"
-      "  -c  Specifies command line flags to pass to application.\n"
-      "  -p  Print the device's home directory, does not run a test.\n"
       "  -s  Specifies the SDK version to use (e.g '9.3'). Will use system "
-      "default if not specified.\n"
-      "  -v  Be more verbose, showing all the xcrun commands we call\n"
-      "  -k  When to kill the iOS Simulator : before, after, both, never "
-      "(default: both)\n"
-      "  -i  Use iossim instead of xcodebuild (disables all xctest "
-      "features). This is incompatible with -t.\n");
+      "default if not specified.\n");
 }
 
 // Exit status codes.
@@ -53,7 +59,7 @@ void LogError(NSString* format, ...) {
   va_end(list);
 }
 
-}
+}  // namespace
 
 typedef enum {
   KILL_NEVER = 0,

@@ -9,7 +9,6 @@ import {currentReadHighlightClass, previousReadHighlightClass} from 'chrome-untr
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import type {FakeTree} from './fake_tree_builder.js';
 import {FakeTreeBuilder} from './fake_tree_builder.js';
@@ -38,13 +37,17 @@ suite('UpdateContentSelectionWithHighlights', () => {
     'In the circle of life',
   ];
 
-  setup(async () => {
+  setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-    app = await createApp();
+
+    // Don't use await createApp() when using a FakeTree, as it seems to cause
+    // flakiness.
+    app = document.createElement('read-anything-app');
+    document.body.appendChild(app);
 
     assertEquals(4, textNodeIds.length);
     assertEquals(4, texts.length);

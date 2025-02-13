@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/auth/views/active_session_auth_view.h"
 #include "ash/auth/views/auth_common.h"
@@ -217,7 +218,7 @@ void ActiveSessionAuthControllerImpl::TestApi::SetPinStatus(
   controller_->contents_view_->SetPinStatus(std::move(pin_status));
 }
 
-const std::u16string&
+std::u16string_view
 ActiveSessionAuthControllerImpl::TestApi::GetPinStatusMessage() const {
   return controller_->contents_view_->GetPinStatusMessage();
 }
@@ -511,7 +512,7 @@ void ActiveSessionAuthControllerImpl::MoveToTheCenter() {
 }
 
 void ActiveSessionAuthControllerImpl::OnPasswordSubmit(
-    const std::u16string& password) {
+    std::u16string_view password) {
   if (IsSucceedState()) {
     return;
   }
@@ -530,7 +531,7 @@ void ActiveSessionAuthControllerImpl::OnPasswordSubmit(
                      weak_ptr_factory_.GetWeakPtr(), AuthInputType::kPassword));
 }
 
-void ActiveSessionAuthControllerImpl::OnPinSubmit(const std::u16string& pin) {
+void ActiveSessionAuthControllerImpl::OnPinSubmit(std::u16string_view pin) {
   if (IsSucceedState()) {
     return;
   }

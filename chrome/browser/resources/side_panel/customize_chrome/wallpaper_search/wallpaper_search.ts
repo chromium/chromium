@@ -758,7 +758,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     if (this.status_ === WallpaperSearchStatus.kOk) {
       this.$.wallpaperSearch.focus();
     } else {
-      const error = this.shadowRoot!.querySelector<HTMLElement>('#error');
+      const error = this.shadowRoot.querySelector<HTMLElement>('#error');
       assert(error);
       error.focus();
     }

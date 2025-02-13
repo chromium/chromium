@@ -18,6 +18,9 @@ enum class AudioWorkletProcessorErrorState : unsigned {
 
   // An exception thrown from the process method.
   kProcessError = 2,
+
+  // An exception thrown if the process method is undefined.
+  kProcessMethodUndefinedError = 3,
 };
 
 }  // namespace blink

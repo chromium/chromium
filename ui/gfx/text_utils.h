@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "ui/gfx/text_constants.h"
@@ -27,7 +28,7 @@ class Size;
 // and span of the last accelerated character, respectively, or -1 and 0 if
 // there was none.
 COMPONENT_EXPORT(GFX)
-std::u16string LocateAndRemoveAcceleratorChar(const std::u16string& s,
+std::u16string LocateAndRemoveAcceleratorChar(std::u16string_view s,
                                               int* accelerated_char_pos,
                                               int* accelerated_char_span);
 
@@ -38,35 +39,35 @@ std::u16string LocateAndRemoveAcceleratorChar(const std::u16string& s,
 // Single accelerator chars ('&') will be stripped from the string. Double
 // accelerator chars ('&&') will be converted to a single '&'. CJK language
 // accelerators, specified as "(&x)", will be entirely removed too.
-COMPONENT_EXPORT(GFX) std::u16string RemoveAccelerator(const std::u16string& s);
+COMPONENT_EXPORT(GFX) std::u16string RemoveAccelerator(std::u16string_view s);
 
 // Returns the number of horizontal pixels needed to display the specified
 // |text| with |font_list|. |typesetter| indicates where the text will be
 // displayed.
 COMPONENT_EXPORT(GFX)
-int GetStringWidth(const std::u16string& text, const FontList& font_list);
+int GetStringWidth(std::u16string_view text, const FontList& font_list);
 
 // Returns the size required to render |text| in |font_list|. This includes all
 // leading space, descender area, etc. even if the text to render does not
 // contain characters with ascenders or descenders.
 COMPONENT_EXPORT(GFX)
-Size GetStringSize(const std::u16string& text, const FontList& font_list);
+Size GetStringSize(std::u16string_view text, const FontList& font_list);
 
 // This is same as GetStringWidth except that fractional width is returned.
 COMPONENT_EXPORT(GFX)
-float GetStringWidthF(const std::u16string& text, const FontList& font_list);
+float GetStringWidthF(std::u16string_view text, const FontList& font_list);
 
 // Returns a valid cut boundary at or before |index|. The surrogate pair and
 // combining characters should not be separated.
 COMPONENT_EXPORT(GFX)
-size_t FindValidBoundaryBefore(const std::u16string& text,
+size_t FindValidBoundaryBefore(std::u16string_view text,
                                size_t index,
                                bool trim_whitespace = false);
 
 // Returns a valid cut boundary at or after |index|. The surrogate pair and
 // combining characters should not be separated.
 COMPONENT_EXPORT(GFX)
-size_t FindValidBoundaryAfter(const std::u16string& text,
+size_t FindValidBoundaryAfter(std::u16string_view text,
                               size_t index,
                               bool trim_whitespace = false);
 

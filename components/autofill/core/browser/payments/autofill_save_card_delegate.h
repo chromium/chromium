@@ -50,6 +50,8 @@ class AutofillSaveCardDelegate {
           user_provided_details);
   virtual void OnUiCanceled();
   virtual void OnUiIgnored();
+  const payments::PaymentsAutofillClient::SaveCreditCardOptions&
+  GetSaveCreditCardOptions() const;
 
  protected:
   // Called when all of the prerequisites for saving a card have been met.

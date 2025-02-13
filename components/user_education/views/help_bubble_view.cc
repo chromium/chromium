@@ -372,6 +372,8 @@ HelpBubbleView::HelpBubbleView(
           true),
       delegate_(delegate),
       event_relay_(std::move(event_relay)) {
+  set_background_color(delegate_->GetHelpBubbleBackgroundColorId());
+
   if (anchor.rect.has_value()) {
     SetForceAnchorRect(anchor.rect.value());
     anchor_observer_ = std::make_unique<AnchorViewObserver>(anchor.view, this);
@@ -823,10 +825,6 @@ void HelpBubbleView::OnThemeChanged() {
   views::BubbleDialogDelegateView::OnThemeChanged();
 
   const auto* color_provider = GetColorProvider();
-  const SkColor background_color =
-      color_provider->GetColor(delegate_->GetHelpBubbleBackgroundColorId());
-  set_color(background_color);
-
   const SkColor foreground_color =
       color_provider->GetColor(delegate_->GetHelpBubbleForegroundColorId());
   if (icon_view_) {
@@ -834,6 +832,8 @@ void HelpBubbleView::OnThemeChanged() {
         foreground_color, icon_view_->GetPreferredSize({}).height() / 2));
   }
 
+  const SkColor background_color =
+      color_provider->GetColor(delegate_->GetHelpBubbleBackgroundColorId());
   for (views::Label* label : labels_) {
     label->SetBackgroundColor(background_color);
     label->SetEnabledColor(foreground_color);

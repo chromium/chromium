@@ -21,7 +21,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_crx_util.h"
@@ -72,12 +71,10 @@
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/notifier_catalogs.h"
 #include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 using base::UserMetricsAction;
@@ -243,7 +240,7 @@ DownloadItemNotification::DownloadItemNotification(
       l10n_util::GetStringUTF16(
           IDS_DOWNLOAD_NOTIFICATION_DISPLAY_SOURCE),  // display_source
       GURL(kDownloadNotificationOrigin),              // origin_url
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       message_center::NotifierId(
           message_center::NotifierType::SYSTEM_COMPONENT,
           kDownloadNotificationNotifierId,
@@ -251,7 +248,7 @@ DownloadItemNotification::DownloadItemNotification(
 #else
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kDownloadNotificationNotifierId),
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       rich_notification_data,
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
           weak_factory_.GetWeakPtr()));
@@ -770,7 +767,7 @@ DownloadItemNotification::GetExtraActions() const {
         actions->push_back(DownloadCommands::RESUME);
       break;
     case download::DownloadItem::COMPLETE: {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       std::optional<DownloadCommands::Command> command =
           item_->MaybeGetMediaAppAction();
       if (command) {
@@ -779,14 +776,12 @@ DownloadItemNotification::GetExtraActions() const {
 #endif
 
       actions->push_back(DownloadCommands::SHOW_IN_FOLDER);
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
       // We disable this functionality for now as the usage is very low, the
       // feature gets re-written at this time and there is currently no secure
       // way to determine the caller on the Ash side as the dialog is still
       // active when |seat::SetSelection| is reached.
       if (!notification_->image().IsEmpty())
         actions->push_back(DownloadCommands::COPY_TO_CLIPBOARD);
-#endif
       break;
     }
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
@@ -902,7 +897,7 @@ std::u16string DownloadItemNotification::GetCommandLabel(
     case DownloadCommands::REVIEW:
       id = IDS_REVIEW_DOWNLOAD;
       break;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case DownloadCommands::OPEN_WITH_MEDIA_APP:
       id = IDS_DOWNLOAD_NOTIFICATION_LABEL_OPEN;
       break;

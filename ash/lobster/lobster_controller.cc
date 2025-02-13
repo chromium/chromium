@@ -19,15 +19,16 @@
 
 namespace ash {
 
-LobsterController::Trigger::Trigger(std::unique_ptr<LobsterClient> client,
-                                    LobsterEntryPoint entry_point,
-                                    LobsterMode mode,
-                                    const gfx::Rect& caret_bounds)
+LobsterController::Trigger::Trigger(
+    std::unique_ptr<LobsterClient> client,
+    LobsterEntryPoint entry_point,
+    LobsterMode mode,
+    const LobsterTextInputContext& text_input_context)
     : client_(std::move(client)),
       state_(State::kReady),
       entry_point_(entry_point),
       mode_(mode),
-      caret_bounds_(caret_bounds) {}
+      text_input_context_(text_input_context) {}
 
 LobsterController::Trigger::~Trigger() = default;
 
@@ -49,7 +50,7 @@ void LobsterController::Trigger::Fire(std::optional<std::string> query) {
   }
 
   controller->StartSession(std::move(client_), std::move(query), entry_point_,
-                           mode_, caret_bounds_);
+                           mode_, text_input_context_);
 }
 
 LobsterController::LobsterController() = default;
@@ -62,8 +63,7 @@ void LobsterController::SetClientFactory(LobsterClientFactory* client_factory) {
 
 std::unique_ptr<LobsterController::Trigger> LobsterController::CreateTrigger(
     LobsterEntryPoint entry_point,
-    bool support_image_insertion,
-    const gfx::Rect& caret_bounds) {
+    ui::TextInputClient* text_input_client) {
   if (client_factory_ == nullptr) {
     return nullptr;
   }
@@ -72,13 +72,25 @@ std::unique_ptr<LobsterController::Trigger> LobsterController::CreateTrigger(
     return nullptr;
   }
 
-  LobsterSystemState system_state = client->GetSystemState();
+  // Lobster is only triggered from focused text fields. If no text input client
+  // is found, never create a trigger.
+  if (text_input_client == nullptr) {
+    return nullptr;
+  }
+
+  LobsterTextInputContext text_input_context(
+      /*text_input_type=*/text_input_client->GetTextInputType(),
+      /*caret_bounds=*/text_input_client->GetCaretBounds(),
+      /*support_image_insertion=*/text_input_client->CanInsertImage());
+
+  LobsterSystemState system_state = client->GetSystemState(text_input_context);
   return system_state.status != LobsterStatus::kBlocked
-             ? std::make_unique<Trigger>(std::move(client), entry_point,
-                                         support_image_insertion
-                                             ? LobsterMode::kInsert
-                                             : LobsterMode::kDownload,
-                                         caret_bounds)
+             ? std::make_unique<Trigger>(
+                   std::move(client), entry_point,
+                   text_input_context.support_image_insertion
+                       ? LobsterMode::kInsert
+                       : LobsterMode::kDownload,
+                   std::move(text_input_context))
              : nullptr;
 }
 
@@ -89,11 +101,12 @@ void LobsterController::LoadUIFromCachedContext() {
   active_session_->LoadUIFromCachedContext();
 }
 
-void LobsterController::StartSession(std::unique_ptr<LobsterClient> client,
-                                     std::optional<std::string> query,
-                                     LobsterEntryPoint entry_point,
-                                     LobsterMode mode,
-                                     const gfx::Rect& caret_bounds) {
+void LobsterController::StartSession(
+    std::unique_ptr<LobsterClient> client,
+    std::optional<std::string> query,
+    LobsterEntryPoint entry_point,
+    LobsterMode mode,
+    const LobsterTextInputContext& text_input_context) {
   // Before creating a new session, we need to inform the lobster client and
   // lobster session to clear their pointer to the session that is about to be
   // destroyed. This is to prevent them from holding a dangling pointer to the
@@ -106,7 +119,8 @@ void LobsterController::StartSession(std::unique_ptr<LobsterClient> client,
                                                          entry_point, mode);
   lobster_client_ptr->SetActiveSession(active_session_.get());
 
-  LobsterStatus lobster_status = lobster_client_ptr->GetSystemState().status;
+  LobsterStatus lobster_status =
+      lobster_client_ptr->GetSystemState(text_input_context).status;
   // When LobsterForceShowDisclaimer flag is enabled, we will show the Lobster
   // Disclaimer screen even when Lobster consent status has been approved
   // before.
@@ -117,10 +131,11 @@ void LobsterController::StartSession(std::unique_ptr<LobsterClient> client,
 
   switch (lobster_status) {
     case LobsterStatus::kConsentNeeded:
-      active_session_->ShowDisclaimerUIAndCacheContext(query, caret_bounds);
+      active_session_->ShowDisclaimerUIAndCacheContext(
+          query, text_input_context.caret_bounds);
       return;
     case LobsterStatus::kEnabled:
-      active_session_->LoadUI(query, mode, caret_bounds);
+      active_session_->LoadUI(query, mode, text_input_context.caret_bounds);
       return;
     case LobsterStatus::kBlocked:
       return;

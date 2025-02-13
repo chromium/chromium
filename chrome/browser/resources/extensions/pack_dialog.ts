@@ -148,8 +148,8 @@ export class ExtensionsPackDialogElement extends CrLitElement {
     }
 
     // This is only possible for a warning dialog.
-    if (this.shadowRoot!.querySelector(
-                            'extensions-pack-dialog-alert')!.returnValue ===
+    if (this.shadowRoot.querySelector(
+                           'extensions-pack-dialog-alert')!.returnValue ===
         'success') {
       this.delegate
           .packExtension(

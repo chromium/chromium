@@ -261,6 +261,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kEdgeToEdgeEverywhere,
     &kEdgeToEdgeSafeAreaConstraint,
     &kEdgeToEdgeWebOptIn,
+    &kEducationalTipDefaultBrowserPromoCard,
     &kEmptyTabListAnimationKillSwitch,
     &kEnableXAxisActivityTransition,
     &kExperimentsForAgsa,
@@ -331,6 +332,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kToolbarPhoneCleanup,
     &kTabResumptionModuleAndroid,
     &kTabStateFlatBuffer,
+    &kTabStripContextMenuAndroid,
     &kTabStripGroupCollapseAndroid,
     &kTabStripGroupDragDropAndroid,
     &kTabStripGroupReorderAndroid,
@@ -813,6 +815,10 @@ BASE_FEATURE(kEdgeToEdgeWebOptIn,
              "EdgeToEdgeWebOptIn",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEducationalTipDefaultBrowserPromoCard,
+             "EducationalTipDefaultBrowserPromoCard",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEmptyTabListAnimationKillSwitch,
              "EmptyTabListAnimationKillSwitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1070,6 +1076,10 @@ BASE_FEATURE(kTabStateFlatBuffer,
              "TabStateFlatBuffer",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabStripContextMenuAndroid,
+             "TabStripContextMenuAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabStripGroupCollapseAndroid,
              "TabStripGroupCollapseAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1084,7 +1094,7 @@ BASE_FEATURE(kTabStripGroupReorderAndroid,
 
 BASE_FEATURE(kTabStripLayoutOptimization,
              "TabStripLayoutOptimization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabStripTransitionInDesktopWindow,
              "TabStripTransitionInDesktopWindow",

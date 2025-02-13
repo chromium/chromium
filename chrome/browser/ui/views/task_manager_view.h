@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TASK_MANAGER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TASK_MANAGER_VIEW_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -112,7 +113,7 @@ class TaskManagerView : public TableViewDelegate,
   void MenuClosed(ui::SimpleMenuModel* source) override;
 
   // TaskManagerSearchBarView::Delegate:
-  void SearchBarOnInputChanged(const std::u16string& text) override;
+  void SearchBarOnInputChanged(std::u16string_view text) override;
 
   views::TableView* tab_table_for_testing() { return tab_table_; }
 
@@ -150,7 +151,7 @@ class TaskManagerView : public TableViewDelegate,
   // associated with the DisplayCategory (e.g. kTabs means only Tab processes
   // are displayed).
   void PerformFilter(DisplayCategory category,
-                     const std::u16string& search_term = u"");
+                     std::u16string_view search_term = {});
 
   // Creates all corresponding subcomponents for the header.
   std::unique_ptr<views::TabbedPaneTabStrip> CreateTabbedPane(

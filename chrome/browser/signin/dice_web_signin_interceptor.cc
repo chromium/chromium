@@ -1296,16 +1296,6 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
           *new_profile, profile_presets->search_engine_choice_data);
     }
 
-    // TODO(crbug.com/40269992): Remove this when UNO is fully launched.
-    if (state_->intercepted_account_management_accepted_) {
-      auto* primary_account_mutator =
-          IdentityManagerFactory::GetForProfile(new_profile)
-              ->GetPrimaryAccountMutator();
-      primary_account_mutator->SetPrimaryAccount(
-          state_->account_id_, signin::ConsentLevel::kSignin,
-          signin_metrics::AccessPoint::kWebSignin);
-    }
-
     // Set the ChromeSignin setting to always signin following accepting the
     // signin intercept and being signed in.
 

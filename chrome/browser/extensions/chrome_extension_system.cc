@@ -24,6 +24,7 @@
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
+#include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_garbage_collector.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -165,16 +166,16 @@ void ChromeExtensionSystem::Shared::RegisterManagementPolicyProviders() {
 
 void ChromeExtensionSystem::Shared::InitInstallGates() {
   update_install_gate_ = std::make_unique<UpdateInstallGate>(profile_);
-  extension_service_->RegisterInstallGate(
+  extension_service_->delayed_install_manager()->RegisterInstallGate(
       ExtensionPrefs::DelayReason::kWaitForIdle, update_install_gate_.get());
-  extension_service_->RegisterInstallGate(
+  extension_service_->delayed_install_manager()->RegisterInstallGate(
       ExtensionPrefs::DelayReason::kWaitForImports,
       extension_service_->shared_module_service());
 #if BUILDFLAG(IS_CHROMEOS)
   if (IsRunningInForcedAppMode()) {
     kiosk_app_update_install_gate_ =
         std::make_unique<ash::KioskAppUpdateInstallGate>(profile_);
-    extension_service_->RegisterInstallGate(
+    extension_service_->delayed_install_manager()->RegisterInstallGate(
         ExtensionPrefs::DelayReason::kWaitForOsUpdate,
         kiosk_app_update_install_gate_.get());
   }

@@ -66,7 +66,7 @@ suite('<settings-customize-mouse-buttons-subpage>', () => {
     assertEquals(Router.getInstance().currentRoute, routes.DEVICE);
   });
 
-  test('button action list fetched from provider', async () => {
+  test('button action list fetched from provider', () => {
     const mouse: Mouse = page.selectedMouse;
     assertTrue(!!mouse);
     assertEquals(mouse.id, fakeMice[0]!.id);

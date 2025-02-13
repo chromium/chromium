@@ -73,20 +73,20 @@ export class FakeMetricsPrivate implements MetricsPrivateApi {
   // The methods below are unimplemented and only added to satisfy the
   // chrome.metricsPrivate interface during TS compilation.
 
-  async getHistogram(): Promise<Histogram> {
-    return {sum: 0, buckets: [{min: 0, max: 0, count: 0}]};
+  getHistogram(): Promise<Histogram> {
+    return Promise.resolve({sum: 0, buckets: [{min: 0, max: 0, count: 0}]});
   }
 
-  async getIsCrashReportingEnabled(): Promise<boolean> {
-    return true;
+  getIsCrashReportingEnabled(): Promise<boolean> {
+    return Promise.resolve(true);
   }
 
-  async getFieldTrial(): Promise<string> {
-    return '';
+  getFieldTrial(): Promise<string> {
+    return Promise.resolve('');
   }
 
-  async getVariationParams(): Promise<Record<string, string>> {
-    return {};
+  getVariationParams(): Promise<Record<string, string>> {
+    return Promise.resolve({});
   }
 
   recordUserAction(_name: string): void {}

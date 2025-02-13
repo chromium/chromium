@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -132,7 +133,7 @@ class PopupViewViews : public PopupBaseView,
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   // PopupSearchBarView::Delegate:
-  void SearchBarOnInputChanged(const std::u16string& text) override;
+  void SearchBarOnInputChanged(std::u16string_view text) override;
   void SearchBarOnFocusLost() override;
   bool SearchBarHandleKeyPressed(const ui::KeyEvent& event) override;
 

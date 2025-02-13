@@ -108,7 +108,7 @@ export class UserEducationInternalsElement extends
     // dynamically created, we have to wait until after the element is
     // populated to register the anchor element.
     if (changedProperties.has('featurePromos_')) {
-      if (this.shadowRoot!.querySelector('#IPH_WebUiHelpBubbleTest')) {
+      if (this.shadowRoot.querySelector('#IPH_WebUiHelpBubbleTest')) {
         this.registerHelpBubble(
             'kWebUIIPHDemoElementIdentifier',
             ['#IPH_WebUiHelpBubbleTest', '#launch']);

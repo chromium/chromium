@@ -550,6 +550,22 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="REFUSED"/>
 </enum>
 
+<!-- LINT.IfChange(HttpStreamPoolInitialAttemptState) -->
+
+<enum name="HttpStreamPoolInitialAttemptState">
+  <int value="0" label="Other"/>
+  <int value="1" label="CanUseQuicWithKnownVersion"/>
+  <int value="2" label="CanUseQuicWithKnownVersionAndSupportsSpdy"/>
+  <int value="3" label="CanUseQuicWithUnknownVersion"/>
+  <int value="4" label="CanUseQuicWithUnknownVersionAndSupportsSpdy"/>
+  <int value="5" label="CannotUseQuicWithKnownVersion"/>
+  <int value="6" label="CannotUseQuicWithKnownVersionAndSupportsSpdy"/>
+  <int value="7" label="CannotUseQuicWithUnknownVersion"/>
+  <int value="8" label="CannotUseQuicWithUnknownVersionAndSupportsSpdy"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/http_stream_pool_attempt_manager.h:InitialAttemptState) -->
+
 <enum name="InitialRttEstimateSource">
   <int value="0" label="Default"/>
   <int value="1" label="Cached"/>

@@ -715,8 +715,10 @@ aggregate_vector_icons("ash_vector_icons") {
   }
 }
 
-source_set("vector_icons") {
+component("vector_icons") {
   sources = get_target_outputs(":ash_vector_icons")
+
+  defines = [ "ASH_IMPLEMENTATION" ]
 
   deps = [
     ":ash_vector_icons",

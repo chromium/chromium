@@ -19,6 +19,9 @@
 
 set -euox pipefail
 
+# Use Xcode 16.0
+sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer
+
 if [[ -z ${ABSEIL_ROOT:-} ]]; then
   ABSEIL_ROOT="$(realpath $(dirname ${0})/..)"
 fi
@@ -58,7 +61,7 @@ brew uninstall google-benchmark
 ${BAZEL_BIN} test ... \
   --copt="-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1" \
   --copt="-Werror" \
-  --cxxopt="-std=c++14" \
+  --cxxopt="-std=c++17" \
   --enable_bzlmod=true \
   --features=external_include_paths \
   --keep_going \

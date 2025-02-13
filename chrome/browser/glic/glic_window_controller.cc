@@ -43,6 +43,8 @@
 #include "ui/views/widget/widget_observer.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/views/win/hwnd_util.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -317,14 +319,30 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
     return;
   }
 
-  // In the case where the user invokes the hotkey, and the most recently used
-  // window for the glic profile is active, treat this as if the user clicked
-  // the glic button on that window.
+  // In the case where the user invokes the hotkey, or the status tray glic icon
+  // and the most recently used window for the glic profile is active, treat
+  // this as if the user clicked the glic button on that window.
   // TODO(392644541): There may be edge cases w.r.t. multi-glic-profile.
   if (!new_attached_browser) {
     Browser* last_active_browser = chrome::FindLastActiveWithProfile(profile_);
-    if (last_active_browser && last_active_browser->IsActive()) {
-      new_attached_browser = last_active_browser;
+    if (last_active_browser) {
+      bool attach_to_last_active_browser =
+          last_active_browser->IsActive() && state_ == State::kClosed;
+#if BUILDFLAG(IS_WIN)
+      // On Windows, clicking the status bar icon makes an active browser window
+      // inactive, but it will still be the last active browser. Attach to the
+      // last active browser if it's not occluded or minimized.
+      if (!attach_to_last_active_browser && state_ == State::kClosed) {
+        attach_to_last_active_browser = last_active_browser->window()
+                                            ->GetNativeWindow()
+                                            ->GetHost()
+                                            ->GetNativeWindowOcclusionState() ==
+                                        aura::Window::OcclusionState::VISIBLE;
+      }
+#endif  // BUILDFLAG(IS_WIN
+      if (attach_to_last_active_browser) {
+        new_attached_browser = last_active_browser;
+      }
     }
   }
 
@@ -366,7 +384,19 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
 
     // Already attached?
     if (attached_browser_) {
-      if (IsActive()) {
+      bool should_close = IsActive();
+#if BUILDFLAG(IS_WIN)
+      // On Windows, clicking the system tray icon de-activates the active
+      // window, so fall back to checking if `attached_browser_` is visible for
+      // both the hot key and system tray click cases.
+      should_close = attached_browser_->window()
+                         ->GetNativeWindow()
+                         ->GetHost()
+                         ->GetNativeWindowOcclusionState() ==
+                     aura::Window::OcclusionState::VISIBLE;
+#endif  // BUILDFLAG(IS_WIN)
+
+      if (should_close) {
         // Hotkey when glic active and attached: close.
         maybe_close();
         return;
@@ -606,6 +636,12 @@ void GlicWindowController::ShowFinish() {
     }
     ResetPresentationTimingState();
   }
+
+  // Whenever the glic window is shown, it should have focus. The following line
+  // of code appears to be necessary but not sufficient and there are still some
+  // edge cases.
+  // TODO(crbug.com/390637019): Fully fix and remove this comment.
+  GetGlicView()->web_view()->GetWebContents()->Focus();
 
   window_event_observer_ =
       std::make_unique<WindowEventObserver>(this, GetGlicView());
@@ -996,9 +1032,7 @@ void GlicWindowController::HandleAttachmentToBrowserWindows() {
   // No browser within attachment range so maybe reparent under an empty holder
   // widget.
   if (!browser) {
-#if !BUILDFLAG(IS_MAC)
     MaybeCreateHolderWindowAndReparent();
-#endif
     return;
   }
   // Attach to the found browser.

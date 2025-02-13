@@ -128,13 +128,24 @@ function getProductDetails(
 
   // First add rows that don't come directly from the product specifications
   // backend. This includes the current price and buying options URL.
-  productDetails.push({
-    title: loadTimeData.getString('priceRowTitle'),
-    content: {
-      price: productInfo?.priceSummary || productInfo?.currentPrice || '',
-      jackpotUrl: product?.buyingOptionsUrl.url || '',
-    },
-  });
+  const priceRowTitle = loadTimeData.getString('priceRowTitle');
+  const price = productInfo?.priceSummary || productInfo?.currentPrice || '';
+  const jackpotUrl = product?.buyingOptionsUrl.url || '';
+  if (price || jackpotUrl) {
+    productDetails.push({
+      title: priceRowTitle,
+      content: {
+        price,
+        jackpotUrl,
+      },
+    });
+  } else {
+    // Show a dash if we don't have the price or buying options.
+    productDetails.push({
+      title: priceRowTitle,
+      content: null,
+    });
+  }
 
   // The second row is the product-level summary.
   productDetails.push({

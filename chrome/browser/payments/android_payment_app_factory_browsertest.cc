@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/test/payments/payment_app_install_util.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "components/payments/core/features.h"
@@ -11,7 +10,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/experiences/arc/overlay/arc_overlay_manager.h"
 #endif
 
@@ -19,7 +18,7 @@ namespace payments {
 namespace {
 
 struct [[maybe_unused]] ScopedTestSupport {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Invoking Play Billing on Chrome OS requires initializing the overlay
   // manager.
   ash::ArcOverlayManager overlay_manager;

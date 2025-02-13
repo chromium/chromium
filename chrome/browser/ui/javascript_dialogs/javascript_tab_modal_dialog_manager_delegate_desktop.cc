@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -17,12 +16,17 @@
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/javascript_dialogs/tab_modal_dialog_view.h"
 #include "components/navigation_metrics/navigation_metrics.h"
+#include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/gfx/text_elider.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/user_interaction_observer.h"
+#endif
 
 JavaScriptTabModalDialogManagerDelegateDesktop::
     JavaScriptTabModalDialogManagerDelegateDesktop(
@@ -36,6 +40,8 @@ JavaScriptTabModalDialogManagerDelegateDesktop::
 
 void JavaScriptTabModalDialogManagerDelegateDesktop::WillRunDialog() {
   BrowserList::AddObserver(this);
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // SafeBrowsing Delayed Warnings experiment can delay some SafeBrowsing
   // warnings until user interaction. If the current page has a delayed warning,
   // it'll have a user interaction observer attached. Show the warning
@@ -46,6 +52,7 @@ void JavaScriptTabModalDialogManagerDelegateDesktop::WillRunDialog() {
   if (observer) {
     observer->OnJavaScriptDialog();
   }
+#endif
 }
 
 void JavaScriptTabModalDialogManagerDelegateDesktop::DidCloseDialog() {

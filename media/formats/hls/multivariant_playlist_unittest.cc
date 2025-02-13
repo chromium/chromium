@@ -129,7 +129,7 @@ TEST(HlsMultivariantPlaylistTest, MediaPlaylistTag) {
     auto tag_line = "#" + std::string{TagNameToString(name)};
     auto fork = builder;
     fork.AppendLine(tag_line);
-    fork.ExpectError(ParseStatusCode::kMultivariantPlaylistHasMediaPlaylistTag);
+    fork.ExpectOk();
   }
 }
 
@@ -350,7 +350,9 @@ TEST(HlsMultivariantPlaylistTest, XMediaTag) {
   fork.ExpectAudioRenditionGroup("foo", HasDefaultRendition, std::nullopt);
   fork.ExpectOk();
 
-  // Two EXT-X-MEDIA tags in the same group may not have the same name
+  // TODO(crbug.com/395949828): Two EXT-X-MEDIA tags in the same group may not
+  // have the same name, but this is super common on the web and safari allows
+  // it.
   fork = builder;
   fork.AppendLine(
       "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"foo\",NAME=\"English\",URI=\"english."
@@ -358,7 +360,7 @@ TEST(HlsMultivariantPlaylistTest, XMediaTag) {
   fork.AppendLine(
       "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"foo\",NAME=\"English\",URI="
       "\"english2.m3u8\"");
-  fork.ExpectError(ParseStatusCode::kRenditionGroupHasDuplicateRenditionNames);
+  fork.ExpectOk();
 
   // .. Unless they are in different groups
   fork = builder;

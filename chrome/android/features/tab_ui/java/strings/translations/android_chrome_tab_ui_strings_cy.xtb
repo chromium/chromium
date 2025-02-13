@@ -30,6 +30,7 @@ Os byddwch yn ei ddileu, bydd pawb yn colli mynediad at y grŵp tabiau "<ph name
 <translation id="2118649612461486615">Gwybodaeth siop</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Gellir ailagor eich tabiau a'ch grwpiau sydd ar gau o'r adran Tabiau diweddar a'r adran Grwpiau tabiau. Ni fydd eich tab Anhysbys ar gael.}zero{Gellir ailagor eich tabiau a'ch grwpiau sydd ar gau o'r adran Tabiau diweddar a'r adran Grwpiau tabiau. Ni fydd eich # tab Anhysbys ar gael.}two{Gellir ailagor eich tabiau a'ch grwpiau sydd ar gau o'r adran Tabiau diweddar a'r adran Grwpiau tabiau. Ni fydd eich # dab Anhysbys ar gael.}few{Gellir ailagor eich tabiau a'ch grwpiau sydd ar gau o'r adran Tabiau diweddar a'r adran Grwpiau tabiau. Ni fydd eich # thab Anhysbys ar gael.}many{Gellir ailagor eich tabiau a'ch grwpiau sydd ar gau o'r adran Tabiau diweddar a'r adran Grwpiau tabiau. Ni fydd eich # thab Anhysbys ar gael.}other{Gellir ailagor eich tabiau a'ch grwpiau sydd ar gau o'r adran Tabiau diweddar a'r adran Grwpiau tabiau. Ni fydd eich # tab Anhysbys ar gael.}}</translation>
 <translation id="2162620598375156287">Nawr <ph name="CURRENT_PRICE" /> yn <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2242907120821295124">Nid yw'r grŵp tabiau <ph name="TAB_GROUP_NAME" /> ar gael bellach</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Dadgrwpio tab}zero{Dadgrwpio tabiau}two{Dadgrwpio tabiau}few{Dadgrwpio tabiau}many{Dadgrwpio tabiau}other{Dadgrwpio tabiau}}</translation>
 <translation id="2271452184061378400">Mae eich grwpiau tabiau yn cael eu cadw yma</translation>
 <translation id="2277224997687551299">Golygu enw'r grŵp</translation>
@@ -87,6 +88,7 @@ Os byddwch yn ei ddileu, bydd pawb yn colli mynediad at y grŵp tabiau "<ph name
 <translation id="4783638485675352219">Rhannu teitlau a chyfeiriadau URL tabiau agored o'r ddyfais hon gyda'r system weithredu</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> adolygiad)}zero{(<ph name="REVIEWS_COUNT_MANY" /> adolygiad)}two{(<ph name="REVIEWS_COUNT_MANY" /> adolygiad)}few{(<ph name="REVIEWS_COUNT_MANY" /> adolygiad)}many{(<ph name="REVIEWS_COUNT_MANY" /> adolygiad)}other{(<ph name="REVIEWS_COUNT_MANY" /> adolygiad)}}</translation>
 <translation id="4850886885716139402">Gweld</translation>
+<translation id="4861611890274104875">Diystyru'r cerdyn.</translation>
 <translation id="4861953997778766866">Gall pawb wneud newidiadau i'ch grwpiau tabiau a rennir</translation>
 <translation id="4870911314065352661">Cau pob tab?</translation>
 <translation id="4871719318659334896">Cau'r grŵp</translation>

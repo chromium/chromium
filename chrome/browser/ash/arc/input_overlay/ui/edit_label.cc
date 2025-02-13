@@ -207,8 +207,8 @@ void EditLabel::SetNameTagState(bool is_error,
 }
 
 void EditLabel::UpdateAccessibleName() {
-  const std::u16string a11y_name =
-      GetDisplayTextAccessibleName(label()->GetText());
+  const std::u16string a11y_name(
+      GetDisplayTextAccessibleName(std::u16string(label()->GetText())));
   const bool unassigned =
       a11y_name.empty() || a11y_name.compare(kUnknownBind) == 0;
   const std::u16string suffix_instruction = l10n_util::GetStringUTF16(

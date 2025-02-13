@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HEADER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HEADER_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
@@ -89,7 +91,7 @@ class TabGroupHeader : public TabSlotView,
   bool GetShowingAttentionIndicator();
 
   // Returns the title text for testing.
-  std::u16string GetTitleTextForTesting() const;
+  std::u16string_view GetTitleTextForTesting() const;
 
  private:
   friend class TabGroupEditorBubbleViewDialogBrowserTest;

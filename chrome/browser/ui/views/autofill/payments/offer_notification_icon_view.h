@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_ICON_VIEW_H_
 
+#include <string_view>
+
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -43,7 +45,7 @@ class OfferNotificationIconView : public PageActionIconView,
   // WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  const std::u16string& GetIconLabelForTesting() const;
+  std::u16string_view GetIconLabelForTesting() const;
   void SetAnimateOutTimerForTesting(base::RetainingOneShotTimer* timer);
 
  protected:

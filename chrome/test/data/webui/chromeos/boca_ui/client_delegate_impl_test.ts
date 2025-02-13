@@ -484,7 +484,7 @@ suite('ClientDelegateTest', function() {
 
   test(
       'client delegate should properly translate getSession with default value',
-      async () => {
+      () => {
         const session = {
           sessionDuration: {
             microseconds: 120000000n,
@@ -582,8 +582,7 @@ suite('ClientDelegateTest', function() {
   });
 
   test(
-      'client delegate should translate data for student activity',
-      async () => {
+      'client delegate should translate data for student activity', () => {
         const activities = [
           {
             id: '1',
@@ -658,7 +657,7 @@ suite('ClientDelegateTest', function() {
         assertDeepEquals(2, result);
       });
 
-  test('client delegate should translate data for network info', async () => {
+  test('client delegate should translate data for network info', () => {
     const networks = [
       {state: 0, type: 0, name: 'network1', signalStrength: 50},
       {state: 1, type: 1, name: 'network2', signalStrength: 75},

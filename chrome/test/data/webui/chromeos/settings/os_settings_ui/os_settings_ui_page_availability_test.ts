@@ -94,7 +94,7 @@ suite('<os-settings-ui> page availability', () => {
     });
 
     for (const {name} of SECTION_EXPECTATIONS) {
-      test(`${name} page availability`, async () => {
+      test(`${name} page availability`, () => {
         assertPageIsStamped(name);
       });
     }
@@ -126,7 +126,7 @@ suite('<os-settings-ui> page availability', () => {
            name,
            availableForGuest,
          } of SECTION_EXPECTATIONS) {
-      test(`${name} page availability`, async () => {
+      test(`${name} page availability`, () => {
         if (availableForGuest) {
           assertPageIsStamped(name);
         } else {

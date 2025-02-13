@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_RESULT_VIEW_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
 #include "chromeos/components/quick_answers/public/cpp/constants.h"
@@ -30,21 +31,21 @@ class ResultView : public views::FlexLayoutView {
   ResultView();
   ~ResultView() override;
 
-  void SetFirstLineText(const std::u16string& first_line_text);
-  std::u16string GetFirstLineText() const;
+  void SetFirstLineText(std::u16string_view first_line_text);
+  std::u16string_view GetFirstLineText() const;
 
   // If FirstLineSubText is set, it will be shown as:
   // [FirstLineText] <a dot> [FirstLineSubText]
   // This is used to render [text to translate] + [source locale] where we want
   // to elide [text to translate]. Note that [a word] + [phonetics] are rendered
   // as a single text while it looks similar for a different elide behavior.
-  void SetFirstLineSubText(const std::u16string& first_line_sub_text);
-  std::u16string GetFirstLineSubText() const;
+  void SetFirstLineSubText(std::u16string_view first_line_sub_text);
+  std::u16string_view GetFirstLineSubText() const;
 
   void SetPhoneticsInfo(const PhoneticsInfo& phonetics_info);
   PhoneticsInfo GetPhoneticsInfo() const;
-  void SetSecondLineText(const std::u16string& second_line_text);
-  std::u16string GetSecondLineText() const;
+  void SetSecondLineText(std::u16string_view second_line_text);
+  std::u16string_view GetSecondLineText() const;
   void SetGenerateTtsCallback(GenerateTtsCallback generate_tts_callback);
 
   void SetDesign(Design design);
@@ -68,10 +69,10 @@ class ResultView : public views::FlexLayoutView {
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, ResultView, views::FlexLayoutView)
-VIEW_BUILDER_PROPERTY(const std::u16string&, FirstLineText)
-VIEW_BUILDER_PROPERTY(const std::u16string&, FirstLineSubText)
+VIEW_BUILDER_PROPERTY(std::u16string, FirstLineText)
+VIEW_BUILDER_PROPERTY(std::u16string, FirstLineSubText)
 VIEW_BUILDER_PROPERTY(const PhoneticsInfo&, PhoneticsInfo)
-VIEW_BUILDER_PROPERTY(const std::u16string&, SecondLineText)
+VIEW_BUILDER_PROPERTY(std::u16string, SecondLineText)
 VIEW_BUILDER_PROPERTY(Design, Design)
 VIEW_BUILDER_PROPERTY(ResultView::GenerateTtsCallback, GenerateTtsCallback)
 END_VIEW_BUILDER

@@ -10,6 +10,8 @@ source_set("model") {
     "off_the_record_profile_ios_impl.mm",
     "off_the_record_profile_ios_io_data.h",
     "off_the_record_profile_ios_io_data.mm",
+    "profile_deleter_ios.h",
+    "profile_deleter_ios.mm",
     "profile_ios_impl.h",
     "profile_ios_impl.mm",
     "profile_ios_impl_io_data.h",
@@ -265,6 +267,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "profile_deleter_ios_unittest.mm",
     "profile_ios_impl_unittest.mm",
     "profile_manager_ios_impl_unittest.mm",
   ]
@@ -272,9 +275,12 @@ source_set("unit_tests") {
     ":model",
     ":test_support",
     "//base",
+    "//base/test:test_support",
     "//components/prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public",
     "//testing/gtest",
   ]
 }

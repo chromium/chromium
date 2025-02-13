@@ -52,7 +52,7 @@ bool IsValidState(std::u16string_view text);
 // Returns whether the number contained in `text` is possible phone number,
 // either in international format, or in the national format associated with
 // `country_code`. Callers should cache the result as the parsing is expensive.
-bool IsPossiblePhoneNumber(const std::u16string& text,
+bool IsPossiblePhoneNumber(std::u16string_view text,
                            const std::string& country_code);
 
 // Returns true if `text` looks like a valid zip code.

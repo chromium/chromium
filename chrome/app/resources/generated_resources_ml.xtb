@@ -220,6 +220,7 @@
 <translation id="114721135501989771">Chrome-ൽ Google സ്‌മാർട്‌സ് നേടുക</translation>
 <translation id="1147322039136785890">ഇനി <ph name="SUPERVISED_USER_NAME" />' എന്ന കുട്ടിയുടെ ഊഴമാണ്</translation>
 <translation id="1147991416141538220">ആക്സസ് ആവശ്യപ്പെടാൻ, ഈ ഉപകരണത്തിന്റെ അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
+<translation id="1148464196693569530">ഉപയോക്തൃ സ്ക്രിപ്‌റ്റുകൾ അനുവദിക്കുക</translation>
 <translation id="1148624853678088576">നിങ്ങൾ എല്ലാം സജ്ജീകരിച്ചു!</translation>
 <translation id="1148669835763563782">മെച്ചപ്പെടുത്തിയ സുരക്ഷയ്ക്കും പുതിയ Chromebook ഫീച്ചറുകൾക്കുമായി നിങ്ങൾക്ക് ഏറ്റവും പുതിയ സോഫ്റ്റ്‌വെയർ അപ്‌ഡേറ്റ് ലഭിക്കുന്നു. നിങ്ങളുടെ Chromebook-ൽ സുഗമമായ തുടക്കം ലഭിക്കാൻ സഹായിക്കുന്നതിന് ഈ അപ്ഡേറ്റിൽ മെച്ചപ്പെടുത്തിയ സജ്ജീകരണ അനുഭവം ഉൾപ്പെടുന്നു.</translation>
 <translation id="1149401351239820326">കാലാവധി കഴിയുന്ന മാസം</translation>
@@ -6764,6 +6765,7 @@
 <translation id="5794414402486823030">എപ്പോഴും സിസ്‌റ്റം വ്യൂവറിൽ തുറക്കുക</translation>
 <translation id="5794700615121138172">Linux-ൽ നിന്ന് പങ്കിട്ട ഫോൾഡറുകൾ</translation>
 <translation id="5794786537412027208">എല്ലാ Chrome അപ്ലിക്കേഷനുകളിൽ നിന്നും പുറത്തുകടക്കുക</translation>
+<translation id="5795422263272161110">വശങ്ങളിലായി കാണിക്കുക</translation>
 <translation id="5796485699458186843">പുതിയ അദൃശ്യ ടാബ്</translation>
 <translation id="5796956053441619942">റിമോട്ട് ഉപകരണത്തിൽ നിന്നുള്ള URL പിന്തുണയ്ക്കുന്നില്ല</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt;, &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; എന്നിവയിൽ എങ്ങനെ ഉപയോഗിച്ച് തുടങ്ങാമെന്ന് അറിയൂ</translation>
@@ -7292,6 +7294,7 @@
 <translation id="6170498031581934115">ADB ഡീബഗ് ചെയ്യൽ പ്രവർത്തനക്ഷമമാക്കാനായില്ല. ക്രമീകരണത്തിലേക്ക് പോയി വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="6170675927290506430">അറിയിപ്പ് ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="6171779718418683144">സന്ദർശിക്കുമ്പോഴെല്ലാം ചോദിക്കുക</translation>
+<translation id="6172020488605056255">'എന്നെ വായിക്കാൻ സഹായിക്കൂ' ഉപയോഗിക്കാൻ വലത്-ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="617213288191670920">ഭാഷകളൊന്നും ചേർത്തിട്ടില്ല</translation>
 <translation id="6173623053897475761">നിങ്ങളുടെ പിൻ വീണ്ടും ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="6174909075810107548">മൗസ് ബട്ടൺ അമർത്താൻ “5” ഉപയോഗിക്കുക</translation>
@@ -8317,6 +8320,7 @@
 <translation id="6910190732484284349"><ph name="USER_EMAIL" /> എന്ന ഉപയോക്തൃനാമത്തിനുള്ള പാസ്‌കീ ഇല്ലാതാക്കുക</translation>
 <translation id="6910211073230771657">ഇല്ലാതാക്കി</translation>
 <translation id="6910274140210351823">ഡാർക്ക്</translation>
+<translation id="691102290537033604">Google അവലോകനം ചെയ്‌തിട്ടില്ലാത്ത കോഡ് റൺ ചെയ്യാൻ വിപുലീകരണത്തിന് കഴിയും. ഇത് സുരക്ഷിതമല്ലായിരിക്കാം, എന്താണ് ചെയ്യുന്നതെന്ന് നിങ്ങൾക്ക് കൃത്യമായി അറിയാമെങ്കിൽ മാത്രമേ ഇത് പ്രവർത്തനക്ഷമമാക്കാവൂ.</translation>
 <translation id="6911734910326569517">മെമ്മറി ഫൂട്ട് പ്രിന്‍റ്</translation>
 <translation id="6912007319859991306">സെല്ലുലാർ SIM പിൻ</translation>
 <translation id="6912380255120084882">മറ്റൊരു ഉപകരണം ഉപയോഗിച്ച് നോക്കുക</translation>
@@ -9827,6 +9831,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> ശബ്ദം <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">നിങ്ങളുടെ Android ഫോണിൽ നിന്ന് വൈഫൈ സ്വയമേവ കൈമാറുക</translation>
 <translation id="7991296728590311172">സ്വിച്ച് ആക്സസ് ക്രമീകരണം</translation>
+<translation id="7992080146463834191">ഉള്ളടക്കം സംഗ്രഹിക്കുക, സങ്കീർണ്ണമായ ഭാഷ ലളിതമാക്കുക, അല്ലെങ്കിൽ ചോദ്യങ്ങൾ ചോദിക്കുക.</translation>
 <translation id="7992203134935383159">സംഭാഷണ സംയോജനം</translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">പ്രോസസ്സ് മുൻഗണന</translation>
@@ -11083,6 +11088,7 @@
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" ഓഫാക്കി</translation>
 <translation id="8874647982044395866">ഓർഗാനിക്</translation>
 <translation id="8874790741333031443">മൂന്നാം കക്ഷി കുക്കികളെ താൽക്കാലികമായി അനുവദിക്കാൻ ശ്രമിക്കുക, അതിനർത്ഥം ബ്രൗസിംഗ് സംരക്ഷണം കുറവായിരിക്കും, എന്നാൽ സൈറ്റ് ഫീച്ചറുകൾ പ്രതീക്ഷിച്ചത് പോലെ പ്രവർത്തിക്കാൻ കൂടുതൽ സാധ്യതയുണ്ട് എന്നാണ്.</translation>
+<translation id="8875221558267407626">ഉള്ളടക്കം സംഗ്രഹിക്കുക, സങ്കീർണ്ണമായ ഭാഷ ലളിതമാക്കുക, അല്ലെങ്കിൽ ചോദ്യങ്ങൾ ചോദിക്കുക</translation>
 <translation id="8875520811099717934">Linux അപ്ഗ്രേഡ് ചെയ്യൽ</translation>
 <translation id="8875736897340638404">നിങ്ങളുടെ ദൃശ്യപരത തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8876307312329369159">ഒരു ഡെമോ സെഷനിൽ ഈ ക്രമീകരണം മാറ്റാനാകില്ല.</translation>
@@ -11136,6 +11142,7 @@
 <translation id="8915916167043355778">എല്ലാം അടയ്ക്കുക</translation>
 <translation id="8916476537757519021">ആൾമാറാട്ട സബ്‌ഫ്രെയിം: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">അതെ, ഞാൻ തയ്യാറാണ്</translation>
+<translation id="8917980324687233736">വശങ്ങളിലായി കാണിക്കുക</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> എന്നയാളുടെ <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">ആപ്പ് ഇൻസ്‌റ്റാൾ ചെയ്യുന്നു…</translation>
 <translation id="891931289445130855">ഡാറ്റയും അനുമതികളും ഇല്ലാതാക്കുക</translation>

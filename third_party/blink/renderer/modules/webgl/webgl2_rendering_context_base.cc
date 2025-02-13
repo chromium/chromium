@@ -3517,8 +3517,6 @@ void WebGL2RenderingContextBase::clearBufferfi(GLenum buffer,
 }
 
 WebGLQuery* WebGL2RenderingContextBase::createQuery() {
-  if (isContextLost())
-    return nullptr;
   return MakeGarbageCollected<WebGLQuery>(this);
 }
 
@@ -3745,8 +3743,6 @@ ScriptValue WebGL2RenderingContextBase::getQueryParameter(
 }
 
 WebGLSampler* WebGL2RenderingContextBase::createSampler() {
-  if (isContextLost())
-    return nullptr;
   return MakeGarbageCollected<WebGLSampler>(this);
 }
 
@@ -3960,9 +3956,6 @@ ScriptValue WebGL2RenderingContextBase::getSamplerParameter(
 
 WebGLSync* WebGL2RenderingContextBase::fenceSync(GLenum condition,
                                                  GLbitfield flags) {
-  if (isContextLost())
-    return nullptr;
-
   if (condition != GL_SYNC_GPU_COMMANDS_COMPLETE) {
     SynthesizeGLError(GL_INVALID_ENUM, "fenceSync",
                       "condition must be SYNC_GPU_COMMANDS_COMPLETE");
@@ -4064,8 +4057,6 @@ ScriptValue WebGL2RenderingContextBase::getSyncParameter(
 }
 
 WebGLTransformFeedback* WebGL2RenderingContextBase::createTransformFeedback() {
-  if (isContextLost())
-    return nullptr;
   return MakeGarbageCollected<WebGLTransformFeedback>(
       this, WebGLTransformFeedback::TFType::kUser);
 }
@@ -4693,9 +4684,6 @@ void WebGL2RenderingContextBase::uniformBlockBinding(
 }
 
 WebGLVertexArrayObject* WebGL2RenderingContextBase::createVertexArray() {
-  if (isContextLost())
-    return nullptr;
-
   return MakeGarbageCollected<WebGLVertexArrayObject>(
       this, WebGLVertexArrayObjectBase::kVaoTypeUser);
 }

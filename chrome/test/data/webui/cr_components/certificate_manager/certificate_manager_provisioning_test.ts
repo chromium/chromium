@@ -248,7 +248,7 @@ suite('DetailsDialogTests', function() {
     assertTrue(dialog.$.dialog.open);
   });
 
-  test('SeeDetails', async function() {
+  test('SeeDetails', function() {
     const certProfileName =
         dialog.shadowRoot!.querySelector<HTMLElement>(
                               '#certProfileName')!.innerText;

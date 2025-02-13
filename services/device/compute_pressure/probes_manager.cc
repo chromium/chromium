@@ -32,7 +32,7 @@ ProbesManager::ProbesManager(base::TimeDelta sampling_interval)
     // base::Unretained use is safe because mojo guarantees the callback will
     // not be called after `clients_` is deallocated, and `clients_` is owned by
     // this instance.
-    clients_[source].set_disconnect_handler(
+    associated_clients_[source].set_disconnect_handler(
         base::BindRepeating(&ProbesManager::OnClientRemoteDisconnected,
                             base::Unretained(this), source));
   }
@@ -50,14 +50,14 @@ bool ProbesManager::is_supported(mojom::PressureSource source) const {
 }
 
 void ProbesManager::RegisterClientRemote(
-    mojo::Remote<mojom::PressureClient> client,
+    mojo::PendingAssociatedRemote<mojom::PressureClient> associated_client,
     mojom::PressureSource source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   switch (source) {
     case mojom::PressureSource::kCpu: {
       CHECK(cpu_probe_manager_);
-      clients_[source].Add(std::move(client));
+      associated_clients_[source].Add(std::move(associated_client));
       cpu_probe_manager_->EnsureStarted();
     }
   }
@@ -73,7 +73,7 @@ void ProbesManager::UpdateClients(mojom::PressureSource source,
   const base::TimeTicks timestamp = base::TimeTicks::Now();
 
   mojom::PressureUpdate update(source, state, timestamp);
-  for (auto& client : clients_[source]) {
+  for (auto& client : associated_clients_[source]) {
     client->OnPressureUpdated(update.Clone());
   }
 }
@@ -83,7 +83,7 @@ void ProbesManager::OnClientRemoteDisconnected(
     mojo::RemoteSetElementId /*id*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (clients_[source].empty()) {
+  if (associated_clients_[source].empty()) {
     switch (source) {
       case mojom::PressureSource::kCpu: {
         if (cpu_probe_manager_) {

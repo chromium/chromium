@@ -17,8 +17,8 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "remoting/base/corp_service_client.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/internal_headers.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/setup/buildflags.h"
 #include "remoting/host/setup/host_starter.h"
@@ -51,7 +51,7 @@ class CorpHostStarter : public HostStarterBase {
 
   // CorpServiceClient callback.
   void OnProvisionCorpMachineResponse(
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<internal::ProvisionCorpMachineResponse> response);
 
  private:
@@ -87,7 +87,7 @@ void CorpHostStarter::RegisterNewHost(const std::string& public_key,
 }
 
 void CorpHostStarter::OnProvisionCorpMachineResponse(
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<internal::ProvisionCorpMachineResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -129,8 +129,8 @@ void CorpHostStarter::ReportError(const std::string& message,
   corp_service_client_->ReportProvisioningError(
       host_id, message,
       base::BindOnce(
-          [](base::OnceClosure on_error_reported,
-             const ProtobufHttpStatus& status, std::unique_ptr<Empty>) {
+          [](base::OnceClosure on_error_reported, const HttpStatus& status,
+             std::unique_ptr<Empty>) {
             if (!status.ok()) {
               LOG(ERROR) << "Failed to report provisioning error: "
                          << static_cast<int>(status.error_code());

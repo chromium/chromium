@@ -312,6 +312,12 @@ void PopulateRandomizedFieldMetadata(
         RandomizedEncoder::kFieldAutocomplete, field.autocomplete_attribute(),
         /*include_checksum=*/false, metadata->mutable_autocomplete());
   }
+  if (!field.pattern().empty()) {
+    EncodeRandomizedValue(encoder, form_signature, field_signature,
+                          RandomizedEncoder::kFieldPattern, field.pattern(),
+                          /*include_checksum=*/false,
+                          metadata->mutable_pattern());
+  }
 }
 
 // Encodes the fields of `upload_fields` in the in-out parameter `upload`.

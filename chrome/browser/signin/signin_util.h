@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -66,7 +65,7 @@ class ScopedForceSigninSetterForTesting {
       const ScopedForceSigninSetterForTesting&) = delete;
 };
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 // Utility class that moves cookies linked to a URL from one profile to the
 // other. This will be mostly used when a new profile is created after a
 // signin interception of an account linked a SAML signin.
@@ -98,7 +97,7 @@ class CookiesMover {
   base::OnceCallback<void()> callback_;
   base::WeakPtrFactory<CookiesMover> weak_pointer_factory_{this};
 };
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 // Return whether the force sign in policy is enabled or not.
 // The state of this policy will not be changed without relaunch Chrome.

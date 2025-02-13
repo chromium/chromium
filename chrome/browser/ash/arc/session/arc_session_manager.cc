@@ -40,7 +40,6 @@
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_oobe_negotiator.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
-#include "chrome/browser/ash/arc/session/arc_reven_hardware_checker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
@@ -63,6 +62,7 @@
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/dlc_install_notification/arc_dlc_install_notification_manager.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_hardware_checker.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
 #include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
@@ -952,7 +952,7 @@ void ArcSessionManager::Shutdown() {
 }
 
 void ArcSessionManager::SetHardwareCheckerForTesting(
-    std::unique_ptr<ArcRevenHardwareChecker> hardware_checker) {
+    std::unique_ptr<ArcDlcInstallHardwareChecker> hardware_checker) {
   hardware_checker_ = std::move(hardware_checker);
 }
 
@@ -2010,10 +2010,10 @@ void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
     // Check if a mock hardware checker has already been created for testing.
     // If not, create a new one to initialize the hardware_checker_ member.
     if (!hardware_checker_) {
-      hardware_checker_ = std::make_unique<arc::ArcRevenHardwareChecker>();
+      hardware_checker_ = std::make_unique<arc::ArcDlcInstallHardwareChecker>();
     }
     // Check if the Reven device is compatible for ARC.
-    hardware_checker_->IsRevenDeviceCompatibleForArc(
+    hardware_checker_->IsCompatible(
         base::BindOnce(&ArcSessionManager::OnEnableArcOnReven,
                        weak_ptr_factory_.GetWeakPtr(), std::move(jobs)));
   } else {

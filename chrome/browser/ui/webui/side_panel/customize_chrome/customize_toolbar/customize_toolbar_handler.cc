@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
@@ -265,10 +266,10 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
              side_panel::customize_chrome::mojom::CategoryId::kTools);
   add_action(kActionQrCodeGenerator,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
-  // TODO(b/323962377): Reinstate after Cast action implementation is
-  // complete.
-  // add_action(kActionRouteMedia,
-  //             side_panel::customize_chrome::mojom::CategoryId::kTools);
+  if (base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
+    add_action(kActionRouteMedia,
+               side_panel::customize_chrome::mojom::CategoryId::kTools);
+  }
   add_action(kActionSidePanelShowReadAnything,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
   add_action(kActionCopyUrl,

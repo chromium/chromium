@@ -88,6 +88,7 @@
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate_impl.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/shared_tab_group_feedback_controller.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -4788,6 +4789,11 @@ void BrowserView::AddedToWidget() {
       features::IsToolbarPinningEnabled() &&
       base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
     browser_->GetFeatures().download_toolbar_ui_controller()->Init();
+  }
+
+  if (auto* shared_tab_group_feedback_controller =
+          browser_->GetFeatures().shared_tab_group_feedback_controller()) {
+    shared_tab_group_feedback_controller->Init();
   }
 
   frame_->OnBrowserViewInitViewsComplete();

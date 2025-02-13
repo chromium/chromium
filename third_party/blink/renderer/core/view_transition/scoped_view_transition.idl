@@ -6,7 +6,7 @@
     ImplementedAs=ScopedViewTransition,
     RuntimeEnabled=ScopedViewTransitions
 ] partial interface Element {
-  [CallWith=ScriptState, RaisesException] ViewTransition startViewTransition();
-  [CallWith=ScriptState, RaisesException] ViewTransition startViewTransition(ViewTransitionCallback update);
-  [CallWith=ScriptState, RaisesException] ViewTransition startViewTransition(ViewTransitionOptions opts);
+  [MeasureAs="WebDXFeature::kDRAFT_ScopedViewTransitions", CallWith=ScriptState, RaisesException] ViewTransition startViewTransition();
+  [MeasureAs="WebDXFeature::kDRAFT_ScopedViewTransitions", CallWith=ScriptState, RaisesException] ViewTransition startViewTransition(ViewTransitionCallback update);
+  [MeasureAs="WebDXFeature::kDRAFT_ScopedViewTransitions", CallWith=ScriptState, RaisesException] ViewTransition startViewTransition(ViewTransitionOptions opts);
 };

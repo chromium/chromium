@@ -730,10 +730,8 @@ int main() { return 0; }
 
 if(ABSL_INTERNAL_AT_LEAST_CXX20)
   set(ABSL_INTERNAL_CXX_STD_FEATURE cxx_std_20)
-elseif(ABSL_INTERNAL_AT_LEAST_CXX17)
-  set(ABSL_INTERNAL_CXX_STD_FEATURE cxx_std_17)
 else()
-  set(ABSL_INTERNAL_CXX_STD_FEATURE cxx_std_14)
+  set(ABSL_INTERNAL_CXX_STD_FEATURE cxx_std_17)
 endif()
 
 function(absl_internal_dll_contains)
@@ -898,7 +896,7 @@ Cflags: -I\${includedir}${PC_CFLAGS}\n")
   )
 
   if(ABSL_PROPAGATE_CXX_STD)
-    # Abseil libraries require C++14 as the current minimum standard. When
+    # Abseil libraries require C++17 as the current minimum standard. When
     # compiled with a higher minimum (either because it is the compiler's
     # default or explicitly requested), then Abseil requires that standard.
     target_compile_features(${_dll} PUBLIC ${ABSL_INTERNAL_CXX_STD_FEATURE})

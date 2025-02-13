@@ -688,9 +688,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                                     META_DATA_NAME_OF_DEFAULT_PAYMENT_METHOD_NAME);
             app =
                     new AndroidPaymentApp(
-                            new AndroidPaymentApp.LauncherImpl(
-                                    mFactoryDelegate.getParams().getWebContents(),
-                                    mFactoryDelegate.getPayIntentErrorStringId()),
+                            mFactoryDelegate.getAndroidIntentLauncher(),
                             mFactoryDelegate.getDialogController(),
                             packageName,
                             resolveInfo.activityInfo.name,

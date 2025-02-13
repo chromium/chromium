@@ -4,7 +4,9 @@
 
 #include "chrome/browser/glic/glic_page_context_fetcher.h"
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -28,6 +30,62 @@
 namespace glic {
 
 namespace {
+
+// Controls scaling and quality of tab screenshots.
+BASE_FEATURE(kGlicTabScreenshotExperiment,
+             "GlicTabScreenshotExperiment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kMaxScreenshotWidthParam{
+    &kGlicTabScreenshotExperiment, "max_screenshot_width", 1024};
+
+const base::FeatureParam<int> kMaxScreenshotHeightParam{
+    &kGlicTabScreenshotExperiment, "max_screenshot_height", 1024};
+
+const base::FeatureParam<int> kScreenshotJpegQuality{
+    &kGlicTabScreenshotExperiment, "screenshot_jpeg_quality", 40};
+
+gfx::Size GetScreenshotSize(content::RenderWidgetHostView* view) {
+  // By default, no scaling.
+  if (!base::FeatureList::IsEnabled(kGlicTabScreenshotExperiment)) {
+    return gfx::Size();
+  }
+
+  // If either width or height is 0, or the view is empty, no scaling.
+  gfx::Size original_size = view->GetViewBounds().size();
+  int max_width = kMaxScreenshotWidthParam.Get();
+  int max_height = kMaxScreenshotHeightParam.Get();
+  if (max_width == 0 || max_height == 0 || original_size.IsEmpty()) {
+    return gfx::Size();
+  }
+
+  double aspect_ratio = static_cast<double>(original_size.width()) /
+                        static_cast<double>(original_size.height());
+
+  int new_width = original_size.width();
+  int new_height = original_size.height();
+
+  // If larger than width or height, scale down while preserving aspect
+  // ratio.
+  if (new_width > max_width) {
+    new_width = max_width;
+    new_height = static_cast<int>(max_width / aspect_ratio);
+  }
+  if (new_height > max_height) {
+    new_height = max_height;
+    new_width = static_cast<int>(max_height * aspect_ratio);
+  }
+
+  return gfx::Size(new_width, new_height);
+}
+
+int GetScreenshotJpegQuality() {
+  if (!base::FeatureList::IsEnabled(kGlicTabScreenshotExperiment)) {
+    return 100;
+  }
+  // Must be an int from 0 to 100.
+  return std::max(0, std::min(100, kScreenshotJpegQuality.Get()));
+}
 
 // Combination of tracked states for when a PDF contents request is made.
 // Must be kept in sync with PdfRequestStates in
@@ -137,7 +195,7 @@ void GlicPageContextFetcher::GetTabScreenshot(
   auto callback = base::BindOnce(
       &GlicPageContextFetcher::RecievedJpegScreenshot, GetWeakPtr());
 
-  if (!view) {
+  if (!view || !view->IsSurfaceAvailableForCopy()) {
     std::move(callback).Run({});
     DLOG(WARNING) << "Could not retrieve RenderWidgetHostView.";
     return;
@@ -145,7 +203,7 @@ void GlicPageContextFetcher::GetTabScreenshot(
 
   view->CopyFromSurface(
       gfx::Rect(),  // Copy entire surface area.
-      gfx::Size(),  // Empty output_size means no down scaling.
+      GetScreenshotSize(view),
       base::BindOnce(&GlicPageContextFetcher::ReceivedViewportBitmap,
                      GetWeakPtr()));
 }
@@ -156,7 +214,7 @@ void GlicPageContextFetcher::ReceivedViewportBitmap(const SkBitmap& bitmap) {
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(
           [](const SkBitmap& bitmap) {
-            return gfx::JPEGCodec::Encode(bitmap, /*quality=*/100);
+            return gfx::JPEGCodec::Encode(bitmap, GetScreenshotJpegQuality());
           },
           std::move(bitmap)),
       base::BindOnce(&GlicPageContextFetcher::RecievedJpegScreenshot,

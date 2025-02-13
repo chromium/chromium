@@ -15,5 +15,5 @@ NSString* const kCurrentCardSaveAcceptedPrefKey = @"currentCardSaveAccepted";
 NSString* const kSupportsEditingPrefKey = @"supportsEditing";
 NSString* const kDisplayedTargetAccountEmailPrefKey =
     @"displayedTargetAccountEmail";
-NSString* const kDisplayedTargetAccountAvatarPrefKey =
-    @"displayedTargetAccountAvatar";
+NSString* const kLogoIconPrefKey = @"logoIcon";
+NSString* const kLogoIconDescriptionPrefKey = @"logoIconDescription";

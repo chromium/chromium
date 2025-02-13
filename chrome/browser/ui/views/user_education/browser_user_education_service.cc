@@ -59,6 +59,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_features.h"
+#include "components/data_sharing/public/features.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
@@ -897,7 +898,8 @@ void MaybeRegisterChromeFeaturePromos(
             feature_engagement::kIPHTabGroupsSharedTabChangedFeature,
             kTopContainerElementId, IDS_DATA_SHARING_USER_ED_FIRST_TAB_CHANGE,
             IDS_LEARN_MORE,
-            CreateNavigationAction(GURL(chrome::kCollaborationLearnMoreURL)))
+            CreateNavigationAction(GURL(
+                data_sharing::features::kLearnMoreSharedTabGroupPageURL.Get())))
             .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
             .SetAnchorElementFilter(base::BindRepeating(
                 [](const ui::ElementTracker::ElementList& elements)
@@ -925,6 +927,17 @@ void MaybeRegisterChromeFeaturePromos(
             .SetMetadata(
                 134, "mickeyburks@google.org",
                 "triggered the first time a user updates a shared tab.")));
+
+    registry.RegisterFeature(std::move(
+        FeaturePromoSpecification::CreateForToastPromo(
+            feature_engagement::kIPHTabGroupsSharedTabFeedbackFeature,
+            kSharedTabGroupFeedbackElementId,
+            IDS_DATA_SHARING_SHARED_GROUPS_FEEDBACK_IPH,
+            IDS_DATA_SHARING_SHARED_GROUPS_FEEDBACK_IPH_SCREENREADER,
+            FeaturePromoSpecification::AcceleratorInfo())
+            .SetMetadata(
+                135, "dljames@chromium.org",
+                "Triggered when a shared tab becomes the active tab.")));
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

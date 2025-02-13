@@ -107,17 +107,17 @@ template("chrome_app") {
 
     browserkit_extension("gpu_process") {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      bundle_identifier = "$ios_chromium_bundle_id.GPUProcess"
+      bundle_identifier = "$ios_chromium_bundle_id.GPUProcessExtension"
     }
 
     browserkit_extension("network_process") {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      bundle_identifier = "$ios_chromium_bundle_id.NetworkProcess"
+      bundle_identifier = "$ios_chromium_bundle_id.NetworkProcesExtension"
     }
 
     browserkit_extension("content_process") {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      bundle_identifier = "$ios_chromium_bundle_id.ContentProcess"
+      bundle_identifier = "$ios_chromium_bundle_id.ContentProcessExtension"
     }
 
     ios_app_bundle(_target_name) {

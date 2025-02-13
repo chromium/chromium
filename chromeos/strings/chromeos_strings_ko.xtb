@@ -554,6 +554,7 @@
 <translation id="3628462041319107639">스크립트 작성 모델 다운로드 중…</translation>
 <translation id="3632040286124154621">좋은 제안</translation>
 <translation id="3632579075709132555">개인 정보 보호 화면 전환</translation>
+<translation id="3634941468757842845">테마 선택</translation>
 <translation id="3639873154908477486">이름(알파벳순)</translation>
 <translation id="3644695927181369554">좋지 않은 제안</translation>
 <translation id="3651050199673793219">온도 단위 선택</translation>
@@ -1540,6 +1541,7 @@
 <translation id="8132480444149501833">트래픽 카운터 요청</translation>
 <translation id="8135609423982943441">Chromebook이 안전한 기본값으로 재설정되었습니다. 설정에서 언제든지 변경할 수 있습니다.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8140591278915222789">직접 만들기</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> 선택</translation>
 <translation id="8151185429379586178">개발자 도구</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>

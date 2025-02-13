@@ -35,7 +35,7 @@ aura::Window* GetWindowParentIncludingTransient(aura::Window* window) {
 }
 
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
-WordBoundaries ComputeWordBoundaries(const std::u16string& text) {
+WordBoundaries ComputeWordBoundaries(std::u16string_view text) {
   WordBoundaries boundaries;
 
   base::i18n::BreakIterator iter(text, base::i18n::BreakIterator::BREAK_WORD);

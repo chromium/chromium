@@ -50,7 +50,7 @@ class FakeBrowserProxy extends TestBrowserProxy implements BrowserProxy {
   }
 }
 
-suite('<borealis-installer-app>', async () => {
+suite('<borealis-installer-app>', () => {
   let fakeBrowserProxy: FakeBrowserProxy;
   let app: BorealisInstallerAppElement;
 

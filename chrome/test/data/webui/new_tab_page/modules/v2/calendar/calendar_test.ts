@@ -19,7 +19,7 @@ suite('NewTabPageModulesCalendarTest', () => {
   let element: CalendarElement;
   let windowProxy: TestMock<WindowProxy>;
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     windowProxy = installMock(WindowProxy);
     element = new CalendarElement();

@@ -1081,7 +1081,7 @@ BASE_FEATURE(kStrictOriginIsolation,
 // much memory is not attempted to be reused.
 BASE_FEATURE(kSubframeProcessReuseThresholds,
              "SubframeProcessReuseThresholds",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Specifies the memory threshold for the `kSubframeProcessReuseThresholds`
 // feature, which only allows a process to be reused for another subframe if the
@@ -1091,7 +1091,7 @@ BASE_FEATURE(kSubframeProcessReuseThresholds,
 // process reuse experiments.
 constexpr base::FeatureParam<double> kSubframeProcessReuseMemoryThreshold{
     &kSubframeProcessReuseThresholds, "SubframeProcessReuseMemoryThreshold",
-    2 * 1024 * 1024 * 1024u};
+    512 * 1024 * 1024u};
 
 // Disallows window.{alert, prompt, confirm} if triggered inside a subframe that
 // is not same origin with the main frame.
@@ -1279,13 +1279,6 @@ BASE_FEATURE(kAccessibilityDeprecateTypeAnnounce,
 BASE_FEATURE(kAccessibilityIncludeLongClickAction,
              "AccessibilityIncludeLongClickAction",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables the use of enhancements to the Page Zoom feature based on user
-// feedback from the v1 version (e.g. reset button, Site Settings, etc).
-// This flag is the fast-follow for the AccessibilityPageZoom experiment.
-BASE_FEATURE(kAccessibilityPageZoomEnhancements,
-             "AccessibilityPageZoomEnhancements",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the second iteration of AccessibilityPageZoom, which continues
 // the work completed in the first experiment and the subsequent fast-follow.

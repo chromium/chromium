@@ -10,11 +10,14 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/json/json_writer.h"
 #include "base/pickle.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/variant_util.h"
 #include "base/values.h"
@@ -82,7 +85,7 @@ void ScopedClipboardWriter::SetDataSourceURL(const GURL& main_frame,
   frame_url_ = frame_url;
 }
 
-void ScopedClipboardWriter::WriteText(const std::u16string& text) {
+void ScopedClipboardWriter::WriteText(std::u16string_view text) {
   RecordWrite(ClipboardFormatMetric::kText);
 
   Clipboard::Data data = Clipboard::TextData{.data = base::UTF16ToUTF8(text)};
@@ -90,21 +93,21 @@ void ScopedClipboardWriter::WriteText(const std::u16string& text) {
   objects_[index] = Clipboard::ObjectMapParams(std::move(data));
 }
 
-void ScopedClipboardWriter::WriteHTML(const std::u16string& markup,
-                                      const std::string& source_url) {
+void ScopedClipboardWriter::WriteHTML(std::u16string_view markup,
+                                      std::string source_url) {
   RecordWrite(ClipboardFormatMetric::kHtml);
 
   Clipboard::HtmlData html_data;
   html_data.markup = base::UTF16ToUTF8(markup);
   if (!source_url.empty()) {
-    html_data.source_url = source_url;
+    html_data.source_url = std::move(source_url);
   }
   Clipboard::Data data(std::move(html_data));
   const size_t index = data.index();
   objects_[index] = Clipboard::ObjectMapParams(std::move(data));
 }
 
-void ScopedClipboardWriter::WriteSvg(const std::u16string& markup) {
+void ScopedClipboardWriter::WriteSvg(std::u16string_view markup) {
   RecordWrite(ClipboardFormatMetric::kSvg);
 
   Clipboard::Data data =
@@ -113,46 +116,46 @@ void ScopedClipboardWriter::WriteSvg(const std::u16string& markup) {
   objects_[index] = Clipboard::ObjectMapParams(std::move(data));
 }
 
-void ScopedClipboardWriter::WriteRTF(const std::string& rtf_data) {
+void ScopedClipboardWriter::WriteRTF(std::string rtf_data) {
   RecordWrite(ClipboardFormatMetric::kRtf);
 
-  Clipboard::Data data = Clipboard::RtfData{.data = rtf_data};
+  Clipboard::Data data = Clipboard::RtfData{.data = std::move(rtf_data)};
   const size_t index = data.index();
   objects_[index] = Clipboard::ObjectMapParams(std::move(data));
 }
 
-void ScopedClipboardWriter::WriteFilenames(const std::string& uri_list) {
+void ScopedClipboardWriter::WriteFilenames(std::string uri_list) {
   RecordWrite(ClipboardFormatMetric::kFilenames);
-  Clipboard::Data data = Clipboard::FilenamesData{.text_uri_list = uri_list};
+  Clipboard::Data data =
+      Clipboard::FilenamesData{.text_uri_list = std::move(uri_list)};
   const size_t index = data.index();
   objects_[index] = Clipboard::ObjectMapParams(std::move(data));
 }
 
-void ScopedClipboardWriter::WriteBookmark(const std::u16string& bookmark_title,
-                                          const std::string& url) {
+void ScopedClipboardWriter::WriteBookmark(std::u16string_view bookmark_title,
+                                          std::string url) {
   if (ui::clipboard_util::ShouldSkipBookmark(bookmark_title, url)) {
     return;
   }
   RecordWrite(ClipboardFormatMetric::kBookmark);
 
   Clipboard::Data data = Clipboard::BookmarkData{
-      .title = base::UTF16ToUTF8(bookmark_title), .url = url};
+      .title = base::UTF16ToUTF8(bookmark_title), .url = std::move(url)};
   const size_t index = data.index();
   objects_[index] = Clipboard::ObjectMapParams(std::move(data));
 }
 
-void ScopedClipboardWriter::WriteHyperlink(const std::u16string& anchor_text,
-                                           const std::string& url) {
+void ScopedClipboardWriter::WriteHyperlink(std::u16string_view anchor_text,
+                                           std::string_view url) {
   if (anchor_text.empty() || url.empty())
     return;
 
   // Construct the hyperlink.
-  std::string html = "<a href=\"";
-  html += base::EscapeForHTML(url);
-  html += "\">";
-  html += base::EscapeForHTML(base::UTF16ToUTF8(anchor_text));
-  html += "</a>";
-  WriteHTML(base::UTF8ToUTF16(html), std::string());
+  const std::string tag =
+      base::StrCat({"<a href=\"", base::EscapeForHTML(url), "\">"});
+  WriteHTML(base::StrCat({base::UTF8ToUTF16(tag),
+                          base::EscapeForHTML(anchor_text), u"</a>"}),
+            std::string());
 }
 
 void ScopedClipboardWriter::WriteWebSmartPaste() {
@@ -199,7 +202,7 @@ void ScopedClipboardWriter::WritePickledData(
   raw_objects_.emplace_back(std::move(raw_data));
 }
 
-void ScopedClipboardWriter::WriteData(const std::u16string& format,
+void ScopedClipboardWriter::WriteData(std::u16string_view format,
                                       mojo_base::BigBuffer data) {
   RecordWrite(ClipboardFormatMetric::kData);
   // Windows / X11 clipboards enter an unrecoverable state after registering

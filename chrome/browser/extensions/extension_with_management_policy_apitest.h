@@ -8,20 +8,32 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/extensions/extension_apitest.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "testing/gmock/include/gmock/gmock.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_platform_apitest.h"
+#else
+#include "chrome/browser/extensions/extension_apitest.h"
+#endif
 
 struct ManagementPolicyRequestLog {
   std::string all_headers;
   std::string host;
 };
 
+#if BUILDFLAG(IS_ANDROID)
+using ExtensionApiTestBase = extensions::ExtensionPlatformApiTest;
+#else
+using ExtensionApiTestBase = extensions::ExtensionApiTest;
+#endif
+
 // The ExtensionSettings policy affects host permissions which impacts several
 // API integration tests. This class enables easy declaration of
 // ExtensionSettings policies and functions commonly used during these tests.
-class ExtensionApiTestWithManagementPolicy
-    : public extensions::ExtensionApiTest {
+class ExtensionApiTestWithManagementPolicy : public ExtensionApiTestBase {
  public:
   explicit ExtensionApiTestWithManagementPolicy(
       ContextType context_type = ContextType::kFromManifest);

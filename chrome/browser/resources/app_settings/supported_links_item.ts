@@ -30,7 +30,7 @@ import type {SupportedLinksOverlappingAppsDialogElement} from './supported_links
 import {createDummyApp} from './web_app_settings_utils.js';
 
 type PreferenceType = 'preferred'|'browser';
-const PREFERRED_APP_PREF = 'preferred' as const;
+const PREFERRED_APP_PREF = 'preferred';
 
 export interface SupportedLinksItemElement {
   $: {

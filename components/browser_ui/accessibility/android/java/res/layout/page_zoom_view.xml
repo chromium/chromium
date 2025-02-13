@@ -36,8 +36,7 @@ found in the LICENSE file.
     <View
         android:id="@+id/page_zoom_reset_divider"
         style="@style/VerticalDivider"
-        android:layout_gravity="center_vertical"
-        android:visibility="gone" />
+        android:layout_gravity="center_vertical" />
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/page_zoom_reset_zoom_button"
@@ -47,8 +46,7 @@ found in the LICENSE file.
         android:minHeight="@dimen/min_touch_target_size"
         android:text="@string/reset"
         android:textAlignment="center"
-        android:layout_gravity="center_vertical"
-        android:visibility="gone" />
+        android:layout_gravity="center_vertical" />
 
   </LinearLayout>
 

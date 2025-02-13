@@ -1272,6 +1272,7 @@
 <translation id="3248329428895535435">ไม่ต้องแสดงในเว็บไซต์นี้</translation>
 <translation id="3249102948665905108">การอัปโหลดไฟล์ไปยัง <ph name="CLOUD_PROVIDER" /> เสร็จสมบูรณ์โดยมีข้อผิดพลาด</translation>
 <translation id="3252772880526154546">สถาปัตยกรรม</translation>
+<translation id="3253225298092156258">ไม่มีข้อมูล</translation>
 <translation id="3254301855501243548">18 x 22 นิ้ว</translation>
 <translation id="3255926992597692024">Chromium กำลังพยายามแก้ไขการตั้งค่าสำหรับการกรอกวิธีการชำระเงิน</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างกิจกรรมใหม่ใน Google ปฏิทินอย่างรวดเร็ว</translation>

@@ -1,0 +1,83 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_EVENT_ROUTER_SHARED_H_
+#define CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_EVENT_ROUTER_SHARED_H_
+
+#include "chrome/browser/extensions/error_console/error_console.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/extensions/api/developer_private.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/permissions_manager.h"
+
+namespace extensions {
+
+class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
+                                          public ErrorConsole::Observer {
+ public:
+  explicit DeveloperPrivateEventRouterShared(Profile* profile);
+
+  DeveloperPrivateEventRouterShared(const DeveloperPrivateEventRouterShared&) =
+      delete;
+  DeveloperPrivateEventRouterShared& operator=(
+      const DeveloperPrivateEventRouterShared&) = delete;
+
+  ~DeveloperPrivateEventRouterShared() override;
+
+  // Add or remove an ID to the list of extensions subscribed to events.
+  void AddExtensionId(const ExtensionId& extension_id);
+  void RemoveExtensionId(const ExtensionId& extension_id);
+
+  // Called when the configuration (such as user preferences) for an extension
+  // has changed in a way that may affect the chrome://extensions UI.
+  void OnExtensionConfigurationChanged(const ExtensionId& extension_id);
+
+ protected:
+  raw_ptr<Profile> profile_;
+
+  raw_ptr<EventRouter> event_router_;
+
+  PrefChangeRegistrar pref_change_registrar_;
+
+ private:
+  // ExtensionRegistryObserver:
+  void OnExtensionLoaded(content::BrowserContext* browser_context,
+                         const Extension* extension) override;
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const Extension* extension,
+                           UnloadedExtensionReason reason) override;
+  void OnExtensionInstalled(content::BrowserContext* browser_context,
+                            const Extension* extension,
+                            bool is_update) override;
+  void OnExtensionUninstalled(content::BrowserContext* browser_context,
+                              const Extension* extension,
+                              extensions::UninstallReason reason) override;
+
+  // ErrorConsole::Observer:
+  void OnErrorAdded(const ExtensionError* error) override;
+  void OnErrorsRemoved(const std::set<ExtensionId>& extension_ids) override;
+
+  // Broadcasts an event to all listeners.
+  virtual void BroadcastItemStateChanged(
+      api::developer_private::EventType event_type,
+      const ExtensionId& id);
+
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
+  base::ScopedObservation<ErrorConsole, ErrorConsole::Observer>
+      error_console_observation_{this};
+
+  // The set of IDs of the Extensions that have subscribed to DeveloperPrivate
+  // events. Since the only consumer of the DeveloperPrivate API is currently
+  // the Apps Developer Tool (which replaces the chrome://extensions page), we
+  // don't want to send information about the subscribing extension in an
+  // update. In particular, we want to avoid entering a loop, which could happen
+  // when, e.g., the Apps Developer Tool throws an error.
+  std::set<ExtensionId> extension_ids_;
+};
+
+}  // namespace extensions
+
+#endif  // CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_EVENT_ROUTER_SHARED_H_

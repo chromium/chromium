@@ -7,11 +7,11 @@
 #include "base/logging.h"
 #include "base/strings/stringize_macros.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/protobuf_http_client.h"
 #include "remoting/base/protobuf_http_request.h"
 #include "remoting/base/protobuf_http_request_config.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/service_urls.h"
 #include "remoting/host/host_details.h"
 #include "remoting/proto/remoting/v1/chrome_os_enterprise_options.pb.h"
@@ -71,14 +71,14 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 constexpr char kRegisterSupportHostPath[] =
     "/v1/remotesupport:registersupporthost";
 
-protocol::ErrorCode MapError(ProtobufHttpStatus::Code status_code) {
+protocol::ErrorCode MapError(HttpStatus::Code status_code) {
   switch (status_code) {
-    case ProtobufHttpStatus::Code::OK:
+    case HttpStatus::Code::OK:
       return protocol::ErrorCode::OK;
-    case ProtobufHttpStatus::Code::DEADLINE_EXCEEDED:
+    case HttpStatus::Code::DEADLINE_EXCEEDED:
       return protocol::ErrorCode::SIGNALING_TIMEOUT;
-    case ProtobufHttpStatus::Code::PERMISSION_DENIED:
-    case ProtobufHttpStatus::Code::UNAUTHENTICATED:
+    case HttpStatus::Code::PERMISSION_DENIED:
+    case HttpStatus::Code::UNAUTHENTICATED:
       return protocol::ErrorCode::AUTHENTICATION_FAILED;
     default:
       return protocol::ErrorCode::SIGNALING_ERROR;
@@ -238,7 +238,7 @@ void RemotingRegisterSupportHostRequest::RegisterHost() {
 }
 
 void RemotingRegisterSupportHostRequest::OnRegisterHostResult(
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<apis::v1::RegisterSupportHostResponse> response) {
   if (!status.ok()) {
     state_ = State::NOT_STARTED;

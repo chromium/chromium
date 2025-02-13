@@ -119,4 +119,12 @@ void AutofillSaveCardInfoBarDelegateIOS::SetInfobarIsPresenting(
   infobar_is_presenting_ = is_presenting;
 }
 
+void AutofillSaveCardInfoBarDelegateIOS::LogSaveCreditCardInfoBarResultMetric(
+    autofill_metrics::SaveCreditCardPromptResultIOS metric,
+    autofill_metrics::SaveCreditCardPromptOverlayType overlay_type) {
+  autofill_metrics::LogSaveCreditCardPromptResultIOS(
+      metric, delegate()->is_for_upload(),
+      delegate()->GetSaveCreditCardOptions(), overlay_type);
+}
+
 }  // namespace autofill

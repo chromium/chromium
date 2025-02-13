@@ -229,7 +229,7 @@ source_set("webrtc") {
     deps += [ "//ui/ozone" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "desktop_media_list_ash.cc",
       "desktop_media_list_ash.h",
@@ -246,6 +246,7 @@ source_set("webrtc") {
       "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/system_web_apps/apps/camera_app",
       "//chrome/browser/ash/system_web_apps/apps/recorder_app",
+      "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/ui/ash/keyboard",
       "//chrome/browser/ui/ash/media_client",
       "//chromeos/ash/components/system",
@@ -263,10 +264,6 @@ source_set("webrtc") {
       "//chrome/browser/ash/system_web_apps/apps/camera_app",
       "//chrome/browser/ash/system_web_apps/apps/recorder_app",
     ]
-  }
-
-  if (is_chromeos) {
-    deps += [ "//chrome/browser/chromeos/policy/dlp" ]
   }
 
   if (is_win) {

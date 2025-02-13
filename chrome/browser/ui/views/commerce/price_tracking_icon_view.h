@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_TRACKING_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_TRACKING_ICON_VIEW_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
@@ -33,7 +35,7 @@ class PriceTrackingIconView : public PageActionIconView {
   const gfx::VectorIcon& GetVectorIcon() const override;
 
   void ForceVisibleForTesting(bool is_tracking_price);
-  const std::u16string& GetIconLabelForTesting();
+  std::u16string_view GetIconLabelForTesting() const;
   void SetOneShotTimerForTesting(base::OneShotTimer* animate_out_timer);
 
  protected:

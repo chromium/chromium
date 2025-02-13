@@ -20,7 +20,7 @@ suite('<settings-graphics-tablet-subpage>', () => {
   let graphicsTabletPage: SettingsGraphicsTabletSubpageElement;
   let browserProxy: TestDevicePageBrowserProxy;
 
-  setup(async () => {
+  setup(() => {
     browserProxy = new TestDevicePageBrowserProxy();
     DevicePageBrowserProxyImpl.setInstanceForTesting(browserProxy);
 

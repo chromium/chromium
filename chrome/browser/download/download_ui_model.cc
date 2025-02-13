@@ -11,7 +11,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
@@ -506,7 +505,7 @@ DownloadUIModel::GetInsecureDownloadStatus() const {
 
 void DownloadUIModel::OpenUsingPlatformHandler() {}
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::optional<DownloadCommands::Command>
 DownloadUIModel::MaybeGetMediaAppAction() const {
   return std::nullopt;
@@ -779,7 +778,7 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
       break;
     case DownloadCommands::OPEN_WITH_MEDIA_APP:
     case DownloadCommands::EDIT_WITH_MEDIA_APP:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       OpenUsingMediaApp();
       break;
 #else

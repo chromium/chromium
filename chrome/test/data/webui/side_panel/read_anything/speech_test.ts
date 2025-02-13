@@ -431,7 +431,7 @@ suite('Speech', () => {
         assertTrue(app.speechPlayingState.isSpeechBeingRepositioned);
       });
 
-  test('interrupt error stops speech', async () => {
+  test('interrupt error stops speech', () => {
     speechSynthesis.setMaxSegments(7);
     chrome.readingMode.initAxPositionWithNode(2);
     speechSynthesis.triggerErrorEventOnNextSpeak('interrupted');

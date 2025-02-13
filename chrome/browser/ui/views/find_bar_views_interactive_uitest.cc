@@ -148,9 +148,11 @@ class LegacyFindInPageTest : public InProcessBrowserTest {
     return GetFindBarHost()->GetFindBarViewForTesting();
   }
 
-  std::u16string GetFindBarText() { return GetFindBarHost()->GetFindText(); }
+  std::u16string_view GetFindBarText() {
+    return GetFindBarHost()->GetFindText();
+  }
 
-  std::u16string GetFindBarSelectedText() {
+  std::u16string_view GetFindBarSelectedText() {
     return GetFindBarHost()->GetFindBarTesting()->GetFindSelectedText();
   }
 

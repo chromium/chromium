@@ -23,7 +23,6 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/browsing_data_remover_browsertest_base.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
@@ -92,18 +91,12 @@
 #include "base/memory/scoped_refptr.h"
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
-#include "components/account_manager_core/account.h"
-#include "components/account_manager_core/account_manager_util.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using content::BrowserThread;
 using content::BrowsingDataFilterBuilder;
@@ -173,22 +166,6 @@ class BrowsingDataRemoverBrowserTest
     enabled_features.push_back(blink::features::kWebSQLAccess);
     InitFeatureLists(std::move(enabled_features), std::move(disabled_features));
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void CreatedBrowserMainParts(
-      content::BrowserMainParts* browser_main_parts) override {
-    crosapi::mojom::BrowserInitParamsPtr init_params =
-        crosapi::mojom::BrowserInitParams::New();
-    std::string device_account_email = "primaryaccount@gmail.com";
-    account_manager::AccountKey key(
-        signin::GetTestGaiaIdForEmail(device_account_email),
-        ::account_manager::AccountType::kGaia);
-    init_params->device_account =
-        account_manager::ToMojoAccount({key, device_account_email});
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
-  }
-#endif
 
   void SetUpOnMainThread() override {
     BrowsingDataRemoverBrowserTestBase::SetUpOnMainThread();
@@ -1187,7 +1164,7 @@ const std::vector<std::string_view> kDoesNotSupportOriginFilteringDelegate{
     "UserDataSnapshot",
 #endif
     "WebrtcEventLogs",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     "TpmAttestationKeys",
 #endif
 #if BUILDFLAG(ENABLE_NACL)
@@ -1667,11 +1644,10 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, StorageRemovedFromDisk) {
   // but there are a few bugs that need to be fixed.
   // Any addition to this list must have an associated TODO.
   static const std::vector<std::string> ignore_file_patterns = {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       // TODO(crbug.com/40577815): Many leveldb files remain on ChromeOS. I
-      // couldn't
-      // reproduce this in manual testing, so it might be a timing issue when
-      // Chrome is closed after the second test?
+      // couldn't reproduce this in manual testing, so it might be a timing
+      // issue when Chrome is closed after the second test?
       "[0-9]{6}",
 #endif
   };
@@ -1726,7 +1702,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Test that removing passwords, when System-proxy is enabled on Chrome OS,
 // sends a request to System-proxy to clear the cached user credentials.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
@@ -1741,7 +1717,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                    ->GetTestInterface()
                    ->GetClearUserCredentialsCount());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                        RelatedWebsiteSetsDeletion) {

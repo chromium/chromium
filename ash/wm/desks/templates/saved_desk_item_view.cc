@@ -507,7 +507,7 @@ void SavedDeskItemView::OnViewBlurred(views::View* observed_view) {
     return;
 
   auto* saved_desk_entry_to_replace = presenter->FindOtherEntryWithName(
-      name_view_->GetText(), saved_desk().type(), uuid());
+      std::u16string(name_view_->GetText()), saved_desk().type(), uuid());
   if (saved_desk_entry_to_replace) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&SavedDeskItemView::MaybeShowReplaceDialog,
@@ -544,7 +544,7 @@ bool SavedDeskItemView::CanHandleAccelerators() const {
 }
 
 void SavedDeskItemView::UpdateSavedDeskName() {
-  saved_desk_->set_template_name(name_view_->GetText());
+  saved_desk_->set_template_name(std::u16string(name_view_->GetText()));
   OnSavedDeskNameChanged(saved_desk_->template_name());
 
   if (auto* presenter = saved_desk_util::GetSavedDeskPresenter()) {

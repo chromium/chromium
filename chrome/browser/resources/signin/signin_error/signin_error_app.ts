@@ -79,7 +79,7 @@ export class SigninErrorAppElement extends SigninErrorAppElementBase {
       await this.updateComplete;
       // Move focus to the only displayed button in this case.
       const button =
-          this.shadowRoot!.querySelector<HTMLElement>('#confirmButton');
+          this.shadowRoot.querySelector<HTMLElement>('#confirmButton');
       assert(button);
       button.focus();
     });

@@ -5,6 +5,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -42,7 +43,7 @@ namespace views {
 
 MdTextButton::MdTextButton(
     PressedCallback callback,
-    const std::u16string& text,
+    std::u16string_view text,
     int button_context,
     bool use_text_color_for_icon,
     std::unique_ptr<LabelButtonImageContainer> image_container)
@@ -233,7 +234,7 @@ std::optional<gfx::Insets> MdTextButton::GetCustomPadding() const {
   return custom_padding_.value_or(CalculateDefaultPadding());
 }
 
-void MdTextButton::SetText(const std::u16string& text) {
+void MdTextButton::SetText(std::u16string_view text) {
   LabelButton::SetText(text);
   UpdatePadding();
 }

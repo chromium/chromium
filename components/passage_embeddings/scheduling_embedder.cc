@@ -75,13 +75,30 @@ SchedulingEmbedder::Job::~Job() = default;
 SchedulingEmbedder::Job::Job(Job&&) = default;
 SchedulingEmbedder::Job& SchedulingEmbedder::Job::operator=(Job&&) = default;
 
+void SchedulingEmbedder::Job::Finish(ComputeEmbeddingsStatus status) {
+  VLOG(2) << "Finished embedding work with status " << static_cast<int>(status)
+          << " for " << passages.size() << " passages starting with `"
+          << passages[0] << "`";
+  if (passages.size() != embeddings.size()) {
+    embeddings.clear();
+  }
+  std::move(callback).Run(std::move(passages), std::move(embeddings), task_id,
+                          status);
+  if (status == ComputeEmbeddingsStatus::kSuccess) {
+    RecordDurationHistograms(priority, timer.Elapsed());
+  }
+  RecordStatusHistograms(priority, status);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 SchedulingEmbedder::SchedulingEmbedder(std::unique_ptr<Embedder> embedder,
-                                       size_t scheduled_max,
+                                       size_t max_jobs,
+                                       size_t max_batch_size,
                                        bool use_performance_scenario)
     : embedder_(std::move(embedder)),
-      scheduled_max_(scheduled_max),
+      max_jobs_(max_jobs),
+      max_batch_size_(max_batch_size),
       use_performance_scenario_(use_performance_scenario) {
 #if BUILDFLAG(USE_BLINK)
   if (use_performance_scenario_) {
@@ -121,6 +138,13 @@ SchedulingEmbedder::TaskId SchedulingEmbedder::ComputePassagesEmbeddings(
         /*passages=*/{}, /*embeddings=*/{}, task_id,
         ComputeEmbeddingsStatus::kSuccess);
     return task_id;
+  }
+
+  // Limit the number of jobs accepted to avoid high memory use when
+  // waiting a long time to process the queue.
+  while (jobs_.size() >= max_jobs_ && !jobs_.back().in_progress) {
+    jobs_.back().Finish(ComputeEmbeddingsStatus::kCanceled);
+    jobs_.pop_back();
   }
 
   jobs_.emplace_back(priority, task_id, std::move(passages),
@@ -167,11 +191,11 @@ void SchedulingEmbedder::SubmitWorkToEmbedder() {
   PassagePriority priority = jobs_.front().priority;
   std::vector<std::string> passages;
   size_t job_index = 0;
-  while (passages.size() < scheduled_max_ && job_index < jobs_.size() &&
+  while (passages.size() < max_batch_size_ && job_index < jobs_.size() &&
          jobs_.at(job_index).priority == priority) {
     Job& job = jobs_.at(job_index);
     job.in_progress = true;
-    size_t accept = std::min(scheduled_max_ - passages.size(),
+    size_t accept = std::min(max_batch_size_ - passages.size(),
                              job.passages.size() - job.embeddings.size());
     VLOG(3) << "Batching range [" << job.embeddings.size() << ','
             << job.embeddings.size() + accept << ") of " << job.passages.size()
@@ -274,13 +298,7 @@ void SchedulingEmbedder::OnEmbeddingsComputed(std::vector<std::string> passages,
   CHECK_EQ(passages.size(), embeddings.size());
 
   if (embeddings.empty()) {
-    Job& job = jobs_.front();
-    VLOG(2) << "Aborted embedding work for " << job.passages.size()
-            << " passages starting with `"
-            << (job.passages.empty() ? "" : job.passages[0]) << "`";
-    std::move(job.callback)
-        .Run(std::move(job.passages), {}, job.task_id, status);
-    RecordStatusHistograms(job.priority, status);
+    jobs_.front().Finish(status);
     jobs_.pop_front();
     // Continue on to allow possibility of resuming any remaining jobs.
     // This upholds the 1:1 callback requirement and gives jobs another
@@ -305,13 +323,7 @@ void SchedulingEmbedder::OnEmbeddingsComputed(std::vector<std::string> passages,
       read_index++;
     }
     if (job.embeddings.size() == job.passages.size()) {
-      VLOG(2) << "Finished embedding work for " << job.passages.size()
-              << " passages starting with `" << job.passages[0] << "`";
-      std::move(job.callback)
-          .Run(std::move(job.passages), std::move(job.embeddings), job.task_id,
-               status);
-      RecordDurationHistograms(job.priority, job.timer.Elapsed());
-      RecordStatusHistograms(job.priority, status);
+      job.Finish(status);
       jobs_.pop_front();
     }
   }

@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/position_area.h"
@@ -311,7 +312,8 @@ inline CSSIdentifierValue::CSSIdentifierValue(AppearanceValue e)
       value_id_ = CSSValueID::kTextarea;
       break;
     case AppearanceValue::kBaseSelect:
-      CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
+      // This can't check for origin trials, unfortunately.
+      DCHECK(HTMLSelectElement::CustomizableSelectEnabledNoDocument());
       value_id_ = CSSValueID::kBaseSelect;
       break;
   }

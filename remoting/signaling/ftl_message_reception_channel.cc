@@ -9,7 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/scoped_protobuf_http_request.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
 #include "remoting/signaling/ftl_services_context.h"
@@ -80,7 +80,7 @@ void FtlMessageReceptionChannel::OnReceiveMessagesStreamReady() {
 }
 
 void FtlMessageReceptionChannel::OnReceiveMessagesStreamClosed(
-    const ProtobufHttpStatus& status) {
+    const HttpStatus& status) {
   if (state_ == State::STOPPED) {
     // Previously closed by the caller.
     return;
@@ -95,8 +95,8 @@ void FtlMessageReceptionChannel::OnReceiveMessagesStreamClosed(
   }
 
   reconnect_retry_backoff_.InformOfRequest(false);
-  if (status.error_code() == ProtobufHttpStatus::Code::ABORTED ||
-      status.error_code() == ProtobufHttpStatus::Code::UNAVAILABLE) {
+  if (status.error_code() == HttpStatus::Code::ABORTED ||
+      status.error_code() == HttpStatus::Code::UNAVAILABLE) {
     // These are 'soft' connection errors that should be retried.
     // Other errors should be ignored.
     RetryStartReceivingMessagesWithBackoff();
@@ -149,7 +149,7 @@ void FtlMessageReceptionChannel::RunStreamReadyCallbacks() {
 }
 
 void FtlMessageReceptionChannel::RunStreamClosedCallbacks(
-    const ProtobufHttpStatus& status) {
+    const HttpStatus& status) {
   if (stream_closed_callbacks_.empty()) {
     return;
   }

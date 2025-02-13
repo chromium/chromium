@@ -42,7 +42,7 @@ suite('CrComponentsConfirmationCodePageTest', function() {
     assertTrue(eventFired);
   });
 
-  test('displays profile name', async function() {
+  test('displays profile name', function() {
     const detailsElement =
         confirmationCodePage.shadowRoot!.getElementById('details');
     assertTrue(!!detailsElement);

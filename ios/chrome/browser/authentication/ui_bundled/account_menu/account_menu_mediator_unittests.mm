@@ -348,14 +348,12 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
                    onSignoutSuccess = value;
                    return true;
                  }]]);
-  OCMExpect([delegate_ blockOtherScenesIfPossible]);
   OCMExpect([consumer_ switchingStarted]);
   OCMExpect([consumer_ setUserInteractionsEnabled:NO]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();
 
-  OCMExpect([delegate_ unblockOtherScenes]);
   OCMExpect([consumer_ switchingStopped]);
   OCMExpect([consumer_ setUserInteractionsEnabled:YES]);
   // Simulate a sign-out failure
@@ -383,7 +381,6 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
                    SignOut();
                    return true;
                  }]]);
-  OCMExpect([delegate_ blockOtherScenesIfPossible]);
   OCMExpect([consumer_ switchingStarted]);
   OCMExpect([consumer_ setUserInteractionsEnabled:NO]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
@@ -407,7 +404,6 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
   // Testing the sign-in callback.
   // The delegate should not receive any message. The mediator directly sign the
   // user back in the previous account.
-  OCMExpect([delegate_ unblockOtherScenes]);
   OCMExpect([consumer_ updatePrimaryAccount]);
   OCMExpect([consumer_ switchingStopped]);
   OCMExpect([consumer_ setUserInteractionsEnabled:YES]);
@@ -437,7 +433,6 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccesfulSwitch) {
                    onSignoutSuccess = value;
                    return true;
                  }]]);
-  OCMExpect([delegate_ blockOtherScenesIfPossible]);
   OCMExpect([consumer_ switchingStarted]);
   OCMExpect([consumer_ setUserInteractionsEnabled:NO]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
@@ -465,7 +460,6 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccesfulSwitch) {
   }
   VerifyMock();
 
-  OCMExpect([delegate_ unblockOtherScenes]);
   OCMExpect(
       [delegate_ triggerAccountSwitchSnackbarWithIdentity:kSecondaryIdentity]);
   OCMExpect([delegate_ mediatorWantsToBeDismissed:mediator_]);
@@ -526,10 +520,8 @@ TEST_P(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
                    completion = value;
                    return true;
                  }]]);
-  OCMExpect([delegate_ blockOtherScenesIfPossible]).andReturn(YES);
   OCMExpect([consumer_ setUserInteractionsEnabled:NO]);
   [mediator_ signOutFromTargetRect:rect];
-  OCMExpect([delegate_ unblockOtherScenes]);
   OCMExpect([delegate_ mediatorWantsToBeDismissed:mediator_]);
   completion(YES);
 }
@@ -546,11 +538,9 @@ TEST_P(AccountMenuMediatorTest, TestSignoutAndClose) {
                    completion = value;
                    return true;
                  }]]);
-  OCMExpect([delegate_ blockOtherScenesIfPossible]).andReturn(YES);
   OCMExpect([consumer_ setUserInteractionsEnabled:NO]);
   [mediator_ signOutFromTargetRect:rect];
   [mediator_ disconnect];
-  OCMExpect([delegate_ unblockOtherScenes]);
   OCMExpect([consumer_ setUserInteractionsEnabled:YES]);
   completion(NO);
 }

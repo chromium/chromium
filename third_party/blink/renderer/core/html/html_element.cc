@@ -1236,7 +1236,7 @@ void HTMLElement::UpdatePopoverAttribute(const AtomicString& value) {
   }
   if (type == PopoverValueType::kNone) {
     if (HasPopoverAttribute()) {
-      if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
+      if (HTMLSelectElement::CustomizableSelectEnabled(this) &&
           !RuntimeEnabledFeatures::PopoverAnchorRelationshipsEnabled()) {
         // CustomizableSelect allows the implicit anchor to be set but only for
         // the UA ::picker(select) popover, which will never have its popover
@@ -1605,7 +1605,7 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   GetPopoverData()->setVisibilityState(PopoverVisibilityState::kShowing);
   GetPopoverData()->setInvoker(invoker);
   if (RuntimeEnabledFeatures::PopoverAnchorRelationshipsEnabled() ||
-      (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
+      (HTMLSelectElement::CustomizableSelectEnabled(this) &&
        HTMLSelectElement::IsPopoverForAppearanceBase(this))) {
     SetImplicitAnchor(invoker);
   }
@@ -2257,7 +2257,7 @@ void HTMLElement::InvokePopover(Element& invoker) {
 }
 
 void HTMLElement::SetImplicitAnchor(Element* element) {
-  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled() ||
+  CHECK(HTMLSelectElement::CustomizableSelectEnabled(this) ||
         RuntimeEnabledFeatures::PopoverAnchorRelationshipsEnabled());
   CHECK(HasPopoverAttribute());
   if (auto* old_implicit_anchor =

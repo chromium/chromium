@@ -369,12 +369,12 @@ TEST_F(AuthenticationFlowTest, TestShowManagedConfirmationOnlyOnce) {
   // Signin from a different UI surface, show the dialog again.
   SignOut();
   SignIn(managed_identity1_, signin_metrics::AccessPoint::kSupervisedUser);
-  EXPECT_EQ(2, managed_confirmation_dialog_shown_count_);
+  EXPECT_EQ(1, managed_confirmation_dialog_shown_count_);
 
   // Signin with a different account, show the dialog again.
   SignOut();
   SignIn(managed_identity2_, signin_metrics::AccessPoint::kAccountMenu);
-  EXPECT_EQ(3, managed_confirmation_dialog_shown_count_);
+  EXPECT_EQ(2, managed_confirmation_dialog_shown_count_);
 }
 
 }  // namespace

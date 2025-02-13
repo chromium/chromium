@@ -8,7 +8,6 @@
 #endif
 
 #include "media/base/vector_math.h"
-#include "media/base/vector_math_testing.h"
 
 #include <algorithm>
 #include <cmath>
@@ -17,6 +16,7 @@
 #include "base/cpu.h"
 #include "base/memory/aligned_memory.h"
 #include "build/build_config.h"
+#include "media/base/vector_math_testing.h"
 
 // NaCl does not allow intrinsics.
 #if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_NACL)
@@ -33,12 +33,15 @@
 #include <arm_neon.h>
 #endif
 
-namespace media {
-namespace vector_math {
+namespace media::vector_math {
 
-void FMAC(const float src[], float scale, int len, float dest[]) {
-  DCHECK(base::IsAligned(src, kRequiredAlignment));
-  DCHECK(base::IsAligned(dest, kRequiredAlignment));
+void FMAC(base::span<const float> src, float scale, base::span<float> dest) {
+  if (src.empty()) {
+    return;
+  }
+  CHECK_LE(src.size(), dest.size());
+  DCHECK(base::IsAligned(src.data(), kRequiredAlignment));
+  DCHECK(base::IsAligned(dest.data(), kRequiredAlignment));
   static const auto fmac_func = [] {
 #if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_NACL)
     base::CPU cpu;
@@ -52,17 +55,22 @@ void FMAC(const float src[], float scale, int len, float dest[]) {
 #endif
   }();
 
-  return fmac_func(src, scale, len, dest);
+  return fmac_func(src.data(), scale, src.size(), dest.data());
 }
 
 void FMAC_C(const float src[], float scale, int len, float dest[]) {
-  for (int i = 0; i < len; ++i)
+  for (int i = 0; i < len; ++i) {
     dest[i] += src[i] * scale;
+  }
 }
 
-void FMUL(const float src[], float scale, int len, float dest[]) {
-  DCHECK(base::IsAligned(src, kRequiredAlignment));
-  DCHECK(base::IsAligned(dest, kRequiredAlignment));
+void FMUL(base::span<const float> src, float scale, base::span<float> dest) {
+  if (src.empty()) {
+    return;
+  }
+  CHECK_LE(src.size(), dest.size());
+  DCHECK(base::IsAligned(src.data(), kRequiredAlignment));
+  DCHECK(base::IsAligned(dest.data(), kRequiredAlignment));
   static const auto fmul_func = [] {
 #if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_NACL)
     base::CPU cpu;
@@ -76,17 +84,19 @@ void FMUL(const float src[], float scale, int len, float dest[]) {
 #endif
   }();
 
-  return fmul_func(src, scale, len, dest);
+  return fmul_func(src.data(), scale, src.size(), dest.data());
 }
 
 void FMUL_C(const float src[], float scale, int len, float dest[]) {
-  for (int i = 0; i < len; ++i)
+  for (int i = 0; i < len; ++i) {
     dest[i] = src[i] * scale;
+  }
 }
 
-std::pair<float, float> EWMAAndMaxPower(
-    float initial_value, const float src[], int len, float smoothing_factor) {
-  DCHECK(base::IsAligned(src, kRequiredAlignment));
+std::pair<float, float> EWMAAndMaxPower(float initial_value,
+                                        base::span<const float> src,
+                                        float smoothing_factor) {
+  DCHECK(base::IsAligned(src.data(), kRequiredAlignment));
   static const auto ewma_and_max_power_func = [] {
 #if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_NACL)
     base::CPU cpu;
@@ -100,11 +110,14 @@ std::pair<float, float> EWMAAndMaxPower(
 #endif
   }();
 
-  return ewma_and_max_power_func(initial_value, src, len, smoothing_factor);
+  return ewma_and_max_power_func(initial_value, src.data(), src.size(),
+                                 smoothing_factor);
 }
 
-std::pair<float, float> EWMAAndMaxPower_C(
-    float initial_value, const float src[], int len, float smoothing_factor) {
+std::pair<float, float> EWMAAndMaxPower_C(float initial_value,
+                                          const float src[],
+                                          int len,
+                                          float smoothing_factor) {
   std::pair<float, float> result(initial_value, 0.0f);
   const float weight_prev = 1.0f - smoothing_factor;
   for (int i = 0; i < len; ++i) {
@@ -122,12 +135,14 @@ void FMUL_SSE(const float src[], float scale, int len, float dest[]) {
   const int rem = len % 4;
   const int last_index = len - rem;
   __m128 m_scale = _mm_set_ps1(scale);
-  for (int i = 0; i < last_index; i += 4)
+  for (int i = 0; i < last_index; i += 4) {
     _mm_store_ps(dest + i, _mm_mul_ps(_mm_load_ps(src + i), m_scale));
+  }
 
   // Handle any remaining values that wouldn't fit in an SSE pass.
-  for (int i = last_index; i < len; ++i)
+  for (int i = last_index; i < len; ++i) {
     dest[i] = src[i] * scale;
+  }
 }
 
 __attribute__((target("avx2"))) void FMUL_AVX2(const float src[],
@@ -143,29 +158,34 @@ __attribute__((target("avx2"))) void FMUL_AVX2(const float src[],
   bool aligned_dest = (reinterpret_cast<uintptr_t>(dest) & 0x1F) == 0;
   if (aligned_src) {
     if (aligned_dest) {
-      for (int i = 0; i < last_index; i += 8)
+      for (int i = 0; i < last_index; i += 8) {
         _mm256_store_ps(dest + i,
                         _mm256_mul_ps(_mm256_load_ps(src + i), m_scale));
+      }
     } else {
-      for (int i = 0; i < last_index; i += 8)
+      for (int i = 0; i < last_index; i += 8) {
         _mm256_storeu_ps(dest + i,
                          _mm256_mul_ps(_mm256_load_ps(src + i), m_scale));
+      }
     }
   } else {
     if (aligned_dest) {
-      for (int i = 0; i < last_index; i += 8)
+      for (int i = 0; i < last_index; i += 8) {
         _mm256_store_ps(dest + i,
                         _mm256_mul_ps(_mm256_loadu_ps(src + i), m_scale));
+      }
     } else {
-      for (int i = 0; i < last_index; i += 8)
+      for (int i = 0; i < last_index; i += 8) {
         _mm256_storeu_ps(dest + i,
                          _mm256_mul_ps(_mm256_loadu_ps(src + i), m_scale));
+      }
     }
   }
 
   // Handle any remaining values that wouldn't fit in an SSE pass.
-  for (int i = last_index; i < len; ++i)
+  for (int i = last_index; i < len; ++i) {
     dest[i] = src[i] * scale;
+  }
 }
 
 void FMAC_SSE(const float src[], float scale, int len, float dest[]) {
@@ -173,13 +193,15 @@ void FMAC_SSE(const float src[], float scale, int len, float dest[]) {
   const int last_index = len - rem;
   __m128 m_scale = _mm_set_ps1(scale);
   for (int i = 0; i < last_index; i += 4) {
-    _mm_store_ps(dest + i, _mm_add_ps(_mm_load_ps(dest + i),
-                 _mm_mul_ps(_mm_load_ps(src + i), m_scale)));
+    _mm_store_ps(dest + i,
+                 _mm_add_ps(_mm_load_ps(dest + i),
+                            _mm_mul_ps(_mm_load_ps(src + i), m_scale)));
   }
 
   // Handle any remaining values that wouldn't fit in an SSE pass.
-  for (int i = last_index; i < len; ++i)
+  for (int i = last_index; i < len; ++i) {
     dest[i] += src[i] * scale;
+  }
 }
 
 __attribute__((target("avx2,fma"))) void FMAC_AVX2(const float src[],
@@ -195,45 +217,50 @@ __attribute__((target("avx2,fma"))) void FMAC_AVX2(const float src[],
   bool aligned_dest = (reinterpret_cast<uintptr_t>(dest) & 0x1F) == 0;
   if (aligned_src) {
     if (aligned_dest) {
-      for (int i = 0; i < last_index; i += 8)
+      for (int i = 0; i < last_index; i += 8) {
         _mm256_store_ps(dest + i,
                         _mm256_fmadd_ps(_mm256_load_ps(src + i), m_scale,
                                         _mm256_load_ps(dest + i)));
+      }
     } else {
-      for (int i = 0; i < last_index; i += 8)
+      for (int i = 0; i < last_index; i += 8) {
         _mm256_storeu_ps(dest + i,
                          _mm256_fmadd_ps(_mm256_load_ps(src + i), m_scale,
                                          _mm256_loadu_ps(dest + i)));
+      }
     }
   } else {
     if (aligned_dest) {
-      for (int i = 0; i < last_index; i += 8)
+      for (int i = 0; i < last_index; i += 8) {
         _mm256_store_ps(dest + i,
                         _mm256_fmadd_ps(_mm256_loadu_ps(src + i), m_scale,
                                         _mm256_load_ps(dest + i)));
+      }
     } else {
-      for (int i = 0; i < last_index; i += 8)
+      for (int i = 0; i < last_index; i += 8) {
         _mm256_storeu_ps(dest + i,
                          _mm256_fmadd_ps(_mm256_loadu_ps(src + i), m_scale,
                                          _mm256_loadu_ps(dest + i)));
+      }
     }
   }
 
   // Handle any remaining values that wouldn't fit in an SSE pass.
-  for (int i = last_index; i < len; ++i)
+  for (int i = last_index; i < len; ++i) {
     dest[i] += src[i] * scale;
+  }
 }
 
 // Convenience macro to extract float 0 through 3 from the vector |a|.  This is
 // needed because compilers other than clang don't support access via
 // operator[]().
 #define EXTRACT_FLOAT(a, i) \
-    (i == 0 ? \
-         _mm_cvtss_f32(a) : \
-         _mm_cvtss_f32(_mm_shuffle_ps(a, a, i)))
+  (i == 0 ? _mm_cvtss_f32(a) : _mm_cvtss_f32(_mm_shuffle_ps(a, a, i)))
 
-std::pair<float, float> EWMAAndMaxPower_SSE(
-    float initial_value, const float src[], int len, float smoothing_factor) {
+std::pair<float, float> EWMAAndMaxPower_SSE(float initial_value,
+                                            const float src[],
+                                            int len,
+                                            float smoothing_factor) {
   // When the recurrence is unrolled, we see that we can split it into 4
   // separate lanes of evaluation:
   //
@@ -269,8 +296,8 @@ std::pair<float, float> EWMAAndMaxPower_SSE(
     max_x4 = _mm_max_ps(max_x4, sample_squared_x4);
     // Note: The compiler optimizes this to a single multiply-and-accumulate
     // instruction:
-    ewma_x4 = _mm_add_ps(ewma_x4,
-                         _mm_mul_ps(sample_squared_x4, smoothing_factor_x4));
+    ewma_x4 =
+        _mm_add_ps(ewma_x4, _mm_mul_ps(sample_squared_x4, smoothing_factor_x4));
   }
 
   // y[n] = z[n] + (1-a)^1(z[n-1]) + (1-a)^2(z[n-2]) + (1-a)^3(z[n-3])
@@ -381,29 +408,34 @@ void FMAC_NEON(const float src[], float scale, int len, float dest[]) {
   const int last_index = len - rem;
   float32x4_t m_scale = vmovq_n_f32(scale);
   for (int i = 0; i < last_index; i += 4) {
-    vst1q_f32(dest + i, vmlaq_f32(
-        vld1q_f32(dest + i), vld1q_f32(src + i), m_scale));
+    vst1q_f32(dest + i,
+              vmlaq_f32(vld1q_f32(dest + i), vld1q_f32(src + i), m_scale));
   }
 
   // Handle any remaining values that wouldn't fit in an NEON pass.
-  for (int i = last_index; i < len; ++i)
+  for (int i = last_index; i < len; ++i) {
     dest[i] += src[i] * scale;
+  }
 }
 
 void FMUL_NEON(const float src[], float scale, int len, float dest[]) {
   const int rem = len % 4;
   const int last_index = len - rem;
   float32x4_t m_scale = vmovq_n_f32(scale);
-  for (int i = 0; i < last_index; i += 4)
+  for (int i = 0; i < last_index; i += 4) {
     vst1q_f32(dest + i, vmulq_f32(vld1q_f32(src + i), m_scale));
+  }
 
   // Handle any remaining values that wouldn't fit in an NEON pass.
-  for (int i = last_index; i < len; ++i)
+  for (int i = last_index; i < len; ++i) {
     dest[i] = src[i] * scale;
+  }
 }
 
-std::pair<float, float> EWMAAndMaxPower_NEON(
-    float initial_value, const float src[], int len, float smoothing_factor) {
+std::pair<float, float> EWMAAndMaxPower_NEON(float initial_value,
+                                             const float src[],
+                                             int len,
+                                             float smoothing_factor) {
   // When the recurrence is unrolled, we see that we can split it into 4
   // separate lanes of evaluation:
   //
@@ -468,5 +500,4 @@ std::pair<float, float> EWMAAndMaxPower_NEON(
 }
 #endif
 
-}  // namespace vector_math
-}  // namespace media
+}  // namespace media::vector_math

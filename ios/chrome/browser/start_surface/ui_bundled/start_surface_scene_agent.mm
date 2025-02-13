@@ -98,6 +98,13 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 
 #pragma mark - SceneStateObserver
 
+- (void)sceneStateDidEnableUI:(SceneState*)sceneState {
+  if (self.waitingForProfileStateAfterSceneStateReady) {
+    self.waitingForProfileStateAfterSceneStateReady = NO;
+    [self showStartSurfaceIfNecessary];
+  }
+}
+
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
   // Tear down objects tied to the scene state before it is deleted.
   [self.sceneState.profileState removeObserver:self];
@@ -126,13 +133,6 @@ bool IsEmptyNTP(const web::WebState* web_state) {
     [self logBackgroundDurationMetricForActivationLevel:level];
     [self showStartSurfaceIfNecessary];
   }
-  // If the Scene is disconnect during the application startup, then there
-  // is no point trying to present the Start Surface and the Scene will be
-  // destroyed soon.
-  if (level == SceneActivationLevelDisconnected) {
-    self.waitingForProfileStateAfterSceneStateReady = NO;
-    [self.sceneState.profileState removeObserver:self];
-  }
   self.previousActivationLevel = level;
 }
 
@@ -144,23 +144,18 @@ bool IsEmptyNTP(const web::WebState* web_state) {
     return;
   }
 
-  // The Scene is not in foreground, wait until it enter foreground before
-  // presenting the Start Surface.
-  if (self.sceneState.activationLevel <
-      SceneActivationLevelForegroundInactive) {
-    self.previousActivationLevel = SceneActivationLevelUnattached;
+  if (!self.sceneState.UIEnabled) {
+    self.waitingForProfileStateAfterSceneStateReady = YES;
     return;
   }
 
-  // -browserProviderInterface should only be nil if the UI has not been
-  // created yet (impossible as the profile has reached kFinal stage) or
-  // has been destroyed (impossible as the SceneState is not disconnected).
-  // See https://crbug.com/395114945 for discussion.
   CHECK(self.sceneState.browserProviderInterface);
+  Browser* browser =
+      self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
 
   // TODO(crbug.com/343699504): Remove pre-fetching capabilities once these
   // are loaded in iSL.
-  ProfileIOS* profile = self.sceneState.profileState.profile;
+  ProfileIOS* profile = browser->GetProfile();
   RunSystemCapabilitiesPrefetch(signin::GetIdentitiesOnDevice(profile));
 
   if (!ShouldShowStartSurfaceForSceneState(self.sceneState)) {
@@ -172,9 +167,6 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   if (self.sceneState.controller.isTabGridVisible) {
     return;
   }
-
-  Browser* browser =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
 
   // If there is no active tab, a NTP will be added, and since there is no
   // recent tab.

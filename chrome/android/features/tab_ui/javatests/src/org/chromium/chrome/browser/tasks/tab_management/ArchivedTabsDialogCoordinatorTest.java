@@ -47,7 +47,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -661,22 +660,13 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/394912255")
     public void testBottomShadowView() throws Exception {
-        addArchivedTab(new GURL("https://google.com"), "test 1");
-        addArchivedTab(new GURL("https://google.com"), "test 2");
-        addArchivedTab(new GURL("https://google.com"), "test 3");
-        addArchivedTab(new GURL("https://google.com"), "test 4");
-        addArchivedTab(new GURL("https://google.com"), "test 5");
-        addArchivedTab(new GURL("https://google.com"), "test 6");
-        addArchivedTab(new GURL("https://google.com"), "test 7");
-        addArchivedTab(new GURL("https://google.com"), "test 8");
-        addArchivedTab(new GURL("https://google.com"), "test 9");
-        addArchivedTab(new GURL("https://google.com"), "test 10");
-        addArchivedTab(new GURL("https://google.com"), "test 11");
-        enterTabSwitcherAndShowDialog(11);
-        onView(withText("11 inactive tabs")).check(matches(isDisplayed()));
-        mRobot.resultRobot.verifyTabListEditorIsVisible().verifyAdapterHasItemCount(11);
+        for (int i = 0; i < 50; i++) {
+            addArchivedTab(new GURL("https://google.com?q=" + i), "test " + i);
+        }
+        enterTabSwitcherAndShowDialog(50);
+        onView(withText("50 inactive tabs")).check(matches(isDisplayed()));
+        mRobot.resultRobot.verifyTabListEditorIsVisible().verifyAdapterHasItemCount(50);
 
         // When there is more than a page of tabs, then the bottom container should have a shadow.
         onView(withId(R.id.close_all_tabs_button_container_shadow)).check(matches(isDisplayed()));

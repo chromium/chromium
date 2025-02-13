@@ -11,6 +11,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/permissions/genai_model_handler.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/permissions/features.h"
 #include "components/permissions/request_type.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -20,23 +21,25 @@
 namespace permissions {
 
 PredictionModelHandlerProvider::PredictionModelHandlerProvider(
-    OptimizationGuideKeyedService* optimization_guide)
-    : genai_model_handler_(
-          std::make_unique<GenAiModelHandler>(optimization_guide))
+    OptimizationGuideKeyedService* optimization_guide) {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-      ,
-      notification_prediction_model_handler_(
-          std::make_unique<PredictionModelHandler>(
-              optimization_guide,
-              optimization_guide::proto::OptimizationTarget::
-                  OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS)),
-      geolocation_prediction_model_handler_(
-          std::make_unique<PredictionModelHandler>(
-              optimization_guide,
-              optimization_guide::proto::OptimizationTarget::
-                  OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS))
+  notification_prediction_model_handler_ =
+      std::make_unique<PredictionModelHandler>(
+          optimization_guide,
+          optimization_guide::proto::OptimizationTarget::
+              OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS);
+
+  geolocation_prediction_model_handler_ =
+      std::make_unique<PredictionModelHandler>(
+          optimization_guide,
+          optimization_guide::proto::OptimizationTarget::
+              OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS);
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-{
+
+  if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1)) {
+    genai_model_handler_ =
+        std::make_unique<GenAiModelHandler>(optimization_guide);
+  }
 }
 
 PredictionModelHandlerProvider::~PredictionModelHandlerProvider() = default;

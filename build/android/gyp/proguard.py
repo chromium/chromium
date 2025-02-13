@@ -330,8 +330,8 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
                                                      tmp_output)
     base_context = split_contexts_by_name['base']
 
-    # R8 OOMs with xmx=2G.
-    cmd = build_utils.JavaCmd(xmx='3G') + [
+    # R8 OOMs with xmx=3G.
+    cmd = build_utils.JavaCmd(xmx='4G') + [
         # Allows -whyareyounotinlining, which we don't have by default, but
         # which is useful for one-off queries.
         '-Dcom.android.tools.r8.experimental.enablewhyareyounotinlining=1',

@@ -90,7 +90,7 @@ bool LayoutFlexibleBox::IsChildAllowed(LayoutObject* object,
   if (select && select->UsesMenuList()) [[unlikely]] {
     if (select->IsAppearanceBaseButton(
             HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle)) {
-      CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
+      CHECK(HTMLSelectElement::CustomizableSelectEnabled(select));
 
       // we want to include elements which are descendants of the SlottedButton,
       // and include ::before/::after/::picker-icon on select.

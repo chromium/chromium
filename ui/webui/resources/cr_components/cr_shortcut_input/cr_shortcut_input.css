@@ -10,13 +10,9 @@
  * #include=cr-icons-lit cr-hidden-style-lit
  * #css_wrapper_metadata_end */
 
-:host {
+ #main {
+  position: relative;
   width: 200px;
-}
-
-#main {
-  width: 200px;
-  position: absolute;
 }
 
 #input {

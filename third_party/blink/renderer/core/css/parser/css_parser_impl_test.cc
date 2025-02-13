@@ -65,6 +65,7 @@ class TestCSSParserObserver : public CSSParserObserver {
                        bool is_parsed) override {
     if (IsAtTargetLevel()) {
       property_start_ = start_offset;
+      property_end_ = end_offset;
     }
   }
   void ObserveComment(unsigned start_offset, unsigned end_offset) override {}
@@ -89,6 +90,7 @@ class TestCSSParserObserver : public CSSParserObserver {
 
   StyleRule::RuleType rule_type_ = StyleRule::RuleType::kStyle;
   unsigned property_start_ = 0;
+  unsigned property_end_ = 0;
   unsigned rule_header_start_ = 0;
   unsigned rule_header_end_ = 0;
   unsigned rule_body_start_ = 0;
@@ -546,6 +548,21 @@ TEST(CSSParserImplTest, ObserveNestedLayer) {
   EXPECT_EQ(test_css_parser_observer.rule_header_end_, 53u);
   EXPECT_EQ(test_css_parser_observer.rule_body_start_, 54u);
   EXPECT_EQ(test_css_parser_observer.rule_body_end_, 82u);
+}
+
+TEST(CSSParserImplTest, ObserveInvalidImportant) {
+  test::TaskEnvironment task_environment;
+  String sheet_text = ".element { font-size: 10px !imp; }";
+
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  TestCSSParserObserver test_css_parser_observer;
+  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, sheet,
+                                             test_css_parser_observer);
+
+  EXPECT_EQ(test_css_parser_observer.property_start_, 11u);
+  EXPECT_EQ(test_css_parser_observer.property_end_, 31u);
 }
 
 TEST(CSSParserImplTest, NestedIdent) {

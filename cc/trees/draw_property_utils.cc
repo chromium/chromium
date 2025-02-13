@@ -631,6 +631,8 @@ void SetSurfaceClipRect(PropertyTrees* property_trees,
     ConditionalClip accumulated_clip_rect = ComputeAccumulatedClip(
         property_trees, include_expanding_clips,
         render_surface->common_ancestor_clip_id(), target_node->id);
+    accumulated_clip_rect.clip_rect.Offset(
+        render_surface->render_target()->pixel_alignment_offset());
     render_surface->SetClipRect(
         ToEnclosingClipRect(accumulated_clip_rect.clip_rect));
   }
@@ -646,7 +648,7 @@ void SetSurfaceDrawTransform(const PropertyTrees* property_trees,
       effect_tree.Node(render_surface->EffectTreeIndex());
   // The draw transform of root render surface is identity transform.
   if (render_surface->EffectTreeIndex() == kContentsRootPropertyNodeId) {
-    render_surface->SetDrawTransform(gfx::Transform());
+    render_surface->SetDrawTransform(gfx::Transform(), gfx::Vector2dF());
     return;
   }
 
@@ -657,7 +659,29 @@ void SetSurfaceDrawTransform(const PropertyTrees* property_trees,
                               &render_surface_transform);
 
   ConcatInverseSurfaceContentsScale(effect_node, &render_surface_transform);
-  render_surface->SetDrawTransform(render_surface_transform);
+
+  gfx::Vector2dF pixel_alignment_offset;
+  if (base::FeatureList::IsEnabled(features::kRenderSurfacePixelAlignment)) {
+    // Adjust render_surface_transform by applying the render target's pixel
+    // alignment before the transform, and de-applying this render surface's
+    // pixel alignment to align it to screen pixels.
+    render_surface_transform.PostTranslate(
+        render_surface->render_target()->pixel_alignment_offset());
+    // TODO(crbug.com/396190933): For now a render surface with view
+    // transition handles pixel alignment by itself, but that doesn't
+    // work in some cases.
+    if (!render_surface->OwningEffectNode()
+             ->view_transition_element_resource_id.IsValid()) {
+      if (auto offset = draw_property_utils::PixelAlignmentOffset(
+              render_surface->screen_space_transform(),
+              render_surface_transform)) {
+        pixel_alignment_offset = *offset;
+        render_surface_transform.Translate(-pixel_alignment_offset);
+      }
+    }
+  }
+  render_surface->SetDrawTransform(render_surface_transform,
+                                   pixel_alignment_offset);
 }
 
 gfx::Rect LayerVisibleRect(PropertyTrees* property_trees, LayerImpl* layer) {
@@ -892,18 +916,20 @@ void ComputeSurfaceDrawProperties(PropertyTrees* property_trees,
                                   RenderSurfaceImpl* render_surface) {
   SetSurfaceIsClipped(property_trees->clip_tree(), render_surface);
   SetSurfaceDrawOpacity(property_trees->effect_tree(), render_surface);
+  render_surface->SetScreenSpaceTransform(
+      property_trees->ToScreenSpaceTransformWithoutSurfaceContentsScale(
+          render_surface->TransformTreeIndex(),
+          render_surface->EffectTreeIndex()));
   SetSurfaceDrawTransform(property_trees, render_surface);
 
   auto mask_filter_info_pair =
       GetMaskFilterInfoPair(property_trees, render_surface->EffectTreeIndex(),
                             /*for_render_surface=*/true);
+  mask_filter_info_pair.first.ApplyTransform(gfx::AxisTransform2d(
+      1.0f, render_surface->render_target()->pixel_alignment_offset()));
   render_surface->SetMaskFilterInfo(
       /*mask_filter_info=*/mask_filter_info_pair.first,
       /*is_fast_rounded_corner=*/mask_filter_info_pair.second);
-  render_surface->SetScreenSpaceTransform(
-      property_trees->ToScreenSpaceTransformWithoutSurfaceContentsScale(
-          render_surface->TransformTreeIndex(),
-          render_surface->EffectTreeIndex()));
 
   SetSurfaceClipRect(property_trees, render_surface);
 }
@@ -1069,6 +1095,38 @@ void ComputeLayerDrawableContentRect(LayerImpl* layer,
                                layer->draw_properties().clip_rect);
 }
 
+void AdjustLayerDrawPropertiesForPixelAlignmentOffset(
+    LayerImpl* layer,
+    PropertyTrees* property_trees) {
+  gfx::Vector2dF offset = layer->render_target()->pixel_alignment_offset();
+  if (offset.IsZero()) {
+    return;
+  }
+
+  DCHECK(base::FeatureList::IsEnabled(features::kRenderSurfacePixelAlignment));
+
+  // Apply the pixel alignment offset to all draw properties that are relative
+  // to the render target's space.
+  layer->draw_properties().target_space_transform.PostTranslate(offset);
+  layer->draw_properties().mask_filter_info.ApplyTransform(
+      gfx::AxisTransform2d(1.0f, offset));
+
+  // clip_rect and visible_drawable_content_rect are enclosing int rects.
+  // We can't simply apply the pixel alignment to them because that would call
+  // ToEnclosingRect() again and the result might be 1px bigger than expected.
+  // That would be especially bad for clip_rect because that would expose
+  // pixels out of the clip. Instead of adjustment, recompute them with the
+  // adjusted target_space_transform.
+  if (layer->draw_properties().is_clipped) {
+    ConditionalClip clip = LayerClipRect(property_trees, layer);
+    CHECK(clip.is_clipped);
+    clip.clip_rect.Offset(offset);
+    layer->draw_properties().clip_rect = ToEnclosingClipRect(clip.clip_rect);
+  }
+  // The adjusted target_space_transform will apply.
+  ComputeLayerDrawableContentRect(layer, property_trees);
+}
+
 void ComputeInitialRenderSurfaceList(
     LayerTreeImpl* layer_tree_impl,
     PropertyTrees* property_trees,
@@ -1139,6 +1197,7 @@ void ComputeInitialRenderSurfaceList(
                                     property_trees);
     }
 
+    AdjustLayerDrawPropertiesForPixelAlignmentOffset(layer, property_trees);
     layer->set_contributes_to_drawn_render_surface(true);
 
     // The layer contributes its drawable content rect to its render target.
@@ -1677,6 +1736,52 @@ void CalculateDrawProperties(
 
   if (output_update_layer_list_for_testing)
     *output_update_layer_list_for_testing = std::move(visible_layer_list);
+}
+
+bool RasterScalesApproximatelyEqual(gfx::Vector2dF scale1,
+                                    gfx::Vector2dF scale2) {
+  // Good match if the maximum alignment error on a layer of size 10000px does
+  // not exceed 0.001px.
+  static constexpr float kPixelErrorThreshold = 0.001f;
+  static constexpr float kScaleErrorThreshold = kPixelErrorThreshold / 10000;
+  gfx::Vector2dF scale_diff = scale1 - scale2;
+  return std::abs(scale_diff.x()) <= kScaleErrorThreshold &&
+         std::abs(scale_diff.y()) <= kScaleErrorThreshold;
+}
+
+std::optional<gfx::Vector2dF> PixelAlignmentOffset(
+    const gfx::Transform& screen_space_transform,
+    const gfx::Transform& target_space_transform) {
+  if (!screen_space_transform.IsScaleOrTranslation() ||
+      !target_space_transform.IsScaleOrTranslation()) {
+    return std::nullopt;
+  }
+
+  // It is only useful to align the content space to the target space if their
+  // relative pixel ratio is some simple rational number. Currently we only
+  // align if the relative pixel ratio is 1:1.
+  if (!RasterScalesApproximatelyEqual(screen_space_transform.To2dScale(),
+                                      target_space_transform.To2dScale())) {
+    return std::nullopt;
+  }
+
+  auto subpixel = [](float f) -> float { return f - std::floor(f); };
+  gfx::Vector2dF screen_translation = screen_space_transform.To2dTranslation();
+  float screen_subpixel_x = subpixel(screen_translation.x());
+  float screen_subpixel_y = subpixel(screen_translation.y());
+  gfx::Vector2dF draw_translation = target_space_transform.To2dTranslation();
+  float draw_subpixel_x = subpixel(draw_translation.x());
+  float draw_subpixel_y = subpixel(draw_translation.y());
+  // If the origin is different in the screen space and in the target space,
+  // it means the render target is not aligned to physical pixels, and the
+  // text content will be blurry regardless of raster translation.
+  static constexpr float kPixelErrorThreshold = 0.001f;
+  if (std::abs(screen_subpixel_x - draw_subpixel_x) > kPixelErrorThreshold ||
+      std::abs(screen_subpixel_y - draw_subpixel_y) > kPixelErrorThreshold) {
+    return std::nullopt;
+  }
+
+  return gfx::Vector2dF(screen_subpixel_x, screen_subpixel_y);
 }
 
 #if DCHECK_IS_ON()

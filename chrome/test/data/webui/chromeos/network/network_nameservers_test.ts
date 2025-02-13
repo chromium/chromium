@@ -23,7 +23,7 @@ suite('NetworkNameserversTest', () => {
     flush();
   });
 
-  test('Select nameservers', async () => {
+  test('Select nameservers', () => {
     assertTrue(!!nameservers);
     const nameserverTypeRadioGroup =
         nameservers.shadowRoot!.querySelector<CrRadioGroupElement>(

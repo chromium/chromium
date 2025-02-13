@@ -36,12 +36,13 @@ import org.robolectric.shadows.ShadowDrawable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.Objects;
 
 /** Unit tests for {@link BookmarkBarUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -69,13 +70,16 @@ public class BookmarkBarUtilsTest {
     }
 
     private void assertIconTintColorList(@NonNull BookmarkBarButton view, boolean isFolder) {
-        ColorStateList iconTintList = null;
+        ColorStateList expectedIconTintList = null;
         if (isFolder) {
-            iconTintList =
+            expectedIconTintList =
                     AppCompatResources.getColorStateList(
                             view.getContext(), R.color.default_icon_color_tint_list);
         }
-        assertEquals(iconTintList, view.getIconTintListForTesting());
+        // NOTE: Reference equivalence may occasionally fail resulting in test flakiness. Instead,
+        // compare string representations which should be sufficient to ensure equivalence.
+        final ColorStateList actualIconTintList = view.getIconTintListForTesting();
+        assertEquals(Objects.toString(expectedIconTintList), Objects.toString(actualIconTintList));
     }
 
     private @NonNull BookmarkBarButton inflateBookmarkBarButton(@NonNull Context context) {
@@ -100,7 +104,6 @@ public class BookmarkBarUtilsTest {
     @Test
     @SmallTest
     @Config(shadows = {ShadowDrawable.class})
-    @DisabledTest(message = "crbug.com/395147154")
     public void testCreateListItemForFolder() {
         testCreateListItem(/* isFolder= */ true);
     }

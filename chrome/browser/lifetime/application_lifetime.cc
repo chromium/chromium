@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
@@ -22,9 +21,9 @@
 #include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/aura/env.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
@@ -52,7 +51,7 @@ void AttemptExitInternal(bool try_to_quit_application) {
 }  // namespace
 
 // The ChromeOS implementations are in application_lifetime_chromeos.cc
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 void AttemptUserExit() {
   // Reset the restart bit that might have been set in cancelled restart
@@ -83,7 +82,7 @@ void AttemptExit() {
   AttemptExitInternal(true);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void ExitIgnoreUnloadHandlers() {
   VLOG(1) << "ExitIgnoreUnloadHandlers";
@@ -91,7 +90,7 @@ void ExitIgnoreUnloadHandlers() {
   // We always mark exit cleanly.
   MarkAsCleanShutdown();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Disable window occlusion tracking on exit before closing all browser
   // windows to make shutdown faster. Note that the occlusion tracking is
   // paused indefinitely. It is okay do so on Chrome OS because there is
@@ -106,11 +105,11 @@ void ExitIgnoreUnloadHandlers() {
   browser_shutdown::OnShutdownStarting(
       AreAllBrowsersCloseable() ? browser_shutdown::ShutdownType::kBrowserExit
                                 : browser_shutdown::ShutdownType::kEndSession);
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // !BUILDFLAG(IS_CHROMEOS)
   // For desktop browsers, always perform a silent exit.
   browser_shutdown::OnShutdownStarting(
       browser_shutdown::ShutdownType::kSilentExit);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_ANDROID)
   AttemptExitInternal(true);
 }

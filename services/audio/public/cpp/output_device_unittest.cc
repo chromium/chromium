@@ -213,7 +213,7 @@ TEST_F(AudioServiceOutputDeviceTest, CreatePlayPause) {
 
 // Flaky on Linux Chromium OS ASan LSan (https://crbug.com/889845)
 // Disabled on Android (crbug.com/395710100).
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && defined(ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_VerifyDataFlow DISABLED_VerifyDataFlow
 #else
 #define MAYBE_VerifyDataFlow VerifyDataFlow

@@ -1273,6 +1273,7 @@
 <translation id="3248329428895535435">عدم العرض على هذا الموقع الإلكتروني</translation>
 <translation id="3249102948665905108">اكتملت عملية تحميل الملف إلى <ph name="CLOUD_PROVIDER" /> مع حدوث أخطاء</translation>
 <translation id="3252772880526154546">هندسة معمارية</translation>
+<translation id="3253225298092156258">غير متاح</translation>
 <translation id="3254301855501243548">18 × 22 بوصة</translation>
 <translation id="3255926992597692024">‏يحاول Chromium تعديل إعدادات ميزة "الملء التلقائي" لبيانات طُرق الدفع.</translation>
 <translation id="3259648571731540213">‏<ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) ثم Enter لإنشاء حدث جديد في "تقويم Google" بسرعة.</translation>
@@ -4417,7 +4418,7 @@
 <translation id="8806696968588872703">بلاستيك (برّاق)</translation>
 <translation id="8807160976559152894">القطع بعد كل صفحة</translation>
 <translation id="8811470563853401328">هل تريد حفظ العنوان في الحساب؟</translation>
-<translation id="8811725516933141693">‏اكتب ‎@gemini للدردشة مع Gemini</translation>
+<translation id="8811725516933141693">‏اكتب ‎@gemini للتحدّث مع Gemini</translation>
 <translation id="8813277370772331957">تذكيري لاحقًا</translation>
 <translation id="8814547618907885931">عرض جميع جداول المقارنة</translation>
 <translation id="8814707942599948500">‏ظرف C8</translation>

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Behavior of Home for customizable-<select>
+  assert_equals: Selected option should be focused expected Element node <option id="500">Option #500</option> but got Element node <select><option id="1">Option #1</option><option id="2">O...
+[FAIL] Behavior of End for customizable-<select>
+  assert_false: expected false got true
+[FAIL] Behavior of PageUp for customizable-<select>
+  assert_false: expected false got true
+[FAIL] Behavior of PageDown for customizable-<select>
+  assert_false: expected false got true
+Harness: the test ran to completion.
+

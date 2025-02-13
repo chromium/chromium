@@ -9,8 +9,8 @@
 #include "base/containers/adapters.h"
 #include "base/run_loop.h"
 #include "net/http/http_status_code.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/protobuf_http_client_messages.pb.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
@@ -18,7 +18,7 @@ namespace remoting {
 
 namespace {
 
-protobufhttpclient::Status ToProtobufStatus(const ProtobufHttpStatus& status) {
+protobufhttpclient::Status ToProtobufStatus(const HttpStatus& status) {
   protobufhttpclient::Status result;
   result.set_code(static_cast<int>(status.error_code()));
   result.set_message(status.error_message());
@@ -64,23 +64,22 @@ void ProtobufHttpTestResponder::AddResponseToMostRecentRequestUrl(
   AddResponse(GetMostRecentRequestUrl(), response_message);
 }
 
-void ProtobufHttpTestResponder::AddError(
-    const std::string& url,
-    const ProtobufHttpStatus& error_status) {
+void ProtobufHttpTestResponder::AddError(const std::string& url,
+                                         const HttpStatus& error_status) {
   test_url_loader_factory_.AddResponse(
       url, ToProtobufStatus(error_status).SerializeAsString(),
       net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
 void ProtobufHttpTestResponder::AddErrorToMostRecentRequestUrl(
-    const ProtobufHttpStatus& error_status) {
+    const HttpStatus& error_status) {
   AddError(GetMostRecentRequestUrl(), error_status);
 }
 
 void ProtobufHttpTestResponder::AddStreamResponse(
     const std::string& url,
     const std::vector<const google::protobuf::MessageLite*>& messages,
-    const ProtobufHttpStatus& status) {
+    const HttpStatus& status) {
   protobufhttpclient::StreamBody messages_body;
   for (const auto* message : messages) {
     messages_body.add_messages(message->SerializeAsString());
@@ -94,7 +93,7 @@ void ProtobufHttpTestResponder::AddStreamResponse(
 
 void ProtobufHttpTestResponder::AddStreamResponseToMostRecentRequestUrl(
     const std::vector<const google::protobuf::MessageLite*>& messages,
-    const ProtobufHttpStatus& status) {
+    const HttpStatus& status) {
   AddStreamResponse(GetMostRecentRequestUrl(), messages, status);
 }
 

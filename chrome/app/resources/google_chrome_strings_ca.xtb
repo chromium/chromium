@@ -78,6 +78,7 @@
 <translation id="2094648590148273905">Condicions de ChromeOS Flex</translation>
 <translation id="2094919256425865063">Vols sortir de Chrome igualment?</translation>
 <translation id="2106831557840787829">ChromeOS Flex és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure<ph name="END_LINK_CROS_OSS" /> addicional, igual que l'<ph name="BEGIN_LINK_LINUX_OSS" />entorn de desenvolupament de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2108778574543343055">Desactiva l'execució de Chrome en segon pla per a les aplicacions</translation>
 <translation id="2120620239521071941">Amb aquesta acció, se suprimiran <ph name="ITEMS_COUNT" /> elements d'aquest dispositiu. Per recuperar les teves dades més endavant, inicia la sessió a Chrome com a <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Reinicia per actualitzar &amp;Chrome</translation>
 <translation id="2123055963409958220">Informa de la <ph name="BEGIN_LINK" />configuració actual<ph name="END_LINK" /> per ajudar-nos a millorar Chrome</translation>
@@ -139,6 +140,7 @@
 <translation id="2797864378188255696">Si inicies la sessió en serveis de Google com ara Gmail o YouTube amb <ph name="USER_EMAIL" />, pots utilitzar el mateix compte per iniciar la sessió automàticament a Chrome</translation>
 <translation id="2799162042226656283">El teu Chrome</translation>
 <translation id="2799223571221894425">Reinicia</translation>
+<translation id="2818684386420968393">Desactiva l'execució de Chrome en segon pla per a les aplicacions</translation>
 <translation id="2825024317344269723">Lloc web perillós. Chrome ha suprimit les notificacions.</translation>
 <translation id="2841525013647267359">Tradueix de</translation>
 <translation id="2846251086934905009">Error d'instal·lació: l'instal·lador no ha completat el procés. La instal·lació s'ha anul·lat.</translation>
@@ -348,6 +350,7 @@
 <translation id="5596627076506792578">Més opcions</translation>
 <translation id="5602351063754773347">Chrome et recomana que la suprimeixis. <ph name="BEGIN_LINK" />Més informació sobre les extensions admeses<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome és més eficaç a l'hora de protegir-te en línia</translation>
+<translation id="5649680279845190972">Per accedir a les extensions i altres elements des de tots els teus ordinadors, inicia la sessió a Chrome</translation>
 <translation id="565744775970812598">Chrome ha bloquejat <ph name="FILE_NAME" /> perquè pot ser perillós.</translation>
 <translation id="566568153320186256">Chrome estalvia bateria limitant l'activitat en segon pla i els efectes visuals, com ara el desplaçament suau i els fotogrames per segon dels vídeos. <ph name="BEGIN_LINK" />Obtén més informació sobre la funció Estalvi d'energia<ph name="END_LINK" />.</translation>
 <translation id="567202749201779594">Esborra les dades de Chrome del teu compte</translation>

@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -311,7 +312,8 @@ const views::ImageView* ReturnToAppButton::expand_indicator_for_testing()
 }
 
 void ReturnToAppButton::UpdateAccessibleName() {
-  auto accessible_name = GetPeripheralsAccessibleName() + GetLabelText();
+  auto accessible_name =
+      base::StrCat({GetPeripheralsAccessibleName(), GetLabelText()});
 
   if (is_top_row()) {
     accessible_name += l10n_util::GetStringUTF16(

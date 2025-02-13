@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/session/test_session_controller_client.h"
@@ -282,11 +283,11 @@ class NetworkFeaturePodControllerTest : public AshTestBase {
 
   bool IsButtonToggled() { return feature_tile_->IsToggled(); }
 
-  const std::u16string GetLabelText() {
+  std::u16string_view GetLabelText() {
     return feature_tile_->label()->GetText();
   }
 
-  const std::u16string GetSubLabelText() {
+  std::u16string_view GetSubLabelText() {
     return feature_tile_->sub_label()->GetText();
   }
 

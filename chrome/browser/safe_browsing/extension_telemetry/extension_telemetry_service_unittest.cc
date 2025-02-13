@@ -810,6 +810,16 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
     EXPECT_EQ(extension_pb->install_location(), ExtensionInfo::UNPACKED);
   }
 
+  auto validate_disable_reasons_list =
+      [](const ExtensionInfo& extension_pb,
+         const base::flat_set<int>& expected_reasons) {
+        base::flat_set<int> actual_reasons;
+        for (int i = 0; i < extension_pb.disable_reasons_list_size(); ++i) {
+          actual_reasons.insert(extension_pb.disable_reasons_list(i));
+        }
+        EXPECT_EQ(actual_reasons, expected_reasons);
+      };
+
   {
     // Test the disable reasons field.
     scoped_refptr<const Extension> extension =
@@ -826,6 +836,8 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
       EXPECT_EQ(extension_pb->disable_reasons(),
                 static_cast<uint32_t>(
                     extensions::disable_reason::DISABLE_USER_ACTION));
+      validate_disable_reasons_list(
+          *extension_pb, {extensions::disable_reason::DISABLE_USER_ACTION});
     }
     // Adding additional disable reasons should result in all reasons being
     // reported.
@@ -839,6 +851,9 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
                 static_cast<uint32_t>(
                     extensions::disable_reason::DISABLE_USER_ACTION |
                     extensions::disable_reason::DISABLE_CORRUPTED));
+      validate_disable_reasons_list(
+          *extension_pb, {extensions::disable_reason::DISABLE_USER_ACTION,
+                          extensions::disable_reason::DISABLE_CORRUPTED});
     }
     // Unknown disable reasons should also be reported.
     constexpr int kUnknownDisableReason =
@@ -857,6 +872,10 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
                     extensions::disable_reason::DISABLE_USER_ACTION |
                     extensions::disable_reason::DISABLE_CORRUPTED |
                     kUnknownDisableReason));
+      validate_disable_reasons_list(
+          *extension_pb, {extensions::disable_reason::DISABLE_USER_ACTION,
+                          extensions::disable_reason::DISABLE_CORRUPTED,
+                          kUnknownDisableReason});
     }
   }
 

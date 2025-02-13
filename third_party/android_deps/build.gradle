@@ -29,36 +29,36 @@ dependencyCheck {
     // Libraries used in these configurations aren't shipped in Chrome.
     // They are only used to aid in compiling or testing.
     skipConfigurations = [
-        'buildCompile',
-        'buildCompileNoDeps',
-        'androidTestCompile',
-        'testCompile'
+            'buildCompile',
+            'buildCompileNoDeps',
+            'androidTestCompile',
+            'testCompile'
     ]
 }
 
 // See https://github.com/google/guava/releases/tag/v33.3.1
 dependencies.constraints {
-  compile("com.google.guava:guava:33.3.1-android") {
-    attributes {
-      attribute(
-        TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
-        objects.named(TargetJvmEnvironment, TargetJvmEnvironment.ANDROID))
+    compile("com.google.guava:guava:33.3.1-android") {
+        attributes {
+            attribute(
+                    TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
+                    objects.named(TargetJvmEnvironment, TargetJvmEnvironment.ANDROID))
+        }
     }
-  }
-  buildCompile("com.google.guava:guava:33.3.1-jre") {
-    attributes {
-      attribute(
-        TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
-        objects.named(TargetJvmEnvironment, TargetJvmEnvironment.STANDARD_JVM))
+    buildCompile("com.google.guava:guava:33.3.1-jre") {
+        attributes {
+            attribute(
+                    TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
+                    objects.named(TargetJvmEnvironment, TargetJvmEnvironment.STANDARD_JVM))
+        }
     }
-  }
-  testCompile("com.google.guava:guava:33.3.1-jre") {
-    attributes {
-      attribute(
-        TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
-        objects.named(TargetJvmEnvironment, TargetJvmEnvironment.STANDARD_JVM))
+    testCompile("com.google.guava:guava:33.3.1-jre") {
+        attributes {
+            attribute(
+                    TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
+                    objects.named(TargetJvmEnvironment, TargetJvmEnvironment.STANDARD_JVM))
+        }
     }
-  }
 }
 
 dependencies {
@@ -199,5 +199,5 @@ task setUpRepository(type: BuildConfigGenerator) {
     repositoryPath 'third_party/android_deps'
     chromiumSourceRoot '../..'
     cipdBucket 'chromium'
-    internalTargetVisibility = [ ':*', '//third_party/androidx:*' ]
+    internalTargetVisibility = [':*', '//third_party/androidx:*']
 }

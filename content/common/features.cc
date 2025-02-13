@@ -378,6 +378,17 @@ BASE_FEATURE(kReloadHiddenTabsWithCrashedSubframes,
 #endif
 );
 
+#if BUILDFLAG(IS_ANDROID)
+// If enabled, then orientation lock won't claim to work on anything but phone
+// form factors.  Tablets already do unpredictable things, such as letterboxing
+// vs rotating and/or (successfully) ignoring the request entirely.  Setting
+// this flag turns off those use-cases which nobody should be relying on right
+// now anyway; they don't work.
+BASE_FEATURE(kRestrictOrientationLockToPhones,
+             "RestrictOrientationLockToPhones",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kServiceWorkerAvoidMainThreadForInitialization,
              "ServiceWorkerAvoidMainThreadForInitialization",
 #if BUILDFLAG(IS_ANDROID)
@@ -420,6 +431,16 @@ BASE_FEATURE(kServiceWorkerStaticRouterRaceRequestFix,
 BASE_FEATURE(kServiceWorkerStaticRouterStartServiceWorker,
              "ServiceWorkerStaticRouterStartServiceWorker",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// (crbug.com/41337436): Enabled feature will have the ServiceWorker Client.url
+// property be the creation URL. This means it does not reflect changes to the
+// URL made by history.pushState() or similar history APIs.
+// When disabled the ServiceWorker Client.url property will be the document URL
+// including changes to history.pushState().
+// This is temporarily DISABLED_BY_DEFAULT pending API owner approval.
+BASE_FEATURE(kServiceWorkerClientUrlIsCreationUrl,
+             "ServiceWorkerClientUrlIsCreationUrl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables skipping the early call to CommitPending when navigating away from a
 // crashed frame.

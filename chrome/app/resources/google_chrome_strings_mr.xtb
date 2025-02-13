@@ -81,6 +81,7 @@
 <translation id="2094648590148273905">ChromeOS Flex अटी</translation>
 <translation id="2094919256425865063">तरीही Chrome बंद करायचे?</translation>
 <translation id="2106831557840787829">ChromeOS Flex हे <ph name="BEGIN_LINK_LINUX_OSS" />Linux डेव्हलपमेंट पद्धत<ph name="END_LINK_LINUX_OSS" /> यासारख्या अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_CROS_OSS" /> याद्वारे तयार करण्यात आले आहे.</translation>
+<translation id="2108778574543343055">अ‍ॅप्ससाठी बॅकग्राउंडमध्ये रन होणारे Chrome बंद करा</translation>
 <translation id="2120620239521071941">हे या डिव्‍हाइस मधून <ph name="ITEMS_COUNT" /> आयटम हटवेल. नंतर तुमचा डेटा पुनर्प्राप्त करण्‍यासाठी Chrome मध्ये <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
 <translation id="2121284319307530122">&amp;Chrome अपडेट करण्यासाठी पुन्हा लाँच करा</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />वर्तमान सेटिंग्ज<ph name="END_LINK" /> चा अहवाल देऊन Chrome ला आणखी चांगले बनवण्यात मदत करा</translation>
@@ -142,6 +143,7 @@
 <translation id="2797864378188255696"><ph name="USER_EMAIL" /> वापरून Gmail किंवा YouTube सारख्या Google सेवांमध्ये साइन इन करताना, तुम्ही तेच खाते वापरून Chrome मध्ये आपोआप साइन इन करू शकता</translation>
 <translation id="2799162042226656283">तुमचे Chrome</translation>
 <translation id="2799223571221894425">पुन्हा लाँच करा</translation>
+<translation id="2818684386420968393">अ‍ॅप्ससाठी बॅकग्राउंडमध्ये रन होणारे Chrome बंद करा</translation>
 <translation id="2825024317344269723">धोकादायक साइट. Chrome ने नोटिफिकेशन काढून टाकली आहेत.</translation>
 <translation id="2841525013647267359">यामधून भाषांतर करा</translation>
 <translation id="2846251086934905009">इंस्टॉलसंबंधित एरर: इंस्टॉलर पूर्ण झाले नाही. इंस्टॉलेशन रद्द केले गेले आहे.</translation>
@@ -354,6 +356,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="5596627076506792578">अधिक पर्याय</translation>
 <translation id="5602351063754773347">तुम्ही ते काढून टाकावे अशी Chrome शिफारस करते. <ph name="BEGIN_LINK" />सपोर्ट असलेल्या एक्स्टेंशनविषयी अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">तुम्हाला ऑनलाइन सुरक्षित ठेवण्यासाठी Chrome हे आणखी गोष्टी करते</translation>
+<translation id="5649680279845190972">तुमच्या सर्व काँप्युटरवर तुमची एक्स्टेंशन आणि आणखी बरेच काही मिळवण्यासाठी, Chrome मध्ये साइन इन करा</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> धोकादायक असू शकते, त्यामुळे Chrome ने ती ब्लॉक केली आहे.</translation>
 <translation id="566568153320186256">Chrome हे स्मूथ स्क्रोलिंग आणि व्हिडिओ फ्रेम रेटसारखी बॅकग्राउंड अ‍ॅक्टिव्हिटी व व्हिज्युअल इफेक्ट मर्यादित करून बॅटरी पॉवरची बचत करते. <ph name="BEGIN_LINK" />एनर्जी सेव्हर बद्दल अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">तुमच्या खात्यामधील Chrome डेटा साफ करा</translation>

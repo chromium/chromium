@@ -569,7 +569,7 @@ std::u16string ActionLabel::CalculateAccessibleName() {
 
   return l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_KEYMAPPING_KEY)
       .append(u" ")
-      .append(GetDisplayTextAccessibleName(label()->GetText()));
+      .append(GetDisplayTextAccessibleName(std::u16string(label()->GetText())));
 }
 
 BEGIN_METADATA(ActionLabel)

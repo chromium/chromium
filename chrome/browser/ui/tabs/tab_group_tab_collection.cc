@@ -13,10 +13,14 @@
 
 namespace tabs {
 
-TabGroupTabCollection::TabGroupTabCollection(tab_groups::TabGroupId group_id)
+TabGroupTabCollection::TabGroupTabCollection(
+    tab_groups::TabGroupId group_id,
+    tab_groups::TabGroupVisualData visual_data,
+    TabGroupController* controller)
     : TabCollection(TabCollection::Type::GROUP),
-      group_id_(group_id),
-      impl_(std::make_unique<TabCollectionStorage>(*this)) {}
+      impl_(std::make_unique<TabCollectionStorage>(*this)) {
+  group_ = std::make_unique<TabGroup>(controller, group_id, visual_data);
+}
 
 TabGroupTabCollection::~TabGroupTabCollection() = default;
 
@@ -26,7 +30,7 @@ void TabGroupTabCollection::AddTab(std::unique_ptr<TabModel> tab_model,
   CHECK(tab_model);
 
   TabModel* inserted_tab_model = impl_->AddTab(std::move(tab_model), index);
-  inserted_tab_model->SetGroup(/*group=*/group_id_);
+  inserted_tab_model->SetGroup(/*group=*/GetTabGroupId());
   inserted_tab_model->OnReparented(this, GetPassKey());
 }
 

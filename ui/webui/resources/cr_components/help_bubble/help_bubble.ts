@@ -274,7 +274,7 @@ export class HelpBubbleElement extends CrLitElement {
     // As a fallback, focus the close button before trying to focus the anchor;
     // this will allow the focus to stay on the close button if the anchor
     // cannot be focused.
-    this.$.close!.focus();
+    this.$.close.focus();
 
     // Maybe try to focus the anchor. This is preferable to focusing the close
     // button, but not every element can be focused.

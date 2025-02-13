@@ -46,11 +46,6 @@ class RealtimeReportingClientBase : public KeyedService,
 
   ~RealtimeReportingClientBase() override;
 
-  // Returns true if enterprise real-time reporting should be initialized base
-  // on feature flag. The default value is true. This function is public
-  // so that it can called in tests.
-  virtual bool ShouldInitRealtimeReportingClient();
-
   virtual base::WeakPtr<RealtimeReportingClientBase> AsWeakPtr() = 0;
 
   // Report an event to the reporting server. This method will not mutate the

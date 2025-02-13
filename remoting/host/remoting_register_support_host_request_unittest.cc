@@ -11,7 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "remoting/base/fake_oauth_token_getter.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/base/test_rsa_key_pair.h"
 #include "remoting/proto/remoting/v1/remote_support_host_messages.pb.h"
@@ -27,7 +27,7 @@ namespace {
 using testing::_;
 
 using RegisterSupportHostResponseCallback = base::OnceCallback<void(
-    const ProtobufHttpStatus&,
+    const HttpStatus&,
     std::unique_ptr<apis::v1::RegisterSupportHostResponse>)>;
 
 constexpr char kSupportId[] = "123321456654";
@@ -49,7 +49,7 @@ void RespondOk(RegisterSupportHostResponseCallback callback) {
   auto response = std::make_unique<apis::v1::RegisterSupportHostResponse>();
   response->set_support_id(kSupportId);
   response->set_support_id_lifetime_seconds(kSupportIdLifetime.InSeconds());
-  std::move(callback).Run(ProtobufHttpStatus::OK(), std::move(response));
+  std::move(callback).Run(HttpStatus::OK(), std::move(response));
 }
 
 decltype(auto) DoValidateRegisterHostAndRespondOk() {
@@ -246,8 +246,8 @@ TEST_F(RemotingRegisterSupportHostTest, FailedWithDeadlineExceeded) {
              RegisterSupportHostResponseCallback callback) {
             ValidateRegisterHost(*request);
             std::move(callback).Run(
-                ProtobufHttpStatus(ProtobufHttpStatus::Code::DEADLINE_EXCEEDED,
-                                   "deadline exceeded"),
+                HttpStatus(HttpStatus::Code::DEADLINE_EXCEEDED,
+                           "deadline exceeded"),
                 nullptr);
           });
   EXPECT_CALL(*register_host_client_, CancelPendingRequests()).Times(1);

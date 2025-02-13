@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <type_traits>
 
 #include "ash/constants/ash_pref_names.h"
@@ -275,7 +276,7 @@ void MahiWebContentsManagerImpl::WebContentsDestroyed(
 void MahiWebContentsManagerImpl::OnContextMenuClicked(
     int64_t display_id,
     ButtonType button_type,
-    const std::u16string& question,
+    std::u16string_view question,
     const gfx::Rect& mahi_menu_bounds) {
   // Records the `button_type` has been clicked.
   base::UmaHistogramEnumeration(chromeos::mahi::kMahiContextMenuActivated,
@@ -296,7 +297,7 @@ void MahiWebContentsManagerImpl::OnContextMenuClicked(
           /*question=*/std::nullopt,
           /*mahi_menu_bounds=*/mahi_menu_bounds);
   if (button_type == chromeos::mahi::ButtonType::kQA) {
-    context_menu_request->question = question;
+    context_menu_request->question = std::u16string(question);
   }
   if (button_type == chromeos::mahi::ButtonType::kElucidation ||
       button_type == chromeos::mahi::ButtonType::kSummaryOfSelection) {

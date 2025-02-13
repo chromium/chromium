@@ -125,12 +125,6 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
   // previously saved.
   BOOL supportsEditing = delegate->is_for_upload() && !infobar->accepted();
 
-  // Convert gfx::Image to UIImage. The NSDictionary below doesn't support nil,
-  // so NSNull must be used.
-  const gfx::Image& avatarGfx = delegate->displayed_target_account_avatar();
-  NSObject* avatar =
-      avatarGfx.IsEmpty() ? [NSNull null] : avatarGfx.ToUIImage();
-
   NSDictionary* prefs = @{
     kCardholderNamePrefKey :
         base::SysUTF16ToNSString(delegate->cardholder_name()),
@@ -146,7 +140,9 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
     kSupportsEditingPrefKey : @(supportsEditing),
     kDisplayedTargetAccountEmailPrefKey :
         base::SysUTF16ToNSString(delegate->displayed_target_account_email()),
-    kDisplayedTargetAccountAvatarPrefKey : avatar,
+    kLogoIconPrefKey : NativeImage(delegate->GetIconId()),
+    kLogoIconDescriptionPrefKey :
+        base::SysUTF16ToNSString(delegate->logo_icon_description()),
   };
   [_consumer setupModalViewControllerWithPrefs:prefs];
 

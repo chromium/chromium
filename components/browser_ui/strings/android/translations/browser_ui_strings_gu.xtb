@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{તમારા ખુલ્લા ટૅબ પર કિંમતમાં ઘટાડો}one{તમારા ખુલ્લા ટૅબ પર કિંમતમાં ઘટાડો}other{તમારા ખુલ્લા ટૅબ પર કિંમતમાં ઘટાડા}}</translation>
 <translation id="5186036860380548585">સ્ક્રીનની ટોચની નજીક વિકલ્પ ઉપલબ્ધ છે</translation>
 <translation id="5197729504361054390">તમે પસંદ કરશો તે સંપર્કોને <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> સાથે શેર કરવામાં આવશે.</translation>
+<translation id="5198930230016462977">'તમારું નવું ટૅબ પેજ કસ્ટમાઇઝ કરો'ની બોટમ શીટ બંધ કરી</translation>
 <translation id="5216942107514965959">છેલ્લે આજે મુલાકાત લીધી</translation>
 <translation id="5225463052809312700">કૅમેરા ચાલુ કરો</translation>
 <translation id="5234764350956374838">કાઢી નાખો</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">હાથ ટ્રૅક કરવાની સુવિધા</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> બ્લૉક કરી</translation>
 <translation id="5804241973901381774">પરવાનગીઓ</translation>
+<translation id="5822675474983796325">'તમારું નવું ટૅબ પેજ કસ્ટમાઇઝ કરો'ની બોટમ શીટ સંપૂર્ણ ઊંચાઈએ ખોલવામાં આવી</translation>
 <translation id="5844448279347999754">ચાલુ હોય ત્યારે, સાઇટ તમારા ક્લિપબોર્ડ પર સાચવેલી ટેક્સ્ટ અને છબીઓ જોવાનું પૂછી શકે છે. બંધ હોય ત્યારે, સાઇટ તમારા ક્લિપબોર્ડ પર સાચવેલી ટેક્સ્ટ અને છબીઓ જોઈ શકતી નથી.</translation>
 <translation id="5853982612236235577">ચાલુ હોય ત્યારે, સાઇટ નોટિફિકેશન મોકલવાનું પૂછી શકે છે. બંધ હોય ત્યારે, સાઇટ નોટિફિકેશન મોકલી શકતી નથી.</translation>
 <translation id="5860033963881614850">બંધ</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">વિસ્તૃત કરેલ</translation>
 <translation id="7219254577985949841">શું સાઇટનો ડેટા ડિલીટ કરીએ?</translation>
 <translation id="723171743924126238">છબીઓ પસંદ કરો</translation>
+<translation id="7243246278722455312">'તમારું નવું ટૅબ પેજ કસ્ટમાઇઝ કરો'ની બોટમ શીટ</translation>
 <translation id="7243308994586599757">સ્ક્રીનના તળિયા નજીક વિકલ્પો ઉપલબ્ધ છે</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />ની પસંદગી કરી</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> અને <ph name="PERMISSION_2" />ની મંજૂરી આપી</translation>

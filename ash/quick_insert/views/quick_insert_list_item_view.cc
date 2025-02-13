@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/ash_element_identifiers.h"
@@ -334,7 +335,7 @@ void QuickInsertListItemView::OnMouseExited(const ui::MouseEvent& event) {
   HidePreview();
 }
 
-std::u16string QuickInsertListItemView::GetPrimaryTextForTesting() const {
+std::u16string_view QuickInsertListItemView::GetPrimaryTextForTesting() const {
   return primary_label_ == nullptr ? u"" : primary_label_->GetText();
 }
 
@@ -351,10 +352,7 @@ ui::ImageModel QuickInsertListItemView::GetPrimaryImageForTesting() const {
 
 std::u16string_view QuickInsertListItemView::GetSecondaryTextForTesting()
     const {
-  if (secondary_label_ == nullptr) {
-    return base::EmptyString16();
-  }
-  return secondary_label_->GetText();
+  return secondary_label_ == nullptr ? u"" : secondary_label_->GetText();
 }
 
 void QuickInsertListItemView::UpdateIconWithPreview() {
@@ -366,14 +364,15 @@ void QuickInsertListItemView::UpdateIconWithPreview() {
 
 std::u16string QuickInsertListItemView::GetAccessibilityLabel() const {
   // TODO: b/316936418 - Get accessible name for image contents.
-  const std::u16string& primary_accessibililty_label =
-      primary_label_ == nullptr ? u"image contents" : primary_label_->GetText();
-  std::u16string label =
-      secondary_label_ == nullptr
-          ? primary_accessibililty_label
-          : l10n_util::GetStringFUTF16(IDS_PICKER_LIST_ITEM_ACCESSIBLE_NAME,
-                                       primary_accessibililty_label,
-                                       secondary_label_->GetText());
+  std::u16string primary_accessibililty_label(primary_label_ == nullptr
+                                                  ? u"image contents"
+                                                  : primary_label_->GetText());
+  std::u16string label = secondary_label_ == nullptr
+                             ? primary_accessibililty_label
+                             : l10n_util::GetStringFUTF16(
+                                   IDS_PICKER_LIST_ITEM_ACCESSIBLE_NAME,
+                                   primary_accessibililty_label,
+                                   std::u16string(secondary_label_->GetText()));
   if (shortcut_hint_view_ != nullptr) {
     label = l10n_util::GetStringFUTF16(
         IDS_PICKER_LIST_ITEM_WITH_SHORTCUT_ACCESSIBLE_NAME, label,

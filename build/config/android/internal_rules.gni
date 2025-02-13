@@ -734,11 +734,20 @@ template("test_runner_script") {
                                "public_deps",
                              ])
       data_deps = []
+      if (defined(invoker.apk_target)) {
+        data_deps += [ invoker.apk_target ]
+      }
       if (defined(invoker.data_deps)) {
         data_deps += invoker.data_deps
       }
+      if (defined(invoker.apk_under_test)) {
+        data_deps += [ invoker.apk_under_test ]
+      }
       if (defined(invoker.additional_apks)) {
         data_deps += invoker.additional_apks
+      }
+      if (defined(invoker.data_deps)) {
+        data_deps += invoker.data_deps
       }
       write_runtime_deps = _runtime_deps_file
     }

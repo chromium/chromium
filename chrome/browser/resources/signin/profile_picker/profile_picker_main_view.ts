@@ -191,7 +191,7 @@ export class ProfilePickerMainViewElement extends
 
     const profilesContainer = this.$.profilesContainer;
     this.resizeObserver_ = new ResizeObserver(() => {
-      this.shadowRoot!.querySelector('.footer')!.classList.toggle(
+      this.shadowRoot.querySelector('.footer')!.classList.toggle(
           'division-line',
           profilesContainer.scrollHeight > profilesContainer.clientHeight);
     });
@@ -356,7 +356,7 @@ export class ProfilePickerMainViewElement extends
     // System Profile that is not allowed to open a browser. Therefore we
     // redirect the call to the handler which will load the last used profile
     // and open a browser with it.
-    const links = this.shadowRoot!.querySelectorAll('.learn-more-link');
+    const links = this.shadowRoot.querySelectorAll('.learn-more-link');
     for (const link of links) {
       // Remove any potential existing event to avoid duplication of execution.
       this.eventTracker_.remove(link, 'click');
@@ -375,7 +375,7 @@ export class ProfilePickerMainViewElement extends
 
   // @override
   getDraggableTile(index: number): HTMLElement {
-    return this.shadowRoot!.querySelector<HTMLElement>(
+    return this.shadowRoot.querySelector<HTMLElement>(
         `profile-card[data-index="${index}"]`)!;
   }
 

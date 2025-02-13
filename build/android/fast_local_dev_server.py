@@ -95,49 +95,52 @@ class OptionsManager:
     assert cls._options is not None
     return cls._options.quiet
 
+  @classmethod
+  def should_remote_print(cls):
+    assert cls._options is not None
+    return not cls._options.no_remote_print
+
 
 class LogfileManager:
-  _open_logfiles: dict[str, IO[str]] = {}
+  _logfiles: dict[str, IO[str]] = {}
+  _lock = threading.RLock()
 
   @classmethod
   def create_logfile(cls, build_id, outdir):
-    # No lock needed since this is only called by the main thread.
-    if logfile := cls._open_logfiles.get(build_id, None):
+    with cls._lock:
+      if logfile := cls._logfiles.get(build_id, None):
+        return logfile
+
+      outdir = pathlib.Path(outdir)
+      latest_logfile = outdir / f'{_LOGFILE_NAME}.0'
+
+      if latest_logfile.exists():
+        with latest_logfile.open('rt') as f:
+          first_line = f.readline()
+          if log_build_id := BUILD_ID_RE.search(first_line):
+            # If the newest logfile on disk is referencing the same build we are
+            # currently processing, we probably crashed previously and we should
+            # pick up where we left off in the same logfile.
+            if log_build_id.group('build_id') == build_id:
+              cls._logfiles[build_id] = latest_logfile.open('at')
+              return cls._logfiles[build_id]
+
+      # Do the logfile name shift.
+      filenames = os.listdir(outdir)
+      logfiles = {f for f in filenames if f.startswith(_LOGFILE_NAME)}
+      for idx in reversed(range(_MAX_LOGFILES)):
+        current_name = f'{_LOGFILE_NAME}.{idx}'
+        next_name = f'{_LOGFILE_NAME}.{idx+1}'
+        if current_name in logfiles:
+          shutil.move(os.path.join(outdir, current_name),
+                      os.path.join(outdir, next_name))
+
+      # Create a new 0th logfile.
+      logfile = latest_logfile.open('wt')
+      logfile.write(FIRST_LOG_LINE.format(build_id=build_id, outdir=outdir))
+      logfile.flush()
+      cls._logfiles[build_id] = logfile
       return logfile
-
-    outdir = pathlib.Path(outdir)
-    latest_logfile = outdir / f'{_LOGFILE_NAME}.0'
-
-    if latest_logfile.exists():
-      with latest_logfile.open('rt') as f:
-        first_line = f.readline()
-        if log_build_id := BUILD_ID_RE.search(first_line):
-          # If the newest logfile on disk is referencing the same build we are
-          # currently processing, we probably crashed previously and we should
-          # pick up where we left off in the same logfile.
-          if log_build_id.group('build_id') == build_id:
-            cls._open_logfiles[build_id] = latest_logfile.open('at')
-            return cls._open_logfiles[build_id]
-
-    # Do the logfile name shift.
-    filenames = os.listdir(outdir)
-    logfiles = {f for f in filenames if f.startswith(_LOGFILE_NAME)}
-    for idx in reversed(range(_MAX_LOGFILES)):
-      current_name = f'{_LOGFILE_NAME}.{idx}'
-      next_name = f'{_LOGFILE_NAME}.{idx+1}'
-      if current_name in logfiles:
-        shutil.move(os.path.join(outdir, current_name),
-                    os.path.join(outdir, next_name))
-
-    # Create a new 0th logfile.
-    logfile = latest_logfile.open('wt')
-    # Logfiles are never closed thus are leaked but there should not be too many
-    # of them since only one per build is created and the server exits on idle
-    # in normal operation.
-    cls._open_logfiles[build_id] = logfile
-    logfile.write(FIRST_LOG_LINE.format(build_id=build_id, outdir=outdir))
-    logfile.flush()
-    return logfile
 
 
 class TaskStats:
@@ -278,13 +281,14 @@ class Build:
 
     # We synchronize all terminal title info rather than having it per build
     # since if two builds are happening in the same terminal concurrently, both
-    # builds will be overriding each other's titles continously. Usually we only
-    # have the one build anyways so it should equivalent in most cases.
+    # builds will be overriding each other's titles continuously. Usually we
+    # only have the one build anyways so it should equivalent in most cases.
     BuildManager.update_remote_titles()
-    if not self.is_active():
-      self._logfile.close()
-      # Reset in case its the last build.
-      BuildManager.update_remote_titles('')
+    with self._lock:
+      if not self.is_active():
+        self._logfile.close()
+        # Reset in case its the last build.
+        BuildManager.update_remote_titles('')
 
   def process_complete(self):
     with self._lock:
@@ -292,13 +296,20 @@ class Build:
     TaskStats.remove_process()
 
   def ensure_logfile(self):
-    if not self._logfile:
-      assert self.cwd is not None
-      self._logfile = LogfileManager.create_logfile(self.id, self.cwd)
+    with self._lock:
+      if not self._logfile:
+        assert self.cwd is not None
+        self._logfile = LogfileManager.create_logfile(self.id, self.cwd)
 
   def log(self, message: str):
-    self.ensure_logfile()
-    print(message, file=self._logfile, flush=True)
+    with self._lock:
+      self.ensure_logfile()
+      if self._logfile.closed:
+        # BuildManager#broadcast can call log after the build is done and the
+        # log is closed. Might make sense to separate out that flow so we can
+        # raise an exception here otherwise.
+        return
+      print(message, file=self._logfile, flush=True)
 
   def _status_update(self, status_message):
     prefix = f'[{TaskStats.prefix(self.id)}] '
@@ -412,12 +423,16 @@ class BuildManager:
   def broadcast(cls, msg: str):
     with cls._lock:
       ttys = list(cls._cached_ttys.values())
-    for tty, _unused in ttys:
-      try:
-        tty.write(msg + '\n')
-        tty.flush()
-      except BrokenPipeError:
-        pass
+      builds = list(cls._builds_by_id.values())
+    if OptionsManager.should_remote_print():
+      for tty, _unused in ttys:
+        try:
+          tty.write(msg + '\n')
+          tty.flush()
+        except BrokenPipeError:
+          pass
+    for build in builds:
+      build.log(msg)
     # Write to the current terminal if we have not written to it yet.
     st = os.stat(sys.stderr.fileno())
     stderr_key = (st.st_ino, st.st_dev)
@@ -665,24 +680,20 @@ class Task:
       self.build.log(message)
       server_log(message)
 
-      # Add emoji to show that output is from the build server.
-      preamble = [f'⏩ {line}' for line in preamble]
-      remote_message = '\n'.join(preamble + [stdout])
-      # Add a new line at start of message to clearly delineate from previous
-      # output/text already on the remote tty we are printing to.
-      self.build.stdout.write(f'\n{remote_message}')
-      self.build.stdout.flush()
+      if OptionsManager.should_remote_print():
+        # Add emoji to show that output is from the build server.
+        preamble = [f'⏩ {line}' for line in preamble]
+        remote_message = '\n'.join(preamble + [stdout])
+        # Add a new line at start of message to clearly delineate from previous
+        # output/text already on the remote tty we are printing to.
+        self.build.stdout.write(f'\n{remote_message}')
+        self.build.stdout.flush()
     if delete_stamp:
       # Force siso to consider failed targets as dirty.
       try:
         os.unlink(os.path.join(self.build.cwd, self.stamp_file))
       except FileNotFoundError:
         pass
-    else:
-      # We do not care about the action writing a too new mtime. Siso only cares
-      # about the mtime that is recorded in its database at the time the
-      # original action finished.
-      pass
     self.build.task_done(self, status_string)
 
 
@@ -1067,6 +1078,9 @@ def main():
   parser.add_argument('--quiet',
                       action='store_true',
                       help='Do not output status updates.')
+  parser.add_argument('--no-remote-print',
+                      action='store_true',
+                      help='Do not output errors to remote terminals.')
   parser.add_argument('--wait-for-build',
                       metavar='BUILD_ID',
                       help='Wait for build server to finish with all tasks '

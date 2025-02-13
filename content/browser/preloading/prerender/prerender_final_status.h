@@ -175,7 +175,10 @@ enum class PrerenderFinalStatus {
   // `Prerender.Experimental.PrefetchAheadOfPrerenderFailed.PrefetchStatus{PreloadingTriggerType}`
   kPrerenderFailedDuringPrefetch = 86,
 
-  kMaxValue = kPrerenderFailedDuringPrefetch,
+  // Prerendering canceled by clearing cache from browsing data removal.
+  kBrowsingDataRemoved = 87,
+
+  kMaxValue = kBrowsingDataRemoved,
 };
 // LINT.ThenChange()
 

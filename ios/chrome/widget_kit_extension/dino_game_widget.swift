@@ -81,7 +81,7 @@ struct DinoGameWidgetEntryView: View {
         }
       }
     }
-    .widgetURL(WidgetConstants.DinoGameWidget.url)
+    .widgetURL(destinationURL(url: WidgetConstants.DinoGameWidget.url, gaia: entry.gaiaID))
     .accessibility(
       label: Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_A11Y_LABEL")
     )

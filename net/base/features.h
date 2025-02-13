@@ -494,15 +494,6 @@ NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyUseQuicProxies;
 // functionality.
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyUseQuicProxiesOnly;
 
-// Truncate IP protection proxy chains to a single proxy. This is intended for
-// development of the QUIC functionality.
-NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyUseSingleProxy;
-
-// Send all traffic to this host via IP Protection proxies, regardless of MDL,
-// 1P/3P, or token availability. This is intended for development of the QUIC
-// functionality.
-NET_EXPORT extern const base::FeatureParam<std::string> kIpPrivacyAlwaysProxy;
-
 // Fallback to direct when connections to IP protection proxies fail. This
 // defaults to true and is intended for development of the QUIC functionality.
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyFallbackToDirect;

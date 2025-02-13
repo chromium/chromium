@@ -136,7 +136,7 @@ export class ThemesElement extends ThemesElementBase {
   }
 
   private onThemesRendered_() {
-    const firstTile = this.shadowRoot!.querySelector('.tile.theme');
+    const firstTile = this.shadowRoot.querySelector('.tile.theme');
     if (firstTile) {
       this.registerHelpBubble(CHROME_THEME_ELEMENT_ID, firstTile);
     }

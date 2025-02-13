@@ -24,7 +24,7 @@ suite('cr-icon-button', function() {
     button.dispatchEvent(new KeyboardEvent('keyup', {key}));
   }
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     button = document.createElement('cr-icon-button');
     document.body.appendChild(button);

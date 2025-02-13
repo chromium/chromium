@@ -930,7 +930,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
 
  protected:
   static base::TimeDelta maximum_idle_period_duration() {
-    return IdleHelper::kMaximumIdlePeriod;
+    return IdleHelper::kMaximumIdlePeriodDuration;
   }
 
   static base::TimeDelta end_idle_when_hidden_delay() {

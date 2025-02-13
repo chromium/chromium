@@ -139,7 +139,7 @@ void ToolbarButton::SetHighlight(const std::u16string& highlight_text,
   SetText(highlight_text);
 }
 
-void ToolbarButton::SetText(const std::u16string& text) {
+void ToolbarButton::SetText(std::u16string_view text) {
   LabelButton::SetText(text);
   UpdateColorsAndInsets();
 }

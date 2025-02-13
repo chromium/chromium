@@ -210,6 +210,11 @@ constexpr base::FeatureParam<base::TimeDelta>
         &kBocaCustomPolling, "InSessionPollingIntervalInSeconds",
         base::Seconds(60)};
 
+// Enables or disables the Boca OnTask pod on ChromeOS.
+BASE_FEATURE(kBocaOnTaskPod,
+             "BocaOnTaskPod",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables Boca student heartbeat interval on ChromeOS.
 BASE_FEATURE(kBocaStudentHeartbeat,
              "kBocaStudentHeartbeat",
@@ -976,13 +981,6 @@ BASE_FEATURE(kFilesConflictDialog,
              "FilesConflictDialog",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the kernel drivers (instead of the FUSE mounters) for the exFAT and
-// NTFS filesystems on systems that support them (b/358446133).
-// TODO(b/364409158) Remove this feature.
-BASE_FEATURE(kFilesKernelDrivers,
-             "FilesKernelDrivers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables local image search by query in the Files app.
 BASE_FEATURE(kFilesLocalImageSearch,
              "FilesLocalImageSearch",
@@ -1745,6 +1743,12 @@ BASE_FEATURE(kLobsterQuickInsertZeroState,
 // Enables lobster right click menu entry point.
 BASE_FEATURE(kLobsterRightClickMenu,
              "LobsterRightClickMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enabling this flag allows Lobster to receive and use the rewritten queries
+// returned from the server.
+BASE_FEATURE(kLobsterUseRewrittenQuery,
+             "LobsterUseRewrittenQuery",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables / Disables the lobster feature from the feature management module.
@@ -2551,8 +2555,8 @@ BASE_FEATURE(kSeaPenDemoMode,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables sea pen prompt rewrite feature.
-BASE_FEATURE(kSeaPenPromptRewrite,
-             "SeaPenPromptRewrite",
+BASE_FEATURE(kSeaPenQueryRewrite,
+             "SeaPenQueryRewrite",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables sea pen feature with next templates.
@@ -3349,6 +3353,10 @@ bool IsBocaCustomPollingEnabled() {
   return base::FeatureList::IsEnabled(kBocaCustomPolling);
 }
 
+bool IsBocaOnTaskPodEnabled() {
+  return base::FeatureList::IsEnabled(kBocaOnTaskPod);
+}
+
 bool IsBocaStudentHeartbeatEnabled() {
   return base::FeatureList::IsEnabled(kBocaStudentHeartbeat);
 }
@@ -3933,6 +3941,10 @@ bool IsLobsterEnabled() {
           base::FeatureList::IsEnabled(kFeatureManagementLobster));
 }
 
+bool IsLobsterUseRewrittenQuery() {
+  return base::FeatureList::IsEnabled(kLobsterUseRewrittenQuery);
+}
+
 bool IsLobsterAlwaysShowDisclaimerForTesting() {
   return base::FeatureList::IsEnabled(kLobsterAlwaysShowDisclaimerForTesting);
 }
@@ -4338,9 +4350,9 @@ bool IsSeaPenDemoModeEnabled() {
   return IsSeaPenEnabled() && base::FeatureList::IsEnabled(kSeaPenDemoMode);
 }
 
-bool IsSeaPenPromptRewriteEnabled() {
+bool IsSeaPenQueryRewriteEnabled() {
   return IsSeaPenTextInputEnabled() &&
-         base::FeatureList::IsEnabled(kSeaPenPromptRewrite);
+         base::FeatureList::IsEnabled(kSeaPenQueryRewrite);
 }
 
 bool IsSeaPenEnabled() {

@@ -76,7 +76,7 @@ suite('<apn-subpage>', () => {
     });
   });
 
-  test('Check if APN list exists', async () => {
+  test('Check if APN list exists', () => {
     assertTrue(!!apnSubpage);
     assertTrue(!!getApnList());
   });
@@ -276,7 +276,7 @@ suite('<apn-subpage>', () => {
     assertEquals(PortalState.kNoInternet, getApnList()!.portalState);
   });
 
-  test('ShouldDisallowApnModification propagated to <apn-list>', async () => {
+  test('ShouldDisallowApnModification propagated to <apn-list>', () => {
     assertFalse(getApnList()!.shouldDisallowApnModification);
     apnSubpage.shouldDisallowApnModification = true;
     assertTrue(getApnList()!.shouldDisallowApnModification);

@@ -403,8 +403,10 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
     return isNonEmptyArray(options);
   }
 
-  private shouldShowFreeformNavigationInfo_(): boolean {
-    return isSeaPenTextInputEnabled() && isPersonalizationApp();
+  private shouldShowFreeformNavigationInfo_(thumbnailsLoading: boolean):
+      boolean {
+    return isSeaPenTextInputEnabled() && isPersonalizationApp() &&
+        !thumbnailsLoading;
   }
 
   private shouldEnableTextAnimation(

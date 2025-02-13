@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">Drwy barhau, rydych yn cytuno i'r <ph name="BEGIN_LINK" />Telerau Gwasanaeth<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Erioed wedi'i gadw</translation>
 <translation id="1062138828266376352">Ni chafodd eich PIN ei newid. Gwiriwch eich cysylltiad rhyngrwyd a rhowch gynnig arall arni</translation>
+<translation id="1074827084851510304">Rydych ar fin dileu {password_count} o gyfrineiriau a'r rhestr o wefannau ac apiau y gwnaethoch ddewis peidio byth â chadw mewngofnodi. Ni fydd unrhyw gyfrif a grëwyd gennych ar gyfer gwefannau ac apiau yn cael ei ddileu.</translation>
 <translation id="1076421457278169141">Mae'r cod wedi'i sganio</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}zero{{count} tab}two{{count} dab}few{{count} tab}many{{count} tab}other{{count} tab}}</translation>
 <translation id="1082554859195167538">Adolygiadau cynnyrch i chi</translation>
@@ -290,7 +291,7 @@
 <translation id="2202084845446535117">Dim cyfrifon e-bost</translation>
 <translation id="2214453882118345682">Siopa, cyfieithu, a nodi'r hyn a welwch gyda'ch camera.</translation>
 <translation id="2220529011494928058">Adrodd am broblem</translation>
-<translation id="2220887224562128152">Unwaith y bydd ffeil wedi'i threfnu i'w dileu, ni ellir ei hadennill.</translation>
+<translation id="2220887224562128152">Unwaith y bydd ffeil wedi'i threfnu i'w dileu, ni ellir ei hadfer.</translation>
 <translation id="2223461067862937305">Wrthi'n creu cod QR</translation>
 <translation id="2229345671837147090">Grid tabiau o bell</translation>
 <translation id="2230173723195178503">Mae tudalen we wedi'i llwytho</translation>
@@ -574,6 +575,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3523789730715594198">Gallwch stopio cysoni unrhyw bryd yn y gosodiadau. Gall Google bersonoleiddio Search a gwasanaethau eraill yn seiliedig ar eich hanes.</translation>
 <translation id="3527085408025491307">Ffolder</translation>
 <translation id="3529024052484145543">Ddim yn ddiogel</translation>
+<translation id="3530024057633834563">Nid oes gennych unrhyw gyfrineiriau na chodau pas wedi'u cadw, ond gallwch ddileu'r rhestr o wefannau ac apiau y gwnaethoch ddewis peidio byth â chadw gwybodaeth mewngofnodi. Ni fydd unrhyw gyfrif a grëwyd gennych ar gyfer gwefannau ac apiau yn cael ei ddileu.</translation>
 <translation id="3530206579861815432">Dod o hyd i dabiau sydd ar agor a'r rhai sydd wedi'u cau yn ddiweddar yn gyflym ar draws eich dyfeisiau sydd wedi'u cysoni.</translation>
 <translation id="3530767473765895035">Rheoli cyfrifon ar y ddyfais hon…</translation>
 <translation id="3533436815740441613">Tab Newydd</translation>
@@ -821,7 +823,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4632655012900268062">Personoleiddio cardiau</translation>
 <translation id="4634124774493850572">Defnyddio cyfrinair</translation>
 <translation id="4636930964841734540">Gwybodaeth</translation>
-<translation id="4641425577292284174">Gwybod a oes gennych y gosodiadau mwyaf diogel neu angen adolygu unrhyw beth</translation>
+<translation id="4641425577292284174">Gwybod a oes gennych y gosodiadau mwyaf diogel neu os oes angen adolygu unrhyw beth</translation>
 <translation id="4642472735733036929">Olrhain prisiau wedi stopio</translation>
 <translation id="4645575059429386691">Rheolir gan dy riant</translation>
 <translation id="4647758699119474035">Wedi mewngofnodi fel <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Gwall Cyfrif Google. Agor dewislen cyfrif.</translation>
@@ -1601,6 +1603,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Mae tudalen wedi'i hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}zero{Mae {count} tudalen wedi'u hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}two{Mae {count} dudalen wedi'u hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}few{Mae {count} tudalen wedi'u hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}many{Mae {count} thudalen wedi'u hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}other{Mae {count} tudalen wedi'u hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}}</translation>
 <translation id="7947953824732555851">Derbyn a mewngofnodi</translation>
+<translation id="7952670906562503188">Rydych ar fin dileu {passkey_count} o godau pas a'r rhestr o wefannau ac apiau y gwnaethoch ddewis peidio byth â chadw mewngofnodi i mewn. Ni fydd unrhyw gyfrif a grëwyd gennych ar gyfer gwefannau ac apiau yn cael ei ddileu.</translation>
 <translation id="7958575506592576831">Gwybodaeth am ddiogelwch y dudalen</translation>
 <translation id="7961015016161918242">Byth</translation>
 <translation id="7966516440812255683">Gall gwefannau ddefnyddio cwcis i wella'ch profiad pori, er enghraifft, i'ch cadw bod wedi'ch mewngofnodi neu i gofio eitemau yn eich basged siopa.
@@ -1881,6 +1884,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="9034759925968272072">Ni fyddwch wedi'ch allgofnodi o'ch Cyfrif Google. Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Lled band</translation>
 <translation id="9042893549633094279">Preifatrwydd a diogelwch</translation>
+<translation id="9055580485132823283">Rydych ar fin dileu {password_count} o gyfrineiriau, {passkey_count} o godau pas, a'r rhestr o wefannau ac apiau y gwnaethoch ddewis peidio byth â chadw mewngofnodi i mewn. Ni fydd unrhyw gyfrif a grëwyd gennych ar gyfer gwefannau ac apiau yn cael ei ddileu.</translation>
 <translation id="9057030985451135243">Dysgu rhagor am grwpiau tabiau a rennir</translation>
 <translation id="9057972802061533987">Methu â dilyn. Aeth rhywbeth o'i le.</translation>
 <translation id="9065203028668620118">Golygu</translation>

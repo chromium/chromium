@@ -100,8 +100,8 @@ export class ChromeUrlsAppElement extends CrLitElement {
       return;
     }
 
-    const header = this.shadowRoot!.querySelector<HTMLElement>(
-        '#internal-debugging-pages');
+    const header =
+        this.shadowRoot.querySelector<HTMLElement>('#internal-debugging-pages');
     assert(header);
     header.scrollIntoView(true);
   }

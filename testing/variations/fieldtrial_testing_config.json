@@ -34,6 +34,25 @@
             ]
         }
     ],
+    "AXRandomizedStressTests": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AXRandomizedStressTests"
+                    ]
+                }
+            ]
+        }
+    ],
     "AXTreeFixing": [
         {
             "platforms": [
@@ -164,7 +183,7 @@
             ]
         }
     ],
-    "AddReferringAppInfoToProtegoPings": [
+    "AddReferringWebApkToProtegoPings": [
         {
             "platforms": [
                 "android"
@@ -173,7 +192,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AddReferringAppInfoToProtegoPings"
+                        "AddReferringWebApkToProtegoPings"
                     ]
                 }
             ]
@@ -672,28 +691,13 @@
                     "name": "Enabled",
                     "params": {
                         "android_tab_declutter_archive_enabled": "true",
-                        "android_tab_declutter_archive_time_delta_hours": "168",
-                        "android_tab_declutter_auto_delete_enabled": "false"
+                        "android_tab_declutter_archive_time_delta_hours": "504",
+                        "android_tab_declutter_auto_delete_enabled": "false",
+                        "android_tab_declutter_max_simultaneous_archives": "250"
                     },
                     "enable_features": [
                         "AndroidTabDeclutter",
-                        "AndroidTabDeclutterArchiveDuplicateTabs",
                         "IPH_AndroidTabDeclutter"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AndroidTabStripLayoutOptimization": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabStripLayoutOptimization"
                     ]
                 }
             ]
@@ -11606,8 +11610,25 @@
                     "name": "Enabled_WithThrottling_20250121",
                     "enable_features": [
                         "AutofillAcrossIframesIos",
-                        "AutofillAcrossIframesIosThrottling",
+                        "AutofillAcrossIframesIosThrottling"
+                    ],
+                    "disable_features": [
                         "AutofillAcrossIframesIosTriggerFormExtraction"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSAutofillFixPostFillingPaymentSheet": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillFixPostFillingPaymentSheet"
                     ]
                 }
             ]
@@ -11900,6 +11921,42 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FullscreenImprovement"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSFullscreenTransition": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledSlowSpeed",
+                    "params": {
+                        "FullscreenTransitionSpeed": "0"
+                    },
+                    "enable_features": [
+                        "FullscreenTransition"
+                    ]
+                },
+                {
+                    "name": "EnabledFastSpeed",
+                    "params": {
+                        "FullscreenTransitionSpeed": "2"
+                    },
+                    "enable_features": [
+                        "FullscreenTransition"
+                    ]
+                },
+                {
+                    "name": "EnabledMediumDelay",
+                    "params": {
+                        "MediumFullscreenTransitionOffset": "true"
+                    },
+                    "enable_features": [
+                        "FullscreenTransition"
                     ]
                 }
             ]
@@ -18862,11 +18919,7 @@
     "RasterInducingScroll": [
         {
             "platforms": [
-                "android_webview",
-                "android",
-                "chromeos",
                 "linux",
-                "mac",
                 "windows"
             ],
             "experiments": [
@@ -19135,6 +19188,24 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ReclaimPrepaintTilesWhenIdle"
+                    ]
+                }
+            ]
+        }
+    ],
+    "RecordFreezingEligibilityUKM": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RecordFreezingEligibilityUKM"
                     ]
                 }
             ]
@@ -19788,7 +19859,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "RustPng"
+                        "RustyPng"
                     ]
                 }
             ]
@@ -21314,7 +21385,7 @@
             ]
         }
     ],
-    "SeaPenPromptRewrite": [
+    "SeaPenQueryRewrite": [
         {
             "platforms": [
                 "chromeos"
@@ -21323,7 +21394,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "SeaPenPromptRewrite"
+                        "SeaPenQueryRewrite"
                     ]
                 }
             ]
@@ -21900,6 +21971,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ServiceWorkerAvoidMainThreadForInitialization"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ServiceWorkerClientUrlIsCreationUrl": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ServiceWorkerClientUrlIsCreationUrl"
                     ]
                 }
             ]
@@ -22962,28 +23054,6 @@
             ]
         }
     ],
-    "SubframeProcessReuseThresholds": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "SubframeProcessReuseMemoryThreshold": "2147483648"
-                    },
-                    "enable_features": [
-                        "SubframeProcessReuseThresholds"
-                    ]
-                }
-            ]
-        }
-    ],
     "SunfishFeature": [
         {
             "platforms": [
@@ -23354,6 +23424,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "has_background": "false"
+                    },
                     "enable_features": [
                         "TabstripComboButton"
                     ]
@@ -26173,6 +26246,21 @@
             ]
         }
     ],
+    "WebViewFileSystemAccessDirectoryIterationBlocklistCheckReenable": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FileSystemAccessDirectoryIterationBlocklistCheck"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewInterceptedCookieHeader": [
         {
             "platforms": [
@@ -26661,6 +26749,25 @@
                     "name": "Enabled_20230222",
                     "enable_features": [
                         "ZeroCopyTabCapture"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ZeroScrollMetricsUpdate": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ZeroScrollMetricsUpdate"
                     ]
                 }
             ]

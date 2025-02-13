@@ -1433,7 +1433,7 @@ void LayoutText::SetInlineItems(InlineItemsData* data,
   NOT_DESTROYED();
 #if DCHECK_IS_ON()
   for (wtf_size_t i = begin; i < begin + size; i++) {
-    DCHECK_EQ(data->items[i].GetLayoutObject(), this);
+    DCHECK_EQ(data->items[i]->GetLayoutObject(), this);
   }
 #endif
   auto* items = GetInlineItems();

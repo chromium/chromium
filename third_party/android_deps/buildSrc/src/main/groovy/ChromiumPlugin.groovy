@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.DependencyResolveDetails
-import org.gradle.api.attributes.*
+import org.gradle.api.attributes.Attribute
+import org.gradle.api.attributes.AttributeCompatibilityRule
+import org.gradle.api.attributes.CompatibilityCheckDetails
 import org.gradle.api.attributes.java.TargetJvmEnvironment
 
 /**
@@ -17,14 +20,14 @@ class ChromiumPlugin implements Plugin<Project> {
     static class TargetJvmEnvironmentCompatibilityRules implements AttributeCompatibilityRule<TargetJvmEnvironment> {
 
         // public constructor to make reflective initialization happy.
-        public TargetJvmEnvironmentCompatibilityRules() {}
+        TargetJvmEnvironmentCompatibilityRules() {}
 
         @Override
-        public void execute(CompatibilityCheckDetails<TargetJvmEnvironment> details) {
+        void execute(CompatibilityCheckDetails<TargetJvmEnvironment> details) {
             // This means regardless of the actual value of the attribute, it is
             // considered a match. Gradle still picks the closest though if multiple
             // options are available (which is what we want).
-            details.compatible();
+            details.compatible()
         }
     }
 
@@ -62,11 +65,11 @@ class ChromiumPlugin implements Plugin<Project> {
 
         project.dependencies.attributesSchema {
             attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE) {
-                getCompatibilityRules().add(TargetJvmEnvironmentCompatibilityRules.class)
+                compatibilityRules.add(TargetJvmEnvironmentCompatibilityRules.class)
             }
         }
 
-        project.configurations.all {
+        project.configurations.configureEach {
             attributes {
                 attribute(Attribute.of("org.gradle.category", String), "library")
                 attribute(Attribute.of("org.gradle.usage", String), "java-runtime")
@@ -96,13 +99,6 @@ class ChromiumPlugin implements Plugin<Project> {
             }
         }
 
-        project.configurations.buildCompile {
-            attributes {
-                // This attribute is used to resolve the caffeine error in: https://crbug.com/1216032#c3
-                attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling, Bundling.EXTERNAL))
-            }
-        }
-
         project.configurations.buildCompileNoDeps {
             // transitive false means do not also pull in the deps of these deps.
             transitive = false
@@ -111,9 +107,9 @@ class ChromiumPlugin implements Plugin<Project> {
     }
 
     private static void overrideVersionIfNecessary(DependencyResolveDetails details) {
-        String module = "${details.requested.group}:${details.requested.name}"
+        String group = details.requested.group
         String version = details.requested.version
-        if (module.startsWith('androidx') && version != '+' && !version.contains('-SNAPSHOT')) {
+        if (group.startsWith('androidx') && version != '+' && !version.contains('-SNAPSHOT')) {
             details.useVersion '+'
         }
     }

@@ -42,7 +42,6 @@ import "chromeos/crosapi/mojom/firewall_hole.mojom";
 import "chromeos/crosapi/mojom/force_installed_tracker.mojom";
 import "chromeos/crosapi/mojom/full_restore.mojom";
 import "chromeos/crosapi/mojom/fullscreen_controller.mojom";
-import "chromeos/crosapi/mojom/geolocation.mojom";
 import "chromeos/crosapi/mojom/identity_manager.mojom";
 import "chromeos/crosapi/mojom/idle_service.mojom";
 import "chromeos/crosapi/mojom/image_writer.mojom";
@@ -92,7 +91,6 @@ import "chromeos/crosapi/mojom/kiosk_session_service.mojom";
 import "chromeos/crosapi/mojom/virtual_keyboard.mojom";
 import "chromeos/crosapi/mojom/volume_manager.mojom";
 import "chromeos/crosapi/mojom/vpn_extension_observer.mojom";
-import "chromeos/crosapi/mojom/web_app_service.mojom";
 import "chromeos/crosapi/mojom/web_kiosk_service.mojom";
 import "chromeos/crosapi/mojom/media_ui.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
@@ -327,11 +325,7 @@ interface Crosapi {
   [MinVersion=94] BindFullscreenController@98(
       pending_receiver<FullscreenController> receiver);
 
-  // Binds the GeolocationService interface for getting network access point
-  // information.
-  // Added in M95.
-  [MinVersion=43]
-  BindGeolocationService@48(pending_receiver<GeolocationService> receiver);
+  // BindGeolocationService@48 was removed.
 
   // Binds the IdentityManager interface for reading identity information.
   // Added in M96.
@@ -667,17 +661,10 @@ interface Crosapi {
   [MinVersion=79] BindVpnService@82(
       pending_receiver<VpnService> receiver);
 
+  // BindWallpaper@87 was removed.
   // BindWebPageInfoFactory@39 was removed.
   // BindWebAppPublisher@27 was removed.
-
-  // Binds the service to allow web-app-related queries and actions between
-  // lacros-chrome and ash-chrome. This is a web-app-specific interface,
-  // independent of the App Service.
-  // Added in M101.
-  [MinVersion=69]
-  BindWebAppService@72(pending_receiver<WebAppService> receiver);
-
-  // BindWallpaper@87 was removed.
+  // BindWebAppService@72 was removed.
 
   // Binds the GuestOS security key forwarding service.
   // Added in M120.

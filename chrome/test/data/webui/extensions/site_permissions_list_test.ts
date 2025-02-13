@@ -37,7 +37,7 @@ suite('SitePermissionsList', function() {
     await microtasksFinished();
 
     const dialog =
-        element.shadowRoot!.querySelector('site-permissions-edit-url-dialog');
+        element.shadowRoot.querySelector('site-permissions-edit-url-dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.$.dialog.open);
   });
@@ -47,7 +47,7 @@ suite('SitePermissionsList', function() {
     await microtasksFinished();
 
     const openEditSites =
-        element!.shadowRoot!.querySelectorAll<HTMLElement>('.icon-more-vert');
+        element!.shadowRoot.querySelectorAll<HTMLElement>('.icon-more-vert');
     assertEquals(2, openEditSites.length);
     openEditSites[1]!.click();
 
@@ -72,9 +72,8 @@ suite('SitePermissionsList', function() {
         element.sites = ['https://google.com', 'http://www.example.com'];
         await microtasksFinished();
 
-        const openEditSites =
-            element!.shadowRoot!.querySelectorAll<HTMLElement>(
-                '.icon-more-vert');
+        const openEditSites = element!.shadowRoot.querySelectorAll<HTMLElement>(
+            '.icon-more-vert');
         assertEquals(2, openEditSites.length);
         openEditSites[1]!.click();
 
@@ -90,7 +89,7 @@ suite('SitePermissionsList', function() {
         await microtasksFinished();
         assertFalse(actionMenu.open);
 
-        const dialog = element.shadowRoot!.querySelector(
+        const dialog = element.shadowRoot.querySelector(
             'site-permissions-edit-url-dialog');
         assertTrue(!!dialog);
         assertTrue(dialog.$.dialog.open);
@@ -103,9 +102,8 @@ suite('SitePermissionsList', function() {
         element.sites = ['https://google.com', 'http://www.example.com'];
         await microtasksFinished();
 
-        const openEditSites =
-            element!.shadowRoot!.querySelectorAll<HTMLElement>(
-                '.icon-more-vert');
+        const openEditSites = element!.shadowRoot.querySelectorAll<HTMLElement>(
+            '.icon-more-vert');
         assertEquals(2, openEditSites.length);
         openEditSites[1]!.click();
 
@@ -121,7 +119,7 @@ suite('SitePermissionsList', function() {
         await microtasksFinished();
         assertFalse(actionMenu.open);
 
-        const dialog = element.shadowRoot!.querySelector(
+        const dialog = element.shadowRoot.querySelector(
             'site-permissions-edit-permissions-dialog');
         assertTrue(!!dialog);
         assertTrue(dialog.$.dialog.open);

@@ -82,6 +82,7 @@
 <translation id="2094648590148273905">ChromeOS Flexની શરતો</translation>
 <translation id="2094919256425865063">છતાં પણ Chrome બંધ કરવું છે?</translation>
 <translation id="2106831557840787829"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ડેવલપમેન્ટ એન્વાયરમેન્ટ<ph name="END_LINK_LINUX_OSS" />ની જેમ, ChromeOS Flex વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા શક્ય બન્યું છે.</translation>
+<translation id="2108778574543343055">ઍપ માટે બૅકગ્રાઉન્ડમાં Chrome ચલાવવાનું બંધ કરો</translation>
 <translation id="2120620239521071941">આ, <ph name="ITEMS_COUNT" /> આઇટમને આ ડિવાઇસમાંથી ડિલીટ કરશે. પછીથી તમારો ડેટા ફરીથી મેળવવા માટે, Chromeમાં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
 <translation id="2121284319307530122">&amp;Chrome અપડેટ કરવા માટે, ફરીથી લૉન્ચ કરો</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />વર્તમાન સેટિંગ<ph name="END_LINK" />ની જાણ કરીને Chromeને બહેતર બનાવવામાં સહાય કરો</translation>
@@ -143,6 +144,7 @@
 <translation id="2797864378188255696">Gmail કે YouTube જેવી Googleની સેવાઓમાં <ph name="USER_EMAIL" /> વડે સાઇન ઇન કરતી વખતે, તમે એ જ એકાઉન્ટ વડે Chromeમાં ઑટોમૅટિક રીતે સાઇન ઇન કરી શકો છો</translation>
 <translation id="2799162042226656283">તમારું Chrome</translation>
 <translation id="2799223571221894425">ફરીથી લોંચ કરો</translation>
+<translation id="2818684386420968393">ઍપ માટે બૅકગ્રાઉન્ડમાં Chrome ચલાવવાનું બંધ કરો</translation>
 <translation id="2825024317344269723">જોખમી સાઇટ. Chrome દ્વારા નોટિફિકેશન કાઢી નાખવામાં આવ્યા.</translation>
 <translation id="2841525013647267359">આમાંથી અનુવાદ કરો</translation>
 <translation id="2846251086934905009">ઇન્સ્ટૉલ કરવામાં ભૂલ: ઇન્સ્ટૉલર પૂર્ણ થયું નહીં. ઇન્સ્ટોલેશન રદ કરવામાં આવ્યું છે.</translation>
@@ -356,6 +358,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
 <translation id="5602351063754773347">Chrome તેને કાઢી નાખવાનો સુઝાવ તમને આપે છે. <ph name="BEGIN_LINK" />સપોર્ટેડ એક્સ્ટેન્શન વિશે વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">તમને ઑનલાઇન સલામત રાખવા માટે Chrome વધુ કાર્યો કરે છે</translation>
+<translation id="5649680279845190972">તમારા બધા કમ્પ્યૂટર પર તમારા એક્સ્ટેન્શન અને વધુ મેળવવા માટે, Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> જોખમી હોઈ શકે છે, તેથી Chrome એ તેને અવરોધિત કરેલ છે.</translation>
 <translation id="566568153320186256">Chrome દ્વારા સ્મૂધ સ્ક્રોલિંગ અને વીડિયોના ફ્રેમ રેટ જેવી બૅકગ્રાઉન્ડ ઍક્ટિવિટી અને વિઝ્યુઅલ ઇફેક્ટને મર્યાદિત કરીને બૅટરીના પાવરની બચત કરવામાં આવે છે. <ph name="BEGIN_LINK" />એનર્જી સેવર વિશે વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">તમારા એકાઉન્ટમાંનો Chrome ડેટા સાફ કરો</translation>

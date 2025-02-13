@@ -158,6 +158,12 @@ signin::Tribool AccountCapabilities::can_use_generative_ai_photo_editing()
   return GetCapabilityByName(kCanUseGenerativeAiPhotoEditing);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+signin::Tribool AccountCapabilities::can_use_chromeos_generative_ai() const {
+  return GetCapabilityByName(kCanUseChromeOSGenerativeAi);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 bool AccountCapabilities::UpdateWith(const AccountCapabilities& other) {
   bool modified = false;
 

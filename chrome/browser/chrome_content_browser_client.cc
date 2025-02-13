@@ -148,12 +148,7 @@
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/request_header_integrity/buildflags.h"
-#include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
-#include "chrome/browser/safe_browsing/delayed_warning_navigation_throttle.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/url_checker_delegate_impl.h"
-#include "chrome/browser/safe_browsing/url_lookup_service_factory.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/segmentation_platform/chrome_browser_main_extra_parts_segmentation_platform.h"
@@ -304,7 +299,6 @@
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/browser_url_loader_throttle.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_throttle.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
@@ -744,6 +738,12 @@
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
+#include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "chrome/browser/safe_browsing/delayed_warning_navigation_throttle.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/safe_browsing/url_lookup_service_factory.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_throttle.h"
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -5448,6 +5448,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
       &throttles);
 #endif
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // g_browser_process->safe_browsing_service() may be null in unittests.
   safe_browsing::SafeBrowsingUIManager* ui_manager =
       g_browser_process->safe_browsing_service()
@@ -5463,6 +5464,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
         std::make_unique<safe_browsing::DelayedWarningNavigationThrottle>(
             handle));
   }
+#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   MaybeAddThrottle(browser_switcher::BrowserSwitcherNavigationThrottle::
@@ -5758,7 +5760,9 @@ bool ChromeContentBrowserClient::IsPluginAllowedToUseDevChannelAPIs(
 void ChromeContentBrowserClient::InitOnUIThread() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing_service_ = g_browser_process->safe_browsing_service();
+#endif
 
   // Initialize `network_contexts_parent_directory_`.
   base::FilePath user_data_dir;
@@ -5870,10 +5874,14 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
   safe_browsing::RealTimeUrlLookupServiceBase* url_lookup_service =
       GetUrlLookupService(browser_context, is_enterprise_lookup_enabled,
                           is_consumer_lookup_enabled);
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::HashRealTimeService* hash_realtime_service =
       safe_browsing_service_
           ? safe_browsing_service_->GetHashRealTimeService(profile)
           : nullptr;
+#else
+  safe_browsing::HashRealTimeService* hash_realtime_service = nullptr;
+#endif
   safe_browsing::hash_realtime_utils::HashRealTimeSelection
       hash_realtime_selection =
           safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
@@ -7241,6 +7249,7 @@ ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate(
   if (!safe_browsing_enabled_for_profile && !should_check_on_sb_disabled)
     return nullptr;
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // |safe_browsing_service_| may be unavailable in tests.
   if (safe_browsing_service_ && !safe_browsing_url_checker_delegate_) {
     safe_browsing_url_checker_delegate_ =
@@ -7248,6 +7257,7 @@ ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate(
             safe_browsing_service_->database_manager(),
             safe_browsing_service_->ui_manager());
   }
+#endif
 
   // Update allowlist domains.
   if (safe_browsing_url_checker_delegate_) {
@@ -7263,6 +7273,7 @@ ChromeContentBrowserClient::GetUrlLookupService(
     content::BrowserContext* browser_context,
     bool is_enterprise_lookup_enabled,
     bool is_consumer_lookup_enabled) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // |safe_browsing_service_| may be unavailable in tests.
   if (!safe_browsing_service_) {
     return nullptr;
@@ -7276,6 +7287,7 @@ ChromeContentBrowserClient::GetUrlLookupService(
     return safe_browsing::RealTimeUrlLookupServiceFactory::GetForProfile(
         profile);
   }
+#endif
   return nullptr;
 }
 
@@ -7287,6 +7299,7 @@ ChromeContentBrowserClient::GetAsyncCheckTracker(
     safe_browsing::hash_realtime_utils::HashRealTimeSelection
         hash_realtime_selection,
     content::FrameTreeNodeId frame_tree_node_id) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   content::WebContents* contents = wc_getter.Run();
   if (!contents || !safe_browsing_service_ ||
       !safe_browsing_service_->ui_manager()) {
@@ -7311,6 +7324,9 @@ ChromeContentBrowserClient::GetAsyncCheckTracker(
       contents, safe_browsing_service_->ui_manager().get(),
       safe_browsing::AsyncCheckTracker::
           IsPlatformEligibleForSyncCheckerCheckAllowlist());
+#else
+  return nullptr;
+#endif
 }
 
 void ChromeContentBrowserClient::ReportLegacyTechEvent(

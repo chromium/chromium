@@ -50,7 +50,7 @@ void PrintLayerHierarchy(std::ostringstream* out) {
       ui::PrintLayerHierarchy(
           layer,
           RootWindowController::ForWindow(root)->GetLastMouseLocationInRoot(),
-          out, child_cb);
+          /*print_invisible=*/true, out, child_cb);
     }
   }
 }

@@ -90,9 +90,10 @@ void ChannelMixer::TransformPartial(const AudioBus* input,
       float scale = matrix_[output_ch][input_ch];
       // Scale should always be positive.  Don't bother scaling by zero.
       DCHECK_GE(scale, 0);
+      const size_t frames = static_cast<size_t>(frame_count);
       if (scale > 0) {
-        vector_math::FMAC(input->channel_span(input_ch).data(), scale,
-                          frame_count, output_channel.data());
+        vector_math::FMAC(input->channel_span(input_ch).first(frames), scale,
+                          output_channel.first(frames));
       }
     }
   }

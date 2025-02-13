@@ -182,11 +182,10 @@ void PerformanceManagerRegistryImpl::TearDown() {
     PerformanceManagerTabHelper* tab_helper =
         PerformanceManagerTabHelper::FromWebContents(web_contents);
     DCHECK(tab_helper);
-    // Clear the destruction observer to avoid a nested notification.
+    // Clear the destruction observer to avoid a notification that will modify
+    // `web_contents_` while iterating.
     tab_helper->SetDestructionObserver(nullptr);
-    // Destroy the tab helper.
-    tab_helper->TearDown();
-    web_contents->RemoveUserData(PerformanceManagerTabHelper::UserDataKey());
+    tab_helper->TearDownAndSelfDelete();
   }
   web_contents_.clear();
 

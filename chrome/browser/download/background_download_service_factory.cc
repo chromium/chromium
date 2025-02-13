@@ -16,7 +16,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/deferred_client_wrapper.h"
 #include "chrome/browser/download/download_manager_utils.h"
 #include "chrome/browser/download/simple_download_manager_coordinator_factory.h"
@@ -50,7 +49,7 @@
 #include "chrome/browser/download/android/service/download_task_scheduler.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/plugin_vm/plugin_vm_image_download_client.h"
 #endif
 
@@ -61,12 +60,12 @@ std::unique_ptr<download::Client> CreateBackgroundFetchDownloadClient(
   return std::make_unique<background_fetch::DownloadClient>(profile);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<download::Client> CreatePluginVmImageDownloadClient(
     Profile* profile) {
   return std::make_unique<plugin_vm::PluginVmImageDownloadClient>(profile);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::unique_ptr<download::Client>
 CreateOptimizationGuidePredictionModelDownloadClient(Profile* profile) {
@@ -144,14 +143,14 @@ BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
       std::make_unique<download::DeferredClientWrapper>(
           base::BindOnce(&CreateBackgroundFetchDownloadClient), key)));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!key->IsOffTheRecord()) {
     clients->insert(std::make_pair(
         download::DownloadClient::PLUGIN_VM_IMAGE,
         std::make_unique<download::DeferredClientWrapper>(
             base::BindOnce(&CreatePluginVmImageDownloadClient), key)));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (optimization_guide::features::IsModelDownloadingEnabled() &&
       !key->IsOffTheRecord()) {

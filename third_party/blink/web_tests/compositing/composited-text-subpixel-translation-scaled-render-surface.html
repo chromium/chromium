@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<style>
+div {
+  will-change: transform, filter;
+  margin: 10px;
+  padding: 2px;
+  transform-origin: 0 0;
+  transform: translate(0.4px, 0.6px) scale(1.5);
+}
+</style>
+All of the following texts should not be blurry.
+<div>SHARP TEXT</div>
+<div>
+  <div style="will-change: transform">SHARP TEXT</div>
+</div>
+<div>
+  <div>SHARP TEXT</div>
+</div>

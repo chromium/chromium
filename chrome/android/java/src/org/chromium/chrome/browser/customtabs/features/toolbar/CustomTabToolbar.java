@@ -1667,7 +1667,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             final CharSequence displayText;
             final int originStart;
             final int originEnd;
-            if (publisherUrl != null) {
+            if (!mOmniboxEnabled && publisherUrl != null) {
                 String plainDisplayText =
                         getContext()
                                 .getString(
@@ -1691,7 +1691,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 originStart = 0;
                 if (mOmniboxEnabled) {
                     displayText = urlBarData.displayText;
-                    originEnd = 0;
+                    originEnd = urlBarData.originEndIndex;
                 } else if (urlBarData.displayText != null) {
                     displayText =
                             urlBarData.displayText.subSequence(

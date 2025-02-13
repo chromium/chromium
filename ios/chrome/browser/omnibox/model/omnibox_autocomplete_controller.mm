@@ -7,7 +7,7 @@
 #import <string>
 
 #import "base/memory/raw_ptr.h"
-#import "base/metrics/histogram_macros.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/bookmarks/browser/bookmark_model.h"
@@ -147,7 +147,7 @@ using base::UserMetricsAction;
 
   if (matchCopy.type == AutocompleteMatchType::CLIPBOARD_URL) {
     base::RecordAction(UserMetricsAction("MobileOmniboxClipboardToURL"));
-    UMA_HISTOGRAM_LONG_TIMES_100(
+    base::UmaHistogramLongTimes100(
         "MobileOmnibox.PressedClipboardSuggestionAge",
         ClipboardRecentContent::GetInstance()->GetClipboardContentAge());
   }

@@ -4,17 +4,20 @@
 
 #include "ui/base/interaction/interactive_test_internal.h"
 
+#include <iterator>
 #include <memory>
 #include <ostream>
 #include <sstream>
 #include <string_view>
 #include <variant>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -39,6 +42,54 @@ DEFINE_FRAMEWORK_SPECIFIC_METADATA(StateObserverElement)
 
 // static
 bool InteractiveTestPrivate::allow_interactive_test_verbs_ = false;
+
+InteractiveTestPrivate::AdditionalContext::AdditionalContext() = default;
+
+InteractiveTestPrivate::AdditionalContext::AdditionalContext(
+    InteractiveTestPrivate& owner,
+    intptr_t handle)
+    : owner_(owner.GetAsWeakPtr()), handle_(handle) {
+  CHECK(handle);
+}
+
+InteractiveTestPrivate::AdditionalContext::AdditionalContext(
+    const AdditionalContext& other) = default;
+
+InteractiveTestPrivate::AdditionalContext&
+InteractiveTestPrivate::AdditionalContext::operator=(
+    const AdditionalContext& other) = default;
+
+InteractiveTestPrivate::AdditionalContext::~AdditionalContext() = default;
+
+void InteractiveTestPrivate::AdditionalContext::Set(
+    const std::string_view& additional_context) {
+  auto* const owner = owner_.get();
+  CHECK(owner) << "Set() should never be executed after destruction of the "
+                  "owning sequence.";
+  CHECK(handle_)
+      << "Set() should never be executed on a default-constructed object.";
+  owner_->additional_context_data_[handle_] = additional_context;
+}
+
+std::string InteractiveTestPrivate::AdditionalContext::Get() const {
+  auto* const owner = owner_.get();
+  CHECK(owner) << "Set() should never be executed after destruction of the "
+                  "owning sequence.";
+  CHECK(handle_)
+      << "Set() should never be executed on a default-constructed object.";
+  const auto it = owner_->additional_context_data_.find(handle_);
+  return (it != owner_->additional_context_data_.end()) ? it->second
+                                                        : std::string();
+}
+
+void InteractiveTestPrivate::AdditionalContext::Clear() {
+  auto* const owner = owner_.get();
+  CHECK(owner) << "Clear() should never be executed after destruction of the "
+                  "owning sequence.";
+  CHECK(handle_)
+      << "Clear() should never be executed on a default-constructed object.";
+  owner_->additional_context_data_.erase(handle_);
+}
 
 InteractiveTestPrivate::InteractiveTestPrivate(
     std::unique_ptr<InteractionTestUtil> test_util)
@@ -157,6 +208,19 @@ bool InteractiveTestPrivate::RemoveStateObserver(ElementIdentifier id,
   return true;
 }
 
+InteractiveTestPrivate::AdditionalContext
+InteractiveTestPrivate::CreateAdditionalContext() {
+  return AdditionalContext(*this, next_additional_context_handle_++);
+}
+
+std::vector<std::string> InteractiveTestPrivate::GetAdditionalContext() const {
+  std::vector<std::string> entries;
+  std::transform(additional_context_data_.begin(),
+                 additional_context_data_.end(), std::back_inserter(entries),
+                 [](const auto& entry) { return entry.second; });
+  return entries;
+}
+
 void InteractiveTestPrivate::DoTestSetUp() {}
 void InteractiveTestPrivate::DoTestTearDown() {
   state_observer_elements_.clear();
@@ -190,6 +254,13 @@ void InteractiveTestPrivate::OnSequenceAborted(
              " - A check being performed on an element that has been hidden. "
              "Wrap waiting for the hide and subsequent checks in a "
              "WithoutDelay() to avoid possible access-after-delete.";
+    }
+    const auto additional_context = GetAdditionalContext();
+    if (!additional_context.empty()) {
+      additional_message << "\nAdditional test context:";
+      for (const auto& ctx : additional_context) {
+        additional_message << "\n * " << ctx;
+      }
     }
     DebugDumpElements(data.context).PrintTo(additional_message);
     GTEST_FAIL() << "Interactive test failed " << data

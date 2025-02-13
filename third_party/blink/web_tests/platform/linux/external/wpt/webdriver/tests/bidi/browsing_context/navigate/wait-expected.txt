@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_expected_url[none]
+  AssertionError: assert 'about:blank' == 'https://web-platform.test:8444/webdriver/tests/support/inline.py?doc=%3C%21doctype+html%3E%0A%3Cmeta+charset%3DUTF-8%3E%0A%3Cdiv%3Efoo%3C%2Fdiv%3E&mime=text%2Fhtml&charset=UTF-8'
+[FAIL] test_slow_image_blocks_load[none-False]
+  AssertionError: assert 'about:blank' == 'https://web-platform.test:8444/webdriver/tests/support/inline.py?doc=%3C%21doctype+html%3E%0A%3Cmeta+charset%3DUTF-8%3E%0A%3Cimg+src%3D%27%2Fwebdriver%2Ftests%2Fbidi%2Fbrowsing_context%2Fsupport%2Fempty.svg%3Fpipe%3Dtrickle%28d10%29%27%3E&mime=text%2Fhtml&charset=UTF-8'
+Harness: the test ran to completion.
+

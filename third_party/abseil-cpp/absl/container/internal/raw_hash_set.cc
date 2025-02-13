@@ -28,6 +28,7 @@
 #include "absl/base/optimization.h"
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hashtablez_sampler.h"
+#include "absl/functional/function_ref.h"
 #include "absl/hash/hash.h"
 #include "absl/numeric/bits.h"
 
@@ -108,6 +109,19 @@ size_t SingleGroupTableH1(size_t hash, ctrl_t* control) {
       hash ^ static_cast<size_t>(reinterpret_cast<uintptr_t>(control))));
 }
 
+// Returns the address of the slot `i` iterations after `slot` assuming each
+// slot has the specified size.
+inline void* NextSlot(void* slot, size_t slot_size, size_t i = 1) {
+  return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(slot) +
+                                 slot_size * i);
+}
+
+// Returns the address of the slot just before `slot` assuming each slot has the
+// specified size.
+inline void* PrevSlot(void* slot, size_t slot_size) {
+  return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(slot) - slot_size);
+}
+
 }  // namespace
 
 GenerationType* EmptyGeneration() {
@@ -138,6 +152,52 @@ bool ShouldInsertBackwardsForDebug(size_t capacity, size_t hash,
   // To avoid problems with weak hashes and single bit tests, we use % 13.
   // TODO(kfm,sbenza): revisit after we do unconditional mixing
   return !is_small(capacity) && (H1(hash, ctrl) ^ RandomSeed()) % 13 > 6;
+}
+
+void IterateOverFullSlots(const CommonFields& c, size_t slot_size,
+                          absl::FunctionRef<void(const ctrl_t*, void*)> cb) {
+  const size_t cap = c.capacity();
+  const ctrl_t* ctrl = c.control();
+  void* slot = c.slot_array();
+  if (is_small(cap)) {
+    // Mirrored/cloned control bytes in small table are also located in the
+    // first group (starting from position 0). We are taking group from position
+    // `capacity` in order to avoid duplicates.
+
+    // Small tables capacity fits into portable group, where
+    // GroupPortableImpl::MaskFull is more efficient for the
+    // capacity <= GroupPortableImpl::kWidth.
+    assert(cap <= GroupPortableImpl::kWidth &&
+           "unexpectedly large small capacity");
+    static_assert(Group::kWidth >= GroupPortableImpl::kWidth,
+                  "unexpected group width");
+    // Group starts from kSentinel slot, so indices in the mask will
+    // be increased by 1.
+    const auto mask = GroupPortableImpl(ctrl + cap).MaskFull();
+    --ctrl;
+    slot = PrevSlot(slot, slot_size);
+    for (uint32_t i : mask) {
+      cb(ctrl + i, SlotAddress(slot, i, slot_size));
+    }
+    return;
+  }
+  size_t remaining = c.size();
+  ABSL_ATTRIBUTE_UNUSED const size_t original_size_for_assert = remaining;
+  while (remaining != 0) {
+    for (uint32_t i : GroupFullEmptyOrDeleted(ctrl).MaskFull()) {
+      assert(IsFull(ctrl[i]) && "hash table was modified unexpectedly");
+      cb(ctrl + i, SlotAddress(slot, i, slot_size));
+      --remaining;
+    }
+    ctrl += Group::kWidth;
+    slot = NextSlot(slot, slot_size, Group::kWidth);
+    assert((remaining == 0 || *(ctrl - 1) != ctrl_t::kSentinel) &&
+           "hash table was modified unexpectedly");
+  }
+  // NOTE: erasure of the current element is allowed in callback for
+  // absl::erase_if specialization. So we use `>=`.
+  assert(original_size_for_assert >= c.size() &&
+         "hash table was modified unexpectedly");
 }
 
 size_t PrepareInsertAfterSoo(size_t hash, size_t slot_size,
@@ -173,18 +233,6 @@ FindInfo find_first_non_full_outofline(const CommonFields& common,
 }
 
 namespace {
-
-// Returns the address of the slot just after slot assuming each slot has the
-// specified size.
-static inline void* NextSlot(void* slot, size_t slot_size) {
-  return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(slot) + slot_size);
-}
-
-// Returns the address of the slot just before slot assuming each slot has the
-// specified size.
-static inline void* PrevSlot(void* slot, size_t slot_size) {
-  return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(slot) - slot_size);
-}
 
 // Finds guaranteed to exists empty slot from the given position.
 // NOTE: this function is almost never triggered inside of the
@@ -337,7 +385,7 @@ void EraseMetaOnly(CommonFields& c, size_t index, size_t slot_size) {
 }
 
 void ClearBackingArray(CommonFields& c, const PolicyFunctions& policy,
-                       bool reuse, bool soo_enabled) {
+                       void* alloc, bool reuse, bool soo_enabled) {
   c.set_size(0);
   if (reuse) {
     assert(!soo_enabled || c.capacity() > SooCapacity());
@@ -349,7 +397,9 @@ void ClearBackingArray(CommonFields& c, const PolicyFunctions& policy,
     // infoz.
     c.infoz().RecordClearedReservation();
     c.infoz().RecordStorageChanged(0, soo_enabled ? SooCapacity() : 0);
-    (*policy.dealloc)(c, policy);
+    c.infoz().Unregister();
+    (*policy.dealloc)(alloc, c.capacity(), c.control(), policy.slot_size,
+                      policy.slot_align, c.has_infoz());
     c = soo_enabled ? CommonFields{soo_tag_t{}} : CommonFields{non_soo_tag_t{}};
   }
 }

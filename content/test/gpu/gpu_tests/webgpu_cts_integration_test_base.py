@@ -194,7 +194,8 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     cls._os_name = cls.browser.platform.GetOSName()
     # Set up the slow tests expectations' tags to match the test runner
     # expectations' tags
-    cls._GetSlowTests().set_tags(cls.child.expectations.tags)
+    if cls.child:
+      cls._GetSlowTests().set_tags(cls.child.expectations.tags)
 
   @classmethod
   def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:

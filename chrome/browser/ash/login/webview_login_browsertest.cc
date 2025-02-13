@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
+#include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/test/auth_ui_utils.h"
@@ -1280,11 +1281,13 @@ class ReauthTokenWebviewLoginTest : public ReauthWebviewLoginTest {
     login_manager_mixin_.AppendRegularUsers(1);
     user_with_invalid_token_ = login_manager_mixin_.users().back().account_id;
     cryptohome_mixin_.MarkUserAsExisting(user_with_invalid_token_);
+    UserDataAuthClient::InitializeFake();
+    token_handle_store_ = TokenHandleStoreFactory::Get()->GetTokenHandleStore();
   }
 
   void ShowReauthDialog() {
-    TokenHandleUtil::StoreTokenHandle(user_with_invalid_token_,
-                                      kTestTokenHandle);
+    token_handle_store_->StoreTokenHandle(user_with_invalid_token_,
+                                          kTestTokenHandle);
     // Force to remain in OOBE after login instead of start session, so we could
     // verify the value in UserContext.
     user_manager::KnownUser(g_browser_process->local_state())
@@ -1305,11 +1308,11 @@ class ReauthTokenWebviewLoginTest : public ReauthWebviewLoginTest {
  protected:
   void SetUpInProcessBrowserTestFixture() override {
     ReauthWebviewLoginTest::SetUpInProcessBrowserTestFixture();
-    TokenHandleUtil::SetInvalidTokenForTesting(kTestTokenHandle);
+    token_handle_store_->SetInvalidTokenForTesting(kTestTokenHandle);
   }
 
   void TearDownInProcessBrowserTestFixture() override {
-    TokenHandleUtil::SetInvalidTokenForTesting(nullptr);
+    token_handle_store_->SetInvalidTokenForTesting(nullptr);
     ReauthWebviewLoginTest::TearDownInProcessBrowserTestFixture();
   }
 
@@ -1317,6 +1320,7 @@ class ReauthTokenWebviewLoginTest : public ReauthWebviewLoginTest {
   CryptohomeMixin cryptohome_mixin_{&mixin_host_};
   FakeRecoveryServiceMixin fake_recovery_service_{&mixin_host_,
                                                   embedded_test_server()};
+  raw_ptr<TokenHandleStore> token_handle_store_;
 };
 
 IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest, FetchSuccess) {
@@ -1377,7 +1381,8 @@ IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest, FetchFailure) {
 
 IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest,
                        SkipFetchTokenWhenRecoveryNotSetUp) {
-  TokenHandleUtil::StoreTokenHandle(user_with_invalid_token_, kTestTokenHandle);
+  token_handle_store_->StoreTokenHandle(user_with_invalid_token_,
+                                        kTestTokenHandle);
   ShowReauthDialog();
   EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(),
             user_with_invalid_token_.GetUserEmail());

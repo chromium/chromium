@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -66,21 +68,20 @@ class VIEWS_EXPORT Label : public View,
   // Create Labels with style::CONTEXT_CONTROL_LABEL and style::STYLE_PRIMARY.
   // TODO(tapted): Remove these. Callers must specify a context or use the
   // constructor taking a CustomFont.
-  Label();
-  explicit Label(const std::u16string& text);
+  explicit Label(std::u16string_view text = {});
 
   // Construct a Label in the given |text_context|. The |text_style| can change
   // later, so provide a default. The |text_context| is fixed.
   // By default text directionality will be derived from the label text, however
   // it can be overriden with |directionality_mode|.
-  Label(const std::u16string& text,
+  Label(std::u16string_view text,
         int text_context,
         int text_style = style::STYLE_PRIMARY,
         gfx::DirectionalityMode directionality_mode =
             gfx::DirectionalityMode::DIRECTIONALITY_FROM_TEXT);
 
   // Construct a Label with the given |font| description.
-  Label(const std::u16string& text, const CustomFont& font);
+  Label(std::u16string_view text, const CustomFont& font);
 
   Label(const Label&) = delete;
   Label& operator=(const Label&) = delete;
@@ -96,8 +97,8 @@ class VIEWS_EXPORT Label : public View,
   virtual void SetFontList(const gfx::FontList& font_list);
 
   // Get or set the label text.
-  const std::u16string& GetText() const;
-  virtual void SetText(const std::u16string& text);
+  std::u16string_view GetText() const;
+  virtual void SetText(std::u16string_view text);
 
   void AdjustAccessibleName(std::u16string& new_name,
                             ax::mojom::NameFrom& name_from) override;
@@ -245,7 +246,7 @@ class VIEWS_EXPORT Label : public View,
   // (single-line) is to show the full text if it is wider than its bounds.
   // Calling this overrides the default behavior and lets you set a custom
   // tooltip.  To revert to default behavior, call this with an empty string.
-  void SetCustomTooltipText(const std::u16string& tooltip_text);
+  void SetCustomTooltipText(std::u16string_view tooltip_text);
 
   // Updates the tooltip text cached on the View.
   void UpdateTooltipText();
@@ -254,7 +255,7 @@ class VIEWS_EXPORT Label : public View,
   // the `handles_tooltips_` value. If `handles_tooltips_` is false, the tooltip
   // will be suppressed and not shown to the user, but the unsuppressed value
   // will still be locally cached if available.
-  std::u16string GetComputedTooltip();
+  std::u16string_view GetComputedTooltip();
 
   // Get or set whether this label can act as a tooltip handler; the default is
   // true.  Set to false whenever an ancestor view should handle tooltips
@@ -282,7 +283,7 @@ class VIEWS_EXPORT Label : public View,
   void SetCollapseWhenHidden(bool value);
 
   // Get the text as displayed to the user, respecting the obscured flag.
-  const std::u16string GetDisplayTextForTesting() const;
+  std::u16string_view GetDisplayTextForTesting() const;
 
   // Get the text direction, as displayed to the user.
   base::i18n::TextDirection GetTextDirectionForTesting();
@@ -439,7 +440,7 @@ class VIEWS_EXPORT Label : public View,
 
   const gfx::RenderText* GetRenderTextForSelectionController() const;
 
-  void Init(const std::u16string& text,
+  void Init(std::u16string_view text,
             const gfx::FontList& font_list,
             gfx::DirectionalityMode directionality_mode);
 
@@ -478,7 +479,7 @@ class VIEWS_EXPORT Label : public View,
   void ClearDisplayText();
 
   // Returns the currently selected text.
-  std::u16string GetSelectedText() const;
+  std::u16string_view GetSelectedText() const;
 
   // Updates the clipboard with the currently selected text.
   void CopyToClipboard();
@@ -567,7 +568,7 @@ class VIEWS_EXPORT Label : public View,
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Label, View)
 VIEW_BUILDER_PROPERTY(const gfx::FontList&, FontList)
-VIEW_BUILDER_PROPERTY(const std::u16string&, Text)
+VIEW_BUILDER_PROPERTY(std::u16string, Text)
 VIEW_BUILDER_PROPERTY(int, TextStyle)
 VIEW_BUILDER_PROPERTY(int, TextContext)
 VIEW_BUILDER_PROPERTY(bool, AutoColorReadabilityEnabled)
@@ -589,7 +590,7 @@ VIEW_BUILDER_PROPERTY(bool, Obscured)
 VIEW_BUILDER_PROPERTY(bool, AllowCharacterBreak)
 VIEW_BUILDER_PROPERTY(size_t, TruncateLength)
 VIEW_BUILDER_PROPERTY(gfx::ElideBehavior, ElideBehavior)
-VIEW_BUILDER_PROPERTY(const std::u16string&, TooltipText)
+VIEW_BUILDER_PROPERTY(std::u16string, TooltipText)
 VIEW_BUILDER_PROPERTY(bool, HandlesTooltips)
 VIEW_BUILDER_PROPERTY(int, MaximumWidth)
 VIEW_BUILDER_PROPERTY(int, MaximumWidthSingleLine)

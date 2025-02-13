@@ -183,6 +183,16 @@
         [[getPoweredByGoogleMessage_()]]
       </h2>
     </template>
+    <template is="dom-if" if="[[!!latestTextQuery_]]">
+      <h3 id="latestTextQueryHeading"
+          class="wallpaper-collections-heading query-history"
+          on-click="onLatestTextQueryClicked_"
+          on-keypress="onLatestTextQueryClicked_"
+          role="button"
+          tabindex="0">
+        [[latestTextQuery_]]
+      </h3>
+    </template>
     <iron-list id="grid"
         items="[[tiles_]]"
         grid
@@ -234,7 +244,7 @@
       </template>
     </iron-list>
     <template is="dom-if" if="[[showHistory_]]" restamp>
-      <h2 id="historyTitle">
+      <h2 id="historyTitle" aria-describedby="historyTooltip">
         [[i18n('seaPenFreeformPreviousPrompts')]]
         <iron-icon
           role="tooltip"

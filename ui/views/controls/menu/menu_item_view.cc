@@ -466,7 +466,7 @@ SubmenuView* MenuItemView::CreateSubmenu() {
   // submenu items, we create a virtual child of type Menu.
   std::unique_ptr<AXVirtualView> virtual_child =
       std::make_unique<AXVirtualView>();
-  virtual_child->GetCustomData().role = ax::mojom::Role::kMenu;
+  virtual_child->SetRole(ax::mojom::Role::kMenu);
   GetViewAccessibility().AddVirtualChildView(std::move(virtual_child));
 #endif  //  BUILDFLAG(IS_MAC)
 

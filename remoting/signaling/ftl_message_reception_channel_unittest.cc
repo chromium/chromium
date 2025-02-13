@@ -20,7 +20,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/scoped_protobuf_http_request.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
 #include "remoting/signaling/ftl_services_context.h"
@@ -40,7 +40,7 @@ using ::testing::Return;
 
 using ReceiveMessagesResponseCallback = base::RepeatingCallback<void(
     std::unique_ptr<ftl::ReceiveMessagesResponse>)>;
-using StatusCallback = base::OnceCallback<void(const ProtobufHttpStatus&)>;
+using StatusCallback = base::OnceCallback<void(const HttpStatus&)>;
 
 class MockSignalingTracker : public SignalingTracker {
  public:
@@ -100,20 +100,19 @@ base::OnceClosure NotReachedClosure() {
   return base::BindOnce([]() { NOTREACHED(); });
 }
 
-base::RepeatingCallback<void(const ProtobufHttpStatus&)>
-NotReachedStatusCallback(const base::Location& location) {
-  return base::BindLambdaForTesting([=](const ProtobufHttpStatus& status) {
+base::RepeatingCallback<void(const HttpStatus&)> NotReachedStatusCallback(
+    const base::Location& location) {
+  return base::BindLambdaForTesting([=](const HttpStatus& status) {
     NOTREACHED() << "Location: " << location.ToString()
                  << ", status code: " << static_cast<int>(status.error_code());
   });
 }
 
-base::OnceCallback<void(const ProtobufHttpStatus&)>
-CheckStatusThenQuitRunLoopCallback(
+base::OnceCallback<void(const HttpStatus&)> CheckStatusThenQuitRunLoopCallback(
     const base::Location& from_here,
-    ProtobufHttpStatus::Code expected_status_code,
+    HttpStatus::Code expected_status_code,
     base::RunLoop* run_loop) {
-  return base::BindLambdaForTesting([=](const ProtobufHttpStatus& status) {
+  return base::BindLambdaForTesting([=](const HttpStatus& status) {
     ASSERT_EQ(expected_status_code, status.error_code())
         << "Incorrect status code. Location: " << from_here.ToString();
     run_loop->QuitWhenIdle();
@@ -190,14 +189,13 @@ TEST_F(FtlMessageReceptionChannelTest,
               const ReceiveMessagesResponseCallback& on_incoming_msg,
               StatusCallback on_channel_closed) {
             std::move(on_channel_closed)
-                .Run(ProtobufHttpStatus(
-                    ProtobufHttpStatus::Code::UNAUTHENTICATED, ""));
+                .Run(HttpStatus(HttpStatus::Code::UNAUTHENTICATED, ""));
           }));
 
   channel_->StartReceivingMessages(
       NotReachedClosure(),
       CheckStatusThenQuitRunLoopCallback(
-          FROM_HERE, ProtobufHttpStatus::Code::UNAUTHENTICATED, &run_loop));
+          FROM_HERE, HttpStatus::Code::UNAUTHENTICATED, &run_loop));
 
   run_loop.Run();
 }
@@ -234,8 +232,7 @@ TEST_F(FtlMessageReceptionChannelTest,
             ASSERT_EQ(0, GetRetryFailureCount());
 
             std::move(on_channel_closed)
-                .Run(ProtobufHttpStatus(ProtobufHttpStatus::Code::UNAVAILABLE,
-                                        ""));
+                .Run(HttpStatus(HttpStatus::Code::UNAVAILABLE, ""));
 
             ASSERT_EQ(1, GetRetryFailureCount());
             ASSERT_NEAR(FtlServicesContext::kBackoffInitialDelay.InSecondsF(),
@@ -328,16 +325,14 @@ TEST_F(FtlMessageReceptionChannelTest, StreamsTwoMessages) {
             *response->mutable_inbox_message() = message_2;
             on_incoming_msg.Run(std::move(response));
 
-            const ProtobufHttpStatus kCancel(
-                ProtobufHttpStatus::Code::CANCELLED, "Cancelled");
+            const HttpStatus kCancel(HttpStatus::Code::CANCELLED, "Cancelled");
             std::move(on_channel_closed).Run(kCancel);
           }));
 
   channel_->StartReceivingMessages(
       base::DoNothing(),
       CheckStatusThenQuitRunLoopCallback(
-          FROM_HERE, ProtobufHttpStatus::ProtobufHttpStatus::Code::CANCELLED,
-          &run_loop));
+          FROM_HERE, HttpStatus::HttpStatus::Code::CANCELLED, &run_loop));
 
   run_loop.Run();
 }
@@ -422,7 +417,7 @@ TEST_F(FtlMessageReceptionChannelTest, ServerClosesStream_ResetsStream) {
             std::move(on_channel_ready).Run();
 
             // Close the stream with OK.
-            std::move(on_channel_closed).Run(ProtobufHttpStatus::OK());
+            std::move(on_channel_closed).Run(HttpStatus::OK());
           },
           &old_stream))
       .WillOnce(StartStream(
@@ -463,9 +458,7 @@ TEST_F(FtlMessageReceptionChannelTest, TimeoutIncreasesToMaximum) {
             // Otherwise send UNAVAILABLE to reset the stream.
 
             std::move(on_channel_closed)
-                .Run(ProtobufHttpStatus(
-                    ProtobufHttpStatus::ProtobufHttpStatus::Code::UNAVAILABLE,
-                    ""));
+                .Run(HttpStatus(HttpStatus::HttpStatus::Code::UNAVAILABLE, ""));
 
             int new_failure_count = GetRetryFailureCount();
             ASSERT_LT(failure_count, new_failure_count);
@@ -505,9 +498,8 @@ TEST_F(FtlMessageReceptionChannelTest,
             ASSERT_EQ(0, GetRetryFailureCount());
 
             std::move(on_channel_closed)
-                .Run(ProtobufHttpStatus(ProtobufHttpStatus::ProtobufHttpStatus::
-                                            Code::UNAUTHENTICATED,
-                                        ""));
+                .Run(HttpStatus(HttpStatus::HttpStatus::Code::UNAUTHENTICATED,
+                                ""));
 
             ASSERT_EQ(1, GetRetryFailureCount());
             ASSERT_NEAR(FtlServicesContext::kBackoffInitialDelay.InSecondsF(),
@@ -532,8 +524,8 @@ TEST_F(FtlMessageReceptionChannelTest,
 
   channel_->StartReceivingMessages(
       base::DoNothing(),
-      base::BindLambdaForTesting([&](const ProtobufHttpStatus& status) {
-        ASSERT_EQ(ProtobufHttpStatus::ProtobufHttpStatus::Code::UNAUTHENTICATED,
+      base::BindLambdaForTesting([&](const HttpStatus& status) {
+        ASSERT_EQ(HttpStatus::HttpStatus::Code::UNAUTHENTICATED,
                   status.error_code());
         channel_->StartReceivingMessages(run_loop.QuitClosure(),
                                          NotReachedStatusCallback(FROM_HERE));

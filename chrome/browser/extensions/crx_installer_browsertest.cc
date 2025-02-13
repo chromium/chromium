@@ -29,6 +29,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/download/download_crx_util.h"
+#include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
@@ -630,7 +631,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
   ASSERT_FALSE(v2_path.empty());
   ASSERT_TRUE(UpdateExtensionWaitForIdle(extension_id, v2_path, 0));
 
-  ASSERT_EQ(1u, service->delayed_installs()->size());
+  DelayedInstallManager* manager = service->delayed_install_manager();
+  ASSERT_EQ(1u, manager->delayed_installs().size());
   extension = registry->enabled_extensions().GetByID(extension_id);
   ASSERT_EQ("1.0", extension->version().GetString());
 
@@ -638,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
   // This should not trigger the delayed install.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   WaitForExtensionIdle(extension_id);
-  ASSERT_EQ(1u, service->delayed_installs()->size());
+  ASSERT_EQ(1u, manager->delayed_installs().size());
   extension = registry->enabled_extensions().GetByID(extension_id);
   ASSERT_EQ("1.0", extension->version().GetString());
 
@@ -652,8 +654,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
 
   // The version 2 delayed install should be cleaned up, and finishing
   // delayed extension installation shouldn't break anything.
-  ASSERT_EQ(0u, service->delayed_installs()->size());
-  service->MaybeFinishDelayedInstallations();
+  ASSERT_EQ(0u, manager->delayed_installs().size());
+  manager->MaybeFinishDelayedInstallations();
   extension = registry->enabled_extensions().GetByID(extension_id);
   ASSERT_EQ("3.0", extension->version().GetString());
 }

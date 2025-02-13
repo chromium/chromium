@@ -81,6 +81,10 @@ void EnterpriseSearchAggregatorProvider::Start(const AutocompleteInput& input,
   if (minimal_changes)
     return;
 
+  if (input.omit_asynchronous_matches()) {
+    return;
+  }
+
   input_ = input;
   done_ = false;  // Set true in callbacks.
 
@@ -135,7 +139,8 @@ void EnterpriseSearchAggregatorProvider::Run() {
                          weak_ptr_factory_.GetWeakPtr()),
           base::BindOnce(
               &EnterpriseSearchAggregatorProvider::RequestCompleted,
-              base::Unretained(this) /* this owns SimpleURLLoader */));
+              base::Unretained(this) /* this owns SimpleURLLoader */),
+          input_.InKeywordMode());
 }
 
 void EnterpriseSearchAggregatorProvider::RequestStarted(

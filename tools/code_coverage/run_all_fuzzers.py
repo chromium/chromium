@@ -72,13 +72,11 @@ def _run_and_log(cmd: Sequence[str], env: Mapping[str, str], timeout: float,
     return True
   except Exception as e:
     if type(e) == subprocess.TimeoutExpired:
-      print(
-          f"Command {cmd!s} ({annotation}) timed out after {e.timeout!s} seconds"
-      )
+      print(f"Command {cmd!s} ({annotation}) timed out " +
+            f"after {e.timeout!s} seconds")
     else:
-      print(
-          f"Command {cmd!s} ({annotation}) return code: {e.returncode!s}\nStdout:\n{e.output}\nStderr:\n{e.stderr}"
-      )
+      print(f"Command {cmd!s} ({annotation}) return code: " +
+            f"{e.returncode!s}\nStdout:\n{e.output}\nStderr:\n{e.stderr}")
   return False
 
 
@@ -143,8 +141,6 @@ def _run_fuzzer_target(args):
   fullcorpus_profraw = os.path.join(profraw_dir, target + "_%p.profraw")
   env['LLVM_PROFILE_FILE'] = fullcorpus_profraw
   fullcorpus_cmd = cmd.copy()
-  if corpus_dir is not None:
-    fullcorpus_cmd.append(corpus_dir)
   _erase_profraws(fullcorpus_profraw)
   for i in range(WHOLE_CORPUS_RETRIES):
     ok = _run_and_log(fullcorpus_cmd, env, WHOLE_CORPUS_TIMEOUT_SECS,
@@ -190,9 +186,8 @@ def _run_fuzzer_target(args):
           break
       # The corpus may be huge - don't keep going forever.
       if count > INDIVIDUAL_TESTCASES_MAX_TO_TRY:
-        print(
-            f"Skipping remaining test cases for {target} - >{INDIVIDUAL_TESTCASES_MAX_TO_TRY} tried"
-        )
+        print(f"Skipping remaining test cases for {target} - >" +
+              f"{INDIVIDUAL_TESTCASES_MAX_TO_TRY} tried")
         break
       # And if we've got enough valid coverage files, assume this is a
       # reasonable approximation of the total coverage. This is partly
@@ -201,8 +196,8 @@ def _run_fuzzer_target(args):
       # because profraw files are huge and can fill up bot disk space.
       if valid_profiles > INDIVIDUAL_TESTCASES_SUCCESSES_NEEDED:
         print(
-            f"Skipping remaining test cases for {target}, >%{INDIVIDUAL_TESTCASES_SUCCESSES_NEEDED} valid profiles recorded."
-        )
+            f"Skipping remaining test cases for {target}, >%" +
+            f"{INDIVIDUAL_TESTCASES_SUCCESSES_NEEDED} valid profiles recorded.")
         break
   if valid_profiles == 0:
     failed_targets.append(target)
@@ -289,7 +284,10 @@ for fuzzer_target in os.listdir(args.fuzzer_corpora_dir):
         env,
         # RSS limit 8GB. Some of our fuzzers which involve running significant
         # chunks of Chromium code require more than the 2GB default.
-        'cmd': [fuzzer_target_binpath, '-runs=0', '-rss_limit_mb=8192'],
+        'cmd': [
+            fuzzer_target_binpath, '-runs=0', '-rss_limit_mb=8192',
+            fuzzer_target_corporadir
+        ],
         'corpus':
         fuzzer_target_corporadir
     })

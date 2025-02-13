@@ -55,6 +55,8 @@ const char kExceptionMessageSystemPromptIsDefinedMultipleTimes[] =
 const char kExceptionMessageSystemPromptIsNotTheFirst[] =
     "The prompt with 'system' role must be placed at the first entry of "
     "initialPrompts.";
+const char kExceptionMessageUnsupportedLanguages[] =
+    "The specified languages are not supported.";
 
 void ThrowInvalidContextException(ExceptionState& exception_state) {
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -194,8 +196,6 @@ WTF::String ConvertModelAvailabilityCheckResultToDebugString(
       return "The GPU is blocked.";
     case mojom::blink::ModelAvailabilityCheckResult::kNoTooManyRecentCrashes:
       return "The model process crashed too many times for this version.";
-    case mojom::blink::ModelAvailabilityCheckResult::kNoTooManyRecentTimeouts:
-      return "The model took too long too many times for this version.";
     case mojom::blink::ModelAvailabilityCheckResult::kNoSafetyModelNotAvailable:
       return "The safety model was required but not available.";
     case mojom::blink::ModelAvailabilityCheckResult::

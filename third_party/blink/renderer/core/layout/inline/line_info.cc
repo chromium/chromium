@@ -198,7 +198,7 @@ InlineItemTextIndex LineInfo::End() const {
     return GetBreakToken()->Start();
   }
   if (end_item_index_ && end_item_index_ < ItemsData().items.size()) {
-    return {end_item_index_, ItemsData().items[end_item_index_].StartOffset()};
+    return {end_item_index_, ItemsData().items[end_item_index_]->StartOffset()};
   }
   return ItemsData().End();
 }
@@ -208,7 +208,7 @@ unsigned LineInfo::EndTextOffset() const {
     return GetBreakToken()->StartTextOffset();
   }
   if (end_item_index_ && end_item_index_ < ItemsData().items.size()) {
-    return ItemsData().items[end_item_index_].StartOffset();
+    return ItemsData().items[end_item_index_]->StartOffset();
   }
   return ItemsData().text_content.length();
 }

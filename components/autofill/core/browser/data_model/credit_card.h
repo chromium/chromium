@@ -330,6 +330,9 @@ class CreditCard : public FormGroup {
   // Returns true if there are no values (field types) set.
   bool IsEmpty(const std::string& app_locale) const;
 
+  // Returns true if the card is enrolled in card info retrieval.
+  bool IsEnrolledInCardInfoRetrieval() const;
+
   // Returns true if credit card number is valid.
   // MASKED_SERVER_CARDs will never be valid because the number is
   // not complete.

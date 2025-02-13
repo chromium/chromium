@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 
+#include <string_view>
+
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -151,7 +153,7 @@ void RichControlsContainerView::SetTitleTextStyleAndColor(
   title_->SetEnabledColorId(color_id);
 }
 
-const std::u16string& RichControlsContainerView::GetTitleForTesting() {
+std::u16string_view RichControlsContainerView::GetTitleForTesting() const {
   return title_->GetText();
 }
 

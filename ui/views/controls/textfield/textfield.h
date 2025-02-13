@@ -12,6 +12,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -142,10 +143,10 @@ class VIEWS_EXPORT Textfield : public View,
   // Gets the text for the Textfield.
   // NOTE: Call sites should take care to not reveal the text for a password
   // textfield.
-  const std::u16string& GetText() const;
+  std::u16string_view GetText() const;
 
   // Sets the text currently displayed in the Textfield.
-  void SetText(const std::u16string& new_text);
+  void SetText(std::u16string_view new_text);
 
   // Sets the text currently displayed in the Textfield and the cursor position.
   // Does not fire notifications about the caret bounds changing. This is
@@ -155,7 +156,7 @@ class VIEWS_EXPORT Textfield : public View,
   // selection or cursor separately afterwards does not update the edit history,
   // i.e. the cursor position after redoing this change will be determined by
   // |cursor_position| and not by subsequent calls to e.g. SetSelectedRange().
-  void SetTextWithoutCaretBoundsChangeNotification(const std::u16string& text,
+  void SetTextWithoutCaretBoundsChangeNotification(std::u16string_view text,
                                                    size_t cursor_position);
 
   // Scrolls all of |scroll_positions| into view, if possible. For each
@@ -179,7 +180,7 @@ class VIEWS_EXPORT Textfield : public View,
   // Returns the text that is currently selected.
   // NOTE: Call sites should take care to not reveal the text for a password
   // textfield.
-  std::u16string GetSelectedText() const;
+  std::u16string_view GetSelectedText() const;
 
   // Select the entire text range. If |reversed| is true, the range will end at
   // the logical beginning of the text; this generally shows the leading portion
@@ -238,8 +239,8 @@ class VIEWS_EXPORT Textfield : public View,
   void SetMinimumWidthInChars(int minimum_width);
 
   // Gets/Sets the text to display when empty.
-  const std::u16string& GetPlaceholderText() const;
-  void SetPlaceholderText(const std::u16string& text);
+  std::u16string_view GetPlaceholderText() const;
+  void SetPlaceholderText(std::u16string_view text);
 
   void set_placeholder_text_color(SkColor color) {
     placeholder_text_color_ = color;

@@ -38,20 +38,18 @@ suite('WallpaperSearchTest', () => {
   let wallpaperSearchElement: WallpaperSearchElement;
   let windowProxy: TestMock<WindowProxy>;
 
-  async function createWallpaperSearchElement(
+  function createWallpaperSearchElement(
       descriptors: Descriptors|null = null,
-      inspirationGroups: InspirationGroup[]|null =
-          null): Promise<WallpaperSearchElement> {
+      inspirationGroups: InspirationGroup[]|null = null) {
     handler.setResultFor('getDescriptors', Promise.resolve({descriptors}));
     handler.setResultFor(
         'getInspirations', Promise.resolve({inspirationGroups}));
     wallpaperSearchElement =
         document.createElement('customize-chrome-wallpaper-search');
     document.body.appendChild(wallpaperSearchElement);
-    return wallpaperSearchElement;
   }
 
-  async function createWallpaperSearchElementWithDescriptors(
+  function createWallpaperSearchElementWithDescriptors(
       inspirationGroups: InspirationGroup[]|null = null) {
     createWallpaperSearchElement(
         {
@@ -82,7 +80,7 @@ suite('WallpaperSearchTest', () => {
         }));
   }
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('onLine', true);

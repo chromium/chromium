@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -340,7 +342,7 @@ void TaskManagerView::MenuClosed(ui::SimpleMenuModel* source) {
   menu_runner_.reset();
 }
 
-void TaskManagerView::SearchBarOnInputChanged(const std::u16string& query) {
+void TaskManagerView::SearchBarOnInputChanged(std::u16string_view query) {
   const auto selected_category =
       query.empty()
           ? kTabDefinitions[tabs_->GetSelectedTabIndex()].associated_category
@@ -474,7 +476,7 @@ std::unique_ptr<views::View> TaskManagerView::CreateHeaderSeparatorUnderlay(
 }
 
 void TaskManagerView::PerformFilter(DisplayCategory category,
-                                    const std::u16string& search_term) {
+                                    std::u16string_view search_term) {
   // When `select_on_remove_` is enabled, the selection will automatically jump
   // to some next/previous row if available. However, this setting needs to be
   // temporarily disabled during model updates to achieve the desired selection

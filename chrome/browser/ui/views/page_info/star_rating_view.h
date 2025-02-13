@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_STAR_RATING_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_STAR_RATING_VIEW_H_
 
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -31,7 +31,7 @@ class StarRatingView : public views::BoxLayoutView {
   void SetRating(double rating);
 
   ui::VectorIconModel GetVectorIconModelForIndexForTesting(int index) const;
-  std::u16string GetTextForTesting() const;
+  std::u16string_view GetTextForTesting() const;
 
  private:
   // Returns the image model for the icon at |index| for |rating|.

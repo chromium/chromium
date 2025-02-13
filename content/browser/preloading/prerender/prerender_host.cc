@@ -1180,6 +1180,7 @@ void PrerenderHost::SetFailureReason(
     case PrerenderFinalStatus::kTabClosedWithoutUserGesture:
     case PrerenderFinalStatus::kSpeculationRuleRemoved:
     case PrerenderFinalStatus::kOtherPrerenderedPageActivated:
+    case PrerenderFinalStatus::kBrowsingDataRemoved:
       return;
     case PrerenderFinalStatus::kDestroyed:
     case PrerenderFinalStatus::kLowEndDevice:

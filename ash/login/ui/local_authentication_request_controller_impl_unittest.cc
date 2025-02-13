@@ -382,13 +382,11 @@ class AuthSubmissionCounter : public ActiveSessionAuthView::Observer,
   }
 
   // ActiveSessionAuthView::Observer:
-  void OnPasswordSubmit(const std::u16string& password) override {
+  void OnPasswordSubmit(std::u16string_view password) override {
     ++password_submit_counter_;
   }
 
-  void OnPinSubmit(const std::u16string& pin) override {
-    ++pin_submit_counter_;
-  }
+  void OnPinSubmit(std::u16string_view pin) override { ++pin_submit_counter_; }
 
   // views::ViewObserver:
   void OnViewRemovedFromWidget(views::View* observed_view) override {

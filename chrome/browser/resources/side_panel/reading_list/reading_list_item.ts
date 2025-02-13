@@ -117,8 +117,8 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
       this.$.updateStatusButton,
       this.$.deleteButton,
     ];
-    const focusedIndex = focusableElements.indexOf(
-        this.shadowRoot!.activeElement as HTMLElement);
+    const focusedIndex =
+        focusableElements.indexOf(this.shadowRoot.activeElement as HTMLElement);
 
     switch (e.key) {
       case ' ':

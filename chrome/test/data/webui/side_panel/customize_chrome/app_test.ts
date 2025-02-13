@@ -25,7 +25,7 @@ suite('AppTest', () => {
   let handler: TestMock<CustomizeChromePageHandlerRemote>;
   let callbackRouter: CustomizeChromePageRemote;
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
         CustomizeChromePageHandlerRemote,
@@ -38,6 +38,7 @@ suite('AppTest', () => {
                          .callbackRouter.$.bindNewPipeAndPassRemote();
     customizeChromeApp = document.createElement('customize-chrome-app');
     document.body.appendChild(customizeChromeApp);
+    return microtasksFinished();
   });
 
   suite('Metrics', () => {
@@ -171,8 +172,7 @@ suite('AppTest', () => {
     });
 
     test(
-        'clicking "coupon" card opens Chrome Web Store category page',
-        async () => {
+        'clicking "coupon" card opens Chrome Web Store category page', () => {
           const button =
               customizeChromeApp.shadowRoot!.querySelector<HTMLElement>(
                   '#couponsButton');
@@ -184,7 +184,7 @@ suite('AppTest', () => {
 
     test(
         'clicking "writing" card opens Chrome Web Store collection page',
-        async () => {
+        () => {
           const button =
               customizeChromeApp.shadowRoot!.querySelector<HTMLElement>(
                   '#writingButton');
@@ -196,7 +196,7 @@ suite('AppTest', () => {
 
     test(
         'clicking "productivity" card opens Chrome Web Store category page',
-        async () => {
+        () => {
           const button =
               customizeChromeApp.shadowRoot!.querySelector<HTMLElement>(
                   '#productivityButton');
@@ -208,7 +208,7 @@ suite('AppTest', () => {
 
     test(
         'clicking Chrome Web Store link opens Chrome Web Store home page',
-        async () => {
+        () => {
           const button =
               customizeChromeApp.shadowRoot!.querySelector<HTMLElement>(
                   '#chromeWebstoreLink');
@@ -226,7 +226,7 @@ suite('AppTest', () => {
         });
       });
 
-      test(`extension card does ${flagEnabled ? '' : 'not '}show`, async () => {
+      test(`extension card does ${flagEnabled ? '' : 'not '}show`, () => {
         assertEquals(
             !!customizeChromeApp.shadowRoot!.querySelector('#extensions'),
             flagEnabled);

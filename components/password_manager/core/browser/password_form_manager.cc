@@ -478,7 +478,7 @@ bool PasswordFormManager::IsUpdateAffectingPasswordsStoredInTheGoogleAccount()
 
 void PasswordFormManager::OnUpdateUsernameFromPrompt(
     const std::u16string& new_username) {
-  DCHECK(parsed_submitted_form_);
+  CHECK(parsed_submitted_form_);
   parsed_submitted_form_->username_value = new_username;
   parsed_submitted_form_->username_element_renderer_id =
       autofill::FieldRendererId();

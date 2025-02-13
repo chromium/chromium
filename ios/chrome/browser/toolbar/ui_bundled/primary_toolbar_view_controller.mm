@@ -11,6 +11,7 @@
 #import "base/metrics/field_trial_params.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/banner_promo/model/default_browser_banner_promo_app_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
@@ -252,6 +253,15 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   }
 }
 
+- (BOOL)locationBarIsExpanded {
+  for (NSLayoutConstraint* constraint in self.view.expandedConstraints) {
+    if (!constraint.isActive) {
+      return false;
+    }
+  }
+  return true;
+}
+
 #pragma mark - SharingPositioner
 
 - (UIView*)sourceView {
@@ -283,6 +293,7 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
 - (void)expandLocationBar {
   [self deactivateViewLocationBarConstraints];
   [NSLayoutConstraint activateConstraints:self.view.expandedConstraints];
+  [self.delegate locationBarExpandedInViewController:self];
   [self.view layoutIfNeeded];
 }
 
@@ -294,6 +305,7 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   } else {
     [NSLayoutConstraint activateConstraints:self.view.contractedConstraints];
   }
+  [self.delegate locationBarContractedInViewController:self];
   [self.view layoutIfNeeded];
 }
 

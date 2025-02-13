@@ -554,6 +554,7 @@
 <translation id="3628462041319107639">S'està baixant el model de transcripció…</translation>
 <translation id="3632040286124154621">El suggeriment és bo</translation>
 <translation id="3632579075709132555">Commutador de la pantalla de privadesa</translation>
+<translation id="3634941468757842845">Tria un tema</translation>
 <translation id="3639873154908477486">Nom (de la A a la Z)</translation>
 <translation id="3644695927181369554">El suggeriment és dolent</translation>
 <translation id="3651050199673793219">Selecciona una unitat de temperatura</translation>
@@ -1048,7 +1049,7 @@
         Totes les imatges creades es mostraran automàticament aquí.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">No m'ho tornis a mostrar</translation>
-<translation id="5975130252842127517">coral</translation>
+<translation id="5975130252842127517">corall</translation>
 <translation id="5982621672636444458">Ordena les opcions</translation>
 <translation id="5984145644188835034">Fons de pantalla predeterminat</translation>
 <translation id="5996832681196460718">seda</translation>
@@ -1540,6 +1541,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8132480444149501833">Sol·licita els comptadors de trànsit</translation>
 <translation id="8135609423982943441">El Chromebook s'ha restablert als valors predeterminats segurs. Pots ajustar aquests canvis en qualsevol moment a Configuració.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8140591278915222789">Crea el teu</translation>
 <translation id="8143951647992294073">Selecciona <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Eines per a desenvolupadors</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>

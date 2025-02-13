@@ -32,12 +32,6 @@ config("xnnpack_config") {
 
   defines = [
     "CHROMIUM",
-
-    # Don't enable this without first talking to Chrome Security!
-    # XNNPACK runs in the browser process. The hardening and fuzzing needed
-    # to ensure JIT can be used safely is not in place yet.
-    "XNN_ENABLE_JIT=0",
-
     "XNN_ENABLE_ASSEMBLY=1",
     "XNN_ENABLE_GEMM_M_SPECIALIZATION=1",
     "XNN_ENABLE_MEMOPT=1",

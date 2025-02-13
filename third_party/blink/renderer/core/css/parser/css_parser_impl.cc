@@ -1391,9 +1391,8 @@ StyleRuleMedia* CSSParserImpl::ConsumeMediaRule(
   }
 
   HeapVector<Member<StyleRuleBase>, 4> rules;
-  ConsumeRuleListOrNestedDeclarationList(
-      stream,
-      nesting_type, parent_rule_for_nesting, &rules);
+  ConsumeRuleListOrNestedDeclarationList(stream, nesting_type,
+                                         parent_rule_for_nesting, &rules);
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());
@@ -1436,9 +1435,8 @@ StyleRuleSupports* CSSParserImpl::ConsumeSupportsRule(
           .SimplifyWhiteSpace();
 
   HeapVector<Member<StyleRuleBase>, 4> rules;
-  ConsumeRuleListOrNestedDeclarationList(
-      stream,
-      nesting_type, parent_rule_for_nesting, &rules);
+  ConsumeRuleListOrNestedDeclarationList(stream, nesting_type,
+                                         parent_rule_for_nesting, &rules);
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());
@@ -1471,9 +1469,8 @@ StyleRuleStartingStyle* CSSParserImpl::ConsumeStartingStyleRule(
   }
 
   HeapVector<Member<StyleRuleBase>, 4> rules;
-  ConsumeRuleListOrNestedDeclarationList(
-      stream,
-      nesting_type, parent_rule_for_nesting, &rules);
+  ConsumeRuleListOrNestedDeclarationList(stream, nesting_type,
+                                         parent_rule_for_nesting, &rules);
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());
@@ -1813,15 +1810,13 @@ StyleRuleProperty* CSSParserImpl::ConsumePropertyRule(
     CSSParserTokenStream& stream) {
   // Parse the prelude.
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
-  const CSSParserToken& name_token = stream.ConsumeIncludingWhitespace();
+  const CSSParserToken& name_token = stream.Peek();
   if (!CSSVariableParser::IsValidVariableName(name_token)) {
-    if (observer_) {
-      observer_->ObserveErroneousAtRule(prelude_offset_start,
-                                        CSSAtRuleID::kCSSAtRuleProperty);
-    }
+    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleProperty);
     return nullptr;
   }
   String name = name_token.Value().ToString();
+  stream.ConsumeIncludingWhitespace();
   wtf_size_t prelude_offset_end = stream.LookAheadOffset();
   if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream,
                                              CSSAtRuleID::kCSSAtRuleProperty)) {
@@ -2084,9 +2079,8 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
   }
 
   HeapVector<Member<StyleRuleBase>, 4> rules;
-  ConsumeRuleListOrNestedDeclarationList(
-      stream,
-      nesting_type, parent_rule_for_nesting, &rules);
+  ConsumeRuleListOrNestedDeclarationList(stream, nesting_type,
+                                         parent_rule_for_nesting, &rules);
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());
@@ -2183,9 +2177,8 @@ StyleRuleBase* CSSParserImpl::ConsumeLayerRule(
   }
 
   HeapVector<Member<StyleRuleBase>, 4> rules;
-  ConsumeRuleListOrNestedDeclarationList(
-      stream,
-      nesting_type, parent_rule_for_nesting, &rules);
+  ConsumeRuleListOrNestedDeclarationList(stream, nesting_type,
+                                         parent_rule_for_nesting, &rules);
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());
@@ -2367,8 +2360,7 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
   CSSSelector dummy;
   StyleRule* fake_parent_rule = StyleRule::Create(base::span_from_ref(dummy));
   HeapVector<Member<StyleRuleBase>, 4> child_rules;
-  ConsumeRuleListOrNestedDeclarationList(stream,
-                                         CSSNestingType::kNesting,
+  ConsumeRuleListOrNestedDeclarationList(stream, CSSNestingType::kNesting,
                                          fake_parent_rule, &child_rules);
   for (StyleRuleBase* child_rule : child_rules) {
     fake_parent_rule->AddChildRule(child_rule);
@@ -2995,6 +2987,12 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
           /*restricted_value=*/true, /*comma_ends_declaration=*/false,
           important, *context_);
     }
+
+    // There could be remnants of a broken !important declaration,
+    // that neither ConsumeUnparsedDeclaration() nor MaybeConsumeImportant()
+    // would consume, but which Devtools wants us to include.
+    stream.SkipUntilPeekedTypeIs<kLeftBraceToken, kSemicolonToken>();
+
     // The end offset is the offset of the terminating token, which is peeked
     // but not yet consumed.
     observer_->ObserveProperty(decl_offset_start, stream.LookAheadOffset(),

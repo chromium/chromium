@@ -5,6 +5,10 @@
 #include "ui/views/style/platform_style.h"
 
 #import <Cocoa/Cocoa.h>
+#include <stddef.h>
+
+#include <memory>
+#include <string_view>
 
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -45,7 +49,7 @@ void PlatformStyle::OnTextfieldEditFailed() {
 }
 
 // static
-gfx::Range PlatformStyle::RangeToDeleteBackwards(const std::u16string& text,
+gfx::Range PlatformStyle::RangeToDeleteBackwards(std::u16string_view text,
                                                  size_t cursor_position) {
   if (cursor_position == 0) {
     return gfx::Range();

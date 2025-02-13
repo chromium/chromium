@@ -417,7 +417,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         assertDeepEquals({}, queryParams);
       });
 
-  test('show breadcrumbs for SeaPen templates', async () => {
+  test('show breadcrumbs for SeaPen templates', () => {
     loadTimeData.overrideValues({isSeaPenTextInputEnabled: false});
     breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
       'path': Paths.SEA_PEN_COLLECTION,
@@ -433,8 +433,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
   });
 
   test(
-      'show breadcrumbs for SeaPen templates with freeform enabled',
-      async () => {
+      'show breadcrumbs for SeaPen templates with freeform enabled', () => {
         loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
         breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
           'path': Paths.SEA_PEN_COLLECTION,
@@ -527,7 +526,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         assertDeepEquals({}, queryParams);
       });
 
-  test('show breadcrumbs for SeaPen freeform', async () => {
+  test('show breadcrumbs for SeaPen freeform', () => {
     breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
       'path': Paths.SEA_PEN_FREEFORM,
     });
@@ -541,7 +540,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     ]);
   });
 
-  test('hide dropdown icon for sea pen templates', async () => {
+  test('hide dropdown icon for sea pen templates', () => {
     loadTimeData.overrideValues({isSeaPenEnabled: true});
     breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
       'path': Paths.SEA_PEN_COLLECTION,
@@ -553,7 +552,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     assertFalse(!!dropdownIcon);
   });
 
-  test('show dropdown icon for SeaPen results', async () => {
+  test('show dropdown icon for SeaPen results', () => {
     loadTimeData.overrideValues({isSeaPenEnabled: true});
     breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
       'path': Paths.SEA_PEN_RESULTS,
@@ -566,7 +565,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     assertTrue(!!dropdownIcon);
   });
 
-  test('click SeaPen template breadcrumb to show dropdown menu', async () => {
+  test('click SeaPen template breadcrumb to show dropdown menu', () => {
     loadTimeData.overrideValues({isSeaPenEnabled: true});
     breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
       'path': Paths.SEA_PEN_RESULTS,

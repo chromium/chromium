@@ -321,7 +321,8 @@ void LoginRemoveAccountDialog::UpdateAccessibleDescription() {
           base::StrCat({email_label_->GetText(), u" ",
                         management_disclosure_label_->GetText()}));
     } else {
-      GetViewAccessibility().SetDescription(email_label_->GetText());
+      GetViewAccessibility().SetDescription(
+          std::u16string(email_label_->GetText()));
     }
   }
 }
@@ -331,9 +332,9 @@ void LoginRemoveAccountDialog::UpdateAccessibleName() {
     GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_ACCESSIBLE_NAME));
   } else {
-    std::u16string accessible_name = username_label_->GetText();
+    std::u16string_view accessible_name = username_label_->GetText();
     if (!accessible_name.empty()) {
-      GetViewAccessibility().SetName(accessible_name);
+      GetViewAccessibility().SetName(std::u16string(accessible_name));
     } else {
       GetViewAccessibility().SetName(
           std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);

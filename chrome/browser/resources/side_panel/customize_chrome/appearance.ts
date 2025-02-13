@@ -193,7 +193,7 @@ export class AppearanceElement extends AppearanceElementBase {
       announcer.announce(this.i18n('updatedToClassicChrome'));
       // If the classicChrome button has focus, change focus to editTheme
       // button, since the button is disappearing.
-      if (this.shadowRoot!.activeElement === this.$.setClassicChromeButton) {
+      if (this.shadowRoot.activeElement === this.$.setClassicChromeButton) {
         this.focusOnThemeButton();
       }
     }

@@ -91,13 +91,17 @@ void WebGLRenderbufferAttachment::Attach(gpu::gles2::GLES2Interface* gl,
                                          GLenum target,
                                          GLenum attachment) {
   GLuint object = ObjectOrZero(renderbuffer_.Get());
-  gl->FramebufferRenderbuffer(target, attachment, GL_RENDERBUFFER, object);
+  if (gl) {
+    gl->FramebufferRenderbuffer(target, attachment, GL_RENDERBUFFER, object);
+  }
 }
 
 void WebGLRenderbufferAttachment::Unattach(gpu::gles2::GLES2Interface* gl,
                                            GLenum target,
                                            GLenum attachment) {
-  gl->FramebufferRenderbuffer(target, attachment, GL_RENDERBUFFER, 0);
+  if (gl) {
+    gl->FramebufferRenderbuffer(target, attachment, GL_RENDERBUFFER, 0);
+  }
 }
 
 class WebGLTextureAttachment final : public WebGLFramebuffer::WebGLAttachment {
@@ -160,6 +164,11 @@ void WebGLTextureAttachment::OnDetached(gpu::gles2::GLES2Interface* gl) {
 void WebGLTextureAttachment::Attach(gpu::gles2::GLES2Interface* gl,
                                     GLenum target,
                                     GLenum attachment) {
+  if (!gl) {
+    // Context lost.
+    return;
+  }
+
   GLuint object = ObjectOrZero(texture_.Get());
   if (target_ == GL_TEXTURE_3D || target_ == GL_TEXTURE_2D_ARRAY) {
     gl->FramebufferTextureLayer(target, attachment, object, level_, layer_);
@@ -171,6 +180,11 @@ void WebGLTextureAttachment::Attach(gpu::gles2::GLES2Interface* gl,
 void WebGLTextureAttachment::Unattach(gpu::gles2::GLES2Interface* gl,
                                       GLenum target,
                                       GLenum attachment) {
+  if (!gl) {
+    // Context lost.
+    return;
+  }
+
   // GL_DEPTH_STENCIL_ATTACHMENT attachment is valid in ES3.
   if (target_ == GL_TEXTURE_3D || target_ == GL_TEXTURE_2D_ARRAY) {
     gl->FramebufferTextureLayer(target, attachment, 0, level_, layer_);
@@ -200,7 +214,9 @@ WebGLFramebuffer::WebGLFramebuffer(WebGLRenderingContextBase* ctx, bool opaque)
       web_gl1_depth_stencil_consistent_(true),
       opaque_(opaque),
       read_buffer_(GL_COLOR_ATTACHMENT0) {
-  ctx->ContextGL()->GenFramebuffers(1, &object_);
+  if (!ctx->isContextLost()) {
+    ctx->ContextGL()->GenFramebuffers(1, &object_);
+  }
 }
 
 WebGLFramebuffer::~WebGLFramebuffer() = default;
@@ -214,6 +230,11 @@ void WebGLFramebuffer::SetAttachmentForBoundFramebuffer(GLenum target,
                                                         GLsizei num_views) {
   DCHECK(object_);
   DCHECK(IsBound(target));
+
+  if (Context()->isContextLost()) {
+    return;
+  }
+
   if (Context()->IsWebGL2()) {
     if (attachment == GL_DEPTH_STENCIL_ATTACHMENT) {
       SetAttachmentInternal(target, GL_DEPTH_ATTACHMENT, tex_target, texture,
@@ -272,6 +293,11 @@ void WebGLFramebuffer::SetAttachmentForBoundFramebuffer(
     WebGLRenderbuffer* renderbuffer) {
   DCHECK(object_);
   DCHECK(IsBound(target));
+
+  if (Context()->isContextLost()) {
+    return;
+  }
+
   if (Context()->IsWebGL2()) {
     if (attachment == GL_DEPTH_STENCIL_ATTACHMENT) {
       SetAttachmentInternal(target, GL_DEPTH_ATTACHMENT, renderbuffer);
@@ -407,6 +433,7 @@ void WebGLFramebuffer::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
     }
   }
 
+  // "gl" is null-checked at higher levels.
   gl->DeleteFramebuffers(1, &object_);
   object_ = 0;
 }
@@ -426,6 +453,10 @@ void WebGLFramebuffer::DrawBuffers(const Vector<GLenum>& bufs) {
 void WebGLFramebuffer::DrawBuffersIfNecessary(bool force) {
   if (Context()->IsWebGL2() ||
       Context()->ExtensionEnabled(kWebGLDrawBuffersName)) {
+    if (Context()->isContextLost()) {
+      return;
+    }
+
     bool reset = force;
     // This filtering works around graphics driver bugs on Mac OS X.
     for (wtf_size_t i = 0; i < draw_buffers_.size(); ++i) {
@@ -496,6 +527,11 @@ void WebGLFramebuffer::RemoveAttachmentInternal(GLenum target,
 
 void WebGLFramebuffer::CommitWebGL1DepthStencilIfConsistent(GLenum target) {
   DCHECK(!Context()->IsWebGL2());
+
+  if (Context()->isContextLost()) {
+    return;
+  }
+
   WebGLAttachment* depth_attachment = nullptr;
   WebGLAttachment* stencil_attachment = nullptr;
   WebGLAttachment* depth_stencil_attachment = nullptr;
@@ -526,6 +562,11 @@ void WebGLFramebuffer::CommitWebGL1DepthStencilIfConsistent(GLenum target) {
     return;
 
   gpu::gles2::GLES2Interface* gl = Context()->ContextGL();
+  if (!gl) {
+    // Context has been lost.
+    return;
+  }
+
   if (depth_attachment) {
     gl->FramebufferRenderbuffer(target, GL_DEPTH_STENCIL_ATTACHMENT,
                                 GL_RENDERBUFFER, 0);

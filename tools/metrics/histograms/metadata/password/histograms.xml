@@ -1954,7 +1954,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.iOS.InfoBar.PasswordSave" enum="Boolean"
     expires_after="2025-08-10">
-  <owner>djean@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
   <owner>sczs@google.com</owner>
   <summary>
     This metric counts how many times the Save Password infobar is shown.
@@ -2233,6 +2233,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>
     An error on LoginDatabase initialization. Recorded when error was
     encountered during login database initialization.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.LogInWithPasswordChangeSubmission"
+    enum="BooleanSuccess" expires_after="2026-02-04">
+  <owner>fiorellab@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records whether or not a login is successful using a password previously
+    saved through password change flow. It is recorded at the moment of
+    detecting a succesful or failed log in.
   </summary>
 </histogram>
 

@@ -88,6 +88,8 @@ public class DataSharingTabManager {
             "https://support.google.com/chrome/?p=chrome_collaboration";
     private static final String LEARN_ABOUT_BLOCKED_ACCOUNTS_URL =
             "https://support.google.com/accounts/answer/6388749";
+    private static final String ACTIVITY_LOGS_URL =
+            "https://myactivity.google.com/product/chrome_shared_tab_group_activity?utm_source=chrome_collab";
 
     // Separator for description and link in share sheet.
     private static final String SHARED_TEXT_SEPARATOR = "";
@@ -258,7 +260,7 @@ public class DataSharingTabManager {
      * @param dataSharingUrl The URL associated with the join invitation.
      */
     public void initiateJoinFlow(Activity activity, GURL dataSharingUrl) {
-        initiateJoinFlow(activity, dataSharingUrl, /* switchToTabSwitcherRunnable= */ null);
+        initiateJoinFlow(activity, dataSharingUrl, /* switchToTabSwitcherCallback= */ null);
     }
 
     /**
@@ -266,21 +268,23 @@ public class DataSharingTabManager {
      *
      * @param activity The current tabbed activity.
      * @param dataSharingUrl The URL associated with the join invitation.
-     * @param switchToTabSwitcherRunnable The runnable to allow to switch to tab switcher view.
+     * @param switchToTabSwitcherCallback The callback to allow to switch to tab switcher view.
      */
     public void initiateJoinFlow(
-            Activity activity, GURL dataSharingUrl, Runnable switchToTabSwitcherRunnable) {
+            Activity activity,
+            GURL dataSharingUrl,
+            Callback<Runnable> switchToTabSwitcherCallback) {
         DataSharingMetrics.recordJoinActionFlowState(
                 DataSharingMetrics.JoinActionStateAndroid.JOIN_TRIGGERED);
         if (mProfile != null) {
-            initiateJoinFlowWithProfile(activity, dataSharingUrl, switchToTabSwitcherRunnable);
+            initiateJoinFlowWithProfile(activity, dataSharingUrl, switchToTabSwitcherCallback);
             return;
         }
 
         mTasksToRunOnProfileAvailable.addLast(
                 () -> {
                     initiateJoinFlowWithProfile(
-                            activity, dataSharingUrl, switchToTabSwitcherRunnable);
+                            activity, dataSharingUrl, switchToTabSwitcherCallback);
                 });
     }
 
@@ -343,8 +347,14 @@ public class DataSharingTabManager {
         return new GURL(LEARN_ABOUT_BLOCKED_ACCOUNTS_URL);
     }
 
+    private GURL getActivityLogsUrl() {
+        return new GURL(ACTIVITY_LOGS_URL);
+    }
+
     private void initiateJoinFlowWithProfile(
-            Activity activity, GURL dataSharingUrl, Runnable switchToTabSwitcherRunnable) {
+            Activity activity,
+            GURL dataSharingUrl,
+            Callback<Runnable> switchToTabSwitcherCallback) {
         DataSharingMetrics.recordJoinActionFlowState(
                 DataSharingMetrics.JoinActionStateAndroid.PROFILE_AVAILABLE);
         if (!mCollaborationService.getServiceStatus().isAllowedToJoin()) {
@@ -356,7 +366,7 @@ public class DataSharingTabManager {
             assert mCollaborationService != null;
             mCurrentDelegate =
                     mCollaborationControllerDelegateFactory.create(
-                            FlowType.JOIN, switchToTabSwitcherRunnable);
+                            FlowType.JOIN, switchToTabSwitcherCallback);
             mCollaborationService.startJoinFlow(mCurrentDelegate, dataSharingUrl);
             return;
         }
@@ -749,7 +759,7 @@ public class DataSharingTabManager {
             // finished.
             mCurrentDelegate =
                     mCollaborationControllerDelegateFactory.create(
-                            FlowType.SHARE_OR_MANAGE, /* switchToTabSwitcherRunnable= */ null);
+                            FlowType.SHARE_OR_MANAGE, /* switchToTabSwitcherCallback= */ null);
             mCollaborationService.startShareOrManageFlow(mCurrentDelegate, existingGroup.syncId);
             return;
         }
@@ -1037,6 +1047,7 @@ public class DataSharingTabManager {
                         .setGroupToken(new GroupToken(collaborationId, null))
                         .setManageCallback(manageCallback)
                         .setLearnAboutBlockedAccounts(getLearnAboutBlockedAccountsUrl())
+                        .setActivityLogsUrl(getActivityLogsUrl())
                         .setCommonConfig(getCommonConfig(activity, tabGroupName, stringConfig))
                         .build();
         return uiDelegate.showManageFlow(manageConfig);

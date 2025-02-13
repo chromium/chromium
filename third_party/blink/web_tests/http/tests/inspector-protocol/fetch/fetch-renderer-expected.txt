@@ -9,5 +9,5 @@ Request to http://127.0.0.1:8000/devtools/network/resources/resource.php, type: 
 Response after fetch.failRequest: fail
 Sending invalid header (should result in error)
 Request to http://127.0.0.1:8000/inspector-protocol/network/resources/echo-headers.php?headers=HTTP_X_DEVTOOLS_TEST, type: XHR
-Got error: Invalid header
+Got error: Invalid header: X-DevTools-Test: 
 

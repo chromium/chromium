@@ -228,14 +228,33 @@ TEST_P(PDFiumOnDemandSearchifierTest, PageWithImagesNoRecognizableText) {
 
   StartSearchify(/*empty_results=*/true);
 
-  base::test::TestFuture<void> future;
-  WaitUntilIdle(searchifier, future.GetCallback());
-  ASSERT_TRUE(future.Wait());
-  ASSERT_EQ(performed_ocrs(), 2);
-  EXPECT_TRUE(page.IsPageSearchified());
+  {
+    base::test::TestFuture<void> future;
+    WaitUntilIdle(searchifier, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    ASSERT_EQ(performed_ocrs(), 2);
+    EXPECT_TRUE(page.IsPageSearchified());
+  }
 
   // The page has two images, but no recognizable text.
   EXPECT_TRUE(GetPageText(page).empty());
+
+  // Unload the page where Searchify did not add any text.
+  page.Unload();
+
+  // Get the text from the page, which reloads the page.
+  EXPECT_EQ(GetPageText(page), "");
+
+  {
+    // Wait for idle. This should not crash.
+    base::test::TestFuture<void> future;
+    WaitUntilIdle(searchifier, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+
+    // The number of performed OCRs has not changed.
+    ASSERT_EQ(performed_ocrs(), 2);
+    EXPECT_TRUE(page.IsPageSearchified());
+  }
 }
 
 TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithImages) {

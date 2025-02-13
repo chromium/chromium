@@ -31,6 +31,7 @@ android_library("java") {
     "//base:log_java",
     "//chrome/browser/task_manager/android:java",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/widget/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",

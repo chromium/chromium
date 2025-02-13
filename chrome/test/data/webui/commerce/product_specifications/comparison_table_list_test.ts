@@ -52,7 +52,7 @@ suite('ComparisonTableListTest', () => {
 
   function getListItems() {
     assertTrue(!!listElement);
-    return listElement.shadowRoot!.querySelectorAll(
+    return listElement.shadowRoot.querySelectorAll(
         'comparison-table-list-item');
   }
 
@@ -102,7 +102,7 @@ suite('ComparisonTableListTest', () => {
     await microtasksFinished();
   });
 
-  test('an item is displayed for each table', async () => {
+  test('an item is displayed for each table', () => {
     const items = getListItems();
 
     assertEquals(TABLES.length, items.length);
@@ -146,7 +146,7 @@ suite('ComparisonTableListTest', () => {
       await toggleCheckboxAtIndex(1);
     });
 
-    test('displays the number of selected items', async () => {
+    test('displays the number of selected items', () => {
       assertStringContains(listElement.$.toolbar.selectionLabel, '2');
     });
 

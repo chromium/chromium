@@ -2880,8 +2880,8 @@ AXSelection AXTree::GetSelection() const {
   return AXSelection(*this);
 }
 
-AXSelection AXTree::GetUnignoredSelection() const {
-  return GetSelection().ToUnignoredSelection();
+AXSelection AXTree::GetUnignoredSelection(bool non_text_endpoints) const {
+  return GetSelection().ToUnignoredSelection(non_text_endpoints);
 }
 
 bool AXTree::GetTreeUpdateInProgressState() const {

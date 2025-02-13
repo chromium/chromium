@@ -236,9 +236,15 @@ def main():
 
     build_cmd = [
         sys.executable,
-        os.path.join(THIS_DIR, 'build.py'), '--bootstrap', '--disable-asserts',
-        '--run-tests', '--pgo'
+        os.path.join(THIS_DIR, 'build.py'),
+        '--bootstrap',
+        '--disable-asserts',
+        '--run-tests',
     ]
+    # PGO drastically increases packaging time and x86-64 macs are almost
+    # obsolete while being slow, so don't PGO-optimize x86-64 mac toolchains.
+    if sys.platform != 'darwin' or platform.machine() == 'arm64':
+      build_cmd.append('--pgo')
     if sys.platform != 'darwin':
       build_cmd.append('--thinlto')
     if sys.platform.startswith('linux'):

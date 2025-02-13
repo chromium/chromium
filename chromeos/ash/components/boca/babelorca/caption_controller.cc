@@ -74,11 +74,13 @@ bool CaptionController::DispatchTranscription(
       caption_bubble_context_.get(), result);
 }
 
-void CaptionController::OnAudioStreamEnd() {
+void CaptionController::OnLanguageIdentificationEvent(
+    const media::mojom::LanguageIdentificationEventPtr& event) {
   if (!caption_bubble_controller()) {
     return;
   }
-  caption_bubble_controller()->OnAudioStreamEnd(caption_bubble_context_.get());
+  caption_bubble_controller()->OnLanguageIdentificationEvent(
+      caption_bubble_context_.get(), event);
 }
 
 captions::CaptionBubbleSettings* CaptionController::caption_bubble_settings() {

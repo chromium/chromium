@@ -63,12 +63,14 @@ public class AiAssistantServiceUnitTest {
     @Mock private WebContents mWebContents;
     @Mock private Tab mTab;
     @Mock SystemAiProvider mSystemAiProvider;
+    @Mock SystemAiProviderFactory mSystemAiProviderFactory;
     @Mock private InnerTextBridge.Natives mInnerTextNatives;
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
     @Captor private ArgumentCaptor<LaunchRequest> mLaunchRequestCaptor;
 
     @Before
     public void setUp() throws Exception {
+        when(mSystemAiProviderFactory.createSystemAiProvider()).thenReturn(mSystemAiProvider);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL_CAT);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.getMainFrame()).thenReturn(mRenderFrameHost);
@@ -95,7 +97,8 @@ public class AiAssistantServiceUnitTest {
 
     @Test
     public void showAi_fallsBackToIntentWhenDownstreamImplNotAvailable() {
-        ServiceLoaderUtil.setInstanceForTesting(SystemAiProvider.class, mSystemAiProvider);
+        ServiceLoaderUtil.setInstanceForTesting(
+                SystemAiProviderFactory.class, mSystemAiProviderFactory);
         var pageContents = "Page contents for google.com/dog";
         setInnerTextExtractionResult(pageContents);
         setSystemAiProviderAsUnavailable();
@@ -112,7 +115,8 @@ public class AiAssistantServiceUnitTest {
 
     @Test
     public void showAi_fallsBackToIntentWhenDownstreamImplNotAvailable_pdfPage() {
-        ServiceLoaderUtil.setInstanceForTesting(SystemAiProvider.class, mSystemAiProvider);
+        ServiceLoaderUtil.setInstanceForTesting(
+                SystemAiProviderFactory.class, mSystemAiProviderFactory);
         setSystemAiProviderAsUnavailable();
         var pdfUri = JUnitTestGURLs.URL_1_WITH_PDF_PATH.getSpec();
         var pdfPage = mock(PdfPage.class);
@@ -129,7 +133,8 @@ public class AiAssistantServiceUnitTest {
 
     @Test
     public void showAi_usesDownstreamImplWhenAvailable() {
-        ServiceLoaderUtil.setInstanceForTesting(SystemAiProvider.class, mSystemAiProvider);
+        ServiceLoaderUtil.setInstanceForTesting(
+                SystemAiProviderFactory.class, mSystemAiProviderFactory);
         setSystemAiProviderAsAvailable();
         var pageContents = "Page contents for URL_2";
         setInnerTextExtractionResult(pageContents);
@@ -146,7 +151,8 @@ public class AiAssistantServiceUnitTest {
 
     @Test
     public void showAi_usesAnalyzeDocumentForPdfs() {
-        ServiceLoaderUtil.setInstanceForTesting(SystemAiProvider.class, mSystemAiProvider);
+        ServiceLoaderUtil.setInstanceForTesting(
+                SystemAiProviderFactory.class, mSystemAiProviderFactory);
         var pdfUri = "https://google.com/file.pdf";
         var pdfPage = mock(PdfPage.class);
         when(pdfPage.getUri()).thenReturn(Uri.parse(pdfUri));

@@ -144,7 +144,7 @@ suite('searchResultRowTest', function() {
     assertTrue(keys2[0]!.highlighted);
   });
 
-  test('Standard accelerators have correct text dividers', async () => {
+  test('Standard accelerators have correct text dividers', () => {
     searchResultRowElement = initSearchResultRowElement();
     searchResultRowElement.searchResult = TakeScreenshotSearchResult;
     flush();
@@ -174,7 +174,7 @@ suite('searchResultRowTest', function() {
             .length);
   });
 
-  test('Query-matching bolded results show up correctly', async () => {
+  test('Query-matching bolded results show up correctly', () => {
     const query = 'Take screenshot';
     searchResultRowElement = initSearchResultRowElement();
     searchResultRowElement.searchQuery = query;

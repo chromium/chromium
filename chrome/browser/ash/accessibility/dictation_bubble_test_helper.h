@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_DICTATION_BUBBLE_TEST_HELPER_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/system/accessibility/dictation_bubble_controller.h"
@@ -29,7 +30,7 @@ class DictationBubbleTestHelper : public DictationBubbleController::Observer {
   // Returns the currently visible icon in the Dictation bubble UI top row.
   DictationBubbleIconType GetVisibleIcon();
   // Returns the current text of the Dictation bubble UI top row.
-  std::u16string GetText();
+  std::u16string_view GetText();
   // Returns true if the currently visible hints match `expected`.
   bool HasVisibleHints(const std::vector<std::u16string>& expected);
 

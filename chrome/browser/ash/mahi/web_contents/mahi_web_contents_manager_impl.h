@@ -83,7 +83,7 @@ class MahiWebContentsManagerImpl : public chromeos::MahiWebContentsManager {
   void WebContentsDestroyed(content::WebContents* web_contents) override;
   void OnContextMenuClicked(int64_t display_id,
                             chromeos::mahi::ButtonType button_type,
-                            const std::u16string& question,
+                            std::u16string_view question,
                             const gfx::Rect& mahi_menu_bounds) override;
   bool IsFocusedPageDistillable() override;
   void RequestContent(const base::UnguessableToken& page_id,

@@ -11,8 +11,10 @@ enum class LensEntrypoint;
 
 // Different causes of dismising the overlay.
 typedef NS_ENUM(NSUInteger, LensOverlayDismissalCause) {
-  // The user dismissed the overlay with a swipe down.
-  LensOverlayDismissalCauseSwipeDown,
+  // The user dismissed the overlay with a swipe down from selection.
+  LensOverlayDismissalCauseSwipeDownFromSelection,
+  // The user dismissed the overlay with a swipe down from translate.
+  LensOverlayDismissalCauseSwipeDownFromTranslate,
   // The user dismissed the overlay by pressing the dismiss button.
   LensOverlayDismissalCauseDismissButton,
   // An external navigation caused the overlay to be dismissed.

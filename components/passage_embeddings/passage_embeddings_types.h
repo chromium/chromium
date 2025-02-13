@@ -73,7 +73,7 @@ enum class ComputeEmbeddingsStatus {
   // Failure occurred during model execution.
   kExecutionFailure = 2,
 
-  // The generation request was explicitly canceled.
+  // The generation request was canceled, either explicitly or due to limits.
   kCanceled = 3,
 
   // This must be kept in sync with ComputeEmbeddingsStatus in

@@ -77,8 +77,7 @@ enum class PatternFile : uint8_t {
   kMaxValue = kLegacy
 #else
   kDefault,
-  kAutofillAi,
-  kMaxValue = kAutofillAi
+  kMaxValue = kDefault
 #endif
 };
 

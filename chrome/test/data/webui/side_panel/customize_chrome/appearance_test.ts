@@ -25,7 +25,7 @@ suite('AppearanceTest', () => {
   let handler: TestMock<CustomizeChromePageHandlerRemote>;
   let metrics: MetricsTracker;
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
         CustomizeChromePageHandlerRemote,
@@ -464,7 +464,7 @@ suite('AppearanceTest', () => {
     await clickEvent;
   });
 
-  suite('WallpaperSearch', async () => {
+  suite('WallpaperSearch', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         'wallpaperSearchEnabled': true,

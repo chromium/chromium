@@ -89,8 +89,7 @@ suite('ExtensionPackDialogTests', function() {
     mockDelegate.keyPromise.resolve(kKeyPath);
 
     await Promise.all(promises);
-    packDialog.shadowRoot!.querySelector<HTMLElement>(
-                              '.action-button')!.click();
+    packDialog.shadowRoot.querySelector<HTMLElement>('.action-button')!.click();
     await microtasksFinished();
     assertEquals(kRootPath, mockDelegate.rootPath);
     assertEquals(kKeyPath, mockDelegate.keyPath);
@@ -109,8 +108,7 @@ suite('ExtensionPackDialogTests', function() {
     await mockDelegate.rootPromise!.promise;
     await microtasksFinished();
     assertEquals(kRootPath, packDialog.$.rootDir.value);
-    packDialog.shadowRoot!.querySelector<HTMLElement>(
-                              '.action-button')!.click();
+    packDialog.shadowRoot.querySelector<HTMLElement>('.action-button')!.click();
     await microtasksFinished();
 
     mockDelegate.packPromise!.resolve({
@@ -124,16 +122,16 @@ suite('ExtensionPackDialogTests', function() {
     await microtasksFinished();
 
     const packDialogAlert =
-        packDialog.shadowRoot!.querySelector('extensions-pack-dialog-alert')!;
+        packDialog.shadowRoot.querySelector('extensions-pack-dialog-alert')!;
     const alertElement = packDialogAlert.$.dialog.getNative();
     assertTrue(isElementVisible(alertElement));
     assertTrue(isElementVisible(dialogElement));
-    assertTrue(!!packDialogAlert.shadowRoot!.querySelector('.action-button'));
+    assertTrue(!!packDialogAlert.shadowRoot.querySelector('.action-button'));
 
     const wait = eventToPromise('close', dialogElement);
     // After 'ok', both dialogs should be closed.
-    packDialogAlert.shadowRoot!.querySelector<HTMLElement>(
-                                   '.action-button')!.click();
+    packDialogAlert.shadowRoot.querySelector<HTMLElement>(
+                                  '.action-button')!.click();
 
     await wait;
     assertFalse(isElementVisible(alertElement));
@@ -153,8 +151,7 @@ suite('ExtensionPackDialogTests', function() {
     await mockDelegate.rootPromise!.promise;
     await microtasksFinished();
     assertEquals(kRootPath, packDialog.$.rootDir.value);
-    packDialog.shadowRoot!.querySelector<HTMLElement>(
-                              '.action-button')!.click();
+    packDialog.shadowRoot.querySelector<HTMLElement>('.action-button')!.click();
 
     mockDelegate.packPromise!.resolve({
       message: '',
@@ -168,15 +165,15 @@ suite('ExtensionPackDialogTests', function() {
 
     // Make sure new alert and the appropriate buttons are visible.
     const packDialogAlert =
-        packDialog.shadowRoot!.querySelector('extensions-pack-dialog-alert')!;
+        packDialog.shadowRoot.querySelector('extensions-pack-dialog-alert')!;
     const alertElement = packDialogAlert.$.dialog.getNative();
     assertTrue(isElementVisible(alertElement));
     assertTrue(isElementVisible(dialogElement));
-    assertTrue(!!packDialogAlert.shadowRoot!.querySelector('.action-button'));
+    assertTrue(!!packDialogAlert.shadowRoot.querySelector('.action-button'));
 
     // After cancel, original dialog is still open and values unchanged.
-    packDialogAlert.shadowRoot!.querySelector<HTMLElement>(
-                                   '.action-button')!.click();
+    packDialogAlert.shadowRoot.querySelector<HTMLElement>(
+                                  '.action-button')!.click();
     await microtasksFinished();
     assertFalse(isElementVisible(alertElement));
     assertTrue(isElementVisible(dialogElement));
@@ -197,8 +194,7 @@ suite('ExtensionPackDialogTests', function() {
     await mockDelegate.rootPromise!.promise;
     await microtasksFinished();
     assertEquals(kRootPath, packDialog.$.rootDir.value);
-    packDialog.shadowRoot!.querySelector<HTMLElement>(
-                              '.action-button')!.click();
+    packDialog.shadowRoot.querySelector<HTMLElement>('.action-button')!.click();
     await microtasksFinished();
 
     mockDelegate.packPromise!.resolve({
@@ -216,19 +212,21 @@ suite('ExtensionPackDialogTests', function() {
 
     // Make sure new alert and the appropriate buttons are visible.
     const packDialogAlert =
-        packDialog.shadowRoot!.querySelector('extensions-pack-dialog-alert')!;
+        packDialog.shadowRoot.querySelector('extensions-pack-dialog-alert')!;
     const alertElement = packDialogAlert.$.dialog.getNative();
     assertTrue(isElementVisible(alertElement));
     assertTrue(isElementVisible(dialogElement));
-    assertFalse(packDialogAlert.shadowRoot!
-                    .querySelector<HTMLElement>('.cancel-button')!.hidden);
-    assertFalse(packDialogAlert.shadowRoot!
-                    .querySelector<HTMLElement>('.action-button')!.hidden);
+    assertFalse(
+        packDialogAlert.shadowRoot.querySelector<HTMLElement>(
+                                      '.cancel-button')!.hidden);
+    assertFalse(
+        packDialogAlert.shadowRoot.querySelector<HTMLElement>(
+                                      '.action-button')!.hidden);
 
     // Make sure "proceed anyway" try to pack extension again.
     const whenClosed = eventToPromise('close', packDialogAlert);
-    packDialogAlert.shadowRoot!.querySelector<HTMLElement>(
-                                   '.action-button')!.click();
+    packDialogAlert.shadowRoot.querySelector<HTMLElement>(
+                                  '.action-button')!.click();
     await whenClosed;
     // Make sure packExtension is called again with the right params.
     assertFalse(isElementVisible(alertElement));

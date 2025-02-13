@@ -12,15 +12,16 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_create_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_initial_prompt_role.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ailm_initial_prompt_line_dict.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ailm_prompt_content_dict.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_ailm_initial_prompt_line.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_ailmpromptcontentdict_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_prompt_dict.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_prompt_role.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_ai_language_model_prompt_content.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_ai_language_model_prompt_input.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_ailanguagemodelpromptdict_string.h"
 #include "third_party/blink/renderer/core/events/progress_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
@@ -30,6 +31,7 @@
 #include "third_party/blink/renderer/modules/ai/ai_language_model_params.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
+#include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -40,13 +42,13 @@ namespace blink {
 namespace {
 
 mojom::blink::AILanguageModelInitialPromptRole AILanguageModelInitialPromptRole(
-    V8AILanguageModelInitialPromptRole role) {
+    V8AILanguageModelPromptRole role) {
   switch (role.AsEnum()) {
-    case V8AILanguageModelInitialPromptRole::Enum::kSystem:
+    case V8AILanguageModelPromptRole::Enum::kSystem:
       return mojom::blink::AILanguageModelInitialPromptRole::kSystem;
-    case V8AILanguageModelInitialPromptRole::Enum::kUser:
+    case V8AILanguageModelPromptRole::Enum::kUser:
       return mojom::blink::AILanguageModelInitialPromptRole::kUser;
-    case V8AILanguageModelInitialPromptRole::Enum::kAssistant:
+    case V8AILanguageModelPromptRole::Enum::kAssistant:
       return mojom::blink::AILanguageModelInitialPromptRole::kAssistant;
   }
   NOTREACHED();
@@ -64,8 +66,10 @@ class CreateLanguageModelClient
       AbortSignal* signal,
       mojom::blink::AILanguageModelSamplingParamsPtr sampling_params,
       WTF::String system_prompt,
-      Vector<mojom::blink::AILanguageModelInitialPromptPtr> initial_prompts,
-      AICreateMonitor* monitor)
+      WTF::Vector<mojom::blink::AILanguageModelInitialPromptPtr>
+          initial_prompts,
+      AICreateMonitor* monitor,
+      std::optional<WTF::Vector<WTF::String>> expected_input_languages)
       : AIMojoClient(script_state, ai, resolver, signal),
         ai_(ai),
         monitor_(monitor),
@@ -79,11 +83,18 @@ class CreateLanguageModelClient
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    ai->GetTaskRunner());
+    std::optional<Vector<mojom::blink::AILanguageCodePtr>>
+        expected_input_language_codes;
+    if (expected_input_languages.has_value()) {
+      expected_input_language_codes =
+          ToMojoLanguageCodes(expected_input_languages.value());
+    }
     ai_->GetAIRemote()->CreateLanguageModel(
         std::move(client_remote),
         mojom::blink::AILanguageModelCreateOptions::New(
             std::move(sampling_params), system_prompt,
-            std::move(initial_prompts)));
+            std::move(initial_prompts),
+            std::move(expected_input_language_codes)));
   }
   ~CreateLanguageModelClient() override = default;
 
@@ -134,6 +145,12 @@ class CreateLanguageModelClient
         GetResolver()->RejectWithDOMException(
             DOMExceptionCode::kQuotaExceededError,
             kExceptionMessageInitialPromptTooLarge);
+        break;
+      }
+      case AIManagerCreateLanguageModelError::kUnsupportedLanguage: {
+        GetResolver()->RejectWithDOMException(
+            DOMExceptionCode::kNotSupportedError,
+            kExceptionMessageUnsupportedLanguages);
         break;
       }
     }
@@ -221,6 +238,7 @@ ScriptPromise<AILanguageModelCapabilities> AILanguageModelFactory::capabilities(
                                 AIMetrics::AIAPI::kCanCreateSession);
 
   ai_->GetAIRemote()->CanCreateLanguageModel(
+      mojom::blink::AILanguageModelAvailabilityOptions::New(),
       WTF::BindOnce(&AILanguageModelFactory::OnCanCreateSessionComplete,
                     WrapPersistent(this), WrapPersistent(resolver)));
 
@@ -236,8 +254,6 @@ void AILanguageModelFactory::OnCanCreateLanguageModelComplete(
   resolver->Resolve(AICapabilityAvailabilityToV8(availability));
 }
 
-// TODO(crbug.com/390459309): implement the logic that actually checks the
-// options.
 ScriptPromise<V8AICapabilityAvailability> AILanguageModelFactory::availability(
     ScriptState* script_state,
     const AILanguageModelCreateCoreOptions* options,
@@ -256,7 +272,22 @@ ScriptPromise<V8AICapabilityAvailability> AILanguageModelFactory::availability(
                                     AIMetrics::AISessionType::kLanguageModel),
                                 AIMetrics::AIAPI::kCanCreateSession);
 
+  std::vector<std::string> expected_languages;
+  auto availability_options =
+      mojom::blink::AILanguageModelAvailabilityOptions::New();
+  if (options->hasTopK()) {
+    availability_options->top_k = options->topK();
+  }
+  if (options->hasTemperature()) {
+    availability_options->temperature = options->temperature();
+  }
+  if (options->hasExpectedInputLanguages()) {
+    availability_options->expected_input_languages =
+        ToMojoLanguageCodes(options->expectedInputLanguages());
+  }
+
   ai_->GetAIRemote()->CanCreateLanguageModel(
+      std::move(availability_options),
       WTF::BindOnce(&AILanguageModelFactory::OnCanCreateLanguageModelComplete,
                     WrapPersistent(this), WrapPersistent(resolver)));
 
@@ -327,6 +358,7 @@ ScriptPromise<AILanguageModel> AILanguageModelFactory::create(
   AbortSignal* signal = nullptr;
   AICreateMonitor* monitor = MakeGarbageCollected<AICreateMonitor>(
       GetExecutionContext(), task_runner_);
+  std::optional<WTF::Vector<WTF::String>> expected_input_languages;
 
   if (options) {
     signal = options->getSignalOr(nullptr);
@@ -369,15 +401,15 @@ ScriptPromise<AILanguageModel> AILanguageModelFactory::create(
         // Only the first prompt might have a `system` role, so it's handled
         // separately.
         auto* first_prompt = prompts.begin()->Get();
-        // The API impl only accepts a line dict for now, more to come soon!
-        if (!first_prompt->IsAILMInitialPromptLineDict()) {
+        // The API impl only accepts a prompt dict for now, more to come soon!
+        if (!first_prompt->IsAILanguageModelPromptDict()) {
           resolver->RejectWithTypeError("Input type not supported");
           return promise;
         }
         auto* first_prompt_dict =
-            first_prompt->GetAsAILMInitialPromptLineDict();
+            first_prompt->GetAsAILanguageModelPromptDict();
         if (first_prompt_dict->role() ==
-            V8AILanguageModelInitialPromptRole::Enum::kSystem) {
+            V8AILanguageModelPromptRole::Enum::kSystem) {
           if (options->hasSystemPrompt()) {
             // If the system prompt cannot be provided both from system prompt
             // and initial prompts, so reject with a `TypeError`.
@@ -395,14 +427,13 @@ ScriptPromise<AILanguageModel> AILanguageModelFactory::create(
         }
         for (size_t index = start_index; index < prompts.size(); ++index) {
           auto prompt = prompts[index];
-          // The API impl only accepts a line dict for now, more to come soon!
-          if (!prompt->IsAILMInitialPromptLineDict()) {
+          // The API impl only accepts a prompt dict for now, more to come soon!
+          if (!prompt->IsAILanguageModelPromptDict()) {
             resolver->RejectWithTypeError("Input type not supported");
             return promise;
           }
-          auto* dict = prompt->GetAsAILMInitialPromptLineDict();
-          if (dict->role() ==
-              V8AILanguageModelInitialPromptRole::Enum::kSystem) {
+          auto* dict = prompt->GetAsAILanguageModelPromptDict();
+          if (dict->role() == V8AILanguageModelPromptRole::Enum::kSystem) {
             // If any prompt except the first one has a `system` role, reject
             // with a `TypeError`.
             resolver->RejectWithTypeError(
@@ -423,9 +454,14 @@ ScriptPromise<AILanguageModel> AILanguageModelFactory::create(
     }
   }
 
+  if (options->hasExpectedInputLanguages()) {
+    expected_input_languages = options->expectedInputLanguages();
+  }
+
   MakeGarbageCollected<CreateLanguageModelClient>(
       script_state, ai_, resolver, signal, std::move(sampling_params),
-      system_prompt, std::move(initial_prompts), monitor);
+      system_prompt, std::move(initial_prompts), monitor,
+      expected_input_languages);
 
   return promise;
 }

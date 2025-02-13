@@ -92,7 +92,7 @@ suite('Chrome OS', function() {
     peoplePage.remove();
   });
 
-  test('GAIA name and picture', async () => {
+  test('GAIA name and picture', () => {
     assertTrue(
         peoplePage.shadowRoot!.querySelector<HTMLElement>('#profile-icon')!
             .style.backgroundImage.includes(

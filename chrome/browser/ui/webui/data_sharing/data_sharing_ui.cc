@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_page_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/data_sharing_resources.h"
 #include "chrome/grit/data_sharing_resources_map.h"
@@ -189,6 +190,8 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
                               std::make_unique<FaviconSource>(
                                   profile, chrome::FaviconUrlFormat::kFavicon2,
                                   /*serve_untrusted=*/true));
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(
+                                           profile, /*serve_untrusted=*/true));
 }
 
 DataSharingUI::~DataSharingUI() = default;

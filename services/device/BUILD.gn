@@ -13,7 +13,7 @@ if (is_android) {
 }
 
 is_serial_enabled_platform =
-    is_win || ((is_linux || is_chromeos) && use_udev) || is_mac
+    is_win || ((is_linux || is_chromeos) && use_udev) || is_mac || is_android
 
 source_set("lib") {
   # This should be visible only to embedders of the Device Service, and the

@@ -349,6 +349,5 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
   auto* side_panel_view = static_cast<WebViewSidePanelView*>(view.get());
 
   EXPECT_EQ(side_panel_view->GetLastUrlForTesting(),
-            CreateUrl(kMerchantReviewsUrl).spec() +
-                "?s=CHROME_SIDE_PANEL");
+            CreateUrl(kMerchantReviewsUrl).spec() + "?s=CHROME_SIDE_PANEL");
 }

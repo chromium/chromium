@@ -98,8 +98,8 @@ class ASH_EXPORT LocalAuthenticationWithPinControllerImpl
   void OnViewPreferredSizeChanged(views::View* observed_view) override;
 
   // ActiveSessionAuthView::Observer:
-  void OnPasswordSubmit(const std::u16string& password) override;
-  void OnPinSubmit(const std::u16string& pin) override;
+  void OnPasswordSubmit(std::u16string_view password) override;
+  void OnPinSubmit(std::u16string_view pin) override;
   void OnClose() override;
 
   // UserDataAuthClient::AuthFactorStatusUpdateObserver:

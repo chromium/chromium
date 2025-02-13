@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -273,21 +274,21 @@ class BaseActionItemBuilderT {
     return std::move(this->SetImage(image));
   }
 
-  BuilderT& SetText(const std::u16string& text) & {
+  BuilderT& SetText(std::u16string_view text) & {
     action_item_->SetText(text);
     return static_cast<BuilderT&>(*this);
   }
 
-  BuilderT&& SetText(const std::u16string& text) && {
+  BuilderT&& SetText(std::u16string_view text) && {
     return std::move(this->SetText(text));
   }
 
-  BuilderT& SetTooltipText(const std::u16string& tooltip) & {
+  BuilderT& SetTooltipText(std::u16string_view tooltip) & {
     action_item_->SetTooltipText(tooltip);
     return static_cast<BuilderT&>(*this);
   }
 
-  BuilderT&& SetTooltipText(const std::u16string& tooltip) && {
+  BuilderT&& SetTooltipText(std::u16string_view tooltip) && {
     return std::move(this->SetTooltipText(tooltip));
   }
 
@@ -376,8 +377,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   }
 
   // Configure action states and attributes.
-  std::u16string GetAccessibleName() const;
-  void SetAccessibleName(const std::u16string accessible_name);
+  std::u16string_view GetAccessibleName() const;
+  void SetAccessibleName(std::u16string_view accessible_name);
   std::optional<ActionId> GetActionId() const;
   void SetActionId(std::optional<ActionId> action_id);
   ui::Accelerator GetAccelerator() const;
@@ -390,10 +391,10 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   void SetGroupId(std::optional<int> group_id);
   const ui::ImageModel& GetImage() const;
   void SetImage(const ui::ImageModel& image);
-  const std::u16string GetText() const;
-  void SetText(const std::u16string& text);
-  const std::u16string GetTooltipText() const;
-  void SetTooltipText(const std::u16string& tooltip);
+  std::u16string_view GetText() const;
+  void SetText(std::u16string_view text);
+  std::u16string_view GetTooltipText() const;
+  void SetTooltipText(std::u16string_view tooltip);
   bool GetVisible() const;
   void SetVisible(bool visible);
   void SetInvokeActionCallback(InvokeActionCallback callback);

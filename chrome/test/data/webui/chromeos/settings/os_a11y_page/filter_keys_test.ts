@@ -39,7 +39,7 @@ suite('<filter-keys>', () => {
     flush();
   }
 
-  setup(async () => {
+  setup(() => {
     loadTimeData.overrideValues({
       isAccessibilityBounceKeysEnabled: true,
       isAccessibilitySlowKeysEnabled: true,

@@ -118,7 +118,6 @@ constexpr char kInternalNamePrefix[] = "internal";
 constexpr char kPlaceholderOuputName[] = "placeholder_output";
 
 // op names
-constexpr char kOpConstTypeName[] = "const";
 // Generic operators.
 constexpr char kOpArgminTypeName[] = "reduce_argmin";
 constexpr char kOpArgmaxTypeName[] = "reduce_argmax";
@@ -130,6 +129,8 @@ constexpr char kOpConv2dTypeName[] = "conv";
 constexpr char kOpConvTranspose2dTypeName[] = "conv_transpose";
 constexpr char kOpCumulativeSumTypeName[] = "cumsum";
 constexpr char kOpDequantizeLinearTypeName[] = "dequantize";
+constexpr char kOpDequantizeLinearConstTypeName[] =
+    "constexpr_affine_dequantize";
 constexpr char kOpEluTypeName[] = "elu";
 constexpr char kOpExpandTypeName[] = "tile";
 constexpr char kOpFillTypeName[] = "fill";
@@ -735,6 +736,74 @@ size_t GetGruGateIndex(GruGate gate, mojom::GruWeightLayout layout) {
   return base::ok();
 }
 
+CoreML::Specification::MILSpec::Value CreateConstantImmediateValue(
+    base::span<const uint32_t> dimensions,
+    OperandDataType data_type,
+    base::span<const uint8_t> value) {
+  switch (data_type) {
+    case OperandDataType::kFloat32: {
+      base::FixedArray<float> floats(value.size() / sizeof(float));
+      for (size_t i = 0u; i < floats.size(); ++i) {
+        floats[i] = base::FloatFromNativeEndian(
+            value.subspan(i * sizeof(float)).first<4u>());
+      }
+      return CreateTensorImmediateValue<float>(dimensions, floats);
+    }
+    case OperandDataType::kFloat16: {
+      base::FixedArray<Float16> float16s(value.size() / sizeof(Float16));
+      for (size_t i = 0u; i < float16s.size(); ++i) {
+        float16s[i].data = base::U16FromNativeEndian(
+            value.subspan(i * sizeof(Float16)).first<2u>());
+      }
+      return CreateTensorImmediateValue<Float16>(dimensions, float16s);
+    }
+    case OperandDataType::kInt32: {
+      base::FixedArray<int32_t> ints(value.size() / sizeof(int32_t));
+      for (size_t i = 0u; i < ints.size(); ++i) {
+        ints[i] = base::I32FromNativeEndian(
+            value.subspan(i * sizeof(int32_t)).first<4u>());
+      }
+      return CreateTensorImmediateValue<int32_t>(dimensions, ints);
+    }
+    case OperandDataType::kInt8: {
+      base::FixedArray<int8_t> int8s(value.size() / sizeof(int8_t));
+      for (size_t i = 0u; i < int8s.size(); ++i) {
+        int8s[i] = base::I8FromNativeEndian(
+            value.subspan(i * sizeof(int8_t)).first<1u>());
+      }
+      return CreateTensorImmediateValue<int8_t>(dimensions, int8s);
+    }
+    case OperandDataType::kUint8: {
+      base::FixedArray<uint8_t> uint8s(value.size() / sizeof(uint8_t));
+      for (size_t i = 0u; i < uint8s.size(); ++i) {
+        uint8s[i] = base::U8FromNativeEndian(
+            value.subspan(i * sizeof(uint8_t)).first<1u>());
+      }
+      return CreateTensorImmediateValue<uint8_t>(dimensions, uint8s);
+    }
+    case OperandDataType::kUint32:
+    case OperandDataType::kInt64:
+    case OperandDataType::kUint64:
+    case OperandDataType::kInt4:
+    case OperandDataType::kUint4: {
+      NOTREACHED() << "Unsupported data type.";
+    }
+  }
+}
+
+CoreML::Specification::MILSpec::Value CreateConstantFileValue(
+    CoreML::Specification::MILSpec::DataType mil_data_type,
+    base::span<const uint32_t> dimensions,
+    uint64_t offset) {
+  CoreML::Specification::MILSpec::Value blob_value{};
+  PopulateValueType(mil_data_type, dimensions, *blob_value.mutable_type());
+  CoreML::Specification::MILSpec::Value::BlobFileValue* blob =
+      blob_value.mutable_blobfilevalue();
+  blob->set_filename(kWeightsRelativeFilePath);
+  blob->set_offset(offset);
+  return blob_value;
+}
+
 }  // namespace
 
 GraphBuilderCoreml::ScopedWeightItem::ScopedWeightItem(
@@ -802,18 +871,45 @@ GraphBuilderCoreml::WeightsFileHandle::WeightsFileHandle(
     : weights_file_(std::move(weights_file)), current_offset_(current_offset) {}
 GraphBuilderCoreml::WeightsFileHandle::~WeightsFileHandle() = default;
 
-base::expected<uint64_t, mojom::ErrorPtr>
-GraphBuilderCoreml::WeightsFileHandle::Write(base::span<const uint8_t> bytes,
-                                             OperandDataType data_type) {
+base::expected<CoreML::Specification::MILSpec::Value, mojom::ErrorPtr>
+GraphBuilderCoreml::WeightsFileHandle::Write(
+    uint64_t operand_id,
+    const WebNNConstantOperand& constant_operand,
+    std::optional<base::span<const uint32_t>> reshape_dimensions) {
   CHECK(!has_error_ && !finalized_);
-  ASSIGN_OR_RETURN(
-      std::unique_ptr<GraphBuilderCoreml::ScopedWeightItem> weight_item,
-      CreateScopedWeightItem(data_type, bytes.size()));
 
-  RETURN_IF_ERROR(weight_item->WriteBytes(bytes));
+  base::span<const uint32_t> dimensions =
+      reshape_dimensions.has_value() ? *reshape_dimensions
+                                     : constant_operand.descriptor().shape();
 
-  RETURN_IF_ERROR(weight_item->Finalize());
-  return weight_item->offset();
+  // CoreML allows writing constants directly into the model file as
+  // `ImmediateValue` or to a separate weight file. It does not support int32
+  // serialization to the weight file. Therefore, int32 values are written as
+  // `ImmediateValue`, as are scalar values for efficiency.
+
+  // TODO(crbug.com/395934168): Consider also saving small constants as
+  // immediate values.
+  if (constant_operand.descriptor().shape().empty() ||
+      constant_operand.descriptor().data_type() == OperandDataType::kInt32) {
+    return CreateConstantImmediateValue(
+        dimensions, constant_operand.descriptor().data_type(),
+        constant_operand.ByteSpan());
+  }
+  if (!constant_offsets_.contains(operand_id)) {
+    ASSIGN_OR_RETURN(
+        std::unique_ptr<GraphBuilderCoreml::ScopedWeightItem> weight_item,
+        CreateScopedWeightItem(constant_operand.descriptor().data_type(),
+                               constant_operand.ByteSpan().size()));
+
+    RETURN_IF_ERROR(weight_item->WriteBytes(constant_operand.ByteSpan()));
+
+    RETURN_IF_ERROR(weight_item->Finalize());
+    CHECK(constant_offsets_.try_emplace(operand_id, weight_item->offset())
+              .second);
+  }
+  return CreateConstantFileValue(
+      OperandTypeToMILDataType(constant_operand.descriptor().data_type()),
+      dimensions, constant_offsets_[operand_id]);
 }
 
 base::expected<std::unique_ptr<GraphBuilderCoreml::ScopedWeightItem>,
@@ -1268,8 +1364,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
     AddPlaceholderInput(main_function, block);
   }
 
-  RETURN_IF_ERROR(WriteImmediateWeights(block));
-
   // Add operations.
   for (const mojom::OperationPtr& operation : graph_info_->operations) {
     std::string operand_op_name = GetOpName(*operation);
@@ -1554,21 +1648,6 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::SerializeModel() {
 std::unique_ptr<GraphBuilderCoreml::Result>
 GraphBuilderCoreml::FinishAndTakeResult() {
   return std::move(result_);
-}
-
-base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::WriteImmediateWeights(
-    CoreML::Specification::MILSpec::Block& block) {
-  // Only adds immediate values, weights saved in weight file are added lazily
-  // because operation might need to manipulate the weights before they are
-  // serialized. We don't support manipulating immediate values right now.
-  for (auto& [id, constant_operand] : *constant_operands_) {
-    // int32 is only supported as immediate value.
-    if (constant_operand->descriptor().shape().empty() ||
-        constant_operand->descriptor().data_type() == OperandDataType::kInt32) {
-      AddConstantImmediateValue(id, block);
-    }
-  }
-  return base::ok();
 }
 
 void GraphBuilderCoreml::AddPlaceholderInput(
@@ -2163,6 +2242,14 @@ GraphBuilderCoreml::AddOperationForDequantizeLinear(
         "or vector. Blockwise dequantization is not supported.");
   }
 
+  if (scale_operand_info.dimensions.size() == 1 &&
+      scale_operand_info.dimensions[0] !=
+          input_operand_info
+              .dimensions[input_operand_info.dimensions.size() - 1]) {
+    return NewNotSupportedError(
+        "Unsupported options to dequantizeLinear. The size of 'scale' must be "
+        "equal to the size of the input's last dimension.");
+  }
   // TODO(crbug.com/338529226): These params must all be constant tensors.
   if (!constant_operands_->contains(operation.zero_point_operand_id)) {
     return NewNotSupportedError(
@@ -2179,6 +2266,10 @@ GraphBuilderCoreml::AddOperationForDequantizeLinear(
            zero_point_operand_info.mil_data_type);
   CHECK_EQ(scale_operand_info.mil_data_type,
            GetOperandInfo(operation.output_operand_id).mil_data_type);
+
+  if (constant_operands_->contains(operation.input_operand_id)) {
+    return AddOperationForDequantizeLinearConst(operation, block);
+  }
 
   uint64_t input_operand_id = operation.input_operand_id;
   if (input_operand_info.dimensions.empty()) {
@@ -2207,24 +2298,82 @@ GraphBuilderCoreml::AddOperationForDequantizeLinear(
 
   // An "axis" must be specified if "scale" is a vector.
   if (!scale_operand_info.dimensions.empty()) {
-    CHECK_EQ(scale_operand_info.dimensions.size(), 1u);
-    // Find `axis` which satisfies: size(scale_vector) == input.shape[axis]
-    auto axis_it = std::ranges::find(input_operand_info.dimensions,
-                                     scale_operand_info.dimensions[0]);
-    if (axis_it == input_operand_info.dimensions.end()) {
-      return NewNotSupportedError(
-          "Unsupported options to dequantizeLinear. The length of the 'scale' "
-          "vector must match a dimension of the input. Blockwise "
-          "dequantization is not supported.");
-    }
-
-    int32_t axis = base::checked_cast<int32_t>(
-        axis_it - input_operand_info.dimensions.begin());
     SetInputWithValue(*op->mutable_inputs(), kOpParamAxis,
-                      CreateScalarImmediateValue(axis));
+                      CreateScalarImmediateValue(base::checked_cast<int32_t>(
+                          input_operand_info.dimensions.size() - 1)));
   }
 
   if (input_operand_id != operation.input_operand_id) {
+    ASSIGN_OR_RETURN(
+        uint64_t output_operand_id,
+        GenerateInternalOperandInfo(
+            GetOperandInfo(operation.output_operand_id).mil_data_type,
+            std::array<uint32_t, 1>{1}));
+    PopulateNamedValueType(output_operand_id, *op->add_outputs());
+    RETURN_IF_ERROR(AddOperationForReshape(output_operand_id,
+                                           operation.output_operand_id, block));
+  } else {
+    PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  }
+  return base::ok();
+}
+
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForDequantizeLinearConst(
+    const mojom::DequantizeLinear& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  const OperandInfo& scale_operand_info =
+      GetOperandInfo(operation.scale_operand_id);
+
+  CHECK(constant_operands_->contains(operation.input_operand_id));
+  CHECK(constant_operands_->contains(operation.zero_point_operand_id));
+  CHECK(constant_operands_->contains(operation.scale_operand_id));
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpDequantizeLinearConstTypeName);
+
+  static constexpr char kParamInput[] = "quantized_data";
+  bool input_needs_reshape = input_operand_info.dimensions.empty();
+  CoreML::Specification::MILSpec::Value value;
+  if (input_needs_reshape) {
+    ASSIGN_OR_RETURN(value,
+                     weights_file_handle_->Write(
+                         operation.input_operand_id,
+                         *constant_operands_->at(operation.input_operand_id),
+                         std::array<uint32_t, 1>{1}));
+  } else {
+    ASSIGN_OR_RETURN(value,
+                     weights_file_handle_->Write(
+                         operation.input_operand_id,
+                         *constant_operands_->at(operation.input_operand_id)));
+  }
+  // This op requires all parameters passed as attributes instead of inputs.
+  (*op->mutable_attributes())[kParamInput] = std::move(value);
+
+  static constexpr char kParamZeroPoint[] = "zero_point";
+  static constexpr char kParamScale[] = "scale";
+
+  ASSIGN_OR_RETURN(
+      (*op->mutable_attributes())[kParamZeroPoint],
+      weights_file_handle_->Write(
+          operation.zero_point_operand_id,
+          *constant_operands_->at(operation.zero_point_operand_id)))
+
+  ASSIGN_OR_RETURN((*op->mutable_attributes())[kParamScale],
+                   weights_file_handle_->Write(
+                       operation.scale_operand_id,
+                       *constant_operands_->at(operation.scale_operand_id)))
+
+  int32_t axis = 0;
+  if (!scale_operand_info.dimensions.empty()) {
+    axis =
+        base::checked_cast<int32_t>(input_operand_info.dimensions.size() - 1);
+  }
+  (*op->mutable_attributes())[kOpParamAxis] = CreateScalarImmediateValue(axis);
+
+  if (input_needs_reshape) {
     ASSIGN_OR_RETURN(
         uint64_t output_operand_id,
         GenerateInternalOperandInfo(
@@ -4814,93 +4963,6 @@ GraphBuilderCoreml::AddOperationForTriangular(
   return base::ok();
 }
 
-CoreML::Specification::MILSpec::Value CreateConstantImmediateValue(
-    base::span<const uint32_t> dimensions,
-    OperandDataType data_type,
-    base::span<const uint8_t> value) {
-  switch (data_type) {
-    case OperandDataType::kFloat32: {
-      base::FixedArray<float> floats(value.size() / sizeof(float));
-      for (size_t i = 0u; i < floats.size(); ++i) {
-        floats[i] = base::FloatFromNativeEndian(
-            value.subspan(i * sizeof(float)).first<4u>());
-      }
-      return CreateTensorImmediateValue<float>(dimensions, floats);
-    }
-    case OperandDataType::kFloat16: {
-      base::FixedArray<Float16> float16s(value.size() / sizeof(Float16));
-      for (size_t i = 0u; i < float16s.size(); ++i) {
-        float16s[i].data = base::U16FromNativeEndian(
-            value.subspan(i * sizeof(Float16)).first<2u>());
-      }
-      return CreateTensorImmediateValue<Float16>(dimensions, float16s);
-    }
-    case OperandDataType::kInt32: {
-      base::FixedArray<int32_t> ints(value.size() / sizeof(int32_t));
-      for (size_t i = 0u; i < ints.size(); ++i) {
-        ints[i] = base::I32FromNativeEndian(
-            value.subspan(i * sizeof(int32_t)).first<4u>());
-      }
-      return CreateTensorImmediateValue<int32_t>(dimensions, ints);
-    }
-    case OperandDataType::kInt8: {
-      base::FixedArray<int8_t> int8s(value.size() / sizeof(int8_t));
-      for (size_t i = 0u; i < int8s.size(); ++i) {
-        int8s[i] = base::I8FromNativeEndian(
-            value.subspan(i * sizeof(int8_t)).first<1u>());
-      }
-      return CreateTensorImmediateValue<int8_t>(dimensions, int8s);
-    }
-    case OperandDataType::kUint8: {
-      base::FixedArray<uint8_t> uint8s(value.size() / sizeof(uint8_t));
-      for (size_t i = 0u; i < uint8s.size(); ++i) {
-        uint8s[i] = base::U8FromNativeEndian(
-            value.subspan(i * sizeof(uint8_t)).first<1u>());
-      }
-      return CreateTensorImmediateValue<uint8_t>(dimensions, uint8s);
-    }
-    case OperandDataType::kUint32:
-    case OperandDataType::kInt64:
-    case OperandDataType::kUint64:
-    case OperandDataType::kInt4:
-    case OperandDataType::kUint4: {
-      NOTREACHED() << "Unsupported data type.";
-    }
-  }
-}
-void GraphBuilderCoreml::AddConstantImmediateValue(
-    uint64_t constant_id,
-    CoreML::Specification::MILSpec::Block& block) {
-  auto* op = block.add_operations();
-  op->set_type(kOpConstTypeName);
-  PopulateNamedValueType(constant_id, *op->add_outputs());
-
-  google::protobuf::Map<std::string, ::CoreML::Specification::MILSpec::Value>&
-      attributes = *op->mutable_attributes();
-  std::string_view name = GetOperandInfo(constant_id).coreml_name;
-  attributes["name"] = CreateStringImmediateValue(name);
-
-  constant_pointers_[constant_id] = name;
-
-  const auto& constant_operand = constant_operands_->at(constant_id);
-  attributes["val"] = CreateConstantImmediateValue(
-      constant_operand->descriptor().shape(),
-      constant_operand->descriptor().data_type(), constant_operand->ByteSpan());
-}
-
-CoreML::Specification::MILSpec::Value
-GraphBuilderCoreml::CreateConstantFileValue(uint64_t constant_id,
-                                            uint64_t offset) {
-  CoreML::Specification::MILSpec::Value blob_value{};
-  const OperandInfo& operand_info = GetOperandInfo(constant_id);
-  PopulateValueTypeFromOperandInfo(operand_info, *blob_value.mutable_type());
-  CoreML::Specification::MILSpec::Value::BlobFileValue* blob =
-      blob_value.mutable_blobfilevalue();
-  blob->set_filename(kWeightsRelativeFilePath);
-  blob->set_offset(offset);
-  return blob_value;
-}
-
 const mojom::Operand& GraphBuilderCoreml::GetOperand(
     uint64_t operand_id) const {
   return *graph_info_->id_to_operand_map.at(operand_id);
@@ -5063,32 +5125,13 @@ GraphBuilderCoreml::SetInputFromOperand(
   // Non-constant operands should already have an entity in the model.
   if (!constant_operands_->contains(operand_id)) {
     inputs[key].add_arguments()->set_name(
-        std::string(GetOperandInfo(operand_id).coreml_name));
+        GetOperandInfo(operand_id).coreml_name);
     return base::ok();
   }
-  auto pointer = constant_pointers_.find(operand_id);
-  // Lazily write weights to file if they are not already serialized.
-  if (pointer == constant_pointers_.end()) {
-    const std::unique_ptr<WebNNConstantOperand>& constant_operand =
-        constant_operands_->at(operand_id);
-    ASSIGN_OR_RETURN(uint64_t offset,
-                     weights_file_handle_->Write(
-                         constant_operand->ByteSpan(),
-                         constant_operand->descriptor().data_type()));
-    constant_pointers_[operand_id] = offset;
-    SetInputWithValue(inputs, key, CreateConstantFileValue(operand_id, offset));
-  } else {
-    std::visit(
-        base::Overloaded{
-            [&](uint64_t offset) {
-              SetInputWithValue(inputs, key,
-                                CreateConstantFileValue(operand_id, offset));
-            },
-            [&](std::string_view coreml_name) {
-              inputs[key].add_arguments()->set_name(std::string(coreml_name));
-            }},
-        pointer->second);
-  }
+  ASSIGN_OR_RETURN(CoreML::Specification::MILSpec::Value value,
+                   weights_file_handle_->Write(
+                       operand_id, *constant_operands_->at(operand_id)))
+  SetInputWithValue(inputs, key, value);
   return base::ok();
 }
 
@@ -5117,11 +5160,9 @@ GraphBuilderCoreml::SetInputFromConstantReordered(
 
   RETURN_IF_ERROR(weight_item->Finalize());
 
-  ASSIGN_OR_RETURN(uint64_t new_constant,
-                   GenerateInternalOperandInfo(
-                       OperandTypeToMILDataType(data_type), dimensions));
-
-  SetInputWithValue(inputs, key, CreateConstantFileValue(new_constant, offset));
+  SetInputWithValue(inputs, key,
+                    CreateConstantFileValue(OperandTypeToMILDataType(data_type),
+                                            dimensions, offset));
 
   return base::ok();
 }
@@ -5225,11 +5266,10 @@ GraphBuilderCoreml::SetInputFromTwoConstantsReordered(
         NOTREACHED() << "Unsupported weight type";
     }
   }
-  ASSIGN_OR_RETURN(uint64_t new_constant,
-                   GenerateInternalOperandInfo(
-                       OperandTypeToMILDataType(data_type), dimensions));
   RETURN_IF_ERROR(weight_item->Finalize());
-  SetInputWithValue(inputs, key, CreateConstantFileValue(new_constant, offset));
+  SetInputWithValue(inputs, key,
+                    CreateConstantFileValue(OperandTypeToMILDataType(data_type),
+                                            dimensions, offset));
 
   return base::ok();
 }

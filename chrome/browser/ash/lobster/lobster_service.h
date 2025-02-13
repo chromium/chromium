@@ -19,6 +19,8 @@
 #include "chrome/browser/ash/lobster/lobster_system_state_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 
 namespace manta {
 class SnapperProvider;
@@ -84,6 +86,8 @@ class LobsterService : public KeyedService, public LobsterEventSink {
   ash::LobsterBubbleCoordinator bubble_coordinator_;
 
   std::unique_ptr<LobsterInsertion> queued_insertion_;
+
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 #endif  // CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SERVICE_H_

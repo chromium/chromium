@@ -184,6 +184,10 @@ bool MultiImplOnlyScrollAnimationsSupported() {
       features::kMultipleImplOnlyScrollAnimations);
 }
 
+BASE_FEATURE(kRenderSurfacePixelAlignment,
+             "RenderSurfacePixelAlignment",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPreventDuplicateImageDecodes,
              "PreventDuplicateImageDecodes",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -208,5 +212,9 @@ BASE_FEATURE(kStopExportDFCMetrics,
 bool StopExportDFCMetrics() {
   return base::FeatureList::IsEnabled(features::kStopExportDFCMetrics);
 }
+
+BASE_FEATURE(kZeroScrollMetricsUpdate,
+             "ZeroScrollMetricsUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

@@ -240,6 +240,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//build/config/linux/libdrm",
+    "//gpu:test_support",
     "//gpu/ipc/service:service",
     "//media",
     "//media:test_support",

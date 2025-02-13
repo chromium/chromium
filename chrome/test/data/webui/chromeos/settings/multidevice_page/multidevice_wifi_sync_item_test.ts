@@ -55,7 +55,7 @@ suite('<settings-multidevice-wifi-sync-item>', () => {
     wifiSyncItem.remove();
   });
 
-  test('Wifi Sync off', async () => {
+  test('Wifi Sync off', () => {
     const prefs = osSyncPrefs;
     prefs.osWifiConfigurationsSynced = false;
     webUIListenerCallback('os-sync-prefs-changed', prefs);
@@ -70,7 +70,7 @@ suite('<settings-multidevice-wifi-sync-item>', () => {
     assertFalse(toggle.checked);
   });
 
-  test('Wifi Sync on', async () => {
+  test('Wifi Sync on', () => {
     const prefs = osSyncPrefs;
     prefs.osWifiConfigurationsSynced = true;
     webUIListenerCallback('os-sync-prefs-changed', prefs);

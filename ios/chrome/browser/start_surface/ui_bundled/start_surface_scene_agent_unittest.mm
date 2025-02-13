@@ -55,7 +55,6 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
 
     profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
     SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
-    profile_state_.profile = profile_.get();
 
     scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state_
                                                     profile:profile_.get()];
@@ -63,6 +62,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
     scene_state_.activationLevel = SceneActivationLevelUnattached;
     scene_state_.profileState = profile_state_;
+    scene_state_.UIEnabled = YES;
 
     agent_ = [[StartSurfaceSceneAgent alloc] init];
     agent_.sceneState = scene_state_;

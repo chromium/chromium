@@ -219,8 +219,8 @@ TEST_F(InteractiveViewsTestTest, PollView) {
   DoPost(base::BindLambdaForTesting(
       [this]() { button1_->SetText(kButton2Caption); }));
   RunTestSequence(PollView(kButtonTextState, kButton1Id,
-                           [](const LabelButton* b) -> std::u16string {
-                             return b->GetText();
+                           [](const LabelButton* b) {
+                             return std::u16string(b->GetText());
                            }),
                   WaitForState(kButtonTextState, kButton2Caption));
 }

@@ -68,6 +68,7 @@ base::Value::Dict ParsedField(std::string renderer_id,
                                 .Set("is_checkable", false)
                                 .Set("value", value)
                                 .Set("label", label)
+                                .Set("pattern_attribute", "")
                                 .Set("placeholder_attribute", "");
   return field;
 }

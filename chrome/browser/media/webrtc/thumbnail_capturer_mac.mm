@@ -55,23 +55,14 @@ BASE_FEATURE(kScreenCaptureKitPickerScreen,
              "ScreenCaptureKitPickerScreen",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// The enable/disable property of this feature has no impact. The feature is
-// used solely to pass on the parameters below.
-BASE_FEATURE(kThumbnailCapturerMac,
-             "ThumbnailCapturerMac",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Default max frame rate that is used when capturing thumbnails. This is per
 // source so the combined frame rate can be higher if there are multiple
 // sources.
-const base::FeatureParam<int> kThumbnailCapturerMacMaxFrameRate{
-    &kThumbnailCapturerMac, "max_frame_rate", 1};
+constexpr int kThumbnailCapturerMacMaxFrameRate = 1;
 
 // Refresh interval that is used to query for the list of shareable content.
-const base::FeatureParam<base::TimeDelta>
-    kThumbnailCapturerMacRefreshTimerInterval{&kThumbnailCapturerMac,
-                                              "refresh_timer_interval",
-                                              base::Milliseconds(250)};
+constexpr base::TimeDelta kThumbnailCapturerMacRefreshTimerInterval =
+    base::Milliseconds(250);
 
 content::DesktopMediaID::Type ConvertToDesktopMediaIDType(
     DesktopMediaList::Type type) {
@@ -89,35 +80,16 @@ content::DesktopMediaID::Type ConvertToDesktopMediaIDType(
   NOTREACHED();
 }
 
-// The sort mode controls the order of the source list that is returned from
-// GetSourceList().
-enum class SortMode {
-  // No extra sorting, same order as returned by SCShareableContent.
-  kNone = 0,
-  // Same order as returned by CGWindowListCopyWindowInfo().
-  kCGWindowList = 1,
-  // Static order where new windows are put last in the list.
-  kNewWindowsLast = 2
-};
-const base::FeatureParam<SortMode>::Option sort_mode_options[] = {
-    {SortMode::kNone, "none"},
-    {SortMode::kCGWindowList, "cg_window_list"},
-    {SortMode::kNewWindowsLast, "new_windows_last"},
-};
-const base::FeatureParam<SortMode> kThumbnailCapturerMacSortMode{
-    &kThumbnailCapturerMac, "sort_mode", SortMode::kCGWindowList,
-    &sort_mode_options};
-
 // The minimum window size that is still considered to be a shareable window.
 // Windows with smaller height or widht are filtered out.
-const base::FeatureParam<int> kThumbnailCapturerMacMinWindowSize{
-    &kThumbnailCapturerMac, "min_window_size", 40};
+constexpr int kThumbnailCapturerMacMinWindowSize = 40;
 
-// Controls the maximum number of sources that are captured during each capture
-// cycle if the capture mode is set to kSCScreenshotManager. By having a limit
-// and cycling through what windows are captured we get a graceful degradation.
-const base::FeatureParam<int> kThumbnailCapturerMacMaxSourcesPerCycles{
-    &kThumbnailCapturerMac, "max_sources_per_cycles", 25};
+// The maximum number of sources that can be captured in each capture cycle
+// if the capture mode is set to kSCScreenshotManager.  This is also the
+// maximum number of capture calls that can be in-flight simultaneously.
+// By having a limit and cycling through what windows are captured we get a
+// graceful degradation.
+constexpr size_t kThumbnailCapturerMacMaxSourcesPerCycle = 25;
 
 bool API_AVAILABLE(macos(12.3))
     IsWindowFullscreen(SCWindow* window, NSArray<SCDisplay*>* displays) {
@@ -211,12 +183,6 @@ class API_AVAILABLE(macos(12.3)) ScreenshotManagerCapturer {
   // Callback that is used whenever a thumbnail is captured.
   SampleCallback sample_callback_;
 
-  // The maximum number of sources that can be captured in each capture cycle.
-  // This is also the maximum number of capture calls that can be in-flight
-  // simultaneously. We have a limit here to not spawn hundreds of capturers at
-  // the same time since this could degrade the system performance.
-  const size_t max_sources_per_cycle_;
-
   // The number of calls to SCScreenshotManager for which we have not yet
   // received the corresponding callback with a captured frame (or potentially
   // an error).
@@ -249,8 +215,7 @@ ScreenshotManagerCapturer::ScreenshotManagerCapturer(
       type_(type),
       get_shareable_display_callback_(get_shareable_display_callback),
       get_shareable_window_callback_(get_shareable_window_callback),
-      sample_callback_(sample_callback),
-      max_sources_per_cycle_(kThumbnailCapturerMacMaxSourcesPerCycles.Get()) {
+      sample_callback_(sample_callback) {
   if (@available(macOS 14.0, *)) {
     capture_frame_timer_.Start(
         FROM_HERE, base::Milliseconds(1000.0 / max_frame_rate), this,
@@ -296,9 +261,10 @@ void ScreenshotManagerCapturer::OnRecurrentCaptureTimer() {
 
   // Take source ids from the top of the queue and capture the corresponding
   // window if it is still selected and exists in the list of shareable windows.
-  CHECK_LE(capture_calls_in_flight_, max_sources_per_cycle_);
-  size_t sources_to_capture = std::min(
-      capture_queue_.size(), max_sources_per_cycle_ - capture_calls_in_flight_);
+  CHECK_LE(capture_calls_in_flight_, kThumbnailCapturerMacMaxSourcesPerCycle);
+  size_t sources_to_capture =
+      std::min(capture_queue_.size(), kThumbnailCapturerMacMaxSourcesPerCycle -
+                                          capture_calls_in_flight_);
   for (size_t i = 0; i < sources_to_capture; ++i) {
     ThumbnailCapturer::SourceId source_id = capture_queue_.front();
     capture_queue_.pop_front();
@@ -452,9 +418,7 @@ class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   DesktopMediaList::Type type_;
-  const SortMode sort_mode_;
   int max_frame_rate_;
-  const int minimum_window_size_;
   raw_ptr<Consumer> consumer_;
   int shareable_content_callbacks_ = 0;
   int shareable_content_errors_ = 0;
@@ -475,9 +439,7 @@ class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
 
 ThumbnailCapturerMac::ThumbnailCapturerMac(DesktopMediaList::Type type)
     : type_(type),
-      sort_mode_(kThumbnailCapturerMacSortMode.Get()),
-      max_frame_rate_(kThumbnailCapturerMacMaxFrameRate.Get()),
-      minimum_window_size_(kThumbnailCapturerMacMinWindowSize.Get()),
+      max_frame_rate_(kThumbnailCapturerMacMaxFrameRate),
       shareable_windows_([[NSArray<SCWindow*> alloc] init]) {
   CHECK(type_ == DesktopMediaList::Type::kWindow ||
         type_ == DesktopMediaList::Type::kScreen);
@@ -500,9 +462,8 @@ void ThumbnailCapturerMac::Start(Consumer* consumer) {
   task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   UpdateWindowsList();
   // Start a timer that periodically update the list of sharable windows.
-  refresh_timer_.Start(FROM_HERE,
-                       kThumbnailCapturerMacRefreshTimerInterval.Get(), this,
-                       &ThumbnailCapturerMac::UpdateWindowsList);
+  refresh_timer_.Start(FROM_HERE, kThumbnailCapturerMacRefreshTimerInterval,
+                       this, &ThumbnailCapturerMac::UpdateWindowsList);
 
   CHECK(!screenshot_manager_capturer_);
   // Unretained is safe because `screenshot_manager_capturer_ ` is owned by
@@ -629,17 +590,7 @@ void ThumbnailCapturerMac::UpdateShareableWindows(
   content_windows = FilterOutUnshareable(content_windows);
 
   // Update shareable_streams_ from current_windows.
-  switch (sort_mode_) {
-    case SortMode::kNone:
-      shareable_windows_ = content_windows;
-      break;
-    case SortMode::kCGWindowList:
-      shareable_windows_ = SortOrderByCGWindowList(content_windows);
-      break;
-    case SortMode::kNewWindowsLast:
-      shareable_windows_ = SortOrderByNewWindowsLast(content_windows);
-      break;
-  }
+  shareable_windows_ = SortOrderByCGWindowList(content_windows);
 }
 
 SCDisplay* ThumbnailCapturerMac::GetShareableDisplay(SourceId source_id) const {
@@ -652,8 +603,6 @@ SCWindow* ThumbnailCapturerMac::GetShareableWindow(SourceId source_id) const {
 
 NSArray<SCWindow*>* ThumbnailCapturerMac::SortOrderByCGWindowList(
     NSArray<SCWindow*>* current_windows) const {
-  CHECK_EQ(sort_mode_, SortMode::kCGWindowList);
-
   // Only get on screen, non-desktop windows.
   // According to
   // https://developer.apple.com/documentation/coregraphics/cgwindowlistoption/1454105-optiononscreenonly
@@ -684,36 +633,6 @@ NSArray<SCWindow*>* ThumbnailCapturerMac::SortOrderByCGWindowList(
   return sorted_windows;
 }
 
-NSArray<SCWindow*>* ThumbnailCapturerMac::SortOrderByNewWindowsLast(
-    NSArray<SCWindow*>* current_windows) const {
-  CHECK_EQ(sort_mode_, SortMode::kNewWindowsLast);
-
-  // Prepare to segment the list of new window as pre-existing / newly-added.
-  NSMutableArray<SCWindow*>* existing_windows = [[NSMutableArray alloc] init];
-  NSMutableArray<SCWindow*>* added_windows = [[NSMutableArray alloc] init];
-
-  // Iterate over the windows from last time and ensure that all of them
-  // which are still relevant, are maintained in their original order.
-  for (SCWindow* window in shareable_windows_) {
-    SCWindow* current_window = FindWindow(current_windows, window.windowID);
-    if (current_window) {
-      // Please note that current_window may not be equal to the previous window
-      // despite that they have the same WindowID if for example the title has
-      // changed.
-      [existing_windows addObject:current_window];
-    }
-  }
-
-  // All other windows in `current_windows` are new by definition.
-  for (SCWindow* window in current_windows) {
-    if (!FindWindow(existing_windows, window.windowID)) {
-      [added_windows addObject:window];
-    }
-  }
-
-  return [existing_windows arrayByAddingObjectsFromArray:added_windows];
-}
-
 bool ThumbnailCapturerMac::IsShareable(SCWindow* window) const {
   // Always exclude windows from the source list based on the following
   // conditions:
@@ -725,8 +644,8 @@ bool ThumbnailCapturerMac::IsShareable(SCWindow* window) const {
   //    that the window is being captured. This indicator is a window itself,
   //    but is of no use for the user.
   return window.windowLayer == 0 &&
-         window.frame.size.height >= minimum_window_size_ &&
-         window.frame.size.width >= minimum_window_size_;
+         window.frame.size.height >= kThumbnailCapturerMacMinWindowSize &&
+         window.frame.size.width >= kThumbnailCapturerMacMinWindowSize;
 }
 
 NSArray<SCWindow*>* ThumbnailCapturerMac::FilterOutUnshareable(

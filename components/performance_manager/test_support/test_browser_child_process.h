@@ -20,10 +20,7 @@ namespace performance_manager {
 //
 // In production, a process and associated ProcessNode is created for
 // this by calling host()->Launch(), but in unit tests this has unsatisfied
-// dependencies so a ProcessNode can be created by calling
-//
-//   PerformanceManagerRegistryImpl::GetInstance()
-//       ->CreateBrowserChildProcessNodeForTesting(host());
+// dependencies so a ProcessNode can be created by calling SimulateLaunch().
 class TestBrowserChildProcess final
     : public content::BrowserChildProcessHostDelegate {
  public:

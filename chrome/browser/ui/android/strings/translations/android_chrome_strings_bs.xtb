@@ -582,6 +582,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3701167022068948696">Ispravi sada</translation>
 <translation id="3701515417135397388">Upozorava vas ako je lozinka ugrožena narušavanjem podataka</translation>
 <translation id="3703166520839776970">Ako se taj problem nastavi pojavljivati, odaberite "Više detalja" u nastavku da saznate više informacija od pružaoca usluga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="3708100450779900829">Kad je uređaj sklopljen, možete odabrati opciju ili dodirnuti i zadržati pritisak na adresnoj traci da biste promijenili položaj</translation>
 <translation id="3710501561113687889">Da nastavite, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će dijeliti vaše <ph name="FIELDS_STRING" /> s ovom web lokacijom.</translation>
 <translation id="3710560693796335511">Saradnja</translation>
 <translation id="3714981814255182093">Otvori u traci za traženje</translation>
@@ -1090,7 +1091,6 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="604996488070107836">Preuzimanje fajla <ph name="FILE_NAME" /> nije uspjelo zbog nepoznate greške.</translation>
 <translation id="605721222689873409">GG</translation>
 <translation id="6059830886158432458">Upravljajte pričama i aktivnostima ovdje</translation>
-<translation id="6070730414166672373">Kontaktiranje banke\u2026</translation>
 <translation id="6071995715087444295">Da provjerite ugrožene lozinke, prijavite se na Google račun</translation>
 <translation id="6085886413119427067">Određuje način povezivanja s web lokacijama putem sigurne veze</translation>
 <translation id="6087286598828478206">Blokirati i napustiti grupu?</translation>
@@ -1127,7 +1127,6 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="6210748933810148297">Vi niste <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Pregledanje ove stranice</translation>
 <translation id="6221633008163990886">Otključajte da izvezete lozinke</translation>
-<translation id="6225572914528673855">Traka za adresu</translation>
 <translation id="6232535412751077445">Ako omogućite "Bez praćenja", taj će se zahtjev slati uz vaš saobraćaj pregledanja. Efikasnost zavisi od toga reagira li web lokacija na zahtjev i na koji način se taj zahtjev tumači.
 
 Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa koji se ne zasnivaju na drugim web lokacijama koje ste posjetili. Mnoge web lokacije će i dalje prikupljati i koristiti vaše podatke o pregledanju kako bi, naprimjer, poboljšale sigurnost, pružale sadržaje, oglase i preporuke te generirale statističke podatke za izvještaje.</translation>
@@ -1616,6 +1615,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8236063039629122676">Sada se prevlačenjem udesno možete vratiti da vidite prethodne stranice koje ste posjetili, a prevlačenjem ulijevo se pomičete unaprijed</translation>
 <translation id="8236097722223016103">Dodaj u oznake</translation>
 <translation id="8243077599929149377">Dodajte korisničko ime</translation>
+<translation id="8244387390464017490">Prilagodba stranice nove kartice</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="8255617931166444521">Web lokacije mogu koristiti vaše kolačiće isključivo da vide vašu aktivnost pregledanja samo na svojoj web lokaciji</translation>
 <translation id="8258999165172757081">Dodano</translation>

@@ -124,15 +124,19 @@ const CGFloat kBottomCornerRadius = 108.0;
 
 - (void)lensOverlayWillDismissWithCause:
     (LensOverlayDismissalCause)dismissalCause {
-  if (dismissalCause == LensOverlayDismissalCauseSwipeDown) {
-    // If it was a swipe down of the bottom sheet, restart capturing.
-    [_lensViewController buildCaptureInfrastructure];
+  // If it was a swipe down of the bottom sheet, restart capturing.
+  if (dismissalCause == LensOverlayDismissalCauseSwipeDownFromSelection) {
+    [_lensViewController buildCaptureInfrastructureForSelection];
+  } else if (dismissalCause ==
+             LensOverlayDismissalCauseSwipeDownFromTranslate) {
+    [_lensViewController buildCaptureInfrastructureForTranslate];
   }
 }
 
 - (void)lensOverlayDidDismissWithCause:
     (LensOverlayDismissalCause)dismissalCause {
-  if (dismissalCause != LensOverlayDismissalCauseSwipeDown) {
+  if (dismissalCause != LensOverlayDismissalCauseSwipeDownFromSelection &&
+      dismissalCause != LensOverlayDismissalCauseSwipeDownFromTranslate) {
     // All other dismissal sources cause the UI to shut down.
     [self exitLensViewFinderAnimated:NO];
   }

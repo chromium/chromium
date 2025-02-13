@@ -163,8 +163,7 @@ void AssistantZeroStateView::UpdateLayout() {
   iph_view_->SetVisible(show_iph);
 }
 
-void AssistantZeroStateView::RunLauncherSearchQuery(
-    const std::u16string& query) {
+void AssistantZeroStateView::RunLauncherSearchQuery(std::u16string_view query) {
   delegate_->OnLauncherSearchChipPressed(query);
 }
 

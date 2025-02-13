@@ -35,8 +35,6 @@ base::span<const MatchPatternRef> GetMatchPatterns(std::string_view name,
 #else
     case PatternFile::kDefault:
       return it->second[0];
-    case PatternFile::kAutofillAi:
-      return it->second[1];
 #endif
   }
   NOTREACHED();

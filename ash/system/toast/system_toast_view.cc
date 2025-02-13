@@ -5,6 +5,7 @@
 #include "ash/system/toast/system_toast_view.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/public/cpp/ash_view_ids.h"
@@ -177,11 +178,11 @@ SystemToastView::SystemToastView(const std::u16string& text,
 
 SystemToastView::~SystemToastView() = default;
 
-void SystemToastView::SetText(const std::u16string& text) {
+void SystemToastView::SetText(std::u16string_view text) {
   label_->SetText(text);
 }
 
-const std::u16string& SystemToastView::GetText() const {
+std::u16string_view SystemToastView::GetText() const {
   return label_->GetText();
 }
 

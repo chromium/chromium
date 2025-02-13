@@ -42,14 +42,15 @@ bool LineWidths::Set(const InlineNode& node,
   const InlineItemsData& items_data = node.ItemsData(/*is_first_line*/ false);
   // `::first-line` is not supported.
   DCHECK_EQ(&items_data, &node.ItemsData(true));
-  base::span<const InlineItem> items(items_data.items);
+  base::span<const Member<InlineItem>> items(items_data.items);
   bool is_empty_so_far = true;
   if (break_token) {
     DCHECK(break_token->Start());
     items = items.subspan(break_token->StartItemIndex());
     is_empty_so_far = false;
   }
-  for (const InlineItem& item : items) {
+  for (const Member<InlineItem>& item_ptr : items) {
+    const InlineItem& item = *item_ptr;
     switch (item.Type()) {
       case InlineItem::kText: {
         if (!item.Length()) [[unlikely]] {

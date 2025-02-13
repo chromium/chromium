@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{तुमच्या उघड्या असलेल्या टॅबवरील कमी झालेली किंमत}other{तुमच्या उघड्या असलेल्या टॅबवरील कमी झालेल्या किमती}}</translation>
 <translation id="5186036860380548585">स्क्रीनच्या सर्वात वरती पर्याय उपलब्ध आहे</translation>
 <translation id="5197729504361054390">तुम्ही निवडलेले संपर्क <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />सोबत शेअर केले जातील.</translation>
+<translation id="5198930230016462977">तुमच्या नवीन टॅब पेजच्या तळाशी असलेली शीट कस्टमाइझ करा हे बंद केले आहे</translation>
 <translation id="5216942107514965959">आज शेवटची भेट दिली</translation>
 <translation id="5225463052809312700">कॅमेरा सुरू करा</translation>
 <translation id="5234764350956374838">डिसमिस करा</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">हँड ट्रॅकिंग</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> ला ब्लॉक केले</translation>
 <translation id="5804241973901381774">परवानग्या</translation>
+<translation id="5822675474983796325">तुमच्या नवीन टॅब पेजच्या तळाशी असलेली शीट कस्टमाइझ करा हे पूर्ण उंचीवर उघडले आहे</translation>
 <translation id="5844448279347999754">सुरू असताना, साइट तुमच्या क्लिपबोर्डवर सेव्ह केलेला मजकूर आणि इमेज पाहण्याची विनंती करू शकतात. बंद असताना, साइट तुमच्या क्लिपबोर्डवर सेव्ह केलेला मजकूर किंवा इमेज पाहू शकत नाहीत.</translation>
 <translation id="5853982612236235577">सुरू असताना, साइट सूचना पाठवण्याची विनंती करू शकतात. बंद असताना, साइट सूचना पाठवू शकत नाहीत.</translation>
 <translation id="5860033963881614850">बंद</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">विस्‍तृत केलेले</translation>
 <translation id="7219254577985949841">साइट डेटा हटवायचा आहे का?</translation>
 <translation id="723171743924126238">इमेज निवडा</translation>
+<translation id="7243246278722455312">तुमच्या नवीन टॅब पेजच्या तळाशी असलेली शीट कस्टमाइझ करा</translation>
 <translation id="7243308994586599757">स्क्रीनच्या तळाशी पर्याय उपलब्ध आहेत</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> निवडले</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> आणि <ph name="PERMISSION_2" /> ला अनुमती दिली</translation>

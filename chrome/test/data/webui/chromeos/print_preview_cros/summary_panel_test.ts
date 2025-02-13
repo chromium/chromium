@@ -101,7 +101,7 @@ suite('SummaryPanel', () => {
 
   // Verify the summary-panel element can be rendered, contains print, cancel,
   // and sheets used elements.
-  test('element renders', async () => {
+  test('element renders', () => {
     assert(element);
     assertTrue(isVisible(element));
 
@@ -117,7 +117,7 @@ suite('SummaryPanel', () => {
   });
 
   // Verify summary-panel element has a controller configured.
-  test('has element controller', async () => {
+  test('has element controller', () => {
     assertTrue(
         !!controller,
         `${SummaryPanelElement.is} should have controller configured`);
@@ -125,7 +125,7 @@ suite('SummaryPanel', () => {
 
   // Verify #sheetsUsed updates to the string defined by SummaryPanelController
   // when a `sheets_used_changed` event occurs.
-  test('sheets used matches controller getSheetsUsed', async () => {
+  test('sheets used matches controller getSheetsUsed', () => {
     assert(element);
     assert(controller);
     const sheetsUsed = strictQuery<HTMLSpanElement>(

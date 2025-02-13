@@ -184,7 +184,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
 
   /** @return The "Errors" button, if it exists. */
   getErrorsButton(): HTMLElement|null {
-    return this.shadowRoot!.querySelector('#errors-button');
+    return this.shadowRoot.querySelector('#errors-button');
   }
 
   protected getEnableToggleAriaLabel_(): string {

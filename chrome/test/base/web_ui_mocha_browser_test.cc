@@ -24,7 +24,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_ui_test_utils.h"
-#include "content/public/common/content_features.h"
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -66,18 +65,6 @@ void WebUIMochaBrowserTest::set_test_loader_scheme(const std::string& scheme) {
 Profile* WebUIMochaBrowserTest::GetProfileForSetup() {
   return chrome_test_utils::GetProfile(this);
 }
-
-#if BUILDFLAG(IS_ANDROID)
-// On Android, JavaScript console messages are only added to test logs if
-// kLogJsConsoleMessages is enabled (on other platforms, such messages are
-// included in test logs by default). Console messages are necessary for
-// WebUI tests since they include logs indicating which tests in a suite
-// passed/failed and the console errors related to any failures.
-void WebUIMochaBrowserTest::SetUp() {
-  scoped_feature_list_.InitAndEnableFeature(features::kLogJsConsoleMessages);
-  PlatformBrowserTest::SetUp();
-}
-#endif
 
 void WebUIMochaBrowserTest::SetUpOnMainThread() {
   // Load browser_tests.pak.

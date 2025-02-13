@@ -44,6 +44,9 @@ class AccountCapabilitiesTestMutator {
   void set_can_use_speaker_label_in_recorder_app(bool value);
   void set_can_use_generative_ai_in_recorder_app(bool value);
   void set_can_use_generative_ai_photo_editing(bool value);
+#if BUILDFLAG(IS_CHROMEOS)
+  void set_can_use_chromeos_generative_ai(bool value);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Modifies all supported capabilities at once.
   void SetAllSupportedCapabilities(bool value);

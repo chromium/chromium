@@ -178,9 +178,6 @@ SpeechRecognitionManagerImpl::SpeechRecognitionManagerImpl(
     MediaStreamManager* media_stream_manager)
     : audio_system_(audio_system),
       media_stream_manager_(media_stream_manager),
-      primary_session_id_(kSessionIDInvalid),
-      last_session_id_(kSessionIDInvalid),
-      is_dispatching_event_(false),
       delegate_(GetContentClient()
                     ->browser()
                     ->CreateSpeechRecognitionManagerDelegate()),
@@ -394,27 +391,29 @@ void SpeechRecognitionManagerImpl::StartSession(int session_id) {
   if (!SessionExists(session_id))
     return;
 
-  // If there is another active session, abort that.
-  if (primary_session_id_ != kSessionIDInvalid &&
-      primary_session_id_ != session_id) {
-    AbortSession(primary_session_id_);
+  if (sessions_[session_id]->use_microphone) {
+    // If there is another session using the microphone, abort that.
+    if (microphone_session_id_ != kSessionIDInvalid &&
+        microphone_session_id_ != session_id) {
+      AbortSession(microphone_session_id_);
+    }
+
+    microphone_session_id_ = session_id;
+
+    if (delegate_) {
+      delegate_->CheckRecognitionIsAllowed(
+          session_id,
+          base::BindOnce(
+              &SpeechRecognitionManagerImpl::RecognitionAllowedCallback,
+              weak_factory_.GetWeakPtr(), session_id));
+    }
+    return;
   }
 
-  primary_session_id_ = session_id;
-
-  if (!sessions_[session_id]->use_microphone) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SpeechRecognitionManagerImpl::DispatchEvent,
-                       weak_factory_.GetWeakPtr(), session_id, EVENT_START));
-
-  } else if (delegate_) {
-    delegate_->CheckRecognitionIsAllowed(
-        session_id,
-        base::BindOnce(
-            &SpeechRecognitionManagerImpl::RecognitionAllowedCallback,
-            weak_factory_.GetWeakPtr(), session_id));
-  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SpeechRecognitionManagerImpl::DispatchEvent,
+                     weak_factory_.GetWeakPtr(), session_id, EVENT_START));
 }
 
 void SpeechRecognitionManagerImpl::RecognitionAllowedCallback(int session_id,
@@ -586,7 +585,6 @@ void SpeechRecognitionManagerImpl::OnRecognitionStart(int session_id) {
         /*screen_capture_ids=*/{}, MediaStreamUI::StateChangeCallback());
   }
 
-  DCHECK_EQ(primary_session_id_, session_id);
   if (SpeechRecognitionEventListener* delegate_listener = GetDelegateListener())
     delegate_listener->OnRecognitionStart(session_id);
   if (SpeechRecognitionEventListener* listener = GetListener(session_id))
@@ -598,7 +596,6 @@ void SpeechRecognitionManagerImpl::OnAudioStart(int session_id) {
   if (!SessionExists(session_id))
     return;
 
-  DCHECK_EQ(primary_session_id_, session_id);
   if (SpeechRecognitionEventListener* delegate_listener = GetDelegateListener())
     delegate_listener->OnAudioStart(session_id);
   if (SpeechRecognitionEventListener* listener = GetListener(session_id))
@@ -610,7 +607,6 @@ void SpeechRecognitionManagerImpl::OnSoundStart(int session_id) {
   if (!SessionExists(session_id))
     return;
 
-  DCHECK_EQ(primary_session_id_, session_id);
   if (SpeechRecognitionEventListener* delegate_listener = GetDelegateListener())
     delegate_listener->OnSoundStart(session_id);
   if (SpeechRecognitionEventListener* listener = GetListener(session_id))
@@ -831,7 +827,6 @@ SpeechRecognitionManagerImpl::GetSessionState(int session_id) const {
 //  - Are guaranteed to be not reentrant (themselves and each other);
 
 void SpeechRecognitionManagerImpl::SessionStart(const Session& session) {
-  DCHECK_EQ(primary_session_id_, session.id);
   const blink::MediaStreamDevices& devices = session.context.devices;
   std::string device_id;
   if (devices.empty()) {
@@ -857,8 +852,9 @@ void SpeechRecognitionManagerImpl::SessionUpdateRecognitionContext(
 }
 
 void SpeechRecognitionManagerImpl::SessionAbort(const Session& session) {
-  if (primary_session_id_ == session.id)
-    primary_session_id_ = kSessionIDInvalid;
+  if (microphone_session_id_ == session.id) {
+    microphone_session_id_ = kSessionIDInvalid;
+  }
   DCHECK(session.recognizer.get());
   session.recognizer->AbortRecognition();
 }
@@ -871,15 +867,15 @@ void SpeechRecognitionManagerImpl::SessionStopAudioCapture(
 
 void SpeechRecognitionManagerImpl::ResetCapturingSessionId(
     const Session& session) {
-  DCHECK_EQ(primary_session_id_, session.id);
-  primary_session_id_ = kSessionIDInvalid;
+  microphone_session_id_ = kSessionIDInvalid;
 }
 
 void SpeechRecognitionManagerImpl::SessionDelete(Session* session) {
   DCHECK(session->recognizer.get() == nullptr ||
          !session->recognizer->IsActive());
-  if (primary_session_id_ == session->id)
-    primary_session_id_ = kSessionIDInvalid;
+  if (microphone_session_id_ == session->id) {
+    microphone_session_id_ = kSessionIDInvalid;
+  }
   if (!session->context.label.empty())
     media_stream_manager_->CancelRequest(session->context.label);
   sessions_.erase(session->id);

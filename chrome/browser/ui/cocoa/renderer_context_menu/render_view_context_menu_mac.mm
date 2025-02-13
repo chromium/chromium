@@ -92,7 +92,7 @@ bool RenderViewContextMenuMac::IsCommandIdEnabled(int command_id) const {
   return RenderViewContextMenu::IsCommandIdEnabled(command_id);
 }
 
-std::u16string RenderViewContextMenuMac::GetSelectedText() const {
+std::u16string_view RenderViewContextMenuMac::GetSelectedText() const {
   return params_.selection_text;
 }
 

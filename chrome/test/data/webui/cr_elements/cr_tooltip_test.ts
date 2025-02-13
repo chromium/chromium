@@ -36,7 +36,7 @@ suite('cr-tooltip', function() {
 
   customElements.define(TestElement.is, TestElement);
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     parent = document.createElement('test-element') as TestElement;
     document.body.appendChild(parent);

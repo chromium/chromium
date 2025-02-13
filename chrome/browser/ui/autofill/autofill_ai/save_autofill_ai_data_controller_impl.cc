@@ -65,15 +65,13 @@ SaveAutofillAiDataController* SaveAutofillAiDataController::GetOrCreate(
 void SaveAutofillAiDataControllerImpl::OfferSave(
     autofill::EntityInstance autofill_ai_data,
     AutofillAiClient::SavePromptAcceptanceCallback
-        save_prompt_acceptance_callback,
-    LearnMoreClickedCallback learn_more_clicked_callback) {
+        save_prompt_acceptance_callback) {
   // Don't show the bubble if it's already visible.
   if (bubble_view()) {
     return;
   }
   autofill_ai_data_ = std::move(autofill_ai_data);
   save_prompt_acceptance_callback_ = std::move(save_prompt_acceptance_callback);
-  learn_more_clicked_callback_ = std::move(learn_more_clicked_callback);
   DoShowBubble();
 }
 
@@ -92,24 +90,9 @@ void SaveAutofillAiDataControllerImpl::OnBubbleClosed(
                  AutofillAiBubbleClosedReason::kAccepted,
              /*did_user_interact=*/
              GetUserInteractionFromAutofillAiBubbleClosedReason(closed_reason),
-             did_trigger_thumbs_up_, did_trigger_thumbs_down_,
              /*entity=*/closed_reason == AutofillAiBubbleClosedReason::kAccepted
                  ? std::exchange(autofill_ai_data_, std::nullopt)
                  : std::nullopt});
-  }
-}
-
-void SaveAutofillAiDataControllerImpl::OnThumbsUpClicked() {
-  did_trigger_thumbs_up_ = true;
-}
-
-void SaveAutofillAiDataControllerImpl::OnThumbsDownClicked() {
-  did_trigger_thumbs_down_ = true;
-}
-
-void SaveAutofillAiDataControllerImpl::OnLearnMoreClicked() {
-  if (!learn_more_clicked_callback_.is_null()) {
-    std::move(learn_more_clicked_callback_).Run();
   }
 }
 

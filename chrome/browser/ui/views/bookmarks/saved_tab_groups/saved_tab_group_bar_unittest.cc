@@ -240,28 +240,25 @@ TEST_F(SavedTabGroupBarUnitTest, EverthingButtonAlwaysVisibleForV2) {
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 
   const views::View* overflow_button = saved_tab_group_bar()->children()[0];
-    // Everything button shows by default.
-    saved_tab_group_bar()->SetBounds(
-        0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(400),
-        2);
-    EXPECT_TRUE(overflow_button->GetVisible());
+  // Everything button shows by default.
+  saved_tab_group_bar()->SetBounds(
+      0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(400), 2);
+  EXPECT_TRUE(overflow_button->GetVisible());
 
-    // Add a tab group button; the Everything button is still there.
-    const base::Uuid& sync_id =
-        EnforceGroupSaved(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-            CreateNewGroupInBrowser()));
+  // Add a tab group button; the Everything button is still there.
+  const base::Uuid& sync_id =
+      EnforceGroupSaved(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+          CreateNewGroupInBrowser()));
 
-    saved_tab_group_bar()->SetBounds(
-        0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(400),
-        2);
-    EXPECT_TRUE(overflow_button->GetVisible());
+  saved_tab_group_bar()->SetBounds(
+      0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(400), 2);
+  EXPECT_TRUE(overflow_button->GetVisible());
 
-    // Remove the last tab group button; the Everything button is still there.
-    service()->RemoveGroup(sync_id);
-    saved_tab_group_bar()->SetBounds(
-        0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(400),
-        2);
-    EXPECT_TRUE(overflow_button->GetVisible());
+  // Remove the last tab group button; the Everything button is still there.
+  service()->RemoveGroup(sync_id);
+  saved_tab_group_bar()->SetBounds(
+      0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(400), 2);
+  EXPECT_TRUE(overflow_button->GetVisible());
 }
 
 TEST_F(SavedTabGroupBarUnitTest, BarsWithSameModelsHaveSameButtons) {

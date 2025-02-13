@@ -2343,7 +2343,10 @@ _ALL_PYDEPS_FILES = _ANDROID_SPECIFIC_PYDEPS_FILES + _GENERIC_PYDEPS_FILES
 
 # Bypass the AUTHORS check for these accounts.
 _KNOWN_ROBOTS = set(
-  ) | set('%s@appspot.gserviceaccount.com' % s for s in ('findit-for-me', 'luci-bisection')
+  ) | set('%s@appspot.gserviceaccount.com' % s for s in ('findit-for-me',
+                                                         'luci-bisection',
+                                                         'predator-for-me-staging',
+                                                         'predator-for-me')
   ) | set('%s@developer.gserviceaccount.com' % s for s in ('3su6n15k.default',)
   ) | set('%s@chops-service-accounts.iam.gserviceaccount.com' % s
           for s in ('bling-autoroll-builder', 'v8-ci-autoroll-builder',
@@ -6458,13 +6461,21 @@ def CheckForWindowsLineEndings(input_api, output_api):
     """
     known_text_files = r'.*\.(txt|html|htm|py|gyp|gypi|gn|isolate|icon)$'
 
+    _WEBUI_FILES_EXTENSIONS = r'\.(css|html|js|ts|svg)$'
+
     file_inclusion_pattern = (known_text_files,
                               r'.+%s' % _IMPLEMENTATION_EXTENSIONS,
-                              r'.+%s' % _HEADER_EXTENSIONS)
+                              r'.+%s' % _HEADER_EXTENSIONS,
+                              r'.+%s' % _WEBUI_FILES_EXTENSIONS)
+
+    # Exclude folder that contains .ts files that are actually binary video
+    # format and not TypeScript.
+    file_exclusion_pattern = (r'media/test/data/')
 
     problems = []
     source_file_filter = lambda f: input_api.FilterSourceFile(
-        f, files_to_check=file_inclusion_pattern, files_to_skip=None)
+        f, files_to_check=file_inclusion_pattern,
+        files_to_skip=file_exclusion_pattern)
     for f in input_api.AffectedSourceFiles(source_file_filter):
         # Ignore test files that contain crlf intentionally.
         if f.LocalPath().endswith('crlf.txt'):

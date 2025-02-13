@@ -6,6 +6,7 @@
 
 #import <AppKit/AppKit.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/mac/mac_util.h"
@@ -103,7 +104,7 @@ void StopSpeaking() {
   [SharedNSSpeechSynthesizer() stopSpeaking];
 }
 
-void SpeakText(const std::u16string& text) {
+void SpeakText(std::u16string_view text) {
   if (IsSpeaking()) {
     StopSpeaking();
   }
@@ -116,7 +117,7 @@ void SpeakText(const std::u16string& text) {
 
 #pragma clang diagnostic pop
 
-void TextServicesContextMenu::SpeakText(const std::u16string& text) {
+void TextServicesContextMenu::SpeakText(std::u16string_view text) {
   int version = base::mac::MacOSVersion();
   if (version >= 14'00'00 && version < 14'04'00) {
     FB13261400Workaround::SpeakText(text);

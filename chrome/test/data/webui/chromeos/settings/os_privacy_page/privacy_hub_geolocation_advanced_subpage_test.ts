@@ -16,7 +16,7 @@ suite('<settings-privacy-hub-geolocation-advanced-subpage>', () => {
   let page: SettingsPrivacyHubGeolocationAdvancedSubpage;
 
   // Helper functions
-  async function initPage(showPrivacyHubLocationControl: boolean) {
+  function initPage(showPrivacyHubLocationControl: boolean) {
     loadTimeData.overrideValues({
       showPrivacyHubLocationControl: showPrivacyHubLocationControl,
     });
@@ -34,7 +34,7 @@ suite('<settings-privacy-hub-geolocation-advanced-subpage>', () => {
     };
     page.prefs = prefs;
     document.body.appendChild(page);
-    flush();
+    return Promise.resolve();
   }
 
   setup(() => {

@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_CARD_UNMASK_PROMPT_CONTROLLER_IMPL_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -56,7 +57,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
 
   // CardUnmaskPromptController implementation.
   void OnUnmaskDialogClosed() override;
-  void OnUnmaskPromptAccepted(const std::u16string& cvc,
+  void OnUnmaskPromptAccepted(std::u16string_view cvc,
                               const std::u16string& exp_month,
                               const std::u16string& exp_year,
                               bool enable_fido_auth,
@@ -81,7 +82,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   bool GetWebauthnOfferStartState() const override;
   std::u16string GetCvcImageAnnouncement() const override;
 #endif
-  bool InputCvcIsValid(const std::u16string& input_text) const override;
+  bool InputCvcIsValid(std::u16string_view input_text) const override;
   bool InputExpirationIsValid(const std::u16string& month,
                               const std::u16string& year) const override;
   int GetExpectedCvcLength() const override;

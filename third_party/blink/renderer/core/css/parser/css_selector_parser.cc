@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -1734,7 +1735,8 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
       return true;
     }
     case CSSSelector::kPseudoPicker:
-      if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+      /* This can't check for origin trials, unfortunately. */
+      if (!HTMLSelectElement::CustomizableSelectEnabledNoDocument()) {
         return false;
       }
       [[fallthrough]];

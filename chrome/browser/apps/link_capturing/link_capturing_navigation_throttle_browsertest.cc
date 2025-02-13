@@ -59,8 +59,7 @@ class LinkCapturingNavigationThrottleBrowserTest
             features::kPwaNavigationCapturing,
             {{"link_capturing_state",
               IsV1() ? "on_by_default" : "reimpl_default_on"}})},
-        /*disabled_features=*/{
-            blink::features::kDropInputEventsBeforeFirstPaint});
+        /*disabled_features=*/{});
   }
 
   bool IsV1() { return GetParam() == NavCaptureVersion::kV1; }

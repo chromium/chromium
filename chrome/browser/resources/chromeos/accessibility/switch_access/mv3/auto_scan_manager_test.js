@@ -22,7 +22,7 @@ SwitchAccessAutoScanManagerTest = class extends SwitchAccessE2ETest {
         Navigator.byItem.moveForward.bind(Navigator.byItem);
     this.moveForwardCount = 0;
 
-    setInterval = function(func, delay) {
+    globalThis.setInterval = function(func, delay) {
       globalThis.intervalCount++;
       globalThis.intervalDelay = delay;
 
@@ -30,7 +30,7 @@ SwitchAccessAutoScanManagerTest = class extends SwitchAccessE2ETest {
       return globalThis.defaultSetInterval(func, 0);
     };
 
-    clearInterval = function(intervalId) {
+    globalThis.clearInterval = function(intervalId) {
       if (intervalId) {
         globalThis.intervalCount--;
       }

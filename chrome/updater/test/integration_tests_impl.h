@@ -509,7 +509,8 @@ void RunOfflineInstall(UpdaterScope scope,
 
 void RunOfflineInstallOsNotSupported(UpdaterScope scope,
                                      bool is_legacy_install,
-                                     bool is_silent_install);
+                                     bool is_silent_install,
+                                     const std::string& language);
 
 base::CommandLine MakeElevated(base::CommandLine command_line);
 

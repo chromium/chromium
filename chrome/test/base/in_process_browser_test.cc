@@ -85,6 +85,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/os_crypt/async/browser/key_provider.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/password_manager/core/browser/password_manager_switches.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/common/content_paths.h"
@@ -171,7 +172,6 @@ class FakeDeviceSyncImplFactory
       gcm::GCMDriver* gcm_driver,
       instance_id::InstanceIDDriver* instance_id_driver,
       PrefService* profile_prefs,
-      const ash::device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
       ash::device_sync::ClientAppMetadataProvider* client_app_metadata_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<base::OneShotTimer> timer,
@@ -478,11 +478,18 @@ void InProcessBrowserTest::SetUp() {
 
   // Use a mocked password storage if OS encryption is used that might block or
   // prompt the user (which is when anything sensitive gets stored, including
-  // Cookies). Without this on Mac and Linux, many tests will hang waiting for a
-  // user to approve KeyChain/kwallet access. On Windows this is not needed as
-  // OS APIs never block.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Cookies). Without this on Mac, many tests will hang waiting for a user to
+  // approve KeyChain/kwallet access. On Linux this is done in
+  // test_launcher_utils::PrepareBrowserCommandLineForTests by using
+  // --password-store=basic. On Windows this is not needed as OS APIs never
+  // block.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   OSCryptMocker::SetUp();
+#elif BUILDFLAG(IS_LINUX)
+  // On Linux, verify that a password store backend is specified - it's either
+  // set to "basic" in test_launcher_utils::PrepareBrowserCommandLineForTests or
+  // could be overridden on the command line manually.
+  CHECK(command_line->HasSwitch(password_manager::kPasswordStore));
 #endif
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)

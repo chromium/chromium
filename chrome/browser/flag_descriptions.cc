@@ -1639,13 +1639,6 @@ const char kEnableProcessPerSiteUpToMainFrameThresholdDescription[] =
     "Proactively reuses same-site renderer processes to host multiple main "
     "frames, up to a certain threshold.";
 
-const char kDropInputEventsBeforeFirstPaintName[] =
-    "Drop Input Events Before First Paint";
-const char kDropInputEventsBeforeFirstPaintDescription[] =
-    "Before the user can see the first paint of a new page they cannot "
-    "intentionally interact with elements on that page. By dropping the events "
-    "we prevent accidental interaction with a page the user has not seen yet.";
-
 const char kBoundaryEventDispatchTracksNodeRemovalName[] =
     "Boundary Event Dispatch Tracks Node Removal";
 const char kBoundaryEventDispatchTracksNodeRemovalDescription[] =
@@ -3165,6 +3158,11 @@ const char kSettingsAppNotificationSettingsDescription[] =
     "lacros-chrome browser's notification permission page "
     "and the ChromeOS settings app.";
 
+const char kSyncPointGraphValidationName[] = "Sync point graph validation";
+const char kSyncPointGraphValidationDescription[] =
+    "When enabled, replaces synchronous GPU sync point validation with graph "
+    "based validation";
+
 const char kRecordWebAppDebugInfoName[] = "Record web app debug info";
 const char kRecordWebAppDebugInfoDescription[] =
     "Enables recording additional web app related debugging data to be "
@@ -4098,12 +4096,6 @@ const char kAccessibilityIncludeLongClickActionDescription[] =
     "When enabled, the accessibility tree for the web contents will include "
     "the ACTION_LONG_CLICK action on all relevant nodes.";
 
-const char kAccessibilityPageZoomEnhancementsName[] =
-    "Accessibility Page Zoom Enhancements";
-const char kAccessibilityPageZoomEnhancementsDescription[] =
-    "When enabled, will show enhancements to the Page Zoom feature based on "
-    "user feedback from the v1 version (e.g. reset button, better IPH, etc).";
-
 const char kAccessibilityUnifiedSnapshotsName[] =
     "Accessibility Unified Snapshots";
 const char kAccessibilityUnifiedSnapshotsDescription[] =
@@ -4377,6 +4369,12 @@ const char kDynamicSafeAreaInsetsSupportedByCCDescription[] =
 const char kCSSSafeAreaMaxInsetName[] = "CSSSafeAreaMaxInset";
 const char kCSSSafeAreaMaxInsetDescription[] =
     "Enables CSS engine support for the env(safe-area-max-inset-*) variables.";
+
+const char kEducationalTipDefaultBrowserPromoCardName[] =
+    "Educational Tip Default Browser Promo Card";
+const char kEducationalTipDefaultBrowserPromoCardDescription[] =
+    "Show the default browser promo card of the educational tip module on "
+    "magic stack in clank";
 
 const char kEducationalTipModuleName[] = "Educational Tip Module";
 const char kEducationalTipModuleDescription[] =
@@ -4720,6 +4718,10 @@ const char kTabGroupSyncDisableNetworkLayerDescription[] =
 const char kTabResumptionModuleAndroidName[] = "Tab Resumption Module";
 const char kTabResumptionModuleAndroidDescription[] =
     "Enable showing tab suggestions on Android";
+
+const char kTabStripContextMenuAndroidName[] = "Tab Strip Context Menu Android";
+const char kTabStripContextMenuAndroidDescription[] =
+    "Enables context menus upon long-pressing on a tab on the tab strip.";
 
 const char kTabStripGroupCollapseAndroidName[] =
     "Tab Strip Group Collapse Android";
@@ -6556,14 +6558,6 @@ const char kFilesConflictDialogName[] = "Files app conflict dialog";
 const char kFilesConflictDialogDescription[] =
     "When enabled, the conflict dialog will be shown during file transfers "
     "if a file entry in the transfer exists at the destination.";
-
-const char kFilesKernelDriversName[] = "Prefer in-kernel filesystem drivers";
-const char kFilesKernelDriversDescription[] =
-    "Prefer the in-kernel drivers to the FUSE drivers for filesystems such as "
-    "exFAT or NTFS. "
-    "Enabling this flag allows the kernel drivers to be used on systems that "
-    "support them. "
-    "Disabling this flag ensures that the FUSE drivers are used.";
 
 const char kFilesExtractArchiveName[] = "Extract archive in Files app";
 const char kFilesExtractArchiveDescription[] =

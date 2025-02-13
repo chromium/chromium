@@ -71,6 +71,13 @@ export class DescriptionSectionElement extends CrLitElement {
     }
     return citationIndex + urlIndex;
   }
+
+  protected summaryIsEmpty_(summary: ProductSpecificationsDescriptionText[]):
+      boolean {
+    return summary.length === 0 || summary.every(summary => {
+      return summary.text.length === 0 || summary.text === 'N/A';
+    });
+  }
 }
 
 declare global {

@@ -9,7 +9,7 @@
 #include "content/public/common/content_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
+#include "chrome/browser/web_applications/link_capturing_features.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -28,11 +28,6 @@ class WebState;
 // Positioner for activity services attached to the toolbar
 - (id<SharingPositioner>)SharingPositioner;
 
-// Alerts the coordinator that the trait collection of the view controller
-// changed.
-- (void)viewControllerTraitCollectionDidChange:
-    (UITraitCollection*)previousTraitCollection;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_PRIMARY_TOOLBAR_COORDINATOR_H_

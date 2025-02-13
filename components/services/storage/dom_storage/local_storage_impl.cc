@@ -657,6 +657,10 @@ void LocalStorageImpl::InitiateConnection(bool in_memory_only) {
 }
 
 void LocalStorageImpl::OnDatabaseOpened(leveldb::Status status) {
+  base::UmaHistogramEnumeration("LocalStorage.DatabaseOpen",
+                                leveldb_env::GetLevelDBStatusUMAValue(status),
+                                leveldb_env::LEVELDB_STATUS_MAX);
+
   if (!status.ok()) {
     // If we failed to open the database, try to delete and recreate the
     // database, or ultimately fallback to an in-memory database.

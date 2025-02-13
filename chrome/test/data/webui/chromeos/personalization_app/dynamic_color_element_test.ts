@@ -77,7 +77,7 @@ suite('DynamicColorElementTest', function() {
     ThemeObserver.initThemeObserverIfNeeded();
   });
 
-  teardown(async () => {
+  teardown(() => {
     teardownElement(dynamicColorElement);
     ThemeObserver.shutdown();
   });

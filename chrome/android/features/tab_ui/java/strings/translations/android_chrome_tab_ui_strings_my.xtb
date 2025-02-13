@@ -30,6 +30,7 @@
 <translation id="2118649612461486615">ဆိုင်အချက်အလက်</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{ပိတ်ထားသောတဘ်နှင့် အုပ်စုများကို ‘လတ်တလောတဘ်’ နှင့် ‘တဘ်အုပ်စု’ ကဏ္ဍများမှ ပြန်ဖွင့်နိုင်သည်။ ‘ရုပ်ဖျက်တဘ်’ ကို အသုံးပြုနိုင်မည် မဟုတ်ပါ။}other{ပိတ်ထားသောတဘ်နှင့် အုပ်စုများကို ‘လတ်တလောတဘ်’ နှင့် ‘တဘ်အုပ်စု’ ကဏ္ဍများမှ ပြန်ဖွင့်နိုင်သည်။ ‘ရုပ်ဖျက်တဘ်’ # ခုကို အသုံးပြုနိုင်မည် မဟုတ်ပါ။}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> တွင်ယခု <ph name="CURRENT_PRICE" /> ဖြစ်သည်</translation>
+<translation id="2242907120821295124"><ph name="TAB_GROUP_NAME" /> တဘ်အုပ်စုကို မရနိုင်တော့ပါ</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{တဘ် အုပ်စုဖြုတ်ရန်}other{တဘ်များ အုပ်စုဖြုတ်ရန်}}</translation>
 <translation id="2271452184061378400">တဘ်အုပ်စုများကို ဤနေရာတွင် သိမ်းထားသည်</translation>
 <translation id="2277224997687551299">အဖွဲ့အမည်ကို တည်းဖြတ်ရန်</translation>
@@ -87,6 +88,7 @@
 <translation id="4783638485675352219">ဤစက်တွင် ဖွင့်ထားသောတဘ်များ၏ ခေါင်းစဉ်နှင့် URL များကို လည်ပတ်သည့်စနစ်နှင့် မျှဝေရန်</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(သုံးသပ်ချက် <ph name="REVIEWS_COUNT_ONE" /> ခု)}other{(သုံးသပ်ချက် <ph name="REVIEWS_COUNT_MANY" /> ခု)}}</translation>
 <translation id="4850886885716139402">မြင်ကွင်း</translation>
+<translation id="4861611890274104875">ကတ်ကို ပယ်ရန်။</translation>
 <translation id="4861953997778766866">မျှဝေထားသော သင့်တဘ်အုပ်စုများကို လူတိုင်းက ပြောင်းလဲနိုင်သည်</translation>
 <translation id="4870911314065352661">တဘ်အားလုံး ပိတ်မလား။</translation>
 <translation id="4871719318659334896">အုပ်စုကို ပိတ်ရန်</translation>

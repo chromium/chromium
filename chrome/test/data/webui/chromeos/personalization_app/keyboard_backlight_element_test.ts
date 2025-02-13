@@ -33,7 +33,7 @@ suite('KeyboardBacklightElementTest', function() {
   });
 
 
-  test('displays content', async () => {
+  test('displays content', () => {
     keyboardBacklightElement = initElement(KeyboardBacklightElement);
     const labelContainer = keyboardBacklightElement.shadowRoot!.getElementById(
         'keyboardBacklightLabel');
@@ -189,7 +189,7 @@ suite('KeyboardBacklightElementTest', function() {
 
   test(
       'shows customization button if multi-zone rgb keyboard is supported',
-      async () => {
+      () => {
         loadTimeData.overrideValues(
             {keyboardBacklightZoneCount: keyboardBacklightProvider.zoneCount});
         keyboardBacklightElement = initElement(KeyboardBacklightElement);
@@ -220,7 +220,7 @@ suite('KeyboardBacklightElementTest', function() {
         'dialog exists after button is clicked');
   });
 
-  test('shows wallpaper color at the end with multi-zone enabled', async () => {
+  test('shows wallpaper color at the end with multi-zone enabled', () => {
     loadTimeData.overrideValues(
         {keyboardBacklightZoneCount: keyboardBacklightProvider.zoneCount});
 
@@ -247,7 +247,7 @@ suite('KeyboardBacklightElementTest', function() {
 
   test(
       'shows wallpaper color button at the beginning with multi-zone disabled',
-      async () => {
+      () => {
         loadTimeData.overrideValues({keyboardBacklightZoneCount: 0});
 
         keyboardBacklightElement = initElement(KeyboardBacklightElement);

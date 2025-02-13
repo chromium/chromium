@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1000127192436081677">Quick Share aan- of uitzetten. Quick Share is <ph name="QUICK_SHARE_STATE" /></translation>
 <translation id="1012876632442809908">USB-C-apparaat (poort aan voorkant)</translation>
 <translation id="1013923882670373915">Bluetooth-apparaat '<ph name="DEVICE_NAME" />' wil rechten om te koppelen. Voer de volgende pincode in op dat apparaat: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">Hiermee kunnen <ph name="APP_NAME" /> en alle apps en websites met locatierechten en ChromeOS de locatie van wifi en mobiele netwerken gebruiken.</translation>
@@ -154,6 +155,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1469148162491666137">Hiermee geef je toegang aan <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> en alle apps en websites met camera- en microfoonrechten. Je moet misschien de webpagina vernieuwen of de app opnieuw starten.</translation>
 <translation id="147310119694673958">Telefoonbatterij <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">Hotspot aan-/uitzetten. Hotspot staat aan: 1 apparaat verbonden.</translation>
+<translation id="1479685784053141667">Een contact maken</translation>
 <translation id="1479909375538722835">Zwevend toegankelijkheidsmenu</translation>
 <translation id="1483493594462132177">Verzenden</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -464,6 +466,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2598725286293895280">Niet-ondersteunde apps in bureau</translation>
 <translation id="2607678425161541573">Online inloggen vereist</translation>
 <translation id="2612072250312279703">activiteitsmonitor</translation>
+<translation id="261210853165551493">Kopiëren met opmaak</translation>
 <translation id="2612614436418177118">Een app-icoon verplaatsen binnen het app-raster</translation>
 <translation id="2619052155095999743">Invoegen</translation>
 <translation id="2619326010008283367">Rondleiding stap <ph name="STEP" /> van <ph name="TOTAL_STEPS" />. Je vindt je apparaatinstellingen in de Launcher. Pas de instellingen van je <ph name="PRODUCT_NAME" /> aan. Je kunt bijvoorbeeld je achtergrond wijzigen of een screensaver instellen.</translation>
@@ -556,6 +559,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="2932487126591186298">10 minuten toegevoegd. Nog <ph name="REMAINING_TIME" />.</translation>
 <translation id="2935225303485967257">Profielen beheren</translation>
 <translation id="2941112035454246133">Laag</translation>
+<translation id="2941232201846070406">Check je internetverbinding en probeer het opnieuw</translation>
 <translation id="2942350706960889382">Vastgezet vergrootglas</translation>
 <translation id="2942516765047364088">Positie van plank</translation>
 <translation id="2946119680249604491">Verbinding toevoegen</translation>
@@ -640,6 +644,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="3206735939915734551">Caps Lock aan-/uitzetten</translation>
 <translation id="3207953481422525583">Gebruikersinstellingen</translation>
 <translation id="3208321278970793882">App</translation>
+<translation id="3212221635583599601">Maak verbinding met internet voor meer acties</translation>
 <translation id="3213571860604332401">Link opslaan als bookmark</translation>
 <translation id="3217205077783620295">Volume staat aan. Als je het uitzet, hoor je geen audio.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> andere meldingen</translation>
@@ -971,6 +976,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4275663329226226506">Media</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4280601795273309128">Beveiligingsupdates gestopt. Upgrade je apparaat.</translation>
+<translation id="4281739221820540368">Google-documenten maken</translation>
 <translation id="4283888303416325161">Geef het wachtwoord op voor extra beveiliging</translation>
 <translation id="4285498937028063278">Losmaken</translation>
 <translation id="428715201724021596">Verbinding maken met profiel. Dit kan een paar minuten duren.</translation>
@@ -1043,6 +1049,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4518404433291145981">Ontgrendel eerst je telefoon om je Chromebook te ontgrendelen</translation>
+<translation id="4525887279712865285">Instellingen voor Quick Share tonen</translation>
 <translation id="4527045527269911712">Bluetooth-apparaat '<ph name="DEVICE_NAME" />' wil rechten om te koppelen.</translation>
 <translation id="4531536770443562276">Alleen volledig scherm is beschikbaar</translation>
 <translation id="4533343294786968049">De batterijduur wordt verlengd. De batterij is om <ph name="FULLY_CHARGE_TIME" /> volledig opgeladen.</translation>
@@ -1598,6 +1605,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276708887952587684">Paginabron bekijken</translation>
 <translation id="6284232397434400372">Resolutie gewijzigd</translation>
+<translation id="6285871695023807425">Toevoegen aan Agenda</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> kan later opnieuw worden toegevoegd met toestemming van een ouder.</translation>
 <translation id="6291221004442998378">Wordt niet opgeladen</translation>
 <translation id="6298183524022479114">Dit apparaat aanpassen in de app</translation>
@@ -1694,6 +1702,7 @@ Nieuwe installatie</translation>
 <translation id="6612889377159412215">subtaak</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> opslag in gebruik | totaal <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Privacyscherm staat aan</translation>
+<translation id="6618277154885124991">Google-spreadsheets maken</translation>
 <translation id="6622679827379792051">De weergave van apps van je telefoon instellen</translation>
 <translation id="662279009180869175">Gebruik de pijl-links en pijl-rechts om het formaat van het gesplitste scherm aan te passen</translation>
 <translation id="6624493541160101248">Huidig bureau: <ph name="DESK_NAME" />. Bureau <ph name="DESK_INDEX" /> van <ph name="DESK_COUNT" />.</translation>
@@ -2249,6 +2258,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="851660987304951246">Gebruik Help me met lezen om snel content samen te vatten of vragen te stellen</translation>
 <translation id="8517041960877371778">Je <ph name="DEVICE_TYPE" /> wordt mogelijk niet opgeladen als deze aanstaat.</translation>
 <translation id="8535393432370007982">Sorteren op kleur ongedaan maken</translation>
+<translation id="8539803091108018926">Tekst gekopieerd naar klembord</translation>
 <translation id="8541078764854166027">Cameraframing</translation>
 <translation id="8542053257095774575">Geen opgeslagen bureaus of templates</translation>
 <translation id="8546059259582788728">Sorteren is ongedaan gemaakt</translation>

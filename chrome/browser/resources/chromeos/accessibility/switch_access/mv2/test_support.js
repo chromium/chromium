@@ -110,7 +110,8 @@
     transcript.push(`Focus ring state: ${JSON.stringify(focusRingState)}`);
     checkFocusRingState();
   });
-  globalThis.domAutomationController.send('ready');
+
+  chrome.test.sendScriptResult('ready');
 
   setInterval(() => {
     console.error(

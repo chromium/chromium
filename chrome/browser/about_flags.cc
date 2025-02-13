@@ -37,7 +37,6 @@
 #include "cc/base/features.h"
 #include "cc/base/switches.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
-#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/flag_descriptions.h"
@@ -67,6 +66,7 @@
 #include "chrome/browser/unexpire_flags.h"
 #include "chrome/browser/unexpire_flags_gen.h"
 #include "chrome/browser/web_applications/features.h"
+#include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -2044,6 +2044,16 @@ const FeatureEntry::FeatureVariation
              kOnDeviceNotificationContentDetectionModelAllowlistSampleRate100),
          nullptr},
 };
+
+const FeatureEntry::FeatureParam kDataSharingShowSendFeedbackDisabled[] = {
+    {"show_send_feedback", "false"}};
+const FeatureEntry::FeatureParam kDataSharingShowSendFeedbackEnabled[] = {
+    {"show_send_feedback", "true"}};
+const FeatureEntry::FeatureVariation kDatasharingVariations[] = {
+    {"with feedback", kDataSharingShowSendFeedbackEnabled,
+     std::size(kDataSharingShowSendFeedbackEnabled)},
+    {"without feedback", kDataSharingShowSendFeedbackDisabled,
+     std::size(kDataSharingShowSendFeedbackEnabled)}};
 
 #if BUILDFLAG(IS_ANDROID)
 
@@ -4062,13 +4072,9 @@ const FeatureEntry::FeatureVariation kTranslationAPIVariations[] = {
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kClayBlockingWithFakeBackend[] = {
     {"use_fake_backend", "true"}};
-const FeatureEntry::FeatureParam kClayBlockingVerbose[] = {
-    {"enable_verbose_logging", "true"}};
 const FeatureEntry::FeatureVariation kClayBlockingVariations[] = {
     {"(with fake backend)", kClayBlockingWithFakeBackend,
-     std::size(kClayBlockingWithFakeBackend), nullptr},
-    {"(verbose)", kClayBlockingVerbose, std::size(kClayBlockingVerbose),
-     nullptr}};
+     std::size(kClayBlockingWithFakeBackend), nullptr}};
 
 const FeatureEntry::FeatureParam kSensitiveContentUsePwmHeuristics[] = {
     {"sensitive_content_use_pwm_heuristics", "true"}};
@@ -5795,11 +5801,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityIncludeLongClickActionDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(features::kAccessibilityIncludeLongClickAction)},
-    {"enable-accessibility-page-zoom-enhancements",
-     flag_descriptions::kAccessibilityPageZoomEnhancementsName,
-     flag_descriptions::kAccessibilityPageZoomEnhancementsDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kAccessibilityPageZoomEnhancements)},
     {"enable-accessibility-unified-snapshots",
      flag_descriptions::kAccessibilityUnifiedSnapshotsName,
      flag_descriptions::kAccessibilityUnifiedSnapshotsDescription, kOsAndroid,
@@ -6146,9 +6147,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"files-conflict-dialog", flag_descriptions::kFilesConflictDialogName,
      flag_descriptions::kFilesConflictDialogDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFilesConflictDialog)},
-    {"files-kernel-drivers", flag_descriptions::kFilesKernelDriversName,
-     flag_descriptions::kFilesKernelDriversDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kFilesKernelDrivers)},
     {"files-local-image-search", flag_descriptions::kFilesLocalImageSearchName,
      flag_descriptions::kFilesLocalImageSearchDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFilesLocalImageSearch)},
@@ -7152,6 +7150,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          segmentation_platform::features::kEducationalTipModule)},
 
+    {"enable-educational-tip-default-browser-promo-card",
+     flag_descriptions::kEducationalTipDefaultBrowserPromoCardName,
+     flag_descriptions::kEducationalTipDefaultBrowserPromoCardDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kEducationalTipDefaultBrowserPromoCard)},
+
     {"enable-segmentation-platform-ephemeral_card_ranker",
      flag_descriptions::kSegmentationPlatformEphemeralCardRankerName,
      flag_descriptions::kSegmentationPlatformEphemeralCardRankerDescription,
@@ -7522,11 +7527,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSingleCaCertVerificationPhase2Description, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSingleCaCertVerificationPhase2)},
 #endif
-
-    {"drop-input-events-before-first-paint",
-     flag_descriptions::kDropInputEventsBeforeFirstPaintName,
-     flag_descriptions::kDropInputEventsBeforeFirstPaintDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kDropInputEventsBeforeFirstPaint)},
 
     {"boundary-event-dispatch-tracks-node-removal",
      flag_descriptions::kBoundaryEventDispatchTracksNodeRemovalName,
@@ -8053,6 +8053,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSettingsAppNotificationSettingsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSettingsAppNotificationSettings)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+    {"sync-point-graph-validation",
+     flag_descriptions::kSyncPointGraphValidationName,
+     flag_descriptions::kSyncPointGraphValidationDescription,
+     kOsLinux | kOsMac | kOsWin | kOsCrOS | kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kSyncPointGraphValidation)},
 
     {"use-dns-https-svcb-alpn", flag_descriptions::kUseDnsHttpsSvcbAlpnName,
      flag_descriptions::kUseDnsHttpsSvcbAlpnDescription,
@@ -9547,6 +9553,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabGroupPaneAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(tab_groups::kTabGroupPaneAndroid)},
 
+    {"tab-strip-context-menu-android",
+     flag_descriptions::kTabStripContextMenuAndroidName,
+     flag_descriptions::kTabStripContextMenuAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabStripContextMenuAndroid)},
+
     {"tab-strip-group-collapse-android",
      flag_descriptions::kTabStripGroupCollapseAndroidName,
      flag_descriptions::kTabStripGroupCollapseAndroidDescription, kOsAndroid,
@@ -10957,7 +10968,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"data-sharing", flag_descriptions::kDataSharingName,
      flag_descriptions::kDataSharingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(data_sharing::features::kDataSharingFeature)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(data_sharing::features::kDataSharingFeature,
+                                    kDatasharingVariations,
+                                    "Enabled")},
 
     {"data-sharing-join-only", flag_descriptions::kDataSharingJoinOnlyName,
      flag_descriptions::kDataSharingJoinOnlyDescription, kOsAll,

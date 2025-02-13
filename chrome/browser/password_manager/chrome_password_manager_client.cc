@@ -41,8 +41,6 @@
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
-#include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -123,6 +121,8 @@
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
+#include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -166,10 +166,14 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/constants.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
-#include "extensions/common/constants.h"
-#endif
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
@@ -192,6 +196,7 @@ using password_manager::PasswordManagerClientHelper;
 using password_manager::PasswordManagerDriver;
 using password_manager::PasswordManagerMetricsRecorder;
 using password_manager::PasswordManagerSetting;
+using password_manager::PasswordManagerSettingsService;
 using password_manager::metrics_util::PasswordType;
 using sessions::SerializedNavigationEntry;
 
@@ -201,7 +206,7 @@ using Logger = autofill::SavePasswordProgressLogger;
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 constexpr char kPasswordBreachEntryTrigger[] = "PASSWORD_ENTRY";
 #endif
 
@@ -284,7 +289,8 @@ bool ChromePasswordManagerClient::IsSavingAndFillingEnabled(
   }
   password_manager::PasswordManagerSettingsService* settings_service =
       PasswordManagerSettingsServiceFactory::GetForProfile(profile_);
-  return settings_service->IsSettingEnabled(
+  return settings_service &&
+         settings_service->IsSettingEnabled(
              PasswordManagerSetting::kOfferToSavePasswords) &&
          !IsOffTheRecord() && IsFillingEnabled(url);
 }
@@ -320,8 +326,8 @@ bool ChromePasswordManagerClient::IsAutoSignInEnabled() const {
 #endif
   password_manager::PasswordManagerSettingsService* settings_service =
       PasswordManagerSettingsServiceFactory::GetForProfile(profile_);
-  return settings_service->IsSettingEnabled(
-      PasswordManagerSetting::kAutoSignIn);
+  return settings_service && settings_service->IsSettingEnabled(
+                                 PasswordManagerSetting::kAutoSignIn);
 }
 
 void ChromePasswordManagerClient::TriggerUserPerceptionOfPasswordManagerSurvey(
@@ -1126,13 +1132,15 @@ autofill::LanguageCode ChromePasswordManagerClient::GetPageLanguage() const {
   return autofill::LanguageCode();
 }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 safe_browsing::PasswordProtectionService*
 ChromePasswordManagerClient::GetPasswordProtectionService() const {
   return safe_browsing::ChromePasswordProtectionService::
       GetPasswordProtectionService(profile_);
 }
+#endif
 
-#if defined(ON_FOCUS_PING_ENABLED)
+#if defined(ON_FOCUS_PING_ENABLED) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 void ChromePasswordManagerClient::CheckSafeBrowsingReputation(
     const GURL& form_action,
     const GURL& frame_url) {
@@ -1144,9 +1152,9 @@ void ChromePasswordManagerClient::CheckSafeBrowsingReputation(
         frame_url, pps->GetAccountInfo().hosted_domain);
   }
 }
-#endif  // defined(ON_FOCUS_PING_ENABLED)
+#endif  // defined(ON_FOCUS_PING_ENABLED) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 void ChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
     const GURL& url,
     bool is_federated,
@@ -1177,7 +1185,7 @@ void ChromePasswordManagerClient::MaybeReportEnterprisePasswordBreachEvent(
   // is enabled by the admin.
   router->OnPasswordBreach(kPasswordBreachEntryTrigger, identities);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 ukm::SourceId ChromePasswordManagerClient::GetUkmSourceId() {
   return web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -1335,10 +1343,10 @@ version_info::Channel ChromePasswordManagerClient::GetChannel() const {
 void ChromePasswordManagerClient::RefreshPasswordManagerSettingsIfNeeded()
     const {
 #if BUILDFLAG(IS_ANDROID)
-  // TODO (b/334091460): Add
-  // password_manager_android_util::AreMinUpmRequirementsMet() check here.
-  PasswordManagerSettingsServiceFactory::GetForProfile(profile_)
-      ->RequestSettingsFromBackend();
+  if (PasswordManagerSettingsService* settings_service =
+          PasswordManagerSettingsServiceFactory::GetForProfile(profile_)) {
+    settings_service->RequestSettingsFromBackend();
+  }
 #endif
 }
 
@@ -1954,6 +1962,7 @@ bool ChromePasswordManagerClient::IsPasswordManagementEnabledForCurrentPage(
     is_enabled = false;
   }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // SafeBrowsing Delayed Warnings experiment can delay some SafeBrowsing
   // warnings until user interaction. If the current page has a delayed warning,
   // it'll have a user interaction observer attached. Disable password
@@ -1964,6 +1973,7 @@ bool ChromePasswordManagerClient::IsPasswordManagementEnabledForCurrentPage(
     observer->OnPasswordSaveOrAutofillDenied();
     is_enabled = false;
   }
+#endif
 
   autofill::LogManager* log_manager = GetOrCreateLogManager();
   if (log_manager && log_manager->IsLoggingActive()) {

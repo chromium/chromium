@@ -32,8 +32,9 @@ class ProbesManager {
 
   // Adds |client| to the list of mojom::PressureClient remotes for the given
   // |source| type and starts the probe if necessary.
-  void RegisterClientRemote(mojo::Remote<mojom::PressureClient> client,
-                            mojom::PressureSource source);
+  void RegisterClientRemote(
+      mojo::PendingAssociatedRemote<mojom::PressureClient> associated_client,
+      mojom::PressureSource source);
 
   base::TimeDelta sampling_interval_for_testing() const;
 
@@ -68,8 +69,9 @@ class ProbesManager {
   std::unique_ptr<CpuProbeManager> cpu_probe_manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::map<mojom::PressureSource, mojo::RemoteSet<mojom::PressureClient>>
-      clients_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::map<mojom::PressureSource,
+           mojo::AssociatedRemoteSet<mojom::PressureClient>>
+      associated_clients_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace device

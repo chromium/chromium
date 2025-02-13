@@ -69,6 +69,9 @@ export function getHtml(this: TableElement) {
                   .jackpotUrl="${detail.content.jackpotUrl}">
               </buying-options-section>
             ` : ''}
+            ${detail.content === null ? html`
+              <empty-section></empty-section>
+            `: ''}
           </div>
         `)}
       </div>

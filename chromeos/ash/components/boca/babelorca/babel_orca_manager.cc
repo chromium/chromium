@@ -18,8 +18,6 @@
 #include "chromeos/ash/components/boca/babelorca/babel_orca_producer.h"
 #include "chromeos/ash/components/boca/babelorca/caption_bubble_settings_impl.h"
 #include "chromeos/ash/components/boca/babelorca/caption_controller.h"
-#include "chromeos/ash/components/boca/babelorca/live_caption_controller_wrapper.h"
-#include "chromeos/ash/components/boca/babelorca/live_caption_controller_wrapper_impl.h"
 #include "chromeos/ash/components/boca/babelorca/oauth_token_fetcher.h"
 #include "chromeos/ash/components/boca/babelorca/pref_names.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_client_impl.h"
@@ -28,7 +26,6 @@
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "components/live_caption/caption_bubble_context.h"
-#include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/translation_dispatcher.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -50,17 +47,20 @@ void BabelOrcaManager::RegisterProfilePrefs(
 std::unique_ptr<BabelOrcaManager> BabelOrcaManager::CreateAsProducer(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    captions::LiveCaptionController* live_caption_controller,
     std::unique_ptr<captions::CaptionBubbleContext> caption_bubble_context,
     std::unique_ptr<babelorca::BabelOrcaSpeechRecognizer> speech_recognizer,
     std::unique_ptr<babelorca::BabelOrcaCaptionTranslator> translator,
-    PrefService* pref_service) {
-  ControllerFactory controller_factory = base::BindOnce(
-      babelorca::BabelOrcaProducer::Create, url_loader_factory,
-      std::move(speech_recognizer),
-      std::make_unique<babelorca::LiveCaptionControllerWrapperImpl>(
-          live_caption_controller, std::move(caption_bubble_context)),
-      std::move(translator), pref_service);
+    PrefService* pref_service,
+    const std::string& application_locale) {
+  auto caption_controller = std::make_unique<babelorca::CaptionController>(
+      std::move(caption_bubble_context), pref_service, application_locale,
+      std::make_unique<babelorca::CaptionBubbleSettingsImpl>(
+          pref_service,
+          /*caption_language_code=*/application_locale));
+  ControllerFactory controller_factory =
+      base::BindOnce(babelorca::BabelOrcaProducer::Create, url_loader_factory,
+                     std::move(speech_recognizer),
+                     std::move(caption_controller), std::move(translator));
   return std::make_unique<BabelOrcaManager>(
       identity_manager, url_loader_factory, std::move(controller_factory));
 }

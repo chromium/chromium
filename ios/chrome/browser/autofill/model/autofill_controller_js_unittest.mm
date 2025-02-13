@@ -157,7 +157,8 @@ NSArray* GetFormFieldAttributeListsToCheck() {
 NSArray* GetTestFormInputElementWithLabelFromPrevious() {
   return @[
       @("* First name: "
-          "<INPUT type='text' name='firstname' id='firstname' value='John'/>"),
+          "<INPUT type='text' name='firstname' id='firstname' value='John' "
+          "pattern='.*'/>"),
       [NSDictionary dictionaryWithObjectsAndKeys:
           @"'* First name:'", @"label",
           @"'firstname'", @"identifier",
@@ -171,6 +172,7 @@ NSArray* GetTestFormInputElementWithLabelFromPrevious() {
           @"'John'", @"value_option_text",
           @"undefined", @"option_values",
           @"undefined", @"option_texts",
+          @".*", @"pattern_attribute",
           nil]];
 }
 
@@ -1730,6 +1732,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"renderer_id" : @"2",
         @"form_control_type" : @"text",
         @"max_length" : GetDefaultMaxLength(),
+        @"pattern_attribute" : @".*",
         @"placeholder_attribute" : @"",
         @"should_autocomplete" : @true,
         @"is_checkable" : @false,
@@ -1747,6 +1750,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"identifier" : @"vehicle1",
         @"renderer_id" : @"3",
         @"form_control_type" : @"checkbox",
+        @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
         @"should_autocomplete" : @true,
         @"is_checkable" : @true,
@@ -1764,6 +1768,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"identifier" : @"vehicle2",
         @"renderer_id" : @"4",
         @"form_control_type" : @"checkbox",
+        @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
         @"should_autocomplete" : @true,
         @"is_checkable" : @true,
@@ -1781,6 +1786,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"identifier" : @"vehicle3",
         @"renderer_id" : @"5",
         @"form_control_type" : @"checkbox",
+        @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
         @"should_autocomplete" : @true,
         @"is_checkable" : @true,
@@ -1798,6 +1804,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"identifier" : @"nameintableth",
         @"renderer_id" : @"6",
         @"form_control_type" : @"text",
+        @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
         @"max_length" : GetDefaultMaxLength(),
         @"should_autocomplete" : @true,
@@ -1816,6 +1823,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"identifier" : @"emailtableth",
         @"renderer_id" : @"7",
         @"form_control_type" : @"email",
+        @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
         @"max_length" : GetDefaultMaxLength(),
         @"should_autocomplete" : @true,
@@ -1834,6 +1842,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"identifier" : @"pwd",
         @"renderer_id" : @"8",
         @"form_control_type" : @"password",
+        @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
         @"autocomplete_attribute" : @"off",
         @"max_length" : GetDefaultMaxLength(),
@@ -1853,6 +1862,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"identifier" : @"state",
         @"renderer_id" : @"9",
         @"form_control_type" : @"select-one",
+        @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
         @"is_focusable" : @1,
         @"is_user_edited" : @true,

@@ -27,9 +27,10 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/adaptive_toolbar_coordinator+subclassing.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/primary_toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/primary_toolbar_view_controller.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/primary_toolbar_view_controller_delegate.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/coordinator/tab_group_indicator_coordinator.h"
 
-@interface PrimaryToolbarCoordinator ()
+@interface PrimaryToolbarCoordinator () <PrimaryToolbarViewControllerDelegate>
 
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
@@ -67,7 +68,7 @@
   self.viewController.popupMenuCommandsHandler =
       HandlerForProtocol(dispatcher, PopupMenuCommands);
   CHECK(self.viewControllerDelegate);
-  self.viewController.delegate = self.viewControllerDelegate;
+  self.viewController.delegate = self;
   self.viewController.toolbarHeightDelegate = self.toolbarHeightDelegate;
   self.viewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
@@ -77,10 +78,8 @@
   self.viewController.buttonFactory =
       [self buttonFactoryWithType:ToolbarType::kPrimary];
 
-  if (!isOffTheRecord) {
-    DefaultBrowserBannerPromoAppAgent* agent =
-        [DefaultBrowserBannerPromoAppAgent
-            agentFromApp:self.browser->GetSceneState().profileState.appState];
+  if (DefaultBrowserBannerPromoAppAgent* agent =
+          [self activeBannerPromoAppAgent]) {
     _mediator = [[PrimaryToolbarMediator alloc]
         initWithDefaultBrowserBannerPromoAppAgent:agent];
     _mediator.settingsHandler =
@@ -135,23 +134,15 @@
   return self.viewController;
 }
 
-- (void)viewControllerTraitCollectionDidChange:
-    (UITraitCollection*)previousTraitCollection {
-  BOOL isOffTheRecord = self.browser->GetProfile()->IsOffTheRecord();
-
-  if (!isOffTheRecord) {
-    DefaultBrowserBannerPromoAppAgent* agent =
-        [DefaultBrowserBannerPromoAppAgent
-            agentFromApp:self.browser->GetSceneState().profileState.appState];
-    agent.UICurrentlySupportsPromo = [self viewControllerSupportsBannerPromo];
-  }
-}
-
 #pragma mark - Private
 
 // Returns whether the banner promo is supported given the current view
 // controller state.
 - (BOOL)viewControllerSupportsBannerPromo {
+  if (self.viewController.locationBarIsExpanded) {
+    return NO;
+  }
+
   // iPad screen is always large enough to show the banner.
   BOOL isIPad =
       UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad;
@@ -160,10 +151,53 @@
   return isIPad || IsSplitToolbarMode(self.viewController);
 }
 
+// Returns the active banner promo app agent if it is available currently.
+- (DefaultBrowserBannerPromoAppAgent*)activeBannerPromoAppAgent {
+  if (self.browser->GetProfile()->IsOffTheRecord()) {
+    return nil;
+  }
+
+  return [DefaultBrowserBannerPromoAppAgent
+      agentFromApp:self.browser->GetSceneState().profileState.appState];
+}
+
 #pragma mark - ToolbarCommands
 
 - (void)triggerToolbarSlideInAnimation {
   [self.viewController triggerToolbarSlideInAnimationFromBelow:NO];
+}
+
+#pragma mark - PrimaryToolbarViewControllerDelegate
+
+- (void)viewControllerTraitCollectionDidChange:
+    (UITraitCollection*)previousTraitCollection {
+  [self.viewControllerDelegate
+      viewControllerTraitCollectionDidChange:previousTraitCollection];
+
+  [self activeBannerPromoAppAgent].UICurrentlySupportsPromo =
+      [self viewControllerSupportsBannerPromo];
+}
+
+- (void)close {
+  [self.viewControllerDelegate close];
+}
+
+- (void)locationBarExpandedInViewController:
+    (PrimaryToolbarViewController*)viewController {
+  [self.viewControllerDelegate
+      locationBarExpandedInViewController:viewController];
+
+  [self activeBannerPromoAppAgent].UICurrentlySupportsPromo =
+      [self viewControllerSupportsBannerPromo];
+}
+
+- (void)locationBarContractedInViewController:
+    (PrimaryToolbarViewController*)viewController {
+  [self.viewControllerDelegate
+      locationBarContractedInViewController:viewController];
+
+  [self activeBannerPromoAppAgent].UICurrentlySupportsPromo =
+      [self viewControllerSupportsBannerPromo];
 }
 
 @end

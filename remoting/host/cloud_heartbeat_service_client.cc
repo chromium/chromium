@@ -82,7 +82,7 @@ void CloudHeartbeatServiceClient::CancelPendingRequests() {
 
 void CloudHeartbeatServiceClient::OnSendHeartbeatResponse(
     HeartbeatResponseCallback callback,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<Empty>) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -91,7 +91,7 @@ void CloudHeartbeatServiceClient::OnSendHeartbeatResponse(
 
 void CloudHeartbeatServiceClient::OnUpdateRemoteAccessHostResponse(
     HeartbeatResponseCallback callback,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<RemoteAccessHost>) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -104,7 +104,7 @@ void CloudHeartbeatServiceClient::OnUpdateRemoteAccessHostResponse(
 
 void CloudHeartbeatServiceClient::OnReportHostOffline(
     HeartbeatResponseCallback callback,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<RemoteAccessHost>) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -124,7 +124,7 @@ void CloudHeartbeatServiceClient::MakeUpdateRemoteAccessHostCall(
 
 void CloudHeartbeatServiceClient::RunHeartbeatResponseCallback(
     HeartbeatResponseCallback callback,
-    const ProtobufHttpStatus& status) {
+    const HttpStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!status.ok()) {

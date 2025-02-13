@@ -86,7 +86,7 @@ export class HeaderElement extends CrLitElement {
   }
 
   private get input_(): CrInputElement|null {
-    const input = this.shadowRoot!.querySelector('cr-input');
+    const input = this.shadowRoot.querySelector('cr-input');
     return input;
   }
 

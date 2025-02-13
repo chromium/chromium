@@ -130,14 +130,14 @@ suite('AppTest', () => {
 
   const testId = 'abcdef01-2345-6789-abcd-ef0123456789';
 
-  async function createAppElement(): Promise<ProductSpecificationsElement> {
+  function createAppElement(): Promise<ProductSpecificationsElement> {
     appElement = document.createElement('product-specifications-app');
 
     loadingStartPromise = createLoadingStartPromise();
     loadingEndPromise = createLoadingEndPromise();
 
     document.body.appendChild(appElement);
-    return appElement;
+    return Promise.resolve(appElement);
   }
 
   async function createAppElementWithPromiseValues(
@@ -203,7 +203,7 @@ suite('AppTest', () => {
     callbackRouterRemote.onProductSpecificationsSetUpdated(set);
   }
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       defaultTableTitle: 'title',
@@ -621,7 +621,7 @@ suite('AppTest', () => {
               imageUrl: productInfo1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', content: {price: '', jackpotUrl: ''}},
+              {title: 'price', content: null},
               {title: 'summary', content: {attributes: [], summary: []}},
               {
                 title: detailTitle,
@@ -745,7 +745,7 @@ suite('AppTest', () => {
               imageUrl: productInfo1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', content: {price: '', jackpotUrl: ''}},
+              {title: 'price', content: null},
               {title: 'summary', content: {attributes: [], summary: []}},
               {
                 title: detailTitle,
@@ -763,7 +763,7 @@ suite('AppTest', () => {
               imageUrl: productInfo2.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', content: {price: '', jackpotUrl: ''}},
+              {title: 'price', content: null},
               {title: 'summary', content: {attributes: [], summary: []}},
               {
                 title: detailTitle,
@@ -956,7 +956,7 @@ suite('AppTest', () => {
               imageUrl: productInfo2.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', content: {price: '', jackpotUrl: ''}},
+              {title: 'price', content: null},
               {title: 'summary', content: {attributes: [], summary: []}},
               {
                 title: rowTitle,
@@ -974,7 +974,7 @@ suite('AppTest', () => {
               imageUrl: productInfo1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', content: {price: '', jackpotUrl: ''}},
+              {title: 'price', content: null},
               {title: 'summary', content: {attributes: [], summary: []}},
               {
                 title: rowTitle,
@@ -1347,7 +1347,7 @@ suite('AppTest', () => {
 
     async function clickFirstAvailableItemInFirstColumn() {
       const table = appElement.$.summaryTable;
-      const selector = table.shadowRoot!.querySelector<ProductSelectorElement>(
+      const selector = table.shadowRoot.querySelector<ProductSelectorElement>(
           'product-selector');
       assertTrue(!!selector);
       selector.$.currentProductContainer.click();
@@ -1452,7 +1452,7 @@ suite('AppTest', () => {
               CompareTableColumnAction.UPDATE_FROM_RECENTLY_VIEWED));
     });
 
-    test('record metrics for success state', async () => {
+    test('record metrics for success state', () => {
       // Table has been loaded in test setup.
       assertEquals(
           1,
@@ -1670,10 +1670,10 @@ suite('AppTest', () => {
     // Wait for the loading animation to start.
     await loadingStartPromise;
     const feedbackLoading =
-        appElement.shadowRoot!.querySelector('#feedbackLoading');
+        appElement.shadowRoot.querySelector('#feedbackLoading');
     assertTrue(!!feedbackLoading);
     const feedbackButtons =
-        appElement.shadowRoot!.querySelector('#feedbackButtons');
+        appElement.shadowRoot.querySelector('#feedbackButtons');
     assertTrue(!!feedbackButtons);
 
     assertTrue(isVisible(feedbackLoading));
@@ -1700,9 +1700,9 @@ suite('AppTest', () => {
     // Wait for the loading animation to start.
     await loadingStartPromise;
     const feedbackLoading =
-        appElement.shadowRoot!.querySelector('#feedbackLoading');
+        appElement.shadowRoot.querySelector('#feedbackLoading');
     const feedbackButtons =
-        appElement.shadowRoot!.querySelector('#feedbackButtons');
+        appElement.shadowRoot.querySelector('#feedbackButtons');
 
     assertFalse(isVisible(feedbackLoading));
     assertFalse(isVisible(feedbackButtons));
@@ -1720,9 +1720,8 @@ suite('AppTest', () => {
       urlsParam: ['https://example.com/'],
     });
     await createAppElementWithPromiseValues(promiseValues);
-    const learnMoreLink =
-        appElement.shadowRoot!.querySelector('#learnMoreLink');
-    const disclaimer = appElement.shadowRoot!.querySelector('#disclaimer');
+    const learnMoreLink = appElement.shadowRoot.querySelector('#learnMoreLink');
+    const disclaimer = appElement.shadowRoot.querySelector('#disclaimer');
 
     assertTrue(!!learnMoreLink);
     assertTrue(isVisible(learnMoreLink));
@@ -1895,11 +1894,11 @@ suite('AppTest', () => {
         await createAppElement();
       });
 
-      test('displays correct subtitle', async () => {
+      test('displays correct subtitle', () => {
         assertEquals(null, appElement.$.header.subtitle);
       });
 
-      test('page title is not clickable', async () => {
+      test('page title is not clickable', () => {
         assertFalse(appElement.$.header.isPageTitleClickable);
       });
     });
@@ -1916,7 +1915,7 @@ suite('AppTest', () => {
         await createAppElementWithPromiseValues(promiseValues);
       });
 
-      test('displays correct subtitle', async () => {
+      test('displays correct subtitle', () => {
         assertEquals('fooName', appElement.$.header.subtitle);
       });
 
@@ -1947,7 +1946,7 @@ suite('AppTest', () => {
 
       assertTrue(isVisible(appElement.$.empty));
       assertFalse(isVisible(appElement.$.specs));
-      const footer = appElement.shadowRoot!.querySelector('#footer');
+      const footer = appElement.shadowRoot.querySelector('#footer');
       assertFalse(isVisible(footer));
     });
 
@@ -2221,7 +2220,7 @@ suite('AppTest', () => {
 
     function updateCrFeedbackButtons(option: CrFeedbackOption) {
       const feedbackButtons =
-          appElement.shadowRoot!.querySelector('#feedbackButtons');
+          appElement.shadowRoot.querySelector('#feedbackButtons');
       assertTrue(!!feedbackButtons);
       feedbackButtons!.dispatchEvent(
           new CustomEvent('selected-option-changed', {
@@ -2359,9 +2358,9 @@ suite('AppTest', () => {
       // Wait for the loading animation to start.
       await loadingStartPromise;
       const feedbackLoading =
-          appElement.shadowRoot!.querySelector('#feedbackLoading');
+          appElement.shadowRoot.querySelector('#feedbackLoading');
       const feedbackButtons =
-          appElement.shadowRoot!.querySelector('#feedbackButtons');
+          appElement.shadowRoot.querySelector('#feedbackButtons');
 
       assertFalse(isVisible(feedbackLoading));
       assertFalse(isVisible(feedbackButtons));

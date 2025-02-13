@@ -76,6 +76,11 @@ void AutofillSaveCardDelegate::OnUiIgnored() {
   }
 }
 
+const payments::PaymentsAutofillClient::SaveCreditCardOptions&
+AutofillSaveCardDelegate::GetSaveCreditCardOptions() const {
+  return options_;
+}
+
 void AutofillSaveCardDelegate::OnFinishedGatheringConsent(
     payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
     payments::PaymentsAutofillClient::UserProvidedCardDetails

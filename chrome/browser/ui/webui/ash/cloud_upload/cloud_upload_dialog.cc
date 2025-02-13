@@ -59,6 +59,7 @@
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/common/constants.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/base/url_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -638,16 +639,23 @@ void CloudOpenTask::OpenAlreadyHostedDriveUrls() {
       drive::DriveIntegrationServiceFactory::FindForProfile(profile_);
   base::FilePath relative_path;
   for (const auto& file_url : file_urls_) {
-    if (integration_service->GetRelativeDrivePath(file_url.path(),
-                                                  &relative_path)) {
-      integration_service->GetDriveFsInterface()->GetMetadata(
-          relative_path,
-          base::BindOnce(&CloudOpenTask::OnGoogleDriveGetMetadata, this));
-    } else {
-      LOG(ERROR) << "Unexpected error obtaining the relative path ";
+    if (!integration_service->GetRelativeDrivePath(file_url.path(),
+                                                   &relative_path)) {
+      LOG(ERROR) << "Unexpected error obtaining the relative path";
       LogGoogleDriveOpenResultUMA(
           OfficeTaskResult::kOpened,
           OfficeDriveOpenErrors::kCannotGetRelativePath);
+
+    } else if (!integration_service->GetDriveFsInterface()) {
+      LOG(ERROR) << "DriveFs interface not available";
+      LogGoogleDriveOpenResultUMA(OfficeTaskResult::kOpened,
+                                  OfficeDriveOpenErrors::kDriveFsInterface);
+    } else {
+      integration_service->GetDriveFsInterface()->GetMetadata(
+          relative_path,
+          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+              base::BindOnce(&CloudOpenTask::OnGoogleDriveGetMetadata, this),
+              drive::FILE_ERROR_SERVICE_UNAVAILABLE, nullptr));
     }
   }
 }
@@ -658,35 +666,43 @@ void CloudOpenTask::OnGoogleDriveGetMetadata(
     drive::FileError error,
     drivefs::mojom::FileMetadataPtr metadata) {
   OfficeDriveOpenErrors open_result = OfficeDriveOpenErrors::kSuccess;
-  GURL hosted_url(metadata->alternate_url);
-  if (error != drive::FILE_ERROR_OK) {
+  if (error == drive::FILE_ERROR_SERVICE_UNAVAILABLE) {
+    LOG(ERROR) << "DriveFs is unavailable";
+    open_result = OfficeDriveOpenErrors::kDriveFsUnavailable;
+  } else if (error != drive::FILE_ERROR_OK) {
     LOG(ERROR) << "Drive metadata error: " << error;
     open_result = OfficeDriveOpenErrors::kNoMetadata;
-  } else if (hosted_url.is_empty() &&
-             metadata->item_id.value_or("").starts_with("local-")) {
-    LOG(ERROR) << "Local item id, the file hasn't been uploaded";
-    open_result = OfficeDriveOpenErrors::kWaitingForUpload;
-    GetUserFallbackChoice(
-        profile_, task_, file_urls_,
-        ash::office_fallback::FallbackReason::kWaitingForUpload,
-        base::DoNothing());
-  } else if (hosted_url.is_empty()) {
-    LOG(ERROR) << "Empty URL";
-    open_result = OfficeDriveOpenErrors::kEmptyAlternateUrl;
-  } else if (!hosted_url.is_valid()) {
-    LOG(ERROR) << "Invalid URL";
-    open_result = OfficeDriveOpenErrors::kInvalidAlternateUrl;
-  } else if (hosted_url.host() == "drive.google.com") {
-    LOG(ERROR) << "URL was from drive.google.com";
-    open_result = OfficeDriveOpenErrors::kDriveAlternateUrl;
-  } else if (hosted_url.host() != "docs.google.com") {
-    LOG(ERROR) << "URL was not from docs.google.com";
-    open_result = OfficeDriveOpenErrors::kUnexpectedAlternateUrl;
+  } else if (metadata.is_null()) {
+    LOG(ERROR) << "Drive metadata is null";
+    open_result = OfficeDriveOpenErrors::kNoMetadata;
   } else {
-    // TODO(b/242685536) add support for multiple files.
-    ::file_manager::util::OpenHostedFileInNewTabOrApp(
-        profile_, file_urls_.front().path(), base::DoNothing(),
-        net::AppendOrReplaceQueryParameter(hosted_url, "cros_files", "true"));
+    GURL hosted_url(metadata->alternate_url);
+    if (hosted_url.is_empty() &&
+        metadata->item_id.value_or("").starts_with("local-")) {
+      LOG(ERROR) << "Local item id, the file hasn't been uploaded";
+      open_result = OfficeDriveOpenErrors::kWaitingForUpload;
+      GetUserFallbackChoice(
+          profile_, task_, file_urls_,
+          ash::office_fallback::FallbackReason::kWaitingForUpload,
+          base::DoNothing());
+    } else if (hosted_url.is_empty()) {
+      LOG(ERROR) << "Empty URL";
+      open_result = OfficeDriveOpenErrors::kEmptyAlternateUrl;
+    } else if (!hosted_url.is_valid()) {
+      LOG(ERROR) << "Invalid URL";
+      open_result = OfficeDriveOpenErrors::kInvalidAlternateUrl;
+    } else if (hosted_url.host() == "drive.google.com") {
+      LOG(ERROR) << "URL was from drive.google.com";
+      open_result = OfficeDriveOpenErrors::kDriveAlternateUrl;
+    } else if (hosted_url.host() != "docs.google.com") {
+      LOG(ERROR) << "URL was not from docs.google.com";
+      open_result = OfficeDriveOpenErrors::kUnexpectedAlternateUrl;
+    } else {
+      // TODO(crbug.com/242685536) add support for multiple files.
+      ::file_manager::util::OpenHostedFileInNewTabOrApp(
+          profile_, file_urls_.front().path(), base::DoNothing(),
+          net::AppendOrReplaceQueryParameter(hosted_url, "cros_files", "true"));
+    }
   }
   LogGoogleDriveOpenResultUMA(OfficeTaskResult::kOpened, open_result);
 }

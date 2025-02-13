@@ -306,7 +306,7 @@ suite('cr_lottie_test', function() {
     assertTrue(canvas.hidden);
   });
 
-  test('TestDetachBeforeImageLoaded', async () => {
+  test('TestDetachBeforeImageLoaded', () => {
     const mockXhr = {
       onreadystatechange: () => {},
     } as unknown as XMLHttpRequest;
@@ -335,7 +335,7 @@ suite('cr_lottie_test', function() {
     mockController.verifyMocks();
   });
 
-  test('TestLoadNewImageWhileOldImageIsStillLoading', async () => {
+  test('TestLoadNewImageWhileOldImageIsStillLoading', () => {
     const mockXhr = {
       onreadystatechange: () => {},
     } as unknown as XMLHttpRequest;

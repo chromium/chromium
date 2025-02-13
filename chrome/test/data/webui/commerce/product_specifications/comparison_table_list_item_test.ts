@@ -73,7 +73,7 @@ suite('ComparisonTableListItemTest', () => {
     await Promise.all([imageUpdatedPromise, numItemsUpdatedPromise]);
   }
 
-  setup(async () => {
+  setup(() => {
     loadTimeData.overrideValues({
       'tableListItemTitle': `Compare ${TABLE_NAME}`,
     });
@@ -173,7 +173,7 @@ suite('ComparisonTableListItemTest', () => {
       menu = maybeMenu;
     });
 
-    test('open in new tab option opens the table in a new tab', async () => {
+    test('open in new tab option opens the table in a new tab', () => {
       const openInNewTabButton =
           menu.querySelector<HTMLButtonElement>('#openInNewTab');
       assertTrue(!!openInNewTabButton);
@@ -190,8 +190,7 @@ suite('ComparisonTableListItemTest', () => {
     });
 
     test(
-        'open in new window option opens the table in a new window',
-        async () => {
+        'open in new window option opens the table in a new window', () => {
           const openInNewWindowButton =
               menu.querySelector<HTMLButtonElement>('#openInNewWindow');
           assertTrue(!!openInNewWindowButton);

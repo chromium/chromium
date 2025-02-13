@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_RETRY_VIEW_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
 #include "chromeos/components/quick_answers/public/cpp/constants.h"
@@ -25,8 +26,8 @@ class RetryView : public views::FlexLayoutView {
   RetryView();
   ~RetryView() override;
 
-  void SetFirstLineText(const std::u16string& first_line_text);
-  std::u16string GetFirstLineText() const;
+  void SetFirstLineText(std::u16string_view first_line_text);
+  std::u16string_view GetFirstLineText() const;
   void SetRetryButtonCallback(RetryButtonCallback retry_button_callback);
   void SetDesign(Design design);
 
@@ -42,7 +43,7 @@ class RetryView : public views::FlexLayoutView {
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, RetryView, views::FlexLayoutView)
-VIEW_BUILDER_PROPERTY(const std::u16string&, FirstLineText)
+VIEW_BUILDER_PROPERTY(std::u16string, FirstLineText)
 VIEW_BUILDER_PROPERTY(RetryView::RetryButtonCallback, RetryButtonCallback)
 VIEW_BUILDER_PROPERTY(Design, Design)
 END_VIEW_BUILDER

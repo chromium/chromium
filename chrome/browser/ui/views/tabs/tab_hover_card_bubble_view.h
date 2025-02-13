@@ -7,7 +7,7 @@
 
 #include <memory>
 #include <optional>
-#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/callback_list.h"
@@ -81,8 +81,8 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   void SetPlaceholderImage();
 
   // Accessors used by tests.
-  std::u16string GetTitleTextForTesting() const;
-  std::u16string GetDomainTextForTesting() const;
+  std::u16string_view GetTitleTextForTesting() const;
+  std::u16string_view GetDomainTextForTesting() const;
   views::View* GetThumbnailViewForTesting();
   FooterView* GetFooterViewForTesting();
 

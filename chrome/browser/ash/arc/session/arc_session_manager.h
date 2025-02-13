@@ -62,7 +62,7 @@ class ArcFastAppReinstallStarter;
 class ArcPaiStarter;
 class ArcProvisioningResult;
 class ArcUiAvailabilityReporter;
-class ArcRevenHardwareChecker;
+class ArcDlcInstallHardwareChecker;
 
 enum class ProvisioningStatus;
 enum class ArcStopReason;
@@ -406,7 +406,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   // The unit test will use a mock hardware checker for testing.
   void SetHardwareCheckerForTesting(
-      std::unique_ptr<ArcRevenHardwareChecker> hardware_checker);
+      std::unique_ptr<ArcDlcInstallHardwareChecker> hardware_checker);
 
   // The unit test will inject an ArcDlcInstallNotificationManager for
   // testing.
@@ -595,7 +595,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   std::unique_ptr<ArcPaiStarter> pai_starter_;
   std::unique_ptr<ArcFastAppReinstallStarter> fast_app_reinstall_starter_;
   std::unique_ptr<ArcUiAvailabilityReporter> arc_ui_availability_reporter_;
-  std::unique_ptr<ArcRevenHardwareChecker> hardware_checker_;
+  std::unique_ptr<ArcDlcInstallHardwareChecker> hardware_checker_;
 
   // The time when the sign in process started.
   base::TimeTicks sign_in_start_time_;

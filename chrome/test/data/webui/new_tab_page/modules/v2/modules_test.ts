@@ -26,7 +26,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
   let metrics: MetricsTracker;
   let moduleRegistry: TestMock<ModuleRegistry>;
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       modulesMaxColumnCount: MAX_COLUMN_COUNT,

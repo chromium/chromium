@@ -190,6 +190,7 @@ export enum Command {
   TOGGLE_STICKY_MODE = 'toggleStickyMode',
   TOP = 'top',
   VIEW_GRAPHIC_AS_BRAILLE = 'viewGraphicAsBraille',
+  TOGGLE_CAPTIONS = 'toggleCaptions',
   // Add a new command to the end of this list.
   // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml)
 }

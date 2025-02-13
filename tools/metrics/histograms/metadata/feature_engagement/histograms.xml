@@ -573,6 +573,8 @@ chromium-metrics-reviews@google.com.
       summary="IPH for tab groups defaulting to saved"/>
   <variant name="IPH_TabGroupsSharedTabChanged"
       summary="IPH for the first time a shared tab is changed"/>
+  <variant name="IPH_TabGroupsSharedTabFeedback"
+      summary="IPH for the first time a shared tab becomes the active tab"/>
   <variant name="IPH_TabGroupsSurface" summary="IPH for tab groups surface"/>
   <variant name="IPH_TabGroupsSurfaceOnHide"
       summary="IPH for tab groups surface after hiding a tab group while on

@@ -53,7 +53,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
-#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_api_signal.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
@@ -82,6 +81,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -130,6 +130,10 @@
 #include "ash/wm/window_pin_util.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
+#endif
 
 using content::BrowserThread;
 using content::NavigationController;
@@ -441,6 +445,7 @@ void NotifyExtensionTelemetry(Profile* profile,
                               const std::string& current_url,
                               const std::string& new_url,
                               const std::optional<StackTrace>& js_callstack) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // Ignore API calls that are not invoked by extensions.
   if (!extension) {
     return;
@@ -457,6 +462,7 @@ void NotifyExtensionTelemetry(Profile* profile,
       extension->id(), api_method, current_url, new_url,
       js_callstack.value_or(StackTrace()));
   extension_telemetry_service->AddSignal(std::move(tabs_api_signal));
+#endif
 }
 
 }  // namespace

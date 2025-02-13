@@ -31,6 +31,7 @@ interface AILanguageDetectorFactory
     method create
 interface AILanguageModel : EventTarget
     attribute @@toStringTag
+    getter expectedInputLanguages
     getter maxTokens
     getter oncontextoverflow
     getter temperature

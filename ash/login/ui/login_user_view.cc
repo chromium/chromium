@@ -5,6 +5,7 @@
 #include "ash/login/ui/login_user_view.h"
 
 #include <memory>
+#include <string_view>
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/login/ui/animated_rounded_image_view.h"
@@ -323,7 +324,7 @@ class LoginUserView::UserLabel : public NonAccessibleView {
                                        gfx::ElideBehavior::ELIDE_TAIL));
   }
 
-  const std::u16string& displayed_name() const { return user_name_->GetText(); }
+  std::u16string_view displayed_name() const { return user_name_->GetText(); }
 
  private:
   raw_ptr<views::Label> user_name_ = nullptr;
@@ -381,7 +382,7 @@ LoginDisplayStyle LoginUserView::TestApi::display_style() const {
   return view_->display_style_;
 }
 
-const std::u16string& LoginUserView::TestApi::displayed_name() const {
+std::u16string_view LoginUserView::TestApi::displayed_name() const {
   return view_->user_label_->displayed_name();
 }
 

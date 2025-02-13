@@ -361,7 +361,7 @@ TEST_F(AIRewriterTest, CanCreateDefaultOptions) {
                                              callback.Get());
 }
 
-TEST_F(AIRewriterTest, CanCreateSupportedLanguages) {
+TEST_F(AIRewriterTest, CanCreateIsLanguagesSupported) {
   SetupMockOptimizationGuideKeyedService();
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               GetOnDeviceModelEligibility(_))
@@ -380,7 +380,7 @@ TEST_F(AIRewriterTest, CanCreateSupportedLanguages) {
                                              callback.Get());
 }
 
-TEST_F(AIRewriterTest, CanCreateUnsupportedLanguages) {
+TEST_F(AIRewriterTest, CanCreateUnIsLanguagesSupported) {
   SetupMockOptimizationGuideKeyedService();
   auto options = GetDefaultOptions();
   options->output_language = AILanguageCode::New("es-ES");

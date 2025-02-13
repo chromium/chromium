@@ -412,7 +412,8 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
                                           UpdaterScope install_scope,
                                           const std::wstring& app_id,
                                           const std::wstring& offline_dir_guid,
-                                          bool is_silent_install) {
+                                          bool is_silent_install,
+                                          const std::string& language) {
   auto launch_legacy_offline_install = [&] {
     auto build_legacy_switch =
         [](const std::string& switch_name) -> std::wstring {
@@ -426,7 +427,8 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
             : L"",
 
         build_legacy_switch(updater::kHandoffSwitch),
-        base::StrCat({L"\"appguid=", app_id, L"&lang=en\""}),
+        base::StrCat({L"\"appguid=", app_id, L"&lang=",
+                      base::UTF8ToWide(language), L"\""}),
 
         build_legacy_switch(updater::kSessionIdSwitch),
         L"{E85204C6-6F2F-40BF-9E6C-4952208BB977}",
@@ -446,9 +448,9 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
       install_cmd.AppendSwitch(kSystemSwitch);
     }
 
-    install_cmd.AppendSwitchNative(
-        updater::kHandoffSwitch,
-        base::StrCat({L"appguid=", app_id, L"&lang=en"}));
+    install_cmd.AppendSwitchNative(updater::kHandoffSwitch,
+                                   base::StrCat({L"appguid=", app_id, L"&lang=",
+                                                 base::UTF8ToWide(language)}));
     install_cmd.AppendSwitchASCII(updater::kSessionIdSwitch,
                                   "{E85204C6-6F2F-40BF-9E6C-4952208BB977}");
     install_cmd.AppendSwitchNative(updater::kOfflineDirSwitch,
@@ -551,6 +553,7 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
                                    bool is_silent_install,
                                    base::cstring_view platform,
                                    int string_resource_id_to_find,
+                                   const std::string& language,
                                    bool expect_success) {
   static constexpr wchar_t kTestAppID[] =
       L"{CDABE316-39CD-43BA-8440-6D1E0547AEE6}";
@@ -667,7 +670,7 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
   // Trigger offline install.
   ASSERT_TRUE(LaunchOfflineInstallProcess(
                   is_legacy_install, updater_exe.value(), scope, kTestAppID,
-                  offline_dir_guid, is_silent_install)
+                  offline_dir_guid, is_silent_install, language)
                   .IsValid());
 
   // * Silent installs do not show any UI.
@@ -680,7 +683,8 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
     EXPECT_TRUE(WaitForUpdaterExit());
   } else {
     CloseInstallCompleteDialog({},
-                               GetLocalizedString(string_resource_id_to_find));
+                               GetLocalizedString(string_resource_id_to_find,
+                                                  base::UTF8ToWide(language)));
   }
 
   scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
@@ -2078,15 +2082,16 @@ void RunOfflineInstall(UpdaterScope scope,
                        bool is_silent_install) {
   RunOfflineInstallWithManifest(scope, is_legacy_install, is_silent_install,
                                 "win", IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE,
-                                true);
+                                "en", true);
 }
 
 void RunOfflineInstallOsNotSupported(UpdaterScope scope,
                                      bool is_legacy_install,
-                                     bool is_silent_install) {
+                                     bool is_silent_install,
+                                     const std::string& language) {
   RunOfflineInstallWithManifest(scope, is_legacy_install, is_silent_install,
                                 "minix", IDS_UPDATER_OS_NOT_SUPPORTED_BASE,
-                                false);
+                                language, false);
 }
 
 base::CommandLine MakeElevated(base::CommandLine command_line) {

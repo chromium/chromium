@@ -105,7 +105,7 @@ class ToggleEffectsButtonLabel : public views::Label {
 
   ~ToggleEffectsButtonLabel() override = default;
 
-  void SetText(const std::u16string& new_text) override {
+  void SetText(std::u16string_view new_text) override {
     views::Label::SetText(new_text);
 
     // Need to size to the new preferred size to know the number of lines

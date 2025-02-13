@@ -94,25 +94,16 @@ void AudioWorkletGlobalScope::registerProcessor(
     return;
   }
 
-  // TODO(crbug.com/1077911): Do not extract process() function at the
-  // registration step.
-  v8::Local<v8::Function> v8_process =
-      retriever.GetMethodOrThrow("process", exception_state);
-  if (exception_state.HadException()) {
-    return;
-  }
-  V8BlinkAudioWorkletProcessCallback* process =
-      V8BlinkAudioWorkletProcessCallback::Create(v8_process);
-
   // The sufficient information to build a AudioWorkletProcessorDefinition
   // is collected. The rest of registration process is optional.
   // (i.e. parameterDescriptors)
   AudioWorkletProcessorDefinition* definition =
-      AudioWorkletProcessorDefinition::Create(name, processor_ctor, process);
+      AudioWorkletProcessorDefinition::Create(name, processor_ctor);
 
+  // 6. Let parameterDescriptorsValue be the result of Get(O=processorCtor,
+  //    P="parameterDescriptors").
   v8::Isolate* isolate = processor_ctor->GetIsolate();
   v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
-
   v8::Local<v8::Value> v8_parameter_descriptors;
   {
     TryRethrowScope rethrow_scope(isolate, exception_state);

@@ -137,7 +137,7 @@ suite('PasskeysSubpage', function() {
   let browserProxy: TestPasskeysBrowserProxy;
   let page: SettingsPasskeysSubpageElement;
 
-  setup(async function() {
+  setup(function() {
     browserProxy = new TestPasskeysBrowserProxy();
     PasskeysBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

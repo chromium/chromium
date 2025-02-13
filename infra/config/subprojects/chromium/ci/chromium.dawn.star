@@ -501,6 +501,9 @@ ci.thin_tester(
                 ci_only = True,
                 experiment_percentage = 100,
             ),
+            "webgpu_cts_compat_min_es31_tests": targets.remove(
+                reason = "Limited capacity, and already many suppressions in default compat, so remove.",
+            ),
             "webgpu_cts_dedicated_worker_tests": targets.remove(
                 reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
             ),
@@ -1165,6 +1168,9 @@ ci.thin_tester(
             #     ci_only = True,
             #     experiment_percentage = 100,
             # ),
+            # "webgpu_cts_compat_min_es31_tests": targets.remove(
+            #     reason = "Limited capacity, and already many suppressions in default compat, so remove.",
+            # ),
             # "webgpu_cts_dedicated_worker_tests": targets.remove(
             #     reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
             # ),
@@ -1277,6 +1283,9 @@ ci.thin_tester(
                 ci_only = True,
                 experiment_percentage = 100,
             ),
+            "webgpu_cts_compat_min_es31_tests": targets.remove(
+                reason = "Limited capacity, and already many suppressions in default compat, so remove.",
+            ),
             "webgpu_cts_dedicated_worker_tests": targets.remove(
                 reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
             ),
@@ -1337,6 +1346,9 @@ ci.thin_tester(
             "linux_intel_uhd_770_stable",
         ],
         per_test_modifications = {
+            "webgpu_cts_compat_min_es31_tests": targets.remove(
+                reason = "Limited capacity, and already many suppressions in default compat, so remove.",
+            ),
             "gl_tests_passthrough": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/linux.uhd_770.gl_tests_passthrough.filter",

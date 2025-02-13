@@ -35,15 +35,20 @@ using blink::mojom::AILanguageCodePtr;
 // running wpt_internal/ tests on content_shell, using content EchoAIManager.
 // If there is enough divergence in two AI Managers' code, it should be
 // refactored to share the common code or use subclasses.
+auto is_language_supported = [](const AILanguageCodePtr& language) {
+  return language->code.empty() ||
+         language::ExtractBaseLanguage(language->code) == "en";
+};
+
+bool IsLanguagesSupported(const std::vector<AILanguageCodePtr>& languages) {
+  return std::ranges::all_of(languages, is_language_supported);
+}
+
 bool SupportedLanguages(const std::vector<AILanguageCodePtr>& input,
                         const std::vector<AILanguageCodePtr>& context,
                         const AILanguageCodePtr& output) {
-  auto supported = [](const AILanguageCodePtr& language) {
-    return language->code.empty() ||
-           language::ExtractBaseLanguage(language->code) == "en";
-  };
-  return std::ranges::all_of(input, supported) &&
-         std::ranges::all_of(context, supported) && supported(output);
+  return IsLanguagesSupported(input) && IsLanguagesSupported(context) &&
+         is_language_supported(output);
 }
 
 }  // namespace
@@ -60,7 +65,15 @@ void EchoAIManagerImpl::Create(
 }
 
 void EchoAIManagerImpl::CanCreateLanguageModel(
+    blink::mojom::AILanguageModelAvailabilityOptionsPtr options,
     CanCreateLanguageModelCallback callback) {
+  if (options && options->expected_input_languages.has_value() &&
+      !IsLanguagesSupported(options->expected_input_languages.value())) {
+    std::move(callback).Run(
+        blink::mojom::ModelAvailabilityCheckResult::kNoUnsupportedLanguage);
+    return;
+  }
+
   std::move(callback).Run(
       blink::mojom::ModelAvailabilityCheckResult::kAfterDownload);
 }
@@ -201,7 +214,8 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
           blink::mojom::AILanguageModelSamplingParams::New(
               optimization_guide::features::GetOnDeviceModelDefaultTopK(),
               optimization_guide::features::
-                  GetOnDeviceModelDefaultTemperature())));
+                  GetOnDeviceModelDefaultTemperature()),
+          std::nullopt));
 }
 
 void EchoAIManagerImpl::ReturnAISummarizerCreationResult(

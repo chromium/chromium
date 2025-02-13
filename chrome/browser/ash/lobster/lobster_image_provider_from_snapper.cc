@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/lobster/lobster_result.h"
 #include "base/barrier_callback.h"
 #include "base/containers/span.h"
@@ -26,6 +27,7 @@ namespace {
 
 constexpr gfx::Size kPreviewImageSize = gfx::Size(512, 512);
 constexpr gfx::Size kFullImageSize = gfx::Size(1024, 1024);
+constexpr char kLobsterUseQueryRewriterFlag[] = "use_query_rewrite";
 
 manta::proto::Request CreateMantaRequest(std::string_view query,
                                          std::optional<uint32_t> seed,
@@ -36,17 +38,23 @@ manta::proto::Request CreateMantaRequest(std::string_view query,
       *request.mutable_request_config();
   manta::proto::ImageDimensions& image_dimensions =
       *request_config.mutable_image_dimensions();
-  manta::proto::InputData& input_data = *request.add_input_data();
+  manta::proto::InputData& query_input_data = *request.add_input_data();
 
   request_config.set_num_outputs(num_outputs);
   request.set_feature_name(manta::proto::FeatureName::CHROMEOS_LOBSTER);
   image_dimensions.set_width(image_size.width());
   image_dimensions.set_height(image_size.height());
-  input_data.set_text(query.data(), query.size());
+  query_input_data.set_text(query.data(), query.size());
 
   if (seed.has_value()) {
     request_config.set_generation_seed(seed.value());
   }
+
+  manta::proto::InputData& query_rewritter_input_data =
+      *request.add_input_data();
+  query_rewritter_input_data.set_tag(kLobsterUseQueryRewriterFlag);
+  query_rewritter_input_data.set_text(
+      ash::features::IsLobsterUseRewrittenQuery() ? "true" : "false");
 
   return request;
 }

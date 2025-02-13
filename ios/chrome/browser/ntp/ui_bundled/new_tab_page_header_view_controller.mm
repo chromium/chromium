@@ -201,7 +201,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   self.headerView.searchHintLabel.alpha = 1;
   self.headerView.voiceSearchButton.alpha = 1;
   if (finalPosition == UIViewAnimatingPositionEnd &&
-      (self.delegate.scrolledToMinimumHeight)) {
+      self.delegate.scrolledToMinimumHeight) {
     // Check to see if the collection are still scrolled to the top --
     // it's possible (and difficult) to unfocus the omnibox and initiate a
     // -shiftTilesDownForOmniboxDefocus before the animation here completes.
@@ -602,7 +602,9 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 // shows fakebox if the logo is visible and hides otherwise
 - (void)updateFakeboxDisplay {
   self.doodleTopMarginConstraint.constant =
-      content_suggestions::DoodleTopMargin(0, self.traitCollection);
+      content_suggestions::DoodleTopMargin(self.logoVendor.showingLogo,
+                                           self.logoVendor.isShowingDoodle,
+                                           self.traitCollection);
   [self.doodleHeightConstraint
       setConstant:content_suggestions::DoodleHeight(
                       self.logoVendor.showingLogo,
@@ -642,7 +644,9 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   self.doodleTopMarginConstraint = [logoView.topAnchor
       constraintEqualToAnchor:headerView.topAnchor
                      constant:content_suggestions::DoodleTopMargin(
-                                  0, self.traitCollection)];
+                                  self.logoVendor.showingLogo,
+                                  self.logoVendor.isShowingDoodle,
+                                  self.traitCollection)];
   self.doodleHeightConstraint = [logoView.heightAnchor
       constraintEqualToConstant:content_suggestions::DoodleHeight(
                                     self.logoVendor.showingLogo,

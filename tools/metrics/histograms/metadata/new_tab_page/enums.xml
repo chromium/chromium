@@ -366,6 +366,11 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Images in a specific NTP collection"/>
 </enum>
 
+<enum name="NTPMicrosoftAuthType">
+  <int value="0" label="Silent"/>
+  <int value="1" label="Popup"/>
+</enum>
+
 <enum name="NtpModules">
   <summary>
     Hash values for the IDs of NTP modules. Each of these values is computed by

@@ -32,15 +32,13 @@ import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.TextViewWithLeading;
 import org.chromium.url.GURL;
 
-/**
- * Dialog in the form of a notice shown for the Privacy Sandbox - V3. This new version is part of
- * the Ads API UX Enhancement.
- */
+// TODO(crbug.com/392943234): Update this class's naming and description when naming is finalized.
+/** Handles logic for the Privacy Sandbox Ads consents/notices dialogs. */
 public class PrivacySandboxDialogV3 extends ChromeDialog
         implements View.OnClickListener, DialogInterface.OnShowListener {
     private View mContentView;
 
-    private LinearLayout mNoticeViewContainer;
+    private LinearLayout mViewContainer;
     private ButtonCompat mMoreButton;
     private LinearLayout mActionButtons;
     private ScrollView mScrollView;
@@ -74,7 +72,7 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
         mActivityWindowAndroid = activityWindowAndroid;
 
         mContentView =
-                LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_notice_v3, null);
+                LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_consent_eea_v3, null);
         setContentView(mContentView);
 
         ButtonCompat ackButton = mContentView.findViewById(R.id.ack_button);
@@ -100,7 +98,7 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
                 PrivacySandboxDialogUtils.createExpandDrawable(context));
         mAdMeasurementExpandArrowView.setChecked(isMeasurementDropdownExpanded());
 
-        mNoticeViewContainer = mContentView.findViewById(R.id.privacy_sandbox_notice_eea_view);
+        mViewContainer = mContentView.findViewById(R.id.privacy_sandbox_consent_eea_view);
         mPrivacyPolicyView = mContentView.findViewById(R.id.privacy_policy_view);
         mPrivacyPolicyContent = mContentView.findViewById(R.id.privacy_policy_content);
         mPrivacyPolicyBackButton = mContentView.findViewById(R.id.privacy_policy_back_button);
@@ -151,15 +149,8 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
             mAdMeasurementDropdownContainer.setVisibility(View.VISIBLE);
             LayoutInflater.from(getContext())
                     .inflate(
-                            R.layout.privacy_sandbox_notice_eea_ad_measurement_dropdown,
+                            R.layout.privacy_sandbox_consent_eea_dropdown_v3,
                             mAdMeasurementDropdownContainer);
-
-            // TODO(crbug.com/392943234): Update content to match mocks.
-            PrivacySandboxDialogUtils.setBulletTextWithBoldContent(
-                    getContext(),
-                    mAdMeasurementDropdownContainer,
-                    R.id.privacy_sandbox_m1_notice_eea_ad_measurement_learn_more_bullet_one,
-                    R.string.privacy_sandbox_m1_notice_eea_ad_measurement_learn_more_bullet_1);
 
             mScrollView.post(() -> mScrollView.scrollTo(0, mAdMeasurementDropdownElement.getTop()));
         }
@@ -169,7 +160,7 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
                 getContext(),
                 view,
                 isMeasurementDropdownExpanded(),
-                R.string.privacy_sandbox_m1_notice_eea_ad_measurement_learn_more_label);
+                R.string.privacy_sandbox_m1_consent_ads_topic_dropdown_v3);
         view.announceForAccessibility(
                 getContext()
                         .getString(
@@ -181,7 +172,7 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
     private void handlePrivacyPolicyBackButtonClicked() {
         mPrivacyPolicyView.setVisibility(View.GONE);
         mPrivacyPolicyContent.removeAllViews();
-        mNoticeViewContainer.setVisibility(View.VISIBLE);
+        mViewContainer.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -193,7 +184,7 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
     private void onPrivacyPolicyClicked(View unused_view) {
         mPrivacyPolicyContent.removeAllViews();
         if (mThinWebView != null && mThinWebView.getView() != null) {
-            mNoticeViewContainer.setVisibility(View.GONE);
+            mViewContainer.setVisibility(View.GONE);
             mPrivacyPolicyContent.addView(mThinWebView.getView());
             mPrivacyPolicyView.setVisibility(View.VISIBLE);
         }

@@ -305,7 +305,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
     // value.
     const ash::personalization_app::mojom::SeaPenQueryPtr& cloned_query =
         query->Clone();
-    if (ash::features::IsSeaPenPromptRewriteEnabled() &&
+    if (ash::features::IsSeaPenQueryRewriteEnabled() &&
         cloned_query->is_text_query()) {
       CHECK_LE(query->get_text_query().size(),
                ash::personalization_app::mojom::

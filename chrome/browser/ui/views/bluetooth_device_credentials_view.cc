@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/bluetooth_device_credentials_view.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -40,7 +41,7 @@ void ShowBluetoothDeviceCredentialsDialog(
 
 namespace {
 
-bool IsInputTextValid(const std::u16string& text) {
+bool IsInputTextValid(std::u16string_view text) {
   const size_t num_digits = std::ranges::count_if(
       text, [](char16_t ch) { return base::IsAsciiDigit(ch); });
   // This dialog is currently only used to prompt for Bluetooth PINs which

@@ -39,6 +39,9 @@ enum RequestContext {
   // (open tabs, bookmarks, etc.) if information is determined to be stale or
   // has otherwise been flushed from the cache.
   CONTEXT_SHOPPING = 13;
+  // Requesting metadata when rendering ShopCard on Magic Stack (which
+  // surfaces shopping related information on a user's URL or ShoppingList).
+  CONTEXT_SHOP_CARD = 14;
 }
 
 message FieldTrial {

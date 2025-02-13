@@ -335,6 +335,7 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kSlowNetwork:
       return PreloadingEligibility::kSlowNetwork;
     case PrerenderFinalStatus::kPrerenderFailedDuringPrefetch:
+    case PrerenderFinalStatus::kBrowsingDataRemoved:
       NOTREACHED();
   }
 

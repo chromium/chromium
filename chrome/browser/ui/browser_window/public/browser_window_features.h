@@ -12,6 +12,7 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 namespace glic {
+class GlicButtonController;
 class GlicIphController;
 }
 #endif
@@ -55,9 +56,14 @@ namespace media_router {
 class CastBrowserController;
 }  // namespace media_router
 
+namespace memory_saver {
+class MemorySaverBubbleController;
+}  // namespace memory_saver
+
 namespace tab_groups {
 class SessionServiceTabGroupSyncObserver;
 class MostRecentUpdateStore;
+class SharedTabGroupFeedbackController;
 }  // namespace tab_groups
 
 namespace send_tab_to_self {
@@ -175,6 +181,15 @@ class BrowserWindowFeatures {
     return most_recent_update_store_.get();
   }
 
+  memory_saver::MemorySaverBubbleController* memory_saver_bubble_controller() {
+    return memory_saver_bubble_controller_.get();
+  }
+
+  tab_groups::SharedTabGroupFeedbackController*
+  shared_tab_group_feedback_controller() {
+    return shared_tab_group_feedback_controller_.get();
+  }
+
  protected:
   BrowserWindowFeatures();
 
@@ -230,10 +245,17 @@ class BrowserWindowFeatures {
   std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
 
 #if BUILDFLAG(ENABLE_GLIC)
+  std::unique_ptr<glic::GlicButtonController> glic_button_controller_;
   std::unique_ptr<glic::GlicIphController> glic_iph_controller_;
 #endif
 
   std::unique_ptr<tab_groups::MostRecentUpdateStore> most_recent_update_store_;
+
+  std::unique_ptr<memory_saver::MemorySaverBubbleController>
+      memory_saver_bubble_controller_;
+
+  std::unique_ptr<tab_groups::SharedTabGroupFeedbackController>
+      shared_tab_group_feedback_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

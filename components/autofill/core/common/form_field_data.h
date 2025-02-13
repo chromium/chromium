@@ -351,6 +351,13 @@ class FormFieldData {
       std::optional<AutocompleteParsingResult> parsed_autocomplete) {
     parsed_autocomplete_ = std::move(parsed_autocomplete);
   }
+
+  // The value of the form control element's "pattern" attribute. The string
+  // comes from the renderer without any further validation. There are no
+  // guarantees about the format of the string.
+  const std::u16string& pattern() const { return pattern_; }
+  void set_pattern(std::u16string pattern) { pattern_ = std::move(pattern); }
+
   const std::u16string& placeholder() const { return placeholder_; }
   void set_placeholder(std::u16string placeholder) {
     placeholder_ = std::move(placeholder);
@@ -565,6 +572,7 @@ class FormFieldData {
   FormControlType form_control_type_ = FormControlType::kInputText;
   std::string autocomplete_attribute_;
   std::optional<AutocompleteParsingResult> parsed_autocomplete_;
+  std::u16string pattern_;
   std::u16string placeholder_;
   std::u16string css_classes_;
   std::u16string aria_label_;

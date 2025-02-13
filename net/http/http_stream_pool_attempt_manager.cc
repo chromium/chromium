@@ -13,6 +13,7 @@
 #include "base/containers/enum_set.h"
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
@@ -73,6 +74,27 @@ std::string_view GetResultHistogramSuffix(std::optional<int> result) {
   return "Canceled";
 }
 
+std::string_view GetHistogramSuffixForStreamAttemptCancel(
+    StreamSocketCloseReason reason) {
+  switch (reason) {
+    case StreamSocketCloseReason::kSpdySessionCreated:
+      return "NewSpdySession";
+    case StreamSocketCloseReason::kQuicSessionCreated:
+      return "NewQuicSession";
+    case StreamSocketCloseReason::kUsingExistingSpdySession:
+      return "ExistingSpdySession";
+    case StreamSocketCloseReason::kUsingExistingQuicSession:
+      return "ExistingQuicSession";
+    case StreamSocketCloseReason::kUnspecified:
+    case StreamSocketCloseReason::kCloseAllConnections:
+    case StreamSocketCloseReason::kIpAddressChanged:
+    case StreamSocketCloseReason::kSslConfigChanged:
+    case StreamSocketCloseReason::kCannotUseTcpBasedProtocols:
+    case StreamSocketCloseReason::kAbort:
+      return "Other";
+  }
+}
+
 bool GetSupportsSpdy(HttpNetworkSession* session,
                      const HttpStreamKey& stream_key) {
   HttpServerProperties* properties = session->http_server_properties();
@@ -107,27 +129,58 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
   InFlightAttempt& operator=(const InFlightAttempt&) = delete;
 
   ~InFlightAttempt() override {
+    base::TimeDelta elapsed = base::TimeTicks::Now() - start_time_;
     base::UmaHistogramTimes(
         base::StrCat({"Net.HttpStreamPool.StreamAttemptTime.",
                       GetResultHistogramSuffix(result_)}),
-        base::TimeTicks::Now() - start_time_);
+        elapsed);
 
     if (cancel_reason_.has_value()) {
       base::UmaHistogramEnumeration(
           "Net.HttpStreamPool.StreamAttemptCancelReason", *cancel_reason_);
+
+      std::string_view suffix =
+          GetHistogramSuffixForStreamAttemptCancel(*cancel_reason_);
+      CHECK(manager_->initial_attempt_state_.has_value());
+      base::UmaHistogramEnumeration(
+          base::StrCat(
+              {"Net.HttpStreamPool.StreamAttemptCanceledInitialAttemptState.",
+               suffix}),
+          *manager_->initial_attempt_state_);
+      base::UmaHistogramTimes(
+          base::StrCat(
+              {"Net.HttpStreamPool.StreamAttemptCanceledTime.", suffix}),
+          elapsed);
     }
   }
 
-  int Start(std::unique_ptr<StreamAttempt> attempt) {
+  void Start(std::unique_ptr<StreamAttempt> attempt,
+             TlsStreamAttempt* tls_attempt_ptr) {
     CHECK(!attempt_);
     attempt_ = std::move(attempt);
     start_time_ = base::TimeTicks::Now();
-    // SAFETY: Callback is only invoked when Start() returns ERR_IO_PENDING.
-    // In that case `manager_` outlives the callback since `manager_` owns
-    // `this`.
-    return attempt_->Start(
-        base::BindOnce(&AttemptManager::OnInFlightAttemptComplete,
-                       base::Unretained(manager_), this));
+    int rv = attempt_->Start(
+        base::BindOnce(&InFlightAttempt::OnInFlightAttemptComplete,
+                       weak_ptr_factory_.GetWeakPtr()));
+    if (rv == ERR_IO_PENDING) {
+      // SAFETY: Unretained `manager_` is fine since `manager_` owns this and
+      // `this` owns `slow_timer_`.
+      slow_timer_.Start(FROM_HERE, HttpStreamPool::GetConnectionAttemptDelay(),
+                        base::BindOnce(&AttemptManager::OnInFlightAttemptSlow,
+                                       base::Unretained(manager_), this));
+      if (tls_attempt_ptr && !tls_attempt_ptr->IsTcpHandshakeCompleted()) {
+        // SAFETY: Unretained `manager_` is fine since the passed callback runs
+        // is invoked synchronously (without PostTask) when the TCP handshake
+        // completes. See TlsStreamAttempt::DoTcpAttemptComplete.
+        tls_attempt_ptr->SetTcpHandshakeCompletionCallback(base::BindOnce(
+            &AttemptManager::OnInFlightAttemptTcpHandshakeComplete,
+            base::Unretained(manager_), this));
+      }
+    } else {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&InFlightAttempt::OnInFlightAttemptComplete,
+                                    weak_ptr_factory_.GetWeakPtr(), rv));
+    }
   }
 
   void SetResult(int rv) {
@@ -220,6 +273,10 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
     CHECK(false) << manager_info;
   }
 
+  void OnInFlightAttemptComplete(int rv) {
+    manager_->OnInFlightAttemptComplete(this, rv);
+  }
+
   const raw_ptr<AttemptManager> manager_;
   std::unique_ptr<StreamAttempt> attempt_;
   base::TimeTicks start_time_;
@@ -237,6 +294,8 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
 
   // TODO(crbug.com/383220402): Remove this when the cause of the bug is fixed.
   base::OneShotTimer ssl_config_waiting_timeout_timer_;
+
+  base::WeakPtrFactory<InFlightAttempt> weak_ptr_factory_{this};
 };
 
 // Represents a preconnect request.
@@ -513,6 +572,50 @@ bool HttpStreamPool::AttemptManager::IsSvcbOptional() {
   base::span<const ServiceEndpoint> endpoints =
       service_endpoint_request_->GetEndpointResults();
   return !HostResolver::AllProtocolEndpointsHaveEch(endpoints);
+}
+
+HttpStreamPool::AttemptManager::InitialAttemptState
+HttpStreamPool::AttemptManager::CalculateInitialAttemptState() {
+  using enum InitialAttemptState;
+  if (CanUseQuic()) {
+    if (quic_version_.IsKnown()) {
+      if (supports_spdy_) {
+        return kCanUseQuicWithKnownVersionAndSupportsSpdy;
+      } else {
+        return kCanUseQuicWithKnownVersion;
+      }
+    } else {
+      if (supports_spdy_) {
+        return kCanUseQuicWithUnknownVersionAndSupportsSpdy;
+      } else {
+        return kCanUseQuicWithUnknownVersion;
+      }
+    }
+  } else {
+    if (quic_version_.IsKnown()) {
+      if (supports_spdy_) {
+        return kCannotUseQuicWithKnownVersionAndSupportsSpdy;
+      } else {
+        return kCannotUseQuicWithKnownVersion;
+      }
+    } else {
+      if (supports_spdy_) {
+        return kCannotUseQuicWithUnknownVersionAndSupportsSpdy;
+      } else {
+        return kCannotUseQuicWithUnknownVersion;
+      }
+    }
+  }
+}
+
+void HttpStreamPool::AttemptManager::MaybeSetInitialAttemptState() {
+  if (initial_attempt_state_.has_value()) {
+    return;
+  }
+
+  initial_attempt_state_ = CalculateInitialAttemptState();
+  base::UmaHistogramEnumeration("Net.HttpStreamPool.InitialAttemptState",
+                                *initial_attempt_state_);
 }
 
 int HttpStreamPool::AttemptManager::WaitForSSLConfigReady() {
@@ -926,6 +1029,7 @@ HttpStreamPool::AttemptManager::CalculateMultiplexedSessionCreationInitiator() {
 }
 
 void HttpStreamPool::AttemptManager::StartInternal(RequestPriority priority) {
+  MaybeSetInitialAttemptState();
   UpdateStreamAttemptState();
 
   if (service_endpoint_request_ || service_endpoint_request_finished_) {
@@ -1281,28 +1385,11 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
           return dict;
         });
 
-    int rv = raw_attempt->Start(std::move(attempt));
+    raw_attempt->Start(std::move(attempt), tls_attempt_ptr);
     // Add NetLog dependency after Start() so that the first event of the
     // attempt can have meaningful description in the NetLog viewer.
     raw_attempt->attempt()->net_log().AddEventReferencingSource(
         NetLogEventType::STREAM_ATTEMPT_BOUND_TO_POOL, net_log().source());
-    if (rv != ERR_IO_PENDING) {
-      // SAFETY: `this` may be deleted before the attempt completes.
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&AttemptManager::OnInFlightAttemptComplete,
-                         weak_ptr_factory_.GetWeakPtr(), raw_attempt, rv));
-    } else {
-      raw_attempt->slow_timer().Start(
-          FROM_HERE, HttpStreamPool::GetConnectionAttemptDelay(),
-          base::BindOnce(&AttemptManager::OnInFlightAttemptSlow,
-                         base::Unretained(this), raw_attempt));
-      if (tls_attempt_ptr && !tls_attempt_ptr->IsTcpHandshakeCompleted()) {
-        tls_attempt_ptr->SetTcpHandshakeCompletionCallback(base::BindOnce(
-            &AttemptManager::OnInFlightAttemptTcpHandshakeComplete,
-            base::Unretained(this), raw_attempt));
-      }
-    }
 
     ++num_attempts;
     if (max_attempts.has_value() && num_attempts >= *max_attempts) {

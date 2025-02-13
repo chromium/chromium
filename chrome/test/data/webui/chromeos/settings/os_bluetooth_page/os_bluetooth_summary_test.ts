@@ -40,7 +40,7 @@ suite('<os-settings-bluetooth-summary>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
-  async function init() {
+  function init() {
     hidPreservingController = new FakeHidPreservingBluetoothStateController();
     hidPreservingController.setBluetoothConfigForTesting(bluetoothConfig);
     setHidPreservingControllerForTesting(hidPreservingController);

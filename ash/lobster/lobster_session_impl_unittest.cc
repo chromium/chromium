@@ -15,6 +15,7 @@
 #include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
+#include "ash/public/cpp/lobster/lobster_text_input_context.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
 #include "base/files/file_util.h"
@@ -64,7 +65,10 @@ class MockLobsterClient : public LobsterClient {
   ~MockLobsterClient() override = default;
 
   MOCK_METHOD(void, SetActiveSession, (LobsterSession * session), (override));
-  MOCK_METHOD(LobsterSystemState, GetSystemState, (), (override));
+  MOCK_METHOD(LobsterSystemState,
+              GetSystemState,
+              (const LobsterTextInputContext& text_input_context),
+              (override));
   MOCK_METHOD(void,
               RequestCandidates,
               (const std::string& query,

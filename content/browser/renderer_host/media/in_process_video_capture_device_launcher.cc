@@ -88,20 +88,8 @@ std::unique_ptr<media::VideoCaptureJpegDecoder> CreateGpuJpegDecoder(
 const int kMaxNumberOfBuffers = media::kVideoCaptureDefaultMaxBufferPoolSize;
 
 #if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kScreenCaptureKitMac,
-             "ScreenCaptureKitMac",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If this feature is enabled, ScreenCaptureKit will be used for window
-// capturing even if kScreenCaptureKitMac is disabled. Please note that this
-// feature has no effect if kScreenCaptureKitMac is enabled.
-BASE_FEATURE(kScreenCaptureKitMacWindow,
-             "ScreenCaptureKitMacWindow",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If this feature is enabled, ScreenCaptureKit will be used for screen
-// capturing even if kScreenCaptureKitMac is disabled. Please note that this
-// feature has no effect if kScreenCaptureKitMac is enabled.
+// capturing.
 BASE_FEATURE(kScreenCaptureKitMacScreen,
              "ScreenCaptureKitMacScreen",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -199,9 +187,7 @@ DesktopCaptureImplementation CreatePlatformDependentVideoCaptureDevice(
 
   // Prefer using ScreenCaptureKit. After that try DesktopCaptureDeviceMac, and
   // if both fail, use the generic DesktopCaptureDevice.
-  if (base::FeatureList::IsEnabled(kScreenCaptureKitMac) ||
-      (desktop_id.type == DesktopMediaID::TYPE_WINDOW &&
-       base::FeatureList::IsEnabled(kScreenCaptureKitMacWindow)) ||
+  if (desktop_id.type == DesktopMediaID::TYPE_WINDOW ||
       (desktop_id.type == DesktopMediaID::TYPE_SCREEN &&
        base::FeatureList::IsEnabled(kScreenCaptureKitMacScreen))) {
     device_out = CreateScreenCaptureKitDeviceMac(desktop_id);

@@ -412,7 +412,8 @@ void It2MeHost::ConnectOnNetworkThread(
       desktop_environment_factory_.get(), std::move(session_manager),
       transport_context, host_context_->audio_task_runner(),
       host_context_->video_encode_task_runner(), options,
-      /* extra_session_policies_validator= */ base::NullCallback(),
+      base::BindRepeating(&It2MeHost::OnEffectiveSessionPoliciesReceived,
+                          base::Unretained(this)),
       local_session_policies_provider_.get());
   host_->status_monitor()->AddStatusObserver(this);
   host_status_logger_ = std::make_unique<HostStatusLogger>(
@@ -521,20 +522,6 @@ void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
   remote_support_connections_allowed_ =
       policies.FindBool(GetRemoteSupportPolicyKey()).value_or(true);
 
-  std::optional<bool> nat_policy_value =
-      policies.FindBool(policy::key::kRemoteAccessHostFirewallTraversal);
-  if (!nat_policy_value.has_value()) {
-    HOST_LOG << "Failed to read kRemoteAccessHostFirewallTraversal policy";
-    nat_policy_value = nat_traversal_enabled_;
-  }
-  std::optional<bool> relay_policy_value =
-      policies.FindBool(policy::key::kRemoteAccessHostAllowRelayedConnection);
-  if (!relay_policy_value.has_value()) {
-    HOST_LOG << "Failed to read kRemoteAccessHostAllowRelayedConnection policy";
-    relay_policy_value = relay_connections_allowed_;
-  }
-  UpdateNatPolicies(*nat_policy_value, *relay_policy_value);
-
   const base::Value::List* host_domain_list =
       policies.FindList(policy::key::kRemoteAccessHostDomainList);
   if (host_domain_list) {
@@ -555,39 +542,52 @@ void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
     UpdateClientDomainListPolicy(std::move(client_domain_list_vector));
   }
 
-  UpdateSessionPolicies(policies);
+  UpdateLocalSessionPolicies(policies);
+
+  // If |session_policies_finalized_| is true, then local policy changes will
+  // either disconnect the session, or have no effects if the effective policies
+  // come from the authenticator. In either case, we do not need to report the
+  // local NAT policies.
+  if (local_session_policies_provider_ && !session_policies_finalized_) {
+    ReportNatPolicies(local_session_policies_provider_->get_local_policies());
+  }
 }
 
-void It2MeHost::UpdateNatPolicies(bool nat_policy_value,
-                                  bool relay_policy_value) {
+std::optional<ErrorCode> It2MeHost::OnEffectiveSessionPoliciesReceived(
+    const SessionPolicies& session_policies) {
   DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
 
-  // This method is needed simply because we need to notify the website of the
-  // setting change. This only works if the NAT policies are configured locally.
-  // This will not work if we add SessionAuthz policies to IT2ME in the future.
-  // TODO: yuweih - Fix this, or remove this altogether if we don't think it's
-  // useful.
+  session_policies_finalized_ = true;
+  ReportNatPolicies(session_policies);
+  return std::nullopt;
+}
 
+void It2MeHost::ReportNatPolicies(const SessionPolicies& session_policies) {
+  DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
+
+  bool nat_policy_value =
+      session_policies.allow_stun_connections.value_or(true);
   VLOG(2) << "UpdateNatPolicies: nat_policy_value: " << nat_policy_value;
-  bool nat_traversal_value_changed = nat_traversal_enabled_ != nat_policy_value;
-  nat_traversal_enabled_ = nat_policy_value;
+  bool nat_traversal_value_changed =
+      !last_reported_nat_traversal_enabled_.has_value() ||
+      *last_reported_nat_traversal_enabled_ != nat_policy_value;
+  last_reported_nat_traversal_enabled_ = nat_policy_value;
 
+  bool relay_policy_value =
+      session_policies.allow_relayed_connections.value_or(true);
   VLOG(2) << "UpdateNatPolicies: relay_policy_value: " << relay_policy_value;
-  bool relay_value_changed = relay_connections_allowed_ != relay_policy_value;
-  relay_connections_allowed_ = relay_policy_value;
-
-  // Force disconnect when transitioning either policy setting to disabled.
-  if (((nat_traversal_value_changed && !nat_traversal_enabled_) ||
-       (relay_value_changed && !relay_connections_allowed_)) &&
-      IsRunning()) {
-    DisconnectOnNetworkThread();
-  }
+  bool relay_value_changed =
+      !last_reported_relay_connections_allowed_.has_value() ||
+      *last_reported_relay_connections_allowed_ != relay_policy_value;
+  last_reported_relay_connections_allowed_ = relay_policy_value;
 
   // Notify listeners of the policy setting change.
-  host_context_->ui_task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&It2MeHost::Observer::OnNatPoliciesChanged, observer_,
-                     nat_traversal_enabled_, relay_connections_allowed_));
+  if (nat_traversal_value_changed || relay_value_changed) {
+    host_context_->ui_task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&It2MeHost::Observer::OnNatPoliciesChanged, observer_,
+                       nat_policy_value, relay_policy_value));
+  }
 }
 
 void It2MeHost::UpdateHostDomainListPolicy(
@@ -620,7 +620,7 @@ void It2MeHost::UpdateClientDomainListPolicy(
   required_client_domain_list_ = std::move(client_domain_list);
 }
 
-void It2MeHost::UpdateSessionPolicies(
+void It2MeHost::UpdateLocalSessionPolicies(
     const base::Value::Dict& platform_policies) {
   // |local_session_policies_provider_| is null if there is no active
   // connection. Connect() calls OnPolicyUpdate() with the platform policies, so

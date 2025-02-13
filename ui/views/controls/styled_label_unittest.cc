@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "build/build_config.h"
@@ -240,7 +241,8 @@ TEST_F(StyledLabelTest, WrapLongWords) {
 
   EXPECT_FALSE(label_0->GetText().empty());
   EXPECT_FALSE(label_1->GetText().empty());
-  EXPECT_EQ(ASCIIToUTF16(text), label_0->GetText() + label_1->GetText());
+  EXPECT_EQ(ASCIIToUTF16(text),
+            base::StrCat({label_0->GetText(), label_1->GetText()}));
 }
 
 TEST_F(StyledLabelTest, CreateLinks) {

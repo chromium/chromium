@@ -26,7 +26,7 @@ suite('CardsTest', () => {
   let handler: TestMock<CustomizeChromePageHandlerRemote>;
   let callbackRouterRemote: CustomizeChromePageRemote;
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     metrics = fakeMetricsPrivate();
     handler = installMock(

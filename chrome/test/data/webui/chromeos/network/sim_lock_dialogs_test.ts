@@ -58,7 +58,7 @@ suite('NetworkSimLockDialogsTest', () => {
     assertTrue(dialog.open);
   }
 
-  test('Show Enter pin dialog', async () => {
+  test('Show Enter pin dialog', () => {
     const deviceState = {
       simLockStatus: {lockEnabled: false, lockType: '', retriesLeft: 3},
     };
@@ -70,7 +70,7 @@ suite('NetworkSimLockDialogsTest', () => {
         enterPin.ariaLabel, simLockDialog.i18n('networkSimEnterPinTitle'));
   });
 
-  test('Show Change PIN dialog', async () => {
+  test('Show Change PIN dialog', () => {
     const deviceState = {
       simLockStatus: {lockEnabled: true, lockType: '', retriesLeft: 3},
     };
@@ -109,7 +109,7 @@ suite('NetworkSimLockDialogsTest', () => {
   });
 
 
-  test('Show Unlock PUK dialog', async () => {
+  test('Show Unlock PUK dialog', () => {
     const deviceState = {
       simLockStatus: {lockEnabled: true, lockType: 'sim-puk', retriesLeft: 3},
     };

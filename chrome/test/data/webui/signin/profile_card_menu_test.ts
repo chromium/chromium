@@ -24,7 +24,7 @@ suite('ProfileCardMenuTest', function() {
   const statisticsDataTypes: string[] =
       ['BrowsingHistory', 'Passwords', 'Bookmarks', 'Autofill'];
 
-  setup(async function() {
+  setup(function() {
     browserProxy = new TestManageProfilesBrowserProxy();
     ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -46,7 +46,7 @@ suite('ProfileCardMenuTest', function() {
   });
 
   // Checks basic layout of the action menu.
-  test('ProfileCardMenuActionMenu', async function() {
+  test('ProfileCardMenuActionMenu', function() {
     assertFalse(profileCardMenuElement.$.actionMenu.open);
     assertFalse(profileCardMenuElement.$.removeConfirmationDialog.open);
     profileCardMenuElement.$.moreActionsButton.click();
@@ -71,7 +71,7 @@ suite('ProfileCardMenuTest', function() {
   });
 
   // Click on the delete profile menu item opens the remove confirmation dialog.
-  test('ProfileCardMenuDeleteButton', async function() {
+  test('ProfileCardMenuDeleteButton', function() {
     profileCardMenuElement.$.moreActionsButton.click();
     const menuButtons =
         profileCardMenuElement.shadowRoot!.querySelectorAll<HTMLButtonElement>(
@@ -83,7 +83,7 @@ suite('ProfileCardMenuTest', function() {
 
   // Click on the cancel button in the remove confirmation dialog closes the
   // dialog.
-  test('RemoveConfirmationDialogCancel', async function() {
+  test('RemoveConfirmationDialogCancel', function() {
     const dialog = profileCardMenuElement.$.removeConfirmationDialog;
     dialog.showModal();
     assertTrue(dialog.open);
@@ -164,7 +164,7 @@ suite('ProfileCardMenuTest', function() {
   });
 
   // The profile statistics of another profile aren't displayed.
-  test('RemoveConfirmationDialogStatisticsWrongProfile', async function() {
+  test('RemoveConfirmationDialogStatisticsWrongProfile', function() {
     const dialog = profileCardMenuElement.$.removeConfirmationDialog;
     dialog.showModal();
     assertTrue(dialog.open);

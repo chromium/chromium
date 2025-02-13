@@ -5,6 +5,7 @@
 import type {BookmarkNode, BookmarksItemElement} from 'chrome://bookmarks/bookmarks.js';
 import {selectItem} from 'chrome://bookmarks/bookmarks.js';
 import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestStore} from './test_store.js';
 import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from './test_util.js';
@@ -29,21 +30,23 @@ suite('<bookmarks-item>', function() {
     replaceBody(item);
   });
 
-  test('changing the url changes the favicon', function() {
+  test('changing the url changes the favicon', async () => {
     const favicon = item.$.icon.style.backgroundImage;
     store.data.nodes['2'] =
         (createItem('0', {url: 'https://mail.google.com'}) as unknown as
          BookmarkNode);
     store.notifyObservers();
+    await microtasksFinished();
     assertNotEquals(favicon, item.$.icon.style.backgroundImage);
   });
 
-  test('changing to folder hides/unhides the folder/icon', function() {
+  test('changing to folder hides/unhides the folder/icon', async () => {
     // Starts test as an item.
     assertEquals('website-icon', item.$.icon.className);
 
     // Change to a folder.
     item.itemId = '1';
+    await microtasksFinished();
 
     assertEquals('folder-icon icon-folder-open', item.$.icon.className);
   });

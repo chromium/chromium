@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/manage_passwords_bubble_controller.h"
 
+#include <string_view>
+
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -286,13 +288,13 @@ void ManagePasswordsBubbleController::AuthenticateUserAndDisplayDetailsOf(
 }
 
 bool ManagePasswordsBubbleController::UsernameExists(
-    const std::u16string& username) {
+    std::u16string_view username) {
   if (!delegate_) {
     return false;
   }
   return std::ranges::any_of(
       GetCredentials(),
-      [&username](const std::unique_ptr<password_manager::PasswordForm>& form) {
+      [username](const std::unique_ptr<password_manager::PasswordForm>& form) {
         return form->username_value == username;
       });
 }

@@ -749,9 +749,10 @@ class IntegrationTest : public ::testing::Test {
   }
 
   void RunOfflineInstallOsNotSupported(bool is_legacy_install,
-                                       bool is_silent_install) {
-    test_commands_->RunOfflineInstallOsNotSupported(is_legacy_install,
-                                                    is_silent_install);
+                                       bool is_silent_install,
+                                       const std::string& language = "en") {
+    test_commands_->RunOfflineInstallOsNotSupported(
+        is_legacy_install, is_silent_install, language);
   }
 
   void DMPushEnrollmentToken(const std::string& enrollment_token) {
@@ -4688,6 +4689,26 @@ TEST_F(IntegrationTest, OfflineInstallOsNotSupported) {
   ASSERT_NO_FATAL_FAILURE(
       RunOfflineInstallOsNotSupported(/*is_legacy_install=*/false,
                                       /*is_silent_install=*/false));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+class IntegrationOfflineInstallOsNotSupportedTest
+    : public ::testing::WithParamInterface<std::string>,
+      public IntegrationTest {
+ protected:
+  std::string lang() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(IntegrationOfflineInstallOsNotSupportedTestCases,
+                         IntegrationOfflineInstallOsNotSupportedTest,
+                         ::testing::Values("en", "de", "ar", "hi"));
+
+TEST_P(IntegrationOfflineInstallOsNotSupportedTest, Lang) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(
+      RunOfflineInstallOsNotSupported(/*is_legacy_install=*/false,
+                                      /*is_silent_install=*/false, lang()));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 

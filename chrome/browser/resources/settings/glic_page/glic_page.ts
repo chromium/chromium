@@ -99,8 +99,7 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
     this.registerHelpBubble(
         OS_WIDGET_TOGGLE_ELEMENT_ID, launcherToggle.getBubbleAnchor());
     this.registerHelpBubble(
-        OS_WIDGET_KEYBOARD_SHORTCUT_ELEMENT_ID,
-        shortcutInput.getBubbleAnchor());
+        OS_WIDGET_KEYBOARD_SHORTCUT_ELEMENT_ID, shortcutInput);
   }
 
   private onToggleChange_(event: Event) {

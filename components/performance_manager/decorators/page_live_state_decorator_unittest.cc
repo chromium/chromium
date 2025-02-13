@@ -5,23 +5,19 @@
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 
 #include <memory>
+#include <optional>
 
-#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/run_loop.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
-#include "base/test/bind.h"
+#include "base/scoped_observation.h"
+#include "build/build_config.h"
+#include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/decorators_utils.h"
-#include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_capability_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager {
@@ -29,13 +25,16 @@ namespace performance_manager {
 namespace {
 
 // A test version of a PageLiveStateObserver that records the latest function
-// that has been called. Gmock isn't used here as instances of this class will
-// be used on a different sequence than the main one and that this add a lot of
-// extra complexity.
+// that has been called.
 class TestPageLiveStateObserver : public PageLiveStateObserver {
  public:
-  TestPageLiveStateObserver() = default;
+  explicit TestPageLiveStateObserver(const PageNode* page_node) {
+    scoped_observation_.Observe(
+        PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node));
+  }
+
   ~TestPageLiveStateObserver() override = default;
+
   TestPageLiveStateObserver(const TestPageLiveStateObserver& other) = delete;
   TestPageLiveStateObserver& operator=(const TestPageLiveStateObserver&) =
       delete;
@@ -115,16 +114,26 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
     page_node_passed_ = page_node;
   }
 
+  ObserverFunction latest_function_called() const {
+    return latest_function_called_;
+  }
+
+  const PageNode* page_node_passed() const { return page_node_passed_; }
+
+ private:
   ObserverFunction latest_function_called_ = ObserverFunction::kNone;
   raw_ptr<const PageNode> page_node_passed_ = nullptr;
+  base::ScopedObservation<PageLiveStateDecorator::Data, PageLiveStateObserver>
+      scoped_observation_{this};
 };
 
 }  // namespace
 
 class PageLiveStateDecoratorTest : public PerformanceManagerTestHarness {
- protected:
+ public:
   PageLiveStateDecoratorTest() = default;
   ~PageLiveStateDecoratorTest() override = default;
+
   PageLiveStateDecoratorTest(const PageLiveStateDecoratorTest& other) = delete;
   PageLiveStateDecoratorTest& operator=(const PageLiveStateDecoratorTest&) =
       delete;
@@ -132,226 +141,238 @@ class PageLiveStateDecoratorTest : public PerformanceManagerTestHarness {
   void SetUp() override {
     PerformanceManagerTestHarness::SetUp();
     SetContents(CreateTestWebContents());
-    observer_ = std::make_unique<TestPageLiveStateObserver>();
 
-    base::RunLoop run_loop;
-    auto quit_closure = run_loop.QuitClosure();
-    PerformanceManager::CallOnGraph(
-        FROM_HERE,
-        base::BindOnce(
-            [](base::WeakPtr<PageNode> page_node,
-               TestPageLiveStateObserver* observer,
-               base::OnceClosure quit_closure) {
-              EXPECT_TRUE(page_node);
-              PageLiveStateDecorator::Data::GetOrCreateForPageNode(
-                  page_node.get())
-                  ->AddObserver(observer);
-              std::move(quit_closure).Run();
-            },
-            PerformanceManager::GetPrimaryPageNodeForWebContents(
-                web_contents()),
-            observer_.get(), std::move(quit_closure)));
-    run_loop.Run();
+    base::WeakPtr<PageNode> page_node =
+        PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
+    ASSERT_TRUE(page_node);
+    observer_.emplace(page_node.get());
   }
 
   void TearDown() override {
-    base::RunLoop run_loop;
-    auto quit_closure = run_loop.QuitClosure();
-    PerformanceManager::CallOnGraph(
-        FROM_HERE,
-        base::BindOnce(
-            [](base::WeakPtr<PageNode> page_node,
-               TestPageLiveStateObserver* observer,
-               base::OnceClosure quit_closure) {
-              EXPECT_TRUE(page_node);
-              PageLiveStateDecorator::Data::GetOrCreateForPageNode(
-                  page_node.get())
-                  ->RemoveObserver(observer);
-              std::move(quit_closure).Run();
-            },
-            PerformanceManager::GetPrimaryPageNodeForWebContents(
-                web_contents()),
-            observer_.get(), std::move(quit_closure)));
-    run_loop.Run();
-
-    PerformanceManager::GetTaskRunner()->DeleteSoon(FROM_HERE,
-                                                    std::move(observer_));
+    observer_.reset();
     DeleteContents();
     PerformanceManagerTestHarness::TearDown();
   }
 
-  void VerifyObserverExpectationOnPMSequence(
-      TestPageLiveStateObserver::ObserverFunction expected_call) {
-    base::RunLoop run_loop;
-    auto quit_closure = run_loop.QuitClosure();
-    PerformanceManager::CallOnGraph(
-        FROM_HERE,
-        base::BindOnce(
-            [](base::WeakPtr<PageNode> page_node,
-               TestPageLiveStateObserver* observer,
-               TestPageLiveStateObserver::ObserverFunction expected_call,
-               base::OnceClosure quit_closure) {
-              EXPECT_TRUE(page_node);
-              EXPECT_EQ(expected_call, observer->latest_function_called_);
-              EXPECT_EQ(page_node.get(), observer->page_node_passed_);
-              std::move(quit_closure).Run();
-            },
-            PerformanceManager::GetPrimaryPageNodeForWebContents(
-                web_contents()),
-            observer_.get(), expected_call, std::move(quit_closure)));
-    run_loop.Run();
-  }
-
   void OnGraphCreated(GraphImpl* graph) override {
     graph->PassToGraph(std::make_unique<PageLiveStateDecorator>());
+    PerformanceManagerTestHarness::OnGraphCreated(graph);
   }
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner() {
-    return content::GetUIThreadTaskRunner({});
+ protected:
+  void VerifyObserverExpectation(
+      TestPageLiveStateObserver::ObserverFunction expected_call) {
+    base::WeakPtr<PageNode> page_node =
+        PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
+    ASSERT_TRUE(page_node);
+    ASSERT_TRUE(observer_);
+    EXPECT_EQ(expected_call, observer_->latest_function_called());
+    EXPECT_EQ(page_node.get(), observer_->page_node_passed());
   }
 
  private:
-  std::unique_ptr<TestPageLiveStateObserver> observer_;
+  std::optional<TestPageLiveStateObserver> observer_;
 };
 
 TEST_F(PageLiveStateDecoratorTest, Usb) {
+  EXPECT_FALSE(PageLiveStateDecorator::IsConnectedToUSBDevice(web_contents()));
   auto setter = [](content::WebContents* contents, bool value) {
     PageLiveStateDecorator::OnCapabilityTypesChanged(
         contents, content::WebContentsCapabilityType::kUSB, value);
+    EXPECT_EQ(PageLiveStateDecorator::IsConnectedToUSBDevice(contents), value);
   };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsConnectedToUSBDevice, setter);
-  VerifyObserverExpectationOnPMSequence(
-      TestPageLiveStateObserver::ObserverFunction::
-          kOnIsConnectedToUSBDeviceChanged);
+  VerifyObserverExpectation(TestPageLiveStateObserver::ObserverFunction::
+                                kOnIsConnectedToUSBDeviceChanged);
 }
 
 TEST_F(PageLiveStateDecoratorTest, Bluetooth) {
+  EXPECT_FALSE(
+      PageLiveStateDecorator::IsConnectedToBluetoothDevice(web_contents()));
   auto setter = [](content::WebContents* contents, bool value) {
     PageLiveStateDecorator::OnCapabilityTypesChanged(
         contents, content::WebContentsCapabilityType::kBluetoothConnected,
         value);
+    EXPECT_EQ(PageLiveStateDecorator::IsConnectedToBluetoothDevice(contents),
+              value);
   };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsConnectedToBluetoothDevice, setter);
-  VerifyObserverExpectationOnPMSequence(
-      TestPageLiveStateObserver::ObserverFunction::
-          kOnIsConnectedToBluetoothDeviceChanged);
+  VerifyObserverExpectation(TestPageLiveStateObserver::ObserverFunction::
+                                kOnIsConnectedToBluetoothDeviceChanged);
 }
 
 TEST_F(PageLiveStateDecoratorTest, Hid) {
+  EXPECT_FALSE(PageLiveStateDecorator::IsConnectedToHidDevice(web_contents()));
   auto setter = [](content::WebContents* contents, bool value) {
     PageLiveStateDecorator::OnCapabilityTypesChanged(
         contents, content::WebContentsCapabilityType::kHID, value);
+    EXPECT_EQ(PageLiveStateDecorator::IsConnectedToHidDevice(contents), value);
   };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsConnectedToHidDevice, setter);
-  VerifyObserverExpectationOnPMSequence(
-      TestPageLiveStateObserver::ObserverFunction::
-          kOnIsConnectedToHidDeviceChanged);
+  VerifyObserverExpectation(TestPageLiveStateObserver::ObserverFunction::
+                                kOnIsConnectedToHidDeviceChanged);
 }
 
 TEST_F(PageLiveStateDecoratorTest, Serial) {
+  EXPECT_FALSE(PageLiveStateDecorator::IsConnectedToSerialPort(web_contents()));
   auto setter = [](content::WebContents* contents, bool value) {
     PageLiveStateDecorator::OnCapabilityTypesChanged(
         contents, content::WebContentsCapabilityType::kSerial, value);
+    EXPECT_EQ(PageLiveStateDecorator::IsConnectedToSerialPort(contents), value);
   };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsConnectedToSerialPort, setter);
-  VerifyObserverExpectationOnPMSequence(
-      TestPageLiveStateObserver::ObserverFunction::
-          kOnIsConnectedToSerialPortChanged);
+  VerifyObserverExpectation(TestPageLiveStateObserver::ObserverFunction::
+                                kOnIsConnectedToSerialPortChanged);
 }
 
 TEST_F(PageLiveStateDecoratorTest, OnIsCapturingVideoChanged) {
+  EXPECT_FALSE(PageLiveStateDecorator::IsCapturingVideo(web_contents()));
+  auto setter = [](content::WebContents* contents, bool value) {
+    PageLiveStateDecorator::OnIsCapturingVideoChanged(contents, value);
+    EXPECT_EQ(PageLiveStateDecorator::IsCapturingVideo(contents), value);
+  };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
-      &PageLiveStateDecorator::Data::IsCapturingVideo,
-      &PageLiveStateDecorator::OnIsCapturingVideoChanged);
-  VerifyObserverExpectationOnPMSequence(
+      &PageLiveStateDecorator::Data::IsCapturingVideo, setter);
+  VerifyObserverExpectation(
       TestPageLiveStateObserver::ObserverFunction::kOnIsCapturingVideoChanged);
 }
 
 TEST_F(PageLiveStateDecoratorTest, OnIsCapturingAudioChanged) {
+  EXPECT_FALSE(PageLiveStateDecorator::IsCapturingAudio(web_contents()));
+  auto setter = [](content::WebContents* contents, bool value) {
+    PageLiveStateDecorator::OnIsCapturingAudioChanged(contents, value);
+    EXPECT_EQ(PageLiveStateDecorator::IsCapturingAudio(contents), value);
+  };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
-      &PageLiveStateDecorator::Data::IsCapturingAudio,
-      &PageLiveStateDecorator::OnIsCapturingAudioChanged);
-  VerifyObserverExpectationOnPMSequence(
+      &PageLiveStateDecorator::Data::IsCapturingAudio, setter);
+  VerifyObserverExpectation(
       TestPageLiveStateObserver::ObserverFunction::kOnIsCapturingAudioChanged);
 }
 
 TEST_F(PageLiveStateDecoratorTest, OnIsBeingMirroredChanged) {
+  EXPECT_FALSE(PageLiveStateDecorator::IsBeingMirrored(web_contents()));
+  auto setter = [](content::WebContents* contents, bool value) {
+    PageLiveStateDecorator::OnIsBeingMirroredChanged(contents, value);
+    EXPECT_EQ(PageLiveStateDecorator::IsBeingMirrored(contents), value);
+  };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
-      &PageLiveStateDecorator::Data::IsBeingMirrored,
-      &PageLiveStateDecorator::OnIsBeingMirroredChanged);
-  VerifyObserverExpectationOnPMSequence(
+      &PageLiveStateDecorator::Data::IsBeingMirrored, setter);
+  VerifyObserverExpectation(
       TestPageLiveStateObserver::ObserverFunction::kOnIsBeingMirroredChanged);
 }
 
 TEST_F(PageLiveStateDecoratorTest, OnIsCapturingWindowChanged) {
+  EXPECT_FALSE(PageLiveStateDecorator::IsCapturingWindow(web_contents()));
+  auto setter = [](content::WebContents* contents, bool value) {
+    PageLiveStateDecorator::OnIsCapturingWindowChanged(contents, value);
+    EXPECT_EQ(PageLiveStateDecorator::IsCapturingWindow(contents), value);
+  };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
-      &PageLiveStateDecorator::Data::IsCapturingWindow,
-      &PageLiveStateDecorator::OnIsCapturingWindowChanged);
-  VerifyObserverExpectationOnPMSequence(
+      &PageLiveStateDecorator::Data::IsCapturingWindow, setter);
+  VerifyObserverExpectation(
       TestPageLiveStateObserver::ObserverFunction::kOnIsCapturingWindowChanged);
 }
 
 TEST_F(PageLiveStateDecoratorTest, OnIsCapturingDisplayChanged) {
+  EXPECT_FALSE(PageLiveStateDecorator::IsCapturingDisplay(web_contents()));
+  auto setter = [](content::WebContents* contents, bool value) {
+    PageLiveStateDecorator::OnIsCapturingDisplayChanged(contents, value);
+    EXPECT_EQ(PageLiveStateDecorator::IsCapturingDisplay(contents), value);
+  };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
-      &PageLiveStateDecorator::Data::IsCapturingDisplay,
-      &PageLiveStateDecorator::OnIsCapturingDisplayChanged);
-  VerifyObserverExpectationOnPMSequence(
-      TestPageLiveStateObserver::ObserverFunction::
-          kOnIsCapturingDisplayChanged);
+      &PageLiveStateDecorator::Data::IsCapturingDisplay, setter);
+  VerifyObserverExpectation(TestPageLiveStateObserver::ObserverFunction::
+                                kOnIsCapturingDisplayChanged);
 }
 
 TEST_F(PageLiveStateDecoratorTest, SetIsAutoDiscardable) {
+  EXPECT_TRUE(PageLiveStateDecorator::IsAutoDiscardable(web_contents()));
+  auto setter = [](content::WebContents* contents, bool value) {
+    PageLiveStateDecorator::SetIsAutoDiscardable(contents, value);
+    EXPECT_EQ(PageLiveStateDecorator::IsAutoDiscardable(contents), value);
+  };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
-      &PageLiveStateDecorator::Data::IsAutoDiscardable,
-      &PageLiveStateDecorator::SetIsAutoDiscardable,
+      &PageLiveStateDecorator::Data::IsAutoDiscardable, setter,
       /*default_state=*/true);
-  VerifyObserverExpectationOnPMSequence(
+  VerifyObserverExpectation(
       TestPageLiveStateObserver::ObserverFunction::kOnIsAutoDiscardableChanged);
 }
 
+TEST_F(PageLiveStateDecoratorTest, AutoDiscardablePersistsThroughDiscard) {
+  PageLiveStateDecorator::SetIsAutoDiscardable(web_contents(), false);
+
+  // Simulate the tab containing web_contents() being discarded by an
+  // extension and replaced by a placeholder.
+  auto placeholder_contents = CreateTestWebContents();
+  auto placeholder_page_node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(
+          placeholder_contents.get());
+  ASSERT_TRUE(placeholder_page_node);
+  EXPECT_TRUE(
+      PageLiveStateDecorator::IsAutoDiscardable(placeholder_contents.get()));
+
+  base::WeakPtr<PageNode> node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
+  ASSERT_TRUE(node);
+  auto* node_impl = PageNodeImpl::FromNode(node.get());
+  node_impl->OnAboutToBeDiscarded(/*new_page_node=*/placeholder_page_node);
+
+  EXPECT_FALSE(
+      PageLiveStateDecorator::IsAutoDiscardable(placeholder_contents.get()));
+}
+
 TEST_F(PageLiveStateDecoratorTest, OnIsActiveTabChanged) {
+  EXPECT_FALSE(PageLiveStateDecorator::IsActiveTab(web_contents()));
+  auto setter = [](content::WebContents* contents, bool value) {
+    PageLiveStateDecorator::SetIsActiveTab(contents, value);
+    EXPECT_EQ(PageLiveStateDecorator::IsActiveTab(contents), value);
+  };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
-      &PageLiveStateDecorator::Data::IsActiveTab,
-      &PageLiveStateDecorator::SetIsActiveTab,
-      /*default_state=*/false);
-  VerifyObserverExpectationOnPMSequence(
+      &PageLiveStateDecorator::Data::IsActiveTab, setter);
+  VerifyObserverExpectation(
       TestPageLiveStateObserver::ObserverFunction::kOnIsActiveTabChanged);
 }
 
 TEST_F(PageLiveStateDecoratorTest, OnIsPinnedTabChanged) {
+  EXPECT_FALSE(PageLiveStateDecorator::IsPinnedTab(web_contents()));
+  auto setter = [](content::WebContents* contents, bool value) {
+    PageLiveStateDecorator::SetIsPinnedTab(contents, value);
+    EXPECT_EQ(PageLiveStateDecorator::IsPinnedTab(contents), value);
+  };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
-      &PageLiveStateDecorator::Data::IsPinnedTab,
-      &PageLiveStateDecorator::SetIsPinnedTab,
-      /*default_state=*/false);
-  VerifyObserverExpectationOnPMSequence(
+      &PageLiveStateDecorator::Data::IsPinnedTab, setter);
+  VerifyObserverExpectation(
       TestPageLiveStateObserver::ObserverFunction::kOnIsPinnedTabChanged);
 }
 
 // DevTools not supported on Android.
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(PageLiveStateDecoratorTest, OnIsDevToolsOpenChanged) {
+  EXPECT_FALSE(PageLiveStateDecorator::IsDevToolsOpen(web_contents()));
+  auto setter = [](content::WebContents* contents, bool value) {
+    PageLiveStateDecorator::SetIsDevToolsOpen(contents, value);
+    EXPECT_EQ(PageLiveStateDecorator::IsDevToolsOpen(contents), value);
+  };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
-      &PageLiveStateDecorator::Data::IsDevToolsOpen,
-      &PageLiveStateDecorator::SetIsDevToolsOpen,
-      /*default_state=*/false);
-  VerifyObserverExpectationOnPMSequence(
+      &PageLiveStateDecorator::Data::IsDevToolsOpen, setter);
+  VerifyObserverExpectation(
       TestPageLiveStateObserver::ObserverFunction::kOnIsDevToolsOpenChanged);
 }
 
@@ -360,51 +381,49 @@ TEST_F(PageLiveStateDecoratorTest, OnIsDevToolsOpenChanged) {
 TEST_F(PageLiveStateDecoratorTest, UpdateTitleInBackground) {
   base::WeakPtr<PageNode> node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
-  base::RunLoop run_loop;
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
-        ASSERT_TRUE(node);
-        auto* node_impl = PageNodeImpl::FromNode(node.get());
-        auto* data =
-            PageLiveStateDecorator::Data::GetOrCreateForPageNode(node.get());
+  ASSERT_TRUE(node);
+  auto* node_impl = PageNodeImpl::FromNode(node.get());
+  auto* data = PageLiveStateDecorator::Data::GetOrCreateForPageNode(node.get());
 
-        // Updating the title while the node is visible does nothing.
-        node_impl->SetIsVisible(true);
-        node_impl->OnTitleUpdated();
-        EXPECT_EQ(data->UpdatedTitleOrFaviconInBackground(), false);
+  EXPECT_FALSE(PageLiveStateDecorator::UpdatedTitleOrFaviconInBackground(
+      web_contents()));
 
-        node_impl->SetIsVisible(false);
-        node_impl->OnTitleUpdated();
-        EXPECT_EQ(data->UpdatedTitleOrFaviconInBackground(), true);
+  // Updating the title while the node is visible does nothing.
+  node_impl->SetIsVisible(true);
+  node_impl->OnTitleUpdated();
+  EXPECT_FALSE(data->UpdatedTitleOrFaviconInBackground());
+  EXPECT_FALSE(PageLiveStateDecorator::UpdatedTitleOrFaviconInBackground(
+      web_contents()));
 
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  node_impl->SetIsVisible(false);
+  node_impl->OnTitleUpdated();
+  EXPECT_TRUE(data->UpdatedTitleOrFaviconInBackground());
+  EXPECT_TRUE(PageLiveStateDecorator::UpdatedTitleOrFaviconInBackground(
+      web_contents()));
 }
 
 TEST_F(PageLiveStateDecoratorTest, UpdateFaviconInBackground) {
   base::WeakPtr<PageNode> node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
-  base::RunLoop run_loop;
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
-        ASSERT_TRUE(node);
-        auto* node_impl = PageNodeImpl::FromNode(node.get());
-        auto* data =
-            PageLiveStateDecorator::Data::GetOrCreateForPageNode(node.get());
+  ASSERT_TRUE(node);
+  auto* node_impl = PageNodeImpl::FromNode(node.get());
+  auto* data = PageLiveStateDecorator::Data::GetOrCreateForPageNode(node.get());
 
-        // Updating the favicon while the node is visible does nothing.
-        node_impl->SetIsVisible(true);
-        node_impl->OnFaviconUpdated();
-        EXPECT_EQ(data->UpdatedTitleOrFaviconInBackground(), false);
+  EXPECT_FALSE(PageLiveStateDecorator::UpdatedTitleOrFaviconInBackground(
+      web_contents()));
 
-        node_impl->SetIsVisible(false);
-        node_impl->OnFaviconUpdated();
-        EXPECT_EQ(data->UpdatedTitleOrFaviconInBackground(), true);
+  // Updating the favicon while the node is visible does nothing.
+  node_impl->SetIsVisible(true);
+  node_impl->OnFaviconUpdated();
+  EXPECT_FALSE(data->UpdatedTitleOrFaviconInBackground());
+  EXPECT_FALSE(PageLiveStateDecorator::UpdatedTitleOrFaviconInBackground(
+      web_contents()));
 
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  node_impl->SetIsVisible(false);
+  node_impl->OnFaviconUpdated();
+  EXPECT_TRUE(data->UpdatedTitleOrFaviconInBackground());
+  EXPECT_TRUE(PageLiveStateDecorator::UpdatedTitleOrFaviconInBackground(
+      web_contents()));
 }
 
 }  // namespace performance_manager

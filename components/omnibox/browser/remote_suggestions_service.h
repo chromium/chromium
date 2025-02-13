@@ -205,7 +205,8 @@ class RemoteSuggestionsService : public KeyedService {
       const std::u16string& query,
       const GURL& suggest_url,
       StartCallback start_callback,
-      CompletionCallback completion_callback);
+      CompletionCallback completion_callback,
+      bool in_keyword_mode);
 
   // Creates and returns a loader to delete personalized suggestions.
   //

@@ -15,6 +15,7 @@ assert(enable_extensions_core)
 schema_sources_ = [
   "activity_log_private.json",
   "cookies.json",
+  "developer_private.idl",
   "notifications.idl",
 ]
 
@@ -51,7 +52,6 @@ if (enable_extensions) {
     "context_menus.json",
     "debugger.json",
     "desktop_capture.json",
-    "developer_private.idl",
     "crash_report_private.idl",
     "downloads.idl",
     "downloads_internal.idl",

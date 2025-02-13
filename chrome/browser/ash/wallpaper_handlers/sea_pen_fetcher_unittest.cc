@@ -1055,7 +1055,7 @@ TEST_F(SeaPenFetcherTest, FetchFreeformWallpaper_UsesGenerativePrompt) {
           ash::features::kFeatureManagementSeaPen,
           manta::features::kMantaService,
           ash::features::kSeaPenTextInput,
-          ash::features::kSeaPenPromptRewrite,
+          ash::features::kSeaPenQueryRewrite,
       },
       {});
   auto user_query = MakeFreeformQuery();
@@ -1107,7 +1107,7 @@ TEST_F(SeaPenFetcherTest,
           ash::features::kFeatureManagementSeaPen,
           manta::features::kMantaService,
           ash::features::kSeaPenTextInput,
-          ash::features::kSeaPenPromptRewrite,
+          ash::features::kSeaPenQueryRewrite,
       },
       {});
   auto user_query = MakeFreeformQuery();
@@ -1152,7 +1152,7 @@ TEST_F(SeaPenFetcherTest, FetchTemplateWallpaper_UsesTemplate) {
           ash::features::kFeatureManagementSeaPen,
           manta::features::kMantaService,
           ash::features::kSeaPenTextInput,
-          ash::features::kSeaPenPromptRewrite,
+          ash::features::kSeaPenQueryRewrite,
       },
       {});
   auto template_query = MakeTemplateQuery();

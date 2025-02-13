@@ -46,7 +46,7 @@ suite('Start flows', () => {
   let dataSharingApp: DataSharingApp|null = null;
   let testBrowserProxy: TestDataSharingBrowserProxy;
 
-  setup(async () => {
+  setup(() => {
     testBrowserProxy = new TestDataSharingBrowserProxy();
     testDataSharingSdk = TestMock.fromClass(DataSharingSdkImpl);
     DataSharingSdkImpl.setInstance(testDataSharingSdk);

@@ -6,43 +6,49 @@ found in the LICENSE file.
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:gravity="center_vertical"
     android:padding="16dp">
 
     <!-- TODO(crbug.com/381352682): Make the header items easier to click. -->
-    <TextView
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
         android:id="@+id/task_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:drawablePadding="12dp"
+        android:gravity="center_vertical"
+        app:drawableWidth="@dimen/default_favicon_size"
+        app:drawableHeight="@dimen/default_favicon_size"
     />
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/memory_footprint"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
     />
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/cpu"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
     />
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/network_usage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
     />
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/process_id"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
     />
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/gpu_memory_id"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

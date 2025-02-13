@@ -42,16 +42,12 @@ class SaveAutofillAiDataControllerImpl
   // SaveAutofillAiDataController:
   void OfferSave(autofill::EntityInstance autofill_ai_data,
                  AutofillAiClient::SavePromptAcceptanceCallback
-                     save_prompt_acceptance_callback,
-                 LearnMoreClickedCallback learn_more_clicked_callback) override;
+                     save_prompt_acceptance_callback) override;
   void OnSaveButtonClicked() override;
   base::optional_ref<const autofill::EntityInstance> GetAutofillAiData()
       const override;
   void OnBubbleClosed(AutofillAiBubbleClosedReason closed_reason) override;
   base::WeakPtr<SaveAutofillAiDataController> GetWeakPtr() override;
-  void OnThumbsUpClicked() override;
-  void OnThumbsDownClicked() override;
-  void OnLearnMoreClicked() override;
 
  protected:
   explicit SaveAutofillAiDataControllerImpl(content::WebContents* web_contents);
@@ -73,14 +69,6 @@ class SaveAutofillAiDataControllerImpl
   // prompt.
   AutofillAiClient::SavePromptAcceptanceCallback
       save_prompt_acceptance_callback_;
-
-  // Represents whether the user interacted with the thumbs up/down buttons.
-  bool did_trigger_thumbs_up_ = false;
-  bool did_trigger_thumbs_down_ = false;
-
-  // Callback to notify that the user clicked the button to learn more about the
-  // feature.
-  LearnMoreClickedCallback learn_more_clicked_callback_;
 
   base::WeakPtrFactory<SaveAutofillAiDataControllerImpl> weak_ptr_factory_{
       this};

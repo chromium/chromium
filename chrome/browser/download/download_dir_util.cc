@@ -6,12 +6,11 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/policy_path_parser.h"
 #include "chrome/common/chrome_features.h"
 #include "components/policy/core/browser/configuration_policy_handler_parameters.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/files/file_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -21,13 +20,10 @@
 
 namespace download_dir_util {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kLocationGoogleDrive[] = "google_drive";
-const char kLocationOneDrive[] = "microsoft_onedrive";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_CHROMEOS)
 const char kDriveNamePolicyVariableName[] = "${google_drive}";
+const char kLocationGoogleDrive[] = "google_drive";
+const char kLocationOneDrive[] = "microsoft_onedrive";
 const char kOneDriveNamePolicyVariableName[] = "${microsoft_onedrive}";
 
 bool DownloadToDrive(const base::FilePath::StringType& string_value,
@@ -52,13 +48,11 @@ bool ExpandDrivePolicyVariable(Profile* profile,
     return false;
 
   base::FilePath google_drive;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   if (!integration_service || !integration_service->is_enabled())
     return false;
   google_drive = integration_service->GetMountPointPath();
-#endif
 
   base::FilePath::StringType google_drive_root =
       google_drive.Append(drive::util::kDriveMyDriveRootDirName).value();
@@ -81,11 +75,9 @@ bool ExpandOneDrivePolicyVariable(Profile* profile,
   }
 
   base::FilePath onedrive_path;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::GetTempDir(&onedrive_path)) {
     return false;
   }
-#endif
 
   std::string expanded_value = old_path.value();
   *new_path =
@@ -100,7 +92,7 @@ bool ExpandOneDrivePolicyVariable(Profile* profile,
 base::FilePath::StringType ExpandDownloadDirectoryPath(
     const base::FilePath::StringType& string_value,
     const policy::PolicyHandlerParameters& parameters) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return string_value;
 #else
   return policy::path_parser::ExpandPathVariables(string_value);

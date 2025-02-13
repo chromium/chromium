@@ -220,6 +220,7 @@
 <translation id="114721135501989771">Chrome मध्ये Google स्मार्ट मिळवा</translation>
 <translation id="1147322039136785890">आता <ph name="SUPERVISED_USER_NAME" /> ची पाळी आहे</translation>
 <translation id="1147991416141538220">अ‍ॅक्सेसची विनंती करण्यासाठी या डिव्हाइसच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
+<translation id="1148464196693569530">वापरकर्ता स्क्रिप्टना अनुमती द्या</translation>
 <translation id="1148624853678088576">तुम्ही पूर्णपणे तयार आहात!</translation>
 <translation id="1148669835763563782">तुम्हाला वर्धित सुरक्षा आणि नवीनतम Chromebook वैशिष्ट्यांसाठी अलीकडील सॉफ्टवेअर अपडेट मिळत आहे. या अपडेटमध्ये तुम्हाला तुमच्या Chromebook वर सहजपणे सुरुवात करण्यात मदत करण्यासाठी सुधारित सेटअप अनुभवाचा समावेश आहे.</translation>
 <translation id="1149401351239820326">कालबाह्य होण्याचा महिना:</translation>
@@ -4145,7 +4146,7 @@
 <translation id="3873423927483480833">पिन दाखवा</translation>
 <translation id="3873915545594852654">ARC++ ला समस्या आली.</translation>
 <translation id="3874164307099183178">Google Assistant सुरू करा</translation>
-<translation id="3874845889165401548">हे वैशिष्ट AI वापरते आणि ते प्रायोगिक आहे</translation>
+<translation id="3874845889165401548">हे वैशिष्ट्य AI वापरते आणि प्रायोगिक आहे</translation>
 <translation id="3875511946736639169">इमेज सुरू करा</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> हे नवीन ब्राउझर टॅबमध्ये उघडण्यासाठी सेट केले आहे, सपोर्ट असलेल्या लिंकदेखील ब्राउझरमध्ये उघडतील. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">आकार बदललेल्या विंडो सर्वात वरती आहेत</translation>
@@ -6778,6 +6779,7 @@
 <translation id="5794414402486823030">नेहमी सिस्टम दर्शकासह उघडा</translation>
 <translation id="5794700615121138172">Linux ने शेअर केलेले फोल्डर</translation>
 <translation id="5794786537412027208">सर्व Chrome Apps मधून बाहेर पडा</translation>
+<translation id="5795422263272161110">बाजूबाजूला दाखवा</translation>
 <translation id="5796485699458186843">नवीन गुप्त टॅब</translation>
 <translation id="5796956053441619942">रिमोट डिव्हाइसवरील URL ला सपोर्ट नाही</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; आणि &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; वर सुरुवात कशी करावी हे जाणून घ्या</translation>
@@ -7309,6 +7311,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6170498031581934115">ADB डीबगिंग सुरू करता आले नाही. सेटिंग्जवर जा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="6170675927290506430">सूचना सेटिंग्ज वर जा</translation>
 <translation id="6171779718418683144">भेट देताना प्रत्येक वेळी विचारा</translation>
+<translation id="6172020488605056255">वाचण्यात मला मदत करा वापरण्यासाठी राइट-क्लिक करा</translation>
 <translation id="617213288191670920">कोणत्याही भाषा जोडलेल्या नाहीत</translation>
 <translation id="6173623053897475761">तुमचा पिन पुन्हा टाइप करा</translation>
 <translation id="6174909075810107548">माउस बटण प्रेस करण्यासाठी “5” वापरा</translation>
@@ -8334,6 +8337,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6910190732484284349">या वापरकर्ता नावासाठी पासकी हटवा: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">हटवला</translation>
 <translation id="6910274140210351823">गडद</translation>
+<translation id="691102290537033604">Google द्वारे पुनरावलोकन न केलेला कोड एक्स्टेंशनला रन करता येईल. हे असुरक्षित असू शकते आणि तुम्ही काय करत आहात हे तुम्हाला माहिती असेल, तेव्हाच सुरू केले पाहिजे.</translation>
 <translation id="6911734910326569517">मेमरी फुटप्रिंट</translation>
 <translation id="6912007319859991306">मोबाइल सिम पिन</translation>
 <translation id="6912380255120084882">वेगळे डिव्हाइस वापरून पहा</translation>
@@ -9843,6 +9847,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> आवाज <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">तुमच्या Android फोनवरून आपोआप वायफाय ट्रान्सफर करा</translation>
 <translation id="7991296728590311172">स्विच ॲक्सेस सेटिंग्ज</translation>
+<translation id="7992080146463834191">आशयाचा सारांश द्या, क्लिष्ट भाषा सोपी करा किंवा प्रश्न विचारा.</translation>
 <translation id="7992203134935383159">स्पीच सिंथेसिस</translation>
 <translation id="799570308305997052">वेबदृश्य</translation>
 <translation id="7997826902155442747">प्रक्रिया प्राधान्य</translation>
@@ -11101,6 +11106,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" बंद केलेली होती</translation>
 <translation id="8874647982044395866">सेंद्रीय</translation>
 <translation id="8874790741333031443">तृतीय पक्ष कुकीना तात्पुरती अनुमती देऊन पहा, ज्यामुळे ब्राउझ करण्यासंबंधित संरक्षण कमी मिळेल, पण साइटची वैशिष्ट्ये अपेक्षेनुसार काम करण्याची अधिक शक्यता आहे.</translation>
+<translation id="8875221558267407626">आशयाचा सारांश द्या, क्लिष्ट भाषा सोपी करा किंवा प्रश्न विचारा</translation>
 <translation id="8875520811099717934">Linux अपग्रेड करा</translation>
 <translation id="8875736897340638404">तुमची दृश्यमानता निवडा</translation>
 <translation id="8876307312329369159">हे सेटिंग डेमो सत्रामध्ये बदलले जाऊ शकत नाही.</translation>
@@ -11154,6 +11160,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8915916167043355778">सर्व बंद करा</translation>
 <translation id="8916476537757519021">गुप्त सबफ्रेम: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">होय, मला मान्य आहे</translation>
+<translation id="8917980324687233736">बाजूबाजूला दाखवा</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />चे <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">अ‍ॅप इंस्टॉल करत आहे...</translation>
 <translation id="891931289445130855">डेटा आणि परवानग्या हटवा</translation>

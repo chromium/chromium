@@ -4,8 +4,6 @@
 
 package org.chromium.components.payments;
 
-import androidx.annotation.Nullable;
-
 /**
  * Interface for providing information to a payment app factory and receiving the list of payment
  * apps.
@@ -70,11 +68,9 @@ public interface PaymentAppFactoryDelegate {
     }
 
     /**
-     * @return The string resource ID of the error string to be shown if activity is paused before
-     *     intent results from the Android payment app, or null if no message is required.
+     * @return The launcher for Android intent-based payment app.
      */
-    @Nullable
-    default Integer getPayIntentErrorStringId() {
+    default AndroidIntentLauncher getAndroidIntentLauncher() {
         return null;
     }
 }

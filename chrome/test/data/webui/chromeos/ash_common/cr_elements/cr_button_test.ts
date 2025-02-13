@@ -27,7 +27,7 @@ suite('cr-button', function() {
     button.dispatchEvent(new KeyboardEvent('keyup', {key}));
   }
 
-  test('label is displayed', async () => {
+  test('label is displayed', () => {
     const widthWithoutLabel = button.offsetWidth;
     document.body.innerHTML = getTrustedHTML`<cr-button>Long Label</cr-button>`;
     button = document.body.querySelector('cr-button')!;
@@ -45,7 +45,7 @@ suite('cr-button', function() {
     assertEquals('true', button.getAttribute('aria-disabled'));
   });
 
-  test('enter/space/click events and programmatic click() calls', async () => {
+  test('enter/space/click events and programmatic click() calls', () => {
     let clickCount = 0;
     function clickHandler() {
       clickCount++;
@@ -70,7 +70,7 @@ suite('cr-button', function() {
     button.removeEventListener('click', clickHandler);
   });
 
-  test('when tabindex is -1, it stays -1', async () => {
+  test('when tabindex is -1, it stays -1', () => {
     document.body.innerHTML =
         getTrustedHTML`<cr-button custom-tab-index="-1"></cr-button>`;
     button = document.body.querySelector('cr-button')!;
@@ -81,7 +81,7 @@ suite('cr-button', function() {
     assertEquals('-1', button.getAttribute('tabindex'));
   });
 
-  test('tabindex update', async () => {
+  test('tabindex update', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     button = document.createElement('cr-button');
     document.body.appendChild(button);

@@ -23,7 +23,7 @@ class SharedURLLoaderFactory;
 
 namespace remoting {
 
-class ProtobufHttpStatus;
+class HttpStatus;
 class OAuthTokenGetter;
 
 namespace protocol {
@@ -47,7 +47,7 @@ class IceConfigFetcherCloud final : public protocol::IceConfigFetcher {
   friend class IceConfigFetcherCloudTest;
 
   void OnResponse(OnIceConfigCallback callback,
-                  const ProtobufHttpStatus& status,
+                  const HttpStatus& status,
                   std::unique_ptr<::google::internal::remoting::cloud::v1alpha::
                                       GenerateIceConfigResponse> response);
 

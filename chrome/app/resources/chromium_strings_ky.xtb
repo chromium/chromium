@@ -98,6 +98,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="2343156876103232566">Номерди бул жерден Android телефонуңузга жөнөтүү үчүн эки түзмөгүңүздөн тең Chromium'га кириңиз.</translation>
 <translation id="2359808026110333948">Улантуу</translation>
 <translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" кеңейтүүсүн колдонуу үчүн Chromium'га киришиңиз керек</translation>
+<translation id="236943522426971115">Колдонмолор үчүн фондо иштеген Chromium'ду өчүрүү</translation>
 <translation id="2374216753258219393">Бул кеңейтүүнү <ph name="USER_EMAIL_ADDRESS" /> аккаунту менен колдонуу үчүн Chromium'га кириңиз.</translation>
 <translation id="2384373936468275798">Аккаунтуңуздун кирүү чоо-жайлары эскирип калгандыктан, ChromiumOS дайын-даректериңизди шайкештештире алган жок.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID түзмөгүн бир же бир нече Chromium кеңейтүүсү пайдаланды}=1{1 HID түзмөгүн бир же бир нече Chromium кеңейтүүсү пайдаланууда}other{# HID түзмөгүн бир же бир нече Chromium кеңейтүүсү пайдаланууда}}</translation>
@@ -180,6 +181,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="3406848076815591792">Учурдагы Chromium профилине өтөсүзбү?</translation>
 <translation id="3412460710772753638">Ушул түзмөктөгү Сырсөздөр бөлүмүндө</translation>
 <translation id="3430503420100763906">Chromium профилдери менен Chromium'дагы маалыматты өзүнчө сактай аласыз. Досторуңуз менен үй-бүлөңүз үчүн профилдерди түзүңүз же жумуш менен эс алууну бири-бири менен аралаштырбаңыз.</translation>
+<translation id="3451656833730006755">Кеңейтүүлөрдү жана башкаларды бардык компьютерлериңизде колдонуу үчүн Chromium'га кириңиз</translation>
 <translation id="347328004046849135">Chromium уурдалган сырсөз менен киргениңизде эскертет</translation>
 <translation id="3474745554856756813">Ушуну менен түзмөктөгү <ph name="ITEMS_COUNT" /> нерсе өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chromium'га <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> Chromium профилдерин которо алат</translation>
@@ -505,6 +507,7 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="8013436988911883588">Chromium'га уруксат берилгенден кийин вебсайттар уруксат сурай алышат.</translation>
 <translation id="80471789339884597">Орнотуп алганыңыз үчүн рахмат. <ph name="BUNDLE_NAME" /> топтомун колдонуп баштоодон мурда бардык серепчилерди өчүрүп күйгүзүңүз.</translation>
 <translation id="8054112667659782652">Сүрөт издөө ыкчам баскычын ар дайым көрсөтүү</translation>
+<translation id="8077498902115777962">Колдонмолор үчүн фондо иштеген Chromium'ду өчүрүү</translation>
 <translation id="80790299200510644">Сүрөт издөө</translation>
 <translation id="8086881907087796310">Компьютериңиз аппараттык камсыздоого коюлган минималдуу талаптарга жооп бербегендиктер, орнотулбай калды.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>

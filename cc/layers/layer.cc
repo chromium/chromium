@@ -1514,6 +1514,8 @@ void Layer::PushDirtyPropertiesTo(LayerImpl* layer,
     subtree_property_changed_.Write(*this) = false;
     update_rect_.Write(*this) = gfx::Rect();
   }
+
+  layer->SetNeedsPushProperties();
 }
 
 void Layer::PushPropertiesTo(LayerImpl* layer_impl,

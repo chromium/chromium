@@ -1458,10 +1458,9 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
         BrowsingContextGroupSwap::CreateDefault();
     auto result = GetFrameHostForNavigation(
         request, &ignored_bcg_swap_info,
-        ProcessAllocationContext{
-            ProcessAllocationSource::kNavigationRequest,
-            NavigationProcessAllocationContext{
-                ProcessAllocationNavigationStage::kBeforeNetworkRequest}});
+        ProcessAllocationContext::CreateForNavigationRequest(
+            ProcessAllocationNavigationStage::kBeforeNetworkRequest,
+            request->GetNavigationId()));
     if (result.has_value()) {
       DCHECK(result.value());
     } else if (result.error() ==

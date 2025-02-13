@@ -98,7 +98,7 @@ suite('AppManagementPermissionItemTest', function() {
     assertEquals(metricData[1], AppManagementUserAction.LOCATION_TURNED_ON);
   });
 
-  test('Permission item has no description', async function() {
+  test('Permission item has no description', function() {
     assertNull(permissionItem.shadowRoot!.querySelector<HTMLElement>(
         '#permissionDescription'));
   });
@@ -416,7 +416,7 @@ suite('AppManagementPermissionItemTest', function() {
         });
 
 
-    test('App Management Toggle Row with aria description', async () => {
+    test('App Management Toggle Row with aria description', () => {
       const ariaDescription =
           permissionItem.shadowRoot!
               .querySelector<AppManagementToggleRowElement>(

@@ -302,7 +302,7 @@ ResizeToggleMenu::MakeBubbleDelegateView(
   delegate_view->SetAccessibleWindowRole(ax::mojom::Role::kMenu);
   // Clear root view's background color. We use the color in
   // `background_view`.
-  delegate_view->set_color(SK_ColorTRANSPARENT);
+  delegate_view->set_background_color(SK_ColorTRANSPARENT);
 
   // Setup view.
   delegate_view->SetUseDefaultFillLayout(true);

@@ -39,7 +39,9 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace extensions {
@@ -1522,6 +1524,188 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, MultipleUnscopedExtensions) {
     EXPECT_TRUE(base::Contains(extension_names,
                                result.GetHeaderForSuggestionGroup(
                                    *result.match_at(2).suggestion_group_id)));
+  }
+}
+
+// Test if unscoped suggestions send in zero suggest.
+IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, UnscopedExtensionZeroSuggest) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "Basic Send Suggestions",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "alpha" },
+           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "permissions" : [ "omnibox.directInput" ]
+         })";
+
+  // Don't trim whitespace before "first" to ensure unscoped extension provider
+  // doesn't hit DCHECK in `SplitKeywordFromInput`.
+  constexpr char kBackground[] =
+      R"(
+         chrome.omnibox.onInputChanged.addListener((text, suggest) => {
+           suggest([
+             {content: ' first', description: 'description'}
+           ]);
+         });)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  AutocompleteController* autocomplete_controller = GetAutocompleteController();
+  chrome::FocusLocationBar(browser());
+
+  // Test that our extension can send suggestions back to us on NTP.
+  AutocompleteInput input_ntp(u"", metrics::OmniboxEventProto::NTP,
+                              ChromeAutocompleteSchemeClassifier(profile()));
+  input_ntp.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  autocomplete_controller->Start(input_ntp);
+  WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  const AutocompleteResult& result_ntp = autocomplete_controller->result();
+  // Check if the suggestion is received (+1 for the IPH).
+  ASSERT_EQ(2U, result_ntp.size()) << AutocompleteResultAsString(result_ntp);
+
+  // Second suggestion is given the first extension group and has a header of
+  // "alpha".
+  {
+    EXPECT_EQ(AutocompleteProvider::TYPE_UNSCOPED_EXTENSION,
+              result_ntp.match_at(0).provider->type());
+    EXPECT_EQ(omnibox::GROUP_UNSCOPED_EXTENSION_1,
+              result_ntp.match_at(0).suggestion_group_id);
+    EXPECT_EQ(u"alpha", result_ntp.GetHeaderForSuggestionGroup(
+                            *result_ntp.match_at(0).suggestion_group_id));
+    EXPECT_EQ(u"first", result_ntp.match_at(0).fill_into_edit);
+  }
+
+  // Test that our extension can send suggestions back to us on SRP.
+  AutocompleteInput input_srp(
+      u"",
+      metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+      ChromeAutocompleteSchemeClassifier(profile()));
+  input_srp.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  autocomplete_controller->Start(input_srp);
+  WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  const AutocompleteResult& result_srp = autocomplete_controller->result();
+  // Check if the suggestion is received.
+  ASSERT_EQ(1U, result_srp.size()) << AutocompleteResultAsString(result_srp);
+
+  // Second suggestion is given the first extension group and has a header of
+  // "alpha".
+  {
+    EXPECT_EQ(AutocompleteProvider::TYPE_UNSCOPED_EXTENSION,
+              result_srp.match_at(0).provider->type());
+    EXPECT_EQ(omnibox::GROUP_UNSCOPED_EXTENSION_1,
+              result_srp.match_at(0).suggestion_group_id);
+    EXPECT_EQ(u"alpha", result_srp.GetHeaderForSuggestionGroup(
+                            *result_srp.match_at(0).suggestion_group_id));
+  }
+}
+
+// Test if unscoped extension are grouped together in zps.
+IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest,
+                       MultipleUnscopedExtensionsZeroSuggest) {
+  constexpr char kManifest[] =
+      R"({
+      "name": "Basic Send Suggestions",
+      "manifest_version": 2,
+      "version": "0.1",
+      "omnibox": { "keyword": "alpha" },
+      "background": { "scripts": [ "background.js" ], "persistent": true },
+      "permissions" : [ "omnibox.directInput" ]
+    })";
+
+  constexpr char kManifest2[] =
+      R"({
+        "name": "Basic Send Suggestions",
+        "manifest_version": 2,
+        "version": "0.1",
+        "omnibox": { "keyword": "dog" },
+        "background": { "scripts": [ "background.js" ], "persistent": true },
+        "permissions" : [ "omnibox.directInput" ]
+      })";
+
+  constexpr char kBackground[] =
+      R"(
+    chrome.omnibox.onInputChanged.addListener((text, suggest) => {
+      suggest([
+        {content: 'first', description: 'extension1'},
+        {content: 'second', description: 'extension1'}
+      ]);
+    });)";
+
+  constexpr char kBackground2[] =
+      R"(
+    chrome.omnibox.onInputChanged.addListener((text, suggest) => {
+      suggest([
+        {content: 'third', description: 'extension2'},
+        {content: 'fourth', description: 'extension2'}
+      ]);
+    });)";
+
+  TestExtensionDir test_dir;
+  TestExtensionDir test_dir2;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  test_dir2.WriteManifest(kManifest2);
+  test_dir2.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground2);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  const Extension* extension2 = LoadExtension(test_dir2.UnpackedPath());
+  ASSERT_TRUE(extension2);
+
+  AutocompleteController* autocomplete_controller = GetAutocompleteController();
+  chrome::FocusLocationBar(browser());
+
+  // Test that our extension can send suggestions back to us.
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP,
+                          ChromeAutocompleteSchemeClassifier(profile()));
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  autocomplete_controller->Start(input);
+  WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  const AutocompleteResult& result = autocomplete_controller->result();
+  // Check if the suggestion is received (+1 for the IPH).
+  ASSERT_EQ(5U, result.size()) << AutocompleteResultAsString(result);
+
+  // Each extension suggestion header should match the extension name that
+  // it came from. Extension suggestions should also be grouped together.
+  std::set<std::u16string> extension_names = {u"alpha", u"dog"};
+  {
+    EXPECT_EQ(AutocompleteProvider::TYPE_UNSCOPED_EXTENSION,
+              result.match_at(0).provider->type());
+    EXPECT_EQ(omnibox::GROUP_UNSCOPED_EXTENSION_1,
+              result.match_at(0).suggestion_group_id);
+    EXPECT_THAT(extension_names,
+                testing::Contains(result.GetHeaderForSuggestionGroup(
+                    *result.match_at(1).suggestion_group_id)));
+    extension_names.erase(result.GetHeaderForSuggestionGroup(
+        *result.match_at(1).suggestion_group_id));
+  }
+  // The third and fourth match should be from the other extension.
+  {
+    EXPECT_EQ(AutocompleteProvider::TYPE_UNSCOPED_EXTENSION,
+              result.match_at(2).provider->type());
+    EXPECT_EQ(omnibox::GROUP_UNSCOPED_EXTENSION_2,
+              result.match_at(2).suggestion_group_id);
+    EXPECT_THAT(extension_names,
+                testing::Contains(result.GetHeaderForSuggestionGroup(
+                    *result.match_at(2).suggestion_group_id)));
+    EXPECT_EQ(AutocompleteProvider::TYPE_UNSCOPED_EXTENSION,
+              result.match_at(3).provider->type());
+    EXPECT_EQ(omnibox::GROUP_UNSCOPED_EXTENSION_2,
+              result.match_at(3).suggestion_group_id);
+    EXPECT_THAT(extension_names,
+                testing::Contains(result.GetHeaderForSuggestionGroup(
+                    *result.match_at(3).suggestion_group_id)));
   }
 }
 

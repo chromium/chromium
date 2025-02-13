@@ -8902,6 +8902,7 @@ from previous Chrome versions.
   <int value="-2058148545" label="LinkLayerPrivacy:enabled"/>
   <int value="-2057927571"
       label="AutofillEnableSendingBcnInGetUploadDetails:enabled"/>
+  <int value="-2057849190" label="SyncPointGraphValidation:enabled"/>
   <int value="-2056436874" label="WebFeedAwareness:disabled"/>
   <int value="-2056351013" label="AutofillUpdatedCardUnmaskPromptUi:enabled"/>
   <int value="-2056198604" label="InterestFeedV2Hearts:disabled"/>
@@ -13143,6 +13144,7 @@ from previous Chrome versions.
   <int value="-387341308" label="ParentAccessJelly:disabled"/>
   <int value="-387217874" label="LinkCapturingInfoBar:enabled"/>
   <int value="-386044242" label="ReadAnythingDocsIntegration:enabled"/>
+  <int value="-385640462" label="TabStripContextMenuAndroid:enabled"/>
   <int value="-385461103" label="XsurfaceMetricsReporting:enabled"/>
   <int value="-385337473" label="enable-fast-unload"/>
   <int value="-384589459" label="disable-supervised-user-safesites"/>
@@ -13771,6 +13773,7 @@ from previous Chrome versions.
   <int value="-138773929" label="PassiveDocumentEventListeners:enabled"/>
   <int value="-138760381" label="AutofillManualFallbackAndroid:enabled"/>
   <int value="-137716319" label="ExtensionManifestV2Unsupported:enabled"/>
+  <int value="-137394236" label="TabStripContextMenuAndroid:disabled"/>
   <int value="-137303226" label="enable-chromevox-developer-option"/>
   <int value="-136663703" label="Compose:enabled"/>
   <int value="-136485076" label="NtpModules:disabled"/>
@@ -14818,6 +14821,8 @@ from previous Chrome versions.
   <int value="283182071" label="SecurityInterstitialsDarkMode:enabled"/>
   <int value="283232244" label="OmniboxUIExperimentNarrowDropdown:enabled"/>
   <int value="283822478" label="PrintPreviewCrosPrimary:enabled"/>
+  <int value="284382291"
+      label="EducationalTipDefaultBrowserPromoCard:disabled"/>
   <int value="284631756" label="EnableBrightnessControlInSettings:disabled"/>
   <int value="284756778"
       label="SearchCustomizableShortcutsInLauncher:disabled"/>
@@ -16467,6 +16472,7 @@ from previous Chrome versions.
   <int value="934236781" label="OmniboxSuggestionsRecyclerView:enabled"/>
   <int value="934292666" label="DownloadRename:enabled"/>
   <int value="934805020" label="CornerShortcuts:disabled"/>
+  <int value="935415458" label="EducationalTipDefaultBrowserPromoCard:enabled"/>
   <int value="935653796" label="CrOSLateBootMediaDynamicCgroup:enabled"/>
   <int value="935655516" label="password-import-export:disabled"/>
   <int value="936341613" label="OfflinePagesCT:disabled"/>
@@ -19608,6 +19614,7 @@ from previous Chrome versions.
   <int value="2137599770" label="enable-win32k-renderer-lockdown"/>
   <int value="2137726794" label="tab-groups-save-v2:disabled"/>
   <int value="2138146331" label="OmniboxVoiceSearchAlwaysVisible:enabled"/>
+  <int value="2138396252" label="SyncPointGraphValidation:disabled"/>
   <int value="2138431623" label="GlobalMediaControlsCrOSUpdatedUI:disabled"/>
   <int value="2138744939" label="ScreenSaverDuration:disabled"/>
   <int value="2139048614" label="UseSurfaceLayerForVideo:enabled"/>
@@ -22506,6 +22513,7 @@ Called by update_net_error_codes.py.-->
   <int value="84" label="kOtherPrerenderedPageActivated"/>
   <int value="85" label="kV8OptimizerDisabled (obsoleted)"/>
   <int value="86" label="kPrerenderFailedDuringPrefetch"/>
+  <int value="87" label="kBrowsingDataRemoved"/>
 </enum>
 
 <enum name="PreviewsCoinFlipResult">

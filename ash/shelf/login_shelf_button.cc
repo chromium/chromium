@@ -122,7 +122,7 @@ bool LoginShelfButton::GetIsActive() const {
 
 void LoginShelfButton::UpdateTooltipText(views::Label* label) {
   if (label->IsDisplayTextTruncated()) {
-    SetTooltipText(GetText());
+    SetTooltipText(std::u16string(GetText()));
   } else {
     SetTooltipText(std::u16string());
   }

@@ -4,6 +4,8 @@
 
 #include "ash/system/unified/feature_pod_button.h"
 
+#include <string_view>
+
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -164,23 +166,23 @@ void FeaturePodLabelButton::OnThemeChanged() {
   OnEnabledChanged();
 }
 
-void FeaturePodLabelButton::SetLabel(const std::u16string& label) {
+void FeaturePodLabelButton::SetLabel(std::u16string_view label) {
   label_->SetText(label);
   InvalidateLayout();
 }
 
-const std::u16string& FeaturePodLabelButton::GetLabelText() const {
+std::u16string_view FeaturePodLabelButton::GetLabelText() const {
   return label_->GetText();
 }
 
-void FeaturePodLabelButton::SetSubLabel(const std::u16string& sub_label) {
+void FeaturePodLabelButton::SetSubLabel(std::u16string_view sub_label) {
   sub_label_->SetText(sub_label);
   sub_label_->SetVisible(!sub_label.empty());
   label_->SetMultiLine(sub_label.empty());
   InvalidateLayout();
 }
 
-const std::u16string& FeaturePodLabelButton::GetSubLabelText() const {
+std::u16string_view FeaturePodLabelButton::GetSubLabelText() const {
   return sub_label_->GetText();
 }
 

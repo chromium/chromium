@@ -10,30 +10,24 @@ namespace enterprise_connectors::test {
 
 FakeFilesRequestHandler::FakeFilesRequestHandler(
     FakeFileUploadCallback fake_file_upload_callback,
+    ContentAnalysisInfo* content_analysis_info,
     safe_browsing::BinaryUploadService* upload_service,
     Profile* profile,
-    const AnalysisSettings& analysis_settings,
     GURL url,
     const std::string& source,
     const std::string& destination,
-    const std::string& user_action_id,
-    const std::string& tab_title,
     const std::string& content_transfer_method,
     safe_browsing::DeepScanAccessPoint access_point,
-    ContentAnalysisRequest::Reason reason,
     const std::vector<base::FilePath>& paths,
     CompletionCallback callback)
-    : FilesRequestHandler(upload_service,
+    : FilesRequestHandler(content_analysis_info,
+                          upload_service,
                           profile,
-                          analysis_settings,
                           url,
                           source,
                           destination,
-                          user_action_id,
-                          tab_title,
                           content_transfer_method,
                           access_point,
-                          reason,
                           paths,
                           std::move(callback)),
       fake_file_upload_callback_(fake_file_upload_callback) {}
@@ -43,23 +37,19 @@ FakeFilesRequestHandler::~FakeFilesRequestHandler() = default;
 // static
 std::unique_ptr<FilesRequestHandler> FakeFilesRequestHandler::Create(
     FakeFileUploadCallback fake_file_upload_callback,
+    ContentAnalysisInfo* content_analysis_info,
     safe_browsing::BinaryUploadService* upload_service,
     Profile* profile,
-    const AnalysisSettings& analysis_settings,
     GURL url,
     const std::string& source,
     const std::string& destination,
-    const std::string& user_action_id,
-    const std::string& tab_title,
     const std::string& content_transfer_method,
     safe_browsing::DeepScanAccessPoint access_point,
-    ContentAnalysisRequest::Reason reason,
     const std::vector<base::FilePath>& paths,
     FilesRequestHandler::CompletionCallback callback) {
   return std::make_unique<FakeFilesRequestHandler>(
-      fake_file_upload_callback, upload_service, profile, analysis_settings,
-      url, source, destination, user_action_id, tab_title,
-      content_transfer_method, access_point, reason, paths,
+      fake_file_upload_callback, content_analysis_info, upload_service, profile,
+      url, source, destination, content_transfer_method, access_point, paths,
       std::move(callback));
 }
 

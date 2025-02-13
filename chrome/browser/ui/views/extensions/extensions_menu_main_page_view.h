@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_MAIN_PAGE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_MAIN_PAGE_VIEW_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -96,7 +98,7 @@ class ExtensionsMenuMainPageView : public views::View {
 
   // Accessors used by tests:
   // Returns the currently-showing menu items.
-  const std::u16string& GetSiteSettingLabelForTesting() const;
+  std::u16string_view GetSiteSettingLabelForTesting() const;
   const views::View* site_settings_tooltip() const;
   views::ToggleButton* GetSiteSettingsToggleForTesting() {
     return site_settings_toggle_;

@@ -1,0 +1,13 @@
+Tests that invalid header value results in an error
+{
+    error : {
+        code : -32602
+        message : Invalid header: Content-Type
+    }
+    id : <number>
+    sessionId : <string>
+}
+X-DevTools-Test:  after redirect:unset
+Content-Type: <not set>
+
+

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PANE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PANE_VIEW_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_content_pane_view.h"
@@ -35,7 +37,7 @@ class DesktopMediaPaneView : public views::View {
 
   // Returns the text in the audio label if an audio label exists;
   // returns the empty string otherwise.
-  std::u16string GetAudioLabelText() const;
+  std::u16string_view GetAudioLabelText() const;
 
   bool IsPermissionPaneVisible() const;
   bool IsContentPaneVisible() const;

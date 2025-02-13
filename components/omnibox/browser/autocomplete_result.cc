@@ -50,6 +50,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_fixer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "omnibox_triggered_feature_service.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
@@ -57,6 +58,10 @@
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/extension_features.h"  // nogncheck
+#endif
 
 using metrics::OmniboxEventProto;
 
@@ -463,6 +468,15 @@ void AutocompleteResult::SortAndCull(
             has_iph_match;
         sections.push_back(std::make_unique<DesktopNTPZpsSection>(
             suggestion_groups_map_, add_iph_section ? 7u : 8u));
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+        // Show unscoped extension suggestions on NTP except in the realbox.
+        if (base::FeatureList::IsEnabled(
+                extensions_features::kExperimentalOmniboxLabs)) {
+          sections.push_back(
+              std::make_unique<DesktopZpsUnscopedExtensionSection>(
+                  suggestion_groups_map_));
+        }
+#endif
         if (add_iph_section) {
           sections.push_back(std::make_unique<DesktopNTPZpsIPHSection>(
               suggestion_groups_map_));
@@ -490,9 +504,25 @@ void AutocompleteResult::SortAndCull(
       } else if (omnibox::IsSearchResultsPage(page_classification)) {
         sections.push_back(
             std::make_unique<DesktopSRPZpsSection>(suggestion_groups_map_));
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+        if (base::FeatureList::IsEnabled(
+                extensions_features::kExperimentalOmniboxLabs)) {
+          sections.push_back(
+              std::make_unique<DesktopZpsUnscopedExtensionSection>(
+                  suggestion_groups_map_));
+        }
+#endif
       } else {
         sections.push_back(
             std::make_unique<DesktopWebZpsSection>(suggestion_groups_map_));
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+        if (base::FeatureList::IsEnabled(
+                extensions_features::kExperimentalOmniboxLabs)) {
+          sections.push_back(
+              std::make_unique<DesktopZpsUnscopedExtensionSection>(
+                  suggestion_groups_map_));
+        }
+#endif
       }
     } else if constexpr (is_ios) {
       if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
@@ -588,21 +618,14 @@ void AutocompleteResult::SortAndCull(
                             matches_, comparing_object);
 
     // Group and trim suggestions to the given limit.
-    if (!is_zero_suggest) {
-      // Typed suggestions are trimmed then grouped.
-      matches_.resize(num_matches);
+    matches_.resize(num_matches);
 
-      // Group search suggestions above URL suggestions.
-      if (matches_.size() > 2 && is_desktop) {
-        GroupSuggestionsBySearchVsURL(std::next(matches_.begin()),
-                                      matches_.end());
-      }
-      GroupAndDemoteMatchesInGroups();
-    } else {
-      // Zero-prefix suggestions are grouped then trimmed.
-      GroupAndDemoteMatchesInGroups();
-      matches_.resize(num_matches);
+    // Group search suggestions above URL suggestions.
+    if (matches_.size() > 2 && is_desktop) {
+      GroupSuggestionsBySearchVsURL(std::next(matches_.begin()),
+                                    matches_.end());
     }
+    GroupAndDemoteMatchesInGroups();
   }
 
 #if DCHECK_IS_ON()

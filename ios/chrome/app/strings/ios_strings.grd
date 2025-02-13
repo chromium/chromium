@@ -5674,8 +5674,28 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SHARE_KIT_JOIN_ALERT_EXPIRED_TITLE" desc="The title of the alert displayed when the shared link has expired.">
         This link doesn’t work
       </message>
-      <message name="IDS_IOS_SHARE_KIT_JOIN_TAB_GROUP" desc="The type of element that the user will be opening when trying to join a shared group. Used in the context 'Join and open *tab group* with Ali'" meaning="You are trying to join a shared tab group">
-        tab group
+      <message name="IDS_IOS_SHARE_KIT_JOIN_DISCLAIMER_CAPTION" desc="The caption part of the disclaimer for sharing a tab group.">
+        wants you to join a tab group. Anyone with the link can edit all tabs, so join with care. Link expires in 48 hr.
+      </message>
+      <message name="IDS_IOS_SHARE_KIT_JOIN_DISCLAIMER_LINK" desc="The link part of the disclaimer for sharing a tab group.">
+        Learn about shared tab groups
+      </message>
+      <message name="IDS_IOS_SHARE_KIT_JOIN_FULL_GROUP_ERROR_MESSAGE" desc="Message of the error shown when a tab group is full (too many members).">
+        Contact the person who sent this link
+      </message>
+      <message name="IDS_IOS_SHARE_KIT_JOIN_FULL_GROUP_ERROR_TITLE" desc="Title of the error shown when a tab group is full (too many members).">
+        This tab group is full
+      </message>
+      <message name="IDS_IOS_SHARE_KIT_JOIN_PREVIEW_HEADER" desc="The preview header in the Join Shared Tab Group flow. It's a section title above the list of tabs in the group.">
+        Tabs in group
+      </message>
+      <message name="IDS_IOS_SHARE_KIT_JOIN_PREVIEW_SUMMARY" desc="The preview summary in the Join Shared Tab Group flow, typically the number of tabs in the group.">
+        {COUNT, plural,
+             =1 {{COUNT} tab}
+             other {{COUNT} tabs}}
+      </message>
+      <message name="IDS_IOS_SHARE_KIT_JOIN_TAB_GROUP" desc="The type of element that the user will be opening when trying to join a shared group. Used in the context 'Join and open *tab group* with Ali'. The string should start with a capital letter, if applicable." meaning="You are trying to join a shared tab group">
+        Tab group
       </message>
       <message name="IDS_IOS_SHARE_KIT_MANAGE_DISCLAIMER" desc="Disclaimer for managing a tab group.">
         Anyone with the link can edit all tabs.

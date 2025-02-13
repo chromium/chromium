@@ -672,7 +672,7 @@ void AuthDialogContentsView::OnInputTextChanged(bool is_empty) {
 }
 
 void AuthDialogContentsView::OnAuthSubmit(bool authenticated_by_pin,
-                                          const std::u16string& password) {
+                                          std::u16string_view password) {
   if (authenticated_by_pin) {
     if (pin_autosubmit_on_) {
       pin_digit_input_view_->SetReadOnly(true);

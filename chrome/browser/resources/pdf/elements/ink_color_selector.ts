@@ -172,7 +172,7 @@ export class InkColorSelectorElement extends InkColorSelectorElementBase {
     assert(newIndex < numOptions);
 
     const newColor = brushColors[newIndex]!.color;
-    const newColorButton = this.shadowRoot!.querySelector<HTMLInputElement>(
+    const newColorButton = this.shadowRoot.querySelector<HTMLInputElement>(
         `[value='${newColor}']`);
     assert(newColorButton);
     this.setBrushColor_(newColorButton);

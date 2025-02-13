@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Ochiq varaqlarda narx tushishi}other{Ochiq varaqlarda narx tushishi}}</translation>
 <translation id="5186036860380548585">Parametr ekranning yuqoriroq qismida joylashgan</translation>
 <translation id="5197729504361054390">Tanlangan kontaktlar <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytiga ulashiladi.</translation>
+<translation id="5198930230016462977">Yangi varaq sahifasini moslash quyi ekrani yopildi</translation>
 <translation id="5216942107514965959">Oxirgi tashrif: bugun</translation>
 <translation id="5225463052809312700">Kamerani yoqish</translation>
 <translation id="5234764350956374838">Yopish</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">Qoʻllar holatini kuzatish</translation>
 <translation id="5771720122942595109">Bloklandi: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Ruxsatlar</translation>
+<translation id="5822675474983796325">Yangi varaq sahifasini moslash quyi ekrani toʻliq hajmda ochildi</translation>
 <translation id="5844448279347999754">Yoqilsa, saytlar klipborddagi rasm va matnlarni koʻrishga ruxsat soʻrashi mumkin. Oʻchirilsa, bunday fayllarni koʻra olmaydi.</translation>
 <translation id="5853982612236235577">Yoqilsa, saytlar bildirishnoma yuborishni soʻrashi mumkin. Oʻchirilsa, bildirishnoma yubora olmaydi.</translation>
 <translation id="5860033963881614850">O‘chiq</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">Yoyilgan</translation>
 <translation id="7219254577985949841">Sayt maʼlumotlari oʻchirilsinmi?</translation>
 <translation id="723171743924126238">Tasvirni tanlang</translation>
+<translation id="7243246278722455312">Yangi varaq sahifasini moslash quyi ekrani</translation>
 <translation id="7243308994586599757">Parametrlar ekranning quyi qismiga yaqinroq joyda</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ta element tanlandi</translation>
 <translation id="7260727271532453612">Ruxsat berildi: <ph name="PERMISSION_1" /> va <ph name="PERMISSION_2" /></translation>

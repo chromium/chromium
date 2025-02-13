@@ -95,3 +95,7 @@ ACCOUNT_CAPABILITY(kCanUseGenerativeAiInRecorderApp,
 ACCOUNT_CAPABILITY(kCanUseGenerativeAiPhotoEditing,
                    CAN_USE_GENERATIVE_AI_PHOTO_EDITING,
                    "accountcapabilities/ge3dgobnmnqxa")
+
+ACCOUNT_CAPABILITY(kCanUseChromeOSGenerativeAi,
+                   CAN_USE_CHROMEOS_GENERATIVE_AI,
+                   "accountcapabilities/ge3dgmjnmnqxa")

@@ -9,7 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -247,7 +247,7 @@ void AccountsPolicyManager::EnsurePrimaryAccountAllowedForProfile(
     signin_metrics::ProfileSignout clear_primary_account_source) {
 // All primary accounts are allowed on ChromeOS, so this method is a no-op on
 // ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     return;
@@ -261,14 +261,6 @@ void AccountsPolicyManager::EnsurePrimaryAccountAllowedForProfile(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Disabling signin in chrome and 'RestrictSigninToPattern' policy
-  // are not supported on Lacros. This code should be unreachable, except in
-  // Guest sessions. The main profile should never be deleted.
-  DCHECK(!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed) &&
-         profile->IsGuestSession())
-      << "On Lacros, signin may only be disallowed in the guest session.";
-#else
   if (ChromeSigninClientFactory::GetForProfile(profile)
           ->IsClearPrimaryAccountAllowed(identity_manager->HasPrimaryAccount(
               signin::ConsentLevel::kSync))) {
@@ -278,7 +270,7 @@ void AccountsPolicyManager::EnsurePrimaryAccountAllowedForProfile(
         identity_manager->GetPrimaryAccountMutator();
     primary_account_mutator->ClearPrimaryAccount(clear_primary_account_source);
   } else {
-#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)
+#if defined(TOOLKIT_VIEWS)
     // Force remove the profile if sign out is not allowed and if the
     // primary account is no longer allowed.
     // This may be called while the profile is initializing, so it must be
@@ -302,10 +294,9 @@ void AccountsPolicyManager::EnsurePrimaryAccountAllowedForProfile(
                     "allowed, sign out is not allowed. Do nothing.";
 #else
     NOTREACHED() << "Deleting profiles is not supported.";
-#endif  // defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)
+#endif  // defined(TOOLKIT_VIEWS)
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)

@@ -32,8 +32,8 @@ class CreateEventResponse;
 }  // namespace v1
 }  // namespace apis
 
+class HttpStatus;
 class ProtobufHttpClient;
-class ProtobufHttpStatus;
 
 // TelemetryLogWriter sends log entries (ChromotingEvent) to the telemetry
 // server.
@@ -59,7 +59,7 @@ class TelemetryLogWriter : public ChromotingEventLogWriter {
  private:
   void SendPendingEntries();
   void DoSend(const apis::v1::CreateEventRequest& request);
-  void OnSendLogResult(const ProtobufHttpStatus& status,
+  void OnSendLogResult(const HttpStatus& status,
                        std::unique_ptr<apis::v1::CreateEventResponse> response);
 
   // Returns true if there are no events sending or pending.

@@ -6,7 +6,7 @@
 #define REMOTING_BASE_LOGGING_SERVICE_CLIENT_H_
 
 #include "base/functional/callback_forward.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/proto/logging_service.h"
 
 namespace remoting {
@@ -16,7 +16,7 @@ namespace remoting {
 // go/crd-corp-logging.
 class LoggingServiceClient {
  public:
-  using StatusCallback = base::OnceCallback<void(const ProtobufHttpStatus&)>;
+  using StatusCallback = base::OnceCallback<void(const HttpStatus&)>;
 
   LoggingServiceClient() = default;
   virtual ~LoggingServiceClient() = default;

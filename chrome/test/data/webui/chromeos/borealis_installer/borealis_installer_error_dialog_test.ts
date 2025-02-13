@@ -9,7 +9,7 @@ import type {BorealisInstallerErrorDialogElement} from 'chrome://borealis-instal
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-suite('<borealis-installer-error-dialog>', async () => {
+suite('<borealis-installer-error-dialog>', () => {
   let errorDialog: BorealisInstallerErrorDialogElement;
 
   setup(async () => {
@@ -50,7 +50,7 @@ suite('<borealis-installer-error-dialog>', async () => {
     assertFalse(element!.hidden);
   }
 
-  test('Buttons', async () => {
+  test('Buttons', () => {
     errorDialog.show(InstallResult.kDlcNeedSpaceError);
 
     let storageEventFired = false;
@@ -81,7 +81,7 @@ suite('<borealis-installer-error-dialog>', async () => {
   });
 
 
-  test('UpdateError', async () => {
+  test('UpdateError', () => {
     const results: number[] = [
       InstallResult.kBorealisNotAllowed,
       InstallResult.kDlcUnsupportedError,
@@ -100,7 +100,7 @@ suite('<borealis-installer-error-dialog>', async () => {
     }
   });
 
-  test('DuplicateError', async () => {
+  test('DuplicateError', () => {
     errorDialog.show(InstallResult.kBorealisInstallInProgress);
     assertHidden('storage');
     assertHidden('retry');
@@ -108,7 +108,7 @@ suite('<borealis-installer-error-dialog>', async () => {
     assertHidden('link');
   });
 
-  test('BusyError', async () => {
+  test('BusyError', () => {
     errorDialog.show(InstallResult.kDlcBusyError);
     assertHidden('storage');
     assertNotHidden('retry');
@@ -117,7 +117,7 @@ suite('<borealis-installer-error-dialog>', async () => {
   });
 
 
-  test('SpaceError', async () => {
+  test('SpaceError', () => {
     errorDialog.show(InstallResult.kDlcNeedSpaceError);
     assertNotHidden('storage');
     assertHidden('retry');
@@ -126,7 +126,7 @@ suite('<borealis-installer-error-dialog>', async () => {
   });
 
 
-  test('OfflineError', async () => {
+  test('OfflineError', () => {
     errorDialog.show(InstallResult.kOffline);
 
     assertHidden('storage');
@@ -135,7 +135,7 @@ suite('<borealis-installer-error-dialog>', async () => {
     assertNotHidden('link');
   });
 
-  test('StartupError', async () => {
+  test('StartupError', () => {
     const results: number[] =
         [InstallResult.kStartupFailed, InstallResult.kMainAppNotPresent];
 

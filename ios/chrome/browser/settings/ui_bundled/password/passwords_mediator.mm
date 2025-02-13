@@ -250,11 +250,6 @@ struct PasswordManagerActiveWidgetPromoData
   return OnDeviceEncryptionStateNotShown;
 }
 
-- (BOOL)shouldShowLocalOnlyIconForCredential:
-    (const password_manager::CredentialUIEntry&)credential {
-  return password_manager::ShouldShowLocalOnlyIcon(credential, _syncService);
-}
-
 - (BOOL)shouldShowLocalOnlyIconForGroup:
     (const password_manager::AffiliatedGroup&)group {
   return password_manager::ShouldShowLocalOnlyIconForGroup(group, _syncService);

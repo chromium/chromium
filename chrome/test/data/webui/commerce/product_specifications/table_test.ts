@@ -24,7 +24,7 @@ suite('ProductSpecificationsTableTest', () => {
   const shoppingServiceApi =
       TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
 
-  setup(async () => {
+  setup(() => {
     metrics = fakeMetricsPrivate();
     shoppingServiceApi.reset();
     ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
@@ -53,12 +53,12 @@ suite('ProductSpecificationsTableTest', () => {
     await microtasksFinished();
 
     // Assert.
-    const columns = tableElement.shadowRoot!.querySelectorAll('.col');
+    const columns = tableElement.shadowRoot.querySelectorAll('.col');
     assertEquals(2, columns.length);
     assertEquals('2', tableElement.style.getPropertyValue('--num-columns'));
 
     const detailContainers =
-        tableElement.shadowRoot!.querySelectorAll('.detail-container');
+        tableElement.shadowRoot.querySelectorAll('.detail-container');
     assertEquals(0, detailContainers.length);
   });
 
@@ -86,7 +86,7 @@ suite('ProductSpecificationsTableTest', () => {
 
     // Assert.
     const images =
-        tableElement.shadowRoot!.querySelectorAll<CrAutoImgElement>('.col img');
+        tableElement.shadowRoot.querySelectorAll<CrAutoImgElement>('.col img');
     assertEquals(2, images.length);
     assertEquals(
         tableElement.columns[0]!.selectedItem.imageUrl, images[0]!.autoSrc);
@@ -209,7 +209,7 @@ suite('ProductSpecificationsTableTest', () => {
 
     // Assert.
     const titles =
-        tableElement.shadowRoot!.querySelectorAll('.detail-title span');
+        tableElement.shadowRoot.querySelectorAll('.detail-title span');
     assertEquals(4, titles.length);
     // Titles should only show in the first column.
     assertNotStyle(titles[0]!, 'visibility', 'hidden');
@@ -222,7 +222,7 @@ suite('ProductSpecificationsTableTest', () => {
     assertEquals(productDetails1[1]!.title, titles[1]!.textContent.trim());
 
     const descriptions =
-        tableElement.shadowRoot!.querySelectorAll('description-section');
+        tableElement.shadowRoot.querySelectorAll('description-section');
     assertEquals(4, descriptions.length);
     assertDeepEquals(productDetails1[0]!.content, descriptions[0]!.description);
     assertDeepEquals(productDetails1[1]!.content, descriptions[1]!.description);
@@ -425,7 +425,7 @@ suite('ProductSpecificationsTableTest', () => {
       },
     ];
     await microtasksFinished();
-    const columns = tableElement.shadowRoot!.querySelectorAll('.col');
+    const columns = tableElement.shadowRoot.querySelectorAll('.col');
     assertEquals(2, columns.length);
     const openTabButton1 =
         columns[0]!.querySelector<HTMLElement>('.open-tab-button');
@@ -534,7 +534,7 @@ suite('ProductSpecificationsTableTest', () => {
     ];
     await microtasksFinished();
     const descriptions =
-        tableElement.shadowRoot!.querySelectorAll('description-text');
+        tableElement.shadowRoot.querySelectorAll('description-text');
     assertEquals(0, descriptions.length);
   });
 
@@ -575,7 +575,7 @@ suite('ProductSpecificationsTableTest', () => {
     ];
     await microtasksFinished();
     const descriptions =
-        tableElement.shadowRoot!.querySelectorAll('description-section');
+        tableElement.shadowRoot.querySelectorAll('description-section');
     descriptions.forEach(description => {
       assertEquals(0, description.description.summary.length);
     });
@@ -621,11 +621,50 @@ suite('ProductSpecificationsTableTest', () => {
     ];
     await microtasksFinished();
     const details =
-        tableElement.shadowRoot!.querySelectorAll('.detail-container');
+        tableElement.shadowRoot.querySelectorAll('.detail-container');
     assertEquals(2, details.length);
     assertFalse(isVisible((details[0]!)));
     assertFalse(isVisible((details[1]!)));
   });
+
+  test(
+      'empty section displayed for null content if other columns are populated',
+      async () => {
+        tableElement.columns = [
+          {
+            selectedItem: {
+              title: 'title',
+              url: 'https://example.com',
+              imageUrl: 'https://example.com/image',
+            },
+            productDetails: [{
+              title: 'foo',
+              content: {
+                attributes: [{label: '', value: 'foo1'}],
+                summary: [{
+                  text: 'bar',
+                  urls: [],
+                }],
+              },
+            }],
+          },
+          {
+            selectedItem: {
+              title: 'title2',
+              url: 'https://example.com/2',
+              imageUrl: 'https://example.com/2/image',
+            },
+            productDetails: [{
+              title: 'foo',
+              content: null,
+            }],
+          },
+        ];
+        await microtasksFinished();
+        const emptySections =
+            tableElement.shadowRoot!.querySelectorAll('empty-section');
+        assertEquals(1, emptySections.length);
+      });
 
   suite('Buying options', () => {
     setup(async () => {
@@ -700,14 +739,14 @@ suite('ProductSpecificationsTableTest', () => {
       await microtasksFinished();
     });
 
-    test('detail title is hidden if it is `null`', async () => {
-      const titles = tableElement.shadowRoot!.querySelectorAll('.detail-title');
+    test('detail title is hidden if it is `null`', () => {
+      const titles = tableElement.shadowRoot.querySelectorAll('.detail-title');
       assertEquals(8, titles.length);
     });
 
-    test('buying options are visible if price is available', async () => {
+    test('buying options are visible if price is available', () => {
       const buyingOptions =
-          tableElement.shadowRoot!.querySelectorAll('buying-options-section');
+          tableElement.shadowRoot.querySelectorAll('buying-options-section');
       assertEquals(2, buyingOptions.length);
       assertEquals('$123.45', buyingOptions[0]!.price);
       assertEquals('https://example.com/jackpot', buyingOptions[0]!.jackpotUrl);
@@ -742,7 +781,7 @@ suite('ProductSpecificationsTableTest', () => {
       },
     ];
     await microtasksFinished();
-    const columns = tableElement.shadowRoot!.querySelectorAll('.col');
+    const columns = tableElement.shadowRoot.querySelectorAll('.col');
     assertEquals(2, columns.length);
     assertStyle(columns[0]!, 'grid-row', 'span 3');
     assertStyle(columns[1]!, 'grid-row', 'span 3');
@@ -817,7 +856,7 @@ suite('ProductSpecificationsTableTest', () => {
 
       // Assert.
       const columns =
-          tableElement.shadowRoot!.querySelectorAll<HTMLElement>('.col');
+          tableElement.shadowRoot.querySelectorAll<HTMLElement>('.col');
       await microtasksFinished();
       assertEquals(2, columns.length);
       assertTrue(columns[0]!.hasAttribute('is-first-column'));
@@ -859,7 +898,7 @@ suite('ProductSpecificationsTableTest', () => {
 
     // Assert.
     const columns =
-        tableElement.shadowRoot!.querySelectorAll<HTMLElement>('.col');
+        tableElement.shadowRoot.querySelectorAll<HTMLElement>('.col');
     await microtasksFinished();
     assertEquals(2, columns.length);
     assertStyle(columns[0]!, 'scroll-snap-align', 'start');

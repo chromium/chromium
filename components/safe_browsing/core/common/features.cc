@@ -33,7 +33,7 @@ BASE_FEATURE(kAdSamplerTriggerFeature,
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kAddReferringAppInfoToProtegoPings,
              "AddReferringAppInfoToProtegoPings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAddReferringWebApkToProtegoPings,
              "AddReferringWebApkToProtegoPings",

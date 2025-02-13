@@ -129,11 +129,11 @@ FontHeight ComputeEmHeight(const LogicalLineItem& line_item) {
 RubyItemIndexes ParseRubyInInlineItems(const InlineItems& items,
                                        wtf_size_t start_item_index) {
   CHECK_LT(start_item_index, items.size());
-  CHECK_EQ(items[start_item_index].Type(), InlineItem::kOpenRubyColumn);
+  CHECK_EQ(items[start_item_index]->Type(), InlineItem::kOpenRubyColumn);
   RubyItemIndexes indexes = {start_item_index, WTF::kNotFound, WTF::kNotFound,
                              WTF::kNotFound};
   for (wtf_size_t i = start_item_index + 1; i < items.size(); ++i) {
-    const InlineItem& item = items[i];
+    const InlineItem& item = *items[i];
     if (item.Type() == InlineItem::kCloseRubyColumn) {
       if (indexes.base_end == WTF::kNotFound) {
         DCHECK_EQ(indexes.annotation_start, WTF::kNotFound);

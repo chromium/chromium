@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_IBAN_BUBBLE_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_IBAN_BUBBLE_CONTROLLER_IMPL_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -82,7 +84,7 @@ class IbanBubbleControllerImpl
   base::OnceCallback<void(PaymentsUiClosedReason)> GetOnBubbleClosedCallback()
       override;
 
-  void OnAcceptButton(const std::u16string& nickname) override;
+  void OnAcceptButton(std::u16string_view nickname) override;
   void OnLegalMessageLinkClicked(const GURL& url) override;
   void OnManageSavedIbanExtraButtonClicked() override;
   void OnBubbleClosed(PaymentsUiClosedReason closed_reason) override;

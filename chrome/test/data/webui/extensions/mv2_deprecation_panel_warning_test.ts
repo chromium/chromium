@@ -42,7 +42,7 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
    */
   function getExtension(): Element {
     const extensionRows =
-        panelElement.shadowRoot!.querySelectorAll('.panel-extension-row');
+        panelElement.shadowRoot.querySelectorAll('.panel-extension-row');
     assertEquals(1, extensionRows.length);
     const extension = extensionRows[0];
     assertTrue(!!extension);
@@ -50,16 +50,16 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
   }
 
   test('header content is always visible', function() {
-    assertTrue(isVisible(
-        panelElement.shadowRoot!.querySelector('.panel-header-text')));
     assertTrue(
-        isVisible(panelElement.shadowRoot!.querySelector('.header-button')));
+        isVisible(panelElement.shadowRoot.querySelector('.panel-header-text')));
+    assertTrue(
+        isVisible(panelElement.shadowRoot.querySelector('.header-button')));
   });
 
   test('correct number of extension rows', async function() {
     // Verify there is one extension row for the extension added at setup.
     let extensionRows =
-        panelElement.shadowRoot!.querySelectorAll('.panel-extension-row');
+        panelElement.shadowRoot.querySelectorAll('.panel-extension-row');
     assertEquals(1, extensionRows.length);
     let infoA =
         extensionRows[0]!.querySelector<HTMLElement>('.panel-extension-info');
@@ -78,7 +78,7 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
 
     // Verify there are two extension rows.
     extensionRows =
-        panelElement.shadowRoot!.querySelectorAll('.panel-extension-row');
+        panelElement.shadowRoot.querySelectorAll('.panel-extension-row');
     assertEquals(extensionRows.length, 2);
     infoA =
         extensionRows[0]!.querySelector<HTMLElement>('.panel-extension-info');
@@ -94,7 +94,7 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
       'dismiss button triggers the warning dismissal when clicked',
       async function() {
         const dismissButton =
-            panelElement.shadowRoot!.querySelector<CrButtonElement>(
+            panelElement.shadowRoot.querySelector<CrButtonElement>(
                 '.header-button');
         assertTrue(!!dismissButton);
 
@@ -161,7 +161,7 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
 
     // Find alternative action is always hidden.
     const findAlternativeAction =
-        panelElement.shadowRoot!.querySelector<HTMLElement>(
+        panelElement.shadowRoot.querySelector<HTMLElement>(
             '#findAlternativeAction');
     assertFalse(isVisible(findAlternativeAction));
   });
@@ -180,8 +180,8 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
 
         // Remove button is visible when the extension doesn't need to remain
         // installed.
-        let removeAction = panelElement.shadowRoot!.querySelector<HTMLElement>(
-            '#removeAction');
+        let removeAction =
+            panelElement.shadowRoot.querySelector<HTMLElement>('#removeAction');
         assertTrue(isVisible(removeAction));
 
         // Click on the remove button in the action menu, and verify it
@@ -212,8 +212,8 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
         await microtasksFinished();
 
         // Remove action is hidden when the extension must remain installed.
-        removeAction = panelElement.shadowRoot!.querySelector<HTMLElement>(
-            '#removeAction');
+        removeAction =
+            panelElement.shadowRoot.querySelector<HTMLElement>('#removeAction');
         assertFalse(isVisible(removeAction));
       });
 
@@ -231,7 +231,7 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
 
         // Keep action is always visible.
         const keepAction =
-            panelElement.shadowRoot!.querySelector<HTMLElement>('#keepAction');
+            panelElement.shadowRoot.querySelector<HTMLElement>('#keepAction');
         assertTrue(!!keepAction);
         assertTrue(isVisible(keepAction));
 

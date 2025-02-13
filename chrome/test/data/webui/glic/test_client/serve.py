@@ -56,6 +56,8 @@ def main():
     args = parser.parse_args()
 
     RequestHandler.directory = f'{args.outdir}/gen/chrome/test/data/webui/glic'
+    RequestHandler.extensions_map['.js'] = 'text/javascript'
+
     if not args.nobuild:
         try:
             build(args.outdir)

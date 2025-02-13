@@ -56,12 +56,6 @@
 - (void)didTapAddAccountWithCompletion:
     (SigninCoordinatorCompletionCallback)completion;
 
-// Blocks the user from using Chromium. Returns whether the block was possible.
-- (BOOL)blockOtherScenesIfPossible;
-
-// Stops the `blockOtherScenesIfPossible`.
-- (void)unblockOtherScenes;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_DELEGATE_H_

@@ -83,7 +83,7 @@ suite('RuntimeHostPermissions', function() {
     // Expect three entries in the list: the two hosts + the add-host button.
     assertEquals(
         3,
-        element.shadowRoot!.querySelector('#hosts')!.getElementsByTagName('li')
+        element.shadowRoot.querySelector('#hosts')!.getElementsByTagName('li')
             .length);
     assertTrue(testIsVisible('#add-host'));
   });
@@ -197,7 +197,7 @@ suite('RuntimeHostPermissions', function() {
 
     await microtasksFinished();
     const dialog =
-        element.shadowRoot!.querySelector('extensions-runtime-hosts-dialog');
+        element.shadowRoot.querySelector('extensions-runtime-hosts-dialog');
     assertTrue(!!dialog);
     assertEquals(
         metricsPrivateMock.getUserActionCount(
@@ -214,7 +214,7 @@ suite('RuntimeHostPermissions', function() {
     // since no host was added.
     assertTrue(dialog.isOpen());
     const whenClosed = eventToPromise('close', dialog);
-    dialog.shadowRoot!.querySelector<HTMLElement>('.cancel-button')!.click();
+    dialog.shadowRoot.querySelector<HTMLElement>('.cancel-button')!.click();
     await whenClosed;
 
     await microtasksFinished();
@@ -262,13 +262,13 @@ suite('RuntimeHostPermissions', function() {
 
     await microtasksFinished();
     const dialog =
-        element.shadowRoot!.querySelector('extensions-runtime-hosts-dialog');
+        element.shadowRoot.querySelector('extensions-runtime-hosts-dialog');
     assertTrue(!!dialog);
 
     assertTrue(dialog.updateHostAccess);
 
     // Make the add button clickable by entering valid input.
-    const input = dialog.shadowRoot!.querySelector('cr-input');
+    const input = dialog.shadowRoot.querySelector('cr-input');
     assertTrue(!!input);
     input.value = 'https://example.com';
     input.dispatchEvent(
@@ -302,14 +302,14 @@ suite('RuntimeHostPermissions', function() {
 
     // Open the dialog by clicking to edit the host permission.
     const editHost =
-        element.shadowRoot!.querySelector<HTMLElement>('.open-edit-host');
+        element.shadowRoot.querySelector<HTMLElement>('.open-edit-host');
     assertTrue(!!editHost);
     editHost.click();
     assertEquals(
         metricsPrivateMock.getUserActionCount(
             'Extensions.Settings.Hosts.ActionMenuOpened'),
         1);
-    const actionMenu = element.shadowRoot!.querySelector('cr-action-menu');
+    const actionMenu = element.shadowRoot.querySelector('cr-action-menu');
     assertTrue(!!actionMenu);
     const actionMenuEdit =
         actionMenu.querySelector<HTMLElement>('#action-menu-edit');
@@ -324,7 +324,7 @@ suite('RuntimeHostPermissions', function() {
     // Verify that the dialog does not want to update the old host access.
     // Regression test for https://crbug.com/903082.
     const newDialog =
-        element.shadowRoot!.querySelector('extensions-runtime-hosts-dialog');
+        element.shadowRoot.querySelector('extensions-runtime-hosts-dialog');
     assertTrue(!!newDialog);
     assertTrue(newDialog.$.dialog.open);
     assertFalse(newDialog.updateHostAccess);
@@ -346,7 +346,7 @@ suite('RuntimeHostPermissions', function() {
     await microtasksFinished();
 
     const addHostButton =
-        element.shadowRoot!.querySelector<HTMLElement>('#add-host');
+        element.shadowRoot.querySelector<HTMLElement>('#add-host');
     assertTrue(!!addHostButton);
     assertTrue(isChildVisible(element, '#add-host'));
 
@@ -357,7 +357,7 @@ suite('RuntimeHostPermissions', function() {
             'Extensions.Settings.Hosts.AddHostActivated'),
         1);
     const dialog =
-        element.shadowRoot!.querySelector('extensions-runtime-hosts-dialog');
+        element.shadowRoot.querySelector('extensions-runtime-hosts-dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.$.dialog.open);
     assertEquals(null, dialog.currentSite);
@@ -378,14 +378,14 @@ suite('RuntimeHostPermissions', function() {
     await microtasksFinished();
 
     const editHost =
-        element.shadowRoot!.querySelector<HTMLElement>('.open-edit-host');
+        element.shadowRoot.querySelector<HTMLElement>('.open-edit-host');
     assertTrue(!!editHost);
     editHost.click();
     assertEquals(
         metricsPrivateMock.getUserActionCount(
             'Extensions.Settings.Hosts.ActionMenuOpened'),
         1);
-    const actionMenu = element.shadowRoot!.querySelector('cr-action-menu');
+    const actionMenu = element.shadowRoot.querySelector('cr-action-menu');
     assertTrue(!!actionMenu);
     assertTrue(actionMenu.open);
 
@@ -417,10 +417,10 @@ suite('RuntimeHostPermissions', function() {
     await microtasksFinished();
 
     const editHost =
-        element.shadowRoot!.querySelector<HTMLElement>('.open-edit-host');
+        element.shadowRoot.querySelector<HTMLElement>('.open-edit-host');
     assertTrue(!!editHost);
     editHost.click();
-    const actionMenu = element.shadowRoot!.querySelector('cr-action-menu');
+    const actionMenu = element.shadowRoot.querySelector('cr-action-menu');
     assertTrue(!!actionMenu);
 
     const actionMenuEdit =
@@ -430,7 +430,7 @@ suite('RuntimeHostPermissions', function() {
     actionMenuEdit.click();
     await microtasksFinished();
     const dialog =
-        element.shadowRoot!.querySelector('extensions-runtime-hosts-dialog');
+        element.shadowRoot.querySelector('extensions-runtime-hosts-dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.$.dialog.open);
     assertFalse(dialog.updateHostAccess);
@@ -451,14 +451,14 @@ suite('RuntimeHostPermissions', function() {
     await microtasksFinished();
 
     const editHost =
-        element.shadowRoot!.querySelector<HTMLElement>('.edit-host');
+        element.shadowRoot.querySelector<HTMLElement>('.edit-host');
     assertTrue(!!editHost);
     editHost.click();
     await microtasksFinished();
 
     // clicking the `editHost` for the site should open the dialog.
     const dialog =
-        element.shadowRoot!.querySelector('extensions-runtime-hosts-dialog');
+        element.shadowRoot.querySelector('extensions-runtime-hosts-dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.$.dialog.open);
     assertFalse(dialog.updateHostAccess);
@@ -481,7 +481,7 @@ suite('RuntimeHostPermissions', function() {
         await microtasksFinished();
 
         const removeHost =
-            element.shadowRoot!.querySelector<HTMLElement>('.remove-host');
+            element.shadowRoot.querySelector<HTMLElement>('.remove-host');
         assertTrue(!!removeHost);
         removeHost.click();
         await microtasksFinished();

@@ -12,6 +12,7 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -240,7 +241,7 @@ class COMPONENT_EXPORT(GFX) RenderTextHarfBuzz : public RenderText {
   ~RenderTextHarfBuzz() override;
 
   // RenderText:
-  const std::u16string& GetDisplayText() override;
+  std::u16string_view GetDisplayText() override;
   SizeF GetStringSizeF() override;
   SizeF GetLineSizeF(const SelectionModel& caret) override;
   std::vector<Rect> GetSubstringBounds(const Range& range) override;
@@ -288,7 +289,7 @@ class COMPONENT_EXPORT(GFX) RenderTextHarfBuzz : public RenderText {
   // Break the text into logical runs in |out_run_list|. Populate
   // |out_commonized_run_map| such that each run is present in the vector
   // corresponding to its FontParams.
-  void ItemizeTextToRuns(const std::u16string& string,
+  void ItemizeTextToRuns(std::u16string_view string,
                          internal::TextRunList* out_run_list,
                          CommonizedRunsMap* out_commonized_run_map);
 
@@ -297,7 +298,7 @@ class COMPONENT_EXPORT(GFX) RenderTextHarfBuzz : public RenderText {
   // run's FontParams and ShapeOutput the parameters and resulting shape that
   // had the smallest number of missing glyphs. Returns true if there are no
   // missing glyphs.
-  bool ShapeRuns(const std::u16string& text,
+  bool ShapeRuns(std::u16string_view text,
                  const internal::TextRunHarfBuzz::FontParams& base_font_params,
                  std::vector<internal::TextRunHarfBuzz*> runs);
 
@@ -310,7 +311,7 @@ class COMPONENT_EXPORT(GFX) RenderTextHarfBuzz : public RenderText {
   // during this function call will be returned in |sucessfully_shaped_runs| if
   // a vector is passed in for that parameter.
   void ShapeRunsWithFont(
-      const std::u16string& text,
+      std::u16string_view text,
       const internal::TextRunHarfBuzz::FontParams& font_params,
       std::vector<internal::TextRunHarfBuzz*>* in_out_runs,
       std::vector<internal::TextRunHarfBuzz*>* sucessfully_shaped_runs =
@@ -325,13 +326,13 @@ class COMPONENT_EXPORT(GFX) RenderTextHarfBuzz : public RenderText {
 
   // Itemize |text| into runs in |out_run_list|, shape the runs, and populate
   // |out_run_list|'s visual <-> logical maps.
-  void ItemizeAndShapeText(const std::u16string& text,
+  void ItemizeAndShapeText(std::u16string_view text,
                            internal::TextRunList* out_run_list);
 
   // Helper method to reduce code duplication in |ItemizeAndShapeText|. Returns
   // true if all text is rendered successfully (no missing glyphs are present).
   bool ItemizeAndShapeTextImpl(CommonizedRunsMap* commonized_run_map,
-                               const std::u16string& text,
+                               std::u16string_view text,
                                internal::TextRunList* run_list);
 
   // Makes sure that text runs for layout text are shaped.

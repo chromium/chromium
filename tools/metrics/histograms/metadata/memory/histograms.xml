@@ -2171,6 +2171,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.SelfCompact2.Renderer.AreAllPagesFrozen" units="bool"
+    expires_after="2025-10-06">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@google.com</owner>
+  <summary>
+    Whether all pages in the renderer are frozen. Recorded right before we begin
+    self-compaction.
+  </summary>
+</histogram>
+
+<histogram name="Memory.SelfCompact2.Renderer.TimeSinceLastCancel" units="s"
+    expires_after="2025-10-06">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@google.com</owner>
+  <summary>
+    Time since the last time we cancelled self-compaction. Recorded after we
+    finish self compaction.
+  </summary>
+</histogram>
+
 <histogram
     name="Memory.SelfCompact2{Process}.{Metric}.Diff.{Timing}.{Direction}"
     units="MiB" expires_after="2025-10-06">

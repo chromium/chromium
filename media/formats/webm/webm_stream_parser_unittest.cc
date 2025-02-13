@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer.h"
@@ -56,7 +57,7 @@ class WebMStreamParserTest : public testing::Test {
     // Note this portion is a simplified version of
     // StreamParserTestBase::AppendAllDataThenParseInPieces(). Consider unifying
     // via inheritance or utility method.
-    EXPECT_TRUE(parser_->AppendToParseBuffer(buffer->AsSpan()));
+    EXPECT_TRUE(parser_->AppendToParseBuffer(base::as_byte_span(*buffer)));
     bool has_more_data = true;
     size_t iterations = 0;
     while (has_more_data) {

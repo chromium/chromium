@@ -6875,10 +6875,15 @@ TEST_P(LCDTextTest, NonIntegralTranslationAboveRenderTarget) {
   non_integral_translation.Translate(1.5, 2.5);
   SetTransform(layer_.get(), non_integral_translation);
   SetRenderSurfaceReason(layer_.get(), RenderSurfaceReason::kTest);
-  // Raster translation can't handle fractional transform above the render
-  // target, so LCD text is not allowed.
-  CheckCanUseLCDText(LCDTextDisallowedReason::kNonIntegralTranslation,
-                     "non-integeral translation above render target");
+  if (base::FeatureList::IsEnabled(features::kRenderSurfacePixelAlignment)) {
+    CheckCanUseLCDText(LCDTextDisallowedReason::kNone,
+                       "render surface pixel alignment");
+  } else {
+    // Raster translation can't handle fractional transform above the render
+    // target, so LCD text is not allowed.
+    CheckCanUseLCDText(LCDTextDisallowedReason::kNonIntegralTranslation,
+                       "non-integeral translation above render target");
+  }
   SetTransform(layer_.get(), gfx::Transform());
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "identity transform");
 }

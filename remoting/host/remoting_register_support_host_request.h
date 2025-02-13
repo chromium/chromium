@@ -29,8 +29,8 @@ class RegisterSupportHostResponse;
 }  // namespace v1
 }  // namespace apis
 
+class HttpStatus;
 class OAuthTokenGetter;
-class ProtobufHttpStatus;
 
 // A RegisterSupportHostRequest implementation that uses Remoting API to
 // register the host.
@@ -58,7 +58,7 @@ class RemotingRegisterSupportHostRequest final
 
  private:
   using RegisterSupportHostResponseCallback = base::OnceCallback<void(
-      const ProtobufHttpStatus&,
+      const HttpStatus&,
       std::unique_ptr<apis::v1::RegisterSupportHostResponse>)>;
 
   friend class RemotingRegisterSupportHostTest;
@@ -87,7 +87,7 @@ class RemotingRegisterSupportHostRequest final
 
   void RegisterHost();
   void OnRegisterHostResult(
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<apis::v1::RegisterSupportHostResponse> response);
 
   void RunCallback(const std::string& support_id,

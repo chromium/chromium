@@ -2704,32 +2704,22 @@ void WebGLRenderingContextBase::copyTexSubImage2D(GLenum target,
 }
 
 WebGLBuffer* WebGLRenderingContextBase::createBuffer() {
-  if (isContextLost())
-    return nullptr;
   return MakeGarbageCollected<WebGLBuffer>(this);
 }
 
 WebGLFramebuffer* WebGLRenderingContextBase::createFramebuffer() {
-  if (isContextLost())
-    return nullptr;
   return MakeGarbageCollected<WebGLFramebuffer>(this);
 }
 
 WebGLTexture* WebGLRenderingContextBase::createTexture() {
-  if (isContextLost())
-    return nullptr;
   return MakeGarbageCollected<WebGLTexture>(this);
 }
 
 WebGLProgram* WebGLRenderingContextBase::createProgram() {
-  if (isContextLost())
-    return nullptr;
   return MakeGarbageCollected<WebGLProgram>(this);
 }
 
 WebGLRenderbuffer* WebGLRenderingContextBase::createRenderbuffer() {
-  if (isContextLost())
-    return nullptr;
   return MakeGarbageCollected<WebGLRenderbuffer>(this);
 }
 
@@ -2742,8 +2732,6 @@ void WebGLRenderingContextBase::SetBoundVertexArrayObject(
 }
 
 WebGLShader* WebGLRenderingContextBase::createShader(GLenum type) {
-  if (isContextLost())
-    return nullptr;
   if (!ValidateShaderType("createShader", type)) {
     return nullptr;
   }
@@ -3735,9 +3723,6 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
       return GetIntParameter(script_state, pname);
     case GL_MAX_VIEWPORT_DIMS:
       return GetWebGLIntArrayParameter(script_state, pname);
-    case GL_NUM_SHADER_BINARY_FORMATS:
-      // FIXME: should we always return 0 for this?
-      return GetIntParameter(script_state, pname);
     case GL_PACK_ALIGNMENT:
       return GetIntParameter(script_state, pname);
     case GL_POLYGON_OFFSET_FACTOR:

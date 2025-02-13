@@ -220,6 +220,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="114721135501989771">Obtén funciones inteligentes en Chrome</translation>
 <translation id="1147322039136785890">Ahora le toca a <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Para solicitar acceso, ponte en contacto con el administrador de este dispositivo.</translation>
+<translation id="1148464196693569530">Permitir secuencias de comandos del usuario</translation>
 <translation id="1148624853678088576">¡Todo listo!</translation>
 <translation id="1148669835763563782">Estás descargando la actualización de software más reciente, que te permitirá disfrutar de una seguridad reforzada y de las funciones más nuevas de Chromebook. Esta actualización incluye una experiencia de configuración mejorada para que los primeros pasos con tu Chromebook vayan como la seda.</translation>
 <translation id="1149401351239820326">Mes de caducidad</translation>
@@ -6766,6 +6767,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5794414402486823030">Abrir siempre con el visor del sistema</translation>
 <translation id="5794700615121138172">Carpetas compartidas de Linux</translation>
 <translation id="5794786537412027208">Salir de todas las aplicaciones de Chrome</translation>
+<translation id="5795422263272161110">Mostrar en paralelo</translation>
 <translation id="5796485699458186843">Nueva pestaña de Incógnito</translation>
 <translation id="5796956053441619942">La URL del dispositivo remoto no es compatible</translation>
 <translation id="5797934230382081317">Descubre cómo empezar a usar &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; y &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -7294,6 +7296,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6170498031581934115">No se ha podido habilitar la depuración ADB. Ve a Ajustes y vuelve a intentarlo.</translation>
 <translation id="6170675927290506430">Ir a los ajustes de notificaciones</translation>
 <translation id="6171779718418683144">Preguntar en cada visita</translation>
+<translation id="6172020488605056255">Haz clic con el botón derecho para usar Ayúdame a leer</translation>
 <translation id="617213288191670920">No se han añadido idiomas</translation>
 <translation id="6173623053897475761">Vuelve a escribir tu PIN</translation>
 <translation id="6174909075810107548">Usa "5" para pulsar un botón del ratón</translation>
@@ -8319,6 +8322,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6910190732484284349">Eliminar llave de acceso para el nombre de usuario <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Eliminado</translation>
 <translation id="6910274140210351823">Oscuro</translation>
+<translation id="691102290537033604">La extensión podrá ejecutar código que Google no haya revisado. Puede que no sea seguro, por lo que solo debes habilitar esta opción si sabes lo que haces.</translation>
 <translation id="6911734910326569517">Uso de memoria</translation>
 <translation id="6912007319859991306">PIN de la SIM del móvil</translation>
 <translation id="6912380255120084882">Prueba con otro dispositivo</translation>
@@ -9830,6 +9834,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Voz <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Transferir Wi-Fi automáticamente desde tu teléfono Android</translation>
 <translation id="7991296728590311172">Ajustes de Accesibilidad con interruptores</translation>
+<translation id="7992080146463834191">Resume contenido, simplifica lenguaje complejo o haz preguntas.</translation>
 <translation id="7992203134935383159">Síntesis de voz</translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Prioridad del proceso</translation>
@@ -11087,6 +11092,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8874448314264883207"><ph name="EXTENSION_NAME" /> se ha desactivado</translation>
 <translation id="8874647982044395866">Orgánico</translation>
 <translation id="8874790741333031443">Prueba a permitir temporalmente las cookies de terceros, lo que disminuirá la protección al navegar, pero aumentará la probabilidad de que las opciones de los sitios funcionen como se espera.</translation>
+<translation id="8875221558267407626">Resume contenido, simplifica lenguaje complejo o haz preguntas</translation>
 <translation id="8875520811099717934">Actualización de Linux</translation>
 <translation id="8875736897340638404">Elige tu visibilidad</translation>
 <translation id="8876307312329369159">Este ajuste no se puede cambiar en una sesión de demostración.</translation>
@@ -11140,6 +11146,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8915916167043355778">Cerrar todo</translation>
 <translation id="8916476537757519021">Submarco incógnito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Sí, acepto</translation>
+<translation id="8917980324687233736">Mostrar en paralelo</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Instalando la aplicación...</translation>
 <translation id="891931289445130855">Eliminar datos y permisos</translation>

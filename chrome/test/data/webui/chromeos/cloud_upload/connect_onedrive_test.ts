@@ -22,7 +22,7 @@ suite('<connect-onedrive>', () => {
      called. */
   let testProxy: CloudUploadTestBrowserProxy;
 
-  async function setUp(options: ProxyOptions) {
+  function setUp(options: ProxyOptions) {
     testProxy = new CloudUploadTestBrowserProxy(options);
     CloudUploadBrowserProxy.setInstance(testProxy);
 
@@ -53,7 +53,7 @@ suite('<connect-onedrive>', () => {
   });
 
   test('Successful connection leads to finished page', async () => {
-    await setUp({
+    setUp({
       fileNames: [],
       officeWebAppInstalled: true,
       installOfficeWebAppResult: true,
@@ -82,7 +82,7 @@ suite('<connect-onedrive>', () => {
   });
 
   test('Failed connection leads to error page', async () => {
-    await setUp({
+    setUp({
       fileNames: [],
       officeWebAppInstalled: true,
       installOfficeWebAppResult: true,
@@ -114,7 +114,7 @@ suite('<connect-onedrive>', () => {
    * `respondWithUserActionAndClose` mojo request.
    */
   test('Cancel', async () => {
-    await setUp({
+    setUp({
       fileNames: [],
       officeWebAppInstalled: true,
       installOfficeWebAppResult: true,
@@ -139,7 +139,7 @@ suite('<connect-onedrive>', () => {
    * `respondWithUserActionAndClose` mojo request.
    */
   test('Escape', async () => {
-    await setUp({
+    setUp({
       fileNames: [],
       officeWebAppInstalled: true,
       installOfficeWebAppResult: true,

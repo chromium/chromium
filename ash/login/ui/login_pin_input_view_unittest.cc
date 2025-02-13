@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/login/ui/login_test_base.h"
 #include "base/functional/bind.h"
@@ -46,8 +47,8 @@ class LoginPinInputViewTest
     SetWidget(CreateWidgetWithContent(view_));
   }
 
-  void OnPinSubmit(const std::u16string& pin) {
-    submitted_pin_ = std::make_optional(pin);
+  void OnPinSubmit(std::u16string_view pin) {
+    submitted_pin_ = std::make_optional(std::u16string(pin));
   }
 
   void OnPinChanged(const bool is_empty) {

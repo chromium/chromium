@@ -7,6 +7,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "ui/base/device_form_factor.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/ScreenOrientationProviderImpl_jni.h"
@@ -38,8 +39,20 @@ void ScreenOrientationDelegateAndroid::Lock(
       static_cast<jbyte>(lock_orientation));
 }
 
+bool ScreenOrientationDelegateAndroid::IsPhone() const {
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
+}
+
 bool ScreenOrientationDelegateAndroid::ScreenOrientationProviderSupported(
     WebContents* web_contentss) {
+  // Since orientation lock behavior is unpredictable on non-phone form factors,
+  // don't claim to support it.
+  if (base::FeatureList::IsEnabled(
+          features::kRestrictOrientationLockToPhones) &&
+      !IsPhone()) {
+    return false;
+  }
+
   // TODO(MLamouri): Consider moving isOrientationLockEnabled to a separate
   // function, so reported error messages can differentiate between the device
   // never supporting orientation or currently not support orientation.

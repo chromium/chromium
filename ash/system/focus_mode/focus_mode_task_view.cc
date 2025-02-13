@@ -165,7 +165,7 @@ class FocusModeTaskView::TaskTextfieldController
 
   // views::ViewObserver:
   void OnViewBlurred(views::View* view) override {
-    owner_->CommitTextfieldContents(textfield_->GetText());
+    owner_->CommitTextfieldContents(std::u16string(textfield_->GetText()));
   }
 
  private:
@@ -513,7 +513,7 @@ void FocusModeTaskView::UpdateStyle(bool show_selected_state,
   complete_button_->SetVisible(show_selected_state);
   if (show_selected_state) {
     complete_button_->GetViewAccessibility().SetDescription(
-        textfield_->GetText());
+        std::u16string(textfield_->GetText()));
   } else {
     complete_button_->GetViewAccessibility().SetDescription(
         std::u16string(),
@@ -543,14 +543,15 @@ void FocusModeTaskView::UpdateStyle(bool show_selected_state,
   textfield_->set_show_selected_state(show_selected_state);
   textfield_->SetTooltipText(
       is_network_connected
-          ? (show_selected_state ? textfield_->GetText() : std::u16string())
+          ? (show_selected_state ? std::u16string(textfield_->GetText())
+                                 : std::u16string())
           : l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_OFFLINE_TOOLTIP));
   textfield_->GetViewAccessibility().SetName(
       show_selected_state
           ? l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_TEXTFIELD_SELECTED_ACCESSIBLE_NAME,
-                textfield_->GetText())
+                std::u16string(textfield_->GetText()))
           : l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_TEXTFIELD_UNSELECTED_ACCESSIBLE_NAME));
   textfield_->SetBorder(views::CreateEmptyBorder(

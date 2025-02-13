@@ -124,7 +124,7 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   /** @return Text of the consent description elements. */
   private getConsentDescription_(): string[] {
     const consentDescription =
-        Array.from(this.shadowRoot!.querySelectorAll('[consent-description]'))
+        Array.from(this.shadowRoot.querySelectorAll('[consent-description]'))
             .filter(
                 element => element.getBoundingClientRect().width *
                         element.getBoundingClientRect().height >

@@ -719,11 +719,6 @@ BASE_FEATURE(kDisableThirdPartyStoragePartitioning3DeprecationTrial,
              "DisableThirdPartyStoragePartitioning3DeprecationTrial",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Drop input events before user sees first paint https://crbug.com/1255485
-BASE_FEATURE(kDropInputEventsBeforeFirstPaint,
-             "DropInputEventsBeforeFirstPaint",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEstablishGpuChannelAsync,
              "EstablishGpuChannelAsync",
              base::FEATURE_ENABLED_BY_DEFAULT);

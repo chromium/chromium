@@ -94,6 +94,21 @@ namespace {
 // Shorten the name to spare line breaks. The code provides enough context
 // already.
 using Logger = autofill::SavePasswordProgressLogger;
+constexpr char kLogInWithPasswordChangeSubmissionHistogram[] =
+    "PasswordManager.LogInWithPasswordChangeSubmission";
+
+bool DidLoginWithChangedPassword(const PasswordFormManager* submitted_manager) {
+  return std::ranges::any_of(
+      submitted_manager->GetBestMatches(),
+      [submitted_manager](const PasswordForm& match_submitted_form) {
+        return match_submitted_form.type ==
+                   PasswordForm::Type::kChangeSubmission &&
+               match_submitted_form.username_value ==
+                   submitted_manager->GetPendingCredentials().username_value &&
+               match_submitted_form.password_value ==
+                   submitted_manager->GetPendingCredentials().password_value;
+      });
+}
 
 bool AreChangePasswordFieldsEmpty(const FormData& form_data,
                                   const PasswordForm& parsed_form) {
@@ -1414,6 +1429,14 @@ void PasswordManager::OnLoginSuccessful() {
                                          client_);
   }
 
+  if (DidLoginWithChangedPassword(submitted_manager)) {
+    base::UmaHistogramBoolean(kLogInWithPasswordChangeSubmissionHistogram,
+                              true);
+    ukm::builders::PasswordManager_ChangeSubmission(client_->GetUkmSourceId())
+        .SetLogInWithPasswordChangeSubmission(true)
+        .Record(ukm::UkmRecorder::Get());
+  }
+
   bool able_to_save_passwords =
       password_manager_util::IsAbleToSavePasswords(client_);
   UMA_HISTOGRAM_BOOLEAN("PasswordManager.AbleToSavePasswordsOnSuccessfulLogin",
@@ -1506,6 +1529,14 @@ void PasswordManager::OnLoginFailed(BrowserSavePasswordProgressLogger* logger) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   MaybeTriggerHatsSurvey(*submitted_manager);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+  if (DidLoginWithChangedPassword(submitted_manager)) {
+    base::UmaHistogramBoolean(kLogInWithPasswordChangeSubmissionHistogram,
+                              false);
+    ukm::builders::PasswordManager_ChangeSubmission(client_->GetUkmSourceId())
+        .SetLogInWithPasswordChangeSubmission(false)
+        .Record(ukm::UkmRecorder::Get());
+  }
 
   ResetSubmittedManager();
 }

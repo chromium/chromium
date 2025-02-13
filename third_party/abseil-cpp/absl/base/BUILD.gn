@@ -196,6 +196,14 @@ absl_source_set("base") {
   ]
 }
 
+absl_test("attributes_test") {
+  sources = [ "attributes_test.cc" ]
+  deps = [
+    ":config",
+    ":core_headers",
+  ]
+}
+
 if (absl_build_tests) {
   import("//testing/test.gni")
   test("absl_c_header_test") {

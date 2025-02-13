@@ -37,7 +37,7 @@ suite('DeletePasskeyDialogTest', function() {
     await flushTasks();
   });
 
-  test('displays a warning with links to the website', async function() {
+  test('displays a warning with links to the website', function() {
     const link =
         dialog.shadowRoot!.querySelector<HTMLAnchorElement>('#link a')!;
     assertTrue(!!link);
@@ -45,7 +45,7 @@ suite('DeletePasskeyDialogTest', function() {
     assertEquals(link.href!.trim(), passkey.affiliatedDomains![0]!.url);
   });
 
-  test('clicking cancel closes the dialog', async function() {
+  test('clicking cancel closes the dialog', function() {
     assertTrue(dialog.$.dialog.open);
     dialog.$.cancelButton.click();
     assertFalse(dialog.$.dialog.open);

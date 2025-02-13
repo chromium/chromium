@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/parser/atomic_html_token.h"
@@ -733,7 +734,9 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
       ProcessCloseWhenNestedTag<IsLi>(token);
       break;
     case HTMLTag::kInput: {
-      if (RuntimeEnabledFeatures::InputClosesSelectEnabled()) {
+      if (RuntimeEnabledFeatures::InputClosesSelectEnabled() &&
+          HTMLSelectElement::SelectParserRelaxationEnabled(
+              tree_.CurrentNode())) {
         if (tree_.OpenElements()->InScope(HTMLTag::kSelect)) {
           ProcessFakeEndTag(HTMLTag::kSelect);
         }
@@ -883,7 +886,8 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
       break;
     case HTMLTag::kHr:
       ProcessFakePEndTagIfPInButtonScope();
-      if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+      if (HTMLSelectElement::SelectParserRelaxationEnabled(
+              tree_.CurrentNode())) {
         if (tree_.OpenElements()->InScope(HTMLTag::kSelect)) {
           tree_.GenerateImpliedEndTags();
         }
@@ -921,7 +925,8 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
       }
       break;
     case HTMLTag::kSelect:
-      if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+      if (HTMLSelectElement::SelectParserRelaxationEnabled(
+              tree_.CurrentNode())) {
         if (IsParsingFragment() &&
             fragment_context_.ContextElement()->HasTagName(
                 html_names::kSelectTag)) {
@@ -955,7 +960,8 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
       frameset_ok_ = false;
       // When SelectParserRelaxation is enabled, we don't want to enter
       // InSelectMode or InSelectInTableMode.
-      if (!RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+      if (!HTMLSelectElement::SelectParserRelaxationEnabled(
+              tree_.CurrentNode())) {
         if (GetInsertionMode() == kInTableMode ||
             GetInsertionMode() == kInCaptionMode ||
             GetInsertionMode() == kInColumnGroupMode ||
@@ -970,7 +976,8 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
       break;
     case HTMLTag::kOptgroup:
     case HTMLTag::kOption:
-      if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled() &&
+      if (HTMLSelectElement::SelectParserRelaxationEnabled(
+              tree_.CurrentNode()) &&
           tree_.OpenElements()->InScope(HTMLTag::kSelect)) {
         // TODO(crbug.com/1511354): Remove this if by separating the optgroup
         // and option cases when the SelectParserRelaxation flag is removed.
@@ -1573,7 +1580,8 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
           [[fallthrough]];
         case HTMLTag::kKeygen:
         case HTMLTag::kTextarea: {
-          if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+          if (HTMLSelectElement::SelectParserRelaxationEnabled(
+                  tree_.CurrentNode())) {
             ProcessStartTagForInBody(token);
           } else {
             ParseError(token);
@@ -1605,7 +1613,8 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
           ProcessTemplateStartTag(token);
           return;
         case HTMLTag::kButton:
-          if (!RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+          if (!HTMLSelectElement::SelectParserRelaxationEnabled(
+                  tree_.CurrentNode())) {
             // TODO(crbug.com/1511354): Remove this UseCounter when the
             // SelectParserRelaxation/CustomizableSelect flags are removed.
             UseCounter::Count(tree_.CurrentNode()->GetDocument(),
@@ -1614,7 +1623,8 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
           [[fallthrough]];
         case HTMLTag::kDatalist:
           if (tag == HTMLTag::kDatalist &&
-              !RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+              !HTMLSelectElement::SelectParserRelaxationEnabled(
+                  tree_.CurrentNode())) {
             // TODO(crbug.com/1511354): Remove this UseCounter when the
             // SelectParserRelaxation/CustomizableSelect flags are removed.
             UseCounter::Count(tree_.CurrentNode()->GetDocument(),
@@ -1622,7 +1632,8 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
           }
           [[fallthrough]];
         default:
-          if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+          if (HTMLSelectElement::SelectParserRelaxationEnabled(
+                  tree_.CurrentNode())) {
             ProcessStartTagForInBody(token);
           } else {
             // TODO(crbug.com/1511354): Remove this UseCounter when the
@@ -1873,7 +1884,8 @@ void HTMLTreeBuilder::ResetInsertionModeAppropriately() {
         case HTMLTag::kTemplate:
           return SetInsertionMode(template_insertion_modes_.back());
         case HTMLTag::kSelect:
-          if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+          if (HTMLSelectElement::SelectParserRelaxationEnabled(
+                  tree_.CurrentNode())) {
             break;
           }
           if (!last) {
@@ -2500,7 +2512,8 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
       }
       [[fallthrough]];
     case kInSelectMode:
-      CHECK(!RuntimeEnabledFeatures::SelectParserRelaxationEnabled());
+      CHECK(!HTMLSelectElement::SelectParserRelaxationEnabled(
+          tree_.CurrentNode()));
       switch (tag) {
         case HTMLTag::kOptgroup:
           if (tree_.CurrentStackItem()->MatchesHTMLTag(HTMLTag::kOption) &&

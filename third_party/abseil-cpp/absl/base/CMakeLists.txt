@@ -371,6 +371,19 @@ absl_cc_test(
 
 absl_cc_test(
   NAME
+    attributes_test
+  SRCS
+    "attributes_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::config
+    absl::core_headers
+    GTest::gtest_main
+)
+
+absl_cc_test(
+  NAME
     bit_cast_test
   SRCS
     "bit_cast_test.cc"

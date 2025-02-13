@@ -6944,7 +6944,7 @@ TEST_P(DesksTest, ZeroStateDeskButtonText) {
 
   desks_bar_view = GetOverviewGridForRoot(root_window)->desks_bar_view();
   auto* default_desk_button = desks_bar_view->default_desk_button();
-  std::u16string desk_button_text = default_desk_button->GetText();
+  std::u16string_view desk_button_text = default_desk_button->GetText();
   std::u16string expected_desk_name(DeskTextfield::kMaxLength, L'a');
   // Zero state desk button should show the elided name as the DeskNameView.
   EXPECT_EQ(expected_desk_name,

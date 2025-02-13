@@ -962,6 +962,13 @@ export const COMMAND_DATA: Record<Command, DataEntry> = {
     msgId: 'toggle_braille_table',
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.G]}},
   },
+  [Command.TOGGLE_CAPTIONS]: {
+    // TODO(crbug.com/383403295): Set an appropriate category when feature is
+    // launched.
+    category: CommandCategory.NO_CATEGORY,
+    msgId: 'toggle_captions',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.C]}},
+  },
   [Command.TOGGLE_DICTATION]: {
     category: CommandCategory.ACTIONS,
     msgId: 'toggle_dictation',

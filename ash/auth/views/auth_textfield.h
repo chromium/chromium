@@ -37,7 +37,7 @@ class ASH_EXPORT AuthTextfield : public SystemTextfield,
    public:
     virtual void OnTextfieldBlur() {}
     virtual void OnTextfieldFocus() {}
-    virtual void OnContentsChanged(const std::u16string& new_contents) {}
+    virtual void OnContentsChanged(std::u16string_view new_contents) {}
     virtual void OnTextVisibleChanged(bool visible) {}
     virtual void OnSubmit() {}
     virtual void OnEscape() {}

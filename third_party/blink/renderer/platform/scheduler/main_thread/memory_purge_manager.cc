@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -141,6 +142,11 @@ void MemoryPurgeManager::OnRendererBackgrounded() {
 void MemoryPurgeManager::OnRendererForegrounded() {
   backgrounded_purge_pending_ = false;
   purge_timer_.Stop();
+}
+
+void MemoryPurgeManager::RecordAreAllPagesFrozenMetric(std::string_view name) {
+  const bool are_all_pages_frozen = AreAllPagesFrozen();
+  base::UmaHistogramBoolean(name, are_all_pages_frozen);
 }
 
 void MemoryPurgeManager::RequestMemoryPurgeWithDelay(base::TimeDelta delay) {

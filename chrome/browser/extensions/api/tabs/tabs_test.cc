@@ -1175,6 +1175,7 @@ class ExtensionWindowCreateIwaTest
   }
 
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
     // Suppress "Welcome to Google Chrome" window
     command_line->AppendSwitch(switches::kNoFirstRun);
     command_line->AppendSwitch(switches::kNoStartupWindow);

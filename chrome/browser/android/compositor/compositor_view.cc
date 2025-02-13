@@ -43,12 +43,6 @@ using base::android::JavaParamRef;
 
 namespace android {
 
-namespace {
-BASE_FEATURE(kIgnoreExcessiveSurfaceSizeKillSwitch,
-             "IgnoreExcessiveSurfaceSizeKillSwitch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-}
-
 jlong JNI_CompositorView_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
@@ -191,10 +185,9 @@ std::optional<int> CompositorView::SurfaceChanged(
   // crbug.com/369374760. Ignore these which is probably less bad than crashing
   // the GPU process.
   constexpr int kExcessiveSurfaceSize = 1000000;
-  if (base::FeatureList::IsEnabled(kIgnoreExcessiveSurfaceSizeKillSwitch) &&
-      (width >= kExcessiveSurfaceSize || height >= kExcessiveSurfaceSize)) {
-    LOG(WARNING) << "Ignoring excessive surface size " << width << "x"
-                 << height;
+  if (width >= kExcessiveSurfaceSize || height >= kExcessiveSurfaceSize ||
+      width <= 0 || height <= 0) {
+    LOG(WARNING) << "Ignoring invalid surface size " << width << "x" << height;
     return std::nullopt;
   }
 

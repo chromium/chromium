@@ -79,7 +79,7 @@ suite('internet-detail-dialog', () => {
     return result;
   }
 
-  setup(async () => {
+  setup(() => {
     assert(window.trustedTypes);
     document.body.innerHTML = window.trustedTypes.emptyHTML;
     InternetDetailDialogBrowserProxyImpl.setInstance(

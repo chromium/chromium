@@ -69,9 +69,6 @@ class TestOmniboxPopupView : public OmniboxPopupView {
   void OnMatchIconUpdated(size_t match_index) override {}
   void OnDragCanceled() override {}
   void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) const override {}
-  std::u16string GetAccessibleButtonTextForResult(size_t line) const override {
-    return u"";
-  }
 };
 
 void OpenUrlFromEditBox(OmniboxController* controller,

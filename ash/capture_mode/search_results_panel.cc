@@ -138,9 +138,8 @@ class SunfishSearchBoxView : public views::View,
 
     if (event.type() == ui::EventType::kKeyPressed &&
         event.key_code() == ui::VKEY_RETURN) {
-      const std::u16string& text = sender->GetText();
       CaptureModeController::Get()->SendMultimodalSearch(
-          image_view_->GetImage(), base::UTF16ToUTF8(text));
+          image_view_->GetImage(), base::UTF16ToUTF8(sender->GetText()));
       return true;
     }
 

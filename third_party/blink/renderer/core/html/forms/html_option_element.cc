@@ -156,6 +156,19 @@ bool HTMLOptionElement::MatchesEnabledPseudoClass() const {
 }
 
 String HTMLOptionElement::DisplayLabel() const {
+  if (RuntimeEnabledFeatures::OptionLabelAttributeWhitespaceEnabled()) {
+    // If the label attribute is set and is not an empty string, then use its
+    // value. Otherwise, use inner text.
+    String label_attr = String(FastGetAttribute(html_names::kLabelAttr));
+    if (!label_attr.empty()) {
+      return label_attr.StripWhiteSpace(IsHTMLSpace<UChar>)
+          .SimplifyWhiteSpace(IsHTMLSpace<UChar>);
+    }
+    return CollectOptionInnerText()
+        .StripWhiteSpace(IsHTMLSpace<UChar>)
+        .SimplifyWhiteSpace(IsHTMLSpace<UChar>);
+  }
+
   String label_attr = String(FastGetAttribute(html_names::kLabelAttr))
     .StripWhiteSpace(IsHTMLSpace<UChar>).SimplifyWhiteSpace(IsHTMLSpace<UChar>);
   String inner_text = CollectOptionInnerText()
@@ -163,7 +176,7 @@ String HTMLOptionElement::DisplayLabel() const {
   // FIXME: The following treats an element with the label attribute set to
   // the empty string the same as an element with no label attribute at all.
   // Is that correct? If it is, then should the label function work the same
-  // way? https://github.com/whatwg/html/issues/10955
+  // way?
   return label_attr.empty() ? inner_text : label_attr;
 }
 
@@ -378,7 +391,7 @@ HTMLSelectElement* NearestAncestorSelectNoNesting(
 
 HTMLSelectElement* HTMLOptionElement::OwnerSelectElement(
     bool skip_check) const {
-  if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+  if (HTMLSelectElement::SelectParserRelaxationEnabled(this)) {
     if (!skip_check) {
       DCHECK_EQ(nearest_ancestor_select_,
                 NearestAncestorSelectNoNesting(*this));
@@ -399,7 +412,7 @@ HTMLSelectElement* HTMLOptionElement::OwnerSelectElement(
 }
 
 void HTMLOptionElement::SetOwnerSelectElement(HTMLSelectElement* select) {
-  CHECK(RuntimeEnabledFeatures::SelectParserRelaxationEnabled());
+  CHECK(HTMLSelectElement::SelectParserRelaxationEnabled(this));
   DCHECK_EQ(select, NearestAncestorSelectNoNesting(*this));
   nearest_ancestor_select_ = select;
 }
@@ -465,7 +478,7 @@ HTMLFormElement* HTMLOptionElement::form() const {
 }
 
 void HTMLOptionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+  if (HTMLSelectElement::CustomizableSelectEnabled(this)) {
     label_container_ = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
     label_container_->SetShadowPseudoId(
         shadow_element_names::kOptionLabelContainer);
@@ -482,7 +495,7 @@ void HTMLOptionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 }
 
 void HTMLOptionElement::UpdateLabel() {
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+  if (HTMLSelectElement::CustomizableSelectEnabled(this)) {
     if (label_container_) {
       label_container_->setTextContent(DisplayLabel());
     }
@@ -494,8 +507,8 @@ void HTMLOptionElement::UpdateLabel() {
 Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
     ContainerNode& insertion_point) {
   auto return_value = HTMLElement::InsertedInto(insertion_point);
-  if (!RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
-    CHECK(!RuntimeEnabledFeatures::CustomizableSelectEnabled());
+  if (!HTMLSelectElement::SelectParserRelaxationEnabled(this)) {
+    CHECK(!HTMLSelectElement::CustomizableSelectEnabled(this));
     return return_value;
   }
 
@@ -546,8 +559,8 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
 
 void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
-  if (!RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
-    CHECK(!RuntimeEnabledFeatures::CustomizableSelectEnabled());
+  if (!HTMLSelectElement::SelectParserRelaxationEnabled(this)) {
+    CHECK(!HTMLSelectElement::CustomizableSelectEnabled(this));
     return;
   }
 
@@ -619,7 +632,7 @@ bool HTMLOptionElement::SpatialNavigationFocused() const {
 bool HTMLOptionElement::IsDisplayNone(bool ensure_style) {
   const ComputedStyle* style = GetComputedStyle();
   if (!style && ensure_style &&
-      RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+      HTMLSelectElement::SelectParserRelaxationEnabled(this)) {
     style = EnsureComputedStyle();
   }
   return !style || style->Display() == EDisplay::kNone;
@@ -783,7 +796,7 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
 
 void HTMLOptionElement::FinishParsingChildren() {
   HTMLElement::FinishParsingChildren();
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() && Selected()) {
+  if (HTMLSelectElement::CustomizableSelectEnabled(this) && Selected()) {
     auto* select = OwnerSelectElement();
     if (select && !select->IsMultiple()) {
       select->UpdateAllSelectedcontents(this);
@@ -793,7 +806,7 @@ void HTMLOptionElement::FinishParsingChildren() {
 
 // static
 bool HTMLOptionElement::IsLabelContainerElement(const Element& element) {
-  if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+  if (!HTMLSelectElement::CustomizableSelectEnabled(&element)) {
     return false;
   }
   return IsA<HTMLOptionElement>(element.OwnerShadowHost()) &&

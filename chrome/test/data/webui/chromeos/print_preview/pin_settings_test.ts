@@ -40,7 +40,7 @@ suite('PinSettingsTest', function() {
   // invalid and the pin printing is unavailable. This test make sure there is
   // check for avaiablity before calling setSettingValid
   // Regression test for https://crbug.com/1321118
-  test('pin settings unavailable with invalid input', async () => {
+  test('pin settings unavailable with invalid input', () => {
     pinSection.state = State.NOT_READY;
     model.set('settings.pin.available', false);
     model.set('settings.pin.value', true);

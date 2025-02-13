@@ -5,22 +5,13 @@
 /**
  * Test support for tests driven by C++.
  */
-
 (async function() {
-  let module = await import('./nodes/back_button_node.js');
-  globalThis.BackButtonNode = module.BackButtonNode;
-
-  module = await import('./focus_ring_manager.js');
-  globalThis.FocusRingManager = module.FocusRingManager;
-
-  module = await import('./navigator.js');
-  globalThis.Navigator = module.Navigator;
-
-  module = await import('./switch_access_constants.js');
-  globalThis.Mode = module.Mode;
-
-  module = await import('./switch_access.js');
-  globalThis.SwitchAccess = module.SwitchAccess;
+  const testImports = TestImportManager.getImports();
+  globalThis.BackButtonNode = testImports.BackButtonNode;
+  globalThis.FocusRingManager = testImports.FocusRingManager;
+  globalThis.Navigator = testImports.Navigator;
+  globalThis.Mode = testImports.Mode;
+  globalThis.SwitchAccess = testImports.SwitchAccess;
   await SwitchAccess.ready();
 
   const focusRingState = {
@@ -110,7 +101,8 @@
     transcript.push(`Focus ring state: ${JSON.stringify(focusRingState)}`);
     checkFocusRingState();
   });
-  globalThis.domAutomationController.send('ready');
+
+  chrome.test.sendScriptResult('ready');
 
   setInterval(() => {
     console.error(

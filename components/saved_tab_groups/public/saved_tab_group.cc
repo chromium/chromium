@@ -255,6 +255,11 @@ SavedTabGroup& SavedTabGroup::SetCreatedByAttribution(GaiaId created_by) {
   return *this;
 }
 
+SavedTabGroup& SavedTabGroup::SetIsHidden(bool is_hidden) {
+  is_hidden_ = is_hidden;
+  return *this;
+}
+
 SavedTabGroup& SavedTabGroup::AddTabLocally(SavedTabGroupTab tab) {
   InsertTabImpl(tab);
   UpdateTabPositionsImpl();

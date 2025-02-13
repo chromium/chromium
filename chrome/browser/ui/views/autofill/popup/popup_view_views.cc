@@ -9,6 +9,7 @@
 #include <optional>
 #include <ranges>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -814,12 +815,12 @@ void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
   }
 }
 
-void PopupViewViews::SearchBarOnInputChanged(const std::u16string& query) {
+void PopupViewViews::SearchBarOnInputChanged(std::u16string_view query) {
   if (controller_) {
     controller_->SetFilter(
-        query.empty()
-            ? std::nullopt
-            : std::optional(AutofillPopupController::SuggestionFilter(query)));
+        query.empty() ? std::nullopt
+                      : std::optional(AutofillPopupController::SuggestionFilter(
+                            std::u16string(query))));
   }
 }
 

@@ -80,7 +80,7 @@ SharingHubBubbleActionButton::SharingHubBubbleActionButton(
       action_info.title, views::style::CONTEXT_MENU));
   title_->SetCanProcessEventsWithinSubtree(false);
 
-  GetViewAccessibility().SetName(title_->GetText(),
+  GetViewAccessibility().SetName(std::u16string(title_->GetText()),
                                  ax::mojom::NameFrom::kAttribute);
 }
 

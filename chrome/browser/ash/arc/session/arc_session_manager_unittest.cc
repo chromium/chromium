@@ -35,7 +35,6 @@
 #include "chrome/browser/ash/arc/session/arc_play_store_enabled_preference_handler.h"
 #include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
-#include "chrome/browser/ash/arc/session/mock_arc_reven_hardware_checker.h"
 #include "chrome/browser/ash/arc/test/arc_data_removed_waiter.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
@@ -68,11 +67,13 @@
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/dlc_install_notification/arc_dlc_install_notification_manager.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_hardware_checker.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_dlc_install_notification_delegate.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
+#include "chromeos/ash/experiences/arc/test/mock_arc_dlc_install_hardware_checker.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -1684,10 +1685,11 @@ TEST_F(ArcSessionManagerTest, EnableHardwareCheck) {
       ash::switches::kEnableArcVmDlc);
   // Enable enable-android-vpn-apps-on-flex chrome flag.
   base::test::ScopedFeatureList scoped_feature_list;
+
   scoped_feature_list.InitAndEnableFeature(ash::features::kVpnAppsOnFlex);
-  auto mock_hardware_checker_ = std::make_unique<MockArcRevenHardwareChecker>();
-  EXPECT_CALL(*mock_hardware_checker_,
-              IsRevenDeviceCompatibleForArc(::testing::_))
+  auto mock_hardware_checker_ =
+      std::make_unique<MockArcDlcInstallHardwareChecker>();
+  EXPECT_CALL(*mock_hardware_checker_, IsCompatible(::testing::_))
       .WillOnce(
           ::testing::Invoke([](base::OnceCallback<void(bool)> callback) {}));
   // Inject the mock hardware checker into the ArcSessionManager.
@@ -1744,10 +1746,9 @@ TEST_F(ArcSessionManagerTest, NoArcVmInstallOnUnmanaged) {
   // Add arcvm-dlc command flag.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kEnableArcVmDlc);
-  auto mock_hardware_checker_ = std::make_unique<MockArcRevenHardwareChecker>();
-  EXPECT_CALL(*mock_hardware_checker_,
-              IsRevenDeviceCompatibleForArc(::testing::_))
-      .Times(0);
+  auto mock_hardware_checker_ =
+      std::make_unique<MockArcDlcInstallHardwareChecker>();
+  EXPECT_CALL(*mock_hardware_checker_, IsCompatible(::testing::_)).Times(0);
   arc_session_manager()->reset_property_files_expansion_result();
   arc_session_manager()->ExpandPropertyFilesAndReadSalt();
 }
@@ -1764,11 +1765,11 @@ TEST_F(ArcSessionManagerTest, NoArcVmInstallWithFlagOff) {
       ash::switches::kEnableArcVmDlc);
   // Disable enable-android-vpn-apps-on-flex chrome flag.
   base::test::ScopedFeatureList scoped_feature_list;
+
   scoped_feature_list.InitAndDisableFeature(ash::features::kVpnAppsOnFlex);
-  auto mock_hardware_checker_ = std::make_unique<MockArcRevenHardwareChecker>();
-  EXPECT_CALL(*mock_hardware_checker_,
-              IsRevenDeviceCompatibleForArc(::testing::_))
-      .Times(0);
+  auto mock_hardware_checker_ =
+      std::make_unique<MockArcDlcInstallHardwareChecker>();
+  EXPECT_CALL(*mock_hardware_checker_, IsCompatible(::testing::_)).Times(0);
   arc_session_manager()->reset_property_files_expansion_result();
   arc_session_manager()->ExpandPropertyFilesAndReadSalt();
 }

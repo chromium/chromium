@@ -220,6 +220,7 @@
 <translation id="114721135501989771">Google'дун акылдуу параметрлерин Chrome'до колдонуңуз</translation>
 <translation id="1147322039136785890">Эми түзмөктү <ph name="SUPERVISED_USER_NAME" /> алсын</translation>
 <translation id="1147991416141538220">Кирүү мүмкүнчүлүгүн алуу үчүн түзмөктүн администраторуна кайрылыңыз.</translation>
+<translation id="1148464196693569530">Колдонуучу скрипттерине уруксат берүү</translation>
 <translation id="1148624853678088576">Баары даяр!</translation>
 <translation id="1148669835763563782">Программаны акыркы версиясына жаңырткандан кийин Chromebook түзмөгүңүз жакшыраак корголуп, анын жаңы функцияларын колдонуп, оңой тууралай аласыз.</translation>
 <translation id="1149401351239820326">Колдонуу мөөнөтү аяктаган ай</translation>
@@ -6781,6 +6782,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5794414402486823030">Ар дайым тутум көрсөткүч менен ачылсын</translation>
 <translation id="5794700615121138172">Linux'тун бөлүшүлгөн папкалары</translation>
 <translation id="5794786537412027208">Бардык Chrome Колдонмолорунан чыгуу</translation>
+<translation id="5795422263272161110">Жанаша көрсөтүү</translation>
 <translation id="5796485699458186843">Жаңы жашыруун &amp;өтмөк</translation>
 <translation id="5796956053441619942">Алыскы түзмөктүн URL дареги колдоого алынбайт</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; жана &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; түзмөктөрүндө кантип баштоону билип алыңыз</translation>
@@ -7309,6 +7311,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6170498031581934115">ADB аркылуу мүчүлүштүктөрдү аныктоо иштетилген жок. Параметрлерге өтүп, кайталап көрүңүз.</translation>
 <translation id="6170675927290506430">Билдирмелердин параметрлерине өтүү</translation>
 <translation id="6171779718418683144">Сайтка кирген сайын суралсын</translation>
+<translation id="6172020488605056255">Окууга жардам бер функциясын колдонуу үчүн оң баскычты чыкылдатыңыз</translation>
 <translation id="617213288191670920">Тилдер кошулган жок</translation>
 <translation id="6173623053897475761">PIN кодуңузду кайра териңиз</translation>
 <translation id="6174909075810107548">Чычкандын баскычын басуу үчүн "5" баскычын колдонуңуз</translation>
@@ -8334,6 +8337,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6910190732484284349">Колдонуучунун аты (<ph name="USER_EMAIL" />) үчүн киргизүүчү ачкычты өчүрүү</translation>
 <translation id="6910211073230771657">Жок кылынды</translation>
 <translation id="6910274140210351823">Караңгы</translation>
+<translation id="691102290537033604">Кеңейтүү Google тарабынан каралбаган кодду иштете алат. Бул кооптуу болушу мүмкүн жана эмне кылып жатканыңызды билсеңиз гана муну иштетишиңиз керек.</translation>
 <translation id="6911734910326569517">Эстутумдун колдонулушу</translation>
 <translation id="6912007319859991306">Мобилдик SIM-картаны PIN код менен кулпулоо</translation>
 <translation id="6912380255120084882">Башка түзмөктү колдонуп көрүңүз</translation>
@@ -9844,6 +9848,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> <ph name="COUNT" />-үн</translation>
 <translation id="7990958035181555539">WiFi'ды Android телефонунан автоматтык түрдө өткөрүү</translation>
 <translation id="7991296728590311172">Switch Access параметрлери</translation>
+<translation id="7992080146463834191">Контентти жыйынтыктап, татаал тилди жөнөкөйлөтүп же суроолорду бериңиз.</translation>
 <translation id="7992203134935383159">Кепти синтездөө</translation>
 <translation id="799570308305997052">Веб көрүнүшү</translation>
 <translation id="7997826902155442747">Процесстин артыкчылыгы</translation>
@@ -11100,6 +11105,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" өчүрүлдү</translation>
 <translation id="8874647982044395866">Органикалык</translation>
 <translation id="8874790741333031443">Үчүнчү тараптын cookie файлдарына убактылуу уруксат берип көрүңүз. Мында Интернетте коопсуздугуңуз азыраак корголот, бирок сайттын функциялары ойдогудай иштеши мүмкүн.</translation>
+<translation id="8875221558267407626">Контентти жыйынтыктап, татаал тилди жөнөкөйлөтүп же суроолорду бериңиз</translation>
 <translation id="8875520811099717934">Linux'ту жаңыртуу</translation>
 <translation id="8875736897340638404">Көрүнүү параметрлерин тандаңыз</translation>
 <translation id="8876307312329369159">Бул параметрди демо сеанста өзгөртүүгө болбойт.</translation>
@@ -11153,6 +11159,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8915916167043355778">Баарын жабуу</translation>
 <translation id="8916476537757519021">Жашыруун көмөкчү алкак: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Ооба, мен макулмун</translation>
+<translation id="8917980324687233736">Жанаша көрсөтүү</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> аттуу колдонуучунун <ph name="DEVICE_TYPE" /> түзмөгү</translation>
 <translation id="8918900204934259333">Колдонмо орнотулууда...</translation>
 <translation id="891931289445130855">Маалыматты жана уруксаттарды өчүрүү</translation>

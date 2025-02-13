@@ -123,9 +123,8 @@ std::string ExpectedOsPlatform() {
 
 // We want a way to check whether or not any metadata was set, but the profile
 // metadata will always contain the `is_chrome_os_managed_guest_session` field
-// if the `kEnterpriseConnectorsEnabledOnMGS` feature flag is enabled, so we
-// check another field (which should always be set if any actual metadata was
-// provided).
+// so we check another field (which should always be set if any actual metadata
+// was provided).
 bool ContainsClientId(const AnalysisSettings& settings) {
   return settings.client_metadata && settings.client_metadata->has_device() &&
          settings.client_metadata->device().has_client_id();
@@ -342,26 +341,12 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceReportingProfileBrowserTest, Test) {
 class ConnectorsServiceAnalysisProfileBrowserTest
     : public ConnectorsServiceProfileBrowserTest,
       public testing::WithParamInterface<
-          std::tuple<ManagementStatus, const char*, bool>> {
+          std::tuple<ManagementStatus, const char*>> {
  public:
   ConnectorsServiceAnalysisProfileBrowserTest()
       : ConnectorsServiceProfileBrowserTest(std::get<0>(GetParam())) {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (enterprise_connectors_enabled_on_mgs()) {
-      enabled_features.push_back(kEnterpriseConnectorsEnabledOnMGS);
-    } else {
-      disabled_features.push_back(kEnterpriseConnectorsEnabledOnMGS);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   const char* settings_value() { return std::get<1>(GetParam()); }
-
-  // Returns whether the kEnterpriseConnectorsEnabledOnMGS feature should be
-  // enabled or not.
-  bool enterprise_connectors_enabled_on_mgs() {
-    return std::get<2>(GetParam());
-  }
 
   bool is_cloud() {
     return strcmp(settings_value(), kNormalCloudAnalysisSettingsPref) == 0;
@@ -502,13 +487,11 @@ class ConnectorsServiceAnalysisProfileBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     ,
     ConnectorsServiceAnalysisProfileBrowserTest,
-    testing::Combine(
-        testing::Values(ManagementStatus::AFFILIATED,
-                        ManagementStatus::UNAFFILIATED,
-                        ManagementStatus::UNMANAGED),
-        testing::Values(kNormalCloudAnalysisSettingsPref,
-                        kNormalLocalAnalysisSettingsPref),
-        testing::Bool()));
+    testing::Combine(testing::Values(ManagementStatus::AFFILIATED,
+                                     ManagementStatus::UNAFFILIATED,
+                                     ManagementStatus::UNMANAGED),
+                     testing::Values(kNormalCloudAnalysisSettingsPref,
+                                     kNormalLocalAnalysisSettingsPref)));
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        DeviceReporting) {
@@ -677,9 +660,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
     ASSERT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
     ASSERT_EQ(kFakeBrowserDMToken,
               settings.value().cloud_or_local_settings.dm_token());
-    if (enterprise_connectors_enabled_on_mgs()) {
-      ASSERT_FALSE(ContainsClientId(settings.value()));
-    }
+    ASSERT_FALSE(ContainsClientId(settings.value()));
     ASSERT_TRUE(settings.value().client_metadata);
     ASSERT_FALSE(settings.value().per_profile);
   }
@@ -701,9 +682,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
         EXPECT_TRUE(settings.has_value());
         ASSERT_EQ(kFakeProfileDMToken,
                   settings.value().cloud_or_local_settings.dm_token());
-        if (enterprise_connectors_enabled_on_mgs()) {
-          ASSERT_FALSE(ContainsClientId(settings.value()));
-        }
+        ASSERT_FALSE(ContainsClientId(settings.value()));
         ASSERT_TRUE(settings.value().client_metadata);
         ASSERT_EQ(management_domain, kDomain1);
       }
@@ -713,9 +692,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       if (settings.value().cloud_or_local_settings.is_cloud_analysis()) {
         ASSERT_EQ(kFakeProfileDMToken,
                   settings.value().cloud_or_local_settings.dm_token());
-        if (enterprise_connectors_enabled_on_mgs()) {
-          ASSERT_FALSE(ContainsClientId(settings.value()));
-        }
+        ASSERT_FALSE(ContainsClientId(settings.value()));
         ASSERT_TRUE(settings.value().client_metadata);
         ASSERT_FALSE(
             settings.value().client_metadata->profile().dm_token().empty());
@@ -735,9 +712,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       if (settings.value().cloud_or_local_settings.is_cloud_analysis()) {
         ASSERT_EQ(kFakeProfileDMToken,
                   settings.value().cloud_or_local_settings.dm_token());
-        if (enterprise_connectors_enabled_on_mgs()) {
-          ASSERT_FALSE(ContainsClientId(settings.value()));
-        }
+        ASSERT_FALSE(ContainsClientId(settings.value()));
         ASSERT_TRUE(settings.value().client_metadata);
         ASSERT_FALSE(
             settings.value().client_metadata->profile().dm_token().empty());
@@ -802,9 +777,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
             settings.value().cloud_or_local_settings.is_cloud_analysis());
         ASSERT_EQ(kFakeProfileDMToken,
                   settings.value().cloud_or_local_settings.dm_token());
-        if (enterprise_connectors_enabled_on_mgs()) {
-          ASSERT_FALSE(ContainsClientId(settings.value()));
-        }
+        ASSERT_FALSE(ContainsClientId(settings.value()));
         ASSERT_TRUE(settings.value().client_metadata);
         ASSERT_TRUE(settings.value().per_profile);
         break;
@@ -812,9 +785,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
         EXPECT_TRUE(settings.has_value());
         ASSERT_EQ(kFakeProfileDMToken,
                   settings.value().cloud_or_local_settings.dm_token());
-        if (enterprise_connectors_enabled_on_mgs()) {
-          ASSERT_FALSE(ContainsClientId(settings.value()));
-        }
+        ASSERT_FALSE(ContainsClientId(settings.value()));
         ASSERT_TRUE(settings.value().client_metadata);
         ASSERT_TRUE(settings.value().per_profile);
         break;

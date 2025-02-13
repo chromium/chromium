@@ -117,8 +117,8 @@ Refer to README.md for content description and update process.
  <item id="lookup_single_password_leak" added_in_milestone="78" content_hash_code="000d99a9" os_list="linux,windows,chromeos,android" file_path="components/password_manager/core/browser/leak_detection/leak_detection_request.cc" />
  <item id="managed_configuration_loader" added_in_milestone="89" content_hash_code="060dc999" os_list="linux,windows,chromeos" file_path="chrome/browser/device_api/managed_configuration_api.cc" />
  <item id="media_router_global_media_controls_image" added_in_milestone="81" content_hash_code="02e96911" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/global_media_controls/cast_media_notification_item.cc" />
- <item id="metrics_report_ukm" added_in_milestone="62" content_hash_code="037b649c" os_list="linux,windows,chromeos,android" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
- <item id="metrics_report_uma" added_in_milestone="62" content_hash_code="00e50cfe" os_list="linux,windows,chromeos,android" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
+ <item id="metrics_report_ukm" added_in_milestone="62" content_hash_code="0520d573" os_list="linux,windows,chromeos,android" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
+ <item id="metrics_report_uma" added_in_milestone="62" content_hash_code="05f568eb" os_list="linux,windows,chromeos,android" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
  <item id="missing" added_in_milestone="62" reserved="1" os_list="linux,windows" file_path="" />
  <item id="navigation_url_loader" added_in_milestone="62" content_hash_code="060edd12" os_list="linux,windows,chromeos,android" file_path="content/browser/loader/navigation_url_loader_impl.cc" />
  <item id="network_location_provider" added_in_milestone="64" type="partial" second_id="network_location_request" content_hash_code="0272f3e8" os_list="linux,windows,chromeos" semantics_fields="1" policy_fields="3,4" file_path="services/device/geolocation/network_location_provider.cc" />
@@ -413,8 +413,8 @@ Refer to README.md for content description and update process.
  <item id="webauthn_rp_id_check" added_in_milestone="121" content_hash_code="048c3faa" os_list="linux,windows,android,chromeos" file_path="content/browser/webauth/webauth_request_security_checker.cc" />
  <item id="devtools_cdp_console_insights" added_in_milestone="121" content_hash_code="051d2911" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/devtools_ui_bindings.cc" />
  <item id="tasks_integration" added_in_milestone="121" content_hash_code="06b37a3d" os_list="chromeos" file_path="chrome/browser/ash/api/tasks/chrome_tasks_delegate.cc" />
- <item id="metrics_report_appkm" added_in_milestone="121" content_hash_code="07bcd252" os_list="linux,windows,android,chromeos" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
- <item id="metrics_report_ukm_and_appkm" added_in_milestone="121" content_hash_code="0579d480" os_list="linux,windows,android,chromeos" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
+ <item id="metrics_report_appkm" added_in_milestone="121" content_hash_code="0662ff56" os_list="linux,windows,android,chromeos" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
+ <item id="metrics_report_ukm_and_appkm" added_in_milestone="121" content_hash_code="0616c235" os_list="linux,windows,android,chromeos" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
  <item id="search_engine_adapter" added_in_milestone="121" content_hash_code="07bed22d" os_list="android" file_path="chrome/browser/search_engines/android/java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineAdapter.java" />
  <item id="prewarm_http_disk_cache" added_in_milestone="122" content_hash_code="0797a094" os_list="windows,android,chromeos,linux" file_path="chrome/browser/predictors/lcp_critical_path_predictor/prewarm_http_disk_cache_manager.cc" />
  <item id="admin_specified_ppd_fetch" added_in_milestone="122" content_hash_code="009beea1" os_list="chromeos" file_path="chromeos/printing/remote_ppd_fetcher.cc" />
@@ -504,4 +504,8 @@ Refer to README.md for content description and update process.
  <item id="microsoft_files_page_handler" added_in_milestone="134" content_hash_code="0550fd5d" os_list="linux,windows,chromeos" file_path="chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files_page_handler.cc" />
  <item id="outlook_calendar_event_attachment" added_in_milestone="134" content_hash_code="07ede3aa" os_list="linux,windows,chromeos" file_path="chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.cc" />
  <item id="ip_protection_service_get_issuer_token" added_in_milestone="134" content_hash_code="018c8314" os_list="linux,windows,android,chromeos" file_path="components/ip_protection/common/ip_protection_issuer_token_direct_fetcher.cc" />
+ <item id="remoting_compute_engine_instance_identity_token" added_in_milestone="135" content_hash_code="01ae9bd2" os_list="linux,windows,chromeos,android" file_path="remoting/base/compute_engine_service_client.cc" />
+ <item id="remoting_compute_engine_instance_access_token" added_in_milestone="135" content_hash_code="0117134b" os_list="linux,windows,chromeos,android" file_path="remoting/base/compute_engine_service_client.cc" />
+ <item id="remoting_compute_engine_instance_access_token_scopes" added_in_milestone="135" content_hash_code="023331d4" os_list="linux,windows,chromeos,android" file_path="remoting/base/compute_engine_service_client.cc" />
+ <item id="metrics_report_dwa" added_in_milestone="135" content_hash_code="04a744db" os_list="linux,windows,android,chromeos" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
 </annotations>

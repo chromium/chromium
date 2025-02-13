@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/auth/views/auth_common.h"
@@ -67,7 +68,7 @@ namespace ash {
 PinStatusView::TestApi::TestApi(PinStatusView* view) : view_(view) {}
 PinStatusView::TestApi::~TestApi() = default;
 
-const std::u16string& PinStatusView::TestApi::GetCurrentText() const {
+std::u16string_view PinStatusView::TestApi::GetCurrentText() const {
   return view_->GetCurrentText();
 }
 
@@ -124,7 +125,7 @@ void PinStatusView::SetText(const std::u16string& text_str) {
   text_label_->SetText(text_str);
 }
 
-const std::u16string& PinStatusView::GetCurrentText() const {
+std::u16string_view PinStatusView::GetCurrentText() const {
   return text_label_->GetText();
 }
 

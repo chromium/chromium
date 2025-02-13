@@ -3502,6 +3502,18 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences(
 
 #if BUILDFLAG(IS_ANDROID)
   prefs.long_press_link_select_text = long_press_link_select_text_;
+
+  if (base::FeatureList::IsEnabled(
+          features::kRestrictOrientationLockToPhones)) {
+    // Only lock fullscreen orientation if the provider allows it, and if the
+    // prefs currently want to do so.  While current behavior happens to match
+    // exactly with the provider claiming to support orientation lock, we still
+    // want to give the cache the opportunity to turn it off for other reasons.
+    // For example, if a foldable is folded, then the prefs cache should notify
+    // us that the behavior may have changed.
+    prefs.video_fullscreen_orientation_lock_enabled &=
+        screen_orientation_provider_->IsOrientationLockSupported();
+  }
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

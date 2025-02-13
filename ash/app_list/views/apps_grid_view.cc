@@ -1906,10 +1906,10 @@ void AppsGridView::HandleKeyboardFoldering(ui::KeyboardCode key_code) {
     return;
   }
 
-  const std::u16string moving_view_title = selected_view_->title()->GetText();
+  const std::u16string moving_view_title(selected_view_->title()->GetText());
   AppListItemView* target_view =
       GetViewDisplayedAtSlotOnCurrentPage(target_index.slot);
-  const std::u16string target_view_title = target_view->title()->GetText();
+  const std::u16string target_view_title(target_view->title()->GetText());
   const bool target_view_is_folder = target_view->is_folder();
 
   std::string folder_id;

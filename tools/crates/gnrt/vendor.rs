@@ -336,10 +336,10 @@ fn placeholder_crate(
     for x in std::fs::read_dir(&crate_dir)? {
         let entry = x?;
         if entry.metadata()?.is_dir() {
-            std::fs::remove_dir_all(&entry.path())
+            std::fs::remove_dir_all(entry.path())
                 .with_context(|| format!("removing dir {}", entry.path().display()))?;
         } else {
-            std::fs::remove_file(&entry.path())
+            std::fs::remove_file(entry.path())
                 .with_context(|| format!("removing file {}", entry.path().display()))?;
         }
     }

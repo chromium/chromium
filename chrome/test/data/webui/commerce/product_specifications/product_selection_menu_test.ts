@@ -8,6 +8,7 @@ import type {ProductSelectionMenuElement} from 'chrome://compare/product_selecti
 import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
+import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -49,7 +50,7 @@ suite('ProductSelectionMenuTest', () => {
         Promise.resolve({urlInfos: recentlyViewedTabs}));
   }
 
-  setup(async () => {
+  setup(() => {
     shoppingServiceApi.reset();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
@@ -87,7 +88,7 @@ suite('ProductSelectionMenuTest', () => {
     await microtasksFinished();
 
     assertStyle($$(menu, '#empty')!, 'display', 'none');
-    const sectionTitles = menu.shadowRoot!.querySelectorAll('.section-title');
+    const sectionTitles = menu.shadowRoot.querySelectorAll('.section-title');
     assertEquals(1, sectionTitles.length);
     assertEquals('suggestions', sectionTitles[0]!.textContent);
     // Ensure the number of open tab list items is equal to the number of open
@@ -114,7 +115,7 @@ suite('ProductSelectionMenuTest', () => {
     await microtasksFinished();
 
     assertStyle($$(menu, '#empty')!, 'display', 'none');
-    const sectionTitles = menu.shadowRoot!.querySelectorAll('.section-title');
+    const sectionTitles = menu.shadowRoot.querySelectorAll('.section-title');
     assertEquals(1, sectionTitles.length);
     assertEquals('recently viewed tabs', sectionTitles[0]!.textContent);
     // Ensure the number of recently viewed list items is equal to the number
@@ -146,7 +147,7 @@ suite('ProductSelectionMenuTest', () => {
     await microtasksFinished();
 
     assertStyle($$(menu, '#empty')!, 'display', 'none');
-    const sectionTitles = menu.shadowRoot!.querySelectorAll('.section-title');
+    const sectionTitles = menu.shadowRoot.querySelectorAll('.section-title');
     assertEquals(2, sectionTitles.length);
     assertEquals('suggestions', sectionTitles[0]!.textContent);
     assertEquals('recently viewed tabs', sectionTitles[1]!.textContent);
@@ -168,11 +169,11 @@ suite('ProductSelectionMenuTest', () => {
     await microtasksFinished();
 
     const listElement =
-        menu.$.menu.get().querySelector<HTMLElement>('.dropdown-item');
+        menu.$.menu.get().querySelector<CrLitElement>('.dropdown-item');
     assertTrue(!!listElement);
 
     const tabUrl =
-        listElement.shadowRoot!.querySelector<HTMLElement>('.description-text');
+        listElement.shadowRoot.querySelector<HTMLElement>('.description-text');
     assertTrue(!!tabUrl);
     assertEquals('example.com', tabUrl.textContent);
   });
@@ -198,10 +199,10 @@ suite('ProductSelectionMenuTest', () => {
     await microtasksFinished();
 
     const listElements =
-        menu.$.menu.get().querySelectorAll<HTMLElement>('.dropdown-item');
+        menu.$.menu.get().querySelectorAll<CrLitElement>('.dropdown-item');
     assertEquals(2, listElements.length);
 
-    const tabUrl = listElements[0]!.shadowRoot!.querySelector<HTMLElement>(
+    const tabUrl = listElements[0]!.shadowRoot.querySelector<HTMLElement>(
         '.description-text');
     assertTrue(!!tabUrl);
     assertEquals('example.com', tabUrl.textContent);
@@ -236,10 +237,10 @@ suite('ProductSelectionMenuTest', () => {
     await microtasksFinished();
 
     const listElements =
-        menu.$.menu.get().querySelectorAll<HTMLElement>('.dropdown-item');
+        menu.$.menu.get().querySelectorAll<CrLitElement>('.dropdown-item');
     assertEquals(2, listElements.length);
 
-    const tabUrl = listElements[0]!.shadowRoot!.querySelector<HTMLElement>(
+    const tabUrl = listElements[0]!.shadowRoot.querySelector<HTMLElement>(
         '.description-text');
     assertTrue(!!tabUrl);
     assertEquals('example.com', tabUrl.textContent);
@@ -365,7 +366,7 @@ suite('ProductSelectionMenuTest', () => {
     menu.showAt(document.body);
     await microtasksFinished();
 
-    const sectionTitles = menu.shadowRoot!.querySelectorAll('.section-title');
+    const sectionTitles = menu.shadowRoot.querySelectorAll('.section-title');
     assertEquals(1, sectionTitles.length);
     assertEquals('suggestions', sectionTitles[0]!.textContent);
     const menuOpenTabEntries = menu.sections[0]!.entries;

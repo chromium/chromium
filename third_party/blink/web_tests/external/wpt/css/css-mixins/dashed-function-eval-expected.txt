@@ -1,0 +1,86 @@
+This is a testharness.js-based test.
+Found 41 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Shadow DOM defined: Literal result
+  assert_equals: expected "12px" but got ""
+[FAIL] Shadow DOM defined: Literal result, typed return
+  assert_equals: expected "12px" but got ""
+[FAIL] Shadow DOM defined: Literal result, typed return, calc
+  assert_equals: expected "13px" but got ""
+[FAIL] Shadow DOM defined: result cascading behavior
+  assert_equals: expected "24px" but got ""
+[FAIL] Shadow DOM defined: Another dashed-function in result
+  assert_equals: expected "12px" but got ""
+[FAIL] Shadow DOM defined: Unused argument
+  assert_equals: expected "12px" but got ""
+[FAIL] Shadow DOM defined: Single parameter
+  assert_equals: expected "100px" but got ""
+[FAIL] Shadow DOM defined: Multiple parameters
+  assert_equals: expected "100px auto red" but got ""
+[FAIL] Shadow DOM defined: Single parameter, typed
+  assert_equals: expected "100px" but got ""
+[FAIL] Shadow DOM defined: Typed parameter with calc()
+  assert_equals: expected "101px" but got ""
+[FAIL] Shadow DOM defined: Untyped parameter with calc()
+  assert_equals: expected "calc(100px + 1px)" but got ""
+[FAIL] Shadow DOM defined: Various typed parameters
+  assert_equals: expected "101px 360deg 1s" but got ""
+[FAIL] Shadow DOM defined: Parameter with complex type (auto)
+  assert_equals: expected "auto" but got ""
+[FAIL] Shadow DOM defined: Parameter with complex type (px)
+  assert_equals: expected "10px" but got ""
+[FAIL] Shadow DOM defined: Passing argument to inner function
+  assert_equals: expected "12px" but got ""
+[FAIL] Shadow DOM defined: var() in argument resolved before call
+  assert_equals: expected "calc(100px + 1px)" but got ""
+[FAIL] Shadow DOM defined: var() in argument resolved before call, typed
+  assert_equals: expected "101px" but got ""
+[FAIL] Shadow DOM defined: Single parameter with default value
+  assert_equals: expected "PASS" but got ""
+[FAIL] Shadow DOM defined: Multiple parameters with defaults
+  assert_equals: expected "1px 5px 3px" but got ""
+[FAIL] Shadow DOM defined: Multiple parameters with defaults, typed
+  assert_equals: expected "1px 5px 3px" but got ""
+[FAIL] Shadow DOM defined: Unused local
+  assert_equals: expected "1px" but got ""
+[FAIL] Shadow DOM defined: Local does not affect outer scope
+  assert_equals: expected "1px 20px" but got ""
+[FAIL] Shadow DOM defined: Substituting local in result
+  assert_equals: expected "10px" but got ""
+[FAIL] Shadow DOM defined: Substituting multiple locals in result
+  assert_equals: expected "10px 17px" but got ""
+[FAIL] Shadow DOM defined: Local referring to another local
+  assert_equals: expected "10px" but got ""
+[FAIL] Shadow DOM defined: Locals appearing after result
+  assert_equals: expected "10px" but got ""
+[FAIL] Shadow DOM defined: Locals cascading behavior
+  assert_equals: expected "20px" but got ""
+[FAIL] Shadow DOM defined: Custom properties are visible inside function
+  assert_equals: expected "10px" but got ""
+[FAIL] Shadow DOM defined: Substitute local from outer scope
+  assert_equals: expected "PASS" but got ""
+[FAIL] Shadow DOM defined: Substitute argument from outer scope
+  assert_equals: expected "PASS" but got ""
+[FAIL] Shadow DOM defined: Inner argument shadowing outer argument
+  assert_equals: expected "PASS" but got ""
+[FAIL] Shadow DOM defined: Inner argument shadowing outer local
+  assert_equals: expected "PASS" but got ""
+[FAIL] Shadow DOM defined: Inner local shadowing outer argument
+  assert_equals: expected "PASS" but got ""
+[FAIL] Shadow DOM defined: Inner local shadowing outer local
+  assert_equals: expected "PASS" but got ""
+[FAIL] Shadow DOM defined: Referencing outer local containing var()
+  assert_equals: expected "1" but got ""
+[FAIL] Shadow DOM defined: Referencing outer typed argument
+  assert_equals: expected "10px" but got ""
+[FAIL] Shadow DOM defined: Same function with different scopes
+  assert_equals: expected "1 2 3 0" but got ""
+[FAIL] Shadow DOM defined: Referencing local two frames up
+  assert_equals: expected "1" but got ""
+[FAIL] Shadow DOM defined: IACVT outer local shadows property
+  assert_equals: expected "PASS" but got ""
+[FAIL] Shadow DOM defined: Parameter shadows custom property
+  assert_equals: expected "PASS" but got ""
+[FAIL] Shadow DOM defined: Local shadows parameter
+  assert_equals: expected "PASS" but got ""
+Harness: the test ran to completion.
+

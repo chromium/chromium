@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/share_kit/model/share_kit_flow_outcome.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_join_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_preview_item.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
@@ -157,6 +158,18 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
   ShareKitJoinConfiguration* config = [[ShareKitJoinConfiguration alloc] init];
   config.token = token;
   config.baseViewController = base_view_controller_;
+  if (const auto& tab_group_preview = preview_data.shared_tab_group_preview) {
+    config.displayName = base::SysUTF8ToNSString(tab_group_preview->title);
+    NSMutableArray<ShareKitPreviewItem*>* preview_items =
+        [NSMutableArray array];
+    for (const auto& tab : tab_group_preview->tabs) {
+      ShareKitPreviewItem* preview_item = [[ShareKitPreviewItem alloc] init];
+      // preview_item.image = // TODO: fetch favicon?
+      preview_item.title = base::SysUTF8ToNSString(tab.url.host());
+      [preview_items addObject:preview_item];
+    }
+    config.previewItems = preview_items;
+  }
   auto completion_block = base::CallbackToBlock(std::move(result));
   config.completion = ^(ShareKitFlowOutcome outcome) {
     completion_block(ConvertOutcome(outcome));

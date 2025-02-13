@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/i18n/rtl.h"
@@ -65,12 +67,10 @@ namespace views {
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(CascadingProperty<SkColor>,
                                    kCascadingLabelEnabledColor)
 
-Label::Label() : Label(std::u16string()) {}
-
-Label::Label(const std::u16string& text)
+Label::Label(std::u16string_view text)
     : Label(text, style::CONTEXT_LABEL, style::STYLE_PRIMARY) {}
 
-Label::Label(const std::u16string& text,
+Label::Label(std::u16string_view text,
              int text_context,
              int text_style,
              gfx::DirectionalityMode directionality_mode)
@@ -81,7 +81,7 @@ Label::Label(const std::u16string& text,
        directionality_mode);
 }
 
-Label::Label(const std::u16string& text, const CustomFont& font)
+Label::Label(std::u16string_view text, const CustomFont& font)
     : text_context_(style::CONTEXT_LABEL),
       text_style_(style::STYLE_PRIMARY),
       context_menu_contents_(this) {
@@ -102,16 +102,16 @@ void Label::SetFontList(const gfx::FontList& font_list) {
   PreferredSizeChanged();
 }
 
-const std::u16string& Label::GetText() const {
+std::u16string_view Label::GetText() const {
   return full_text_->text();
 }
 
-void Label::SetText(const std::u16string& new_text) {
+void Label::SetText(std::u16string_view new_text) {
   if (new_text == GetText()) {
     return;
   }
 
-  std::u16string current_text = GetText();
+  std::u16string current_text(GetText());
   full_text_->SetText(new_text);
   ClearDisplayText();
 
@@ -127,9 +127,9 @@ void Label::SetText(const std::u16string& new_text) {
       GetViewAccessibility().GetCachedName() == current_text) {
     if (new_text.empty()) {
       GetViewAccessibility().SetName(
-          new_text, ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+          std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
     } else {
-      GetViewAccessibility().SetName(new_text);
+      GetViewAccessibility().SetName(std::u16string(new_text));
     }
   }
 
@@ -150,7 +150,7 @@ void Label::SetText(const std::u16string& new_text) {
 void Label::AdjustAccessibleName(std::u16string& new_name,
                                  ax::mojom::NameFrom& name_from) {
   if (new_name.empty()) {
-    new_name = full_text_->GetDisplayText();
+    new_name = std::u16string(full_text_->GetDisplayText());
   }
 }
 
@@ -555,15 +555,15 @@ void Label::SetElideBehavior(gfx::ElideBehavior elide_behavior) {
   OnDisplayTextTruncation();
 }
 
-void Label::SetCustomTooltipText(const std::u16string& tooltip_text) {
-  custom_tooltip_text_ = tooltip_text;
+void Label::SetCustomTooltipText(std::u16string_view tooltip_text) {
+  custom_tooltip_text_ = std::u16string(tooltip_text);
 
   UpdateTooltipText();
 }
 
 void Label::UpdateTooltipText() {
   if (GetHandlesTooltips()) {
-    SetTooltipText(GetComputedTooltip());
+    SetTooltipText(std::u16string(GetComputedTooltip()));
     suppressed_tooltip_text_.clear();
   } else {
     SetTooltipText(std::u16string());
@@ -575,9 +575,9 @@ void Label::UpdateTooltipText() {
   }
 }
 
-std::u16string Label::GetComputedTooltip() {
+std::u16string_view Label::GetComputedTooltip() {
   if (GetObscured()) {
-    return std::u16string();
+    return {};
   }
 
   if (!custom_tooltip_text_.empty()) {
@@ -588,7 +588,7 @@ std::u16string Label::GetComputedTooltip() {
     return full_text_->GetDisplayText();
   }
 
-  return std::u16string();
+  return {};
 }
 
 bool Label::GetHandlesTooltips() const {
@@ -658,9 +658,10 @@ size_t Label::GetRequiredLines() const {
   return full_text_->GetNumLines();
 }
 
-const std::u16string Label::GetDisplayTextForTesting() const {
+std::u16string_view Label::GetDisplayTextForTesting() const {
   MaybeBuildDisplayText();
-  return display_text_ ? display_text_->GetDisplayText() : std::u16string();
+  return display_text_ ? display_text_->GetDisplayText()
+                       : std::u16string_view();
 }
 
 base::i18n::TextDirection Label::GetTextDirectionForTesting() {
@@ -797,8 +798,8 @@ gfx::Size Label::GetMinimumSize() const {
       elide_behavior_ == gfx::ELIDE_MIDDLE ||
       elide_behavior_ == gfx::ELIDE_TAIL ||
       elide_behavior_ == gfx::ELIDE_EMAIL) {
-    size.set_width(gfx::Canvas::GetStringWidth(
-        std::u16string(gfx::kEllipsisUTF16), font_list()));
+    size.set_width(
+        gfx::Canvas::GetStringWidth(gfx::kEllipsisUTF16, font_list()));
   }
 
   if (!GetMultiLine()) {
@@ -1348,7 +1349,7 @@ const gfx::RenderText* Label::GetRenderTextForSelectionController() const {
   return display_text_.get();
 }
 
-void Label::Init(const std::u16string& text,
+void Label::Init(std::u16string_view text,
                  const gfx::FontList& font_list,
                  gfx::DirectionalityMode directionality_mode) {
   full_text_ = gfx::RenderText::CreateRenderText();
@@ -1363,7 +1364,7 @@ void Label::Init(const std::u16string& text,
   GetViewAccessibility().SetRole(text_context_ == style::CONTEXT_DIALOG_TITLE
                                      ? ax::mojom::Role::kTitleBar
                                      : ax::mojom::Role::kStaticText);
-  GetViewAccessibility().SetName(text);
+  GetViewAccessibility().SetName(std::u16string(text));
 
   SetText(text);
 
@@ -1532,10 +1533,10 @@ void Label::ClearDisplayText() {
   SchedulePaint();
 }
 
-std::u16string Label::GetSelectedText() const {
+std::u16string_view Label::GetSelectedText() const {
   const gfx::RenderText* render_text = GetRenderTextForSelectionController();
   return render_text ? render_text->GetTextFromRange(render_text->selection())
-                     : std::u16string();
+                     : std::u16string_view();
 }
 
 void Label::CopyToClipboard() {
@@ -1566,7 +1567,7 @@ void Label::OnDisplayTextTruncation() {
 }
 
 BEGIN_METADATA(Label)
-ADD_PROPERTY_METADATA(std::u16string, Text)
+ADD_PROPERTY_METADATA(std::u16string_view, Text)
 ADD_PROPERTY_METADATA(int, TextContext)
 ADD_PROPERTY_METADATA(int, TextStyle)
 ADD_PROPERTY_METADATA(bool, AutoColorReadabilityEnabled)

@@ -123,6 +123,10 @@ void DetachFromVM() {
 }
 
 void InitVM(JavaVM* vm) {
+  if (g_jvm) {
+    JNI_ZERO_CHECK(vm == g_jvm);
+    return;
+  }
   g_jvm = vm;
   JNIEnv* env = AttachCurrentThread();
   g_object_class = GetSystemClassGlobalRef(env, "java/lang/Object");

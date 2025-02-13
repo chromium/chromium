@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
+<translation id="1000127192436081677">切換快速分享功能；快速分享目前狀態為<ph name="QUICK_SHARE_STATE" /></translation>
 <translation id="1012876632442809908">USB-C 裝置 (前方連接埠)</translation>
 <translation id="1013923882670373915">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限，請在裝置上輸入以下 PIN 碼：<ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">這項操作會允許「<ph name="APP_NAME" />」、具有位置存取權的所有應用程式/網站和 ChromeOS 使用 Wi-Fi 和行動網路的位置資訊。</translation>
@@ -154,6 +155,7 @@
 <translation id="1469148162491666137">這將允許「<ph name="APP1_NAME" />」、「<ph name="APP2_NAME" />」與具有攝影機和麥克風權限的所有應用程式和網站存取。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="147310119694673958">手機電量 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">切換無線基地台。無線基地台已開啟，有 1 部裝置已連線。</translation>
+<translation id="1479685784053141667">建立聯絡人</translation>
 <translation id="1479909375538722835">浮動式無障礙選單</translation>
 <translation id="1483493594462132177">傳送</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -464,6 +466,7 @@
 <translation id="2598725286293895280">桌面不支援的應用程式</translation>
 <translation id="2607678425161541573">需要線上登入</translation>
 <translation id="2612072250312279703">活動監測工具</translation>
+<translation id="261210853165551493">一併複製格式</translation>
 <translation id="2612614436418177118">在應用程式排列顯示畫面中移動應用程式圖示</translation>
 <translation id="2619052155095999743">Insert 鍵</translation>
 <translation id="2619326010008283367">導覽步驟 <ph name="STEP" />，共 <ph name="TOTAL_STEPS" /> 個步驟。你可以使用啟動器找出裝置的「設定」，然後在「設定」中試著自訂 <ph name="PRODUCT_NAME" />，例如變更桌布或設定螢幕保護程式。</translation>
@@ -556,6 +559,7 @@
 <translation id="2932487126591186298">已延長 10 分鐘，還剩 <ph name="REMAINING_TIME" />。</translation>
 <translation id="2935225303485967257">管理個人資料</translation>
 <translation id="2941112035454246133">低</translation>
+<translation id="2941232201846070406">請檢查網際網路連線，然後再試一次</translation>
 <translation id="2942350706960889382">置頂放大鏡</translation>
 <translation id="2942516765047364088">檔案櫃位置</translation>
 <translation id="2946119680249604491">新增連線</translation>
@@ -640,6 +644,7 @@
 <translation id="3206735939915734551">開啟/關閉 Caps Lock 鍵</translation>
 <translation id="3207953481422525583">使用者設定</translation>
 <translation id="3208321278970793882">應用程式</translation>
+<translation id="3212221635583599601">連上網際網路即可執行更多操作</translation>
 <translation id="3213571860604332401">將連結儲存為書籤</translation>
 <translation id="3217205077783620295">音量已開啟；使用切換鈕可設為靜音。</translation>
 <translation id="3226991577105957773">還有 <ph name="COUNT" /> 則</translation>
@@ -968,6 +973,7 @@
 <translation id="4275663329226226506">媒體</translation>
 <translation id="4279490309300973883">鏡像</translation>
 <translation id="4280601795273309128">安全性更新已終止，請升級裝置。</translation>
+<translation id="4281739221820540368">建立 Google 文件</translation>
 <translation id="4283888303416325161">基於安全考量，請輸入密碼</translation>
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="428715201724021596">正在連線至設定檔。請稍候片刻。</translation>
@@ -1040,6 +1046,7 @@
 <translation id="4513044611477939680">快速分享</translation>
 <translation id="4513946894732546136">意見回饋</translation>
 <translation id="4518404433291145981">如要解鎖 Chromebook，請先解鎖手機</translation>
+<translation id="4525887279712865285">顯示快速分享設定</translation>
 <translation id="4527045527269911712">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限。</translation>
 <translation id="4531536770443562276">僅提供全螢幕模式</translation>
 <translation id="4533343294786968049">延長電池續航力。電池電量將在<ph name="FULLY_CHARGE_TIME" /> 充飽。</translation>
@@ -1595,6 +1602,7 @@
 <translation id="6274202259872570803">螢幕側錄</translation>
 <translation id="6276708887952587684">查看網頁原始碼</translation>
 <translation id="6284232397434400372">解析度已變更</translation>
+<translation id="6285871695023807425">新增至日曆</translation>
 <translation id="6288235558961782912">取得家長同意後即可再次新增 <ph name="USER_EMAIL_ADDRESS" />。</translation>
 <translation id="6291221004442998378">非充電中</translation>
 <translation id="6298183524022479114">在應用程式中自訂這部裝置</translation>
@@ -1690,6 +1698,7 @@
 <translation id="6612889377159412215">子工作</translation>
 <translation id="6613765291890844037">已使用 <ph name="STORAGE_IN_USE_SIZE" /> 的儲存空間 | 共 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">已啟用隱私保護畫面</translation>
+<translation id="6618277154885124991">建立 Google 試算表</translation>
 <translation id="6622679827379792051">配置以下設定：查看手機的應用程式</translation>
 <translation id="662279009180869175">使用向左和向右鍵調整分割畫面大小</translation>
 <translation id="6624493541160101248">目前的桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 個桌面，共 <ph name="DESK_COUNT" /> 個。</translation>
@@ -2245,6 +2254,7 @@
 <translation id="851660987304951246">使用「幫我讀」功能，快速總結內容或提問</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> 在開啟時可能無法充電。</translation>
 <translation id="8535393432370007982">復原依顏色排列順序</translation>
+<translation id="8539803091108018926">已將文字複製到剪貼簿</translation>
 <translation id="8541078764854166027">相機取景</translation>
 <translation id="8542053257095774575">沒有已儲存的桌面或範本</translation>
 <translation id="8546059259582788728">已成功復原排列順序</translation>

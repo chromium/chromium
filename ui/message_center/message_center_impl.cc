@@ -574,7 +574,7 @@ void MessageCenterImpl::ClickOnNotificationButton(const std::string& id,
 void MessageCenterImpl::ClickOnNotificationButtonWithReply(
     const std::string& id,
     int button_index,
-    const std::u16string& reply) {
+    std::u16string_view reply) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!FindVisibleNotificationById(id)) {
     return;
@@ -582,7 +582,8 @@ void MessageCenterImpl::ClickOnNotificationButtonWithReply(
 
   lock_screen_controller_->DismissLockScreenThenExecute(
       base::BindOnce(&MessageCenterImpl::ClickOnNotificationUnlocked,
-                     base::Unretained(this), id, button_index, reply),
+                     base::Unretained(this), id, button_index,
+                     std::u16string(reply)),
       base::OnceClosure());
 }
 

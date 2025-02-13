@@ -36,7 +36,7 @@ suite('BlockAppItemElementTest', () => {
         '.app-toggle');
   }
 
-  setup(async () => {
+  setup(() => {
     handler = new FakeAppParentalControlsHandler();
     setAppParentalControlsProviderForTesting(handler);
   });

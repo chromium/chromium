@@ -220,7 +220,7 @@ suite('<settings-keyboard>', () => {
         button, 'Keyboard shortcuts button');
   });
 
-  test('Navigate to a11y keyboard settings subpage', async () => {
+  test('Navigate to a11y keyboard settings subpage', () => {
     keyboardPage.shadowRoot!
         .querySelector<CrLinkRowElement>('#a11yKeyboardRow')!.click();
     assertEquals(

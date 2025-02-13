@@ -47,7 +47,8 @@ void InvokeStreamingCallbackWithRemoteResult(
 
 // The state for an ongoing ExecuteModel() call.
 class OnDeviceExecution final
-    : public on_device_model::mojom::StreamingResponder {
+    : public on_device_model::mojom::StreamingResponder,
+      public on_device_model::mojom::ContextClient {
  public:
   // Possible outcomes of ExecuteModel().
   // These values are persisted to logs. Entries should not be renumbered and
@@ -144,16 +145,21 @@ class OnDeviceExecution final
 
   // Callback invoked with RequestSafetyCheck result.
   // Calls BeginRequestExecution if safety checks pass.
-  void OnRequestSafetyResult(on_device_model::mojom::InputOptionsPtr options,
+  void OnRequestSafetyResult(on_device_model::mojom::GenerateOptionsPtr options,
                              SafetyChecker::Result safety_result);
 
   // Begins request execution (leads to OnResponse/OnComplete, which will
   // call RunRawOutputSafetyCheck).
-  void BeginRequestExecution(on_device_model::mojom::InputOptionsPtr options);
+  void BeginRequestExecution(
+      on_device_model::mojom::GenerateOptionsPtr options);
 
   // on_device_model::mojom::StreamingResponder:
   void OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) override;
   void OnComplete(on_device_model::mojom::ResponseSummaryPtr summary) override;
+
+  // on_device_model::mojom::ContextClient:
+  void OnComplete(uint32_t tokens_processed) override;
+
   void OnResponderDisconnect();
 
   // Evaluates raw output safety (leads to OnRawOutputSafetyResult).
@@ -265,7 +271,8 @@ class OnDeviceExecution final
   // Should pass true to indicate healthy completion, or false if unhealthy.
   base::OnceCallback<void(bool)> cleanup_callback_;
 
-  mojo::Receiver<on_device_model::mojom::StreamingResponder> receiver_;
+  mojo::Receiver<on_device_model::mojom::StreamingResponder> receiver_{this};
+  mojo::Receiver<on_device_model::mojom::ContextClient> context_receiver_{this};
 
   // Factory for weak pointers related to this session that are invalidated
   // with the request state.

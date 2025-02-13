@@ -16,7 +16,20 @@ PressureServiceForFrame::PressureServiceForFrame(
   CHECK(render_frame_host);
 }
 
-PressureServiceForFrame::~PressureServiceForFrame() = default;
+PressureServiceForFrame::~PressureServiceForFrame() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Manually remove the observer here, due to a possible race between
+  // RenderFrameHost deletion and WebPressureManager's receiver
+  // disconnect_handler call.
+  //
+  // The observer is removed here and not in PressureServiceBase because
+  // DocumentUserData needs to be valid to retrieve the RenderFrameHost
+  // necessary to access WebContents.
+  auto* pressure_manager_proxy = GetWebContentsPressureManagerProxy();
+  if (pressure_manager_proxy) {
+    pressure_manager_proxy->RemoveObserver(this);
+  }
+}
 
 bool PressureServiceForFrame::CanCallAddClient() const {
   return render_frame_host().IsActive() &&

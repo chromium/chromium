@@ -84,6 +84,8 @@ public final class AccountCapabilitiesTest {
                 return capabilities.canUseGenerativeAiInRecorderApp();
             case AccountCapabilitiesConstants.CAN_USE_GENERATIVE_AI_PHOTO_EDITING:
                 return capabilities.canUseGenerativeAiPhotoEditing();
+            case AccountCapabilitiesConstants.CAN_USE_CHROMEOS_GENERATIVE_AI:
+                return capabilities.canUseChromeOSGenerativeAi();
         }
         assert false : "Capability name is not known.";
         return -1;
@@ -184,7 +186,12 @@ public final class AccountCapabilitiesTest {
                                 .name("CanUseGenerativeAiPhotoEditing")
                                 .value(
                                         AccountCapabilitiesConstants
-                                                .CAN_USE_GENERATIVE_AI_PHOTO_EDITING));
+                                                .CAN_USE_GENERATIVE_AI_PHOTO_EDITING),
+                        new ParameterSet()
+                                .name("CanUseChromeOSGenerativeAi")
+                                .value(
+                                        AccountCapabilitiesConstants
+                                                .CAN_USE_CHROMEOS_GENERATIVE_AI));
 
         // Returns String value added from Capabilities ParameterSet.
         static String getCapabilityName(ParameterSet parameterSet) {

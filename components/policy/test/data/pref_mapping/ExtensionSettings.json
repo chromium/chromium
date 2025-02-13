@@ -6,6 +6,7 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
+      "desktop_android",
       "fuchsia"
     ],
     "policy_pref_mapping_tests": [

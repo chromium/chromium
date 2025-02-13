@@ -75,8 +75,6 @@ namespace {
 
 // The name string for the header for variations information.
 constexpr char kClientDataHeader[] = "X-Client-Data";
-constexpr char kHttpGetMethod[] = "GET";
-constexpr char kHttpPostMethod[] = "POST";
 constexpr char kContentTypeKey[] = "Content-Type";
 constexpr char kContentType[] = "application/x-protobuf";
 constexpr char kDeveloperKey[] = "X-Developer-Key";
@@ -634,7 +632,7 @@ std::unique_ptr<EndpointFetcher>
 LensOverlayQueryController::CreateEndpointFetcher(
     lens::LensOverlayServerRequest* request,
     const GURL& fetch_url,
-    const std::string& http_method,
+    const HttpMethod& http_method,
     const base::TimeDelta& timeout,
     const std::vector<std::string>& request_headers,
     const std::vector<std::string>& cors_exempt_headers,
@@ -651,15 +649,14 @@ LensOverlayQueryController::CreateEndpointFetcher(
           ? profile_->GetURLLoaderFactory().get()
           : g_browser_process->shared_url_loader_factory(),
       /*url=*/fetch_url,
-      /*http_method=*/http_method,
       /*content_type=*/kContentType,
       /*timeout=*/timeout,
       /*post_data=*/request_string,
       /*headers=*/request_headers,
-      /*cors_exempt_headers=*/cors_exempt_headers,
-      /*annotation_tag=*/kTrafficAnnotationTag, chrome::GetChannel(),
+      /*cors_exempt_headers=*/cors_exempt_headers, chrome::GetChannel(),
       /*request_params=*/
-      EndpointFetcher::RequestParams::Builder()
+      EndpointFetcher::RequestParams::Builder(http_method,
+                                              kTrafficAnnotationTag)
           .SetCredentialsMode(CredentialsMode::kInclude)
           .SetSetSiteForCookies(true)
           .SetUploadProgressCallback(upload_progress_callback)
@@ -754,7 +751,7 @@ void LensOverlayQueryController::PerformClusterInfoFetchRequest(
   // given params. Store in class variable to keep endpoint fetcher alive until
   // the request is made.
   cluster_info_endpoint_fetcher_ = CreateEndpointFetcher(
-      nullptr, fetch_url, kHttpGetMethod,
+      nullptr, fetch_url, HttpMethod::kGet,
       base::Milliseconds(lens::features::GetLensOverlayServerRequestTimeout()),
       request_headers, cors_exempt_headers, base::DoNothing());
 
@@ -1703,7 +1700,7 @@ void LensOverlayQueryController::PerformFetchRequest(
   // Create the EndpointFetcher, responsible for making the request using our
   // given params.
   std::unique_ptr<EndpointFetcher> endpoint_fetcher = CreateEndpointFetcher(
-      request, fetch_url, kHttpPostMethod, timeout, *request_headers,
+      request, fetch_url, HttpMethod::kPost, timeout, *request_headers,
       cors_exempt_headers, upload_progress_callback);
   EndpointFetcher* fetcher = endpoint_fetcher.get();
 
@@ -1967,10 +1964,8 @@ void LensOverlayQueryController::OnInteractionEndpointFetcherCreated(
 }
 
 bool LensOverlayQueryController::ShouldSendContextualSearchQuery() {
-  // Can send the query if the page content request has finished, or the partial
-  // page content is substantial enough to provide good results.
-  return !page_content_request_in_progress_ ||
-         IsPartialPageContentSubstantial();
+  // Can send the query if the page content request has finished.
+  return !page_content_request_in_progress_;
 }
 
 bool LensOverlayQueryController::IsPartialPageContentSubstantial() {

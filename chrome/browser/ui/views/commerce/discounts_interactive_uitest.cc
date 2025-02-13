@@ -347,12 +347,11 @@ IN_PROC_BROWSER_TEST_P(DiscountsBubbleDialogInteractiveTest,
 
 IN_PROC_BROWSER_TEST_P(DiscountsBubbleDialogInteractiveTest,
                        AccessibleNameChangedOnCopyButtonPress) {
-  static auto is_accessible_name_equal = [](views::MdTextButton* copy_button,
-                                            int expected_message_id) {
-    std::u16string expected_name =
-        copy_button->GetText() + u" " +
-        l10n_util::GetStringUTF16(expected_message_id);
-    return copy_button->GetViewAccessibility().GetCachedName() == expected_name;
+  static auto is_accessible_name_expected = [](views::MdTextButton* copy_button,
+                                               int expected_message_id) {
+    return copy_button->GetViewAccessibility().GetCachedName() ==
+           base::StrCat({copy_button->GetText(), u" ",
+                         l10n_util::GetStringUTF16(expected_message_id)});
   };
 
   RunTestSequence(
@@ -364,13 +363,13 @@ IN_PROC_BROWSER_TEST_P(DiscountsBubbleDialogInteractiveTest,
       WaitForShow(kDiscountsBubbleDialogId),
       CheckView(kDiscountsBubbleCopyButtonElementId,
                 base::BindOnce([&](views::MdTextButton* copy_button) {
-                  return is_accessible_name_equal(
+                  return is_accessible_name_expected(
                       copy_button, IDS_DISCOUNTS_COUPON_CODE_BUTTON_TOOLTIP);
                 })),
       PressButton(kDiscountsBubbleCopyButtonElementId),
       CheckView(kDiscountsBubbleCopyButtonElementId,
                 base::BindOnce([&](views::MdTextButton* copy_button) {
-                  return is_accessible_name_equal(
+                  return is_accessible_name_expected(
                       copy_button,
                       IDS_DISCOUNTS_COUPON_CODE_BUTTON_TOOLTIP_CLICKED);
                 })));

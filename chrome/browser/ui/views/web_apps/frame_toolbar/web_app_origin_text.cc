@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_origin_text.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
@@ -129,8 +131,8 @@ void WebAppOriginText::OnLayerAnimationEnded(
   SetVisible(false);
 }
 
-const std::u16string& WebAppOriginText::GetLabelTextForTesting() {
-  CHECK(label_ != nullptr);
+std::u16string_view WebAppOriginText::GetLabelTextForTesting() const {
+  CHECK(label_);
   return label_->GetText();
 }
 
@@ -181,7 +183,7 @@ void WebAppOriginText::DidFinishNavigation(content::NavigationHandle* handle) {
 
 void WebAppOriginText::UpdateAccessibleName() {
   if (!label_->GetText().empty()) {
-    GetViewAccessibility().SetName(label_->GetText());
+    GetViewAccessibility().SetName(std::u16string(label_->GetText()));
   } else {
     GetViewAccessibility().RemoveName();
   }

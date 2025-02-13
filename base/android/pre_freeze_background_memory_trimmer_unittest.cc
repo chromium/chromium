@@ -924,7 +924,7 @@ TEST_F(PreFreezeSelfCompactionTest, NotCanceled) {
   // We also check that no other histograms (other than the ones expected above)
   // were recorded.
   EXPECT_EQ(histograms.GetTotalCountsForPrefix("Memory.SelfCompact2").size(),
-            45);
+            46);
 
   for (size_t i = 1; i < 5; i++) {
     size_t len = i * base::GetPageSize();
@@ -976,7 +976,7 @@ TEST_F(PreFreezeSelfCompactionTest, Disabled) {
   // We also check that no other histograms (other than the ones expected above)
   // were recorded.
   EXPECT_EQ(histograms.GetTotalCountsForPrefix("Memory.SelfCompact2").size(),
-            45);
+            46);
 }
 
 }  // namespace base::android

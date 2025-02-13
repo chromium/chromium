@@ -252,7 +252,7 @@ suite('LensUploadDialogTest', () => {
             uploadDialog.shadowRoot!.querySelector('#offlineContainer')));
       });
 
-  test('submit url does not submit with empty url', async () => {
+  test('submit url does not submit with empty url', () => {
     // Act.
     clickInputSubmit();
 
@@ -260,21 +260,20 @@ suite('LensUploadDialogTest', () => {
     assertFalse(submitUrlCalled);
   });
 
-  test(
-      'submit valid url by clicking submit button should submit ', async () => {
-        // Arrange.
-        const url = 'http://google.com/image.png';
+  test('submit valid url by clicking submit button should submit ', () => {
+    // Arrange.
+    const url = 'http://google.com/image.png';
 
-        // Act.
-        setInputBoxValue(url);
-        clickInputSubmit();
+    // Act.
+    setInputBoxValue(url);
+    clickInputSubmit();
 
-        // Assert.
-        assertTrue(submitUrlCalled);
-        assertEquals(url, submittedUrl);
-      });
+    // Assert.
+    assertTrue(submitUrlCalled);
+    assertEquals(url, submittedUrl);
+  });
 
-  test('pressing enter in input box should submit valid url', async () => {
+  test('pressing enter in input box should submit valid url', () => {
     // Arrange.
     const url = 'http://google.com/image.png';
 
@@ -287,7 +286,7 @@ suite('LensUploadDialogTest', () => {
     assertEquals(url, submittedUrl);
   });
 
-  test('pressing enter in search button should submit valid url', async () => {
+  test('pressing enter in search button should submit valid url', () => {
     // Arrange.
     const url = 'http://google.com/image.png';
 
@@ -301,7 +300,7 @@ suite('LensUploadDialogTest', () => {
     assertEquals(url, submittedUrl);
   });
 
-  test('pressing space in search button should submit valid url', async () => {
+  test('pressing space in search button should submit valid url', () => {
     // Arrange.
     const url = 'http://google.com/image.png';
 
@@ -343,8 +342,9 @@ suite('LensUploadDialogTest', () => {
   test('drop event should submit files', async () => {
     // Arrange.
     let submitFileListCalled = false;
-    uploadDialog.$.lensForm.submitFileList = async (_fileList: FileList) => {
+    uploadDialog.$.lensForm.submitFileList = (_fileList: FileList) => {
       submitFileListCalled = true;
+      return Promise.resolve();
     };
     // Act.
     const dataTransfer = new DataTransfer();

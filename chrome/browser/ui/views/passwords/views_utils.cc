@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -293,7 +294,7 @@ std::unique_ptr<views::View> CreateTitleView(const std::u16string& title) {
 void EmphasizeTokens(views::Label* label,
                      views::style::TextStyle emphasize_style,
                      const std::vector<std::u16string>& tokens) {
-  const std::u16string& text = label->GetText();
+  const std::u16string_view text = label->GetText();
   for (const std::u16string& token : tokens) {
     size_t start = text.find(token, 0);
     while (start != std::u16string::npos) {

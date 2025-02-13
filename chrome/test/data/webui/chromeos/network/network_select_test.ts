@@ -11,7 +11,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 suite('NetworkSelectTest', function() {
   let networkSelect: NetworkSelectElement|undefined;
 
-  setup(async function() {
+  setup(function() {
     networkSelect = document.createElement('network-select');
     document.body.appendChild(networkSelect);
     flush();

@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/ai/ai_common.mojom";
 import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
 
 // Most of the mojo definition in this file can be viewed as a representation
@@ -39,7 +40,10 @@ struct AILanguageModelInstanceInfo {
   // The number of tokens that are already in the context.
   uint64 current_tokens;
 
+  // The following values are the same as the one provided by the caller when
+  // creating the AILanguageModel.
   AILanguageModelSamplingParams sampling_params;
+  array<AILanguageCode>? expected_input_languages;
 };
 
 // The enum describes the possible roles in the initial prompt.
@@ -64,6 +68,14 @@ struct AILanguageModelCreateOptions {
   // This can be any arbitrary string taken from the JavaScript API.
   string? system_prompt;
   array<AILanguageModelInitialPrompt> initial_prompts;
+  array<AILanguageCode>? expected_input_languages;
+};
+
+// This is used when checking if the AILanguageModel can be created.
+struct AILanguageModelAvailabilityOptions {
+  uint32? top_k;
+  float? temperature;
+  array<AILanguageCode>? expected_input_languages;
 };
 
 enum AIManagerCreateLanguageModelError {
@@ -73,6 +85,8 @@ enum AIManagerCreateLanguageModelError {
   kUnableToCalculateTokenSize = 1,
   // The initial prompt is too large to fit in the context.
   kInitialPromptsTooLarge = 2,
+  // The expected language is not supported.
+  kUnsupportedLanguage = 3,
 
   // Append new line here
 };

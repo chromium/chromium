@@ -55,10 +55,7 @@
   --cr-spinner-size: 20px;
 }
 
-<if expr="is_win">
-/** Windows system tracing -------------------------------------------------- */
-
-#system-tracing {
+.config-toggle-container {
   align-items: center;
   font-size: 1.2em;
   border-radius: 4px;
@@ -66,23 +63,25 @@
   display: flex;
 }
 
-#system-tracing-description {
+.config-toggle-description {
   padding-inline-end: 12px;
 }
 
-#system-tracing-description em {
+.config-toggle-description em {
   display: block;
 }
 
-#system-tracing-toggle {
+.config-toggle {
   flex: none;
 }
 
-#system-tracing-shield {
-  padding-inline-start: 12px;
+.config-toggle:not(:defined) {
+  width: 34px;
 }
 
-#system-tracing-toggle:not(:defined) {
-  width: 34px;
+<if expr="is_win">
+/** Windows system tracing -------------------------------------------------- */
+#system-tracing-shield {
+  padding-inline-start: 12px;
 }
 </if>

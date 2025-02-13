@@ -75,11 +75,13 @@ account_manager::AccountManager* GetAccountManager(Profile* profile) {
 }  // namespace
 
 TokenHandleFetcher::TokenHandleFetcher(Profile* profile,
-                                       TokenHandleUtil* util,
+                                       TokenHandleStore* token_handle_store,
                                        const AccountId& account_id)
-    : profile_(profile), token_handle_util_(util), account_id_(account_id) {
+    : profile_(profile),
+      token_handle_store_(token_handle_store),
+      account_id_(account_id) {
   CHECK(profile_.get());
-  CHECK(token_handle_util_.get());
+  CHECK(token_handle_store_.get());
 }
 
 TokenHandleFetcher::~TokenHandleFetcher() = default;
@@ -181,7 +183,7 @@ void TokenHandleFetcher::OnGetTokenInfoResponse(
     const std::string* handle = token_info.FindString("token_handle");
     if (handle) {
       success = true;
-      token_handle_util_->StoreTokenHandle(account_id_, *handle);
+      token_handle_store_->StoreTokenHandle(account_id_, *handle);
       StoreTokenHandleMapping(*handle);
     }
   }

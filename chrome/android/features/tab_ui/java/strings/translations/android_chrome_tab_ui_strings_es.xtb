@@ -30,6 +30,7 @@ Si lo eliminas, todos los usuarios perderán inmediatamente el acceso al grupo d
 <translation id="2118649612461486615">Información de la tienda</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Puedes volver a abrir las pestañas y los grupos cerrados desde las secciones Pestañas recientes y Grupo de pestañas. Tu pestaña de Incógnito no estará disponible.}other{Puedes volver a abrir las pestañas y los grupos cerrados desde las secciones Pestañas recientes y Grupo de pestañas. Tus # pestañas de Incógnito no estarán disponibles.}}</translation>
 <translation id="2162620598375156287">Ahora, por <ph name="CURRENT_PRICE" /> en <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2242907120821295124">El grupo de pestañas <ph name="TAB_GROUP_NAME" /> no está disponible</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Desagrupar pestaña}other{Desagrupar pestañas}}</translation>
 <translation id="2271452184061378400">Tus grupos de pestañas se guardan aquí</translation>
 <translation id="2277224997687551299">Editar nombre de grupo</translation>
@@ -87,6 +88,7 @@ Si lo eliminas, todos los usuarios perderán inmediatamente el acceso al grupo d
 <translation id="4783638485675352219">Compartir con el sistema operativo los títulos y las URLs de las pestañas abiertas de este dispositivo</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> reseña)}other{(<ph name="REVIEWS_COUNT_MANY" /> reseñas)}}</translation>
 <translation id="4850886885716139402">Ver</translation>
+<translation id="4861611890274104875">Descarta la tarjeta.</translation>
 <translation id="4861953997778766866">Todos los usuarios pueden hacer cambios en tus grupos de pestañas compartidos</translation>
 <translation id="4870911314065352661">¿Cerrar todas las pestañas?</translation>
 <translation id="4871719318659334896">Cerrar grupo</translation>

@@ -211,7 +211,7 @@ suite('Logger', () => {
     assertGT(startTime, recordedTime);
   });
 
-  test('logTimeBetween uses correct uma name', async () => {
+  test('logTimeBetween uses correct uma name', () => {
     assertTimeMetricIsCalled(
         TimeFrom.APP, TimeTo.CONNNECTED_CALLBACK,
         'Accessibility.ReadAnything.TimeFromAppStartedToConnectedCallback');

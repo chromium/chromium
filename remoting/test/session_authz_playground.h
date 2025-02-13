@@ -9,8 +9,8 @@
 
 #include "base/run_loop.h"
 #include "remoting/base/corp_session_authz_service_client.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/oauth_token_getter.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
 
 namespace remoting {

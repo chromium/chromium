@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -36,7 +35,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 class MockChromeSigninClient : public ChromeSigninClient {
  public:
@@ -116,24 +115,8 @@ TEST_F(ChromeSigninClientSignoutTest, SignOutWithoutForceSignin) {
   PreSignOut(source_metric);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_F(ChromeSigninClientSignoutTest, MainProfile) {
-  TestingProfile::Builder builder;
-  builder.SetIsMainProfile(true);
-  std::unique_ptr<TestingProfile> profile = builder.Build();
-
-  CreateClient(profile.get());
-  EXPECT_FALSE(
-      client_->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
-  EXPECT_TRUE(client_->IsRevokeSyncConsentAllowed());
-}
-#endif
-
 TEST_F(ChromeSigninClientSignoutTest, AllAllowed) {
   std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_FALSE(profile->IsMainProfile());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_FALSE(profile->IsChild());
 
   CreateClient(profile.get());
@@ -223,28 +206,6 @@ bool IsAlwaysAllowedSignoutSources(
       return true;
   }
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutMainProfile) {
-  signin_metrics::ProfileSignout signout_source = GetParam();
-
-  TestingProfile::Builder builder;
-  builder.SetIsMainProfile(true);
-  std::unique_ptr<TestingProfile> profile = builder.Build();
-
-  CreateClient(profile.get());
-  ASSERT_FALSE(
-      client_->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
-
-  SigninClient::SignoutDecision signout_decision =
-      IsAlwaysAllowedSignoutSources(signout_source)
-          ? SigninClient::SignoutDecision::ALLOW
-          : SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED;
-  EXPECT_CALL(*client_, SignOutCallback(signout_source, signout_decision))
-      .Times(1);
-  PreSignOut(signout_source);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutAllowed) {
   signin_metrics::ProfileSignout signout_source = GetParam();
@@ -863,4 +824,4 @@ TEST_F(ChromeSigninClientMetricsTest,
               testing::ContainerEq(expected_counts));
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)

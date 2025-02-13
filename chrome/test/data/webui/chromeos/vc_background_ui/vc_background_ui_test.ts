@@ -61,7 +61,7 @@ suite('VcBackgroundUITest', () => {
         'wallpaper-grid-item:not([hidden])'));
   }
 
-  test('initial breadcrumbs', async () => {
+  test('initial breadcrumbs', () => {
     assertArrayEquals(
         getVcBackgroundBreadcrumbsText(),
         [getVcBackgroundBreadcrumbs().i18n('vcBackgroundLabel')]);

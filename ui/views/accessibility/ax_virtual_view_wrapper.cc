@@ -53,7 +53,7 @@ void AXVirtualViewWrapper::Serialize(ui::AXNodeData* out_node_data) {
 }
 
 ui::AXNodeID AXVirtualViewWrapper::GetUniqueId() const {
-  return virtual_view_->GetUniqueId();
+  return virtual_view_->ViewAccessibility::GetUniqueId();
 }
 
 bool AXVirtualViewWrapper::HandleAccessibleAction(

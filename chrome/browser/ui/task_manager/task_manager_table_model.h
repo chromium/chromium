@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <unordered_set>
 
 #include "base/memory/raw_ptr.h"
@@ -142,7 +143,7 @@ class TaskManagerTableModel : public TaskManagerObserver,
   // Updates task positions based on category and search filters. Returns true
   // if the model is changed.
   bool UpdateModel(const DisplayCategory display_category,
-                   const std::u16string& search_term);
+                   std::u16string_view search_term);
 
  private:
   friend class TaskManagerTester;

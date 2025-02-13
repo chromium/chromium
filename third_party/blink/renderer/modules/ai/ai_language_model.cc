@@ -10,12 +10,13 @@
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_ailmpromptcontentdict_ailmpromptcontentdictorstringorailmpromptlinedictorstringsequence_ailmpromptlinedict_string_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_ai_language_model_prompt_input.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/modules/ai/ai_language_model_factory.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
+#include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
@@ -164,6 +165,10 @@ AILanguageModel::AILanguageModel(
     current_tokens_ = info->current_tokens;
     top_k_ = info->sampling_params->top_k;
     temperature_ = info->sampling_params->temperature;
+    if (info->expected_input_languages.has_value()) {
+      expected_input_languages_ =
+          ToStringLanguageCodes(info->expected_input_languages.value());
+    }
   }
 }
 

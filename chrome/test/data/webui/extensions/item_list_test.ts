@@ -50,7 +50,7 @@ suite('ExtensionItemListTest', function() {
     async function itemLengthEquals(num: number) {
       await microtasksFinished();
       assertEquals(
-          itemList.shadowRoot!.querySelectorAll('extensions-item').length, num);
+          itemList.shadowRoot.querySelectorAll('extensions-item').length, num);
     }
 
     // We should initially show all the items.
@@ -67,19 +67,19 @@ suite('ExtensionItemListTest', function() {
     await itemLengthEquals(1);
     assertEquals(
         'Bravo',
-        itemList.shadowRoot!.querySelector('extensions-item')!.data.name);
+        itemList.shadowRoot.querySelector('extensions-item')!.data.name);
     // Test inner substring (rather than prefix).
     itemList.filter = 'lph';
     await itemLengthEquals(1);
     assertEquals(
         'Alpha',
-        itemList.shadowRoot!.querySelector('extensions-item')!.data.name);
+        itemList.shadowRoot.querySelector('extensions-item')!.data.name);
     // Test trailing/leading spaces.
     itemList.filter = '   Alpha  ';
     await itemLengthEquals(1);
     assertEquals(
         'Alpha',
-        itemList.shadowRoot!.querySelector('extensions-item')!.data.name);
+        itemList.shadowRoot.querySelector('extensions-item')!.data.name);
     // Test string with no matching items.
     itemList.filter = 'z';
     await itemLengthEquals(0);
@@ -95,7 +95,7 @@ suite('ExtensionItemListTest', function() {
     await itemLengthEquals(1);
     assertEquals(
         'Charlie',
-        itemList.shadowRoot!.querySelector('extensions-item')!.data.name);
+        itemList.shadowRoot.querySelector('extensions-item')!.data.name);
   });
 
   test('NoItems', async () => {
@@ -177,7 +177,7 @@ suite('ExtensionItemListTest', function() {
     await microtasksFinished();
     boundTestVisible('extensions-review-panel', true);
     const reviewPanel =
-        itemList.shadowRoot!.querySelector('extensions-review-panel');
+        itemList.shadowRoot.querySelector('extensions-review-panel');
     assertTrue(!!reviewPanel);
     assertEquals(1, reviewPanel.extensions.length);
   });
@@ -200,12 +200,12 @@ suite('ExtensionItemListTest', function() {
     await microtasksFinished();
     boundTestVisible('extensions-review-panel', true);
     const reviewPanel =
-        itemList.shadowRoot!.querySelector('extensions-review-panel');
+        itemList.shadowRoot.querySelector('extensions-review-panel');
     assertTrue(!!reviewPanel);
     assertEquals(1, reviewPanel.extensions.length);
   });
 
-  test('ManifestV2DeprecationPanel_None', async function() {
+  test('ManifestV2DeprecationPanel_None', function() {
     // Panel is hidden for experiment on stage 0 (none).
     loadTimeData.overrideValues({MV2ExperimentStage: 0});
     setupElement();
@@ -232,7 +232,7 @@ suite('ExtensionItemListTest', function() {
     await microtasksFinished();
     boundTestVisible('extensions-mv2-deprecation-panel', true);
     const mv2DeprecationPanel =
-        itemList.shadowRoot!.querySelector('extensions-mv2-deprecation-panel');
+        itemList.shadowRoot.querySelector('extensions-mv2-deprecation-panel');
     assertTrue(!!mv2DeprecationPanel);
     assertEquals(1, mv2DeprecationPanel.extensions.length);
 
@@ -301,7 +301,7 @@ suite('ExtensionItemListTest', function() {
     await microtasksFinished();
     boundTestVisible('extensions-mv2-deprecation-panel', true);
     const mv2DeprecationPanel =
-        itemList.shadowRoot!.querySelector('extensions-mv2-deprecation-panel');
+        itemList.shadowRoot.querySelector('extensions-mv2-deprecation-panel');
     assertTrue(!!mv2DeprecationPanel);
     assertEquals(1, mv2DeprecationPanel.extensions.length);
 
@@ -365,7 +365,7 @@ suite('ExtensionItemListTest', function() {
     await microtasksFinished();
     boundTestVisible('extensions-mv2-deprecation-panel', true);
     const mv2DeprecationPanel =
-        itemList.shadowRoot!.querySelector('extensions-mv2-deprecation-panel');
+        itemList.shadowRoot.querySelector('extensions-mv2-deprecation-panel');
     assertTrue(!!mv2DeprecationPanel);
     assertEquals(1, mv2DeprecationPanel.extensions.length);
 
@@ -416,7 +416,7 @@ suite('ExtensionItemListTest', function() {
     boundTestVisible('extensions-mv2-deprecation-panel', true);
 
     // MV2 deprecation panel title is hidden when the review panel is hidden.
-    const mv2DeprecationPanel = itemList.shadowRoot!.querySelector<HTMLElement>(
+    const mv2DeprecationPanel = itemList.shadowRoot.querySelector<HTMLElement>(
         'extensions-mv2-deprecation-panel');
     assertTrue(!!mv2DeprecationPanel);
     testVisible(mv2DeprecationPanel, '.panel-title', false);

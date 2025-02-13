@@ -30,6 +30,7 @@
 <translation id="2118649612461486615">स्टोर की जानकारी</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{बंद किए गए टैब और ग्रुप, 'हाल ही के टैब' सेक्शन और 'टैब ग्रुप' सेक्शन में जाकर फिर से खोले जा सकते हैं. हालांकि, गुप्त टैब आपको इन सेक्शन में नहीं दिखेगा.}one{बंद किए गए टैब और ग्रुप, 'हाल ही के टैब' सेक्शन और 'टैब ग्रुप' सेक्शन में जाकर फिर से खोले जा सकते हैं. हालांकि, # गुप्त टैब आपको इन सेक्शन में नहीं दिखेगा.}other{बंद किए गए टैब और ग्रुप, 'हाल ही के टैब' सेक्शन और 'टैब ग्रुप' सेक्शन में जाकर फिर से खोले जा सकते हैं. हालांकि, # गुप्त टैब आपको इन सेक्शन में नहीं दिखेंगे.}}</translation>
 <translation id="2162620598375156287">अब <ph name="SOURCE_WEBSITE" /> पर कीमत <ph name="CURRENT_PRICE" /> है</translation>
+<translation id="2242907120821295124"><ph name="TAB_GROUP_NAME" /> टैब ग्रुप अब मौजूद नहीं है</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{टैब को ग्रुप से अलग करें}one{टैब को ग्रुप से अलग करें}other{टैब को ग्रुप से अलग करें}}</translation>
 <translation id="2271452184061378400">आपके टैब ग्रुप यहां सेव किए जाते हैं</translation>
 <translation id="2277224997687551299">ग्रुप के नाम में बदलाव करें</translation>
@@ -87,6 +88,7 @@
 <translation id="4783638485675352219">इस डिवाइस से, खुले हुए टैब के टाइटल और यूआरएल को ऑपरेटिंग सिस्टम के साथ शेयर करें</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> समीक्षा)}one{(<ph name="REVIEWS_COUNT_MANY" /> समीक्षा)}other{(<ph name="REVIEWS_COUNT_MANY" /> समीक्षाएं)}}</translation>
 <translation id="4850886885716139402">देखें</translation>
+<translation id="4861611890274104875">कार्ड को खारिज करें.</translation>
 <translation id="4861953997778766866">आपके शेयर किए गए टैब ग्रुप में, सभी लोग बदलाव कर सकते हैं</translation>
 <translation id="4870911314065352661">सभी टैब बंद करें?</translation>
 <translation id="4871719318659334896">ग्रुप बंद करें</translation>

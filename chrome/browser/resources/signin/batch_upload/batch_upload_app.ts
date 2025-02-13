@@ -168,7 +168,7 @@ export class BatchUploadAppElement extends BatchUploadAppElementBase {
     const idsToMove: number[][] = [];
 
     // Get the section element list.
-    const dataSections = this.shadowRoot!.querySelectorAll(`data-section`);
+    const dataSections = this.shadowRoot.querySelectorAll(`data-section`);
     // Getting the output from each section.
     for (let i = 0; i < dataSections.length; ++i) {
       const selectedIds = dataSections[i]!.dataSelected;

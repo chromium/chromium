@@ -11,8 +11,7 @@
 
 namespace resource_coordinator {
 
-LifecycleUnitBase::LifecycleUnitBase(LifecycleUnitSourceBase* source,
-                                     content::Visibility visibility)
+LifecycleUnitBase::LifecycleUnitBase(LifecycleUnitSourceBase* source)
     : source_(source) {
   if (source_)
     source_->NotifyLifecycleUnitBeingCreated(this);
@@ -75,13 +74,6 @@ void LifecycleUnitBase::SetState(LifecycleUnitState state,
 void LifecycleUnitBase::OnLifecycleUnitStateChanged(
     LifecycleUnitState last_state,
     LifecycleUnitStateChangeReason reason) {}
-
-void LifecycleUnitBase::OnLifecycleUnitVisibilityChanged(
-    content::Visibility visibility) {
-  for (auto& observer : observers_) {
-    observer.OnLifecycleUnitVisibilityChanged(this, visibility);
-  }
-}
 
 void LifecycleUnitBase::OnLifecycleUnitDestroyed() {
   for (auto& observer : observers_)

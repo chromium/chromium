@@ -61,12 +61,8 @@ struct CredentialUIEntry;
 // Returns the on-device encryption state according to the sync service.
 - (OnDeviceEncryptionState)onDeviceEncryptionState;
 
-// Returns whether a special icon should be shown next to `credential` that
-// indicates it's not backed up to any account.
-- (BOOL)shouldShowLocalOnlyIconForCredential:
-    (const password_manager::CredentialUIEntry&)credential;
-
-// Similar to above but for an affiliated group.
+// Returns whether a special icon should be shown next to `group` that indicates
+// it's not backed up to any account.
 - (BOOL)shouldShowLocalOnlyIconForGroup:
     (const password_manager::AffiliatedGroup&)group;
 

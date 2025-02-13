@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/form_parsing/address_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/address_field_parser_ng.h"
 #include "components/autofill/core/browser/form_parsing/alternative_name_field_parser.h"
-#include "components/autofill/core/browser/form_parsing/autofill_ai_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
@@ -192,15 +191,6 @@ void FormFieldParser::ParseFormFields(
     FieldCandidatesMap& field_candidates) {
   std::vector<raw_ptr<AutofillField, VectorExperimental>> processed_fields =
       RemoveCheckableFields(fields);
-
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  // AutofillAi is parsed using their own exclusive pattern file.
-  if (context.pattern_file == PatternFile::kAutofillAi) {
-    ParseFormFieldsPass(AutofillAiFieldParser::Parse, context, processed_fields,
-                        field_candidates);
-    return;
-  }
-#endif
 
   // Email pass.
   ParseFormFieldsPass(EmailFieldParser::Parse, context, processed_fields,

@@ -35,7 +35,7 @@ suite('GraduationAppTest.AuthenticationSuccess', function() {
     await flushTasks();
   });
 
-  teardown(async () => {
+  teardown(() => {
     resetGraduationHandlerForTesting();
   });
 
@@ -125,7 +125,7 @@ suite('GraduationAppTest.AuthenticationError', function() {
     await flushTasks();
   });
 
-  teardown(async () => {
+  teardown(() => {
     resetGraduationHandlerForTesting();
   });
 

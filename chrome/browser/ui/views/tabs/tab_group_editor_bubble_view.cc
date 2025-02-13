@@ -617,24 +617,34 @@ tab_groups::TabGroupColorId TabGroupEditorBubbleView::InitColorSet() {
 
 // TabStripModelObserver:
 void TabGroupEditorBubbleView::OnTabGroupChanged(const TabGroupChange& change) {
-  if (change.type == TabGroupChange::kVisualsChanged) {
-    const tab_groups::TabGroupVisualData* new_visuals =
-        change.GetVisualsChange()->new_visuals;
-    const std::optional<int> selected_color =
-        color_selector_->GetSelectedElement();
-    const bool color_changed =
-        !selected_color.has_value() ||
-        colors_[selected_color.value()].first != new_visuals->color();
-    const bool text_changed = title_field_->GetText() != new_visuals->title();
-    if (color_changed) {
-      const std::optional<size_t> index = GetIndexOf(color_selector_);
-      CHECK(index.has_value());
-      RemoveChildViewT<ColorPickerView>(color_selector_);
-      color_selector_ = AddChildViewAt(BuildColorPicker(), index.value());
-    }
-    if (text_changed) {
-      title_field_->SetText(new_visuals->title());
-    }
+  if (change.group != group_ ||
+      change.type != TabGroupChange::kVisualsChanged ||
+      !change.GetVisualsChange()->new_visuals) {
+    return;
+  }
+
+  const tab_groups::TabGroupVisualData* new_visuals =
+      change.GetVisualsChange()->new_visuals;
+
+  const std::optional<int> selected_color =
+      color_selector_->GetSelectedElement();
+
+  const bool color_changed =
+      !selected_color.has_value() ||
+      static_cast<int>(colors_.size()) <= selected_color.value() ||
+      colors_[selected_color.value()].first != new_visuals->color();
+
+  if (color_changed) {
+    const std::optional<size_t> index = GetIndexOf(color_selector_);
+    CHECK(index.has_value());
+    RemoveChildViewT<ColorPickerView>(color_selector_);
+    color_selector_ = AddChildViewAt(BuildColorPicker(), index.value());
+  }
+
+  const bool text_changed = title_field_->GetText() != new_visuals->title();
+
+  if (text_changed) {
+    title_field_->SetText(new_visuals->title());
   }
 }
 
@@ -663,9 +673,9 @@ void TabGroupEditorBubbleView::UpdateGroup() {
     close_or_delete_button->SetText(GetTextForCloseButton());
   }
 
-  tab_groups::TabGroupVisualData new_data(title_field_->GetText(),
-                                          updated_color,
-                                          current_visual_data->is_collapsed());
+  tab_groups::TabGroupVisualData new_data(
+      std::u16string(title_field_->GetText()), updated_color,
+      current_visual_data->is_collapsed());
   tab_group->SetVisualData(new_data, tab_group->IsCustomized());
 }
 

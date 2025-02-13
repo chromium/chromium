@@ -1706,6 +1706,8 @@ bool LayerTreeImpl::UpdateDrawProperties(
             render_surface->EffectTreeIndex());
         draw_property_utils::ConcatInverseSurfaceContentsScale(effect_node,
                                                                &draw_transform);
+        draw_transform.PostTranslate(
+            occlusion_surface->pixel_alignment_offset());
       }
 
       Occlusion occlusion =

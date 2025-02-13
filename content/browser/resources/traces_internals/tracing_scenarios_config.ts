@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 // <if expr="is_win">
@@ -129,13 +130,14 @@ export class TracingScenariosConfigElement extends CrLitElement {
     this.isLoading_ = false;
   }
 
-  protected privacyFilterDidChange_(event: CustomEvent<{value: boolean}>):
-      void {
+  protected async privacyFilterDidChange_(event: CustomEvent<{value: boolean}>):
+      Promise<void> {
     if (this.privacyFilterEnabled_ === event.detail.value) {
       return;
     }
     this.privacyFilterEnabled_ = event.detail.value;
-    this.isEdited_ = true;
+    await this.traceReportProxy_.handler.setPrivacyFilterEnabled(
+        this.privacyFilterEnabled_);
   }
 
   protected valueDidChange_(event: CustomEvent<{value: boolean}>): void {
@@ -155,9 +157,6 @@ export class TracingScenariosConfigElement extends CrLitElement {
   }
 
   protected async onConfirmClick_(): Promise<void> {
-    await this.traceReportProxy_.handler.setPrivacyFilterEnabled(
-        this.privacyFilterEnabled_);
-
     const enabledScenarios: string[] = [];
     for (const scenario of this.presetConfig_) {
       if (scenario.selected) {

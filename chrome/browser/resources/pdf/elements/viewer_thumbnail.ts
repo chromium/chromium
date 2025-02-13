@@ -154,12 +154,12 @@ export class ViewerThumbnailElement extends CrLitElement {
   }
 
   private getCanvas_(): HTMLCanvasElement|null {
-    return this.shadowRoot!.querySelector('#' + PDF_CANVAS_ID);
+    return this.shadowRoot.querySelector('#' + PDF_CANVAS_ID);
   }
 
   // <if expr="enable_pdf_ink2">
   private getInk2Canvas_(): HTMLCanvasElement|null {
-    return this.shadowRoot!.querySelector('#' + INK2_CANVAS_ID);
+    return this.shadowRoot.querySelector('#' + INK2_CANVAS_ID);
   }
   // </if>
 
@@ -219,7 +219,7 @@ export class ViewerThumbnailElement extends CrLitElement {
   private styleCanvas_(canvas: HTMLCanvasElement) {
     assert(this.clockwiseRotations >= 0 && this.clockwiseRotations < 4);
 
-    const div = this.shadowRoot!.querySelector<HTMLElement>('#thumbnail')!;
+    const div = this.shadowRoot.querySelector<HTMLElement>('#thumbnail')!;
 
     const degreesRotated = this.clockwiseRotations * 90;
     canvas.style.transform = `rotate(${degreesRotated}deg)`;

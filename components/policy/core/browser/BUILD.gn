@@ -148,6 +148,7 @@ source_set("pref_mapping_test_support") {
 
   deps = [
     "//base",
+    "//build:android_buildflags",
     "//build:branding_buildflags",
     "//components/policy:generated",
     "//components/policy/core/common:test_support",

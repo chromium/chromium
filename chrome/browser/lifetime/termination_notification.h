@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_LIFETIME_TERMINATION_NOTIFICATION_H_
 
 #include "base/callback_list.h"
-#include "build/chromeos_buildflags.h"
 
 namespace browser_shutdown {
 

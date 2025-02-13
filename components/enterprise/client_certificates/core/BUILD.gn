@@ -97,6 +97,8 @@ source_set("test_support") {
     "mock_certificate_store.h",
     "mock_cloud_management_delegate.cc",
     "mock_cloud_management_delegate.h",
+    "mock_context_delegate.cc",
+    "mock_context_delegate.h",
     "mock_dm_server_client.cc",
     "mock_dm_server_client.h",
     "mock_key_upload_client.cc",

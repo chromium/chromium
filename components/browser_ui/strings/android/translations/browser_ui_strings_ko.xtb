@@ -283,6 +283,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{열려 있는 탭의 가격 인하}other{열려 있는 탭의 가격 인하}}</translation>
 <translation id="5186036860380548585">화면 상단에서 옵션을 선택할 수 있습니다</translation>
 <translation id="5197729504361054390">선택한 연락처가 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />과(와) 공유됩니다.</translation>
+<translation id="5198930230016462977">새 탭 페이지 맞춤설정 하단 시트가 닫힘</translation>
 <translation id="5216942107514965959">최근 방문: 오늘</translation>
 <translation id="5225463052809312700">카메라 켜기</translation>
 <translation id="5234764350956374838">닫기</translation>
@@ -327,6 +328,7 @@
 <translation id="5750869797196646528">손 추적</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> 차단됨</translation>
 <translation id="5804241973901381774">권한</translation>
+<translation id="5822675474983796325">새 탭 페이지 맞춤설정 하단 시트가 전체 높이로 열림</translation>
 <translation id="5844448279347999754">사용 설정하면 사이트에서 클립보드에 저장된 텍스트 및 이미지 확인을 요청할 수 있습니다. 사용 중지하면 사이트에서 클립보드에 저장된 텍스트나 이미지를 확인할 수 없습니다.</translation>
 <translation id="5853982612236235577">사용 설정하면 사이트에서 알림 전송을 요청할 수 있습니다. 사용 중지하면 사이트에서 알림을 전송할 수 없습니다.</translation>
 <translation id="5860033963881614850">사용 안함</translation>
@@ -434,6 +436,7 @@
 <translation id="7203150201908454328">펼쳐짐</translation>
 <translation id="7219254577985949841">사이트 데이터를 삭제하시겠습니까?</translation>
 <translation id="723171743924126238">이미지 선택</translation>
+<translation id="7243246278722455312">새 탭 페이지 맞춤설정 하단 시트</translation>
 <translation id="7243308994586599757">화면 하단에서 옵션 선택 가능</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />개 선택됨</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 허용됨</translation>

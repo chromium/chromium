@@ -22,6 +22,8 @@ source_set("browser") {
     "autofill_java_script_feature.mm",
     "autofill_manager_observer_bridge.h",
     "autofill_manager_observer_bridge.mm",
+    "credit_card_save_metrics_ios.h",
+    "credit_card_save_metrics_ios.mm",
     "credit_card_util.h",
     "credit_card_util.mm",
     "form_fetch_batcher.h",

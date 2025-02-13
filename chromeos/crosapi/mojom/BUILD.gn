@@ -44,7 +44,6 @@ mojom("mojom") {
     "force_installed_tracker.mojom",
     "full_restore.mojom",
     "fullscreen_controller.mojom",
-    "geolocation.mojom",
     "guest_os_sk_forwarder.mojom",
     "identity_manager.mojom",
     "idle_service.mojom",
@@ -100,7 +99,6 @@ mojom("mojom") {
     "volume_manager.mojom",
     "vpn_extension_observer.mojom",
     "vpn_service.mojom",
-    "web_app_service.mojom",
     "web_app_types.mojom",
     "web_kiosk_service.mojom",
   ]

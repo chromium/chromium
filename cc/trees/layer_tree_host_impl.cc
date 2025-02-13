@@ -495,7 +495,9 @@ LayerTreeHostImpl::LayerTreeHostImpl(
                       compositor_frame_reporting_controller_.get()),
       lcd_text_metrics_reporter_(LCDTextMetricsReporter::CreateIfNeeded(this)),
       frame_rate_estimator_(GetTaskRunner()),
-      contains_srgb_cache_(kContainsSrgbCacheSize) {
+      contains_srgb_cache_(kContainsSrgbCacheSize),
+      zero_scroll_metrics_update_enabled_(
+          base::FeatureList::IsEnabled(features::kZeroScrollMetricsUpdate)) {
   resource_provider_ = std::make_unique<viz::ClientResourceProvider>(
       task_runner_provider_->MainThreadTaskRunner(),
       task_runner_provider_->HasImplThread()
@@ -3494,6 +3496,14 @@ void LayerTreeHostImpl::DidNotProduceFrame(const viz::BeginFrameAck& ack,
       layer_tree_frame_sink_->DidNotProduceFrame(ack, reason);
     }
   }
+  // While scrolling, we save all event metrics. It is possible that this
+  // results in a 0 delta scroll, which has no damage. We take the metrics here
+  // so that they are terminated now. This prevents them from being incorrectly
+  // associated with a future produced frame. So that jank measurements have
+  // accurate deltas.
+  if (zero_scroll_metrics_update_enabled_) {
+    events_metrics_manager_.TakeSavedEventsMetrics();
+  }
 }
 
 void LayerTreeHostImpl::OnBeginImplFrameDeadline() {
@@ -4580,6 +4590,14 @@ void LayerTreeHostImpl::WillScrollContent(ElementId element_id) {
     if (ScrollbarAnimationController* animation_controller =
             ScrollbarAnimationControllerForElementId(element_id))
       animation_controller->WillUpdateScroll();
+  }
+  // Whenever we are scrolling, we want to save the metrics. It is possible for
+  // the event to result in a 0 delta change. However we want to associate it
+  // with the subsequent frame. Otherwise this event will be attributed to jank.
+  //
+  // If there are on going animations, we may still submit a frame.
+  if (zero_scroll_metrics_update_enabled_) {
+    events_metrics_manager_.SaveActiveEventMetrics();
   }
 }
 

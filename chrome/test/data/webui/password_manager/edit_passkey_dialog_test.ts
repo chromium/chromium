@@ -37,7 +37,7 @@ suite('EditPasskeyDialogTest', function() {
     await flushTasks();
   });
 
-  test('passkey displayed correctly', async function() {
+  test('passkey displayed correctly', function() {
     assertEquals(dialog.$.usernameInput.value, passkey.username);
     assertEquals(
         dialog.$.usernameInput.placeholder,

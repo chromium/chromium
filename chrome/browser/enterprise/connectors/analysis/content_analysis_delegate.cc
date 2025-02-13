@@ -795,9 +795,8 @@ ContentAnalysisDelegate::UploadData() {
     // Passing the settings using a reference is safe here, because
     // MultiFileRequestHandler is owned by this class.
     files_request_handler_ = FilesRequestHandler::Create(
-        GetBinaryUploadService(), profile_, data_.settings, url_, "", "",
-        user_action_id_, title_, GetContentTransferMethod(), access_point_,
-        data_.reason, data_.paths,
+        this, GetBinaryUploadService(), profile_, url_, "", "",
+        GetContentTransferMethod(), access_point_, data_.paths,
         base::BindOnce(&ContentAnalysisDelegate::FilesRequestCallback,
                        GetWeakPtr()));
     files_request_complete_ = !files_request_handler_->UploadData();

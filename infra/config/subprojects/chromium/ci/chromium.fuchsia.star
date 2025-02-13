@@ -66,6 +66,8 @@ ci.builder(
     # Runs two builds, which can cause the builder to run out of disk space
     # with standard free space.
     free_space = free_space.high,
+    gardener_rotation_console_category = "ci|x64",
+    gardener_rotation_console_short_name = "det",
     console_view_entry = [
         consoles.console_view_entry(
             category = "det",

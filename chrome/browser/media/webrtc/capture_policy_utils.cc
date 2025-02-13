@@ -40,15 +40,12 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 #include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service.h"
 #include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -135,15 +132,13 @@ namespace capture_policy {
 const char kManagedAccessToGetAllScreensMediaAllowedForUrls[] =
     "profile.managed_access_to_get_all_screens_media_allowed_for_urls";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
+#if BUILDFLAG(IS_CHROMEOS)
 // This pref connects to the MultiScreenCaptureAllowedForUrls policy and will
 // replace the deprecated GetDisplayMediaSetSelectAllScreensAllowedForUrls
 // policy once the pivot to IWAs is complete.
 const char kManagedMultiScreenCaptureAllowedForUrls[] =
     "profile.managed_multi_screen_capture_allowed_for_urls";
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -255,9 +250,9 @@ AllowedScreenCaptureLevel GetAllowedCaptureLevel(const GURL& request_origin,
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kManagedAccessToGetAllScreensMediaAllowedForUrls);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterListPref(kManagedMultiScreenCaptureAllowedForUrls);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void CheckGetAllScreensMediaAllowedForAnyOrigin(

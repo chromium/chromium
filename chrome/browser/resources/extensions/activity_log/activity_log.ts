@@ -149,7 +149,7 @@ export class ExtensionsActivityLogElement extends
     this.selectedSubpage_ = NONE_SELECTED;
     // clear the stream if the user is exiting the activity log page.
     const activityLogStream =
-        this.shadowRoot!.querySelector('activity-log-stream');
+        this.shadowRoot.querySelector('activity-log-stream');
     if (activityLogStream) {
       activityLogStream.clearStream();
     }
@@ -179,7 +179,7 @@ export class ExtensionsActivityLogElement extends
   protected onSelectedSubpageChanged_(
       newTab: MaybeActivityLogSubpage, oldTab: MaybeActivityLogSubpage) {
     const activityLogStream =
-        this.shadowRoot!.querySelector('activity-log-stream');
+        this.shadowRoot.querySelector('activity-log-stream');
     if (activityLogStream) {
       if (newTab === ActivityLogSubpage.STREAM) {
         // Start the stream if the user is switching to the real-time tab.

@@ -708,6 +708,8 @@ ios_builder(
         "ci/ios-wpt-fyi-rel",
     ],
     gn_args = "ci/ios-wpt-fyi-rel",
+    builderless = True,
+    cpu = cpu.ARM64,
 )
 
 ios_builder(

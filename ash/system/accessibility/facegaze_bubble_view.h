@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_ACCESSIBILITY_FACEGAZE_BUBBLE_VIEW_H_
 
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
@@ -43,13 +44,10 @@ class ASH_EXPORT FaceGazeBubbleView : public views::BubbleDialogDelegateView {
   // Updates text content of this view.
   void Update(const std::u16string& text, bool is_warning);
 
-  // views::BubbleDialogDelegateView:
-  void OnThemeChanged() override;
-
   // views::View:
   void OnMouseEntered(const ui::MouseEvent& event) override;
 
-  const std::u16string& GetTextForTesting() const;
+  std::u16string_view GetTextForTesting() const;
 
  private:
   friend class FaceGazeBubbleControllerTest;

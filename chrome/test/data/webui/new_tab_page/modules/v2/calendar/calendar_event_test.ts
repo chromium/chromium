@@ -117,7 +117,7 @@ suite('NewTabPageModulesCalendarEventTest', () => {
       assertEquals(attachmentChips.length, 3);
     });
 
-    test('Non-expanded event hides extra info', async () => {
+    test('Non-expanded event hides extra info', () => {
       // Assert.
       const locationElement = $$(element, '#location');
       const attachmentsElement = $$(element, '#attachments');

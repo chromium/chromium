@@ -521,9 +521,19 @@ const int kExpectedExitAnimationCount = 2;
   BOOL dismissedWithSwipeDown =
       dismissalSource ==
       lens::LensOverlayDismissalSource::kBottomSheetDismissed;
-  LensOverlayDismissalCause dismissalCause =
-      dismissedWithSwipeDown ? LensOverlayDismissalCauseSwipeDown
-                             : LensOverlayDismissalCauseDismissButton;
+
+  BOOL isInTranslate = _selectionViewController.translateFilterActive;
+
+  LensOverlayDismissalCause dismissalCause;
+  if (dismissedWithSwipeDown) {
+    if (isInTranslate) {
+      dismissalCause = LensOverlayDismissalCauseSwipeDownFromTranslate;
+    } else {
+      dismissalCause = LensOverlayDismissalCauseSwipeDownFromSelection;
+    }
+  } else {
+    dismissalCause = LensOverlayDismissalCauseDismissButton;
+  }
 
   [weakCommands lensOverlayWillDismissWithCause:dismissalCause];
   void (^onAnimationFinished)() = ^{

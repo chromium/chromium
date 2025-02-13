@@ -4,43 +4,29 @@
 
 #include "components/performance_manager/worker_watcher.h"
 
-#include <memory>
-#include <utility>
-#include <vector>
+#include <string>
 
 #include "base/containers/contains.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/stringprintf.h"
-#include "base/uuid.h"
-#include "components/performance_manager/graph/frame_node_impl.h"
-#include "components/performance_manager/graph/graph_impl.h"
-#include "components/performance_manager/graph/page_node_impl.h"
-#include "components/performance_manager/graph/process_node_impl.h"
-#include "components/performance_manager/graph/worker_node_impl.h"
-#include "components/performance_manager/performance_manager_impl.h"
-#include "components/performance_manager/performance_manager_registry_impl.h"
+#include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
-#include "components/performance_manager/public/render_process_host_id.h"
-#include "components/performance_manager/public/render_process_host_proxy.h"
+#include "components/performance_manager/public/graph/process_node.h"
+#include "components/performance_manager/public/graph/worker_node.h"
+#include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
-#include "components/performance_manager/test_support/run_in_graph.h"
-#include "content/public/browser/dedicated_worker_creator.h"
-#include "content/public/browser/dedicated_worker_service.h"
+#include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/service_worker_context_observer.h"
-#include "content/public/browser/service_worker_running_info.h"
-#include "content/public/browser/shared_worker_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/back_forward_cache_util.h"
-#include "content/public/test/fake_service_worker_context.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -48,23 +34,11 @@ namespace performance_manager {
 
 namespace {
 
-// Generates a new sequential int ID. Used for things that need a unique ID
-// and don't have a more specific generator.
-int GenerateNextId() {
-  static int next_id = 0;
-  return next_id++;
-}
-
-// Generates a unique URL for a fake worker node.
-GURL GenerateWorkerUrl() {
-  return GURL(base::StringPrintf("https://www.foo.org/worker_script_%d.js",
-                                 GenerateNextId()));
-}
-
 // Generates a URL in a unique domain, which can be used to create identifiable
 // origins or scope URL's for service workers.
 GURL GenerateUniqueDomainUrl() {
-  return GURL(base::StringPrintf("https://www.foo%d.org", GenerateNextId()));
+  static int next_id = 0;
+  return GURL(base::StringPrintf("https://www.foo%d.org", next_id++));
 }
 
 // Helper function to check that |worker_node| and |client_frame_node| are
@@ -87,440 +61,6 @@ bool IsWorkerClient(base::WeakPtr<WorkerNode> worker_node,
                         worker_node.get());
 }
 
-// DedicatedWorkerFactory ------------------------------------------------------
-
-// A test DedicatedWorkerService that allows to simulate creating and destroying
-// dedicated workers.
-class DedicatedWorkerFactory {
- public:
-  explicit DedicatedWorkerFactory(
-      content::DedicatedWorkerService::Observer* observer);
-
-  DedicatedWorkerFactory(const DedicatedWorkerFactory&) = delete;
-  DedicatedWorkerFactory& operator=(const DedicatedWorkerFactory&) = delete;
-
-  ~DedicatedWorkerFactory();
-
-  // Creates a new dedicated worker and returns its ID.
-  const blink::DedicatedWorkerToken& CreateDedicatedWorker(
-      const ProcessNode* process_node,
-      const FrameNode* frame_node,
-      const url::Origin& origin = url::Origin());
-  const blink::DedicatedWorkerToken& CreateDedicatedWorker(
-      const ProcessNode* process_node,
-      const WorkerNode* parent_dedicated_worker_node,
-      const url::Origin& origin = url::Origin());
-
-  // Destroys an existing dedicated worker.
-  void DestroyDedicatedWorker(const blink::DedicatedWorkerToken& token);
-
- private:
-  raw_ptr<content::DedicatedWorkerService::Observer> observer_;
-
-  // Maps each running worker to its creator.
-  base::flat_map<blink::DedicatedWorkerToken, content::DedicatedWorkerCreator>
-      dedicated_worker_creators_;
-};
-
-DedicatedWorkerFactory::DedicatedWorkerFactory(
-    content::DedicatedWorkerService::Observer* observer)
-    : observer_(observer) {}
-
-DedicatedWorkerFactory::~DedicatedWorkerFactory() {
-  CHECK(dedicated_worker_creators_.empty());
-}
-
-const blink::DedicatedWorkerToken&
-DedicatedWorkerFactory::CreateDedicatedWorker(const ProcessNode* process_node,
-                                              const FrameNode* frame_node,
-                                              const url::Origin& origin) {
-  int worker_process_id =
-      process_node->GetRenderProcessHostId().GetUnsafeValue();
-  content::GlobalRenderFrameHostId render_frame_host_id =
-      frame_node->GetRenderFrameHostProxy().global_frame_routing_id();
-
-  // Create a new token for the worker and add it to the map, along with its
-  // client ID.
-  const blink::DedicatedWorkerToken token;
-
-  auto result = dedicated_worker_creators_.emplace(token, render_frame_host_id);
-  DCHECK(result.second);  // Check inserted.
-
-  // Notify observers.
-  observer_->OnWorkerCreated(token, worker_process_id, origin,
-                             render_frame_host_id);
-
-  return result.first->first;
-}
-
-const blink::DedicatedWorkerToken&
-DedicatedWorkerFactory::CreateDedicatedWorker(
-    const ProcessNode* process_node,
-    const WorkerNode* parent_dedicated_worker_node,
-    const url::Origin& origin) {
-  int worker_process_id =
-      process_node->GetRenderProcessHostId().GetUnsafeValue();
-
-  // Create a new token for the worker and add it to the map, along with its
-  // client ID.
-  const blink::DedicatedWorkerToken token;
-
-  const blink::DedicatedWorkerToken parent_token =
-      parent_dedicated_worker_node->GetWorkerToken()
-          .GetAs<blink::DedicatedWorkerToken>();
-
-  auto result = dedicated_worker_creators_.emplace(token, parent_token);
-  DCHECK(result.second);  // Check inserted.
-
-  // Notify observers.
-  observer_->OnWorkerCreated(token, worker_process_id, origin, parent_token);
-
-  return result.first->first;
-}
-
-void DedicatedWorkerFactory::DestroyDedicatedWorker(
-    const blink::DedicatedWorkerToken& token) {
-  auto it = dedicated_worker_creators_.find(token);
-  CHECK(it != dedicated_worker_creators_.end(), base::NotFatalUntil::M130);
-
-  // Notify observers that the worker is being destroyed.
-  observer_->OnBeforeWorkerDestroyed(token, it->second);
-
-  // Remove the worker ID from the map.
-  dedicated_worker_creators_.erase(it);
-}
-
-// SharedWorkerFactory ---------------------------------------------------------
-
-// A test SharedWorkerService that allows to simulate creating and destroying
-// shared workers and adding clients to existing workers.
-class SharedWorkerFactory {
- public:
-  explicit SharedWorkerFactory(
-      content::SharedWorkerService::Observer* observer);
-
-  SharedWorkerFactory(const SharedWorkerFactory&) = delete;
-  SharedWorkerFactory& operator=(const SharedWorkerFactory&) = delete;
-
-  ~SharedWorkerFactory();
-
-  // Creates a new shared worker and returns its token.
-  blink::SharedWorkerToken CreateSharedWorker(
-      const ProcessNode* process_node,
-      const url::Origin& origin = url::Origin());
-
-  // Destroys a running shared worker.
-  void DestroySharedWorker(const blink::SharedWorkerToken& shared_worker_token);
-
-  // Adds a new frame client to an existing worker.
-  void AddClient(const blink::SharedWorkerToken& shared_worker_token,
-                 content::GlobalRenderFrameHostId client_render_frame_host_id);
-
-  // Removes an existing frame client from a worker.
-  void RemoveClient(
-      const blink::SharedWorkerToken& shared_worker_token,
-      content::GlobalRenderFrameHostId client_render_frame_host_id);
-
- private:
-  raw_ptr<content::SharedWorkerService::Observer> observer_;
-
-  // Contains the set of clients for each running workers.
-  base::flat_map<blink::SharedWorkerToken,
-                 base::flat_set<content::GlobalRenderFrameHostId>>
-      shared_worker_client_frames_;
-};
-
-SharedWorkerFactory::SharedWorkerFactory(
-    content::SharedWorkerService::Observer* observer)
-    : observer_(observer) {}
-
-SharedWorkerFactory::~SharedWorkerFactory() {
-  CHECK(shared_worker_client_frames_.empty());
-}
-
-blink::SharedWorkerToken SharedWorkerFactory::CreateSharedWorker(
-    const ProcessNode* process_node,
-    const url::Origin& origin) {
-  int worker_process_id =
-      process_node->GetRenderProcessHostId().GetUnsafeValue();
-
-  // Create a new SharedWorkerToken for the worker and add it to the map.
-  const blink::SharedWorkerToken shared_worker_token;
-
-  bool inserted =
-      shared_worker_client_frames_.insert({shared_worker_token, {}}).second;
-  DCHECK(inserted);
-
-  // Notify observer.
-  observer_->OnWorkerCreated(shared_worker_token, worker_process_id, origin,
-                             base::UnguessableToken::Create());
-
-  return shared_worker_token;
-}
-
-void SharedWorkerFactory::DestroySharedWorker(
-    const blink::SharedWorkerToken& shared_worker_token) {
-  auto it = shared_worker_client_frames_.find(shared_worker_token);
-  CHECK(it != shared_worker_client_frames_.end(), base::NotFatalUntil::M130);
-
-  // The worker should no longer have any clients.
-  DCHECK(it->second.empty());
-
-  // Notify observers that the worker is being destroyed.
-  observer_->OnBeforeWorkerDestroyed(shared_worker_token);
-
-  // Remove the worker ID from the map.
-  shared_worker_client_frames_.erase(it);
-}
-
-void SharedWorkerFactory::AddClient(
-    const blink::SharedWorkerToken& shared_worker_token,
-    content::GlobalRenderFrameHostId client_render_frame_host_id) {
-  // Add the frame to the set of clients for this worker.
-  auto it = shared_worker_client_frames_.find(shared_worker_token);
-  CHECK(it != shared_worker_client_frames_.end(), base::NotFatalUntil::M130);
-
-  base::flat_set<content::GlobalRenderFrameHostId>& client_frames = it->second;
-  bool inserted = client_frames.insert(client_render_frame_host_id).second;
-  DCHECK(inserted);
-
-  // Then notify observer.
-  observer_->OnClientAdded(shared_worker_token, client_render_frame_host_id);
-}
-
-void SharedWorkerFactory::RemoveClient(
-    const blink::SharedWorkerToken& shared_worker_token,
-    content::GlobalRenderFrameHostId client_render_frame_host_id) {
-  // Notify observers.
-  observer_->OnClientRemoved(shared_worker_token, client_render_frame_host_id);
-
-  // Then remove the frame from the set of clients of this worker.
-  auto it = shared_worker_client_frames_.find(shared_worker_token);
-  CHECK(it != shared_worker_client_frames_.end(), base::NotFatalUntil::M130);
-
-  base::flat_set<content::GlobalRenderFrameHostId>& client_frames = it->second;
-  size_t removed = client_frames.erase(client_render_frame_host_id);
-  DCHECK_EQ(removed, 1u);
-}
-
-// ServiceWorkerFactory ---------------------------------------------
-
-// A test ServiceWorkerContext that allows to simulate a worker starting and
-// stopping and adding clients to running workers.
-class ServiceWorkerFactory {
- public:
-  explicit ServiceWorkerFactory(
-      content::ServiceWorkerContextObserver* observer);
-  ~ServiceWorkerFactory();
-
-  ServiceWorkerFactory(const ServiceWorkerFactory&) = delete;
-  ServiceWorkerFactory& operator=(const ServiceWorkerFactory&) = delete;
-
-  // Creates a new service worker and returns its version ID.
-  int64_t CreateServiceWorker();
-
-  // Deletes an existing service worker.
-  void DestroyServiceWorker(int64_t version_id);
-
-  // Starts an existing service worker and returns its token.
-  blink::ServiceWorkerToken StartServiceWorker(
-      int64_t version_id,
-      const ProcessNode* process_node,
-      const GURL& worker_url = GenerateWorkerUrl(),
-      const GURL& scope_url = GURL());
-
-  // Stops a service shared worker.
-  void StopServiceWorker(int64_t version_id);
-
-  // Adds a new client to an existing service worker and returns its generated
-  // client UUID, or the `client_uuid` passed as an argument.
-  std::string AddClient(int64_t version_id,
-                        const FrameNode* frame_node,
-                        std::string client_uuid =
-                            base::Uuid::GenerateRandomV4().AsLowercaseString());
-  std::string AddClient(int64_t version_id,
-                        const WorkerNode* worker_node,
-                        std::string client_uuid =
-                            base::Uuid::GenerateRandomV4().AsLowercaseString());
-
-  // Removes an existing client from a worker.
-  void RemoveClient(int64_t version_id, const std::string& client_uuid);
-
-  // Simulates when the navigation commits, meaning that the RenderFrameHost is
-  // now available for a window client. Not valid for worker clients.
-  void OnControlleeNavigationCommitted(int64_t version_id,
-                                       const std::string& client_uuid,
-                                       const FrameNode* frame_node);
-
- private:
-  // Adds a new client to an existing service worker with the provided
-  // client UUID. Returns |client_uuid| for convenience.
-  void AddClientImpl(int64_t version_id,
-                     std::string client_uuid,
-                     const content::ServiceWorkerClientInfo& client_info);
-
-  raw_ptr<content::ServiceWorkerContextObserver> observer_;
-
-  // The ID that the next service worker will be assigned.
-  int64_t next_service_worker_instance_id_ = 0;
-
-  struct ServiceWorkerInfo {
-    bool is_running = false;
-
-    // Contains all the clients
-    base::flat_set<std::string /*client_uuid*/> clients;
-  };
-
-  base::flat_map<int64_t /*version_id*/, ServiceWorkerInfo>
-      service_worker_infos_;
-};
-
-ServiceWorkerFactory::ServiceWorkerFactory(
-    content::ServiceWorkerContextObserver* observer)
-    : observer_(observer) {}
-
-ServiceWorkerFactory::~ServiceWorkerFactory() {
-  CHECK(service_worker_infos_.empty());
-}
-
-int64_t ServiceWorkerFactory::CreateServiceWorker() {
-  // Create a new version ID and add it to the map.
-  int64_t version_id = next_service_worker_instance_id_++;
-
-  bool inserted = service_worker_infos_.insert({version_id, {}}).second;
-  DCHECK(inserted);
-
-  return version_id;
-}
-
-void ServiceWorkerFactory::DestroyServiceWorker(int64_t version_id) {
-  auto it = service_worker_infos_.find(version_id);
-  CHECK(it != service_worker_infos_.end(), base::NotFatalUntil::M130);
-  const ServiceWorkerInfo& info = it->second;
-
-  // Can only delete a service worker that isn't running and has no clients.
-  DCHECK(!info.is_running);
-  DCHECK(info.clients.empty());
-
-  // Remove the worker instance from the map.
-  service_worker_infos_.erase(it);
-}
-
-blink::ServiceWorkerToken ServiceWorkerFactory::StartServiceWorker(
-    int64_t version_id,
-    const ProcessNode* process_node,
-    const GURL& worker_url,
-    const GURL& scope_url) {
-  int worker_process_id =
-      process_node->GetRenderProcessHostId().GetUnsafeValue();
-
-  // Create a new token for the worker.
-  blink::ServiceWorkerToken token;
-
-  auto it = service_worker_infos_.find(version_id);
-  CHECK(it != service_worker_infos_.end(), base::NotFatalUntil::M130);
-  ServiceWorkerInfo& info = it->second;
-
-  DCHECK(!info.is_running);
-  info.is_running = true;
-
-  // Notify observer.
-  observer_->OnVersionStartedRunning(
-      version_id,
-      content::ServiceWorkerRunningInfo(
-          worker_url, scope_url,
-          blink::StorageKey::CreateFirstParty(url::Origin::Create(scope_url)),
-          worker_process_id, token,
-          content::ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::
-              kActivated));
-
-  return token;
-}
-
-void ServiceWorkerFactory::StopServiceWorker(int64_t version_id) {
-  auto it = service_worker_infos_.find(version_id);
-  CHECK(it != service_worker_infos_.end(), base::NotFatalUntil::M130);
-  ServiceWorkerInfo& info = it->second;
-
-  DCHECK(info.is_running);
-  info.is_running = false;
-
-  // Notify the observer that the worker is terminating.
-  observer_->OnVersionStoppedRunning(version_id);
-}
-
-std::string ServiceWorkerFactory::AddClient(int64_t version_id,
-                                            const FrameNode* frame_node,
-                                            std::string client_uuid) {
-  AddClientImpl(
-      version_id, client_uuid,
-      frame_node->GetRenderFrameHostProxy().global_frame_routing_id());
-  return client_uuid;
-}
-
-std::string ServiceWorkerFactory::AddClient(int64_t version_id,
-                                            const WorkerNode* worker_node,
-                                            std::string client_uuid) {
-  // Get the worker-type specific token. Service workers can't be clients of
-  // shared workers.
-  content::ServiceWorkerClientInfo service_worker_client_info =
-      worker_node->GetWorkerToken().Visit(base::Overloaded(
-          [](const blink::ServiceWorkerToken& service_worker_token)
-              -> content::ServiceWorkerClientInfo {
-            ADD_FAILURE();
-            return content::ServiceWorkerClientInfo();
-          },
-          [](const auto& token) -> content::ServiceWorkerClientInfo {
-            return content::ServiceWorkerClientInfo(token);
-          }));
-
-  AddClientImpl(version_id, client_uuid, service_worker_client_info);
-  return client_uuid;
-}
-
-void ServiceWorkerFactory::RemoveClient(int64_t version_id,
-                                        const std::string& client_uuid) {
-  auto it = service_worker_infos_.find(version_id);
-  CHECK(it != service_worker_infos_.end(), base::NotFatalUntil::M130);
-  ServiceWorkerInfo& info = it->second;
-
-  size_t removed = info.clients.erase(client_uuid);
-  DCHECK_EQ(removed, 1u);
-
-  observer_->OnControlleeRemoved(version_id, client_uuid);
-}
-
-void ServiceWorkerFactory::OnControlleeNavigationCommitted(
-    int64_t version_id,
-    const std::string& client_uuid,
-    const FrameNode* frame_node) {
-  content::GlobalRenderFrameHostId render_frame_host_id =
-      frame_node->GetRenderFrameHostProxy().global_frame_routing_id();
-
-  auto it = service_worker_infos_.find(version_id);
-  CHECK(it != service_worker_infos_.end(), base::NotFatalUntil::M130);
-  ServiceWorkerInfo& info = it->second;
-
-  DCHECK(base::Contains(info.clients, client_uuid));
-
-  observer_->OnControlleeNavigationCommitted(version_id, client_uuid,
-                                             render_frame_host_id);
-}
-
-void ServiceWorkerFactory::AddClientImpl(
-    int64_t version_id,
-    std::string client_uuid,
-    const content::ServiceWorkerClientInfo& client_info) {
-  auto it = service_worker_infos_.find(version_id);
-  CHECK(it != service_worker_infos_.end(), base::NotFatalUntil::M130);
-  ServiceWorkerInfo& info = it->second;
-
-  bool inserted = info.clients.insert(client_uuid).second;
-  DCHECK(inserted);
-
-  observer_->OnControlleeAdded(version_id, client_uuid, client_info);
-}
-
 // Helpers methods for retrieving nodes from the graph.
 
 base::WeakPtr<ProcessNode> GetProcessNode(
@@ -540,65 +80,7 @@ base::WeakPtr<WorkerNode> GetWorkerNode(const blink::WorkerToken& token) {
 
 }  // namespace
 
-class WorkerWatcherTest : public PerformanceManagerTestHarness {
- public:
-  using Super = PerformanceManagerTestHarness;
-
-  WorkerWatcherTest();
-
-  WorkerWatcherTest(const WorkerWatcherTest&) = delete;
-  WorkerWatcherTest& operator=(const WorkerWatcherTest&) = delete;
-
-  ~WorkerWatcherTest() override;
-
-  void SetUp() override;
-  void TearDown() override;
-
-  DedicatedWorkerFactory* dedicated_worker_factory() {
-    return dedicated_worker_factory_.get();
-  }
-
-  SharedWorkerFactory* shared_worker_factory() {
-    return shared_worker_factory_.get();
-  }
-
-  ServiceWorkerFactory* service_worker_factory() {
-    return service_worker_factory_.get();
-  }
-
- private:
-  std::unique_ptr<DedicatedWorkerFactory> dedicated_worker_factory_;
-  std::unique_ptr<SharedWorkerFactory> shared_worker_factory_;
-  std::unique_ptr<ServiceWorkerFactory> service_worker_factory_;
-};
-
-WorkerWatcherTest::WorkerWatcherTest() = default;
-
-WorkerWatcherTest::~WorkerWatcherTest() = default;
-
-void WorkerWatcherTest::SetUp() {
-  Super::SetUp();
-
-  performance_manager::WorkerWatcher* worker_watcher =
-      PerformanceManagerRegistryImpl::GetInstance()->GetWorkerWatcherForTesting(
-          GetBrowserContext());
-  CHECK(worker_watcher);
-
-  dedicated_worker_factory_ =
-      std::make_unique<DedicatedWorkerFactory>(worker_watcher);
-  shared_worker_factory_ =
-      std::make_unique<SharedWorkerFactory>(worker_watcher);
-  service_worker_factory_ =
-      std::make_unique<ServiceWorkerFactory>(worker_watcher);
-}
-
-void WorkerWatcherTest::TearDown() {
-  service_worker_factory_.reset();
-  shared_worker_factory_.reset();
-  dedicated_worker_factory_.reset();
-
-  Super::TearDown();
-}
+class WorkerWatcherTest : public PerformanceManagerTestHarness {};
 
 // This test creates one dedicated worker with a frame client.
 TEST_F(WorkerWatcherTest, SimpleDedicatedWorker) {
@@ -745,7 +227,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerFrameClient) {
   // Create and start the service worker.
   int64_t service_worker_version_id =
       service_worker_factory()->CreateServiceWorker();
-  const GURL worker_url = GenerateWorkerUrl();
+  const GURL worker_url = ServiceWorkerFactory::GenerateWorkerUrl();
   const GURL scope_url = GenerateUniqueDomainUrl();
   // Make sure origins created from `worker_url` and `scope_url` can't be
   // confused.
@@ -760,6 +242,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerFrameClient) {
   // Add a window client of the service worker.
   std::string service_worker_client_uuid = service_worker_factory()->AddClient(
       service_worker_version_id, client_frame_node.get());
+  ASSERT_FALSE(service_worker_client_uuid.empty());
 
   // Check the worker node's properties on the graph.
   Graph* graph = PerformanceManager::GetGraph();
@@ -814,7 +297,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerFrameClientOfTwoWorkers) {
   // Create and start both service workers.
   int64_t first_service_worker_version_id =
       service_worker_factory()->CreateServiceWorker();
-  const GURL first_worker_url = GenerateWorkerUrl();
+  const GURL first_worker_url = ServiceWorkerFactory::GenerateWorkerUrl();
   const GURL first_scope_url = GenerateUniqueDomainUrl();
   blink::ServiceWorkerToken first_service_worker_token =
       service_worker_factory()->StartServiceWorker(
@@ -826,7 +309,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerFrameClientOfTwoWorkers) {
 
   int64_t second_service_worker_version_id =
       service_worker_factory()->CreateServiceWorker();
-  const GURL second_worker_url = GenerateWorkerUrl();
+  const GURL second_worker_url = ServiceWorkerFactory::GenerateWorkerUrl();
   const GURL second_scope_url = GenerateUniqueDomainUrl();
   blink::ServiceWorkerToken second_service_worker_token =
       service_worker_factory()->StartServiceWorker(
@@ -846,9 +329,12 @@ TEST_F(WorkerWatcherTest, ServiceWorkerFrameClientOfTwoWorkers) {
   // Add a window client of the service worker twice.
   std::string service_worker_client_uuid = service_worker_factory()->AddClient(
       first_service_worker_version_id, client_frame_node.get());
-  service_worker_factory()->AddClient(second_service_worker_version_id,
-                                      client_frame_node.get(),
-                                      service_worker_client_uuid);
+  ASSERT_FALSE(service_worker_client_uuid.empty());
+  EXPECT_FALSE(service_worker_factory()
+                   ->AddClient(second_service_worker_version_id,
+                               client_frame_node.get(),
+                               service_worker_client_uuid)
+                   .empty());
 
   // Check expectations on the graph.
   Graph* graph = PerformanceManager::GetGraph();
@@ -916,6 +402,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerTwoFrameClientRelationships) {
   // Add a window client of the service worker.
   std::string first_client_uuid = service_worker_factory()->AddClient(
       service_worker_version_id, client_frame_node.get());
+  ASSERT_FALSE(first_client_uuid.empty());
 
   // Check expectations on the graph.
   Graph* graph = PerformanceManager::GetGraph();
@@ -929,6 +416,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerTwoFrameClientRelationships) {
   // Add a second client relationship between the same two entities.
   std::string second_client_uuid = service_worker_factory()->AddClient(
       service_worker_version_id, client_frame_node.get());
+  ASSERT_FALSE(second_client_uuid.empty());
 
   // Now simulate the navigation commit for the first client relationship.
   service_worker_factory()->OnControlleeNavigationCommitted(
@@ -1004,6 +492,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerFrameClientDestroyedBeforeCommit) {
   // Add a window client of the service worker.
   std::string service_worker_client_uuid = service_worker_factory()->AddClient(
       service_worker_version_id, client_frame_node.get());
+  ASSERT_FALSE(service_worker_client_uuid.empty());
 
   // Check expectations on the graph.
   Graph* graph = PerformanceManager::GetGraph();
@@ -1048,6 +537,7 @@ TEST_F(WorkerWatcherTest, AllTypesOfServiceWorkerClients) {
   // Frame client.
   std::string frame_client_uuid = service_worker_factory()->AddClient(
       service_worker_version_id, client_frame_node.get());
+  ASSERT_FALSE(frame_client_uuid.empty());
   service_worker_factory()->OnControlleeNavigationCommitted(
       service_worker_version_id, frame_client_uuid, client_frame_node.get());
 
@@ -1061,6 +551,7 @@ TEST_F(WorkerWatcherTest, AllTypesOfServiceWorkerClients) {
   std::string dedicated_worker_client_uuid =
       service_worker_factory()->AddClient(service_worker_version_id,
                                           dedicated_worker_node.get());
+  ASSERT_FALSE(dedicated_worker_client_uuid.empty());
 
   // Shared worker client.
   blink::SharedWorkerToken shared_worker_token =
@@ -1070,6 +561,7 @@ TEST_F(WorkerWatcherTest, AllTypesOfServiceWorkerClients) {
   ASSERT_TRUE(shared_worker_node);
   std::string shared_worker_client_uuid = service_worker_factory()->AddClient(
       service_worker_version_id, shared_worker_node.get());
+  ASSERT_FALSE(shared_worker_client_uuid.empty());
 
   // Check expectations on the graph.
   Graph* graph = PerformanceManager::GetGraph();
@@ -1117,6 +609,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerStartsAndStopsWithExistingClients) {
   // Frame client.
   std::string frame_client_uuid = service_worker_factory()->AddClient(
       service_worker_version_id, frame_node.get());
+  ASSERT_FALSE(frame_client_uuid.empty());
   service_worker_factory()->OnControlleeNavigationCommitted(
       service_worker_version_id, frame_client_uuid, frame_node.get());
 
@@ -1130,6 +623,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerStartsAndStopsWithExistingClients) {
   std::string dedicated_worker_client_uuid =
       service_worker_factory()->AddClient(service_worker_version_id,
                                           dedicated_worker_node.get());
+  ASSERT_FALSE(dedicated_worker_client_uuid.empty());
 
   // Shared worker client.
   blink::SharedWorkerToken shared_worker_token =
@@ -1139,6 +633,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerStartsAndStopsWithExistingClients) {
   ASSERT_TRUE(shared_worker_node);
   std::string shared_worker_client_uuid = service_worker_factory()->AddClient(
       service_worker_version_id, shared_worker_node.get());
+  ASSERT_FALSE(shared_worker_client_uuid.empty());
 
   // Check expectations on the graph.
   Graph* graph = PerformanceManager::GetGraph();
@@ -1152,7 +647,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerStartsAndStopsWithExistingClients) {
   // Note: Because a dedicated worker is always connected to a frame, this
   // frame node actually has |dedicated_worker_node| as its sole client.
   EXPECT_THAT(frame_node->GetChildWorkerNodes(),
-              testing::ElementsAre(dedicated_worker_node.get()));
+              ::testing::ElementsAre(dedicated_worker_node.get()));
   EXPECT_TRUE(dedicated_worker_node->GetChildWorkers().empty());
   EXPECT_TRUE(shared_worker_node->GetChildWorkers().empty());
 
@@ -1194,7 +689,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerStartsAndStopsWithExistingClients) {
   // Note: Because a dedicated worker is always connected to a frame, this
   // frame node actually has |dedicated_worker_node| as its sole client.
   EXPECT_THAT(frame_node->GetChildWorkerNodes(),
-              testing::ElementsAre(dedicated_worker_node.get()));
+              ::testing::ElementsAre(dedicated_worker_node.get()));
   EXPECT_TRUE(dedicated_worker_node->GetChildWorkers().empty());
   EXPECT_TRUE(shared_worker_node->GetChildWorkers().empty());
 
@@ -1241,6 +736,7 @@ TEST_F(WorkerWatcherTest, SharedWorkerStartsWithDeadWorkerClients) {
   std::string dedicated_worker_client_uuid =
       service_worker_factory()->AddClient(service_worker_version_id,
                                           dedicated_worker_node.get());
+  ASSERT_FALSE(dedicated_worker_client_uuid.empty());
 
   // Shared worker client.
   blink::SharedWorkerToken shared_worker_token =
@@ -1250,6 +746,7 @@ TEST_F(WorkerWatcherTest, SharedWorkerStartsWithDeadWorkerClients) {
   ASSERT_TRUE(shared_worker_node);
   std::string shared_worker_client_uuid = service_worker_factory()->AddClient(
       service_worker_version_id, shared_worker_node.get());
+  ASSERT_FALSE(shared_worker_client_uuid.empty());
 
   // Destroy the workers before the service worker starts.
   shared_worker_factory()->DestroySharedWorker(shared_worker_token);
@@ -1319,6 +816,7 @@ TEST_F(WorkerWatcherTest, SharedWorkerDiesAsServiceWorkerClient) {
 
   std::string service_worker_client_uuid = service_worker_factory()->AddClient(
       service_worker_version_id, shared_worker_node.get());
+  ASSERT_FALSE(service_worker_client_uuid.empty());
 
   // Check expectations on the graph.
   Graph* graph = PerformanceManager::GetGraph();
@@ -1503,6 +1001,7 @@ TEST_F(WorkerWatcherTest, FrameDestroyed) {
   shared_worker_factory()->AddClient(shared_worker_token, render_frame_host_id);
   std::string service_worker_client_uuid = service_worker_factory()->AddClient(
       service_worker_version_id, client_frame_node.get());
+  ASSERT_FALSE(service_worker_client_uuid.empty());
   service_worker_factory()->OnControlleeNavigationCommitted(
       service_worker_version_id, service_worker_client_uuid,
       client_frame_node.get());

@@ -109,7 +109,7 @@ export class AppListElement extends CrLitElement {
     const activeElementId = this.shadowRoot.activeElement?.id;
     if (activeElementId !== undefined &&
         this.apps_.some(app => activeElementId === app.id)) {
-      BrowserProxy.getInstance().handler.launchApp(activeElementId!, null);
+      BrowserProxy.getInstance().handler.launchApp(activeElementId, null);
     }
   }
 
@@ -140,7 +140,7 @@ export class AppListElement extends CrLitElement {
     const cssProps =
         window.getComputedStyle(this.shadowRoot.getElementById('container')!);
     const numColumns: number =
-        cssProps!.getPropertyValue('grid-template-columns')!.split(' ').length;
+        cssProps.getPropertyValue('grid-template-columns').split(' ').length;
     const keyActions = {
       ArrowRight: 1,
       ArrowLeft: -1,

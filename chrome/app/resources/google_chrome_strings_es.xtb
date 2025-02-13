@@ -82,6 +82,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2094648590148273905">Términos de ChromeOS Flex</translation>
 <translation id="2094919256425865063">¿Quieres cerrar Chrome de todas formas?</translation>
 <translation id="2106831557840787829">ChromeOS Flex se ha creado gracias a <ph name="BEGIN_LINK_CROS_OSS" />software libre<ph name="END_LINK_CROS_OSS" /> adicional, como el <ph name="BEGIN_LINK_LINUX_OSS" />entorno de desarrollo de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2108778574543343055">Inhabilitar que Chrome se ejecute en segundo plano en las aplicaciones</translation>
 <translation id="2120620239521071941">Se eliminarán <ph name="ITEMS_COUNT" /> elementos de este dispositivo. Para recuperar tus datos en otro momento, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="2123055963409958220">Genera un informe de la <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para ayudar a mejorar Chrome</translation>
@@ -143,6 +144,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2797864378188255696">Al iniciar sesión en servicios de Google como Gmail o YouTube con <ph name="USER_EMAIL" />, puedes iniciar sesión automáticamente en Chrome con la misma cuenta</translation>
 <translation id="2799162042226656283">Tu Chrome</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
+<translation id="2818684386420968393">Inhabilitar que Chrome se ejecute en segundo plano en las aplicaciones</translation>
 <translation id="2825024317344269723">Sitio peligroso. Chrome ha eliminado las notificaciones.</translation>
 <translation id="2841525013647267359">Traducir del</translation>
 <translation id="2846251086934905009">Error de instalación: no se ha completado el proceso de instalación. Se ha cancelado la instalación.</translation>
@@ -356,6 +358,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="5602351063754773347">Chrome te recomienda que la elimines. <ph name="BEGIN_LINK" />Más información sobre las extensiones compatibles<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome hace más para protegerte online</translation>
+<translation id="5649680279845190972">Para obtener tus extensiones y más en todos tus ordenadores, inicia sesión en Chrome</translation>
 <translation id="565744775970812598">Es posible que <ph name="FILE_NAME" /> sea peligroso, por lo que Chrome lo ha bloqueado.</translation>
 <translation id="566568153320186256">Chrome ahorra batería limitando la actividad en segundo plano y los efectos visuales, como el desplazamiento fluido y la velocidad de fotogramas de los vídeos. <ph name="BEGIN_LINK" />Más información sobre Ahorro de energía<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Borra los datos de Chrome de tu cuenta</translation>

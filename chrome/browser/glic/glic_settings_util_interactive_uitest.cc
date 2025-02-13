@@ -76,13 +76,9 @@ class GlicSettingsUtilUiTest : public InteractiveFeaturePromoTest {
                                            "help-bubble",
                                            "#close"};
 
-  const DeepQuery kKeyboardShortcutHelpBubbleQuery{"settings-ui",
-                                                   "settings-main",
-                                                   "settings-basic-page",
-                                                   "settings-glic-page",
-                                                   "#shortcutInput",
-                                                   "help-bubble",
-                                                   "#close"};
+  const DeepQuery kKeyboardShortcutHelpBubbleQuery{
+      "settings-ui",        "settings-main", "settings-basic-page",
+      "settings-glic-page", "help-bubble",   "#close"};
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

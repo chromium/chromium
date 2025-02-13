@@ -21,4 +21,16 @@ Vector<mojom::blink::AILanguageCodePtr> ToMojoLanguageCodes(
   return result;
 }
 
+Vector<String> ToStringLanguageCodes(
+    const Vector<mojom::blink::AILanguageCodePtr>& language_codes) {
+  Vector<String> result;
+  result.reserve(language_codes.size());
+  std::ranges::transform(
+      language_codes, std::back_inserter(result),
+      [](const mojom::blink::AILanguageCodePtr& language_code) {
+        return language_code->code;
+      });
+  return result;
+}
+
 }  // namespace blink

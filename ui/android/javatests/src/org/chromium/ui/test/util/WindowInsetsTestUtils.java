@@ -16,7 +16,14 @@ import org.mockito.Mockito;
 /** Util class used to manipulate window insets. */
 public class WindowInsetsTestUtils {
 
-    /** Insets builder that allows building insets that don't exists. */
+    /**
+     * Insets builder that allows building insets that don't exists on compat versions.
+     *
+     * <p>Note this class does not work well when test scenario involved display cutout heavily.
+     *
+     * @deprecated Use WindowInsetCompat.Builder from sdk=30+ instead.
+     */
+    @Deprecated(forRemoval = true)
     public static class SpyWindowInsetsBuilder {
         private static final int STATUS_BARS = WindowInsetsCompat.Type.statusBars();
         private static final int NAVIGATION_BARS = WindowInsetsCompat.Type.navigationBars();

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -50,8 +51,8 @@ PinStatusMessageView::TestApi::TestApi(PinStatusMessageView* view)
 
 PinStatusMessageView::TestApi::~TestApi() = default;
 
-const std::u16string&
-PinStatusMessageView::TestApi::GetPinStatusMessageContent() const {
+std::u16string_view PinStatusMessageView::TestApi::GetPinStatusMessageContent()
+    const {
   return view_->message_->GetText();
 }
 

@@ -1207,6 +1207,7 @@ Unknown properties are collapsed to zero. -->
   <int value="176" label="TOGGLE_STICKY_MODE"/>
   <int value="177" label="TOP"/>
   <int value="178" label="VIEW_GRAPHIC_AS_BRAILLE"/>
+  <int value="179" label="TOGGLE_CAPTIONS"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/chromeos/accessibility/chromevox/common/command.ts:Command) -->

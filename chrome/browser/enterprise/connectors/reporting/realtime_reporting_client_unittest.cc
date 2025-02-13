@@ -35,20 +35,8 @@
 #include "components/enterprise/browser/enterprise_switches.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
-#include "components/account_id/account_id.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user.h"
-#else
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -106,83 +94,6 @@ class RealtimeReportingClientTestBase : public testing::Test {
 };
 }  // namespace
 
-// Tests to make sure the feature flag and policy control real-time reporting
-// as expected.  The parameter for these tests is a tuple of bools:
-//
-//   bool: whether the feature flag is enabled.
-//   bool: whether the session is public or not.
-class RealtimeReportingClientIsRealtimeReportingEnabledTest
-    : public RealtimeReportingClientTestBase,
-      public testing::WithParamInterface<testing::tuple<bool, bool>> {
- public:
-  RealtimeReportingClientIsRealtimeReportingEnabledTest()
-      : is_feature_flag_enabled_(testing::get<0>(GetParam())),
-        is_public_session_(testing::get<1>(GetParam())) {
-    if (is_feature_flag_enabled_) {
-      scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabledOnMGS},
-                                            {});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {kEnterpriseConnectorsEnabledOnMGS});
-    }
-
-    // In chrome branded desktop builds, the browser is always manageable.
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kEnableChromeBrowserCloudManagement);
-#endif
-  }
-
-  void SetUp() override {
-    RealtimeReportingClientTestBase::SetUp();
-    reporting_client_ =
-        enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
-            profile_);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    const AccountId account_id(
-        AccountId::FromUserEmail(profile_->GetProfileUserName()));
-    const user_manager::User* user;
-    if (is_public_session_) {
-      user = user_manager->AddPublicAccountUser(account_id);
-    } else {
-      user = user_manager->AddUserWithAffiliation(account_id,
-                                                  /*is_affiliated=*/true);
-    }
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                 profile_);
-    user_manager->UserLoggedIn(account_id, user->username_hash(),
-                               /*browser_restart=*/false,
-                               /*is_child=*/false);
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
-    profile_->ScopedCrosSettingsTestHelper()
-        ->InstallAttributes()
-        ->SetCloudManaged("domain.com", "device_id");
-#endif
-  }
-
-  bool should_init() {
-    bool is_mgs = false;
-#if BUILDFLAG(IS_CHROMEOS)
-    is_mgs = chromeos::IsManagedGuestSession();
-#endif
-    return is_feature_flag_enabled_ || !is_mgs;
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<RealtimeReportingClient> reporting_client_ = nullptr;
-  const bool is_feature_flag_enabled_;
-  const bool is_public_session_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
- private:
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-#endif
-};
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 class RealtimeReportingClientOidcTest : public RealtimeReportingClientTestBase {
  public:
@@ -201,16 +112,6 @@ class RealtimeReportingClientOidcTest : public RealtimeReportingClientTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-TEST_P(RealtimeReportingClientIsRealtimeReportingEnabledTest,
-       ShouldInitRealtimeReportingClient) {
-  EXPECT_EQ(should_init(),
-            reporting_client_->ShouldInitRealtimeReportingClient());
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         RealtimeReportingClientIsRealtimeReportingEnabledTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
 
 class RealtimeReportingClientUmaTest
     : public RealtimeReportingClientTestBase,

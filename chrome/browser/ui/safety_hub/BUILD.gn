@@ -148,7 +148,7 @@ source_set("test_support") {
     "//services/network:test_support",
   ]
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     public_deps += [
       "//chrome/browser/extensions",
       "//extensions/common",

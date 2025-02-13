@@ -9,6 +9,8 @@
 
 #include "ash/assistant/ui/main_stage/assistant_onboarding_suggestion_view.h"
 
+#include <string_view>
+
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
@@ -174,7 +176,7 @@ gfx::ImageSkia AssistantOnboardingSuggestionView::GetIcon() const {
   return icon_->GetImage();
 }
 
-const std::u16string& AssistantOnboardingSuggestionView::GetText() const {
+std::u16string_view AssistantOnboardingSuggestionView::GetText() const {
   return label_->GetText();
 }
 

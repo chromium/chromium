@@ -37,8 +37,10 @@ class FakeCaptionBubbleController : public captions::CaptionBubbleController {
     return delegate_->AddTranscription(result);
   }
 
-  void OnAudioStreamEnd(captions::CaptionBubbleContext*) override {
-    delegate_->OnAudioStreamEnd();
+  void OnLanguageIdentificationEvent(
+      captions::CaptionBubbleContext*,
+      const media::mojom::LanguageIdentificationEventPtr&) override {
+    delegate_->OnLanguageIdentificationEvent();
   }
 
   void UpdateCaptionStyle(std::optional<ui::CaptionStyle> style) override {
@@ -54,9 +56,7 @@ class FakeCaptionBubbleController : public captions::CaptionBubbleController {
   bool IsGenericErrorMessageVisibleForTesting() override { return false; }
   std::string GetBubbleLabelTextForTesting() override { return std::string(); }
   void CloseActiveModelForTesting() override {}
-  void OnLanguageIdentificationEvent(
-      captions::CaptionBubbleContext*,
-      const media::mojom::LanguageIdentificationEventPtr&) override {}
+  void OnAudioStreamEnd(captions::CaptionBubbleContext*) override {}
 
  private:
   raw_ptr<FakeCaptionControllerDelegate> delegate_;
@@ -95,8 +95,8 @@ FakeCaptionControllerDelegate::GetCaptionStyleObserver() {
   return style_observer_;
 }
 
-size_t FakeCaptionControllerDelegate::GetOnAudioStreamEndCount() {
-  return audio_stream_end_count_;
+size_t FakeCaptionControllerDelegate::GetOnLanguageIdentificationEventCount() {
+  return language_identification_event_count_;
 }
 
 const std::vector<std::optional<ui::CaptionStyle>>&
@@ -119,8 +119,8 @@ void FakeCaptionControllerDelegate::SetOnTranscriptionSuccess(bool success) {
   on_transcritption_success_ = success;
 }
 
-void FakeCaptionControllerDelegate::OnAudioStreamEnd() {
-  ++audio_stream_end_count_;
+void FakeCaptionControllerDelegate::OnLanguageIdentificationEvent() {
+  ++language_identification_event_count_;
 }
 
 void FakeCaptionControllerDelegate::AddStyleUpdate(

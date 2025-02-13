@@ -113,7 +113,7 @@ TEST(CaptionControllerTest, DispatchAfterStopLiveCaption) {
   EXPECT_EQ(delegate_ptr->GetCreateBubbleControllerCount(), 1u);
 }
 
-TEST(CaptionControllerTest, OnAudioStreamEndBeforeStart) {
+TEST(CaptionControllerTest, OnLanguageIdentificationEventBeforeStart) {
   TestingPrefServiceSimple pref_service;
   RegisterPrefsForTesting(&pref_service);
   auto delegate = std::make_unique<FakeCaptionControllerDelegate>();
@@ -122,12 +122,12 @@ TEST(CaptionControllerTest, OnAudioStreamEndBeforeStart) {
       /*caption_bubble_context=*/nullptr, &pref_service, kApplicationLocale,
       /*caption_bubble_settings=*/nullptr, std::move(delegate));
 
-  caption_controller.OnAudioStreamEnd();
+  caption_controller.OnLanguageIdentificationEvent(nullptr);
 
-  EXPECT_EQ(delegate_ptr->GetOnAudioStreamEndCount(), 0u);
+  EXPECT_EQ(delegate_ptr->GetOnLanguageIdentificationEventCount(), 0u);
 }
 
-TEST(CaptionControllerTest, OnAudioStreamEnd) {
+TEST(CaptionControllerTest, OnLanguageIdentificationEvent) {
   TestingPrefServiceSimple pref_service;
   RegisterPrefsForTesting(&pref_service);
   auto delegate = std::make_unique<FakeCaptionControllerDelegate>();
@@ -137,12 +137,12 @@ TEST(CaptionControllerTest, OnAudioStreamEnd) {
       /*caption_bubble_settings=*/nullptr, std::move(delegate));
 
   caption_controller.StartLiveCaption();
-  caption_controller.OnAudioStreamEnd();
+  caption_controller.OnLanguageIdentificationEvent(nullptr);
 
-  EXPECT_EQ(delegate_ptr->GetOnAudioStreamEndCount(), 1u);
+  EXPECT_EQ(delegate_ptr->GetOnLanguageIdentificationEventCount(), 1u);
 }
 
-TEST(CaptionControllerTest, OnAudioStreamEndAfterStop) {
+TEST(CaptionControllerTest, OnLanguageIdentificationEventAfterStop) {
   TestingPrefServiceSimple pref_service;
   RegisterPrefsForTesting(&pref_service);
   auto delegate = std::make_unique<FakeCaptionControllerDelegate>();
@@ -153,9 +153,9 @@ TEST(CaptionControllerTest, OnAudioStreamEndAfterStop) {
 
   caption_controller.StartLiveCaption();
   caption_controller.StopLiveCaption();
-  caption_controller.OnAudioStreamEnd();
+  caption_controller.OnLanguageIdentificationEvent(nullptr);
 
-  EXPECT_EQ(delegate_ptr->GetOnAudioStreamEndCount(), 0u);
+  EXPECT_EQ(delegate_ptr->GetOnLanguageIdentificationEventCount(), 0u);
 }
 
 TEST(CaptionControllerTest, OnCaptionStyleUpdated) {

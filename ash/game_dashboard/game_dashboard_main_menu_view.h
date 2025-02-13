@@ -161,9 +161,6 @@ class ASH_EXPORT GameDashboardMainMenuView
   // sub-label aren't available, returns null. Visible for testing.
   const views::Label* GetScreenSizeRowSubtitle();
 
-  // views::Views:
-  void OnThemeChanged() override;
-
   // Allows this class to access `GameDashboardContext` owned functions/objects.
   const raw_ptr<GameDashboardContext> context_;
 

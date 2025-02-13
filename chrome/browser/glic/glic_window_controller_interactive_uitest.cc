@@ -193,6 +193,66 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       CheckControllerHasWidget(false));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       HotkeyAttachesToActiveBrowser) {
+  RunTestSequence(
+      // Glic should open attached to active browser.
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kActivateSurfaceIncompatibilityNotice),
+      ActivateSurface(kBrowserViewElementId), SimulateGlicHotkey(),
+      InAnyContext(WaitForShow(kGlicViewElementId)),
+      CheckControllerHasWidget(true),
+      CheckControllerWidgetMode(GlicWindowMode::kAttached));
+}
+
+#if !BUILDFLAG(IS_LINUX)
+// This appears to be flaky on Linux. Perhaps Minimizing isn't synchronous
+// on Linux.
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       HotkeyOpensDetachedWithMinimizedBrowser) {
+  RunTestSequence(
+      // Glic should open attached to active browser.
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kActivateSurfaceIncompatibilityNotice),
+      ActivateSurface(kBrowserViewElementId));
+  browser()->window()->Minimize();
+  RunTestSequence(SimulateGlicHotkey(),
+                  InAnyContext(WaitForShow(kGlicViewElementId)),
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kDetached));
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       HotkeyOpensDetachedWithOccludedBrowser) {
+  RunTestSequence(
+      // Glic should open attached to active browser.
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kActivateSurfaceIncompatibilityNotice),
+      ActivateSurface(kBrowserViewElementId));
+
+  browser()->window()->Deactivate();
+
+  // Mark browser window as occluded. If this test is flaky, it might be
+  // because we haven't disabled the kCalculateNativeWinOcclusion feature. But,
+  // Toggle(), which checks if the window is occluded, should get called
+  // synchronously, before the background occlusion calculation has a chance to
+  // mark the browser window as visible.
+  browser()
+      ->window()
+      ->GetNativeWindow()
+      ->GetHost()
+      ->SetNativeWindowOcclusionState(aura::Window::OcclusionState::OCCLUDED,
+                                      {});
+
+  RunTestSequence(SimulateGlicHotkey(),
+                  InAnyContext(WaitForShow(kGlicViewElementId)),
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kDetached));
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 // TODO(388102775): When Mac app focus issues are resolved, add a test to verify
 // that invoking the hotkey while open detached always closes glic regardless of
 // activation.
@@ -305,7 +365,10 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerWithMemoryPressureUiTest, Preload) {
                   InAnyContext(WaitForShow(kGlicViewElementId)));
 }
 
-#if !BUILDFLAG(IS_LINUX)
+// These tests for dragging across multiple displays is for mac-only.
+// On Windows11, this test times out in calling WaitForDisplaySizes() when
+// setting up the virtual displays.
+#if BUILDFLAG(IS_MAC)
 class GlicWindowControllerMultipleDisplaysUiTest
     : public GlicWindowControllerUiTest {
  public:

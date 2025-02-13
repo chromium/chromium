@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -31,10 +30,6 @@ class FileSystemURL;
 }
 
 namespace enterprise_connectors {
-
-// Controls whether the Enterprise Connectors policies should be read by
-// ConnectorsManager in Managed Guest Sessions.
-BASE_DECLARE_FEATURE(kEnterpriseConnectorsEnabledOnMGS);
 
 // A keyed service to access ConnectorsManager, which tracks Connector policies.
 class ConnectorsService : public ConnectorsServiceBase, public KeyedService {

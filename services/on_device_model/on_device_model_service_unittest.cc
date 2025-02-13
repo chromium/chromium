@@ -131,12 +131,12 @@ class OnDeviceModelServiceTest : public testing::Test {
     return LoadAdaptationWithParams(model, std::move(params));
   }
 
-  mojom::InputOptionsPtr MakeInput(const std::string& input) {
+  mojom::AppendOptionsPtr MakeInput(const std::string& input) {
     return MakeInput({ml::InputPiece(input)});
   }
 
-  mojom::InputOptionsPtr MakeInput(std::vector<ml::InputPiece> input) {
-    auto options = mojom::InputOptions::New();
+  mojom::AppendOptionsPtr MakeInput(std::vector<ml::InputPiece> input) {
+    auto options = mojom::AppendOptions::New();
     options->input = mojom::Input::New(std::move(input));
     return options;
   }
@@ -146,7 +146,11 @@ class OnDeviceModelServiceTest : public testing::Test {
     TestResponseHolder response;
     mojo::Remote<mojom::Session> session;
     model.StartSession(session.BindNewPipeAndPassReceiver());
-    session->Execute(MakeInput(input), response.BindRemote());
+    auto options = mojom::AppendOptions::New();
+    options->input =
+        mojom::Input::New(std::vector<ml::InputPiece>{ml::InputPiece(input)});
+    session->Append(std::move(options), {});
+    session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
     response.WaitForCompletion();
     return response.responses();
   }
@@ -165,25 +169,26 @@ class OnDeviceModelServiceTest : public testing::Test {
 
 TEST_F(OnDeviceModelServiceTest, Responds) {
   auto model = LoadModel();
-  EXPECT_THAT(GetResponses(*model, "bar"), ElementsAre("Input: bar\n"));
+  EXPECT_THAT(GetResponses(*model, "bar"), ElementsAre("Context: bar\n"));
   // Try another input on  the same model.
-  EXPECT_THAT(GetResponses(*model, "cat"), ElementsAre("Input: cat\n"));
+  EXPECT_THAT(GetResponses(*model, "cat"), ElementsAre("Context: cat\n"));
 }
 
-TEST_F(OnDeviceModelServiceTest, AddContext) {
+TEST_F(OnDeviceModelServiceTest, Append) {
   auto model = LoadModel();
 
   TestResponseHolder response;
   mojo::Remote<mojom::Session> session;
   model->StartSession(session.BindNewPipeAndPassReceiver());
-  session->AddContext(MakeInput("cheese"), {});
-  session->AddContext(MakeInput("more"), {});
-  session->Execute(MakeInput("cheddar"), response.BindRemote());
+  session->Append(MakeInput("cheese"), {});
+  session->Append(MakeInput("more"), {});
+  session->Append(MakeInput("cheddar"), {});
+  session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
   response.WaitForCompletion();
 
-  EXPECT_THAT(
-      response.responses(),
-      ElementsAre("Context: cheese\n", "Context: more\n", "Input: cheddar\n"));
+  EXPECT_THAT(response.responses(),
+              ElementsAre("Context: cheese\n", "Context: more\n",
+                          "Context: cheddar\n"));
 }
 
 TEST_F(OnDeviceModelServiceTest, CloneContextAndContinue) {
@@ -191,134 +196,79 @@ TEST_F(OnDeviceModelServiceTest, CloneContextAndContinue) {
 
   mojo::Remote<mojom::Session> session;
   model->StartSession(session.BindNewPipeAndPassReceiver());
-  session->AddContext(MakeInput("cheese"), {});
-  session->AddContext(MakeInput("more"), {});
+  session->Append(MakeInput("cheese"), {});
+  session->Append(MakeInput("more"), {});
 
   mojo::Remote<mojom::Session> cloned;
   session->Clone(cloned.BindNewPipeAndPassReceiver());
 
   {
     TestResponseHolder response;
-    cloned->Execute(MakeInput("cheddar"), response.BindRemote());
+    cloned->Generate(mojom::GenerateOptions::New(), response.BindRemote());
     response.WaitForCompletion();
     EXPECT_THAT(response.responses(),
-                ElementsAre("Context: cheese\n", "Context: more\n",
-                            "Input: cheddar\n"));
+                ElementsAre("Context: cheese\n", "Context: more\n"));
   }
   {
     TestResponseHolder response;
-    session->Execute(MakeInput("swiss"), response.BindRemote());
+    session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
+    response.WaitForCompletion();
+    EXPECT_THAT(response.responses(),
+                ElementsAre("Context: cheese\n", "Context: more\n"));
+  }
+
+  session->Append(MakeInput("foo"), {});
+  cloned->Append(MakeInput("bar"), {});
+  {
+    TestResponseHolder response;
+    session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
     response.WaitForCompletion();
     EXPECT_THAT(
         response.responses(),
-        ElementsAre("Context: cheese\n", "Context: more\n", "Input: swiss\n"));
-  }
-
-  session->AddContext(MakeInput("foo"), {});
-  cloned->AddContext(MakeInput("bar"), {});
-  {
-    TestResponseHolder response;
-    session->Execute(MakeInput("swiss"), response.BindRemote());
-    response.WaitForCompletion();
-    EXPECT_THAT(response.responses(),
-                ElementsAre("Context: cheese\n", "Context: more\n",
-                            "Context: foo\n", "Input: swiss\n"));
+        ElementsAre("Context: cheese\n", "Context: more\n", "Context: foo\n"));
   }
   {
     TestResponseHolder response;
-    cloned->Execute(MakeInput("cheddar"), response.BindRemote());
+    cloned->Generate(mojom::GenerateOptions::New(), response.BindRemote());
     response.WaitForCompletion();
-    EXPECT_THAT(response.responses(),
-                ElementsAre("Context: cheese\n", "Context: more\n",
-                            "Context: bar\n", "Input: cheddar\n"));
+    EXPECT_THAT(
+        response.responses(),
+        ElementsAre("Context: cheese\n", "Context: more\n", "Context: bar\n"));
   }
 }
 
-TEST_F(OnDeviceModelServiceTest, MultipleSessionsAddContext) {
+TEST_F(OnDeviceModelServiceTest, MultipleSessionsAppend) {
   auto model = LoadModel();
 
   TestResponseHolder response1, response2, response3, response4, response5;
-  mojo::Remote<mojom::Session> session1, session2;
+  mojo::Remote<mojom::Session> session1, session2, session3, session4, session5;
 
   model->StartSession(session1.BindNewPipeAndPassReceiver());
   model->StartSession(session2.BindNewPipeAndPassReceiver());
 
-  session1->AddContext(MakeInput("cheese"), {});
-  session1->AddContext(MakeInput("more"), {});
-  session2->AddContext(MakeInput("apple"), {});
+  session1->Append(MakeInput("cheese"), {});
+  session1->Append(MakeInput("more"), {});
+  session2->Append(MakeInput("apple"), {});
 
-  session1->Execute(MakeInput("cheddar"), response1.BindRemote());
+  session1->Clone(session3.BindNewPipeAndPassReceiver());
+  session1->Append(MakeInput("cheddar"), {});
+  session1->Generate(mojom::GenerateOptions::New(), response1.BindRemote());
 
-  session2->AddContext(MakeInput("banana"), {});
+  session2->Append(MakeInput("banana"), {});
 
-  session2->Execute(MakeInput("candy"), response2.BindRemote());
-  session2->Execute(MakeInput("chip"), response3.BindRemote());
-  session1->Execute(MakeInput("choco"), response4.BindRemote());
-  session2->Execute(MakeInput("orange"), response5.BindRemote());
+  session2->Clone(session4.BindNewPipeAndPassReceiver());
+  session2->Append(MakeInput("candy"), {});
+  session2->Generate(mojom::GenerateOptions::New(), response2.BindRemote());
 
-  response1.WaitForCompletion();
-  response2.WaitForCompletion();
-  response3.WaitForCompletion();
-  response4.WaitForCompletion();
-  response5.WaitForCompletion();
+  session4->Clone(session5.BindNewPipeAndPassReceiver());
+  session4->Append(MakeInput("chip"), {});
+  session4->Generate(mojom::GenerateOptions::New(), response3.BindRemote());
 
-  EXPECT_THAT(
-      response1.responses(),
-      ElementsAre("Context: cheese\n", "Context: more\n", "Input: cheddar\n"));
-  EXPECT_THAT(
-      response2.responses(),
-      ElementsAre("Context: apple\n", "Context: banana\n", "Input: candy\n"));
-  EXPECT_THAT(
-      response3.responses(),
-      ElementsAre("Context: apple\n", "Context: banana\n", "Input: chip\n"));
-  EXPECT_THAT(
-      response4.responses(),
-      ElementsAre("Context: cheese\n", "Context: more\n", "Input: choco\n"));
-  EXPECT_THAT(
-      response5.responses(),
-      ElementsAre("Context: apple\n", "Context: banana\n", "Input: orange\n"));
-}
+  session3->Append(MakeInput("choco"), {});
+  session3->Generate(mojom::GenerateOptions::New(), response4.BindRemote());
 
-TEST_F(OnDeviceModelServiceTest, IgnoresContext) {
-  auto model = LoadModel();
-
-  TestResponseHolder response;
-  mojo::Remote<mojom::Session> session;
-  model->StartSession(session.BindNewPipeAndPassReceiver());
-  session->AddContext(MakeInput("cheese"), {});
-  auto input = MakeInput("cheddar");
-  input->ignore_context = true;
-  session->Execute(std::move(input), response.BindRemote());
-  response.WaitForCompletion();
-
-  EXPECT_THAT(response.responses(), ElementsAre("Input: cheddar\n"));
-}
-
-TEST_F(OnDeviceModelServiceTest, MultipleSessionsIgnoreContext) {
-  auto model = LoadModel();
-
-  TestResponseHolder response1, response2, response3, response4, response5;
-  mojo::Remote<mojom::Session> session1, session2;
-
-  model->StartSession(session1.BindNewPipeAndPassReceiver());
-  model->StartSession(session2.BindNewPipeAndPassReceiver());
-
-  session1->AddContext(MakeInput("cheese"), {});
-
-  session1->Execute(MakeInput("cheddar"), response1.BindRemote());
-
-  session1->AddContext(MakeInput("more"), {});
-  session2->AddContext(MakeInput("apple"), {});
-  session2->AddContext(MakeInput("banana"), {});
-
-  session2->Execute(MakeInput("candy"), response2.BindRemote());
-  auto chip = MakeInput("chip");
-  chip->ignore_context = true;
-  session2->Execute(std::move(chip), response3.BindRemote());
-  auto choco = MakeInput("choco");
-  choco->ignore_context = true;
-  session1->Execute(std::move(choco), response4.BindRemote());
-  session2->Execute(MakeInput("orange"), response5.BindRemote());
+  session5->Append(MakeInput("orange"), {});
+  session5->Generate(mojom::GenerateOptions::New(), response5.BindRemote());
 
   response1.WaitForCompletion();
   response2.WaitForCompletion();
@@ -327,15 +277,20 @@ TEST_F(OnDeviceModelServiceTest, MultipleSessionsIgnoreContext) {
   response5.WaitForCompletion();
 
   EXPECT_THAT(response1.responses(),
-              ElementsAre("Context: cheese\n", "Input: cheddar\n"));
+              ElementsAre("Context: cheese\n", "Context: more\n",
+                          "Context: cheddar\n"));
   EXPECT_THAT(
       response2.responses(),
-      ElementsAre("Context: apple\n", "Context: banana\n", "Input: candy\n"));
-  EXPECT_THAT(response3.responses(), ElementsAre("Input: chip\n"));
-  EXPECT_THAT(response4.responses(), ElementsAre("Input: choco\n"));
+      ElementsAre("Context: apple\n", "Context: banana\n", "Context: candy\n"));
   EXPECT_THAT(
-      response5.responses(),
-      ElementsAre("Context: apple\n", "Context: banana\n", "Input: orange\n"));
+      response3.responses(),
+      ElementsAre("Context: apple\n", "Context: banana\n", "Context: chip\n"));
+  EXPECT_THAT(
+      response4.responses(),
+      ElementsAre("Context: cheese\n", "Context: more\n", "Context: choco\n"));
+  EXPECT_THAT(response5.responses(),
+              ElementsAre("Context: apple\n", "Context: banana\n",
+                          "Context: orange\n"));
 }
 
 TEST_F(OnDeviceModelServiceTest, CountTokens) {
@@ -344,19 +299,19 @@ TEST_F(OnDeviceModelServiceTest, CountTokens) {
   TestResponseHolder response;
   mojo::Remote<mojom::Session> session;
   model->StartSession(session.BindNewPipeAndPassReceiver());
-  session->AddContext(MakeInput("cheese"), {});
-  session->AddContext(MakeInput("more"), {});
+  session->Append(MakeInput("cheese"), {});
+  session->Append(MakeInput("more"), {});
 
   std::string input = "cheddar";
-  session->Execute(MakeInput(input), response.BindRemote());
+  session->Append(MakeInput(input), {});
+  session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
   response.WaitForCompletion();
 
-  EXPECT_THAT(response.input_token_count(), input.size());
-  // 2 context + 1 input.
+  // 3 context.
   EXPECT_THAT(response.output_token_count(), 3);
 }
 
-TEST_F(OnDeviceModelServiceTest, AddContextWithTokenLimits) {
+TEST_F(OnDeviceModelServiceTest, AppendWithTokenLimits) {
   auto model = LoadModel();
 
   TestResponseHolder response;
@@ -367,21 +322,22 @@ TEST_F(OnDeviceModelServiceTest, AddContextWithTokenLimits) {
   ContextClientWaiter client1;
   auto max_input = MakeInput("big cheese");
   max_input->max_tokens = 4;
-  session->AddContext(std::move(max_input), client1.BindRemote());
+  session->Append(std::move(max_input), client1.BindRemote());
   EXPECT_EQ(client1.WaitForCompletion(), 4);
 
   ContextClientWaiter client2;
   auto offset_input = MakeInput("big cheese");
   offset_input->token_offset = 4;
-  session->AddContext(std::move(offset_input), client2.BindRemote());
+  session->Append(std::move(offset_input), client2.BindRemote());
   EXPECT_EQ(client2.WaitForCompletion(), 6);
 
-  session->Execute(MakeInput("cheddar"), response.BindRemote());
+  session->Append(MakeInput("cheddar"), {});
+  session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
   response.WaitForCompletion();
 
-  EXPECT_THAT(
-      response.responses(),
-      ElementsAre("Context: big \n", "Context: cheese\n", "Input: cheddar\n"));
+  EXPECT_THAT(response.responses(),
+              ElementsAre("Context: big \n", "Context: cheese\n",
+                          "Context: cheddar\n"));
 }
 
 TEST_F(OnDeviceModelServiceTest, MultipleSessionsWaitPreviousSession) {
@@ -390,7 +346,8 @@ TEST_F(OnDeviceModelServiceTest, MultipleSessionsWaitPreviousSession) {
   TestResponseHolder response1;
   mojo::Remote<mojom::Session> session1;
   model->StartSession(session1.BindNewPipeAndPassReceiver());
-  session1->Execute(MakeInput("1"), response1.BindRemote());
+  session1->Append(MakeInput("1"), {});
+  session1->Generate(mojom::GenerateOptions::New(), response1.BindRemote());
 
   mojo::Remote<mojom::Session> session2;
   model->StartSession(session2.BindNewPipeAndPassReceiver());
@@ -402,13 +359,14 @@ TEST_F(OnDeviceModelServiceTest, MultipleSessionsWaitPreviousSession) {
 
   // Response from first session should still work.
   response1.WaitForCompletion();
-  EXPECT_THAT(response1.responses(), ElementsAre("Input: 1\n"));
+  EXPECT_THAT(response1.responses(), ElementsAre("Context: 1\n"));
 
   // Second session still works.
   TestResponseHolder response2;
-  session2->Execute(MakeInput("2"), response2.BindRemote());
+  session2->Append(MakeInput("2"), {});
+  session2->Generate(mojom::GenerateOptions::New(), response2.BindRemote());
   response2.WaitForCompletion();
-  EXPECT_THAT(response2.responses(), ElementsAre("Input: 2\n"));
+  EXPECT_THAT(response2.responses(), ElementsAre("Context: 2\n"));
 }
 
 TEST_F(OnDeviceModelServiceTest, LoadsAdaptation) {
@@ -416,16 +374,16 @@ TEST_F(OnDeviceModelServiceTest, LoadsAdaptation) {
   FakeFile weights2("Adapt2");
   auto model = LoadModel();
   auto adaptation1 = LoadAdaptation(*model, weights1.Open());
-  EXPECT_THAT(GetResponses(*model, "foo"), ElementsAre("Input: foo\n"));
+  EXPECT_THAT(GetResponses(*model, "foo"), ElementsAre("Context: foo\n"));
   EXPECT_THAT(GetResponses(*adaptation1, "foo"),
-              ElementsAre("Adaptation: Adapt1\n", "Input: foo\n"));
+              ElementsAre("Adaptation: Adapt1\n", "Context: foo\n"));
 
   auto adaptation2 = LoadAdaptation(*model, weights2.Open());
-  EXPECT_THAT(GetResponses(*model, "foo"), ElementsAre("Input: foo\n"));
+  EXPECT_THAT(GetResponses(*model, "foo"), ElementsAre("Context: foo\n"));
   EXPECT_THAT(GetResponses(*adaptation1, "foo"),
-              ElementsAre("Adaptation: Adapt1\n", "Input: foo\n"));
+              ElementsAre("Adaptation: Adapt1\n", "Context: foo\n"));
   EXPECT_THAT(GetResponses(*adaptation2, "foo"),
-              ElementsAre("Adaptation: Adapt2\n", "Input: foo\n"));
+              ElementsAre("Adaptation: Adapt2\n", "Context: foo\n"));
 }
 
 TEST_F(OnDeviceModelServiceTest, DestroysAdaptationSession) {
@@ -457,16 +415,16 @@ TEST_F(OnDeviceModelServiceTest, LoadsAdaptationWithPath) {
   FakeFile weights2("Adapt2");
   auto model = LoadModel(ml::ModelBackendType::kApuBackend);
   auto adaptation1 = LoadAdaptation(*model, weights1.Path());
-  EXPECT_THAT(GetResponses(*model, "foo"), ElementsAre("Input: foo\n"));
+  EXPECT_THAT(GetResponses(*model, "foo"), ElementsAre("Context: foo\n"));
   EXPECT_THAT(GetResponses(*adaptation1, "foo"),
-              ElementsAre("Adaptation: Adapt1\n", "Input: foo\n"));
+              ElementsAre("Adaptation: Adapt1\n", "Context: foo\n"));
 
   auto adaptation2 = LoadAdaptation(*model, weights2.Path());
-  EXPECT_THAT(GetResponses(*model, "foo"), ElementsAre("Input: foo\n"));
+  EXPECT_THAT(GetResponses(*model, "foo"), ElementsAre("Context: foo\n"));
   EXPECT_THAT(GetResponses(*adaptation1, "foo"),
-              ElementsAre("Adaptation: Adapt1\n", "Input: foo\n"));
+              ElementsAre("Adaptation: Adapt1\n", "Context: foo\n"));
   EXPECT_THAT(GetResponses(*adaptation2, "foo"),
-              ElementsAre("Adaptation: Adapt2\n", "Input: foo\n"));
+              ElementsAre("Adaptation: Adapt2\n", "Context: foo\n"));
 }
 
 TEST_F(OnDeviceModelServiceTest, LoadingAdaptationDoesNotCancelSession) {
@@ -518,7 +476,7 @@ TEST_F(OnDeviceModelServiceTest, Score) {
 
   mojo::Remote<mojom::Session> session;
   model->StartSession(session.BindNewPipeAndPassReceiver());
-  session->AddContext(MakeInput("hi"), {});
+  session->Append(MakeInput("hi"), {});
 
   {
     base::test::TestFuture<float> future;
@@ -532,7 +490,7 @@ TEST_F(OnDeviceModelServiceTest, Score) {
   }
 }
 
-TEST_F(OnDeviceModelServiceTest, AddContextWithTokens) {
+TEST_F(OnDeviceModelServiceTest, AppendWithTokens) {
   auto model = LoadModel();
 
   TestResponseHolder response;
@@ -543,29 +501,30 @@ TEST_F(OnDeviceModelServiceTest, AddContextWithTokens) {
     pieces.push_back(ml::Token::kSystem);
     pieces.push_back("hi");
     pieces.push_back(ml::Token::kEnd);
-    session->AddContext(MakeInput(std::move(pieces)), {});
+    session->Append(MakeInput(std::move(pieces)), {});
   }
   {
     std::vector<ml::InputPiece> pieces;
     pieces.push_back(ml::Token::kModel);
     pieces.push_back("hello");
     pieces.push_back(ml::Token::kEnd);
-    session->AddContext(MakeInput(std::move(pieces)), {});
+    session->Append(MakeInput(std::move(pieces)), {});
   }
   {
     std::vector<ml::InputPiece> pieces;
     pieces.push_back(ml::Token::kUser);
     pieces.push_back("bye");
-    session->Execute(MakeInput(std::move(pieces)), response.BindRemote());
+    session->Append(MakeInput(std::move(pieces)), {});
+    session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
   }
   response.WaitForCompletion();
 
   EXPECT_THAT(response.responses(), ElementsAre("Context: System: hi End.\n",
                                                 "Context: Model: hello End.\n",
-                                                "Input: User: bye\n"));
+                                                "Context: User: bye\n"));
 }
 
-TEST_F(OnDeviceModelServiceTest, AddContextWithImages) {
+TEST_F(OnDeviceModelServiceTest, AppendWithImages) {
   auto model = LoadModel();
   auto params = mojom::LoadAdaptationParams::New();
   params->enable_image_input = true;
@@ -588,7 +547,7 @@ TEST_F(OnDeviceModelServiceTest, AddContextWithImages) {
 
     pieces.push_back("cheese");
 
-    session->AddContext(MakeInput(std::move(pieces)), {});
+    session->Append(MakeInput(std::move(pieces)), {});
   }
 
   {
@@ -604,13 +563,14 @@ TEST_F(OnDeviceModelServiceTest, AddContextWithImages) {
 
     pieces.push_back("cheese");
 
-    session->Execute(MakeInput(std::move(pieces)), response.BindRemote());
+    session->Append(MakeInput(std::move(pieces)), {});
+    session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
     response.WaitForCompletion();
   }
 
   EXPECT_THAT(response.responses(),
               ElementsAre("Context: cheddar[Bitmap of size 7x21]cheese\n",
-                          "Input: bleu[Bitmap of size 63x42]cheese\n"));
+                          "Context: bleu[Bitmap of size 63x42]cheese\n"));
 }
 
 TEST_F(OnDeviceModelServiceTest, ClassifyTextSafety) {
@@ -640,7 +600,7 @@ TEST_F(OnDeviceModelServiceTest, PerformanceHint) {
   auto model = LoadModel(ml::ModelBackendType::kGpuBackend,
                          ml::ModelPerformanceHint::kFastestInference);
   EXPECT_THAT(GetResponses(*model, "foo"),
-              ElementsAre("Fastest inference\n", "Input: foo\n"));
+              ElementsAre("Fastest inference\n", "Context: foo\n"));
 }
 
 }  // namespace

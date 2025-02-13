@@ -14,7 +14,8 @@ namespace net::test {
 
 TEST(QuicSimpleClientTest, Initialize) {
   base::test::TaskEnvironment task_environment;
-  quic::QuicSocketAddress server_address(quic::QuicIpAddress::Loopback4(), 80);
+  quic::QuicSocketAddress server_address(quiche::QuicheIpAddress::Loopback4(),
+                                         80);
   quic::QuicServerId server_id("hostname", server_address.port());
   quic::ParsedQuicVersionVector versions = quic::AllSupportedVersions();
   QuicSimpleClient client(

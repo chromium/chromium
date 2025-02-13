@@ -220,6 +220,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="114721135501989771">Eines intel·ligents a Chrome</translation>
 <translation id="1147322039136785890">Ara és el torn de: <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Per demanar accés, contacta amb l'administrador d'aquest dispositiu.</translation>
+<translation id="1148464196693569530">Permet els scripts d'usuari</translation>
 <translation id="1148624853678088576">Ja esteu a punt</translation>
 <translation id="1148669835763563782">Obtindràs la darrera actualització de programari per millorar la seguretat i gaudir de les funcions més recents del Chromebook. Aquesta actualització inclou una experiència de configuració millorada perquè puguis començar a utilitzar el Chromebook fàcilment.</translation>
 <translation id="1149401351239820326">Mes de caducitat</translation>
@@ -6763,6 +6764,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5794414402486823030">Obre sempre amb el visualitzador del sistema</translation>
 <translation id="5794700615121138172">Carpetes compartides de Linux</translation>
 <translation id="5794786537412027208">Surt de totes les aplicacions de Chrome</translation>
+<translation id="5795422263272161110">Mostra en paral·lel</translation>
 <translation id="5796485699458186843">Pestanya &amp;d'incògnit nova</translation>
 <translation id="5796956053441619942">L'URL del dispositiu remot no s'admet</translation>
 <translation id="5797934230382081317">Més informació sobre com pots començar a utilitzar &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; i &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -7290,6 +7292,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6170498031581934115">No s'ha pogut activar la depuració d'ADB. Ves a Configuració i torna-ho a provar.</translation>
 <translation id="6170675927290506430">Ves a la configuració de notificacions</translation>
 <translation id="6171779718418683144">Pregunta en cada visita</translation>
+<translation id="6172020488605056255">Fes clic amb el botó dret per utilitzar Ajuda'm a llegir</translation>
 <translation id="617213288191670920">No s'ha afegit cap idioma</translation>
 <translation id="6173623053897475761">Torna a escriure el PIN</translation>
 <translation id="6174909075810107548">Utilitza la tecla 5 per prémer un botó del ratolí</translation>
@@ -8315,6 +8318,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6910190732484284349">Suprimeix la clau d'accés per al nom d'usuari: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Suprimit</translation>
 <translation id="6910274140210351823">Fosc</translation>
+<translation id="691102290537033604">L'extensió podrà executar codi que Google no hagi revisat. Potser no és segura. Activa-la només si saps el que fas.</translation>
 <translation id="6911734910326569517">Ús de la memòria</translation>
 <translation id="6912007319859991306">PIN de la SIM mòbil</translation>
 <translation id="6912380255120084882">Prova un altre dispositiu</translation>
@@ -9826,6 +9830,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7990863024647916394">Veu en <ph name="DISPLAY_NAME" /> <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Transfereix la Wi-Fi automàticament des del teu telèfon Android</translation>
 <translation id="7991296728590311172">Configuració d'accés amb interruptors</translation>
+<translation id="7992080146463834191">Resumeix contingut, simplifica el llenguatge complex o fes preguntes.</translation>
 <translation id="7992203134935383159">Síntesi de veu</translation>
 <translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">Prioritat del procés</translation>
@@ -11084,6 +11089,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8874448314264883207">S'ha desactivat "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8874647982044395866">Orgànic</translation>
 <translation id="8874790741333031443">Prova de permetre temporalment les galetes de tercers. Això implica menys protecció de navegació, però és més probable que les funcions del lloc web funcionin de la manera prevista.</translation>
+<translation id="8875221558267407626">Resumeix contingut, simplifica el llenguatge complex o fes preguntes</translation>
 <translation id="8875520811099717934">Actualització de Linux</translation>
 <translation id="8875736897340638404">Tria la teva visibilitat</translation>
 <translation id="8876307312329369159">Aquesta opció de configuració no es pot canviar durant una sessió de demostració.</translation>
@@ -11137,6 +11143,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8915916167043355778">Tanca-ho tot</translation>
 <translation id="8916476537757519021">Submarc d'incògnit: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Sí, endavant</translation>
+<translation id="8917980324687233736">Mostra en paral·lel</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">S'està instal·lant l'aplicació...</translation>
 <translation id="891931289445130855">Suprimeix les dades i els permisos</translation>

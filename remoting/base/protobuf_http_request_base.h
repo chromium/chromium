@@ -12,7 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/scoped_protobuf_http_request.h"
 
 namespace network {
@@ -49,7 +49,7 @@ class ProtobufHttpRequestBase {
   // Called when the protobuf HTTP client failed to get the access token. Note
   // that the subclass implementation should not invoke |invalidator_| since the
   // request has never been started.
-  virtual void OnAuthFailed(const ProtobufHttpStatus& status) = 0;
+  virtual void OnAuthFailed(const HttpStatus& status) = 0;
 
   virtual void StartRequestInternal(
       network::mojom::URLLoaderFactory* loader_factory) = 0;
@@ -61,7 +61,7 @@ class ProtobufHttpRequestBase {
 
   // Returns the http status from |url_loader_|. Only useful when |url_loader_|
   // informs that the request has been completed.
-  ProtobufHttpStatus GetUrlLoaderStatus() const;
+  HttpStatus GetUrlLoaderStatus() const;
 
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 

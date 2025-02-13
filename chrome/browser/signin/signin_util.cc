@@ -16,7 +16,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -66,7 +65,7 @@ ScopedForceSigninSetterForTesting::~ScopedForceSigninSetterForTesting() {
   ResetForceSigninForTesting();  // IN-TEST
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 CookiesMover::CookiesMover(base::WeakPtr<Profile> source_profile,
                            base::WeakPtr<Profile> destination_profile,
                            base::OnceCallback<void()> callback)
@@ -133,7 +132,7 @@ void CookiesMover::OnCookiesReceived(
 void CookiesMover::OnCookiesMoved() {
   std::move(callback_).Run();
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 bool IsForceSigninEnabled() {
   if (g_is_force_signin_enabled_cache == NOT_CACHED) {

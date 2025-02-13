@@ -30,6 +30,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "net/base/url_util.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
@@ -494,13 +495,18 @@ void ServiceWorkerClient::OnEndNavigationCommit() {
 }
 
 void ServiceWorkerClient::UpdateUrlsInternal(
-    const GURL& url,
+    const GURL& creation_url,
     const std::optional<url::Origin>& top_frame_origin,
     const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!url.has_ref());
 
+  const GURL url = creation_url.is_valid()
+                       ? net::SimplifyUrlForRequest(creation_url)
+                       : creation_url;
   GURL previous_url = url_;
+  creation_url_ = creation_url;
+  // The url_ needs the URL fragment removed, but the creation URL needs to be
+  // the original URL including the fragment.
   url_ = url;
   top_frame_origin_ = top_frame_origin;
   key_ = storage_key;
@@ -644,11 +650,11 @@ blink::StorageKey ServiceWorkerClient::CalculateStorageKeyForUpdateUrls(
 }
 
 void ServiceWorkerClient::UpdateUrls(
-    const GURL& url,
+    const GURL& creation_url,
     const std::optional<url::Origin>& top_frame_origin,
     const blink::StorageKey& storage_key) {
   CHECK(!is_response_committed());
-  UpdateUrlsInternal(url, top_frame_origin, storage_key);
+  UpdateUrlsInternal(creation_url, top_frame_origin, storage_key);
 }
 
 void ServiceWorkerClient::UpdateUrlsAfterCommitResponseForTesting(

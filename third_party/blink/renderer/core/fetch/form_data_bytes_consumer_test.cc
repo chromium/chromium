@@ -215,8 +215,8 @@ class FormDataBytesConsumerTest : public PageTestBase {
         .SetBinderForTesting(mojom::FileUtilitiesHost::Name_,
                              base::BindRepeating(&FileUtilitiesHostImpl::Bind));
 
-    auto fake_blob_registry = std::make_unique<FakeBlobRegistry>();
-    fake_blob_registry->support_binary_blob_bodies_ = true;
+    auto fake_blob_registry = std::make_unique<FakeBlobRegistry>(
+        /*support_binary_blob_bodies=*/true);
     mojo::MakeSelfOwnedReceiver(
         std::move(fake_blob_registry),
         blob_registry_remote_.BindNewPipeAndPassReceiver());

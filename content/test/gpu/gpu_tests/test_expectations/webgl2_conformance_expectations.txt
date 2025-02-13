@@ -78,6 +78,8 @@
 #         webgpu-service-worker
 #         webgpu-dedicated-worker
 #         webgpu-shared-worker ]
+# WebGPU Compat context
+# tags: [ compat-default compat-min-es31 ]
 # Clang coverage
 # tags: [ clang-coverage no-clang-coverage ]
 # Skia Graphite
@@ -482,13 +484,6 @@ crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] deqp/fun
 crbug.com/891953 [ mac ] WebglExtension_OVR_multiview2 [ Failure ]
 crbug.com/891953 [ android ] WebglExtension_OVR_multiview2 [ Failure ]
 
-# Platform-independent failures due to a WebGL roll.
-crbug.com/371971708 conformance/context/context-lost.html [ Failure ]
-crbug.com/371971708 conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
-crbug.com/371971708 conformance/offscreencanvas/context-lost-restored.html [ Failure ]
-crbug.com/371971708 conformance/offscreencanvas/context-lost-worker.html [ Failure ]
-crbug.com/371971708 conformance/offscreencanvas/context-lost.html [ Failure ]
-crbug.com/371971708 conformance2/state/gl-enum-tests.html [ Failure ]
 
 # ========================
 # Conformance expectations
@@ -550,8 +545,8 @@ crbug.com/483282 [ angle-d3d11 win amd ] conformance2/rendering/blitframebuffer-
 
 ## Win / Intel ##
 
-crbug.com/384257970 [ angle-d3d11 win intel ] conformance/textures/canvas_sub_rectangle/* [ RetryOnFailure ]
-crbug.com/384257970 [ angle-d3d11 win intel ] conformance2/textures/canvas_sub_rectangle/* [ RetryOnFailure ]
+crbug.com/384257970 [ angle-d3d11 intel-0x9bc5 win ] conformance/textures/canvas_sub_rectangle/* [ RetryOnFailure ]
+crbug.com/384257970 [ angle-d3d11 intel-0x9bc5 win ] conformance2/textures/canvas_sub_rectangle/* [ RetryOnFailure ]
 
 ## Win / Adreno 690 / D3D11
 crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
@@ -681,9 +676,6 @@ crbug.com/996344 [ mac nvidia-0xfe9 ] conformance2/textures/misc/tex-base-level-
 crbug.com/784817 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/init-array-with-loop.html [ Failure ]
 crbug.com/772651 [ mac nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop-complex.html [ Failure ]
 crbug.com/795052 [ mac nvidia-0xfe9 ] conformance2/uniforms/draw-with-uniform-blocks.html [ Failure ]
-crbug.com/1457723 [ bigsur nvidia-0xfe9 angle-opengl ] conformance2/textures/canvas_sub_rectangle/tex-3d-* [ Failure ]
-crbug.com/1475765 [ bigsur nvidia-0xfe9 angle-opengl ] conformance/textures/canvas_sub_rectangle/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
-crbug.com/1475765 [ angle-opengl bigsur nvidia-0xfe9 nvidia_lt_31.0.15.4601 ] conformance2/textures/canvas_sub_rectangle/tex-2d-rgb5_a1-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 crbug.com/1488444 [ mac-x86_64 nvidia-0xfe9 angle-opengl passthrough ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
 
 ## Mac AMD ##
@@ -919,7 +911,6 @@ crbug.com/326755442 [ chromeos intel mesa_ge_21.0 passthrough ] conformance2/ext
 
 ## Volteer ##
 crbug.com/332743717 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
-crbug.com/324952609 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/extensions/oes-draw-buffers-indexed.html [ RetryOnFailure ]
 crbug.com/40947854 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
 crbug.com/40947856 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 crbug.com/40947856 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]

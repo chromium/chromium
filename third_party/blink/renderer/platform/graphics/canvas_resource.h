@@ -175,8 +175,6 @@ class PLATFORM_EXPORT CanvasResource
     return base::PlatformThread::CurrentRef() != owning_thread_ref_;
   }
 
-  virtual bool HasDetailedMemoryDumpProvider() const { return false; }
-
  protected:
   CanvasResource(base::WeakPtr<CanvasResourceProvider>,
                  gfx::Size size,
@@ -318,10 +316,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     const std::string& parent_path,
                     size_t bytes_per_pixel) const;
-  // Whether this type of CanvasResource can provide detailed memory data. If
-  // true, then the CanvasResourceProvider will not report data, to avoid
-  // double-countintg.
-  bool HasDetailedMemoryDumpProvider() const override { return true; }
 
   // Signals that an external write has completed, passing the token that should
   // be waited on to ensure that the service-side operations of the external

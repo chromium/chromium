@@ -10,6 +10,7 @@
 #import "components/data_sharing/public/group_data.h"
 
 enum class ShareKitFlowOutcome;
+@class ShareKitPreviewItem;
 
 // Configuration object for joining a shared group.
 @interface ShareKitJoinConfiguration : NSObject
@@ -22,6 +23,12 @@ enum class ShareKitFlowOutcome;
 
 // Executed when the join flow ended.
 @property(nonatomic, copy) void (^completion)(ShareKitFlowOutcome outcome);
+
+// The display name of the shared group.
+@property(nonatomic, copy) NSString* displayName;
+
+// The preview items to show in the preview screen.
+@property(nonatomic, copy) NSArray<ShareKitPreviewItem*>* previewItems;
 
 @end
 

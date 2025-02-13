@@ -185,6 +185,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNewContentForCheckerboardedScrolls);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMultipleImplOnlyScrollAnimations);
 CC_BASE_EXPORT extern bool MultiImplOnlyScrollAnimationsSupported();
 
+// When enabled, for a render surface with fractional translation, we'll try to
+// align the texels in the render surface to screen pixels to avoid blurriness
+// during compositing.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kRenderSurfacePixelAlignment);
+
 // When enabled, and an image decode is requested by both a tile task and
 // explicitly via img.decode(), it will be decoded only once.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPreventDuplicateImageDecodes);
@@ -205,6 +210,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60Hz);
 // When enabled, stops the export of most DFCMetrics.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kStopExportDFCMetrics);
 CC_BASE_EXPORT extern bool StopExportDFCMetrics();
+
+// When enabled, we save the `EventMetrics` for a scroll, even when the result
+// is no damage. So that the termination can be per properly attributed to the
+// end of frame production for the given VSync.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kZeroScrollMetricsUpdate);
 
 }  // namespace features
 

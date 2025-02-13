@@ -89,7 +89,8 @@ class LocaleItemView : public views::Button {
           kMenuIconSize));
       tri_view->AddView(TriView::Container::END, checked_image);
     }
-    GetViewAccessibility().SetName(display_name_view->GetText());
+    GetViewAccessibility().SetName(
+        std::u16string(display_name_view->GetText()));
     GetViewAccessibility().SetRole(ax::mojom::Role::kCheckBox);
     GetViewAccessibility().SetCheckedState(
         checked_ ? ax::mojom::CheckedState::kTrue

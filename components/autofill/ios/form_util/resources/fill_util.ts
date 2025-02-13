@@ -31,6 +31,7 @@ declare interface AutofillFormFieldData {
   identifier?: string;
   name_attribute?: string;
   id_attribute?: string;
+  pattern_attribute?: string;
 }
 
 declare interface AutofillFormData {

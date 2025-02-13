@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] e.style['timeline-scope'] = "abc" should not set the property value
+  assert_equals: expected "" but got "abc"
+[FAIL] e.style['timeline-scope'] = "  abc" should not set the property value
+  assert_equals: expected "" but got "abc"
+[FAIL] e.style['timeline-scope'] = "aBc" should not set the property value
+  assert_equals: expected "" but got "aBc"
+[FAIL] e.style['timeline-scope'] = "foo, bar" should not set the property value
+  assert_equals: expected "" but got "foo, bar"
+[FAIL] e.style['timeline-scope'] = "bar, foo" should not set the property value
+  assert_equals: expected "" but got "bar, foo"
+[FAIL] e.style['timeline-scope'] = "auto" should not set the property value
+  assert_equals: expected "" but got "auto"
+Harness: the test ran to completion.
+

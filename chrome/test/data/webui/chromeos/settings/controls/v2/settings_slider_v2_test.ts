@@ -116,7 +116,7 @@ suite(SettingsSliderV2Element.is, () => {
       assertEquals('true', internalSlider.ariaDisabled);
     });
 
-    test('markers are shown by default when ticks is set', async () => {
+    test('markers are shown by default when ticks is set', () => {
       slider.ticks = ticks;
       flush();
 

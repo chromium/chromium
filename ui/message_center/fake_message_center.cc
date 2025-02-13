@@ -162,7 +162,7 @@ void FakeMessageCenter::ClickOnNotificationButton(const std::string& id,
 void FakeMessageCenter::ClickOnNotificationButtonWithReply(
     const std::string& id,
     int button_index,
-    const std::u16string& reply) {}
+    std::u16string_view reply) {}
 
 void FakeMessageCenter::ClickOnSettingsButton(const std::string& id) {}
 

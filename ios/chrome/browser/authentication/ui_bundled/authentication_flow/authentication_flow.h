@@ -17,17 +17,6 @@ class Browser;
 @class UIViewController;
 @protocol SystemIdentity;
 
-// Handles completion of AuthenticationFlow operations.
-@protocol AuthenticationFlowDelegate <NSObject>
-
-// Indicates that a user dialog is presented from the authentication flow.
-- (void)didPresentDialog;
-
-// Indicates that a user dialog is dismissed from the authentication flow.
-- (void)didDismissDialog;
-
-@end
-
 // `AuthenticationFlow` manages the authentication flow for a given identity.
 //
 // A new instance of `AuthenticationFlow` should be used each time an identity
@@ -65,9 +54,6 @@ class Browser;
 //
 // Does noting if the sign-in flow is already done
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action;
-
-// The delegate.
-@property(nonatomic, weak) id<AuthenticationFlowDelegate> delegate;
 
 // Identity to sign-in.
 @property(nonatomic, strong, readonly) id<SystemIdentity> identity;

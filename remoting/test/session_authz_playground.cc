@@ -37,8 +37,7 @@ namespace {
 constexpr char kOAuthScope[] =
     "https://www.googleapis.com/auth/chromoting.me2me.host";
 
-void PrintErrorAndExit(const std::string& api_name,
-                       const ProtobufHttpStatus& status) {
+void PrintErrorAndExit(const std::string& api_name, const HttpStatus& status) {
   fprintf(stderr, "Failed to call API: %s, error code: %d\n", api_name.data(),
           static_cast<int>(status.error_code()));
   fprintf(stderr, "%s\n", status.error_message().data());
@@ -87,7 +86,7 @@ void SessionAuthzPlayground::GenerateHostToken() {
   printf("Fetching host token...\n");
   service_client_->GenerateHostToken(
       base::BindOnce(
-          [](const ProtobufHttpStatus& status,
+          [](const HttpStatus& status,
              std::unique_ptr<internal::GenerateHostTokenResponseStruct>
                  response) {
             if (!status.ok()) {
@@ -111,7 +110,7 @@ void SessionAuthzPlayground::VerifySessionToken(const std::string& session_id) {
   service_client_->VerifySessionToken(
       session_token,
       base::BindOnce(
-          [](const std::string& session_id, const ProtobufHttpStatus& status,
+          [](const std::string& session_id, const HttpStatus& status,
              std::unique_ptr<internal::VerifySessionTokenResponseStruct>
                  response) {
             if (!status.ok()) {
@@ -148,7 +147,7 @@ void SessionAuthzPlayground::ReauthorizeHost(const std::string& session_id,
   }
   service_client_->ReauthorizeHost(
       reauth_token, session_id,
-      base::BindOnce([](const ProtobufHttpStatus& status,
+      base::BindOnce([](const HttpStatus& status,
                         std::unique_ptr<internal::ReauthorizeHostResponseStruct>
                             response) {
         if (!status.ok()) {

@@ -38,6 +38,7 @@ class OnDeviceModelValidator
   int index_ = 0;
   proto::OnDeviceModelValidationConfig validation_config_;
   mojo::Remote<on_device_model::mojom::Session> session_;
+  mojo::Remote<on_device_model::mojom::Session> active_session_;
   mojo::Receiver<on_device_model::mojom::StreamingResponder> receiver_{this};
   FinishCallback finish_callback_;
 };

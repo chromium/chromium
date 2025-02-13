@@ -194,8 +194,8 @@ IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, CollectPostLoginData) {
   // Comparing the collected tab data with the expected tab data.
   EXPECT_THAT(tabs_and_apps.tabs,
               testing::UnorderedElementsAre(
-                  TabEq("", GURL("https://examples1.com/")),
-                  TabEq("", GURL("https://examples2.com/")),
+                  TabEq("examples1.com", GURL("https://examples1.com/")),
+                  TabEq("examples2.com", GURL("https://examples2.com/")),
                   TabEq("bookmarks", GURL(chrome::kChromeUIBookmarksURL)),
                   TabEq("chrome-urls", GURL(chrome::kChromeUIChromeURLsURL)),
                   TabEq("crashes", GURL(chrome::kChromeUICrashesUrl)),

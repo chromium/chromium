@@ -7,6 +7,9 @@
 #include <stdint.h>
 
 #include <set>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
@@ -45,7 +48,7 @@ void GetAtomIntersection(const std::vector<x11::Atom>& desired,
   }
 }
 
-void AddString16ToVector(const std::u16string& str,
+void AddString16ToVector(std::u16string_view str,
                          std::vector<unsigned char>* bytes) {
   auto span = base::as_byte_span(str);
   bytes->insert(bytes->end(), span.begin(), span.end());

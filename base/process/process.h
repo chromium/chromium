@@ -221,7 +221,8 @@ class BASE_EXPORT Process {
     kMaxValue = kUserBlocking,
   };
 
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+#if (BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))) && \
+    !BUILDFLAG(IS_TVOS)
   // The Mac needs a Mach port in order to manipulate a process's priority,
   // and there's no good way to get that from base given the pid. These Mac
   // variants of the `GetPriority()` and `SetPriority()` API take a port

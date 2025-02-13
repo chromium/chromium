@@ -60,7 +60,7 @@ suite('HostPermissionsToggleList', function() {
     assertFalse(allSites.checked);
 
     const hostToggles =
-        element.shadowRoot!.querySelectorAll<ExtensionsToggleRowElement>(
+        element.shadowRoot.querySelectorAll<ExtensionsToggleRowElement>(
             '.host-toggle');
     assertEquals(3, hostToggles.length);
 
@@ -100,7 +100,7 @@ suite('HostPermissionsToggleList', function() {
     assertTrue(allSites.checked);
 
     const hostToggles =
-        element.shadowRoot!.querySelectorAll<ExtensionsToggleRowElement>(
+        element.shadowRoot.querySelectorAll<ExtensionsToggleRowElement>(
             '.host-toggle');
     assertEquals(3, hostToggles.length);
 
@@ -141,7 +141,7 @@ suite('HostPermissionsToggleList', function() {
     assertFalse(allSites!.checked);
 
     const hostToggles =
-        element.shadowRoot!.querySelectorAll<ExtensionsToggleRowElement>(
+        element.shadowRoot.querySelectorAll<ExtensionsToggleRowElement>(
             '.host-toggle');
     assertEquals(3, hostToggles.length);
 
@@ -261,7 +261,7 @@ suite('HostPermissionsToggleList', function() {
     await microtasksFinished();
 
     const hostToggles =
-        element.shadowRoot!.querySelectorAll<ExtensionsToggleRowElement>(
+        element.shadowRoot.querySelectorAll<ExtensionsToggleRowElement>(
             '.host-toggle');
     assertEquals(3, hostToggles.length);
 
@@ -302,7 +302,7 @@ suite('HostPermissionsToggleList', function() {
         await microtasksFinished();
 
         const hostToggles =
-            element.shadowRoot!.querySelectorAll<ExtensionsToggleRowElement>(
+            element.shadowRoot.querySelectorAll<ExtensionsToggleRowElement>(
                 '.host-toggle');
         assertEquals(1, hostToggles.length);
         assertEquals(RESTRICTED_COM, hostToggles[0]!.innerText!.trim());

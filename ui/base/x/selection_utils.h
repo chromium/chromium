@@ -8,6 +8,9 @@
 #include <stddef.h>
 
 #include <map>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
@@ -32,7 +35,7 @@ void GetAtomIntersection(const std::vector<x11::Atom>& desired,
 
 // Takes the raw bytes of the std::u16string and copies them into |bytes|.
 COMPONENT_EXPORT(UI_BASE_X)
-void AddString16ToVector(const std::u16string& str,
+void AddString16ToVector(std::u16string_view str,
                          std::vector<unsigned char>* bytes);
 
 // Tokenizes and parses the Selection Data as if it is a URI List.

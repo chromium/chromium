@@ -248,11 +248,13 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 #endif
 
-  ObjectPainter object_painter(*layout_object);
-  if (object_painter.ShouldRecordSpecialHitTestData(paint_info)) {
-    object_painter.RecordHitTestData(paint_info,
-                                     ToPixelSnappedRect(physical_box),
-                                     *text_item.GetDisplayItemClient());
+  if (paint_info.phase == PaintPhase::kForeground) {
+    ObjectPainter object_painter(*layout_object);
+    if (object_painter.ShouldRecordSpecialHitTestData(paint_info)) {
+      object_painter.RecordHitTestData(paint_info,
+                                       ToPixelSnappedRect(physical_box),
+                                       *text_item.GetDisplayItemClient());
+    }
   }
 
   // Determine whether or not we’ll need a writing-mode rotation, but don’t

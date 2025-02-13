@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -178,7 +179,7 @@ void ActionButtonContainerView::ErrorView::SetTryAgainCallback(
   try_again_link_->SetCallback(std::move(try_again_callback));
 }
 
-const std::u16string&
+std::u16string_view
 ActionButtonContainerView::ErrorView::GetErrorMessageForTesting() const {
   return error_label_->GetText();
 }

@@ -6,7 +6,6 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/profiles/profile.h"
@@ -36,7 +35,7 @@ const char kSignInPromoQueryKeyAutoClose[] = "auto_close";
 const char kSignInPromoQueryKeyForceKeepData[] = "force_keep_data";
 const char kSignInPromoQueryKeyReason[] = "reason";
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 GURL GetEmbeddedPromoURL(signin_metrics::AccessPoint access_point,
                          signin_metrics::Reason reason,
                          bool auto_close) {
@@ -71,7 +70,7 @@ GURL GetEmbeddedReauthURLWithEmail(signin_metrics::AccessPoint access_point,
   url = net::AppendQueryParameter(url, "validateEmail", "1");
   return net::AppendQueryParameter(url, "readOnlyEmail", "1");
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 GURL GetChromeSyncURLForDice(ChromeSyncUrlArgs args) {
   GURL url = GaiaUrls::GetInstance()->signin_chrome_sync_dice();

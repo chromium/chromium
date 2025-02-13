@@ -90,8 +90,8 @@ export function createTheme({isDark = false, isBaseline = true} = {}): Theme {
   };
 }
 
-export async function initNullModule(): Promise<null> {
-  return null;
+export function initNullModule(): Promise<null> {
+  return Promise.resolve(null);
 }
 
 export function createElement(): HTMLElement {

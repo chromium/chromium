@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,9 +33,17 @@ void MicrosoftAuthUntrustedPageHandler::ClearAuthData() {
   auth_service_->ClearAuthData();
 }
 
+// TODO(crbug.com/396144770): Update logic to something that simply calls
+// `OnAuthStateUpdated` after merges for M134 are complete, instead of the
+// renderer calling this and deciding for itself based on the response.
 void MicrosoftAuthUntrustedPageHandler::GetAuthState(
     GetAuthStateCallback callback) {
-  std::move(callback).Run(auth_service_->GetAuthState());
+  auto state = auth_service_->GetAuthState();
+  if (state == new_tab_page::mojom::AuthState::kNone) {
+    base::UmaHistogramEnumeration("NewTabPage.MicrosoftAuth.AuthStarted",
+                                  new_tab_page::mojom::AuthType::kSilent);
+  }
+  std::move(callback).Run(std::move(state));
 }
 
 void MicrosoftAuthUntrustedPageHandler::SetAccessToken(
@@ -50,5 +59,7 @@ void MicrosoftAuthUntrustedPageHandler::OnAuthStateUpdated() {
   new_tab_page::mojom::AuthState auth_state = auth_service_->GetAuthState();
   if (auth_state == new_tab_page::mojom::AuthState::kNone) {
     document_->AcquireTokenSilent();
+    base::UmaHistogramEnumeration("NewTabPage.MicrosoftAuth.AuthStarted",
+                                  new_tab_page::mojom::AuthType::kSilent);
   }
 }

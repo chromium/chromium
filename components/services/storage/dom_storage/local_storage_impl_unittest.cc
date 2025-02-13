@@ -926,6 +926,7 @@ TEST_F(LocalStorageImplTest, InMemoryInvalidPath) {
 }
 
 TEST_F(LocalStorageImplTest, OnDisk) {
+  base::HistogramTester histograms;
   auto key = StdStringToUint8Vector("key");
   auto value = StdStringToUint8Vector("value");
 
@@ -943,6 +944,9 @@ TEST_F(LocalStorageImplTest, OnDisk) {
   InitializeStorage(storage_path());
   EXPECT_TRUE(DoTestGet(key, &result));
   EXPECT_EQ(value, result);
+  histograms.ExpectUniqueSample(
+      "LocalStorage.DatabaseOpen",
+      leveldb_env::LevelDBStatusValue::LEVELDB_STATUS_OK, 2);
 }
 
 TEST_F(LocalStorageImplTest, InvalidVersionOnDisk) {
@@ -983,6 +987,7 @@ TEST_F(LocalStorageImplTest, InvalidVersionOnDisk) {
 }
 
 TEST_F(LocalStorageImplTest, CorruptionOnDisk) {
+  base::HistogramTester histograms;
   auto key = StdStringToUint8Vector("key");
   auto value = StdStringToUint8Vector("value");
 
@@ -1015,6 +1020,9 @@ TEST_F(LocalStorageImplTest, CorruptionOnDisk) {
   ResetStorage(storage_path());
   EXPECT_TRUE(DoTestGet(key, &result));
   EXPECT_EQ(value, result);
+  histograms.ExpectBucketCount(
+      "LocalStorage.DatabaseOpen",
+      leveldb_env::LevelDBStatusValue::LEVELDB_STATUS_IO_ERROR, 1);
 }
 
 TEST_F(LocalStorageImplTest, RecreateOnCommitFailure) {

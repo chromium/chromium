@@ -392,7 +392,7 @@ TEST_F(ChromeSigninHelperTest, NonEligibleURL) {
       &request, GURL(), /*is_off_the_record=*/false,
       /*incognito_availability=*/0, signin::AccountConsistencyMethod::kMirror,
       GaiaId("gaia_id"), /*is_child_account=*/signin::Tribool::kFalse,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       /*is_secondary_account_addition_allowed=*/true,
 #endif
       CookieSettingsFactory::GetForProfile(profile()).get());
@@ -408,7 +408,7 @@ TEST_F(ChromeSigninHelperTest, EligibleURL) {
       &request, GURL(), /*is_off_the_record=*/false,
       /*incognito_availability=*/0, signin::AccountConsistencyMethod::kMirror,
       GaiaId("gaia_id"), /*is_child_account=*/signin::Tribool::kFalse,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       /*is_secondary_account_addition_allowed=*/true,
 #endif
       CookieSettingsFactory::GetForProfile(profile()).get());
@@ -431,7 +431,7 @@ TEST_F(ChromeSigninHelperTest, NonDefaultGaiaOrigin) {
       &request, GURL(), /*is_off_the_record=*/false,
       /*incognito_availability=*/0, signin::AccountConsistencyMethod::kMirror,
       GaiaId("gaia_id"), /*is_child_account=*/signin::Tribool::kFalse,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       /*is_secondary_account_addition_allowed=*/true,
 #endif
       CookieSettingsFactory::GetForProfile(profile()).get());

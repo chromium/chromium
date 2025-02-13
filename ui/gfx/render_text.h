@@ -10,13 +10,16 @@
 
 #include <algorithm>
 #include <array>
+#include <concepts>
 #include <cstring>
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -263,11 +266,26 @@ class COMPONENT_EXPORT(GFX) RenderText {
 
   // Like above but copies all style settings too.
   std::unique_ptr<RenderText> CreateInstanceOfSameStyle(
-      const std::u16string& text) const;
+      std::u16string_view text) const;
 
-  const std::u16string& text() const { return text_; }
-  void SetText(std::u16string text);
-  void AppendText(const std::u16string& text);
+  std::u16string_view text() const { return text_; }
+  void SetText(std::u16string_view text);
+
+  // If the caller already has a `std::u16string`, this can save unnecessary
+  // work otherwise done by the `SetText()` version above. Templatizing the arg
+  // causes the compiler to prefer the above function unambiguously if the
+  // argument is neither a string nor a string_view, but convertible to either
+  // (e.g. a `const char16_t*`).
+  template <typename T>
+    requires(std::same_as<T, std::u16string>)
+  void SetText(T text) {
+    DCHECK(!composition_range_.IsValid());
+    if (text_ != text) {
+      SetTextImpl(std::move(text));
+    }
+  }
+
+  void AppendText(std::u16string_view text);
 
   HorizontalAlignment horizontal_alignment() const {
     return horizontal_alignment_;
@@ -498,7 +516,7 @@ class COMPONENT_EXPORT(GFX) RenderText {
   // Returns the text used to display, which may be obscured, truncated or
   // elided. The subclass may compute elided text on the fly, or use
   // precomputed the elided text.
-  virtual const std::u16string& GetDisplayText() = 0;
+  virtual std::u16string_view GetDisplayText() = 0;
 
   // Returns the size required to display the current string (which is the
   // wrapped size in multiline mode). The returned size does not include space
@@ -636,7 +654,7 @@ class COMPONENT_EXPORT(GFX) RenderText {
                              Rect* rect);
 
   // Retrieves the text in the given |range|.
-  std::u16string GetTextFromRange(const Range& range) const;
+  std::u16string_view GetTextFromRange(const Range& range) const;
 
   void set_strike_thickness_factor(SkScalar f) { strike_thickness_factor_ = f; }
 
@@ -674,21 +692,21 @@ class COMPONENT_EXPORT(GFX) RenderText {
   bool IsNewlineSegment(const internal::LineSegment& segment) const;
 
   // Whether |segment| corresponds to the newline character inside |text|.
-  bool IsNewlineSegment(const std::u16string& text,
+  bool IsNewlineSegment(std::u16string_view text,
                         const internal::LineSegment& segment) const;
 
   // Returns the character range of segments in |line| excluding the trailing
   // newline segment.
-  Range GetLineRange(const std::u16string& text,
+  Range GetLineRange(std::u16string_view text,
                      const internal::Line& line) const;
 
   // Returns the text used for layout (e.g. after rewriting, eliding and
   // obscuring characters).
-  const std::u16string& GetLayoutText() const;
+  std::u16string_view GetLayoutText() const;
 
   // NOTE: The value of these accessors may be stale. Please make sure
   // that these fields are up to date before accessing them.
-  const std::u16string& display_text() const { return display_text_; }
+  std::u16string_view display_text() const { return display_text_; }
   bool text_elided() const { return text_elided_; }
 
   // Returns an iterator over the |text_| attributes.
@@ -836,7 +854,7 @@ class COMPONENT_EXPORT(GFX) RenderText {
   // Get the text direction for the current directionality mode and given
   // |text|.
   base::i18n::TextDirection GetTextDirectionForGivenText(
-      const std::u16string& text) const;
+      std::u16string_view text) const;
 
   // Adjust ranged styles to accommodate a new |text_| length.
   void UpdateStyleLengths();
@@ -887,6 +905,10 @@ class COMPONENT_EXPORT(GFX) RenderText {
  private:
   friend class test::RenderTextTestApi;
 
+  // Common implementation of public `SetText()` methods, once `text` is known
+  // to differ.
+  void SetTextImpl(std::u16string text);
+
   // Resets |layout_text_| and |display_text_| and marks them dirty.
   void OnTextAttributeChanged();
 
@@ -897,13 +919,13 @@ class COMPONENT_EXPORT(GFX) RenderText {
   // Elides |text| as needed to fit in the |available_width| using |behavior|.
   // |text_width| is the pre-calculated width of the text shaped by this render
   // text, or pass 0 if the width is unknown.
-  std::u16string Elide(const std::u16string& text,
+  std::u16string Elide(std::u16string_view text,
                        float text_width,
                        float available_width,
                        ElideBehavior behavior);
 
   // Elides |email| as needed to fit the |available_width|.
-  std::u16string ElideEmail(const std::u16string& email, float available_width);
+  std::u16string ElideEmail(std::u16string_view email, float available_width);
 
   // Update the cached bounds and display offset to ensure that the current
   // cursor is within the visible display area.
@@ -914,9 +936,9 @@ class COMPONENT_EXPORT(GFX) RenderText {
 
   // Returns a grapheme iterator that contains the codepoint at |index|.
   internal::GraphemeIterator GetGraphemeIteratorAtIndex(
-      const std::u16string& text,
-      const size_t internal::TextToDisplayIndex::*field,
-      size_t index) const;
+      size_t index,
+      const size_t internal::TextToDisplayIndex::* field,
+      size_t end) const;
 
   // Returns the nearest word start boundary for |index|. First searches in the
   // CURSOR_BACKWARD direction, then in the CURSOR_FORWARD direction. Returns

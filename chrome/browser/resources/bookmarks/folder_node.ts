@@ -72,7 +72,8 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
   protected isSelectedFolder_: boolean = false;
   protected hasChildFolder_: boolean = false;
 
-  override firstUpdated() {
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
     this.addEventListener('keydown', e => this.onKeydown_(e));
   }
 
@@ -177,7 +178,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
     }
 
     this.changeKeyboardSelection_(
-        xDirection, yDirection, this.shadowRoot!.activeElement);
+        xDirection, yDirection, this.shadowRoot.activeElement);
 
     if (!handled) {
       handled = BookmarksCommandManagerElement.getInstance().handleKeyEvent(
@@ -322,8 +323,8 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
   }
 
   private getChildFolderNodes_(): BookmarksFolderNodeElement[] {
-    return Array.from(this.shadowRoot!.querySelectorAll(
-        'bookmarks-folder-node'));
+    return Array.from(
+        this.shadowRoot.querySelectorAll('bookmarks-folder-node'));
   }
 
   /**

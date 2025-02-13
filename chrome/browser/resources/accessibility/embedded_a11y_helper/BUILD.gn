@@ -36,9 +36,9 @@ ts_library("build_ts") {
 copy("embedded_a11y_helper_copied_files") {
   sources = filter_include(get_target_outputs(":build_ts"), [ "*.js" ]) + [
               "../../chromeos/accessibility/common/gdocs_script.js",
-              "../../chromeos/accessibility/select_to_speak/sts-icon-128.png",
-              "../../chromeos/accessibility/select_to_speak/sts-icon-16.png",
-              "../../chromeos/accessibility/select_to_speak/sts-icon-48.png",
+              "../../chromeos/accessibility/select_to_speak/mv2/sts-icon-128.png",
+              "../../chromeos/accessibility/select_to_speak/mv2/sts-icon-16.png",
+              "../../chromeos/accessibility/select_to_speak/mv2/sts-icon-48.png",
             ]
   outputs = [ "$out_dir/{{source_file_part}}" ]
   deps = [ ":build_ts" ]

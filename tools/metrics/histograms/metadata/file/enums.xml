@@ -569,6 +569,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Disable Drive preference set"/>
   <int value="15" label="Drive disabled for account type"/>
   <int value="16" label="Cannot get relative path"/>
+  <int value="17" label="DriveFs unavailable"/>
 </enum>
 
 <enum name="OfficeFileHandler">

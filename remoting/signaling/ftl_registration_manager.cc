@@ -12,10 +12,10 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/protobuf_http_client.h"
 #include "remoting/base/protobuf_http_request.h"
 #include "remoting/base/protobuf_http_request_config.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
 #include "remoting/signaling/ftl_device_id_provider.h"
 #include "remoting/signaling/ftl_services_context.h"
@@ -190,7 +190,7 @@ void FtlRegistrationManager::DoSignInGaia(DoneCallback on_done) {
 
 void FtlRegistrationManager::OnSignInGaiaResponse(
     DoneCallback on_done,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<ftl::SignInGaiaResponse> response) {
   registration_id_.clear();
 
@@ -206,8 +206,8 @@ void FtlRegistrationManager::OnSignInGaiaResponse(
   sign_in_backoff_.Reset();
   registration_id_ = response->registration_id();
   if (registration_id_.empty()) {
-    std::move(on_done).Run(ProtobufHttpStatus(ProtobufHttpStatus::Code::UNKNOWN,
-                                              "registration_id is empty."));
+    std::move(on_done).Run(
+        HttpStatus(HttpStatus::Code::UNKNOWN, "registration_id is empty."));
     return;
   }
 
