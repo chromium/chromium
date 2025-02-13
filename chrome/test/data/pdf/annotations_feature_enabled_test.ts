@@ -241,7 +241,7 @@ chrome.test.runTests([
     chrome.test.assertEq(redo.disabled, true);
     chrome.test.succeed();
   },
-  async function testPointerEvents() {
+  function testPointerEvents() {
     chrome.test.assertTrue(isAnnotationMode());
     const inkHost = contentElement() as ViewerInkHostElement;
     inkHost.resetPenMode();
@@ -352,7 +352,7 @@ chrome.test.runTests([
     ]);
     chrome.test.succeed();
   },
-  async function testTouchPanGestures() {
+  function testTouchPanGestures() {
     // Ensure that we have an out-of-bounds area.
     viewer.viewport.setZoom(0.5);
     chrome.test.assertTrue(isAnnotationMode());

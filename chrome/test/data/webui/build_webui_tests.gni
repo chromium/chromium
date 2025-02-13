@@ -5,6 +5,7 @@
 import("//chrome/common/features.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/webui_ts_library.gni")
+import("//ui/webui/resources/tools/eslint_ts.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 template("build_webui_tests") {
@@ -43,7 +44,10 @@ template("build_webui_tests") {
   }
 
   preprocess_if_expr("preprocess") {
-    visibility = [ ":build_ts" ]
+    visibility = [
+      ":build_ts",
+      ":lint",
+    ]
     defines = chrome_grit_defines
     in_folder = "."
     out_folder = preprocess_dir
@@ -65,7 +69,10 @@ template("build_webui_tests") {
       composite = invoker.ts_composite
     }
     if (!composite) {
-      visibility = [ ":build_grdp" ]
+      visibility = [
+        ":build_grdp",
+        ":lint",
+      ]
     }
     root_dir = preprocess_dir
     out_dir = tsc_dir
@@ -133,6 +140,22 @@ template("build_webui_tests") {
     }
   }
 
+  enable_type_aware_eslint_checks =
+      !defined(invoker.enable_type_aware_eslint_checks) ||
+      invoker.enable_type_aware_eslint_checks
+
+  if (enable_type_aware_eslint_checks) {
+    eslint_ts("lint") {
+      in_folder = preprocess_dir
+      in_files = filter_exclude(files, [ "*.js" ])
+      tsconfig = "$target_gen_dir/tsconfig_build_ts.json"
+      deps = [
+        ":build_ts",
+        ":preprocess",
+      ]
+    }
+  }
+
   # This target is public so that it can be depended on by
   # chrome/test/data/webui:build_grd which will place this grdp file into a grd
   # file.
@@ -150,6 +173,12 @@ template("build_webui_tests") {
       deps += [ ":preprocess_static_files" ]
       manifest_files +=
           [ "${target_gen_dir}/preprocess_static_files_manifest.json" ]
+    }
+
+    if (enable_type_aware_eslint_checks) {
+      # Adding as a dependency so that it runs as part of the build, even though
+      # this `generate_grd()` target does not use any outputs from it.
+      deps += [ ":lint" ]
     }
   }
 }
