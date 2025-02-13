@@ -210,6 +210,18 @@ void SharedStorageWorklet::AddModuleHelper(
     return;
   }
 
+  // data: url is treated as unexpected request and reported as bad message by
+  // CorsURLLoaderFactory, which will generate dump in official build and crash
+  // in non official build. Explicitly reject the request for data: url here.
+  if (script_source_url.ProtocolIs(url::kDataScheme)) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+        "data: module script url is not allowed."));
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kAddModuleWebVisible);
+    return;
+  }
+
   shared_storage_origin_ = std::move(shared_storage_origin);
 
   network::mojom::CredentialsMode credentials_mode =
