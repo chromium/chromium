@@ -675,7 +675,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsRedirect) {
   // RedirectMode::kError results in ERR_FAILED errors on redirects, which
   // results in rather unhelpful error messages.
   EXPECT_EQ(result.error(),
-            base::StringPrintf("Failed to load %s error = net::ERR_FAILED.",
+            base::StringPrintf("Unexpected redirect on %s.",
                                server_redirect_url.spec().c_str()));
 }
 

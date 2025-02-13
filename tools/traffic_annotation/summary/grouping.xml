@@ -465,7 +465,6 @@ after discussions on the right group.
       <annotation id="bidding_and_auction_server_key_fetch"/>
       <annotation id="interest_group_update_fetcher"/>
       <annotation id="interest_group_well_known_fetcher"/>
-      <annotation id="trusted_signals_fetcher"/>
     </sender>
   </group>
   <group name="Identity and Security" hidden="true">

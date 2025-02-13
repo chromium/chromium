@@ -13,6 +13,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/types/optional_ref.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "net/base/network_interfaces.h"
@@ -25,6 +26,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
+
 namespace auction_worklet {
 
 // Download utility for auction scripts and JSON data. Creates requests and
@@ -119,6 +121,24 @@ class CONTENT_EXPORT AuctionDownloader {
       ResponseStartedCallback response_started_callback,
       AuctionDownloaderCallback auction_downloader_callback,
       std::unique_ptr<NetworkEventsDelegate> network_events_delegate);
+
+  // Alternative constructor, for use when used in the browser process directly,
+  // rather than in conjunction with a AuctionURLLoaderFactoryProxy. Takes an
+  // initiator and ResourceRequest::TrustedParams. Creation of TrustedParams
+  // from an IPAddressSpace requires content/browser code, so this method can't
+  // take an IPAddressSpace and IsolationInfo and construct it from them.
+  AuctionDownloader(
+      network::mojom::URLLoaderFactory* url_loader_factory,
+      const GURL& source_url,
+      DownloadMode download_mode,
+      MimeType mime_type,
+      std::optional<std::string> post_body,
+      std::optional<std::string> content_type,
+      const url::Origin& request_initiator,
+      network::ResourceRequest::TrustedParams trusted_params,
+      AuctionDownloaderCallback auction_downloader_callback,
+      std::unique_ptr<NetworkEventsDelegate> network_events_delegate);
+
   explicit AuctionDownloader(const AuctionDownloader&) = delete;
   AuctionDownloader& operator=(const AuctionDownloader&) = delete;
   ~AuctionDownloader();
@@ -133,7 +153,25 @@ class CONTENT_EXPORT AuctionDownloader {
       const network::mojom::URLResponseHead& response_head,
       network::URLLoaderCompletionStatus& status_out);
 
+  static std::string_view MimeTypeToStringForTesting(
+      AuctionDownloader::MimeType mime_type);
+
  private:
+  // Delegated constructor used by both public constructor calls.
+  AuctionDownloader(
+      network::mojom::URLLoaderFactory* url_loader_factory,
+      const GURL& source_url,
+      DownloadMode download_mode,
+      MimeType mime_type,
+      std::optional<std::string> post_body,
+      std::optional<std::string> content_type,
+      bool is_trusted_bidding_signals_kvv1_download,
+      base::optional_ref<const url::Origin> request_initiator,
+      std::optional<network::ResourceRequest::TrustedParams> trusted_params,
+      ResponseStartedCallback response_started_callback,
+      AuctionDownloaderCallback auction_downloader_callback,
+      std::unique_ptr<NetworkEventsDelegate> network_events_delegate);
+
   void OnHeadersOnlyReceived(scoped_refptr<net::HttpResponseHeaders> headers);
 
   void OnBodyReceived(std::unique_ptr<std::string> body);

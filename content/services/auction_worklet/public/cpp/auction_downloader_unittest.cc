@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -21,11 +22,13 @@
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
+#include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/devtools_observer_util.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -56,13 +59,39 @@ network::mojom::URLResponseHeadPtr CreateResponseHead() {
   return response_head;
 }
 
+// The bool parameter is true if the constructor that takes an initiator should
+// be used.
 class AuctionDownloaderTest
-    : public testing::TestWithParam<AuctionDownloader::DownloadMode> {
+    : public testing::TestWithParam<
+          std::tuple<AuctionDownloader::DownloadMode, bool>> {
  public:
   AuctionDownloaderTest() = default;
   ~AuctionDownloaderTest() override = default;
 
-  AuctionDownloader::DownloadMode download_mode() { return GetParam(); }
+  AuctionDownloader::DownloadMode download_mode() const {
+    return std::get<AuctionDownloader::DownloadMode>(GetParam());
+  }
+  bool use_request_initiator_constructor() const {
+    return std::get<bool>(GetParam());
+  }
+
+  // Returns the request initiator to use. `use_request_initiator_constructor()`
+  // must be true.
+  url::Origin RequestInitiator() const {
+    CHECK(use_request_initiator_constructor());
+    return url::Origin::Create(GURL("https://initiator.test"));
+  }
+
+  // Returns the TrustedParams to use. `use_request_initiator_constructor()`
+  // must be true.
+  network::ResourceRequest::TrustedParams TrustedParams() const {
+    CHECK(use_request_initiator_constructor());
+    network::ResourceRequest::TrustedParams trusted_params;
+    trusted_params.isolation_info =
+        net::IsolationInfo::CreateForInternalRequest(
+            url::Origin::Create(GURL("https://isolation_info.test")));
+    return trusted_params;
+  }
 
   class TestDelegate : public AuctionDownloader::NetworkEventsDelegate {
    public:
@@ -104,6 +133,9 @@ class AuctionDownloaderTest
     raw_ref<network::URLLoaderCompletionStatus> completetion_status_ref_;
   };
 
+  // `trusted_params` may only be non-null if
+  // use_request_initiator_constructor() is true, since only the constructor
+  // that takes an initiator takes a TrustedParams argument.
   std::unique_ptr<std::string> RunRequest(
       std::optional<std::string> post_body = std::nullopt,
       std::optional<std::string> content_type = std::nullopt) {
@@ -125,19 +157,58 @@ class AuctionDownloaderTest
     url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
         [this](const network::ResourceRequest& request) {
           EXPECT_TRUE(request.devtools_request_id);
+          EXPECT_EQ(request.credentials_mode,
+                    network::mojom::CredentialsMode::kOmit);
+          EXPECT_EQ(request.redirect_mode,
+                    network::mojom::RedirectMode::kError);
+          EXPECT_EQ(request.url, url_);
+          EXPECT_EQ(
+              AuctionDownloader::MimeTypeToStringForTesting(mime_type_),
+              request.headers.GetHeader(net::HttpRequestHeaders::kAccept));
+
+          if (!use_request_initiator_constructor()) {
+            EXPECT_FALSE(request.request_initiator);
+            EXPECT_EQ(request.mode, network::mojom::RequestMode::kNoCors);
+            EXPECT_FALSE(request.trusted_params);
+          } else {
+            EXPECT_EQ(request.request_initiator, RequestInitiator());
+            EXPECT_EQ(request.mode, network::mojom::RequestMode::kCors);
+            ASSERT_TRUE(request.trusted_params);
+            EXPECT_TRUE(
+                request.trusted_params->isolation_info.IsEqualForTesting(
+                    TrustedParams().isolation_info));
+          }
+
           observed_request_post_body_ = request.request_body;
           observed_request_content_type_ =
               request.headers.GetHeader(net::HttpRequestHeaders::kContentType);
           observed_request_method_ = request.method;
         }));
 
-    AuctionDownloader downloader(
-        &url_loader_factory_, url_, download_mode(), mime_type_,
-        std::move(post_body), std::move(content_type),
-        is_trusted_bidding_signals_kvv1_download_, response_started_callback_,
-        base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
-                       base::Unretained(this)),
-        std::move(test_network_events_delegate));
+    std::unique_ptr<AuctionDownloader> downloader;
+    // Use presence of `request_initiator` to determine which constructor to
+    // use.
+    if (!use_request_initiator_constructor()) {
+      downloader = std::make_unique<AuctionDownloader>(
+          &url_loader_factory_, url_, download_mode(), mime_type_,
+          std::move(post_body), std::move(content_type),
+          is_trusted_bidding_signals_kvv1_download_, response_started_callback_,
+          base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
+                         base::Unretained(this)),
+          std::move(test_network_events_delegate));
+    } else {
+      // This constructor doesn't take a ResponseStarted callback, or take
+      // `is_trusted_bidding_signals_kvv1_download_`.
+      CHECK(!response_started_callback_);
+      CHECK(!is_trusted_bidding_signals_kvv1_download_);
+      downloader = std::make_unique<AuctionDownloader>(
+          &url_loader_factory_, url_, download_mode(), mime_type_,
+          std::move(post_body), std::move(content_type), RequestInitiator(),
+          TrustedParams(),
+          base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
+                         base::Unretained(this)),
+          std::move(test_network_events_delegate));
+    }
 
     // Populate `run_loop_` after starting the download, since API guarantees
     // callback will not be invoked synchronously.
@@ -408,6 +479,11 @@ TEST_P(AuctionDownloaderTest, PassesHeaders) {
 }
 
 TEST_P(AuctionDownloaderTest, ResponseStartedCallback) {
+  // ResponseStartedCallback is only supported by the constructor that doesn't
+  // take an initiator.
+  if (use_request_initiator_constructor()) {
+    return;
+  }
   bool called = false;
   response_started_callback_ = base::BindLambdaForTesting(
       [&](const network::mojom::URLResponseHead& response_head) {
@@ -864,6 +940,11 @@ TEST_P(AuctionDownloaderTest, Charset) {
 }
 
 TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge2_Cached) {
+  // `is_trusted_bidding_signals_kvv1_download_` is only supported by the
+  // constructor that doesn't take an initiator.
+  if (use_request_initiator_constructor()) {
+    return;
+  }
   network::URLLoaderCompletionStatus status;
   is_trusted_bidding_signals_kvv1_download_ = true;
 
@@ -879,6 +960,11 @@ TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge2_Cached) {
 }
 
 TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge2_NotCached) {
+  // `is_trusted_bidding_signals_kvv1_download_` is only supported by the
+  // constructor that doesn't take an initiator.
+  if (use_request_initiator_constructor()) {
+    return;
+  }
   network::URLLoaderCompletionStatus status;
   is_trusted_bidding_signals_kvv1_download_ = true;
 
@@ -905,6 +991,11 @@ TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge2_NotKVV1) {
 }
 
 TEST_P(AuctionDownloaderTest, StaleWhileRevalidate) {
+  // Stale-while-revalidate is only supported by the constructor that doesn't
+  // take an initiator.
+  if (use_request_initiator_constructor()) {
+    return;
+  }
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kFledgeAuctionDownloaderStaleWhileRevalidate);
@@ -1007,8 +1098,13 @@ TEST_P(AuctionDownloaderTest, DoNotSupportStaleWhileRevalidateWhenDisabled) {
 INSTANTIATE_TEST_SUITE_P(
     /* no label */,
     AuctionDownloaderTest,
-    testing::Values(AuctionDownloader::DownloadMode::kActualDownload,
-                    AuctionDownloader::DownloadMode::kSimulatedDownload));
+    testing::Values(
+        std::make_tuple(AuctionDownloader::DownloadMode::kActualDownload,
+                        /*use_request_initiator_constructor=*/false),
+        std::make_tuple(AuctionDownloader::DownloadMode::kSimulatedDownload,
+                        /*use_request_initiator_constructor=*/false),
+        std::make_tuple(AuctionDownloader::DownloadMode::kActualDownload,
+                        /*use_request_initiator_constructor=*/true)));
 
 }  // namespace
 }  // namespace auction_worklet

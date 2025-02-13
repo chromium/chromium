@@ -23,14 +23,18 @@
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
+#include "net/http/http_response_headers.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/buffers/oblivious_http_request.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+namespace auction_worklet {
+class AuctionDownloader;
+}
 
 namespace content {
 
@@ -222,10 +226,9 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
       std::string plaintext_request_body,
       Callback callback);
 
-  void OnResponseStarted(const GURL& final_url,
-                         const network::mojom::URLResponseHead& response_head);
-
-  void OnRequestComplete(std::unique_ptr<std::string> response_body);
+  void OnRequestComplete(std::unique_ptr<std::string> response_body,
+                         scoped_refptr<net::HttpResponseHeaders> headers,
+                         std::optional<std::string> error);
 
   void OnCborParsed(data_decoder::DataDecoder::ValueOrError value_or_error);
 
@@ -251,7 +254,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // The URL being fetched. Cached for using in error strings.
   GURL trusted_signals_url_;
   Callback callback_;
-  std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
+  std::unique_ptr<auction_worklet::AuctionDownloader> auction_downloader_;
 
   // Context needed to decrypt the response. Initialized while encrypting the
   // request body.
