@@ -13,7 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -296,7 +296,7 @@ void SetAnalysisConnector(PrefService* prefs,
 void ClearAnalysisConnector(PrefService* prefs, AnalysisConnector connector);
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Helper function to set the profile DM token. It installs a
 // MockCloudPolicyClient with |dm_token| into |profile|'s UserCloudPolicyManager
 // to simulate |profile|'s DM token.

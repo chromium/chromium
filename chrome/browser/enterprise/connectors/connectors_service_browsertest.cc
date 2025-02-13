@@ -15,7 +15,6 @@
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_browsertest_base.h"
@@ -39,18 +38,13 @@
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_id.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
-#include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
 namespace enterprise_connectors {
@@ -81,11 +75,8 @@ constexpr char kNormalReportingSettingsPref[] = R"([
   }
 ])";
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kAffiliationId2[] = "affiliation-id-2";
-#endif
-
 #if !BUILDFLAG(IS_CHROMEOS)
+constexpr char kAffiliationId2[] = "affiliation-id-2";
 constexpr char kFakeEnrollmentToken[] = "fake-enrollment-token";
 constexpr char kUsername1[] = "user@domain1.com";
 constexpr char kUsername2[] = "admin@domain2.com";
@@ -100,7 +91,7 @@ constexpr char kAffiliationId1[] = "affiliation-id-1";
 constexpr char kDomain1[] = "domain1.com";
 constexpr char kTestUrl[] = "https://foo.com";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr GaiaId::Literal kTestGaiaId("123");
 constexpr char kTestEmail[] = "test@test";
 #endif
@@ -184,15 +175,13 @@ class ConnectorsServiceProfileBrowserTest
   }
 
   void TearDownOnMainThread() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     user_manager_enabler_.reset();
 #endif
   }
 
   void SetUpProfileData() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    EXPECT_TRUE(browser()->profile()->IsMainProfile());
-#elif !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     test::SetProfileDMToken(browser()->profile(), kFakeProfileDMToken);
 #endif
 
@@ -202,14 +191,8 @@ class ConnectorsServiceProfileBrowserTest
     profile_policy_data.set_device_id(kFakeProfileClientId);
     profile_policy_data.set_request_token(kFakeProfileDMToken);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (management_status_ != ManagementStatus::UNMANAGED) {
-      policy::PolicyLoaderLacros::set_main_user_policy_data_for_testing(
-          std::move(profile_policy_data));
-    }
-#else
     auto* profile_policy_manager =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         browser()->profile()->GetUserCloudPolicyManagerAsh();
 #else
         browser()->profile()->GetUserCloudPolicyManager();
@@ -218,20 +201,10 @@ class ConnectorsServiceProfileBrowserTest
     profile_policy_manager->core()->store()->set_policy_data_for_testing(
         std::make_unique<enterprise_management::PolicyData>(
             std::move(profile_policy_data)));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
   void SetUpDeviceData() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    crosapi::mojom::BrowserInitParamsPtr init_params =
-        crosapi::mojom::BrowserInitParams::New();
-    init_params->device_properties = crosapi::mojom::DeviceProperties::New();
-    init_params->device_properties->device_dm_token = kFakeBrowserDMToken;
-    init_params->device_properties->device_affiliation_ids = {
-        management_status() == ManagementStatus::AFFILIATED ? kAffiliationId1
-                                                            : kAffiliationId2};
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     auto* fake_user_manager = new ash::FakeChromeUserManager();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager));
@@ -259,7 +232,7 @@ class ConnectorsServiceProfileBrowserTest
 #endif
   }
 
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
     command_line->AppendSwitch(::switches::kEnableChromeBrowserCloudManagement);
@@ -291,7 +264,7 @@ class ConnectorsServiceProfileBrowserTest
  protected:
   std::unique_ptr<policy::FakeBrowserDMTokenStorage> browser_dm_token_storage_;
   ManagementStatus management_status_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
  private:
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 #endif
@@ -475,7 +448,7 @@ class ConnectorsServiceAnalysisProfileBrowserTest
         metadata.profile().profile_name(),
         *reporting_metadata.FindStringByDottedPath("profile.profileName"));
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     ASSERT_TRUE(metadata.profile().has_client_id());
     ASSERT_EQ(metadata.profile().client_id(), kFakeProfileClientId);
     ASSERT_EQ(metadata.profile().client_id(),

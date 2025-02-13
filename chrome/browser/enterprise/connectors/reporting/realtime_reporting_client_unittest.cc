@@ -13,7 +13,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
@@ -31,7 +30,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 #include "components/enterprise/browser/enterprise_switches.h"
 #endif
 
@@ -134,7 +133,7 @@ class RealtimeReportingClientUmaTest
 
 TEST_P(RealtimeReportingClientUmaTest, TestDeprecatedUmaEventUploadSucceeds) {
 // Profile reporting is not supported on Ash.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (is_profile_reporting()) {
     return;
   }
@@ -205,7 +204,7 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadSucceeds) {
 
 TEST_P(RealtimeReportingClientUmaTest, TestDeprecatedUmaEventUploadFails) {
 // Profile reporting is not supported on Ash.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (is_profile_reporting()) {
     return;
   }

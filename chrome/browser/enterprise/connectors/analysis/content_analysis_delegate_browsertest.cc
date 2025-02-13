@@ -21,7 +21,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
@@ -312,7 +311,7 @@ class ContentAnalysisDelegateBrowserTestBase
   }
 
   void EnableUploadsScanningAndReporting() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     SetDMTokenForTesting(policy::DMToken::CreateValidToken(kBrowserDMToken));
 #else
     if (machine_scope_) {
@@ -342,7 +341,7 @@ class ContentAnalysisDelegateBrowserTestBase
                                       /*enabled*/ true,
                                       /*enabled_event_names*/ {},
                                       /*enabled_opt_in_events*/ {},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                                       /*machine_scope*/ false);
 #else
                                       machine_scope_);
@@ -350,7 +349,7 @@ class ContentAnalysisDelegateBrowserTestBase
 
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
     client_->SetDMToken(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         kBrowserDMToken);
 #else
         machine_scope() ? kBrowserDMToken : kProfileDMToken);
@@ -360,7 +359,7 @@ class ContentAnalysisDelegateBrowserTestBase
           ->SetBrowserCloudPolicyClientForTesting(client_.get());
     } else {
       RealtimeReportingClientFactory::GetForProfile(browser()->profile())
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
           ->SetBrowserCloudPolicyClientForTesting(client_.get());
 #else
           ->SetProfileCloudPolicyClientForTesting(client_.get());
@@ -385,7 +384,7 @@ class ContentAnalysisDelegateBrowserTestBase
   policy::MockCloudPolicyClient* client() { return client_.get(); }
 
   std::string GetProfileIdentifier() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     return browser()->profile()->GetPath().AsUTF8Unsafe();
 #else
     if (machine_scope_) {
@@ -2232,7 +2231,7 @@ class ContentAnalysisDelegateUnauthorizedBrowserTest
   }
 
   void SetUpScanning(bool file_scan) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     SetDMTokenForTesting(policy::DMToken::CreateValidToken(dm_token()));
 #else
     if (machine_scope()) {

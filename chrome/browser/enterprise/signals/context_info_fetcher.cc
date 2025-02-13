@@ -18,7 +18,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/signals/signals_utils.h"
@@ -55,7 +54,7 @@
 #include "net/dns/public/win_dns_system_settings.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/constants/dbus_switches.h"
 #endif
 
@@ -203,7 +202,7 @@ SettingValue GetMacOSFirewall() {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 SettingValue GetChromeosFirewall() {
   // The firewall is always enabled and can only be disabled in dev mode on
   // ChromeOS. If the device isn't in dev mode, the firewall is guaranteed to be
@@ -339,7 +338,7 @@ SettingValue ContextInfoFetcher::GetOSFirewall() {
   return GetWinOSFirewall();
 #elif BUILDFLAG(IS_MAC)
   return GetMacOSFirewall();
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   return GetChromeosFirewall();
 #else
   return SettingValue::UNKNOWN;

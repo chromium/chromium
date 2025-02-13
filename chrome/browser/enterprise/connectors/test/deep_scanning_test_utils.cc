@@ -820,7 +820,7 @@ void ClearAnalysisConnector(PrefService* prefs, AnalysisConnector connector) {
 }
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void SetProfileDMToken(Profile* profile, const std::string& dm_token) {
   auto policy_data = std::make_unique<enterprise_management::PolicyData>();
   policy_data->set_request_token(dm_token);
@@ -832,13 +832,8 @@ void SetProfileDMToken(Profile* profile, const std::string& dm_token) {
   auto client = std::make_unique<policy::MockCloudPolicyClient>();
   client->SetDMToken(dm_token);
 
-// crbug.com/1230268 The main profile in Lacros doesn't have a
-// CloudPolicyManager, but we might want to apply the code if it's a secondary
-// profile.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   profile->GetUserCloudPolicyManager()->Connect(
       g_browser_process->local_state(), std::move(client));
-#endif
 }
 #endif
 

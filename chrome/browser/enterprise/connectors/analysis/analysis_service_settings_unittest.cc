@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -22,7 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include <initializer_list>
 
 #include "chrome/browser/ash/file_manager/volume_manager.h"
@@ -206,7 +207,7 @@ constexpr char kNoDlpDotCom[] = "https://no.dlp.com";
 constexpr char kNoMalwareDotCom[] = "https://no.malware.com";
 constexpr char kNoDlpOrMalwareDotCa[] = "https://no.dlp.or.malware.ca";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 using VolumeInfo = SourceDestinationTestingHelper::VolumeInfo;
 
 struct SourceDestinationTestParam {
@@ -588,7 +589,7 @@ constexpr std::pair<VolumeInfo, VolumeInfo> kDlpNoMalwareVolumePair1 = {
     kMyFilesVolumeInfo, kRemovableVolumeInfo};
 constexpr std::pair<VolumeInfo, VolumeInfo> kDlpNoMalwareVolumePair2 = {
     kDriveVolumeInfo, kRemovableVolumeInfo};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // These URLs can't be added directly to the "expected" settings object, because
 // it's created statically and statically initializing GURLs is prohibited.
@@ -606,7 +607,7 @@ AnalysisSettings* OnlyDlpEnabledSettings() {
   return settings.get();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // These are only used for SourceDestination tests and are unused on non-ash
 // chrome.
 AnalysisSettings* OnlyMalwareEnabledSettings() {
@@ -626,7 +627,7 @@ AnalysisSettings* OnlyDlpAndMalwareEnabledSettings() {
   }());
   return settings.get();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 AnalysisSettings NormalSettingsWithTags(
     std::map<std::string, TagSettings> tags) {
@@ -942,7 +943,7 @@ INSTANTIATE_TEST_SUITE_P(
                   NormalDlpSettings(),
                   DataRegion::EUROPE)));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 class AnalysisServiceSourceDestinationSettingsTest
     : public testing::TestWithParam<SourceDestinationTestParam> {
@@ -1311,6 +1312,6 @@ INSTANTIATE_TEST_SUITE_P(
                                    NormalDlpSettings(),
                                    DataRegion::EUROPE)));
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace enterprise_connectors

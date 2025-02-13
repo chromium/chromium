@@ -34,7 +34,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/enterprise/connectors/analysis/source_destination_test_util.h"
 #endif
@@ -158,7 +158,7 @@ class ConnectorsManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // This is necessary so the URL flag code works on CrOS. If it's absent, a
   // CrOS DCHECK fails when trying to access the
   // BrowserPolicyConnectorAsh as it is not completely initialized.
@@ -320,7 +320,7 @@ INSTANTIATE_TEST_SUITE_P(
                                      kNormalLocalAnalysisSettingsPref)));
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 using VolumeInfo = SourceDestinationTestingHelper::VolumeInfo;
 
 namespace {
@@ -664,7 +664,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(kNormalCloudSourceDestinationSettingsPref)),
     testingTupleToString);
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 class ConnectorsManagerAnalysisConnectorsTest
@@ -749,7 +749,7 @@ INSTANTIATE_TEST_SUITE_P(
                                      kNormalLocalAnalysisSettingsPref)));
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 class ConnectorsManagerAnalysisConnectorsSourceDestinationTest
     : public ConnectorsManagerTest,
@@ -837,7 +837,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(kNormalCloudSourceDestinationSettingsPref,
                         kNormalLocalSourceDestinationSettingsPref)));
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 class ConnectorsManagerLocalAnalysisConnectorTest

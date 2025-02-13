@@ -43,12 +43,12 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   std::optional<AnalysisSettings> GetAnalysisSettings(
       const GURL& url,
       AnalysisConnector connector);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::optional<AnalysisSettings> GetAnalysisSettings(
       const storage::FileSystemURL& source_url,
       const storage::FileSystemURL& destination_url,
       AnalysisConnector connector);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   bool IsConnectorEnabled(AnalysisConnector connector) const override;
 

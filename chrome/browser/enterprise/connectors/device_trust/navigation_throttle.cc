@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/device_trust_constants.h"
@@ -29,9 +30,9 @@
 #include "net/http/http_response_headers.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace enterprise_connectors {
 
@@ -76,7 +77,7 @@ Profile* GetProfile(content::NavigationHandle* navigation_handle) {
       navigation_handle->GetWebContents()->GetBrowserContext());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 DTOrigin GetAttestationFlowOrigin(content::BrowserContext* context) {
   if (context->IsOffTheRecord() && ash::ProfileHelper::IsSigninProfile(
                                        Profile::FromBrowserContext(context))) {
@@ -85,7 +86,7 @@ DTOrigin GetAttestationFlowOrigin(content::BrowserContext* context) {
 
   return DTOrigin::kInSession;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -198,11 +199,11 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
   if (navigation_handle()->GetResponseHeaders() == nullptr ||
       !navigation_handle()->GetResponseHeaders()->HasHeader(
           kVerifiedAccessChallengeHeader)) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     LogOrigin(GetAttestationFlowOrigin(
         navigation_handle()->GetWebContents()->GetBrowserContext()));
     LogEnrollmentStatus();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     LogAttestationFunnelStep(DTAttestationFunnelStep::kAttestationFlowStarted);
     navigation_handle()->SetRequestHeader(kDeviceTrustHeader,
                                           kDeviceTrustHeaderValue);

@@ -7,7 +7,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -94,14 +94,14 @@ class ExtensionRequestReportGeneratorTest : public ::testing::Test {
       EXPECT_EQ(actual_report->justification(), kJustification);
     }
     EXPECT_EQ(is_removed, actual_report->removed());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     EXPECT_EQ(ExtensionsWorkflowEvent::CHROME_OS_USER,
               actual_report->client_type());
 #else
     EXPECT_EQ(ExtensionsWorkflowEvent::BROWSER_DEVICE,
               actual_report->client_type());
     EXPECT_EQ(policy::GetMachineName(), actual_report->device_name());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
  private:

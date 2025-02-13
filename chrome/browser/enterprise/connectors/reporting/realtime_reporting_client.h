@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "components/enterprise/common/proto/upload_request_response.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
@@ -31,7 +31,7 @@ namespace signin {
 class IdentityManager;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 namespace user_manager {
 class User;
@@ -116,7 +116,7 @@ class RealtimeReportingClient : public RealtimeReportingClientBase {
       EnterpriseReportingEventType eventType,
       policy::CloudPolicyClient::Result upload_result) override;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   std::pair<std::string, policy::CloudPolicyClient*> InitProfileReportingClient(
       const std::string& dm_token) override;
 #endif
@@ -157,12 +157,10 @@ class RealtimeReportingClient : public RealtimeReportingClientBase {
   void OnCloudPolicyClientAvailable(const std::string& policy_client_desc,
                                     policy::CloudPolicyClient* client);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
+#if BUILDFLAG(IS_CHROMEOS)
   // Return the Chrome OS user who is subject to reporting, or nullptr if
   // the user cannot be deterined.
   static const user_manager::User* GetChromeOSUser();
-
 #endif
 
   void RemoveDmTokenFromRejectedSet(const std::string& dm_token);
