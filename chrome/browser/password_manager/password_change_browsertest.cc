@@ -877,7 +877,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
            PasswordChangeDelegate::State::kPasswordSuccessfullyChanged;
   }));
   // Expect tab password change to be closed.
-  EXPECT_EQ(1, tab_strip->count());
+  EXPECT_TRUE(
+      base::test::RunUntil([&tab_strip]() { return tab_strip->count() == 1; }));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
