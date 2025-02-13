@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_update_store.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/shared_tab_group_feedback_controller.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_service.h"
@@ -270,6 +271,15 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
     download_toolbar_ui_controller_ =
         std::make_unique<DownloadToolbarUIController>(browser_view);
   }
+
+  if (browser_view->browser()->GetTabStripModel()->SupportsTabGroups() &&
+      tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups() &&
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+          browser_view->GetProfile())) {
+    shared_tab_group_feedback_controller_ =
+        std::make_unique<tab_groups::SharedTabGroupFeedbackController>(
+            browser_view);
+  }
 }
 
 void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
@@ -288,6 +298,10 @@ void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
 
   if (mv2_disabled_dialog_controller_) {
     mv2_disabled_dialog_controller_->TearDown();
+  }
+
+  if (shared_tab_group_feedback_controller_) {
+    shared_tab_group_feedback_controller_->TearDown();
   }
 }
 

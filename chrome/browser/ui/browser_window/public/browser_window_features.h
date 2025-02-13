@@ -63,6 +63,7 @@ class MemorySaverBubbleController;
 namespace tab_groups {
 class SessionServiceTabGroupSyncObserver;
 class MostRecentUpdateStore;
+class SharedTabGroupFeedbackController;
 }  // namespace tab_groups
 
 namespace send_tab_to_self {
@@ -184,6 +185,11 @@ class BrowserWindowFeatures {
     return memory_saver_bubble_controller_.get();
   }
 
+  tab_groups::SharedTabGroupFeedbackController*
+  shared_tab_group_feedback_controller() {
+    return shared_tab_group_feedback_controller_.get();
+  }
+
  protected:
   BrowserWindowFeatures();
 
@@ -247,6 +253,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<memory_saver::MemorySaverBubbleController>
       memory_saver_bubble_controller_;
+
+  std::unique_ptr<tab_groups::SharedTabGroupFeedbackController>
+      shared_tab_group_feedback_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_
