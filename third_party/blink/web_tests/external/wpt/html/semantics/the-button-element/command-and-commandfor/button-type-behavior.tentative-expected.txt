@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Button type=reset in form should trigger form reset and toggle popover
+  assert_true: type=reset should toggle the popover expected true got false
+[FAIL] Button type=reset with form attr should trigger form reset and toggle popover
+  assert_true: type=reset should toggle the popover expected true got false
+Harness: the test ran to completion.
+
