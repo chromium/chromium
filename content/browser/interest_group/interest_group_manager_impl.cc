@@ -505,8 +505,9 @@ void InterestGroupManagerImpl::RecordInterestGroupWin(
 }
 
 void InterestGroupManagerImpl::RecordDebugReportLockout(
-    base::Time last_report_sent_time) {
-  caching_storage_.RecordDebugReportLockout(last_report_sent_time);
+    base::Time starting_time,
+    base::TimeDelta duration) {
+  caching_storage_.RecordDebugReportLockout(starting_time, duration);
 }
 
 void InterestGroupManagerImpl::RecordDebugReportCooldown(
@@ -903,9 +904,9 @@ void InterestGroupManagerImpl::OnInterestGroupAdAuctionDataLoadComplete(
 
 void InterestGroupManagerImpl::OnAdAuctionDataLoadComplete(
     AdAuctionDataLoaderState state,
-    std::optional<base::Time> last_report_sent_time) {
+    std::optional<DebugReportLockout> lockout) {
   state.serializer.SetDebugReportInLockout(
-      IsInDebugReportLockout(last_report_sent_time, base::Time::Now()));
+      IsInDebugReportLockout(lockout, base::Time::Now()));
   BiddingAndAuctionData data = state.serializer.Build();
   base::UmaHistogramTimes(
       "Ads.InterestGroup.ServerAuction.AdAuctionDataLoadTime",

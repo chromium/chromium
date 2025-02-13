@@ -179,6 +179,7 @@ class InterestGroupStorageTest : public testing::Test {
         case 26:
         case 27:
         case 30:
+        case 32:
           *version_changed_ig_fields = false;
           break;
         default:
@@ -211,6 +212,8 @@ class InterestGroupStorageTest : public testing::Test {
     // instance.
 
     switch (version_number) {
+      case 32:
+        [[fallthrough]];
       case 31:
         result.ads.value()[0].creative_scanning_metadata = "scan 1";
         result.ad_components.value()[1].creative_scanning_metadata = "scan 2";
@@ -1370,24 +1373,29 @@ TEST_F(InterestGroupStorageTest, RecordsDebugReportLockoutAndCooldown) {
   std::optional<DebugReportLockoutAndCooldowns> cooldowns =
       storage->GetDebugReportLockoutAndCooldowns(origins);
   ASSERT_TRUE(cooldowns.has_value());
-  EXPECT_FALSE(cooldowns->last_report_sent_time.has_value());
+  EXPECT_FALSE(cooldowns->lockout.has_value());
   EXPECT_TRUE(cooldowns->debug_report_cooldown_map.empty());
 
-  std::optional<base::Time> lockout = storage->GetDebugReportLockout();
+  std::optional<DebugReportLockout> lockout = storage->GetDebugReportLockout();
   ASSERT_FALSE(lockout.has_value());
 
   base::Time time = base::Time::Now();
   base::Time expected_time = base::Time::FromDeltaSinceWindowsEpoch(
       time.ToDeltaSinceWindowsEpoch().CeilToMultiple(base::Hours(1)));
-  storage->RecordDebugReportLockout(time);
+  storage->RecordDebugReportLockout(
+      time, blink::features::kFledgeDebugReportLockout.Get());
   cooldowns = storage->GetDebugReportLockoutAndCooldowns(origins);
   ASSERT_TRUE(cooldowns.has_value());
-  ASSERT_TRUE(cooldowns->last_report_sent_time.has_value());
-  EXPECT_EQ(expected_time, *cooldowns->last_report_sent_time);
+  ASSERT_TRUE(cooldowns->lockout.has_value());
+  EXPECT_EQ(expected_time, cooldowns->lockout->starting_time);
+  EXPECT_EQ(blink::features::kFledgeDebugReportLockout.Get(),
+            cooldowns->lockout->duration);
   EXPECT_TRUE(cooldowns->debug_report_cooldown_map.empty());
   lockout = storage->GetDebugReportLockout();
   ASSERT_TRUE(lockout.has_value());
-  EXPECT_EQ(expected_time, *lockout);
+  EXPECT_EQ(expected_time, lockout->starting_time);
+  EXPECT_EQ(blink::features::kFledgeDebugReportLockout.Get(),
+            lockout->duration);
 
   storage->RecordDebugReportCooldown(test_origin, time,
                                      DebugReportCooldownType::kShortCooldown);
@@ -1396,17 +1404,18 @@ TEST_F(InterestGroupStorageTest, RecordsDebugReportLockoutAndCooldown) {
   expected_cooldown_map[test_origin] = DebugReportCooldown(
       expected_time, DebugReportCooldownType::kShortCooldown);
   ASSERT_TRUE(cooldowns.has_value());
-  ASSERT_TRUE(cooldowns->last_report_sent_time.has_value());
-  EXPECT_EQ(expected_time, *cooldowns->last_report_sent_time);
+  ASSERT_TRUE(cooldowns->lockout.has_value());
+  EXPECT_EQ(expected_time, cooldowns->lockout->starting_time);
   EXPECT_EQ(expected_cooldown_map, cooldowns->debug_report_cooldown_map);
   expected_cooldown_map.clear();
 
-  // Ensure we get to a different hour, to get a different time.
+  // Ensure we get to a different hour, to get a different time. Also test
+  // customize lockout duration.
   task_environment().FastForwardBy(base::Minutes(90));
   base::Time time2 = base::Time::Now();
   base::Time expected_time2 = base::Time::FromDeltaSinceWindowsEpoch(
       time2.ToDeltaSinceWindowsEpoch().CeilToMultiple(base::Hours(1)));
-  storage->RecordDebugReportLockout(time2);
+  storage->RecordDebugReportLockout(time2, /*duration=*/base::Days(90));
   storage->RecordDebugReportCooldown(
       test_origin, time2, DebugReportCooldownType::kRestrictedCooldown);
   storage->RecordDebugReportCooldown(test_origin2, time2,
@@ -1417,8 +1426,9 @@ TEST_F(InterestGroupStorageTest, RecordsDebugReportLockoutAndCooldown) {
   expected_cooldown_map[test_origin2] = DebugReportCooldown(
       expected_time2, DebugReportCooldownType::kShortCooldown);
   ASSERT_TRUE(cooldowns.has_value());
-  ASSERT_TRUE(cooldowns->last_report_sent_time.has_value());
-  EXPECT_EQ(expected_time2, *cooldowns->last_report_sent_time);
+  ASSERT_TRUE(cooldowns->lockout.has_value());
+  EXPECT_EQ(expected_time2, cooldowns->lockout->starting_time);
+  EXPECT_EQ(base::Days(90), cooldowns->lockout->duration);
   EXPECT_EQ(expected_cooldown_map, cooldowns->debug_report_cooldown_map);
 }
 
@@ -3397,6 +3407,32 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV16) {
   std::optional<base::Time> last_reported =
       storage->GetLastKAnonymityReported(key_without_ig_in_ig_table);
   EXPECT_EQ(last_reported, base::Time::Min() + base::Microseconds(8));
+}
+
+// The lockout_debugging_only_report table schema is changed from V31 to V32.
+TEST_F(InterestGroupStorageTest, UpgradeFromV31) {
+  // Create V31 database from dump
+  base::FilePath file_path;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
+  file_path =
+      file_path.AppendASCII("content/test/data/interest_group/schemaV31.sql");
+  ASSERT_TRUE(base::PathExists(file_path));
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(), file_path));
+
+  // Upgrade.
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+  ASSERT_TRUE(storage);
+
+  // Make sure the database can accept new data (including new fields) correctly
+  // after the migration.
+  base::Time now_nearest_next_hour = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().CeilToMultiple(
+          base::Hours(1)));
+  storage->RecordDebugReportLockout(now_nearest_next_hour, base::Days(90));
+  std::optional<DebugReportLockout> lockout = storage->GetDebugReportLockout();
+  ASSERT_TRUE(lockout.has_value());
+  EXPECT_EQ(now_nearest_next_hour, lockout->starting_time);
+  EXPECT_EQ(base::Days(90), lockout->duration);
 }
 
 TEST_F(InterestGroupStorageTest, MultiVersionUpgradeTest) {

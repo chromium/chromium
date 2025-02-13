@@ -628,8 +628,8 @@ bool IsOriginInDebugReportCooldownOrLockout(
     return false;
   }
 
-  if (IsInDebugReportLockout(
-          debug_report_lockout_and_cooldowns->last_report_sent_time, now)) {
+  if (IsInDebugReportLockout(debug_report_lockout_and_cooldowns->lockout,
+                             now)) {
     return true;
   }
 
@@ -713,8 +713,9 @@ bool SampleDebugReport(
     // zero.
     if (blink::features::kFledgeDebugReportLockout.Get() !=
         base::Milliseconds(0)) {
-      new_debug_report_lockout_and_cooldowns.last_report_sent_time =
-          now_nearest_next_hour;
+      new_debug_report_lockout_and_cooldowns.lockout =
+          DebugReportLockout(now_nearest_next_hour,
+                             blink::features::kFledgeDebugReportLockout.Get());
     }
   }
   base::UmaHistogramBoolean(
@@ -4334,10 +4335,10 @@ void InterestGroupAuction::CollectBiddingAndScoringPhaseReports() {
     component_auction_info.second->CollectBiddingAndScoringPhaseReports();
   }
 
-  if (new_debug_report_lockout_and_cooldowns_.last_report_sent_time
-          .has_value()) {
+  if (new_debug_report_lockout_and_cooldowns_.lockout.has_value()) {
     interest_group_manager_->RecordDebugReportLockout(
-        *new_debug_report_lockout_and_cooldowns_.last_report_sent_time);
+        new_debug_report_lockout_and_cooldowns_.lockout->starting_time,
+        new_debug_report_lockout_and_cooldowns_.lockout->duration);
   }
   for (const auto& [origin, debug_report_cooldown] :
        new_debug_report_lockout_and_cooldowns_.debug_report_cooldown_map) {

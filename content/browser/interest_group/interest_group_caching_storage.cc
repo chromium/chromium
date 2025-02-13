@@ -18,6 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
+#include "content/browser/interest_group/for_debugging_only_report_util.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_storage.h"
@@ -346,10 +347,11 @@ void InterestGroupCachingStorage::RecordInterestGroupWin(
 }
 
 void InterestGroupCachingStorage::RecordDebugReportLockout(
-    base::Time last_report_sent_time) {
+    base::Time starting_time,
+    base::TimeDelta duration) {
   interest_group_storage_
       .AsyncCall(&InterestGroupStorage::RecordDebugReportLockout)
-      .WithArgs(last_report_sent_time);
+      .WithArgs(starting_time, duration);
 }
 
 void InterestGroupCachingStorage::RecordDebugReportCooldown(
@@ -443,7 +445,7 @@ void InterestGroupCachingStorage::GetInterestGroupsForUpdate(
 }
 
 void InterestGroupCachingStorage::GetDebugReportLockout(
-    base::OnceCallback<void(std::optional<base::Time>)> callback) {
+    base::OnceCallback<void(std::optional<DebugReportLockout>)> callback) {
   return interest_group_storage_
       .AsyncCall(&InterestGroupStorage::GetDebugReportLockout)
       .Then(std::move(callback));

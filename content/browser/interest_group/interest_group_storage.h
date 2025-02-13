@@ -15,6 +15,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "content/browser/interest_group/for_debugging_only_report_util.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
@@ -87,7 +88,7 @@ class CONTENT_EXPORT InterestGroupStorage {
       const url::Origin& main_frame_origin);
 
   // Gets lockout for sending forDebuggingOnly reports.
-  std::optional<base::Time> GetDebugReportLockout();
+  std::optional<DebugReportLockout> GetDebugReportLockout();
 
   // Gets lockout and cooldowns for sending forDebuggingOnly reports.
   std::optional<DebugReportLockoutAndCooldowns>
@@ -122,7 +123,8 @@ class CONTENT_EXPORT InterestGroupStorage {
                               const std::string& ad_json);
   // Adds an entry to forDebuggingOnly report lockout table if the table is
   // empty. Otherwise replaces the existing entry.
-  void RecordDebugReportLockout(base::Time last_report_sent_time);
+  void RecordDebugReportLockout(base::Time starting_time,
+                                base::TimeDelta duration);
   // Adds an entry to forDebuggingOnly report cooldown table for `origin` if it
   // does not exist, otherwise replaces the existing entry.
   void RecordDebugReportCooldown(const url::Origin& origin,
