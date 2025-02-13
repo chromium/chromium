@@ -39,9 +39,6 @@ public final class ListMenuTestUtils {
      *
      *     verify(mSpyListMenu).setMaxWidth(anyInt());
      * }
-     *
-     * Note that internally, R8 will optimize and mark a class final for some cases. When using
-     * this method, define an unused mock / Spy in your test file. See crbug.com/387543612.
      */
     public static void captorPopupWindowSpy(Callback<AnchoredPopupWindow> popupWindowCallback) {
         ListMenuHost.setMenuChangedListenerForTesting(
