@@ -1117,7 +1117,7 @@
     {
       // Support making elements inert through the interactivity property.
       name: "CSSInert",
-      status: "experimental",
+      status: "stable",
     },
     {
       // CSS if() function for custom properties. Supports only style
