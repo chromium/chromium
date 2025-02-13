@@ -73,11 +73,13 @@ void DownloadManagerMediator::SetConsumer(
 
 void DownloadManagerMediator::SetDownloadTask(web::DownloadTask* task) {
   if (download_task_) {
+    download_task_->GetWebState()->RemoveObserver(this);
     download_task_->RemoveObserver(this);
   }
   download_task_ = task;
   if (download_task_) {
     download_task_->AddObserver(this);
+    download_task_->GetWebState()->AddObserver(this);
   }
   // Update upload task associated with `download_task_`.
   UpdateUploadTask();
@@ -218,14 +220,35 @@ void DownloadManagerMediator::UpdateConsumer() {
 
   [consumer_ setFileName:base::apple::FilePathToNSString(filename)];
 
-  // Show the originating host if it is not the one presented in the omnibox.
-  if ([download_task_->GetOriginatingHost() length] &&
-      download_task_->GetWebState()->GetLastCommittedURL().host() !=
-          base::SysNSStringToUTF8(download_task_->GetOriginatingHost())) {
-    [consumer_ setOriginatingHost:download_task_->GetOriginatingHost()];
-  } else {
-    [consumer_ setOriginatingHost:nil];
+  NSString* originating_host = nil;
+  bool display_originating_host = false;
+#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
+  if (@available(iOS 18.2, *)) {
+    // The originating host is only populated when compiled with iOS18.2 SDK
+    // and running on iOS18.2.
+    if ([download_task_->GetOriginatingHost() length]) {
+      // Use the originating host provided by WKWebView.
+      originating_host = download_task_->GetOriginatingHost();
+    } else if (download_task_->GetRedirectedUrl().host().size()) {
+      // If originating host is not available (e.g. the download is triggered
+      // by a data:// frame, use the download host instead).
+      originating_host =
+          base::SysUTF8ToNSString(download_task_->GetRedirectedUrl().host());
+    }
+    // Only show the compute the originating host if it is not what is displayed
+    // in the omnibox.
+    display_originating_host =
+        download_task_->GetWebState()->GetLastCommittedURL().host() !=
+        base::SysNSStringToUTF8(originating_host);
+
+    // If the host was already displayed, keep it displayed
+    display_originating_host = display_originating_host || should_show_origin_;
+    should_show_origin_ = display_originating_host;
   }
+#endif
+
+  [consumer_ setOriginatingHost:originating_host
+                        display:display_originating_host];
 
   int a11y_announcement = GetDownloadManagerA11yAnnouncement();
   if (a11y_announcement != -1) {
@@ -335,6 +358,20 @@ void DownloadManagerMediator::SetUploadTask(UploadTask* task) {
 void DownloadManagerMediator::AppWillEnterForeground() {
   CHECK(base::FeatureList::IsEnabled(kIOSDownloadNoUIUpdateInBackground));
   SetGoogleDriveAppInstalled(IsGoogleDriveAppInstalled());
+  UpdateConsumer();
+}
+
+#pragma mark - web::WebStateObserver overrides
+
+void DownloadManagerMediator::WebStateDestroyed(web::WebState* web_state) {
+  // This should not be needed as DownloadTask should already be destroyed, but
+  // if it is not the case, deattach anyway.
+  SetDownloadTask(nullptr);
+}
+
+void DownloadManagerMediator::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
   UpdateConsumer();
 }
 

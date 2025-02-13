@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/download/ui_bundled/download_manager_consumer.h"
 #import "ios/chrome/browser/drive/model/upload_task_observer.h"
 #import "ios/web/public/download/download_task_observer.h"
+#import "ios/web/public/web_state_observer.h"
 
 @protocol DownloadManagerConsumer;
 
@@ -33,7 +34,8 @@ class DownloadTask;
 // update consumer if download task was changed.
 class DownloadManagerMediator : public web::DownloadTaskObserver,
                                 public UploadTaskObserver,
-                                public signin::IdentityManager::Observer {
+                                public signin::IdentityManager::Observer,
+                                public web::WebStateObserver {
  public:
   DownloadManagerMediator();
 
@@ -113,6 +115,11 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
   // Sets upload task. Must be set to null when task is destroyed.
   void SetUploadTask(UploadTask* task);
 
+  // web::WebStateObserver overrides:
+  void WebStateDestroyed(web::WebState* web_state) override;
+  void DidFinishNavigation(web::WebState* web_state,
+                           web::NavigationContext* navigation_context) override;
+
   // web::DownloadTaskObserver overrides:
   void OnDownloadUpdated(web::DownloadTask* task) override;
   void OnDownloadDestroyed(web::DownloadTask* task) override;
@@ -140,6 +147,7 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
   // Observers for NSNotificationCenter notifications.
   __strong id<NSObject> application_foregrounding_observer_;
   bool is_google_drive_app_installed_ = false;
+  bool should_show_origin_ = false;
 
   base::WeakPtrFactory<DownloadManagerMediator> weak_ptr_factory_;
 };

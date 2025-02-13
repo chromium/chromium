@@ -24,6 +24,7 @@ namespace web {
 namespace {
 
 const char kUrl[] = "chromium://download.test/";
+const char kUrlRedirected[] = "chromium://redirected.test/";
 NSString* const kOrigninatingHost = @"host.test";
 const char kContentDisposition[] = "attachment; filename=file.test";
 const char kMimeType[] = "application/pdf";
@@ -57,6 +58,7 @@ class FakeDownloadTaskImpl final : public DownloadTaskImpl {
 
   void StartInternal(const base::FilePath& path) final {}
   void CancelInternal() final {}
+  void Redirect(const GURL& url) { OnRedirected(url); }
 };
 
 // Test fixture for testing DownloadTaskImplTest class.
@@ -86,6 +88,7 @@ TEST_F(DownloadTaskImplTest, DefaultState) {
   EXPECT_EQ(DownloadTask::State::kNotStarted, task_->GetState());
   EXPECT_NSNE(@"", task_->GetIdentifier());
   EXPECT_EQ(kUrl, task_->GetOriginalUrl());
+  EXPECT_EQ(kUrl, task_->GetRedirectedUrl());
   EXPECT_NSEQ(kOrigninatingHost, task_->GetOriginatingHost());
   EXPECT_FALSE(task_->IsDone());
   EXPECT_EQ(0, task_->GetErrorCode());
@@ -110,4 +113,14 @@ TEST_F(DownloadTaskImplTest, SuccessfulInitialization) {
   task_->Cancel();
   EXPECT_EQ(DownloadTask::State::kCancelled, task_->GetState());
 }
+
+// Tests DownloadTaskImpl redirection.
+TEST_F(DownloadTaskImplTest, RedirectURL) {
+  EXPECT_EQ(kUrl, task_->GetOriginalUrl());
+  EXPECT_EQ(kUrl, task_->GetRedirectedUrl());
+  task_->Redirect(GURL(kUrlRedirected));
+  EXPECT_EQ(kUrl, task_->GetOriginalUrl());
+  EXPECT_EQ(kUrlRedirected, task_->GetRedirectedUrl());
+}
+
 }  // namespace web

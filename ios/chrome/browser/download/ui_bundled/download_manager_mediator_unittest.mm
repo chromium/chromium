@@ -7,7 +7,9 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/ios/ios_util.h"
 #import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/download/model/document_download_tab_helper.h"
@@ -30,6 +32,9 @@ namespace {
 
 // Constants for configuring a fake download task.
 const char kTestUrl[] = "https://chromium.test/download.txt";
+const char kSameDomainURL[] = "https://chromium.test/page";
+const char kCrossDomainURL[] = "https://otherdomain.test/page";
+const char kCrossDomainURL2[] = "https://yetanotherdomain.test/page";
 const char kTestMimeType[] = "text/html";
 const int64_t kTestTotalBytes = 10;
 const int64_t kTestReceivedBytes = 0;
@@ -302,4 +307,65 @@ TEST_F(DownloadManagerMediatorTest, SetGoogleDriveAppInstalled) {
   mediator_.SetGoogleDriveAppInstalled(true);
   mediator_.UpdateConsumer();
   EXPECT_FALSE(consumer_.installDriveButtonVisible);
+}
+
+// Tests the diplay origin logic.
+TEST_F(DownloadManagerMediatorTest, DisplayOrigin) {
+  if (!base::ios::IsRunningOnOrLater(18, 2, 0)) {
+    // Origin logic is only available on iOS18.2.
+    return;
+  }
+  web_state_->SetCurrentURL(GURL(kSameDomainURL));
+  auto mediator = std::make_unique<DownloadManagerMediator>();
+  mediator->SetDownloadTask(task());
+  mediator->SetConsumer(consumer_);
+
+  // WebState and task have the same domain.
+  mediator->UpdateConsumer();
+  EXPECT_NSEQ(consumer_.originatingHost,
+              base::SysUTF8ToNSString(GURL(kSameDomainURL).host()));
+  EXPECT_FALSE(consumer_.originatingHostDisplayed);
+
+  // WebState and task have different domains.
+  web_state_->SetCurrentURL(GURL(kCrossDomainURL));
+  mediator->UpdateConsumer();
+  EXPECT_NSEQ(consumer_.originatingHost,
+              base::SysUTF8ToNSString(GURL(kSameDomainURL).host()));
+  EXPECT_TRUE(consumer_.originatingHostDisplayed);
+
+  // Navigate back, origin should still be visible.
+  web_state_->SetCurrentURL(GURL(kSameDomainURL));
+  mediator->UpdateConsumer();
+  EXPECT_NSEQ(consumer_.originatingHost,
+              base::SysUTF8ToNSString(GURL(kSameDomainURL).host()));
+  EXPECT_TRUE(consumer_.originatingHostDisplayed);
+
+  // Reset Mediator.
+  web_state_->SetCurrentURL(GURL(kSameDomainURL));
+  mediator = std::make_unique<DownloadManagerMediator>();
+  mediator->SetDownloadTask(task());
+  mediator->SetConsumer(consumer_);
+
+  // Check that the originating host is used.
+  task()->SetRedirectedURL(GURL(kCrossDomainURL2));
+  task()->SetOriginatingHost(
+      base::SysUTF8ToNSString(GURL(kCrossDomainURL).host()));
+  mediator->UpdateConsumer();
+  EXPECT_NSEQ(consumer_.originatingHost,
+              base::SysUTF8ToNSString(GURL(kCrossDomainURL).host()));
+  EXPECT_TRUE(consumer_.originatingHostDisplayed);
+
+  // Reset Mediator.
+  web_state_->SetCurrentURL(GURL(kSameDomainURL));
+  mediator = std::make_unique<DownloadManagerMediator>();
+  mediator->SetDownloadTask(task());
+  mediator->SetConsumer(consumer_);
+
+  // Check that if no URL is available, the placeholder is displayed.
+  task()->SetRedirectedURL(GURL("data:"));
+  task()->SetOriginatingHost(@"");
+  web_state_->SetCurrentURL(GURL("data:"));
+  mediator->UpdateConsumer();
+  EXPECT_NSEQ(consumer_.originatingHost, nil);
+  EXPECT_TRUE(consumer_.originatingHostDisplayed);
 }

@@ -350,7 +350,7 @@ enum class DownloadNativeTaskState {
         base::apple::ObjCCastStrict<NSHTTPURLResponse>(response).statusCode;
   }
 
-  std::move(_responseCallback).Run(http_error, response.MIMEType);
+  std::move(_responseCallback).Run(http_error, response.MIMEType, response.URL);
 }
 
 @end

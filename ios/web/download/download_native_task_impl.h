@@ -49,7 +49,9 @@ class DownloadNativeTaskImpl final : public DownloadTaskImpl {
                           double fraction_complete);
 
   // Invoked when the NSURLResponse of WKDownload is received.
-  void OnResponseReceived(int http_error_code, NSString* mime_type);
+  void OnResponseReceived(int http_error_code,
+                          NSString* mime_type,
+                          NSURL* redirected_url);
 
   DownloadNativeTaskBridge* download_bridge_ = nil;
 
