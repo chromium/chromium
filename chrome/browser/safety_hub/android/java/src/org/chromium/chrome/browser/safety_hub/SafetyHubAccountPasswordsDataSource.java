@@ -72,7 +72,6 @@ public class SafetyHubAccountPasswordsDataSource
     private int mReusedPasswordCount;
 
     SafetyHubAccountPasswordsDataSource(
-            SafetyHubModuleMediatorDelegate mediatorDelegate,
             SafetyHubModuleDelegate moduleDelegate,
             PrefService prefService,
             SafetyHubFetchService safetyHubFetchService,

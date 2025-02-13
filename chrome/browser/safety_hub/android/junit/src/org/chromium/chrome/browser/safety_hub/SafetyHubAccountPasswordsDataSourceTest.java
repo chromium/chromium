@@ -70,7 +70,6 @@ public class SafetyHubAccountPasswordsDataSourceTest {
     private SafetyHubAccountPasswordsDataSource mDataSource;
     private SafetyHubAccountPasswordsDataSourceObserverTest mObserver;
 
-    @Mock private SafetyHubModuleMediatorDelegate mMediatorDelegateMock;
     @Mock private SafetyHubModuleDelegate mModuleDelegateMock;
     @Mock private PrefService mPrefServiceMock;
     @Mock private SafetyHubFetchService mSafetyHubFetchServiceMock;
@@ -94,7 +93,6 @@ public class SafetyHubAccountPasswordsDataSourceTest {
         mObserver = new SafetyHubAccountPasswordsDataSourceObserverTest();
         mDataSource =
                 new SafetyHubAccountPasswordsDataSource(
-                        mMediatorDelegateMock,
                         mModuleDelegateMock,
                         mPrefServiceMock,
                         mSafetyHubFetchServiceMock,

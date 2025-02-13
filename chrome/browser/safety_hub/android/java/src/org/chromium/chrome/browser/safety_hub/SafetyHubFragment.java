@@ -126,7 +126,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
         SafetyHubAccountPasswordsDataSource accountPasswordsDataSource =
                 new SafetyHubAccountPasswordsDataSource(
-                        this,
                         mDelegate,
                         UserPrefs.get(getProfile()),
                         safetyHubFetchService,
