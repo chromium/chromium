@@ -91,6 +91,12 @@ ConfigurableStorageDelegate::GetDeleteExpiredRateLimitsFrequency() const {
   return delete_expired_rate_limits_frequency_;
 }
 
+base::TimeDelta
+ConfigurableStorageDelegate::GetDeleteExpiredOsRegistrationsFrequency() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return delete_expired_os_registrations_frequency_;
+}
+
 base::Uuid ConfigurableStorageDelegate::NewReportID() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return DefaultExternalReportID();
@@ -190,6 +196,12 @@ void ConfigurableStorageDelegate::set_delete_expired_rate_limits_frequency(
     base::TimeDelta frequency) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   delete_expired_rate_limits_frequency_ = frequency;
+}
+
+void ConfigurableStorageDelegate::set_delete_expired_os_registrations_frequency(
+    base::TimeDelta frequency) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delete_expired_os_registrations_frequency_ = frequency;
 }
 
 void ConfigurableStorageDelegate::set_report_delay(

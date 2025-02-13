@@ -1303,6 +1303,26 @@ TEST_F(AttributionManagerImplTest, HandleOsRegistration) {
             base::Bucket(OsRegistrationResult::kRejectedByOs, 2)));
 
     ::testing::Mock::VerifyAndClear(os_level_manager_.get());
+
+    base::RunLoop run_loop;
+    attribution_manager_->GetAllDataKeys(base::BindLambdaForTesting(
+        [&](std::set<AttributionDataModel::DataKey> data_keys) {
+          EXPECT_THAT(data_keys,
+                      UnorderedElementsAre(
+                          AttributionDataModel::DataKey(
+                              url::Origin::Create(kRegistrationUrl1)),
+                          AttributionDataModel::DataKey(
+                              url::Origin::Create(kRegistrationUrl2))));
+
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+
+    attribution_manager_->ClearData(
+        /*delete_begin=*/base::Time::Min(), /*delete_end=*/base::Time::Max(),
+        /*filter=*/base::NullCallback(),
+        /*filter_builder=*/nullptr,
+        /*delete_rate_limit_data=*/true, base::DoNothing());
   }
 }
 

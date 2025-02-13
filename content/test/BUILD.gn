@@ -2445,6 +2445,7 @@ test("content_unittests") {
     "../browser/attribution_reporting/attribution_suitable_context_unittest.cc",
     "../browser/attribution_reporting/interop/interop_unittest.cc",
     "../browser/attribution_reporting/interop/parser_unittest.cc",
+    "../browser/attribution_reporting/os_registrations_table_unittest.cc",
     "../browser/attribution_reporting/rate_limit_table_unittest.cc",
     "../browser/background_fetch/background_fetch_cross_origin_filter_unittest.cc",
     "../browser/background_fetch/background_fetch_data_manager_unittest.cc",

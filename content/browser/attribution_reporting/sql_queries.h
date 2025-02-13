@@ -334,6 +334,26 @@ inline constexpr const char kDeleteAggregatableDebugRateLimitRangeSql[] =
     "DELETE FROM aggregatable_debug_rate_limits "
     "WHERE time BETWEEN ?1 AND ?2";
 
+inline constexpr const char kDeleteExpiredOsRegistrationsSql[] =
+    "DELETE FROM os_registrations "
+    "WHERE time<=?";
+
+inline constexpr const char kSelectOsRegistrationsForDeletionSql[] =
+    "SELECT registration_origin,time "
+    "FROM os_registrations "
+    "WHERE time BETWEEN ?1 AND ?2";
+
+inline constexpr const char kDeleteOsRegistrationsRangeSql[] =
+    "DELETE FROM os_registrations "
+    "WHERE time BETWEEN ?1 AND ?2";
+
+inline constexpr const char kDeleteOsRegistrationSql[] =
+    "DELETE FROM os_registrations "
+    "WHERE registration_origin=? AND time=?";
+
+inline constexpr const char kGetOsRegistrationDataKeysSql[] =
+    "SELECT DISTINCT registration_origin FROM os_registrations";
+
 }  // namespace content::attribution_queries
 
 #endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_SQL_QUERIES_H_
