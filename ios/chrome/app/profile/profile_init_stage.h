@@ -40,7 +40,7 @@ enum class ProfileInitStage {
   // that the user must go through before proceeding to the next stage. If the
   // conditions are already handled, the transition will be instantanous.
   //
-  // It is possible to add new stage between kNormalUI and kNormalUI to add new
+  // It is possible to add new stage between kUIReady and kNormalUI to add new
   // blocking stage if a feature requires it.
 
   // This presents the first run experience. Only presented for new profile
