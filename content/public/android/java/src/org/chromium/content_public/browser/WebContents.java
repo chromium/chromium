@@ -452,14 +452,13 @@ public interface WebContents extends Parcelable {
      *
      * @param stylusWritingHandler the object that implements StylusWritingHandler interface.
      */
-    void setStylusWritingHandler(StylusWritingHandler stylusWritingHandler);
+    void setStylusWritingHandler(@Nullable StylusWritingHandler stylusWritingHandler);
 
     /**
      * @return {@link StylusWritingImeCallback} which is used to implement the IME functionality for
      *     the Stylus handwriting feature.
      */
-    @Nullable
-    StylusWritingImeCallback getStylusWritingImeCallback();
+    @Nullable StylusWritingImeCallback getStylusWritingImeCallback();
 
     /**
      * Returns {@link EventForwarder} which is used to forward input/view events to native content
@@ -522,8 +521,7 @@ public interface WebContents extends Parcelable {
      * the rectangle is meaningless. Will return null if there is no such video. Fullscreen videos
      * may take a moment to register.
      */
-    @Nullable
-    Rect getFullscreenVideoSize();
+    @Nullable Rect getFullscreenVideoSize();
 
     /**
      * Notifies the WebContents about the new persistent video status. It should be called whenever

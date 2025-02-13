@@ -867,7 +867,7 @@ public class WebContentsImpl
     }
 
     @Override
-    public void setStylusWritingHandler(StylusWritingHandler stylusWritingHandler) {
+    public void setStylusWritingHandler(@Nullable StylusWritingHandler stylusWritingHandler) {
         mStylusWritingHandler = stylusWritingHandler;
         if (mNativeWebContentsAndroid == 0) return;
         WebContentsImplJni.get()

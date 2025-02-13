@@ -19,6 +19,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
@@ -30,13 +31,14 @@ import org.chromium.build.annotations.Nullable;
  * regressions.
  */
 @JNINamespace("base::android::apk_info")
+@NullMarked
 public final class ApkInfo {
     private static final String TAG = "ApkInfo";
 
     private static boolean sInitialized;
     private static @Nullable PackageInfo sBrowserPackageInfo;
 
-    private ApplicationInfo mBrowserApplicationInfo;
+    private final ApplicationInfo mBrowserApplicationInfo;
 
     /**
      * The package name of the host app which has loaded WebView, retrieved from the application
@@ -75,7 +77,7 @@ public final class ApkInfo {
     /** Product version as stored in Android resources. */
     private final String mResourcesVersion;
 
-    private static volatile ApkInfo sInstance;
+    private static volatile @Nullable ApkInfo sInstance;
 
     private static final Object CREATION_LOCK = new Object();
 
@@ -238,15 +240,14 @@ public final class ApkInfo {
         // In the case of the SDK Runtime, we would like to retrieve the package name loading the
         // SDK.
         String appInstalledPackageName = appContextPackageName;
+        ApplicationInfo appInfo = appContext.getApplicationInfo();
 
         if (hostInformationProvided) {
-            mHostPackageName = providedHostPackageName;
-            mHostPackageLabel = providedHostPackageLabel;
-            mHostVersionCode = providedHostVersionCode;
-            mVersionName = providedPackageVersionName;
-            mPackageName = providedPackageName;
-
-            mBrowserApplicationInfo = appContext.getApplicationInfo();
+            mHostPackageName = assumeNonNull(providedHostPackageName);
+            mHostPackageLabel = assumeNonNull(providedHostPackageLabel);
+            mHostVersionCode = assumeNonNull(providedHostVersionCode);
+            mVersionName = assumeNonNull(providedPackageVersionName);
+            mPackageName = assumeNonNull(providedPackageName);
         } else {
             // The SDK Qualified package name will retrieve the same information as
             // appInstalledPackageName but prefix it with the SDK Sandbox process so that we can
@@ -272,7 +273,6 @@ public final class ApkInfo {
                 }
             }
 
-            ApplicationInfo appInfo = appContext.getApplicationInfo();
             mHostPackageName = sdkQualifiedName;
             mHostPackageLabel = nullToEmpty(pm.getApplicationLabel(appInfo));
 
@@ -282,15 +282,16 @@ public final class ApkInfo {
                 mHostVersionCode = PackageUtils.packageVersionCode(pi);
                 mPackageName = sBrowserPackageInfo.packageName;
                 mVersionName = nullToEmpty(sBrowserPackageInfo.versionName);
-                mBrowserApplicationInfo = sBrowserPackageInfo.applicationInfo;
+                appInfo = sBrowserPackageInfo.applicationInfo;
                 sBrowserPackageInfo = null;
             } else {
                 mPackageName = appContextPackageName;
                 mHostVersionCode = BuildConfig.VERSION_CODE;
                 mVersionName = VersionInfo.getProductVersion();
-                mBrowserApplicationInfo = appInfo;
             }
         }
+        assert appInfo != null;
+        mBrowserApplicationInfo = appInfo;
 
         mInstallerPackageName = nullToEmpty(pm.getInstallerPackageName(appInstalledPackageName));
 

@@ -12,8 +12,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** AndroidInfo is a utility class to access Android's Build information specific data. */
 @JNINamespace("base::android::android_info")
+@NullMarked
 public final class AndroidInfo {
     private static final String TAG = "AndroidInfo";
 
