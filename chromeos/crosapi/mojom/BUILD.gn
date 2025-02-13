@@ -12,7 +12,6 @@ mojom("mojom") {
     "audio_service.mojom",
     "authentication.mojom",
     "bitmap.mojom",
-    "cec_private.mojom",
     "cert_database.mojom",
     "cert_provisioning.mojom",
     "chaps_service.mojom",

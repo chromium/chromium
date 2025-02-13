@@ -13,7 +13,6 @@ import "chromeos/crosapi/mojom/arc.mojom";
 import "chromeos/crosapi/mojom/audio_service.mojom";
 import "chromeos/crosapi/mojom/authentication.mojom";
 import "chromeos/crosapi/mojom/guest_os_sk_forwarder.mojom";
-import "chromeos/crosapi/mojom/cec_private.mojom";
 import "chromeos/crosapi/mojom/cert_database.mojom";
 import "chromeos/crosapi/mojom/cert_provisioning.mojom";
 import "chromeos/crosapi/mojom/chaps_service.mojom";
@@ -147,10 +146,7 @@ interface Crosapi {
   [MinVersion=42] BindBrowserCdmFactory@47(
       mojo_base.mojom.GenericPendingReceiver receiver);
 
-  // CecPrivate is a service that allows setting and querying display power
-  // modes using HDMI CEC in Lacros. Implemented in Ash.
-  [MinVersion=138] BindCecPrivate@140(
-      pending_receiver<CecPrivate> receiver);
+  // BindCecPrivate@140 was removed.
 
   // Binds the CertDatabase interface for initializing certificate database in
   // client applications.

@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/crosapi/arc_ash.h"
 #include "chrome/browser/ash/crosapi/audio_service_ash.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/cec_private_ash.h"
 #include "chrome/browser/ash/crosapi/cert_database_ash.h"
 #include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
 #include "chrome/browser/ash/crosapi/chaps_service_ash.h"
@@ -163,7 +162,6 @@ Profile* GetAshProfile() {
 CrosapiAsh::CrosapiAsh()
     : arc_ash_(std::make_unique<ArcAsh>()),
       audio_service_ash_(std::make_unique<AudioServiceAsh>()),
-      cec_private_ash_(std::make_unique<CecPrivateAsh>()),
       cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
       cert_provisioning_ash_(std::make_unique<CertProvisioningAsh>()),
       chaps_service_ash_(std::make_unique<ChapsServiceAsh>()),
@@ -292,11 +290,6 @@ void CrosapiAsh::BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) {
   if (auto r = receiver.As<chromeos::cdm::mojom::BrowserCdmFactory>()) {
     chromeos::CdmFactoryDaemonProxyAsh::Create(std::move(r));
   }
-}
-
-void CrosapiAsh::BindCecPrivate(
-    mojo::PendingReceiver<mojom::CecPrivate> receiver) {
-  cec_private_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindCertDatabase(
