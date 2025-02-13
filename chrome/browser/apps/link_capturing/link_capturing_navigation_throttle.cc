@@ -10,7 +10,6 @@
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_tab_data.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"  // nogncheck https://crbug.com/1474116
@@ -18,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"  // nogncheck https://crbug.com/1474984
 #include "chrome/browser/ui/web_applications/navigation_capturing_process.h"  // nogncheck https://crbug.com/377760841
+#include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
