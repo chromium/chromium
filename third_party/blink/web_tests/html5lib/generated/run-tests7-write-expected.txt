@@ -1,27 +1,7 @@
 CONSOLE ERROR: Uncaught SyntaxError: Failed to execute 'write' on 'Document': Unexpected token '<'
 CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select>. Please add the missing </select> end tag.
 ../resources/tests7.dat:
-17
 34
-
-Test 17 of 34 in ../resources/tests7.dat failed. Input:
-<!doctype html><select><input>X
-Got:
-| <!DOCTYPE html>
-| <html>
-|   <head>
-|   <body>
-|     <select>
-|       <input>
-|       "X"
-Expected:
-| <!DOCTYPE html>
-| <html>
-|   <head>
-|   <body>
-|     <select>
-|     <input>
-|     "X"
 
 Test 34 of 34 in ../resources/tests7.dat failed. Input:
 <select><keygen>
