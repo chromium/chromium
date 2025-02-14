@@ -2480,6 +2480,7 @@ inline constexpr char kScannerEnterprisePolicyAllowed[] =
 
 // A boolean pref that records whether users can submit feedback with Scanner.
 // Intended to be managed by policy.
+// TODO: b/388450143 - Delete this now-unused pref.
 inline constexpr char kScannerFeedbackEnabled[] =
     "ash.scanner.feedback_enabled";
 

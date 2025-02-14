@@ -501,9 +501,10 @@ void ScannerController::OnActionFinished(
     PrefService* prefs =
         session_controller_->GetUserPrefServiceForUser(account_id);
 
-    // TODO: b/391961194 - Update this check to use
-    // `prefs::kScannerEnterprisePolicyAllowed` instead.
-    if (prefs && prefs->GetBoolean(prefs::kScannerFeedbackEnabled)) {
+    if (prefs &&
+        prefs->GetInteger(prefs::kScannerEnterprisePolicyAllowed) ==
+            static_cast<int>(
+                ScannerEnterprisePolicy::kAllowedWithModelImprovement)) {
       toast_data.button_type = ToastData::ButtonType::kIconButton;
       toast_data.button_text = l10n_util::GetStringUTF16(
           IDS_ASH_SCANNER_ACTION_TOAST_FEEDBACK_ICON_ACCESSIBLE_NAME);
