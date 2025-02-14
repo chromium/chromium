@@ -105,15 +105,15 @@ constexpr FieldType AttributeType::field_type() const {
       return LOYALTY_MEMBERSHIP_PROVIDER;
     case AttributeTypeName::kLoyaltyCardMemberId:
       return LOYALTY_MEMBERSHIP_ID;
-    case AttributeTypeName::kVehicleOwner:
+    case AttributeTypeName::kCarOwner:
       return VEHICLE_OWNER_TAG;
-    case AttributeTypeName::kVehicleLicensePlate:
+    case AttributeTypeName::kCarLicensePlate:
       return VEHICLE_LICENSE_PLATE;
-    case AttributeTypeName::kVehicleVin:
+    case AttributeTypeName::kCarRegistration:
       return VEHICLE_VIN;
-    case AttributeTypeName::kVehicleMake:
+    case AttributeTypeName::kCarMake:
       return VEHICLE_MAKE;
-    case AttributeTypeName::kVehicleModel:
+    case AttributeTypeName::kCarModel:
       return VEHICLE_MODEL;
     case AttributeTypeName::kDriversLicenseName:
       return DRIVERS_LICENSE_NAME_TAG;
@@ -125,6 +125,7 @@ constexpr FieldType AttributeType::field_type() const {
       return DRIVERS_LICENSE_EXPIRATION_DATE_TAG;
     case AttributeTypeName::kDriversLicenseIssueDate:
       return DRIVERS_LICENSE_ISSUE_DATE_TAG;
+      return UNKNOWN_TYPE;
   }
   NOTREACHED();
 }

@@ -23,8 +23,8 @@
     "syncable": true
   },
   {
-    "name": "Vehicle",
-    "attributes": [ "Owner", "License plate", "VIN", "Make", "Model" ],
+    "name": "Car",
+    "attributes": [ "Owner", "License plate", "Registration", "Make", "Model" ],
     "import constraints": [
       [ "Owner", "License plate" ]
     ],
