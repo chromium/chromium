@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ARC_ARC_DLC_INSTALL_NOTIFICATION_DELEGATE_IMPL_H_
-#define CHROME_BROWSER_ASH_ARC_ARC_DLC_INSTALL_NOTIFICATION_DELEGATE_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_ARC_DLC_INSTALLER_ARC_DLC_INSTALL_NOTIFICATION_DELEGATE_IMPL_H_
+#define CHROME_BROWSER_ASH_ARC_DLC_INSTALLER_ARC_DLC_INSTALL_NOTIFICATION_DELEGATE_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chromeos/ash/experiences/arc/dlc_install_notification/arc_dlc_install_notification_manager.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_notification_manager.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-// Forward declaration of Profile.
 class Profile;
 
 namespace arc {
@@ -37,4 +36,4 @@ class ArcDlcInstallNotificationManagerDelegateImpl
 
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_ASH_ARC_ARC_DLC_INSTALL_NOTIFICATION_DELEGATE_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_ARC_DLC_INSTALLER_ARC_DLC_INSTALL_NOTIFICATION_DELEGATE_IMPL_H_

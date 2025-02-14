@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_DLC_INSTALL_NOTIFICATION_ARC_DLC_INSTALL_NOTIFICATION_MANAGER_H_
-#define CHROMEOS_ASH_EXPERIENCES_ARC_DLC_INSTALL_NOTIFICATION_ARC_DLC_INSTALL_NOTIFICATION_MANAGER_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_DLC_INSTALLER_ARC_DLC_INSTALL_NOTIFICATION_MANAGER_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_DLC_INSTALLER_ARC_DLC_INSTALL_NOTIFICATION_MANAGER_H_
 
 #include <memory>
 
 #include "base/memory/raw_ref.h"
+#include "components/account_id/account_id.h"
 #include "ui/message_center/public/cpp/notification.h"
-
-// Forward declaration of AccountId
-class AccountId;
 
 namespace arc {
 
@@ -46,9 +44,9 @@ class ArcDlcInstallNotificationManager {
   std::unique_ptr<Delegate> delegate_;
 
   // Account id associated with notifications.
-  const raw_ref<const AccountId> account_id_;
+  const AccountId account_id_;
 };
 
 }  // namespace arc
 
-#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_DLC_INSTALL_NOTIFICATION_ARC_DLC_INSTALL_NOTIFICATION_MANAGER_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_DLC_INSTALLER_ARC_DLC_INSTALL_NOTIFICATION_MANAGER_H_

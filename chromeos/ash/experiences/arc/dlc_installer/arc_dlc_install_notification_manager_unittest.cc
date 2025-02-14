@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/experiences/arc/dlc_install_notification/arc_dlc_install_notification_manager.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_notification_manager.h"
 
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_dlc_install_notification_delegate.h"
 #include "components/account_id/account_id.h"
 #include "components/strings/grit/components_strings.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -15,25 +16,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace arc {
-
-namespace {
-
-class FakeArcDlcInstallNotificationDelegate
-    : public ArcDlcInstallNotificationManager::Delegate {
- public:
-  void DisplayNotification(
-      const message_center::Notification& notification) override {
-    displayed_notifications_.push_back(notification);
-  }
-
-  const std::vector<message_center::Notification>& displayed_notifications()
-      const {
-    return displayed_notifications_;
-  }
-
- private:
-  std::vector<message_center::Notification> displayed_notifications_;
-};
 
 class ArcDlcInstallNotificationManagerTest : public testing::Test {
  protected:
@@ -55,6 +37,7 @@ class ArcDlcInstallNotificationManagerTest : public testing::Test {
   }
 
   ArcDlcInstallNotificationManager* manager() { return manager_.get(); }
+
   FakeArcDlcInstallNotificationDelegate* delegate() { return delegate_; }
 
  private:
@@ -100,5 +83,4 @@ TEST_F(ArcDlcInstallNotificationManagerTest,
             l10n_util::GetStringUTF16(IDS_ARC_VM_PRELOAD_STARTED_MESSAGE));
 }
 
-}  // namespace
 }  // namespace arc

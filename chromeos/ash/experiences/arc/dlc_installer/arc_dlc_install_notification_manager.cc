@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/experiences/arc/dlc_install_notification/arc_dlc_install_notification_manager.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_notification_manager.h"
 
 #include <memory>
 #include <optional>
@@ -53,7 +53,7 @@ void ArcDlcInstallNotificationManager::Show(
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
       ash::NotificationCatalogName::kArcMigrationGuide);
-  notifier_id.profile_id = account_id_->GetUserEmail();
+  notifier_id.profile_id = account_id_.GetUserEmail();
 
   auto click_delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
@@ -71,4 +71,5 @@ void ArcDlcInstallNotificationManager::Show(
 
   delegate_->DisplayNotification(std::move(notification));
 }
+
 }  // namespace arc
