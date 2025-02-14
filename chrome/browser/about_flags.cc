@@ -10090,10 +10090,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kObservableAPIDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kObservableAPI)},
 
-    {"atomic-move", flag_descriptions::kAtomicMoveAPIName,
-     flag_descriptions::kAtomicMoveAPIDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kAtomicMoveAPI)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"android-hub-search", flag_descriptions::kAndroidHubSearchName,
      flag_descriptions::kAndroidHubSearchDescription, kOsAndroid,

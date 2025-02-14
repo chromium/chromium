@@ -507,11 +507,6 @@
     "expiry_milestone": 126
   },
   {
-    "name": "atomic-move",
-    "owners": [ "dom@chromium.org", "nrosenthal@chromium.org" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "audio-a2dp-advanced-codecs",
     "owners": ["jrwu@chromium.org", "chromeos-audio@google.com" ],
     "expiry_milestone": 130

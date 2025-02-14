@@ -2026,12 +2026,6 @@ const char kOutlineSilhouetteIconName[] = "Outline Silhouette Icon";
 const char kOutlineSilhouetteIconDescription[] =
     "Enables the improved silhouette icon for signed out profiles";
 
-const char kAtomicMoveAPIName[] = "Atomic DOM move (Node.moveBefore)";
-const char kAtomicMoveAPIDescription[] =
-    "Introduces a state-preserving atomic move primitive to the DOM, "
-    "by calling Node.moveBefore. See "
-    "https://github.com/whatwg/dom/issues/1255.";
-
 const char kCastMessageLoggingName[] = "Enables logging of all Cast messages.";
 const char kCastMessageLoggingDescription[] =
     "Enables logging of all messages exchanged between websites, Chrome, "

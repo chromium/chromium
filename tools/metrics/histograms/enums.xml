@@ -16215,7 +16215,6 @@ from previous Chrome versions.
       label="ConsolidateMetricsServiceInitialLogLogic:enabled"/>
   <int value="820650704" label="disable-ntp-popular-sites"/>
   <int value="821192723" label="show-fps-counter"/>
-  <int value="821610512" label="AtomicMoveAPI:enabled"/>
   <int value="821819319" label="NavBarColorAnimation:enabled"/>
   <int value="822352138" label="GameDashboard:enabled"/>
   <int value="823505300" label="LensOnQuickActionSearchWidget:disabled"/>
@@ -17819,7 +17818,6 @@ from previous Chrome versions.
       label="CellularBypassESimInstallationConnectivityCheck:disabled"/>
   <int value="1451160278"
       label="AutofillRequireValidLocalCardsInSettings:disabled"/>
-  <int value="1451778280" label="AtomicMoveAPI:disabled"/>
   <int value="1452411293" label="ShowFeaturedEnterpriseSiteSearch:enabled"/>
   <int value="1452546183" label="PwaPersistentNotification:enabled"/>
   <int value="1453393588" label="DiscoverFeedMultiColumn:disabled"/>

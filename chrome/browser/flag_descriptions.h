@@ -1151,9 +1151,6 @@ extern const char kObservableAPIDescription[];
 extern const char kOutlineSilhouetteIconName[];
 extern const char kOutlineSilhouetteIconDescription[];
 
-extern const char kAtomicMoveAPIName[];
-extern const char kAtomicMoveAPIDescription[];
-
 extern const char kCastMessageLoggingName[];
 extern const char kCastMessageLoggingDescription[];
 
