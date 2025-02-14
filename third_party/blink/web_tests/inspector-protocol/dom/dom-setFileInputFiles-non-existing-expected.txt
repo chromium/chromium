@@ -1,0 +1,3 @@
+Tests DOM.setFileInputFiles method with a non existing file.
+File info path: /SOME_NONE_EXISTING_FILE
+
