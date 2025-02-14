@@ -3926,6 +3926,25 @@
       }
     ]
   },
+  "LOYALTY_MEMBERSHIP_ID": {
+    "en": {
+      "AutofillEnableLoyaltyCardsFilling": [
+        {
+          "positive_pattern": "loyalty[\\s-]*num|frequent[\\s-]*flyer",
+          "positive_score": 1.1,
+          "negative_pattern": null,
+          "match_field_attributes": [
+            "LABEL",
+            "NAME"
+          ],
+          "form_control_types": [
+            "INPUT_TEXT",
+            "INPUT_SEARCH"
+          ]
+        }
+      ]
+    }
+  },
   "MERCHANT_PROMO_CODE": {
     "en": [
       {

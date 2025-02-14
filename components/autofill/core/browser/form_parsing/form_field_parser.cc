@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/form_parsing/email_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/iban_field_parser.h"
+#include "components/autofill/core/browser/form_parsing/loyalty_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/merchant_promo_code_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/name_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/phone_field_parser.h"
@@ -228,6 +229,13 @@ void FormFieldParser::ParseFormFields(
   ParseFormFieldsPass(PriceFieldParser::Parse, context, processed_fields,
                       field_candidates);
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableLoyaltyCardsFilling)) {
+    // Loyalty card pass.
+    ParseFormFieldsPass(LoyaltyFieldParser::Parse, context, processed_fields,
+                        field_candidates);
+  }
+
   // Name pass.
   ParseFormFieldsPass(NameFieldParser::Parse, context, processed_fields,
                       field_candidates);
@@ -287,6 +295,7 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
     return;
   }
 
+  // TODO(crbug.com/393118480): Include loyalty card fields.
   FieldTypeSet permitted_single_field_types{
       MERCHANT_PROMO_CODE, IBAN_VALUE,
       CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
