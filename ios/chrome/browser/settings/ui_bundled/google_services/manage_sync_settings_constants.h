@@ -43,8 +43,10 @@ extern NSString* const kPersonalizeGoogleServicesViewIdentifier;
 typedef NS_ENUM(NSInteger, SyncSettingsSectionIdentifier) {
   // Section for all the sync settings.
   SyncDataTypeSectionIdentifier = kSectionIdentifierEnumZero,
-  // Manager and sign out options.
+  // Manage and sign out options.
   ManageAndSignOutSectionIdentifier,
+  // Switch account and sign out options.
+  SwitchAccountAndSignOutSectionIdentifier,
   // Advanced settings.
   AdvancedSettingsSectionIdentifier,
   // Sync errors.
@@ -84,6 +86,9 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   ManageGoogleAccountItemType,
   // Manage accounts on this device item.
   ManageAccountsItemType,
+  // SwitchAccountAndSignOutSectionIdentifier section.
+  // Switch account item.
+  SwitchAccountItemType,
   // AdvancedSettingsSectionIdentifier section.
   // Encryption item.
   EncryptionItemType,

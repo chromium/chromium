@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_service_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_table_view_controller_model_delegate.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
@@ -262,8 +263,17 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
         [self.tableViewModel sectionIdentifierForSectionIndex:section];
     switch (sectionIdentifier) {
       case SyncDataTypeSectionIdentifier:
-      case ManageAndSignOutSectionIdentifier:
         return UITableViewAutomaticDimension;
+      case ManageAndSignOutSectionIdentifier: {
+        if (AreSeparateProfilesForManagedAccountsEnabled()) {
+          break;
+        }
+        return UITableViewAutomaticDimension;
+      }
+      case SwitchAccountAndSignOutSectionIdentifier: {
+        CHECK(AreSeparateProfilesForManagedAccountsEnabled());
+        return UITableViewAutomaticDimension;
+      }
       case AdvancedSettingsSectionIdentifier:
       case SyncErrorsSectionIdentifier:
         break;

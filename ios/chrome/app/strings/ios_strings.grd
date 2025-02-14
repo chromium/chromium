@@ -2312,6 +2312,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE_ENTERPRISE" desc="Snackbar message shown after signing out from account settings, when an enterprise policy disabled sync. [iOS only]">
         Signed out
       </message>
+      <message name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SWITCH_ACCOUNT_ITEM" desc="Title shown on the switch account button item. [iOS only]">
+        Use Another Account
+      </message>
       <message name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TITLE" desc="Title for the view in the Settings for account features management UI. [iOS only]">
         Account
       </message>
