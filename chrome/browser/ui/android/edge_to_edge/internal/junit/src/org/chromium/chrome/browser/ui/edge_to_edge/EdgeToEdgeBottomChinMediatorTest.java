@@ -33,6 +33,7 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -337,6 +338,32 @@ public class EdgeToEdgeBottomChinMediatorTest {
         assertEquals(
                 "The chin should change back to DEFAULT_SCROLL_OFF once constraint removed.",
                 BottomControlsStacker.LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                mMediator.getScrollBehavior());
+    }
+
+    @Test
+    @Features.EnableFeatures(
+            ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT + ":scrollable_when_stacking/true")
+    public void testUpdateSafeAreaConstraint_ScrollableWhenStacking_autoPage() {
+        mMediator.onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
+        mMediator.onSafeAreaConstraintChanged(true);
+        assertEquals(
+                "The chin should NEVER_SCROLL_OFF when safe area constraint presents while"
+                        + " on non-opt-in page.",
+                BottomControlsStacker.LayerScrollBehavior.NEVER_SCROLL_OFF,
+                mMediator.getScrollBehavior());
+    }
+
+    @Test
+    @Features.EnableFeatures(
+            ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT + ":scrollable_when_stacking/true")
+    public void testUpdateSafeAreaConstraint_ScrollableWhenStacking_optInPage() {
+        mMediator.onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ true);
+        mMediator.onSafeAreaConstraintChanged(true);
+        assertEquals(
+                "The chin should DEFAULT_SCROLL_OFF when safe area constraint presents"
+                        + " while on opt-in page.",
+                LayerScrollBehavior.DEFAULT_SCROLL_OFF,
                 mMediator.getScrollBehavior());
     }
 
