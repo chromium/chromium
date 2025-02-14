@@ -360,6 +360,11 @@ class CONTENT_EXPORT StoragePartitionImpl
           listener) override;
   void OnWebSocketConnectedToPrivateNetwork(
       network::mojom::IPAddressSpace ip_address_space) override;
+  void OnUrlLoaderConnectedToPrivateNetwork(
+      const GURL& request_url,
+      network::mojom::IPAddressSpace response_address_space,
+      network::mojom::IPAddressSpace client_address_space,
+      network::mojom::IPAddressSpace target_address_space) override;
   void OnAuthRequired(
       const std::optional<base::UnguessableToken>& window_id,
       int32_t request_id,

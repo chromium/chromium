@@ -277,4 +277,10 @@ void BruschettaNetworkContext::Clone(
 void BruschettaNetworkContext::OnWebSocketConnectedToPrivateNetwork(
     network::mojom::IPAddressSpace ip_address_space) {}
 
+void BruschettaNetworkContext::OnUrlLoaderConnectedToPrivateNetwork(
+    const GURL& request_url,
+    network::mojom::IPAddressSpace response_address_space,
+    network::mojom::IPAddressSpace client_address_space,
+    network::mojom::IPAddressSpace target_address_space) {}
+
 }  // namespace bruschetta

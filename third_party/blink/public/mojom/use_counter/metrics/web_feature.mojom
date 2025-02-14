@@ -4702,6 +4702,7 @@ enum WebFeature {
   kCSSEnvironmentVariable_SafeAreaMaxInsetBottom = 5316,
   kV8AILanguageModel_ExpectedInputLanguages_AttributeGetter = 5317,
   kV8AnimationTrigger_Constructor= 5318,
+  kPrivateNetworkAccessInsecureResourceNotKnownPrivate = 5319,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

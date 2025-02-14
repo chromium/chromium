@@ -86,6 +86,11 @@ class UrlLoaderNetworkServiceObserver
           listener) override;
   void OnWebSocketConnectedToPrivateNetwork(
       network::mojom::IPAddressSpace ip_address_space) override;
+  void OnUrlLoaderConnectedToPrivateNetwork(
+      const GURL& request_url,
+      network::mojom::IPAddressSpace response_address_space,
+      network::mojom::IPAddressSpace client_address_space,
+      network::mojom::IPAddressSpace target_address_space) override;
 
   void OnCertificatesSelected(
       mojo::PendingRemote<network::mojom::ClientCertificateResponder>
