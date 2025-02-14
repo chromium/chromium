@@ -51,8 +51,7 @@ class OAuthHostStarter : public HostStarterBase {
 
   // HostStarterBase implementation.
   void RetrieveApiAccessToken() override;
-  void RegisterNewHost(const std::string& public_key,
-                       std::optional<std::string> access_token) override;
+  void RegisterNewHost(std::optional<std::string> access_token) override;
   void RemoveOldHostFromDirectory(base::OnceClosure on_host_removed) override;
   void ApplyConfigValues(base::Value::Dict& config) override;
 
@@ -117,21 +116,19 @@ void OAuthHostStarter::OnUserTokensRetrieved(const std::string& user_email,
 
   // We don't need a `refresh_token` for the user so ignore it even if the
   // authorization_code was created with the offline param.
-  RegisterNewHost(key_pair().GetPublicKey(), access_token);
+  RegisterNewHost(access_token);
 }
 
 void OAuthHostStarter::RegisterNewHost(
-    const std::string& public_key,
     std::optional<std::string> access_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(access_token.has_value());
   DCHECK(!access_token->empty());
-  DCHECK(!public_key.empty());
 
   token_getter_.set_access_token(*access_token);
 
   directory_service_client_.RegisterHost(
-      params().id, params().name, public_key,
+      params().id, params().name, key_pair().GetPublicKey(),
       google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING_HOST),
       base::BindOnce(&OAuthHostStarter::OnRegisterHostResponse,
                      weak_ptr_factory_.GetWeakPtr()));

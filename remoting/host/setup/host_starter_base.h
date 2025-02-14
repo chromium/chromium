@@ -63,8 +63,7 @@ class HostStarterBase : public HostStarter {
   // comment. They are listed in the order in which they are called.
   void OnExistingConfigLoaded(std::optional<base::Value::Dict> config);
   virtual void RetrieveApiAccessToken();
-  virtual void RegisterNewHost(const std::string& public_key,
-                               std::optional<std::string> access_token) = 0;
+  virtual void RegisterNewHost(std::optional<std::string> access_token) = 0;
   void OnNewHostRegistered(const std::string& directory_id,
                            const std::string& owner_account_email,
                            const std::string& service_account_email,

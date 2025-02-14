@@ -47,8 +47,7 @@ class CloudHostStarter : public HostStarterBase {
 
   // HostStarterBase implementation.
   void RetrieveApiAccessToken() override;
-  void RegisterNewHost(const std::string& public_key,
-                       std::optional<std::string> access_token) override;
+  void RegisterNewHost(std::optional<std::string> access_token) override;
   void RemoveOldHostFromDirectory(base::OnceClosure on_host_removed) override;
   void ApplyConfigValues(base::Value::Dict& config) override;
 
@@ -90,7 +89,7 @@ void CloudHostStarter::RetrieveApiAccessToken() {
         base::BindOnce(&CloudHostStarter::OnApiAccessTokenRetrieved,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
-    RegisterNewHost(key_pair().GetPublicKey(), /*access_token=*/std::nullopt);
+    RegisterNewHost(/*access_token=*/std::nullopt);
   }
 }
 
@@ -115,14 +114,12 @@ void CloudHostStarter::OnApiAccessTokenRetrieved(const HttpStatus& status) {
     return;
   }
 
-  RegisterNewHost(key_pair().GetPublicKey(), *access_token);
+  RegisterNewHost(*access_token);
 }
 
 void CloudHostStarter::RegisterNewHost(
-    const std::string& public_key,
     std::optional<std::string> access_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!public_key.empty());
 
   if (access_token.has_value() && !access_token->empty()) {
     CHECK(params().api_key.empty());
@@ -139,7 +136,8 @@ void CloudHostStarter::RegisterNewHost(
   }
 
   cloud_service_client_->ProvisionGceInstance(
-      params().owner_email, params().name, public_key, existing_host_id(),
+      params().owner_email, params().name, key_pair().GetPublicKey(),
+      existing_host_id(),
       base::BindOnce(&CloudHostStarter::OnProvisionGceInstanceResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }

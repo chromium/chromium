@@ -148,8 +148,7 @@ class TestHostStarter : public HostStarterBase {
 
   // HostStarterBase implementation.
   void RetrieveApiAccessToken() override;
-  void RegisterNewHost(const std::string& public_key,
-                       std::optional<std::string> access_token) override;
+  void RegisterNewHost(std::optional<std::string> access_token) override;
   void RemoveOldHostFromDirectory(base::OnceClosure on_removed) override;
   void ApplyConfigValues(base::Value::Dict& config) override;
   void ReportError(const std::string& error_message,
@@ -195,14 +194,13 @@ TestHostStarter::~TestHostStarter() = default;
 
 void TestHostStarter::RetrieveApiAccessToken() {
   if (!api_access_token_.empty()) {
-    RegisterNewHost(key_pair().GetPublicKey(), api_access_token_);
+    RegisterNewHost(api_access_token_);
   } else {
     HostStarterBase::RetrieveApiAccessToken();
   }
 }
 
-void TestHostStarter::RegisterNewHost(const std::string& public_key,
-                                      std::optional<std::string> access_token) {
+void TestHostStarter::RegisterNewHost(std::optional<std::string> access_token) {
   // Set up the TestUrlLoaderFactory so it will provide service account
   // responses rather than user account responses.
   std::move(configure_gaia_for_service_account_).Run();

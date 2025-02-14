@@ -83,7 +83,7 @@ void HostStarterBase::RetrieveApiAccessToken() {
   // Subclasses which require an access token for their specific provisioning
   // RPC should override this method and call RegisterNewHost() on completion or
   // ReportError() if an access token cannot be retrieved.
-  RegisterNewHost(key_pair_->GetPublicKey(), /*access_token=*/std::nullopt);
+  RegisterNewHost(/*access_token=*/std::nullopt);
 }
 
 void HostStarterBase::OnNewHostRegistered(
