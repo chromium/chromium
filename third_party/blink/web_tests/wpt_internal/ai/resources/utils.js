@@ -111,8 +111,8 @@ const testPromptAPI = async () => {
 // on the first download. The test cases shall always
 // call this function to create the summarizer.
 const createSummarizerMaybeDownload = async (options) => {
-  const capabilities = await ai.summarizer.capabilities();
-  if (capabilities.available == "after-download") {
+  const availability = await ai.summarizer.availability();
+  if (availability === "downloadable" || availability === "downloading") {
     isDownloadProgressEventTriggered = false;
     options.monitor = (m) => {
       m.addEventListener("downloadprogress", e => {

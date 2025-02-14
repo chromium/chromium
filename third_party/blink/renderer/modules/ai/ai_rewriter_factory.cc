@@ -141,17 +141,17 @@ void AIRewriterFactory::Trace(Visitor* visitor) const {
   visitor->Trace(ai_);
 }
 
-ScriptPromise<V8AICapabilityAvailability> AIRewriterFactory::availability(
+ScriptPromise<V8AIAvailability> AIRewriterFactory::availability(
     ScriptState* script_state,
     AIRewriterCreateCoreOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<V8AICapabilityAvailability>();
+    return ScriptPromise<V8AIAvailability>();
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<V8AICapabilityAvailability>>(
+      MakeGarbageCollected<ScriptPromiseResolver<V8AIAvailability>>(
           script_state);
   auto promise = resolver->Promise();
   if (!ai_->GetAIRemote().is_connected()) {
@@ -170,15 +170,13 @@ ScriptPromise<V8AICapabilityAvailability> AIRewriterFactory::availability(
           mojom::blink::AILanguageCode::New(
               options->getOutputLanguageOr(g_empty_string))),
       WTF::BindOnce(
-          [](ScriptPromiseResolver<V8AICapabilityAvailability>* resolver,
+          [](ScriptPromiseResolver<V8AIAvailability>* resolver,
              AIRewriterFactory* factory,
              mojom::blink::ModelAvailabilityCheckResult result) {
-            AICapabilityAvailability availability =
-                AIAvailabilityToAICapabilityAvailability(
-                    HandleModelAvailabilityCheckResult(
-                        factory->GetExecutionContext(),
-                        AIMetrics::AISessionType::kRewriter, result));
-            resolver->Resolve(AICapabilityAvailabilityToV8(availability));
+            AIAvailability availability = HandleModelAvailabilityCheckResult(
+                factory->GetExecutionContext(),
+                AIMetrics::AISessionType::kRewriter, result);
+            resolver->Resolve(AIAvailabilityToV8(availability));
           },
           WrapPersistent(resolver), WrapWeakPersistent(this)));
   return promise;

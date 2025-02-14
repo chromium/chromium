@@ -19,7 +19,7 @@ promise_test(async () => {
     format: "plain-text",
     length: "medium",
   });
-  assert_not_equals(availability, "no");
+  assert_not_equals(availability, "unavailable");
 }, 'AISummarizerFactory.availability is available');
 
 promise_test(async () => {
@@ -31,7 +31,7 @@ promise_test(async () => {
     expectedContextLanguages: ["en"],
     outputLanguage: "en",
   });
-  assert_not_equals(availability, "no");
+  assert_not_equals(availability, "unavailable");
 }, 'AISummarizerFactory.availability is available for supported languages');
 
 promise_test(async () => {
@@ -43,7 +43,7 @@ promise_test(async () => {
     expectedContextLanguages: ["en"],
     outputLanguage: "es", // not supported
   });
-  assert_equals(availability, "no");
+  assert_equals(availability, "unavailable");
 }, 'AISummarizerFactory.availability returns no for unsupported languages');
 
 promise_test(async () => {
