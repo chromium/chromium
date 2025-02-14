@@ -169,7 +169,8 @@ class PLATFORM_EXPORT AudioDestination final
                          size_t frames_to_render,
                          base::TimeDelta delay,
                          base::TimeTicks delay_timestamp,
-                         const media::AudioGlitchInfo& glitch_info);
+                         const media::AudioGlitchInfo& glitch_info,
+                         base::TimeTicks request_timestamp);
 
   // Returns true if it was able to provide audio, false otherwise (this would
   // happen if and only if rendering is stopping or stopped.
@@ -178,6 +179,7 @@ class PLATFORM_EXPORT AudioDestination final
                      base::TimeDelta delay,
                      base::TimeTicks delay_timestamp,
                      const media::AudioGlitchInfo& glitch_info,
+                     base::TimeTicks request_timestamp,
                      bool has_fifo_underrun_occurred = false);
 
   // Provide input to the resampler (if used).

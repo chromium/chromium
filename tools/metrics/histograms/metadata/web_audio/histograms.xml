@@ -264,6 +264,49 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="WebAudio.AudioDestination.{ModeTag}.RenderTimeRatio{LatencyTag}"
+    units="ms" expires_after="2025-08-03">
+  <owner>mjwilson@chromium.org</owner>
+  <owner>hongchan@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
+  <summary>
+    The percentage of time spent in AudioDestination::Render relative to the
+    expected callback interval.
+  </summary>
+  <token key="ModeTag" variants="RenderMode"/>
+  <token key="LatencyTag" variants="WebAudioLatencyTag"/>
+</histogram>
+
+<histogram
+    name="WebAudio.AudioDestination.{ModeTag}.RequestRenderGapTimeRatio{LatencyTag}"
+    units="ms" expires_after="2025-08-03">
+  <owner>mjwilson@chromium.org</owner>
+  <owner>hongchan@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
+  <summary>
+    The percentage of time elapsed between a request to
+    AudioDestination::RequestRender and its actual start, relative to the
+    expected callback interval.
+  </summary>
+  <token key="ModeTag" variants="RenderMode"/>
+  <token key="LatencyTag" variants="WebAudioLatencyTag"/>
+</histogram>
+
+<histogram
+    name="WebAudio.AudioDestination.{ModeTag}.RequestRenderTimeRatio{LatencyTag}"
+    units="ms" expires_after="2025-08-03">
+  <owner>mjwilson@chromium.org</owner>
+  <owner>hongchan@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
+  <summary>
+    The percentage of time spent in AudioDestination::RequestRender relative to
+    the expected callback interval.
+  </summary>
+  <token key="ModeTag" variants="RenderMode"/>
+  <token key="LatencyTag" variants="WebAudioLatencyTag"/>
+</histogram>
+
+<histogram
     name="WebAudio.AudioDestination.{ModeTag}.TotalPlayoutDelay{LatencyTag}"
     units="ms" expires_after="2025-08-03">
   <owner>mjwilson@chromium.org</owner>
