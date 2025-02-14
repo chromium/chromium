@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PREDICTORS_LCP_CRITICAL_PATH_PREDICTOR_PREWARM_HTTP_DISK_CACHE_MANAGER_H_
 
 #include <queue>
-#include <tuple>
 
 #include "base/containers/lru_cache.h"
 #include "base/memory/weak_ptr.h"
@@ -45,18 +44,31 @@ class PrewarmHttpDiskCacheManager
       const GURL& top_frame_main_resource_url,
       const std::vector<GURL>& top_frame_subresource_urls);
 
-  using PrewarmJob = std::tuple<std::optional<url::Origin>,
-                                url::Origin,
-                                GURL,
-                                net::IsolationInfo::RequestType>;
+  struct PrewarmJob {
+    PrewarmJob();
+    PrewarmJob(std::optional<url::Origin> initiator_origin,
+               url::Origin top_frame_origin,
+               GURL url,
+               net::IsolationInfo::RequestType request_type);
+    PrewarmJob(PrewarmJob&&);
+    PrewarmJob& operator=(PrewarmJob&&);
+    PrewarmJob(const PrewarmJob&);
+    PrewarmJob& operator=(const PrewarmJob&);
+    ~PrewarmJob();
+
+    bool operator==(const PrewarmJob& other) const;
+    auto operator<=>(const PrewarmJob& other) const;
+
+    std::optional<url::Origin> initiator_origin;
+    url::Origin top_frame_origin;
+    GURL url;
+    net::IsolationInfo::RequestType request_type;
+  };
 
  private:
   friend class PrewarmHttpDiskCacheManagerTest;
 
-  void MaybeAddPrewarmJob(const std::optional<url::Origin>& initiator_origin,
-                          const url::Origin& top_frame_origin,
-                          const GURL& url,
-                          net::IsolationInfo::RequestType request_type);
+  void MaybeAddPrewarmJob(const PrewarmJob& prewarm_job);
   void MaybeProcessNextQueuedJob();
   void PrewarmHttpDiskCache(GURL url);
 
