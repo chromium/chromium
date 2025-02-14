@@ -710,7 +710,7 @@ scoped_refptr<DecoderBuffer> Mp4MuxerDelegate::ConvertNALUData(
         video_codec_, add_parameter_sets_in_bitstream_);
   }
 
-  return h26x_converter_->Convert(encoded_data->AsSpan());
+  return h26x_converter_->Convert(*encoded_data);
 }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) ||
         // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)

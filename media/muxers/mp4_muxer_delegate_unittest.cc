@@ -1631,7 +1631,7 @@ TEST_P(Mp4MuxerDelegateTest, VideoFrameResolutionChanged) {
   base::TimeTicks base_time_ticks = base::TimeTicks::Now();
 
   // Add the first `240x240` frame.
-  auto stream_buffer_1 = converter.Convert(video_stream_1->AsSpan());
+  auto stream_buffer_1 = converter.Convert(*video_stream_1);
   media::Muxer::VideoParameters params_1(gfx::Size(240, 240), 30,
                                          VideoCodec::kH264, gfx::ColorSpace());
   video_stream_1->set_is_key_frame(true);
@@ -1639,7 +1639,7 @@ TEST_P(Mp4MuxerDelegateTest, VideoFrameResolutionChanged) {
                          converter.GetCodecDescription(), base_time_ticks);
 
   // Add the second `320x192` frame.
-  auto stream_buffer_2 = converter.Convert(video_stream_2->AsSpan());
+  auto stream_buffer_2 = converter.Convert(*video_stream_2);
   media::Muxer::VideoParameters params_2(gfx::Size(320, 192), 30,
                                          VideoCodec::kH264, gfx::ColorSpace());
   video_stream_2->set_is_key_frame(true);

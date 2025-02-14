@@ -149,14 +149,14 @@ class MuxerTimestampAdapterTest : public MuxerTimestampAdapterTestBase,
                                   public ::testing::Test {};
 
 MATCHER_P(MatchBufferData, data, "decoderbuffer data matcher") {
-  return arg.data->AsSpan() == base::as_byte_span(data);
+  return (*arg.data) == base::as_byte_span(data);
 }
 
 MATCHER_P2(MatchBufferDataAndAlphaData,
            data,
            alpha_data,
            "decoderbuffer data matcher") {
-  return arg.data->AsSpan() == base::as_byte_span(data) &&
+  return (*arg.data) == base::as_byte_span(data) &&
          arg.data->WritableSideData().alpha_data ==
              base::as_byte_span(alpha_data);
 }
