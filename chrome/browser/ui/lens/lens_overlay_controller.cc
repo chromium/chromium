@@ -2277,20 +2277,17 @@ void LensOverlayController::InitializeOverlayUI(
   // data to the overlay web UI in a single message.
   page_->ThemeReceived(CreateTheme(init_data.color_palette_));
 
-  contextual_searchbox_shown_in_session_ =
-      !init_data.page_content_bytes_.empty();
-  if (contextual_searchbox_shown_in_session_) {
-    contextual_searchbox_focused_in_session_ = false;
+  bool should_show_csb = !init_data.page_content_bytes_.empty();
+  if (should_show_csb) {
     // Reset metric booleans in case they were set to true previously and the
     // overlay was reopened.
-    contextual_zps_shown_in_session_ = false;
-    contextual_zps_used_in_session_ = false;
-    contextual_query_issued_in_session_ = false;
+    csb_session_end_metrics_ = lens::ContextualSearchboxSessionEndMetrics();
+    csb_session_end_metrics_.searchbox_shown_ = true;
   }
   initial_page_content_type_ = init_data.page_content_type_;
   initial_document_type_ =
       StringMimeTypeToDocumentType(tab_->GetContents()->GetContentsMimeType());
-  page_->ShouldShowContextualSearchBox(contextual_searchbox_shown_in_session_);
+  page_->ShouldShowContextualSearchBox(should_show_csb);
 
   // Send the initial document type to the overlay web UI.
   NotifyPageContentUpdated();
@@ -2540,7 +2537,7 @@ void LensOverlayController::OnFocusChanged(bool focused) {
   }
 
   if (IsContextualSearchbox()) {
-    if (!contextual_searchbox_focused_in_session_) {
+    if (!csb_session_end_metrics_.searchbox_focused_) {
       // This is the first time the searchbox is focused in this session.
       // Record the time between the overlay being invoked and the searchbox
       // being focused.
@@ -2550,7 +2547,7 @@ void LensOverlayController::OnFocusChanged(bool focused) {
     } else {
       RecordContextualSearchboxTimeToFocusAfterNavigation();
     }
-    contextual_searchbox_focused_in_session_ = true;
+    csb_session_end_metrics_.searchbox_focused_ = true;
 
     // If the searchbox becomes focused, showing intent to issue a new query,
     // upload the new page content for contextualization.
@@ -2591,8 +2588,14 @@ void LensOverlayController::ShowGhostLoaderErrorState() {
 }
 
 void LensOverlayController::OnZeroSuggestShown() {
-  if (IsContextualSearchbox()) {
-    contextual_zps_shown_in_session_ = true;
+  if (!IsContextualSearchbox()) {
+    return;
+  }
+
+  if (state() == State::kOverlay) {
+    csb_session_end_metrics_.zps_shown_on_initial_query_ = true;
+  } else {
+    csb_session_end_metrics_.zps_shown_on_follow_up_query_ = true;
   }
 }
 
@@ -3031,6 +3034,10 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion,
     std::map<std::string, std::string> additional_query_params) {
+  // If the overlay is closing or is off, do not attempt to issue the query.
+  if (IsOverlayClosing() || state() == State::kOff) {
+    return;
+  }
   initialization_data_->additional_search_query_params_ =
       additional_query_params;
 
@@ -3052,9 +3059,24 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
     lens_overlay_query_controller_->SendContextualTextQuery(
         search_box_text, lens_selection_type_,
         initialization_data_->additional_search_query_params_);
-    contextual_zps_used_in_session_ =
-        contextual_zps_used_in_session_ || is_zero_prefix_suggestion;
-    contextual_query_issued_in_session_ = true;
+    csb_session_end_metrics_.zps_used_ =
+        csb_session_end_metrics_.zps_used_ || is_zero_prefix_suggestion;
+    csb_session_end_metrics_.query_issued_ = true;
+    if (state() == State::kLivePageAndResults) {
+      csb_session_end_metrics_.follow_up_query_issued_ = true;
+    }
+    if (state() == State::kOverlay &&
+        !csb_session_end_metrics_.zps_shown_on_initial_query_) {
+      // If the query was made in the initial state, and the ZPS has not been
+      // shown, mark the query as issued before ZPS shown.
+      csb_session_end_metrics_.initial_query_issued_before_zps_shown_ = true;
+    } else if (state() == State::kLivePageAndResults &&
+               !csb_session_end_metrics_.zps_shown_on_follow_up_query_) {
+      // If a follow up query was made, and the ZPS has not been
+      // shown for the follow up query, mark the query as issued before ZPS
+      // shown.
+      csb_session_end_metrics_.follow_up_query_issued_before_zps_shown_ = true;
+    }
   } else if (initialization_data_->selected_region_.is_null()) {
     lens_overlay_query_controller_->SendTextOnlyQuery(
         search_box_text, lens_selection_type_,
@@ -3091,6 +3113,10 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
 
   results_side_panel_coordinator_->RegisterEntryAndShow();
   MaybeLaunchSurvey();
+
+  // After the searchbox request is sent, mark the follow up zps as not shown so
+  // it is false for the next follow up query.
+  csb_session_end_metrics_.zps_shown_on_follow_up_query_ = false;
 }
 
 void LensOverlayController::HandleStartQueryResponse(
@@ -3230,10 +3256,7 @@ void LensOverlayController::RecordEndOfSessionMetrics(
   // UMA and UKM end of session metrics for the CSB. Only recorded if CSB is
   // shown in session.
   lens::RecordContextualSearchboxSessionEndMetrics(
-      source_id, contextual_searchbox_shown_in_session_,
-      contextual_searchbox_focused_in_session_,
-      contextual_zps_shown_in_session_, contextual_zps_used_in_session_,
-      contextual_query_issued_in_session_, initial_page_content_type_,
+      source_id, csb_session_end_metrics_, initial_page_content_type_,
       initial_document_type_);
 }
 

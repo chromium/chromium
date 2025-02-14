@@ -6531,6 +6531,161 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       RecordQueryIssuesBeforeZpsShownInSessionHistograms) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  WaitForPaint(kDocumentWithNonAsciiCharacters);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Show ZPS and issue a query.
+  controller->OnZeroSuggestShownForTesting();
+  controller->IssueSearchBoxRequestForTesting(
+      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      std::map<std::string, std::string>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kLivePageAndResults; }));
+
+  // Close the overlay.
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+
+  // Verify the initial histogram was recorded.
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.InitialQuery."
+      "QueryIssuedInSessionBeforeSuggestShown",
+      false,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.InitialQuery.ByPageContentType.PlainText."
+      "QueryIssuedInSessionBeforeSuggestShown",
+      false,
+      /*expected_count=*/1);
+
+  // Verify the follow up histogram was not recorded.
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSuggest.FollowUpQuery."
+      "QueryIssuedInSessionBeforeSuggestShown",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSuggest.FollowUpQuery.ByPageContentType."
+      "PlainText.QueryIssuedInSessionBeforeSuggestShown",
+      /*expected_count=*/0);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Issue a search query before ZPS is shown.
+  controller->IssueSearchBoxRequestForTesting(
+      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      std::map<std::string, std::string>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kLivePageAndResults; }));
+
+  // Issue a follow up after ZPS is shown.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  int follow_up_query_issued_count =
+      fake_controller->is_side_panel_loading_set_to_true_;
+
+  controller->OnZeroSuggestShownForTesting();
+  controller->IssueSearchBoxRequestForTesting(
+      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      std::map<std::string, std::string>());
+
+  // Run until the follow up query is issued.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return fake_controller->is_side_panel_loading_set_to_true_ ==
+           follow_up_query_issued_count + 1;
+  }));
+
+  // Close the overlay.
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+
+  // Verify the initial histogram was recorded.
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.InitialQuery."
+      "QueryIssuedInSessionBeforeSuggestShown",
+      true,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.InitialQuery.ByPageContentType.PlainText."
+      "QueryIssuedInSessionBeforeSuggestShown",
+      true,
+      /*expected_count=*/1);
+
+  // Verify the follow up histogram was recorded.
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.FollowUpQuery."
+      "QueryIssuedInSessionBeforeSuggestShown",
+      false,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.FollowUpQuery.ByPageContentType."
+      "PlainText.QueryIssuedInSessionBeforeSuggestShown",
+      false,
+      /*expected_count=*/1);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Issue a search query.
+  controller->IssueSearchBoxRequestForTesting(
+      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      std::map<std::string, std::string>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kLivePageAndResults; }));
+
+  // Issue a follow up before ZPS is shown.
+  follow_up_query_issued_count =
+      fake_controller->is_side_panel_loading_set_to_true_;
+  controller->IssueSearchBoxRequestForTesting(
+      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      std::map<std::string, std::string>());
+
+  // Run until the follow up query is issued.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return fake_controller->is_side_panel_loading_set_to_true_ ==
+           follow_up_query_issued_count + 1;
+  }));
+
+  // Close the overlay.
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+
+  // Verify the follow up histogram was recorded.
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.FollowUpQuery."
+      "QueryIssuedInSessionBeforeSuggestShown",
+      true,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.FollowUpQuery.ByPageContentType."
+      "PlainText.QueryIssuedInSessionBeforeSuggestShown",
+      true,
+      /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        ContextualQueryInBackStackRequest) {
   WaitForPaint(kDocumentWithNonAsciiCharacters);
 

@@ -140,11 +140,7 @@ void RecordSessionDuration(LensOverlayInvocationSource invocation_source,
 
 void RecordContextualSearchboxSessionEndMetrics(
     ukm::SourceId source_id,
-    bool contextual_searchbox_shown_in_session,
-    bool contextual_searchbox_focused_in_session,
-    bool contextual_zps_shown_in_session,
-    bool contextual_zps_used_in_session,
-    bool contextual_query_issued_in_session,
+    ContextualSearchboxSessionEndMetrics session_end_metrics,
     lens::MimeType page_content_type,
     lens::MimeType document_content_type) {
   // Only record if the contextual search box feature is enabled.
@@ -154,78 +150,119 @@ void RecordContextualSearchboxSessionEndMetrics(
 
   // UMA contextual searchbox shown in session.
   base::UmaHistogramBoolean("Lens.Overlay.ContextualSearchBox.ShownInSession",
-                            contextual_searchbox_shown_in_session);
+                            session_end_metrics.searchbox_shown_);
 
   // UMA contextual searchbox shown in session sliced by page content type.
   const auto sliced_page_content_invoked_histogram_name =
       "Lens.Overlay.ContextualSearchBox.ByPageContentType." +
       MimeTypeToMetricString(page_content_type) + ".ShownInSession";
   base::UmaHistogramBoolean(sliced_page_content_invoked_histogram_name,
-                            contextual_searchbox_shown_in_session);
+                            session_end_metrics.searchbox_shown_);
 
   // UMA contextual searchbox shown in session sliced by document type.
   const auto sliced_document_invoked_histogram_name =
       "Lens.Overlay.ContextualSearchBox.ByDocumentType." +
       MimeTypeToMetricString(document_content_type) + ".ShownInSession";
   base::UmaHistogramBoolean(sliced_document_invoked_histogram_name,
-                            contextual_searchbox_shown_in_session);
+                            session_end_metrics.searchbox_shown_);
 
   // Record UKM for contextual search box shown in session.
   if (source_id != ukm::kInvalidSourceId) {
     ukm::builders::Lens_Overlay_ContextualSearchBox_ShownInSession event(
         source_id);
-    event.SetWasShown(contextual_searchbox_shown_in_session)
+    event.SetWasShown(session_end_metrics.searchbox_shown_)
         .SetPageContentType(static_cast<int64_t>(page_content_type))
         .Record(ukm::UkmRecorder::Get());
   }
 
   // Don't record the rest of the contextual searchbox metrics if it was not
   // shown in the session.
-  if (!contextual_searchbox_shown_in_session) {
+  if (!session_end_metrics.searchbox_shown_) {
     return;
   }
 
   // UMA contextual searchbox focused in session.
   base::UmaHistogramBoolean("Lens.Overlay.ContextualSearchBox.FocusedInSession",
-                            contextual_searchbox_focused_in_session);
+                            session_end_metrics.searchbox_focused_);
   // UMA contextual searchbox focused in session sliced by document type.
   const auto sliced_focused_histogram_name =
       "Lens.Overlay.ContextualSearchBox.ByPageContentType." +
       MimeTypeToMetricString(page_content_type) + ".FocusedInSession";
   base::UmaHistogramBoolean(sliced_focused_histogram_name,
-                            contextual_searchbox_focused_in_session);
+                            session_end_metrics.searchbox_focused_);
 
+  bool zps_shown_in_session =
+      session_end_metrics.zps_shown_on_initial_query_ ||
+      session_end_metrics.zps_shown_on_follow_up_query_;
   // UMA contextual zps shown in session.
   base::UmaHistogramBoolean("Lens.Overlay.ContextualSuggest.ZPS.ShownInSession",
-                            contextual_zps_shown_in_session);
+                            zps_shown_in_session);
   // UMA contextual zps shown in session sliced by document type.
   const auto sliced_contextual_zps_histogram_name =
       "Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType." +
       MimeTypeToMetricString(page_content_type) + ".ShownInSession";
   base::UmaHistogramBoolean(sliced_contextual_zps_histogram_name,
-                            contextual_zps_shown_in_session);
+                            zps_shown_in_session);
 
   // UMA contextual zps used in session.
   base::UmaHistogramBoolean(
       "Lens.Overlay.ContextualSuggest.ZPS.SuggestionUsedInSession",
-      contextual_zps_used_in_session);
+      session_end_metrics.zps_used_);
   // UMA contextual zps used in session sliced by document type.
   const auto sliced_contextual_zps_used_histogram_name =
       "Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType." +
       MimeTypeToMetricString(page_content_type) + ".SuggestionUsedInSession";
   base::UmaHistogramBoolean(sliced_contextual_zps_used_histogram_name,
-                            contextual_zps_used_in_session);
+                            session_end_metrics.zps_used_);
 
   // UMA contextual query issued in session.
   base::UmaHistogramBoolean(
       "Lens.Overlay.ContextualSuggest.QueryIssuedInSession",
-      contextual_query_issued_in_session);
+      session_end_metrics.query_issued_);
   // UMA contextual query issued in session sliced by document type.
   const auto sliced_contextual_query_issued_histogram_name =
       "Lens.Overlay.ContextualSuggest.ByPageContentType." +
       MimeTypeToMetricString(page_content_type) + ".QueryIssuedInSession";
   base::UmaHistogramBoolean(sliced_contextual_query_issued_histogram_name,
-                            contextual_query_issued_in_session);
+                            session_end_metrics.query_issued_);
+
+  // Only record the contextual query issued before zps shown metrics if a
+  // contextual query was issued in the session.
+  if (session_end_metrics.query_issued_) {
+    // UMA initial contextual query issued before zps shown in session.
+    base::UmaHistogramBoolean(
+        "Lens.Overlay.ContextualSuggest.InitialQuery."
+        "QueryIssuedInSessionBeforeSuggestShown",
+        session_end_metrics.initial_query_issued_before_zps_shown_);
+    // UMA initial contextual query issued before zps shown in session sliced by
+    // page content type.
+    const auto
+        sliced_contextual_query_issued_before_zps_shown_initial_histogram_name =
+            "Lens.Overlay.ContextualSuggest.InitialQuery.ByPageContentType." +
+            MimeTypeToMetricString(page_content_type) +
+            ".QueryIssuedInSessionBeforeSuggestShown";
+    base::UmaHistogramBoolean(
+        sliced_contextual_query_issued_before_zps_shown_initial_histogram_name,
+        session_end_metrics.initial_query_issued_before_zps_shown_);
+  }
+
+  if (session_end_metrics.follow_up_query_issued_) {
+    // UMA follow up contextual query issued before zps shown in session.
+    base::UmaHistogramBoolean(
+        "Lens.Overlay.ContextualSuggest.FollowUpQuery."
+        "QueryIssuedInSessionBeforeSuggestShown",
+        session_end_metrics.follow_up_query_issued_before_zps_shown_);
+    // UMA initial contextual query issued before zps shown in session sliced by
+    // page content type.
+    const auto
+        sliced_contextual_query_issued_before_zps_shown_follow_up_histogram_name =
+            "Lens.Overlay.ContextualSuggest.FollowUpQuery.ByPageContentType." +
+            MimeTypeToMetricString(page_content_type) +
+            ".QueryIssuedInSessionBeforeSuggestShown";
+    base::UmaHistogramBoolean(
+        sliced_contextual_query_issued_before_zps_shown_follow_up_histogram_name,
+        session_end_metrics.follow_up_query_issued_before_zps_shown_);
+  }
 
   if (source_id == ukm::kInvalidSourceId) {
     return;
@@ -233,26 +270,26 @@ void RecordContextualSearchboxSessionEndMetrics(
 
   // UKM contextual searchbox focused in session.
   ukm::builders::Lens_Overlay_ContextualSearchbox_FocusedInSession(source_id)
-      .SetFocusedInSession(contextual_searchbox_focused_in_session)
+      .SetFocusedInSession(session_end_metrics.searchbox_focused_)
       .SetPageContentType(static_cast<int64_t>(page_content_type))
       .Record(ukm::UkmRecorder::Get());
 
   // UKM contextual zps shown in session.
   ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession(source_id)
-      .SetShownInSession(contextual_zps_shown_in_session)
+      .SetShownInSession(zps_shown_in_session)
       .SetPageContentType(static_cast<int64_t>(page_content_type))
       .Record(ukm::UkmRecorder::Get());
 
   // UKM contextual zps used in session.
   ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_SuggestionUsedInSession(
       source_id)
-      .SetSuggestionUsedInSession(contextual_zps_used_in_session)
+      .SetSuggestionUsedInSession(session_end_metrics.zps_used_)
       .SetPageContentType(static_cast<int64_t>(page_content_type))
       .Record(ukm::UkmRecorder::Get());
 
   // UKM contextual query issued in session.
   ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession(source_id)
-      .SetQueryIssuedInSession(contextual_query_issued_in_session)
+      .SetQueryIssuedInSession(session_end_metrics.query_issued_)
       .SetPageContentType(static_cast<int64_t>(page_content_type))
       .Record(ukm::UkmRecorder::Get());
 }
