@@ -333,6 +333,7 @@ ScannerController::~ScannerController() = default;
 
 // static
 void ScannerController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kScannerEnabled, true);
   registry->RegisterBooleanPref(prefs::kScannerFeedbackEnabled, true);
 }
 
