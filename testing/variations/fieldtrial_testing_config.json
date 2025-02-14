@@ -11867,6 +11867,22 @@
             ]
         }
     ],
+    "IOSGRPC": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensUnaryApisWithHttpTransportEnabled",
+                        "LensUnaryHttpTransportEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSHomeCustomization": [
         {
             "platforms": [
