@@ -2852,41 +2852,31 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
 // Tests that the percentage of favicons for the password manager metric is
 // logged properly when there are passwords with a favicon.
-// TODO(crbug.com/395064486): Test is flaky on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testLogFaviconsForPasswordsPercentageMetricWithPassword \
-  FLAKY_testLogFaviconsForPasswordsPercentageMetricWithPassword
-#else
-#define MAYBE_testLogFaviconsForPasswordsPercentageMetricWithPassword \
-  testLogFaviconsForPasswordsPercentageMetricWithPassword
-#endif
-- (void)MAYBE_testLogFaviconsForPasswordsPercentageMetricWithPassword {
-  // Sign-in and synced user.
+- (void)testLogFaviconsForPasswordsPercentageMetricWithPassword {
+  // Sign-in and wait for fully active sync.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncActiveTimeout];
 
-  // Add passwords for the user.
   SaveExamplePasswordForms();
-
   OpenPasswordManager();
 
-  // Make sure the cell is loaded properly before tapping on it.
+  // Metrics are logged when the password list view is disappearing, tap on a
+  // password entry to trigger that. Make sure the details view is loaded
+  // properly before verifying that.
+  [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"]
+      performAction:grey_tap()];
   ConditionBlock condition = ^{
     NSError* error = nil;
-    [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"]
+    [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
         assertWithMatcher:grey_sufficientlyVisible()
                     error:&error];
     return error == nil;
   };
-
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  base::test::ios::kWaitForUIElementTimeout, condition),
-             @"Waiting for the cell to load");
-
-  [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"]
-      performAction:grey_tap()];
+             @"Waiting for the details view to load");
 
   // Metric: Percentage of favicons with image.
   // Verify that histogram is called.
@@ -2896,6 +2886,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   if (error) {
     GREYFail([error description]);
   }
+
   // Verify the logged value of the histogram.
   error = [MetricsAppInterface
          expectSum:0
