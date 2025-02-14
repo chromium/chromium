@@ -89,7 +89,7 @@ CrostiniUninstallerView::CrostiniUninstallerView(Profile* profile)
       ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_CROSTINI_UNINSTALLER_UNINSTALL_BUTTON));
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL));
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,

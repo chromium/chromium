@@ -84,7 +84,7 @@ CrostiniExpiredContainerWarningView::CrostiniExpiredContainerWarningView(
       weak_ptr_factory_.GetWeakPtr()));
 
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL));
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
