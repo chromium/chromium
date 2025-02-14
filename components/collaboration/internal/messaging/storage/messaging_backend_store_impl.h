@@ -64,7 +64,7 @@ class MessagingBackendStoreImpl : public MessagingBackendStore {
   std::vector<collaboration_pb::Message> GetRecentMessagesForGroup(
       const data_sharing::GroupId& collaboration_id) override;
   void AddMessage(const collaboration_pb::Message& message) override;
-  void RemoveMessage(const std::string& message_id) override;
+  void RemoveMessages(const std::set<std::string>& message_ids) override;
 
   std::optional<MessagesPerGroup*> GetMessagesPerGroupForTesting(
       const data_sharing::GroupId& collaboration_id);

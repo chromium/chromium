@@ -318,8 +318,43 @@ void MessagingBackendStoreImpl::AddMessage(
   }
 }
 
-void MessagingBackendStoreImpl::RemoveMessage(const std::string& message_id) {
-  // TODO(crbug.com/389948455): Implement.
+void MessagingBackendStoreImpl::RemoveMessages(
+    const std::set<std::string>& message_ids) {
+  for (auto& [key, messages_per_group] : messages_) {
+    auto& tab_messages = messages_per_group->tab_messages;
+    for (auto it = tab_messages.begin(); it != tab_messages.end();) {
+      std::string message_uuid = it->second.uuid();
+      if (base::Contains(message_ids, message_uuid)) {
+        it = tab_messages.erase(it);
+      } else {
+        ++it;
+      }
+    }
+
+    auto& tab_group_messages = messages_per_group->tab_group_messages;
+    for (auto it = tab_group_messages.begin();
+         it != tab_group_messages.end();) {
+      std::string message_uuid = it->second.uuid();
+      if (base::Contains(message_ids, message_uuid)) {
+        it = tab_group_messages.erase(it);
+      } else {
+        ++it;
+      }
+    }
+
+    auto& collab_messages = messages_per_group->collaboration_messages;
+    for (auto it = collab_messages.begin(); it != collab_messages.end();) {
+      std::string message_uuid = it->uuid();
+      if (base::Contains(message_ids, message_uuid)) {
+        it = collab_messages.erase(it);
+      } else {
+        ++it;
+      }
+    }
+  }
+
+  database_->Delete(
+      std::vector<std::string>(message_ids.begin(), message_ids.end()));
 }
 
 std::optional<MessagesPerGroup*>
