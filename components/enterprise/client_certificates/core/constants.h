@@ -16,6 +16,12 @@ extern const char kManagedProfileIdentityName[];
 // rotation.
 extern const char kTemporaryManagedProfileIdentityName[];
 
+// Key name used within a key-value context for the private key.
+extern const char kKey[];
+
+// Key name used within a key-value context for the private key source.
+extern const char kKeySource[];
+
 }  // namespace client_certificates
 
 #endif  // COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_CONSTANTS_H_

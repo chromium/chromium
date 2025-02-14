@@ -11,4 +11,8 @@ const char kManagedProfileIdentityName[] = "ManagedProfileIdentity";
 const char kTemporaryManagedProfileIdentityName[] =
     "TemporaryManagedProfileIdentityName";
 
+const char kKey[] = "PrivateKey";
+
+const char kKeySource[] = "PrivateKeySource";
+
 }  // namespace client_certificates
