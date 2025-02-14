@@ -25,6 +25,7 @@
 #include "remoting/host/pin_hash.h"
 #include "remoting/host/setup/host_starter.h"
 #include "remoting/host/setup/host_starter_base.h"
+#include "remoting/host/setup/host_starter_oauth_helper.h"
 #include "remoting/proto/remoting/v1/directory_messages.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -43,7 +44,13 @@ class OAuthHostStarter : public HostStarterBase {
 
   ~OAuthHostStarter() override;
 
+  void OnUserTokensRetrieved(const std::string& user_email,
+                             const std::string& access_token,
+                             const std::string& refresh_token,
+                             const std::string& scopes);
+
   // HostStarterBase implementation.
+  void RetrieveApiAccessToken() override;
   void RegisterNewHost(const std::string& public_key,
                        std::optional<std::string> access_token) override;
   void RemoveOldHostFromDirectory(base::OnceClosure on_host_removed) override;
@@ -61,18 +68,57 @@ class OAuthHostStarter : public HostStarterBase {
   base::OnceClosure on_host_removed_;
   PassthroughOAuthTokenGetter token_getter_;
   DirectoryServiceClient directory_service_client_;
+  HostStarterOAuthHelper oauth_helper_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  base::WeakPtr<OAuthHostStarter> weak_ptr_;
   base::WeakPtrFactory<OAuthHostStarter> weak_ptr_factory_{this};
 };
 
 OAuthHostStarter::OAuthHostStarter(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : HostStarterBase(url_loader_factory),
-      directory_service_client_(&token_getter_, url_loader_factory) {}
+      directory_service_client_(&token_getter_, url_loader_factory),
+      oauth_helper_(url_loader_factory) {
+  weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
+}
 
 OAuthHostStarter::~OAuthHostStarter() = default;
+
+void OAuthHostStarter::RetrieveApiAccessToken() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!params().auth_code.empty());
+
+  oauth_helper_.FetchTokens(
+      params().owner_email, params().auth_code,
+      {
+          .client_id =
+              google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING),
+          .client_secret =
+              google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING),
+          .redirect_uri = params().redirect_url,
+      },
+      base::BindOnce(&OAuthHostStarter::OnUserTokensRetrieved, weak_ptr_),
+      base::BindOnce(&OAuthHostStarter::HandleError, weak_ptr_));
+}
+
+void OAuthHostStarter::OnUserTokensRetrieved(const std::string& user_email,
+                                             const std::string& access_token,
+                                             const std::string& refresh_token,
+                                             const std::string& scope_str) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // If an owner email was not provided, then use the account which created the
+  // authorization code.
+  if (params().owner_email.empty()) {
+    params().owner_email = base::ToLowerASCII(user_email);
+  }
+
+  // We don't need a `refresh_token` for the user so ignore it even if the
+  // authorization_code was created with the offline param.
+  RegisterNewHost(key_pair().GetPublicKey(), access_token);
+}
 
 void OAuthHostStarter::RegisterNewHost(
     const std::string& public_key,

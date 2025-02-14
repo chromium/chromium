@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "remoting/base/http_status.h"
+#include "remoting/base/rsa_key_pair.h"
 #include "remoting/host/setup/daemon_controller.h"
 #include "remoting/host/setup/host_starter.h"
 #include "remoting/host/setup/host_starter_oauth_helper.h"
@@ -27,9 +28,6 @@ class SharedURLLoaderFactory;
 
 namespace remoting {
 
-class HostStarterOAuthHelper;
-class RsaKeyPair;
-
 // Base class used to provide common functionality needed when registering a
 // new remote access host instance in the CRD backend. Subclasses should
 // override the methods which handle the steps which differ however the flow
@@ -37,7 +35,7 @@ class RsaKeyPair;
 //
 // Overview of the steps in the registration flow once StartHost() is called:
 // 1.) Check for an existing host instance
-// 2.) <optional> Exchange authorization_code for an access token
+// 2.) <optional> Retrieve an access token
 // 3.) Register the new host instance in the CRD backend
 // 4.) Exchange the service account authorization_code for a refresh token
 // 5.) Remove the existing host from the CRD backend
@@ -58,15 +56,13 @@ class HostStarterBase : public HostStarter {
 
  protected:
   Params& params() { return start_host_params_; }
+  RsaKeyPair& key_pair() { return *key_pair_; }
   std::optional<std::string>& existing_host_id() { return existing_host_id_; }
 
   // Methods used to implement the registration process described in the class
   // comment. They are listed in the order in which they are called.
   void OnExistingConfigLoaded(std::optional<base::Value::Dict> config);
-  void OnUserTokensRetrieved(const std::string& user_email,
-                             const std::string& access_token,
-                             const std::string& refresh_token,
-                             const std::string& scopes);
+  virtual void RetrieveApiAccessToken();
   virtual void RegisterNewHost(const std::string& public_key,
                                std::optional<std::string> access_token) = 0;
   void OnNewHostRegistered(const std::string& directory_id,
@@ -100,19 +96,18 @@ class HostStarterBase : public HostStarter {
 
  private:
   Params start_host_params_;
-  scoped_refptr<RsaKeyPair> key_pair_;
+  scoped_refptr<RsaKeyPair> key_pair_{RsaKeyPair::Generate()};
   std::optional<std::string> existing_host_id_;
 
   std::string service_account_email_;
   std::string service_account_refresh_token_;
 
-  std::optional<HostStarterOAuthHelper> oauth_helper_;
+  HostStarterOAuthHelper oauth_helper_;
 
   scoped_refptr<DaemonController> daemon_controller_ =
       DaemonController::Create();
 
   CompletionCallback on_done_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
