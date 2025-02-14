@@ -3843,21 +3843,6 @@
             ]
         }
     ],
-    "CVDisplayLinkBeginFrameSource": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CVDisplayLinkBeginFrameSource"
-                    ]
-                }
-            ]
-        }
-    ],
     "CacheStorageTaskPriority": [
         {
             "platforms": [
@@ -3989,22 +3974,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CanvasHibernationSnapshotZstd"
-                    ]
-                }
-            ]
-        }
-    ],
-    "CanvasOutOfProcessRasterization": [
-        {
-            "platforms": [
-                "chromeos",
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CanvasOopRasterization"
                     ]
                 }
             ]
@@ -7443,21 +7412,6 @@
             ]
         }
     ],
-    "DefaultANGLEMetal": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DefaultANGLEMetal"
-                    ]
-                }
-            ]
-        }
-    ],
     "DefaultANGLEVulkan": [
         {
             "platforms": [
@@ -8527,28 +8481,6 @@
             ]
         }
     ],
-    "DontAlwaysPushPictureLayerImpls": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DontAlwaysPushPictureLayerImpls"
-                    ]
-                }
-            ]
-        }
-    ],
     "DownloadLater": [
         {
             "platforms": [
@@ -8782,21 +8714,6 @@
                     "enable_features": [
                         "ImeFstDecoderParamsUpdate",
                         "ImeUsEnglishModelUpdate"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EnableADPFGpuCompositorThread": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableADPFGpuCompositorThread"
                     ]
                 }
             ]
@@ -9310,21 +9227,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableUserSessionActivityReporting"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EnableVkPipelineCache": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableVkPipelineCache"
                     ]
                 }
             ]
@@ -25585,7 +25487,6 @@
     "WebGPUUseTintIR": [
         {
             "platforms": [
-                "mac",
                 "windows"
             ],
             "experiments": [
