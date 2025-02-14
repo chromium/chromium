@@ -30,6 +30,10 @@ class EmptyCollaborationService : public CollaborationService {
       const data_sharing::GroupId& group_id) override;
   std::optional<data_sharing::GroupData> GetGroupData(
       const data_sharing::GroupId& group_id) override;
+  void DeleteGroup(const data_sharing::GroupId& group_id,
+                   base::OnceCallback<void(bool)> callback) override;
+  void LeaveGroup(const data_sharing::GroupId& group_id,
+                  base::OnceCallback<void(bool)> callback) override;
 };
 
 }  // namespace collaboration

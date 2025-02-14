@@ -40,4 +40,16 @@ std::optional<data_sharing::GroupData> EmptyCollaborationService::GetGroupData(
   return std::nullopt;
 }
 
+void EmptyCollaborationService::DeleteGroup(
+    const data_sharing::GroupId& group_id,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(true);
+}
+
+void EmptyCollaborationService::LeaveGroup(
+    const data_sharing::GroupId& group_id,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(true);
+}
+
 }  // namespace collaboration

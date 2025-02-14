@@ -18,7 +18,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
-import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesView;
@@ -38,9 +37,7 @@ import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManage
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.CollaborationService;
-import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupData;
-import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -187,7 +184,6 @@ public class TabUiUtils {
         TabModel tabModel = filter.getTabModel();
         Profile profile = tabModel.getProfile();
         TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
-        DataSharingService dataSharingService = DataSharingServiceFactory.getForProfile(profile);
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         CollaborationService collaborationService =
@@ -222,7 +218,7 @@ public class TabUiUtils {
                         exitCollaborationWithoutWarning(
                                 context,
                                 modalDialogManager,
-                                dataSharingService,
+                                collaborationService,
                                 collaborationId,
                                 memberRole,
                                 maybeBlockingResult.finishBlocking);
@@ -280,7 +276,7 @@ public class TabUiUtils {
      *
      * @param context Used to load resources.
      * @param modalDialogManager Used to show error dialogs.
-     * @param dataSharingService Called to do the actual leave or delete action.
+     * @param collaborationService Called to do the actual leave or delete action.
      * @param collaborationId Used to identify the collaboration.
      * @param memberRole Used to decide which way to exit the group.
      * @param finishedRunnable Invoked when the server RPC is complete.
@@ -288,16 +284,16 @@ public class TabUiUtils {
     public static void exitCollaborationWithoutWarning(
             Context context,
             ModalDialogManager modalDialogManager,
-            DataSharingService dataSharingService,
+            CollaborationService collaborationService,
             String collaborationId,
             @MemberRole int memberRole,
             @Nullable Runnable finishedRunnable) {
-        Callback<Integer> callback =
+        Callback<Boolean> callback =
                 bindOnLeaveOrDeleteGroup(context, modalDialogManager, finishedRunnable);
         if (memberRole == MemberRole.OWNER) {
-            dataSharingService.deleteGroup(collaborationId, callback);
+            collaborationService.deleteGroup(collaborationId, callback);
         } else if (memberRole == MemberRole.MEMBER) {
-            dataSharingService.leaveGroup(collaborationId, callback);
+            collaborationService.leaveGroup(collaborationId, callback);
         } else {
             showGenericErrorDialog(context, modalDialogManager);
         }
@@ -351,16 +347,16 @@ public class TabUiUtils {
         container.addView(imageTilesView, layoutParams);
     }
 
-    private static Callback<Integer> bindOnLeaveOrDeleteGroup(
+    private static Callback<Boolean> bindOnLeaveOrDeleteGroup(
             Context context,
             ModalDialogManager modalDialogManager,
             @Nullable Runnable finishedRunnable) {
-        return (@PeopleGroupActionOutcome Integer outcome) -> {
+        return (Boolean success) -> {
             // Invoke the runnable first since it may be necessary to hide the prior dialog before
             // showing the error.
             if (finishedRunnable != null) finishedRunnable.run();
 
-            if (outcome != PeopleGroupActionOutcome.SUCCESS) {
+            if (!Boolean.TRUE.equals(success)) {
                 showGenericErrorDialog(context, modalDialogManager);
             }
         };

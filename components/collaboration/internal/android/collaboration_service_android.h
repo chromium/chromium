@@ -37,6 +37,12 @@ class CollaborationServiceAndroid : public base::SupportsUserData::Data {
   jni_zero::ScopedJavaLocalRef<jobject> GetGroupData(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& group_id);
+  void LeaveGroup(JNIEnv* env,
+                  const base::android::JavaParamRef<jstring>& group_id,
+                  const base::android::JavaParamRef<jobject>& j_callback);
+  void DeleteGroup(JNIEnv* env,
+                   const base::android::JavaParamRef<jstring>& group_id,
+                   const base::android::JavaParamRef<jobject>& j_callback);
 
   // Returns the CollaborationServiceImpl java object.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();

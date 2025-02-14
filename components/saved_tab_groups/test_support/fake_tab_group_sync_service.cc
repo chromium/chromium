@@ -254,6 +254,11 @@ void FakeTabGroupSyncService::OnTabGroupUnShareComplete(
   NotifyObserversOfTabGroupShared(group);
 }
 
+void FakeTabGroupSyncService::OnCollaborationRemoved(
+    const std::string& collaboration_id) {
+  // No op.
+}
+
 std::vector<SavedTabGroup> FakeTabGroupSyncService::GetAllGroups() const {
   std::vector<SavedTabGroup> groups;
   for (const SavedTabGroup& group : groups_) {

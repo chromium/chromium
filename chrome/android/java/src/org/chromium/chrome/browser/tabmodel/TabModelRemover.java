@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
-import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils.GroupsPendingDestroy;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -29,7 +28,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.CollaborationService;
-import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -91,7 +89,6 @@ class TabModelRemover {
     // Lazily created objects use corresponding getters.
     private @Nullable ActionConfirmationManager mActionConfirmationManager;
     private @Nullable TabGroupSyncService mTabGroupSyncService;
-    private @Nullable DataSharingService mDataSharingService;
     private @Nullable CollaborationService mCollaborationService;
 
     /**
@@ -224,20 +221,17 @@ class TabModelRemover {
             @NonNull CollaborationInfo collaborationInfo, @NonNull Runnable finishBlocking) {
         assert collaborationInfo.isValid();
 
-        // TODO(crbug.com/376907248): Remove DataSharingService from here once these operations
-        // are supported by CollaborationService.
-
         String collaborationId = collaborationInfo.collaborationId;
         @MemberRole int memberRole = collaborationInfo.memberRole;
-        @Nullable DataSharingService dataSharingService = getDataSharingService();
-        if (dataSharingService == null) {
+        @Nullable CollaborationService collaborationService = getCollaborationService();
+        if (collaborationService == null) {
             finishBlocking.run();
             TabUiUtils.showGenericErrorDialog(mContext, mModalDialogManager);
         } else {
             TabUiUtils.exitCollaborationWithoutWarning(
                     mContext,
                     mModalDialogManager,
-                    dataSharingService,
+                    collaborationService,
                     collaborationId,
                     memberRole,
                     finishBlocking);
@@ -349,14 +343,6 @@ class TabModelRemover {
             mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
         }
         return mTabGroupSyncService;
-    }
-
-    private @Nullable DataSharingService getDataSharingService() {
-        if (mDataSharingService == null) {
-            Profile profile = getProfile();
-            mDataSharingService = DataSharingServiceFactory.getForProfile(profile);
-        }
-        return mDataSharingService;
     }
 
     private @NonNull CollaborationService getCollaborationService() {

@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.url.GURL;
@@ -65,4 +66,20 @@ public interface CollaborationService {
      */
     @Nullable
     GroupData getGroupData(String collaborationId);
+
+    /**
+     * Attempt to leave a collaboration group.
+     *
+     * @param groupId The group ID to leave.
+     * @param callback The leave result as a boolean.
+     */
+    void leaveGroup(String groupId, Callback</* success= */ Boolean> callback);
+
+    /**
+     * Attempt to delete a collaboration group.
+     *
+     * @param groupId The group ID to delete.
+     * @param callback The deletion result as a boolean.
+     */
+    void deleteGroup(String groupId, Callback</* success= */ Boolean> callback);
 }

@@ -265,10 +265,10 @@ void SavedTabGroupUtils::LeaveSharedGroup(const Browser* browser,
           return;
         }
 
-        data_sharing::DataSharingService* data_sharing_service =
-            data_sharing::DataSharingServiceFactory::GetForProfile(
+        collaboration::CollaborationService* collaboration_service =
+            collaboration::CollaborationServiceFactory::GetForProfile(
                 browser->profile());
-        if (!data_sharing_service) {
+        if (!collaboration_service) {
           return;
         }
 
@@ -277,7 +277,7 @@ void SavedTabGroupUtils::LeaveSharedGroup(const Browser* browser,
               nullptr, saved_group->local_group_id().value());
         }
 
-        data_sharing_service->LeaveGroup(
+        collaboration_service->LeaveGroup(
             data_sharing::GroupId(saved_group->collaboration_id()->value()),
             base::DoNothing());
       },

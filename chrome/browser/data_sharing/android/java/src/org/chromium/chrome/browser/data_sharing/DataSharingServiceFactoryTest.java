@@ -104,22 +104,6 @@ public class DataSharingServiceFactoryTest {
                                             result.actionFailure);
                                     callbackReceived();
                                 });
-                        dataSharingService.leaveGroup(
-                                "bad_id",
-                                result -> {
-                                    Assert.assertEquals(
-                                            PeopleGroupActionOutcome.TRANSIENT_FAILURE,
-                                            result.intValue());
-                                    callbackReceived();
-                                });
-                        dataSharingService.deleteGroup(
-                                "bad_id",
-                                result -> {
-                                    Assert.assertEquals(
-                                            PeopleGroupActionOutcome.TRANSIENT_FAILURE,
-                                            result.intValue());
-                                    callbackReceived();
-                                });
                         dataSharingService.inviteMember(
                                 "bad_id",
                                 "bad_email",
