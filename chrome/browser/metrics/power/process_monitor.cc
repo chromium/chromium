@@ -329,8 +329,7 @@ void ProcessMonitor::BrowserChildProcessLaunchedAndConnected(
 #if BUILDFLAG(IS_WIN)
   // Cannot gather process metrics for elevated process as browser has no
   // access to them.
-  CHECK(data.sandbox_type.has_value());
-  if (data.sandbox_type ==
+  if (data.sandbox_type.value() ==
       sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges) {
     return;
   }
@@ -350,16 +349,6 @@ void ProcessMonitor::BrowserChildProcessLaunchedAndConnected(
 void ProcessMonitor::BrowserChildProcessHostDisconnected(
     const content::ChildProcessData& data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if BUILDFLAG(IS_WIN)
-  // Cannot gather process metrics for elevated process as browser has no
-  // access to them.
-  CHECK(data.sandbox_type.has_value());
-  if (data.sandbox_type ==
-      sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges) {
-    return;
-  }
-#endif
-
   DCHECK(browser_child_process_infos_.find(data.id) ==
          browser_child_process_infos_.end());
 }
@@ -392,8 +381,7 @@ void ProcessMonitor::OnBrowserChildProcessExited(
 #if BUILDFLAG(IS_WIN)
   // Cannot gather process metrics for elevated process as browser has no
   // access to them.
-  CHECK(data.sandbox_type.has_value());
-  if (data.sandbox_type ==
+  if (data.sandbox_type.value() ==
       sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges) {
     return;
   }
