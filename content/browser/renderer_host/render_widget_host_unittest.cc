@@ -1186,7 +1186,7 @@ TEST_F(RenderWidgetHostTest, NewSizeIncludesScaleFactor) {
   EXPECT_EQ(202, new_size.width());
   EXPECT_EQ(200, new_size.height());
   auto visible_viewport_size =
-      widget_.ReceivedVisualProperties()[0].visible_viewport_size;
+      widget_.ReceivedVisualProperties()[0].visible_viewport_size_device_px;
   EXPECT_EQ(202, visible_viewport_size.width());
   EXPECT_EQ(200, visible_viewport_size.height());
   EXPECT_TRUE(host_->visual_properties_ack_pending_);

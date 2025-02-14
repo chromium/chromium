@@ -41,13 +41,13 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
     return r.max_size_for_auto_resize;
   }
 
-  static const gfx::Size& new_size(const blink::VisualProperties& r) {
+  static const gfx::Size& new_size_device_px(const blink::VisualProperties& r) {
     return r.new_size_device_px;
   }
 
-  static const gfx::Size& visible_viewport_size(
+  static const gfx::Size& visible_viewport_size_device_px(
       const blink::VisualProperties& r) {
-    return r.visible_viewport_size;
+    return r.visible_viewport_size_device_px;
   }
 
   static const gfx::Rect& compositor_viewport_pixel_rect(

@@ -20,7 +20,8 @@ bool VisualProperties::operator==(const VisualProperties& other) const {
          min_size_for_auto_resize == other.min_size_for_auto_resize &&
          max_size_for_auto_resize == other.max_size_for_auto_resize &&
          new_size_device_px == other.new_size_device_px &&
-         visible_viewport_size == other.visible_viewport_size &&
+         visible_viewport_size_device_px ==
+             other.visible_viewport_size_device_px &&
          compositor_viewport_pixel_rect ==
              other.compositor_viewport_pixel_rect &&
          browser_controls_params == other.browser_controls_params &&

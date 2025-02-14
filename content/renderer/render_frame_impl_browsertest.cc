@@ -288,7 +288,7 @@ TEST_F(RenderFrameImplTest, FrameResize) {
   gfx::Size visible_size(350, 170);
   visual_properties.new_size_device_px = widget_size;
   visual_properties.compositor_viewport_pixel_rect = gfx::Rect(widget_size);
-  visual_properties.visible_viewport_size = visible_size;
+  visual_properties.visible_viewport_size_device_px = visible_size;
 
   blink::WebFrameWidget* main_frame_widget =
       GetMainRenderFrame()->GetLocalRootWebFrameWidget();

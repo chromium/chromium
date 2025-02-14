@@ -73,8 +73,7 @@ struct BLINK_COMMON_EXPORT VisualProperties {
   // is entirely scrolled out of the main frame's viewport. It may also be
   // smaller than the widget's size in |new_size| due to the UI hiding part of
   // the widget, such as with an on-screen keyboard.
-  // TODO(chrishtr): rename to visible_viewport_size_device_px.
-  gfx::Size visible_viewport_size;
+  gfx::Size visible_viewport_size_device_px;
 
   // The rect of compositor's viewport in device pixels. Note that for top level
   // widgets this is the same as |new_size| (when UseDevicePixelsForWidgetSizing

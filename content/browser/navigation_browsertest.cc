@@ -9637,7 +9637,8 @@ IN_PROC_BROWSER_TEST_F(VisualPropertiesSynchronization,
   std::optional<blink::VisualProperties> visual_properties =
       root_rwh->LastComputedVisualProperties();
   EXPECT_TRUE(visual_properties);
-  EXPECT_NE(gfx::Size(0, 0), visual_properties->visible_viewport_size);
+  EXPECT_NE(gfx::Size(0, 0),
+            visual_properties->visible_viewport_size_device_px);
 
   // Ensure a frame has been produced.
   ASSERT_TRUE(

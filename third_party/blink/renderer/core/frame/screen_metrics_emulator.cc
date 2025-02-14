@@ -183,7 +183,8 @@ void ScreenMetricsEmulator::UpdateVisualProperties(
       visual_properties.new_size_device_px,
       1 / original_screen_infos_.current().device_scale_factor);
 
-  original_visible_viewport_size_ = visual_properties.visible_viewport_size;
+  original_visible_viewport_size_ =
+      visual_properties.visible_viewport_size_device_px;
   original_root_viewport_segments_ =
       visual_properties.root_widget_viewport_segments;
   Apply();
