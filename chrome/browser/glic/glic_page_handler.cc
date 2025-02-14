@@ -7,6 +7,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/browser_process.h"
@@ -25,10 +26,12 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -258,6 +261,18 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void OnResponseRated(bool positive) override {
     glic_service_->metrics()->OnResponseRated(positive);
+  }
+
+  void ScrollTo(mojom::ScrollToParamsPtr params,
+                ScrollToCallback callback) override {
+    if (!base::FeatureList::IsEnabled(features::kGlicScrollTo)) {
+      mojo::ReportBadMessage(
+          "Client should not be able to call ScrollTo without the GlicScrollTo "
+          "feature enabled.");
+      return;
+    }
+    NOTIMPLEMENTED();
+    std::move(callback).Run(mojom::ScrollToErrorReason::kNotSupported);
   }
 
   // GlicWindowController::StateObserver implementation.

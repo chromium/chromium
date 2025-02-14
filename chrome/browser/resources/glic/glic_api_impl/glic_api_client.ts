@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotatedPageData, ChromeVersion, DraggableArea, FocusedTabCandidate, FocusedTabData, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, PanelState, PdfDocumentData, Screenshot, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, ChromeVersion, DraggableArea, FocusedTabCandidate, FocusedTabData, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, PanelState, PdfDocumentData, Screenshot, ScrollToParams, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
 import type {AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClientRequestTypes} from './request_types.js';
@@ -176,6 +176,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         state.tabContextPermissionEnabled);
     this.canAttachPanelValue.assignAndSignal(state.canAttach);
     this.chromeVersion = state.chromeVersion;
+
+    if (!state.scrollToEnabled) {
+      (this as GlicBrowserHost).scrollTo = undefined;
+    }
   }
 
   webClientInitialized(success: boolean) {
@@ -339,6 +343,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   getMetrics(): GlicBrowserHostMetrics {
     return this.metrics;
+  }
+
+  scrollTo(params: ScrollToParams): Promise<void> {
+    return this.sender.requestWithResponse('glicBrowserScrollTo', {params});
   }
 }
 

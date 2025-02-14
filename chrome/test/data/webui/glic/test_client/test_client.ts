@@ -59,6 +59,8 @@ interface PageElementTypes {
   desktopScreenshotErrorReason: HTMLSpanElement;
   createTabInBackground: HTMLInputElement;
   canAttachCheckbox: HTMLInputElement;
+  scrollToTextInput: HTMLInputElement;
+  scrollToBn: HTMLButtonElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -423,6 +425,29 @@ $.audioDuckingOn.addEventListener('click', () => {
 
 $.audioDuckingOff.addEventListener('click', () => {
   getBrowser()!.setAudioDucking!(false);
+});
+
+$.scrollToBn.addEventListener('click', async () => {
+  const text = $.scrollToTextInput.value;
+  if (!text) {
+    logMessage('scrollTo called with empty text.');
+    return;
+  }
+  if (!(getBrowser()!.scrollTo)) {
+    logMessage(
+        `scrollTo is not enabled. Run with --enable-features=GlicScrollTo.`);
+    return;
+  }
+  logMessage(`scrollTo called with "${text}"`);
+  try {
+    await getBrowser()!.scrollTo!({
+      selector: {exactText: {text: text}},
+      highlight: true,
+    });
+    logMessage(`scrollTo succeeded.`);
+  } catch (error) {
+    logMessage(`scrollTo failed: ${error}`);
+  }
 });
 
 

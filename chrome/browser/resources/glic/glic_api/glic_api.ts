@@ -316,6 +316,17 @@ export declare interface GlicBrowserHost {
 
   /** Returns an object that holds metrics-related functionality. */
   getMetrics?(): GlicBrowserHostMetrics;
+
+  /**
+   * @todo Not yet implemented. https://crbug.com/381437495
+   *
+   * Scrolls to and (optionally) highlights content specified by an input
+   * selector. Returns a promise that resolves when the selected content is
+   * matched and a scroll is started.
+   *
+   * @throws {ScrollToError} on failure.
+   */
+  scrollTo?(params: ScrollToParams): Promise<void>;
 }
 
 /** Holds optional parameters for `GlicBrowserHost#resizeWindow`. */
@@ -620,6 +631,7 @@ export declare interface Screenshot {
 export declare interface ErrorReasonTypes {
   tabContext: GetTabContextErrorReason;
   captureScreenshot: CaptureScreenshotErrorReason;
+  scrollTo: ScrollToErrorReason;
 }
 
 /** Error implementation with a typed generic reason attached. */
@@ -688,6 +700,61 @@ export type GetTabContextError = ErrorWithReason<'tabContext'>;
 
 /** Error type used for screenshot capture errors. */
 export type CaptureScreenshotError = ErrorWithReason<'captureScreenshot'>;
+
+/** Params for scrollTo(). */
+export declare interface ScrollToParams {
+  /**
+   * Whether we should highlight the content selected. True by default if not
+   * specified. If false, the content is scrolled to but not highlighted.
+   */
+  highlight?: boolean;
+
+  /** Used to specify content to scroll to and highlight. */
+  selector: ScrollToSelector;
+}
+
+/**
+ * Used to select content to scroll to. Note that only one concrete selector
+ * type can be present.
+ * Additional selector types will be added to this API in the future.
+ */
+export declare interface ScrollToSelector {
+  /** Exact text selector, see ScrollToTextSelector for more details. */
+  exactText?: ScrollToTextSelector;
+
+  /**
+   * Text fragment selector, see ScrollToTextFragmentSelector for more details
+   */
+  textFragment?: ScrollToTextFragmentSelector;
+}
+
+/**
+ * scrollTo() selector to select exact text in HTML and PDF documents.
+ */
+export declare interface ScrollToTextSelector {
+  text: string;
+}
+
+/**
+ * scrollTo() selector to select a range of text in HTML and PDF documents.
+ * Text selected will match textStart <anything in the middle> textEnd.
+ */
+export declare interface ScrollToTextFragmentSelector {
+  textStart: string;
+  textEnd: string;
+}
+
+/** Error type used for scrollTo(). */
+export type ScrollToError = ErrorWithReason<'scrollTo'>;
+
+/** Reason why scrollTo() failed. */
+export enum ScrollToErrorReason {
+  /**
+   * Invalid params were provided to scrollTo(), or the browser doesn't support
+   * scrollTo() yet.
+   */
+  NOT_SUPPORTED = 0
+}
 
 /**
  * A rectangular area based in the glic window's coordinate system. All

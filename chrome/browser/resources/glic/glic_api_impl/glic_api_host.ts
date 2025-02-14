@@ -17,10 +17,10 @@ import type {Origin} from '//resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {BrowserProxy} from '../browser_proxy.js';
-import type {FocusedTabCandidate as FocusedTabCandidateMojo, FocusedTabData as FocusedTabDataMojo, InvalidCandidateError as MojoInvalidCandidateError, NoCandidateTabError as MojoNoCandidateTabError, OpenPanelInfo as OpenPanelInfoMojo, PanelState as PanelStateMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
+import type {FocusedTabCandidate as FocusedTabCandidateMojo, FocusedTabData as FocusedTabDataMojo, InvalidCandidateError as MojoInvalidCandidateError, NoCandidateTabError as MojoNoCandidateTabError, OpenPanelInfo as OpenPanelInfoMojo, PanelState as PanelStateMojo, ScrollToSelector as ScrollToSelectorMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
 import {GetTabContextErrorReason as MojoGetTabContextErrorReason, WebClientHandlerRemote, WebClientMode, WebClientReceiver} from '../glic.mojom-webui.js';
-import type {DraggableArea, PanelState, Screenshot, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
-import {CaptureScreenshotErrorReason, DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason, InvalidCandidateError, NoCandidateTabError} from '../glic_api/glic_api.js';
+import type {DraggableArea, PanelState, Screenshot, ScrollToParams, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
+import {CaptureScreenshotErrorReason, DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason, InvalidCandidateError, NoCandidateTabError, ScrollToErrorReason} from '../glic_api/glic_api.js';
 
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
@@ -184,6 +184,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
         patch: chromeVersion[3] || 0,
       },
       canAttach: initialState.canAttach,
+      scrollToEnabled: loadTimeData.getBoolean('enableScrollTo'),
     };
   }
 
@@ -438,6 +439,41 @@ class HostMessageHandler implements HostMessageHandlerInterface {
 
   glicBrowserOnResponseRated(request: {positive: boolean}) {
     this.handler.onResponseRated(request.positive);
+  }
+
+  async glicBrowserScrollTo(request: {params: ScrollToParams}) {
+    const {params} = request;
+
+    function getMojoSelector(): ScrollToSelectorMojo {
+      const {selector} = params;
+      if (selector.exactText !== undefined) {
+        return {
+          exactTextSelector: {
+            text: selector.exactText!.text,
+          },
+        };
+      }
+      if (selector.textFragment !== undefined) {
+        return {
+          textFragmentSelector: {
+            textStart: selector.textFragment!.textStart,
+            textEnd: selector.textFragment!.textEnd,
+          },
+        };
+      }
+      throw new ErrorWithReasonImpl(
+          'scrollTo', ScrollToErrorReason.NOT_SUPPORTED);
+    }
+
+    const mojoParams = {
+      highlight: params.highlight === undefined ? true : params.highlight,
+      selector: getMojoSelector(),
+    };
+    const {errorReason} = (await this.handler.scrollTo(mojoParams));
+    if (errorReason !== null) {
+      throw new ErrorWithReasonImpl('scrollTo', errorReason! as number);
+    }
+    return {};
   }
 }
 

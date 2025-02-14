@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotatedPageData, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabCandidate, FocusedTabData, InvalidCandidateError, NoCandidateTabError, OpenPanelInfo, PanelState, PdfDocumentData, Screenshot, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabCandidate, FocusedTabData, InvalidCandidateError, NoCandidateTabError, OpenPanelInfo, PanelState, PdfDocumentData, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -37,6 +37,7 @@ export declare interface HostRequestTypes {
       focusedTabData: FocusedTabDataPrivate,
       chromeVersion: ChromeVersion,
       canAttach: boolean,
+      scrollToEnabled: boolean,
     },
   };
   // This message is sent after the client returns successfully from
@@ -174,6 +175,10 @@ export declare interface HostRequestTypes {
     request: {
       positive: boolean,
     },
+    response: void,
+  };
+  glicBrowserScrollTo: {
+    request: {params: ScrollToParams},
     response: void,
   };
 }

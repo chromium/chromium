@@ -359,6 +359,8 @@ const base::FeatureParam<std::string> kGlicAllowedOriginsOverride{
     // Space-delimited set of allowed origins.
     "https://*.google.com"};
 
+BASE_FEATURE(kGlicScrollTo, "GlicScrollTo", base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabstripComboButton,
              "TabstripComboButton",
              base::FEATURE_DISABLED_BY_DEFAULT);

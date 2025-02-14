@@ -107,6 +107,9 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
 
   source->AddBoolean("enableDebug",
                      base::FeatureList::IsEnabled(features::kGlicDebugWebview));
+
+  source->AddBoolean("enableScrollTo",
+                     base::FeatureList::IsEnabled(features::kGlicScrollTo));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GlicUI)

@@ -187,6 +187,45 @@ struct GetTabContextOptions {
   uint32 pdf_size_limit;
 };
 
+// Parameters for ScrollTo.
+struct ScrollToParams {
+  // Used to specify content to scroll to (and optionally highlight).
+  ScrollToSelector selector;
+
+  // Whether to highlight the selected content.
+  bool highlight;
+};
+
+// Used to select content in a page to scroll to and highlight.
+union ScrollToSelector {
+  ScrollToTextSelector exact_text_selector;
+  ScrollToTextFragmentSelector text_fragment_selector;
+};
+
+// Used to specify exact text to scroll to and highlight.
+struct ScrollToTextSelector {
+  // Exact text to select.
+  string text;
+};
+
+// Used to specify a text fragment to scroll to and highlight. Text selected
+// will match text block that starts with `text_start` and ends with `text_end`
+// (and can have any text in the middle).
+struct ScrollToTextFragmentSelector {
+  // Start of text to select.
+  string text_start;
+  // End of text to select.
+  string text_end;
+};
+
+// Note: This must be kept in sync with the corresponding enum (same name) in
+// glic_api.ts
+[Stable, Extensible]
+enum ScrollToErrorReason {
+  // The browser doesn't support ScrollTo.
+  [Default] kNotSupported = 0
+};
+
 // Access to the browser from the web client by proxy through the WebUI.
 // A single WebClientHandler will provide access to the browser for only
 // a single web client. If the webview navigates or refreshes, a new
@@ -304,6 +343,10 @@ interface WebClientHandler {
 
   // Called when the user rates a response.
   OnResponseRated(bool positive);
+
+  // Scrolls to and (optionally) highlights content specified by `params`.
+  // Returns an error reason if the scroll fails, or null otherwise.
+  ScrollTo(ScrollToParams params) => (ScrollToErrorReason? error_reason);
 };
 
 // State of the glic panel.
