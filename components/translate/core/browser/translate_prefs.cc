@@ -300,7 +300,13 @@ std::vector<std::string> TranslatePrefs::GetNeverTranslateLanguages() const {
 
   std::vector<std::string> languages;
   for (const auto& language : fluent_languages_value) {
-    std::string chrome_language(language.GetString());
+    const std::string* language_as_string = language.GetIfString();
+    // This needs to be checked here as there can be corrupt entries in the pref
+    // list which causes a crash.
+    if (!language_as_string) {
+      continue;
+    }
+    std::string chrome_language{*language_as_string};
     language::ToChromeLanguageSynonym(&chrome_language);
     languages.push_back(chrome_language);
   }
